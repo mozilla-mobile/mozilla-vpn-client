@@ -6,7 +6,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "platforms/android/androidutils.h"
 #include "QDir"
 #include "QVariant"
 #include <QtXml>

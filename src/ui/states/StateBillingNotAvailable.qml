@@ -15,28 +15,25 @@ VPNStackView {
     id: stackview
 
     function handleButtonClick() {
-        VPN.openLink(VPN.LinkSubscriptionsBlocked)
+        VPN.launchPlayStore()
     }
 
     Component.onCompleted: {
         stackview.push("../views/ViewErrorFullScreen.qml", {
-            // "Problem confirming subscription…"
-            headlineText: VPNl18n.tr(VPNl18n.MultiFxaAccountErrorFxaAccountErrorHeader),
+            // Sign in to Google Account
+            headlineText: VPNl18n.tr(VPNl18n.NotSignedInGoogleGoogleModalHeader),
 
-            // "Your subscription is linked to another Firefox Account....."
-            errorMessage: VPNl18n.tr(VPNl18n.MultiFxaAccountErrorFxaAccountErrorText),
+            // To continue subscribing, please sign in to your Google Account
+            errorMessage: VPNl18n.tr(VPNl18n.NotSignedInGoogleGoogleModalBodyText),
 
-            //% "Visit our help center to learn more about managing your subscriptions."
-            errorMessage2: qsTrId("vpn.subscriptionBlocked.visitHelpCenter"),
-
-            //% "Get Help"
-            buttonText: qsTrId("vpn.subscriptionBlocked.getHelp"),
+            // Go to Play Store
+            buttonText: VPNl18n.tr(VPNl18n.NotSignedInGoogleGoogleModalLinkText),
             buttonObjectName: "errorGetHelpButton",
             buttonOnClick: stackview.handleButtonClick,
             signOffLinkVisible: true,
-            getHelpLinkVisible: false
+            getHelpLinkVisible: true
             }
         );
-        Sample.subscriptionBlockedViewed.record();
+        Sample.billingNotAvailableViewed.record();
     }
 }
