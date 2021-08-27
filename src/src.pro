@@ -107,6 +107,7 @@ SOURCES += \
         main.cpp \
         models/device.cpp \
         models/devicemodel.cpp \
+        models/feature.cpp \
         models/feedbackcategorymodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
@@ -197,6 +198,20 @@ HEADERS += \
         curve25519.h \
         errorhandler.h \
         featurelist.h \
+        features/featureappreview.h \
+        features/featurecaptiveportal.h \
+        features/featurecustomdns.h \
+        features/featureglean.h \
+        features/featureinappaccountCreate.h \
+        features/featureinappauth.h \
+        features/featureinapppurchase.h \
+        features/featurelocalareaaccess.h \
+        features/featuremultihop.h \
+        features/featurenotificationcontrol.h \
+        features/featuresplittunnel.h \
+        features/featurestartonboot.h \
+        features/featureunsecurednetworknotification.h \
+        features/featureunauthsupport.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
@@ -216,6 +231,7 @@ HEADERS += \
         logoutobserver.h \
         models/device.h \
         models/devicemodel.h \
+        models/feature.h \
         models/feedbackcategorymodel.h \
         models/helpmodel.h \
         models/keys.h \

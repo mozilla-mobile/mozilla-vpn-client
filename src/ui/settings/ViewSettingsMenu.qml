@@ -85,7 +85,7 @@ VPNFlickable {
         anchors.rightMargin: Theme.hSpacing
         width: vpnFlickable.width - Theme.hSpacing
         onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
-        visible: VPNFeatureList.startOnBootSupported
+        visible: VPNFeatureList.get("startOnBoot").isSupported
     }
 
     Component {
@@ -101,7 +101,7 @@ VPNFlickable {
         id: settingsList
 
         spacing: Theme.listSpacing
-        y: Theme.vSpacing + (VPNFeatureList.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height :
+        y: Theme.vSpacing + (VPNFeatureList.get("startOnBoot").isSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height :
                               manageAccountButton.y + manageAccountButton.height)
         width: parent.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
@@ -121,7 +121,7 @@ VPNFlickable {
             imageLeftSrc: "../resources/settings/notifications.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewNotifications.qml")
-            visible: VPNFeatureList.captivePortalNotificationSupported || VPNFeatureList.unsecuredNetworkNotificationSupported || VPNFeatureList.notificationControlSupported
+            visible: VPNFeatureList.get("captivePortal").isSupported || VPNFeatureList.get("unsecuredNetworkNotification").isSupported || VPNFeatureList.get("notificationControl").isSupported
         }
         VPNSettingsItem {
             objectName: "settingsLanguages"
@@ -137,7 +137,7 @@ VPNFlickable {
             settingTitle: qsTrId("vpn.settings.appPermissions2")
             imageLeftSrc: "../resources/settings/apps.svg"
             imageRightSrc: "../resources/chevron.svg"
-            visible: VPNFeatureList.protectSelectedAppsSupported
+            visible: VPNFeatureList.get("splitTunnel").isSupported
             onClicked: settingsStackView.push("../settings/ViewAppPermissions.qml")
         }
         VPNSettingsItem {
