@@ -359,7 +359,7 @@ Window {
     function showFeatureInWhatsNew(feature) {
         return feature.isNew           // new feature in this release
             && feature.isMajor         // a feature we would like to show
-//            && feature.supported;      // feature is supported on platform
+            && feature.supported;      // feature is supported on platform
     }
 
     VPNFeatureTourPopup {
