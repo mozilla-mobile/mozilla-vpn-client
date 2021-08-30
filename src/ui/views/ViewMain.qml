@@ -91,14 +91,14 @@ VPNFlickable {
                 stackview.push("ViewServers.qml")
             }
 
-            Layout.topMargin: 12
-
             id: serverInfo
             objectName: "serverListButton"
 
             //% "Select location"
             //: Select the Location of the VPN server
             titleText: qsTrId("vpn.servers.selectLocation")
+
+            subtitleText: VPNCurrentServer.localizedCityName
             //% "current location - %1"
             //: Accessibility description for current location of the VPN server
             descriptionText: qsTrId("vpn.servers.currentLocation").arg(
@@ -106,7 +106,7 @@ VPNFlickable {
             disableRowWhen: (VPNController.state !== VPNController.StateOn
                              && VPNController.state !== VPNController.StateOff)
                             || box.connectionInfoVisible
-
+            Layout.topMargin: 12
             contentChildren: [
 
                 VPNServerLabel {
