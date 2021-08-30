@@ -213,8 +213,7 @@ void AndroidIAPHandler::onSkuDetailsFailed(JNIEnv* env, jobject thiz,
   logger.error() << "onSkuDetailsFailed"
                  << QJsonDocument(json).toJson(QJsonDocument::Compact);
   IAPHandler* iap = IAPHandler::instance();
-  iap->stopSubscription();
-  emit iap->subscriptionFailed();
+  iap->stopProductsRegistration();
 }
 
 // static
