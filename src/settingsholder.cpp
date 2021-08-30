@@ -106,6 +106,12 @@ constexpr const char* SETTINGS_DEVELOPERUNLOCK = "developerUnlock";
 constexpr bool SETTINGS_STAGINGSERVER_DEFAULT = false;
 constexpr const char* SETTINGS_STAGINGSERVER = "stagingServer";
 
+const QStringList SETTINGS_SEENFEATURES_DEFAULT = QStringList();
+constexpr const char* SETTINGS_SEENFEATURES = "seenFeatures";
+
+constexpr bool SETTINGS_FEATURESTOURSHOWN_DEFAULT = false;
+constexpr const char* SETTINGS_FEATURESTOURSHOWN = "featuresTourShown";
+
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 // Setting Keys That won't show up in a report;
@@ -263,6 +269,13 @@ GETSETDEFAULT(SETTINGS_DEVELOPERUNLOCK_DEFAULT, bool, toBool,
 GETSETDEFAULT(SETTINGS_STAGINGSERVER_DEFAULT, bool, toBool,
               SETTINGS_STAGINGSERVER, hasStagingServer, stagingServer,
               setStagingServer, stagingServerChanged)
+GETSETDEFAULT(SETTINGS_SEENFEATURES_DEFAULT, QStringList, toStringList,
+              SETTINGS_SEENFEATURES, hasSeenFeatures, seenFeatures,
+              setSeenFeatures, seenFeaturesChanged);
+GETSETDEFAULT(SETTINGS_FEATURESTOURSHOWN_DEFAULT, bool, toBool,
+              SETTINGS_FEATURESTOURSHOWN, hasFeaturesTourShown,
+              featuresTourShown, setFeaturesTourShown,
+              featuresTourShownChanged);
 GETSETDEFAULT(SETTINGS_DNS_PROVIDER_DEFAULT, int, toInt, SETTINGS_DNS_PROVIDER,
               hasDNSProvider, dnsProvider, setDNSProvider, dnsProviderChanged)
 GETSETDEFAULT(SETTINGS_DEFAULT_EMPTY_LIST, QStringList, toStringList,
@@ -470,6 +483,18 @@ void SettingsHolder::removeDevModeFeatureFlag(const QString& featureID) {
   }
   features.removeAll(featureID);
   setDevModeFeatureFlags(features);
+}
+
+void SettingsHolder::addSeenFeature(const QString& featureID) {
+  QStringList seenfeatureslist;
+  if (hasSeenFeatures()) {
+    seenfeatureslist = seenFeatures();
+  }
+  if (seenfeatureslist.contains(featureID)) {
+    return;
+  }
+  seenfeatureslist.append(featureID);
+  setSeenFeatures(seenfeatureslist);
 }
 
 void SettingsHolder::removeEntryServer() {
