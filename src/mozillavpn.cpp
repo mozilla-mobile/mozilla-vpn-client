@@ -1020,7 +1020,8 @@ void MozillaVPN::setUpdateRecommended(bool value) {
 }
 
 void MozillaVPN::setUserAuthenticated(bool state) {
-  logger.debug() << "User authentication state:" << state;
+  logger.debug() << "User authentication state:"
+                 << QVariant::fromValue(state).toString();
   m_userAuthenticated = state;
   emit userAuthenticationChanged();
 }
