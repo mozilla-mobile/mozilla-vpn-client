@@ -153,13 +153,14 @@ void AndroidIAPHandler::onSkuDetailsReceived(JNIEnv* env, jobject thiz,
     logger.error() << "onSkuDetailsReceived - products entry expected.";
     return;
   }
-  IAPHandler* iap = IAPHandler::instance();
   QJsonArray products = obj["products"].toArray();
+  IAPHandler* iap = IAPHandler::instance();
   if (products.isEmpty()) {
     logger.error() << "onSkuDetailsRecieved - no products found.";
-  } else {
-    static_cast<AndroidIAPHandler*>(iap)->updateProductsInfo(products);
+    iap->stopProductsRegistration();
+    return;
   }
+  static_cast<AndroidIAPHandler*>(iap)->updateProductsInfo(products);
   iap->productsRegistrationCompleted();
 }
 
