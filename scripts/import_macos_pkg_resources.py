@@ -17,7 +17,7 @@ keys = [ "macosinstaller.title",
          "macosinstaller.welcome.message1",
          "macosinstaller.welcome.message2",
          "macosinstaller.conclusion.title",
-         "macosinstaller.conclusion.message1",
+         "macosinstaller.conclusion.message1_v2",
          "macosinstaller.conclusion.message2",
          "macosinstaller.conclusion.message3" ];
 
@@ -62,7 +62,7 @@ def translate(root, locale):
       f.write('<body style="color: #1a1919; line-height: 1.5; font-family: -apple-system, BlinkMacSystemFont, \'Helvetica\', sans-serif; font-size: 13px;">\n')
       f.write('<br />\n')
       f.write(f'<h3 style="margin-left: 5px; margin-right: 5px;">{getTranslation(root, "macosinstaller.conclusion.title", nodeTag)}</h3>\n');
-      f.write(f'<p style="margin: 5px;">{getTranslation(root, "macosinstaller.conclusion.message1", nodeTag)}</p>\n')
+      f.write(f'<p style="margin: 5px;">{getTranslation(root, "macosinstaller.conclusion.message1_v2", nodeTag)}</p>\n')
       f.write('<br />\n')
       f.write(f'<p style="margin: 5px;">{getTranslation(root, "macosinstaller.conclusion.message2", nodeTag)}\n');
       f.write(f'<a rel="noopener noreferrer" href="https://support.mozilla.org/products/firefox-private-network-vpn?utm_source=mozilla-vpn&utm_medium=mozilla-vpn-installer&utm_campaign=mac-installer" style="color: #0a84ff;">{getTranslation(root, "macosinstaller.conclusion.message3", nodeTag)}</a></p>\n')

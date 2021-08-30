@@ -5,6 +5,7 @@
 #include "authenticationinapplistener.h"
 #include "authenticationinapp.h"
 #include "featurelist.h"
+#include "features/featureinappaccountcreate.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "hkdf.h"
@@ -36,7 +37,8 @@ AuthenticationInAppListener::~AuthenticationInAppListener() {
 }
 
 void AuthenticationInAppListener::start(const QString& codeChallenge,
-                                        const QString& codeChallengeMethod) {
+                                        const QString& codeChallengeMethod,
+                                        const QString& emailAddress) {
   logger.debug() << "AuthenticationInAppListener initialized";
 
   m_codeChallenge = codeChallenge;
@@ -48,7 +50,8 @@ void AuthenticationInAppListener::start(const QString& codeChallenge,
   aip->registerListener(this);
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInApp,
-                                   codeChallenge, codeChallengeMethod));
+                                   codeChallenge, codeChallengeMethod,
+                                   emailAddress));
 
   NetworkRequest* request =
       NetworkRequest::createForGetUrl(this, url.toString());
@@ -119,7 +122,7 @@ void AuthenticationInAppListener::accountChecked(bool exists) {
     return;
   }
 
-  if (FeatureList::instance()->accountCreationInAppSupported()) {
+  if (FeatureInAppAccountCreate::instance()->isSupported()) {
     AuthenticationInApp::instance()->requestState(
         AuthenticationInApp::StateSignUp, this);
     return;
@@ -130,7 +133,8 @@ void AuthenticationInAppListener::accountChecked(bool exists) {
 
   AuthenticationListener* fallbackListener =
       create(this, MozillaVPN::AuthenticationInBrowser);
-  fallbackListener->start(m_codeChallenge, m_codeChallengeMethod);
+  fallbackListener->start(m_codeChallenge, m_codeChallengeMethod,
+                          m_emailAddress);
 
   connect(fallbackListener, &AuthenticationListener::completed, this,
           &AuthenticationListener::completed);
@@ -157,6 +161,13 @@ QByteArray AuthenticationInAppListener::generateAuthPw(
 void AuthenticationInAppListener::setPassword(const QString& password) {
   m_authPw = generateAuthPw(password);
 }
+
+#ifdef UNIT_TEST
+void AuthenticationInAppListener::enableTotpCreation() {
+  logger.debug() << "Enabling totp creation";
+  m_totpCreationNeeded = true;
+}
+#endif
 
 void AuthenticationInAppListener::signIn(const QString& unblockCode) {
   logger.debug() << "Sign in";
@@ -295,7 +306,24 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
             logger.debug() << "Verification completed" << data;
-            finalizeSignInOrUp();
+
+            QJsonDocument json = QJsonDocument::fromJson(data);
+            if (json.isNull()) {
+              MozillaVPN::instance()->errorHandle(
+                  ErrorHandler::AuthenticationError);
+              return;
+            }
+
+            QJsonObject obj = json.object();
+            bool success = obj.value("success").toBool();
+            if (success) {
+              finalizeSignInOrUp();
+              return;
+            }
+
+            AuthenticationInApp* aip = AuthenticationInApp::instance();
+            aip->requestErrorPropagation(
+                AuthenticationInApp::ErrorInvalidTotpCode, this);
           });
 }
 
@@ -329,8 +357,43 @@ void AuthenticationInAppListener::signInOrUpCompleted(
   finalizeSignInOrUp();
 }
 
+#ifdef UNIT_TEST
+void AuthenticationInAppListener::createTotpCodes() {
+  NetworkRequest* request =
+      NetworkRequest::createForFxaTotpCreation(this, m_sessionToken);
+
+  connect(request, &NetworkRequest::requestFailed,
+          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
+            logger.error() << "Failed to create totp codes" << error;
+            processRequestFailure(error, data);
+          });
+
+  connect(request, &NetworkRequest::requestCompleted,
+          [this](const QByteArray& data) {
+            logger.debug() << "Totp code creation completed" << data;
+
+            AuthenticationInApp* aip = AuthenticationInApp::instance();
+            aip->requestState(
+                AuthenticationInApp::StateVerificationSessionByTotpNeeded,
+                this);
+            emit aip->unitTestTotpCodeCreated(data);
+          });
+}
+#endif
+
 void AuthenticationInAppListener::finalizeSignInOrUp() {
   Q_ASSERT(!m_sessionToken.isEmpty());
+
+#ifdef UNIT_TEST
+  if (m_totpCreationNeeded) {
+    logger.info() << "Totp creation in process";
+    m_totpCreationNeeded = false;
+    // Let's set it to false to avoid loops at the next finalizeSignInOrUp()
+    // call.
+    createTotpCodes();
+    return;
+  }
+#endif
 
   NetworkRequest* request =
       NetworkRequest::createForFxaAuthz(this, m_sessionToken, m_urlQuery);
@@ -341,73 +404,73 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
-          [this](const QByteArray& data) {
-            logger.debug() << "Oauth code creation completed" << data;
+  connect(
+      request, &NetworkRequest::requestCompleted,
+      [this](const QByteArray& data) {
+        logger.debug() << "Oauth code creation completed" << data;
 
-            QJsonDocument json = QJsonDocument::fromJson(data);
-            if (json.isNull()) {
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
-              return;
-            }
+        QJsonDocument json = QJsonDocument::fromJson(data);
+        if (json.isNull()) {
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
+          return;
+        }
 
-            QJsonObject obj = json.object();
-            QJsonValue code = obj.value("code");
-            if (!code.isString()) {
-              logger.error() << "FxA Authz: code not found";
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
-              return;
-            }
-            QJsonValue state = obj.value("state");
-            if (!state.isString()) {
-              logger.error() << "FxA Authz: state not found";
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
-              return;
-            }
-            QJsonValue redirect = obj.value("redirect");
-            if (!redirect.isString()) {
-              logger.error() << "FxA Authz: redirect not found";
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
-              return;
-            }
+        QJsonObject obj = json.object();
+        QJsonValue code = obj.value("code");
+        if (!code.isString()) {
+          logger.error() << "FxA Authz: code not found";
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
+          return;
+        }
+        QJsonValue state = obj.value("state");
+        if (!state.isString()) {
+          logger.error() << "FxA Authz: state not found";
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
+          return;
+        }
+        QJsonValue redirect = obj.value("redirect");
+        if (!redirect.isString()) {
+          logger.error() << "FxA Authz: redirect not found";
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
+          return;
+        }
 
-            NetworkRequest* request =
-                NetworkRequest::createForGetUrl(this, redirect.toString(), 200);
+        NetworkRequest* request =
+            NetworkRequest::createForGetUrl(this, redirect.toString(), 200);
 
-            connect(request, &NetworkRequest::requestFailed,
-                    [this](QNetworkReply::NetworkError error,
-                           const QByteArray& data) {
-                      logger.error()
-                          << "Failed to fetch the final redirect data" << error;
-                      processRequestFailure(error, data);
-                    });
+        connect(
+            request, &NetworkRequest::requestFailed,
+            [this](QNetworkReply::NetworkError error, const QByteArray& data) {
+              logger.error()
+                  << "Failed to fetch the final redirect data" << error;
+              processRequestFailure(error, data);
+            });
 
-            connect(request, &NetworkRequest::requestHeaderReceived,
-                    [this](NetworkRequest* request) {
+        connect(request, &NetworkRequest::requestHeaderReceived,
+                [this](NetworkRequest* request) {
 #ifdef UNIT_TEST
-                      AuthenticationInApp* aip =
-                          AuthenticationInApp::instance();
-                      emit aip->unitTestFinalUrl(request->url());
+                  AuthenticationInApp* aip = AuthenticationInApp::instance();
+                  emit aip->unitTestFinalUrl(request->url());
 #endif
-                      // On a 200 response, we receive the OAuth code from the
-                      // query string
-                      QString code =
-                          QUrlQuery(request->url()).queryItemValue("code");
-                      if (code.isEmpty()) {
-                        logger.error() << "Code not received!";
-                        MozillaVPN::instance()->errorHandle(
-                            ErrorHandler::AuthenticationError);
-                        emit failed(ErrorHandler::AuthenticationError);
-                        return;
-                      }
+                  // On a 200 response, we receive the OAuth code from the
+                  // query string
+                  QString code =
+                      QUrlQuery(request->url()).queryItemValue("code");
+                  if (code.isEmpty()) {
+                    logger.error() << "Code not received!";
+                    MozillaVPN::instance()->errorHandle(
+                        ErrorHandler::AuthenticationError);
+                    emit failed(ErrorHandler::AuthenticationError);
+                    return;
+                  }
 
-                      emit completed(code);
-                    });
-          });
+                  emit completed(code);
+                });
+      });
 }
 
 void AuthenticationInAppListener::processErrorCode(int errorCode) {
@@ -636,7 +699,6 @@ void AuthenticationInAppListener::processRequestFailure(
         return;
       }
 
-      // TODO
       logger.error() << "Unsupported verification method:"
                      << verificationMethod;
       return;

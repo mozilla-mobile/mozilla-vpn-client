@@ -49,6 +49,8 @@ Daemon* Daemon::instance() {
 }
 
 bool Daemon::activate(const InterfaceConfig& config) {
+  Q_ASSERT(wgutils() != nullptr);
+
   // There are 3 possible scenarios in which this method is called:
   //
   // 1. the VPN is off: the method tries to enable the VPN.
@@ -58,18 +60,18 @@ bool Daemon::activate(const InterfaceConfig& config) {
   //    method calls switchServer().
   //
   // At the end, if the activation succeds, the `connected` signal is emitted.
+  logger.debug() << "Activating interface";
 
-  if (m_connected) {
+  if (m_connections.contains(config.m_hopindex)) {
     if (supportServerSwitching(config)) {
       logger.debug() << "Already connected. Server switching supported.";
 
-      m_lastConfig = config;
       if (!switchServer(config)) {
         return false;
       }
+      m_connections[config.m_hopindex] = ConnectionState(config);
 
-      m_connectionDate = QDateTime::currentDateTime();
-      emit connected();
+      emit connected(config.m_hopindex);
       return true;
     }
 
@@ -78,24 +80,26 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return false;
     }
 
-    Q_ASSERT(!m_connected);
+    Q_ASSERT(!m_connections.contains(config.m_hopindex));
     return activate(config);
   }
 
   prepareActivation(config);
 
-  if (supportWGUtils()) {
-    if (wgutils()->interfaceExists()) {
-      qWarning("Wireguard interface `%s` already exists.", WG_INTERFACE);
-      return false;
-    }
-    // add_if and configure
+  // Bring up the wireguard interface if not already done.
+  if (!wgutils()->interfaceExists()) {
     if (!wgutils()->addInterface(config)) {
-      qWarning("Interface creation failed. Removing `%s`.", WG_INTERFACE);
+      logger.error() << "Interface creation failed.";
       return false;
     }
   }
-  if (supportDnsUtils()) {
+  // Add the peer to this interface.
+  if (!wgutils()->updatePeer(config)) {
+    logger.error() << "Peer creation failed.";
+    return false;
+  }
+
+  if ((config.m_hopindex == 0) && supportDnsUtils()) {
     QList<QHostAddress> resolvers;
     resolvers.append(QHostAddress(config.m_dnsServer));
 
@@ -106,111 +110,102 @@ bool Daemon::activate(const InterfaceConfig& config) {
       resolvers.append(QHostAddress(config.m_serverIpv6Gateway));
     }
 
-    if (!dnsutils()->updateResolvers(WG_INTERFACE, resolvers)) {
+    if (!dnsutils()->updateResolvers(wgutils()->interfaceName(), resolvers)) {
       return false;
     }
   }
+
   if (supportIPUtils()) {
     if (!iputils()->addInterfaceIPs(config)) {
       return false;
     }
-    if (!iputils()->setMTUAndUp()) {
+    if (!iputils()->setMTUAndUp(config)) {
       return false;
     }
   }
-  if (supportWGUtils()) {
-    // set routing
-    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
-      if (!wgutils()->addRoutePrefix(ip)) {
-        qWarning("Routing configuration failed. Removing `%s`.", WG_INTERFACE);
-        return false;
-      }
+
+  // set routing
+  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
+      logger.debug() << "Routing configuration failed for" << ip.toString();
+      return false;
     }
   }
 
-  m_lastConfig = config;
-  m_connected = run(Up, m_lastConfig);
-
-  logger.debug() << "Connection status:" << m_connected;
-
-  if (m_connected) {
-    m_connectionDate = QDateTime::currentDateTime();
-    emit connected();
+  bool status = run(Up, config);
+  logger.debug() << "Connection status:" << status;
+  if (status) {
+    m_connections[config.m_hopindex] = ConnectionState(config);
+    emit connected(config.m_hopindex);
   }
 
-  return m_connected;
+  return status;
 }
 
 // static
 bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
-#define GETVALUESTR(name, where)                                  \
+#define GETVALUE(name, where, jsontype)                           \
   if (!obj.contains(name)) {                                      \
     logger.debug() << name << " missing in the jsonConfig input"; \
     return false;                                                 \
-  }                                                               \
-  {                                                               \
+  } else {                                                        \
     QJsonValue value = obj.value(name);                           \
-    if (!value.isString()) {                                      \
-      logger.error() << name << " is not a string";               \
+    if (value.type() != QJsonValue::jsontype) {                   \
+      logger.error() << name << " is not a " #jsontype;           \
       return false;                                               \
     }                                                             \
-    where = value.toString();                                     \
+    where = value.to##jsontype();                                 \
   }
 
-  GETVALUESTR("privateKey", config.m_privateKey);
-  GETVALUESTR("deviceIpv4Address", config.m_deviceIpv4Address);
-  GETVALUESTR("deviceIpv6Address", config.m_deviceIpv6Address);
-  GETVALUESTR("serverIpv4Gateway", config.m_serverIpv4Gateway);
-  GETVALUESTR("serverIpv6Gateway", config.m_serverIpv6Gateway);
-  GETVALUESTR("serverPublicKey", config.m_serverPublicKey);
-  GETVALUESTR("serverIpv4AddrIn", config.m_serverIpv4AddrIn);
-  GETVALUESTR("serverIpv6AddrIn", config.m_serverIpv6AddrIn);
-  GETVALUESTR("dnsServer", config.m_dnsServer);
+  GETVALUE("privateKey", config.m_privateKey, String);
+  GETVALUE("serverPublicKey", config.m_serverPublicKey, String);
+  GETVALUE("serverPort", config.m_serverPort, Double);
+  GETVALUE("ipv6Enabled", config.m_ipv6Enabled, Bool);
 
-#undef GETVALUESTR
+  config.m_deviceIpv4Address = obj.value("deviceIpv4Address").toString();
+  config.m_deviceIpv6Address = obj.value("deviceIpv6Address").toString();
+  if (config.m_deviceIpv4Address.isNull() &&
+      config.m_deviceIpv6Address.isNull()) {
+    logger.warning() << "no device addresses found in jsonConfig input";
+    return false;
+  }
+  config.m_serverIpv4AddrIn = obj.value("serverIpv4AddrIn").toString();
+  config.m_serverIpv6AddrIn = obj.value("serverIpv6AddrIn").toString();
+  if (config.m_serverIpv4AddrIn.isNull() &&
+      config.m_serverIpv6AddrIn.isNull()) {
+    logger.error() << "no server addresses found in jsonConfig input";
+    return false;
+  }
+  config.m_serverIpv4Gateway = obj.value("serverIpv4Gateway").toString();
+  config.m_serverIpv6Gateway = obj.value("serverIpv6Gateway").toString();
 
-#define GETVALUEINT(name, where)                                  \
-  if (!obj.contains(name)) {                                      \
-    logger.debug() << name << " missing in the jsonConfig input"; \
-    return false;                                                 \
-  }                                                               \
-  {                                                               \
-    QJsonValue value = obj.value(name);                           \
-    if (!value.isDouble()) {                                      \
-      logger.error() << name << " is not a number";               \
-      return false;                                               \
-    }                                                             \
-    where = value.toInt();                                        \
+  if (!obj.contains("dnsServer")) {
+    config.m_dnsServer = QString();
+  } else {
+    QJsonValue value = obj.value("dnsServer");
+    if (!value.isString()) {
+      logger.error() << "dnsServer is not a string";
+      return false;
+    }
+    config.m_dnsServer = value.toString();
   }
 
-  GETVALUEINT("serverPort", config.m_serverPort);
-
-#undef GETVALUEINT
-
-#define GETVALUEBOOL(name, where)                                 \
-  if (!obj.contains(name)) {                                      \
-    logger.debug() << name << " missing in the jsonConfig input"; \
-    return false;                                                 \
-  }                                                               \
-  {                                                               \
-    QJsonValue value = obj.value(name);                           \
-    if (!value.isBool()) {                                        \
-      logger.error() << name << " is not a boolean";              \
-      return false;                                               \
-    }                                                             \
-    where = value.toBool();                                       \
+  if (!obj.contains("hopindex")) {
+    config.m_hopindex = 0;
+  } else {
+    QJsonValue value = obj.value("hopindex");
+    if (!value.isDouble()) {
+      logger.error() << "hopindex is not a number";
+      return false;
+    }
+    config.m_hopindex = value.toInt();
   }
-
-  GETVALUEBOOL("ipv6Enabled", config.m_ipv6Enabled);
-
-#undef GETVALUEBOOL
 
   if (!obj.contains(JSON_ALLOWEDIPADDRESSRANGES)) {
     logger.error() << JSON_ALLOWEDIPADDRESSRANGES
                    << "missing in the jsonconfig input";
     return false;
-  }
-  {
+  } else {
     QJsonValue value = obj.value(JSON_ALLOWEDIPADDRESSRANGES);
     if (!value.isArray()) {
       logger.error() << JSON_ALLOWEDIPADDRESSRANGES << "is not an array";
@@ -256,9 +251,16 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
           address.toString(), range.toInt(),
           isIpv6.toBool() ? IPAddressRange::IPv6 : IPAddressRange::IPv4));
     }
+
+    // Sort allowed IPs by decreasing prefix length.
+    std::sort(config.m_allowedIPAddressRanges.begin(),
+              config.m_allowedIPAddressRanges.end(),
+              [&](const IPAddressRange& a, const IPAddressRange& b) -> bool {
+                return a.range() > b.range();
+              });
   }
 
-  {  // Read Split Tunnel Apps
+  if (obj.contains("vpnDisabledApps")) {
     QJsonValue value = obj.value("vpnDisabledApps");
     if (!value.isArray()) {
       logger.error() << "vpnDisabledApps is not an array";
@@ -277,40 +279,45 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 }
 
 bool Daemon::deactivate(bool emitSignals) {
-  logger.debug() << "Deactivate";
+  Q_ASSERT(wgutils() != nullptr);
 
-  if (!m_connected) {
-    logger.error() << "Already disconnected";
-    return true;
-  }
-
-  if (supportDnsUtils()) {
-    if (!dnsutils()->restoreResolvers()) {
+  // Deactivate the main interface.
+  if (m_connections.contains(0)) {
+    const ConnectionState& state = m_connections.value(0);
+    if (!run(Down, state.m_config)) {
       return false;
+    }
+    if (emitSignals) {
+      emit disconnected(0);
     }
   }
 
-  if (supportWGUtils() && !wgutils()->interfaceExists()) {
-    qWarning("Wireguard interface `%s` does not exist. Cannot proceed.",
-             WG_INTERFACE);
+  // Cleanup DNS
+  if (supportDnsUtils() && !dnsutils()->restoreResolvers()) {
     return false;
   }
 
-  m_connected = false;
-  bool status = run(Down, m_lastConfig);
-
-  if (supportWGUtils() && !wgutils()->deleteInterface()) {
+  if (!wgutils()->interfaceExists()) {
+    logger.warning() << "Wireguard interface does not exist.";
     return false;
   }
 
-  logger.debug() << "Status:" << status;
-
-  // No notification for server switching.
-  if (emitSignals && status) {
-    emit disconnected();
+  // Cleanup routing
+  for (const ConnectionState& state : m_connections.values()) {
+    const InterfaceConfig& config = state.m_config;
+    logger.debug() << "Deleting routes for hop" << config.m_hopindex;
+    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+      wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
+    }
   }
 
-  return status;
+  // Delete the interface
+  if (!wgutils()->deleteInterface()) {
+    return false;
+  }
+
+  m_connections.clear();
+  return true;
 }
 
 QString Daemon::logs() {
@@ -326,29 +333,51 @@ QString Daemon::logs() {
 
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
-bool Daemon::switchServer(const InterfaceConfig& config) {
-  // Generic server switching is not supported without wgutils.
-  if (!supportWGUtils()) {
-    qFatal("Have you forgotten to implement switchServer?");
+bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
+  if (!m_connections.contains(config.m_hopindex)) {
     return false;
   }
+  const InterfaceConfig& current =
+      m_connections.value(config.m_hopindex).m_config;
 
-  logger.debug() << "Switching server";
+  return current.m_privateKey == config.m_privateKey &&
+         current.m_deviceIpv4Address == config.m_deviceIpv4Address &&
+         current.m_deviceIpv6Address == config.m_deviceIpv6Address &&
+         current.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
+         current.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
+}
 
-  Q_ASSERT(m_connected);
-  wgutils()->flushRoutes();
+bool Daemon::switchServer(const InterfaceConfig& config) {
+  Q_ASSERT(wgutils() != nullptr);
 
-  if (!wgutils()->updateInterface(config)) {
+  logger.debug() << "Switching server for hop" << config.m_hopindex;
+
+  Q_ASSERT(m_connections.contains(config.m_hopindex));
+  const InterfaceConfig& lastConfig =
+      m_connections.value(config.m_hopindex).m_config;
+
+  // Activate the new peer and its routes.
+  if (!wgutils()->updatePeer(config)) {
     logger.error() << "Server switch failed to update the wireguard interface";
     return false;
   }
-
   for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
-    if (!wgutils()->addRoutePrefix(ip)) {
+    if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
       logger.error() << "Server switch failed to update the routing table";
-      return false;
+      break;
     }
   }
 
+  // Deactivate the old peer and remove its routes.
+  for (const IPAddressRange& ip : lastConfig.m_allowedIPAddressRanges) {
+    if (!config.m_allowedIPAddressRanges.contains(ip)) {
+      wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
+    }
+  }
+  if (!wgutils()->deletePeer(lastConfig.m_serverPublicKey)) {
+    return false;
+  }
+
+  m_connections[config.m_hopindex] = ConnectionState(config);
   return true;
 }

@@ -5,7 +5,6 @@
 
 import os.path
 import yaml
-import humps
 import subprocess
 
 print("Parsing the metrics.yaml file...")
@@ -27,9 +26,20 @@ output.write("""/* This Source Code Form is subject to the terms of the Mozilla 
 namespace GleanSample {
 
 """)
+def camelize(string):
+    output = ''
+    first = True
+    for chunk in string.split('_'):
+        if first:
+          output += chunk
+          first = False
+        else:
+          output += chunk[0].upper()
+          output += chunk[1:]
+    return output
 
 for key in yaml_content['sample']:
-   sampleName = humps.camelize(key)
+   sampleName = camelize(key)
    output.write(f"constexpr const char* {sampleName} = \"{sampleName}\";\n")
 
 output.write("""

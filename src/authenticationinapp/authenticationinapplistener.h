@@ -18,8 +18,8 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   explicit AuthenticationInAppListener(QObject* parent);
   ~AuthenticationInAppListener();
 
-  void start(const QString& codeChallenge,
-             const QString& codeChallengeMethod) override;
+  void start(const QString& codeChallenge, const QString& codeChallengeMethod,
+             const QString& emailAddress) override;
 
   void checkAccount(const QString& emailAddress);
   void setPassword(const QString& password);
@@ -30,6 +30,12 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   void resendVerificationSessionCodeEmail();
   void sendUnblockCodeEmail();
   void verifySessionTotpCode(const QString& code);
+
+#ifdef UNIT_TEST
+  void enableTotpCreation();
+#endif
+
+  const QString& emailAddress() const { return m_emailAddress; }
 
  private:
   void processErrorCode(int errorCode);
@@ -44,6 +50,10 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   void unblockCodeNeeded();
   void finalizeSignInOrUp();
 
+#ifdef UNIT_TEST
+  void createTotpCodes();
+#endif
+
  private:
   QString m_codeChallenge;
   QString m_codeChallengeMethod;
@@ -54,6 +64,10 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   QByteArray m_authPw;
 
   QByteArray m_sessionToken;
+
+#ifdef UNIT_TEST
+  bool m_totpCreationNeeded = false;
+#endif
 };
 
 #endif  // AUTHENTICATIONINAPPLISTENER_H

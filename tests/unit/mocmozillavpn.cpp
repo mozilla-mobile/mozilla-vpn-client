@@ -69,9 +69,12 @@ void MozillaVPN::setAlert(AlertType) {}
 
 void MozillaVPN::errorHandle(ErrorHandler::ErrorType) {}
 
-const QList<Server> MozillaVPN::servers() const { return QList<Server>(); }
+const QList<Server> MozillaVPN::exitServers() const { return QList<Server>(); }
 
-void MozillaVPN::changeServer(const QString&, const QString&) {}
+const QList<Server> MozillaVPN::entryServers() const { return QList<Server>(); }
+
+void MozillaVPN::changeServer(const QString&, const QString&, const QString&,
+                              const QString&) {}
 
 void MozillaVPN::postAuthenticationCompleted() {}
 
@@ -106,6 +109,8 @@ void MozillaVPN::requestAbout() {}
 
 void MozillaVPN::requestViewLogs() {}
 
+void MozillaVPN::requestContactUs() {}
+
 void MozillaVPN::retrieveLogs() {}
 
 void MozillaVPN::storeInClipboard(const QString&) {}
@@ -136,4 +141,13 @@ void MozillaVPN::triggerHeartbeat() {}
 
 void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
 
+void MozillaVPN::createSupportTicket(const QString&, const QString&,
+                                     const QString&, const QString&) {}
+
 void MozillaVPN::addCurrentDeviceAndRefreshData() {}
+
+void MozillaVPN::appReviewRequested() {}
+
+bool MozillaVPN::validateUserDNS(const QString&) const { return false; }
+
+void MozillaVPN::reset(bool) {}

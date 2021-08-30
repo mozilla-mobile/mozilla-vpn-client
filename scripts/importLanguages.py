@@ -3,14 +3,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# This script must be executed at the root of the repository.
-
 import argparse
 import xml.etree.ElementTree as ET
 import os
 import sys
 import shutil
 import generate_strings
+import atexit
+
+# Use the project root as the working directory
+prevdir = os.getcwd()
+workdir = os.path.join(os.path.dirname(__file__), '..')
+os.chdir(workdir)
+atexit.register(os.chdir, prevdir)
 
 # Include only locales above this threshold (e.g. 70%) in production
 l10n_threshold = 0.70

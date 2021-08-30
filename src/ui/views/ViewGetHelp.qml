@@ -60,9 +60,9 @@ Item {
         visible: VPNSettings.developerUnlock
         onClicked: {
             if (isSettingsView) {
-                settingsStackView.push("../views/ViewDeveloper.qml", {isSettingsView: true})
+                settingsStackView.push("../developerMenu/ViewDeveloperMenu.qml", {isSettingsView: true})
             } else {
-                stackview.push("../views/ViewDeveloper.qml", {isSettingsView: false})
+                stackview.push("../developerMenu/ViewDeveloperMenu.qml", {isSettingsView: false})
             }
         }
     }

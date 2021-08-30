@@ -133,8 +133,7 @@ Item {
                         }
 
                         VPNFeedbackRadioDelegate {
-                            //% "Very good"
-                            Accessible.name: qsTrId("vpn.feedbackForm.veryGood")
+                            Accessible.name: VPNl18n.tr(VPNl18n.FeedbackFormExcellentLabel)
                             iconSource: "../resources/faces/veryGood.svg"
                             value: 5
                         }
@@ -150,7 +149,7 @@ Item {
                         VPNInterLabel {
                             Layout.alignment: Qt.AlignRight
                             horizontalAlignment: Qt.AlignRight
-                            text: qsTrId("vpn.feedbackForm.veryGood")
+                            text: VPNl18n.tr(VPNl18n.FeedbackFormExcellentLabel)
                             Layout.fillWidth: true
                             color: Theme.fontColor
                         }
@@ -171,6 +170,12 @@ Item {
 
                     if (btnGroup.checkedButton.value >= 5) {
                         feedbackRoot.sendFeedback(btnGroup.checkedButton.value, 0, "");
+
+                        if (VPNFeatureList.get("appReview").isSupported) {
+                          feedbackStackView.push(appReviewView);
+                          return;
+                        }
+
                         feedbackStackView.push(thankYouView);
                         return;
                     }
@@ -359,19 +364,62 @@ Item {
             }
             VPNButton {
                 //% "Done"
-               text: qsTrId("vpn.feedbackform.done")
-               anchors.top: col.bottom
-               anchors.topMargin: Theme.vSpacing
-               anchors.horizontalCenter: parent.horizontalCenter
-               onClicked: stackview.pop(StackView.Immediate)
-               Component.onCompleted: {
-                 if (window.fullscreenRequired()) {
-                     anchors.top = undefined;
-                     anchors.topMargin = undefined;
-                     anchors.bottom= parent.bottom
-                     anchors.bottomMargin = Theme.windowMargin * 4
-                 }
+                text: qsTrId("vpn.feedbackform.done")
+                anchors.top: col.bottom
+                anchors.topMargin: Theme.vSpacing
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: stackview.pop(StackView.Immediate)
+                Component.onCompleted: {
+                   if (window.fullscreenRequired()) {
+                       anchors.top = undefined;
+                       anchors.topMargin = undefined;
+                       anchors.bottom= parent.bottom
+                       anchors.bottomMargin = Theme.windowMargin * 4
+                   }
                }
+            }
+        }
+    }
+
+    Component {
+        id: appReviewView
+        Item {
+            ColumnLayout {
+                id: col
+                anchors.top: parent.top
+                anchors.topMargin: window.height * .10
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
+                VPNPanel {
+                    id: panel
+                    logo: "../resources/app-rating.svg"
+                    logoTitle: VPNl18n.tr(VPNl18n.FeedbackFormReviewHeader)
+                    logoSubtitle: VPNl18n.tr(VPNl18n.FeedbackFormReviewBody)
+                    anchors.horizontalCenter: undefined
+                    Layout.fillWidth: true
+                }
+            }
+
+            VPNButton {
+                id: reviewButton
+                text: VPNl18n.tr(VPNl18n.FeedbackFormLeaveReviewButton)
+                anchors.top: col.bottom
+                anchors.topMargin: Theme.vSpacing
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: {
+                    feedbackStackView.push(thankYouView);
+                    VPN.appReviewRequested();
+               }
+            }
+
+            VPNLinkButton {
+                anchors.top: reviewButton.bottom
+                anchors.topMargin: Theme.vSpacing
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                labelText: qsTrId("vpn.feedbackForm.skip")
+                onClicked: feedbackStackView.push(thankYouView);
+                implicitHeight: Theme.rowHeight
             }
         }
     }

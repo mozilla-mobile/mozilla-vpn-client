@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "platforms/ios/iaphandler.h"
+#include "platforms/ios/iosiaphandler.h"
 #include "constants.h"
 #include "iosutils.h"
 #include "leakdetector.h"
@@ -22,20 +22,18 @@
 #import <StoreKit/StoreKit.h>
 
 namespace {
-Logger logger(LOG_IAP, "IAPHandler");
-
-IAPHandler* s_instance = nullptr;
+Logger logger(LOG_IAP, "IOSIAPHandler");
 }  // namespace
 
-@interface IAPHandlerDelegate
+@interface IOSIAPHandlerDelegate
     : NSObject <SKRequestDelegate, SKProductsRequestDelegate, SKPaymentTransactionObserver> {
-  IAPHandler* m_handler;
+  IOSIAPHandler* m_handler;
 }
 @end
 
-@implementation IAPHandlerDelegate
+@implementation IOSIAPHandlerDelegate
 
-- (id)initWithObject:(IAPHandler*)handler {
+- (id)initWithObject:(IOSIAPHandler*)handler {
   self = [super init];
   if (self) {
     m_handler = handler;
@@ -198,88 +196,25 @@ IAPHandler* s_instance = nullptr;
 
 @end
 
-// static
-IAPHandler* IAPHandler::createInstance() {
-  Q_ASSERT(!s_instance);
-  new IAPHandler(qApp);
-  Q_ASSERT(s_instance);
-  return instance();
-}
+IOSIAPHandler::IOSIAPHandler(QObject* parent) : IAPHandler(parent) {
+  MVPN_COUNT_CTOR(IOSIAPHandler);
 
-// static
-IAPHandler* IAPHandler::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
-}
-
-IAPHandler::IAPHandler(QObject* parent) : QAbstractListModel(parent) {
-  MVPN_COUNT_CTOR(IAPHandler);
-
-  Q_ASSERT(!s_instance);
-  s_instance = this;
-
-  m_delegate = [[IAPHandlerDelegate alloc] initWithObject:this];
+  m_delegate = [[IOSIAPHandlerDelegate alloc] initWithObject:this];
   [[SKPaymentQueue defaultQueue]
-      addTransactionObserver:static_cast<IAPHandlerDelegate*>(m_delegate)];
+      addTransactionObserver:static_cast<IOSIAPHandlerDelegate*>(m_delegate)];
 }
 
-IAPHandler::~IAPHandler() {
-  MVPN_COUNT_DTOR(IAPHandler);
+IOSIAPHandler::~IOSIAPHandler() {
+  MVPN_COUNT_DTOR(IOSIAPHandler);
 
-  Q_ASSERT(s_instance == this);
-  s_instance = nullptr;
-
-  IAPHandlerDelegate* delegate = static_cast<IAPHandlerDelegate*>(m_delegate);
+  IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
   [[SKPaymentQueue defaultQueue] removeTransactionObserver:delegate];
 
   [delegate dealloc];
   m_delegate = nullptr;
 }
 
-void IAPHandler::registerProducts(const QByteArray& data) {
-  logger.debug() << "Maybe register products";
-
-  Q_ASSERT(m_productsRegistrationState == eRegistered ||
-           m_productsRegistrationState == eNotRegistered);
-
-  auto guard = qScopeGuard([&] { emit productsRegistered(); });
-
-  if (m_productsRegistrationState == eRegistered) {
-    return;
-  }
-
-  Q_ASSERT(m_products.isEmpty());
-
-  QJsonDocument json = QJsonDocument::fromJson(data);
-  if (!json.isObject()) {
-    logger.debug() << "Object expected";
-    return;
-  }
-
-  QJsonObject obj = json.object();
-  if (!obj.contains("products")) {
-    logger.debug() << "products entry expected";
-    return;
-  }
-
-  QJsonArray products = obj["products"].toArray();
-  if (products.isEmpty()) {
-    logger.error() << "No products found";
-    return;
-  }
-
-  m_productsRegistrationState = eRegistering;
-
-  for (const QJsonValue& value : products) {
-    addProduct(value);
-  }
-
-  if (m_products.isEmpty()) {
-    logger.error() << "No pending products (nothing has been registered). Unable to recover from "
-                      "this scenario.";
-    return;
-  }
-
+void IOSIAPHandler::nativeRegisterProducts() {
   NSSet<NSString*>* productIdentifiers = [NSSet<NSString*> set];
   for (const Product& product : m_products) {
     productIdentifiers = [productIdentifiers setByAddingObject:product.m_name.toNSString()];
@@ -290,87 +225,19 @@ void IAPHandler::registerProducts(const QByteArray& data) {
   SKProductsRequest* productsRequest =
       [[SKProductsRequest alloc] initWithProductIdentifiers:productIdentifiers];
 
-  IAPHandlerDelegate* delegate = static_cast<IAPHandlerDelegate*>(m_delegate);
+  IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
   productsRequest.delegate = delegate;
   [productsRequest start];
-
-  logger.debug() << "Waiting for the products registration";
-
-  guard.dismiss();
 }
 
-void IAPHandler::addProduct(const QJsonValue& value) {
-  if (!value.isObject()) {
-    logger.debug() << "Object expected for the single product";
-    return;
-  }
-
-  QJsonObject obj = value.toObject();
-
-  Product product;
-  product.m_name = obj["id"].toString();
-  product.m_type = productTypeToEnum(obj["type"].toString());
-  product.m_featuredProduct = obj["featured_product"].toBool();
-
-  if (product.m_type == ProductUnknown) {
-    logger.error() << "Unknown product type:" << obj["type"].toString();
-    return;
-  }
-
-  m_products.append(product);
-}
-
-IAPHandler::Product* IAPHandler::findProduct(const QString& productIdentifier) {
-  for (Product& p : m_products) {
-    if (p.m_name == productIdentifier) {
-      return &p;
-    }
-  }
-  return nullptr;
-}
-
-void IAPHandler::startSubscription(const QString& productIdentifier) {
-  Q_ASSERT(m_productsRegistrationState == eRegistered);
-
-  Product* product = findProduct(productIdentifier);
-  Q_ASSERT(product);
-  Q_ASSERT(product->m_productNS);
-
-  if (m_subscriptionState != eInactive) {
-    logger.warning() << "No multiple IAP!";
-    return;
-  }
-
-  m_subscriptionState = eActive;
-
-  logger.debug() << "Starting the subscription";
-  SKProduct* skProduct = static_cast<SKProduct*>(product->m_productNS);
+void IOSIAPHandler::nativeStartSubscription(Product* product) {
+  Q_ASSERT(product->m_extra);
+  SKProduct* skProduct = static_cast<SKProduct*>(product->m_extra);
   SKPayment* payment = [SKPayment paymentWithProduct:skProduct];
   [[SKPaymentQueue defaultQueue] addPayment:payment];
 }
 
-void IAPHandler::stopSubscription() {
-  logger.debug() << "Stop subscription";
-  m_subscriptionState = eInactive;
-}
-
-void IAPHandler::unknownProductRegistered(const QString& identifier) {
-  Q_ASSERT(m_productsRegistrationState == eRegistering);
-
-  logger.error() << "Product registration failed:" << identifier;
-
-  // Let's remove the unregistered product.
-  QList<Product>::iterator i = m_products.begin();
-  while (i != m_products.end()) {
-    if (i->m_name == identifier) {
-      i = m_products.erase(i);
-      break;
-    }
-    ++i;
-  }
-}
-
-void IAPHandler::productRegistered(void* a_product) {
+void IOSIAPHandler::productRegistered(void* a_product) {
   SKProduct* product = static_cast<SKProduct*>(a_product);
 
   Q_ASSERT(m_productsRegistrationState == eRegistering);
@@ -431,24 +298,10 @@ void IAPHandler::productRegistered(void* a_product) {
   productData->m_price = priceValue;
   productData->m_monthlyPrice = monthlyPriceValue;
   productData->m_nonLocalizedMonthlyPrice = [monthlyPriceNS doubleValue];
-  productData->m_productNS = product;
+  productData->m_extra = product;
 }
 
-void IAPHandler::productsRegistrationCompleted() {
-  logger.debug() << "All the products has been registered";
-
-  beginResetModel();
-
-  computeSavings();
-
-  m_productsRegistrationState = eRegistered;
-
-  endResetModel();
-
-  emit productsRegistered();
-}
-
-void IAPHandler::processCompletedTransactions(const QStringList& ids) {
+void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
   logger.debug() << "process completed transactions";
 
   if (m_subscriptionState != eActive) {
@@ -513,108 +366,4 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
     stopSubscription();
     emit subscriptionCompleted();
   });
-}
-
-void IAPHandler::subscribe(const QString& productIdentifier) {
-  logger.debug() << "Subscription required";
-  emit subscriptionStarted(productIdentifier);
-}
-
-void IAPHandler::computeSavings() {
-  double monthlyPrice = 0;
-  // Let's find the price for the monthly payment.
-  for (const Product& product : m_products) {
-    if (product.m_type == ProductMonthly) {
-      monthlyPrice = product.m_nonLocalizedMonthlyPrice;
-      break;
-    }
-  }
-
-  if (monthlyPrice == 0) {
-    logger.error() << "No monthly payment found";
-    return;
-  }
-
-  // Compute the savings for all the other types.
-  for (Product& product : m_products) {
-    if (product.m_type == ProductMonthly) continue;
-
-    int savings = qRound(100.00 - ((product.m_nonLocalizedMonthlyPrice * 100.00) / monthlyPrice));
-    if (savings < 0 || savings > 100) continue;
-
-    product.m_savings = (int)savings;
-
-    logger.debug() << "Saving" << product.m_savings << "for" << product.m_name;
-  }
-}
-
-QHash<int, QByteArray> IAPHandler::roleNames() const {
-  QHash<int, QByteArray> roles;
-  roles[ProductIdentifierRole] = "productIdentifier";
-  roles[ProductPriceRole] = "productPrice";
-  roles[ProductMonthlyPriceRole] = "productMonthlyPrice";
-  roles[ProductTypeRole] = "productType";
-  roles[ProductFeaturedRole] = "productFeatured";
-  roles[ProductSavingsRole] = "productSavings";
-  return roles;
-}
-
-int IAPHandler::rowCount(const QModelIndex&) const {
-  if (m_productsRegistrationState != eRegistered) {
-    return 0;
-  }
-
-  return m_products.count();
-}
-
-QVariant IAPHandler::data(const QModelIndex& index, int role) const {
-  if (m_productsRegistrationState != eRegistered || !index.isValid()) {
-    return QVariant();
-  }
-
-  switch (role) {
-    case ProductIdentifierRole:
-      return QVariant(m_products.at(index.row()).m_name);
-
-    case ProductPriceRole:
-      return QVariant(m_products.at(index.row()).m_price);
-
-    case ProductMonthlyPriceRole:
-      return QVariant(m_products.at(index.row()).m_monthlyPrice);
-
-    case ProductTypeRole:
-      return QVariant(m_products.at(index.row()).m_type);
-
-    case ProductFeaturedRole:
-      return QVariant(m_products.at(index.row()).m_featuredProduct);
-
-    case ProductSavingsRole:
-      return QVariant(m_products.at(index.row()).m_savings);
-
-    default:
-      return QVariant();
-  }
-}
-
-// static
-IAPHandler::ProductType IAPHandler::productTypeToEnum(const QString& type) {
-  if (type == "yearly") return ProductYearly;
-  if (type == "half-yearly") return ProductHalfYearly;
-  if (type == "monthly") return ProductMonthly;
-  return ProductUnknown;
-}
-
-// static
-uint32_t IAPHandler::productTypeToMonthCount(ProductType type) {
-  switch (type) {
-    case ProductYearly:
-      return 12;
-    case ProductHalfYearly:
-      return 6;
-    case ProductMonthly:
-      return 1;
-    default:
-      Q_ASSERT(false);
-      return 1;
-  }
 }

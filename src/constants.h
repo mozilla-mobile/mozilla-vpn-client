@@ -13,15 +13,14 @@ namespace Constants {
 bool inProduction();
 void setStaging();
 
-// This value is the fallback in case apple is slower than the user. This
-// should never happen.
-constexpr const char* SUBSCRIPTION_CURRENCY_VALUE_USD = "4.99$";
-
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
 
 // Number of msecs for the unsecured network alert.
 constexpr uint32_t UNSECURED_NETWORK_ALERT_MSEC = 4000;
+
+// Number of recent connections to retain.
+constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \

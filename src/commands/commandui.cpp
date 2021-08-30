@@ -10,9 +10,11 @@
 #include "commandlineparser.h"
 #include "constants.h"
 #include "featurelist.h"
+#include "features/featureinapppurchase.h"
 #include "filterproxymodel.h"
 #include "fontloader.h"
 #include "l18nstrings.h"
+#include "iaphandler.h"
 #include "inspector/inspectorhttpserver.h"
 #include "inspector/inspectorwebsocketserver.h"
 #include "leakdetector.h"
@@ -38,10 +40,9 @@
 #endif
 
 #ifdef MVPN_ANDROID
-#  include "platforms/android/androidutils.h"
-#  include "platforms/android/androidwebview.h"
 #  include "platforms/android/androidappimageprovider.h"
 #  include "platforms/android/androidutils.h"
+#  include "platforms/android/androidwebview.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -52,10 +53,6 @@
 #  include "eventlistener.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #  include "platforms/windows/windowsappimageprovider.h"
-#endif
-
-#ifdef MVPN_IOS
-#  include "platforms/ios/iaphandler.h"
 #endif
 
 #ifdef MVPN_WASM
@@ -255,6 +252,14 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNSupportCategoryModel",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->supportCategoryModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNHelpModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->helpModel();
@@ -354,14 +359,15 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterType<AndroidWebView>("Mozilla.VPN", 1, 0, "VPNAndroidWebView");
 #endif
 
-#ifdef MVPN_IOS
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNIAP", [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = IAPHandler::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-#endif
+    if (FeatureInAppPurchase::instance()->isSupported()) {
+      qmlRegisterSingletonType<MozillaVPN>(
+          "Mozilla.VPN", 1, 0, "VPNIAP",
+          [](QQmlEngine*, QJSEngine*) -> QObject* {
+            QObject* obj = IAPHandler::instance();
+            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+            return obj;
+          });
+    }
 
 #ifdef QT_DEBUG
     qmlRegisterSingletonType<MozillaVPN>(

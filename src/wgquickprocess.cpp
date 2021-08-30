@@ -42,24 +42,42 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
   out << "[Interface]\n";
   out << "PrivateKey = " << config.m_privateKey << "\n";
 
-  QStringList addresses(config.m_deviceIpv4Address);
-  QStringList dnsServers(config.m_dnsServer);
-  if (config.m_ipv6Enabled) {
+  QStringList addresses;
+  if (!config.m_deviceIpv4Address.isNull()) {
+    addresses.append(config.m_deviceIpv4Address);
+  }
+  if (!config.m_deviceIpv6Address.isNull()) {
     addresses.append(config.m_deviceIpv6Address);
-    // If the DNS is not the Gateway, it's a user defined DNS
-    // thus, not add any other :)
-    if (config.m_dnsServer == config.m_serverIpv4Gateway) {
-      dnsServers.append(config.m_serverIpv6Gateway);
-    }
+  }
+  if (addresses.isEmpty()) {
+    logger.error() << "Failed to create WG quick config with no addresses";
+    return false;
   }
   out << "Address = " << addresses.join(", ") << "\n";
-  out << "DNS = " << dnsServers.join(", ") << "\n";
+
+  if (!config.m_dnsServer.isNull()) {
+    QStringList dnsServers(config.m_dnsServer);
+    // If the DNS is not the Gateway, it's a user defined DNS
+    // thus, not add any other :)
+    if ((config.m_ipv6Enabled) &&
+        (config.m_dnsServer == config.m_serverIpv4Gateway)) {
+      dnsServers.append(config.m_serverIpv6Gateway);
+    }
+    out << "DNS = " << dnsServers.join(", ") << "\n";
+  }
 
   // If any extra config was provided, append it now.
   for (const QString& key : extra.keys()) {
     out << key << " = " << extra[key] << "\n";
   }
 
+  // For windows, we don't want to include the peer configuration since they
+  // will be passed later as a UAPI command. and we need to fiddle with the
+  // interface in between creation and peer bringup.
+  //
+  // This function should go away as soon as we fixup the Mac implementation
+  // anyways.
+#if !defined(MVPN_WINDOWS) && !defined(MVPN_MACOS_DAEMON)
   out << "\n[Peer]\n";
   out << "PublicKey = " << config.m_serverPublicKey << "\n";
   out << "Endpoint = " << config.m_serverIpv4AddrIn.toUtf8() << ":"
@@ -77,6 +95,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
     ranges.append(ip.toString());
   }
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
+#endif
 
 #ifdef QT_DEBUG
   logger.debug() << content;
@@ -126,70 +145,4 @@ bool WgQuickProcess::createConfigFile(
   }
 
   return createConfigFile(outputFile, config);
-}
-
-// static
-bool WgQuickProcess::run(
-    Daemon::Op op, const QString& privateKey, const QString& deviceIpv4Address,
-    const QString& deviceIpv6Address, const QString& serverIpv4Gateway,
-    const QString& serverIpv6Gateway, const QString& serverPublicKey,
-    const QString& serverIpv4AddrIn, const QString& serverIpv6AddrIn,
-    const QString& allowedIPAddressRanges, int serverPort, bool ipv6Enabled,
-    const QString& dnsServer) {
-  QTemporaryDir tmpDir;
-  if (!tmpDir.isValid()) {
-    logger.error() << "Cannot create a temporary directory"
-                   << tmpDir.errorString();
-    return false;
-  }
-
-  QDir dir(tmpDir.path());
-  QString configFile(dir.filePath(QString("%1.conf").arg(WG_INTERFACE)));
-
-  if (!createConfigFile(configFile, privateKey, deviceIpv4Address,
-                        deviceIpv6Address, serverIpv4Gateway, serverIpv6Gateway,
-                        serverPublicKey, serverIpv4AddrIn, serverIpv6AddrIn,
-                        allowedIPAddressRanges, serverPort, ipv6Enabled,
-                        dnsServer)) {
-    logger.error() << "Failed to create the config file";
-    return false;
-  }
-
-  QStringList arguments;
-  arguments.append(op == Daemon::Up ? "up" : "down");
-  arguments.append(configFile);
-
-  QString app = scriptPath();
-  logger.debug() << "Start:" << app << " - arguments:" << arguments;
-
-  QProcess wgQuickProcess;
-  wgQuickProcess.start(app, arguments);
-
-  if (!wgQuickProcess.waitForFinished(-1)) {
-    logger.error() << "Error occurred:" << wgQuickProcess.errorString();
-    return false;
-  }
-
-  logger.debug() << "Execution finished" << wgQuickProcess.exitCode();
-
-  logger.debug() << "wg-quick stdout:" << Qt::endl
-                 << qUtf8Printable(wgQuickProcess.readAllStandardOutput())
-                 << Qt::endl;
-  logger.debug() << "wg-quick stderr:" << Qt::endl
-                 << qUtf8Printable(wgQuickProcess.readAllStandardError())
-                 << Qt::endl;
-
-  return wgQuickProcess.exitCode() == 0;
-}
-
-// static
-QString WgQuickProcess::scriptPath() {
-#if defined(MVPN_MACOS_DAEMON)
-  QDir appPath(QCoreApplication::applicationDirPath());
-  appPath.cdUp();
-  appPath.cd("Resources");
-  appPath.cd("utils");
-  return appPath.filePath("helper.sh");
-#endif
-  return QString();
 }

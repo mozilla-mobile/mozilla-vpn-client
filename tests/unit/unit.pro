@@ -22,7 +22,8 @@ INCLUDEPATH += \
             ../../src \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
-            ../../src/hacl-star/kremlin/minimal
+            ../../src/hacl-star/kremlin/minimal \
+            ../../translations/generated
 
 HEADERS += \
     ../../src/bigint.h \
@@ -41,12 +42,14 @@ HEADERS += \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
     ../../src/ipfinder.h \
+    ../../src/l18nstringsimpl.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/device.h \
     ../../src/models/devicemodel.h \
+    ../../src/models/feature.h \
     ../../src/models/feedbackcategorymodel.h \
     ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
@@ -55,6 +58,7 @@ HEADERS += \
     ../../src/models/servercountry.h \
     ../../src/models/servercountrymodel.h \
     ../../src/models/serverdata.h \
+    ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
     ../../src/models/user.h \
@@ -122,12 +126,14 @@ SOURCES += \
     ../../src/ipaddress.cpp \
     ../../src/ipaddressrange.cpp \
     ../../src/ipfinder.cpp \
+    ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/device.cpp \
     ../../src/models/devicemodel.cpp \
+    ../../src/models/feature.cpp \
     ../../src/models/feedbackcategorymodel.cpp \
     ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
@@ -136,6 +142,7 @@ SOURCES += \
     ../../src/models/servercountry.cpp \
     ../../src/models/servercountrymodel.cpp \
     ../../src/models/serverdata.cpp \
+    ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
     ../../src/models/user.cpp \
@@ -184,6 +191,13 @@ SOURCES += \
     teststatusicon.cpp \
     testtasks.cpp \
     testtimersingleshot.cpp
+
+exists($$PWD/../../translations/generated/l18nstrings.h) {
+    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
+    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
+} else {
+    error("No l18nstrings.h. Have you generated the strings?")
+}
 
 # Platform-specific: Linux
 linux {

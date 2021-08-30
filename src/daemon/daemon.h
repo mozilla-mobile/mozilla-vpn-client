@@ -42,8 +42,8 @@ class Daemon : public QObject {
   void cleanLogs();
 
  signals:
-  void connected();
-  void disconnected();
+  void connected(int hopindex);
+  void disconnected(int hopindex);
   void backendFailure();
 
  protected:
@@ -52,21 +52,25 @@ class Daemon : public QObject {
     Q_UNUSED(config);
     return true;
   }
-  virtual bool supportServerSwitching(const InterfaceConfig& config) const {
-    Q_UNUSED(config);
-    return false;
-  }
+  virtual bool supportServerSwitching(const InterfaceConfig& config) const;
   virtual bool switchServer(const InterfaceConfig& config);
-  virtual bool supportWGUtils() const { return false; }
-  virtual WireguardUtils* wgutils() { return nullptr; }
+  virtual WireguardUtils* wgutils() const = 0;
   virtual bool supportIPUtils() const { return false; }
   virtual IPUtils* iputils() { return nullptr; }
   virtual bool supportDnsUtils() const { return false; }
   virtual DnsUtils* dnsutils() { return nullptr; }
 
-  bool m_connected = false;
-  QDateTime m_connectionDate;
-  InterfaceConfig m_lastConfig;
+  class ConnectionState {
+   public:
+    ConnectionState(){};
+    ConnectionState(const InterfaceConfig& config) {
+      m_config = config;
+      m_date = QDateTime::currentDateTime();
+    }
+    QDateTime m_date;
+    InterfaceConfig m_config;
+  };
+  QMap<int, ConnectionState> m_connections;
 };
 
 #endif  // DAEMON_H

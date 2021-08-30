@@ -21,17 +21,46 @@ bool ServerData::fromSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  if (!settingsHolder->hasCurrentServerCountry() ||
-      !settingsHolder->hasCurrentServerCity() ||
-      !settingsHolder->hasCurrentServerCountryCode()) {
+  if (!settingsHolder->hasCurrentServerCountryCode() ||
+      !settingsHolder->hasCurrentServerCity()) {
     return false;
   }
 
   initializeInternal(settingsHolder->currentServerCountryCode(),
-                     settingsHolder->currentServerCountry(),
-                     settingsHolder->currentServerCity());
+                     settingsHolder->currentServerCity(),
+                     settingsHolder->entryServerCountryCode(),
+                     settingsHolder->entryServerCity());
 
-  logger.debug() << m_countryCode << m_countryName << m_cityName;
+  logger.debug() << toString();
+  return true;
+}
+
+bool ServerData::fromString(const QString& data) {
+  QStringList serverList = data.split("->");
+
+  QString exit = serverList.last();
+  int index = exit.lastIndexOf(',');
+  if (index < 0) {
+    return false;
+  }
+  QString exitCountryCode = exit.mid(index + 1).trimmed();
+  QString exitCityName = exit.left(index).trimmed();
+  QString entryCountryCode;
+  QString entryCityName;
+
+  if (serverList.count() > 1) {
+    QString entry = serverList.first();
+    index = entry.lastIndexOf(',');
+    if (index > 0) {
+      entryCityName = entry.left(index).trimmed();
+      entryCountryCode = entry.mid(index + 1).trimmed();
+    }
+  }
+
+  initializeInternal(exitCountryCode, exitCityName, entryCountryCode,
+                     entryCityName);
+
+  logger.debug() << toString();
   return true;
 }
 
@@ -39,38 +68,54 @@ void ServerData::writeSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  settingsHolder->setCurrentServerCountryCode(m_countryCode);
-  settingsHolder->setCurrentServerCountry(m_countryName);
-  settingsHolder->setCurrentServerCity(m_cityName);
+  settingsHolder->setCurrentServerCountryCode(m_exitCountryCode);
+  settingsHolder->setCurrentServerCity(m_exitCityName);
+
+  if (multihop()) {
+    settingsHolder->setEntryServerCountryCode(m_entryCountryCode);
+    settingsHolder->setEntryServerCity(m_entryCityName);
+  } else {
+    settingsHolder->removeEntryServer();
+  }
 }
 
-void ServerData::initialize(const ServerCountry& country,
-                            const ServerCity& city) {
-  logger.debug() << "Country:" << country.name() << "City:" << city.name();
-
-  initializeInternal(country.code(), country.name(), city.name());
+void ServerData::update(const QString& countryCode, const QString& cityName,
+                        const QString& entryCountryCode,
+                        const QString& entryCityName) {
+  logger.debug() << "Country:" << countryCode << "City:" << cityName;
+  initializeInternal(countryCode, cityName, entryCountryCode, entryCityName);
   emit changed();
 }
 
-void ServerData::update(const QString& countryCode, const QString& countryName,
-                        const QString& cityName) {
-  initializeInternal(countryCode, countryName, cityName);
-  emit changed();
-}
-
-void ServerData::initializeInternal(const QString& countryCode,
-                                    const QString& countryName,
-                                    const QString& cityName) {
+void ServerData::initializeInternal(const QString& exitCountryCode,
+                                    const QString& exitCityName,
+                                    const QString& entryCountryCode,
+                                    const QString& entryCityName) {
   m_initialized = true;
-  m_countryCode = countryCode;
-  m_countryName = countryName;
-  m_cityName = cityName;
-}
-
-QString ServerData::localizedCountryName() const {
-  return ServerI18N::translateCountryName(m_countryCode, m_countryName);
+  m_exitCountryCode = exitCountryCode;
+  m_exitCityName = exitCityName;
+  m_entryCountryCode = entryCountryCode;
+  m_entryCityName = entryCityName;
 }
 
 QString ServerData::localizedCityName() const {
-  return ServerI18N::translateCityName(m_countryCode, m_cityName);
+  return ServerI18N::translateCityName(m_exitCountryCode, m_exitCityName);
+}
+
+QString ServerData::localizedEntryCity() const {
+  return ServerI18N::translateCityName(m_entryCountryCode, m_entryCityName);
+}
+
+QString ServerData::toString() const {
+  if (!m_initialized) {
+    return QString();
+  }
+
+  QString result = "";
+  if (multihop()) {
+    result += m_entryCityName + ", " + m_entryCountryCode + " -> ";
+  }
+
+  result += m_exitCityName + ", " + m_exitCountryCode;
+  return result;
 }

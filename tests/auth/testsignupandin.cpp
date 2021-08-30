@@ -15,6 +15,8 @@
 #include <QEventLoop>
 #include <QTest>
 
+#include <liboath/oath.h>
+
 constexpr const char* PASSWORD = "12345678";
 
 class EventLoop final : public QEventLoop {
@@ -32,7 +34,8 @@ class EventLoop final : public QEventLoop {
   }
 };
 
-TestSignUpAndIn::TestSignUpAndIn(const QString& pattern) {
+TestSignUpAndIn::TestSignUpAndIn(const QString& pattern, bool totpCreation)
+    : m_totpCreation(totpCreation) {
   QString emailAccount(pattern);
   emailAccount.append(QString::number(QDateTime::currentSecsSinceEpoch()));
   m_emailAccount = emailAccount;
@@ -76,8 +79,13 @@ void TestSignUpAndIn::signUp() {
   // Password
   aia->setPassword(PASSWORD);
 
+  if (m_totpCreation) {
+    aia->enableTotpCreation();
+  }
+
   // Sign-up
   aia->signUp();
+
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {
     if (aia->state() ==
         AuthenticationInApp::StateVerificationSessionByEmailNeeded) {
@@ -100,11 +108,20 @@ void TestSignUpAndIn::signUp() {
     qDebug() << "Task completed";
     loop.exit();
   });
+
+  if (m_totpCreation) {
+    waitForTotpCodes();
+  }
+
   loop.exec();
 
   // The account is not active yet. So, let's check the final URL.
-  QCOMPARE(finalUrl.host(), "www-dev.allizom.org");
-  QCOMPARE(finalUrl.path(), "/en-US/products/vpn/");
+  QVERIFY(
+      (finalUrl.host() == "stage-vpn.guardian.nonprod.cloudops.mozgcp.net" &&
+       finalUrl.path() == "/vpn/client/login/success") ||
+      (finalUrl.host() == "www-dev.allizom.org" &&
+       finalUrl.path() == "/en-US/products/vpn/"));
+  qDebug() << finalUrl.path();
 }
 
 void TestSignUpAndIn::signIn() {
@@ -156,6 +173,10 @@ void TestSignUpAndIn::signIn() {
   // Sign-in
   aia->signIn();
 
+  if (m_totpCreation) {
+    waitForTotpCodes();
+  }
+
   QUrl finalUrl;
   connect(aia, &AuthenticationInApp::unitTestFinalUrl,
           [&](const QUrl& url) { finalUrl = url; });
@@ -163,11 +184,16 @@ void TestSignUpAndIn::signIn() {
     qDebug() << "Task completed";
     loop.exit();
   });
+
   loop.exec();
 
   // The account is not active yet. So, let's check the final URL.
-  QCOMPARE(finalUrl.host(), "www-dev.allizom.org");
-  QCOMPARE(finalUrl.path(), "/en-US/products/vpn/");
+  QVERIFY(
+      (finalUrl.host() == "stage-vpn.guardian.nonprod.cloudops.mozgcp.net" &&
+       finalUrl.path() == "/vpn/client/login/success") ||
+      (finalUrl.host() == "www-dev.allizom.org" &&
+       finalUrl.path() == "/en-US/products/vpn/"));
+  qDebug() << finalUrl.path();
 }
 
 QString TestSignUpAndIn::fetchSessionCode() {
@@ -176,6 +202,58 @@ QString TestSignUpAndIn::fetchSessionCode() {
 
 QString TestSignUpAndIn::fetchUnblockCode() {
   return fetchCode("x-unblock-code");
+}
+
+void TestSignUpAndIn::waitForTotpCodes() {
+  qDebug() << "Adding the callback for the totp code creation";
+
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+
+  connect(aia, &AuthenticationInApp::errorOccurred,
+          [this](AuthenticationInApp::ErrorType error) {
+            if (error == AuthenticationInApp::ErrorInvalidTotpCode) {
+              qDebug() << "Invalid code. Let's send the right one";
+
+              QCOMPARE(oath_init(), OATH_OK);
+
+              char otp[/* length + 1 */ 7] = {};
+              QCOMPARE(oath_totp_generate(m_totpSecret.data(),
+                                          m_totpSecret.length(), time(nullptr),
+                                          OATH_TOTP_DEFAULT_TIME_STEP_SIZE,
+                                          OATH_TOTP_DEFAULT_START_TIME, 6, otp),
+                       OATH_OK);
+
+              qDebug() << "Code:" << otp;
+              AuthenticationInApp* aia = AuthenticationInApp::instance();
+              aia->verifySessionTotpCode(otp);
+            }
+          });
+
+  connect(aia, &AuthenticationInApp::unitTestTotpCodeCreated,
+          [this](const QByteArray& data) {
+            qDebug() << "Codes received";
+            QJsonDocument json = QJsonDocument::fromJson(data);
+            QJsonObject obj = json.object();
+            QByteArray totpSecret = obj["secret"].toString().toLocal8Bit();
+
+            char* secret = nullptr;
+            size_t secretLength = 0;
+            QCOMPARE(oath_base32_decode(totpSecret.data(), totpSecret.length(),
+                                        &secret, &secretLength),
+                     OATH_OK);
+
+            m_totpSecret = QByteArray(secret, secretLength);
+            QVERIFY(!m_totpSecret.isEmpty());
+          });
+
+  connect(aia, &AuthenticationInApp::stateChanged, []() {
+    AuthenticationInApp* aia = AuthenticationInApp::instance();
+    if (aia->state() ==
+        AuthenticationInApp::StateVerificationSessionByTotpNeeded) {
+      qDebug() << "Code required. Let's write a wrong code first.";
+      aia->verifySessionTotpCode("123456");
+    }
+  });
 }
 
 QString TestSignUpAndIn::fetchCode(const QString& code) {

@@ -10,6 +10,7 @@
 #include <QApplication>
 #include <QVector>
 #include "settingsholder.h"
+#include "l18nstrings.h"
 
 #if defined(MVPN_ANDROID)
 #  include "platforms/android/androidapplistprovider.h"
@@ -98,6 +99,7 @@ void AppPermission::flip(const QString& appID) {
   if (settingsHolder->hasVpnDisabledApp(appID)) {
     logger.debug() << "Enabled --" << appID << " for VPN";
     settingsHolder->removeVpnDisabledApp(appID);
+
   } else {
     logger.debug() << "Disabled --" << appID << " for VPN";
     settingsHolder->addVpnDisabledApp(appID);
@@ -113,7 +115,24 @@ void AppPermission::requestApplist() {
 }
 
 void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
-  auto keys = applist.keys();
+  QMap<QString, QString> applistCopy = applist;
+  QList<QString> removedMissingApps;
+  // Add Missing apps, cleanup ones that we can't find anymore.
+  // If that happens
+  if (SettingsHolder::instance()->hasMissingApps()) {
+    auto missingAppList = SettingsHolder::instance()->missingApps();
+    for (const auto& appPath : missingAppList) {
+      // Check if the App Still exists, otherwise clean up.
+      if (!m_listprovider->isValidAppId(appPath)) {
+        SettingsHolder::instance()->removeMissingApp(appPath);
+        removedMissingApps.append(m_listprovider->getAppName(appPath));
+      } else {
+        applistCopy.insert(appPath, m_listprovider->getAppName(appPath));
+      }
+    }
+  }
+
+  auto keys = applistCopy.keys();
   if (!m_applist.isEmpty()) {
     // Check the Disabled-List
     SettingsHolder* settingsHolder = SettingsHolder::instance();
@@ -122,22 +141,36 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
         // In case the AppID is no longer valid we don't need to keep it
         logger.debug() << "Removed obsolete appid" << blockedAppId;
         settingsHolder->removeVpnDisabledApp(blockedAppId);
+        removedMissingApps.append(m_listprovider->getAppName(blockedAppId));
       } else if (!keys.contains(blockedAppId)) {
         // In case the AppID is valid but not in our applist, we need to create
         // an entry
         logger.debug() << "Added missing appid" << blockedAppId;
-        m_applist.append(AppDescription(blockedAppId, applist[blockedAppId]));
+        m_applist.append(
+            AppDescription(blockedAppId, applistCopy[blockedAppId]));
       }
     }
   }
   beginResetModel();
-  logger.debug() << "Received new Applist -- Entrys: " << applist.size();
+  logger.debug() << "Recived new Applist -- Entrys: " << applistCopy.size();
   m_applist.clear();
   for (auto id : keys) {
-    m_applist.append(AppDescription(id, applist[id]));
+    m_applist.append(AppDescription(id, applistCopy[id]));
   }
   std::sort(m_applist.begin(), m_applist.end());
   endResetModel();
+
+  // In Case we removed Missing Apps during cleanup,
+  // Notify the user
+  if (removedMissingApps.isEmpty()) {
+    return;
+  }
+  auto strings = L18nStrings::instance();
+  QString action = strings->tr(L18nStrings::SplittunnelMissingAppActionButton);
+
+  QString message = strings->tr(L18nStrings::SplittunnelMissingAppMultiple)
+                        .arg(removedMissingApps.count());
+  emit notification("warning", message, action);
 }
 
 void AppPermission::protectAll() {
@@ -187,5 +220,14 @@ void AppPermission::openFilePicker() {
   Q_ASSERT(fileNames.length() == 1);
 
   Q_ASSERT(m_listprovider);
+  if (!m_listprovider->isValidAppId(fileNames[0])) {
+    logger.debug() << "App not valid:" << fileNames[0];
+    return;
+  }
   m_listprovider->addApplication(fileNames[0]);
+
+  QString message = L18nStrings::instance()
+                        ->tr(L18nStrings::SplittunnelMissingAppAddedOne)
+                        .arg(m_listprovider->getAppName(fileNames[0]));
+  emit notification("success", message);
 }

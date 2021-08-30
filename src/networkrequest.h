@@ -61,6 +61,12 @@ class NetworkRequest final : public QObject {
                                            const qint8 rating,
                                            const QString& category);
 
+  static NetworkRequest* createForSupportTicket(
+      QObject* parent, const QString& email, const QString& subject,
+      const QString& issueText, const QString& logs, const QString& category);
+
+  static NetworkRequest* createForGetFeatureList(QObject* parent);
+
   static NetworkRequest* createForFxaAccountStatus(QObject* parent,
                                                    const QString& emailAddress);
 
@@ -93,14 +99,24 @@ class NetworkRequest final : public QObject {
                                            const QByteArray& sessionToken,
                                            const QUrlQuery& query);
 
+#ifdef UNIT_TEST
+  static NetworkRequest* createForFxaTotpCreation(
+      QObject* parent, const QByteArray& sessionToken);
+#endif
+
   static NetworkRequest* createForFxaSessionDestroy(
       QObject* parent, const QByteArray& sessionToken);
 
-#ifdef MVPN_IOS
-  static NetworkRequest* createForIOSProducts(QObject* parent);
+  static NetworkRequest* createForProducts(QObject* parent);
 
+#ifdef MVPN_IOS
   static NetworkRequest* createForIOSPurchase(QObject* parent,
                                               const QString& receipt);
+#endif
+#ifdef MVPN_ANDROID
+  static NetworkRequest* createForAndroidPurchase(QObject* parent,
+                                                  const QString& sku,
+                                                  const QString& purchaseToken);
 #endif
 
   void disableTimeout();

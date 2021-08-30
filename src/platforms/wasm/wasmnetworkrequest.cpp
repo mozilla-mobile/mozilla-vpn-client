@@ -192,6 +192,29 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
 }
 
 // static
+NetworkRequest* NetworkRequest::createForSupportTicket(
+    QObject* parent, const QString& email, const QString& subject,
+    const QString& issueText, const QString& logs, const QString& category) {
+  Q_UNUSED(parent);
+  Q_UNUSED(email);
+  Q_UNUSED(subject);
+  Q_UNUSED(issueText);
+  Q_UNUSED(logs);
+  Q_UNUSED(category);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForFxaAccountStatus(
     QObject* parent, const QString& emailAddress) {
   Q_ASSERT(parent);
@@ -300,6 +323,15 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
     QObject* parent, const QByteArray& sessionToken) {
   Q_ASSERT(parent);
   Q_UNUSED(sessionToken);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
+  Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);

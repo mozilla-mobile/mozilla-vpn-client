@@ -38,7 +38,7 @@ class Controller final : public QObject {
 
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
-  Q_PROPERTY(int time READ time NOTIFY timeChanged)
+  Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
   Q_PROPERTY(QString currentLocalizedCityName READ currentLocalizedCityName
                  NOTIFY stateChanged)
   Q_PROPERTY(QString switchingLocalizedCityName READ switchingLocalizedCityName
@@ -54,12 +54,13 @@ class Controller final : public QObject {
 
   State state() const;
 
-  Q_INVOKABLE void changeServer(const QString& countryCode,
-                                const QString& city);
+  Q_INVOKABLE void changeServer(const QString& countryCode, const QString& city,
+                                const QString& entryCountryCode = QString(),
+                                const QString& entryCity = QString());
 
   Q_INVOKABLE void logout();
 
-  int time() const;
+  qint64 time() const;
 
   QString currentLocalizedCityName() const;
 
@@ -118,7 +119,7 @@ class Controller final : public QObject {
   void setState(State state);
 
   bool processNextStep();
-  QList<IPAddressRange> getAllowedIPAddressRanges(const Server& server);
+  QList<IPAddressRange> getAllowedIPAddressRanges(const QList<Server>& servers);
 
   void activateInternal();
 
@@ -127,8 +128,6 @@ class Controller final : public QObject {
   void heartbeatCompleted();
 
   void resetConnectedTime();
-
-  bool shouldExcludeDns();
 
  private:
   State m_state = StateInitializing;

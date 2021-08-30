@@ -12,6 +12,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
+#include "features/featureunauthsupport.h"
 
 #ifdef QT_DEBUG
 #  include "gleantest.h"
@@ -208,13 +209,15 @@ static QList<WebSocketSettingCommand> s_settingCommands{
     WebSocketSettingCommand{
         "current-server-country-code", WebSocketSettingCommand::String, nullptr,
         []() {
-          return MozillaVPN::instance()->currentServer()->countryCode();
+          return MozillaVPN::instance()->currentServer()->exitCountryCode();
         }},
 
     // server city
     WebSocketSettingCommand{
         "current-server-city", WebSocketSettingCommand::String, nullptr,
-        []() { return MozillaVPN::instance()->currentServer()->cityName(); }},
+        []() {
+          return MozillaVPN::instance()->currentServer()->exitCityName();
+        }},
 
     // glean-enabled
     WebSocketSettingCommand{
@@ -226,6 +229,27 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->gleanEnabled() ? "true" : "false";
         }},
 
+};
+
+struct WebSocketFeatureCommand {
+  QString m_featureName;
+
+  std::function<void(bool)> m_set;
+  std::function<QJsonValue()> m_get;
+};
+
+// The list of features exposed to the websocket.
+static QList<WebSocketFeatureCommand> s_featureCommands{
+    // Unauth Support
+    WebSocketFeatureCommand{
+        "unauth-support",
+        [](bool enabled) {
+          FeatureUnauthSupport::instance()->setIsSupported(enabled);
+        },
+        []() {
+          return FeatureUnauthSupport::instance()->isSupported() ? "true"
+                                                                 : "false";
+        }},
 };
 
 struct WebSocketCommand {
@@ -282,6 +306,44 @@ static QList<WebSocketCommand> s_commands{
                      [](const QList<QByteArray>& arguments) {
                        QJsonObject obj;
                        obj["value"] = !!findObject(arguments[1]);
+                       return obj;
+                     }},
+
+    WebSocketCommand{"list", "List all properties for an object", 1,
+                     [](const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       QString result;
+
+                       QObject* item = findObject(arguments[1]);
+                       if (!item) {
+                         obj["error"] = "Object not found";
+                         return obj;
+                       }
+                       const QMetaObject* meta = item->metaObject();
+                       int start = meta->propertyOffset();
+                       int longest = 0;
+
+                       for (int i = start; i < meta->propertyCount(); i++) {
+                         QMetaProperty mp = meta->property(i);
+                         int namelen = strlen(mp.name());
+                         if (namelen > longest) {
+                           longest = namelen;
+                         }
+                       }
+
+                       for (int i = start; i < meta->propertyCount(); i++) {
+                         QMetaProperty mp = meta->property(i);
+                         int padding = longest - strlen(mp.name());
+                         QVariant value = mp.read(item);
+                         if (!result.isEmpty()) {
+                           result += "\n";
+                         }
+                         result += QString(mp.name());
+                         result += QString(padding, ' ') + " = ";
+                         result += value.toString();
+                       }
+
+                       obj["value"] = result;
                        return obj;
                      }},
 
@@ -502,6 +564,63 @@ static QList<WebSocketCommand> s_commands{
 
           obj["error"] = QString("Invalid settings. The options are: %1")
                              .arg(settings.join(", "));
+          return obj;
+        }},
+
+    WebSocketCommand{
+        "set_feature", "Set a feature", 2,
+        [](const QList<QByteArray>& arguments) {
+          QJsonObject obj;
+
+          for (const WebSocketFeatureCommand& feature : s_featureCommands) {
+            if (arguments[1] == feature.m_featureName) {
+              if (arguments[2] != "true" && arguments[2] != "false") {
+                obj["error"] =
+                    QString("Expected boolean (true/false) for features %1")
+                        .arg(QString(arguments[1]));
+                return obj;
+              }
+
+              if (!feature.m_set) {
+                obj["error"] =
+                    QString("Read-only settings %1").arg(QString(arguments[1]));
+                return obj;
+              }
+
+              feature.m_set(arguments[2] == "true");
+              return obj;
+            }
+          }
+
+          QStringList features;
+          for (const WebSocketFeatureCommand& feature : s_featureCommands) {
+            features.append(feature.m_featureName);
+          }
+
+          obj["error"] = QString("Invalid features. The options are: %1")
+                             .arg(features.join(", "));
+          return obj;
+        }},
+
+    WebSocketCommand{
+        "feature", "Get a feature value", 1,
+        [](const QList<QByteArray>& arguments) {
+          QJsonObject obj;
+
+          for (const WebSocketFeatureCommand& feature : s_featureCommands) {
+            if (arguments[1] == feature.m_featureName) {
+              obj["value"] = feature.m_get();
+              return obj;
+            }
+          }
+
+          QStringList features;
+          for (const WebSocketFeatureCommand& feature : s_featureCommands) {
+            features.append(feature.m_featureName);
+          }
+
+          obj["error"] = QString("Invalid features. The options are: %1")
+                             .arg(features.join(", "));
           return obj;
         }},
 

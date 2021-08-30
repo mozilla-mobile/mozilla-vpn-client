@@ -86,7 +86,7 @@ void LocalSocketController::daemonConnected() {
 }
 
 void LocalSocketController::activate(
-    const Server& server, const Device* device, const Keys* keys,
+    const QList<Server>& serverList, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
     Reason reason) {
@@ -97,9 +97,38 @@ void LocalSocketController::activate(
     emit disconnected();
     return;
   }
+  const Server& server = serverList.first();
+
+  // Activate connections starting from the outermost tunnel
+  for (int hopindex = serverList.count() - 1; hopindex > 0; hopindex--) {
+    const Server& hop = serverList[hopindex];
+    const Server& next = serverList[hopindex - 1];
+    QJsonObject hopJson;
+    hopJson.insert("type", "activate");
+    hopJson.insert("hopindex", QJsonValue((double)hopindex));
+    hopJson.insert("privateKey", QJsonValue(keys->privateKey()));
+    hopJson.insert("deviceIpv4Address", QJsonValue(device->ipv4Address()));
+    hopJson.insert("deviceIpv6Address", QJsonValue(device->ipv6Address()));
+    hopJson.insert("serverPublicKey", QJsonValue(hop.publicKey()));
+    hopJson.insert("serverIpv4AddrIn", QJsonValue(hop.ipv4AddrIn()));
+    hopJson.insert("serverIpv6AddrIn", QJsonValue(hop.ipv6AddrIn()));
+    hopJson.insert("serverPort", QJsonValue((double)hop.choosePort()));
+    hopJson.insert("ipv6Enabled",
+                   QJsonValue(SettingsHolder::instance()->ipv6Enabled()));
+
+    QJsonArray hopAddressRanges;
+    hopAddressRanges.append(QJsonObject(
+        {{"address", next.ipv4AddrIn()}, {"range", 32}, {"isIpv6", false}}));
+    hopAddressRanges.append(QJsonObject(
+        {{"address", next.ipv6AddrIn()}, {"range", 128}, {"isIpv6", true}}));
+    hopJson.insert("allowedIPAddressRanges", hopAddressRanges);
+
+    write(hopJson);
+  }
 
   QJsonObject json;
   json.insert("type", "activate");
+  json.insert("hopindex", QJsonValue((double)0));
   json.insert("privateKey", QJsonValue(keys->privateKey()));
   json.insert("deviceIpv4Address", QJsonValue(device->ipv4Address()));
   json.insert("deviceIpv6Address", QJsonValue(device->ipv6Address()));

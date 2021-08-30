@@ -328,6 +328,46 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForSupportTicket(
+    QObject* parent, const QString& email, const QString& subject,
+    const QString& issueText, const QString& logs, const QString& category) {
+  NetworkRequest* r = new NetworkRequest(parent, 201, true);
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/createSupportTicket");
+  r->m_request.setUrl(url);
+
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("email", email);
+  obj.insert("logs", logs);
+  obj.insert("versionString", MozillaVPN::instance()->versionString());
+  obj.insert("platformVersion", QString(NetworkManager::osVersion()));
+  obj.insert("subject", subject);
+  obj.insert("issueText", issueText);
+  obj.insert("category", category);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/featurelist");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
 // static
 NetworkRequest* NetworkRequest::createForFxaAccountStatus(
     QObject* parent, const QString& emailAddress) {
@@ -463,7 +503,16 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
   obj.insert("service", query.queryItemValue("client_id"));
 
   QJsonArray scopes;
-  scopes.append(query.queryItemValue("scope"));
+  QStringList queryScopes = query.queryItemValue("scope").split("+");
+  foreach (const QString& s, queryScopes) {
+    QString parsedScope;
+    if (s.startsWith("http")) {
+      parsedScope = QUrl::fromPercentEncoding(s.toUtf8());
+    } else {
+      parsedScope = s;
+    }
+    scopes.append(parsedScope);
+  }
   obj.insert("scopes", scopes);
 
   QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
@@ -542,7 +591,10 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
   QJsonObject obj;
   obj.insert("client_id", query.queryItemValue("client_id"));
   obj.insert("state", query.queryItemValue("state"));
-  obj.insert("scope", query.queryItemValue("scope"));
+  // QUrl does not covert '+' to <space>. But we need it to split the scopes.
+  obj.insert(
+      "scope",
+      query.queryItemValue("scope", QUrl::FullyDecoded).replace("+", " "));
   obj.insert("access_type", query.queryItemValue("access_type"));
 
   QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
@@ -554,6 +606,29 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
   r->postRequest(payload);
   return r;
 }
+
+#ifdef UNIT_TEST
+// static
+NetworkRequest* NetworkRequest::createForFxaTotpCreation(
+    QObject* parent, const QByteArray& sessionToken) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::fxaUrl());
+  url.setPath("/v1/totp/create");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QByteArray payload = "{}";
+
+  HawkAuth hawk = HawkAuth(sessionToken);
+  QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();
+  r->m_request.setRawHeader("Authorization", hawkHeader);
+
+  r->postRequest(payload);
+  return r;
+}
+#endif
 
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
@@ -577,20 +652,20 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
   return r;
 }
 
-#ifdef MVPN_IOS
-NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
+NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
   QUrl url(apiBaseUrl());
-  url.setPath("/api/v2/vpn/products/ios");
+  url.setPath("/api/v3/vpn/products");
   r->m_request.setUrl(url);
 
   r->getRequest();
   return r;
 }
 
+#ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
                                                      const QString& receipt) {
   Q_ASSERT(parent);
@@ -609,6 +684,34 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
 
   QJsonDocument json;
   json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+#endif
+
+#ifdef MVPN_ANDROID
+NetworkRequest* NetworkRequest::createForAndroidPurchase(
+    QObject* parent, const QString& sku, const QString& purchaseToken) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/purchases/android");
+  r->m_request.setUrl(url);
+
+  QJsonObject obj;
+  obj.insert("sku", sku);
+  obj.insert("token", purchaseToken);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  logger.debug() << "Network request createForAndroidPurchase created"
+                 << logger.sensitive(json.toJson(QJsonDocument::Compact));
 
   r->postRequest(json.toJson(QJsonDocument::Compact));
   return r;

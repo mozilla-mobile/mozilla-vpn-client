@@ -143,14 +143,35 @@ uint32_t Server::choosePort() const {
     return 0;
   }
 
-  quint32 r = QRandomGenerator::global()->generate() % m_portRanges.length();
-  const QPair<uint32_t, uint32_t>& ports = m_portRanges.at(r);
+  // Count the total number of potential ports.
+  quint32 length = 0;
+  for (const QPair<uint32_t, uint32_t>& range : m_portRanges) {
+    Q_ASSERT(range.first <= range.second);
+    length += range.second - range.first + 1;
+  }
+  Q_ASSERT(length < 65536);
 
-  if (ports.first == ports.second) {
-    return ports.first;
+  while (true) {
+    // Pick a port at random.
+    quint32 r = QRandomGenerator::global()->generate() % length;
+    quint32 port = 0;
+
+    for (const QPair<uint32_t, uint32_t>& range : m_portRanges) {
+      if (r <= (range.second - range.first)) {
+        port = r + range.first;
+        break;
+      }
+      r -= (range.second - range.first + 1);
+    }
+    Q_ASSERT(port != 0);
+
+    // Avoid using port 53/DNS for multihop, since Mullvad blocks DNS traffic.
+    if (port != 53) {
+      return port;
+    }
   }
 
-  Q_ASSERT(ports.first < ports.second);
-  return ports.first + (QRandomGenerator::global()->generate() %
-                        (ports.second - ports.first));
+  // We should not get here.
+  Q_ASSERT(false);
+  return 0;
 }

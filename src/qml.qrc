@@ -52,9 +52,11 @@
         <file>ui/settings/ViewNotifications.qml</file>
         <file>ui/settings/ViewPrivacySecurity.qml</file>
         <file>ui/settings/ViewSettingsMenu.qml</file>
-        <file>ui/states/StateSubscriptionNeeded.qml</file>
-        <file>ui/states/StateSubscriptionValidation.qml</file>
+        <file>ui/states/StateBillingNotAvailable.qml</file>
         <file>ui/states/StateSubscriptionBlocked.qml</file>
+        <file>ui/states/StateSubscriptionInProgress.qml</file>
+        <file>ui/states/StateSubscriptionNeeded.qml</file>
+        <file>ui/states/StateSubscriptionNotValidated.qml</file>
         <file>ui/states/StateMain.qml</file>
         <file>ui/states/StateInitialize.qml</file>
         <file>ui/states/StateAuthenticating.qml</file>
@@ -66,7 +68,7 @@
         <file>ui/views/ViewMain.qml</file>
         <file>ui/views/ViewDevices.qml</file>
         <file>ui/views/ViewGetHelp.qml</file>
-        <file>ui/views/ViewDeveloper.qml</file>
+        <file>ui/developerMenu/ViewDeveloperMenu.qml</file>
         <file>ui/views/ViewServers.qml</file>
         <file>ui/views/ViewSettings.qml</file>
         <file>ui/views/ViewInitialize.qml</file>
@@ -339,6 +341,7 @@
         <file>ui/resources/chevron-right-dark.svg</file>
         <file>ui/resources/close-white.svg</file>
         <file>ui/resources/externalLink.svg</file>
+        <file>ui/resources/arrow-forward.svg</file>
         <file>ui/resources/arrow-toggle.svg</file>
         <file>ui/resources/connection.svg</file>
         <file>ui/resources/onboarding/onboarding1.svg</file>
@@ -359,6 +362,7 @@
         <file>ui/resources/settings/aboutUs.svg</file>
         <file>ui/resources/settings/notifications.svg</file>
         <file>ui/resources/settings/networkSettings.svg</file>
+        <file>ui/resources/settings/whatsnew.svg</file>
         <file>ui/resources/devicesLimit.svg</file>
         <file>ui/resources/settings-white.svg</file>
         <file>ui/resources/shield-off.svg</file>
@@ -393,6 +397,7 @@
         <file>ui/components/VPNAboutUs.qml</file>
         <file>ui/components/VPNRemoveDevicePopup.qml</file>
         <file>ui/views/ViewLogs.qml</file>
+        <file>ui/views/ViewContactUs.qml</file>
         <file>ui/components/VPNStackView.qml</file>
         <file>ui/components/VPNFocusOutline.qml</file>
         <file>ui/components/VPNMouseArea.qml</file>
@@ -425,6 +430,7 @@
         <file>ui/components/forms/VPNInputBackground.qml</file>
         <file>ui/components/forms/VPNTextArea.qml</file>
         <file>ui/resources/heart-check.svg</file>
+        <file>ui/resources/app-rating.svg</file>
         <file>ui/resources/faces/average.svg</file>
         <file>ui/resources/faces/good.svg</file>
         <file>ui/resources/faces/poor.svg</file>
@@ -440,6 +446,8 @@
         <file>ui/components/VPNMetropolisLabel.qml</file>
         <file>ui/resources/warning-dark-orange.svg</file>
         <file>ui/components/VPNToggleCard.qml</file>
+        <file>ui/resources/avatar-default.png</file>
+        <file>ui/components/VPNAvatar.qml</file>
         <file>ui/themes/colors.js</file>
         <file>ui/components/forms/VPNInputStates.qml</file>
         <file>ui/components/VPNSemiMonoLabel.qml</file>
@@ -454,8 +462,11 @@
         <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
         <file>ui/components/VPNCollapsibleCard.qml</file>
+        <file>ui/components/VPNAnimatedRingsShader.qml</file>
+        <file>ui/components/VPNServerLabel.qml</file>
         <file>ui/components/VPNTabNavigation.qml</file>
-        <file>ui/components/VPNServerList.qml</file>
-        <file>ui/views/ViewMultiHop.qml</file>
+        <file>ui/resources/encodedPassword.txt</file>
+        <file>ui/developerMenu/ViewFeatureList.qml</file>
+        <file>ui/components/VPNViewDNSSettings.qml</file>
     </qresource>
 </RCC>

@@ -6,51 +6,34 @@
 #define FEATURELIST_H
 
 #include <QObject>
+#include <QAbstractListModel>
 
-class FeatureList final : public QObject {
+class Feature;
+
+class FeatureList final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(FeatureList)
 
  private:
-  Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
-  Q_PROPERTY(bool localNetworkAccessSupported READ localNetworkAccessSupported
-                 CONSTANT)
-  Q_PROPERTY(bool protectSelectedAppsSupported READ protectSelectedAppsSupported
-                 CONSTANT)
-  Q_PROPERTY(bool unsecuredNetworkNotificationSupported READ
-                 unsecuredNetworkNotificationSupported CONSTANT)
-  Q_PROPERTY(bool captivePortalNotificationSupported READ
-                 captivePortalNotificationSupported CONSTANT)
-  Q_PROPERTY(bool notificationControlSupported READ notificationControlSupported
-                 CONSTANT)
-  Q_PROPERTY(bool userDNSSupported READ userDNSSupported CONSTANT)
-  Q_PROPERTY(bool authenticationInApp READ authenticationInApp CONSTANT)
+  FeatureList() = default;
 
  public:
-  FeatureList() = default;
-  ~FeatureList() = default;
-
   static FeatureList* instance();
 
-  bool startOnBootSupported() const;
+  void initialize();
 
-  bool protectSelectedAppsSupported() const;
+  void updateFeatureList(const QByteArray& data);
 
-  bool localNetworkAccessSupported() const;
+  // QAbstractListModel methods
+  QHash<int, QByteArray> roleNames() const override;
+  int rowCount(const QModelIndex&) const override;
+  QVariant data(const QModelIndex& index, int role) const override;
 
-  bool captivePortalNotificationSupported() const;
+  Q_INVOKABLE void devModeFlipFeatureFlag(const QString& feature);
+  Q_INVOKABLE QObject* get(const QString& feature);
 
-  bool unsecuredNetworkNotificationSupported() const;
-
-  bool notificationControlSupported() const;
-
-  bool userDNSSupported() const;
-
-  bool authenticationInApp() const;
-
-  // some platforms support the authentication in app, but not the account
-  // creation.
-  bool accountCreationInAppSupported() const;
+ private:
+  QList<Feature*> m_featurelist;
 };
 
 #endif  // FEATURELIST_H

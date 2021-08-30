@@ -45,7 +45,6 @@ jobs:
         shell: bash
         run: |
           pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
           pip3 install pyyaml
           python3 scripts/generate_glean.py
 
@@ -195,7 +194,6 @@ jobs:
         shell: bash
         run: |
           pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
           pip3 install pyyaml
           python3 scripts/generate_glean.py
 
@@ -256,8 +254,11 @@ jobs:
           cp -r ./macos/pkg/scripts BUILD
           cp -r ./macos/pkg/Distribution BUILD
           cp -r ./macos/pkg/Resources BUILD
+          cd BUILD
+          zip -r BUILD.zip .
+          mv BUILD.zip ..
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
             name: Release tarball
-            path: BUILD
+            path: BUILD.zip

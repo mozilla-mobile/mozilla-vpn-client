@@ -91,11 +91,11 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
-#ifdef MVPN_IOS
-NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
+NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
+#ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
                                                      const QString&) {
   return new NetworkRequest(parent, 1234, false);
@@ -116,6 +116,24 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
   Q_UNUSED(rating);
   Q_UNUSED(category);
 
+  return new NetworkRequest(parent, 1234, false);
+}
+
+NetworkRequest* NetworkRequest::createForSupportTicket(
+    QObject* parent, const QString& email, const QString& subject,
+    const QString& issueText, const QString& logs, const QString& category) {
+  Q_UNUSED(parent);
+  Q_UNUSED(email);
+  Q_UNUSED(subject);
+  Q_UNUSED(issueText);
+  Q_UNUSED(logs);
+  Q_UNUSED(category);
+
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 

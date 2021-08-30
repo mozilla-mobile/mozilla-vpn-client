@@ -21,7 +21,8 @@ class LinuxController final : public ControllerImpl {
 
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const Server& server, const Device* device, const Keys* keys,
+  void activate(const QList<Server>& serverList, const Device* device,
+                const Keys* keys,
                 const QList<IPAddressRange>& allowedIPAddressRanges,
                 const QList<QString>& vpnDisabledApps,
                 const QHostAddress& dnsServer, Reason reason) override;
@@ -38,6 +39,8 @@ class LinuxController final : public ControllerImpl {
   void checkStatusCompleted(QDBusPendingCallWatcher* call);
   void initializeCompleted(QDBusPendingCallWatcher* call);
   void operationCompleted(QDBusPendingCallWatcher* call);
+  void hopConnected(int hopindex);
+  void hopDisconnected(int hopindex);
 
  private:
   DBusClient* m_dbus = nullptr;

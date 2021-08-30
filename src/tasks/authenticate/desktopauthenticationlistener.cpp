@@ -60,11 +60,13 @@ DesktopAuthenticationListener::~DesktopAuthenticationListener() {
 }
 
 void DesktopAuthenticationListener::start(const QString& codeChallenge,
-                                          const QString& codeChallengeMethod) {
+                                          const QString& codeChallengeMethod,
+                                          const QString& emailAddress) {
   logger.debug() << "DesktopAuthenticationListener initialize";
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser,
-                                   codeChallenge, codeChallengeMethod));
+                                   codeChallenge, codeChallengeMethod,
+                                   emailAddress));
 
   if (!m_server->isListening()) {
     QVector<quint16> triedPorts;

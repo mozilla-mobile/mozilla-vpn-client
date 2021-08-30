@@ -5,6 +5,7 @@
 #include "command.h"
 #include "commandlineparser.h"
 #include "constants.h"
+#include "featurelist.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -75,10 +76,14 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
   SettingsHolder settingsHolder;
+
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
     LogHandler::enableDebug();
   }
+
+  FeatureList::instance()->initialize();
+
   qInstallMessageHandler(LogHandler::messageQTHandler);
   logger.info() << "MozillaVPN" << APP_VERSION;
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
@@ -98,10 +103,14 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
   SettingsHolder settingsHolder;
+
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
     LogHandler::enableDebug();
   }
+
+  FeatureList::instance()->initialize();
+
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
   logger.info() << "MozillaVPN" << APP_VERSION;
@@ -125,10 +134,14 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
   SettingsHolder settingsHolder;
+
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
     LogHandler::enableDebug();
   }
+
+  FeatureList::instance()->initialize();
+
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
   logger.info() << "MozillaVPN" << APP_VERSION;

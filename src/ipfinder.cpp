@@ -36,6 +36,13 @@ IPFinder::~IPFinder() {
 void IPFinder::start() {
   logger.debug() << "Starting the ip-lookup";
 
+#ifdef MVPN_WASM
+  // QHostInfo uses dlopen() to run the DNS lookup. This does not work on WASM.
+  // Let's fake the result.
+  emit completed("1.2.3.4", "a1f:ea75:ca75", "Mordor");
+  return;
+#endif
+
   QUrl url(NetworkRequest::apiBaseUrl());
   m_lookupId = QHostInfo::lookupHost(url.host(), this,
                                      SLOT(dnsLookupCompleted(QHostInfo)));
