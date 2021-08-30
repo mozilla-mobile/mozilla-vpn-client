@@ -29,20 +29,32 @@ RowLayout {
                     Layout.preferredWidth: Theme.windowMargin
                     Layout.preferredHeight: Theme.windowMargin
                     Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
-                    visible: modelData.countryCode !== ""
 
                     Component.onCompleted: {
-                        if (typeof(modelData.countryCode) === "undefined" || modelData.countryCode === "") {
-                            visible = false;
-                        } else {
-                           source = "../resources/flags/" + modelData.countryCode.toUpperCase() + ".png"
+                        if (typeof(countryCode) !== "undefined") {
+                            return source = "../resources/flags/" + countryCode.toUpperCase() + ".png"
                         }
+
+                        if (typeof(modelData.countryCode) === "undefined" || modelData.countryCode === "") {
+                            return visible = false;
+                        }
+
+                        source = "../resources/flags/" + modelData.countryCode.toUpperCase() + ".png"
+
                     }
                 }
 
                 VPNLightLabel {
                     id: serverLocation
-                    text: typeof(modelData.localizedCityName) !== "undefined" ? modelData.localizedCityName : ""
+                    text: {
+                        if (typeof(localizedCityName) !== "undefined") {
+                             return localizedCityName
+                         }
+                         if (modelData.localizedCityName) {
+                             return modelData.localizedCityName
+                         }
+                         return "";
+                        }
                     Accessible.ignored: true
                     Layout.alignment: Qt.AlignLeft
                 }
@@ -55,12 +67,15 @@ RowLayout {
                     sourceSize.width: Theme.iconSize
                     Layout.leftMargin: Theme.listSpacing
                     Layout.rightMargin: Theme.listSpacing
+                    visible: (index !== serverRepeater.count - 1)
                     Component.onCompleted: {
-                        if (typeof(serverRepeater) === "undefined" || modelData.countryCode === "") {
-                            visible = false;
+                        if (typeof(countryCode) !== "undefined") {
                             return;
                         }
-                        visible = (index !== serverRepeater.count - 1);
+
+                        if (typeof(serverRepeater) === "undefined" || modelData.countryCode === "") {
+                            return visible = false;
+                        }
                     }
                 }
             }
