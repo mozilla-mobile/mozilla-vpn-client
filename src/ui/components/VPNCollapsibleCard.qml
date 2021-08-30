@@ -23,6 +23,22 @@ Rectangle {
     radius: Theme.cornerRadius
     width: parent.width
 
+    VPNDropShadow {
+        anchors.fill: shadowSource
+        source: shadowSource
+        state: "overwrite-state"
+        cached: true
+        transparentBorder: true
+        z: -1
+    }
+
+    Rectangle {
+        id: shadowSource
+        anchors.fill: root
+        radius: root.radius
+        color: parent.color
+    }
+
     states: [
         State {
             name: "expanded"
@@ -105,13 +121,14 @@ Rectangle {
                 Layout.preferredHeight: Theme.rowHeight
                 Layout.preferredWidth: Theme.rowHeight
 
-                Image {
+                // TODO - Use accesibleName string
+                accessibleName: ""
+
+                VPNChevron {
                     id: chevron
 
                     anchors.centerIn: stateIndicator
-                    fillMode: Image.PreserveAspectFit
                     source: "../resources/chevron-right-dark.svg"
-                    sourceSize.width: 24
 
                     Behavior on rotation {
                         NumberAnimation {
@@ -153,14 +170,6 @@ Rectangle {
                 }
             }
         }
-    }
-
-    VPNDropShadow {
-        anchors.fill: root
-        source: root
-        cached: true
-        transparentBorder: true
-        z: -1
     }
 
     function handleToggleCard() {
