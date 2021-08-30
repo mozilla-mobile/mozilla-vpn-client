@@ -113,14 +113,14 @@ VPNFlickable {
                     id: selectLocationLabel
                     serversList: [
                         {
-                            "countryCode": typeof(VPNCurrentServer.entryCountryCode) !== 'undefined' ? VPNCurrentServer.entryCountryCode : "" ,
-                            "localizedCityName": typeof(VPNCurrentServer.localizedEntryCity) !== 'undefined' ? VPNCurrentServer.localizedEntryCity : "",
-                            "cityName": typeof(VPNCurrentServer.entryCityName) !== "undefined" ? VPNCurrentServer.entryCityName : ""
+                            countryCode: typeof(VPNCurrentServer.entryCountryCode) !== 'undefined' ? VPNCurrentServer.entryCountryCode : "" ,
+                            localizedCityName: typeof(VPNCurrentServer.localizedEntryCity) !== 'undefined' ? VPNCurrentServer.localizedEntryCity : "",
+                            cityName: typeof(VPNCurrentServer.entryCityName) !== "undefined" ? VPNCurrentServer.entryCityName : ""
                         },
                         {
-                         "countryCode": VPNCurrentServer.exitCountryCode,
-                         "localizedCityName": VPNCurrentServer.localizedCityName,
-                         "cityName": VPNCurrentServer.exitCityName
+                         countryCode: VPNCurrentServer.exitCountryCode,
+                         localizedCityName: VPNCurrentServer.localizedCityName,
+                         cityName: VPNCurrentServer.exitCityName
                         }
                     ]
                 }

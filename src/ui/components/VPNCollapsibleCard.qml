@@ -105,7 +105,7 @@ Rectangle {
                 Layout.preferredHeight: Theme.rowHeight
                 Layout.preferredWidth: Theme.rowHeight
 
-                // MULTIHOP TODO
+                // TODO - Use accesibleName string
                 accessibleName: ""
 
                 VPNChevron {

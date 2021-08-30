@@ -21,14 +21,16 @@ FocusScope {
     property bool showRecentConnections: false
     property var currentServer
 
+    Component.onCompleted: centerActiveServer();
+
     function centerActiveServer() {
+
         // Scroll vpnFlickable so that the current server city is
         // vertically centered in the view
-        const serverListYCenter = vpnFlickable.height / 2 - listOffset;
+        const serverListYCenter = vpnFlickable.height / 2 - listOffset
 
         for (let idx = 0; idx < countriesRepeater.count; idx++) {
             const countryItem = countriesRepeater.itemAt(idx);
-
 
             if (
                 // Country does not host current active server
@@ -40,12 +42,8 @@ FocusScope {
                 continue;
             }
 
-            if (countryItem.y < serverListYCenter) {
-                continue;
-            }
-
             // Get distance to the current server city and scroll
-            const currentCityYPosition = countryItem.y  + (54 * countryItem.currentCityIndex) - serverListYCenter;
+            const currentCityYPosition = countryItem.y + (54 * countryItem.currentCityIndex) - serverListYCenter;
             const destinationY = (currentCityYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : currentCityYPosition;
             vpnFlickable.contentY = destinationY;
 
@@ -56,6 +54,7 @@ FocusScope {
             return;
         }
     }
+
 
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -96,10 +95,6 @@ FocusScope {
             spacing: 14
             width: parent.width
             anchors.top: verticalSpacer.bottom
-
-            Component.onCompleted: {
-                centerActiveServer();
-            }
 
             VPNSearchBar {
                 id: serverSearchInput
@@ -163,6 +158,7 @@ FocusScope {
                 anchors.leftMargin: anchors.rightMargin
                 visible: showRecentConnections && serverSearchInput.text.length === 0
                 showMultiHopRecentConnections: false
+                height: showRecentConnections ? implicitHeight : 0
             }
 
             Repeater {

@@ -27,10 +27,22 @@ Item {
 
         function handleMultiHopNav() {
             if (multiHopStackView && multiHopStackView.depth > 1) {
+                // User clicked back from either the Multi-hop entry or exit server list
                 multiHopStackView.pop();
                 menu.title = menu.defaultMenuTitle;
                 return;
             }
+
+            if (serversTabs.currentTab.objectName === "tabMultiHop" && multiHopStackView.depth === 1) {
+                // User clicked back button from the Multi-hop tab main view
+                VPNController.changeServer(...serversTabs.multiHopExitServer.slice(0,2), ...serversTabs.multiHopEntryServer.slice(0,2));
+            }
+
+            if (serversTabs.currentTab.objectName === "tabSingleHop") {
+                // User clicked back button from the Single-hop tab view but didn't select a new server
+                VPNController.changeServer(VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName)
+            }
+
             return stackview.pop()
         }
     }
@@ -48,8 +60,11 @@ Item {
     }
 
     VPNTabNavigation {
+        property var multiHopEntryServer: [VPNCurrentServer.entryCountryCode, VPNCurrentServer.entryCityName, VPNCurrentServer.localizedEntryCity]
+        property var multiHopExitServer: [VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName, VPNCurrentServer.localizedCityName]
 
-        id: tabNavigation
+        id: serversTabs
+
         tabList: tabButtonList
         width: root.width
         anchors.top: menu.bottom
@@ -64,7 +79,7 @@ Item {
                     "countryCode": VPNCurrentServer.exitCountryCode,
                     "localizedCityName": VPNCurrentServer.localizedCityName,
                     "cityName": VPNCurrentServer.exitCityName,
-                    "selectWhichHop": "singleHop"
+                    "whichHop": "singleHopServer"
                 }
                 showRecentConnections: true
 
@@ -77,19 +92,17 @@ Item {
         }
         handleTabClick: (tab) => {
             if (multiHopStackView && multiHopStackView.depth > 1) {
+                    // Return to the Multi-hop main view when the Multi-hop tab
+                    // is clicked from a Multi-hop entry or exit server list
                     multiHopStackView.pop();
                 }
 
             if (tab.objectName === "tabSingleHop") {
                 // Do single hop things
-                VPNController.changeServer(VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName)
                 menu.title = menu.defaultMenuTitle;
                 singleHopServerList.centerActiveServer();
                 return;
             }
-            // Do Multi-hop things
-            VPNController.changeServer(VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName, "us", "Dallas, TX"); // Need a "pick random" or "pick last active multi-hop connection"
-
         }
     }
 
@@ -99,10 +112,10 @@ Item {
             return;
         }
 
-        tabNavigation.stackContent.push(multiHopStackView);
+        serversTabs.stackContent.push(multiHopStackView);
       if (VPNCurrentServer.entryCountryCode && VPNCurrentServer.entryCountryCode !== "") {
           // Set default tab to multi-hop
-          tabNavigation.setCurrentTabIndex(1)
+          return serversTabs.setCurrentTabIndex(1);
       }
     }
 }

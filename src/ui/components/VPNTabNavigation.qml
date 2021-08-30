@@ -13,7 +13,7 @@ Item {
 
     property alias tabList: tabButtons.model
     property alias stackContent: stack.children
-    property real currentTab: bar.currentIndex
+    property variant currentTab: bar.currentItem
     property var handleTabClick: (()=> {});
 
     function setCurrentTabIndex(idx) {
@@ -106,6 +106,7 @@ Item {
         anchors.top: bar.bottom
         height: root.height - bar.contentHeight
         clip: true
+
 
         PropertyAnimation {
             id: fadeIn

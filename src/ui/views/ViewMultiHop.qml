@@ -14,7 +14,9 @@ StackView {
     id: multiHopStackView
 
     initialItem: VPNFlickable {
+
         id: vpnFlickable
+
         flickContentHeight: col.implicitHeight + col.y + Theme.windowMargin
         windowHeightExceedsContentHeight: parent.height > flickContentHeight
         contentHeight: flickContentHeight
@@ -47,15 +49,14 @@ StackView {
                 showMultiHopRecentConnections: true
             }
 
-
             VPNControllerNav {
                 function handleClick() {
                     multiHopStackView.push(
                         "../components/VPNServerList.qml",
                         {
-                                    currentServer: entryLabel.serversList[0],
-                                    showRecentConnections: false
-                                }
+                            currentServer: entryLabel.serversList[0],
+                            showRecentConnections: false
+                        }
                     );
                     menu.title =  titleText;
                 }
@@ -67,13 +68,13 @@ StackView {
                     VPNServerLabel {
                         id: entryLabel
 
-                        // MULTIHOP TODO - Replace with real thing
                         serversList: [
+                            // Multi-hop TODO : What to do when there is no entry server.
                             {
-                                countryCode: typeof(VPNCurrentServer.entryCountryCode) !== 'undefined' ? VPNCurrentServer.entryCountryCode : "" ,
-                                localizedCityName: typeof(VPNCurrentServer.localizedEntryCity) !== 'undefined' ? VPNCurrentServer.localizedEntryCity : "",
-                                cityName: typeof(VPNCurrentServer.entryCityName) !== "undefined" ? VPNCurrentServer.entryCityName : "",
-                                selectWhichHop: "multiHopEntry"
+                                countryCode: typeof(serversTabs.multiHopEntryServer[0]) !== "undefined" ? serversTabs.multiHopEntryServer[0] : "",
+                                cityName: typeof(serversTabs.multiHopEntryServer[1]) !== "undefined" ? serversTabs.multiHopEntryServer[1] : "",
+                                localizedCityName: typeof(serversTabs.multiHopEntryServer[2]) !== 'undefined' ? serversTabs.multiHopEntryServer[2] : "",
+                                whichHop: "multiHopEntryServer"
                             }
                         ]
                     }
@@ -84,9 +85,10 @@ StackView {
                 function handleClick() {
                     multiHopStackView.push("../components/VPNServerList.qml",
                        {
-                           currentServer:  exitLabel.serversList[0],
-                                               showRecentConnections: false
+                            currentServer:  exitLabel.serversList[0],
+                            showRecentConnections: false
                        });
+
                     menu.title = titleText;
                 }
 
@@ -98,11 +100,12 @@ StackView {
                     VPNServerLabel {
                         id: exitLabel
                         serversList: [
+
                             {
-                                countryCode: VPNCurrentServer.exitCountryCode,
-                                localizedCityName : VPNCurrentServer.localizedCityName,
-                                cityName: VPNCurrentServer.exitCityName,
-                                selectWhichHop: "multiHopExit"
+                                countryCode: serversTabs.multiHopExitServer[0],
+                                cityName: serversTabs.multiHopExitServer[1],
+                                localizedCityName : serversTabs.multiHopExitServer[2],
+                                whichHop: "multiHopExitServer"
                             }
                         ]
                     }

@@ -162,11 +162,12 @@ VPNClickableRow {
             id: citiesRepeater
             model: cities
             delegate: VPNRadioDelegate {
+                property string _cityName: modelData[0]
+                property string _localizedCityName: modelData[1]
+                property string _countryCode: code
                 id: del
-                objectName: "serverCity-" + modelData[0].replace(/ /g, '_')
-
+                objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
                 activeFocusOnTab: cityListVisible
-
                 Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
                 Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
 
@@ -175,28 +176,16 @@ VPNClickableRow {
                 radioButtonLabelText: modelData[1]
                 accessibleName: modelData[1]
                 onClicked: {
-
-                    switch(focusScope.currentServer.selectWhichHop) {
-
-                    case ("multiHopExit"):
-                        VPNController.changeServer(code, modelData[0], VPNCurrentServer.entryCountryCode, VPNCurrentServer.entryCityName);
-                        break;
-                    case ("multiHopEntry"):
-                        VPNController.changeServer(VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName, code, modelData[0])
-                        break;
-                    default: // singleHop
-                        VPNController.changeServer(code, modelData[0])
-                        break;
+                    if (currentServer.whichHop === "singleHopServer") {
+                        VPNController.changeServer(code, del._cityName);
+                        return stackview.pop();
                     }
 
-                    if (typeof(multiHopStackView) !== "undefined" && multiHopStackView.depth > 1) {
-                        return multiHopStackView.pop();
-                    }
-
-                    stackview.pop();
+                    serversTabs[currentServer.whichHop] = [del._countryCode,  del._cityName, del._localizedCityName] // [countryCode, cityName, localizedCityName]
+                    multiHopStackView.pop()
                 }
                 height: 54
-                checked: code === focusScope.currentServer.countryCode && modelData[0] === focusScope.currentServer.cityName
+                checked: del._countryCode === focusScope.currentServer.countryCode &&  del._cityName === focusScope.currentServer.cityName
                 isHoverable: cityListVisible
                 enabled: cityListVisible
                 Component.onCompleted: {
