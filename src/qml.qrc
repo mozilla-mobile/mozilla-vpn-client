@@ -335,15 +335,23 @@
         <file>ui/resources/delete.svg</file>
         <file>ui/resources/devices.svg</file>
         <file>ui/resources/back.svg</file>
+        <file>ui/resources/back-dark.svg</file>
         <file>ui/resources/settings.svg</file>
         <file>ui/resources/logo.svg</file>
         <file>ui/resources/chevron.svg</file>
         <file>ui/resources/chevron-right-dark.svg</file>
+        <file>ui/resources/chevron-purple.svg</file>
         <file>ui/resources/close-white.svg</file>
+        <file>ui/resources/close-dark.svg</file>
+        <file>ui/resources/close-darker.svg</file>
         <file>ui/resources/externalLink.svg</file>
         <file>ui/resources/arrow-forward.svg</file>
+        <file>ui/resources/arrow-forward-white.svg</file>
         <file>ui/resources/arrow-toggle.svg</file>
         <file>ui/resources/connection.svg</file>
+        <file>ui/resources/magic-dark.svg</file>
+        <file>ui/resources/magic-purple.svg</file>
+        <file>ui/resources/gift-dark.svg</file>
         <file>ui/resources/onboarding/onboarding1.svg</file>
         <file>ui/resources/onboarding/onboarding4.svg</file>
         <file>ui/resources/onboarding/onboarding3.svg</file>
@@ -374,7 +382,7 @@
         <file>ui/resources/warning-white.svg</file>
         <file>ui/resources/connection-info-dark.svg</file>
         <file>ui/resources/down.svg</file>
-        <file>ui/resources/close-dark.svg</file>
+        <file>ui/resources/location-dark.svg</file>
         <file>ui/resources/logo-on.svg</file>
         <file>ui/resources/logo-on.png</file>
         <file>ui/resources/logo-animated1.svg</file>
@@ -466,7 +474,15 @@
         <file>ui/components/VPNServerLabel.qml</file>
         <file>ui/components/VPNTabNavigation.qml</file>
         <file>ui/resources/encodedPassword.txt</file>
+        <file>ui/components/VPNFeatureTour.qml</file>
+        <file>ui/components/VPNPopup.qml</file>
+        <file>ui/settings/ViewWhatsNew.qml</file>
+        <file>ui/resources/features/custom-dns-preview.png</file>
+        <file>ui/resources/features/features-tour-hero.png</file>
+        <file>ui/resources/features/multi-hop-preview.png</file>
+        <file>ui/resources/features/support-form-preview.png</file>
         <file>ui/developerMenu/ViewFeatureList.qml</file>
+        <file>ui/components/VPNFeatureTourPopup.qml</file>
         <file>ui/components/VPNViewDNSSettings.qml</file>
     </qresource>
 </RCC>

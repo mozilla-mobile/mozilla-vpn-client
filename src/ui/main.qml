@@ -336,13 +336,61 @@ Window {
         }
     }
 
+    VPNSystemAlert {
+    }
+
+    VPNFilterProxyModel {
+        id: newFeaturesModel
+        source: VPNFeatureList
+        // Filter features that should be listed in What’s new
+        filterCallback: feature => showFeatureInWhatsNew(feature)
+    }
+
+    VPNFilterProxyModel {
+        id: unseenFeaturesModel
+        source: VPNFeatureList
+        // Filter seen features for showing the What’s new indicator
+        filterCallback: feature => {
+            const isFeatureSeen = VPNSettings.seenFeatures.includes(feature.id);
+            return showFeatureInWhatsNew(feature) && !isFeatureSeen;
+        }
+    }
+
+    function showFeatureInWhatsNew(feature) {
+        return feature.isNew           // new feature in this release
+            && feature.isMajor         // a feature we would like to show
+            && feature.supported;      // feature is supported on platform
+    }
+
+    VPNFeatureTourPopup {
+        id: featureTourPopup
+
+        Component.onCompleted: {
+            featureTourPopup.handleShowTour();
+        }
+
+        function handleShowTour(tourShown) {
+            if(VPN.state === VPN.StateMain
+                && newFeaturesModel.rowCount() > 0
+                && !tourShown
+            ) {
+                featureTourPopup.openTour();
+            }
+        }
+    }
+
     Connections {
         target: VPNSettings
         function onGleanEnabledChanged() {
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }
-    }
 
-    VPNSystemAlert {
+        function onFeaturesTourShownChanged(tourShown) {
+            featureTourPopup.handleShowTour(tourShown);
+        }
+
+        function onSeenFeaturesChanged() {
+            unseenFeaturesModel.invalidate();
+        }
     }
 }

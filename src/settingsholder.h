@@ -39,6 +39,10 @@ class SettingsHolder final : public QObject {
                  NOTIFY developerUnlockChanged)
   Q_PROPERTY(bool stagingServer READ stagingServer WRITE setStagingServer NOTIFY
                  stagingServerChanged)
+  Q_PROPERTY(QStringList seenFeatures READ seenFeatures WRITE setSeenFeatures
+                 NOTIFY seenFeaturesChanged)
+  Q_PROPERTY(bool featuresTourShown READ featuresTourShown WRITE
+                 setFeaturesTourShown NOTIFY featuresTourShownChanged)
   Q_PROPERTY(int dnsProvider READ dnsProvider WRITE setDNSProvider NOTIFY
                  dnsProviderChanged)
   Q_PROPERTY(
@@ -126,8 +130,10 @@ class SettingsHolder final : public QObject {
          setServerSwitchNotification);
   GETSET(bool, hasConnectionChangeNotification, connectionChangeNotification,
          setConnectionChangeNotification);
+  GETSET(bool, hasFeaturesTourShown, featuresTourShown, setFeaturesTourShown);
 
   GETSET(QStringList, hasMissingApps, missingApps, setMissingApps)
+  GETSET(QStringList, hasSeenFeatures, seenFeatures, setSeenFeatures)
   GETSET(QStringList, hasDevModeFeatureFlags, devModeFeatureFlags,
          setDevModeFeatureFlags);
   GETSET(QStringList, hasRecentConnections, recentConnections,
@@ -145,6 +151,9 @@ class SettingsHolder final : public QObject {
   void removeDevModeFeatureFlag(const QString& featureID);
 
   void addConsumedSurvey(const QString& surveyId);
+
+  Q_INVOKABLE void addSeenFeature(const QString& featureID);
+
   void removeEntryServer();
 
 #ifdef MVPN_IOS
@@ -187,6 +196,8 @@ class SettingsHolder final : public QObject {
   void connectionChangeNotificationChanged(bool value);
   void developerUnlockChanged(bool value);
   void stagingServerChanged(bool value);
+  void seenFeaturesChanged(const QStringList& featureIDs);
+  void featuresTourShownChanged(bool value);
   void devModeFeatureFlagsChanged(const QStringList& featureIDs);
   void entryServerCountryCodeChanged(const QString& value);
   void entryServerCityChanged(const QString& value);
