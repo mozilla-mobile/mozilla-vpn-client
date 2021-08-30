@@ -10,13 +10,15 @@ import "../themes/themes.js" as Theme
 Popup {
     id: popup
 
+    property int maxWidth: ({})
+
     closePolicy: Popup.CloseOnEscape
     enabled: true
     focus: true
     modal: true
-    width: parent.width
-    leftInset: Theme.windowMargin
-    rightInset: Theme.windowMargin
+    implicitWidth: parent.width
+    leftInset: maxWidth && maxWidth < window.width ? (window.width - maxWidth) / 2 : Theme.windowMargin
+    rightInset: maxWidth && maxWidth < window.width ? (window.width - maxWidth) / 2 : Theme.windowMargin
     horizontalPadding: Theme.popupMargin + popup.leftInset
     bottomPadding: Theme.popupMargin
     topPadding: Theme.popupMargin * 2

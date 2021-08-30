@@ -126,16 +126,17 @@ Item {
                     spacing: Theme.listSpacing
 
                     Item {
-                        height: parent.width * 0.475
-                        width: parent.width
+                        Layout.preferredHeight: parent.width * 0.475
+                        Layout.preferredWidth: parent.width
 
                         Image {
                             anchors.fill: parent
                             source: featureImagePath
                             fillMode: Image.PreserveAspectFit
 
-                            Layout.alignment: Qt.AlignHCenter
-                            Layout.bottomMargin: tour.state === "tour-start" ? Theme.listSpacing : Theme.listSpacing * 0.25
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: tour.state === "tour-start" ? Theme.listSpacing * 0.5 : Theme.listSpacing * 0.25
                         }
                     }
 

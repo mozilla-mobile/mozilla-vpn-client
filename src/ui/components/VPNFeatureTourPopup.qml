@@ -5,6 +5,7 @@ import "../themes/themes.js" as Theme
 VPNPopup {
     id: root
 
+    maxWidth: Theme.desktopAppWidth
     topMargin: Theme.windowMargin * 2
     contentItem: VPNFeatureTour {
         id: featureTour

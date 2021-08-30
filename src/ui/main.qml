@@ -393,17 +393,4 @@ Window {
             unseenFeaturesModel.invalidate();
         }
     }
-
-    // TODO: Remove — just for debugging/reviewing
-    // Button {
-    //     anchors.bottom: parent.bottom
-    //     anchors.bottomMargin: 16
-    //     anchors.horizontalCenter: parent.horizontalCenter
-
-    //     text: "Reset What’s new"
-    //     onClicked: {
-    //         VPNSettings.featuresTourShown = false;
-    //         VPNSettings.seenFeatures = [];
-    //     }
-    // }
 }
