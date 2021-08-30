@@ -12,6 +12,7 @@ Item {
     property alias title: title.text
     property alias rightTitle: rightTitle.text
     property bool isSettingsView: false
+    property bool isMultiHopView: false
     property bool isMainView: false
     property bool accessibleIgnored: false
     property bool btnDisabled: false
@@ -47,7 +48,7 @@ Item {
 
         skipEnsureVisible: true // prevents scrolling of lists when this is focused
 
-        onClicked: isMainView ? mainStackView.pop() : (isSettingsView ? settingsStackView.pop() : stackview.pop())
+        onClicked: isMultiHopView? handleMultiHopNav() : isMainView ? mainStackView.pop() : (isSettingsView ? settingsStackView.pop() : stackview.pop())
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2

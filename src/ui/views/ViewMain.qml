@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtGraphicalEffects 1.14
@@ -81,15 +80,16 @@ VPNFlickable {
 
         VPNControllerView {
             id: box
-
         }
 
         VPNControllerNav {
             function handleClick() {
+                if (disableRowWhen) {
+                    return
+                }
+
                 stackview.push("ViewServers.qml")
             }
-
-            Layout.topMargin: 12
 
             id: serverInfo
             objectName: "serverListButton"
@@ -97,13 +97,36 @@ VPNFlickable {
             //% "Select location"
             //: Select the Location of the VPN server
             titleText: qsTrId("vpn.servers.selectLocation")
-            //% "current location - %1"
-            //: Accessibility description for current location of the VPN server
-            descriptionText: qsTrId("vpn.servers.currentLocation").arg(VPNCurrentServer.localizedCityName)
 
             subtitleText: VPNCurrentServer.localizedCityName
-            imgSource:  "../resources/flags/" + VPNCurrentServer.exitCountryCode.toUpperCase() + ".png"
-            disableRowWhen: (VPNController.state !== VPNController.StateOn && VPNController.state !== VPNController.StateOff) || box.connectionInfoVisible
+
+            //% "current location - %1"
+            //: Accessibility description for current location of the VPN server
+            descriptionText: qsTrId("vpn.servers.currentLocation").arg(
+                                 VPNCurrentServer.localizedCityName)
+
+            disableRowWhen: (VPNController.state !== VPNController.StateOn
+                             && VPNController.state !== VPNController.StateOff)
+                            || box.connectionInfoVisible
+            Layout.topMargin: 12
+            contentChildren: [
+
+                VPNServerLabel {
+                    id: selectLocationLabel
+                    serversList: [
+                        {
+                            countryCode: typeof(VPNCurrentServer.entryCountryCode) !== 'undefined' ? VPNCurrentServer.entryCountryCode : "" ,
+                            localizedCityName: typeof(VPNCurrentServer.localizedEntryCity) !== 'undefined' ? VPNCurrentServer.localizedEntryCity : "",
+                            cityName: typeof(VPNCurrentServer.entryCityName) !== "undefined" ? VPNCurrentServer.entryCityName : ""
+                        },
+                        {
+                         countryCode: VPNCurrentServer.exitCountryCode,
+                         localizedCityName: VPNCurrentServer.localizedCityName,
+                         cityName: VPNCurrentServer.exitCityName
+                        }
+                    ]
+                }
+            ]
         }
 
         VPNControllerNav {
@@ -114,15 +137,28 @@ VPNFlickable {
             Layout.topMargin: 6
 
             objectName: "deviceListButton"
-            //% "%1 of %2"
-            //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
-            subtitleText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + (VPN.state !== VPN.StateDeviceLimit ? 0 : 1)).arg(VPNUser.maxDevices)
-            imgSource: "../resources/devices.svg"
-            imgIsVector: true
-            imgSize: 24
             //% "My devices"
             titleText: qsTrId("vpn.devices.myDevices")
             disableRowWhen: box.connectionInfoVisible
+            contentChildren: [
+                VPNIcon {
+                    source: "../resources/devices.svg"
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
+                },
+
+                VPNLightLabel {
+                    id: serverLocation
+                    Accessible.ignored: true
+                    Layout.alignment: Qt.AlignLeft
+                    elide: Text.ElideRight
+                    //% "%1 of %2"
+                    //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
+                    text: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(
+                              VPNDeviceModel.activeDevices
+                              + (VPN.state !== VPN.StateDeviceLimit ? 0 : 1)).arg(
+                              VPNUser.maxDevices)
+                }
+            ]
         }
 
         VPNVerticalSpacer {
