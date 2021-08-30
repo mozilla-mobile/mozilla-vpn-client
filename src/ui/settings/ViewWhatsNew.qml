@@ -20,7 +20,7 @@ Item {
         id: menu
         objectName: "settingsWhatsNew"
 
-        title: "What’s new"
+        title: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourPageHeader)
         isSettingsView: true
     }
 
