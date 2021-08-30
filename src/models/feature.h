@@ -17,6 +17,7 @@ class Feature : public QObject {
   Q_PROPERTY(QString id MEMBER m_id CONSTANT)
   Q_PROPERTY(QString name MEMBER m_name CONSTANT)
   Q_PROPERTY(bool isMajorFeature MEMBER m_majorFeature CONSTANT)
+  Q_PROPERTY(QString displayName READ displayName CONSTANT)
   Q_PROPERTY(QString shortDescription READ shortDescription CONSTANT)
   Q_PROPERTY(QString description READ description CONSTANT)
   Q_PROPERTY(QString imagePath MEMBER m_imagePath CONSTANT)
@@ -29,9 +30,10 @@ class Feature : public QObject {
   // protected:
  public:
   Feature(const QString& id, const QString& name, bool isMajor,
-          L18nStrings::String shortDesc_id, L18nStrings::String desc_id,
-          const QString& imgPath, const QString& iconPath,
-          const QString& releaseVersion, bool devModeWriteable = false);
+          L18nStrings::String displayName_id, L18nStrings::String shortDesc_id,
+          L18nStrings::String desc_id, const QString& imgPath,
+          const QString& iconPath, const QString& releaseVersion,
+          bool devModeWriteable = false);
 
  public:
   virtual ~Feature() = default;
@@ -50,6 +52,7 @@ class Feature : public QObject {
   // Returns true if it was enabled via DevMode
   bool isDevModeEnabled() const;
 
+  QString displayName() const;
   QString description() const;
   QString shortDescription() const;
 
@@ -60,6 +63,7 @@ class Feature : public QObject {
   enum ModelRoles {
     RoleId,
     RoleName,
+    RoleDisplayName,
     RoleDescription,
     RoleShortDescription,
     RoleImagePath,
@@ -67,6 +71,7 @@ class Feature : public QObject {
     RoleReleased,
     RoleSupported,
     RoleNew,
+    RoleMajor,
     RoleDevModeWriteable,
     RoleDevModeEnabled
   };
@@ -93,6 +98,8 @@ class Feature : public QObject {
   // Major Features are shown at "Whats new"
   const bool m_majorFeature;
 
+  // Id for Display Name, used in the whats new list
+  const L18nStrings::String m_displayName_id;
   // Id for Short Description, used in the whats new list
   const L18nStrings::String m_shortDescription_id;
   // Id for Longer description, used in the whats new cards

@@ -8,6 +8,7 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
+import "../themes/colors.js" as Color
 
 import org.mozilla.Glean 0.15
 import telemetry 0.15
@@ -583,6 +584,52 @@ Item {
             id: settingsImage
 
             anchors.centerIn: settingsButton
+
+            Rectangle {
+                id: unseenFeaturesIndicator
+
+                states: [
+                    State {
+                        when: settingsButton.state === Theme.uiState.stateHovered
+
+                        PropertyChanges {
+                            target: unseenFeaturesIndicator
+                            border.color: settingsButton.buttonColorScheme.buttonHovered
+                        }
+                    },
+                    State {
+                        when: settingsButton.state === Theme.uiState.statePressed
+
+                        PropertyChanges {
+                            target: unseenFeaturesIndicator
+                            border.color: settingsButton.buttonColorScheme.buttonPressed
+                        }
+                    }
+                ]
+
+                transitions: [
+                    Transition {
+                        ColorAnimation {
+                            target: unseenFeaturesIndicator
+                            duration: 200
+                        }
+                    }
+                ]
+
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.topMargin: 1
+                anchors.rightMargin: 1
+                border {
+                    color: boxBackground.color
+                    width: 1
+                }
+                color: Color.error.default
+                height: Theme.listSpacing + border.width * 2
+                radius: width / 2
+                visible: unseenFeaturesModel.rowCount() > 0
+                width: Theme.listSpacing + border.width * 2
+            }
         }
 
         Component {

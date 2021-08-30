@@ -16,6 +16,7 @@ class FeatureUnsecuredNetworkNotification final : public Feature {
       : Feature(FEATURE_UNSECUREDNETWORKNOTIFICATION,
                 "Unsecured network notification",
                 false,               // Is Major Feature
+                L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath

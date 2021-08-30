@@ -17,6 +17,7 @@ QMap<QString, Feature*>* s_features = nullptr;
 }  // namespace
 
 Feature::Feature(const QString& id, const QString& name, bool isMajor,
+                 L18nStrings::String displayName_id,
                  L18nStrings::String shortDesc_id, L18nStrings::String desc_id,
                  const QString& imgPath, const QString& iconPath,
                  const QString& aReleaseVersion, bool devModeWriteable)
@@ -24,6 +25,7 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
       m_id(id),
       m_name(name),
       m_majorFeature(isMajor),
+      m_displayName_id(displayName_id),
       m_shortDescription_id(shortDesc_id),
       m_description_id(desc_id),
       m_imagePath(imgPath),
@@ -98,6 +100,9 @@ bool Feature::isSupported() const {
   return checkSupportCallback();
 }
 
+QString Feature::displayName() const {
+  return L18nStrings::instance()->tr(m_displayName_id);
+}
 QString Feature::description() const {
   return L18nStrings::instance()->tr(m_description_id);
 }
@@ -111,6 +116,8 @@ QVariant Feature::data(int role) const {
       return m_id;
     case RoleName:
       return m_name;
+    case RoleDisplayName:
+      return displayName();
     case RoleDescription:
       return description();
     case RoleShortDescription:
@@ -129,6 +136,8 @@ QVariant Feature::data(int role) const {
       return isDevModeEnabled();
     case RoleNew:
       return m_new;
+    case RoleMajor:
+      return m_majorFeature;
     default:
       return QVariant();
   }
@@ -139,12 +148,14 @@ QHash<int, QByteArray> Feature::roleNames() {
   // and just get this via the Q_metaobject
   return QHash<int, QByteArray>({{RoleId, "id"},
                                  {RoleName, "name"},
+                                 {RoleDisplayName, "displayName"},
                                  {RoleDescription, "description"},
                                  {RoleShortDescription, "shortDescription"},
                                  {RoleImagePath, "imagePath"},
                                  {RoleIconPath, "iconPath"},
                                  {RoleReleased, "featureReleased"},
                                  {RoleNew, "isNew"},
+                                 {RoleMajor, "isMajor"},
                                  {RoleSupported, "supported"},
                                  {RoleDevModeWriteable, "devModeWriteable"},
                                  {RoleDevModeEnabled, "devModeEnabled"}});

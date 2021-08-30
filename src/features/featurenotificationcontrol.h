@@ -14,6 +14,7 @@ class FeatureNotificationControl final : public Feature {
   FeatureNotificationControl()
       : Feature(FEATURE_NOTIFICATION_CONTROL, "Notification control",
                 false,               // Is Major Feature
+                L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath
