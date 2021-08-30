@@ -14,6 +14,7 @@ class FeatureAppReview : public Feature {
   FeatureAppReview()
       : Feature(FEATURE_APPREVIEW, "App Review",
                 false,               // Is Major Feature
+                L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath

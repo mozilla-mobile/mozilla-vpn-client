@@ -14,6 +14,7 @@ class FeatureStartOnBoot final : public Feature {
   FeatureStartOnBoot()
       : Feature(FEATURE_STARTONBOOT, "Start on boot",
                 false,               // Is Major Feature
+                L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath

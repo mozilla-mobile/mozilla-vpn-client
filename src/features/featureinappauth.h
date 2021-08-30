@@ -14,6 +14,7 @@ class FeatureInAppAuth final : public Feature {
   FeatureInAppAuth()
       : Feature(FEATURE_IN_APP_AUTH, "In app authentication",
                 false,               // Is Major Feature
+                L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath

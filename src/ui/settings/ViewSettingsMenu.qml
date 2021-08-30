@@ -96,7 +96,6 @@ VPNFlickable {
         }
     }
 
-
     ColumnLayout {
         id: settingsList
 
@@ -105,7 +104,15 @@ VPNFlickable {
                               manageAccountButton.y + manageAccountButton.height)
         width: parent.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
+        VPNSettingsItem {
+            objectName: "settingsWhatsNew"
 
+            settingTitle: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourPageHeader)
+            imageLeftSrc: "../resources/gift-dark.svg"
+            imageRightSrc: "../resources/chevron.svg"
+            onClicked: settingsStackView.push("../settings/ViewWhatsNew.qml")
+            showIndicator: unseenFeaturesModel.rowCount() > 0
+        }
         VPNSettingsItem {
             objectName: "settingsNetworking"
 
@@ -191,5 +198,4 @@ VPNFlickable {
         objectName: "settingsLogout"
         onClicked: VPNController.logout()
     }
-
 }
