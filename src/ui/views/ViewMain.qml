@@ -99,10 +99,12 @@ VPNFlickable {
             titleText: qsTrId("vpn.servers.selectLocation")
 
             subtitleText: VPNCurrentServer.localizedCityName
+
             //% "current location - %1"
             //: Accessibility description for current location of the VPN server
             descriptionText: qsTrId("vpn.servers.currentLocation").arg(
                                  VPNCurrentServer.localizedCityName)
+
             disableRowWhen: (VPNController.state !== VPNController.StateOn
                              && VPNController.state !== VPNController.StateOff)
                             || box.connectionInfoVisible
@@ -149,6 +151,7 @@ VPNFlickable {
                     Accessible.ignored: true
                     Layout.alignment: Qt.AlignLeft
                     elide: Text.ElideRight
+                    //% "%1 of %2"
                     //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
                     text: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(
                               VPNDeviceModel.activeDevices
