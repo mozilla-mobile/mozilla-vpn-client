@@ -346,7 +346,13 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "connected") {
-    emit connected();
+    int hopindex = obj.value("hopindex").toInt(0);
+    if (hopindex != 0) {
+      logger.debug() << "hopindex" << hopindex << "connected";
+      return;
+    } else {
+      emit connected();
+    }
     return;
   }
 
