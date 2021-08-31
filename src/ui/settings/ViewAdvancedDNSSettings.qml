@@ -101,6 +101,11 @@ Item {
             }
 
         ]
+        Component.onCompleted: {
+            if (VPNSettings.dnsProvider !== VPNSettings.Gateway) {
+                return tabs.setCurrentTabIndex(1)
+            }
+        }
     }
 }
 
