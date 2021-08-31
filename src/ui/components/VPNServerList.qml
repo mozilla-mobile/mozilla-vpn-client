@@ -16,7 +16,6 @@ import "../themes/colors.js" as Color
 FocusScope {
     id: focusScope
 
-    property var lastFocusedItemIdx
     property real listOffset: (56 * 2)
     property bool showRecentConnections: false
     property var currentServer
@@ -58,7 +57,6 @@ FocusScope {
 
     Layout.fillWidth: true
     Layout.fillHeight: true
-    onActiveFocusChanged: if (focus) serverSearchInput.forceActiveFocus()
     Accessible.name: menu.title
     Accessible.role: Accessible.List
 
@@ -110,6 +108,7 @@ FocusScope {
                 }
                 placeholderText: VPNl18n.tr(VPNl18n.ServersViewSearchPlaceholder)
                 hasError: countriesRepeater.count === 0
+                Keys.onDownPressed: recentConnections.visible ? recentConnections.focusItemAt(0) : countriesRepeater.itemAt(0).forceActiveFocus()
 
                 RowLayout {
                     id: searchWarning
