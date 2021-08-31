@@ -398,7 +398,8 @@ Window {
         Repeater {
             model: VPNWhatsNewModel
             delegate: Button {
-                text: "Whats" + displayName
+                // text: isSupported ? "Feature supported" :  "Feature not supported"
+                text: isSupported ? "Feature: " + displayName + " supported" : "Feature: " + displayName + " not supported"
             }
         }
     }

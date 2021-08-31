@@ -22,7 +22,11 @@ namespace {
 Logger logger(LOG_MODEL, "WhatsNewModel");
 }
 
-WhatsNewModel::WhatsNewModel() { MVPN_COUNT_CTOR(WhatsNewModel); }
+WhatsNewModel::WhatsNewModel() {
+  MVPN_COUNT_CTOR(WhatsNewModel);
+
+  WhatsNewModel::getNewFeatures();
+}
 
 WhatsNewModel::~WhatsNewModel() { MVPN_COUNT_DTOR(WhatsNewModel); }
 
@@ -52,8 +56,7 @@ QHash<int, QByteArray> WhatsNewModel::roleNames() const {
 }
 
 int WhatsNewModel::rowCount(const QModelIndex&) const {
-  // return m_featurelist.count();
-  return 10;
+  return m_featurelist.count();
 }
 
 QVariant WhatsNewModel::data(const QModelIndex& index, int role) const {
@@ -65,7 +68,7 @@ QVariant WhatsNewModel::data(const QModelIndex& index, int role) const {
     case NameRole:
       return QVariant(m_featurelist.at(index.row())->displayName());
     case DisplayNameRole:
-      return QVariant("test");
+      return QVariant(m_featurelist.at(index.row())->displayName());
     case IsSupportedRole:
       return QVariant(m_featurelist.at(index.row())->isSupported());
 
@@ -92,13 +95,13 @@ void WhatsNewModel::getNewFeatures() {
 
   for (int i = 0; i < m_featurelist.count(); ++i) {
     // qDebug() << m_featurelist[i];
-    qDebug() << m_featurelist[i]->isNew();
-    qDebug() << m_featurelist[i]->isSupported();
-    qDebug() << m_featurelist[i]->isMajor();
+    // qDebug() << m_featurelist[i]->isNew();
+    // qDebug() << m_featurelist[i]->isSupported();
+    // qDebug() << m_featurelist[i]->isMajor();
 
-    // if (!m_featurelist[i]->isNew() || !m_featurelist[i]->isSupported() ||
-    //     !m_featurelist[i]->isMajor()) {
-    //   m_featurelist.removeAt(i);
-    // }
+    if (!m_featurelist[i]->isNew() || !m_featurelist[i]->isSupported() ||
+        !m_featurelist[i]->isMajor()) {
+      m_featurelist.removeAt(i);
+    }
   }
 }
