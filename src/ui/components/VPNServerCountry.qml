@@ -13,14 +13,16 @@ VPNClickableRow {
     id: serverCountry
     objectName: "serverCountry-" + code
 
-    property bool cityListVisible: (code === VPNCurrentServer.exitCountryCode)
+    property bool cityListVisible: (code === focusScope.currentServer.countryCode)
+    property real multiHopMenuHeight: VPNFeatureList.get("multiHop").isSupported ? 56 : 0
     property real animationDuration: 200 + (citiesRepeater.count * 25)
+    property string _countryCode: code
     property var currentCityIndex
     property alias serverCountryName: countryName.text
 
     function openCityList() {
         cityListVisible = !cityListVisible;
-        const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y;
+        const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y - multiHopMenuHeight;
         const listScrollPosition = vpnFlickable.contentY
 
         if (itemDistanceFromWindowTop + cityList.height < vpnFlickable.height || !cityListVisible) {
@@ -42,7 +44,7 @@ VPNClickableRow {
     Keys.onUpPressed: countriesRepeater.itemAt(index - 1) ? countriesRepeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
     Keys.onBacktabPressed: {
         focusScope.lastFocusedItemIdx = index;
-        menu.forceActiveFocus();
+        serverSearchInput.forceActiveFocus();
     }
 
     state: cityListVisible ? "listOpen" : "listClosed"
@@ -160,11 +162,12 @@ VPNClickableRow {
             id: citiesRepeater
             model: cities
             delegate: VPNRadioDelegate {
+                property string _cityName: modelData[0]
+                property string _localizedCityName: modelData[1]
+                property string _countryCode: code
                 id: del
-                objectName: "serverCity-" + modelData[0].replace(/ /g, '_')
-
+                objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
                 activeFocusOnTab: cityListVisible
-
                 Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
                 Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
 
@@ -173,16 +176,21 @@ VPNClickableRow {
                 radioButtonLabelText: modelData[1]
                 accessibleName: modelData[1]
                 onClicked: {
-                    VPNController.changeServer(code, modelData[0]);
-                    stackview.pop();
+                    if (currentServer.whichHop === "singleHopServer") {
+                        VPNController.changeServer(code, del._cityName);
+                        return stackview.pop();
+                    }
+
+                    serversTabs[currentServer.whichHop] = [del._countryCode,  del._cityName, del._localizedCityName] // [countryCode, cityName, localizedCityName]
+                    multiHopStackView.pop()
                 }
                 height: 54
-                checked: code === VPNCurrentServer.exitCountryCode && modelData[0] === VPNCurrentServer.exitCityName
+                checked: del._countryCode === focusScope.currentServer.countryCode &&  del._cityName === focusScope.currentServer.cityName
                 isHoverable: cityListVisible
                 enabled: cityListVisible
                 Component.onCompleted: {
                     if (checked) {
-                        currentCityIndex = index
+                        currentCityIndex = index;
                     }
                 }
 

@@ -154,11 +154,12 @@ void AndroidIAPHandler::onSkuDetailsReceived(JNIEnv* env, jobject thiz,
     return;
   }
   QJsonArray products = obj["products"].toArray();
+  IAPHandler* iap = IAPHandler::instance();
   if (products.isEmpty()) {
     logger.error() << "onSkuDetailsRecieved - no products found.";
+    iap->stopProductsRegistration();
     return;
   }
-  IAPHandler* iap = IAPHandler::instance();
   static_cast<AndroidIAPHandler*>(iap)->updateProductsInfo(products);
   iap->productsRegistrationCompleted();
 }
@@ -213,8 +214,7 @@ void AndroidIAPHandler::onSkuDetailsFailed(JNIEnv* env, jobject thiz,
   logger.error() << "onSkuDetailsFailed"
                  << QJsonDocument(json).toJson(QJsonDocument::Compact);
   IAPHandler* iap = IAPHandler::instance();
-  iap->stopSubscription();
-  emit iap->subscriptionFailed();
+  iap->stopProductsRegistration();
 }
 
 // static
