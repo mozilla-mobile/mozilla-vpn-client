@@ -105,13 +105,26 @@ VPNFlickable {
         width: parent.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
         VPNSettingsItem {
+            id: settingsWhatsNew
             objectName: "settingsWhatsNew"
 
             settingTitle: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourPageHeader)
             imageLeftSrc: "../resources/gift-dark.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewWhatsNew.qml")
-            showIndicator: unseenFeaturesModel.rowCount() > 0
+            showIndicator: hasIndicator()
+
+            function hasIndicator() {
+                return unseenFeaturesModel.rowCount() > 0;
+            }
+
+            Connections {
+                target: VPNSettings
+
+                function onSeenFeaturesChanged() {
+                    settingsWhatsNew.showIndicator = settingsWhatsNew.hasIndicator();
+                }
+            }
         }
         VPNSettingsItem {
             objectName: "settingsNetworking"
