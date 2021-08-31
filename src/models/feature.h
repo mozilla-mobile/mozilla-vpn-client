@@ -52,6 +52,10 @@ class Feature : public QObject {
   // Returns true if it was enabled via DevMode
   bool isDevModeEnabled() const;
 
+  bool isNew() const;
+
+  bool isMajor() const;
+
   QString displayName() const;
   QString description() const;
   QString shortDescription() const;

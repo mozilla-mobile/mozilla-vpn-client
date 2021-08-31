@@ -394,6 +394,24 @@ Window {
         }
     }
 
+    Column {
+        Repeater {
+            model: VPNWhatsNewModel
+            delegate: Button {
+                text: "Whats" + displayName
+            }
+        }
+    }
+
+//    Column {
+//        Repeater {
+//            model: VPNDeviceModel
+//            delegate: Button {
+//                text: "device" + name
+//            }
+//        }
+//    }
+
     // TODO: Remove — just for debugging
     Button {
         anchors.bottom: parent.bottom
@@ -403,14 +421,14 @@ Window {
         text: "Reset What’s new"
         onClicked: {
             VPNSettings.featuresTourShown = false;
-            VPNSettings.seenFeatures = [];
+            // VPNSettings.seenFeatures = [];
 
             console.log(VPNWhatsNewModel);
             console.log(VPNWhatsNewModel.activeDevices);
             console.log(VPNWhatsNewModel.hasUnseenFeature);
             console.log(VPNWhatsNewModel.newFeatures);
-            console.log(VPNWhatsNewModel.doSomething());
             console.log(VPNWhatsNewModel.featureCount());
+            console.log(VPNWhatsNewModel.getNewFeatures());
         }
     }
 }
