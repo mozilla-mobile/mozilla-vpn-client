@@ -26,14 +26,6 @@ Item {
         }
     }
 
-    Component.onCompleted: {
-        tabButtonList.append({"buttonLabel":VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsDefaultToggle)})
-        tabButtonList.append({"buttonLabel":VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdvancedToggle)})
-
-
-
-    }
-
     VPNMenu {
         id: menu
         objectName: "settingsAdvancedDNSSettingsBackButton"
@@ -54,7 +46,15 @@ Item {
         height: root.height - menu.height
 
         tabList: ListModel {
-              id: tabButtonList
+            id: tabButtonList
+            ListElement {
+                tabLabelStringId: "CustomDNSSettingsDnsDefaultToggle"
+                tabButtonId: "tabDefault"
+            }
+            ListElement {
+                tabLabelStringId:"CustomDNSSettingsDnsAdvancedToggle"
+                tabButtonId: "tabAdvanced"
+            }
         }
 
         ButtonGroup {
