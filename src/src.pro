@@ -540,7 +540,7 @@ else:android {
 
     INCLUDEPATH += platforms/android
 
-    SOURCES +=  platforms/android/androidadjusthelper.cpp \
+    SOURCES +=  adjusthandler.cpp \
                 platforms/android/androidauthenticationlistener.cpp \
                 platforms/android/androidcontroller.cpp \
                 platforms/android/androidiaphandler.cpp \
@@ -554,7 +554,7 @@ else:android {
                 platforms/android/androidsharedprefs.cpp \
                 tasks/authenticate/desktopauthenticationlistener.cpp
 
-    HEADERS +=  platforms/android/androidadjusthelper.h \
+    HEADERS +=  adjusthandler.h \
                 platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
                 platforms/android/androidiaphandler.h \
@@ -732,6 +732,7 @@ else:ios {
             platforms/macos/macospingsender.cpp
 
     OBJECTIVE_SOURCES += \
+            adjusthandler.cpp \
             platforms/ios/iosiaphandler.mm \
             platforms/ios/iosadjusthelper.mm \
             platforms/ios/iosauthenticationlistener.mm \
@@ -746,6 +747,7 @@ else:ios {
             platforms/macos/macospingsender.h
 
     OBJECTIVE_HEADERS += \
+            adjusthandler.h \
             platforms/ios/iosiaphandler.h \
             platforms/ios/iosadjusthelper.h \
             platforms/ios/iosauthenticationlistener.h \

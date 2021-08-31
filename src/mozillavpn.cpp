@@ -87,7 +87,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   logger.debug() << "Creating MozillaVPN singleton";
 
-#ifdef MVPN_IOS || MVPN_ANDROID
+#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
   AdjustHandler::initialize();
 #endif
 
@@ -1310,7 +1310,7 @@ void MozillaVPN::subscriptionCompleted() {
   }
 
   logger.debug() << "Subscription completed";
-#ifdef MVPN_IOS || MVPN_ANDROID
+#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
   AdjustHandler::trackEvent("subscriptionCompleted");
 #endif
   completeActivation();
