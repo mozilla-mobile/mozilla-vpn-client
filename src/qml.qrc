@@ -487,8 +487,5 @@
         <file>ui/views/ViewMultiHop.qml</file>
         <file>ui/components/VPNServerList.qml</file>
         <file>ui/components/VPNRecentConnections.qml</file>
-        <file>ui/components/VPNCollapsibleCard.qml</file>
-        <file>ui/resources/tip.svg</file>
-        <file>ui/resources/chevron-right-dark.svg</file>
     </qresource>
 </RCC>
