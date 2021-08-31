@@ -369,10 +369,10 @@ Window {
             featureTourPopup.handleShowTour();
         }
 
-        function handleShowTour(tourShown) {
+        function handleShowTour() {
             if(VPN.state === VPN.StateMain
+                && !VPNSettings.featuresTourShown
                 && newFeaturesModel.rowCount() > 0
-                && !tourShown
             ) {
                 featureTourPopup.openTour();
             }
@@ -385,8 +385,8 @@ Window {
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }
 
-        function onFeaturesTourShownChanged(tourShown) {
-            featureTourPopup.handleShowTour(tourShown);
+        function onFeaturesTourShownChanged() {
+            featureTourPopup.handleShowTour();
         }
 
         function onSeenFeaturesChanged() {
