@@ -116,6 +116,9 @@ FocusScope {
                     anchors.top: serverSearchInput.bottom
                     anchors.topMargin: Theme.listSpacing
                     visible: serverSearchInput.hasError
+                    width: parent.width
+                    spacing: Theme.windowMargin / 2
+
 
                     VPNIcon {
                         id: warningIcon
@@ -123,6 +126,8 @@ FocusScope {
                         source: "../resources/warning.svg"
                         sourceSize.height: 14
                         sourceSize.width: 14
+                        Layout.alignment: Qt.AlignTop
+                        Layout.topMargin: Theme.windowMargin / 4
                     }
 
                     VPNInterLabel {
@@ -130,6 +135,10 @@ FocusScope {
                         color: Color.error.default
                         text: VPNl18n.tr(VPNl18n.ServersViewSearchNoResultsLabel)
                         font.pixelSize: Theme.fontSizeSmall
+                        width: undefined
+                        Layout.fillWidth: true
+                        wrapMode: Text.WordWrap
+                        horizontalAlignment: Text.AlignLeft
                     }
                 }
             }
