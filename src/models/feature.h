@@ -56,10 +56,12 @@ class Feature : public QObject {
 
   bool isMajor() const;
 
+  QString id() const { return m_id; };
   QString displayName() const;
   QString description() const;
   QString shortDescription() const;
-  QString id() const { return m_id; };
+  QString imagePath() const { return m_imagePath; };
+  QString iconPath() const { return m_iconPath; };
 
   // For use in QAbstractListModel
   static QHash<int, QByteArray> roleNames();

@@ -25,9 +25,12 @@ class WhatsNewModel final : public QAbstractListModel {
   ~WhatsNewModel();
 
   enum ModelRoles {
-    RoleName,
     RoleId,
     RoleDisplayName,
+    RoleDescription,
+    RoleShortDescription,
+    RoleImagePath,
+    RoleIconPath,
   };
 
   const QList<Feature*>& features() const { return m_featurelist; }

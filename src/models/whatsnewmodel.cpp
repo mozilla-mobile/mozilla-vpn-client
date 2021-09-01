@@ -38,7 +38,11 @@ int WhatsNewModel::featureCount() {
 QHash<int, QByteArray> WhatsNewModel::roleNames() const {
   QHash<int, QByteArray> roles;
   roles[RoleId] = "id";
-  roles[RoleName] = "name";
+  roles[RoleDisplayName] = "displayName";
+  roles[RoleDescription] = "description";
+  roles[RoleShortDescription] = "shortDescription";
+  roles[RoleImagePath] = "imagePath";
+  roles[RoleIconPath] = "iconPath";
 
   return roles;
 }
@@ -55,8 +59,16 @@ QVariant WhatsNewModel::data(const QModelIndex& index, int role) const {
   switch (role) {
     case RoleId:
       return QVariant(m_featurelist.at(index.row())->id());
-    case RoleName:
+    case RoleDisplayName:
       return QVariant(m_featurelist.at(index.row())->displayName());
+    case RoleDescription:
+      return QVariant(m_featurelist.at(index.row())->description());
+    case RoleShortDescription:
+      return QVariant(m_featurelist.at(index.row())->shortDescription());
+    case RoleImagePath:
+      return QVariant(m_featurelist.at(index.row())->imagePath());
+    case RoleIconPath:
+      return QVariant(m_featurelist.at(index.row())->iconPath());
     default:
       return QVariant();
   }

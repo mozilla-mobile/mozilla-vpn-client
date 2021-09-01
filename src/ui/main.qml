@@ -363,21 +363,6 @@ Window {
         }
     }
 
-    Column {
-        y: 50
-
-        Button {
-            text: VPNWhatsNewModel.hasUnseenFeature ? ":)" : ":("
-        }
-
-        Repeater {
-            model: VPNWhatsNewModel
-            delegate: Button {
-                text: id
-            }
-        }
-    }
-
     Button {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 16
