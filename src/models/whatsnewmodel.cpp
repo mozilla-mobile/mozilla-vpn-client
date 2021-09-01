@@ -25,7 +25,7 @@ Logger logger(LOG_MODEL, "WhatsNewModel");
 WhatsNewModel::WhatsNewModel() {
   MVPN_COUNT_CTOR(WhatsNewModel);
 
-  WhatsNewModel::getNewFeatures();
+  WhatsNewModel::setNewFeatures();
 }
 
 WhatsNewModel::~WhatsNewModel() { MVPN_COUNT_DTOR(WhatsNewModel); }
@@ -48,9 +48,9 @@ int WhatsNewModel::featureCount() {
 
 QHash<int, QByteArray> WhatsNewModel::roleNames() const {
   QHash<int, QByteArray> roles;
-  roles[NameRole] = "name";
-  roles[DisplayNameRole] = "displayName";
-  roles[IsSupportedRole] = "isSupported";
+  roles[RoleId] = "id";
+  roles[RoleName] = "name";
+  roles[RoleIsSupported] = "isSupported";
 
   return roles;
 }
@@ -65,11 +65,11 @@ QVariant WhatsNewModel::data(const QModelIndex& index, int role) const {
   }
 
   switch (role) {
-    case NameRole:
+    case RoleId:
+      return QVariant(m_featurelist.at(index.row())->id());
+    case RoleName:
       return QVariant(m_featurelist.at(index.row())->displayName());
-    case DisplayNameRole:
-      return QVariant(m_featurelist.at(index.row())->displayName());
-    case IsSupportedRole:
+    case RoleIsSupported:
       return QVariant(m_featurelist.at(index.row())->isSupported());
 
     default:
@@ -77,31 +77,19 @@ QVariant WhatsNewModel::data(const QModelIndex& index, int role) const {
   }
 }
 
-// Get new features
-// isNew
-// isSupported
-// isMajor
-void WhatsNewModel::getNewFeatures() {
-  m_featurelist = Feature::getAll();
+void WhatsNewModel::setNewFeatures() {
+  QList<Feature*> allFeatures = Feature::getAll();
+  QList<Feature*> newFeatures;
 
-  qDebug() << m_featurelist;
+  for (int i = 0; i < allFeatures.count(); ++i) {
+    bool shouldBeInWhatsNew =
+        allFeatures[i]->isNew() && allFeatures[i]->isMajor();
 
-  // QList<Feature *>::iterator iterator = m_featurelist.begin();
-
-  // while (iterator != m_featurelist.end()) {
-  //   logger.debug() << "WhatsNewModel - Feature: " << m_featurelist;
-  //   ++iterator;
-  // }
-
-  for (int i = 0; i < m_featurelist.count(); ++i) {
-    // qDebug() << m_featurelist[i];
-    // qDebug() << m_featurelist[i]->isNew();
-    // qDebug() << m_featurelist[i]->isSupported();
-    // qDebug() << m_featurelist[i]->isMajor();
-
-    if (!m_featurelist[i]->isNew() || !m_featurelist[i]->isSupported() ||
-        !m_featurelist[i]->isMajor()) {
-      m_featurelist.removeAt(i);
+    if (shouldBeInWhatsNew) {
+      newFeatures.append(allFeatures[i]);
     }
   }
+
+  m_featurelist = newFeatures;
+  qDebug() << m_featurelist;
 }

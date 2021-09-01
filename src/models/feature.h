@@ -59,6 +59,7 @@ class Feature : public QObject {
   QString displayName() const;
   QString description() const;
   QString shortDescription() const;
+  QString id() const { return m_id; };
 
   // For use in QAbstractListModel
   static QHash<int, QByteArray> roleNames();

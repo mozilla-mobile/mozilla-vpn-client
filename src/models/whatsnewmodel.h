@@ -25,9 +25,10 @@ class WhatsNewModel final : public QAbstractListModel {
   ~WhatsNewModel();
 
   enum ModelRoles {
-    NameRole = Qt::UserRole + 1,
-    DisplayNameRole,
-    IsSupportedRole,
+    RoleName,
+    RoleId,
+    RoleDisplayName,
+    RoleIsSupported,
   };
 
   int hasUnseenFeature() const { return m_featurelist.count(); }
@@ -38,7 +39,7 @@ class WhatsNewModel final : public QAbstractListModel {
 
   Q_INVOKABLE int featureCount();
 
-  Q_INVOKABLE void getNewFeatures();
+  Q_INVOKABLE void setNewFeatures();
 
   int rowCount(const QModelIndex&) const override;
 

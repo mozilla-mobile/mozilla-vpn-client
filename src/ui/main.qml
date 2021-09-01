@@ -393,11 +393,16 @@ Window {
     }
 
     Column {
+        Button {
+            text: VPNWhatsNewModel.hasUnseenFeature
+        }
+
         Repeater {
             model: VPNWhatsNewModel
             delegate: Button {
-                // text: isSupported ? "Feature supported" :  "Feature not supported"
-                text: isSupported ? "Feature: " + displayName + " supported" : "Feature: " + displayName + " not supported"
+//                  text: isSupported ? "Feature supported" :  "Feature not supported"
+//                text: isSupported === undefined || !isSupported ? "Feature: " + displayName + " supported" : "Feature: " + displayName + " not supported"
+                text: id
             }
         }
     }
@@ -413,11 +418,6 @@ Window {
             VPNSettings.featuresTourShown = false;
             // VPNSettings.seenFeatures = [];
 
-            console.log(VPNWhatsNewModel);
-            console.log(VPNWhatsNewModel.activeDevices);
-            console.log(VPNWhatsNewModel.hasUnseenFeature);
-            console.log(VPNWhatsNewModel.newFeatures);
-            console.log(VPNWhatsNewModel.featureCount());
             console.log(VPNWhatsNewModel.getNewFeatures());
         }
     }
