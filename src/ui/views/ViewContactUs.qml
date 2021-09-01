@@ -19,7 +19,6 @@ Item {
         contactUsStackView.pop();
     }
 
-
     function createSupportTicket(email, subject, issueText, category) {
         contactUsStackView.push("../components/VPNLoader.qml", {
             footerLinkIsVisible: false
@@ -101,6 +100,7 @@ Item {
                         Layout.fillHeight: true
                         spacing: 24
                         visible: !VPN.userAuthenticated
+                        Layout.fillWidth: true
 
                         ColumnLayout {
                             spacing: 10
@@ -109,17 +109,18 @@ Item {
                                 property string enterEmailAddress: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportEmailFieldLabel)
 
                                 text: enterEmailAddress
-                                lineHeight: 10
+                                lineHeight: Theme.labelLineHeight
                                 lineHeightMode: Text.FixedHeight
                                 wrapMode: Text.WordWrap
                                 verticalAlignment: Text.AlignVCenter
                                 Layout.fillWidth: true
+                                width: undefined
+
                             }
 
                             VPNTextField {
                                 id: emailInput
 
-                                width: parent.width
                                 verticalAlignment: Text.AlignVCenter
                                 Layout.fillWidth: true
                                 hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
@@ -141,6 +142,8 @@ Item {
                     }
 
                     ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: parent.width
                         RowLayout {
                             visible: VPN.userAuthenticated
                             spacing: 15
@@ -166,6 +169,8 @@ Item {
                                     //% "VPN User"
                                     readonly property var textVpnUser: qsTrId("vpn.settings.user")
                                     text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
+                                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                                    Layout.fillWidth: true
 
                                 }
 
@@ -176,6 +181,7 @@ Item {
                                     Accessible.ignored: true
                                     Layout.alignment: Qt.AlignLeft
                                     elide: Text.ElideRight
+                                    Layout.fillWidth: true
                                 }
                             }
                         }
@@ -187,17 +193,19 @@ Item {
                             property string enterEmailAddress: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportFieldHeader)
 
                             text: enterEmailAddress
-                            lineHeight: 10
+                            lineHeight: Theme.labelLineHeight
                             lineHeightMode: Text.FixedHeight
                             wrapMode: Text.WordWrap
                             verticalAlignment: Text.AlignVCenter
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.width
+                            width: undefined
                         }
 
                         VPNComboBox {
                             id: dropDown
                             placeholderText: VPNl18n.tr(VPNl18n.InAppSupportWorkflowDropdownLabel)
                             model: VPNSupportCategoryModel
+                            Layout.preferredWidth: parent.width
                         }
                     }
 

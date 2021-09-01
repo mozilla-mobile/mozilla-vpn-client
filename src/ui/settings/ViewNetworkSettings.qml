@@ -81,7 +81,7 @@ Item {
             VPNCheckBoxRow {
                 id: localNetwork
                 objectName: "settingLocalNetworkAccess"
-                visible: VPNFeatureList.localNetworkAccessSupported
+                visible: VPNFeatureList.get("lanAccess").isSupported
                 width: parent.width - Theme.windowMargin
                 showDivider: isEnabled
 
@@ -98,32 +98,10 @@ Item {
                 }
             }
 
-            VPNCheckBoxRow {
-                id: multihopTunnel
-                objectName: "settingMultihopTunnel"
-                visible: VPNFeatureList.multihopSupported
-                Layout.rightMargin: Theme.windowMargin
-
-                //% "Multihop tunnel"
-                labelText: qsTrId("vpn.settings.multihop")
-                //% "Protect your traffic by routing it through multiple servers"
-                subLabelText: qsTrId("vpn.settings.multihop.description")
-                isChecked: (VPNSettings.multihopTunnel)
-                isEnabled: vpnFlickable.vpnIsOff
-                showDivider: vpnFlickable.vpnIsOff
-                onClicked: {
-                    if (vpnFlickable.vpnIsOff) {
-                        VPNSettings.multihopTunnel = !VPNSettings.multihopTunnel
-                    }
-                }
-            }
-
             VPNSettingsItem {
                 objectName: "advancedDNSSettings"
                 anchors.left: parent.left
                 anchors.right: parent.right
-                Layout.fillWidth: undefined
-                Layout.preferredHeight: undefined
                 width: parent.width - Theme.windowMargin
 
                 //% "Advanced DNS Settings"
@@ -131,7 +109,7 @@ Item {
                 imageLeftSrc: "../resources/settings.svg"
                 imageRightSrc: "../resources/chevron.svg"
                 onClicked: settingsStackView.push("../settings/ViewAdvancedDNSSettings.qml")
-                visible: VPNFeatureList.userDNSSupported
+                visible: VPNFeatureList.get("customDNS").isSupported
                 enabled: vpnFlickable.vpnIsOff
                 opacity: enabled ? 1 : .5
             }

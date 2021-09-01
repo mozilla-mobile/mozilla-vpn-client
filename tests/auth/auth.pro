@@ -45,9 +45,11 @@ HEADERS += \
     ../../src/inspector/inspectorwebsocketconnection.h \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
+    ../../src/l18nstringsimpl.h \
     ../../src/leakdetector.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
+    ../../src/models/feature.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
@@ -60,8 +62,9 @@ HEADERS += \
     ../../src/task.h \
     ../../src/tasks/authenticate/desktopauthenticationlistener.h \
     ../../src/tasks/authenticate/taskauthenticate.h \
+    ../../src/update/updater.h \
+    ../../src/update/versionapi.h \
     ../../src/urlopener.h \
-    ../../translations/generated/l18nstrings.h \
     testemailvalidation.h \
     testpasswordvalidation.h \
     testsignupandin.h
@@ -84,6 +87,7 @@ SOURCES += \
     ../../src/leakdetector.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
+    ../../src/models/feature.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
     ../../src/rfc/rfc1918.cpp \
@@ -94,12 +98,20 @@ SOURCES += \
     ../../src/simplenetworkmanager.cpp \
     ../../src/tasks/authenticate/desktopauthenticationlistener.cpp \
     ../../src/tasks/authenticate/taskauthenticate.cpp \
+    ../../src/update/updater.cpp \
+    ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \
-    ../../translations/generated/l18nstrings_p.cpp \
     main.cpp \
     testemailvalidation.cpp \
     testpasswordvalidation.cpp \
     testsignupandin.cpp
+
+exists($$PWD/../../translations/generated/l18nstrings.h) {
+    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
+    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
+} else {
+    error("No l18nstrings.h. Have you generated the strings?")
+}
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc

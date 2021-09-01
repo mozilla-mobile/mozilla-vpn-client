@@ -179,7 +179,7 @@ double PingHelper::loss() const {
       QDateTime::currentMSecsSinceEpoch() - (PING_TIMOUT_SEC * 1000);
 
   for (const PingSendData& data : m_pingData) {
-    if (data.latency > 0) {
+    if (data.latency >= 0) {
       recvCount++;
       sendCount++;
     } else if ((data.timestamp > 0) && (data.timestamp < sendBefore)) {

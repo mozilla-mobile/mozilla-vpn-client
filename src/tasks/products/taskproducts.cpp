@@ -38,6 +38,8 @@ void TaskProducts::run(MozillaVPN* vpn) {
 
             connect(iapHandler, &IAPHandler::productsRegistered, this,
                     &TaskProducts::completed);
+            connect(iapHandler, &IAPHandler::productsRegistrationStopped, this,
+                    &TaskProducts::completed);
             iapHandler->registerProducts(data);
           });
 }

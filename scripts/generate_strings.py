@@ -128,6 +128,7 @@ class L18nStrings final : public QObject {
 
  public:
   enum String {
+    Empty,
 """
             )
 
@@ -168,6 +169,9 @@ class L18nStrings final : public QObject {
 
 // static
 const char* const L18nStrings::_ids[] = {
+    // The first ID is for the empty string.
+    "",
+
 """
             )
 

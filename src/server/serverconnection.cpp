@@ -179,8 +179,8 @@ void ServerConnection::writeState() {
       case MozillaVPN::StateSubscriptionNeeded:
         stateStr = "subscriptionNeeded";
         break;
-      case MozillaVPN::StateSubscriptionValidation:
-        stateStr = "subscriptionValidation";
+      case MozillaVPN::StateSubscriptionInProgress:
+        stateStr = "subscriptionInProgress";
         break;
       case MozillaVPN::StateSubscriptionBlocked:
         stateStr = "subscriptionBlocked";
@@ -190,6 +190,12 @@ void ServerConnection::writeState() {
         break;
       case MozillaVPN::StateBackendFailure:
         stateStr = "backendFailure";
+        break;
+      case MozillaVPN::StateBillingNotAvailable:
+        stateStr = "billingNotAvailable";
+        break;
+      case MozillaVPN::StateSubscriptionNotValidated:
+        stateStr = "subscriptionNotValidated";
         break;
       default:
         Q_ASSERT(false);

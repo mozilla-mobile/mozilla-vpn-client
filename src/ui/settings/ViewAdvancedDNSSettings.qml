@@ -18,225 +18,92 @@ import telemetry 0.15
 Item {
     id: root
 
+    StackView.onDeactivating: root.opacity = 0
+
+    Behavior on opacity {
+        PropertyAnimation {
+            duration: 100
+        }
+    }
+
     VPNMenu {
         id: menu
         objectName: "settingsAdvancedDNSSettingsBackButton"
 
-        //% "Advanced DNS settings"
-        title: qsTrId("vpn.settings.advancedDNSSettings.title2")
+        title: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsNavItem)
         isSettingsView: true
     }
 
-    VPNFlickable {
-        id: vpnFlickable
-        property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
+    VPNTabNavigation {
+        // hacks to circumvent the fact that we can't send
+        // "scripts" as property values through ListModel/ListElement
 
+        id: tabs
+        width: root.width
         anchors.top: menu.bottom
-        anchors.right: parent.right
         anchors.left: parent.left
+        anchors.right: parent.right
         height: root.height - menu.height
-        flickContentHeight: col.childrenRect.height
-        interactive: flickContentHeight > height
 
-        Component.onCompleted: {
-            Glean.sample.dnsSettingsViewOpened.record();
+        tabList: ListModel {
+            id: tabButtonList
+            ListElement {
+                tabLabelStringId: "CustomDNSSettingsDnsDefaultToggle"
+                tabButtonId: "tabDefault"
+            }
+            ListElement {
+                tabLabelStringId:"CustomDNSSettingsDnsAdvancedToggle"
+                tabButtonId: "tabAdvanced"
+            }
         }
 
         ButtonGroup {
             id: radioButtonGroup
         }
 
-        ColumnLayout {
-            id: col
-            width: parent.width
-            anchors.top: parent.top
-            anchors.topMargin: 18
-            anchors.left: parent.left
-            anchors.leftMargin: 18
-            anchors.right: parent.right
-            anchors.rightMargin: Theme.windowMargin
-            spacing: Theme.vSpacing
-
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: Theme.windowMargin
-                Layout.rightMargin: Theme.windowMargin
-
-                VPNRadioButton {
-                    Layout.preferredWidth: Theme.vSpacing
-                    Layout.preferredHeight: Theme.rowHeight
-                    Layout.alignment: Qt.AlignTop
-                    checked: VPNSettings.useGatewayDNS
-                    accessibleName: useDefaultLabel.text
-
-                    onClicked: {
-                        if (vpnFlickable.vpnIsOff) {
-                            VPNSettings.useGatewayDNS = true
-                        }
-                    }
+        stackContent: [
+            VPNViewDNSSettings {
+                settingsListModel: ListModel {
+                    id:defaultTabListModel
                 }
-
-                Column {
-                    spacing: 4
-                    Layout.fillWidth: true
-                    VPNInterLabel {
-                        id: useDefaultLabel
-                        //% "Use default DNS"
-                        text: qsTrId("vpn.advancedDNSSettings.gateway")
-                        Layout.alignment: Qt.AlignTop
-                    }
-
-                    VPNTextBlock {
-
-                       //% "Automatically use Mozilla VPN-protected DNS"
-                       text: qsTrId("vpn.advancedDNSSettings.gateway.description")
-                       width: parent.width
-                    }
+                Component.onCompleted: {
+                    defaultTabListModel.append({
+                                                settingValue: VPNSettings.Gateway,
+                                                settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsDefaultRadioHeader),
+                                                settingDescription: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsDefaultRadioBody),
+                                                showDNSInput: false,
+                    })
+                }
+            },
+            VPNViewDNSSettings {
+                settingsListModel: ListModel{
+                    id:advancedListModel
+                }
+                Component.onCompleted: {
+                    advancedListModel.append({
+                                                 settingValue: VPNSettings.BlockAds,
+                                                 settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdblockRadioHeader),
+                                                 settingDescription: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdblockRadioBody),
+                                                 showDNSInput: false})
+                    advancedListModel.append({   settingValue: VPNSettings.BlockTracking,
+                                                 settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAntitrackRadioHeader),
+                                                 settingDescription: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAntitrackRadioBody),
+                                                 showDNSInput: false})
+                    advancedListModel.append({   settingValue: VPNSettings.BlockAll,
+                                                 settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdblockAntiTrackRadioHeader),
+                                                 settingDescription: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdblockAntiTrackRadioBody),
+                                                 showDNSInput: false})
+                    advancedListModel.append({   settingValue: VPNSettings.Custom,
+                                                 settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsCustomDNSRadioHeader),
+                                                 settingDescription:  VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsCustomDNSRadioBody),
+                                                 showDNSInput: true})
                 }
             }
 
-            ColumnLayout {
-                spacing: Theme.windowMargin
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: Theme.windowMargin
-                    Layout.rightMargin: Theme.windowMargin
-
-                    VPNRadioButton {
-                        Layout.preferredWidth: Theme.vSpacing
-                        Layout.preferredHeight: Theme.rowHeight
-                        Layout.alignment: Qt.AlignTop
-                        checked: !VPNSettings.useGatewayDNS
-                        onClicked: VPNSettings.useGatewayDNS = false
-                        accessibleName:  useLocalDNSLabel.text
-                    }
-
-                    Column {
-                        spacing: 4
-                        Layout.fillWidth: true
-                        VPNInterLabel {
-                            id: useLocalDNSLabel
-                            //% "Use local DNS"
-                            text: qsTrId("vpn.advancedDNSSettings.localDNS")
-                            Layout.alignment: Qt.AlignTop
-                        }
-
-                        VPNTextBlock {
-                           //% "Resolve website domain names using a DNS in your local network"
-                           text: qsTrId("vpn.advancedDNSSettings.localDNS.resolveWebsiteDomainNames")
-                           width: parent.width
-                        }
-                    }
-                }
-
-                VPNTextField {
-                    property bool valueInvalid: false
-                    property string error: "This is an error string"
-                    hasError: valueInvalid
-
-                    id: ipInput
-
-                    enabled: !VPNSettings.useGatewayDNS
-                    placeholderText: VPNSettings.placeholderUserDNS
-                    text: VPNSettings.userDNS
-                    Layout.fillWidth: true
-                    Layout.leftMargin: 40
-
-                    PropertyAnimation on opacity {
-                        duration: 200
-                    }
-
-                    onTextChanged: text => {
-                        if (ipInput.text === "") {
-                            // If nothing is entered, thats valid too. We will ignore the value later.
-                            ipInput.valueInvalid = false;
-                            VPNSettings.userDNS = ipInput.text
-                            return;
-                        }
-                        if(VPNSettings.validateUserDNS(ipInput.text)){
-                            ipInput.valueInvalid = false;
-                            if (text !== VPNSettings.userDNS) {
-                                VPNSettings.userDNS = ipInput.text
-                            }
-                        }else{
-                            // Now bother user if the ip is invalid :)
-                            //% "Invalid IP address"
-                            ipInput.error = qsTrId("vpn.settings.userDNS.invalid")
-                            ipInput.valueInvalid = true;
-                        }
-                    }
-                }
-
-                VPNCheckBoxAlert {
-                    id: errorAlert
-                    errorMessage: ipInput.error
-                    anchors.left: undefined
-                    anchors.right: undefined
-                    anchors.leftMargin: undefined
-                    anchors.rightMargin: undefined
-                    anchors.top: undefined
-                    anchors.topMargin: undefined
-                    Layout.leftMargin: ipInput.Layout.leftMargin
-                    alertColor: Theme.red
-
-                    states: [
-                        State {
-                            name: "visible"
-                            when: ipInput.valueInvalid
-                            PropertyChanges {
-                                target: errorAlert
-                                visible: true
-                                opacity: 1
-                            }
-                        },
-                        State {
-                            name: "hidden"
-                            when: !ipInput.valueInvalid
-                            PropertyChanges {
-                                target: errorAlert
-                                visible: false
-                                opacity: 0
-                            }
-                        }
-                    ]
-
-                    transitions: [
-                        Transition {
-                            to: "hidden"
-                            SequentialAnimation {
-                                PropertyAnimation {
-                                    target: errorAlert
-                                    property: "opacity"
-                                    to: 0
-                                    duration: 100
-                                }
-                                PropertyAction {
-                                    target: errorAlert
-                                    property: "visible"
-                                    value: false
-                                }
-                            }
-                        },
-                        Transition {
-                            to: "visible"
-                            SequentialAnimation {
-                                PropertyAction {
-                                    target: errorAlert
-                                    property: "visible"
-                                    value: true
-                                }
-                                PropertyAnimation {
-                                    target: errorAlert
-                                    property: "opacity"
-                                    from: 0
-                                    to: 1
-                                    duration: 100
-                                }
-                            }
-                        }
-                    ]
-                }
+        ]
+        Component.onCompleted: {
+            if (VPNSettings.dnsProvider !== VPNSettings.Gateway) {
+                return tabs.setCurrentTabIndex(1)
             }
         }
     }

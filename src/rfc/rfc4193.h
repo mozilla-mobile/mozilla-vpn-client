@@ -12,6 +12,7 @@
 class RFC4193 final {
  public:
   static QList<IPAddress> ipv6();
+  static bool contains(const QHostAddress& ip);
 };
 
 #endif  // RFC4193_H

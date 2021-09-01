@@ -4,16 +4,21 @@
 
 #include "controller.h"
 #include "controllerimpl.h"
+#include "dnshelper.h"
 #include "featurelist.h"
+#include "features/featurecustomdns.h"
+#include "features/featurecaptiveportal.h"
+#include "features/featurelocalareaaccess.h"
+#include "features/featuremultihop.h"
+#include "rfc/rfc1918.h"
+#include "rfc/rfc4193.h"
+
 #include "ipaddress.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
-#include "rfc/rfc1918.h"
-#include "rfc/rfc4193.h"
-#include "rfc/rfc5735.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "tasks/heartbeat/taskheartbeat.h"
@@ -168,7 +173,7 @@ void Controller::activateInternal() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  QList<Server> servers = vpn->servers();
+  QList<Server> servers = vpn->exitServers();
   Q_ASSERT(!servers.isEmpty());
 
   Server server = Server::weightChooser(servers);
@@ -189,26 +194,16 @@ void Controller::activateInternal() {
   // Multihop connections provide a list of servers, starting with the exit
   // node as the first element, and the entry node as the final entry.
   QList<Server> serverList = {server};
-  if (FeatureList::instance()->multihopSupported() &&
-      settingsHolder->multihopTunnel()) {
-    ServerData data;
-    Server hop = vpn->randomHop(data);
-    while (serverList.contains(hop)) {
-      hop = vpn->randomHop(data);
-    }
+  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
+    Server hop = Server::weightChooser(vpn->entryServers());
+    Q_ASSERT(hop.initialized());
     serverList.append(hop);
   }
 
   // Use the Gateway as DNS Server
-  // If the user as entered a valid dns, use that instead
-  QHostAddress dns = QHostAddress(server.ipv4Gateway());
-  if (FeatureList::instance()->userDNSSupported() &&
-      !settingsHolder->useGatewayDNS() &&
-      settingsHolder->userDNS().size() > 0 &&
-      settingsHolder->validateUserDNS(settingsHolder->userDNS())) {
-    dns = QHostAddress(settingsHolder->userDNS());
-    logger.debug() << "User DNS Set" << dns.toString();
-  }
+  // If the user as entered a valid DN, use that instead
+  QHostAddress dns = QHostAddress(DNSHelper::getDNS(server.ipv4Gateway()));
+  logger.debug() << "DNS Set" << dns.toString();
 
   Q_ASSERT(m_impl);
   m_impl->activate(serverList, device, vpn->keys(),
@@ -227,7 +222,7 @@ bool Controller::silentSwitchServers() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  QList<Server> servers = vpn->servers();
+  QList<Server> servers = vpn->exitServers();
   Q_ASSERT(!servers.isEmpty());
 
   if (servers.length() <= 1) {
@@ -267,24 +262,13 @@ bool Controller::silentSwitchServers() {
   }
 
   QList<Server> serverList = {server};
-  if (FeatureList::instance()->multihopSupported() &&
-      settingsHolder->multihopTunnel()) {
-    ServerData data;
-    Server hop = vpn->randomHop(data);
-    while (serverList.contains(hop)) {
-      hop = vpn->randomHop(data);
-    }
+  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
+    Server hop = Server::weightChooser(vpn->entryServers());
+    Q_ASSERT(hop.initialized());
     serverList.append(hop);
   }
 
-  QHostAddress dns = QHostAddress(server.ipv4Gateway());
-  if (FeatureList::instance()->userDNSSupported() &&
-      !settingsHolder->useGatewayDNS() &&
-      settingsHolder->userDNS().size() > 0 &&
-      settingsHolder->validateUserDNS(settingsHolder->userDNS())) {
-    dns = QHostAddress(settingsHolder->userDNS());
-    logger.debug() << "User DNS Set" << dns.toString();
-  }
+  QHostAddress dns = QHostAddress(DNSHelper::getDNS(server.ipv4Gateway()));
 
   Q_ASSERT(m_impl);
   m_impl->activate(serverList, device, vpn->keys(),
@@ -439,8 +423,9 @@ void Controller::disconnected() {
   }
 
   if (nextStep == None && m_state == StateSwitching) {
-    MozillaVPN::instance()->changeServer(m_switchingCountryCode,
-                                         m_switchingCity);
+    MozillaVPN* vpn = MozillaVPN::instance();
+    vpn->changeServer(m_switchingExitCountry, m_switchingExitCity,
+                      m_switchingEntryCountry, m_switchingEntryCity);
     activate();
     return;
   }
@@ -453,21 +438,25 @@ void Controller::timerTimeout() {
   emit timeChanged();
 }
 
-void Controller::changeServer(const QString& countryCode, const QString& city) {
+void Controller::changeServer(const QString& countryCode, const QString& city,
+                              const QString& entryCountryCode,
+                              const QString& entryCity) {
   Q_ASSERT(m_state == StateOn || m_state == StateOff);
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  if (vpn->currentServer()->countryCode() == countryCode &&
-      vpn->currentServer()->cityName() == city) {
+  if (vpn->currentServer()->exitCountryCode() == countryCode &&
+      vpn->currentServer()->exitCityName() == city &&
+      vpn->currentServer()->entryCountryCode() == entryCountryCode &&
+      vpn->currentServer()->entryCityName() == entryCity) {
     logger.debug() << "No server change needed";
     return;
   }
 
   if (m_state == StateOff) {
     logger.debug() << "Change server";
-    vpn->changeServer(countryCode, city);
+    vpn->changeServer(countryCode, city, entryCountryCode, entryCity);
     return;
   }
 
@@ -476,10 +465,12 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
 
   logger.debug() << "Switching to a different server";
 
-  m_currentCity = vpn->currentServer()->cityName();
-  m_currentCountryCode = vpn->currentServer()->countryCode();
-  m_switchingCountryCode = countryCode;
-  m_switchingCity = city;
+  m_currentCity = vpn->currentServer()->exitCityName();
+  m_currentCountryCode = vpn->currentServer()->exitCountryCode();
+  m_switchingExitCountry = countryCode;
+  m_switchingExitCity = city;
+  m_switchingEntryCountry = entryCountryCode;
+  m_switchingEntryCity = entryCity;
 
   setState(StateSwitching);
 
@@ -574,7 +565,7 @@ bool Controller::processNextStep() {
 }
 
 void Controller::setState(State state) {
-  logger.debug() << "Setting state:" << state;
+  logger.debug() << "Setting state:" << QVariant::fromValue(state).toString();
 
   if (m_state != state) {
     m_state = state;
@@ -660,7 +651,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   const Server& server = serverList.last();
 
   // filtering out the captive portal endpoint
-  if (FeatureList::instance()->captivePortalNotificationSupported() &&
+  if (FeatureCaptivePortal::instance()->isSupported() &&
       SettingsHolder::instance()->captivePortalAlert()) {
     CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
 
@@ -674,7 +665,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   }
 
   // filtering out the RFC1918 local area network
-  if (FeatureList::instance()->localNetworkAccessSupported() &&
+  if (FeatureLocalAreaAccess::instance()->isSupported() &&
       SettingsHolder::instance()->localNetworkAccess()) {
     logger.debug() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());
@@ -684,12 +675,11 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
       excludeIPv6s.append(RFC4193::ipv6());
     }
   }
-  if (shouldExcludeDns()) {
-    // Filter out the Custom DNS Server, if the User has one.
-    logger.debug() << "Filtering out the DNS address"
-                   << SettingsHolder::instance()->userDNS();
-    excludeIPv4s.append(
-        IPAddress::create(SettingsHolder::instance()->userDNS()));
+  if (DNSHelper::shouldExcludeDNS()) {
+    auto dns = DNSHelper::getDNS(server.ipv4Gateway());
+    // Filter out the Custom DNS Server, if the user has set one.
+    logger.debug() << "Filtering out the DNS address" << dns;
+    excludeIPv4s.append(IPAddress::create(dns));
   }
 
   QList<IPAddressRange> list;
@@ -732,40 +722,6 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   return list;
 }
 
-bool Controller::shouldExcludeDns() {
-  auto settings = SettingsHolder::instance();
-  if (!FeatureList::instance()->userDNSSupported()) {
-    return false;
-  }
-  if (settings->useGatewayDNS()) {
-    return false;
-  }
-  auto dns = settings->userDNS();
-  if (!settings->validateUserDNS(dns)) {
-    return false;
-  }
-  // No need to filter out loopback ip addresses
-  if (RFC5735::ipv4LoopbackAddressBlock().contains(QHostAddress(dns))) {
-    return false;
-  }
-  bool isLocalDNS = RFC1918::contains(QHostAddress(dns));
-  // In case we cant use lan access, no need to exclude anyway.
-  if (!FeatureList::instance()->localNetworkAccessSupported()) {
-    return false;
-  }
-
-  // TODO: Uncomment this once mullvad is ready to route custom dns
-  // currently we want all custom dns to not use the vpn because of this.
-  // if(!isLocalDNS){
-  //  return false;
-  //}
-  if (isLocalDNS && settings->localNetworkAccess()) {
-    // DNS is lan, but we already excluded local-ip's, all good.
-    return false;
-  }
-  return true;
-}
-
 void Controller::resetConnectionCheck() {
   m_reconnectionStep = NoReconnection;
 
@@ -797,5 +753,6 @@ QString Controller::currentLocalizedCityName() const {
 }
 
 QString Controller::switchingLocalizedCityName() const {
-  return ServerI18N::translateCityName(m_switchingCountryCode, m_switchingCity);
+  return ServerI18N::translateCityName(m_switchingExitCountry,
+                                       m_switchingExitCity);
 }

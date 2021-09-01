@@ -101,7 +101,7 @@ class NetworkRequest final : public QObject {
 
 #ifdef UNIT_TEST
   static NetworkRequest* createForFxaTotpCreation(
-      QObject* parent, const QByteArray& sessionToken, const QUrlQuery& query);
+      QObject* parent, const QByteArray& sessionToken);
 #endif
 
   static NetworkRequest* createForFxaSessionDestroy(
@@ -112,6 +112,11 @@ class NetworkRequest final : public QObject {
 #ifdef MVPN_IOS
   static NetworkRequest* createForIOSPurchase(QObject* parent,
                                               const QString& receipt);
+#endif
+#ifdef MVPN_ANDROID
+  static NetworkRequest* createForAndroidPurchase(QObject* parent,
+                                                  const QString& sku,
+                                                  const QString& purchaseToken);
 #endif
 
   void disableTimeout();

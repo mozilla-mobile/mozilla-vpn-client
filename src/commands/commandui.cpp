@@ -10,6 +10,7 @@
 #include "commandlineparser.h"
 #include "constants.h"
 #include "featurelist.h"
+#include "features/featureinapppurchase.h"
 #include "filterproxymodel.h"
 #include "fontloader.h"
 #include "l18nstrings.h"
@@ -39,10 +40,9 @@
 #endif
 
 #ifdef MVPN_ANDROID
-#  include "platforms/android/androidutils.h"
-#  include "platforms/android/androidwebview.h"
 #  include "platforms/android/androidappimageprovider.h"
 #  include "platforms/android/androidutils.h"
+#  include "platforms/android/androidwebview.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -359,7 +359,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterType<AndroidWebView>("Mozilla.VPN", 1, 0, "VPNAndroidWebView");
 #endif
 
-    if (FeatureList::instance()->inAppPurchaseSupported()) {
+    if (FeatureInAppPurchase::instance()->isSupported()) {
       qmlRegisterSingletonType<MozillaVPN>(
           "Mozilla.VPN", 1, 0, "VPNIAP",
           [](QQmlEngine*, QJSEngine*) -> QObject* {

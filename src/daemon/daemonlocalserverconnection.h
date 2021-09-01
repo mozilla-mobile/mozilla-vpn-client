@@ -21,7 +21,7 @@ class DaemonLocalServerConnection final : public QObject {
 
   void parseCommand(const QByteArray& json);
 
-  void connected();
+  void connected(int hopindex);
   void disconnected();
   void backendFailure();
 

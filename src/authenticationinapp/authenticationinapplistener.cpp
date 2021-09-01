@@ -5,6 +5,7 @@
 #include "authenticationinapplistener.h"
 #include "authenticationinapp.h"
 #include "featurelist.h"
+#include "features/featureinappaccountcreate.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "hkdf.h"
@@ -121,7 +122,7 @@ void AuthenticationInAppListener::accountChecked(bool exists) {
     return;
   }
 
-  if (FeatureList::instance()->accountCreationInAppSupported()) {
+  if (FeatureInAppAccountCreate::instance()->isSupported()) {
     AuthenticationInApp::instance()->requestState(
         AuthenticationInApp::StateSignUp, this);
     return;
@@ -358,8 +359,8 @@ void AuthenticationInAppListener::signInOrUpCompleted(
 
 #ifdef UNIT_TEST
 void AuthenticationInAppListener::createTotpCodes() {
-  NetworkRequest* request = NetworkRequest::createForFxaTotpCreation(
-      this, m_sessionToken, m_urlQuery);
+  NetworkRequest* request =
+      NetworkRequest::createForFxaTotpCreation(this, m_sessionToken);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {

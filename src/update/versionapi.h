@@ -24,6 +24,10 @@ class VersionApi final : public Updater {
   // empty.
   static int compareVersions(const QString& a, const QString& b);
 
+  // Strips the minor version
+  // e.g 2.2.2 -> 2.2.0
+  static QString stripMinor(const QString& a);
+
  private:
   [[nodiscard]] bool processData(const QByteArray& data);
 };
