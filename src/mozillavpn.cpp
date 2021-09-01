@@ -454,6 +454,10 @@ void MozillaVPN::openLink(LinkType linkType) {
       url = NetworkRequest::apiBaseUrl();
       url.append("/r/vpn/subscriptionBlocked");
       break;
+    case LinkInspector:
+      Q_ASSERT(!Constants::inProduction());
+      url = "http://localhost:8766/";
+      break;
 
     default:
       qFatal("Unsupported link type!");

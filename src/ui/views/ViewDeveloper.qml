@@ -55,6 +55,23 @@ VPNFlickable {
             }
         }
     }
+    VPNExternalLinkListItem {
+        visible: stagingServer.isChecked && !restartRequired.visible
+        anchors.top: stagingServer.bottom
+        anchors.topMargin: Theme.windowMargin
+        anchors.left: stagingServer.left
+        anchors.leftMargin: Theme.windowMargin/2
+        width: parent.width - Theme.windowMargin
+
+        objectName: "openInspector"
+        title: "Open Inspector"
+        accessibleName: "Open Inspector"
+        iconSource:  "../resources/externalLink.svg"
+        backgroundColor: Theme.clickableRowBlue
+        onClicked: {
+            VPN.openLink(VPN.LinkInspector)
+        }
+    }
 
     VPNCheckBoxAlert {
         id: restartRequired
