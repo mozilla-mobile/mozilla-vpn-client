@@ -41,9 +41,8 @@ VPNClickableRow {
     activeFocusOnTab: true
     accessibleName: localizedName
     Keys.onDownPressed: countriesRepeater.itemAt(index + 1) ? countriesRepeater.itemAt(index + 1).forceActiveFocus() : countriesRepeater.itemAt(0).forceActiveFocus()
-    Keys.onUpPressed: countriesRepeater.itemAt(index - 1) ? countriesRepeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
+    Keys.onUpPressed: countriesRepeater.itemAt(index - 1) ? countriesRepeater.itemAt(index - 1).forceActiveFocus() : recentConnections.focusItemAt(recentConnections.numVisibleConnections - 1)
     Keys.onBacktabPressed: {
-        focusScope.lastFocusedItemIdx = index;
         serverSearchInput.forceActiveFocus();
     }
 
