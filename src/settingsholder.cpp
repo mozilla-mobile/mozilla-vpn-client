@@ -497,6 +497,11 @@ void SettingsHolder::addSeenFeature(const QString& featureID) {
   setSeenFeatures(seenfeatureslist);
 }
 
+void SettingsHolder::removeSeenFeatures() {
+  QStringList emptyList;
+  setSeenFeatures(emptyList);
+}
+
 void SettingsHolder::removeEntryServer() {
   m_settings.remove(SETTINGS_ENTRYSERVER_COUNTRYCODE);
   m_settings.remove(SETTINGS_ENTRYSERVER_CITY);

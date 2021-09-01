@@ -388,7 +388,8 @@ Window {
         function onFeaturesTourShownChanged() {
         }
 
-        function onSeenFeaturesChanged() {
+        function onSeenFeaturesChanged(seenFeaturesIDs) {
+            console.log("onSeenFeaturesChanged", seenFeaturesIDs);
         }
     }
 
@@ -411,14 +412,23 @@ Window {
     Button {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 16
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
 
         text: "Reset What’s new"
         onClicked: {
             VPNSettings.featuresTourShown = false;
-             VPNSettings.seenFeatures = [];
+            VPNWhatsNewModel.markFeaturesAsUnseen();
+        }
+    }
 
-            console.log(VPNWhatsNewModel.getNewFeatures());
+    Button {
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 16
+        anchors.right: parent.right
+
+        text: "Mark as seen"
+        onClicked: {
+            VPNWhatsNewModel.markFeaturesAsSeen();
         }
     }
 }

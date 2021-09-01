@@ -39,7 +39,6 @@ QHash<int, QByteArray> WhatsNewModel::roleNames() const {
   QHash<int, QByteArray> roles;
   roles[RoleId] = "id";
   roles[RoleName] = "name";
-  roles[RoleIsSupported] = "isSupported";
 
   return roles;
 }
@@ -58,9 +57,6 @@ QVariant WhatsNewModel::data(const QModelIndex& index, int role) const {
       return QVariant(m_featurelist.at(index.row())->id());
     case RoleName:
       return QVariant(m_featurelist.at(index.row())->displayName());
-    case RoleIsSupported:
-      return QVariant(m_featurelist.at(index.row())->isSupported());
-
     default:
       return QVariant();
   }
@@ -101,5 +97,21 @@ bool WhatsNewModel::hasUnseenFeature() {
     }
   }
 
+  emit hasUnseenFeatureChanged();
+
   return false;
+}
+
+void WhatsNewModel::markFeaturesAsSeen() {
+  for (int i = 0; i < m_featurelist.count(); ++i) {
+    SettingsHolder::instance()->addSeenFeature(m_featurelist[i]->id());
+  }
+
+  emit hasUnseenFeatureChanged();
+}
+
+void WhatsNewModel::markFeaturesAsUnseen() {
+  SettingsHolder::instance()->removeSeenFeatures();
+
+  emit hasUnseenFeatureChanged();
 }

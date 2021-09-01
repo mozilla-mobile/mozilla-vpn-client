@@ -28,7 +28,6 @@ class WhatsNewModel final : public QAbstractListModel {
     RoleName,
     RoleId,
     RoleDisplayName,
-    RoleIsSupported,
   };
 
   const QList<Feature*>& features() const { return m_featurelist; }
@@ -39,7 +38,11 @@ class WhatsNewModel final : public QAbstractListModel {
 
   Q_INVOKABLE void setNewFeatures();
 
+  Q_INVOKABLE void markFeaturesAsSeen();
+
   Q_INVOKABLE bool hasUnseenFeature();
+
+  Q_INVOKABLE void markFeaturesAsUnseen();
 
   int rowCount(const QModelIndex&) const override;
 
