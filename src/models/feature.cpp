@@ -100,10 +100,6 @@ bool Feature::isSupported() const {
   return checkSupportCallback();
 }
 
-bool Feature::isNew() const { return m_new; }
-
-bool Feature::isMajor() const { return m_majorFeature; }
-
 QString Feature::displayName() const {
   return L18nStrings::instance()->tr(m_displayName_id);
 }

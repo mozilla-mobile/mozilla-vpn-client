@@ -16,14 +16,14 @@ class Feature : public QObject {
 
   Q_PROPERTY(QString id MEMBER m_id CONSTANT)
   Q_PROPERTY(QString name MEMBER m_name CONSTANT)
-  Q_PROPERTY(bool isMajorFeature MEMBER m_majorFeature CONSTANT)
+  Q_PROPERTY(bool isMajor READ isMajor CONSTANT)
   Q_PROPERTY(QString displayName READ displayName CONSTANT)
   Q_PROPERTY(QString shortDescription READ shortDescription CONSTANT)
   Q_PROPERTY(QString description READ description CONSTANT)
   Q_PROPERTY(QString imagePath MEMBER m_imagePath CONSTANT)
   Q_PROPERTY(QString iconPath MEMBER m_iconPath CONSTANT)
   Q_PROPERTY(bool isReleased MEMBER m_released CONSTANT)
-  Q_PROPERTY(bool isNew MEMBER m_new CONSTANT)
+  Q_PROPERTY(bool isNew READ isNew CONSTANT)
   Q_PROPERTY(bool devModeWriteable MEMBER m_devModeWriteable CONSTANT)
   Q_PROPERTY(bool isSupported READ isSupported NOTIFY supportedChanged)
 
@@ -53,17 +53,17 @@ class Feature : public QObject {
   bool isDevModeEnabled() const;
 
   // Returns true if this is a newly introduced feature
-  bool isNew() const;
+  bool isNew() const { return m_new; }
 
   // Returns true if this is a feature we marked as major
-  bool isMajor() const;
+  bool isMajor() const { return m_majorFeature; }
 
-  QString id() const { return m_id; };
+  QString id() const { return m_id; }
   QString displayName() const;
   QString description() const;
   QString shortDescription() const;
-  QString imagePath() const { return m_imagePath; };
-  QString iconPath() const { return m_iconPath; };
+  QString imagePath() const { return m_imagePath; }
+  QString iconPath() const { return m_iconPath; }
 
   // For use in QAbstractListModel
   static QHash<int, QByteArray> roleNames();

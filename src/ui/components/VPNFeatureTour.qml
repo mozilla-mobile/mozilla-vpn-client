@@ -188,9 +188,9 @@ Item {
                     id: featureSlidesLoader
 
                     property int slideIndex: index + 1
-                    property string featureName: displayName
-                    property string featureDescription: description
-                    property string featureImagePath: imagePath
+                    property string featureName: feature.displayName
+                    property string featureDescription: feature.description
+                    property string featureImagePath: feature.imagePath
 
                     active: SwipeView.isCurrentItem | SwipeView.isPreviousItem | SwipeView.isNextItem
                     asynchronous: true

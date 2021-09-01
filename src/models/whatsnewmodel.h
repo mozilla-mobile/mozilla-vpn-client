@@ -25,21 +25,16 @@ class WhatsNewModel final : public QAbstractListModel {
   ~WhatsNewModel();
 
   enum ModelRoles {
-    RoleId,
-    RoleDisplayName,
-    RoleDescription,
-    RoleShortDescription,
-    RoleImagePath,
-    RoleIconPath,
+    RoleFeature,
   };
 
   const QList<Feature*>& features() const { return m_featurelist; }
 
   QHash<int, QByteArray> roleNames() const override;
 
-  Q_INVOKABLE int featureCount();
+  int featureCount() const;
 
-  Q_INVOKABLE void setNewFeatures();
+  void setNewFeatures();
 
   Q_INVOKABLE void markFeaturesAsSeen();
 

@@ -24,43 +24,25 @@ WhatsNewModel::WhatsNewModel() {
 
 WhatsNewModel::~WhatsNewModel() { MVPN_COUNT_DTOR(WhatsNewModel); }
 
-int WhatsNewModel::featureCount() { return m_featurelist.size(); }
+int WhatsNewModel::featureCount() const { return m_featurelist.count(); }
 
 QHash<int, QByteArray> WhatsNewModel::roleNames() const {
   QHash<int, QByteArray> roles;
-  roles[RoleId] = "id";
-  roles[RoleDisplayName] = "displayName";
-  roles[RoleDescription] = "description";
-  roles[RoleShortDescription] = "shortDescription";
-  roles[RoleImagePath] = "imagePath";
-  roles[RoleIconPath] = "iconPath";
+  roles[RoleFeature] = "feature";
 
   return roles;
 }
 
-int WhatsNewModel::rowCount(const QModelIndex&) const {
-  return m_featurelist.count();
-}
+int WhatsNewModel::rowCount(const QModelIndex&) const { return featureCount(); }
 
 QVariant WhatsNewModel::data(const QModelIndex& index, int role) const {
   if (!index.isValid()) {
     return QVariant();
   }
 
-  auto feature = m_featurelist.at(index.row());
   switch (role) {
-    case RoleId:
-      return QVariant(feature->id());
-    case RoleDisplayName:
-      return QVariant(feature->displayName());
-    case RoleDescription:
-      return QVariant(feature->description());
-    case RoleShortDescription:
-      return QVariant(feature->shortDescription());
-    case RoleImagePath:
-      return QVariant(feature->imagePath());
-    case RoleIconPath:
-      return QVariant(feature->iconPath());
+    case RoleFeature:
+      return QVariant::fromValue(m_featurelist.at(index.row()));
     default:
       return QVariant();
   }
@@ -88,15 +70,14 @@ bool WhatsNewModel::hasUnseenFeature() {
   Q_ASSERT(settingsHolder);
 
   logger.debug() << "Reading seen features from settings";
-  if (settingsHolder->hasSeenFeatures()) {
-    const QStringList& seenFeatureList = settingsHolder->seenFeatures();
+  if (!settingsHolder->hasSeenFeatures()) {
+    return false;
+  }
 
-    for (int i = 0; i < m_featurelist.count(); ++i) {
-      bool isSeenFeature = seenFeatureList.contains(m_featurelist[i]->id());
-
-      if (!isSeenFeature) {
-        return true;
-      }
+  const QStringList& seenFeatureList = settingsHolder->seenFeatures();
+  for (Feature* feature : m_featurelist) {
+    if (!seenFeatureList.contains(feature->id())) {
+      return true;
     }
   }
 
@@ -104,8 +85,8 @@ bool WhatsNewModel::hasUnseenFeature() {
 }
 
 void WhatsNewModel::markFeaturesAsSeen() {
-  for (int i = 0; i < m_featurelist.count(); ++i) {
-    SettingsHolder::instance()->addSeenFeature(m_featurelist[i]->id());
+  for (Feature* feature : m_featurelist) {
+    SettingsHolder::instance()->addSeenFeature(feature->id());
   }
 
   emit hasUnseenFeatureChanged();

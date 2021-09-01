@@ -80,14 +80,14 @@ Item {
                     VPNIconAndLabel {
                         id: featureTitle
 
-                        title: displayName
-                        icon: iconPath
+                        title: feature.displayName
+                        icon: feature.iconPath
                     }
 
                     VPNTextBlock {
                         id: featureText
 
-                        text: shortDescription
+                        text: feature.shortDescription
                         Layout.fillWidth: true
                         Layout.leftMargin: Theme.vSpacing + 14
                     }
