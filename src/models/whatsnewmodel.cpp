@@ -19,7 +19,7 @@ Logger logger(LOG_MODEL, "WhatsNewModel");
 WhatsNewModel::WhatsNewModel() {
   MVPN_COUNT_CTOR(WhatsNewModel);
 
-  WhatsNewModel::setNewFeatures();
+  WhatsNewModel::initialize();
 }
 
 WhatsNewModel::~WhatsNewModel() { MVPN_COUNT_DTOR(WhatsNewModel); }
@@ -48,7 +48,7 @@ QVariant WhatsNewModel::data(const QModelIndex& index, int role) const {
   }
 }
 
-void WhatsNewModel::setNewFeatures() {
+void WhatsNewModel::initialize() {
   QList<Feature*> allFeatures = Feature::getAll();
   QList<Feature*> newFeatures;
 

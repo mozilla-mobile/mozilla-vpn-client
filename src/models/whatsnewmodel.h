@@ -10,9 +10,6 @@
 
 #include "featurelist.h"
 
-class Keys;
-class Feature;
-
 class WhatsNewModel final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(WhatsNewModel)
@@ -28,6 +25,8 @@ class WhatsNewModel final : public QAbstractListModel {
     RoleFeature,
   };
 
+  void initialize();
+
   const QList<Feature*>& features() const { return m_featurelist; }
 
   QHash<int, QByteArray> roleNames() const override;
@@ -38,7 +37,7 @@ class WhatsNewModel final : public QAbstractListModel {
 
   QVariant data(const QModelIndex& index, int role) const override;
 
-  void setNewFeatures();
+  bool hasUnseenFeature();
 
   void addSeenFeature(const QString& featureID);
 
@@ -46,9 +45,7 @@ class WhatsNewModel final : public QAbstractListModel {
 
   Q_INVOKABLE void markFeaturesAsSeen();
 
-  Q_INVOKABLE bool hasUnseenFeature();
-
-  Q_INVOKABLE void markFeaturesAsUnseen();
+  void markFeaturesAsUnseen();
 
  signals:
   void hasUnseenFeatureChanged();
