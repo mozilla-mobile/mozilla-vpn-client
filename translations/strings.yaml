@@ -215,3 +215,7 @@ customDNSSettings:
 
 networkSettings:
   multihopTitle: Multi-hop tunnel
+
+systemPreferencesSettings:
+  systemPreferencesTitle: System preferences
+  launchVPNOnStartUpDescription: Mozilla VPN will launch when you start up your device or open the app
