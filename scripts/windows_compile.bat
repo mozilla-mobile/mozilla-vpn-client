@@ -20,7 +20,7 @@ IF "%selfWrapped%" == "" (
 ECHO This script MozillaVPN for windows
 
 IF NOT EXIST src (
-  ECHO THis doesn't seem to be the root of the MozillaVPN repository.
+  ECHO This doesn't seem to be the root of the MozillaVPN repository.
   EXIT 1
 )
 

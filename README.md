@@ -1,17 +1,20 @@
 # Mozilla VPN
 
+TODO verfiy the formatting is correct here
+
 >_One tap to privacy
-Surf, stream, game, and get work done while maintaining your privacy online. Whether you’re traveling, using public WiFi, or simply looking for more online security, we will always put your privacy first._ 
+>
+> Surf, stream, game, and get work done while maintaining your privacy online. Whether you’re traveling, using public WiFi, or simply looking for more online security, we will always put your privacy first._
 
 See: https://vpn.mozilla.org
 
 ## Getting Involved
 
-We encourage you to participate in this open source project. We love Pull Requests, Bug Reports, ideas, (security) code reviews or any other kind of positive contribution. 
+We encourage you to participate in this open source project. We love pull requests, bug reports, ideas, (security) code reviews or any other kind of positive contribution.
 
 Before you attempt to make a contribution please read the [Community Participation Guidelines](https://www.mozilla.org/en-US/about/governance/policies/participation/).
 
-* [View current Issues](https://github.com/mozilla-mobile/mozilla-vpn-client/issues), [view current Pull Requests](https://github.com/mozilla-mobile/mozilla-vpn-client/pulls), or [file a security issue](https://bugzilla.mozilla.org/enter_bug.cgi?product=Mozilla%20VPN).
+* [View current issues](https://github.com/mozilla-mobile/mozilla-vpn-client/issues), [view current pull requests](https://github.com/mozilla-mobile/mozilla-vpn-client/pulls), or [file a security issue](https://bugzilla.mozilla.org/enter_bug.cgi?product=Mozilla%20VPN).
 * Localization happens on [Pontoon](https://pontoon.mozilla.org/projects/mozilla-vpn-client/).
 * Matrix [#mozilla-vpn:mozilla.org channel](https://chat.mozilla.org/#/room/#mozilla-vpn:mozilla.org)
 * [View the Wiki](https://github.com/mozilla-mobile/mozilla-vpn-client/wiki).
@@ -30,7 +33,7 @@ After checking out the code:
 
 ### Linux
 
-On linux, the compilation of MozillaVPN is relative easy. You need the
+On linux, the compilation of MozillaVPN is relatively easy. You need the
 following dependencies:
 
 - Qt5 >= 5.15.0
@@ -50,7 +53,7 @@ Python3 (pip) depedencies:
 Qt5 can be installed in a number of ways:
 - download a binary package or the installer from the official QT website: https://www.qt.io/download
 - use a linux package manager
-- compile Qt5 (dinamically or statically).
+- compile Qt5 (dynamically or statically).
 
 To build QT5 statically on Ubuntu/20.04, go to the root directory of this project and follow these steps:
 
@@ -82,14 +85,18 @@ git submodule update
 
 #### Build
 
-To build next to source:
+To build next to source, first generate the Makefile using `qmake`:
 
 ```
-make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
+qmake CONFIG +=debug
+```
+
+Then build and install:
+
+```
+make -j$(nproc)  # or manually specify the number of cores, e.g. make -j8
 sudo make install
 ```
-
-For local dev builds, the following qmake command may be more helpful `qmake CONFIG+=debug`.
 
 If you prefer to not install at /usr or /etc, you can specify alternate prefixes. Using no prefixes is equivalent to:
 
@@ -135,13 +142,13 @@ The procedure to compile MozillaVPN for macOS is the following:
 ```
 2. Install go v1.16+ if you haven't done it before: https://golang.org/dl/
 
-Some developers have experienced that in step 8 (when you're in XCode) that XCode reports that 
-go isn't available and so you can't build the app and dependencies in XCode. 
+Some developers have experienced that in step 8 (when you're in XCode) that XCode reports that
+go isn't available and so you can't build the app and dependencies in XCode.
 In this case, a workaround is to symlink go into XCode directory as follows:
 
 * Make sure go is 1.16+: `go version`
 * Find the location of go binary `which go` example output `/usr/local/go/bin/go`
-* Symlink e.g. `sudo ln -s /usr/local/go/bin/go /Applications/Xcode.app/Contents/Developer/usr/bin/go` 
+* Symlink e.g. `sudo ln -s /usr/local/go/bin/go /Applications/Xcode.app/Contents/Developer/usr/bin/go`
 
 This step needs to be updated each time XCode updates.
 
@@ -159,6 +166,9 @@ This step needs to be updated each time XCode updates.
 ```
   $ cp xcode.xconfig.template xcode.xconfig
 ```
+
+TODO why "something like" ? (in many places)
+
 6. Modify xcode.xconfig to something like:
 ```
 DEVELOPMENT_TEAM = 43AQ936H96
@@ -210,6 +220,7 @@ The IOS procedure is similar to the macOS one:
 ```
 
 3. Install python3 dependencies:
+
 ```
   $ pip3 install 'glean_parser==3.5'
   $ pip3 install pyyaml
@@ -248,13 +259,13 @@ You may be interested in flags like -i for the inspector (see ./scripts/apple_co
 
 7. Open Xcode and run/test/archive/ship the app
 
-### Android 
+### Android
 
 1. Install go if you haven't done it before: https://golang.org/dl/
 2. Install Android SDK/NDK + JDK - https://doc.qt.io/qt-5/android-getting-started.html
 3. We currently require NDK r20b and SDK >=21
 4. Update the submodules:
-```bash 
+```bash
   $ git submodule init
   $ git submodule update
 ```
@@ -266,7 +277,7 @@ You may be interested in flags like -i for the inspector (see ./scripts/apple_co
 ```
 
 6. Build the apk
-```bash 
+```bash
   $  ./scripts/android_package.sh /path/to/Qt/5.15.x/ (debug|release)
 ```
 7. The apk will be located in ```.tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk```
@@ -275,7 +286,7 @@ You may be interested in flags like -i for the inspector (see ./scripts/apple_co
   $ adb install .tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk
 ```
 
-9. To build the apk for release the environment variable ADJUST_SDK_TOKEN is required. It must be set to the app token of the Adjust SDK dashboard. 
+9. To build the apk for release the environment variable ADJUST_SDK_TOKEN is required. It must be set to the app token of the Adjust SDK dashboard.
 
 ### Windows
 
@@ -283,6 +294,8 @@ We use a statically-compiled QT5.15 version to deploy the app. There are many
 tutorials about to how to compile QT5 on windows, but to make this task
 easier for everyone, there is a batch script to execute into a visual-studio
 x86 context: `$ scripts\qt5_compile.bat`
+
+TODO make it clearer that these need to be on your PATH.
 
 The dependencies are:
 1. perl: http://strawberryperl.com/
@@ -295,6 +308,9 @@ Openssl can be obtained from here: https://www.openssl.org/source/
 Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz
 
 There is also a script to compile the application: `scripts\windows_compile.bat`
+
+TODO explicitly explain that it is necessary to download and install openssl and qt and pass the paths to the batch script.
+TODO what is the difference between the two batch scripts?
 
 ## Developer Options and staging environment
 
@@ -321,3 +337,5 @@ Please file bugs here: https://github.com/mozilla-mobile/mozilla-vpn-client/issu
 [![Android](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/android.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/android.yaml)
 [![MacOS](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/macos-build.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/macos-build.yaml)
 [![Windows](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/windows-build.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/windows-build.yaml)
+
+TODO add a note about scripts/generate_strings.py
