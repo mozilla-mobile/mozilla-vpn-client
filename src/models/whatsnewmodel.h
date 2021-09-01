@@ -34,17 +34,21 @@ class WhatsNewModel final : public QAbstractListModel {
 
   int featureCount() const;
 
+  int rowCount(const QModelIndex&) const override;
+
+  QVariant data(const QModelIndex& index, int role) const override;
+
   void setNewFeatures();
+
+  void addSeenFeature(const QString& featureID);
+
+  void removeSeenFeatures();
 
   Q_INVOKABLE void markFeaturesAsSeen();
 
   Q_INVOKABLE bool hasUnseenFeature();
 
   Q_INVOKABLE void markFeaturesAsUnseen();
-
-  int rowCount(const QModelIndex&) const override;
-
-  QVariant data(const QModelIndex& index, int role) const override;
 
  signals:
   void hasUnseenFeatureChanged();

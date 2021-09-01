@@ -152,10 +152,6 @@ class SettingsHolder final : public QObject {
 
   void addConsumedSurvey(const QString& surveyId);
 
-  Q_INVOKABLE void addSeenFeature(const QString& featureID);
-
-  Q_INVOKABLE void removeSeenFeatures();
-
   void removeEntryServer();
 
 #ifdef MVPN_IOS

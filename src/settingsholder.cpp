@@ -485,20 +485,6 @@ void SettingsHolder::removeDevModeFeatureFlag(const QString& featureID) {
   setDevModeFeatureFlags(features);
 }
 
-void SettingsHolder::addSeenFeature(const QString& featureID) {
-  QStringList seenfeatureslist;
-  if (hasSeenFeatures()) {
-    seenfeatureslist = seenFeatures();
-  }
-  if (seenfeatureslist.contains(featureID)) {
-    return;
-  }
-  seenfeatureslist.append(featureID);
-  setSeenFeatures(seenfeatureslist);
-}
-
-void SettingsHolder::removeSeenFeatures() { setSeenFeatures(QStringList()); }
-
 void SettingsHolder::removeEntryServer() {
   m_settings.remove(SETTINGS_ENTRYSERVER_COUNTRYCODE);
   m_settings.remove(SETTINGS_ENTRYSERVER_CITY);

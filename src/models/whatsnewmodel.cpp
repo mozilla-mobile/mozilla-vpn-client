@@ -65,6 +65,38 @@ void WhatsNewModel::setNewFeatures() {
   m_featurelist = newFeatures;
 }
 
+void WhatsNewModel::addSeenFeature(const QString& featureID) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  logger.debug() << "Add seen feature to settings";
+  if (!settingsHolder->hasSeenFeatures()) {
+    return;
+  }
+
+  QStringList seenfeatureslist;
+  seenfeatureslist = settingsHolder->seenFeatures();
+
+  if (seenfeatureslist.contains(featureID)) {
+    return;
+  }
+
+  seenfeatureslist.append(featureID);
+  settingsHolder->setSeenFeatures(seenfeatureslist);
+}
+
+void WhatsNewModel::removeSeenFeatures() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  logger.debug() << "Remove seen features from settings";
+  if (!settingsHolder->hasSeenFeatures()) {
+    return;
+  }
+
+  settingsHolder->setSeenFeatures(QStringList());
+}
+
 bool WhatsNewModel::hasUnseenFeature() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -86,14 +118,14 @@ bool WhatsNewModel::hasUnseenFeature() {
 
 void WhatsNewModel::markFeaturesAsSeen() {
   for (Feature* feature : m_featurelist) {
-    SettingsHolder::instance()->addSeenFeature(feature->id());
+    addSeenFeature(feature->id());
   }
 
   emit hasUnseenFeatureChanged();
 }
 
 void WhatsNewModel::markFeaturesAsUnseen() {
-  SettingsHolder::instance()->removeSeenFeatures();
+  removeSeenFeatures();
 
   emit hasUnseenFeatureChanged();
 }
