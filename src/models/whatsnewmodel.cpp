@@ -24,9 +24,7 @@ WhatsNewModel::WhatsNewModel() {
 
 WhatsNewModel::~WhatsNewModel() { MVPN_COUNT_DTOR(WhatsNewModel); }
 
-int WhatsNewModel::featureCount() {
-  return m_featurelist.size();
-}
+int WhatsNewModel::featureCount() { return m_featurelist.size(); }
 
 QHash<int, QByteArray> WhatsNewModel::roleNames() const {
   QHash<int, QByteArray> roles;
