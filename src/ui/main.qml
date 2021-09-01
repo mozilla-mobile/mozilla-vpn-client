@@ -355,8 +355,8 @@ Window {
 
         function handleShowTour() {
             if(VPN.state === VPN.StateMain
+                && !VPNSettings.featuresTourShown
                 && VPNWhatsNewModel.hasUnseenFeature
-                && !tourShown
             ) {
                 featureTourPopup.openTour();
             }
