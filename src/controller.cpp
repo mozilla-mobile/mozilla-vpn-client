@@ -423,8 +423,9 @@ void Controller::disconnected() {
   }
 
   if (nextStep == None && m_state == StateSwitching) {
-    MozillaVPN::instance()->changeServer(m_switchingCountryCode,
-                                         m_switchingCity);
+    MozillaVPN* vpn = MozillaVPN::instance();
+    vpn->changeServer(m_switchingExitCountry, m_switchingExitCity,
+                      m_switchingEntryCountry, m_switchingEntryCity);
     activate();
     return;
   }
@@ -466,8 +467,10 @@ void Controller::changeServer(const QString& countryCode, const QString& city,
 
   m_currentCity = vpn->currentServer()->exitCityName();
   m_currentCountryCode = vpn->currentServer()->exitCountryCode();
-  m_switchingCountryCode = countryCode;
-  m_switchingCity = city;
+  m_switchingExitCountry = countryCode;
+  m_switchingExitCity = city;
+  m_switchingEntryCountry = entryCountryCode;
+  m_switchingEntryCity = entryCity;
 
   setState(StateSwitching);
 
@@ -750,5 +753,6 @@ QString Controller::currentLocalizedCityName() const {
 }
 
 QString Controller::switchingLocalizedCityName() const {
-  return ServerI18N::translateCityName(m_switchingCountryCode, m_switchingCity);
+  return ServerI18N::translateCityName(m_switchingExitCountry,
+                                       m_switchingExitCity);
 }
