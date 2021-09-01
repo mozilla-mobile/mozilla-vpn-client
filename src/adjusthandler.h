@@ -2,16 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef ANDROIDADJUSTHELPER_H
-#define ANDROIDADJUSTHELPER_H
+#ifndef ADJUSTHELPER_H
+#define ADJUSTHELPER_H
 
 #include <QString>
 
-class AndroidAdjustHelper {
+class AdjustHandler {
  public:
-  AndroidAdjustHelper() = default;
+  AdjustHandler() = default;
 
+  static void initialize();
   static void trackEvent(const QString& event);
 };
 
-#endif  // ANDROIDADJUSTHELPER_H
+#endif  // ADJUSTHELPER_H

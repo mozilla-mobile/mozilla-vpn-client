@@ -517,6 +517,15 @@ else:linux:!android {
 else:android {
     message(Android build)
 
+    adjust {
+        message(Adjust SDK enabled)
+        DEFINES += MVPN_ADJUST
+
+        SOURCES += adjusthandler.cpp
+
+        HEADERS += adjusthandler.h
+    }
+
     versionAtLeast(QT_VERSION, 5.15.1) {
       QMAKE_CXXFLAGS *= -Werror
     }
@@ -540,8 +549,7 @@ else:android {
 
     INCLUDEPATH += platforms/android
 
-    SOURCES +=  platforms/android/androidadjusthelper.cpp \
-                platforms/android/androidauthenticationlistener.cpp \
+    SOURCES +=  platforms/android/androidauthenticationlistener.cpp \
                 platforms/android/androidcontroller.cpp \
                 platforms/android/androidiaphandler.cpp \
                 platforms/android/androidnotificationhandler.cpp \
@@ -554,8 +562,7 @@ else:android {
                 platforms/android/androidsharedprefs.cpp \
                 tasks/authenticate/desktopauthenticationlistener.cpp
 
-    HEADERS +=  platforms/android/androidadjusthelper.h \
-                platforms/android/androidauthenticationlistener.h \
+    HEADERS +=  platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
                 platforms/android/androidiaphandler.h \
                 platforms/android/androidnotificationhandler.h \
@@ -710,6 +717,20 @@ else:macos {
 else:ios {
     message(IOS build)
 
+    adjust {
+        message(Adjust SDK enabled)
+        DEFINES += MVPN_ADJUST
+
+        OBJECTIVE_SOURCES += \
+            adjusthandler.cpp \
+            platforms/ios/iosadjusthelper.mm \
+
+        OBJECTIVE_HEADERS += \
+            adjusthandler.h \
+            platforms/ios/iosadjusthelper.h \
+
+    }
+
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
     QT += svg
@@ -733,7 +754,6 @@ else:ios {
 
     OBJECTIVE_SOURCES += \
             platforms/ios/iosiaphandler.mm \
-            platforms/ios/iosadjusthelper.mm \
             platforms/ios/iosauthenticationlistener.mm \
             platforms/ios/ioscontroller.mm \
             platforms/ios/iosdatamigration.mm \
@@ -747,7 +767,6 @@ else:ios {
 
     OBJECTIVE_HEADERS += \
             platforms/ios/iosiaphandler.h \
-            platforms/ios/iosadjusthelper.h \
             platforms/ios/iosauthenticationlistener.h \
             platforms/ios/ioscontroller.h \
             platforms/ios/iosdatamigration.h \
