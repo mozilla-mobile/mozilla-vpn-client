@@ -1314,7 +1314,7 @@ void MozillaVPN::subscriptionCompleted() {
 
   logger.debug() << "Subscription completed";
 #ifdef MVPN_ADJUST
-  AdjustHandler::trackEvent("subscriptionCompleted");
+  AdjustHandler::trackEvent(AdjustHandler::SubscriptionCompleted);
 #endif
   completeActivation();
 }

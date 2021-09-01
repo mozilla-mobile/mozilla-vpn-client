@@ -9,10 +9,17 @@
 
 class AdjustHandler {
  public:
+  enum AdjustEvent {
+    SubscriptionCompleted,
+  };
+
   AdjustHandler() = default;
 
   static void initialize();
-  static void trackEvent(const QString& event);
+  static void trackEvent(AdjustEvent event);
+
+ private:
+  static const QString eventToToken(AdjustEvent event);
 };
 
 #endif  // ADJUSTHELPER_H
