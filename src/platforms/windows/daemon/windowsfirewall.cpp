@@ -561,7 +561,9 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
 
   conds[3].fieldKey = FWPM_CONDITION_IP_REMOTE_ADDRESS;
   conds[3].matchType = FWP_MATCH_EQUAL;
-  importAddress(targetIP, conds[3].conditionValue);
+  QByteArray buffer(IPV6_ADDRESS_SIZE,
+                    0);  // will hold v6 Addess bytes if present.
+  importAddress(targetIP, conds[3].conditionValue, &buffer);
 
   // Assemble the Filter base
   FWPM_FILTER0 filter;
@@ -894,8 +896,11 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range,
 
   FWPM_FILTER_CONDITION0 cond[1] = {0};
   FWP_RANGE0 ipRange;
-  importAddress(lower, ipRange.valueLow);
-  importAddress(upper, ipRange.valueHigh);
+  QByteArray upperv6Buffer(IPV6_ADDRESS_SIZE, 0);
+  QByteArray lowerV6Buffer(IPV6_ADDRESS_SIZE, 0);
+
+  importAddress(lower, ipRange.valueLow, &lowerV6Buffer);
+  importAddress(upper, ipRange.valueHigh, &upperv6Buffer);
 
   cond[0].fieldKey = FWPM_CONDITION_IP_REMOTE_ADDRESS;
   cond[0].matchType = FWP_MATCH_RANGE;
@@ -970,28 +975,38 @@ QString WindowsFirewall::getCurrentPath() {
 }
 
 void WindowsFirewall::importAddress(const QHostAddress& addr,
-                                    OUT FWP_VALUE0_& value) {
+                                    OUT FWP_VALUE0_& value,
+                                    OUT QByteArray* v6DataBuffer) {
   const bool isV4 = addr.protocol() == QAbstractSocket::IPv4Protocol;
   if (isV4) {
     value.type = FWP_UINT32;
     value.uint32 = addr.toIPv4Address();
     return;
   }
+  if (v6DataBuffer->size() < IPV6_ADDRESS_SIZE) {
+    return;
+  }
   value.type = FWP_BYTE_ARRAY16_TYPE;
+  value.byteArray16 = (FWP_BYTE_ARRAY16*)v6DataBuffer->data();
   auto v6bytes = addr.toIPv6Address();
-  RtlCopyMemory(&v6bytes, value.byteArray16, IPV6_ADDRESS_SIZE);
+  RtlCopyMemory(&v6bytes.c, v6DataBuffer->data(), IPV6_ADDRESS_SIZE);
 }
 void WindowsFirewall::importAddress(const QHostAddress& addr,
-                                    OUT FWP_CONDITION_VALUE0_& value) {
+                                    OUT FWP_CONDITION_VALUE0_& value,
+                                    OUT QByteArray* v6DataBuffer) {
   const bool isV4 = addr.protocol() == QAbstractSocket::IPv4Protocol;
   if (isV4) {
     value.type = FWP_UINT32;
     value.uint32 = addr.toIPv4Address();
     return;
   }
+  if (v6DataBuffer->size() < IPV6_ADDRESS_SIZE) {
+    return;
+  }
   value.type = FWP_BYTE_ARRAY16_TYPE;
+  value.byteArray16 = (FWP_BYTE_ARRAY16*)v6DataBuffer->data();
   auto v6bytes = addr.toIPv6Address();
-  RtlCopyMemory(&v6bytes, value.byteArray16, IPV6_ADDRESS_SIZE);
+  RtlCopyMemory(&v6bytes.c, v6DataBuffer->data(), IPV6_ADDRESS_SIZE);
 }
 
 bool WindowsFirewall::blockTrafficOnPort(uint port, uint8_t weight) {
