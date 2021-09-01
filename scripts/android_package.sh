@@ -12,11 +12,12 @@ fi
 JOBS=8
 QTPATH=
 RELEASE=1
+ADJUST_SDK_TOKEN=
 export SPLITAPK=0
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>]"
+  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>] [-a|--adjusttoken <adjust_token>]"
   print N ""
   print N "By default, the android build is compiled in release mode. Use -d or --debug for a debug build."
   print N ""
@@ -30,6 +31,11 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
+  -a | --adjusttoken)
+    ADJUST_SDK_TOKEN="$2"
+    shift
+    shift
+    ;;
   -j | --jobs)
     JOBS="$2"
     shift
@@ -88,9 +94,6 @@ fi
 if [ -z "${ANDROID_SDK_ROOT}" ]; then
   die "Could not find 'ANDROID_SDK_ROOT' in env"
 fi
-if [[ "$RELEASE" ]] && [ -z "${ADJUST_SDK_TOKEN}" ]; then
-  die "Could not find 'ADJUST_SDK_TOKEN' in env which is required for a release build"
-fi
 
 $QTPATH/android/bin/qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
 
@@ -112,9 +115,16 @@ python3 scripts/generate_glean.py || die "Failed to generate glean samples"
 printn Y "Computing the version... "
 export SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ) # Export so gradle can pick it up
 export VERSIONCODE=$(date +%s | sed 's/.\{3\}$//' )"0" #Remove the last 3 digits of the timestamp, so we only get every ~16m a new versioncode
+export ADJUST_SDK_TOKEN=$ADJUST_SDK_TOKEN # Export it even if it is not set to override system env variables
 FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
 print G "$SHORTVERSION - $FULLVERSION - $VERSIONCODE"
 print Y "Configuring the android build"
+if [[ "$ADJUST_SDK_TOKEN" ]]; then
+  print Y "Use adjust config"
+  ADJUST="CONFIG+=adjust"
+else
+  ADJUST="CONFIG-=adjust"
+fi
 
 cd .tmp/
 
@@ -144,6 +154,7 @@ if [[ "$RELEASE" ]]; then
     CONFIG-=debug \
     CONFIG-=debug_and_release \
     CONFIG+=release \
+    $ADJUST \
     ..//mozillavpn.pro  || die "Qmake failed"
 else
   printn Y "Use debug config \n"
@@ -154,6 +165,7 @@ else
     CONFIG-=debug_and_release \
     CONFIG-=release \
     CONFIG+=qml_debug \
+    $ADJUST \
     ..//mozillavpn.pro || die "Qmake failed"
 fi
 
