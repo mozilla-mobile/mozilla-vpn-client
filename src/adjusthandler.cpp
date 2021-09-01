@@ -20,7 +20,7 @@ Logger logger(LOG_MAIN, "AdjustHandler");
 }  // namespace
 
 const QString AdjustHandler::eventToToken(AdjustEvent event) {
-  switch(event) {
+  switch (event) {
     case AdjustEvent::SubscriptionCompleted:
 #ifdef MVPN_IOS
       return "jl72xm";
