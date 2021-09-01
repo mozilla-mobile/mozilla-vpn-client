@@ -70,7 +70,7 @@ Item {
             Repeater {
                 id: featureRepeater
 
-                model: newFeaturesModel
+                model: VPNWhatsNewModel
                 delegate: ColumnLayout {
                     Layout.leftMargin: Theme.windowMargin / 2
                     Layout.rightMargin: Theme.windowMargin

@@ -10,7 +10,7 @@ VPNPopup {
     contentItem: VPNFeatureTour {
         id: featureTour
 
-        slidesModel: newFeaturesModel
+        slidesModel: VPNWhatsNewModel
         onFinished: {
             root.close();
         }
