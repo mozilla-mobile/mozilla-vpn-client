@@ -363,26 +363,26 @@ Window {
         }
     }
 
-    Button {
+    Column {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 16
-        anchors.left: parent.left
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 8
 
-        text: "Reset What’s new"
-        onClicked: {
-            VPNSettings.featuresTourShown = false;
-            VPNWhatsNewModel.markFeaturesAsUnseen();
+        Button {
+            text: "Reset What’s new"
+            onClicked: {
+                VPNSettings.featuresTourShown = false;
+                VPNWhatsNewModel.markFeaturesAsUnseen();
+                featureTourPopup.handleShowTour();
+            }
         }
-    }
 
-    Button {
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 16
-        anchors.right: parent.right
-
-        text: "Mark as seen"
-        onClicked: {
-            VPNWhatsNewModel.markFeaturesAsSeen();
+        Button {
+            text: "Mark features as seen"
+            onClicked: {
+                VPNWhatsNewModel.markFeaturesAsSeen();
+            }
         }
     }
 }

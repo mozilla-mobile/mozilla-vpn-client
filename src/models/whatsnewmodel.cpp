@@ -10,13 +10,7 @@
 #include "featurelist.h"
 #include "feature.h"
 
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QMutableListIterator>
-
-#include <QDebug>
+#include <QList>
 
 namespace {
 Logger logger(LOG_MODEL, "WhatsNewModel");
@@ -31,7 +25,6 @@ WhatsNewModel::WhatsNewModel() {
 WhatsNewModel::~WhatsNewModel() { MVPN_COUNT_DTOR(WhatsNewModel); }
 
 int WhatsNewModel::featureCount() {
-  logger.debug() << "WhatsNewModel - featureCount: " << m_featurelist.size();
   return m_featurelist.size();
 }
 
@@ -56,19 +49,20 @@ QVariant WhatsNewModel::data(const QModelIndex& index, int role) const {
     return QVariant();
   }
 
+  auto feature = m_featurelist.at(index.row());
   switch (role) {
     case RoleId:
-      return QVariant(m_featurelist.at(index.row())->id());
+      return QVariant(feature->id());
     case RoleDisplayName:
-      return QVariant(m_featurelist.at(index.row())->displayName());
+      return QVariant(feature->displayName());
     case RoleDescription:
-      return QVariant(m_featurelist.at(index.row())->description());
+      return QVariant(feature->description());
     case RoleShortDescription:
-      return QVariant(m_featurelist.at(index.row())->shortDescription());
+      return QVariant(feature->shortDescription());
     case RoleImagePath:
-      return QVariant(m_featurelist.at(index.row())->imagePath());
+      return QVariant(feature->imagePath());
     case RoleIconPath:
-      return QVariant(m_featurelist.at(index.row())->iconPath());
+      return QVariant(feature->iconPath());
     default:
       return QVariant();
   }
@@ -79,8 +73,9 @@ void WhatsNewModel::setNewFeatures() {
   QList<Feature*> newFeatures;
 
   for (int i = 0; i < allFeatures.count(); ++i) {
-    bool shouldBeInWhatsNew =
-        allFeatures[i]->isNew() && allFeatures[i]->isMajor();
+    bool shouldBeInWhatsNew = allFeatures[i]->isNew() &&
+                              allFeatures[i]->isMajor() &&
+                              allFeatures[i]->isSupported();
 
     if (shouldBeInWhatsNew) {
       newFeatures.append(allFeatures[i]);
@@ -88,7 +83,6 @@ void WhatsNewModel::setNewFeatures() {
   }
 
   m_featurelist = newFeatures;
-  qDebug() << m_featurelist;
 }
 
 bool WhatsNewModel::hasUnseenFeature() {
@@ -98,7 +92,6 @@ bool WhatsNewModel::hasUnseenFeature() {
   logger.debug() << "Reading seen features from settings";
   if (settingsHolder->hasSeenFeatures()) {
     const QStringList& seenFeatureList = settingsHolder->seenFeatures();
-    logger.debug() << "WhatsNewModel - seenFeatures: " << seenFeatureList;
 
     for (int i = 0; i < m_featurelist.count(); ++i) {
       bool isSeenFeature = seenFeatureList.contains(m_featurelist[i]->id());
@@ -108,8 +101,6 @@ bool WhatsNewModel::hasUnseenFeature() {
       }
     }
   }
-
-  emit hasUnseenFeatureChanged();
 
   return false;
 }

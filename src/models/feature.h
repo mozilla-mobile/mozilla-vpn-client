@@ -52,8 +52,10 @@ class Feature : public QObject {
   // Returns true if it was enabled via DevMode
   bool isDevModeEnabled() const;
 
+  // Returns true if this is a newly introduced feature
   bool isNew() const;
 
+  // Returns true if this is a feature we marked as major
   bool isMajor() const;
 
   QString id() const { return m_id; };
