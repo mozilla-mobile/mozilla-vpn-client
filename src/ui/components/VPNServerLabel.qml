@@ -7,9 +7,7 @@ import QtQuick.Layouts 1.14
 import "../themes/themes.js" as Theme
 
 RowLayout {
-    property var servers: ({})
-    property int imgSize: 20
-
+    property var serversList
     id: root
 
     Flow {
@@ -20,44 +18,68 @@ RowLayout {
 
         Repeater {
             id: serverRepeater
-            model: servers
-            delegate: serverDelegate
+            model: serversList
+            delegate: RowLayout {
+                spacing: Theme.listSpacing
+
+                Image {
+                    id: flag
+                    fillMode: Image.PreserveAspectFit
+
+                    Layout.preferredWidth: Theme.windowMargin
+                    Layout.preferredHeight: Theme.windowMargin
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
+
+                    Component.onCompleted: {
+                        if (typeof(countryCode) !== "undefined") {
+                            return source = "../resources/flags/" + countryCode.toUpperCase() + ".png"
+                        }
+
+                        if (typeof(modelData.countryCode) === "undefined" || modelData.countryCode === "") {
+                            return visible = false;
+                        }
+
+                        source = "../resources/flags/" + modelData.countryCode.toUpperCase() + ".png"
+
+                    }
+                }
+
+                VPNLightLabel {
+                    id: serverLocation
+                    text: {
+                        if (typeof(localizedCityName) !== "undefined") {
+                             return localizedCityName
+                         }
+                         if (modelData.localizedCityName) {
+                             return modelData.localizedCityName
+                         }
+                         return "";
+                        }
+                    Accessible.ignored: true
+                    Layout.alignment: Qt.AlignLeft
+                }
+
+                VPNIcon {
+                    id: arrowIcon
+
+                    source: "../resources/arrow-forward.svg"
+                    sourceSize.height: Theme.iconSize
+                    sourceSize.width: Theme.iconSize
+                    Layout.leftMargin: Theme.listSpacing
+                    Layout.rightMargin: Theme.listSpacing
+                    visible: (index !== serverRepeater.count - 1)
+                    Component.onCompleted: {
+                        if (typeof(countryCode) !== "undefined") {
+                            return;
+                        }
+
+                        if (typeof(serverRepeater) === "undefined" || modelData.countryCode === "") {
+                            return visible = false;
+                        }
+                    }
+                }
+            }
         }
     }
 
-    Component {
-        id: serverDelegate
-
-        RowLayout {
-            spacing: Theme.listSpacing
-
-            Image {
-                id: flag
-                fillMode: Image.PreserveAspectFit
-                source: "../resources/flags/" + modelData.countryCode.toUpperCase() + ".png"
-
-                Layout.preferredWidth: imgSize
-                Layout.preferredHeight: imgSize
-                Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
-            }
-
-            VPNLightLabel {
-                id: serverLocation
-                text: modelData.localizedCityName
-                Accessible.ignored: true
-                Layout.alignment: Qt.AlignLeft
-            }
-
-            VPNIcon {
-                id: arrowIcon
-
-                source: "../resources/arrow-forward.svg"
-                sourceSize.height: Theme.iconSize
-                sourceSize.width: Theme.iconSize
-                visible: index !== serverRepeater.model.length - 1
-                Layout.leftMargin: Theme.listSpacing
-                Layout.rightMargin: Theme.listSpacing
-            }
-        }
-    }
 }

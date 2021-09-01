@@ -40,7 +40,8 @@ void WindowsNetworkWatcher::initialize() {
 
   DWORD prefNotifSource;
   if (WlanRegisterNotification(m_wlanHandle, WLAN_NOTIFICATION_SOURCE_MSM,
-                               true /* ignore duplicates */, wlanCallback, this,
+                               true /* ignore duplicates */,
+                               (WLAN_NOTIFICATION_CALLBACK)wlanCallback, this,
                                nullptr, &prefNotifSource) != ERROR_SUCCESS) {
     WindowsCommons::windowsLog("Failed to register a wlan callback");
     return;

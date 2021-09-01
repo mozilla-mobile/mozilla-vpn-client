@@ -4,26 +4,107 @@
 
 #include "featurelist.h"
 #include "logger.h"
+#include "qmlengineholder.h"
+#include "settingsholder.h"
 
-#include <QProcessEnvironment>
+#include "features/featureappreview.h"
+#include "features/featurecaptiveportal.h"
+#include "features/featurecustomdns.h"
+#include "features/featureglean.h"
+#include "features/featureinappaccountcreate.h"
+#include "features/featureinappauth.h"
+#include "features/featureinapppurchase.h"
+#include "features/featurelocalareaaccess.h"
+#include "features/featuremultihop.h"
+#include "features/featurenotificationcontrol.h"
+#include "features/featuresplittunnel.h"
+#include "features/featurestartonboot.h"
+#include "features/featureunauthsupport.h"
+#include "features/featureunsecurednetworknotification.h"
+
 #include <QJsonDocument>
 #include <QJsonObject>
-
-#ifdef MVPN_ANDROID
-#  include "platforms/android/androidutils.h"
-#endif
-
-#ifdef MVPN_LINUX
-#  include "platforms/linux/linuxdependencies.h"
-#endif
+#include <QHash>
+#include <QProcessEnvironment>
 
 namespace {
-Logger logger(LOG_MAIN, "FeatureList");
-FeatureList s_featureList;
+FeatureList* s_instance = nullptr;
+Logger logger(LOG_MODEL, "FeatureList");
 }  // namespace
 
-// static
-FeatureList* FeatureList::instance() { return &s_featureList; }
+FeatureList* FeatureList::instance() {
+  if (!s_instance) {
+    s_instance = new FeatureList();
+  };
+  return s_instance;
+}
+
+void FeatureList::initialize() {
+  new FeatureAppReview();
+  new FeatureCaptivePortal();
+  new FeatureCustomDNS();
+  new FeatureGlean();
+  new FeatureInAppAccountCreate();
+  new FeatureInAppAuth();
+  new FeatureInAppPurchase();
+  new FeatureLocalAreaAccess();
+  new FeatureMultiHop();
+  new FeatureNotificationControl();
+  new FeatureSplitTunnel();
+  new FeatureStartOnBoot();
+  new FeatureUnauthSupport();
+  new FeatureUnsecuredNetworkNotification();
+
+  m_featurelist = Feature::getAll();
+}
+
+void FeatureList::devModeFlipFeatureFlag(const QString& feature) {
+  logger.debug() << "Flipping " << feature;
+
+  QStringList flags;
+  auto const settings = SettingsHolder::instance();
+  if (settings->hasDevModeFeatureFlags()) {
+    flags = settings->devModeFeatureFlags();
+  }
+
+  logger.debug() << "Got List - size:" << flags.size();
+
+  if (flags.contains(feature)) {
+    logger.debug() << "Contains yes -> remove" << flags.size();
+    flags.removeAll(feature);
+  } else {
+    logger.debug() << "Contains no -> add" << flags.size();
+    flags.append(feature);
+  }
+
+  settings->setDevModeFeatureFlags(flags);
+
+  logger.debug() << "Feature Flipped! new size:" << flags.size();
+  emit dataChanged(createIndex(0, 0), createIndex(m_featurelist.size(), 0));
+}
+
+QHash<int, QByteArray> FeatureList::roleNames() const {
+  return Feature::roleNames();
+}
+
+int FeatureList::rowCount(const QModelIndex&) const {
+  return m_featurelist.size();
+}
+
+QVariant FeatureList::data(const QModelIndex& index, int role) const {
+  auto feature = m_featurelist.at(index.row());
+  if (feature == nullptr) {
+    return QVariant();
+  }
+  return feature->data(role);
+};
+
+QObject* FeatureList::get(const QString& feature) {
+  const Feature* f = Feature::get(feature);
+  auto obj = (QObject*)f;
+  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+  return obj;
+}
 
 void FeatureList::updateFeatureList(const QByteArray& data) {
   QJsonObject json = QJsonDocument::fromJson(data).object();
@@ -31,153 +112,9 @@ void FeatureList::updateFeatureList(const QByteArray& data) {
   if (unauthSupportEnabled.isBool()) {
     logger.debug() << "Setting unauth support enablet to: "
                    << unauthSupportEnabled.toBool();
-    m_unauthSupportSupported = unauthSupportEnabled.toBool();
+    FeatureUnauthSupport::instance()->setIsSupported(
+        unauthSupportEnabled.toBool());
   } else {
     logger.error() << "Error in parsing unauth support response";
   }
-}
-
-bool FeatureList::startOnBootSupported() const {
-#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
-    defined(MVPN_DUMMY) || defined(MVPN_WASM)
-  return true;
-#else
-  return false;
-#endif
-}
-
-bool FeatureList::localNetworkAccessSupported() const {
-#if defined(MVPN_IOS)
-  // managed by the OS automatically. No need to expose this feature.
-  return false;
-#endif
-
-  // All the rest (android, windows, linux, mac,...) is OK.
-  return true;
-}
-
-bool FeatureList::protectSelectedAppsSupported() const {
-#if defined(MVPN_ANDROID) || defined(MVPN_WINDOWS) || defined(MVPN_DUMMY)
-  return true;
-#elif defined(MVPN_LINUX)
-  static bool initDone = false;
-  static bool splitTunnelSupported = false;
-  if (initDone) {
-    return splitTunnelSupported;
-  }
-  initDone = true;
-
-  /* Control groups v1 must be mounted for traffic classification */
-  if (LinuxDependencies::findCgroupPath("net_cls").isNull()) {
-    return false;
-  }
-
-  /* Application tracking is only supported on GTK-based desktops */
-  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  if (!pe.contains("XDG_CURRENT_DESKTOP")) {
-    return false;
-  }
-  QStringList desktop = pe.value("XDG_CURRENT_DESKTOP").split(":");
-  if (!desktop.contains("GNOME") && !desktop.contains("MATE") &&
-      !desktop.contains("Unity") && !desktop.contains("X-Cinnamon")) {
-    return false;
-  }
-  splitTunnelSupported = true;
-  return splitTunnelSupported;
-#else
-  return false;
-#endif
-}
-
-bool FeatureList::captivePortalNotificationSupported() const {
-#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
-    defined(MVPN_DUMMY) || defined(MVPN_WASM)
-  return true;
-#else
-  // If we decide to enable the captive-portal notification for IOS, remember
-  // to add the following keys/values in the ios/app/Info.plist:
-  // ```
-  // <key>NSAppTransportSecurity</key>
-  // <dict>
-  //   <key>NSAllowsArbitraryLoads</key>
-  //   <true/>
-  // </dict>
-  // ```
-  // NSAllowsArbitraryLoads allows the loading of HTTP (not-encrypted)
-  // requests. By default, IOS apps work in HTTPS-only mode.
-  return false;
-#endif
-}
-
-bool FeatureList::unsecuredNetworkNotificationSupported() const {
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
-    defined(MVPN_WASM) || defined(MVPN_DUMMY)
-  return true;
-#else
-  return false;
-#endif
-}
-
-bool FeatureList::notificationControlSupported() const {
-#if defined(MVPN_ANDROID)
-  return false;
-#else
-  return true;
-#endif
-}
-
-bool FeatureList::userDNSSupported() const {
-#if defined(MVPN_ANDROID) || defined(MVPN_WASM) || defined(MVPN_DUMMY) || \
-    defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
-  return true;
-#else
-  return false;
-#endif
-}
-
-bool FeatureList::authenticationInApp() const {
-#ifdef MVPN_AUTHINAPP
-  return true;
-#else
-  return false;
-#endif
-}
-
-bool FeatureList::accountCreationInAppSupported() const {
-#if defined(MVPN_IOS) || defined(UNIT_TEST)
-  // Soon-ish, android will have AIP. But not now yet.
-  return true;
-#else
-  return false;
-#endif
-}
-
-bool FeatureList::inAppPurchaseSupported() const {
-#if defined(MVPN_IOS)
-  // Soon, android will have IAP.
-  return true;
-#else
-  return false;
-#endif
-}
-
-bool FeatureList::multihopSupported() const {
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS) || defined(MVPN_DUMMY) || \
-    defined(MVPN_MACOS_DAEMON)
-  return true;
-#else
-  return false;
-#endif
-}
-
-bool FeatureList::appReviewSupported() const {
-#if defined(MVPN_IOS) || defined(MVPN_ANDROID)
-  return true;
-#else
-  return false;
-#endif
-}
-
-bool FeatureList::unauthSupportSupported() const {
-  return m_unauthSupportSupported;
 }

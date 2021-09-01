@@ -23,7 +23,6 @@ VPNFlickable {
 
     VPNCheckBoxRow {
         id: developerUnlock
-        objectName: "settingsDeveloperUnlock"
 
         anchors.top: menu.bottom
         anchors.topMargin: Theme.windowMargin
@@ -73,9 +72,25 @@ VPNFlickable {
         }
     }
 
-    VPNCheckBoxAlert {
-        id: restartRequired
+    VPNSettingsItem {
+        id: featureListLink
+        objectName: "settingsFeatureList"
+
         anchors.top: stagingServer.bottom
+        anchors.topMargin: Theme.windowMargin
+        anchors.left: stagingServer.left
+        anchors.leftMargin: Theme.windowMargin/2
+        width: parent.width - Theme.windowMargin
+
+        // Do not translate this string!
+        settingTitle: "Feature list"
+        imageLeftSrc: "../resources/settings/whatsnew.svg"
+        imageRightSrc: "../resources/chevron.svg"
+        onClicked: stackview.push("../developerMenu/ViewFeatureList.qml")
+    }
+
+    VPNCheckBoxAlert {
+        anchors.top: featureListLink.bottom
         visible: VPN.stagingMode != VPNSettings.stagingServer
 
         errorMessage: VPNl18n.tr(VPNl18n.SettingsDevRestartRequired)

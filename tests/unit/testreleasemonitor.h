@@ -15,4 +15,7 @@ class TestReleaseMonitor final : public TestHelper {
 
   void compareVersions_data();
   void compareVersions();
+
+  void stripMinor_data();
+  void stripMinor();
 };

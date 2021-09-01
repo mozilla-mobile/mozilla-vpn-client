@@ -4,6 +4,7 @@
 
 #include "../../src/authenticationinapp/authenticationinapp.h"
 #include "../../src/constants.h"
+#include "../../src/featurelist.h"
 #include "../../src/leakdetector.h"
 #include "../../src/settingsholder.h"
 #include "../../src/simplenetworkmanager.h"
@@ -27,6 +28,7 @@ int main(int argc, char* argv[]) {
 
   SimpleNetworkManager snm;
   SettingsHolder settingsHolder;
+  FeatureList::instance()->initialize();
 
   int failures = 0;
   TestEmailValidation tev;

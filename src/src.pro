@@ -80,6 +80,7 @@ SOURCES += \
         controller.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
+        dnshelper.cpp \
         errorhandler.cpp \
         featurelist.cpp \
         filterproxymodel.cpp \
@@ -107,6 +108,7 @@ SOURCES += \
         main.cpp \
         models/device.cpp \
         models/devicemodel.cpp \
+        models/feature.cpp \
         models/feedbackcategorymodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
@@ -195,8 +197,23 @@ HEADERS += \
         controllerimpl.h \
         cryptosettings.h \
         curve25519.h \
+        dnshelper.h \
         errorhandler.h \
         featurelist.h \
+        features/featureappreview.h \
+        features/featurecaptiveportal.h \
+        features/featurecustomdns.h \
+        features/featureglean.h \
+        features/featureinappaccountCreate.h \
+        features/featureinappauth.h \
+        features/featureinapppurchase.h \
+        features/featurelocalareaaccess.h \
+        features/featuremultihop.h \
+        features/featurenotificationcontrol.h \
+        features/featuresplittunnel.h \
+        features/featurestartonboot.h \
+        features/featureunsecurednetworknotification.h \
+        features/featureunauthsupport.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
@@ -216,6 +233,7 @@ HEADERS += \
         logoutobserver.h \
         models/device.h \
         models/devicemodel.h \
+        models/feature.h \
         models/feedbackcategorymodel.h \
         models/helpmodel.h \
         models/keys.h \
@@ -525,6 +543,7 @@ else:android {
     SOURCES +=  platforms/android/androidadjusthelper.cpp \
                 platforms/android/androidauthenticationlistener.cpp \
                 platforms/android/androidcontroller.cpp \
+                platforms/android/androidiaphandler.cpp \
                 platforms/android/androidnotificationhandler.cpp \
                 platforms/android/androidutils.cpp \
                 platforms/android/androidwebview.cpp \
@@ -538,6 +557,7 @@ else:android {
     HEADERS +=  platforms/android/androidadjusthelper.h \
                 platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
+                platforms/android/androidiaphandler.h \
                 platforms/android/androidnotificationhandler.h \
                 platforms/android/androidutils.h \
                 platforms/android/androidwebview.h \

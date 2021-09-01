@@ -116,8 +116,12 @@ void TestSignUpAndIn::signUp() {
   loop.exec();
 
   // The account is not active yet. So, let's check the final URL.
-  QCOMPARE(finalUrl.host(), "stage-vpn.guardian.nonprod.cloudops.mozgcp.net");
-  QCOMPARE(finalUrl.path(), "/vpn/client/login/success");
+  QVERIFY(
+      (finalUrl.host() == "stage-vpn.guardian.nonprod.cloudops.mozgcp.net" &&
+       finalUrl.path() == "/vpn/client/login/success") ||
+      (finalUrl.host() == "www-dev.allizom.org" &&
+       finalUrl.path() == "/en-US/products/vpn/"));
+  qDebug() << finalUrl.path();
 }
 
 void TestSignUpAndIn::signIn() {
@@ -184,8 +188,12 @@ void TestSignUpAndIn::signIn() {
   loop.exec();
 
   // The account is not active yet. So, let's check the final URL.
-  QCOMPARE(finalUrl.host(), "stage-vpn.guardian.nonprod.cloudops.mozgcp.net");
-  QCOMPARE(finalUrl.path(), "/vpn/client/login/success");
+  QVERIFY(
+      (finalUrl.host() == "stage-vpn.guardian.nonprod.cloudops.mozgcp.net" &&
+       finalUrl.path() == "/vpn/client/login/success") ||
+      (finalUrl.host() == "www-dev.allizom.org" &&
+       finalUrl.path() == "/en-US/products/vpn/"));
+  qDebug() << finalUrl.path();
 }
 
 QString TestSignUpAndIn::fetchSessionCode() {

@@ -65,7 +65,7 @@ Window {
             minimumWidth = Theme.desktopAppWidth
         }
 
-        Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled, {
+        Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported, {
           appBuild: `MozillaVPN/${VPN.versionString}`,
           appDisplayVersion: VPN.versionString,
           httpClient: {
@@ -178,7 +178,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: VPNFeatureList.authenticationInApp ? "states/StateAuthenticationInApp.qml" : "states/StateAuthenticating.qml"
+                        source: VPNFeatureList.get("inAppAuthentication").isSupported ? "states/StateAuthenticationInApp.qml" : "states/StateAuthenticating.qml"
                     }
 
                 },
@@ -228,11 +228,11 @@ Window {
 
                 },
                 State {
-                    name: VPN.StateSubscriptionValidation
+                    name: VPN.StateSubscriptionInProgress
 
                     PropertyChanges {
                         target: loader
-                        source: "states/StateSubscriptionValidation.qml"
+                        source: "states/StateSubscriptionInProgress.qml"
                     }
 
                 },
@@ -262,6 +262,22 @@ Window {
                         source: "states/StateBackendFailure.qml"
                     }
 
+                },
+                State {
+                    name: VPN.StateBillingNotAvailable
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateBillingNotAvailable.qml"
+                    }
+                },
+                State {
+                    name: VPN.StateSubscriptionNotValidated
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateSubscriptionNotValidated.qml"
+                    }
                 }
             ]
 
@@ -302,7 +318,7 @@ Window {
         }
 
         function onSendGleanPings() {
-            if (VPNSettings.gleanEnabled) {
+            if (VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported) {
                 Pings.main.submit();
             }
         }
@@ -314,8 +330,51 @@ Window {
         function onAboutToQuit() {
             // We are about to quit. Let's see if we are fast enough to send
             // the last chunck of data to the glean servers.
-            if (VPNSettings.gleanEnabled) {
+            if (VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported) {
               Pings.main.submit();
+            }
+        }
+    }
+
+    VPNSystemAlert {
+    }
+
+    VPNFilterProxyModel {
+        id: newFeaturesModel
+        source: VPNFeatureList
+        // Filter features that should be listed in What’s new
+        filterCallback: feature => showFeatureInWhatsNew(feature)
+    }
+
+    VPNFilterProxyModel {
+        id: unseenFeaturesModel
+        source: VPNFeatureList
+        // Filter seen features for showing the What’s new indicator
+        filterCallback: feature => {
+            const isFeatureSeen = VPNSettings.seenFeatures.includes(feature.id);
+            return showFeatureInWhatsNew(feature) && !isFeatureSeen;
+        }
+    }
+
+    function showFeatureInWhatsNew(feature) {
+        return feature.isNew           // new feature in this release
+            && feature.isMajor         // a feature we would like to show
+            && feature.supported;      // feature is supported on platform
+    }
+
+    VPNFeatureTourPopup {
+        id: featureTourPopup
+
+        Component.onCompleted: {
+            featureTourPopup.handleShowTour();
+        }
+
+        function handleShowTour() {
+            if(VPN.state === VPN.StateMain
+                && !VPNSettings.featuresTourShown
+                && newFeaturesModel.rowCount() > 0
+            ) {
+                featureTourPopup.openTour();
             }
         }
     }
@@ -325,8 +384,13 @@ Window {
         function onGleanEnabledChanged() {
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }
-    }
 
-    VPNSystemAlert {
+        function onFeaturesTourShownChanged() {
+            featureTourPopup.handleShowTour();
+        }
+
+        function onSeenFeaturesChanged() {
+            unseenFeaturesModel.invalidate();
+        }
     }
 }

@@ -152,3 +152,19 @@ int VersionApi::compareVersions(const QString& a, const QString& b) {
 
   return 0;
 }
+
+// static
+QString VersionApi::stripMinor(const QString& a) {
+  QStringList aParts;
+
+  if (!a.isEmpty()) {
+    for (const QString& part : a.split(".")) aParts.append(part);
+  }
+
+  while (aParts.length() < 3) aParts.append("0");
+
+  while (aParts.length() > 2) aParts.removeLast();
+
+  aParts.append("0");
+  return aParts.join(".");
+}

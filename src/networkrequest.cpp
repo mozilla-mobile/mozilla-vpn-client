@@ -361,7 +361,7 @@ NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(apiBaseUrl());
-  url.setPath("/api/v1/featurelist");
+  url.setPath("/api/v1/vpn/featurelist");
   r->m_request.setUrl(url);
 
   r->getRequest();
@@ -503,7 +503,16 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
   obj.insert("service", query.queryItemValue("client_id"));
 
   QJsonArray scopes;
-  scopes.append(query.queryItemValue("scope"));
+  QStringList queryScopes = query.queryItemValue("scope").split("+");
+  foreach (const QString& s, queryScopes) {
+    QString parsedScope;
+    if (s.startsWith("http")) {
+      parsedScope = QUrl::fromPercentEncoding(s.toUtf8());
+    } else {
+      parsedScope = s;
+    }
+    scopes.append(parsedScope);
+  }
   obj.insert("scopes", scopes);
 
   QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
@@ -582,7 +591,10 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
   QJsonObject obj;
   obj.insert("client_id", query.queryItemValue("client_id"));
   obj.insert("state", query.queryItemValue("state"));
-  obj.insert("scope", query.queryItemValue("scope"));
+  // QUrl does not covert '+' to <space>. But we need it to split the scopes.
+  obj.insert(
+      "scope",
+      query.queryItemValue("scope", QUrl::FullyDecoded).replace("+", " "));
   obj.insert("access_type", query.queryItemValue("access_type"));
 
   QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
@@ -598,7 +610,7 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
 #ifdef UNIT_TEST
 // static
 NetworkRequest* NetworkRequest::createForFxaTotpCreation(
-    QObject* parent, const QByteArray& sessionToken, const QUrlQuery& query) {
+    QObject* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaUrl());
@@ -672,6 +684,34 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
 
   QJsonDocument json;
   json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+#endif
+
+#ifdef MVPN_ANDROID
+NetworkRequest* NetworkRequest::createForAndroidPurchase(
+    QObject* parent, const QString& sku, const QString& purchaseToken) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/purchases/android");
+  r->m_request.setUrl(url);
+
+  QJsonObject obj;
+  obj.insert("sku", sku);
+  obj.insert("token", purchaseToken);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  logger.debug() << "Network request createForAndroidPurchase created"
+                 << logger.sensitive(json.toJson(QJsonDocument::Compact));
 
   r->postRequest(json.toJson(QJsonDocument::Compact));
   return r;

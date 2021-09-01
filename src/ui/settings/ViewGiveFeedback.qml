@@ -171,7 +171,7 @@ Item {
                     if (btnGroup.checkedButton.value >= 5) {
                         feedbackRoot.sendFeedback(btnGroup.checkedButton.value, 0, "");
 
-                        if (VPNFeatureList.appReviewSupported) {
+                        if (VPNFeatureList.get("appReview").isSupported) {
                           feedbackStackView.push(appReviewView);
                           return;
                         }

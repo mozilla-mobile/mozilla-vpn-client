@@ -12,3 +12,13 @@ QList<IPAddress> RFC4193::ipv6() {
 
   return list;
 }
+
+bool RFC4193::contains(const QHostAddress& ip) {
+  QList<IPAddress> list = ipv6();
+  foreach (const IPAddress& addr, list) {
+    if (addr.contains(ip)) {
+      return true;
+    }
+  }
+  return false;
+}
