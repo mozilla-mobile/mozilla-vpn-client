@@ -353,7 +353,7 @@ Window {
             featureTourPopup.handleShowTour();
         }
 
-        function handleShowTour(tourShown) {
+        function handleShowTour() {
             if(VPN.state === VPN.StateMain
                 && VPNWhatsNewModel.hasUnseenFeature
                 && !tourShown

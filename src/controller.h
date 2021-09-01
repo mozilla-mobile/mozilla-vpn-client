@@ -64,8 +64,6 @@ class Controller final : public QObject {
 
   QString currentLocalizedCityName() const;
 
-  const QString& switchingCountryCode() const { return m_switchingCountryCode; }
-
   QString switchingLocalizedCityName() const;
 
   bool silentSwitchServers();
@@ -141,8 +139,10 @@ class Controller final : public QObject {
   QString m_currentCountryCode;
   QString m_currentCity;
 
-  QString m_switchingCountryCode;
-  QString m_switchingCity;
+  QString m_switchingExitCountry;
+  QString m_switchingExitCity;
+  QString m_switchingEntryCountry;
+  QString m_switchingEntryCity;
 
   enum NextStep {
     None,

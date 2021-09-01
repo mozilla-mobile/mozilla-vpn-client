@@ -16,6 +16,16 @@ import "../themes/colors.js" as Color
 ColumnLayout {
     property bool hasVisibleConnections: false
     property bool showMultiHopRecentConnections: true
+    property real numVisibleConnections: recentConnectionsRepeater.count
+
+    function focusItemAt(idx) {
+        if (!visible) {
+            return serverSearchInput.forceActiveFocus()
+        }
+
+        recentConnectionsRepeater.itemAt(idx).forceActiveFocus();
+    }
+
 
     id: root
 
@@ -110,6 +120,9 @@ ColumnLayout {
                 anchors.right: undefined
                 anchors.leftMargin: undefined
                 anchors.rightMargin: undefined
+
+                Keys.onDownPressed: recentConnectionsRepeater.itemAt(index + 1) ? recentConnectionsRepeater.itemAt(index + 1).forceActiveFocus() : countriesRepeater.itemAt(0).forceActiveFocus()
+                Keys.onUpPressed: recentConnectionsRepeater.itemAt(index - 1) ? recentConnectionsRepeater.itemAt(index - 1).forceActiveFocus() : serverSearchInput.forceActiveFocus()
 
                 onClicked: {
                     let args = [];
