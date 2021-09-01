@@ -31,17 +31,6 @@ WhatsNewModel::WhatsNewModel() {
 WhatsNewModel::~WhatsNewModel() { MVPN_COUNT_DTOR(WhatsNewModel); }
 
 int WhatsNewModel::featureCount() {
-  // Start: Get seen features from settings
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
-  logger.debug() << "Reading seen features from settings";
-  if (settingsHolder->hasSeenFeatures()) {
-    const QStringList& seenFeatureList = settingsHolder->seenFeatures();
-    logger.debug() << "WhatsNewModel - seenFeatures: " << seenFeatureList;
-  }
-  // End: Get seen features from settings
-
   logger.debug() << "WhatsNewModel - featureCount: " << m_featurelist.size();
   return m_featurelist.size();
 }
@@ -92,4 +81,25 @@ void WhatsNewModel::setNewFeatures() {
 
   m_featurelist = newFeatures;
   qDebug() << m_featurelist;
+}
+
+bool WhatsNewModel::hasUnseenFeature() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  logger.debug() << "Reading seen features from settings";
+  if (settingsHolder->hasSeenFeatures()) {
+    const QStringList& seenFeatureList = settingsHolder->seenFeatures();
+    logger.debug() << "WhatsNewModel - seenFeatures: " << seenFeatureList;
+
+    for (int i = 0; i < m_featurelist.count(); ++i) {
+      bool isSeenFeature = seenFeatureList.contains(m_featurelist[i]->id());
+
+      if (!isSeenFeature) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }

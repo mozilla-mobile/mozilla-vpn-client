@@ -17,8 +17,8 @@ class WhatsNewModel final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(WhatsNewModel)
 
-  Q_PROPERTY(int hasUnseenFeature READ hasUnseenFeature NOTIFY
-             hasUnseenFeatureChanged)
+  Q_PROPERTY(bool hasUnseenFeature READ hasUnseenFeature NOTIFY
+                 hasUnseenFeatureChanged)
 
  public:
   WhatsNewModel();
@@ -31,8 +31,6 @@ class WhatsNewModel final : public QAbstractListModel {
     RoleIsSupported,
   };
 
-  int hasUnseenFeature() const { return m_featurelist.count(); }
-
   const QList<Feature*>& features() const { return m_featurelist; }
 
   QHash<int, QByteArray> roleNames() const override;
@@ -40,6 +38,8 @@ class WhatsNewModel final : public QAbstractListModel {
   Q_INVOKABLE int featureCount();
 
   Q_INVOKABLE void setNewFeatures();
+
+  Q_INVOKABLE bool hasUnseenFeature();
 
   int rowCount(const QModelIndex&) const override;
 

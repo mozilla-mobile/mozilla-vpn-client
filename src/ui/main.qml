@@ -394,7 +394,7 @@ Window {
 
     Column {
         Button {
-            text: VPNWhatsNewModel.hasUnseenFeature
+            text: VPNWhatsNewModel.hasUnseenFeature ? ":)" : ":("
         }
 
         Repeater {
@@ -416,7 +416,7 @@ Window {
         text: "Reset What’s new"
         onClicked: {
             VPNSettings.featuresTourShown = false;
-            // VPNSettings.seenFeatures = [];
+             VPNSettings.seenFeatures = [];
 
             console.log(VPNWhatsNewModel.getNewFeatures());
         }
