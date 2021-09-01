@@ -503,7 +503,16 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
   obj.insert("service", query.queryItemValue("client_id"));
 
   QJsonArray scopes;
-  scopes.append(query.queryItemValue("scope"));
+  QStringList queryScopes = query.queryItemValue("scope").split("+");
+  foreach (const QString& s, queryScopes) {
+    QString parsedScope;
+    if (s.startsWith("http")) {
+      parsedScope = QUrl::fromPercentEncoding(s.toUtf8());
+    } else {
+      parsedScope = s;
+    }
+    scopes.append(parsedScope);
+  }
   obj.insert("scopes", scopes);
 
   QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
@@ -675,6 +684,34 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
 
   QJsonDocument json;
   json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+#endif
+
+#ifdef MVPN_ANDROID
+NetworkRequest* NetworkRequest::createForAndroidPurchase(
+    QObject* parent, const QString& sku, const QString& purchaseToken) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/purchases/android");
+  r->m_request.setUrl(url);
+
+  QJsonObject obj;
+  obj.insert("sku", sku);
+  obj.insert("token", purchaseToken);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  logger.debug() << "Network request createForAndroidPurchase created"
+                 << logger.sensitive(json.toJson(QJsonDocument::Compact));
 
   r->postRequest(json.toJson(QJsonDocument::Compact));
   return r;

@@ -228,11 +228,11 @@ Window {
 
                 },
                 State {
-                    name: VPN.StateSubscriptionValidation
+                    name: VPN.StateSubscriptionInProgress
 
                     PropertyChanges {
                         target: loader
-                        source: "states/StateSubscriptionValidation.qml"
+                        source: "states/StateSubscriptionInProgress.qml"
                     }
 
                 },
@@ -262,6 +262,22 @@ Window {
                         source: "states/StateBackendFailure.qml"
                     }
 
+                },
+                State {
+                    name: VPN.StateBillingNotAvailable
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateBillingNotAvailable.qml"
+                    }
+                },
+                State {
+                    name: VPN.StateSubscriptionNotValidated
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateSubscriptionNotValidated.qml"
+                    }
                 }
             ]
 
@@ -323,63 +339,45 @@ Window {
     VPNSystemAlert {
     }
 
-    VPNFilterProxyModel {
-        id: newFeaturesModel
-        source: VPNFeatureList
-        // Filter features that should be listed in What’s new
-        filterCallback: feature => showFeatureInWhatsNew(feature)
+    // VPNFilterProxyModel {
+    //     id: newFeaturesModel
+    //     source: VPNFeatureList
+    //     // Filter features that should be listed in What’s new
+    //     filterCallback: feature => showFeatureInWhatsNew(feature)
+    // }
 
-        function showFeatureInWhatsNew(feature) {
-            return feature.isNew           // new feature in this release
-                && feature.isMajor         // a feature we would like to show
-    //            && feature.supported;      // feature is supported on platform
-        }
-    }
+    // VPNFilterProxyModel {
+    //     id: unseenFeaturesModel
+    //     source: VPNFeatureList
+    //     // Filter seen features for showing the What’s new indicator
+    //     filterCallback: feature => {
+    //         const isFeatureSeen = VPNSettings.seenFeatures.includes(feature.id);
+    //         return showFeatureInWhatsNew(feature) && !isFeatureSeen;
+    //     }
+    // }
 
-    VPNFeatureTourPopup {
-        id: featureTourPopup
+    // function showFeatureInWhatsNew(feature) {
+    //     return feature.isNew           // new feature in this release
+    //         && feature.isMajor         // a feature we would like to show
+    //         && feature.supported;      // feature is supported on platform
+    // }
 
-        visible: {
-            // Check if we should show the What’s new popup
-            return VPN.state === VPN.StateMain
-                && newFeaturesModel.rowCount() > 0
-                && !VPNSettings.featuresTourShown;
-        }
-    }
+    // VPNFeatureTourPopup {
+    //     id: featureTourPopup
 
-    Repeater {
-        id: featureListHelper
+    //     Component.onCompleted: {
+    //         featureTourPopup.handleShowTour();
+    //     }
 
-        states: [
-            State {
-                name: "hasUnseenFeatures"
-                when: featureListHelper.hasUnseenFeatures()
-            }
-        ]
-        model: newFeaturesModel
-        delegate: Text {
-            text: id
-            visible: false
-        }
-
-        function hasUnseenFeatures() {
-            const unseenFeatures = [];
-            for(
-                var featureIndex = 0;
-                featureIndex < featureListHelper.count;
-                featureIndex++
-            ) {
-                const featureID = featureListHelper.itemAt(featureIndex).text;
-                const isFeatureSeen = VPNSettings.seenFeatures.includes(featureID);
-
-                if (!isFeatureSeen) {
-                    unseenFeatures.push(featureID);
-                }
-            }
-
-            return unseenFeatures.length > 0;
-        }
-    }
+    //     function handleShowTour(tourShown) {
+    //         if(VPN.state === VPN.StateMain
+    //             && newFeaturesModel.rowCount() > 0
+    //             && !tourShown
+    //         ) {
+    //             featureTourPopup.openTour();
+    //         }
+    //     }
+    // }
 
     Connections {
         target: VPNSettings
@@ -403,15 +401,6 @@ Window {
             }
         }
     }
-
-//    Column {
-//        Repeater {
-//            model: VPNDeviceModel
-//            delegate: Button {
-//                text: "device" + name
-//            }
-//        }
-//    }
 
     // TODO: Remove — just for debugging
     Button {

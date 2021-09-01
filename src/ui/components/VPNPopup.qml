@@ -10,13 +10,15 @@ import "../themes/themes.js" as Theme
 Popup {
     id: popup
 
+    property int maxWidth: ({})
+
     closePolicy: Popup.CloseOnEscape
     enabled: true
     focus: true
     modal: true
-    width: parent.width
-    leftInset: Theme.windowMargin
-    rightInset: Theme.windowMargin
+    implicitWidth: parent.width
+    leftInset: maxWidth && maxWidth < window.width ? (window.width - maxWidth) / 2 : Theme.windowMargin
+    rightInset: maxWidth && maxWidth < window.width ? (window.width - maxWidth) / 2 : Theme.windowMargin
     horizontalPadding: Theme.popupMargin + popup.leftInset
     bottomPadding: Theme.popupMargin
     topPadding: Theme.popupMargin * 2
@@ -28,16 +30,23 @@ Popup {
         color: Theme.bgColor
         radius: 8
 
+        Rectangle {
+            id: popUpShadowSource
+            anchors.fill: popupBackground
+            radius: popupBackground.radius
+            z: -1
+        }
+
         DropShadow {
             id: popupShadow
 
-            anchors.fill: popupBackground
+            anchors.fill: popUpShadowSource
             cached: true
             color: "black"
             opacity: 0.2
             radius: 16
             samples: 33
-            source: popupBackground
+            source: popUpShadowSource
             spread: 0.1
             transparentBorder: true
             verticalOffset: 4

@@ -45,6 +45,7 @@
 #endif
 
 #ifdef MVPN_ANDROID
+#  include "platforms/android/androidiaphandler.h"
 #  include "platforms/android/androidutils.h"
 #endif
 
@@ -165,6 +166,10 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
             &MozillaVPN::subscriptionCompleted);
     connect(iap, &IAPHandler::alreadySubscribed, this,
             &MozillaVPN::alreadySubscribed);
+    connect(iap, &IAPHandler::billingNotAvailable, this,
+            &MozillaVPN::billingNotAvailable);
+    connect(iap, &IAPHandler::subscriptionNotValidated, this,
+            &MozillaVPN::subscriptionNotValidated);
   }
 
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
@@ -297,7 +302,7 @@ void MozillaVPN::initialize() {
 }
 
 void MozillaVPN::setState(State state) {
-  logger.debug() << "Set state:" << state;
+  logger.debug() << "Set state:" << QVariant::fromValue(state).toString();
   m_state = state;
   emit stateChanged();
 
@@ -314,8 +319,14 @@ void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
-    if (m_private->m_user.subscriptionNeeded()) {
+    if (m_state != StateSubscriptionBlocked &&
+        m_private->m_user.subscriptionNeeded()) {
+      logger.info() << "Subscription needed";
       setState(StateSubscriptionNeeded);
+      return;
+    }
+    if (m_state == StateSubscriptionBlocked) {
+      logger.info() << "Subscription is blocked, stay blocked.";
       return;
     }
   }
@@ -710,6 +721,14 @@ void MozillaVPN::createSupportTicket(const QString& email,
   });
 }
 
+#ifdef MVPN_ANDROID
+void MozillaVPN::launchPlayStore() {
+  logger.debug() << "Launch Play Store";
+  IAPHandler* iap = IAPHandler::instance();
+  static_cast<AndroidIAPHandler*>(iap)->launchPlayStore();
+}
+#endif
+
 void MozillaVPN::accountChecked(const QByteArray& json) {
   logger.debug() << "Account checked";
 
@@ -771,7 +790,9 @@ void MozillaVPN::logout() {
   deleteTasks();
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
-    IAPHandler::instance()->stopSubscription();
+    IAPHandler* iap = IAPHandler::instance();
+    iap->stopSubscription();
+    iap->stopProductsRegistration();
   }
 
   // update-required state is the only one we want to keep when logging out.
@@ -794,6 +815,12 @@ void MozillaVPN::reset(bool forceInitialState) {
   SettingsHolder::instance()->clear();
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
+
+  if (FeatureInAppPurchase::instance()->isSupported()) {
+    IAPHandler* iap = IAPHandler::instance();
+    iap->stopSubscription();
+    iap->stopProductsRegistration();
+  }
 
   setUserAuthenticated(false);
 
@@ -994,7 +1021,8 @@ void MozillaVPN::setUpdateRecommended(bool value) {
 }
 
 void MozillaVPN::setUserAuthenticated(bool state) {
-  logger.debug() << "User authentication state:" << state;
+  logger.debug() << "User authentication state:"
+                 << QVariant::fromValue(state).toString();
   m_userAuthenticated = state;
   emit userAuthenticationChanged();
 }
@@ -1255,7 +1283,7 @@ void MozillaVPN::quit() {
 void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   logger.debug() << "Subscription started" << productIdentifier;
 
-  setState(StateSubscriptionValidation);
+  setState(StateSubscriptionInProgress);
 
   IAPHandler* iap = IAPHandler::instance();
 
@@ -1273,7 +1301,9 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 }
 
 void MozillaVPN::subscriptionCompleted() {
-  if (m_state != StateSubscriptionValidation) {
+  if (m_state != StateSubscriptionInProgress) {
+    // We could hit this in android flow if we're doing a late acknowledgement.
+    // And ignoring is fine.
     logger.warning()
         << "Random subscription completion received. Let's ignore it.";
     return;
@@ -1281,6 +1311,18 @@ void MozillaVPN::subscriptionCompleted() {
 
   logger.debug() << "Subscription completed";
   completeActivation();
+}
+
+void MozillaVPN::billingNotAvailable() {
+  // If a subscription isn't needed, billingNotAvailable is
+  // a no-op because we don't need the billing client.
+  if (m_private->m_user.subscriptionNeeded()) {
+    setState(StateBillingNotAvailable);
+  }
+}
+
+void MozillaVPN::subscriptionNotValidated() {
+  setState(StateSubscriptionNotValidated);
 }
 
 void MozillaVPN::subscriptionFailed() {
@@ -1292,11 +1334,15 @@ void MozillaVPN::subscriptionCanceled() {
 }
 
 void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
-  if (m_state != StateSubscriptionValidation) {
+#ifdef MVPN_IOS
+  // This is iOS only.
+  // Android can legitimately end up here on a skuDetailsFailed.
+  if (m_state != StateSubscriptionInProgress) {
     logger.warning()
         << "Random subscription failure received. Let's ignore it.";
     return;
   }
+#endif
 
   logger.debug() << "Subscription failed or canceled";
 
@@ -1318,12 +1364,16 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
 }
 
 void MozillaVPN::alreadySubscribed() {
-  if (m_state != StateSubscriptionValidation) {
+#ifdef MVPN_IOS
+  // This randomness is an iOS only issue
+  // TODO - How can we make this cleaner in the future
+  if (m_state != StateSubscriptionInProgress) {
     logger.warning()
         << "Random already-subscribed notification received. Let's ignore it.";
     return;
   }
-
+#endif
+  logger.info() << "Setting state: Subscription Blocked";
   setState(StateSubscriptionBlocked);
 }
 

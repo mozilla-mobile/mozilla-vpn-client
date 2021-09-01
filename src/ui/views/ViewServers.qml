@@ -14,141 +14,109 @@ import "../themes/colors.js" as Color
 
 Item {
     id: root
+
+
     VPNMenu {
+        property string defaultMenuTitle: qsTrId("vpn.servers.selectLocation")
         id: menu
         objectName: "serverListBackButton"
 
-        title: qsTrId("vpn.servers.selectLocation")
+        title: defaultMenuTitle
         onActiveFocusChanged: if (focus) forceFocus = true
+        isMultiHopView: true
+
+        function handleMultiHopNav() {
+            if (multiHopStackView && multiHopStackView.depth > 1) {
+                // User clicked back from either the Multi-hop entry or exit server list
+                multiHopStackView.pop();
+                menu.title = menu.defaultMenuTitle;
+                return;
+            }
+
+            if (serversTabs.currentTab.objectName === "tabMultiHop" && multiHopStackView.depth === 1) {
+                // User clicked back button from the Multi-hop tab main view
+                VPNController.changeServer(...serversTabs.multiHopExitServer.slice(0,2), ...serversTabs.multiHopEntryServer.slice(0,2));
+            }
+
+            if (serversTabs.currentTab.objectName === "tabSingleHop") {
+                // User clicked back button from the Single-hop tab view but didn't select a new server
+                VPNController.changeServer(VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName)
+            }
+
+            return stackview.pop()
+        }
     }
 
-    FocusScope {
-        id: focusScope
+    ListModel {
+        id: tabButtonList
+        ListElement {
+            tabLabelStringId: "MultiHopFeatureSingleHopToggleCTA"
+            tabButtonId: "tabSingleHop"
+        }
+        ListElement {
+            tabLabelStringId: "MultiHopFeatureMultiHopToggleCTA"
+            tabButtonId: "tabMultiHop"
+        }
+    }
 
-        property var lastFocusedItemIdx
+    VPNTabNavigation {
+        property var multiHopEntryServer: [VPNCurrentServer.entryCountryCode, VPNCurrentServer.entryCityName, VPNCurrentServer.localizedEntryCity]
+        property var multiHopExitServer: [VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName, VPNCurrentServer.localizedCityName]
 
-        height: parent.height - menu.height
+        id: serversTabs
+
+        tabList: tabButtonList
+        width: root.width
         anchors.top: menu.bottom
-        width: parent.width
-        onActiveFocusChanged: if (focus && lastFocusedItemIdx) countriesRepeater.itemAt(lastFocusedItemIdx).forceActiveFocus()
-        Accessible.name: menu.title
-        Accessible.role: Accessible.List
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: root.height - menu.height
 
-        ButtonGroup {
-            id: radioButtonGroup
+        stackContent: [
+            VPNServerList {
+                id: singleHopServerList
+                currentServer: {
+                    "countryCode": VPNCurrentServer.exitCountryCode,
+                    "localizedCityName": VPNCurrentServer.localizedCityName,
+                    "cityName": VPNCurrentServer.exitCityName,
+                    "whichHop": "singleHopServer"
+                }
+                showRecentConnections: true
+
+            }
+        ]
+
+        ViewMultiHop {
+            id: multiHopStackView
+            visible: VPNFeatureList.get("multiHop").isSupported
         }
-
-        VPNFlickable {
-            id: vpnFlickable
-            objectName: "serverCountryView"
-
-            flickContentHeight: serverList.y + serverList.implicitHeight + (Theme.rowHeight * 2)
-            anchors.fill: parent
-
-            Rectangle {
-                id: verticalSpacer
-
-                height: Theme.vSpacing
-                width: parent.width
-                color: "transparent"
-            }
-
-            NumberAnimation on contentY {
-                id: scrollAnimation
-
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-
-            Column {
-                id: serverList
-                objectName: "serverCountryList"
-
-                spacing: 14
-                width: parent.width
-                anchors.top: verticalSpacer.bottom
-                Component.onCompleted: {
-
-                    // Scroll vpnFlickable so that the current server city is
-                    // vertically centered in the view
-
-                    const serverListYCenter = vpnFlickable.height / 2;
-
-                    for (let idx = 0; idx < countriesRepeater.count; idx++) {
-                        const countryItem = countriesRepeater.itemAt(idx);
-                        const countryItemYPosition = countryItem.mapToItem(vpnFlickable.contentItem, 0, 0).y;
-                        if (!countryItem.cityListVisible || countryItemYPosition < serverListYCenter) {
-                            continue;
-                        }
-
-                        const currentCityYPosition = countryItem.y + (Theme.rowHeight * 2) + (54 * countryItem.currentCityIndex) - serverListYCenter;
-                        const destinationY = (currentCityYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : currentCityYPosition;
-
-                        vpnFlickable.contentY = destinationY;
-                        return;
-                    }
+        handleTabClick: (tab) => {
+            if (multiHopStackView && multiHopStackView.depth > 1) {
+                    // Return to the Multi-hop main view when the Multi-hop tab
+                    // is clicked from a Multi-hop entry or exit server list
+                    multiHopStackView.pop();
                 }
 
-                VPNSearchBar {
-                    id: serverSearchInput
-
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.leftMargin: Theme.vSpacing
-                    anchors.rightMargin: Theme.vSpacing
-                    enabled: true
-                    height: Theme.rowHeight
-                    onTextChanged: () => {
-                        countriesModel.invalidate();
-                    }
-                    placeholderText: VPNl18n.tr(VPNl18n.ServersViewSearchPlaceholder)
-                    hasError: countriesRepeater.count === 0
-
-                    RowLayout {
-                        id: searchWarning
-                        anchors.top: serverSearchInput.bottom
-                        anchors.topMargin: Theme.listSpacing
-                        visible: serverSearchInput.hasError
-
-                        VPNIcon {
-                            id: warningIcon
-
-                            source: "../resources/warning.svg"
-                            sourceSize.height: 14
-                            sourceSize.width: 14
-                        }
-
-                        VPNInterLabel {
-                            id: warningLabel
-                            color: Color.error.default
-                            text: VPNl18n.tr(VPNl18n.ServersViewSearchNoResultsLabel)
-                            font.pixelSize: Theme.fontSizeSmall
-                        }
-                    }
-                }
-
-                VPNFilterProxyModel {
-                    id: countriesModel
-                    source: VPNServerCountryModel
-                    filterCallback: country => {
-                        const searchString = serverSearchInput.text.toLowerCase();
-                        const includesSearchString = nameString => (
-                            nameString.toLowerCase().includes(searchString)
-                        );
-                        const includesName = includesSearchString(country.name);
-                        const includesLocalizedName = includesSearchString(country.localizedName);
-                        const matchesCountryCode = country.code.toLowerCase() === searchString;
-
-                        return includesName || includesLocalizedName || matchesCountryCode;
-                    }
-                }
-
-                Repeater {
-                    id: countriesRepeater
-                    model: countriesModel
-                    delegate: VPNServerCountry{}
-                }
+            if (tab.objectName === "tabSingleHop") {
+                // Do single hop things
+                menu.title = menu.defaultMenuTitle;
+                singleHopServerList.centerActiveServer();
+                return;
             }
         }
+    }
+
+
+    Component.onCompleted: {
+        if (!VPNFeatureList.get("multiHop").isSupported) {
+            return;
+        }
+
+        serversTabs.stackContent.push(multiHopStackView);
+      if (VPNCurrentServer.entryCountryCode && VPNCurrentServer.entryCountryCode !== "") {
+          // Set default tab to multi-hop
+          return serversTabs.setCurrentTabIndex(1);
+      }
     }
 }
+

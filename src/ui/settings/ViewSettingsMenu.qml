@@ -111,7 +111,7 @@ VPNFlickable {
             imageLeftSrc: "../resources/gift-dark.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewWhatsNew.qml")
-            showIndicator: featureListHelper.state === "hasUnseenFeatures"
+            showIndicator: unseenFeaturesModel.rowCount() > 0
         }
         VPNSettingsItem {
             objectName: "settingsNetworking"

@@ -3,18 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidutils.h"
+#include "androidauthenticationlistener.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "platforms/android/androidauthenticationlistener.h"
 #include "qmlengineholder.h"
 
-#include <jni.h>
 #include <QAndroidJniEnvironment>
 #include <QAndroidJniObject>
 #include <QApplication>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
 #include <QtAndroid>
@@ -133,4 +134,59 @@ void AndroidUtils::appReviewRequested() {
   QAndroidJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/qt/VPNAppReview", "appReviewRequested",
       "(Landroid/app/Activity;)V", activity.object<jobject>());
+}
+
+// static
+void AndroidUtils::dispatchToMainThread(std::function<void()> callback) {
+  QTimer* timer = new QTimer();
+  timer->moveToThread(qApp->thread());
+  timer->setSingleShot(true);
+  QObject::connect(timer, &QTimer::timeout, [=]() {
+    callback();
+    timer->deleteLater();
+  });
+  QMetaObject::invokeMethod(timer, "start", Qt::QueuedConnection);
+}
+
+// static
+QByteArray AndroidUtils::getQByteArrayFromJString(JNIEnv* env, jstring data) {
+  const char* buffer = env->GetStringUTFChars(data, nullptr);
+  if (!buffer) {
+    logger.error() << "getQByteArrayFromJString - failed to parse data.";
+    return QByteArray();
+  }
+  QByteArray out(buffer);
+  env->ReleaseStringUTFChars(data, buffer);
+  return out;
+}
+
+// static
+QString AndroidUtils::getQStringFromJString(JNIEnv* env, jstring data) {
+  const char* buffer = env->GetStringUTFChars(data, nullptr);
+  if (!buffer) {
+    logger.error() << "getQStringFromJString - failed to parse data.";
+    return QString();
+  }
+  QString out(buffer);
+  env->ReleaseStringUTFChars(data, buffer);
+  return out;
+}
+
+// static
+QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
+  QByteArray raw(getQByteArrayFromJString(env, data));
+  QJsonParseError jsonError;
+  QJsonDocument json = QJsonDocument::fromJson(raw, &jsonError);
+  if (QJsonParseError::NoError != jsonError.error) {
+    logger.error() << "getQJsonObjectFromJstring - error parsing json. Code: "
+                   << jsonError.error << "Offset: " << jsonError.offset
+                   << "Message: " << jsonError.errorString()
+                   << "Data: " << logger.sensitive(raw);
+    return QJsonObject();
+  }
+  if (!json.isObject()) {
+    logger.error() << "getQJsonObjectFromJString - object expected.";
+    return QJsonObject();
+  }
+  return json.object();
 }

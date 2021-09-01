@@ -545,6 +545,7 @@ else:android {
     SOURCES +=  platforms/android/androidadjusthelper.cpp \
                 platforms/android/androidauthenticationlistener.cpp \
                 platforms/android/androidcontroller.cpp \
+                platforms/android/androidiaphandler.cpp \
                 platforms/android/androidnotificationhandler.cpp \
                 platforms/android/androidutils.cpp \
                 platforms/android/androidwebview.cpp \
@@ -558,6 +559,7 @@ else:android {
     HEADERS +=  platforms/android/androidadjusthelper.h \
                 platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
+                platforms/android/androidiaphandler.h \
                 platforms/android/androidnotificationhandler.h \
                 platforms/android/androidutils.h \
                 platforms/android/androidwebview.h \
