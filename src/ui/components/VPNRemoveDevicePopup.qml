@@ -135,6 +135,8 @@ Popup {
                 horizontalAlignment: Text.AlignHCenter
                 Layout.alignment: Qt.AlignHCenter
                 Layout.bottomMargin: Theme.vSpacing
+                Layout.leftMargin: Theme.popupMargin
+                Layout.rightMargin: Theme.popupMargin
                 Layout.fillWidth: true
                 lineHeight: 22
 
