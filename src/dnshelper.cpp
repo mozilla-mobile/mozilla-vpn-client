@@ -117,12 +117,8 @@ bool DNSHelper::shouldExcludeDNS() {
     return false;
   }
 
-  // TODO: Uncomment this once mullvad is ready to route custom DNS
-  // See: https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1610
-  // currently we want all custom DNS to not use the vpn because of this.
-  // if(!isLocalDNS){
-  //  return false;
-  //}
-
+  if (!isLocalDNS) {
+    return false;
+  }
   return true;
 }
