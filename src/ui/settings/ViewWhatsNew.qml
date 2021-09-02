@@ -21,7 +21,7 @@ Item {
     VPNFlickable {
         id: vpnFlickable
         anchors.top: parent.top
-        anchors.topMargin: 56
+        anchors.topMargin: Theme.menuHeight
         anchors.left: root.left
         anchors.right: root.right
         height: root.height - menu.height

@@ -59,6 +59,7 @@ const windowMargin = 16;
 const popupMargin = 24;
 const desktopAppHeight = 520;
 const desktopAppWidth = 360;
+const menuHeight = 56;
 
 const darkFocusBorder = fontColor;
 const lightFocusBorder = "#d5d3e0";

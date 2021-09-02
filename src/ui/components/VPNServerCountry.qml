@@ -14,7 +14,7 @@ VPNClickableRow {
     objectName: "serverCountry-" + code
 
     property bool cityListVisible: (code === focusScope.currentServer.countryCode)
-    property real multiHopMenuHeight: VPNFeatureList.get("multiHop").isSupported ? 56 : 0
+    property real multiHopMenuHeight: VPNFeatureList.get("multiHop").isSupported ? Theme.menuHeight : 0
     property real animationDuration: 200 + (citiesRepeater.count * 25)
     property string _countryCode: code
     property var currentCityIndex

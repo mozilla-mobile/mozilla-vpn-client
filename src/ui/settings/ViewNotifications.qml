@@ -20,7 +20,7 @@ VPNFlickable {
     anchors.left: root.left
     anchors.right: root.right
     anchors.top: parent.top
-    anchors.topMargin: 56
+    anchors.topMargin: Theme.menuHeight
     flickContentHeight: col.y + col.childrenRect.height + ( Theme.rowHeight * 2 )
     interactive: flickContentHeight > height
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff)

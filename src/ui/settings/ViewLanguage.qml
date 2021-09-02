@@ -21,7 +21,7 @@ Item {
 
         height: parent.height - menu.height
         anchors.top: parent.top
-        anchors.topMargin: 56
+        anchors.topMargin: Theme.menuHeight
         anchors.left: parent.left
         anchors.right: parent.right
         width: parent.width

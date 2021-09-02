@@ -35,7 +35,7 @@ Item {
         objectName: "tabBar"
         width: parent.width
         visible: stack.children.length > 1
-        contentHeight: stack.children.length === 1 ? 0 : 56
+        contentHeight: stack.children.length === 1 ? 0 : Theme.menuHeight
         background: Rectangle {
             color: "transparent"
         }

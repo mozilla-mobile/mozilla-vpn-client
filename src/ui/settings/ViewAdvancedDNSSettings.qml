@@ -18,6 +18,7 @@ import telemetry 0.15
 Item {
     property string _menuTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsNavItem)
     id: root
+    objectName: "advancedDNSSettingsView"
 
     StackView.onDeactivating: root.opacity = 0
 
@@ -48,7 +49,7 @@ Item {
         id: tabs
         width: root.width
         anchors.top: parent.top
-        anchors.topMargin: 56
+        anchors.topMargin: Theme.menuHeight
         anchors.left: parent.left
         anchors.right: parent.right
         height: root.height - menu.height

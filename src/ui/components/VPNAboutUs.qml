@@ -55,7 +55,7 @@ Item {
         id: aboutUsCopy
 
         anchors.top: menu.visible ? menu.bottom : parent.top
-        anchors.topMargin: menu.visible ? 0 : 56 + Theme.windowMargin
+        anchors.topMargin: menu.visible ? 0 : Theme.menuHeight + Theme.windowMargin
         anchors.left: viewAboutUs.left
         anchors.leftMargin: Theme.windowMargin
         anchors.rightMargin: Theme.windowMargin

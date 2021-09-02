@@ -32,7 +32,7 @@ Item {
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
         flickContentHeight:  (VPNSettings.protectSelectedApps ? enabledList.y + enabledList.implicitHeight + 100 : vpnFlickable.y + toggleCard.height )+ helpInfoText.height + helpLink.height
         anchors.top: parent.top
-        anchors.topMargin: 56
+        anchors.topMargin: Theme.menuHeight
         height: root.height - menu.height
         anchors.left: parent.left
         anchors.right: parent.right
@@ -144,6 +144,6 @@ Item {
             onClicked: {
                VPN.openLink(VPN.LinkSplitTunnelHelp)
             }
-        }     
+        }
     }
 }
