@@ -88,11 +88,12 @@ void WhatsNewModel::markFeaturesAsSeen() {
   Q_ASSERT(settingsHolder);
 
   logger.debug() << "Add seen features to settings";
-  if (!settingsHolder->hasSeenFeatures()) {
-    return;
+
+  QStringList seenfeatureslist;
+  if (settingsHolder->hasSeenFeatures()) {
+    seenfeatureslist = settingsHolder->seenFeatures();
   }
 
-  QStringList seenfeatureslist = settingsHolder->seenFeatures();
   for (Feature* feature : m_featurelist) {
     const QString featureID = feature->id();
 

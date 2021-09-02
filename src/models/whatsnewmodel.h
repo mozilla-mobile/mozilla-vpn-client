@@ -25,8 +25,6 @@ class WhatsNewModel final : public QAbstractListModel {
     RoleFeature,
   };
 
-  const QList<Feature*>& features() const { return m_featurelist; }
-
   QHash<int, QByteArray> roleNames() const override;
 
   int rowCount(const QModelIndex&) const override;
