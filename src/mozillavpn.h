@@ -21,6 +21,7 @@
 #include "models/supportcategorymodel.h"
 #include "models/surveymodel.h"
 #include "models/user.h"
+#include "models/whatsnewmodel.h"
 #include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
@@ -189,6 +190,7 @@ class MozillaVPN final : public QObject {
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
+  WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
   User* user() { return &m_private->m_user; }
 
   // Called at the end of the authentication flow. We can continue adding the
@@ -366,6 +368,7 @@ class MozillaVPN final : public QObject {
     ServerData m_serverData;
     StatusIcon m_statusIcon;
     SurveyModel m_surveyModel;
+    WhatsNewModel m_whatsNewModel;
     User m_user;
   };
 
