@@ -117,7 +117,7 @@ bool DNSHelper::shouldExcludeDNS() {
     return false;
   }
 
-   if(!isLocalDNS){
+  if (!isLocalDNS) {
     return false;
   }
   return true;
