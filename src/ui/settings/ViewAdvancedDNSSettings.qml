@@ -28,11 +28,6 @@ Item {
         }
     }
 
-
-    Component.onCompleted: {
-        tabButtonList.append({"buttonLabel":VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsDefaultToggle)})
-        tabButtonList.append({"buttonLabel":VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdvancedToggle)})
-    }
     
     VPNMenu {
         id: menu
