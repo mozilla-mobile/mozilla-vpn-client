@@ -95,7 +95,7 @@ void WhatsNewModel::markFeaturesAsSeen() {
   }
 
   for (Feature* feature : m_featurelist) {
-    const QString featureID = feature->id();
+    const QString& featureID = feature->id();
 
     if (!seenfeatureslist.contains(featureID)) {
       seenfeatureslist.append(featureID);
