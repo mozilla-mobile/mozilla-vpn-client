@@ -33,7 +33,7 @@ Item {
 
         //% "Get help"
         title: qsTrId("vpn.main.getHelp2")
-        visible: !isSettingsView
+        visible: isSettingsView
 
         onClicked: {
             if (unlockCounter >= 5) {
@@ -77,7 +77,7 @@ Item {
 
             model: VPNHelpModel
             delegate: VPNExternalLinkListItem {
-                objectName: "getHelpBackLink-" + id
+                objectName: "getHelpBackList-" + id
                 title: name
                 accessibleName: name
                 iconSource: externalLink ? "../resources/externalLink.svg" : "../resources/chevron.svg"

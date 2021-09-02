@@ -93,6 +93,8 @@ describe('Settings', function() {
     await checkSetting('settingIpv6Enabled', 'ipv6-enabled');
     await checkSetting('settingLocalNetworkAccess', 'local-network-access');
 
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
     await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
@@ -138,6 +140,7 @@ describe('Settings', function() {
 
     await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
+
     await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
@@ -276,7 +279,6 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
   });
 
-  // TODO: checking the give feedback views
 
   it('Checking the get help', async () => {
     await vpn.waitForElement('settingsGetHelp');
@@ -310,23 +312,42 @@ describe('Settings', function() {
     await vpn.waitForElement('giveFeedbackView');
     await vpn.waitForElementProperty(
       'giveFeedbackView', 'visible', 'true');
+    await vpn.clickOnElement('giveFeedbackView');
+    await vpn.wait();
 
-    // await vpn.waitForElement('getHelpBackList/getHelpBackList-2');
-    // await vpn.waitForElementProperty(
-    //     'getHelpBackList/getHelpBackList-2', 'visible', 'true');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
+    await vpn.clickOnElement('settingsBackButton');
 
-    // await vpn.clickOnElement('getHelpBackList/getHelpBackList-2');
-    // await vpn.waitForCondition(async () => {
-    //   const url = await vpn.getLastUrl();
-    //   return url.startsWith('file://') && url.includes('mozillavpn') &&
-    //       url.endsWith('.txt');
-    // });
 
-    // await vpn.clickOnElement('getHelpBackList/getHelpBackList-1');
-    // await vpn.waitForCondition(async () => {
-    //   const url = await vpn.getLastUrl();
-    //   return url.endsWith('/r/vpn/support');
-    // });
+    await vpn.waitForElement('getHelpBackList');
+    await vpn.waitForElementProperty('getHelpBackList', 'visible', 'true');
+
+    // TODO: checking the give feedback views
+
+  /* TODO: Reinstate these tests correctly
+      await vpn.waitForElement('getHelpBackList/getHelpBackList-2');
+      await vpn.waitForElementProperty(
+          'getHelpBackList/getHelpBackList-2', 'visible', 'true');
+
+      await vpn.clickOnElement('getHelpBackList/getHelpBackList-2');
+
+      await vpn.waitForCondition(async () => {
+        const url = await vpn.getLastUrl();
+        return url.startsWith('file://') && url.includes('mozillavpn') &&
+            url.endsWith('.txt');
+      });
+
+      await vpn.waitForElement('getHelpBackList/getHelpBackList-0')
+      await vpn.waitForElementProperty(
+        'getHelpBackList/getHelpBackList-0', 'visible', 'true');
+
+      await vpn.clickOnElement('getHelpBackList/getHelpBackList-0');
+      await vpn.waitForCondition(async () => {
+        const url = await vpn.getLastUrl();
+        return url.endsWith('/r/vpn/support');
+      });
+    /*
 
     /* TODO:  Reinstate this test correctly
         https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1638
@@ -340,7 +361,8 @@ describe('Settings', function() {
         });
     */
 
-    await vpn.clickOnElement('settingsBackButton');
+    await vpn.wait();
+    await vpn.waitForElement('settingsBackButton');
     await vpn.clickOnElement('settingsBackButton');
 
     await vpn.waitForElement('settingsGetHelp');

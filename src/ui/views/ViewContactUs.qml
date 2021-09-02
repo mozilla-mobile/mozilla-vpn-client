@@ -12,6 +12,8 @@ import "../components/forms"
 import "../themes/themes.js" as Theme
 
 Item {
+    property string _menuTitle:  VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportNavLinkText)
+
     id: contactUsRoot
 
     function tryAgain() {
@@ -43,6 +45,7 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.top: menu.bottom
+        anchors.topMargin: 0
 
         Connections {
             target: VPN

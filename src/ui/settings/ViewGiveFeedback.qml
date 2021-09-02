@@ -27,6 +27,7 @@ Item {
     VPNMenu {
         id: menu
         title: qsTrId("vpn.settings.giveFeedback")
+        objectName: "giveFeedbackBackButton"
     }
 
     StackView {
