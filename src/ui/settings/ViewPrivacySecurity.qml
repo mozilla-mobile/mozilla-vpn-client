@@ -10,8 +10,8 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-// This view would more appropriately be named "ViewSystemPreferences" but is so
-// denoted to skirt around a code-freeze and avoid adding new strings.
+// TODO: This filename should be changed to 'ViewPreferences.qml' after the 2.5 release
+// The legacy name has been kept to prevent the creation of additional strings
 
 Item {
     property string _startAtBootTitle: ""
