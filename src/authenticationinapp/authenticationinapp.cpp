@@ -162,10 +162,11 @@ bool AuthenticationInApp::validateEmailAddress(const QString& emailAddress) {
     return false;
   }
 
-  QByteArray emailAce = QUrl::toAce(parts[0]);
   QRegularExpression emailRE("^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}$",
                              QRegularExpression::CaseInsensitiveOption);
-  if (!emailRE.match(emailAce).hasMatch()) {
+  // We don't have to convert the first part of the email address to ASCII
+  // Compatible Encoding (ace).
+  if (!emailRE.match(parts[0]).hasMatch()) {
     return false;
   }
 
