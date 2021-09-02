@@ -12,23 +12,16 @@ import "../themes/themes.js" as Theme
 
 Item {
     property var useSystemLanguageEnabled: toggleCard.toggleChecked
-
+    //% "Language"
+    property string _menuTitle :  qsTrId("vpn.settings.language")
     id: container
 
-    VPNMenu {
-        id: menu
-        objectName: "settingsLanguagesBackButton"
-
-        //% "Language"
-        title: qsTrId("vpn.settings.language")
-        isSettingsView: true
-        onActiveFocusChanged: if (focus) forceFocus = true
-    }
     FocusScope {
         id: focusScope
 
         height: parent.height - menu.height
-        anchors.top: menu.bottom
+        anchors.top: parent.top
+        anchors.topMargin: 56
         anchors.left: parent.left
         anchors.right: parent.right
         width: parent.width

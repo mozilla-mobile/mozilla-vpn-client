@@ -31,6 +31,9 @@ Item {
         id: menu
         //% "Contact support"
         title: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportNavLinkText)
+
+        // this view gets pushed to mainStackView from backend always
+        // and so should be removed from mainStackView (even in settings flow) on back clicks
         isMainView: true
     }
 
@@ -134,7 +137,7 @@ Item {
                             width: parent.width
                             verticalAlignment: Text.AlignVCenter
                             Layout.fillWidth: true
-                            hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) && emailInput.text != confirmEmailInput.text
+                            hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
                             //% "Confirm email address"
                             placeholderText: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder)
                         }

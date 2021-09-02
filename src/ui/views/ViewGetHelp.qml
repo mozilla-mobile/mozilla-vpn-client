@@ -10,11 +10,15 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 Item {
+    property alias isSettingsView: menu.isSettingsView
+    property alias isMainView: menu.isMainView
+    //% "Get help"
+    property string _menuTitle: qsTrId("vpn.main.getHelp2")
+    property int unlockCounter: 0
+
     id: getHelp
     objectName: "getHelp"
-    property alias isSettingsView: menu.isSettingsView
 
-    property int unlockCounter: 0
     Timer {
         id: unlockTimeout
         repeat: false
@@ -29,7 +33,7 @@ Item {
 
         //% "Get help"
         title: qsTrId("vpn.main.getHelp2")
-        isSettingsView: true
+        visible: !isSettingsView
 
         onClicked: {
             if (unlockCounter >= 5) {
@@ -37,62 +41,75 @@ Item {
                 VPNSettings.developerUnlock = true
             }
             else if (!VPNSettings.developerUnlock) {
-                unlockTimeout.restart()
+                unlockTimeout.restaabrt()
                 unlockCounter = unlockCounter + 1
             }
         }
     }
 
-    VPNSettingsItem {
-        id: developer
-        objectName: "developer"
+
+    Column {
+        objectName: "getHelpLinks"
+        spacing: Theme.windowMargin
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.topMargin: Theme.windowMargin
 
         anchors.top: menu.bottom
-        anchors.topMargin: Theme.windowMargin
-        width: parent.width - Theme.windowMargin
-        spacing: Theme.listSpacing
-        anchors.horizontalCenter: parent.horizontalCenter
 
-        //% "Developer Options"
-        settingTitle: qsTrId("vpn.settings.developer")
-        imageLeftSrc: "../resources/developer.svg"
-        imageRightSrc: "../resources/chevron.svg"
-        visible: VPNSettings.developerUnlock
-        onClicked: {
-            if (isSettingsView) {
-                settingsStackView.push("../developerMenu/ViewDeveloperMenu.qml", {isSettingsView: true})
-            } else {
-                stackview.push("../developerMenu/ViewDeveloperMenu.qml", {isSettingsView: false})
+        VPNExternalLinkListItem {
+            objectName: "settingsGiveFeedback"
+
+            accessibleName: title
+            title: qsTrId("vpn.settings.giveFeedback")
+            onClicked: isSettingsView ? settingsStackView.push("../settings/ViewGiveFeedback.qml") : isMainView? mainStackView.push("../settings/ViewGiveFeedback.qml") : stackview.push("../settings/ViewGiveFeedback.qml", {isMainView: true})
+            iconSource: "../resources/chevron.svg"
+            backgroundColor: Theme.iconButtonLightBackground
+            width: parent.width - Theme.windowMargin
+        }
+
+
+
+        Repeater {
+            id: getHelpList
+            objectName: "getHelpBackList"
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            model: VPNHelpModel
+            delegate: VPNExternalLinkListItem {
+                objectName: "getHelpBackLink-" + id
+                title: name
+                accessibleName: name
+                iconSource: externalLink ? "../resources/externalLink.svg" : "../resources/chevron.svg"
+                backgroundColor: externalLink ? Theme.clickableRowBlue : Theme.iconButtonLightBackground
+                onClicked: {
+                    VPNHelpModel.open(id)
+                }
             }
         }
-    }
 
-    VPNList {
-        objectName: "getHelpBackList"
-        height: parent.height - menu.height - (developer.visible ? developer.height : 0)
-        width: parent.width
-        anchors.top: developer.visible ? developer.bottom : menu.bottom
-        spacing: Theme.listSpacing
-        anchors.topMargin: Theme.windowMargin
-        listName: menu.title
+        VPNSettingsItem {
+            id: developer
+            objectName: "developer"
 
-        model: VPNHelpModel
+            width: parent.width - Theme.windowMargin
+            spacing: Theme.listSpacing
+            anchors.horizontalCenter: parent.horizontalCenter
 
-        delegate: VPNExternalLinkListItem {
-            objectName: "getHelpBackList-" + id
-            title: name
-            accessibleName: name
-            iconSource: externalLink ? "../resources/externalLink.svg" : "../resources/chevron.svg"
-            backgroundColor: externalLink ? Theme.clickableRowBlue : Theme.iconButtonLightBackground
+            //% "Developer Options"
+            settingTitle: qsTrId("vpn.settings.developer")
+            imageLeftSrc: "../resources/developer.svg"
+            imageRightSrc: "../resources/chevron.svg"
+            visible: VPNSettings.developerUnlock
             onClicked: {
-                VPNHelpModel.open(id)
+                if (isSettingsView) {
+                    settingsStackView.push("../developerMenu/ViewDeveloperMenu.qml", {isSettingsView: true})
+                } else {
+                    stackview.push("../developerMenu/ViewDeveloperMenu.qml", {isSettingsView: false})
+                }
             }
         }
-
-        ScrollBar.vertical: ScrollBar {
-            Accessible.ignored: true
-        }
-
     }
 
 }

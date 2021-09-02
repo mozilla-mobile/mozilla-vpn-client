@@ -9,8 +9,39 @@ import Mozilla.VPN 1.0
 
 import "../components"
 
-VPNStackView {
-    id: settingsStackView
+Item {
 
-    initialItem: "../settings/ViewSettingsMenu.qml"
+    VPNMenu {
+        id: menu
+        objectName: "settingsBackButton"
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        title: ""
+        isSettingsView: true
+        visible: settingsStackView.depth !== 1
+        opacity: visible ? 1 : 0
+
+
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 200
+            }
+        }
+    }
+
+
+    VPNStackView {
+        id: settingsStackView
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        initialItem: "../settings/ViewSettingsMenu.qml"
+
+        onCurrentItemChanged: {
+            if (currentItem._menuTitle) menu.title = currentItem._menuTitle
+        }
+    }
 }

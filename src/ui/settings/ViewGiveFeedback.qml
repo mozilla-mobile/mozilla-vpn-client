@@ -13,7 +13,11 @@ import "../components/forms"
 import "../themes/themes.js" as Theme
 
 Item {
+    property string _menuTitle: qsTrId("vpn.settings.giveFeedback")
+    property alias isSettingsView: menu.isSettingsView
+
     id: feedbackRoot
+    objectName: "giveFeedbackView"
 
     function sendFeedback(appRating, category, message) {
         VPN.submitFeedback(message, appRating, category);
@@ -23,7 +27,6 @@ Item {
     VPNMenu {
         id: menu
         title: qsTrId("vpn.settings.giveFeedback")
-        isSettingsView: true
     }
 
     StackView {
@@ -32,6 +35,7 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.top: menu.bottom
+        anchors.topMargin: 0
         initialItem: appRatingView
     }
 

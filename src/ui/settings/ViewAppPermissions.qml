@@ -24,19 +24,15 @@ Item {
     //% "Add Application"
     //: Button label
     property string addApplication: qsTrId("vpn.protectSelectedApps.addApplication")
-
-
-    VPNMenu {
-        id: menu
-        title: qsTrId("vpn.settings.appPermissions2")
-        isSettingsView: true
-    }
+    property string _menuTitle: qsTrId("vpn.settings.appPermissions2")
+    objectName: "appPermissions"
 
     VPNFlickable {
         id: vpnFlickable
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
         flickContentHeight:  (VPNSettings.protectSelectedApps ? enabledList.y + enabledList.implicitHeight + 100 : vpnFlickable.y + toggleCard.height )+ helpInfoText.height + helpLink.height
-        anchors.top: menu.bottom
+        anchors.top: parent.top
+        anchors.topMargin: 56
         height: root.height - menu.height
         anchors.left: parent.left
         anchors.right: parent.right

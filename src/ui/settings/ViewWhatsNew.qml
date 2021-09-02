@@ -14,19 +14,14 @@ import "../themes/themes.js" as Theme
 import "../themes/colors.js" as Color
 
 Item {
+    property string _menuTitle: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourPageHeader)
     id: root
-
-    VPNMenu {
-        id: menu
-        objectName: "settingsWhatsNew"
-
-        title: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourPageHeader)
-        isSettingsView: true
-    }
+    objectName: "settingsWhatsNew"
 
     VPNFlickable {
         id: vpnFlickable
-        anchors.top: menu.bottom
+        anchors.top: parent.top
+        anchors.topMargin: 56
         anchors.left: root.left
         anchors.right: root.right
         height: root.height - menu.height
