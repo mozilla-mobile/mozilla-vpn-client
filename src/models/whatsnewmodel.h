@@ -25,13 +25,9 @@ class WhatsNewModel final : public QAbstractListModel {
     RoleFeature,
   };
 
-  void initialize();
-
   const QList<Feature*>& features() const { return m_featurelist; }
 
   QHash<int, QByteArray> roleNames() const override;
-
-  int featureCount() const;
 
   int rowCount(const QModelIndex&) const override;
 
@@ -39,18 +35,14 @@ class WhatsNewModel final : public QAbstractListModel {
 
   bool hasUnseenFeature();
 
-  void addSeenFeature(const QString& featureID);
-
-  void removeSeenFeatures();
-
   Q_INVOKABLE void markFeaturesAsSeen();
-
-  void markFeaturesAsUnseen();
 
  signals:
   void hasUnseenFeatureChanged();
 
  private:
+  void initialize();
+
   QList<Feature*> m_featurelist;
 };
 
