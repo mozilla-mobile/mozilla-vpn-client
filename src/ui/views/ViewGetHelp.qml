@@ -66,9 +66,8 @@ Item {
             iconSource: "../resources/chevron.svg"
             backgroundColor: Theme.iconButtonLightBackground
             width: parent.width - Theme.windowMargin
+            visible: VPN.userAuthenticated
         }
-
-
 
         Repeater {
             id: getHelpList
