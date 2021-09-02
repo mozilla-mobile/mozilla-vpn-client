@@ -22,6 +22,7 @@ class AndroidIAPHandler final : public IAPHandler {
   void nativeStartSubscription(Product* product) override;
 
  private:
+  void maybeInit();
   void updateProductsInfo(const QJsonArray& products);
   void processPurchase(QJsonObject purchase);
   void validatePurchase(QJsonObject purchase);
@@ -37,6 +38,9 @@ class AndroidIAPHandler final : public IAPHandler {
                                           jstring data);
   static void onSkuDetailsFailed(JNIEnv* env, jobject thiz, jstring data);
   static void onSubscriptionFailed(JNIEnv* env, jobject thiz, jstring data);
+
+ private:
+  bool m_init = false;
 };
 
 #endif  // ANDROIDIAPHANDLER_H
