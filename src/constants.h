@@ -108,6 +108,9 @@ constexpr const char* PLATFORM_NAME =
 constexpr const char* PLACEHOLDER_USER_DNS = "127.0.0.1";
 
 #if defined(MVPN_ADJUST)
+// These are the two auto-generated token from the Adjust dashboard for the
+// "Subscription Completed" event. We have two since in the Adjust dashboard we
+// have defined two apps for iOS and Android with a event token each.
 constexpr const char* ADJUST_SUBSCRIPTION_COMPLETED =
 #  if defined(MVPN_IOS)
     "jl72xm"
@@ -116,7 +119,7 @@ constexpr const char* ADJUST_SUBSCRIPTION_COMPLETED =
 #  else
     ""
 #  endif
-;
+    ;
 #endif
 
 };  // namespace Constants
