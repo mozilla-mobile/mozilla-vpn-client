@@ -62,6 +62,7 @@ HEADERS += \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
     ../../src/models/user.h \
+    ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
@@ -146,6 +147,7 @@ SOURCES += \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
     ../../src/models/user.cpp \
+    ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkwatcher.cpp \
     ../../src/pinghelper.cpp \

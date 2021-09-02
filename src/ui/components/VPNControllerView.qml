@@ -627,7 +627,7 @@ Item {
                 color: Color.error.default
                 height: Theme.listSpacing + border.width * 2
                 radius: width / 2
-                visible: unseenFeaturesModel.rowCount() > 0
+                visible: VPNWhatsNewModel.hasUnseenFeature
                 width: Theme.listSpacing + border.width * 2
             }
         }
