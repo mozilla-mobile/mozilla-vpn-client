@@ -4,7 +4,6 @@
 
 #include "adjusthandler.h"
 #include "constants.h"
-#include "logger.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosadjusthelper.h"
@@ -14,25 +13,6 @@
 #endif
 
 #include <QString>
-
-namespace {
-Logger logger(LOG_MAIN, "AdjustHandler");
-}  // namespace
-
-const QString AdjustHandler::eventToToken(AdjustEvent event) {
-  switch (event) {
-    case AdjustEvent::SubscriptionCompleted:
-#ifdef MVPN_IOS
-      return "jl72xm";
-#endif
-#ifdef MVPN_ANDROID
-      return "o1mn9m";
-#endif
-    default:
-      logger.error() << "Unknown Adjust event provided: " << event;
-      return "";
-  }
-}
 
 void AdjustHandler::initialize() {
 #ifdef MVPN_ANDROID
@@ -46,17 +26,15 @@ void AdjustHandler::initialize() {
 #endif
 }
 
-void AdjustHandler::trackEvent(AdjustEvent event) {
-  const QString eventToken = AdjustHandler::eventToToken(event);
-
+void AdjustHandler::trackEvent(const QString& event) {
 #ifdef MVPN_ANDROID
-  QAndroidJniObject javaMessage = QAndroidJniObject::fromString(eventToken);
+  QAndroidJniObject javaMessage = QAndroidJniObject::fromString(event);
   QAndroidJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/qt/VPNApplication", "trackEvent",
       "(Ljava/lang/String;)V", javaMessage.object<jstring>());
 #endif
 
 #ifdef MVPN_IOS
-  IOSAdjustHelper::trackEvent(eventToken);
+  IOSAdjustHelper::trackEvent(event);
 #endif
 }

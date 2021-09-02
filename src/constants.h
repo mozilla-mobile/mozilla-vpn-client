@@ -107,6 +107,18 @@ constexpr const char* PLATFORM_NAME =
 
 constexpr const char* PLACEHOLDER_USER_DNS = "127.0.0.1";
 
+#if defined(MVPN_ADJUST)
+constexpr const char* ADJUST_SUBSCRIPTION_COMPLETED =
+#  if defined(MVPN_IOS)
+    "jl72xm"
+#  elif defined(MVPN_ANDROID)
+    "o1mn9m"
+#  else
+    ""
+#  endif
+;
+#endif
+
 };  // namespace Constants
 
 #endif  // CONSTANTS_H
