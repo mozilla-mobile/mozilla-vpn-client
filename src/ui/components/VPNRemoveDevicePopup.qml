@@ -130,6 +130,8 @@ Popup {
             VPNTextBlock {
                 id: popupText
 
+                property string textString
+
                 color: Theme.fontColor
                 font.pixelSize: 15
                 horizontalAlignment: Text.AlignHCenter
@@ -138,11 +140,15 @@ Popup {
                 Layout.leftMargin: Theme.popupMargin
                 Layout.rightMargin: Theme.popupMargin
                 Layout.fillWidth: true
-                lineHeight: 22
+                lineHeight: 22;
+                text: textString.arg(popup.deviceName)
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
-                //: %1 is the name of the device being removed. The name is displayed on purpose on a new line.
-                //% "Please confirm you would like to remove\n%1."
-                text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(popup.deviceName)
+                Component.onCompleted: {
+                    //: %1 is the name of the device being removed. The name is displayed on purpose on a new line.
+                    //% "Please confirm you would like to remove\n%1."
+                    textString = qsTrId("vpn.devices.deviceRemovalConfirm").replace("\n", " ")
+                }
             }
 
             GridLayout {
