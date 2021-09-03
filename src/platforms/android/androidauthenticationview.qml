@@ -33,6 +33,7 @@ Item {
 
             onClicked: {
                 VPNAndroidUtils.abortAuthentication();
+                authWebview.clearStorage();
                 mainStackView.pop(StackView.Immediate);
             }
 
@@ -72,6 +73,7 @@ Item {
     }
 
     VPNAndroidWebView {
+        id: authWebview
         url: VPNAndroidUtils.url
 
         height: parent.height - menuBar.height
