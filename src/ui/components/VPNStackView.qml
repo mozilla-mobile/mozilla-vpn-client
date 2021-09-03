@@ -17,6 +17,8 @@ StackView {
         VPN.currentView = objString.split("_QML")[0];
     }
 
+    anchors.fill: parent
+
     Connections {
         target: VPNCloseEventHandler
         function onGoBack(item) {
