@@ -224,6 +224,10 @@ void AppPermission::openFilePicker() {
     logger.debug() << "App not valid:" << fileNames[0];
     return;
   }
+  if (m_applist.contains(AppDescription(fileNames[0]))) {
+    // Already have that app in the list.
+    return;
+  }
   m_listprovider->addApplication(fileNames[0]);
 
   QString message = L18nStrings::instance()
