@@ -26,7 +26,7 @@ class DnsResolver : public QHostAddress {
       args << QByteArray::fromRawData((const char*)&addrv6, sizeof(addrv6));
     } else {
       quint32 addrv4 = ip.toIPv4Address();
-      QByteArray data = QByteArray(4, 0);
+      QByteArray data(4, 0);
       data[0] = (addrv4 >> 24) & 0xff;
       data[1] = (addrv4 >> 16) & 0xff;
       data[2] = (addrv4 >> 8) & 0xff;
