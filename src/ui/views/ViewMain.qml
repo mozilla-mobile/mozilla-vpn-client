@@ -13,6 +13,9 @@ VPNFlickable {
     id: vpnFlickable
 
     flickContentHeight: col.height + Theme.windowMargin / 2
+    anchors.left: parent.left
+    anchors.right: parent.right
+
     states: [
         State {
             when: window.fullscreenRequired()
