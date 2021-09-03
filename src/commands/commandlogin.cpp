@@ -144,9 +144,6 @@ int CommandLogin::run(QStringList& tokens) {
               case AuthenticationInApp::ErrorIncorrectPassword:
                 stream << "Incorrect password!" << Qt::endl;
                 break;
-              case AuthenticationInApp::ErrorInvalidParameter:
-                stream << "Invalid parameter!" << Qt::endl;
-                break;
               case AuthenticationInApp::ErrorInvalidEmailCode:
                 stream << "Invalid email code!" << Qt::endl;
                 break;
@@ -161,12 +158,6 @@ int CommandLogin::run(QStringList& tokens) {
                 break;
               case AuthenticationInApp::ErrorTooManyRequests:
                 stream << "Too many requests. Slow down, please." << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorInvalidPhoneNumber:
-                stream << "Invalid phone number?!?" << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorInvalidRegion:
-                stream << "Invalid region" << Qt::endl;
                 break;
               case AuthenticationInApp::ErrorServerUnavailable:
                 stream << "The server is down" << Qt::endl;
