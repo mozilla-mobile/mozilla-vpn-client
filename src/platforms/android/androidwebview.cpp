@@ -245,8 +245,7 @@ void AndroidWebView::invalidateSceneGraph() {
   }
 }
 
-void AndroidWebView::clearStorage(){
-  QtAndroid::runOnAndroidThreadSync([this]() {
-    m_object.callMethod<void>("clearStorage", "()V");
-  });
+void AndroidWebView::clearStorage() {
+  QtAndroid::runOnAndroidThreadSync(
+      [this]() { m_object.callMethod<void>("clearStorage", "()V"); });
 }
