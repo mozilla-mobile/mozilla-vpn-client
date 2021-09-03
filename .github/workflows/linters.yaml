@@ -7,7 +7,7 @@ on:
       - 'releases/**'
     types: [ opened, synchronize, reopened ]
 jobs:
-  fetch:
+  linter:
     runs-on: ubuntu-20.04
     steps:
       - name: Install Linux packages
@@ -56,6 +56,12 @@ jobs:
           export PATH=/opt/qt515/bin:$PATH
           lupdate -version
           python .github/l10n/check_l10n_issues.py
+
+      - name: Check for QRC errors
+        run: |
+          # Manually add QT executables to path
+          export PATH=/opt/qt515/bin:$PATH
+          python scripts/check_qrc.py
 
       - name: Check for issues with clang-format
         uses: DoozyX/clang-format-lint-action@v0.11
