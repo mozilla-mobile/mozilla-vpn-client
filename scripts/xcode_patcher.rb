@@ -92,8 +92,10 @@ class XCodeprojPatcher
       groupId = "";
       if (platform == 'macos')
         groupId = configHash['DEVELOPMENT_TEAM'] + "." + configHash['GROUP_ID_MACOS']
+        config.build_settings['APP_ID_MACOS'] ||= configHash['APP_ID_MACOS']
       else
         groupId = configHash['GROUP_ID_IOS']
+        config.build_settings['GROUP_ID_IOS'] ||= configHash['GROUP_ID_IOS']
       end
 
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
