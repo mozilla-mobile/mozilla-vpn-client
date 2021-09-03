@@ -11,7 +11,7 @@
 #endif
 
 namespace {
-Logger logger({LOG_LINUX, LOG_NETWORKING}, "PingSender");
+Logger logger(LOG_NETWORKING, "PingSender");
 }
 
 quint16 PingSender::inetChecksum(const void* data, size_t len) {
