@@ -191,7 +191,7 @@ bool CryptoSettings::writeEncryptedChachaPolyV1File(
   }
 
   Q_ASSERT(NONCE_SIZE > sizeof(lastNonce));
-  QByteArray nonce = QByteArray(NONCE_SIZE, 0x00);
+  QByteArray nonce(NONCE_SIZE, 0x00);
   memcpy(nonce.data(), &lastNonce, sizeof(lastNonce));
 
   uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];

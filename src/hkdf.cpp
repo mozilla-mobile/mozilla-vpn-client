@@ -16,9 +16,9 @@ HKDF::HKDF(QCryptographicHash::Algorithm method, const QByteArray& salt)
 
 QByteArray HKDF::result(int length, const QByteArray& info) {
   // Compute the internal private key
-  QByteArray privkey = m_hmac.result();
-  QByteArray block = QByteArray();
-  QByteArray result = QByteArray();
+  QByteArray privkey(m_hmac.result());
+  QByteArray block;
+  QByteArray result;
 
   for (char counter = 1; result.size() < length; counter++) {
     // Compute and append the next block

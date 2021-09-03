@@ -206,7 +206,7 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
   // Build and add the Filters
   // #1 Permit outbound IPv4 traffic.
   {
-    QString name = QString("Permit (out) IPv4 Traffic of: " + appName);
+    QString name("Permit (out) IPv4 Traffic of: " + appName);
     std::wstring wname = name.toStdWString();
     PCWSTR filterName = wname.c_str();
     filter.displayData.name = (PWSTR)filterName;
@@ -221,7 +221,7 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
   }
   // #2 Permit inbound IPv4 traffic.
   {
-    QString name = QString("Permit (in)  IPv4 Traffic of: " + appName);
+    QString name("Permit (in)  IPv4 Traffic of: " + appName);
     std::wstring wname = name.toStdWString();
     PCWSTR filterName = wname.c_str();
     filter.displayData.name = (PWSTR)filterName;
@@ -235,7 +235,7 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
   }
   // #3 Permit outbound IPv6 traffic.
   {
-    QString name = QString("Permit (out) IPv6 Traffic of: " + appName);
+    QString name("Permit (out) IPv6 Traffic of: " + appName);
     std::wstring wname = name.toStdWString();
     PCWSTR filterName = wname.c_str();
     filter.displayData.name = (PWSTR)filterName;
@@ -249,7 +249,7 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
   }
   // #4 Permit inbound IPv6 traffic.
   {
-    QString name = QString("Permit (in)  IPv6 Traffic of: " + appName);
+    QString name("Permit (in)  IPv6 Traffic of: " + appName);
     std::wstring wname = name.toStdWString();
     PCWSTR filterName = wname.c_str();
     filter.displayData.name = (PWSTR)filterName;
@@ -379,7 +379,7 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
   // Build and add the Filters
   // #1 Permit outbound IPv4 traffic.
   {
-    QString name = QString("Permit (out) IPv4 Traffic of: " + appName);
+    QString name("Permit (out) IPv4 Traffic of: " + appName);
     std::wstring wname = name.toStdWString();
     PCWSTR filterName = wname.c_str();
     filter.displayData.name = (PWSTR)filterName;
@@ -394,7 +394,7 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
   }
   // #2 Permit inbound IPv4 traffic.
   {
-    QString name = QString("Permit (in)  IPv4 Traffic of: " + appName);
+    QString name("Permit (in)  IPv4 Traffic of: " + appName);
     std::wstring wname = name.toStdWString();
     PCWSTR filterName = wname.c_str();
     filter.displayData.name = (PWSTR)filterName;
