@@ -33,7 +33,7 @@ Item {
 
         //% "Get help"
         title: qsTrId("vpn.main.getHelp2")
-        visible: isSettingsView
+        visible: !isSettingsView
 
         onClicked: {
             if (unlockCounter >= 5) {
