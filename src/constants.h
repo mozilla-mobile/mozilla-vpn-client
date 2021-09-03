@@ -68,8 +68,8 @@ CONSTEXPR(uint32_t, surveyTimerMsec, 300000, 4000, 0)
   inline type functionName() { return inProduction() ? prod : beta; }
 
 constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
-constexpr const char* API_STAGING_URL =
-    "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
+
+constexpr const char* API_STAGING_URL = "https://guardian-dev.herokuapp.com";
 
 constexpr const char* LOGO_URL = ":/ui/resources/logo-dock.png";
 
