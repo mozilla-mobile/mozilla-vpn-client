@@ -22,7 +22,7 @@ void IOSAdjustHelper::initialize() {
     NSString *environment = Constants::inProduction() ? ADJEnvironmentProduction : ADJEnvironmentSandbox;
     ADJConfig *adjustConfig = [ADJConfig configWithAppToken:adjustToken
                                                 environment:environment];
-    [adjustConfig setLogLevel:ADJLogLevelDebug];
+    [adjustConfig setLogLevel:ADJLogLevelVerbose];
     [Adjust appDidLaunch:adjustConfig];
   }
 }
