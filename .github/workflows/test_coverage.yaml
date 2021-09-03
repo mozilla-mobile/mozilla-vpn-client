@@ -10,7 +10,7 @@ on:
       - 'releases/**'
 
 jobs:
-  fetch:
+  unit-test:
     runs-on: ubuntu-20.04
     steps:
       - name: Install Linux packages
