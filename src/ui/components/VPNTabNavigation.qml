@@ -7,7 +7,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import Mozilla.VPN 1.0
 import "../themes/colors.js" as Color
-
+import "../themes/themes.js" as Theme
 Item {
     id: root
 
@@ -35,7 +35,7 @@ Item {
         objectName: "tabBar"
         width: parent.width
         visible: stack.children.length > 1
-        contentHeight: stack.children.length === 1 ? 0 : 56
+        contentHeight: stack.children.length === 1 ? 0 : Theme.menuHeight
         background: Rectangle {
             color: "transparent"
         }
