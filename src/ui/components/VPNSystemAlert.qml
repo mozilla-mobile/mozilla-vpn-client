@@ -8,6 +8,7 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 VPNAlert {
+    property alias wasmSetAlertState: alertStates.state
     id: alertBox
     alertType: alertTypes.error
 
