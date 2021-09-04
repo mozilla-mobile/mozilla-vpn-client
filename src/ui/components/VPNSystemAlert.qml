@@ -8,10 +8,12 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 VPNAlert {
+    property alias wasmSetAlertState: alertStates.state
     id: alertBox
     alertType: alertTypes.error
 
     Item {
+        id: alertStates
         state: VPN.alert
         states: [
             State {
@@ -26,6 +28,7 @@ VPNAlert {
                 PropertyChanges {
                     target: alertBox
                     visible: false
+                    alertType: alertTypes.info
                 }
             },
             State {
@@ -49,7 +52,7 @@ VPNAlert {
                     target: alertBox
                     //% "Unable to connect"
                     alertText: qsTrId("vpn.alert.unableToConnect")
-                    alertLinkText: qsTrId("vpn.alert.tryAgain")
+                    alertActionText: qsTrId("vpn.alert.tryAgain")
                     visible: true
                 }
             },

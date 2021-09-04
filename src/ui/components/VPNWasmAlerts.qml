@@ -5,32 +5,31 @@
 import QtQuick 2.0
 import "../themes/themes.js" as Theme
 
-Item {
+VPNFlickable {
+    id: vpnFlickable
     anchors.fill: parent
+    contentHeight: wasmAlerts.implicitHeight + 100
 
     Column {
-        anchors.fill: parent
+        id: wasmAlerts
         anchors.top: parent.top
-        anchors.topMargin: Theme.rowHeight
+        anchors.topMargin: 56 + Theme.windowMargin
+        anchors.horizontalCenter: parent.horizontalCenter
         spacing: Theme.windowMargin
-
-        VPNAlert {
-            id: alertBox1
-            alertType: "update"
-            state: "recommended"
-            alertColor: Theme.blueButton
-            width: parent.width - (Theme.windowMargin * 2)
-            alertLinkText: qsTrId("vpn.updates.updateNow")
-            alertText: qsTrId("vpn.updates.newVersionAvailable")
-            visible: true
-        }
+        width: parent.width
 
         Repeater {
-            model: 9
+            model: 11
             delegate: VPNSystemAlert {
-                state: index
+                wasmSetAlertState: index
                 visible: true
             }
+        }
+
+        VPNAlerts {
+            width: parent.width - Theme.windowMargin
+            anchors.horizontalCenter: parent.horizontalCenter
+            isWasmViewer: true
         }
     }
 }
