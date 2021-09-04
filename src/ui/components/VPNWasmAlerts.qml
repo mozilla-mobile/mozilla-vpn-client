@@ -8,7 +8,7 @@ import "../themes/themes.js" as Theme
 VPNFlickable {
     id: vpnFlickable
     anchors.fill: parent
-    contentHeight: wasmAlerts.implicitHeight
+    contentHeight: wasmAlerts.implicitHeight + 100
 
     Column {
         id: wasmAlerts
