@@ -11,6 +11,7 @@ import "../themes/themes.js" as Theme
 
 Rectangle {
     id: alertBox
+
     // Defines what type of alert this is
     property var alertType: stateNames.info
     // Contains all accepted values for alertType
@@ -31,39 +32,20 @@ Rectangle {
     // Delete itself after closing
     property var destructive: false
 
-
-    color: style.alertColor
-    Behavior on color {
-        ColorAnimation {
-            duration: 200
-        }
-    }
-    radius: Theme.cornerRadius
-    height : style.alertHeight;
-    z: 3
     Layout.minimumHeight: style.alertHeight
     Layout.maximumHeight: style.alertHeight
     Layout.fillWidth: isLayout
+    color: style.alertColor
+    visible: false
+    radius: Theme.cornerRadius
+    height : style.alertHeight;
+    z: 3
 
     onVisibleChanged: {
         if (visible) {
             showAlert.start();
         }
     }
-    Component.onCompleted:  {
-        if (!isLayout) {
-            height = style.alertHeight;
-            width = Math.min(window.width - Theme.windowMargin, Theme.maxHorizontalContentWidth);
-            y = fullscreenRequired()? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
-            anchors.horizontalCenter = parent.horizontalCenter;
-            anchors.margins = Theme.windowMargin / 2;
-        }
-        if(alertBox.duration > 0){
-            console.log("Toasbox timer start")
-            autoHideTimer.start()
-        }
-    }
-
     // Private Properties, will be changed depnding on alertType
     QtObject {
         id: style
@@ -80,6 +62,7 @@ Rectangle {
         property var closeIcon : darkCloseIcon
         property var focusBorder: alertColor
     }
+
     // Possible Alert Types
     QtObject {
         id: stateNames
@@ -88,10 +71,16 @@ Rectangle {
         readonly property string error: "error"
         readonly property string warning: "warning"
     }
+
     state: alertType
     states:[
         State{
             name: stateNames.info
+            PropertyChanges {
+                target: focusIndicators
+                colorScheme: Theme.blueButton
+            }
+
             PropertyChanges {
                 target: style;
                 alertColor: Theme.blue
@@ -104,6 +93,11 @@ Rectangle {
         State{
             name: stateNames.success
             PropertyChanges {
+                target: focusIndicators
+                colorScheme: Theme.greenAlert
+            }
+
+            PropertyChanges {
                 target: style;
                 alertColor: Theme.greenAlert.defaultColor
                 alertHoverColor: Theme.greenAlert.buttonHovered
@@ -112,8 +106,15 @@ Rectangle {
                 closeIcon: darkCloseIcon
             }
         },
+
         State{
             name: stateNames.error
+
+            PropertyChanges {
+                target: focusIndicators
+                colorScheme: Theme.redButton
+            }
+
             PropertyChanges {
                 target: style;
                 alertColor: Theme.red
@@ -126,10 +127,15 @@ Rectangle {
         State{
             name: stateNames.warning
             PropertyChanges {
+                target: focusIndicators
+                colorScheme: Theme.warningAlertfocusIndicators
+            }
+
+            PropertyChanges {
                 target: style;
                 alertColor: Theme.orange
                 alertHoverColor: Theme.orangeHovered
-                alertClickColor: Theme.organgePressed
+                alertClickColor: Theme.orangePressed
                 fontColor: Theme.fontColorDark
                 closeIcon: darkCloseIcon
             }
@@ -157,11 +163,11 @@ Rectangle {
         color: "#0C0C0D"
    }
 
-
     VPNButtonBase {
         id: alertAction
         anchors.fill: alertBox
         radius: Theme.cornerRadius
+        enabled: alertActionText != ""
         onClicked: {
             if(alertActionText != ""){
               // Only Trigger an Action,
@@ -182,17 +188,19 @@ Rectangle {
             Label {
                 id: label
                  anchors.centerIn: parent
-                 text: alertBox.alertText + " " + "<b><u>" + alertBox.alertActionText + "</b></u>"
+                 text: alertBox.alertText + "\u0001" + "<b><u>"  + alertBox.alertActionText + "</b></u>"
                  horizontalAlignment: Text.AlignHCenter
                  font.pixelSize: Theme.fontSizeSmall
                  color: style.fontColor
                  width: labelWrapper.width - Theme.windowMargin
                  wrapMode: Label.WordWrap
              }
-
         }
 
-        VPNMouseArea {}
+        VPNMouseArea {
+            anchors.leftMargin: closeButton.width
+        }
+
         state: Theme.uiState.stateDefault
         states: [
             State {
@@ -210,20 +218,12 @@ Rectangle {
         ]
     }
 
-    VPNFocusOutline {
-        focusColorScheme: style.alertHoverColor
-        focusedComponent: closeButton
-        anchors.fill: closeButton
-        setMargins: -3
-        radius: Theme.cornerRadius
-    }
 
     VPNButtonBase {
         // Hack to create the two right angle corners
         // where closeButton meets alertAction
 
         id: closeButton
-
         height: alertBox.height
         width: Theme.rowHeight
         clip: true
@@ -236,13 +236,7 @@ Rectangle {
             alertBox.onClosePressed();
         }
 
-        VPNFocusBorder {
-            anchors.fill: closeButton
-            border.color: style.focusBorder
-            opacity: closeButton.activeFocus ? 1 : 0
-            radius: Theme.cornerRadius
-            z: 1
-        }
+        VPNMouseArea { }
 
         Rectangle {
             id: backgroundRect
@@ -254,14 +248,28 @@ Rectangle {
             radius: Theme.cornerRadius
             color: style.alertColor
             clip: true
-            state: closeButton.state
+            state: parent.state
+            opacity: alertBox.opacity === 1 ? 1 : 0
 
             Behavior on color {
                 ColorAnimation {
-                    duration: 200
+                    duration: 100
                 }
             }
-
+            states: [
+                State {
+                    name: Theme.uiState.stateDefault
+                    PropertyChanges {target: backgroundRect; color: style.alertColor }
+                },
+                State {
+                    name: Theme.uiState.statePressed
+                    PropertyChanges {target: backgroundRect; color: style.alertClickColor }
+                },
+                State {
+                    name: Theme.uiState.stateHovered
+                    PropertyChanges {target: backgroundRect; color: style.alertHoverColor }
+                }
+            ]
         }
 
         Image {
@@ -271,52 +279,57 @@ Rectangle {
             sourceSize.height: 12
             anchors.centerIn: closeButton
         }
-
-        VPNMouseArea {}
-        state: Theme.uiState.stateDefault
-        states: [
-            State {
-                name: Theme.uiState.stateDefault
-                PropertyChanges {target: backgroundRect; color: style.alertColor }
-            },
-            State {
-                name: Theme.uiState.statePressed
-                PropertyChanges {target: backgroundRect; color: style.alertClickColor }
-            },
-            State {
-                name: Theme.uiState.stateHovered
-                PropertyChanges {target: backgroundRect; color: style.alertHoverColor }
-            }
-        ]
-
     }
 
-    VPNFocusBorder {
-        anchors.fill: alertBox
-        border.color: style.focusBorder
-        opacity: alertAction.activeFocus ? 1 : 0
-        radius: Theme.cornerRadius
+    Rectangle {
+        property var colorScheme
+        id: focusIndicators
+        anchors.fill: closeButton.activeFocus ? closeButton : alertAction
+        anchors.margins: -3
+        border.color: colorScheme ? colorScheme.focusOutline : "transparent"
+        border.width: 3
+        visible: closeButton.activeFocus || alertAction.activeFocus
+        color: "transparent"
+        radius: Theme.cornerRadius + (anchors.margins * -1)
+
+        Rectangle {
+            color: "transparent"
+            border.width: 2
+            border.color: parent.colorScheme ? parent.colorScheme.focusBorder : "transparent"
+            radius: Theme.cornerRadius
+            anchors.fill: parent
+            anchors.margins: 3
+        }
     }
 
     SequentialAnimation {
         id: showAlert
+        ScriptAction { script: show();}
 
         PropertyAnimation {
-            target: alertBox
-            property: isLayout ? "Layout.minimumHeight" : "height"
-            to: style.alertHeight
-            duration: 60
-        }
-
-        PropertyAnimation {
-            target: alertBox
+            targets: alertBox
             property: "opacity"
+            from: 0
             to: 1
             duration: 100
         }
-
     }
+    function show() {
+        if (!isLayout) {
+            height = style.alertHeight;
+            width = Math.min(window.width - Theme.windowMargin, Theme.maxHorizontalContentWidth);
+            y = fullscreenRequired()? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
+            anchors.horizontalCenter = parent.horizontalCenter;
+            anchors.margins = Theme.windowMargin / 2;
+        }
+        if(alertBox.duration > 0){
+            console.log("Toasbox timer start")
+            autoHideTimer.start()
+        }
+    }
+
     function remove(){
+
         if(alertBox.destructive){
             alertBox.destroy(100)
         }
@@ -324,8 +337,8 @@ Rectangle {
 
     SequentialAnimation {
         property var closeTarget
-        id: closeAlert
-
+         id: closeAlert
+        ScriptAction { script: show(); }
         PropertyAnimation {
             target: alertBox
             property: "opacity"
@@ -344,7 +357,7 @@ Rectangle {
             property: "visible"
             value: "false"
         }
-        ScriptAction { script: remove();}
+        ScriptAction { script: remove(); }
     }
 
 }
