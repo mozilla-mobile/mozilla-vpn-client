@@ -187,9 +187,8 @@ Rectangle {
 
             Label {
                 id: label
-                property string space: " "
                  anchors.centerIn: parent
-                 text: alertBox.alertText + " " + "<b><u>"  + alertBox.alertActionText + "</b></u>"
+                 text: alertBox.alertText + "\u0001" + "<b><u>"  + alertBox.alertActionText + "</b></u>"
                  horizontalAlignment: Text.AlignHCenter
                  font.pixelSize: Theme.fontSizeSmall
                  color: style.fontColor
