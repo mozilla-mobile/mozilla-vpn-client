@@ -9,18 +9,19 @@ import "./../components"
 import "./../themes/themes.js" as Theme
 
 ColumnLayout {
+    property bool isWasmViewer: false
     id: notifications
     spacing: Theme.windowMargin / 2
-    Layout.maximumWidth: col.width - Theme.windowMargin
+    Layout.maximumWidth: parent.width - Theme.windowMargin
     Layout.alignment: Qt.AlignHCenter
     Layout.fillHeight: false
-    visible: VPNSurveyModel.hasSurvey || VPN.updateRecommended
+    visible: VPNSurveyModel.hasSurvey || VPN.updateRecommended || isWasmViewer
 
     VPNAlert {
         id: updateAlert
         isLayout: true
         alertType: alertTypes.info
-        visible: VPN.updateRecommended
+        visible: VPN.updateRecommended || isWasmViewer
         //% "New version is available."
         alertText: qsTrId("vpn.updates.newVersionAvailable")
         //% "Update now"
@@ -43,7 +44,7 @@ ColumnLayout {
         alertText: qsTrId("vpn.systray.survey.wouldLoveYourFeedback")
         //% "Take Survey"
         alertActionText: qsTrId("vpn.systray.survey.takeSurvey")
-        visible: VPNSurveyModel.hasSurvey
+        visible: VPNSurveyModel.hasSurvey || isWasmViewer
 
         onActionPressed: ()=>{
             VPNSurveyModel.openCurrentSurvey();
