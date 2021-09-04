@@ -21,6 +21,7 @@ describe('Take screenshots for each view', function() {
     fs.writeFileSync(`${dir}/${name}_${language}.png`, buffer);
   }
 
+
   async function screenCapture(name, cb = null) {
     for (let language of languages) {
       await vpn.setSetting('language-code', language);
@@ -312,14 +313,49 @@ describe('Take screenshots for each view', function() {
 
     await screenCapture('settings_networking');
 
-    await vpn.clickOnElement('settingsNetworkingBackButton');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
   });
 
-  it('settings / notifications', async () => {
+
+  it('settings / networking / DNS', async () => {
+    await vpn.waitForElement('settingsNetworking');
+    await vpn.waitForElementProperty('settingsNetworking', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsNetworking', 'y')));
+    await vpn.wait();
+
+    await vpn.clickOnElement('settingsNetworking');
+    await vpn.wait();
+
+    await vpn.waitForElement('advancedDNSSettings');
+    await vpn.waitForElementProperty('advancedDNSSettings', 'visible', 'true');
+    await vpn.clickOnElement('advancedDNSSettings');
+    await vpn.wait();
+
+    await screenCapture('dns_settings');
+
+    await vpn.clickOnElement('settingsBackButton');
+    await vpn.wait();
+
+    await vpn.clickOnElement('settingsBackButton');
+    await vpn.wait();
+
+    await vpn.waitForElement('manageAccountButton');
+    await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
+  });
+
+  it('settings / preferences / notifications', async () => {
+    await vpn.waitForElement('settingsPreferences');
+    await vpn.clickOnElement('settingsPreferences');
+    await vpn.wait();
+
     await vpn.waitForElement('settingsNotifications');
     await vpn.waitForElementProperty(
         'settingsNotifications', 'visible', 'true');
@@ -334,23 +370,29 @@ describe('Take screenshots for each view', function() {
 
     await screenCapture('settings_notification');
 
-    await vpn.clickOnElement('settingsNotificationsBackButton');
+    await vpn.clickOnElement('settingsBackButton');
+    await vpn.wait();
+
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
   });
 
-  it('settings / languages', async () => {
+  it('settings / preferences / languages', async () => {
+    await vpn.waitForElement('settingsPreferences');
+    await vpn.clickOnElement('settingsPreferences');
+    await vpn.wait();
+
     await vpn.waitForElement('settingsLanguages');
     await vpn.waitForElementProperty('settingsLanguages', 'visible', 'true');
+    await vpn.clickOnElement('settingsLanguages');
+    await vpn.wait();
 
     await vpn.setElementProperty(
         'settingsView', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('settingsLanguages', 'y')));
-    await vpn.wait();
-
-    await vpn.clickOnElement('settingsLanguages');
     await vpn.wait();
 
     await screenCapture('settings_languages');
@@ -374,7 +416,9 @@ describe('Take screenshots for each view', function() {
       await screenCapture(`settings_languages_${++scrollId}`);
     }
 
-    await vpn.clickOnElement('settingsLanguagesBackButton');
+    await vpn.clickOnElement('settingsBackButton');
+    await vpn.wait();
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('manageAccountButton');
@@ -399,7 +443,7 @@ describe('Take screenshots for each view', function() {
 
     await screenCapture('settings_about');
 
-    await vpn.clickOnElement('aboutUsBackButton');
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('manageAccountButton');
@@ -421,6 +465,40 @@ describe('Take screenshots for each view', function() {
     await screenCapture('settings_help');
 
     await vpn.clickOnElement('getHelpBack');
+    await vpn.wait();
+
+    await vpn.waitForElement('settingsGetHelp');
+    await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
+  });
+
+
+  it('settings / help / support', async () => {
+    await vpn.waitForElement('settingsGetHelp');
+    await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsGetHelp', 'y')));
+    await vpn.wait();
+
+    await vpn.clickOnElement('settingsGetHelp');
+    await vpn.wait();
+
+    await vpn.waitForElement('settingsGiveFeedback');
+    await vpn.waitForElementProperty('settingsGiveFeedback', 'visible', 'true');
+    await vpn.clickOnElement('settingsGiveFeedback');
+    await vpn.wait();
+
+    await screenCapture('settings_give_feedback');
+
+    await vpn.waitForElement('giveFeedbackBackButton');
+    await vpn.waitForElementProperty('giveFeedbackBackButton', 'visible', 'true');
+    await vpn.clickOnElement('giveFeedbackBackButton');
+    await vpn.wait();
+
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('settingsGetHelp');

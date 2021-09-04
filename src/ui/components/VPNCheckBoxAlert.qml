@@ -8,7 +8,7 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 RowLayout {
-    property var leftMargin:  56
+    property var leftMargin:  Theme.menuHeight
     property var alertColor: Theme.checkBoxWarning
     property var errorMessage
 

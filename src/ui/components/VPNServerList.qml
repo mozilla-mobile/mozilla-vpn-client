@@ -16,7 +16,7 @@ import "../themes/colors.js" as Color
 FocusScope {
     id: focusScope
 
-    property real listOffset: (56 * 2)
+    property real listOffset: (Theme.menuHeight * 2)
     property bool showRecentConnections: false
     property var currentServer
 

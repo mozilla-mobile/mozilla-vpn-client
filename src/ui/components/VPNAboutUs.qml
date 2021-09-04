@@ -12,6 +12,9 @@ import "../themes/themes.js" as Theme
 Item {
     id: viewAboutUs
     property alias isSettingsView: menu.isSettingsView
+    property alias isMainView: menu.isMainView
+    //% "About us
+    property string _menuTitle: qsTrId("vpn.settings.aboutUs")
 
     ListModel {
         id: aboutUsListModel
@@ -44,18 +47,16 @@ Item {
     VPNMenu {
         id: menu
         objectName: "aboutUsBackButton"
-
-        //% "About us"
         title: qsTrId("vpn.settings.aboutUs")
-        isSettingsView: true
+        visible: !isSettingsView
     }
 
     Rectangle {
         id: aboutUsCopy
 
-        anchors.top: menu.bottom
+        anchors.top: menu.visible ? menu.bottom : parent.top
+        anchors.topMargin: menu.visible ? 0 : Theme.menuHeight + Theme.windowMargin
         anchors.left: viewAboutUs.left
-        anchors.topMargin: Theme.vSpacing
         anchors.leftMargin: Theme.windowMargin
         anchors.rightMargin: Theme.windowMargin
         height: childrenRect.height
@@ -127,11 +128,11 @@ Item {
         anchors.top: divider.bottom
         anchors.topMargin: 16
         anchors.bottomMargin: Theme.vSpacing
-        height: parent.height - menu.height - aboutUsCopy.height - divider.height
+        height: parent.height
         width: viewAboutUs.width
         spacing: Theme.listSpacing
         model: aboutUsListModel
-        listName: menu.title
+        listName: _menuTitle
 
         delegate: VPNExternalLinkListItem {
             objectName: "aboutUsList-" + linkId
