@@ -22,7 +22,7 @@ VPNFlickable {
     property alias settingsListModel: repeater.model
 
 
-    flickContentHeight: col.height + 56*2
+    flickContentHeight: col.height + Theme.menuHeight*2
     interactive: flickContentHeight > height
 
     ColumnLayout {

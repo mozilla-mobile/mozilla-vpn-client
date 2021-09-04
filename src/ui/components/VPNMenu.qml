@@ -20,7 +20,7 @@ Item {
     signal clicked(QtObject mouse)
 
     width: parent.width
-    height: 56
+    height: Theme.menuHeight
     // Ensure that menu is on top of possible scrollable
     // content.
     z: 2
