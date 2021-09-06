@@ -42,7 +42,6 @@ void maybeInitialize() {
                              !FeatureUnauthSupport::instance()->isSupported());
   // Here we use the logger to force lrelease to add the help menu Ids.
 
-
   //% "Help center"
   logger.debug() << "Adding:" << qtTrId("help.helpCenter2");
   s_helpEntries.append(
