@@ -28,7 +28,6 @@
         <file>ui/components/VPNSubtitle.qml</file>
         <file>ui/components/VPNIconButton.qml</file>
         <file>ui/components/VPNDevicesListHeader.qml</file>
-        <file>ui/components/VPNAnimatedRings.qml</file>
         <file>ui/components/VPNConnectionInfo.qml</file>
         <file>ui/components/VPNCheckBoxRow.qml</file>
         <file>ui/components/VPNMainImage.qml</file>
