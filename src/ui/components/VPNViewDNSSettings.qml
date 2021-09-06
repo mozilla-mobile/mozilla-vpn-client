@@ -124,7 +124,7 @@ VPNFlickable {
                             states: [
                                 State {
                                     name: "visible"
-                                    when: ipInput.valueInvalid
+                                    when: showDNSInput && ipInput.valueInvalid
                                     PropertyChanges {
                                         target: errorAlert
                                         visible: true
