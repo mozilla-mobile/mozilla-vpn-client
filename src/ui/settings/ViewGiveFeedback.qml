@@ -412,8 +412,8 @@ Item {
                 anchors.topMargin: Theme.vSpacing
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
+                    VPN.openAppStoreReviewLink();
                     feedbackStackView.push(thankYouView);
-                    VPN.appReviewRequested();
                }
             }
 

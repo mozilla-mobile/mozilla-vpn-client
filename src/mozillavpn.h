@@ -79,6 +79,7 @@ class MozillaVPN final : public QObject {
     LinkAccount,
     LinkContact,
     LinkFeedback,
+    LinkLeaveReview,
     LinkLicense,
     LinkHelpSupport,
     LinkTermsOfService,
@@ -149,6 +150,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void submitFeedback(const QString& feedbackText,
                                   const qint8 rating, const QString& category);
   Q_INVOKABLE void appReviewRequested();
+  Q_INVOKABLE void openAppStoreReviewLink();
   Q_INVOKABLE void createSupportTicket(const QString& email,
                                        const QString& subject,
                                        const QString& issueText,
