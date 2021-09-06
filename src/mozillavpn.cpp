@@ -452,7 +452,8 @@ void MozillaVPN::openLink(LinkType linkType) {
 #if defined(MVPN_IOS)
           "https://apps.apple.com/app/id1489407738?action=write-review";
 #elif defined(MVPN_ANDROID)
-          "https://play.google.com/store/apps/details?id=org.mozilla.firefox.vpn";
+          "https://play.google.com/store/apps/"
+          "details?id=org.mozilla.firefox.vpn";
 #else
           "";
 #endif
