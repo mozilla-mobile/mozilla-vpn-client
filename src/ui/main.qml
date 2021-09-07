@@ -108,7 +108,7 @@ Window {
     Rectangle {
         id: iosSafeAreaTopMargin
 
-        color: "blue"
+        color: "transparent"
         height: marginHeightByDevice()
         width: window.width
         anchors.top: parent.top
