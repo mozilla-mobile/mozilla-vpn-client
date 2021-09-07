@@ -380,7 +380,13 @@ void MozillaVPN::getStarted() {
   authenticate();
 }
 
-void MozillaVPN::authenticate(
+void MozillaVPN::authenticate() {
+  return authenticateWithType(FeatureInAppAuth::instance()->isSupported()
+                                  ? AuthenticationInApp
+                                  : AuthenticationInBrowser);
+}
+
+void MozillaVPN::authenticateWithType(
     MozillaVPN::AuthenticationType authenticationType) {
   logger.debug() << "Authenticate";
 
@@ -388,18 +394,13 @@ void MozillaVPN::authenticate(
 
   hideAlert();
 
-  if (authenticationType == DefaultAuthentication) {
-    authenticationType = FeatureInAppAuth::instance()->isSupported()
-                             ? AuthenticationInApp
-                             : AuthenticationInBrowser;
-  }
-
   if (m_userAuthenticated) {
     LogoutObserver* lo = new LogoutObserver(this);
     // Let's use QueuedConnection to avoid nexted tasks executions.
     connect(
         lo, &LogoutObserver::ready, this,
-        [&] { authenticate(authenticationType); }, Qt::QueuedConnection);
+        [&] { authenticateWithType(authenticationType); },
+        Qt::QueuedConnection);
     return;
   }
 

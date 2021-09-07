@@ -120,15 +120,13 @@ class MozillaVPN final : public QObject {
   bool stagingMode() const;
 
   enum AuthenticationType {
-    DefaultAuthentication,
     AuthenticationInBrowser,
     AuthenticationInApp,
   };
 
   // Exposed QML methods:
   Q_INVOKABLE void getStarted();
-  Q_INVOKABLE void authenticate(
-      AuthenticationType authenticationType = DefaultAuthentication);
+  Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void openLink(LinkType linkType);
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
@@ -157,6 +155,8 @@ class MozillaVPN final : public QObject {
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
+
+  void authenticateWithType(AuthenticationType authenticationType);
 
   // Internal object getters:
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }

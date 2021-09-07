@@ -68,9 +68,9 @@ int CommandLogin::run(QStringList& tokens) {
     MozillaVPN vpn;
 
     if (!passwordOption.m_set) {
-      vpn.authenticate(MozillaVPN::AuthenticationInBrowser);
+      vpn.authenticateWithType(MozillaVPN::AuthenticationInBrowser);
     } else {
-      vpn.authenticate(MozillaVPN::AuthenticationInApp);
+      vpn.authenticateWithType(MozillaVPN::AuthenticationInApp);
     }
 
     QEventLoop loop;

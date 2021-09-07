@@ -30,7 +30,8 @@ void MozillaVPN::setState(State) {}
 
 void MozillaVPN::getStarted() {}
 
-void MozillaVPN::authenticate(MozillaVPN::AuthenticationType) {}
+void MozillaVPN::authenticate() {}
+void MozillaVPN::authenticateWithType(MozillaVPN::AuthenticationType) {}
 
 void MozillaVPN::openLink(LinkType) {}
 
