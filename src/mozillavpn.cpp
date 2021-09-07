@@ -1236,8 +1236,22 @@ void MozillaVPN::requestAbout() {
 void MozillaVPN::requestViewLogs() {
   logger.debug() << "View log requested";
 
+#if defined(MVPN_IOS)
+  QString* buffer = new QString();
+  QTextStream* out = new QTextStream(buffer);
+  serializeLogs(out, [buffer, out]() {
+    Q_ASSERT(out);
+    Q_ASSERT(buffer);
+
+    IOSUtils::shareLogs(*buffer);
+
+    delete out;
+    delete buffer;
+  });
+#else
   QmlEngineHolder::instance()->showWindow();
   emit viewLogsNeeded();
+#endif
 }
 
 void MozillaVPN::requestContactUs() {

@@ -14,6 +14,8 @@ class IOSUtils final {
   static QString IAPReceipt();
 
   static void appReviewRequested();
+
+  static void shareLogs(const QString& logs);
 };
 
 #endif  // IOSUTILS_H

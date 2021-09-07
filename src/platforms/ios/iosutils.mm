@@ -4,9 +4,13 @@
 
 #include "iosutils.h"
 #include "logger.h"
+#include "qmlengineholder.h"
 
 #include <QDateTime>
 #include <QString>
+#include <QtGui/qpa/qplatformnativeinterface.h>
+#include <QtGui>
+#include <QtQuick>
 
 #import <StoreKit/StoreKit.h>
 #import <UIKit/UIKit.h>
@@ -67,4 +71,16 @@ void IOSUtils::appReviewRequested() {
   if ([SKStoreReviewController class]) {
     [SKStoreReviewController requestReview];
   }
+}
+
+void IOSUtils::shareLogs(const QString& logs) {
+  UIView *view = static_cast<UIView *>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", QmlEngineHolder::instance()->window()));
+  UIViewController *qtController = [[view window] rootViewController];
+
+  NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:@"MozillaVPN-logs.txt"]];
+  NSData *data = [logs.toNSString() dataUsingEncoding:NSUTF8StringEncoding];
+  [data writeToURL:url atomically:NO];
+
+  UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[url] applicationActivities:nil];
+  [qtController presentViewController:activityViewController animated:YES completion:nil];
 }
