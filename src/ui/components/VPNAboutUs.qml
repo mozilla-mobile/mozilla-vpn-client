@@ -13,7 +13,7 @@ Item {
     id: viewAboutUs
     property alias isSettingsView: menu.isSettingsView
     property alias isMainView: menu.isMainView
-    //% "About us
+    //% "About us"
     property string _menuTitle: qsTrId("vpn.settings.aboutUs")
 
     ListModel {
