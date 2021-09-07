@@ -5,10 +5,9 @@
 #ifndef LINUXAPPIMAGEPROVIDER_H
 #define LINUXAPPIMAGEPROVIDER_H
 
-#include <QObject>
-#include <QQuickImageProvider>
+#include "appimageprovider.h"
 
-class LinuxAppImageProvider final : public QQuickImageProvider, public QObject {
+class LinuxAppImageProvider final : public AppImageProvider {
  public:
   LinuxAppImageProvider(QObject* parent);
   ~LinuxAppImageProvider();

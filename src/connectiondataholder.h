@@ -11,10 +11,17 @@
 #include <QTimer>
 #include <QVector>
 
+#if QT_VERSION >= 0x060000
+class QSplineSeries;
+class QValueAxis;
+#else
 namespace QtCharts {
 class QSplineSeries;
 class QValueAxis;
 }  // namespace QtCharts
+
+using namespace QtCharts;
+#endif
 
 #ifdef UNIT_TEST
 class TestConnectionDataHolder;
@@ -70,10 +77,10 @@ class ConnectionDataHolder final : public QObject {
   void bytesChanged();
 
  private:
-  QtCharts::QSplineSeries* m_txSeries = nullptr;
-  QtCharts::QSplineSeries* m_rxSeries = nullptr;
-  QtCharts::QValueAxis* m_axisX = nullptr;
-  QtCharts::QValueAxis* m_axisY = nullptr;
+  QSplineSeries* m_txSeries = nullptr;
+  QSplineSeries* m_rxSeries = nullptr;
+  QValueAxis* m_axisX = nullptr;
+  QValueAxis* m_axisY = nullptr;
 
   QVector<QPair<uint64_t, uint64_t>> m_data;
 

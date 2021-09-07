@@ -7,7 +7,6 @@
 #include "leakdetector.h"
 
 #include <QAndroidJniEnvironment>
-#include <QAndroidJniObject>
 #include <QtAndroid>
 #include <jni.h>
 #include <android/bitmap.h>
@@ -17,9 +16,8 @@ Logger logger(LOG_CONTROLLER, "AndroidAppImageProvider");
 }
 
 AndroidAppImageProvider::AndroidAppImageProvider(QObject* parent)
-    : QQuickImageProvider(QQuickImageProvider::Image,
-                          QQmlImageProviderBase::ForceAsynchronousImageLoading),
-      QObject(parent) {
+    : AppImageProvider(parent, QQuickImageProvider::Image,
+                       QQmlImageProviderBase::ForceAsynchronousImageLoading) {
   MVPN_COUNT_CTOR(AndroidAppImageProvider);
 }
 
@@ -30,14 +28,14 @@ AndroidAppImageProvider::~AndroidAppImageProvider() {
 // from QQuickImageProvider
 QImage AndroidAppImageProvider::requestImage(const QString& id, QSize* size,
                                              const QSize& requestedSize) {
-  QAndroidJniObject activity = QtAndroid::androidActivity();
+  QJniObject activity = QtAndroid::androidActivity();
   Q_ASSERT(activity.isValid());
 
-  auto jniString = QAndroidJniObject::fromString(id);
+  auto jniString = QJniObject::fromString(id);
 
   logger.debug() << " Request image";
 
-  QAndroidJniObject drawable = QAndroidJniObject::callStaticObjectMethod(
+  QJniObject drawable = QJniObject::callStaticObjectMethod(
       "org/mozilla/firefox/vpn/qt/PackageManagerHelper", "getAppIcon",
       "(Landroid/content/Context;Ljava/lang/String;)Landroid/graphics/drawable/"
       "Drawable;",
@@ -59,7 +57,7 @@ QImage AndroidAppImageProvider::requestImage(const QString& id, QSize* size,
   return out;
 }
 
-QImage AndroidAppImageProvider::toImage(const QAndroidJniObject& bitmap) {
+QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
   QAndroidJniEnvironment env;
   AndroidBitmapInfo info;
   if (AndroidBitmap_getInfo(env, bitmap.object(), &info) !=
@@ -108,22 +106,23 @@ QImage AndroidAppImageProvider::toImage(const QAndroidJniObject& bitmap) {
   return image;
 }
 
-QAndroidJniObject AndroidAppImageProvider::createBitmap(int width, int height) {
-  QAndroidJniObject config = QAndroidJniObject::getStaticObjectField(
+AndroidAppImageProvider::QJniObject AndroidAppImageProvider::createBitmap(
+    int width, int height) {
+  QJniObject config = QJniObject::getStaticObjectField(
       "android/graphics/Bitmap$Config", "ARGB_8888",
       "Landroid/graphics/Bitmap$Config;");
 
-  return QAndroidJniObject::callStaticObjectMethod(
+  return QJniObject::callStaticObjectMethod(
       "android/graphics/Bitmap", "createBitmap",
       "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;", width,
       height, config.object());
 }
 
-QImage AndroidAppImageProvider::toImage(const QAndroidJniObject& drawable,
+QImage AndroidAppImageProvider::toImage(const QJniObject& drawable,
                                         const QRect& bounds) {
-  QAndroidJniObject bitmap = createBitmap(bounds.width(), bounds.height());
-  QAndroidJniObject canvas("android/graphics/Canvas",
-                           "(Landroid/graphics/Bitmap;)V", bitmap.object());
+  QJniObject bitmap = createBitmap(bounds.width(), bounds.height());
+  QJniObject canvas("android/graphics/Canvas", "(Landroid/graphics/Bitmap;)V",
+                    bitmap.object());
   drawable.callMethod<void>("setBounds", "(IIII)V", bounds.left(), bounds.top(),
                             bounds.right(), bounds.bottom());
   drawable.callMethod<void>("draw", "(Landroid/graphics/Canvas;)V",
