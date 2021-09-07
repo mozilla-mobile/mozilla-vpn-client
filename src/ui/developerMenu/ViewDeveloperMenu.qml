@@ -10,11 +10,12 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 VPNFlickable {
-    id: vpnFlickable
+    property string _menuTitle: VPNl18n.tr(VPNl18n.SettingsDevTitle)
     property alias isSettingsView: menu.isSettingsView
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff) ||
         (VPNController.state === VPNController.StateInitializing)
 
+    id: vpnFlickable
     VPNMenu {
         id: menu
         title: VPNl18n.tr(VPNl18n.SettingsDevTitle)

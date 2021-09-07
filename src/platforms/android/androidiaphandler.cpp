@@ -24,10 +24,29 @@ constexpr auto CLASSNAME = "org.mozilla.firefox.vpn.InAppPurchase";
 
 AndroidIAPHandler::AndroidIAPHandler(QObject* parent) : IAPHandler(parent) {
   MVPN_COUNT_CTOR(AndroidIAPHandler);
+  maybeInit();
+}
 
+AndroidIAPHandler::~AndroidIAPHandler() {
+  MVPN_COUNT_DTOR(AndroidIAPHandler);
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/mozilla/firefox/vpn/InAppPurchase", "deinit", "()V");
+}
+
+void AndroidIAPHandler::maybeInit() {
+  if (m_init) {
+    return;
+  }
   // Init the billing client
   auto appContext = QtAndroid::androidActivity().callObjectMethod(
       "getApplicationContext", "()Landroid/content/Context;");
+  if (!appContext.isValid()) {
+    // This is a race condition, we could be here while android has not finished
+    // activity::onCreate on the Ui thread. In this case the context is null.
+    logger.debug() << "Android IAP handler init skipped";
+    return;
+  }
+  logger.debug() << "Android IAP handler init";
   QAndroidJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/InAppPurchase", "init",
       "(Landroid/content/Context;)V", appContext.object());
@@ -59,15 +78,12 @@ AndroidIAPHandler::AndroidIAPHandler(QObject* parent) : IAPHandler(parent) {
                          sizeof(methods) / sizeof(methods[0]));
     env->DeleteLocalRef(objectClass);
   });
-}
-
-AndroidIAPHandler::~AndroidIAPHandler() {
-  MVPN_COUNT_DTOR(AndroidIAPHandler);
-  QAndroidJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/InAppPurchase", "deinit", "()V");
+  m_init = true;
 }
 
 void AndroidIAPHandler::nativeRegisterProducts() {
+  maybeInit();
+  Q_ASSERT(m_init);
   // Convert products to JSON
   QJsonArray jsonProducts;
   for (auto p : m_products) {
@@ -89,6 +105,8 @@ void AndroidIAPHandler::nativeRegisterProducts() {
 }
 
 void AndroidIAPHandler::nativeStartSubscription(Product* product) {
+  maybeInit();
+  Q_ASSERT(m_init);
   auto jniString = QAndroidJniObject::fromString(product->m_name);
   auto appActivity = QtAndroid::androidActivity();
   QAndroidJniObject::callStaticMethod<void>(
@@ -98,6 +116,8 @@ void AndroidIAPHandler::nativeStartSubscription(Product* product) {
 }
 
 void AndroidIAPHandler::launchPlayStore() {
+  maybeInit();
+  Q_ASSERT(m_init);
   auto appActivity = QtAndroid::androidActivity();
   QAndroidJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/InAppPurchase", "launchPlayStore",

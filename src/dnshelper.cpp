@@ -71,7 +71,15 @@ bool DNSHelper::isMullvadDNS(const QString& address) {
 bool DNSHelper::validateUserDNS(const QString& dns) {
   QHostAddress address = QHostAddress(dns);
   logger.debug() << "checking -> " << dns << "==" << !address.isNull();
-  return !address.isNull();
+  if (address.isNull()) {
+    return false;
+  }
+  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+    // We have an issue on Windows with v6 dns, lets disable v6 dns for now.
+    // See: https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1714
+    return false;
+  }
+  return true;
 }
 
 // static
@@ -117,12 +125,8 @@ bool DNSHelper::shouldExcludeDNS() {
     return false;
   }
 
-  // TODO: Uncomment this once mullvad is ready to route custom DNS
-  // See: https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1610
-  // currently we want all custom DNS to not use the vpn because of this.
-  // if(!isLocalDNS){
-  //  return false;
-  //}
-
+  if (!isLocalDNS) {
+    return false;
+  }
   return true;
 }

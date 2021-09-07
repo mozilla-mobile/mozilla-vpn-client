@@ -174,9 +174,6 @@ NATIVEMESSAGING_ID_MACOS = org.mozilla.macos.FirefoxVPN.native-messaging
 GROUP_ID_IOS = <>
 APP_ID_IOS = <>
 NETEXT_ID_IOS = <>
-
-# Adjust SDK token
-ADJUST_SDK_TOKEN = <>
 ```
 7. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
 ```
@@ -196,7 +193,11 @@ The built up will show up in `Release/Mozilla VPN.app` (relative to the root of 
 
 ### IOS
 
-The IOS procedure is similar to the macOS one:
+For IOS, we recommend installing Qt using the [Qt Online Installer](https://www.qt.io/download-qt-installer). We recommend installing
+the latest available release of Qt5 for IOS. You may also need to enable support for Qt Charts and Qt Network Qt Network Authorization
+during the installation.
+
+Once Qt has been installed, the IOS procedure is similar to the macOS one:
 
 1. Install XCodeProj:
 ```
@@ -235,16 +236,13 @@ NATIVEMESSAGING_ID_MACOS = <>
 GROUP_ID_IOS = group.org.mozilla.ios.Guardian
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
-
-# Adjust SDK token
-ADJUST_SDK_TOKEN = <>
 ```
-(if you want to build for release also add the Adjust SDK token)
 6. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
 ```
   $ ./scripts/apple_compile.sh ios
 ```
 You may be interested in flags like -i for the inspector (see ./scripts/apple_compile.sh --help for more)
+Add the Adjust SDK token with `-a | --adjust <adjust_token>`
 
 7. Open Xcode and run/test/archive/ship the app
 
@@ -269,13 +267,12 @@ You may be interested in flags like -i for the inspector (see ./scripts/apple_co
 ```bash 
   $  ./scripts/android_package.sh /path/to/Qt/5.15.x/ (debug|release)
 ```
+Add the Adjust SDK token with `-a | --adjust <adjust_token>`
 7. The apk will be located in ```.tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk```
 8. Install with adb on device/emulator
 ```bash
   $ adb install .tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk
 ```
-
-9. To build the apk for release the environment variable ADJUST_SDK_TOKEN is required. It must be set to the app token of the Adjust SDK dashboard. 
 
 ### Windows
 

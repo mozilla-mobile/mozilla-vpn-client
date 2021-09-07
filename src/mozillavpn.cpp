@@ -17,8 +17,6 @@
 #include "loghandler.h"
 #include "logoutobserver.h"
 #include "models/device.h"
-#include "models/servercountrymodel.h"
-#include "models/user.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -39,7 +37,6 @@
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
-#  include "platforms/ios/iosadjusthelper.h"
 #  include "platforms/ios/iosutils.h"
 #endif
 
@@ -51,9 +48,14 @@
 #ifdef MVPN_WINDOWS
 #  include "platforms/windows/windowsdatamigration.h"
 #endif
+
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androiddatamigration.h"
 #  include "platforms/android/androidvpnactivity.h"
+#endif
+
+#ifdef MVPN_ADJUST
+#  include "adjusthandler.h"
 #endif
 
 #include <QApplication>
@@ -86,8 +88,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   logger.debug() << "Creating MozillaVPN singleton";
 
-#ifdef MVPN_IOS
-  IOSAdjustHelper::initialize();
+#ifdef MVPN_ADJUST
+  AdjustHandler::initialize();
 #endif
 
   Q_ASSERT(!s_instance);
@@ -1313,6 +1315,9 @@ void MozillaVPN::subscriptionCompleted() {
   }
 
   logger.debug() << "Subscription completed";
+#ifdef MVPN_ADJUST
+  AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
+#endif
   completeActivation();
 }
 

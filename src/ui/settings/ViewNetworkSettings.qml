@@ -15,22 +15,19 @@ import telemetry 0.15
 
 
 Item {
+    property string _appPermissionsTitle
+    //% "Network settings"
+    property string _menuTitle: qsTrId("vpn.settings.networking")
+
     id: root
-
-    VPNMenu {
-        id: menu
-        objectName: "settingsNetworkingBackButton"
-
-        //% "Network settings"
-        title: qsTrId("vpn.settings.networking")
-        isSettingsView: true
-    }
+    objectName: "settingsNetworkingBackButton"
 
     VPNFlickable {
         id: vpnFlickable
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
-        anchors.top: menu.bottom
+        anchors.top: parent.top
+        anchors.topMargin: 56
         anchors.right: parent.right
         anchors.left: parent.left
         height: root.height - menu.height
@@ -63,7 +60,7 @@ Item {
                 id: ipv6
                 objectName: "settingIpv6Enabled"
                 width: parent.width - Theme.windowMargin
-                showDivider: isEnabled
+                showDivider: false
 
                 //% "IPv6"
                 labelText: qsTrId("vpn.settings.ipv6")
@@ -83,7 +80,7 @@ Item {
                 objectName: "settingLocalNetworkAccess"
                 visible: VPNFeatureList.get("lanAccess").isSupported
                 width: parent.width - Theme.windowMargin
-                showDivider: isEnabled
+                showDivider: true
 
                 //% "Local network access"
                 labelText: qsTrId("vpn.settings.lanAccess")
@@ -98,22 +95,39 @@ Item {
                 }
             }
 
-            VPNSettingsItem {
-                objectName: "advancedDNSSettings"
-                anchors.left: parent.left
-                anchors.right: parent.right
-                width: parent.width - Theme.windowMargin
+            Column {
+                width: parent.width
+                spacing: Theme.windowMargin  /2
+                VPNSettingsItem {
+                    objectName: "advancedDNSSettings"
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    width: parent.width - Theme.windowMargin
 
-                //% "Advanced DNS Settings"
-                settingTitle: qsTrId("vpn.settings.networking.advancedDNSSettings")
-                imageLeftSrc: "../resources/settings.svg"
-                imageRightSrc: "../resources/chevron.svg"
-                onClicked: settingsStackView.push("../settings/ViewAdvancedDNSSettings.qml")
-                visible: VPNFeatureList.get("customDNS").isSupported
-                enabled: vpnFlickable.vpnIsOff
-                opacity: enabled ? 1 : .5
+                    //% "Advanced DNS Settings"
+                    settingTitle: qsTrId("vpn.settings.networking.advancedDNSSettings")
+                    imageLeftSrc: "../resources/settings.svg"
+                    imageRightSrc: "../resources/chevron.svg"
+                    onClicked: settingsStackView.push("../settings/ViewAdvancedDNSSettings.qml")
+                    visible: VPNFeatureList.get("customDNS").isSupported
+                    enabled: vpnFlickable.vpnIsOff
+                    opacity: enabled ? 1 : .5
+                }
+
+                VPNSettingsItem {
+                    objectName: "appPermissions"
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    width: parent.width - Theme.windowMargin
+                    settingTitle: _appPermissionsTitle
+                    imageLeftSrc: "../resources/settings/apps.svg"
+                    imageRightSrc: "../resources/chevron.svg"
+                    onClicked: settingsStackView.push("../settings/ViewAppPermissions.qml")
+                    visible: VPNFeatureList.get("splitTunnel").isSupported
+                    enabled: vpnFlickable.vpnIsOff
+                    opacity: enabled ? 1 : .5
+                }
             }
         }
-
     }
 }
