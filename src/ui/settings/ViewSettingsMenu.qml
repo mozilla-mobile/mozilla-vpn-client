@@ -104,7 +104,7 @@ VPNFlickable {
             property string prefs: qsTrId("systray.preferences")
             property string notificationsTitle: qsTrId("vpn.settings.notifications")
             property string languageTitle: qsTrId("vpn.settings.language")
-            //% "Launch VPN app on startup
+            //% "Launch VPN app on startup"
             property string startAtBootTitle: qsTrId("vpn.settings.runOnBoot2")
 
             id: preferencesSetting
