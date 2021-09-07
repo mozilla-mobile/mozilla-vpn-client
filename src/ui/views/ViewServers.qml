@@ -92,10 +92,10 @@ Item {
         }
         handleTabClick: (tab) => {
             if (multiHopStackView && multiHopStackView.depth > 1) {
-                    // Return to the Multi-hop main view when the Multi-hop tab
-                    // is clicked from a Multi-hop entry or exit server list
-                    multiHopStackView.pop();
-                }
+                // Return to the Multi-hop main view when the Multi-hop tab
+                // is clicked from a Multi-hop entry or exit server list
+                multiHopStackView.pop();
+            }
 
             if (tab.objectName === "tabSingleHop") {
                 // Do single hop things
@@ -103,9 +103,12 @@ Item {
                 singleHopServerList.centerActiveServer();
                 return;
             }
+            else if (multiHopEntryServer[0] === "") {
+                // Choose a random entry server when switching to multihop
+                multiHopEntryServer = VPNServerCountryModel.pickRandom();
+            }
         }
     }
-
 
     Component.onCompleted: {
         if (!VPNFeatureList.get("multiHop").isSupported) {
@@ -113,10 +116,10 @@ Item {
         }
 
         serversTabs.stackContent.push(multiHopStackView);
-      if (VPNCurrentServer.entryCountryCode && VPNCurrentServer.entryCountryCode !== "") {
-          // Set default tab to multi-hop
-          return serversTabs.setCurrentTabIndex(1);
-      }
+        if (VPNCurrentServer.entryCountryCode && VPNCurrentServer.entryCountryCode !== "") {
+            // Set default tab to multi-hop
+            return serversTabs.setCurrentTabIndex(1);
+        }
     }
 }
 
