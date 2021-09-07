@@ -71,12 +71,14 @@ void AndroidIAPHandler::maybeInit() {
         {"onSkuDetailsReceived", "(Ljava/lang/String;)V",
          reinterpret_cast<void*>(onSkuDetailsReceived)},
     };
-    QAndroidJniObject javaClass(CLASSNAME);
     QAndroidJniEnvironment env;
-    jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
+    jclass objectClass = env.findClass(CLASSNAME);
+    if (objectClass == nullptr) {
+      logger.error() << "Android-IAP Class is Null?!";
+      return;
+    }
     env->RegisterNatives(objectClass, methods,
                          sizeof(methods) / sizeof(methods[0]));
-    env->DeleteLocalRef(objectClass);
   });
   m_init = true;
 }
