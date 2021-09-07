@@ -318,36 +318,34 @@ describe('Settings', function() {
     await vpn.waitForElement('settingsBackButton');
     await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
     await vpn.clickOnElement('settingsBackButton');
+    await vpn.wait();
 
-
-    await vpn.waitForElement('getHelpBackList');
-    await vpn.waitForElementProperty('getHelpBackList', 'visible', 'true');
+    await vpn.waitForElement('getHelpLinks');
+    await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
 
     // TODO: checking the give feedback views
 
-  /* TODO: Reinstate these tests correctly
-      await vpn.waitForElement('getHelpBackList/getHelpBackList-2');
-      await vpn.waitForElementProperty(
-          'getHelpBackList/getHelpBackList-2', 'visible', 'true');
+    await vpn.waitForElement('getHelpLinks/getHelpBackList-2');
+    await vpn.waitForElementProperty(
+        'getHelpLinks/getHelpBackList-2', 'visible', 'true');
 
-      await vpn.clickOnElement('getHelpBackList/getHelpBackList-2');
+    await vpn.clickOnElement('getHelpLinks/getHelpBackList-2');
 
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.startsWith('file://') && url.includes('mozillavpn') &&
-            url.endsWith('.txt');
-      });
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+      return url.startsWith('file://') && url.includes('mozillavpn') &&
+          url.endsWith('.txt');
+    });
 
-      await vpn.waitForElement('getHelpBackList/getHelpBackList-0')
-      await vpn.waitForElementProperty(
-        'getHelpBackList/getHelpBackList-0', 'visible', 'true');
+    await vpn.waitForElement('getHelpLinks/getHelpBackList-0')
+        await vpn.waitForElementProperty(
+            'getHelpLinks/getHelpBackList-0', 'visible', 'true');
 
-      await vpn.clickOnElement('getHelpBackList/getHelpBackList-0');
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.endsWith('/r/vpn/support');
-      });
-    /*
+    await vpn.clickOnElement('getHelpLinks/getHelpBackList-0');
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+      return url.endsWith('/r/vpn/support');
+    });
 
     /* TODO:  Reinstate this test correctly
         https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1638

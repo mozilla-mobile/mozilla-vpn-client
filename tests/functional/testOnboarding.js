@@ -41,35 +41,35 @@ describe('Initial view and onboarding', function() {
   });
 
   it('Open some links', async () => {
-    await vpn.waitForElement('getHelpBackList');
-    await vpn.waitForElementProperty('getHelpBackList', 'visible', 'true');
+    await vpn.waitForElement('getHelpLinks');
+    await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
 
-    await vpn.waitForElement('getHelpBackList/getHelpBackList-0');
+    await vpn.waitForElement('getHelpLinks/getHelpBackList-0');
     await vpn.waitForElementProperty(
-        'getHelpBackList/getHelpBackList-0', 'visible', 'true');
+        'getHelpLinks/getHelpBackList-0', 'visible', 'true');
 
-    await vpn.waitForElement('getHelpBackList/getHelpBackList-1');
+    await vpn.waitForElement('getHelpLinks/getHelpBackList-1');
     await vpn.waitForElementProperty(
-        'getHelpBackList/getHelpBackList-1', 'visible', 'true');
+        'getHelpLinks/getHelpBackList-1', 'visible', 'true');
 
-    await vpn.waitForElement('getHelpBackList/getHelpBackList-2');
+    await vpn.waitForElement('getHelpLinks/getHelpBackList-2');
     await vpn.waitForElementProperty(
-        'getHelpBackList/getHelpBackList-2', 'visible', 'true');
+        'getHelpLinks/getHelpBackList-2', 'visible', 'true');
 
-    await vpn.clickOnElement('getHelpBackList/getHelpBackList-0');
+    await vpn.clickOnElement('getHelpLinks/getHelpBackList-2');
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.startsWith('file://') && url.includes('mozillavpn') &&
           url.endsWith('.txt');
     });
 
-    await vpn.clickOnElement('getHelpBackList/getHelpBackList-1');
+    await vpn.clickOnElement('getHelpLinks/getHelpBackList-0');
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.endsWith('/r/vpn/support');
     });
 
-    await vpn.clickOnElement('getHelpBackList/getHelpBackList-2');
+    await vpn.clickOnElement('getHelpLinks/getHelpBackList-1');
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.endsWith('/r/vpn/contact');
