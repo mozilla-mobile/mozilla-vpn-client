@@ -15,7 +15,7 @@ import "../themes/themes.js" as Theme
 Button {
     id: wasmHeader
 
-    height: 60
+    height: Theme.menuHeight
     width: parent.width
     z: 2
     clip: true
