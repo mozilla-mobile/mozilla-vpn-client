@@ -15,6 +15,7 @@
 class ServerData;
 
 class ServerCountryModel final : public QAbstractListModel {
+  Q_OBJECT
   Q_DISABLE_COPY_MOVE(ServerCountryModel)
 
  public:
@@ -33,6 +34,8 @@ class ServerCountryModel final : public QAbstractListModel {
   [[nodiscard]] bool fromJson(const QByteArray& data);
 
   bool initialized() const { return !m_rawJson.isEmpty(); }
+
+  Q_INVOKABLE QStringList pickRandom();
 
   void pickRandom(ServerData& data) const;
 

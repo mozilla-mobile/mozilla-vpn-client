@@ -1023,6 +1023,15 @@ void TestModels::serverCountryModelPick() {
   }
 
   {
+    SettingsHolder settingsHolder;
+    QStringList tuple = m.pickRandom();
+    QCOMPARE(tuple.length(), 3);
+    QCOMPARE(tuple.at(0), "serverCountryCode");
+    QCOMPARE(tuple.at(1), "serverCityName");
+    QCOMPARE(tuple.at(2), "serverCityName");  // Localized?
+  }
+
+  {
     ServerData sd;
     QCOMPARE(m.pickByIPv4Address("ipv4AddrIn", sd), true);
     QCOMPARE(sd.exitCountryCode(), "serverCountryCode");
