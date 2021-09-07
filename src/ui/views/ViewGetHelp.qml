@@ -41,7 +41,7 @@ Item {
                 VPNSettings.developerUnlock = true
             }
             else if (!VPNSettings.developerUnlock) {
-                unlockTimeout.restaabrt()
+                unlockTimeout.restart()
                 unlockCounter = unlockCounter + 1
             }
         }
