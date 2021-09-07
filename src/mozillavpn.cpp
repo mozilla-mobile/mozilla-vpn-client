@@ -479,6 +479,10 @@ void MozillaVPN::openLink(LinkType linkType) {
           "https://support.mozilla.org/kb/"
           "split-tunneling-use-mozilla-vpn-specific-apps-wind";
       break;
+    case LinkInspector:
+      Q_ASSERT(!Constants::inProduction());
+      url = "http://localhost:8766/";
+      break;
 
     default:
       qFatal("Unsupported link type!");

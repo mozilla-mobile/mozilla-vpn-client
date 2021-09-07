@@ -55,7 +55,6 @@ VPNFlickable {
             }
         }
     }
-
     VPNSettingsItem {
         id: featureListLink
         objectName: "settingsFeatureList"
@@ -72,9 +71,27 @@ VPNFlickable {
         imageRightSrc: "../resources/chevron.svg"
         onClicked: stackview.push("../developerMenu/ViewFeatureList.qml")
     }
+    VPNExternalLinkListItem {
+        id:inspectorLink
+        visible: stagingServer.isChecked && !restartRequired.visible
+        anchors.top: featureListLink.bottom
+        anchors.topMargin: Theme.windowMargin
+        anchors.left: featureListLink.left
+        anchors.leftMargin: Theme.windowMargin/2
+        width: parent.width - Theme.windowMargin
+
+        objectName: "openInspector"
+        title: "Open Inspector"
+        accessibleName: "Open Inspector"
+        iconSource:  "../resources/externalLink.svg"
+        backgroundColor: Theme.clickableRowBlue
+        onClicked: {
+            VPN.openLink(VPN.LinkInspector)
+        }
+    }
 
     VPNCheckBoxAlert {
-        anchors.top: featureListLink.bottom
+        anchors.top: inspectorLink.bottom
         visible: VPN.stagingMode != VPNSettings.stagingServer
 
         errorMessage: VPNl18n.tr(VPNl18n.SettingsDevRestartRequired)
