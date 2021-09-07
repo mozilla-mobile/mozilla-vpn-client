@@ -24,9 +24,7 @@ Window {
                 Qt.platform.os === "tvos";
     }
     screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
-
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
-
     visible: true
 
     width: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
@@ -110,9 +108,10 @@ Window {
     Rectangle {
         id: iosSafeAreaTopMargin
 
-        color: "transparent"
+        color: "blue"
         height: marginHeightByDevice()
         width: window.width
+        anchors.top: parent.top
 
         function marginHeightByDevice() {
             if (Qt.platform.os !== "ios") {
@@ -138,24 +137,20 @@ Window {
 
     VPNWasmHeader {
         id: wasmMenuHeader
-        visible: false
+        visible: isWasmApp
+        height: Theme.menuHeight
+        anchors.top: parent.top
+        anchors.topMargin: iosSafeAreaTopMargin.height
     }
 
     VPNStackView {
         id: mainStackView
         initialItem: mainView
         width: parent.width
-        anchors.top: iosSafeAreaTopMargin.bottom
+        anchors.top: parent.top
+        anchors.topMargin: iosSafeAreaTopMargin.height + isWasmApp ? wasmMenuHeader.height : 0
         height: safeContentHeight
         clip: true
-
-        Component.onCompleted: {
-            if (isWasmApp) {
-                wasmMenuHeader.visible = true;
-                anchors.top = wasmMenuHeader.bottom;
-                height = safeContentHeight - wasmMenuHeader.height;
-            }
-        }
     }
 
     Component {
