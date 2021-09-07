@@ -45,7 +45,6 @@ TaskAuthenticate::TaskAuthenticate(
     MozillaVPN::AuthenticationType authenticationType)
     : Task("TaskAuthenticate"), m_authenticationType(authenticationType) {
   MVPN_COUNT_CTOR(TaskAuthenticate);
-  Q_ASSERT(authenticationType != MozillaVPN::DefaultAuthentication);
 }
 
 TaskAuthenticate::~TaskAuthenticate() { MVPN_COUNT_DTOR(TaskAuthenticate); }
