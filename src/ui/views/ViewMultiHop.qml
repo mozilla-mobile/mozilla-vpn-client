@@ -81,36 +81,71 @@ StackView {
                 ]
             }
 
-            VPNControllerNav {
-                function handleClick() {
-                    multiHopStackView.push("../components/VPNServerList.qml",
-                       {
-                            currentServer:  exitLabel.serversList[0],
-                            showRecentConnections: false
-                       });
+            ColumnLayout {
+                spacing: 8
+                VPNControllerNav {
+                    function handleClick() {
+                        multiHopStackView.push("../components/VPNServerList.qml",
+                           {
+                                currentServer:  exitLabel.serversList[0],
+                                showRecentConnections: false
+                           });
 
-                    menu.title = titleText;
-                }
-
-                objectName: "buttonSelectExit"
-                titleText: VPNl18n.tr(VPNl18n.MultiHopFeatureMultiHopExitLocationHeader)
-                descriptionText: titleText
-                contentChildren: [
-
-                    VPNServerLabel {
-                        id: exitLabel
-                        serversList: [
-
-                            {
-                                countryCode: serversTabs.multiHopExitServer[0],
-                                cityName: serversTabs.multiHopExitServer[1],
-                                localizedCityName : serversTabs.multiHopExitServer[2],
-                                whichHop: "multiHopExitServer"
-                            }
-                        ]
+                        menu.title = titleText;
                     }
-                ]
+
+                    objectName: "buttonSelectExit"
+                    titleText: VPNl18n.tr(VPNl18n.MultiHopFeatureMultiHopExitLocationHeader)
+                    descriptionText: titleText
+                    contentChildren: [
+
+                        VPNServerLabel {
+                            id: exitLabel
+                            serversList: [
+
+                                {
+                                    countryCode: serversTabs.multiHopExitServer[0],
+                                    cityName: serversTabs.multiHopExitServer[1],
+                                    localizedCityName : serversTabs.multiHopExitServer[2],
+                                    whichHop: "multiHopExitServer"
+                                }
+                            ]
+                        }
+                    ]
+                }
+                RowLayout {
+                    id: turnVPNOffAlert
+                    spacing: 4
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: Theme.rowHeight
+
+                    Rectangle {
+                        color: "transparent"
+                        Layout.preferredHeight: Theme.vSpacing
+                        Layout.preferredWidth: Theme.vSpacing
+                        Layout.leftMargin: 12
+                        Layout.alignment: Qt.AlignTop
+
+                        VPNIcon {
+                            id: warningIcon
+                            source: "../resources/connection-info-dark.svg"
+                            sourceSize.height: 18
+                            sourceSize.width: 18
+                            anchors.centerIn: parent
+                        }
+                    }
+
+                    VPNTextBlock {
+                        id: message
+                        text: VPNl18n.tr(VPNl18n.MultiHopFeatureMultiHopInfoText)
+                        color: Color.grey40
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
+                        Layout.topMargin: 4
+                    }
+                }
             }
+
         }
     }
 }
