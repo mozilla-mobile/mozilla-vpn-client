@@ -120,6 +120,7 @@ FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
 print G "$SHORTVERSION - $FULLVERSION - $VERSIONCODE"
 print Y "Configuring the android build"
 if [[ "$ADJUST_SDK_TOKEN" ]]; then
+  print G "$ADJUST_SDK_TOKEN"
   print Y "Use adjust config"
   ADJUST="CONFIG+=adjust"
 else
