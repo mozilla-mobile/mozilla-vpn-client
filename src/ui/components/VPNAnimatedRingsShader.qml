@@ -12,11 +12,12 @@ ShaderEffect {
     property real animationProgress
     property real animationOpacity
 
+    anchors.horizontalCenter: parent.horizontalCenter
     animationProgress: 0.0
     animationOpacity: ringAnimationTimer.running ? 1.0 : 0.5
     blending: true
     height: parent.height
-    width: parent.width
+    width: parent.height
 
     Timer {
         id: ringAnimationTimer
