@@ -8,7 +8,7 @@
 #include "models/feature.h"
 
 #ifdef MVPN_ANDROID
-#include <QtAndroid>
+#  include <QtAndroid>
 #endif
 
 constexpr const char* FEATURE_SHARE_LOGS = "shareLogs";
@@ -34,11 +34,12 @@ class FeatureShareLogs : public Feature {
         ) {}
 
   bool checkSupportCallback() const override {
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || \
-    defined(MVPN_MACOS)
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
+    defined(MVPN_IOS)
     return true;
 #elif defined(MVPN_ANDROID)
-  return QtAndroid::androidSdkVersion() >= 29; // Android Q 10 is required for this
+    return QtAndroid::androidSdkVersion() >=
+           29;  // Android Q (10) is required for this
 #else
     return false;
 #endif

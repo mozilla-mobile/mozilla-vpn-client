@@ -128,6 +128,7 @@ VPNFlickable {
             imageLeftSrc: "../resources/settings/questionMark.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: {
+                Sample.getHelpClickedViewSettings.record();
                 settingsStackView.push("../views/ViewGetHelp.qml", {isSettingsView: true})
             }
         }

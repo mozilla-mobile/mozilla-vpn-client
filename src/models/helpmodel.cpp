@@ -7,6 +7,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "features/featureunauthsupport.h"
+#include "features/featuresharelogs.h"
 
 namespace {
 bool s_initialized = false;
@@ -55,12 +56,7 @@ void maybeInitialize() {
   //% "View log"
   logger.debug() << "Adding:" << qtTrId("help.viewLog");
   s_helpEntries.append(HelpEntry("help.viewLog",
-
-#if defined(MVPN_IOS) || defined(MVPN_ANDROID)
-                                 false,
-#else
-                                 true,
-#endif
+                                 FeatureShareLogs::instance()->isSupported(),
                                  true, MozillaVPN::LinkContact));
 }
 

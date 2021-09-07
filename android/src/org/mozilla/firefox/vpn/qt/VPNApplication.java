@@ -15,10 +15,6 @@ public class VPNApplication extends org.qtproject.qt5.android.bindings.QtApplica
 
   private static VPNApplication instance;
 
-  public static VPNApplication getInstance() {
-    return instance;
-  }
-
   @Override
   public void onCreate() {
       super.onCreate();

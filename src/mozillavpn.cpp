@@ -10,6 +10,7 @@
 #include "features/featureinapppurchase.h"
 #include "features/featureinappauth.h"
 #include "features/featureinappaccountcreate.h"
+#include "features/featuresharelogs.h"
 #include "gleansample.h"
 #include "iaphandler.h"
 #include "leakdetector.h"
@@ -1147,14 +1148,15 @@ void MozillaVPN::serializeLogs(QTextStream* out,
 void MozillaVPN::viewLogs() {
   logger.debug() << "View logs";
 
-  #if defined(MVPN_ANDROID)
-      QString* buffer = new QString();
-      QTextStream* out = new QTextStream(buffer);
-      serializeLogs(out, [buffer]() {
-        AndroidUtils::ShareText(*buffer);
-      });
-    return;
-  #endif 
+#if defined(MVPN_ANDROID)
+  if (!FeatureShareLogs::instance()->isSupported()) {
+    logger.error() << "ViewLogs Called on unsupported Android version!";
+  }
+  QString* buffer = new QString();
+  QTextStream* out = new QTextStream(buffer);
+  serializeLogs(out, [buffer]() { AndroidUtils::ShareText(*buffer); });
+  return;
+#endif
 
   if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {
     return;

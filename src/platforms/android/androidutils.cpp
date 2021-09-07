@@ -21,7 +21,6 @@
 #include <QtAndroid>
 #include <QAndroidIntent>
 
-
 namespace {
 AndroidUtils* s_instance = nullptr;
 Logger logger(LOG_ANDROID, "AndroidUtils");
@@ -128,7 +127,6 @@ void AndroidUtils::abortAuthentication() {
   m_listener = nullptr;
 }
 
-
 // static
 void AndroidUtils::appReviewRequested() {
   QAndroidJniObject activity = QtAndroid::androidActivity();
@@ -192,10 +190,11 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
     return QJsonObject();
   }
   return json.object();
+}
 
-bool AndroidUtils::ShareText(const QString& text){
+bool AndroidUtils::ShareText(const QString& text) {
   QAndroidJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/qt/VPNShareUtils", "sharePlainText",
       "(Ljava/lang/String;)V", QAndroidJniObject::fromString(text).object());
   return true;
-  }
+}

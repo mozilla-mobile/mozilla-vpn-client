@@ -567,10 +567,7 @@ Item {
         opacity: 1
 
         onClicked: {
-            try{Sample.settingsViewOpened.record();}
-            catch(error){
-                console.log(error)
-            }
+            Sample.settingsViewOpened.record();
             stackview.push("../views/ViewSettings.qml", StackView.Immediate)
         }
 
