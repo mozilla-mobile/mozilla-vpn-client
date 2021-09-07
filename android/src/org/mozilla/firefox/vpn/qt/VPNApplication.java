@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 package org.mozilla.firefox.vpn.qt;
+import android.util.Log;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustConfig;
@@ -23,6 +24,7 @@ public class VPNApplication extends org.qtproject.qt5.android.bindings.QtApplica
 
   public static void onVpnInit(boolean inProduction) {
       if(BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
+        Log.v("Adjust", "Adjust Token: " + BuildConfig.ADJUST_SDK_TOKEN);
         String appToken = BuildConfig.ADJUST_SDK_TOKEN;
         String environment = inProduction ? AdjustConfig.ENVIRONMENT_PRODUCTION : AdjustConfig.ENVIRONMENT_SANDBOX;
         AdjustConfig config = new AdjustConfig(VPNApplication.instance, appToken, environment);
