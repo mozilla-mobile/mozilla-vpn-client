@@ -38,7 +38,10 @@ Item {
         Accessible.ignored: true
         wrapMode: Text.WordWrap
         leftPadding: icon.width + 14
+        lineHeightMode: Text.FixedHeight
+        lineHeight: Theme.labelLineHeight
         rightPadding: icon.width + 14
+        topPadding: Theme.labelLineHeight - font.pixelSize
         width: title.implicitWidth < parent.width ? undefined : parent.width
 
         Rectangle {

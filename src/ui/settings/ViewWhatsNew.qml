@@ -77,6 +77,7 @@ Item {
 
                         title: feature.displayName
                         icon: feature.iconPath
+                        Layout.fillWidth: true
                     }
 
                     VPNTextBlock {
