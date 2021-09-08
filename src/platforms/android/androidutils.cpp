@@ -127,16 +127,6 @@ void AndroidUtils::abortAuthentication() {
 }
 
 // static
-void AndroidUtils::appReviewRequested() {
-  QAndroidJniObject activity = QtAndroid::androidActivity();
-  Q_ASSERT(activity.isValid());
-
-  QAndroidJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/qt/VPNAppReview", "appReviewRequested",
-      "(Landroid/app/Activity;)V", activity.object<jobject>());
-}
-
-// static
 void AndroidUtils::dispatchToMainThread(std::function<void()> callback) {
   QTimer* timer = new QTimer();
   timer->moveToThread(qApp->thread());

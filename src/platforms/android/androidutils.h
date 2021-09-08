@@ -31,8 +31,6 @@ class AndroidUtils final : public QObject {
 
   Q_INVOKABLE bool maybeCompleteAuthentication(const QString& url);
 
-  static void appReviewRequested();
-
   static void dispatchToMainThread(std::function<void()> callback);
 
   static QByteArray getQByteArrayFromJString(JNIEnv* env, jstring data);

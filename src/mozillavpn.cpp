@@ -1468,15 +1468,6 @@ void MozillaVPN::addCurrentDeviceAndRefreshData() {
   scheduleTask(new TaskAccountAndServers());
 }
 
-void MozillaVPN::appReviewRequested() {
-  Q_ASSERT(FeatureAppReview::instance()->isSupported());
-#if defined(MVPN_IOS)
-  IOSUtils::appReviewRequested();
-#elif defined(MVPN_ANDROID)
-  AndroidUtils::appReviewRequested();
-#endif
-}
-
 void MozillaVPN::openAppStoreReviewLink() {
   Q_ASSERT(FeatureAppReview::instance()->isSupported());
   openLink(LinkType::LinkLeaveReview);
