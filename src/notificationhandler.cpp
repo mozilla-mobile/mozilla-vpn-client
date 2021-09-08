@@ -70,6 +70,12 @@ void NotificationHandler::showNotification() {
           // Dont show notification if it's turned off.
           return;
         }
+        if ((m_switchingLocalizedServerCountry == localizedCountryName) &&
+            (m_switchingLocalizedServerCity == localizedCityName)) {
+          // Don't show notifications unless the exit server changed, see:
+          // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1719
+          return;
+        }
 
         //% "VPN Switched Servers"
         title = qtTrId("vpn.systray.statusSwitch.title");
