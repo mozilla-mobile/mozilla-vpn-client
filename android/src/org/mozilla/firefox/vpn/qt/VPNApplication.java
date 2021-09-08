@@ -8,6 +8,8 @@ import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.AdjustEvent;
+import android.app.Activity;
+import android.os.Bundle;
 
 import org.mozilla.firefox.vpn.BuildConfig;
 
@@ -27,7 +29,10 @@ public class VPNApplication extends org.qtproject.qt5.android.bindings.QtApplica
         String environment = inProduction ? AdjustConfig.ENVIRONMENT_PRODUCTION : AdjustConfig.ENVIRONMENT_SANDBOX;
         AdjustConfig config = new AdjustConfig(VPNApplication.instance, appToken, environment);
         config.setLogLevel(LogLevel.DEBUG);
+        config.setSendInBackground(true);
         Adjust.onCreate(config);
+
+        VPNApplication.instance.registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
       }
   }
 
@@ -36,5 +41,37 @@ public class VPNApplication extends org.qtproject.qt5.android.bindings.QtApplica
       AdjustEvent adjustEvent = new AdjustEvent(event);
       Adjust.trackEvent(adjustEvent);
     }
+  }
+
+  private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
+      @Override
+      public void onActivityResumed(Activity activity) {
+          Adjust.onResume();
+      }
+
+      @Override
+      public void onActivityPaused(Activity activity) {
+          Adjust.onPause();
+      }
+
+      @Override
+      public void onActivityStopped(Activity activity) {
+      }
+
+      @Override
+      public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+      }
+
+      @Override
+      public void onActivityDestroyed(Activity activity) {
+      }
+
+      @Override
+      public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+      }
+
+      @Override
+      public void onActivityStarted(Activity activity) {
+      }
   }
 }
