@@ -49,7 +49,8 @@ class WindowsFirewall final : public QObject {
 
   // Utils
   QString getCurrentPath();
-  void importAddress(const QHostAddress& addr, OUT FWP_VALUE0_& value);
+  void importAddress(const QHostAddress& addr, OUT FWP_VALUE0_& value,
+                     OUT QByteArray* v6DataBuffer);
   void importAddress(const QHostAddress& addr, OUT FWP_CONDITION_VALUE0_& value,
                      OUT QByteArray* v6DataBuffer);
   bool enableFilter(FWPM_FILTER0* filter, const QString& title,
