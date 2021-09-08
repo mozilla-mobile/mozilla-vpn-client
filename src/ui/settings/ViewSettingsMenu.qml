@@ -88,6 +88,7 @@ VPNFlickable {
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewWhatsNew.qml")
             showIndicator: VPNWhatsNewModel.hasUnseenFeature
+            visible: VPNWhatsNewModel.rowCount() > 0
         }
 
         VPNSettingsItem {
