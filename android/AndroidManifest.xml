@@ -12,7 +12,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <!-- The following comment will be replaced upon deployment with default features based on the dependencies of the application.
          Remove the comment if you do not require these default features. -->
     <!-- %%INSERT_FEATURES -->
@@ -27,14 +26,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         android:extractNativeLibs="true"
         android:theme="@style/AppTheme"
         android:icon="@mipmap/vpnicon">
-        <receiver
-            android:name="com.adjust.sdk.AdjustReferrerReceiver"
-            android:permission="android.permission.INSTALL_PACKAGES"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
         <activity
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
             android:name="org.mozilla.firefox.vpn.qt.VPNActivity"
