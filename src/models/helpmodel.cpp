@@ -42,16 +42,6 @@ void maybeInitialize() {
                              !FeatureUnauthSupport::instance()->isSupported());
   // Here we use the logger to force lrelease to add the help menu Ids.
 
-  //% "View log"
-  logger.debug() << "Adding:" << qtTrId("help.viewLog");
-  s_helpEntries.append(HelpEntry("help.viewLog",
-#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
-                                 false,
-#else
-                                 true,
-#endif
-                                 true, MozillaVPN::LinkContact));
-
   //% "Help center"
   logger.debug() << "Adding:" << qtTrId("help.helpCenter2");
   s_helpEntries.append(
@@ -61,6 +51,16 @@ void maybeInitialize() {
   logger.debug() << "Adding:" << qtTrId("help.contactUs");
   s_helpEntries.append(HelpEntry("help.contactUs", s_contactUsExternalLink,
                                  false, MozillaVPN::LinkContact));
+
+  //% "View log"
+  logger.debug() << "Adding:" << qtTrId("help.viewLog");
+  s_helpEntries.append(HelpEntry("help.viewLog",
+#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
+                                 false,
+#else
+                                 true,
+#endif
+                                 true, MozillaVPN::LinkContact));
 }
 
 }  // namespace

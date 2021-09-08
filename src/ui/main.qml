@@ -24,9 +24,7 @@ Window {
                 Qt.platform.os === "tvos";
     }
     screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
-
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
-
     visible: true
 
     width: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
@@ -113,6 +111,7 @@ Window {
         color: "transparent"
         height: marginHeightByDevice()
         width: window.width
+        anchors.top: parent.top
 
         function marginHeightByDevice() {
             if (Qt.platform.os !== "ios") {
@@ -138,24 +137,20 @@ Window {
 
     VPNWasmHeader {
         id: wasmMenuHeader
-        visible: false
+        visible: isWasmApp
+        height: Theme.menuHeight
+        anchors.top: parent.top
+        anchors.topMargin: iosSafeAreaTopMargin.height
     }
 
     VPNStackView {
         id: mainStackView
         initialItem: mainView
         width: parent.width
-        anchors.top: iosSafeAreaTopMargin.bottom
+        anchors.top: parent.top
+        anchors.topMargin: iosSafeAreaTopMargin.height + isWasmApp ? wasmMenuHeader.height : 0
         height: safeContentHeight
         clip: true
-
-        Component.onCompleted: {
-            if (isWasmApp) {
-                wasmMenuHeader.visible = true;
-                anchors.top = wasmMenuHeader.bottom;
-                height = safeContentHeight - wasmMenuHeader.height;
-            }
-        }
     }
 
     Component {
@@ -336,30 +331,14 @@ Window {
         }
     }
 
-    VPNSystemAlert {
-    }
-
-    VPNFilterProxyModel {
-        id: newFeaturesModel
-        source: VPNFeatureList
-        // Filter features that should be listed in What’s new
-        filterCallback: feature => showFeatureInWhatsNew(feature)
-    }
-
-    VPNFilterProxyModel {
-        id: unseenFeaturesModel
-        source: VPNFeatureList
-        // Filter seen features for showing the What’s new indicator
-        filterCallback: feature => {
-            const isFeatureSeen = VPNSettings.seenFeatures.includes(feature.id);
-            return showFeatureInWhatsNew(feature) && !isFeatureSeen;
+    Connections {
+        target: VPNSettings
+        function onGleanEnabledChanged() {
+            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }
     }
 
-    function showFeatureInWhatsNew(feature) {
-        return feature.isNew           // new feature in this release
-            && feature.isMajor         // a feature we would like to show
-            && feature.supported;      // feature is supported on platform
+    VPNSystemAlert {
     }
 
     VPNFeatureTourPopup {
@@ -372,25 +351,10 @@ Window {
         function handleShowTour() {
             if(VPN.state === VPN.StateMain
                 && !VPNSettings.featuresTourShown
-                && newFeaturesModel.rowCount() > 0
+                && VPNWhatsNewModel.hasUnseenFeature
             ) {
                 featureTourPopup.openTour();
             }
-        }
-    }
-
-    Connections {
-        target: VPNSettings
-        function onGleanEnabledChanged() {
-            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
-        }
-
-        function onFeaturesTourShownChanged() {
-            featureTourPopup.handleShowTour();
-        }
-
-        function onSeenFeaturesChanged() {
-            unseenFeaturesModel.invalidate();
         }
     }
 }

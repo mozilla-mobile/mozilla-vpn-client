@@ -5,20 +5,17 @@ import "../themes/themes.js" as Theme
 VPNPopup {
     id: root
 
+    anchors.centerIn: parent
     maxWidth: Theme.desktopAppWidth
-    topMargin: Theme.windowMargin * 2
     contentItem: VPNFeatureTour {
         id: featureTour
 
-        slidesModel: newFeaturesModel
+        slidesModel: VPNWhatsNewModel
         onFinished: {
             root.close();
         }
         onStarted: {
-            // TODO: Dynamically add feature IDs to seen features list
-            VPNSettings.addSeenFeature('customDNS');
-            VPNSettings.addSeenFeature('multiHop');
-            VPNSettings.addSeenFeature('unauthSupport');
+            VPNWhatsNewModel.markFeaturesAsSeen();
         }
     }
 

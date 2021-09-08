@@ -21,6 +21,7 @@
 #include "models/supportcategorymodel.h"
 #include "models/surveymodel.h"
 #include "models/user.h"
+#include "models/whatsnewmodel.h"
 #include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
@@ -83,6 +84,7 @@ class MozillaVPN final : public QObject {
     LinkTermsOfService,
     LinkPrivacyNotice,
     LinkUpdate,
+    LinkInspector,
     LinkSubscriptionBlocked,
     LinkSplitTunnelHelp
   };
@@ -119,15 +121,13 @@ class MozillaVPN final : public QObject {
   bool stagingMode() const;
 
   enum AuthenticationType {
-    DefaultAuthentication,
     AuthenticationInBrowser,
     AuthenticationInApp,
   };
 
   // Exposed QML methods:
   Q_INVOKABLE void getStarted();
-  Q_INVOKABLE void authenticate(
-      AuthenticationType authenticationType = DefaultAuthentication);
+  Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void openLink(LinkType linkType);
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
@@ -156,6 +156,8 @@ class MozillaVPN final : public QObject {
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
+
+  void authenticateWithType(AuthenticationType authenticationType);
 
   // Internal object getters:
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }
@@ -189,6 +191,7 @@ class MozillaVPN final : public QObject {
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
+  WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
   User* user() { return &m_private->m_user; }
 
   // Called at the end of the authentication flow. We can continue adding the
@@ -219,8 +222,6 @@ class MozillaVPN final : public QObject {
                     const QString& entryCity = QString());
 
   void silentSwitch();
-
-  const Server& randomHop(ServerData& data) const;
 
   const QString versionString() const { return QString(APP_VERSION); }
 
@@ -366,6 +367,7 @@ class MozillaVPN final : public QObject {
     ServerData m_serverData;
     StatusIcon m_statusIcon;
     SurveyModel m_surveyModel;
+    WhatsNewModel m_whatsNewModel;
     User m_user;
   };
 

@@ -11,8 +11,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.PluginState;
+import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.CookieManager;
 
 import android.util.Log;
 
@@ -154,5 +156,11 @@ public class VPNWebView
             m_activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
           }
         });
+    }
+    public void clearStorage(){
+        m_webView.clearCache(true);
+        CookieManager.getInstance().removeAllCookies(null);
+        CookieManager.getInstance().flush();
+        WebStorage.getInstance().deleteAllData();
     }
 }

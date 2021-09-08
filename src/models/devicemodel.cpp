@@ -12,7 +12,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QMutableListIterator>
 
 namespace {
 Logger logger(LOG_MODEL, "DeviceModel");

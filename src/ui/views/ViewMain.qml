@@ -13,6 +13,9 @@ VPNFlickable {
     id: vpnFlickable
 
     flickContentHeight: col.height + Theme.windowMargin / 2
+    anchors.left: parent.left
+    anchors.right: parent.right
+
     states: [
         State {
             when: window.fullscreenRequired()
@@ -45,8 +48,11 @@ VPNFlickable {
 
     GridLayout {
         id: col
-        width: parent.width - Theme.windowMargin
-        anchors.horizontalCenter: parent.horizontalCenter
+
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin: Theme.windowMargin / 2
+        anchors.rightMargin: Theme.windowMargin / 2
         flow: GridLayout.TopToBottom
         rowSpacing: Theme.windowMargin
         anchors.top: parent.top

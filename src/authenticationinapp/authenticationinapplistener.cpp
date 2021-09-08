@@ -513,18 +513,6 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
       aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
-    case 129:  // Invalid phone number
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorInvalidPhoneNumber,
-                                   this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      break;
-
-    case 130:  // Invalid region
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorInvalidRegion,
-                                   this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      break;
-
     case 142:  // Sign in with this email type is not currently supported
       aip->requestErrorPropagation(
           AuthenticationInApp::ErrorEmailTypeNotSupported, this);

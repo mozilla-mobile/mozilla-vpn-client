@@ -22,7 +22,7 @@ VPNFlickable {
     property alias settingsListModel: repeater.model
 
 
-    flickContentHeight: col.height + 56*2
+    flickContentHeight: col.height + Theme.menuHeight*2
     interactive: flickContentHeight > height
 
     ColumnLayout {
@@ -124,7 +124,7 @@ VPNFlickable {
                             states: [
                                 State {
                                     name: "visible"
-                                    when: ipInput.valueInvalid
+                                    when: ipInput.valueInvalid && ipInput.visible
                                     PropertyChanges {
                                         target: errorAlert
                                         visible: true
@@ -133,7 +133,7 @@ VPNFlickable {
                                 },
                                 State {
                                     name: "hidden"
-                                    when: !ipInput.valueInvalid
+                                    when: !ipInput.valueInvalid || !ipInput.visible
                                     PropertyChanges {
                                         target: errorAlert
                                         visible: false

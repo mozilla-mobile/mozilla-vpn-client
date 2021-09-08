@@ -24,7 +24,8 @@ const greyPressed = "#C2C2C2";
 const ink = "#321C64";
 const orange = "#FFA436";
 const orangeHovered = "#E27F2E";
-const organgePressed= "#C45A27";
+const orangeFocus= "#4DE27F2E";
+const orangePressed= "#C45A27";
 const purple60 = "#7542E5";
 const red = "#FF4F5E";
 const redHovered = "#E22850";
@@ -59,9 +60,11 @@ const windowMargin = 16;
 const popupMargin = 24;
 const desktopAppHeight = 520;
 const desktopAppWidth = 360;
+const menuHeight = 56;
 
 const darkFocusBorder = fontColor;
 const lightFocusBorder = "#d5d3e0";
+
 
 const blueButton = {
     "defaultColor" : blue,
@@ -81,6 +84,11 @@ const wasmOptionBtn = {
     "focusBgColor": blue,
     "focusOutline": blueFocusOutline,
     "focusBorder": blueFocusBorder,
+};
+
+const warningAlertFocusBorders = {
+    "focusOutline":  orangeFocus,
+    "focusBorder" : orangePressed,
 };
 
 const clickableRowBlue = {
@@ -120,7 +128,7 @@ const linkButton = {
     "buttonHovered": bgColorTransparent,
     "buttonPressed": bgColorTransparent,
     "focusOutline": bgColorTransparent,
-    "focusBorder": blueFocusBorder,
+    "focusBorder": bgColorTransparent,
 };
 
 const greyButton = {

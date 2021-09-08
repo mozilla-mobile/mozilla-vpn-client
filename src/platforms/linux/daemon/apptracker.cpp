@@ -102,7 +102,7 @@ void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
   Q_UNUSED(uris);
   Q_UNUSED(extra);
 
-  QString appIdName = QString(appid);
+  QString appIdName(appid);
   if (!appIdName.isEmpty()) {
     emit appLaunched(appIdName, pid);
   }

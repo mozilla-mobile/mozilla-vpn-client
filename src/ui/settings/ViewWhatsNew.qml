@@ -14,19 +14,14 @@ import "../themes/themes.js" as Theme
 import "../themes/colors.js" as Color
 
 Item {
+    property string _menuTitle: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourPageHeader)
     id: root
-
-    VPNMenu {
-        id: menu
-        objectName: "settingsWhatsNew"
-
-        title: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourPageHeader)
-        isSettingsView: true
-    }
+    objectName: "settingsWhatsNew"
 
     VPNFlickable {
         id: vpnFlickable
-        anchors.top: menu.bottom
+        anchors.top: parent.top
+        anchors.topMargin: Theme.menuHeight
         anchors.left: root.left
         anchors.right: root.right
         height: root.height - menu.height
@@ -70,7 +65,7 @@ Item {
             Repeater {
                 id: featureRepeater
 
-                model: newFeaturesModel
+                model: VPNWhatsNewModel
                 delegate: ColumnLayout {
                     Layout.leftMargin: Theme.windowMargin / 2
                     Layout.rightMargin: Theme.windowMargin
@@ -80,14 +75,15 @@ Item {
                     VPNIconAndLabel {
                         id: featureTitle
 
-                        title: displayName
-                        icon: iconPath
+                        title: feature.displayName
+                        icon: feature.iconPath
+                        Layout.fillWidth: true
                     }
 
                     VPNTextBlock {
                         id: featureText
 
-                        text: shortDescription
+                        text: feature.shortDescription
                         Layout.fillWidth: true
                         Layout.leftMargin: Theme.vSpacing + 14
                     }

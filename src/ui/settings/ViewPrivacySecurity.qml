@@ -10,20 +10,22 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
+// TODO: This filename should be changed to 'ViewPreferences.qml' after the 2.5 release
+// The legacy name has been kept to prevent the creation of additional strings
 
 Item {
-    id: root
-    VPNMenu {
-        id: menu
-        objectName: "settingsPrivacySecurtyBackButton"
+    property string _startAtBootTitle: ""
+    property string _notificationsTitle: ""
+    property string _languageTitle: ""
+    property string _menuTitle
 
-        //% "Privacy & Security"
-        title: qsTrId("vpn.settings.privacySecurityTitle")
-        isSettingsView: true
-    }
+    id: root
+
     VPNFlickable {
         id: vpnFlickable
-        anchors.top: menu.bottom
+        objectName: "settingsPreferencesView"
+        anchors.top: parent.top
+        anchors.topMargin: Theme.menuHeight
         anchors.left: root.left
         anchors.right: root.right
         height: root.height - menu.height
@@ -37,11 +39,34 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             spacing: Theme.windowMargin
+            width: parent.width - Theme.windowMargin
+
+            VPNCheckBoxRow {
+                id: startAtBootCheckBox
+                objectName: "settingStartAtBoot"
+
+                labelText: _startAtBootTitle
+                subLabelText: ""
+                isChecked: VPNSettings.startAtBoot
+                isEnabled: true
+                showDivider: false
+                width: parent.width - Theme.windowMargin
+                onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
+                visible: VPNFeatureList.get("startOnBoot").isSupported
+
+            }
+
+            VPNVerticalSpacer {
+                height: 1
+                width: parent.width
+            }
 
             VPNCheckBoxRow {
                 id: dataCollection
                 objectName: "dataCollection"
                 width: parent.width - Theme.windowMargin
+                anchors.left: parent.left
+                anchors.right: parent.right
 
                 //% "Data collection and use"
                 labelText: qsTrId("vpn.settings.dataCollection")
@@ -52,6 +77,38 @@ Item {
                     VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
                }
             }
+
+            Column {
+                spacing: Theme.windowMargin / 2
+                width: parent.width
+                VPNSettingsItem {
+                    objectName: "settingsNotifications"
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    settingTitle: _notificationsTitle
+                    imageLeftSrc: "../resources/settings/notifications.svg"
+                    imageRightSrc: "../resources/chevron.svg"
+                    onClicked: settingsStackView.push("../settings/ViewNotifications.qml")
+                    visible: VPNFeatureList.get("captivePortal").isSupported || VPNFeatureList.get("unsecuredNetworkNotification").isSupported || VPNFeatureList.get("notificationControl").isSupported
+                    width: parent.width - Theme.windowMargin
+                }
+
+                VPNSettingsItem {
+                    objectName: "settingsLanguages"
+
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    settingTitle: _languageTitle
+                    imageLeftSrc: "../resources/settings/language.svg"
+                    imageRightSrc: "../resources/chevron.svg"
+                    onClicked: settingsStackView.push("../settings/ViewLanguage.qml")
+                    visible: VPNLocalizer.hasLanguages
+                    width: parent.width - Theme.windowMargin
+                }
+            }
+
         }
     }
 }

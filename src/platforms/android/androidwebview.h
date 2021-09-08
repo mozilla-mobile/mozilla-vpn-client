@@ -26,6 +26,7 @@ class AndroidWebView : public QQuickItem {
 
   QUrl url() const;
   void setUrl(const QUrl& url);
+  Q_INVOKABLE void clearStorage();
 
  protected:
   void componentComplete() override;

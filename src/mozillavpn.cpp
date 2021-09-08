@@ -17,8 +17,6 @@
 #include "loghandler.h"
 #include "logoutobserver.h"
 #include "models/device.h"
-#include "models/servercountrymodel.h"
-#include "models/user.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -382,7 +380,13 @@ void MozillaVPN::getStarted() {
   authenticate();
 }
 
-void MozillaVPN::authenticate(
+void MozillaVPN::authenticate() {
+  return authenticateWithType(FeatureInAppAuth::instance()->isSupported()
+                                  ? AuthenticationInApp
+                                  : AuthenticationInBrowser);
+}
+
+void MozillaVPN::authenticateWithType(
     MozillaVPN::AuthenticationType authenticationType) {
   logger.debug() << "Authenticate";
 
@@ -390,18 +394,13 @@ void MozillaVPN::authenticate(
 
   hideAlert();
 
-  if (authenticationType == DefaultAuthentication) {
-    authenticationType = FeatureInAppAuth::instance()->isSupported()
-                             ? AuthenticationInApp
-                             : AuthenticationInBrowser;
-  }
-
   if (m_userAuthenticated) {
     LogoutObserver* lo = new LogoutObserver(this);
     // Let's use QueuedConnection to avoid nexted tasks executions.
     connect(
         lo, &LogoutObserver::ready, this,
-        [&] { authenticate(authenticationType); }, Qt::QueuedConnection);
+        [&] { authenticateWithType(authenticationType); },
+        Qt::QueuedConnection);
     return;
   }
 
@@ -479,6 +478,10 @@ void MozillaVPN::openLink(LinkType linkType) {
       url =
           "https://support.mozilla.org/kb/"
           "split-tunneling-use-mozilla-vpn-specific-apps-wind";
+      break;
+    case LinkInspector:
+      Q_ASSERT(!Constants::inProduction());
+      url = "http://localhost:8766/";
       break;
 
     default:
@@ -977,12 +980,6 @@ void MozillaVPN::changeServer(const QString& countryCode, const QString& city,
   SettingsHolder::instance()->setRecentConnections(recent);
 }
 
-const Server& MozillaVPN::randomHop(ServerData& data) const {
-  m_private->m_serverCountryModel.pickRandom(data);
-  const QList<Server> servers = m_private->m_serverCountryModel.servers(data);
-  return Server::weightChooser(servers);
-}
-
 void MozillaVPN::postAuthenticationCompleted() {
   logger.debug() << "Post authentication completed";
 
@@ -1314,7 +1311,7 @@ void MozillaVPN::subscriptionCompleted() {
 
   logger.debug() << "Subscription completed";
 #ifdef MVPN_ADJUST
-  AdjustHandler::trackEvent("subscriptionCompleted");
+  AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
   completeActivation();
 }

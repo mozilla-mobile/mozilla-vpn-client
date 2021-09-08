@@ -3,11 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "pingsender.h"
+#include "logger.h"
 
 // QProcess is not supported on iOS
 #ifndef MVPN_IOS
 #  include <QProcess>
 #endif
+
+namespace {
+Logger logger(LOG_NETWORKING, "PingSender");
+}
 
 quint16 PingSender::inetChecksum(const void* data, size_t len) {
   int nleft, sum;
@@ -60,6 +65,38 @@ void PingSender::genericSendPing(const QStringList& args, qint16 sequence) {
           });
   connect(process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
           process, &QObject::deleteLater);
+  connect(
+      process, &QProcess::errorOccurred, this,
+      [this, sequence](QProcess::ProcessError error) {
+        switch (error) {
+          case QProcess::ProcessError::Crashed:
+            logger.error() << "Failed to use native Ping: Crashed";
+            break;
+          case QProcess::ProcessError::FailedToStart:
+            logger.error() << "Failed to use native Ping: FailedToStart";
+            break;
+          case QProcess::ProcessError::ReadError:
+            logger.error() << "Failed to use native Ping: ReadError";
+            break;
+          case QProcess::ProcessError::Timedout:
+            logger.error() << "Failed to use native Ping: Timedout";
+            break;
+          case QProcess::ProcessError::UnknownError:
+            logger.error() << "Failed to use native Ping: UnknownError";
+            break;
+          case QProcess::ProcessError::WriteError:
+            logger.error() << "Failed to use native Ping: WriteError";
+            break;
+        };
+        // Using generic ping is a fallback anyway, if we fail here
+        // we won't be able to infer any info about connection health -
+        // so lets just return a fake ping, so the user can use the app
+        // but without the "no connection" / "no confirm"
+        logger.info() << "Pushing fake ping response";
+        emit recvPing(sequence);
+      },
+      Qt::ConnectionType::QueuedConnection);
+  connect(process, &QProcess::errorOccurred, process, &QObject::deleteLater);
 
   // Ensure any lingering pings are cleaned up when the PingSender is destroyed
   connect(this, &QObject::destroyed, process, [process] {

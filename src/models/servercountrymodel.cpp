@@ -170,6 +170,26 @@ bool ServerCountryModel::pickIfExists(const QString& countryCode,
   return false;
 }
 
+QStringList ServerCountryModel::pickRandom() {
+  logger.debug() << "Choosing a random server";
+
+  QStringList serverTuple;
+
+  quint32 countryId =
+      QRandomGenerator::global()->generate() % m_countries.length();
+  const ServerCountry& country = m_countries[countryId];
+
+  quint32 cityId =
+      QRandomGenerator::global()->generate() % country.cities().length();
+  const ServerCity& city = country.cities().at(cityId);
+
+  serverTuple.append(country.code());
+  serverTuple.append(city.name());
+  serverTuple.append(
+      ServerI18N::translateCityName(country.code(), city.name()));
+  return serverTuple;
+}
+
 void ServerCountryModel::pickRandom(ServerData& data) const {
   logger.debug() << "Choosing a random server";
 

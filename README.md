@@ -193,7 +193,11 @@ The built up will show up in `Release/Mozilla VPN.app` (relative to the root of 
 
 ### IOS
 
-The IOS procedure is similar to the macOS one:
+For IOS, we recommend installing Qt using the [Qt Online Installer](https://www.qt.io/download-qt-installer). We recommend installing
+the latest available release of Qt5 for IOS. You may also need to enable support for Qt Charts and Qt Network Qt Network Authorization
+during the installation.
+
+Once Qt has been installed, the IOS procedure is similar to the macOS one:
 
 1. Install XCodeProj:
 ```

@@ -76,8 +76,6 @@ describe('Settings', function() {
       const url = await vpn.getLastUrl();
       return url.includes('/r/vpn/account');
     });
-
-    await checkSetting('settingStartAtBoot', 'start-at-boot');
   });
 
   it('Checking the networking settings', async () => {
@@ -95,35 +93,9 @@ describe('Settings', function() {
     await checkSetting('settingIpv6Enabled', 'ipv6-enabled');
     await checkSetting('settingLocalNetworkAccess', 'local-network-access');
 
-    await vpn.clickOnElement('settingsNetworkingBackButton');
-    await vpn.wait();
-
-    await vpn.waitForElement('manageAccountButton');
-    await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
-  });
-
-  it('Checking the notifications settings', async () => {
-    await vpn.waitForElement('settingsNotifications');
-    await vpn.waitForElementProperty(
-        'settingsNotifications', 'visible', 'true');
-
-    await vpn.setElementProperty(
-        'settingsView', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty('settingsNotifications', 'y')));
-    await vpn.wait();
-
-    await vpn.clickOnElement('settingsNotifications');
-    await vpn.wait();
-
-    /* TODO: captive-portal disabled
-        await checkSetting('settingCaptivePortalAlert', 'captive-portal-alert');
-        await checkSetting(
-            'settingUnsecuredNetworkAlert', 'unsecured-network-alert');
-    */
-    await checkSetting('switchServersAlert', 'server-switch-notification');
-    await checkSetting('connectionChangeAlert','connection-change-notification');
-
-    await vpn.clickOnElement('settingsNotificationsBackButton');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('manageAccountButton');
@@ -133,20 +105,16 @@ describe('Settings', function() {
   it('Checking the languages settings', async () => {
     await vpn.setSetting('language-code', '');
 
+    await vpn.waitForElement('settingsPreferences');
+    await vpn.waitForElementProperty('settingsPreferences', 'visible', 'true');
+    await vpn.clickOnElement('settingsPreferences');
+    await vpn.wait();
+
     await vpn.waitForElement('settingsLanguages');
     await vpn.waitForElementProperty('settingsLanguages', 'visible', 'true');
 
-    await vpn.setElementProperty(
-        'settingsView', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty('settingsLanguages', 'y')));
-    await vpn.wait();
-
     await vpn.clickOnElement('settingsLanguages');
     await vpn.wait();
-
-    await vpn.waitForElement('settingsLanguagesBackButton');
-    await vpn.waitForElementProperty(
-        'settingsLanguagesBackButton', 'visible', 'true');
 
     await vpn.waitForElement('settingsSystemLanguageToggle');
     await vpn.waitForElementProperty(
@@ -170,28 +138,29 @@ describe('Settings', function() {
     await vpn.clickOnElement('languageList/language-it');
     await vpn.wait();
 
-    await vpn.clickOnElement('settingsLanguagesBackButton');
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
-    await vpn.setElementProperty('settingsView', 'contentY', 'i', 0);
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'manageAccountButton', 'text', 'Gestisci account');
 
-    await vpn.setElementProperty(
-        'settingsView', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty('settingsLanguages', 'y')));
+
+    await vpn.waitForElement('settingsPreferences');
+    await vpn.waitForElementProperty('settingsPreferences', 'visible', 'true');
+    await vpn.clickOnElement('settingsPreferences');
     await vpn.wait();
 
+    await vpn.waitForElement('settingsLanguages');
+    await vpn.waitForElementProperty('settingsLanguages', 'visible', 'true');
     await vpn.clickOnElement('settingsLanguages');
     await vpn.wait();
 
-    await vpn.waitForElement('settingsLanguagesBackButton');
+    await vpn.waitForElement('settingsBackButton');
     await vpn.waitForElementProperty(
-        'settingsLanguagesBackButton', 'visible', 'true');
+        'settingsBackButton', 'visible', 'true');
     await vpn.waitForElementProperty(
         'settingsSystemLanguageToggle', 'checked', 'false');
 
@@ -207,7 +176,9 @@ describe('Settings', function() {
     await vpn.clickOnElement('languageList/language-en');
     await vpn.wait();
 
-    await vpn.clickOnElement('settingsLanguagesBackButton');
+    await vpn.clickOnElement('settingsBackButton');
+    await vpn.wait();
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('manageAccountButton');
@@ -215,16 +186,25 @@ describe('Settings', function() {
     await vpn.waitForElementProperty(
         'manageAccountButton', 'text', 'Manage account');
 
+    await vpn.waitForElement('settingsPreferences');
+    await vpn.waitForElementProperty('settingsPreferences', 'visible', 'true');
+    await vpn.clickOnElement('settingsPreferences');
+    await vpn.wait();
+
+    await vpn.waitForElement('settingsLanguages');
+    await vpn.waitForElementProperty('settingsLanguages', 'visible', 'true');
     await vpn.clickOnElement('settingsLanguages');
     await vpn.wait();
 
-    await vpn.waitForElement('settingsLanguagesBackButton');
+    await vpn.clickOnElement('settingsLanguages');
+    await vpn.wait();
+    await vpn.waitForElement('settingsBackButton');
 
     await vpn.setElementProperty('settingsLanguagesView', 'contentY', 'i', 0);
     await vpn.wait();
 
     await vpn.waitForElementProperty(
-        'settingsLanguagesBackButton', 'visible', 'true');
+        'settingsBackButton', 'visible', 'true');
     await vpn.waitForElementProperty(
         'settingsSystemLanguageToggle', 'checked', 'false');
 
@@ -232,7 +212,9 @@ describe('Settings', function() {
     await vpn.waitForElementProperty(
         'settingsSystemLanguageToggle', 'checked', 'true');
 
-    await vpn.clickOnElement('settingsLanguagesBackButton');
+    await vpn.clickOnElement('settingsBackButton');
+    await vpn.wait();
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('manageAccountButton');
@@ -255,8 +237,8 @@ describe('Settings', function() {
     await vpn.clickOnElement('settingsAboutUs');
     await vpn.wait();
 
-    await vpn.waitForElement('aboutUsBackButton');
-    await vpn.waitForElementProperty('aboutUsBackButton', 'visible', 'true');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
 
     await vpn.waitForElement('aboutUsList');
 
@@ -289,14 +271,14 @@ describe('Settings', function() {
           'https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/LICENSE.md';
     });
 
-    await vpn.clickOnElement('aboutUsBackButton');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
   });
 
-  // TODO: checking the give feedback views
 
   it('Checking the get help', async () => {
     await vpn.waitForElement('settingsGetHelp');
@@ -310,32 +292,56 @@ describe('Settings', function() {
     await vpn.clickOnElement('settingsGetHelp');
     await vpn.wait();
 
-    await vpn.waitForElement('getHelpBack');
-    await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
 
-    await vpn.waitForElement('getHelpBackList');
-    await vpn.waitForElementProperty('getHelpBackList', 'visible', 'true');
+    await vpn.waitForElement('getHelpLinks');
+    await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
 
-    await vpn.waitForElement('getHelpBackList/getHelpBackList-0');
+    await vpn.waitForElement('getHelpLinks/getHelpBackList');
     await vpn.waitForElementProperty(
-        'getHelpBackList/getHelpBackList-0', 'visible', 'true');
+        'getHelpLinks/getHelpBackList', 'visible', 'true');
 
-    await vpn.waitForElement('getHelpBackList/getHelpBackList-1');
+    await vpn.waitForElement('getHelpLinks/settingsGiveFeedback');
     await vpn.waitForElementProperty(
-        'getHelpBackList/getHelpBackList-1', 'visible', 'true');
+      'getHelpLinks/settingsGiveFeedback', 'visible', 'true');
 
-    await vpn.waitForElement('getHelpBackList/getHelpBackList-2');
+    await vpn.clickOnElement('getHelpLinks/settingsGiveFeedback');
+    await vpn.wait();
+
+    await vpn.waitForElement('giveFeedbackView');
     await vpn.waitForElementProperty(
-        'getHelpBackList/getHelpBackList-2', 'visible', 'true');
+      'giveFeedbackView', 'visible', 'true');
+    await vpn.clickOnElement('giveFeedbackView');
+    await vpn.wait();
 
-    await vpn.clickOnElement('getHelpBackList/getHelpBackList-0');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
+    await vpn.clickOnElement('settingsBackButton');
+    await vpn.wait();
+
+    await vpn.waitForElement('getHelpLinks');
+    await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
+
+    // TODO: checking the give feedback views
+
+    await vpn.waitForElement('getHelpLinks/getHelpBackList-2');
+    await vpn.waitForElementProperty(
+        'getHelpLinks/getHelpBackList-2', 'visible', 'true');
+
+    await vpn.clickOnElement('getHelpLinks/getHelpBackList-2');
+
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.startsWith('file://') && url.includes('mozillavpn') &&
           url.endsWith('.txt');
     });
 
-    await vpn.clickOnElement('getHelpBackList/getHelpBackList-1');
+    await vpn.waitForElement('getHelpLinks/getHelpBackList-0')
+        await vpn.waitForElementProperty(
+            'getHelpLinks/getHelpBackList-0', 'visible', 'true');
+
+    await vpn.clickOnElement('getHelpLinks/getHelpBackList-0');
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.endsWith('/r/vpn/support');
@@ -353,29 +359,68 @@ describe('Settings', function() {
         });
     */
 
-    await vpn.clickOnElement('getHelpBack');
+    await vpn.wait();
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.clickOnElement('settingsBackButton');
 
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
   });
 
-  it('Checking the privacy&security settings', async () => {
-    await vpn.waitForElement('settingsPrivacySecurity');
+  it('Checking the preferences settings', async () => {
+    await vpn.waitForElement('settingsPreferences');
     await vpn.waitForElementProperty(
-        'settingsPrivacySecurity', 'visible', 'true');
+        'settingsPreferences', 'visible', 'true');
 
     await vpn.setElementProperty(
         'settingsView', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty('settingsPrivacySecurity', 'y')));
+        parseInt(await vpn.getElementProperty('settingsPreferences', 'y')));
     await vpn.wait();
 
-    await vpn.clickOnElement('settingsPrivacySecurity');
+    await vpn.clickOnElement('settingsPreferences');
     await vpn.wait();
 
     await checkSetting('dataCollection', 'glean-enabled');
 
-    await vpn.clickOnElement('settingsPrivacySecurtyBackButton');
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
+
+    await vpn.waitForElement('manageAccountButton');
+    await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
+  });
+
+  it('Checking the notifications settings', async () => {
+    await vpn.waitForElement('settingsPreferences');
+    await vpn.waitForElementProperty(
+        'settingsPreferences', 'visible', 'true');
+
+    await vpn.clickOnElement('settingsPreferences');
+    await vpn.wait();
+
+    await vpn.waitForElement('settingsNotifications');
+    await vpn.waitForElementProperty(
+        'settingsNotifications', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsNotifications', 'y')));
+    await vpn.wait();
+
+    await vpn.clickOnElement('settingsNotifications');
+    await vpn.wait();
+
+    /* TODO: captive-portal disabled
+        await checkSetting('settingCaptivePortalAlert', 'captive-portal-alert');
+        await checkSetting(
+            'settingUnsecuredNetworkAlert', 'unsecured-network-alert');
+    */
+    await checkSetting('switchServersAlert', 'server-switch-notification');
+    await checkSetting('connectionChangeAlert','connection-change-notification');
+
+    await vpn.clickOnElement('settingsBackButton');
+    await vpn.wait();
+
+    await vpn.clickOnElement('settingsBackButton');
 
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');

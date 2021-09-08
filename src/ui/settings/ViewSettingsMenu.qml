@@ -15,15 +15,12 @@ import telemetry 0.15
 VPNFlickable {
     id: vpnFlickable
     objectName: "settingsView"
-
-    width: window.width
     flickContentHeight: settingsList.y + settingsList.height + signOutLink.height + signOutLink.anchors.bottomMargin
     hideScollBarOnStackTransition: true
 
     VPNIconButton {
         id: iconButton
         objectName: "settingsCloseButton"
-
         onClicked: stackview.pop(StackView.Immediate)
         anchors.top: parent.top
         anchors.left: parent.left
@@ -39,7 +36,6 @@ VPNFlickable {
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton
         }
-
     }
 
     VPNPanel {
@@ -59,7 +55,6 @@ VPNFlickable {
     VPNButton {
         id: manageAccountButton
         objectName: "manageAccountButton"
-
         text: qsTrId("vpn.main.manageAccount")
         anchors.top: vpnPanel.bottom
         anchors.topMargin: Theme.vSpacing
@@ -70,29 +65,12 @@ VPNFlickable {
         }
     }
 
-    VPNCheckBoxRow {
-        id: startAtBootCheckBox
-        objectName: "settingStartAtBoot"
-
-        //% "Launch VPN app on startup"
-        labelText: qsTrId("vpn.settings.runOnBoot2")
-        subLabelText: ""
-        isChecked: VPNSettings.startAtBoot
-        isEnabled: true
-        showDivider: true
-        anchors.top: manageAccountButton.bottom
-        anchors.topMargin: Theme.hSpacing * 1.5
-        anchors.rightMargin: Theme.hSpacing
-        width: vpnFlickable.width - Theme.hSpacing
-        onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
-        visible: VPNFeatureList.get("startOnBoot").isSupported
-    }
-
     Component {
         id: aboutUsComponent
 
         VPNAboutUs {
             isSettingsView: true
+            isMainView: false
         }
     }
 
@@ -100,89 +78,70 @@ VPNFlickable {
         id: settingsList
 
         spacing: Theme.listSpacing
-        y: Theme.vSpacing + (VPNFeatureList.get("startOnBoot").isSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height :
-                              manageAccountButton.y + manageAccountButton.height)
+        y: Theme.vSpacing + manageAccountButton.y + manageAccountButton.height
         width: parent.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
         VPNSettingsItem {
             objectName: "settingsWhatsNew"
-
             settingTitle: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourPageHeader)
             imageLeftSrc: "../resources/gift-dark.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewWhatsNew.qml")
-            showIndicator: unseenFeaturesModel.rowCount() > 0
+            showIndicator: VPNWhatsNewModel.hasUnseenFeature
+            visible: VPNWhatsNewModel.rowCount() > 0
         }
+
         VPNSettingsItem {
             objectName: "settingsNetworking"
-
             settingTitle: qsTrId("vpn.settings.networking")
             imageLeftSrc: "../resources/settings/networkSettings.svg"
             imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push("../settings/ViewNetworkSettings.qml")
+            onClicked: settingsStackView.push("../settings/ViewNetworkSettings.qml", {
+                                                  //% "App permissions"
+                                                  _appPermissionsTitle: qsTrId("vpn.settings.appPermissions2")
+                                              } )
         }
         VPNSettingsItem {
-            objectName: "settingsNotifications"
+            property string prefs: qsTrId("systray.preferences")
+            property string notificationsTitle: qsTrId("vpn.settings.notifications")
+            property string languageTitle: qsTrId("vpn.settings.language")
+            //% "Launch VPN app on startup"
+            property string startAtBootTitle: qsTrId("vpn.settings.runOnBoot2")
 
-            settingTitle: qsTrId("vpn.settings.notifications")
-            imageLeftSrc: "../resources/settings/notifications.svg"
+            id: preferencesSetting
+            objectName: "settingsPreferences"
+            settingTitle: prefs.replace("…", "").replace("...", "")
+            imageLeftSrc: "../resources/settings/preferences.svg"
             imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push("../settings/ViewNotifications.qml")
-            visible: VPNFeatureList.get("captivePortal").isSupported || VPNFeatureList.get("unsecuredNetworkNotification").isSupported || VPNFeatureList.get("notificationControl").isSupported
+            onClicked: settingsStackView.push("../settings/ViewPrivacySecurity.qml", {
+                                                _startAtBootTitle: startAtBootTitle,
+                                                _languageTitle: qsTrId("vpn.settings.language"),
+                                                _notificationsTitle: qsTrId("vpn.settings.notifications"),
+                                                _menuTitle: preferencesSetting.settingTitle
+                                              })
         }
-        VPNSettingsItem {
-            objectName: "settingsLanguages"
 
-            settingTitle: qsTrId("vpn.settings.language")
-            imageLeftSrc: "../resources/settings/language.svg"
-            imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push("../settings/ViewLanguage.qml")
-            visible: VPNLocalizer.hasLanguages
-        }
         VPNSettingsItem {
-            //% "App permissions"
-            settingTitle: qsTrId("vpn.settings.appPermissions2")
-            imageLeftSrc: "../resources/settings/apps.svg"
+            //% "Give feedback"
+            property string giveFeedbackTitle: qsTrId("vpn.settings.giveFeedback")
+            objectName: "settingsGetHelp"
+            settingTitle: qsTrId("vpn.main.getHelp2")
+            imageLeftSrc: "../resources/settings/questionMark.svg"
             imageRightSrc: "../resources/chevron.svg"
-            visible: VPNFeatureList.get("splitTunnel").isSupported
-            onClicked: settingsStackView.push("../settings/ViewAppPermissions.qml")
+            onClicked: {
+                Sample.getHelpClickedViewSettings.record();
+                settingsStackView.push("../views/ViewGetHelp.qml", {
+                                           isSettingsView: true
+                                       })
+            }
         }
+
         VPNSettingsItem {
             objectName: "settingsAboutUs"
-
             settingTitle: qsTrId("vpn.settings.aboutUs")
             imageLeftSrc: "../resources/settings/aboutUs.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push(aboutUsComponent)
-        }
-        VPNSettingsItem {
-            objectName: "settingsGiveFeedback"
-
-            //% "Give feedback"
-            settingTitle: qsTrId("vpn.settings.giveFeedback")
-            imageLeftSrc: "../resources/settings/feedback.svg"
-            imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push("../settings/ViewGiveFeedback.qml")
-        }
-        VPNSettingsItem {
-            objectName: "settingsGetHelp"
-
-            settingTitle: qsTrId("vpn.main.getHelp2")
-            imageLeftSrc: "../resources/settings/getHelp.svg"
-            imageRightSrc: "../resources/chevron.svg"
-            onClicked: {
-                Sample.getHelpClickedViewSettings.record();
-                settingsStackView.push("../views/ViewGetHelp.qml", {isSettingsView: true})
-            }
-        }
-        VPNSettingsItem {
-            objectName: "settingsPrivacySecurity"
-
-            //% "Privacy & security"
-            settingTitle: qsTrId("vpn.main.privacySecurity2")
-            imageLeftSrc: "../resources/settings/lock.svg"
-            imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push("../settings/ViewPrivacySecurity.qml")
         }
 
         Rectangle {

@@ -12,7 +12,6 @@ Item {
     // This view shows the authentication form. We need to collect an email
     // address and a password.
     // At this point we do not know if we are going to sign-in or sign-up.
-    // The next step is to call VPNAuthInApp::sigInOrUp();
 
     Component.onCompleted: console.log("START")
 
