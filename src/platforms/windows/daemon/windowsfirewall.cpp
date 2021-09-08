@@ -160,136 +160,42 @@ bool WindowsFirewall::init() {
   return true;
 }
 
-bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
-                                                  int network) {
-  logger.debug() << "Adding hard Permit for " << exePath
-                 << " Accessing Device: " << network;
-  DWORD result = ERROR_SUCCESS;
-
-  // Get the AppID for the Executable;
-  QString appName = QFileInfo(exePath).baseName();
-  std::wstring wstr = exePath.toStdWString();
-  PCWSTR appPath = wstr.c_str();
-  FWP_BYTE_BLOB* appID = NULL;
-  uint64_t filterID = 0;
-
-  result = FwpmGetAppIdFromFileName0(appPath, &appID);
-  if (result != ERROR_SUCCESS) {
-    WindowsCommons::windowsLog("FwpmGetAppIdFromFileName0 failure");
-    return false;
-  }
-  // Condition 1: Request must come from the .exe
-  FWPM_FILTER_CONDITION0 conds[2];
-  conds[0].fieldKey = FWPM_CONDITION_ALE_APP_ID;
-  conds[0].matchType = FWP_MATCH_EQUAL;
-  conds[0].conditionValue.type = FWP_BYTE_BLOB_TYPE;
-  conds[0].conditionValue.byteBlob = appID;
-
-  // Condition 2: Request may NOT be targeting the TUN interface
-  conds[1].fieldKey = FWPM_CONDITION_INTERFACE_INDEX;
-  conds[1].matchType = FWP_MATCH_EQUAL;
-  conds[1].conditionValue.type = FWP_UINT32;
-  conds[1].conditionValue.uint32 = network;
-
-  // Assemble the Filter base
-  FWPM_FILTER0 filter;
-  memset(&filter, 0, sizeof(filter));
-  filter.filterCondition = conds;
-  filter.numFilterConditions = 2;
-  filter.action.type = FWP_ACTION_PERMIT;
-  filter.weight.type = FWP_UINT8;
-  filter.weight.uint8 = 15;
-  filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
-  filter.flags = FWPM_FILTER_FLAG_CLEAR_ACTION_RIGHT;  // Make this decision
-                                                       // only blockable by veto
-
-  // Build and add the Filters
-  // #1 Permit outbound IPv4 traffic.
-  {
-    QString name("Permit (out) IPv4 Traffic of: " + appName);
-    std::wstring wname = name.toStdWString();
-    PCWSTR filterName = wname.c_str();
-    filter.displayData.name = (PWSTR)filterName;
-    filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-
-    result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-
-    if (result != ERROR_SUCCESS) {
-      logger.error() << "Failed to set rule " << name << "\n" << result;
-      return false;
-    }
-  }
-  // #2 Permit inbound IPv4 traffic.
-  {
-    QString name("Permit (in)  IPv4 Traffic of: " + appName);
-    std::wstring wname = name.toStdWString();
-    PCWSTR filterName = wname.c_str();
-    filter.displayData.name = (PWSTR)filterName;
-    filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
-    result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-
-    if (result != ERROR_SUCCESS) {
-      logger.error() << "Failed to set rule " << name << "\n" << result;
-      return false;
-    }
-  }
-  // #3 Permit outbound IPv6 traffic.
-  {
-    QString name("Permit (out) IPv6 Traffic of: " + appName);
-    std::wstring wname = name.toStdWString();
-    PCWSTR filterName = wname.c_str();
-    filter.displayData.name = (PWSTR)filterName;
-    filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-    result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-
-    if (result != ERROR_SUCCESS) {
-      logger.error() << "Failed to set rule " << name << "\n" << result;
-      return false;
-    }
-  }
-  // #4 Permit inbound IPv6 traffic.
-  {
-    QString name("Permit (in)  IPv6 Traffic of: " + appName);
-    std::wstring wname = name.toStdWString();
-    PCWSTR filterName = wname.c_str();
-    filter.displayData.name = (PWSTR)filterName;
-    filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
-    result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-
-    if (result != ERROR_SUCCESS) {
-      logger.error() << "Failed to set rule " << name << "\n" << result;
-      return false;
-    }
-  }
-
-  logger.debug() << "Ruleset applied for: " << exePath;
-  return true;
-}
-
 bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
                                        const InterfaceConfig& config) {
 // Checks if the FW_Rule was enabled succesfully,
 // disables the whole killswitch and returns false if not.
-#define FW_OK(rule, name)                             \
-  if (!rule) {                                        \
-    logger.error() << "Rule failed:" << name << "\n"; \
-    disableKillSwitch();                              \
-    return false;                                     \
-  }                                                   \
-  logger.debug() << "Rule enabled:" << name << "\n";
+#define FW_OK(rule)                                                       \
+  {                                                                       \
+    auto result = FwpmTransactionBegin(m_sessionHandle, NULL);            \
+    if (result != ERROR_SUCCESS) {                                        \
+      disableKillSwitch();                                                \
+      return false;                                                       \
+    }                                                                     \
+    if (!rule) {                                                          \
+      FwpmTransactionAbort0(m_sessionHandle);                             \
+      disableKillSwitch();                                                \
+      return false;                                                       \
+    }                                                                     \
+    result = FwpmTransactionCommit0(m_sessionHandle);                     \
+    if (result != ERROR_SUCCESS) {                                        \
+      logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" \
+                     << result;                                           \
+      return false;                                                       \
+    }                                                                     \
+  }
 
   logger.info() << "Enabling Killswitch Using Adapter:" << vpnAdapterIndex;
-  FW_OK(blockTrafficTo(config.m_allowedIPAddressRanges, LOW_WEIGHT),
-        "Block all");
-  FW_OK(allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT),
-        "Allow Traffic to VPN Adapter");
-  FW_OK(allowDHCPTraffic(MED_WEIGHT), "Allow DHCP Traffic");
-  FW_OK(allowHyperVTraffic(MED_WEIGHT), "Allow Hyper-V Traffic");
-  FW_OK(allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT),
-        "Allow Traffic for MozillaVPN.exe");
-  FW_OK(blockTrafficOnPort(53, MED_WEIGHT), "Block DNS Traffic");
-  FW_OK(allowTrafficTo(QHostAddress(config.m_dnsServer), 53, HIGH_WEIGHT),
-        "Allow DNS Traffic to Defined DNS Server");
+  FW_OK(blockTrafficTo(config.m_allowedIPAddressRanges, LOW_WEIGHT,
+                       "Block Internet"));
+  FW_OK(allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT,
+                              "Allow usage of VPN Adapter"));
+  FW_OK(allowDHCPTraffic(MED_WEIGHT, "Allow DHCP Traffic"));
+  FW_OK(allowHyperVTraffic(MED_WEIGHT, "Allow Hyper-V Traffic"));
+  FW_OK(allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT,
+                                "Allow all for MozillaVPN.exe"));
+  FW_OK(blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS"));
+  FW_OK(allowTrafficTo(QHostAddress(config.m_dnsServer), 53, HIGH_WEIGHT,
+                       "Allow DNS-Server"));
 
   logger.debug() << "Killswitch on! Rules:" << m_activeRules.length();
   return true;
@@ -326,9 +232,8 @@ bool WindowsFirewall::disableKillSwitch() {
 }
 
 bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
-                                              int weight) {
-  logger.debug() << "Adding hard Permit for " << exePath
-                 << " Accessing All Devices: ";
+                                              int weight,
+                                              const QString& title) {
   DWORD result = ERROR_SUCCESS;
   Q_ASSERT(weight <= 15);
 
@@ -343,20 +248,6 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
     WindowsCommons::windowsLog("FwpmGetAppIdFromFileName0 failure");
     return false;
   }
-
-  // Start Transaction
-  result = FwpmTransactionBegin(m_sessionHandle, NULL);
-  auto cleanup = qScopeGuard([&] {
-    if (result != ERROR_SUCCESS) {
-      FwpmTransactionAbort0(m_sessionHandle);
-    }
-  });
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
-                   << result;
-    return false;
-  }
-
   // Condition: Request must come from the .exe
   FWPM_FILTER_CONDITION0 conds;
   conds.fieldKey = FWPM_CONDITION_ALE_APP_ID;
@@ -375,63 +266,28 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
   filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
   filter.flags = FWPM_FILTER_FLAG_CLEAR_ACTION_RIGHT;  // Make this decision
                                                        // only blockable by veto
-
   // Build and add the Filters
   // #1 Permit outbound IPv4 traffic.
   {
-    QString name("Permit (out) IPv4 Traffic of: " + appName);
-    std::wstring wname = name.toStdWString();
-    PCWSTR filterName = wname.c_str();
-    filter.displayData.name = (PWSTR)filterName;
+    QString desc("Permit (out) IPv4 Traffic of: " + appName);
     filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-
-    result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-
-    if (result != ERROR_SUCCESS) {
-      logger.error() << "Failed to set rule " << name << "\n" << result;
+    if (!enableFilter(&filter, title, desc)) {
       return false;
     }
   }
   // #2 Permit inbound IPv4 traffic.
   {
-    QString name("Permit (in)  IPv4 Traffic of: " + appName);
-    std::wstring wname = name.toStdWString();
-    PCWSTR filterName = wname.c_str();
-    filter.displayData.name = (PWSTR)filterName;
+    QString desc("Permit (in) IPv4 Traffic of: " + appName);
     filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
-    result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-
-    if (result != ERROR_SUCCESS) {
-      logger.error() << "Failed to set rule " << name << "\n" << result;
+    if (!enableFilter(&filter, title, desc)) {
       return false;
     }
-  }
-
-  // Commit!
-  result = FwpmTransactionCommit0(m_sessionHandle);
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
-                   << result;
-    return false;
   }
   return true;
 }
 
-bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter,
-                                            uint8_t weight) {
-  // Start Transaction
-  auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
-  auto cleanup = qScopeGuard([&] {
-    if (result != ERROR_SUCCESS) {
-      FwpmTransactionAbort0(m_sessionHandle);
-    }
-  });
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
-                   << result;
-    return false;
-  }
-
+bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter, uint8_t weight,
+                                            const QString& title) {
   FWPM_FILTER_CONDITION0 conds;
   // Condition: Request must be targeting the TUN interface
   conds.fieldKey = FWPM_CONDITION_INTERFACE_INDEX;
@@ -449,99 +305,46 @@ bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter,
   filter.weight.uint8 = weight;
   filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
 
-  uint64_t filterID = 0;
+  QString description("Allow %0 traffic on Adapter %1");
   // #1 Permit outbound IPv4 traffic.
-  std::wstring name(L"Permit outbound IPv4 traffic on TUN adapter");
-  filter.displayData.name = (PWSTR)name.c_str();
   filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
-    WindowsCommons::windowsLog(
-        "Failed: Permit outbound IPv4 traffic on adapter");
-    logger.debug() << "Result code " << result;
+  if (!enableFilter(&filter, title,
+                    description.arg("out").arg(networkAdapter))) {
     return false;
   }
-  m_activeRules.append(filterID);
-
   // #2 Permit inbound IPv4 traffic.
-  name = std::wstring(L"Permit inbound IPv4 traffic on TUN adapter");
-  filter.displayData.name = (PWSTR)name.c_str();
   filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
-
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
-    WindowsCommons::windowsLog(
-        "Failed: Permit inbound IPv4 traffic on adapter");
-    logger.debug() << "Result code " << result;
+  if (!enableFilter(&filter, title,
+                    description.arg("in").arg(networkAdapter))) {
     return false;
   }
-  m_activeRules.append(filterID);
-
   // #3 Permit outbound IPv6 traffic.
-  name = std::wstring(L"Permit outbound IPv6 traffic on TUN adapter");
-  filter.displayData.name = (PWSTR)name.c_str();
   filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
-    WindowsCommons::windowsLog(
-        "Failed: Permit outbound IPv6 traffic on adapter");
-    logger.debug() << "Result code " << result;
+  if (!enableFilter(&filter, title,
+                    description.arg("out").arg(networkAdapter))) {
     return false;
   }
-  m_activeRules.append(filterID);
-
   // #4 Permit inbound IPv6 traffic.
-  name = std::wstring(L"Permit inbound IPv4 traffic on TUN adapter");
-  filter.displayData.name = (PWSTR)name.c_str();
   filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
-
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
-    WindowsCommons::windowsLog(
-        "Failed: Permit inbound IPv6 traffic on adapter");
-    return false;
-  }
-  m_activeRules.append(filterID);
-
-  // Commit!
-  result = FwpmTransactionCommit0(m_sessionHandle);
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
-                   << result;
+  if (!enableFilter(&filter, title,
+                    description.arg("in").arg(networkAdapter))) {
     return false;
   }
   return true;
 }
 
 bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
-                                     int weight) {
-  logger.debug() << "Requesting to allow Traffic to: " << targetIP.toString()
-                 << ":" << port;
-
+                                     int weight, const QString& title) {
   bool isIPv4 = targetIP.protocol() == QAbstractSocket::IPv4Protocol;
   GUID layerOut =
       isIPv4 ? FWPM_LAYER_ALE_AUTH_CONNECT_V4 : FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-  GUID layoutIn = isIPv4 ? FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4
-                         : FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
+  GUID layerIn = isIPv4 ? FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4
+                        : FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
 
   quint32_be ipBigEndian;
   quint32 ip = targetIP.toIPv4Address();
   qToBigEndian(ip, &ipBigEndian);
 
-  // Start Transaction
-  auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
-  auto cleanup = qScopeGuard([&] {
-    if (result != ERROR_SUCCESS) {
-      FwpmTransactionAbort0(m_sessionHandle);
-    }
-  });
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
-                   << result;
-    return false;
-  }
   // Allow Traffic to IP with PORT using any protocol
   FWPM_FILTER_CONDITION0 conds[4];
   conds[0].fieldKey = FWPM_CONDITION_IP_PROTOCOL;
@@ -576,47 +379,22 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
   filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
   filter.flags = FWPM_FILTER_FLAG_CLEAR_ACTION_RIGHT;  // Hard Permit!
 
-  uint64_t filterID = 0;
-  auto name = std::wstring(L"Permit outbound Traffic to Fixed IP");
-  filter.displayData.name = (PWSTR)name.c_str();
+  QString description("Permit traffic %1 %2 on port");
   filter.layerKey = layerOut;
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
+  if (!enableFilter(&filter, title,
+                    description.arg("to").arg(targetIP.toString()).arg(port))) {
     return false;
   }
-  m_activeRules.append(filterID);
-
-  name = std::wstring(L"Permit inbound Traffic from Fixed IP");
-  filter.displayData.name = (PWSTR)name.c_str();
-  filter.layerKey = layoutIn;
-
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
-    return false;
-  }
-  m_activeRules.append(filterID);
-  result = FwpmTransactionCommit0(m_sessionHandle);
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
-                   << result;
+  filter.layerKey = layerIn;
+  if (!enableFilter(
+          &filter, title,
+          description.arg("from").arg(targetIP.toString()).arg(port))) {
     return false;
   }
   return true;
 }
 
-bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
-  // Start Transaction
-  auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
-  auto cleanup = qScopeGuard([&] {
-    if (result != ERROR_SUCCESS) {
-      FwpmTransactionAbort0(m_sessionHandle);
-    }
-  });
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
-                   << result;
-    return false;
-  }
+bool WindowsFirewall::allowDHCPTraffic(uint8_t weight, const QString& title) {
   // Allow outbound DHCPv4
   {
     FWPM_FILTER_CONDITION0 conds[4];
@@ -651,16 +429,11 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
     filter.weight.uint8 = weight;
     filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
 
-    uint64_t filterID = 0;
-    auto name = std::wstring(L"Permit outbound DHCPv4");
-    filter.displayData.name = (PWSTR)name.c_str();
     filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
 
-    result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-    if (result != ERROR_SUCCESS) {
+    if (!enableFilter(&filter, title, "Allow Outbound DHCP")) {
       return false;
     }
-    m_activeRules.append(filterID);
   }
   // Allow inbound DHCPv4
   {
@@ -689,17 +462,11 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
     filter.weight.type = FWP_UINT8;
     filter.weight.uint8 = weight;
     filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
-
-    uint64_t filterID = 0;
-    auto name = std::wstring(L"Permit inbound DHCPv4");
-    filter.displayData.name = (PWSTR)name.c_str();
     filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
 
-    result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-    if (result != ERROR_SUCCESS) {
+    if (!enableFilter(&filter, title, "Allow inbound DHCP")) {
       return false;
     }
-    m_activeRules.append(filterID);
   }
 
   // Allow outbound DHCPv6
@@ -730,17 +497,11 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
     filter.weight.type = FWP_UINT8;
     filter.weight.uint8 = weight;
     filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
-
-    uint64_t filterID = 0;
-    auto name = std::wstring(L"Permit outbound DHCPv6");
-    filter.displayData.name = (PWSTR)name.c_str();
     filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
 
-    result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-    if (result != ERROR_SUCCESS) {
+    if (!enableFilter(&filter, title, "Allow outbound DHCPv6")) {
       return false;
     }
-    m_activeRules.append(filterID);
   }
 
   // Allow inbound DHCPv6
@@ -770,43 +531,15 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
     filter.weight.type = FWP_UINT8;
     filter.weight.uint8 = weight;
     filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
-
-    uint64_t filterID = 0;
-    auto name = std::wstring(L"Permit inbound DHCPv6");
-    filter.displayData.name = (PWSTR)name.c_str();
     filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
-
-    result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-    if (result != ERROR_SUCCESS) {
+    if (!enableFilter(&filter, title, "Allow inbound DHCPv6")) {
       return false;
     }
-    m_activeRules.append(filterID);
-  }
-
-  // Commit!
-  result = FwpmTransactionCommit0(m_sessionHandle);
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
-                   << result;
-    return false;
   }
   return true;
 }
 // Allows the internal Hyper-V Switches to work.
-bool WindowsFirewall::allowHyperVTraffic(uint8_t weight) {
-  // Start Transaction
-  auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
-  auto cleanup = qScopeGuard([&] {
-    if (result != ERROR_SUCCESS) {
-      FwpmTransactionAbort0(m_sessionHandle);
-    }
-  });
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
-                   << result;
-    return false;
-  }
-
+bool WindowsFirewall::allowHyperVTraffic(uint8_t weight, const QString& title) {
   FWPM_FILTER_CONDITION0 cond;
   // Condition: Request must be targeting the TUN interface
   cond.fieldKey = FWPM_CONDITION_L2_FLAGS;
@@ -824,67 +557,32 @@ bool WindowsFirewall::allowHyperVTraffic(uint8_t weight) {
   filter.weight.uint8 = weight;
   filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
 
-  uint64_t filterID = 0;
   // #1 Permit Hyper-V => Hyper-V outbound.
-  std::wstring name(L"Permit Hyper-V => Hyper-V outbound");
-  filter.displayData.name = (PWSTR)name.c_str();
   filter.layerKey = FWPM_LAYER_OUTBOUND_MAC_FRAME_NATIVE;
-
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "Permit Hyper-V => Hyper-V outbound failed " << result;
+  if (!enableFilter(&filter, title, "Permit Hyper-V => Hyper-V outbound")) {
     return false;
   }
-  m_activeRules.append(filterID);
   // #2 Permit Hyper-V => Hyper-V inbound.
-  name = std::wstring(L"Permit Hyper-V => Hyper-V inbound");
-  filter.displayData.name = (PWSTR)name.c_str();
   filter.layerKey = FWPM_LAYER_INBOUND_MAC_FRAME_NATIVE;
-
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
-    logger.debug() << "Permit Hyper-V => Hyper-V inbound failed " << result;
-    return false;
-  }
-  m_activeRules.append(filterID);
-
-  // Commit!
-  result = FwpmTransactionCommit0(m_sessionHandle);
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
-                   << result;
+  if (!enableFilter(&filter, title, "Permit Hyper-V => Hyper-V inbound")) {
     return false;
   }
   return true;
 }
 
 bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range,
-                                     uint8_t weight) {
-  logger.info() << "Blocking traffic to " << range.toString();
+                                     uint8_t weight, const QString& title) {
+  QString description("Block traffic %1 %2 ");
   IPAddress addr = IPAddress::create(range.toString());
 
   auto lower = addr.address();
   auto upper = addr.broadcastAddress();
 
-  // Start Transaction
-  auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
-  auto cleanup = qScopeGuard([&] {
-    if (result != ERROR_SUCCESS) {
-      FwpmTransactionAbort0(m_sessionHandle);
-    }
-  });
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
-                   << result;
-    return false;
-  }
   const bool isV4 = addr.type() == QAbstractSocket::IPv4Protocol;
   const GUID layerKeyOut =
       isV4 ? FWPM_LAYER_ALE_AUTH_CONNECT_V4 : FWPM_LAYER_ALE_AUTH_CONNECT_V6;
   const GUID layerKeyIn = isV4 ? FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4
                                : FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
-
-  uint64_t filterID = 0;
 
   // Assemble the Filter base
   FWPM_FILTER0 filter;
@@ -907,45 +605,23 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range,
   filter.numFilterConditions = 1;
   filter.filterCondition = cond;
 
-  {  // Set outbound rule for iprange
-    QString name =
-        QString("Block Outbound traffic to %1 ").arg(range.toString());
-    std::wstring wname = name.toStdWString();
-    filter.displayData.name = (PWSTR)wname.c_str();
-    filter.layerKey = layerKeyOut;
-
-    if (result != ERROR_SUCCESS) {
-      return false;
-    }
-    m_activeRules.append(filterID);
+  filter.layerKey = layerKeyOut;
+  if (!enableFilter(&filter, title,
+                    description.arg("to").arg(range.toString()))) {
+    return false;
   }
-  {  // Set inbound rule for iprange
-    QString name =
-        QString("Block Inbound traffic to %1 ").arg(range.toString());
-    std::wstring wname = name.toStdWString();
-    filter.displayData.name = (PWSTR)wname.c_str();
-    filter.layerKey = layerKeyIn;
-
-    if (result != ERROR_SUCCESS) {
-      return false;
-    }
-    m_activeRules.append(filterID);
-  }
-
-  // Commit!
-  result = FwpmTransactionCommit0(m_sessionHandle);
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
-                   << result;
+  filter.layerKey = layerKeyIn;
+  if (!enableFilter(&filter, title,
+                    description.arg("from").arg(range.toString()))) {
     return false;
   }
   return true;
 }
 
 bool WindowsFirewall::blockTrafficTo(const QList<IPAddressRange>& rangeList,
-                                     uint8_t weight) {
+                                     uint8_t weight, const QString& title) {
   for (auto range : rangeList) {
-    if (!blockTrafficTo(range, weight)) {
+    if (!blockTrafficTo(range, weight, title)) {
       logger.info() << "Setting Range of" << range.toString() << "failed";
       return false;
     }
@@ -980,7 +656,7 @@ void WindowsFirewall::importAddress(const QHostAddress& addr,
     return;
   }
   value.type = FWP_BYTE_ARRAY16_TYPE;
-  auto v6bytes = addr.toIPv6Address(); 
+  auto v6bytes = addr.toIPv6Address();
   RtlCopyMemory(&v6bytes, value.byteArray16, IPV6_ADDRESS_SIZE);
 }
 void WindowsFirewall::importAddress(const QHostAddress& addr,
@@ -1001,20 +677,8 @@ void WindowsFirewall::importAddress(const QHostAddress& addr,
   RtlCopyMemory(&v6bytes, v6DataBuffer->data(), IPV6_ADDRESS_SIZE);
 }
 
-bool WindowsFirewall::blockTrafficOnPort(uint port, uint8_t weight) {
-  logger.debug() << "Requesting to block all traffic on port " << port;
-
-  auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
-  auto cleanup = qScopeGuard([&] {
-    if (result != ERROR_SUCCESS) {
-      FwpmTransactionAbort0(m_sessionHandle);
-    }
-  });
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
-                   << result;
-    return false;
-  }
+bool WindowsFirewall::blockTrafficOnPort(uint port, uint8_t weight,
+                                         const QString& title) {
   // Allow Traffic to IP with PORT using any protocol
   FWPM_FILTER_CONDITION0 conds[3];
   conds[0].fieldKey = FWPM_CONDITION_IP_PROTOCOL;
@@ -1042,38 +706,41 @@ bool WindowsFirewall::blockTrafficOnPort(uint port, uint8_t weight) {
   filter.weight.uint8 = weight;
   filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
 
-  uint64_t filterID = 0;
-  auto name = std::wstring(L"Block Traffic on Port");
-  filter.displayData.name = (PWSTR)name.c_str();
+  QString description("Block %1 on Port %2");
   filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
+  if (!enableFilter(&filter, title, description.arg("outgoing v6").arg(port))) {
     return false;
   }
-  m_activeRules.append(filterID);
   filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
+  if (!enableFilter(&filter, title, description.arg("outgoing v4").arg(port))) {
     return false;
   }
-  m_activeRules.append(filterID);
+
   filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
+  if (!enableFilter(&filter, title, description.arg("incoming v4").arg(port))) {
     return false;
   }
-  m_activeRules.append(filterID);
   filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
+  if (!enableFilter(&filter, title, description.arg("incoming v6").arg(port))) {
     return false;
   }
+  return true;
+}
+
+bool WindowsFirewall::enableFilter(FWPM_FILTER0* filter, const QString& title,
+                                   const QString& description) {
+  uint64_t filterID = 0;
+  auto name = title.toStdWString();
+  auto desc = description.toStdWString();
+  filter->displayData.name = (PWSTR)name.c_str();
+  filter->displayData.description = (PWSTR)desc.c_str();
+  auto result = FwpmFilterAdd0(m_sessionHandle, filter, NULL, &filterID);
+  if (result != ERROR_SUCCESS) {
+    logger.error() << "Failed to enable filter: " << title << " "
+                   << description;
+    return false;
+  }
+  logger.info() << "Filter added: " << title << ":" << description;
   m_activeRules.append(filterID);
-  result = FwpmTransactionCommit0(m_sessionHandle);
-  if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
-                   << result;
-    return false;
-  }
   return true;
 }
