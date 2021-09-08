@@ -97,7 +97,7 @@ VPNFlickable {
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewNetworkSettings.qml", {
                                                   //% "App permissions"
-                                                  _appPermissionsTitle: qsTrId("vpn.settings.appPermissions2")
+                                                  _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
                                               } )
         }
         VPNSettingsItem {
@@ -113,10 +113,10 @@ VPNFlickable {
             imageLeftSrc: "../resources/settings/preferences.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewPrivacySecurity.qml", {
-                                                _startAtBootTitle: startAtBootTitle,
-                                                _languageTitle: qsTrId("vpn.settings.language"),
-                                                _notificationsTitle: qsTrId("vpn.settings.notifications"),
-                                                _menuTitle: preferencesSetting.settingTitle
+                                                _startAtBootTitle: Qt.binding(() => startAtBootTitle),
+                                                _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
+                                                _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
+                                                _menuTitle: Qt.binding(() => preferencesSetting.settingTitle)
                                               })
         }
 
