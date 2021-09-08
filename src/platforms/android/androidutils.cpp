@@ -19,6 +19,7 @@
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
 #include <QtAndroid>
+#include <QAndroidIntent>
 
 namespace {
 AndroidUtils* s_instance = nullptr;
@@ -179,4 +180,11 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
     return QJsonObject();
   }
   return json.object();
+}
+
+bool AndroidUtils::ShareText(const QString& text) {
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/mozilla/firefox/vpn/qt/VPNShareUtils", "sharePlainText",
+      "(Ljava/lang/String;)V", QAndroidJniObject::fromString(text).object());
+  return true;
 }

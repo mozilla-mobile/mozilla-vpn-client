@@ -10,6 +10,7 @@
 #include "features/featureinapppurchase.h"
 #include "features/featureinappauth.h"
 #include "features/featureinappaccountcreate.h"
+#include "features/featuresharelogs.h"
 #include "gleansample.h"
 #include "iaphandler.h"
 #include "leakdetector.h"
@@ -53,6 +54,7 @@
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androiddatamigration.h"
 #  include "platforms/android/androidvpnactivity.h"
+#  include "platforms/android/androidutils.h"
 #endif
 
 #ifdef MVPN_ADJUST
@@ -1170,6 +1172,29 @@ void MozillaVPN::serializeLogs(QTextStream* out,
 void MozillaVPN::viewLogs() {
   logger.debug() << "View logs";
 
+  if (!FeatureShareLogs::instance()->isSupported()) {
+    logger.error() << "ViewLogs Called on unsupported OS or version!";
+  }
+
+#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
+  QString* buffer = new QString();
+  QTextStream* out = new QTextStream(buffer);
+  serializeLogs(out, [buffer, out]() {
+    Q_ASSERT(out);
+    Q_ASSERT(buffer);
+
+#if defined(MVPN_ANDROID)
+    AndroidUtils::ShareText(*buffer);
+#else
+    IOSUtils::shareLogs(*buffer);
+#endif
+
+    delete out;
+    delete buffer;
+  });
+  return;
+#endif
+
   if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {
     return;
   }
@@ -1259,23 +1284,9 @@ void MozillaVPN::requestAbout() {
 
 void MozillaVPN::requestViewLogs() {
   logger.debug() << "View log requested";
-
-#if defined(MVPN_IOS)
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
-  serializeLogs(out, [buffer, out]() {
-    Q_ASSERT(out);
-    Q_ASSERT(buffer);
-
-    IOSUtils::shareLogs(*buffer);
-
-    delete out;
-    delete buffer;
-  });
-#else
+  
   QmlEngineHolder::instance()->showWindow();
   emit viewLogsNeeded();
-#endif
 }
 
 void MozillaVPN::requestContactUs() {

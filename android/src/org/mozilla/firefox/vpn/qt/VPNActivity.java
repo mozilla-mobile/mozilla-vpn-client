@@ -4,9 +4,20 @@
 
 package org.mozilla.firefox.vpn.qt;
 
+import android.os.Bundle;
 import android.view.KeyEvent;
 
 public class VPNActivity extends org.qtproject.qt5.android.bindings.QtActivity {
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    instance = this;
+  }
+  private static VPNActivity instance;
+
+  public static VPNActivity getInstance() {
+    return instance;
+  }
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
