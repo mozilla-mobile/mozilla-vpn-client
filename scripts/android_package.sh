@@ -21,6 +21,8 @@ helpFunction() {
   print N ""
   print N "By default, the android build is compiled in release mode. Use -d or --debug for a debug build."
   print N ""
+  print N "If MVPN_ANDROID_ADJUST_TOKEN env is found, this will be used at compilation time."
+  print N ""
   exit 0
 }
 
@@ -93,6 +95,11 @@ if [ -z "${ANDROID_NDK_ROOT}" ]; then
 fi
 if [ -z "${ANDROID_SDK_ROOT}" ]; then
   die "Could not find 'ANDROID_SDK_ROOT' in env"
+fi
+
+if ! [[ "$ADJUST_SDK_TOKEN" ]] && [[ "$MVPN_ANDROID_ADJUST_TOKEN" ]]; then
+  print Y "Using the MVPN_ANDROID_ADJUST_TOKEN value for the adjust token"
+  ADJUST_SDK_TOKEN=$MVPN_ANDROID_ADJUST_TOKEN
 fi
 
 $QTPATH/android/bin/qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
