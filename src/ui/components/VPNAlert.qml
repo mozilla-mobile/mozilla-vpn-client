@@ -186,7 +186,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
 
             Label {
-                property var whiteSpaceCharacter: Qt.platform.os === "windows" ? " " : "\u0001" 
+                property var whiteSpaceCharacter: Qt.platform.os === "windows" || Qt.platform.os === "android" ? " " : "\u0001"
                 id: label
                 anchors.centerIn: parent
                 text: alertBox.alertText + whiteSpaceCharacter + "<b><u>"  + alertBox.alertActionText + "</b></u>"
