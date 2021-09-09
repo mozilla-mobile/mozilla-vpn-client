@@ -17,10 +17,7 @@ Popup {
     focus: true
     modal: true
     width: Math.min(window.width - Theme.vSpacing, maxWidth)
-    height: Math.min(window.height - (Theme.vSpacing * 2) - bottomPadding, Theme.desktopAppHeight)
     horizontalPadding: Theme.popupMargin
-    bottomPadding: Theme.popupMargin
-    topPadding: Theme.popupMargin * 2
 
     background: Rectangle {
         id: popupBackground
