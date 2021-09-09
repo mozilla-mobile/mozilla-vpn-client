@@ -106,7 +106,7 @@ FocusScope {
                 onTextChanged: () => {
                     countriesModel.invalidate();
                 }
-                placeholderText: VPNl18n.tr(VPNl18n.ServersViewSearchPlaceholder)
+                placeholderText: VPNl18n.ServersViewSearchPlaceholder
                 hasError: countriesRepeater.count === 0
                 Keys.onDownPressed: recentConnections.visible ? recentConnections.focusItemAt(0) : countriesRepeater.itemAt(0).forceActiveFocus()
 
@@ -132,7 +132,7 @@ FocusScope {
                     VPNInterLabel {
                         id: warningLabel
                         color: Color.error.default
-                        text: VPNl18n.tr(VPNl18n.ServersViewSearchNoResultsLabel)
+                        text: VPNl18n.ServersViewSearchNoResultsLabel
                         font.pixelSize: Theme.fontSizeSmall
                         width: undefined
                         Layout.fillWidth: true

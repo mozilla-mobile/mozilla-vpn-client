@@ -31,12 +31,12 @@
 #      - Also comments can be written using
 #      - multiple lines!
 #
-# In QML/JS, you can use the string IDs via the `VPNl18n` object and the `tr`
-# method. Each string is converted in an enum composed by categoryName +
-# stringId, in pascal case. For instance:
+# In QML/JS, you can use the string IDs via the `VPNl18n` object. Each string
+# is converted in an enum composed by categoryName + stringId, in pascal case.
+# For instance:
 # ```
 # Text {
-#   text: VPNl18n.tr(VPNl18n.InitialViewSubTitle)
+#   text: VPNl18n.InitialViewSubTitle
 # ```
 #
 # In C++, you can do basically the same:

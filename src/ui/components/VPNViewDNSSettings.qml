@@ -103,7 +103,7 @@ VPNFlickable {
                                 ipInput.valueInvalid = false;
                                 VPNSettings.userDNS = ipInput.text
                             }else{
-                                ipInput.error = VPNl18n.tr(VPNl18n.CustomDNSSettingsInlineCustomDNSError)
+                                ipInput.error = VPNl18n.CustomDNSSettingsInlineCustomDNSError
                                 ipInput.valueInvalid = true;
                             }
                         }

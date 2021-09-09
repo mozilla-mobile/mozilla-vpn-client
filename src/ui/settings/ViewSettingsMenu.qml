@@ -81,9 +81,10 @@ VPNFlickable {
         y: Theme.vSpacing + manageAccountButton.y + manageAccountButton.height
         width: parent.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
+
         VPNSettingsItem {
             objectName: "settingsWhatsNew"
-            settingTitle: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourPageHeader)
+            settingTitle: VPNl18n.WhatsNewReleaseNotesTourPageHeader
             imageLeftSrc: "../resources/gift-dark.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewWhatsNew.qml")
