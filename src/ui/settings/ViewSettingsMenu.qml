@@ -99,7 +99,7 @@ VPNFlickable {
             onClicked: settingsStackView.push("../settings/ViewNetworkSettings.qml", {
                                                   //% "App permissions"
                                                   _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
-                                              } )
+                                              })
         }
         VPNSettingsItem {
             property string prefs: qsTrId("systray.preferences")
