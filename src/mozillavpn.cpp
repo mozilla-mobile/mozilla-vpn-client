@@ -399,7 +399,9 @@ void MozillaVPN::authenticateWithType(
     // Let's use QueuedConnection to avoid nexted tasks executions.
     connect(
         lo, &LogoutObserver::ready, this,
-        [&] { authenticateWithType(authenticationType); },
+        [this, authenticationType]() {
+          authenticateWithType(authenticationType);
+        },
         Qt::QueuedConnection);
     return;
   }
