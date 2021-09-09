@@ -130,7 +130,7 @@ Item {
                                 Layout.fillWidth: true
                                 hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
                                 //% "Email address"
-                                placeholderText: VPNl18n.InAppSupportWorkflowSupportFieldPlaceholder
+                                placeholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
                             }
                         }
 
