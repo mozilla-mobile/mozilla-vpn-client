@@ -147,7 +147,7 @@ void MozillaVPN::addCurrentDeviceAndRefreshData() {}
 
 void MozillaVPN::abortAuthentication() {}
 
-void MozillaVPN::appReviewRequested() {}
+void MozillaVPN::openAppStoreReviewLink() {}
 
 bool MozillaVPN::validateUserDNS(const QString&) const { return false; }
 
