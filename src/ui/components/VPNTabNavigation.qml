@@ -68,8 +68,7 @@ Item {
                 }
 
                 contentItem: VPNBoldLabel {
-                    // Workaround since VPNl18n.tr(VPNl18n()) cannot be used as a value in a ListItem
-                    text: VPNl18n.tr(VPNl18n[tabLabelStringId])
+                    text: VPNl18n[tabLabelStringId]
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: btn.checked || btn.activeFocus ? Color.purple70 : btn.hovered ? Color.grey50 : Color.grey40

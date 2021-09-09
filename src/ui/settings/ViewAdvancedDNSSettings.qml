@@ -16,7 +16,7 @@ import telemetry 0.15
 
 
 Item {
-    property string _menuTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsNavItem)
+    property string _menuTitle: VPNl18n.CustomDNSSettingsDnsNavItem
     id: root
     objectName: "advancedDNSSettingsView"
 
@@ -33,7 +33,7 @@ Item {
         id: menu
         objectName: "settingsAdvancedDNSSettingsBackButton"
 
-        title: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsNavItem)
+        title: VPNl18n.CustomDNSSettingsDnsNavItem
         isSettingsView: true
     }
 
@@ -73,8 +73,8 @@ Item {
                 Component.onCompleted: {
                     defaultTabListModel.append({
                                                 settingValue: VPNSettings.Gateway,
-                                                settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsDefaultRadioHeader),
-                                                settingDescription: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsDefaultRadioBody),
+                                                settingTitle: VPNl18n.CustomDNSSettingsDnsDefaultRadioHeader,
+                                                settingDescription: VPNl18n.CustomDNSSettingsDnsDefaultRadioBody,
                                                 showDNSInput: false,
                     })
                 }
@@ -86,20 +86,20 @@ Item {
                 Component.onCompleted: {
                     advancedListModel.append({
                                                  settingValue: VPNSettings.BlockAds,
-                                                 settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdblockRadioHeader),
-                                                 settingDescription: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdblockRadioBody),
+                                                 settingTitle: VPNl18n.CustomDNSSettingsDnsAdblockRadioHeader,
+                                                 settingDescription: VPNl18n.CustomDNSSettingsDnsAdblockRadioBody,
                                                  showDNSInput: false})
                     advancedListModel.append({   settingValue: VPNSettings.BlockTracking,
-                                                 settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAntitrackRadioHeader),
-                                                 settingDescription: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAntitrackRadioBody),
+                                                 settingTitle: VPNl18n.CustomDNSSettingsDnsAntitrackRadioHeader,
+                                                 settingDescription: VPNl18n.CustomDNSSettingsDnsAntitrackRadioBody,
                                                  showDNSInput: false})
                     advancedListModel.append({   settingValue: VPNSettings.BlockAll,
-                                                 settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdblockAntiTrackRadioHeader),
-                                                 settingDescription: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdblockAntiTrackRadioBody),
+                                                 settingTitle: VPNl18n.CustomDNSSettingsDnsAdblockAntiTrackRadioHeader,
+                                                 settingDescription: VPNl18n.CustomDNSSettingsDnsAdblockAntiTrackRadioBody,
                                                  showDNSInput: false})
                     advancedListModel.append({   settingValue: VPNSettings.Custom,
-                                                 settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsCustomDNSRadioHeader),
-                                                 settingDescription:  VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsCustomDNSRadioBody),
+                                                 settingTitle: VPNl18n.CustomDNSSettingsDnsCustomDNSRadioHeader,
+                                                 settingDescription:  VPNl18n.CustomDNSSettingsDnsCustomDNSRadioBody,
                                                  showDNSInput: true})
                 }
             }

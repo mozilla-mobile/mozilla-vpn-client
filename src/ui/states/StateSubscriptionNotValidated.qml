@@ -21,13 +21,13 @@ VPNStackView {
     Component.onCompleted: {
         stackview.push("../views/ViewErrorFullScreen.qml", {
             // "Problem confirming subscription…"
-            headlineText: VPNl18n.tr(VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader),
+            headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
             // "An unexpected error....."
-            errorMessage: VPNl18n.tr(VPNl18n.GenericPurchaseErrorGenericPurchaseErrorText),
+            errorMessage: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorText,
 
             // "Try again"
-            buttonText: VPNl18n.tr(VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton),
+            buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
             buttonObjectName: "errorGetHelpButton",
             buttonOnClick: stackview.handleButtonClick,
             signOffLinkVisible: false,

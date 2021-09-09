@@ -465,6 +465,7 @@ int CommandUI::run(QStringList& tokens) {
       logger.debug() << "Retranslating";
       QmlEngineHolder::instance()->engine()->retranslate();
       SystemTrayHandler::instance()->retranslate();
+      L18nStrings::instance()->retranslate();
 
 #ifdef MVPN_MACOS
       MacOSMenuBar::instance()->retranslate();
