@@ -147,7 +147,7 @@ void MozillaVPN::createSupportTicket(const QString&, const QString&,
 
 void MozillaVPN::addCurrentDeviceAndRefreshData() {}
 
-void MozillaVPN::appReviewRequested() {}
+void MozillaVPN::openAppStoreReviewLink() {}
 
 bool MozillaVPN::validateUserDNS(const QString&) const { return false; }
 
