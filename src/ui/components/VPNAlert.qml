@@ -186,15 +186,16 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
 
             Label {
+                property var whiteSpaceCharacter: Qt.platform.os === "windows" ? " " : "\u0001" 
                 id: label
-                 anchors.centerIn: parent
-                 text: alertBox.alertText + "\u0001" + "<b><u>"  + alertBox.alertActionText + "</b></u>"
-                 horizontalAlignment: Text.AlignHCenter
-                 font.pixelSize: Theme.fontSizeSmall
-                 color: style.fontColor
-                 width: labelWrapper.width - Theme.windowMargin
-                 wrapMode: Label.WordWrap
-             }
+                anchors.centerIn: parent
+                text: alertBox.alertText + whiteSpaceCharacter + "<b><u>"  + alertBox.alertActionText + "</b></u>"
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeSmall
+                color: style.fontColor
+                width: labelWrapper.width - Theme.windowMargin
+                wrapMode: Label.WordWrap
+            }
         }
 
         VPNMouseArea {
