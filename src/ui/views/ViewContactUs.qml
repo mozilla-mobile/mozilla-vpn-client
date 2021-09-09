@@ -17,12 +17,11 @@ Item {
     id: contactUsRoot
 
     function tryAgain() {
-        contactUsStackView.pop();
-        contactUsStackView.pop();
+        mainStackView.pop();
     }
 
     function createSupportTicket(email, subject, issueText, category) {
-        contactUsStackView.push("../components/VPNLoader.qml", {
+        mainStackView.push("../components/VPNLoader.qml", {
             footerLinkIsVisible: false
         });
         VPN.createSupportTicket(email, subject, issueText, category);
@@ -51,9 +50,9 @@ Item {
             target: VPN
             function onTicketCreationAnswer(successful) {
                 if(successful) {
-                    contactUsStackView.push(thankYouView);
+                    mainStackView.replace(thankYouView);
                 } else {
-                    contactUsStackView.push("../views/ViewErrorFullScreen.qml", {
+                    mainStackView.replace("../views/ViewErrorFullScreen.qml", {
                         //% "Error submitting your support request..."
                         headlineText: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportErrorHeader),
 
@@ -312,8 +311,8 @@ Item {
         Item {
             ColumnLayout {
                 id: col
-                anchors.top: parent.top
-                anchors.topMargin: window.height * .10
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.verticalCenterOffset: (Theme.rowHeight + Theme.vSpacing) * -1
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
                 VPNPanel {
