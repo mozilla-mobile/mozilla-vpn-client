@@ -120,9 +120,9 @@ def generateStrings():
 #ifndef L18NSTRINGS_H
 #define L18NSTRINGS_H
 
-#include <QObject>
+#include <QQmlPropertyMap>
 
-class L18nStrings final : public QObject {
+class L18nStrings final : public QQmlPropertyMap {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(L18nStrings)
 
@@ -138,14 +138,15 @@ class L18nStrings final : public QObject {
             output.write(
                 """    __Last,
   };
-  Q_ENUM(String)
 
   static L18nStrings* instance();
 
   explicit L18nStrings(QObject* parent);
   ~L18nStrings();
 
-  Q_INVOKABLE QString tr(String) const;
+  void retranslate();
+
+  QString tr(String) const;
 
  private:
   static const char* const _ids[];
@@ -189,8 +190,15 @@ const char* const L18nStrings::_ids[] = {
             if len(stringIds) == 0:
                 output.write(f"    \"vpn.dummy.ignore\",\n\n")
 
-            output.write("};")
+            output.write("""
+};
 
+void L18nStrings::retranslate() {
+""")
+
+            for string in stringIds:
+                output.write(f"    insert(\"{string['enumId']}\", qtTrId(_ids[{string['enumId']}]));\n")
+            output.write("}")
 
 if __name__ == "__main__":
     generateStrings()

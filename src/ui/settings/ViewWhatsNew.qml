@@ -14,7 +14,7 @@ import "../themes/themes.js" as Theme
 import "../themes/colors.js" as Color
 
 Item {
-    property string _menuTitle: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourPageHeader)
+    property string _menuTitle: VPNl18n.WhatsNewReleaseNotesTourPageHeader
     id: root
     objectName: "settingsWhatsNew"
 
@@ -37,7 +37,7 @@ Item {
             width: parent.width - Theme.windowMargin
 
             VPNSettingsItem {                
-                settingTitle: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourSubHeader)
+                settingTitle: VPNl18n.WhatsNewReleaseNotesTourSubHeader
                 imageLeftSrc: hovered ? "../resources/magic-purple.svg" : "../resources/magic-dark.svg"
                 imageRightSrc: hovered ? "../resources/chevron-purple.svg" : "../resources/chevron.svg"
                 backgroundColor: Theme.clickableRowPurple

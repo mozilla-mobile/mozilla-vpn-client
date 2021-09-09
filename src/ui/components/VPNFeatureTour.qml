@@ -25,7 +25,7 @@ ColumnLayout {
 
             PropertyChanges {
                 target: resumeButton
-                text: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesSupportModalButtonText)
+                text: VPNl18n.WhatsNewReleaseNotesSupportModalButtonText
             }
 
             PropertyChanges {
@@ -39,7 +39,7 @@ ColumnLayout {
 
             PropertyChanges {
                 target: resumeButton
-                text: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourModalButtonText)
+                text: VPNl18n.WhatsNewReleaseNotesTourModalButtonText
             }
 
             PropertyChanges {
@@ -58,7 +58,7 @@ ColumnLayout {
 
             PropertyChanges {
                 target: resumeButton
-                text: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesDnsModalButtonText)
+                text: VPNl18n.WhatsNewReleaseNotesDnsModalButtonText
             }
 
             PropertyChanges {
@@ -173,8 +173,8 @@ ColumnLayout {
                 id: initialSlideLoader
 
                 property int slideIndex: 0
-                property string featureName: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourModalHeader)
-                property string featureDescription: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourModalBodyText)
+                property string featureName: VPNl18n.WhatsNewReleaseNotesTourModalHeader
+                property string featureDescription: VPNl18n.WhatsNewReleaseNotesTourModalBodyText
                 property string featureImagePath: "../resources/features/features-tour-hero.png"
 
                 active: SwipeView.isCurrentItem | SwipeView.isPreviousItem | SwipeView.isNextItem

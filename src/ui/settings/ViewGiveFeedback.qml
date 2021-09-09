@@ -138,7 +138,7 @@ Item {
                         }
 
                         VPNFeedbackRadioDelegate {
-                            Accessible.name: VPNl18n.tr(VPNl18n.FeedbackFormExcellentLabel)
+                            Accessible.name: VPNl18n.FeedbackFormExcellentLabel
                             iconSource: "../resources/faces/veryGood.svg"
                             value: 5
                         }
@@ -154,7 +154,7 @@ Item {
                         VPNInterLabel {
                             Layout.alignment: Qt.AlignRight
                             horizontalAlignment: Qt.AlignRight
-                            text: VPNl18n.tr(VPNl18n.FeedbackFormExcellentLabel)
+                            text: VPNl18n.FeedbackFormExcellentLabel
                             Layout.fillWidth: true
                             color: Theme.fontColor
                         }
@@ -264,7 +264,7 @@ Item {
 
                     VPNComboBox {
                         id: dropDown
-                        placeholderText: VPNl18n.tr(VPNl18n.FeedbackFormChooseCategory)
+                        placeholderText: VPNl18n.FeedbackFormChooseCategory
                         model: VPNFeedbackCategoryModel
                     }
 
@@ -398,8 +398,8 @@ Item {
                 VPNPanel {
                     id: panel
                     logo: "../resources/app-rating.svg"
-                    logoTitle: VPNl18n.tr(VPNl18n.FeedbackFormReviewHeader)
-                    logoSubtitle: VPNl18n.tr(VPNl18n.FeedbackFormReviewBody)
+                    logoTitle: VPNl18n.FeedbackFormReviewHeader
+                    logoSubtitle: VPNl18n.FeedbackFormReviewBody
                     anchors.horizontalCenter: undefined
                     Layout.fillWidth: true
                 }
@@ -407,7 +407,7 @@ Item {
 
             VPNButton {
                 id: reviewButton
-                text: VPNl18n.tr(VPNl18n.FeedbackFormLeaveReviewButton)
+                text: VPNl18n.FeedbackFormLeaveReviewButton
                 anchors.top: col.bottom
                 anchors.topMargin: Theme.vSpacing
                 anchors.horizontalCenter: parent.horizontalCenter

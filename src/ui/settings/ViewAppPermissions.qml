@@ -133,14 +133,14 @@ Item {
             anchors.topMargin: 30
             anchors.top: enabledList.visible? enabledList.bottom : toggleCard.bottom
             anchors.horizontalCenter:  enabledList.visible? enabledList.horizontalCenter : toggleCard.horizontalCenter
-            text: VPNl18n.tr(VPNl18n.SplittunnelInfoText)
+            text: VPNl18n.SplittunnelInfoText
         }
 
         VPNHeaderLink{
             id: helpLink
             anchors.top:  helpInfoText.bottom
             anchors.horizontalCenter: helpInfoText.horizontalCenter
-            labelText: VPNl18n.tr(VPNl18n.SplittunnelInfoLinkText)
+            labelText: VPNl18n.SplittunnelInfoLinkText
             onClicked: {
                VPN.openLink(VPN.LinkSplitTunnelHelp)
             }

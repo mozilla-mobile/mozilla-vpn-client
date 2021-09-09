@@ -20,8 +20,9 @@ L18nStrings* L18nStrings::instance() {
   return s_instance;
 }
 
-L18nStrings::L18nStrings(QObject* parent) : QObject(parent) {
+L18nStrings::L18nStrings(QObject* parent) : QQmlPropertyMap(parent) {
   MVPN_COUNT_CTOR(L18nStrings);
+  retranslate();
 }
 
 L18nStrings::~L18nStrings() { MVPN_COUNT_DTOR(L18nStrings); }
