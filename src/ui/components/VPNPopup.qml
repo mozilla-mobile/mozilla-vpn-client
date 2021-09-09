@@ -12,21 +12,18 @@ Popup {
 
     property int maxWidth: ({})
 
-    closePolicy: Popup.CloseOnEscape
+    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
     enabled: true
     focus: true
     modal: true
-    implicitWidth: parent.width
-    leftInset: maxWidth && maxWidth < window.width ? (window.width - maxWidth) / 2 : Theme.windowMargin
-    rightInset: maxWidth && maxWidth < window.width ? (window.width - maxWidth) / 2 : Theme.windowMargin
-    horizontalPadding: Theme.popupMargin + popup.leftInset
-    bottomPadding: Theme.popupMargin
-    topPadding: Theme.popupMargin * 2
+    width: Math.min(window.width - Theme.vSpacing, maxWidth)
+    horizontalPadding: Theme.popupMargin
 
     background: Rectangle {
         id: popupBackground
 
-        anchors.margins: 0
+        anchors.fill: contentItem
+        anchors.margins: -24
         color: Theme.bgColor
         radius: 8
 
