@@ -41,7 +41,7 @@ Item {
         initialItem: "../settings/ViewSettingsMenu.qml"
 
         onCurrentItemChanged: {
-            if (currentItem._menuTitle) menu.title = Qt.binding(() => currentItem._menuTitle);
+            menu.title = Qt.binding(() => currentItem._menuTitle || "");
         }
     }
 }

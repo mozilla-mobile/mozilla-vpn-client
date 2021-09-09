@@ -8,7 +8,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
-Item {
+ColumnLayout {
     id: tour
 
     signal started()
@@ -17,8 +17,6 @@ Item {
 
     property variant slidesModel: ({})
 
-    implicitHeight: content.implicitHeight
-    width: parent.width
 
     states: [
         State {
@@ -73,14 +71,17 @@ Item {
     VPNIconButton {
         id: backButton
 
-        anchors.bottom: tour.top
+        Layout.alignment: Qt.AlignTop
+        Layout.preferredHeight: Theme.rowHeight
+        Layout.preferredWidth: Theme.rowHeight
+        Layout.margins: -Theme.windowMargin
+        visible: true
         accessibleName: qsTrId("vpn.main.back")
         enabled: swipeView.currentIndex > 1
         onClicked: {
             swipeView.currentIndex -= 1;
         }
         opacity: swipeView.currentIndex > 1 ? 1 : 0
-        x: -Theme.windowMargin
         z: 1
 
         Image {
@@ -102,9 +103,7 @@ Item {
 
     ColumnLayout {
         id: content
-
         spacing: Theme.listSpacing
-        width: parent.width
 
         SwipeView {
             id: swipeView
@@ -123,39 +122,43 @@ Item {
                     id: slideContent
 
                     opacity: slideIndex === swipeView.currentIndex ? 1 : 0
-                    spacing: Theme.listSpacing
 
-                    Item {
-                        Layout.preferredHeight: parent.width * 0.475
-                        Layout.preferredWidth: parent.width
+                    ColumnLayout {
+                        spacing: Theme.listSpacing
+                        Item {
+                            Layout.alignment: Qt.AlignHCenter
+                            Layout.preferredHeight: 120
+                            Layout.preferredWidth: 120
 
-                        Image {
-                            anchors.fill: parent
-                            source: featureImagePath
-                            fillMode: Image.PreserveAspectFit
+                            Image {
+                                anchors.fill: parent
+                                source: featureImagePath
+                                fillMode: Image.PreserveAspectFit
 
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: tour.state === "tour-start" ? Theme.listSpacing * 0.5 : Theme.listSpacing * 0.25
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: tour.state === "tour-start" ? Theme.listSpacing * 0.5 : Theme.listSpacing * 0.25
+                            }
                         }
-                    }
 
-                    VPNMetropolisLabel {
-                        id: popupTitle
+                        VPNMetropolisLabel {
+                            id: popupTitle
 
-                        color: Theme.fontColorDark
-                        horizontalAlignment: Text.AlignHCenter
-                        font.pixelSize: Theme.fontSizeLarge
-                        text: featureName
+                            color: Theme.fontColorDark
+                            horizontalAlignment: Text.AlignHCenter
+                            font.pixelSize: Theme.fontSizeLarge
+                            text: featureName
 
-                        Layout.bottomMargin: Theme.listSpacing
-                        Layout.fillWidth: true
-                    }
+                            Layout.bottomMargin: Theme.listSpacing
+                            Layout.fillWidth: true
+                        }
 
-                    VPNTextBlock {
-                        horizontalAlignment: Text.AlignHCenter
-                        text: featureDescription
-                        Layout.fillWidth: true
+                        VPNTextBlock {
+                            horizontalAlignment: Text.AlignHCenter
+                            text: featureDescription
+                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.width
+                        }
                     }
 
                     Behavior on opacity {
