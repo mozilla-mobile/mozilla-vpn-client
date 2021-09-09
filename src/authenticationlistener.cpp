@@ -28,7 +28,10 @@ Logger logger(LOG_MAIN, "AuthenticationListener");
 AuthenticationListener* AuthenticationListener::create(
     QObject* parent, MozillaVPN::AuthenticationType authenticationType) {
   switch (authenticationType) {
+    case MozillaVPN::AuthenticationInApp:
+      return new AuthenticationInAppListener(parent);
     case MozillaVPN::AuthenticationInBrowser:
+    default:
 #if defined(MVPN_ANDROID)
       return new AndroidAuthenticationListener(parent);
 #elif defined(MVPN_IOS)
@@ -38,12 +41,6 @@ AuthenticationListener* AuthenticationListener::create(
 #else
       return new DesktopAuthenticationListener(parent);
 #endif
-    case MozillaVPN::AuthenticationInApp:
-      return new AuthenticationInAppListener(parent);
-
-    default:
-      Q_ASSERT(false);
-      return nullptr;
   }
 }
 
