@@ -226,8 +226,7 @@ bool WindowsFirewall::enablePeerTraffic(const InterfaceConfig& config) {
     if (config.m_ipv6Enabled &&
         config.m_dnsServer == config.m_serverIpv4Gateway) {
       if (!allowTrafficTo(QHostAddress(config.m_serverIpv6Gateway), 53,
-                          HIGH_WEIGHT,
-                          "Allow extra IPv6 DNS-Server",
+                          HIGH_WEIGHT, "Allow extra IPv6 DNS-Server",
                           config.m_serverPublicKey)) {
         return false;
       }
@@ -464,9 +463,9 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
     return false;
   }
   filter.layerKey = layerIn;
-  if (!enableFilter(
-          &filter, title,
-          description.arg("from").arg(targetIP.toString()).arg(port), peer)) {
+  if (!enableFilter(&filter, title,
+                    description.arg("from").arg(targetIP.toString()).arg(port),
+                    peer)) {
     return false;
   }
   return true;
@@ -689,8 +688,8 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range,
   filter.filterCondition = cond;
 
   filter.layerKey = layerKeyOut;
-  if (!enableFilter(&filter, title,
-                    description.arg("to").arg(range.toString()), peer)) {
+  if (!enableFilter(&filter, title, description.arg("to").arg(range.toString()),
+                    peer)) {
     return false;
   }
   filter.layerKey = layerKeyIn;
@@ -827,8 +826,7 @@ bool WindowsFirewall::enableFilter(FWPM_FILTER0* filter, const QString& title,
   logger.info() << "Filter added: " << title << ":" << description;
   if (peer.isEmpty()) {
     m_activeRules.append(filterID);
-  }
-  else {
+  } else {
     m_peerRules.insert(peer, filterID);
   }
   return true;

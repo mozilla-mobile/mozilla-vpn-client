@@ -34,7 +34,7 @@ class WindowsFirewall final : public QObject {
   HANDLE m_sessionHandle;
   bool m_init = false;
   QList<uint64_t> m_activeRules;
-  QMultiMap<QString,uint64_t> m_peerRules;
+  QMultiMap<QString, uint64_t> m_peerRules;
 
   bool allowTrafficForAppOnAll(const QString& exePath, int weight,
                                const QString& title);
@@ -57,7 +57,8 @@ class WindowsFirewall final : public QObject {
   void importAddress(const QHostAddress& addr, OUT FWP_CONDITION_VALUE0_& value,
                      OUT QByteArray* v6DataBuffer);
   bool enableFilter(FWPM_FILTER0* filter, const QString& title,
-                    const QString& description, const QString& peer = QString());
+                    const QString& description,
+                    const QString& peer = QString());
 };
 
 #endif  // WINDOWSFIREWALL_H

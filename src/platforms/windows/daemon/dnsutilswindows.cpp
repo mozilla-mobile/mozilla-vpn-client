@@ -29,7 +29,6 @@ DnsUtilsWindows::~DnsUtilsWindows() {
 
 bool DnsUtilsWindows::updateResolvers(const QString& ifname,
                                       const QList<QHostAddress>& resolvers) {
-
   // Lookup the interface GUID
   NET_LUID luid;
   GUID guid;
