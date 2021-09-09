@@ -8,9 +8,11 @@
 #include "../../daemon/interfaceconfig.h"
 
 #include <windows.h>
+#include <fwpmu.h>
 #include <QString>
 #include <QObject>
-class QHostAddress;
+#include <QHostAddress>
+#include <QByteArray>
 class IpAdressRange;
 struct FWP_VALUE0_;
 struct FWP_CONDITION_VALUE0_;
@@ -31,19 +33,28 @@ class WindowsFirewall final : public QObject {
   bool m_init = false;
   QList<uint64_t> m_activeRules;
 
+  bool allowTrafficForAppOnAll(const QString& exePath, int weight,
+                               const QString& title);
+  bool blockTrafficTo(const QList<IPAddressRange>& range, uint8_t weight,
+                      const QString& title);
+  bool blockTrafficTo(const IPAddressRange& range, uint8_t weight,
+                      const QString& title);
+  bool blockTrafficOnPort(uint port, uint8_t weight, const QString& title);
+  bool allowTrafficTo(const QHostAddress& targetIP, uint port, int weight,
+                      const QString& title);
+  bool allowTrafficOfAdapter(int networkAdapter, uint8_t weight,
+                             const QString& title);
+  bool allowDHCPTraffic(uint8_t weight, const QString& title);
+  bool allowHyperVTraffic(uint8_t weight, const QString& title);
+
+  // Utils
   QString getCurrentPath();
-  void importAddress(const QHostAddress& addr, OUT FWP_VALUE0_& value);
-  void importAddress(const QHostAddress& addr,
-                     OUT FWP_CONDITION_VALUE0_& value);
-  bool allowTrafficForAppOnAdapter(const QString& exePath, int networkIndex);
-  bool allowTrafficForAppOnAll(const QString& exePath, int weight);
-  bool blockTrafficTo(const QList<IPAddressRange>& range, uint8_t weight);
-  bool blockTrafficTo(const IPAddressRange& range, uint8_t weight);
-  bool blockTrafficOnPort(uint port, uint8_t weight);
-  bool allowTrafficTo(const QHostAddress& targetIP, uint port, int weight);
-  bool allowTrafficOfAdapter(int networkAdapter, uint8_t weight);
-  bool allowDHCPTraffic(uint8_t weight);
-  bool allowHyperVTraffic(uint8_t weight);
+  void importAddress(const QHostAddress& addr, OUT FWP_VALUE0_& value,
+                     OUT QByteArray* v6DataBuffer);
+  void importAddress(const QHostAddress& addr, OUT FWP_CONDITION_VALUE0_& value,
+                     OUT QByteArray* v6DataBuffer);
+  bool enableFilter(FWPM_FILTER0* filter, const QString& title,
+                    const QString& description);
 };
 
 #endif  // WINDOWSFIREWALL_H
