@@ -38,7 +38,7 @@ ColumnLayout {
 
     VPNBoldLabel {
         id: recentConnectionsHeader
-        text: VPNl18n.tr(VPNl18n.MultiHopFeatureMultiHopConnectionsHeader)
+        text: VPNl18n.MultiHopFeatureMultiHopConnectionsHeader
         Layout.leftMargin: Theme.windowMargin
         Layout.minimumHeight: Theme.vSpacing
         verticalAlignment: Text.AlignVCenter

@@ -21,13 +21,13 @@ VPNStackView {
     Component.onCompleted: {
         stackview.push("../views/ViewErrorFullScreen.qml", {
             // Sign in to Google Account
-            headlineText: VPNl18n.tr(VPNl18n.NotSignedInGoogleGoogleModalHeader),
+            headlineText: VPNl18n.NotSignedInGoogleGoogleModalHeader,
 
             // To continue subscribing, please sign in to your Google Account
-            errorMessage: VPNl18n.tr(VPNl18n.NotSignedInGoogleGoogleModalBodyText),
+            errorMessage: VPNl18n.NotSignedInGoogleGoogleModalBodyText,
 
             // Go to Play Store
-            buttonText: VPNl18n.tr(VPNl18n.NotSignedInGoogleGoogleModalLinkText),
+            buttonText: VPNl18n.NotSignedInGoogleGoogleModalLinkText,
             buttonObjectName: "errorGetHelpButton",
             buttonOnClick: stackview.handleButtonClick,
             signOffLinkVisible: true,

@@ -10,7 +10,7 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 VPNFlickable {
-    property string _menuTitle: VPNl18n.tr(VPNl18n.SettingsDevTitle)
+    property string _menuTitle: VPNl18n.SettingsDevTitle
     property alias isSettingsView: menu.isSettingsView
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff) ||
         (VPNController.state === VPNController.StateInitializing)
@@ -18,7 +18,7 @@ VPNFlickable {
     id: vpnFlickable
     VPNMenu {
         id: menu
-        title: VPNl18n.tr(VPNl18n.SettingsDevTitle)
+        title: VPNl18n.SettingsDevTitle
         isSettingsView: false
     }
 
@@ -29,8 +29,8 @@ VPNFlickable {
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
 
-        labelText:  VPNl18n.tr(VPNl18n.SettingsDevShowOptionTitle)
-        subLabelText: VPNl18n.tr(VPNl18n.SettingsDevShowOptionSubtitle)
+        labelText:  VPNl18n.SettingsDevShowOptionTitle
+        subLabelText: VPNl18n.SettingsDevShowOptionSubtitle
 
         isChecked: VPNSettings.developerUnlock
         onClicked: VPNSettings.developerUnlock = !VPNSettings.developerUnlock
@@ -44,8 +44,8 @@ VPNFlickable {
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
 
-        labelText: VPNl18n.tr(VPNl18n.SettingsDevUseStagingTitle)
-        subLabelText: VPNl18n.tr(VPNl18n.SettingsDevUseStagingSubtitle)
+        labelText: VPNl18n.SettingsDevUseStagingTitle
+        subLabelText: VPNl18n.SettingsDevUseStagingSubtitle
 
         isChecked: (VPNSettings.stagingServer)
         isEnabled: vpnFlickable.vpnIsOff
@@ -94,6 +94,6 @@ VPNFlickable {
         anchors.top: inspectorLink.bottom
         visible: VPN.stagingMode != VPNSettings.stagingServer
 
-        errorMessage: VPNl18n.tr(VPNl18n.SettingsDevRestartRequired)
+        errorMessage: VPNl18n.SettingsDevRestartRequired
     }
 }
