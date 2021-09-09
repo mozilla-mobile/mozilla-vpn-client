@@ -24,3 +24,7 @@ webextension {
     SUBDIRS += extension/app
     SUBDIRS += tests/nativemessaging
 }
+
+TOOLS {
+    SUBDIRS += tools/ipmonitor
+}

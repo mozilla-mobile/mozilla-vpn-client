@@ -9,6 +9,9 @@
 #include "tasks/accountandservers/taskaccountandservers.h"
 
 #include <QEventLoop>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QTextStream>
 
 CommandServers::CommandServers(QObject* parent)
@@ -26,11 +29,13 @@ int CommandServers::run(QStringList& tokens) {
     CommandLineParser::Option hOption = CommandLineParser::helpOption();
     CommandLineParser::Option verboseOption("v", "verbose", "Verbose mode.");
     CommandLineParser::Option cacheOption("c", "cache", "From local cache.");
+    CommandLineParser::Option jsonOption("j", "json", "Json format.");
 
     QList<CommandLineParser::Option*> options;
     options.append(&hOption);
     options.append(&verboseOption);
     options.append(&cacheOption);
+    options.append(&jsonOption);
 
     CommandLineParser clp;
     if (clp.parse(tokens, options, false)) {
@@ -63,28 +68,64 @@ int CommandServers::run(QStringList& tokens) {
       return 0;
     }
 
-    QTextStream stream(stdout);
+    if (jsonOption.m_set) {
+      ServerCountryModel* scm = vpn.serverCountryModel();
+      QJsonArray list;
+      for (const ServerCountry& country : scm->countries()) {
+        QJsonObject countryObj;
+        countryObj["name"] = country.name();
+        countryObj["code"] = country.code();
 
-    ServerCountryModel* scm = vpn.serverCountryModel();
-    for (const ServerCountry& country : scm->countries()) {
-      stream << "- Country: " << country.name() << " (code: " << country.code()
-             << ")" << Qt::endl;
-      for (const ServerCity& city : country.cities()) {
-        stream << "  - City: " << city.name() << " (" << city.code() << ")"
-               << Qt::endl;
-        for (const Server& server : city.servers()) {
-          stream << "    - Server: " << server.hostname() << Qt::endl;
+        QJsonArray cityArray;
+        for (const ServerCity& city : country.cities()) {
+          QJsonObject cityObj;
+          cityObj["name"] = city.name();
+          cityObj["code"] = city.code();
 
-          if (verboseOption.m_set) {
-            stream << "        ipv4 addr-in: " << server.ipv4AddrIn()
-                   << Qt::endl;
-            stream << "        ipv4 gateway: " << server.ipv4Gateway()
-                   << Qt::endl;
-            stream << "        ipv6 addr-in: " << server.ipv6AddrIn()
-                   << Qt::endl;
-            stream << "        ipv6 gateway: " << server.ipv6Gateway()
-                   << Qt::endl;
-            stream << "        public key: " << server.publicKey() << Qt::endl;
+          QJsonArray serverArray;
+          for (const Server& server : city.servers()) {
+            QJsonObject serverObj;
+            serverObj["hostname"] = server.hostname();
+            serverObj["ipv4-addr-in"] = server.ipv4AddrIn();
+            serverObj["ipv4-gateway"] = server.ipv4Gateway();
+            serverObj["ipv6-addr-in"] = server.ipv6AddrIn();
+            serverObj["ipv6-gateway"] = server.ipv6Gateway();
+            serverObj["public-key"] = server.publicKey();
+            serverArray.append(serverObj);
+          }
+
+          cityObj["servers"] = serverArray;
+          cityArray.append(cityObj);
+        }
+
+        countryObj["cities"] = cityArray;
+        list.append(countryObj);
+      }
+      QTextStream(stdout) << QJsonDocument(list).toJson() << Qt::endl;
+    } else {
+      QTextStream stream(stdout);
+      ServerCountryModel* scm = vpn.serverCountryModel();
+      for (const ServerCountry& country : scm->countries()) {
+        stream << "- Country: " << country.name()
+               << " (code: " << country.code() << ")" << Qt::endl;
+        for (const ServerCity& city : country.cities()) {
+          stream << "  - City: " << city.name() << " (" << city.code() << ")"
+                 << Qt::endl;
+          for (const Server& server : city.servers()) {
+            stream << "    - Server: " << server.hostname() << Qt::endl;
+
+            if (verboseOption.m_set) {
+              stream << "        ipv4 addr-in: " << server.ipv4AddrIn()
+                     << Qt::endl;
+              stream << "        ipv4 gateway: " << server.ipv4Gateway()
+                     << Qt::endl;
+              stream << "        ipv6 addr-in: " << server.ipv6AddrIn()
+                     << Qt::endl;
+              stream << "        ipv6 gateway: " << server.ipv6Gateway()
+                     << Qt::endl;
+              stream << "        public key: " << server.publicKey()
+                     << Qt::endl;
+            }
           }
         }
       }
