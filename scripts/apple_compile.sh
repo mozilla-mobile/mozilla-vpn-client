@@ -24,9 +24,12 @@ helpFunction() {
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N "Use -n or --networkextension to force the network-extension component for MacOS too."
   print N ""
+  print N "If MVPN_IOS_ADJUST_TOKEN env is found, this will be used at compilation time."
+  print N ""
   print G "Config variables:"
   print N "\tQT_MACOS_BIN=</path/of/the/qt/bin/folder/for/macos>"
   print N "\tQT_IOS_BIN=</path/of/the/qt/bin/folder/for/ios>"
+  print N "\tMVPN_IOS_ADJUST_TOKEN=<token>"
   print N ""
   exit 0
 }
@@ -99,6 +102,11 @@ sha256() {
 
 if [[ "$OS" != "macos" ]] && [[ "$OS" != "ios" ]] && [[ "$OS" != "macostest" ]]; then
   helpFunction
+fi
+
+if ! [[ "$ADJUST_SDK_TOKEN" ]] && [[ "$MVPN_IOS_ADJUST_TOKEN" ]]; then
+  print Y "Using the MVPN_IOS_ADJUST_TOKEN value for the adjust token"
+  ADJUST_SDK_TOKEN=$MVPN_IOS_ADJUST_TOKEN
 fi
 
 if [[ "$OS" == "ios" ]]; then
