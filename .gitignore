@@ -119,3 +119,7 @@ macos/pkg/Resources/*.lproj
 AdjustSdkDynamic.framework.zip
 AdjustSdkDynamic/
 AdjustSdk.framework/
+
+# ipmonitor
+tools/ipmonitor/ipmonitor
+tools/ipmonitor/ipmonitor.exe

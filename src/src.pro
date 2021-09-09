@@ -15,8 +15,6 @@ CCACHE_BIN = $$system(which ccache)
     message(Using ccache)
     load(ccache)
     QMAKE_CXXFLAGS +=-g -fdebug-prefix-map=$(shell pwd)=.
-
-
 }
 
 QT += network
