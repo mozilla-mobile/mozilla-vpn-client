@@ -447,6 +447,19 @@ void MozillaVPN::openLink(LinkType linkType) {
       url.append("/r/vpn/support");
       break;
 
+    case LinkLeaveReview:
+      Q_ASSERT(FeatureAppReview::instance()->isSupported());
+      url =
+#if defined(MVPN_IOS)
+          "https://apps.apple.com/app/id1489407738?action=write-review";
+#elif defined(MVPN_ANDROID)
+          "https://play.google.com/store/apps/"
+          "details?id=org.mozilla.firefox.vpn";
+#else
+          "";
+#endif
+      break;
+
     case LinkLicense:
       url =
           "https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/"
@@ -1454,13 +1467,9 @@ void MozillaVPN::addCurrentDeviceAndRefreshData() {
   scheduleTask(new TaskAccountAndServers());
 }
 
-void MozillaVPN::appReviewRequested() {
+void MozillaVPN::openAppStoreReviewLink() {
   Q_ASSERT(FeatureAppReview::instance()->isSupported());
-#if defined(MVPN_IOS)
-  IOSUtils::appReviewRequested();
-#elif defined(MVPN_ANDROID)
-  AndroidUtils::appReviewRequested();
-#endif
+  openLink(LinkType::LinkLeaveReview);
 }
 
 bool MozillaVPN::validateUserDNS(const QString& dns) const {
