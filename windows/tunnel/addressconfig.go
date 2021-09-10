@@ -166,12 +166,7 @@ func configureInterface(family winipcfg.AddressFamily, conf *conf.Config, tun *t
 		ipif.DadTransmits = 0
 		ipif.RouterDiscoveryBehavior = winipcfg.RouterDiscoveryDisabled
 	}
-	err = ipif.Set()
-	if err != nil {
-		return err
-	}
-
-	return luid.SetDNS(family, conf.Interface.DNS, conf.Interface.DNSSearch)
+	return ipif.Set()
 }
 
 func enableFirewall(conf *conf.Config, tun *tun.NativeTun) error {
