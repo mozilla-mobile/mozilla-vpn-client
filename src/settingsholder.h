@@ -137,8 +137,7 @@ class SettingsHolder final : public QObject {
          setDevModeFeatureFlags);
   GETSET(QStringList, hasRecentConnections, recentConnections,
          setRecentConnections);
-  GETSET(bool, hasDeviceKeyRegenerated_2_5, deviceKeyRegenerated_2_5,
-         setDeviceKeyRegenerated_2_5)
+  GETSET(QString, hasDeviceKeyVersion, deviceKeyVersion, setDeviceKeyVersion)
 
   void removeMissingApp(const QString& appID);
   void addMissingApp(const QString& appID);

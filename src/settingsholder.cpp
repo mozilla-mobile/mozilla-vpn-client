@@ -112,8 +112,7 @@ constexpr const char* SETTINGS_SEENFEATURES = "seenFeatures";
 constexpr bool SETTINGS_FEATURESTOURSHOWN_DEFAULT = false;
 constexpr const char* SETTINGS_FEATURESTOURSHOWN = "featuresTourShown";
 
-constexpr const char* SETTINGS_DEVICEKEYREGENERATED_2_5 =
-    "deviceKeyRegenerated2.5";
+constexpr const char* SETTINGS_DEVICEKEYVERSION = "deviceKeyVersion";
 
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
@@ -363,9 +362,8 @@ GETSET(bool, toBool, SETTINGS_SYSTEMLANGUAGECODEMIGRATED,
        setSystemLanguageCodeMigrated);
 GETSET(QDateTime, toDateTime, SETTINGS_INSTALLATIONTIME, hasInstallationTime,
        installationTime, setInstallationTime);
-GETSET(bool, toBool, SETTINGS_DEVICEKEYREGENERATED_2_5,
-       hasDeviceKeyRegenerated_2_5, deviceKeyRegenerated_2_5,
-       setDeviceKeyRegenerated_2_5);
+GETSET(QString, toString, SETTINGS_DEVICEKEYVERSION, hasDeviceKeyVersion,
+       deviceKeyVersion, setDeviceKeyVersion);
 
 #ifdef MVPN_ANDROID
 GETSET(bool, toBool, SETTINGS_NATIVEANDROIDSDATAMIGRATED,
