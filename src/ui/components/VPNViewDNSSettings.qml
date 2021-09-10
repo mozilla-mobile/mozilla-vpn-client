@@ -120,6 +120,7 @@ VPNFlickable {
                             anchors.topMargin: undefined
                             Layout.leftMargin: ipInput.Layout.leftMargin
                             alertColor: Theme.red
+                            width: ipInput.width - ipInput.Layout.leftMargin
 
                             states: [
                                 State {
