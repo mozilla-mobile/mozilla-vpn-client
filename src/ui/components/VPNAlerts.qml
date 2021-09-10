@@ -16,6 +16,7 @@ ColumnLayout {
     Layout.alignment: Qt.AlignHCenter
     Layout.fillHeight: false
     visible: VPNSurveyModel.hasSurvey || VPN.updateRecommended || isWasmViewer
+    property var stackviewMode: StackView.Immediate
 
     VPNAlert {
         id: updateAlert
@@ -28,7 +29,7 @@ ColumnLayout {
         alertActionText: qsTrId("vpn.updates.updateNow")
 
         onActionPressed: ()=>{
-            stackview.push("../views/ViewUpdate.qml", StackView.Immediate);
+            stackview.push("../views/ViewUpdate.qml", stackviewMode);
         }
         onClosePressed: ()=>{
              VPN.hideUpdateRecommendedAlert();
