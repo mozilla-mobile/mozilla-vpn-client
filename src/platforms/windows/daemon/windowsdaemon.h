@@ -6,6 +6,7 @@
 #define WINDOWSDAEMON_H
 
 #include "daemon/daemon.h"
+#include "dnsutilswindows.h"
 #include "windowstunnelservice.h"
 #include "wireguardutilswindows.h"
 #include "windowssplittunnel.h"
@@ -25,6 +26,8 @@ class WindowsDaemon final : public Daemon {
  protected:
   bool run(Op op, const InterfaceConfig& config) override;
   WireguardUtils* wgutils() const override { return m_wgutils; }
+  bool supportDnsUtils() const override { return true; }
+  DnsUtils* dnsutils() override { return m_dnsutils; }
 
  private:
   void monitorBackendFailure();
@@ -39,6 +42,7 @@ class WindowsDaemon final : public Daemon {
   int m_inetAdapterIndex = -1;
 
   WireguardUtilsWindows* m_wgutils = nullptr;
+  DnsUtilsWindows* m_dnsutils = nullptr;
   WindowsSplitTunnel m_splitTunnelManager;
 };
 
