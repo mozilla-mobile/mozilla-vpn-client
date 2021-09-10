@@ -23,7 +23,7 @@ DnsUtilsWindows::DnsUtilsWindows(QObject* parent) : DnsUtils(parent) {
   MVPN_COUNT_CTOR(DnsUtilsWindows);
   logger.debug() << "DnsUtilsWindows created.";
 
-  typedef DWORD WindowsSetDnsCallType(GUID, const void *);
+  typedef DWORD WindowsSetDnsCallType(GUID, const void*);
   HMODULE library = LoadLibrary(TEXT("iphlpapi.dll"));
   if (library) {
     m_setInterfaceDnsSettingsProcAddr = (WindowsSetDnsCallType*)GetProcAddress(
@@ -108,7 +108,8 @@ bool DnsUtilsWindows::updateResolversWin32(
 }
 
 constexpr const char* netshFlushTemplate =
-    "interface %1 set dnsservers name=%2 address=none valdiate=no register=both\r\n";
+    "interface %1 set dnsservers name=%2 address=none valdiate=no "
+    "register=both\r\n";
 constexpr const char* netshAddTemplate =
     "interface %1 add dnsservers name=%2 address=%3 validate=no\r\n";
 
@@ -146,10 +147,11 @@ bool DnsUtilsWindows::updateResolversNetsh(
     if (addr.protocol() == QAbstractSocket::IPv6Protocol) {
       family = "ipv6";
     }
-    QString nsaddr = addr.toString();
-    QString nscmd = QString(netshAddTemplate).arg(family).arg(ifindex).arg(nsaddr);
-    logger.debug() << "netsh write:" << nscmd.trimmed();
-    cmdstream << nscmd;
+    QString nsAddr = addr.toString();
+    QString nsCommand =
+        QString(netshAddTemplate).arg(family).arg(ifindex).arg(nsAddr);
+    logger.debug() << "netsh write:" << nsCommand.trimmed();
+    cmdstream << nsCommand;
   }
 
   // Exit and cleanup netsh
