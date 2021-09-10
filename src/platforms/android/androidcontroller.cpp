@@ -45,7 +45,7 @@ const int EVENT_CONNECTED = 1;
 const int EVENT_DISCONNECTED = 2;
 const int EVENT_STATISTIC_UPDATE = 3;
 const int EVENT_BACKEND_LOGS = 4;
-const int EVENT_ACTIVATION_ERROR =5;
+const int EVENT_ACTIVATION_ERROR = 5;
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidController");
