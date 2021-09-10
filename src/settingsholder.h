@@ -131,13 +131,13 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasConnectionChangeNotification, connectionChangeNotification,
          setConnectionChangeNotification);
   GETSET(bool, hasFeaturesTourShown, featuresTourShown, setFeaturesTourShown);
-
   GETSET(QStringList, hasMissingApps, missingApps, setMissingApps)
   GETSET(QStringList, hasSeenFeatures, seenFeatures, setSeenFeatures)
   GETSET(QStringList, hasDevModeFeatureFlags, devModeFeatureFlags,
          setDevModeFeatureFlags);
   GETSET(QStringList, hasRecentConnections, recentConnections,
          setRecentConnections);
+  GETSET(QString, hasDeviceKeyVersion, deviceKeyVersion, setDeviceKeyVersion)
 
   void removeMissingApp(const QString& appID);
   void addMissingApp(const QString& appID);
