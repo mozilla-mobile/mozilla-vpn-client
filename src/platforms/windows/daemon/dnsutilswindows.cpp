@@ -104,7 +104,7 @@ bool DnsUtilsWindows::updateResolversWin32(
     logger.error() << "Failed to configure IPv6 resolvers" << v6result;
   }
 
-  return ((v4result == NO_ERROR) || (v6result == NO_ERROR));
+  return ((v4result == NO_ERROR) && (v6result == NO_ERROR));
 }
 
 constexpr const char* netshFlushTemplate =
