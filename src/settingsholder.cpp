@@ -112,6 +112,8 @@ constexpr const char* SETTINGS_SEENFEATURES = "seenFeatures";
 constexpr bool SETTINGS_FEATURESTOURSHOWN_DEFAULT = false;
 constexpr const char* SETTINGS_FEATURESTOURSHOWN = "featuresTourShown";
 
+constexpr const char* SETTINGS_DEVICEKEYVERSION = "deviceKeyVersion";
+
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 // Setting Keys That won't show up in a report;
@@ -360,6 +362,8 @@ GETSET(bool, toBool, SETTINGS_SYSTEMLANGUAGECODEMIGRATED,
        setSystemLanguageCodeMigrated);
 GETSET(QDateTime, toDateTime, SETTINGS_INSTALLATIONTIME, hasInstallationTime,
        installationTime, setInstallationTime);
+GETSET(QString, toString, SETTINGS_DEVICEKEYVERSION, hasDeviceKeyVersion,
+       deviceKeyVersion, setDeviceKeyVersion);
 
 #ifdef MVPN_ANDROID
 GETSET(bool, toBool, SETTINGS_NATIVEANDROIDSDATAMIGRATED,
