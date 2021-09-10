@@ -11,6 +11,8 @@
 #include <QMap>
 #include <QString>
 
+#include <windows.h>
+
 class DnsUtilsWindows final : public DnsUtils {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(DnsUtilsWindows)
@@ -23,7 +25,11 @@ class DnsUtilsWindows final : public DnsUtils {
   bool restoreResolvers() override;
 
  private:
-  QString m_ifname;
+  quint64 m_luid = 0;
+  DWORD (*m_setInterfaceDnsSettingsProcAddr)(GUID, const void *) = nullptr;
+
+  bool updateResolversWin32(const QList<QHostAddress>& resolvers);
+  bool updateResolversNetsh(const QList<QHostAddress>& resolvers);
 };
 
 #endif  // DNSUTILSWINDOWS_H

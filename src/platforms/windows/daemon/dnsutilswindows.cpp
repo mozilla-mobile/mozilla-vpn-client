@@ -6,10 +6,14 @@
 #include "leakdetector.h"
 #include "logger.h"
 
+#include <QProcess>
 #include <QScopeGuard>
+#include <QTextStream>
 
 #include <windows.h>
 #include <iphlpapi.h>
+
+constexpr uint32_t WINDOWS_NETSH_TIMEOUT_MSEC = 2000;
 
 namespace {
 Logger logger(LOG_WINDOWS, "DnsUtilsWindows");
@@ -17,8 +21,14 @@ Logger logger(LOG_WINDOWS, "DnsUtilsWindows");
 
 DnsUtilsWindows::DnsUtilsWindows(QObject* parent) : DnsUtils(parent) {
   MVPN_COUNT_CTOR(DnsUtilsWindows);
-
   logger.debug() << "DnsUtilsWindows created.";
+
+  typedef DWORD WindowsSetDnsCallType(GUID, const void *);
+  HMODULE library = LoadLibrary(TEXT("iphlpapi.dll"));
+  if (library) {
+    m_setInterfaceDnsSettingsProcAddr = (WindowsSetDnsCallType*)GetProcAddress(
+        library, "SetInterfaceDnsSettings");
+  }
 }
 
 DnsUtilsWindows::~DnsUtilsWindows() {
@@ -29,18 +39,30 @@ DnsUtilsWindows::~DnsUtilsWindows() {
 
 bool DnsUtilsWindows::updateResolvers(const QString& ifname,
                                       const QList<QHostAddress>& resolvers) {
-  // Lookup the interface GUID
   NET_LUID luid;
-  GUID guid;
   if (ConvertInterfaceAliasToLuid((wchar_t*)ifname.utf16(), &luid) != 0) {
-    logger.error() << "Failed to resolved LUID for" << ifname;
+    logger.error() << "Failed to resolve LUID for" << ifname;
     return false;
   }
-  if (ConvertInterfaceLuidToGuid(&luid, &guid) != 0) {
-    logger.error() << "Failed to resolved GUID for" << ifname;
+  m_luid = luid.Value;
+
+  logger.debug() << "Configuring DNS for" << ifname;
+  if (m_setInterfaceDnsSettingsProcAddr == nullptr) {
+    return updateResolversNetsh(resolvers);
+  } else {
+    return updateResolversWin32(resolvers);
+  }
+}
+
+bool DnsUtilsWindows::updateResolversWin32(
+    const QList<QHostAddress>& resolvers) {
+  GUID guid;
+  NET_LUID luid;
+  luid.Value = m_luid;
+  if (ConvertInterfaceLuidToGuid(&luid, &guid) != NO_ERROR) {
+    logger.error() << "Failed to resolve GUID";
     return false;
   }
-  m_ifname = ifname;
 
   QStringList v4resolvers;
   QStringList v6resolvers;
@@ -68,7 +90,7 @@ bool DnsUtilsWindows::updateResolvers(const QString& ifname,
   // Configure nameservers for IPv4
   QString v4resolverstring = v4resolvers.join(",");
   settings.NameServer = (wchar_t*)v4resolverstring.utf16();
-  DWORD v4result = SetInterfaceDnsSettings(guid, &settings);
+  DWORD v4result = m_setInterfaceDnsSettingsProcAddr(guid, &settings);
   if (v4result != NO_ERROR) {
     logger.error() << "Failed to configure IPv4 resolvers:" << v4result;
   }
@@ -77,7 +99,7 @@ bool DnsUtilsWindows::updateResolvers(const QString& ifname,
   QString v6resolverstring = v6resolvers.join(",");
   settings.Flags |= DNS_SETTING_IPV6;
   settings.NameServer = (wchar_t*)v6resolverstring.utf16();
-  DWORD v6result = SetInterfaceDnsSettings(guid, &settings);
+  DWORD v6result = m_setInterfaceDnsSettingsProcAddr(guid, &settings);
   if (v6result != NO_ERROR) {
     logger.error() << "Failed to configure IPv6 resolvers" << v6result;
   }
@@ -85,10 +107,71 @@ bool DnsUtilsWindows::updateResolvers(const QString& ifname,
   return ((v4result == NO_ERROR) || (v6result == NO_ERROR));
 }
 
-bool DnsUtilsWindows::restoreResolvers() {
-  if (!m_ifname.isEmpty()) {
-    QList<QHostAddress> empty;
-    updateResolvers(m_ifname, empty);
+constexpr const char* netshFlushTemplate =
+    "interface %1 set dnsservers name=%2 address=none valdiate=no register=both\r\n";
+constexpr const char* netshAddTemplate =
+    "interface %1 add dnsservers name=%2 address=%3 validate=no\r\n";
+
+bool DnsUtilsWindows::updateResolversNetsh(
+    const QList<QHostAddress>& resolvers) {
+  QProcess netsh;
+  NET_LUID luid;
+  NET_IFINDEX ifindex;
+  luid.Value = m_luid;
+  if (ConvertInterfaceLuidToIndex(&luid, &ifindex) != NO_ERROR) {
+    logger.error() << "Failed to resolve GUID";
+    return false;
   }
-  return true;
+
+  netsh.setProgram("netsh");
+  netsh.start();
+  if (!netsh.waitForStarted(WINDOWS_NETSH_TIMEOUT_MSEC)) {
+    logger.error() << "Failed to start netsh";
+    return false;
+  }
+
+  QTextStream cmdstream(&netsh);
+
+  // Flush DNS servers
+  QString v4flush = QString(netshFlushTemplate).arg("ipv4").arg(ifindex);
+  QString v6flush = QString(netshFlushTemplate).arg("ipv6").arg(ifindex);
+  logger.debug() << "netsh write:" << v4flush.trimmed();
+  cmdstream << v4flush;
+  logger.debug() << "netsh write:" << v6flush.trimmed();
+  cmdstream << v6flush;
+
+  // Add new DNS servers
+  for (const QHostAddress& addr : resolvers) {
+    const char* family = "ipv4";
+    if (addr.protocol() == QAbstractSocket::IPv6Protocol) {
+      family = "ipv6";
+    }
+    QString nsaddr = addr.toString();
+    QString nscmd = QString(netshAddTemplate).arg(family).arg(ifindex).arg(nsaddr);
+    logger.debug() << "netsh write:" << nscmd.trimmed();
+    cmdstream << nscmd;
+  }
+
+  // Exit and cleanup netsh
+  cmdstream << "exit\r\n";
+  cmdstream.flush();
+  if (!netsh.waitForFinished(WINDOWS_NETSH_TIMEOUT_MSEC)) {
+    logger.error() << "Failed to exit netsh";
+    return false;
+  }
+
+  return netsh.exitCode() == 0;
+}
+
+bool DnsUtilsWindows::restoreResolvers() {
+  if (m_luid == 0) {
+    return true;
+  }
+
+  QList<QHostAddress> empty;
+  if (m_setInterfaceDnsSettingsProcAddr != nullptr) {
+    return updateResolversWin32(empty);
+  } else {
+    return updateResolversNetsh(empty);
+  }
 }
