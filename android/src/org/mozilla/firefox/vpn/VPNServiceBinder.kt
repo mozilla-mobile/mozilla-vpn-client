@@ -75,6 +75,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     this.mService.turnOn(config)
                 } catch (e: Exception) {
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
+                    dispatchEvent(EVENTS.activationError, e.localizedMessage)
                 }
                 return true
             }
@@ -177,6 +178,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val disconnected = 2
         const val statisticUpdate = 3
         const val backendLogs = 4
+        const val activationError = 5
     }
 
     /**

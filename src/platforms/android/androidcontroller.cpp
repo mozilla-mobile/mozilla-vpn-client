@@ -9,6 +9,7 @@
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
+#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QAndroidBinder>
@@ -44,6 +45,7 @@ const int EVENT_CONNECTED = 1;
 const int EVENT_DISCONNECTED = 2;
 const int EVENT_STATISTIC_UPDATE = 3;
 const int EVENT_BACKEND_LOGS = 4;
+const int EVENT_ACTIVATION_ERROR =5;
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidController");
@@ -317,6 +319,9 @@ bool AndroidController::VPNBinder::onTransact(int code,
         m_controller->m_logCallback(buffer);
       }
       break;
+    case EVENT_ACTIVATION_ERROR:
+      MozillaVPN::instance()->errorHandle(ErrorHandler::ConnectionFailureError);
+      emit m_controller->disconnected();
     default:
       logger.warning() << "Transact: Invalid!";
       break;
