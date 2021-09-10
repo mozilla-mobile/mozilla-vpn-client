@@ -1,0 +1,61 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+
+  <title>A simple MozillaVPN log viewer</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand">MozillaVPN log viewer</a>
+      <form class="d-flex">
+        <input class="form-control me-2" type="file" id="file" />
+      </form>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-4">
+        <h4>Date</h4>
+        <input type="range" id="dateMinRange" min="0" max="100" value="0" />
+        <label for="dateMinRange">From</label><br/>
+        <input type="range" id="dateMaxRange" min="0" max="100" value="100" />
+        <label for="dateMaxRange">Max</label><br />
+        <p id="dateRange"></p>
+
+        <h4>Modules</h4>
+        <ul id="moduleList"></ul>
+
+        <h4>Components</h4>
+        <ul id="componentList"></ul>
+
+      </div>
+      <div class="col-8">
+        <h4>Logs</h4>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Modules</th>
+              <th scope="col">Components</th>
+              <th scope="col">Log</th>
+            </tr>
+          </thead>
+          <tbody id="logTable">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+</body>
+</html>
