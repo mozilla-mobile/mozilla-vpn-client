@@ -321,7 +321,7 @@ Item {
                     //% "Thank you!"
                     logoTitle: VPNl18n.InAppSupportWorkflowSupportResponseHeader
                     //% "We appreciate your feedback. You’re helping us improve Mozilla VPN."
-                    logoSubtitle: VPNl18n.InAppSupportWorkflowSupportResponseBody
+                    logoSubtitle: VPNl18n.InAppSupportWorkflowSupportResponseBody.arg((VPN.userAuthenticated ? VPNUser.email : emailInput.text))
                     anchors.horizontalCenter: undefined
                     Layout.fillWidth: true
                 }
