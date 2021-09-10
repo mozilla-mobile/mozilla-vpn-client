@@ -49,9 +49,8 @@ bool DnsUtilsWindows::updateResolvers(const QString& ifname,
   logger.debug() << "Configuring DNS for" << ifname;
   if (m_setInterfaceDnsSettingsProcAddr == nullptr) {
     return updateResolversNetsh(resolvers);
-  } else {
-    return updateResolversWin32(resolvers);
   }
+  return updateResolversWin32(resolvers);
 }
 
 bool DnsUtilsWindows::updateResolversWin32(
@@ -171,9 +170,8 @@ bool DnsUtilsWindows::restoreResolvers() {
   }
 
   QList<QHostAddress> empty;
-  if (m_setInterfaceDnsSettingsProcAddr != nullptr) {
-    return updateResolversWin32(empty);
-  } else {
+  if (m_setInterfaceDnsSettingsProcAddr == nullptr) {
     return updateResolversNetsh(empty);
   }
+  return updateResolversWin32(empty);
 }

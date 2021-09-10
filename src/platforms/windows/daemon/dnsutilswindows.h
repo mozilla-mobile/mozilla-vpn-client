@@ -8,7 +8,6 @@
 #include "daemon/dnsutils.h"
 
 #include <QHostAddress>
-#include <QMap>
 #include <QString>
 
 #include <windows.h>
