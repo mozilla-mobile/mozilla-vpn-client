@@ -269,7 +269,7 @@ Item {
                         VPNButton {
                              //% "Submit"
                             text: VPNl18n.InAppSupportWorkflowSupportPrimaryButtonText
-                            onClicked: contactUsRoot.createSupportTicket(emailInput.text, subjectInput.text, textArea.userEntry, dropDown.currentValue);
+                            onClicked: contactUsRoot.createSupportTicket((VPN.userAuthenticated ? VPNUser.email : emailInput.text), subjectInput.text, textArea.userEntry, dropDown.currentValue);
                             enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
                                      (VPN.userAuthenticated ? true :
                                         (VPNAuthInApp.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
@@ -332,7 +332,10 @@ Item {
                anchors.top: col.bottom
                anchors.topMargin: Theme.vSpacing
                anchors.horizontalCenter: parent.horizontalCenter
-               onClicked: mainStackView.pop()
+               onClicked: {
+                   mainStackView.pop();
+                   mainStackView.pop();
+               }
                Component.onCompleted: {
                  if (window.fullscreenRequired()) {
                      anchors.top = undefined;
