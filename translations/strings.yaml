@@ -238,3 +238,12 @@ customDNSSettings:
 
 networkSettings:
   multihopTitle: Multi-hop tunnel
+
+## TODO Ask crooney for proper strings :) 
+AndroidNotifications:
+  StatusChanges:
+    value: Connection Status Changes
+    comment: Type of Notification - I.e. User wants to be notified if the "Status changes"
+  StatusChangesDescription:
+    value: Get notifications if the vpn status changes
+    comment: Description of the Status Changes notification type.

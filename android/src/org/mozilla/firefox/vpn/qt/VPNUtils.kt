@@ -1,0 +1,29 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+package org.mozilla.firefox.vpn.qt
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+
+// Companion for AndroidUtils.cpp
+object VPNUtils {
+    @SuppressLint("NewApi")
+    @JvmStatic
+    fun openNotificationSettings() {
+        val context = VPNActivity.getInstance()
+        val intent = Intent()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName())
+        } else {
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS")
+            intent.putExtra("app_package", context.getPackageName())
+            intent.putExtra("app_uid", context.getApplicationInfo().uid)
+        }
+        context.startActivity(intent)
+    }
+}

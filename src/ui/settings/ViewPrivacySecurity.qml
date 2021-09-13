@@ -89,7 +89,13 @@ Item {
                     settingTitle: _notificationsTitle
                     imageLeftSrc: "../resources/settings/notifications.svg"
                     imageRightSrc: "../resources/chevron.svg"
-                    onClicked: settingsStackView.push("../settings/ViewNotifications.qml")
+                    onClicked: {
+                        if(Qt.platform.os == "android"){
+                            VPNAndroidUtils.openNotificationSettings();
+                            return;
+                        }
+                        settingsStackView.push("../settings/ViewNotifications.qml")
+                    }
                     visible: VPNFeatureList.get("captivePortal").isSupported || VPNFeatureList.get("unsecuredNetworkNotification").isSupported || VPNFeatureList.get("notificationControl").isSupported
                     width: parent.width - Theme.windowMargin
                 }

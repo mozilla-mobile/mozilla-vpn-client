@@ -173,7 +173,7 @@ class VPNService : android.net.VpnService() {
         protect(wgGetSocketV4(currentTunnelHandle))
         protect(wgGetSocketV6(currentTunnelHandle))
         isUp = true
-        NotificationUtil.show(this) // Go foreground
+        NotificationUtil.get(this)?.show(this) // Go foreground
     }
 
     fun turnOff() {

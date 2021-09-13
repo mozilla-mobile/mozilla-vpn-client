@@ -4,6 +4,7 @@
 
 package org.mozilla.firefox.vpn
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -14,13 +15,29 @@ import android.os.Parcel
 import androidx.core.app.NotificationCompat
 import org.json.JSONObject
 
-object NotificationUtil {
-    var sCurrentContext: Context? = null
-    private var sNotificationBuilder: NotificationCompat.Builder? = null
+class NotificationUtil {
+    val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
+    val CONNECTED_NOTIFICATION_ID = 1337
+    val tag = "NotificationUtil"
+    val sCurrentContext: Context
+    private val mNotificationBuilder: NotificationCompat.Builder
+    private val mNotificationManager: NotificationManager
+    private constructor(ctx: Context) {
+        sCurrentContext = ctx
+        mNotificationManager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        mNotificationBuilder = NotificationCompat.Builder(ctx, NOTIFICATION_CHANNEL_ID)
+        updateNotificationChannel(null, null) // Will create the channel, will update
+    }
 
-    const val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
-    const val CONNECTED_NOTIFICATION_ID = 1337
-    const val tag = "NotificationUtil"
+    companion object {
+        var instance: NotificationUtil? = null
+        fun get(ctx: Context?): NotificationUtil? {
+            if (instance == null) {
+                instance = ctx?.let { NotificationUtil(it) }
+            }
+            return instance
+        }
+    }
 
     /**
      * Updates the current shown notification from a
@@ -39,11 +56,10 @@ object NotificationUtil {
      * Updates the current shown notification
      */
     fun update(heading: String, message: String) {
-        if (sCurrentContext == null) return
         val notificationManager: NotificationManager =
             sCurrentContext?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        sNotificationBuilder?.let {
+        mNotificationBuilder?.let {
             it.setContentTitle(heading)
                 .setContentText(message)
             notificationManager.notify(CONNECTED_NOTIFICATION_ID, it.build())
@@ -54,7 +70,7 @@ object NotificationUtil {
      * Saves the default translated "connected" notification, in case the vpn gets started
      * without the app.
      */
-    fun saveFallBackMessage(data: Parcel, context: Context) {
+    fun updateStrings(data: Parcel, context: Context) {
         // [data] is here a json containing the notification content
         val buffer = data.createByteArray()
         val json = buffer?.let { String(it) }
@@ -62,9 +78,14 @@ object NotificationUtil {
 
         val prefs = Prefs.get(context)
         prefs.edit()
-            .putString("fallbackNotificationHeader", content.getString("title"))
-            .putString("fallbackNotificationMessage", content.getString("message"))
+            .putString("fallbackNotificationHeader", content.getString("productName"))
+            .putString("fallbackNotificationMessage", content.getString("idleText"))
             .apply()
+
+        val channelName = content.getString("group_statusChange")
+        val channelDescription = content.getString("group_statusChange_desc")
+        updateNotificationChannel(channelName, channelDescription)
+
         Log.v(tag, "Saved new fallback message -> ${content.getString("title")}")
     }
 
@@ -72,22 +93,8 @@ object NotificationUtil {
     * Creates a new Notification using the current set of Strings
     * Shows the notification in the given {context}
     */
+    @SuppressLint("NewApi")
     fun show(service: VPNService) {
-        sNotificationBuilder = NotificationCompat.Builder(service, NOTIFICATION_CHANNEL_ID)
-        sCurrentContext = service
-        val notificationManager: NotificationManager =
-            sCurrentContext?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        // From Oreo on we need to have a "notification channel" to post to.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "vpn"
-            val descriptionText = "  "
-            val importance = NotificationManager.IMPORTANCE_LOW
-            val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
-            // Register the channel with the system
-            notificationManager.createNotificationChannel(channel)
-        }
         // In case we do not have gotten a message to show from the Frontend
         // try to populate the notification with a translated Fallback message
         val prefs = Prefs.get(service)
@@ -101,15 +108,28 @@ object NotificationUtil {
         val intent = Intent(service, activity)
         val pendingIntent = PendingIntent.getActivity(service, 0, intent, 0)
         // Build our notification
-        sNotificationBuilder?.let {
-            it.setSmallIcon(org.mozilla.firefox.vpn.R.drawable.ic_mozvpn_round)
-                .setContentTitle(header)
-                .setContentText(message)
-                .setOnlyAlertOnce(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(pendingIntent)
+        mNotificationBuilder
+            .setSmallIcon(org.mozilla.firefox.vpn.R.drawable.ic_mozvpn_round)
+            .setContentTitle(header)
+            .setContentText(message)
+            .setOnlyAlertOnce(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
 
-            service.startForeground(CONNECTED_NOTIFICATION_ID, it.build())
+        service.startForeground(CONNECTED_NOTIFICATION_ID, mNotificationBuilder.build())
+    }
+    private fun updateNotificationChannel(aTitle: String?, aDescription: String?) {
+        // From Oreo on we need to have a "notification channel" to post to.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return
         }
+        val name = aTitle ?: "General"
+        val descriptionText = aDescription ?: "All thze notifications!"
+        val importance = NotificationManager.IMPORTANCE_LOW
+        val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance).apply {
+            description = descriptionText
+        }
+        // Register the channel with the system
+        mNotificationManager.createNotificationChannel(channel)
     }
 }

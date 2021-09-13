@@ -180,3 +180,8 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
   }
   return json.object();
 }
+
+void AndroidUtils::openNotificationSettings() {
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/mozilla/firefox/vpn/qt/VPNUtils", "openNotificationSettings", "()V");
+}
