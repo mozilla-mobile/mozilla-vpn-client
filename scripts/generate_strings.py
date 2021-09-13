@@ -98,6 +98,9 @@ def generateStrings():
                     else:
                         stop(stringId)
 
+                    if "%1" in "\n".join(value) and len(comments) == 0:
+                        exit(f"The string {stringId} contains arguments but it doesn't have comments. Please describe the arguments.")
+
                     stringIds.append(
                         {
                             "enumId": pascalize(f"{category}_{key}"),
