@@ -7,6 +7,9 @@
 int main()
 {
     NSString *appId = [NSString stringWithUTF8String: APP_ID];
+    fprintf(stderr, "BAKU BAKU %s\n", [appId UTF8String]);
+
+    
 
     [[NSWorkspace sharedWorkspace]
            launchAppWithBundleIdentifier:appId

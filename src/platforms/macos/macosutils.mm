@@ -35,6 +35,7 @@ void MacOSUtils::enableLoginItem(bool startAtBoot) {
       QString("%1.login-item").arg(QString::fromNSString(appId)).toNSString();
   CFStringRef cfs = (__bridge CFStringRef)loginItemAppId;
 
+  logger.debug() << "CFS:" << QString::fromNSString(loginItemAppId);
   Boolean ok = SMLoginItemSetEnabled(cfs, startAtBoot ? YES : NO);
   logger.debug() << "Result: " << ok;
 }
