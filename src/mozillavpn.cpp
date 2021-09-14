@@ -1183,11 +1183,11 @@ void MozillaVPN::viewLogs() {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
-#if defined(MVPN_ANDROID)
+#  if defined(MVPN_ANDROID)
     AndroidUtils::ShareText(*buffer);
-#else
+#  else
     IOSUtils::shareLogs(*buffer);
-#endif
+#  endif
 
     delete out;
     delete buffer;
@@ -1284,7 +1284,7 @@ void MozillaVPN::requestAbout() {
 
 void MozillaVPN::requestViewLogs() {
   logger.debug() << "View log requested";
-  
+
   QmlEngineHolder::instance()->showWindow();
   emit viewLogsNeeded();
 }
