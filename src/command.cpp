@@ -18,6 +18,10 @@
 #  include <Windows.h>
 #endif
 
+#ifdef MVPN_MACOS
+#  include "platforms/macos/macosutils.h"
+#endif
+
 #include <QApplication>
 #include <QIcon>
 #include <QTextStream>
@@ -124,6 +128,10 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   Localizer localizer;
   SimpleNetworkManager snm;
 
+#ifdef MVPN_MACOS
+  MacOSUtils::adjustMenuBarIconForBigSur();
+#endif
+
   QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
@@ -159,6 +167,10 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
   Localizer localizer;
+
+#ifdef MVPN_MACOS
+  MacOSUtils::adjustMenuBarIconForBigSur();
+#endif
 
   QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);

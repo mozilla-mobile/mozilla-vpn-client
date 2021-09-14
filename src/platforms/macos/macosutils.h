@@ -18,6 +18,8 @@ class MacOSUtils final {
 
   static void hideDockIcon();
   static void showDockIcon();
+
+  static void adjustMenuBarIconForBigSur();
 };
 
 #endif  // MACOSUTILS_H
