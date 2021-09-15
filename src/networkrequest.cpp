@@ -92,7 +92,7 @@ QString NetworkRequest::apiBaseUrl() {
   if (pe.contains("MVPN_API_BASE_URL")) {
     return pe.value("MVPN_API_BASE_URL");
   }
-  return SettingsHolder::instance()->stagingServerAddress();
+  return Constants::getStagingServerAddress();
 }
 
 // static

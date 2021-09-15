@@ -6,11 +6,13 @@
 #define CONSTANTS_H
 
 #include <stdint.h>
+#include <QString>
 
 namespace Constants {
 
 // Returns true if we are in a production environment.
 bool inProduction();
+QString getStagingServerAddress();
 void setStaging();
 
 // Number of msecs for the captive-portal block alert.

@@ -101,7 +101,9 @@ VPNFlickable {
                 }
 
                 onTextChanged: text => {
-                    VPNSettings.stagingServerAddress = serverAddressInput.text;
+                    if (vpnFlickable.vpnIsOff) {
+                        VPNSettings.stagingServerAddress = serverAddressInput.text;
+                    }
                 }
             }
 
@@ -154,7 +156,7 @@ VPNFlickable {
     VPNCheckBoxAlert {
         id: restartRequired
         anchors.top: inspectorLink.bottom
-        visible: VPN.stagingMode != VPNSettings.stagingServer
+        visible: VPN.stagingMode != VPNSettings.stagingServer || VPN.stagingServerAddress != VPNSettings.stagingServerAddress
 
         errorMessage: VPNl18n.SettingsDevRestartRequired
     }

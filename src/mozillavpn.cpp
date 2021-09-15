@@ -194,6 +194,8 @@ MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
 bool MozillaVPN::stagingMode() const { return !Constants::inProduction(); }
 
+QString MozillaVPN::stagingServerAddress() const { return Constants::getStagingServerAddress(); }
+
 void MozillaVPN::initialize() {
   logger.debug() << "MozillaVPN Initialization";
 
