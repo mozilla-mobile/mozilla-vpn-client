@@ -90,56 +90,68 @@ void MacOSUtils::showDockIcon() {
   [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 }
 
-// TODO this needs a better name
-void MacOSUtils::adjustMenuBarIconForBigSur() {
-  Method originalMethod = class_getInstanceMethod([NSStatusBarButton class], @selector(setImage:));
-  Method extendedMethod =
-      class_getInstanceMethod([NSStatusBarButton class], @selector(patched_setImage:));
-  method_exchangeImplementations(originalMethod, extendedMethod);
+/**
+ * Replace the setImage method on NSStatusBarButton with a method that scales
+ * images proportionally before setting.
+ *
+ * The reason for this is that there is a bug in Qt 5.15 that causes status bar
+ * icons to be displayed larger than UI recommendations, and out of proportion
+ * on displays with a device pixel ratio greater than 1 (MacOS Big Sur only).
+ * This bug will not be fixed in Qt open source versions, so we have to resort
+ * to a hack that exchanges the implementation of a method on NSStatusBarButton
+ * with one that correctly scales the icon.
+ *
+ * Original bug (and sample implementation):
+ * https://bugreports.qt.io/browse/QTBUG-88600
+ */
+void MacOSUtils::patchNSStatusBarSetImageForBigSur() {
+  Method original = class_getInstanceMethod([NSStatusBarButton class], @selector(setImage:));
+  Method patched = class_getInstanceMethod([NSStatusBarButton class], @selector(setImagePatched:));
+  method_exchangeImplementations(original, patched);
 }
 
-// TODO format, organize properly and mark up with comments
-// Reference: https://bugreports.qt.io/browse/QTBUG-88600
-
 @interface NSImageScalingHelper : NSObject
-+ (NSImage*)imageByScalingProportionallyToSize:(NSImage*)sourceImage size:(NSSize)targetSize;
+
+/**
+ * Create a proportionally scaled image according to the given target size.
+ *
+ * @param sourceImage The original image to be scaled.
+ * @param targetSize The required size of the image.
+ * @return A scaled image.
+ */
++ (NSImage*)imageByScaling:(NSImage*)sourceImage size:(NSSize)targetSize;
 @end
 
 @implementation NSImageScalingHelper
-+ (NSImage*)imageByScalingProportionallyToSize:(NSImage*)sourceImage size:(NSSize)targetSize {
++ (NSImage*)imageByScaling:(NSImage*)sourceImage size:(NSSize)targetSize {
   NSImage* newImage = nil;
 
   if ([sourceImage isValid]) {
-    NSSize imageSize = [sourceImage size];
-    float width = imageSize.width;
-    float height = imageSize.height;
+    NSSize sourceSize = [sourceImage size];
 
-    if (width != .0 || height != .0) {
-      float targetWidth = targetSize.width;
-      float targetHeight = targetSize.height;
-
+    if (sourceSize.width != 0.0 || sourceSize.height != 0.0) {
       float scaleFactor = 0.0;
-      float scaledWidth = targetWidth;
-      float scaledHeight = targetHeight;
+      float scaledWidth = targetSize.width;
+      float scaledHeight = targetSize.height;
 
       NSPoint thumbnailPoint = NSZeroPoint;
 
-      if (NSEqualSizes(imageSize, targetSize) == NO) {
-        float widthFactor = targetWidth / width;
-        float heightFactor = targetHeight / height;
+      if (NSEqualSizes(sourceSize, targetSize) == NO) {
+        float widthFactor = targetSize.width / sourceSize.width;
+        float heightFactor = targetSize.height / sourceSize.height;
 
         if (widthFactor < heightFactor) {
           scaleFactor = widthFactor;
         } else {
           scaleFactor = heightFactor;
         }
-        scaledWidth = width * scaleFactor;
-        scaledHeight = height * scaleFactor;
+        scaledWidth = sourceSize.width * scaleFactor;
+        scaledHeight = sourceSize.height * scaleFactor;
 
         if (widthFactor < heightFactor) {
-          thumbnailPoint.y = (targetHeight - scaledHeight) * 0.5;
-        } else if (widthFactor > heightFactor) {
-          thumbnailPoint.x = (targetWidth - scaledWidth) * 0.5;
+          thumbnailPoint.y = (targetSize.height - scaledHeight) * 0.5;
+        } else {
+          thumbnailPoint.x = (targetSize.width - scaledWidth) * 0.5;
         }
       }
 
@@ -166,19 +178,16 @@ void MacOSUtils::adjustMenuBarIconForBigSur() {
 @end
 
 @implementation NSStatusBarButton (Swizzle)
-- (void)patched_setImage:(NSImage*)image {
+- (void)setImagePatched:(NSImage*)image {
   NSImage* img = image;
 
-  // TODO reenable
-  // if (@available(macOS 10.16, *)) {
-  if (image != nil) {
-    int thickness = [[NSStatusBar systemStatusBar] thickness];
-    img =
-        [NSImageScalingHelper imageByScalingProportionallyToSize:image
-                                                            size:NSMakeSize(thickness, thickness)];
+  if (@available(macOS 11.0, *)) {
+    if (image != nil) {
+      int thickness = [[NSStatusBar systemStatusBar] thickness];
+      img = [NSImageScalingHelper imageByScaling:image size:NSMakeSize(thickness, thickness)];
+    }
   }
-  // }
 
-  [self patched_setImage:img];
+  [self setImagePatched:img];
 }
 @end

@@ -129,7 +129,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   SimpleNetworkManager snm;
 
 #ifdef MVPN_MACOS
-  MacOSUtils::adjustMenuBarIconForBigSur();
+  MacOSUtils::patchNSStatusBarSetImageForBigSur();
 #endif
 
   QIcon icon(Constants::LOGO_URL);
@@ -169,7 +169,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   Localizer localizer;
 
 #ifdef MVPN_MACOS
-  MacOSUtils::adjustMenuBarIconForBigSur();
+  MacOSUtils::patchNSStatusBarSetImageForBigSur();
 #endif
 
   QIcon icon(Constants::LOGO_URL);
