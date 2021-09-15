@@ -103,7 +103,6 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
   Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
-  Q_PROPERTY(QString stagingServerAddress READ stagingServerAddress CONSTANT)
   Q_PROPERTY(QString currentView READ currentView WRITE setCurrentView NOTIFY
                  currentViewChanged)
 
@@ -121,7 +120,6 @@ class MozillaVPN final : public QObject {
   const QString& serverPublicKey() const { return m_serverPublicKey; }
 
   bool stagingMode() const;
-  QString stagingServerAddress() const;
 
   enum AuthenticationType {
     AuthenticationInBrowser,

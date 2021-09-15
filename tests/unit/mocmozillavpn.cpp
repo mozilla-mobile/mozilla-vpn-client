@@ -26,8 +26,6 @@ MozillaVPN::State MozillaVPN::state() const { return TestHelper::vpnState; }
 
 bool MozillaVPN::stagingMode() const { return true; }
 
-QString MozillaVPN::stagingServerAddress() const { return Constants::API_STAGING_URL; }
-
 void MozillaVPN::initialize() {}
 
 void MozillaVPN::setState(State) {}

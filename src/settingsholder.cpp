@@ -16,6 +16,7 @@
 #include "features/featureunsecurednetworknotification.h"
 
 #include <QSettings>
+#include <QProcessEnvironment>
 
 constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
 constexpr bool SETTINGS_LOCALNETWORKACCESS_DEFAULT = false;
@@ -106,7 +107,6 @@ constexpr const char* SETTINGS_DEVELOPERUNLOCK = "developerUnlock";
 constexpr bool SETTINGS_STAGINGSERVER_DEFAULT = false;
 constexpr const char* SETTINGS_STAGINGSERVER = "stagingServer";
 
-constexpr const char* SETTINGS_STAGINGSERVERADDRESS_DEFAULT = "";
 constexpr const char* SETTINGS_STAGINGSERVERADDRESS = "stagingServerAddress";
 
 const QStringList SETTINGS_SEENFEATURES_DEFAULT = QStringList();
@@ -274,7 +274,7 @@ GETSETDEFAULT(SETTINGS_DEVELOPERUNLOCK_DEFAULT, bool, toBool,
 GETSETDEFAULT(SETTINGS_STAGINGSERVER_DEFAULT, bool, toBool,
               SETTINGS_STAGINGSERVER, hasStagingServer, stagingServer,
               setStagingServer, stagingServerChanged)
-GETSETDEFAULT(SETTINGS_STAGINGSERVERADDRESS_DEFAULT, QString, toString,
+GETSETDEFAULT(getEnvVariable("MVPN_API_BASE_URL"), QString, toString,
               SETTINGS_STAGINGSERVERADDRESS, hasStagingServerAddress,
               stagingServerAddress, setStagingServerAddress,
               stagingServerAddressChanged)
@@ -499,4 +499,10 @@ void SettingsHolder::removeDevModeFeatureFlag(const QString& featureID) {
 void SettingsHolder::removeEntryServer() {
   m_settings.remove(SETTINGS_ENTRYSERVER_COUNTRYCODE);
   m_settings.remove(SETTINGS_ENTRYSERVER_CITY);
+}
+
+QString SettingsHolder::getEnvVariable(const QString& name) const {
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (pe.contains(name)) return pe.value(name);
+  return QString();
 }

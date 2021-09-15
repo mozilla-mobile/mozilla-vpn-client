@@ -156,7 +156,12 @@ VPNFlickable {
     VPNCheckBoxAlert {
         id: restartRequired
         anchors.top: inspectorLink.bottom
-        visible: VPN.stagingMode != VPNSettings.stagingServer || VPN.stagingServerAddress != VPNSettings.stagingServerAddress
+        visible: false
+        Connections {
+            target: VPNSettings
+            function onStagingServerAddressChanged() { restartRequired.visible = true; }
+            function onStagingServerChanged() { restatRequired.visible = true; }
+        }
 
         errorMessage: VPNl18n.SettingsDevRestartRequired
     }

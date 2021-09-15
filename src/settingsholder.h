@@ -158,6 +158,8 @@ class SettingsHolder final : public QObject {
 
   void removeEntryServer();
 
+  QString getEnvVariable(const QString& name) const;
+
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,
          setNativeIOSDataMigrated)

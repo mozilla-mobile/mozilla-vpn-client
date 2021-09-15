@@ -14,7 +14,7 @@ QString s_stagingServerAddress = "";
 
 bool Constants::inProduction() { return s_inProduction; }
 
-QString Constants::getStagingServerAddress() { return s_stagingServerAddress; }
+const QString& Constants::getStagingServerAddress() { return s_stagingServerAddress; }
 
 void Constants::setStaging() {
   s_inProduction = false;
