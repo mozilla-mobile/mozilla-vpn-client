@@ -39,6 +39,8 @@ class SettingsHolder final : public QObject {
                  NOTIFY developerUnlockChanged)
   Q_PROPERTY(bool stagingServer READ stagingServer WRITE setStagingServer NOTIFY
                  stagingServerChanged)
+  Q_PROPERTY(QString stagingServerAddress READ stagingServerAddress WRITE
+                 setStagingServerAddress NOTIFY stagingServerAddressChanged)
   Q_PROPERTY(QStringList seenFeatures READ seenFeatures WRITE setSeenFeatures
                  NOTIFY seenFeaturesChanged)
   Q_PROPERTY(bool featuresTourShown READ featuresTourShown WRITE
@@ -125,6 +127,8 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasGleanEnabled, gleanEnabled, setGleanEnabled)
   GETSET(bool, hasDeveloperUnlock, developerUnlock, setDeveloperUnlock)
   GETSET(bool, hasStagingServer, stagingServer, setStagingServer)
+  GETSET(QString, hasStagingServerAddress, stagingServerAddress,
+         setStagingServerAddress)
   GETSET(QDateTime, hasInstallationTime, installationTime, setInstallationTime)
   GETSET(bool, hasServerSwitchNotification, serverSwitchNotification,
          setServerSwitchNotification);
@@ -194,6 +198,7 @@ class SettingsHolder final : public QObject {
   void connectionChangeNotificationChanged(bool value);
   void developerUnlockChanged(bool value);
   void stagingServerChanged(bool value);
+  void stagingServerAddressChanged(const QString& value);
   void seenFeaturesChanged(const QStringList& featureIDs);
   void featuresTourShownChanged(bool value);
   void devModeFeatureFlagsChanged(const QStringList& featureIDs);

@@ -106,6 +106,9 @@ constexpr const char* SETTINGS_DEVELOPERUNLOCK = "developerUnlock";
 constexpr bool SETTINGS_STAGINGSERVER_DEFAULT = false;
 constexpr const char* SETTINGS_STAGINGSERVER = "stagingServer";
 
+constexpr const char* SETTINGS_STAGINGSERVERADDRESS_DEFAULT = "";
+constexpr const char* SETTINGS_STAGINGSERVERADDRESS = "stagingServerAddress";
+
 const QStringList SETTINGS_SEENFEATURES_DEFAULT = QStringList();
 constexpr const char* SETTINGS_SEENFEATURES = "seenFeatures";
 
@@ -271,6 +274,10 @@ GETSETDEFAULT(SETTINGS_DEVELOPERUNLOCK_DEFAULT, bool, toBool,
 GETSETDEFAULT(SETTINGS_STAGINGSERVER_DEFAULT, bool, toBool,
               SETTINGS_STAGINGSERVER, hasStagingServer, stagingServer,
               setStagingServer, stagingServerChanged)
+GETSETDEFAULT(SETTINGS_STAGINGSERVERADDRESS_DEFAULT, QString, toString,
+              SETTINGS_STAGINGSERVERADDRESS, hasStagingServerAddress,
+              stagingServerAddress, setStagingServerAddress,
+              stagingServerAddressChanged)
 GETSETDEFAULT(SETTINGS_SEENFEATURES_DEFAULT, QStringList, toStringList,
               SETTINGS_SEENFEATURES, hasSeenFeatures, seenFeatures,
               setSeenFeatures, seenFeaturesChanged);
