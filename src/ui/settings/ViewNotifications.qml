@@ -30,7 +30,7 @@ VPNFlickable {
         if (!vpnIsOff) {
             Sample.notificationsViewWarning.record();
         }
-     }
+    }
 
     Column {
         id: col
@@ -45,6 +45,7 @@ VPNFlickable {
             //% "VPN must be off to edit these settings"
             //: Associated to a group of settings that require the VPN to be disconnected to change
             errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
+            visible: !vpnIsOff && (captivePortalAlert.visible || unsecuredNetworkAlert.visible)
         }
 
         VPNCheckBoxRow {
