@@ -619,6 +619,7 @@ else:macos {
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
     QT += networkauth
+    QT += svg
 
     CONFIG += c++1z
 
