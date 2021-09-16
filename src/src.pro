@@ -23,6 +23,10 @@ QT += widgets
 QT += charts
 QT+= websockets
 
+# Necessary for the Glean.js storage to work
+QT += sql
+ios:QTPLUGIN += qsqlite
+
 # for the inspector
 QT+= testlib
 QT.testlib.CONFIG -= console
@@ -202,7 +206,6 @@ HEADERS += \
         features/featureappreview.h \
         features/featurecaptiveportal.h \
         features/featurecustomdns.h \
-        features/featureglean.h \
         features/featureinappaccountCreate.h \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
