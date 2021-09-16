@@ -10,8 +10,8 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 import "../themes/colors.js" as Color
 
-import org.mozilla.Glean 0.15
-import telemetry 0.15
+import org.mozilla.Glean 0.20
+import telemetry 0.20
 
 Item {
     id: box

@@ -21,7 +21,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get install golang debhelper -y
-          pip3 install "glean_parser==3.5"
+          pip3 install "glean_parser==4.0"
           pip3 install pyyaml
 
       - name: Build source bundle

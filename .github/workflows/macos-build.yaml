@@ -44,7 +44,7 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
-          pip3 install "glean_parser==3.5"
+          pip3 install "glean_parser==4.0"
           pip3 install pyyaml
           python3 scripts/generate_glean.py
 
@@ -193,7 +193,7 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
-          pip3 install "glean_parser==3.5"
+          pip3 install "glean_parser==4.0"
           pip3 install pyyaml
           python3 scripts/generate_glean.py
 

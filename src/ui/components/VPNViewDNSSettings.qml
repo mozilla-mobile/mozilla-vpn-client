@@ -11,8 +11,8 @@ import "../components"
 import "../components/forms"
 import "../themes/themes.js" as Theme
 
-import org.mozilla.Glean 0.15
-import telemetry 0.15
+import org.mozilla.Glean 0.20
+import telemetry 0.20
 
 
 VPNFlickable {

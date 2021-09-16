@@ -9,8 +9,8 @@ import Mozilla.VPN 1.0
 import "./components"
 import "themes/themes.js" as Theme
 
-import org.mozilla.Glean 0.15
-import telemetry 0.15
+import org.mozilla.Glean 0.20
+import telemetry 0.20
 
 Window {
     id: window
@@ -65,31 +65,7 @@ Window {
 
         Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported, {
           appBuild: `MozillaVPN/${VPN.versionString}`,
-          appDisplayVersion: VPN.versionString,
-          httpClient: {
-                  post(url, body, headers) {
-                      if (typeof(VPNGleanTest) !== "undefined") {
-                          VPNGleanTest.requestDone(url, body);
-                      }
-                      if (VPN.stagingMode) {
-                          return Promise.reject('Glean disabled in staging mode');
-                      }
-
-                      return new Promise((resolve, reject) => {
-                          const xhr = new XMLHttpRequest();
-                          xhr.open("POST", url);
-
-                          for (const header in headers) {
-                            xhr.setRequestHeader(header, headers[header]);
-                          }
-                          xhr.onloadend = () => {
-                            resolve({status: xhr.status, result: 2 /* UploadResultStatus.Success */ });
-                          }
-                          xhr.send(body);
-
-                      });
-                  }
-          }
+          appDisplayVersion: VPN.versionString
         });
     }
 

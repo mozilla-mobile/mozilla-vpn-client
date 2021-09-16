@@ -47,7 +47,7 @@ jobs:
       - name: Install glean depedencies
         shell: bash
         run: |
-          pip3 install "glean_parser==3.5"
+          pip3 install "glean_parser==4.0"
           pip3 install pyyaml
 
       - name: Adding msbuild to PATH
