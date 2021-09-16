@@ -19,8 +19,10 @@ int main(int argc, char* argv[]) {
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);
 #endif
-  SettingsHolder settingsHolder;
-  Constants::setStaging();
+  {
+    SettingsHolder settingsHolder;
+    Constants::setStaging();
+  }
 
   QCoreApplication a(argc, argv);
 
