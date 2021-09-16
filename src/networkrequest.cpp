@@ -19,7 +19,6 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QProcessEnvironment>
 #include <QUrl>
 #include <QUrlQuery>
 
@@ -88,11 +87,7 @@ QString NetworkRequest::apiBaseUrl() {
     return Constants::API_PRODUCTION_URL;
   }
 
-  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  if (pe.contains("MVPN_API_BASE_URL")) {
-    return pe.value("MVPN_API_BASE_URL");
-  }
-  return Constants::API_STAGING_URL;
+  return Constants::getStagingServerAddress();
 }
 
 // static
