@@ -84,12 +84,16 @@ VPNFlickable {
 
                         enabled: VPNSettings.dnsProvider === VPNSettings.Custom
                         placeholderText: VPNSettings.placeholderUserDNS
-                        text: VPNSettings.userDNS
+                        text: ""
                         width: parent.width
                         height: 40
 
                         PropertyAnimation on opacity {
                             duration: 200
+                        }
+
+                        Component.onCompleted: {
+                            ipInput.text = VPNSettings.userDNS;
                         }
 
                         onTextChanged: text => {
@@ -99,10 +103,10 @@ VPNFlickable {
                                 VPNSettings.userDNS = ipInput.text
                                 return;
                             }
-                            if(VPN.validateUserDNS(ipInput.text)){
+                            if (VPN.validateUserDNS(ipInput.text)) {
                                 ipInput.valueInvalid = false;
                                 VPNSettings.userDNS = ipInput.text
-                            }else{
+                            } else {
                                 ipInput.error = VPNl18n.CustomDNSSettingsInlineCustomDNSError
                                 ipInput.valueInvalid = true;
                             }
