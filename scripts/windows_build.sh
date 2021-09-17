@@ -3,8 +3,8 @@ set -x
 set -e
 
 # Dependencies
-python3 scripts/tooltool.py fetch -m windows/qt-dependencies.tt.manifest
-python3 scripts/tooltool.py fetch -m windows/vs2017-15.9.tt.manifest
+python3 scripts/tooltool.py --url http://taskcluster/tooltool.mozilla-releng.net fetch -m windows/qt-dependencies.tt.manifest
+python3 scripts/tooltool.py --url http://taskcluster/tooltool.mozilla-releng.net fetch -m windows/vs2017-15.9.tt.manifest
 # TODO: internal pypi mirror, if it doesn't get used by default?
 python3 -m virtualenv build
 build/scripts/pip install glean_parser==3.5 pyyaml
