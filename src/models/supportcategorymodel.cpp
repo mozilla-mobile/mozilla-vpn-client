@@ -60,7 +60,7 @@ QVariant SupportCategoryModel::data(const QModelIndex& index, int role) const {
       return QVariant(s_supportCategories.at(index.row()).m_categoryName);
 
     case LocalizedNameRole:
-      return QVariant(L18nStrings::instance()->tr(
+      return QVariant(L18nStrings::instance()->t(
           s_supportCategories.at(index.row()).m_stringId));
 
     default:
