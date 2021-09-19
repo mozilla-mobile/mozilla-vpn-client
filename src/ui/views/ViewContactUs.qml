@@ -29,7 +29,6 @@ Item {
 
     VPNMenu {
         id: menu
-        //% "Contact support"
         title: VPNl18n.InAppSupportWorkflowSupportNavLinkText
 
         // this view gets pushed to mainStackView from backend always
@@ -53,13 +52,8 @@ Item {
                     mainStackView.replace(thankYouView);
                 } else {
                     mainStackView.replace("../views/ViewErrorFullScreen.qml", {
-                        //% "Error submitting your support request..."
                         headlineText: VPNl18n.InAppSupportWorkflowSupportErrorHeader,
-
-                        //% "An unexpected error has occured, please try again."
                         errorMessage: VPNl18n.InAppSupportWorkflowSupportErrorText,
-
-                        //% "Try again"
                         buttonText: VPNl18n.InAppSupportWorkflowSupportErrorButton,
                         buttonOnClick: contactUsRoot.tryAgain,
                         buttonObjectName: "errorTryAgainButton"
@@ -110,7 +104,6 @@ Item {
                         ColumnLayout {
                             spacing: 10
                             VPNBoldLabel {
-                                //% "Enter your email"
                                 property string enterEmailAddress: VPNl18n.InAppSupportWorkflowSupportEmailFieldLabel
 
                                 text: enterEmailAddress
@@ -129,7 +122,6 @@ Item {
                                 verticalAlignment: Text.AlignVCenter
                                 Layout.fillWidth: true
                                 hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
-                                //% "Email address"
                                 placeholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
                             }
                         }
@@ -141,7 +133,6 @@ Item {
                             verticalAlignment: Text.AlignVCenter
                             Layout.fillWidth: true
                             hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
-                            //% "Confirm email address"
                             placeholderText: VPNl18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
                         }
                     }
@@ -194,7 +185,6 @@ Item {
                         spacing: 10
 
                         VPNBoldLabel {
-                            //% "How can we help you with Mozilla VPN?"
                             property string enterEmailAddress: VPNl18n.InAppSupportWorkflowSupportFieldHeader
 
                             text: enterEmailAddress
@@ -220,13 +210,11 @@ Item {
                         width: parent.width
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
-                        //% "Subject (optional)"
                         placeholderText: VPNl18n.InAppSupportWorkflowSubjectFieldPlaceholder
                     }
 
                     VPNTextArea {
                         id: textArea
-                        //% "Describe issue..."
                         placeholderText: VPNl18n.InAppSupportWorkflowIssueFieldPlaceholder
                     }
                 }
@@ -249,13 +237,11 @@ Item {
                         VPNTextBlock {
                             font.pixelSize: Theme.fontSize
                             horizontalAlignment: Text.AlignHCenter
-                            //% "When you submit, Mozilla VPN will collect technical and interaction data with your email to help our support team understand your issue."
                             text: VPNl18n.InAppSupportWorkflowDisclaimerText
                             width:parent.width
                         }
 
                         VPNLinkButton {
-                            //% "Mozilla VPN Privacy Notice"
                             labelText: VPNl18n.InAppSupportWorkflowPrivacyNoticeLinkText
                             Layout.alignment: Qt.AlignHCenter
                             onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
@@ -267,7 +253,6 @@ Item {
                         spacing: Theme.windowMargin
 
                         VPNButton {
-                             //% "Submit"
                             text: VPNl18n.InAppSupportWorkflowSupportPrimaryButtonText
                             onClicked: contactUsRoot.createSupportTicket((VPN.userAuthenticated ? VPNUser.email : emailInput.text), subjectInput.text, textArea.userEntry, dropDown.currentValue);
                             enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
@@ -286,7 +271,6 @@ Item {
                             }
                         }
                         VPNLinkButton {
-                            //% "Cancel"
                             labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText
                             Layout.preferredHeight: Theme.rowHeight
                             Layout.alignment: Qt.AlignHCenter
@@ -318,16 +302,13 @@ Item {
                 VPNPanel {
                     id: panel
                     logo: "../resources/heart-check.svg"
-                    //% "Thank you!"
                     logoTitle: VPNl18n.InAppSupportWorkflowSupportResponseHeader
-                    //% "We appreciate your feedback. You’re helping us improve Mozilla VPN."
                     logoSubtitle: VPNl18n.InAppSupportWorkflowSupportResponseBody.arg((VPN.userAuthenticated ? VPNUser.email : emailInput.text))
                     anchors.horizontalCenter: undefined
                     Layout.fillWidth: true
                 }
             }
             VPNButton {
-                //% "Done"
                text: VPNl18n.InAppSupportWorkflowSupportResponseButton
                anchors.top: col.bottom
                anchors.topMargin: Theme.vSpacing

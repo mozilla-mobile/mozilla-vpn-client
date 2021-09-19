@@ -146,7 +146,7 @@ class L18nStrings final : public QQmlPropertyMap {
 
   void retranslate();
 
-  QString tr(String) const;
+  QString t(String) const;
 
  private:
   static const char* const _ids[];
