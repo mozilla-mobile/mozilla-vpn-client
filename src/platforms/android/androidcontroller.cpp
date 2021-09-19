@@ -148,7 +148,7 @@ void AndroidController::activate(
       PERMISSIONHELPER_CLASS, "startService", "(Landroid/content/Context;)V",
       appContext.object());
 
-  m_server = serverList[0];
+  Server server = serverList[0];
   m_device = *device;
 
   // Serialise arguments for the VPNService
@@ -163,12 +163,12 @@ void AndroidController::activate(
   jKeys["privateKey"] = keys->privateKey();
 
   QJsonObject jServer;
-  jServer["ipv4AddrIn"] = m_server.ipv4AddrIn();
-  jServer["ipv4Gateway"] = m_server.ipv4Gateway();
-  jServer["ipv6AddrIn"] = m_server.ipv6AddrIn();
-  jServer["ipv6Gateway"] = m_server.ipv6Gateway();
-  jServer["publicKey"] = m_server.publicKey();
-  jServer["port"] = (int)m_server.choosePort();
+  jServer["ipv4AddrIn"] = server.ipv4AddrIn();
+  jServer["ipv4Gateway"] = server.ipv4Gateway();
+  jServer["ipv6AddrIn"] = server.ipv6AddrIn();
+  jServer["ipv6Gateway"] = server.ipv6Gateway();
+  jServer["publicKey"] = server.publicKey();
+  jServer["port"] = (int)server.choosePort();
 
   QJsonArray allowedIPs;
   foreach (auto item, allowedIPAddressRanges) {
@@ -306,8 +306,8 @@ bool AndroidController::VPNBinder::onTransact(int code,
 
       // Data is here a JSON String
       doc = QJsonDocument::fromJson(data.readData());
-      emit m_controller->statusUpdated(m_controller->m_server.ipv4Gateway(),
-                                       m_controller->m_device.ipv4Address(),
+      emit m_controller->statusUpdated(doc.object()["endpoint"].toString(),
+                                       doc.object()["deviceIpv4"].toString(),
                                        doc.object()["totalTX"].toInt(),
                                        doc.object()["totalRX"].toInt());
       break;

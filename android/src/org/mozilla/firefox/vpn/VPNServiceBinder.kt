@@ -8,7 +8,6 @@ import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.Parcel
 import com.wireguard.config.*
-import com.wireguard.crypto.Key
 import org.json.JSONObject
 import java.lang.Exception
 
@@ -17,7 +16,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
     private val mService = service
     private val tag = "VPNServiceBinder"
     private var mListener: IBinder? = null
-    private var mResumeConfig: Config? = null
+    private var mResumeConfig: JSONObject? = null
 
     /**
      * The codes this Binder does accept in [onTransact]
@@ -53,23 +52,14 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     // [data] is here a json containing the wireguard conf
                     val buffer = data.createByteArray()
                     val json = buffer?.let { String(it) }
-                    // Store the config in case the service gets
-                    // asked boot vpn from the OS
-                    val prefs = Prefs.get(mService)
-                    prefs.edit()
-                        .putString("lastConf", json)
-                        .apply()
-
-                    Log.sensitive(tag, json)
-
+                    val config = JSONObject(json)
                     Log.v(tag, "Stored new Tunnel config in Service")
-                    val config = buildConfigFromJSON(json)
 
                     if (!mService.checkPermissions()) {
                         mResumeConfig = config
                         // The Permission prompt was already
                         // send, in case it's accepted we will 
-                        // recive ACTIONS.resumeActivate
+                        // receive ACTIONS.resumeActivate
                         return true
                     }
                     this.mService.turnOn(config)
@@ -84,7 +74,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 // [data] is empty
                 // Activate the current tunnel
                 try {
-                    this.mService.turnOn(mResumeConfig)
+                    mResumeConfig?.let { this.mService.turnOn(it) }
                 } catch (e: Exception) {
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
                 }
@@ -109,10 +99,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             }
 
             ACTIONS.requestStatistic -> {
-                val obj = JSONObject()
-                obj.put("totalRX", mService.totalRx)
-                obj.put("totalTX", mService.totalTx)
-                dispatchEvent(EVENTS.statisticUpdate, obj.toString())
+                dispatchEvent(EVENTS.statisticUpdate, mService.status.toString())
                 return true
             }
 
@@ -179,52 +166,5 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val statisticUpdate = 3
         const val backendLogs = 4
         const val activationError = 5
-    }
-
-    /**
-     * Create a Wireguard [Config]  from a [json] string -
-     * The [json] will be created in AndroidController.cpp
-     */
-    fun buildConfigFromJSON(json: String?): Config {
-        val confBuilder = Config.Builder()
-        if (json == null) {
-            return confBuilder.build()
-        }
-        val obj = JSONObject(json)
-        val jServer = obj.getJSONObject("server")
-        val peerBuilder = Peer.Builder()
-        val ep =
-            InetEndpoint.parse(jServer.getString("ipv4AddrIn") + ":" + jServer.getString("port"))
-        peerBuilder.setEndpoint(ep)
-        peerBuilder.setPublicKey(Key.fromBase64(jServer.getString("publicKey")))
-
-        val jAllowedIPList = obj.getJSONArray("allowedIPs")
-        if (jAllowedIPList.length() == 0) {
-            val internet = InetNetwork.parse("0.0.0.0/0") // aka The whole internet.
-            peerBuilder.addAllowedIp(internet)
-        } else {
-            (0 until jAllowedIPList.length()).toList().forEach {
-                val network = InetNetwork.parse(jAllowedIPList.getString(it))
-                peerBuilder.addAllowedIp(network)
-            }
-        }
-
-        confBuilder.addPeer(peerBuilder.build())
-
-        val privateKey = obj.getJSONObject("keys").getString("privateKey")
-        val jDevice = obj.getJSONObject("device")
-
-        val ifaceBuilder = Interface.Builder()
-        ifaceBuilder.parsePrivateKey(privateKey)
-        ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv4Address")))
-        ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv6Address")))
-        ifaceBuilder.addDnsServer(InetNetwork.parse(obj.getString("dns")).address)
-        val jExcludedApplication = obj.getJSONArray("excludedApps")
-        (0 until jExcludedApplication.length()).toList().forEach {
-            val appName = jExcludedApplication.get(it).toString()
-            ifaceBuilder.excludeApplication(appName)
-        }
-        confBuilder.setInterface(ifaceBuilder.build())
-        return confBuilder.build()
     }
 }
