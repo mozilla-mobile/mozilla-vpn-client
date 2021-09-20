@@ -160,7 +160,7 @@ VPNFlickable {
         Connections {
             target: VPNSettings
             function onStagingServerAddressChanged() { restartRequired.visible = true; }
-            function onStagingServerChanged() { restatRequired.visible = true; }
+            function onStagingServerChanged() { restartRequired.visible = true; }
         }
 
         errorMessage: VPNl18n.SettingsDevRestartRequired
