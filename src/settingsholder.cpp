@@ -510,8 +510,11 @@ QString SettingsHolder::getEnvVariable(const QString& name) const {
 QString SettingsHolder::envOrDefault(const QString& name,
                                      const QString& defaultValue) const {
   const QString env = getEnvVariable(name);
-  if (!env.isEmpty()) {
-    return env;
+  if (env.isEmpty()) {
+    return defaultValue;
   }
-  return defaultValue;
+  if (!QUrl(env).isValid()) {
+    return defaultValue;
+  }
+  return env;
 }
