@@ -26,29 +26,28 @@
         <input type="range" id="dateMinRange" min="0" max="100" value="0" />
         <label for="dateMinRange">From</label><br/>
         <input type="range" id="dateMaxRange" min="0" max="100" value="100" />
-        <label for="dateMaxRange">Max</label><br />
+        <label for="dateMaxRange">To</label><br />
         <p id="dateRange"></p>
 
         <h4>Modules</h4>
+        <div class="btn-group" role="group" aria-label="Module selection">
+          <button type="button" class="btn btn-primary" id="moduleSelectAll">Select all</button>
+          <button type="button" class="btn btn-primary" id="moduleUnselectAll">Unselect all</button>
+        </div>
         <ul id="moduleList"></ul>
 
         <h4>Components</h4>
+        <div class="btn-group" role="group" aria-label="Component selection">
+          <button type="button" class="btn btn-primary" id="componentSelectAll">Select all</button>
+          <button type="button" class="btn btn-primary" id="componentUnselectAll">Unselect all</button>
+        </div>
         <ul id="componentList"></ul>
 
       </div>
       <div class="col-8">
         <h4>Logs</h4>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Modules</th>
-              <th scope="col">Components</th>
-              <th scope="col">Log</th>
-            </tr>
-          </thead>
-          <tbody id="logTable">
-          </tbody>
+        <ul class="nav nav-tabs" id="contextsTabs" role="tablist"></ul>
+        <div class="tab-content" id="contextsLog"></div>
         </table>
       </div>
     </div>
