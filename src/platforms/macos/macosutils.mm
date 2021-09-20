@@ -129,7 +129,7 @@ void MacOSUtils::patchNSStatusBarSetImageForBigSur() {
   if ([sourceImage isValid]) {
     NSSize sourceSize = [sourceImage size];
 
-    if (sourceSize.width != 0.0 || sourceSize.height != 0.0) {
+    if (sourceSize.width != 0.0 && sourceSize.height != 0.0) {
       float scaleFactor = 0.0;
       float scaledWidth = targetSize.width;
       float scaledHeight = targetSize.height;
