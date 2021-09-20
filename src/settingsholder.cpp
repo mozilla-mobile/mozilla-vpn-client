@@ -274,10 +274,10 @@ GETSETDEFAULT(SETTINGS_DEVELOPERUNLOCK_DEFAULT, bool, toBool,
 GETSETDEFAULT(SETTINGS_STAGINGSERVER_DEFAULT, bool, toBool,
               SETTINGS_STAGINGSERVER, hasStagingServer, stagingServer,
               setStagingServer, stagingServerChanged)
-GETSETDEFAULT(getEnvVariable("MVPN_API_BASE_URL"), QString, toString,
-              SETTINGS_STAGINGSERVERADDRESS, hasStagingServerAddress,
-              stagingServerAddress, setStagingServerAddress,
-              stagingServerAddressChanged)
+GETSETDEFAULT(envOrDefault("MVPN_API_BASE_URL", Constants::API_STAGING_URL),
+              QString, toString, SETTINGS_STAGINGSERVERADDRESS,
+              hasStagingServerAddress, stagingServerAddress,
+              setStagingServerAddress, stagingServerAddressChanged)
 GETSETDEFAULT(SETTINGS_SEENFEATURES_DEFAULT, QStringList, toStringList,
               SETTINGS_SEENFEATURES, hasSeenFeatures, seenFeatures,
               setSeenFeatures, seenFeaturesChanged);
@@ -505,4 +505,13 @@ QString SettingsHolder::getEnvVariable(const QString& name) const {
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   if (pe.contains(name)) return pe.value(name);
   return QString();
+}
+
+QString SettingsHolder::envOrDefault(const QString& name,
+                                     const QString& defaultValue) const {
+  const QString env = getEnvVariable(name);
+  if (!env.isEmpty()) {
+    return env;
+  }
+  return defaultValue;
 }

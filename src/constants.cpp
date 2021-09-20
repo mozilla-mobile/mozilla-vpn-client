@@ -6,6 +6,7 @@
 #include "settingsholder.h"
 
 #include <QString>
+#include <QtGlobal>
 
 namespace {
 bool s_inProduction = true;
@@ -21,4 +22,5 @@ const QString& Constants::getStagingServerAddress() {
 void Constants::setStaging() {
   s_inProduction = false;
   s_stagingServerAddress = SettingsHolder::instance()->stagingServerAddress();
+  Q_ASSERT(!s_stagingServerAddress.isEmpty());
 }
