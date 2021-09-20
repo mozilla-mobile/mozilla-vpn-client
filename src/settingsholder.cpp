@@ -274,7 +274,7 @@ GETSETDEFAULT(SETTINGS_DEVELOPERUNLOCK_DEFAULT, bool, toBool,
 GETSETDEFAULT(SETTINGS_STAGINGSERVER_DEFAULT, bool, toBool,
               SETTINGS_STAGINGSERVER, hasStagingServer, stagingServer,
               setStagingServer, stagingServerChanged)
-GETSETDEFAULT(envOrDefault("MVPN_API_BASE_URL", Constants::API_STAGING_URL),
+GETSETDEFAULT(envOrDefault("MVPN_API_BASE_URL", Constants::API_PRODUCTION_URL),
               QString, toString, SETTINGS_STAGINGSERVERADDRESS,
               hasStagingServerAddress, stagingServerAddress,
               setStagingServerAddress, stagingServerAddressChanged)
