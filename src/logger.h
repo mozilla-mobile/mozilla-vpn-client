@@ -7,6 +7,7 @@
 
 #include "loglevel.h"
 
+#include <QIODevice>
 #include <QString>
 #include <QTextStream>
 

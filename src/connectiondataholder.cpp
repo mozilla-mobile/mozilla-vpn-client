@@ -110,8 +110,8 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
   logger.info() << "Activated";
   updateIpAddress();
 
-  QtCharts::QSplineSeries* txSeries =
-      qobject_cast<QtCharts::QSplineSeries*>(a_txSeries.value<QObject*>());
+  QSplineSeries* txSeries =
+      qobject_cast<QSplineSeries*>(a_txSeries.value<QObject*>());
   Q_ASSERT(txSeries);
 
   if (m_txSeries != txSeries) {
@@ -120,8 +120,8 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
             &ConnectionDataHolder::deactivate);
   }
 
-  QtCharts::QSplineSeries* rxSeries =
-      qobject_cast<QtCharts::QSplineSeries*>(a_rxSeries.value<QObject*>());
+  QSplineSeries* rxSeries =
+      qobject_cast<QSplineSeries*>(a_rxSeries.value<QObject*>());
   Q_ASSERT(rxSeries);
 
   if (m_rxSeries != rxSeries) {
@@ -130,8 +130,7 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
             &ConnectionDataHolder::deactivate);
   }
 
-  QtCharts::QValueAxis* axisX =
-      qobject_cast<QtCharts::QValueAxis*>(a_axisX.value<QObject*>());
+  QValueAxis* axisX = qobject_cast<QValueAxis*>(a_axisX.value<QObject*>());
   Q_ASSERT(axisX);
 
   if (m_axisX != axisX) {
@@ -140,8 +139,7 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
             &ConnectionDataHolder::deactivate);
   }
 
-  QtCharts::QValueAxis* axisY =
-      qobject_cast<QtCharts::QValueAxis*>(a_axisY.value<QObject*>());
+  QValueAxis* axisY = qobject_cast<QValueAxis*>(a_axisY.value<QObject*>());
   Q_ASSERT(axisY);
 
   if (m_axisY != axisY) {

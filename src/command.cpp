@@ -159,7 +159,10 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   SetProcessDPIAware();
 #endif
 
+#if QT_VERSION < 0x060000
+  // This flag is set by default in qt6.
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 

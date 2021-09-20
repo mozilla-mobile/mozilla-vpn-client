@@ -5,11 +5,9 @@
 #ifndef WINDOWSAPPIMAGEPROVIDER_H
 #define WINDOWSAPPIMAGEPROVIDER_H
 
-#include <QObject>
-#include <QQuickImageProvider>
+#include "appimageprovider.h"
 
-class WindowsAppImageProvider final : public QQuickImageProvider,
-                                      public QObject {
+class WindowsAppImageProvider final : public AppImageProvider {
  public:
   WindowsAppImageProvider(QObject* parent);
   ~WindowsAppImageProvider();

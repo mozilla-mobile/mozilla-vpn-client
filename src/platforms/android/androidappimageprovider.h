@@ -5,21 +5,28 @@
 #ifndef ANDROIDAPPIMAGEPROVIDER_H
 #define ANDROIDAPPIMAGEPROVIDER_H
 
-#include <QObject>
-#include <QQuickImageProvider>
-#include <QAndroidJniObject>
+#include "appimageprovider.h"
 
-class AndroidAppImageProvider final : public QQuickImageProvider,
-                                      public QObject {
+#if QT_VERSION >= 0x060000
+#  include <QJniObject>
+#else
+#  include <QAndroidJniObject>
+#endif
+
+class AndroidAppImageProvider final : public AppImageProvider {
+#if QT_VERSION < 0x060000
+  typedef QAndroidJniObject QJniObject;
+#endif
+
  public:
   AndroidAppImageProvider(QObject* parent);
   ~AndroidAppImageProvider();
   QImage requestImage(const QString& id, QSize* size,
                       const QSize& requestedSize) override;
 
-  QAndroidJniObject createBitmap(int width, int height);
-  QImage toImage(const QAndroidJniObject& bitmap);
-  QImage toImage(const QAndroidJniObject& drawable, const QRect& bounds);
+  QJniObject createBitmap(int width, int height);
+  QImage toImage(const QJniObject& bitmap);
+  QImage toImage(const QJniObject& drawable, const QRect& bounds);
 };
 
 #endif  // ANDROIDAPPIMAGEPROVIDER_H
