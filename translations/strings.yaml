@@ -42,7 +42,7 @@
 # In C++, you can do basically the same:
 # ```
 # QString foo =
-#    L18nStrings::instance()->tr(L18nStrings::InitialViewGetStartedButton)
+#    L18nStrings::instance()->t(L18nStrings::InitialViewGetStartedButton)
 # ```
 #
 # If a string contains arguments, add '%<number>' for each argument. For
@@ -65,7 +65,7 @@
 # In C++:
 # ```
 # QString foo =
-#    L18nStrings::instance()->tr(L18nStrings::Something).arg("hello")
+#    L18nStrings::instance()->t(L18nStrings::Something).arg("hello")
 # ```
 #
 # Remember! When you change this file, you must run the

@@ -166,9 +166,9 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
     return;
   }
   auto strings = L18nStrings::instance();
-  QString action = strings->tr(L18nStrings::SplittunnelMissingAppActionButton);
+  QString action = strings->t(L18nStrings::SplittunnelMissingAppActionButton);
 
-  QString message = strings->tr(L18nStrings::SplittunnelMissingAppMultiple)
+  QString message = strings->t(L18nStrings::SplittunnelMissingAppMultiple)
                         .arg(removedMissingApps.count());
   emit notification("warning", message, action);
 }
@@ -231,7 +231,7 @@ void AppPermission::openFilePicker() {
   m_listprovider->addApplication(fileNames[0]);
 
   QString message = L18nStrings::instance()
-                        ->tr(L18nStrings::SplittunnelMissingAppAddedOne)
+                        ->t(L18nStrings::SplittunnelMissingAppAddedOne)
                         .arg(m_listprovider->getAppName(fileNames[0]));
   emit notification("success", message);
 }

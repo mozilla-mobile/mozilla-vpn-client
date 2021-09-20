@@ -5,10 +5,20 @@
 #include "constants.h"
 #include "settingsholder.h"
 
+#include <QString>
+
 namespace {
 bool s_inProduction = true;
+QString s_stagingServerAddress = "";
 }  // namespace
 
 bool Constants::inProduction() { return s_inProduction; }
 
-void Constants::setStaging() { s_inProduction = false; }
+const QString& Constants::getStagingServerAddress() {
+  return s_stagingServerAddress;
+}
+
+void Constants::setStaging() {
+  s_inProduction = false;
+  s_stagingServerAddress = SettingsHolder::instance()->stagingServerAddress();
+}
