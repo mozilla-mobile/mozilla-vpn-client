@@ -24,14 +24,7 @@ class FeatureCustomDNS final : public Feature {
             true  // Can be enabled in devmode
         ) {}
 
-  bool checkSupportCallback() const override {
-#if defined(MVPN_ANDROID) || defined(MVPN_WASM) || defined(MVPN_DUMMY) || \
-    defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
-    return true;
-#else
-    return false;
-#endif
-  }
+  bool checkSupportCallback() const override { return true; }
 
   static const FeatureCustomDNS* instance() {
     return static_cast<const FeatureCustomDNS*>(get(FEATURE_CUSTOM_DNS));
