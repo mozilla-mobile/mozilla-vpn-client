@@ -191,6 +191,8 @@ bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex) {
   FW_OK(allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT,
                                 "Allow all for MozillaVPN.exe"));
   FW_OK(blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS"));
+  FW_OK(
+      allowLoopbackTraffic(MED_WEIGHT, "Allow Loopback traffic on device %1"));
 
   logger.debug() << "Killswitch on! Rules:" << m_activeRules.length();
   return true;
@@ -828,6 +830,22 @@ bool WindowsFirewall::enableFilter(FWPM_FILTER0* filter, const QString& title,
     m_activeRules.append(filterID);
   } else {
     m_peerRules.insert(peer, filterID);
+  }
+  return true;
+}
+
+bool WindowsFirewall::allowLoopbackTraffic(uint8_t weight,
+                                           const QString& title) {
+  QList<QNetworkInterface> networkInterfaces =
+      QNetworkInterface::allInterfaces();
+  for (const auto& iface : networkInterfaces) {
+    if (iface.type() != QNetworkInterface::Loopback) {
+      continue;
+    }
+    if (!allowTrafficOfAdapter(iface.index(), weight,
+                               title.arg(iface.name()))) {
+      return false;
+    }
   }
   return true;
 }
