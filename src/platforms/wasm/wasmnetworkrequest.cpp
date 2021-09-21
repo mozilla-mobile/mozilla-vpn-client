@@ -56,7 +56,11 @@ void NetworkRequest::abort() {}
 
 // static
 QString NetworkRequest::apiBaseUrl() {
-  return QString(Constants::API_STAGING_URL);
+  if (Constants::inProduction()) {
+    return Constants::API_PRODUCTION_URL;
+  }
+
+  return Constants::getStagingServerAddress();
 }
 
 // static
