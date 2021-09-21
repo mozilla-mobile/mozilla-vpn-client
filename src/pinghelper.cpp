@@ -6,6 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "pingsender.h"
+#include "platforms/dummy/dummypingsender.h"
 
 #if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
 #  include "platforms/linux/linuxpingsender.h"
@@ -14,7 +15,6 @@
 #elif defined(MVPN_WINDOWS)
 #  include "platforms/windows/windowspingsender.h"
 #elif defined(MVPN_DUMMY) || defined(UNIT_TEST)
-#  include "platforms/dummy/dummypingsender.h"
 #else
 #  error "Unsupported platform"
 #endif
@@ -31,6 +31,7 @@ constexpr int PING_STATS_WINDOW = 32;
 
 namespace {
 Logger logger(LOG_NETWORKING, "PingHelper");
+bool s_has_critical_ping_error = false;
 }
 
 PingHelper::PingHelper() {
@@ -50,17 +51,25 @@ void PingHelper::start(const QString& serverIpv4Gateway,
 
   m_gateway = serverIpv4Gateway;
   m_source = deviceIpv4Address.section('/', 0, 0);
-  m_pingSender =
+
+  if (s_has_critical_ping_error) {
+    logger.info() << "Encountered Unrecoverable ping error, using DUMMY Ping";
+    m_pingSender = new DummyPingSender(m_source, this);
+  } else {
+    m_pingSender =
 #if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
-      new LinuxPingSender(m_source, this);
+        new LinuxPingSender(m_source, this);
 #elif defined(MVPN_MACOS) || defined(MVPN_IOS)
-      new MacOSPingSender(m_source, this);
+        new MacOSPingSender(m_source, this);
 #elif defined(MVPN_WINDOWS)
-      new WindowsPingSender(m_source, this);
+        new WindowsPingSender(m_source, this);
 #else
-      new DummyPingSender(m_source, this);
+        new DummyPingSender(m_source, this);
 #endif
+  }
   connect(m_pingSender, &PingSender::recvPing, this, &PingHelper::pingReceived);
+  connect(m_pingSender, &PingSender::criticalPingError, this,
+          &PingHelper::handlePingError);
 
   // Reset the ping statistics
   m_sequence = 0;
@@ -191,4 +200,14 @@ double PingHelper::loss() const {
     return 0.0;
   }
   return (double)(sendCount - recvCount) / sendCount;
+}
+
+void PingHelper::handlePingError() {
+  // When the ping helper is unable to work, set the error flag
+  // and restart the pinghelper, to replace the impl with a dummy impl
+  // which we will use for the rest of the session
+  emit pingSentAndReceived(1);  // Fake a ping response with 1ms;
+  s_has_critical_ping_error = true;
+  stop();
+  start(m_gateway, m_source);
 }
