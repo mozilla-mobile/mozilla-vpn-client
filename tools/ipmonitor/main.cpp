@@ -4,6 +4,7 @@
 
 #include <QCommandLineParser>
 #include <QCoreApplication>
+#include <QDnsLookup>
 #include <QFile>
 #include <QHash>
 #include <QJsonArray>
@@ -105,6 +106,10 @@ class Output final : public QTextStream {
   static const char* magenta() { return "\033[35m"; }
   static const char* cyan() { return "\033[36m"; }
 
+  static QString indent(uint32_t recursive) {
+    return QString().fill(' ', recursive * 2);
+  }
+
  private:
   QString m_buffer;
 };
@@ -146,6 +151,38 @@ bool parseServerListFile(const QString& fileName,
   }
 
   return true;
+}
+
+QStringList resolveCaptivePortal(const QString& domain,
+                                 uint32_t recursive = 0) {
+  QStringList ips;
+  QEventLoop loop;
+  QDnsLookup dns;
+  QObject::connect(&dns, &QDnsLookup::finished, [&]() {
+    if (dns.error() == QDnsLookup::NoError) {
+      for (const QDnsDomainNameRecord& record : dns.canonicalNameRecords()) {
+        Output() << Output::indent(recursive) << " - CNAME: " << Output::bold()
+                 << record.value() << Qt::endl;
+        ips.append(resolveCaptivePortal(record.value(), recursive + 1));
+      }
+
+      for (const QDnsHostAddressRecord& record : dns.hostAddressRecords()) {
+        Output() << Output::indent(recursive) << " - A: " << Output::bold()
+                 << record.value().toString() << Qt::endl;
+        if (record.value().protocol() == QAbstractSocket::IPv4Protocol) {
+          ips.append(record.value().toString());
+        }
+      }
+    }
+    loop.exit();
+  });
+
+  dns.setType(QDnsLookup::ANY);
+  dns.setName(domain);
+  dns.lookup();
+
+  loop.exec();
+  return ips;
 }
 
 void logPackage(QFile* logger, const QString& ipSrc, const QString& ipDst) {
@@ -234,6 +271,10 @@ int main(int argc, char* argv[]) {
     return 1;
   }
   Output(Output::eDone) << servers.count() << " servers." << Qt::endl;
+
+  Output(Output::eInfo) << "Resolving the captive-portal URL..." << Qt::endl;
+  QStringList captivePortalIps =
+      resolveCaptivePortal("detectportal.firefox.com");
 
   Output(Output::eInfo) << "Retrieving the interface list: ";
   pcap_if_t* interfaces = nullptr;
@@ -354,6 +395,9 @@ int main(int argc, char* argv[]) {
 
     bool outcome = addresses.contains(ipSrc);
     bool income = addresses.contains(ipDst);
+
+    if (income && captivePortalIps.contains(ipSrc)) continue;
+    if (outcome && captivePortalIps.contains(ipDst)) continue;
 
     char direction = '=';
     // Let's ignore local and unrelated packages
