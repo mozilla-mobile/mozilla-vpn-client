@@ -12,5 +12,6 @@ int main(int argc, char* argv[]) {
 #endif
 
   CommandLineParser clp;
+
   return clp.parse(argc, argv);
 }
