@@ -26,6 +26,7 @@ linux/netfilter/vendor/
 .qm
 .tmp
 .env
+env.bat
 
 asset_catalog_compiler.Info.plist
 
@@ -36,7 +37,7 @@ android/.idea/
 android/build
 android/local.properties
 android/*/.cxx/
-!android/*/*/Makefile 
+!android/*/*/Makefile
 xcode.xconfig
 .gradle/
 .gradle_cache/
@@ -62,7 +63,7 @@ MozillaVPN.xcodeproj/
 MozillaVPN.vcxproj*
 *.autosave
 
-#Windows 
+#Windows
 .deps
 lib*.dll
 balrog.dll

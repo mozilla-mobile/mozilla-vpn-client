@@ -1,0 +1,2 @@
+glean_parser==3.5
+pyyaml
