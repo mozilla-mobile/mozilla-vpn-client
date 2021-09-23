@@ -20,17 +20,17 @@ bool Keys::fromSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  if (!settingsHolder->hasPrivateKey()) {
+  if (settingsHolder->privateKey().isEmpty()) {
     return false;
   }
 
   // Quick migration to retrieve the public key from the current device.
-  if (!settingsHolder->hasPublicKey()) {
-    if (!settingsHolder->hasDevices()) {
+  if (settingsHolder->publicKey().isEmpty()) {
+    const QByteArray& json = settingsHolder->devices();
+    if (json.isEmpty()) {
       return false;
     }
 
-    const QByteArray& json = settingsHolder->devices();
     QJsonDocument doc = QJsonDocument::fromJson(json);
     if (!doc.isObject()) {
       return false;

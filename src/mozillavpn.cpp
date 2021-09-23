@@ -211,21 +211,21 @@ void MozillaVPN::initialize() {
   Q_ASSERT(settingsHolder);
 
 #ifdef MVPN_IOS
-  if (!settingsHolder->hasNativeIOSDataMigrated()) {
+  if (!settingsHolder->nativeIOSDataMigrated()) {
     IOSDataMigration::migrate();
     settingsHolder->setNativeIOSDataMigrated(true);
   }
 #endif
 
 #ifdef MVPN_WINDOWS
-  if (!settingsHolder->hasNativeWindowsDataMigrated()) {
+  if (!settingsHolder->nativeWindowsDataMigrated()) {
     WindowsDataMigration::migrate();
     settingsHolder->setNativeWindowsDataMigrated(true);
   }
 #endif
 
 #ifdef MVPN_ANDROID
-  if (!settingsHolder->hasNativeAndroidDataMigrated()) {
+  if (!settingsHolder->nativeAndroidDataMigrated()) {
     AndroidDataMigration::migrate();
     settingsHolder->setNativeAndroidDataMigrated(true);
   }
@@ -336,15 +336,13 @@ void MozillaVPN::maybeStateMain() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
 #if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
-  if (!settingsHolder->hasPostAuthenticationShown() ||
-      !settingsHolder->postAuthenticationShown()) {
+  if (!settingsHolder->postAuthenticationShown()) {
     setState(StatePostAuthentication);
     return;
   }
 #endif
 
-  if (!settingsHolder->hasTelemetryPolicyShown() ||
-      !settingsHolder->telemetryPolicyShown()) {
+  if (!settingsHolder->telemetryPolicyShown()) {
     setState(StateTelemetryPolicy);
     return;
   }
@@ -376,8 +374,7 @@ void MozillaVPN::getStarted() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-  if (!settingsHolder->hasTelemetryPolicyShown() ||
-      !settingsHolder->telemetryPolicyShown()) {
+  if (!settingsHolder->telemetryPolicyShown()) {
     setState(StateTelemetryPolicy);
     return;
   }
