@@ -37,7 +37,13 @@ Mozilla VPN depends on Qt 5.15.2. In general, we recommend compiling Qt statical
 
 ### Linux
 
-TODO header
+#### Software requirements
+
+TODO
+
+#### Building Qt
+
+TODO
 
 ```bash
 # Install dependencies
@@ -61,6 +67,27 @@ Finally, add the Qt bin dir to the PATH:
 ```bash
 export PATH=$(pwd)/qt/bin:$PATH
 ```
+
+#### Building the application
+
+TODO
+
+```bash
+qmake CONFIG+=debug
+make -j$(nproc)
+sudo make install
+```
+
+Then run `mozillavpn`.
+
+Alternatively, you can use two terminals to run the daemon manually and separately:
+
+```bash
+sudo mozillavpn linuxdaemon
+mozillavpn
+```
+
+`mozillavpn linuxdaemon` needs privileged access and so if you do not run as root, you will get an authentication prompt every time you try to reconnect the vpn.
 
 ### MacOS
 
