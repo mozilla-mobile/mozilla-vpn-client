@@ -61,7 +61,6 @@ void PingSender::genericSendPing(const QStringList& args, qint16 sequence) {
 
   connect(process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
           this, [this, sequence](int exitCode, QProcess::ExitStatus) {
-            logger.info() << "ping exit code: " << exitCode;
             if (exitCode == 0) {
               emit recvPing(sequence);
               return;

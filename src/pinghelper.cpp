@@ -7,6 +7,7 @@
 #include "logger.h"
 #include "pingsender.h"
 #include "platforms/dummy/dummypingsender.h"
+#include "timersingleshot.h"
 
 #if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
 #  include "platforms/linux/linuxpingsender.h"
@@ -19,6 +20,7 @@
 #  error "Unsupported platform"
 #endif
 
+#include <QApplication>
 #include <QDateTime>
 
 #include <cmath>
@@ -53,7 +55,6 @@ void PingHelper::start(const QString& serverIpv4Gateway,
   m_source = deviceIpv4Address.section('/', 0, 0);
 
   if (s_has_critical_ping_error) {
-    logger.info() << "Encountered Unrecoverable ping error, using DUMMY Ping";
     m_pingSender = new DummyPingSender(m_source, this);
   } else {
     m_pingSender =
@@ -203,6 +204,11 @@ double PingHelper::loss() const {
 }
 
 void PingHelper::handlePingError() {
+  if (s_has_critical_ping_error) {
+    return;
+  }
+  logger.info() << "Encountered Unrecoverable ping error, switching to DUMMY "
+                   "Ping for next 10 Minutes";
   // When the ping helper is unable to work, set the error flag
   // and restart the pinghelper, to replace the impl with a dummy impl
   // which we will use for the rest of the session
@@ -210,4 +216,9 @@ void PingHelper::handlePingError() {
   s_has_critical_ping_error = true;
   stop();
   start(m_gateway, m_source);
+
+  TimerSingleShot::create(qApp, 600000, [&] {  // 10 Minutes
+    logger.debug() << "Removing ping error state";
+    s_has_critical_ping_error = false;
+  });
 }
