@@ -309,6 +309,8 @@ class MozillaVPN final : public QObject {
 
   void controllerStateChanged();
 
+  void maybeRegenerateDeviceKey();
+
  public slots:
   void requestSettings();
   void requestAbout();

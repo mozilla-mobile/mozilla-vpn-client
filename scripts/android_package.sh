@@ -77,15 +77,15 @@ if ! [ -d "src" ] || ! [ -d "linux" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
-if ! [ -d "$QTPATH/android/bin/" ]; then
+if [ -d "$QTPATH/android/bin/" ]; then
+  QTPATH=$QTPATH/android
+elif ! [ -d "$QTPATH/bin/" ]; then
   die "QTAndroid SDK was not found in the provided QT path"
 fi
+
 print Y "Checking Enviroment"
 if ! [ -d "src" ] || ! [ -d "linux" ]; then
   die "This script must be executed at the root of the repository."
-fi
-if ! [ -d "$QTPATH/android/bin/" ]; then
-  die "QTAndroid SDK was not found in the provided QT path"
 fi
 if [ -z "${JAVA_HOME}" ]; then
   die "Could not find 'JAVA_HOME' in env"
@@ -102,8 +102,7 @@ if ! [[ "$ADJUST_SDK_TOKEN" ]] && [[ "$MVPN_ANDROID_ADJUST_TOKEN" ]]; then
   ADJUST_SDK_TOKEN=$MVPN_ANDROID_ADJUST_TOKEN
 fi
 
-$QTPATH/android/bin/qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
-
+$QTPATH/bin/qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
 
 printn Y "Cleaning the folder... "
 make distclean &>/dev/null;
@@ -141,20 +140,20 @@ if [[ "$RELEASE" ]]; then
   # But sometimes the resolver seems to miss the current abi and defaults to the "none" abi
   # This one was missing on my machine, let's create a "none" version in case the resolver might fail too
   printn Y "Patch qt meta data"
-  cp $QTPATH/android/lib/metatypes/qt5quick_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5quick_metatypes.json
-  cp $QTPATH/android/lib/metatypes/qt5charts_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5charts_metatypes.json
-  cp $QTPATH/android/lib/metatypes/qt5svg_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5svg_metatypes.json
-  cp $QTPATH/android/lib/metatypes/qt5widgets_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5widgets_metatypes.json
-  cp $QTPATH/android/lib/metatypes/qt5gui_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5gui_metatypes.json
-  cp $QTPATH/android/lib/metatypes/qt5qmlmodels_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5qmlmodels_metatypes.json
-  cp $QTPATH/android/lib/metatypes/qt5qml_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5qml_metatypes.json
-  cp $QTPATH/android/lib/metatypes/qt5networkauth_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5networkauth_metatypes.json
-  cp $QTPATH/android/lib/metatypes/qt5network_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5network_xmetatypes.json
-  cp $QTPATH/android/lib/metatypes/qt5test_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5test_metatypes.json
-  cp $QTPATH/android/lib/metatypes/qt5androidextras_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5androidextras_metatypes.json
-  cp $QTPATH/android/lib/metatypes/qt5core_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5core_metatypes.json
+  cp $QTPATH/lib/metatypes/qt5quick_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5quick_metatypes.json
+  cp $QTPATH/lib/metatypes/qt5charts_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5charts_metatypes.json
+  cp $QTPATH/lib/metatypes/qt5svg_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5svg_metatypes.json
+  cp $QTPATH/lib/metatypes/qt5widgets_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5widgets_metatypes.json
+  cp $QTPATH/lib/metatypes/qt5gui_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5gui_metatypes.json
+  cp $QTPATH/lib/metatypes/qt5qmlmodels_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5qmlmodels_metatypes.json
+  cp $QTPATH/lib/metatypes/qt5qml_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5qml_metatypes.json
+  cp $QTPATH/lib/metatypes/qt5networkauth_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5networkauth_metatypes.json
+  cp $QTPATH/lib/metatypes/qt5network_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5network_xmetatypes.json
+  cp $QTPATH/lib/metatypes/qt5test_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5test_metatypes.json
+  cp $QTPATH/lib/metatypes/qt5androidextras_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5androidextras_metatypes.json
+  cp $QTPATH/lib/metatypes/qt5core_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5core_metatypes.json
   printn Y "Use release config"
-  $QTPATH/android/bin/qmake -spec android-clang \
+  $QTPATH/bin/qmake -spec android-clang \
     VERSION=$SHORTVERSION \
     BUILD_ID=$VERSIONCODE \
     CONFIG+=qtquickcompiler \
@@ -165,7 +164,7 @@ if [[ "$RELEASE" ]]; then
     ..//mozillavpn.pro  || die "Qmake failed"
 else
   printn Y "Use debug config \n"
-  $QTPATH/android/bin/qmake -spec android-clang \
+  $QTPATH/bin/qmake -spec android-clang \
     VERSION=$SHORTVERSION \
     BUILD_ID=$VERSIONCODE \
     CONFIG+=debug \

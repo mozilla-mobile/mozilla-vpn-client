@@ -9,6 +9,7 @@
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
+#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QAndroidBinder>
@@ -44,6 +45,7 @@ const int EVENT_CONNECTED = 1;
 const int EVENT_DISCONNECTED = 2;
 const int EVENT_STATISTIC_UPDATE = 3;
 const int EVENT_BACKEND_LOGS = 4;
+const int EVENT_ACTIVATION_ERROR = 5;
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidController");
@@ -146,7 +148,7 @@ void AndroidController::activate(
       PERMISSIONHELPER_CLASS, "startService", "(Landroid/content/Context;)V",
       appContext.object());
 
-  m_server = serverList[0];
+  Server server = serverList[0];
   m_device = *device;
 
   // Serialise arguments for the VPNService
@@ -161,12 +163,12 @@ void AndroidController::activate(
   jKeys["privateKey"] = keys->privateKey();
 
   QJsonObject jServer;
-  jServer["ipv4AddrIn"] = m_server.ipv4AddrIn();
-  jServer["ipv4Gateway"] = m_server.ipv4Gateway();
-  jServer["ipv6AddrIn"] = m_server.ipv6AddrIn();
-  jServer["ipv6Gateway"] = m_server.ipv6Gateway();
-  jServer["publicKey"] = m_server.publicKey();
-  jServer["port"] = (int)m_server.choosePort();
+  jServer["ipv4AddrIn"] = server.ipv4AddrIn();
+  jServer["ipv4Gateway"] = server.ipv4Gateway();
+  jServer["ipv6AddrIn"] = server.ipv6AddrIn();
+  jServer["ipv6Gateway"] = server.ipv6Gateway();
+  jServer["publicKey"] = server.publicKey();
+  jServer["port"] = (int)server.choosePort();
 
   QJsonArray allowedIPs;
   foreach (auto item, allowedIPAddressRanges) {
@@ -304,8 +306,8 @@ bool AndroidController::VPNBinder::onTransact(int code,
 
       // Data is here a JSON String
       doc = QJsonDocument::fromJson(data.readData());
-      emit m_controller->statusUpdated(m_controller->m_server.ipv4Gateway(),
-                                       m_controller->m_device.ipv4Address(),
+      emit m_controller->statusUpdated(doc.object()["endpoint"].toString(),
+                                       doc.object()["deviceIpv4"].toString(),
                                        doc.object()["totalTX"].toInt(),
                                        doc.object()["totalRX"].toInt());
       break;
@@ -317,6 +319,9 @@ bool AndroidController::VPNBinder::onTransact(int code,
         m_controller->m_logCallback(buffer);
       }
       break;
+    case EVENT_ACTIVATION_ERROR:
+      MozillaVPN::instance()->errorHandle(ErrorHandler::ConnectionFailureError);
+      emit m_controller->disconnected();
     default:
       logger.warning() << "Transact: Invalid!";
       break;

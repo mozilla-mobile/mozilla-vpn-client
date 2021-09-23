@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsdaemon.h"
+#include "dnsutilswindows.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
@@ -30,6 +31,7 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {
   MVPN_COUNT_CTOR(WindowsDaemon);
 
   m_wgutils = new WireguardUtilsWindows(this);
+  m_dnsutils = new DnsUtilsWindows(this);
 
   connect(m_wgutils, &WireguardUtilsWindows::backendFailure, this,
           &WindowsDaemon::monitorBackendFailure);
@@ -39,6 +41,7 @@ WindowsDaemon::~WindowsDaemon() {
   MVPN_COUNT_DTOR(WindowsDaemon);
   logger.debug() << "Daemon released";
 }
+
 void WindowsDaemon::prepareActivation(const InterfaceConfig& config) {
   // Before creating the interface we need to check which adapter
   // routes to the server endpoint
@@ -53,7 +56,6 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
     if (splitTunnelEnabled) {
       m_splitTunnelManager.stop();
     }
-    WindowsFirewall::instance()->disableKillSwitch();
     return true;
   }
   if (splitTunnelEnabled) {
@@ -65,8 +67,6 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
     m_splitTunnelManager.start(m_inetAdapterIndex);
     m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
   }
-  WindowsFirewall::instance()->enableKillSwitch(
-      WindowsCommons::VPNAdapterIndex(), config);
   return true;
 }
 

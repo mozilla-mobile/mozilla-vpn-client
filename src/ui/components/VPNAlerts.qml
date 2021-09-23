@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import Mozilla.VPN 1.0
 import QtQuick.Layouts 1.14
+import QtQuick.Controls 2.15
 import "./../components"
 import "./../themes/themes.js" as Theme
 
@@ -16,6 +17,7 @@ ColumnLayout {
     Layout.alignment: Qt.AlignHCenter
     Layout.fillHeight: false
     visible: VPNSurveyModel.hasSurvey || VPN.updateRecommended || isWasmViewer
+    property var stackviewMode: StackView.Immediate
 
     VPNAlert {
         id: updateAlert
@@ -28,7 +30,7 @@ ColumnLayout {
         alertActionText: qsTrId("vpn.updates.updateNow")
 
         onActionPressed: ()=>{
-            stackview.push("../views/ViewUpdate.qml", StackView.Immediate);
+            stackview.push("../views/ViewUpdate.qml", stackviewMode);
         }
         onClosePressed: ()=>{
              VPN.hideUpdateRecommendedAlert();

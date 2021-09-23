@@ -21,7 +21,7 @@ QT += network
 QT += quick
 QT += widgets
 QT += charts
-QT+= websockets
+QT += websockets
 
 # for the inspector
 QT+= testlib
@@ -31,6 +31,7 @@ CONFIG += no_testcase_installs
 TEMPLATE  = app
 
 DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
 INCLUDEPATH += \
             hacl-star \
@@ -161,6 +162,7 @@ SOURCES += \
         urlopener.cpp
 
 HEADERS += \
+        appimageprovider.h \
         apppermission.h \
         applistprovider.h \
         authenticationlistener.h \
@@ -538,10 +540,13 @@ else:android {
     TARGET = mozillavpn
     QT += networkauth
     QT += svg
-    QT += androidextras
     QT += qml
     QT += xml
     LIBS += \-ljnigraphics\
+
+    !versionAtLeast(QT_VERSION, 6.0.0) {
+        QT += androidextras
+    }
 
     DEFINES += MVPN_ANDROID
 
@@ -619,6 +624,7 @@ else:macos {
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
     QT += networkauth
+    QT += svg
 
     CONFIG += c++1z
 
@@ -813,6 +819,7 @@ else:win* {
         localsocketcontroller.cpp \
         platforms/windows/windowsapplistprovider.cpp  \
         platforms/windows/windowsappimageprovider.cpp \
+        platforms/windows/daemon/dnsutilswindows.cpp \
         platforms/windows/daemon/windowsdaemon.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
@@ -845,6 +852,7 @@ else:win* {
         localsocketcontroller.h \
         platforms/windows/windowsapplistprovider.h \
         platforms/windows/windowsappimageprovider.h \ 
+        platforms/windows/daemon/dnsutilswindows.h \
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \

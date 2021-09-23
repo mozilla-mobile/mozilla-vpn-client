@@ -7,6 +7,7 @@
 #include "helper.h"
 #include "networkrequest.h"
 #include "constants.h"
+#include "settingsholder.h"
 
 namespace {};
 
@@ -37,7 +38,8 @@ NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
 
 // static
 QString NetworkRequest::apiBaseUrl() {
-  return QString(Constants::API_STAGING_URL);
+  return SettingsHolder::instance()->envOrDefault(
+      "MVPN_API_BASE_URL", Constants::API_PRODUCTION_URL);
 }
 
 // static

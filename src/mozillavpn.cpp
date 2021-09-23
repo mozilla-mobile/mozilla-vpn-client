@@ -33,6 +33,7 @@
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
+#include "update/versionapi.h"
 #include "urlopener.h"
 
 #ifdef MVPN_IOS
@@ -210,21 +211,21 @@ void MozillaVPN::initialize() {
   Q_ASSERT(settingsHolder);
 
 #ifdef MVPN_IOS
-  if (!settingsHolder->hasNativeIOSDataMigrated()) {
+  if (!settingsHolder->nativeIOSDataMigrated()) {
     IOSDataMigration::migrate();
     settingsHolder->setNativeIOSDataMigrated(true);
   }
 #endif
 
 #ifdef MVPN_WINDOWS
-  if (!settingsHolder->hasNativeWindowsDataMigrated()) {
+  if (!settingsHolder->nativeWindowsDataMigrated()) {
     WindowsDataMigration::migrate();
     settingsHolder->setNativeWindowsDataMigrated(true);
   }
 #endif
 
 #ifdef MVPN_ANDROID
-  if (!settingsHolder->hasNativeAndroidDataMigrated()) {
+  if (!settingsHolder->nativeAndroidDataMigrated()) {
     AndroidDataMigration::migrate();
     settingsHolder->setNativeAndroidDataMigrated(true);
   }
@@ -335,15 +336,13 @@ void MozillaVPN::maybeStateMain() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
 #if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
-  if (!settingsHolder->hasPostAuthenticationShown() ||
-      !settingsHolder->postAuthenticationShown()) {
+  if (!settingsHolder->postAuthenticationShown()) {
     setState(StatePostAuthentication);
     return;
   }
 #endif
 
-  if (!settingsHolder->hasTelemetryPolicyShown() ||
-      !settingsHolder->telemetryPolicyShown()) {
+  if (!settingsHolder->telemetryPolicyShown()) {
     setState(StateTelemetryPolicy);
     return;
   }
@@ -355,6 +354,10 @@ void MozillaVPN::maybeStateMain() {
     setState(StateDeviceLimit);
     return;
   }
+
+  // For 2.5 we need to regenerate the device key to allow the the custom DNS
+  // feature. We can do it in background when the main view is shown.
+  maybeRegenerateDeviceKey();
 
   if (m_state != StateUpdateRequired) {
     setState(StateMain);
@@ -371,8 +374,7 @@ void MozillaVPN::getStarted() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-  if (!settingsHolder->hasTelemetryPolicyShown() ||
-      !settingsHolder->telemetryPolicyShown()) {
+  if (!settingsHolder->telemetryPolicyShown()) {
     setState(StateTelemetryPolicy);
     return;
   }
@@ -622,9 +624,14 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   Q_UNUSED(publicKey);
   logger.debug() << "Device added" << deviceName;
 
-  SettingsHolder::instance()->setPrivateKey(privateKey);
-  SettingsHolder::instance()->setPublicKey(publicKey);
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  settingsHolder->setPrivateKey(privateKey);
+  settingsHolder->setPublicKey(publicKey);
   m_private->m_keys.storeKeys(privateKey, publicKey);
+
+  settingsHolder->setDeviceKeyVersion(APP_VERSION);
 }
 
 void MozillaVPN::deviceRemoved(const QString& publicKey) {
@@ -1265,6 +1272,11 @@ void MozillaVPN::activate() {
   logger.debug() << "VPN tunnel activation";
 
   deleteTasks();
+
+  // We are about to connect. If the device key needs to be regenerated, this
+  // is the right time to do it.
+  maybeRegenerateDeviceKey();
+
   scheduleTask(new TaskControllerAction(TaskControllerAction::eActivate));
 }
 
@@ -1476,4 +1488,29 @@ void MozillaVPN::openAppStoreReviewLink() {
 
 bool MozillaVPN::validateUserDNS(const QString& dns) const {
   return DNSHelper::validateUserDNS(dns);
+}
+
+void MozillaVPN::maybeRegenerateDeviceKey() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  if (settingsHolder->hasDeviceKeyVersion() &&
+      VersionApi::compareVersions(settingsHolder->deviceKeyVersion(),
+                                  APP_VERSION) >= 0) {
+    return;
+  }
+
+  // We need a new device key only if the user wants to use custom DNS servers.
+  if (settingsHolder->dnsProvider() == SettingsHolder::DnsProvider::Gateway) {
+    logger.debug() << "Removal needed but no custom DNS used.";
+    return;
+  }
+
+  Q_ASSERT(m_private->m_deviceModel.hasCurrentDevice(keys()));
+
+  logger.debug() << "Removal needed for the 2.5 key regeneration.";
+
+  // We do not need to remove the current device! guardian-website "overwrites"
+  // the current device key when we submit a new one.
+  addCurrentDeviceAndRefreshData();
 }

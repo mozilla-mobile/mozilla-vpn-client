@@ -85,10 +85,10 @@ class DnsLinkDomain {
     args.endStructure();
     return args;
   }
-  bool operator==(const DnsLinkDomain& other) {
+  bool operator==(const DnsLinkDomain& other) const {
     return (domain == other.domain) && (search == other.search);
   }
-  bool operator==(const QString& other) { return (domain == other); }
+  bool operator==(const QString& other) const { return (domain == other); }
 };
 typedef QList<DnsLinkDomain> DnsLinkDomainList;
 Q_DECLARE_METATYPE(DnsLinkDomain);

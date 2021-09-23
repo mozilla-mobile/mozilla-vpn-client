@@ -186,8 +186,7 @@ void Controller::activateInternal() {
   QList<QString> vpnDisabledApps;
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (settingsHolder->protectSelectedApps() &&
-      settingsHolder->hasVpnDisabledApps()) {
+  if (settingsHolder->protectSelectedApps()) {
     vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
@@ -256,8 +255,7 @@ bool Controller::silentSwitchServers() {
   QList<QString> vpnDisabledApps;
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (settingsHolder->protectSelectedApps() &&
-      settingsHolder->hasVpnDisabledApps()) {
+  if (settingsHolder->protectSelectedApps()) {
     vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 

@@ -82,8 +82,8 @@ bool Feature::isDevModeEnabled() const {
   if (!m_devModeWriteable) {
     return false;
   }
-  const auto settings = SettingsHolder::instance();
-  return settings->hasDevModeFeatureFlag(m_id);
+
+  return SettingsHolder::instance()->devModeFeatureFlags().contains(m_id);
 }
 
 bool Feature::isSupported() const {
@@ -101,13 +101,13 @@ bool Feature::isSupported() const {
 }
 
 QString Feature::displayName() const {
-  return L18nStrings::instance()->tr(m_displayName_id);
+  return L18nStrings::instance()->t(m_displayName_id);
 }
 QString Feature::description() const {
-  return L18nStrings::instance()->tr(m_description_id);
+  return L18nStrings::instance()->t(m_description_id);
 }
 QString Feature::shortDescription() const {
-  return L18nStrings::instance()->tr(m_shortDescription_id);
+  return L18nStrings::instance()->t(m_shortDescription_id);
 }
 
 QVariant Feature::data(int role) const {

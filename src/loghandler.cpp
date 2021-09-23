@@ -11,7 +11,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageLogContext>
-#include <QMutexLocker>
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 #include <QString>
@@ -51,7 +50,7 @@ LogLevel qtTypeToLogLevel(QtMsgType type) {
 
 // static
 LogHandler* LogHandler::instance() {
-  QMutexLocker lock(&s_mutex);
+  MutexLocker lock(&s_mutex);
   return maybeCreate(lock);
 }
 
@@ -59,7 +58,7 @@ LogHandler* LogHandler::instance() {
 void LogHandler::messageQTHandler(QtMsgType type,
                                   const QMessageLogContext& context,
                                   const QString& message) {
-  QMutexLocker lock(&s_mutex);
+  MutexLocker lock(&s_mutex);
   maybeCreate(lock)->addLog(Log(qtTypeToLogLevel(type), context.file,
                                 context.function, context.line, message),
                             lock);
@@ -69,12 +68,12 @@ void LogHandler::messageQTHandler(QtMsgType type,
 void LogHandler::messageHandler(LogLevel logLevel, const QStringList& modules,
                                 const QString& className,
                                 const QString& message) {
-  QMutexLocker lock(&s_mutex);
+  MutexLocker lock(&s_mutex);
   maybeCreate(lock)->addLog(Log(logLevel, modules, className, message), lock);
 }
 
 // static
-LogHandler* LogHandler::maybeCreate(const QMutexLocker& proofOfLock) {
+LogHandler* LogHandler::maybeCreate(const MutexLocker& proofOfLock) {
   if (!s_instance) {
     LogLevel minLogLevel = Debug;  // TODO: in prod, we should log >= warning
     QStringList modules;
@@ -159,12 +158,12 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
 
 // static
 void LogHandler::enableDebug() {
-  QMutexLocker lock(&s_mutex);
+  MutexLocker lock(&s_mutex);
   maybeCreate(lock)->m_showDebug = true;
 }
 
 LogHandler::LogHandler(LogLevel minLogLevel, const QStringList& modules,
-                       const QMutexLocker& proofOfLock)
+                       const MutexLocker& proofOfLock)
     : m_minLogLevel(minLogLevel), m_modules(modules) {
   Q_UNUSED(proofOfLock);
 
@@ -177,7 +176,7 @@ LogHandler::LogHandler(LogLevel minLogLevel, const QStringList& modules,
   }
 }
 
-void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
+void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
   if (!matchLogLevel(log, proofOfLock)) {
     return;
   }
@@ -212,7 +211,7 @@ void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
 }
 
 bool LogHandler::matchModule(const Log& log,
-                             const QMutexLocker& proofOfLock) const {
+                             const MutexLocker& proofOfLock) const {
   Q_UNUSED(proofOfLock);
 
   // Let's include QT logs always.
@@ -235,14 +234,14 @@ bool LogHandler::matchModule(const Log& log,
 }
 
 bool LogHandler::matchLogLevel(const Log& log,
-                               const QMutexLocker& proofOfLock) const {
+                               const MutexLocker& proofOfLock) const {
   Q_UNUSED(proofOfLock);
   return log.m_logLevel >= m_minLogLevel;
 }
 
 // static
 void LogHandler::writeLogs(QTextStream& out) {
-  QMutexLocker lock(&s_mutex);
+  MutexLocker lock(&s_mutex);
 
   if (!s_instance || !s_instance->m_logFile) {
     return;
@@ -265,12 +264,12 @@ void LogHandler::writeLogs(QTextStream& out) {
 
 // static
 void LogHandler::cleanupLogs() {
-  QMutexLocker lock(&s_mutex);
+  MutexLocker lock(&s_mutex);
   cleanupLogFile(lock);
 }
 
 // static
-void LogHandler::cleanupLogFile(const QMutexLocker& proofOfLock) {
+void LogHandler::cleanupLogFile(const MutexLocker& proofOfLock) {
   if (!s_instance || !s_instance->m_logFile) {
     return;
   }
@@ -288,7 +287,7 @@ void LogHandler::cleanupLogFile(const QMutexLocker& proofOfLock) {
 
 // static
 void LogHandler::setLocation(const QString& path) {
-  QMutexLocker lock(&s_mutex);
+  MutexLocker lock(&s_mutex);
   s_location = path;
 
   if (s_instance && s_instance->m_logFile) {
@@ -296,7 +295,7 @@ void LogHandler::setLocation(const QString& path) {
   }
 }
 
-void LogHandler::openLogFile(const QMutexLocker& proofOfLock) {
+void LogHandler::openLogFile(const MutexLocker& proofOfLock) {
   Q_UNUSED(proofOfLock);
   Q_ASSERT(!m_logFile);
   Q_ASSERT(!m_output);
@@ -333,7 +332,7 @@ void LogHandler::openLogFile(const QMutexLocker& proofOfLock) {
          proofOfLock);
 }
 
-void LogHandler::closeLogFile(const QMutexLocker& proofOfLock) {
+void LogHandler::closeLogFile(const MutexLocker& proofOfLock) {
   Q_UNUSED(proofOfLock);
 
   if (m_logFile) {

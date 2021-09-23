@@ -111,19 +111,7 @@ RadioDelegate {
         anchors.bottomMargin: 12
 
         ColumnLayout {
-            spacing: 0
-
-            VPNBoldLabel {
-                //: “/month” stands for “per month”. %1 is replaced by the monthly cost (including currency).
-                //% "%1/month"
-                text: qsTrId("vpn.subscription.price").arg(productMonthlyPrice)
-
-                lineHeightMode: Text.FixedHeight
-                lineHeight: Theme.labelLineHeight
-                verticalAlignment: Text.AlignTop
-            }
-
-            VPNLightLabel {
+            id: col
                 function getSubscriptionDuration(product) {
                     switch (product) {
                     case VPNIAP.ProductMonthly:
@@ -137,17 +125,31 @@ RadioDelegate {
                     }
                 }
 
-                // TODO (maybe) - Do we want to add the subscription duration in months to the model?
-                property var subscriptionDuration: getSubscriptionDuration(productType)
+            // TODO (maybe) - Do we want to add the subscription duration in months to the model?
+            property var subscriptionDuration: getSubscriptionDuration(productType)
 
-                //% "Monthly plan"
-                property string productSingleMonth: qsTrId("vpn.subscription.monthlyPlan")
+            //% "Monthly plan"
+            property string productSingleMonth: qsTrId("vpn.subscription.monthlyPlan")
 
-                //: %1 is replaced by the subscription duration in months. %2 is replaced by the total subscription cost.
-                //% "%1-month plan: %2"
-                property string productMultiMonth: qsTrId("vpn.subscription.multiMonthPlan").arg(subscriptionDuration).arg(productPrice)
+            //: %1 is replaced by the subscription duration in months. %2 is replaced by the total subscription cost.
+            //% "%1-month plan: %2"
+            property string productMultiMonth: qsTrId("vpn.subscription.multiMonthPlan").arg(subscriptionDuration).arg(productPrice)
 
-                text: subscriptionDuration > 0 ? (subscriptionDuration> 1 ? productMultiMonth : productSingleMonth) : ""
+            //: “/month” stands for “per month”. %1 is replaced by the monthly cost (including currency).
+            //% "%1/month"
+            property string monthlyPrice: qsTrId("vpn.subscription.price").arg(productMonthlyPrice)
+
+            spacing: 0
+
+            VPNBoldLabel {
+                text: col.subscriptionDuration > 1 ? col.productMultiMonth : col.monthlyPrice
+                lineHeightMode: Text.FixedHeight
+                lineHeight: Theme.labelLineHeight
+                verticalAlignment: Text.AlignTop
+            }
+
+            VPNLightLabel {
+                text: col.subscriptionDuration > 0 ? (col.subscriptionDuration> 1 ? col.monthlyPrice : col.productSingleMonth) : ""
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
             }

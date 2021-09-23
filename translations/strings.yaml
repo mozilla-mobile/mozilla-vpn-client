@@ -42,7 +42,30 @@
 # In C++, you can do basically the same:
 # ```
 # QString foo =
-#    L18nStrings::instance()->tr(L18nStrings::InitialViewGetStartedButton)
+#    L18nStrings::instance()->t(L18nStrings::InitialViewGetStartedButton)
+# ```
+#
+# If a string contains arguments, add '%<number>' for each argument. For
+# instance, you can write 2 strings in these way:
+#   foo:
+#     value: You have %1 active devices
+#     comment: %1 is the number of active devices.
+#   bar:
+#     value: Your device %1 has been created at %2.
+#     comment: %1 is the device name. %2 is a date/time value.
+#
+# Please, write a comment to describe what the arguments are about.
+#
+# When you use a string with arguments, in QML, you can write:
+# ```
+# Text {
+#   text: VPNl18n.Something.arg("hello")
+#   otherText: VPNl18n.Something.arg("hello").arg("second argument")
+# ```
+# In C++:
+# ```
+# QString foo =
+#    L18nStrings::instance()->t(L18nStrings::Something).arg("hello")
 # ```
 #
 # Remember! When you change this file, you must run the

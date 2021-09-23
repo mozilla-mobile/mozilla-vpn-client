@@ -24,7 +24,9 @@ class WindowsFirewall final : public QObject {
   static WindowsFirewall* instance();
   bool init();
 
-  bool enableKillSwitch(int vpnAdapterIndex, const InterfaceConfig& config);
+  bool enableKillSwitch(int vpnAdapterIndex);
+  bool enablePeerTraffic(const InterfaceConfig& config);
+  bool disablePeerTraffic(const QString& pubkey);
   bool disableKillSwitch();
 
  private:
@@ -32,20 +34,22 @@ class WindowsFirewall final : public QObject {
   HANDLE m_sessionHandle;
   bool m_init = false;
   QList<uint64_t> m_activeRules;
+  QMultiMap<QString, uint64_t> m_peerRules;
 
   bool allowTrafficForAppOnAll(const QString& exePath, int weight,
                                const QString& title);
   bool blockTrafficTo(const QList<IPAddressRange>& range, uint8_t weight,
-                      const QString& title);
+                      const QString& title, const QString& peer = QString());
   bool blockTrafficTo(const IPAddressRange& range, uint8_t weight,
-                      const QString& title);
+                      const QString& title, const QString& peer = QString());
   bool blockTrafficOnPort(uint port, uint8_t weight, const QString& title);
   bool allowTrafficTo(const QHostAddress& targetIP, uint port, int weight,
-                      const QString& title);
+                      const QString& title, const QString& peer = QString());
   bool allowTrafficOfAdapter(int networkAdapter, uint8_t weight,
                              const QString& title);
   bool allowDHCPTraffic(uint8_t weight, const QString& title);
   bool allowHyperVTraffic(uint8_t weight, const QString& title);
+  bool allowLoopbackTraffic(uint8_t weight, const QString& title);
 
   // Utils
   QString getCurrentPath();
@@ -54,7 +58,8 @@ class WindowsFirewall final : public QObject {
   void importAddress(const QHostAddress& addr, OUT FWP_CONDITION_VALUE0_& value,
                      OUT QByteArray* v6DataBuffer);
   bool enableFilter(FWPM_FILTER0* filter, const QString& title,
-                    const QString& description);
+                    const QString& description,
+                    const QString& peer = QString());
 };
 
 #endif  // WINDOWSFIREWALL_H

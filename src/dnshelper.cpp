@@ -79,6 +79,12 @@ bool DNSHelper::validateUserDNS(const QString& dns) {
     // See: https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1714
     return false;
   }
+#ifdef MVPN_ANDROID
+  // Android rejects loopback as dns
+  if (address.isLoopback()) {
+    return false;
+  }
+#endif
   return true;
 }
 
