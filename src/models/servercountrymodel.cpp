@@ -34,12 +34,8 @@ bool ServerCountryModel::fromSettings() {
 
   logger.debug() << "Reading the server list from settings";
 
-  if (!settingsHolder->hasServers()) {
-    return false;
-  }
-
   const QByteArray json = settingsHolder->servers();
-  if (!fromJsonInternal(json)) {
+  if (json.isEmpty() || !fromJsonInternal(json)) {
     return false;
   }
 
