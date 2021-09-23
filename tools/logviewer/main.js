@@ -10,6 +10,7 @@ const Logger = {
   _modules: [],
   _components: [],
   _contexts: {},
+  _contextID: {},
   _currentContext: 'Client',
 
   async initialize(e) {
@@ -73,6 +74,7 @@ const Logger = {
     }
 
     this.createDateRange();
+    this.createContextIDs();
     this.createModuleList();
     this.createComponentList();
     this.populateLogTable();
@@ -222,6 +224,15 @@ const Logger = {
     this._maxDateValue = maxDateValue.getTime();
   },
 
+  createContextIDs() {
+    const params = new URLSearchParams(window.location.search);
+    for (let key of params.keys()) {
+      if (key.startsWith('id-')) {
+        this._contextID[key.substr(3)] = parseInt(params.get(key), 10);
+      }
+    }
+  },
+
   createModuleList() {
     const params = new URLSearchParams(window.location.search);
     let modules = null;
@@ -313,6 +324,8 @@ const Logger = {
   },
 
   populateLogTable() {
+    const searchValue = document.getElementById('search').value.toLowerCase();
+
     const ulContexts = document.getElementById('contextsTabs');
     const divContexts = document.getElementById('contextsLog');
     if (ulContexts.children.length === 0) {
@@ -347,7 +360,7 @@ const Logger = {
         div.setAttribute('aria-labelledby', `${context}-tab`);
 
         const table = document.createElement('table');
-        table.setAttribute('class', 'table');
+        table.setAttribute('class', 'table table-hover table-sm');
         div.appendChild(table);
 
         const thead = document.createElement('thead');
@@ -402,10 +415,9 @@ const Logger = {
     for (let component of components) urlSearchParams.append('c', component);
     urlSearchParams.append('dm', document.getElementById('dateMinRange').value);
     urlSearchParams.append('dM', document.getElementById('dateMaxRange').value);
-
-    const url = new URL(window.location);
-    url.search = urlSearchParams.toString();
-    window.history.pushState({}, '', url);
+    for (let key of Object.keys(this._contextID))
+      urlSearchParams.append(`id-${key}`, this._contextID[key]);
+    this.updateHistory(urlSearchParams);
 
     for (let context of Object.keys(this._contexts)) {
       const table = document.getElementById(`logTable-${context}`);
@@ -419,12 +431,22 @@ const Logger = {
                    .includes(true))
             continue;
 
+          if (searchValue != '' &&
+              !entry.log.find(log => log.toLowerCase().includes(searchValue))) {
+            continue;
+          }
+
           const entryDateTime = entry.date.getTime();
           if (entryDateTime < this._minDateValue ||
               entryDateTime > this._maxDateValue)
             continue;
 
           const tr = document.createElement('tr');
+          tr.setAttribute('data-id', id);
+
+          if ((context in this._contextID) && this._contextID[context] == id)
+            tr.classList.add('table-active');
+
           const th = document.createElement('th');
           th.setAttribute('scope', 'row');
           th.textContent = ++id;
@@ -454,6 +476,8 @@ const Logger = {
           tr.appendChild(tdLog);
 
           table.appendChild(tr);
+
+          tr.onclick = () => this.selectRow(context, tr);
           continue
         }
 
@@ -476,6 +500,48 @@ const Logger = {
         }
       }
     }
+  },
+
+  selectRow(context, row) {
+    if (row.classList.contains('table-active')) {
+      row.classList.remove('table-active');
+      delete this._contextID[context];
+    } else {
+      row.classList.add('table-active');
+      for (let prevRow = row.previousSibling; prevRow;
+           prevRow = prevRow.previousSibling)
+        prevRow.classList.remove('table-active');
+      for (let nextRow = row.nextSibling; nextRow;
+           nextRow = nextRow.nextSibling)
+        nextRow.classList.remove('table-active');
+
+      this._contextID[context] = parseInt(row.dataset.id, 10);
+    }
+
+    const url = new URL(window.location);
+    for (let key of url.searchParams.keys()) {
+      if (key.startsWith('id-')) {
+        url.searchParams.delete(key);
+      }
+    }
+
+    for (let key of Object.keys(this._contextID))
+      url.searchParams.append(`id-${key}`, this._contextID[key]);
+    this.updateHistory(url.searchParams);
+  },
+
+  keyboardSearchChanged() {
+    if (this._keyboardSearchTimerId) {
+      clearTimeout(this._keyboardSearchTimerId);
+    }
+    this._keyboardSearchTimerId =
+        setTimeout(() => this.populateLogTable(), 500);
+  },
+
+  updateHistory(urlSearchParams) {
+    const url = new URL(window.location);
+    url.search = urlSearchParams.toString();
+    window.history.pushState({}, '', url);
   }
 };
 
@@ -488,3 +554,5 @@ document.getElementById('componentSelectAll').onclick = () =>
     Logger.componentSelectAll();
 document.getElementById('componentUnselectAll').onclick = () =>
     Logger.componentUnselectAll();
+document.getElementById('search').onkeypress = () =>
+    Logger.keyboardSearchChanged();
