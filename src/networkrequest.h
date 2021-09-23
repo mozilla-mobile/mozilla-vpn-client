@@ -30,6 +30,15 @@ class NetworkRequest final : public QObject {
       QObject* parent, const QString& pkceCodeSuccess,
       const QString& pkceCodeVerifier);
 
+  static NetworkRequest* createForAdjustForwardGet(
+      QObject* parent, const QByteArray& route,
+      const QHash<QByteArray, QByteArray>& headers);
+
+  static NetworkRequest* createForAdjustForwardPost(
+      QObject* parent, const QByteArray& route,
+      const QHash<QByteArray, QByteArray>& headers,
+      const QByteArray& parameters);
+
   static NetworkRequest* createForDeviceCreation(QObject* parent,
                                                  const QString& deviceName,
                                                  const QString& pubKey);

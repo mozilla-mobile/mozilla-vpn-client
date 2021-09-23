@@ -134,6 +134,59 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 }
 
 // static
+NetworkRequest* NetworkRequest::createForAdjustForwardGet(
+    QObject* parent, const QByteArray& route,
+    const QHash<QByteArray, QByteArray>& headers) {
+  Q_ASSERT(parent);
+
+  logger.debug() << "Sending Adjust GET request";
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  for (QByteArray key : headers.keys()) {
+    logger.debug() << key << ": " << headers.value(key);
+    QByteArray value = key == "Host" ? "app.adjust.com" : headers.value(key);
+    r->m_request.setRawHeader(key, value);
+  }
+
+  QUrl url("https://app.adjust.com");
+  url.setPath(route);
+  r->m_request.setUrl(url);
+
+  logger.debug() << route;
+
+  r->getRequest();
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForAdjustForwardPost(
+    QObject* parent, const QByteArray& route,
+    const QHash<QByteArray, QByteArray>& headers,
+    const QByteArray& parameters) {
+  Q_ASSERT(parent);
+
+  logger.debug() << "Sending Adjust POST request";
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  for (QByteArray key : headers.keys()) {
+    QByteArray value = key == "Host" ? "app.adjust.com" : headers.value(key);
+    logger.debug() << key << ": " << value;
+    r->m_request.setRawHeader(key, value);
+  }
+
+  QUrl url("https://app.adjust.com:443");
+  url.setPath(route);
+  r->m_request.setUrl(url);
+
+  logger.debug() << route;
+
+  r->postRequest(parameters);
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForDeviceCreation(
     QObject* parent, const QString& deviceName, const QString& pubKey) {
   Q_ASSERT(parent);

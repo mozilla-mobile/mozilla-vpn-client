@@ -14,7 +14,7 @@
 
 #include <QString>
 
-void AdjustHandler::initialize() {
+void AdjustHandler::initialize(quint16 proxyPort) {
 #ifdef MVPN_ANDROID
   QAndroidJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/qt/VPNApplication", "onVpnInit", "(Z)V",
@@ -22,7 +22,7 @@ void AdjustHandler::initialize() {
 #endif
 
 #ifdef MVPN_IOS
-  IOSAdjustHelper::initialize();
+  IOSAdjustHelper::initialize(proxyPort);
 #endif
 }
 

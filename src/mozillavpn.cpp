@@ -57,6 +57,7 @@
 
 #ifdef MVPN_ADJUST
 #  include "adjusthandler.h"
+#  include "adjustproxy.h"
 #endif
 
 #include <QApplication>
@@ -90,7 +91,11 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   logger.debug() << "Creating MozillaVPN singleton";
 
 #ifdef MVPN_ADJUST
-  AdjustHandler::initialize();
+  AdjustProxy* adjustProxy = new AdjustProxy(qApp);
+  QObject::connect(controller(), &Controller::readyToQuit, adjustProxy,
+                   &AdjustProxy::close);
+  AdjustHandler::initialize(adjustProxy->serverPort());
+  AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
 
   Q_ASSERT(!s_instance);
