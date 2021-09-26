@@ -45,7 +45,7 @@ int CommandLogout::run(QStringList& tokens) {
         core.deviceModel()->currentDevice(core.keys());
     if (currentDevice) {
       TaskRemoveDevice task(currentDevice->publicKey());
-      task.run(&core);
+      task.run();
 
       QEventLoop loop;
       QObject::connect(&task, &Task::completed, [&] { loop.exit(); });

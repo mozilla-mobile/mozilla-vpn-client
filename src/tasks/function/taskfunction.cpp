@@ -5,14 +5,14 @@
 #include "taskfunction.h"
 #include "leakdetector.h"
 
-TaskFunction::TaskFunction(std::function<void(Core*)>&& callback)
+TaskFunction::TaskFunction(std::function<void()>&& callback)
     : Task("TaskFunction"), m_callback(std::move(callback)) {
   MVPN_COUNT_CTOR(TaskFunction);
 }
 
 TaskFunction::~TaskFunction() { MVPN_COUNT_DTOR(TaskFunction); }
 
-void TaskFunction::run(Core* core) {
-  m_callback(core);
+void TaskFunction::run() {
+  m_callback();
   emit completed();
 }

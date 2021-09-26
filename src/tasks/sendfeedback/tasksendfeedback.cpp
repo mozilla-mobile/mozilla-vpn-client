@@ -30,9 +30,7 @@ TaskSendFeedback::TaskSendFeedback(const QString& feedbackText,
 
 TaskSendFeedback::~TaskSendFeedback() { MVPN_COUNT_DTOR(TaskSendFeedback); }
 
-void TaskSendFeedback::run(Core* core) {
-  Q_UNUSED(core);
-
+void TaskSendFeedback::run() {
   logger.debug() << "Sending the feedback";
 
   NetworkRequest* request = NetworkRequest::createForFeedback(

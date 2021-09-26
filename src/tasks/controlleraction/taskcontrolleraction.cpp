@@ -28,8 +28,11 @@ TaskControllerAction::~TaskControllerAction() {
   MVPN_COUNT_DTOR(TaskControllerAction);
 }
 
-void TaskControllerAction::run(Core* core) {
+void TaskControllerAction::run() {
   logger.debug() << "TaskControllerAction run";
+
+  Core* core = Core::instance();
+  Q_ASSERT(core);
 
   Controller* controller = core->controller();
   Q_ASSERT(controller);

@@ -22,7 +22,7 @@ TaskAccountAndServers::~TaskAccountAndServers() {
   MVPN_COUNT_DTOR(TaskAccountAndServers);
 }
 
-void TaskAccountAndServers::run(Core* core) {
+void TaskAccountAndServers::run() {
   // Account fetch and servers fetch run in parallel.
 
   // Account fetch
@@ -30,17 +30,17 @@ void TaskAccountAndServers::run(Core* core) {
     NetworkRequest* request = NetworkRequest::createForAccount(this);
 
     connect(request, &NetworkRequest::requestFailed,
-            [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
+            [this](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Account request failed" << error;
-              core->errorHandle(ErrorHandler::toErrorType(error));
+              Core::instance()->errorHandle(ErrorHandler::toErrorType(error));
               m_accountCompleted = true;
               maybeCompleted();
             });
 
     connect(request, &NetworkRequest::requestCompleted,
-            [this, core](const QByteArray& data) {
+            [this](const QByteArray& data) {
               logger.error() << "Account request completed";
-              core->accountChecked(data);
+              Core::instance()->accountChecked(data);
               m_accountCompleted = true;
               maybeCompleted();
             });
@@ -51,17 +51,17 @@ void TaskAccountAndServers::run(Core* core) {
     NetworkRequest* request = NetworkRequest::createForServers(this);
 
     connect(request, &NetworkRequest::requestFailed,
-            [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
+            [this](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Failed to retrieve servers";
-              core->errorHandle(ErrorHandler::toErrorType(error));
+              Core::instance()->errorHandle(ErrorHandler::toErrorType(error));
               m_serversCompleted = true;
               maybeCompleted();
             });
 
     connect(request, &NetworkRequest::requestCompleted,
-            [this, core](const QByteArray& data) {
+            [this](const QByteArray& data) {
               logger.debug() << "Servers obtained";
-              core->serversFetched(data);
+              Core::instance()->serversFetched(data);
               m_serversCompleted = true;
               maybeCompleted();
             });

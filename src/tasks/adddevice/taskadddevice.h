@@ -16,7 +16,7 @@ class TaskAddDevice final : public Task {
   explicit TaskAddDevice(const QString& deviceName);
   ~TaskAddDevice();
 
-  void run(Core* core) override;
+  void run() override;
 
  private:
   QString m_deviceName;

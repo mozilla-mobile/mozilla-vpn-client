@@ -68,16 +68,9 @@ void TestTasks::addDevice_failure() {
   loop.exec();
 }
 
-void TestTasks::authenticate() {
-  // TODO
-}
-
 void TestTasks::function() {
   bool completed = false;
-  TaskFunction* task = new TaskFunction([&](Core* core) {
-    completed = true;
-    QCOMPARE(core, Core::instance());
-  });
+  TaskFunction* task = new TaskFunction([&]() { completed = true; });
 
   Core::instance()->scheduleTask(task);
   QVERIFY(completed);

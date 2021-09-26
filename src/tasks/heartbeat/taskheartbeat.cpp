@@ -21,38 +21,43 @@ TaskHeartbeat::TaskHeartbeat() : Task("TaskHeartbeat") {
 
 TaskHeartbeat::~TaskHeartbeat() { MVPN_COUNT_DTOR(TaskHeartbeat); }
 
-void TaskHeartbeat::run(Core* core) {
+void TaskHeartbeat::run() {
   NetworkRequest* request = NetworkRequest::createForHeartbeat(this);
 
-  connect(
-      request, &NetworkRequest::requestFailed,
-      [this, request, core](QNetworkReply::NetworkError, const QByteArray&) {
-        logger.error() << "Failed to talk with the server";
+  connect(request, &NetworkRequest::requestFailed,
+          [this, request](QNetworkReply::NetworkError, const QByteArray&) {
+            logger.error() << "Failed to talk with the server";
 
-        int statusCode = request->statusCode();
+            Core* core = Core::instance();
+            Q_ASSERT(core);
 
-        // Internal server errors.
-        if (statusCode >= 500 && statusCode <= 509) {
-          core->heartbeatCompleted(false);
-          return;
-        }
+            int statusCode = request->statusCode();
 
-        // Request failure ((?!?)
-        if (statusCode >= 400 && statusCode <= 409) {
-          core->heartbeatCompleted(false);
-          return;
-        }
+            // Internal server errors.
+            if (statusCode >= 500 && statusCode <= 509) {
+              core->heartbeatCompleted(false);
+              return;
+            }
 
-        // We don't know if this happeneded because of a global network
-        // failure or a local network issue. In general, let's ignore this
-        // error.
-        core->heartbeatCompleted(true);
-        emit completed();
-      });
+            // Request failure ((?!?)
+            if (statusCode >= 400 && statusCode <= 409) {
+              core->heartbeatCompleted(false);
+              return;
+            }
+
+            // We don't know if this happeneded because of a global network
+            // failure or a local network issue. In general, let's ignore this
+            // error.
+            core->heartbeatCompleted(true);
+            emit completed();
+          });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, core](const QByteArray& data) {
+          [this](const QByteArray& data) {
             logger.debug() << "Heartbeat content received:" << data;
+
+            Core* core = Core::instance();
+            Q_ASSERT(core);
 
             QJsonObject json = QJsonDocument::fromJson(data).object();
             QJsonValue mullvad = json.value("mullvadOK");

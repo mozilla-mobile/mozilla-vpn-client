@@ -4,7 +4,6 @@
 
 #include "taskauthenticate.h"
 #include "authenticationlistener.h"
-#include "core.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -48,7 +47,7 @@ TaskAuthenticate::TaskAuthenticate(Core::AuthenticationType authenticationType)
 
 TaskAuthenticate::~TaskAuthenticate() { MVPN_COUNT_DTOR(TaskAuthenticate); }
 
-void TaskAuthenticate::run(Core* core) {
+void TaskAuthenticate::run() {
   logger.debug() << "TaskAuthenticate::Run";
 
   Q_ASSERT(!m_authenticationListener);
@@ -63,7 +62,7 @@ void TaskAuthenticate::run(Core* core) {
       AuthenticationListener::create(this, m_authenticationType);
 
   connect(m_authenticationListener, &AuthenticationListener::completed,
-          [this, core, pkceCodeVerifier](const QString& pkceCodeSucces) {
+          [this, pkceCodeVerifier](const QString& pkceCodeSucces) {
             logger.debug() << "Authentication completed with code:"
                            << pkceCodeSucces;
 
@@ -71,39 +70,41 @@ void TaskAuthenticate::run(Core* core) {
                 NetworkRequest::createForAuthenticationVerification(
                     this, pkceCodeSucces, pkceCodeVerifier);
 
-            connect(
-                request, &NetworkRequest::requestFailed,
-                [core](QNetworkReply::NetworkError error, const QByteArray&) {
-                  logger.error()
-                      << "Failed to complete the authentication" << error;
-                  core->errorHandle(ErrorHandler::toErrorType(error));
-                });
+            connect(request, &NetworkRequest::requestFailed,
+                    [](QNetworkReply::NetworkError error, const QByteArray&) {
+                      logger.error()
+                          << "Failed to complete the authentication" << error;
+                      Core::instance()->errorHandle(
+                          ErrorHandler::toErrorType(error));
+                    });
 
             connect(request, &NetworkRequest::requestCompleted,
-                    [this, core](const QByteArray& data) {
+                    [this](const QByteArray& data) {
                       logger.debug() << "Authentication completed";
-                      authenticationCompleted(core, data);
+                      authenticationCompleted(data);
                     });
           });
 
   connect(m_authenticationListener, &AuthenticationListener::failed,
-          [this, core](const ErrorHandler::ErrorType error) {
-            core->errorHandle(error);
+          [this](const ErrorHandler::ErrorType error) {
+            Core::instance()->errorHandle(error);
             emit completed();
           });
 
   connect(m_authenticationListener, &AuthenticationListener::abortedByUser,
-          [this, core]() {
-            core->abortAuthentication();
+          [this]() {
+            Core::instance()->abortAuthentication();
             emit completed();
           });
 
   m_authenticationListener->start(pkceCodeChallenge, CODE_CHALLENGE_METHOD);
 }
 
-void TaskAuthenticate::authenticationCompleted(Core* core,
-                                               const QByteArray& data) {
+void TaskAuthenticate::authenticationCompleted(const QByteArray& data) {
   logger.debug() << "Authentication completed";
+
+  Core* core = Core::instance();
+  Q_ASSERT(core);
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isNull()) {

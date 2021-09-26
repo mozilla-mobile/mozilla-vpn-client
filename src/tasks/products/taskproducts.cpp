@@ -19,13 +19,13 @@ TaskProducts::TaskProducts() : Task("TaskProducts") {
 
 TaskProducts::~TaskProducts() { MVPN_COUNT_DTOR(TaskProducts); }
 
-void TaskProducts::run(Core* core) {
+void TaskProducts::run() {
   NetworkRequest* request = NetworkRequest::createForProducts(this);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Products request to guardian failed" << error;
-            core->errorHandle(ErrorHandler::toErrorType(error));
+            Core::instance()->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });
 

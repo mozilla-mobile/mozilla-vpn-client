@@ -66,7 +66,7 @@ int CommandDevice::run(QStringList& tokens) {
     }
 
     TaskRemoveDevice task(device.publicKey());
-    task.run(&core);
+    task.run();
 
     QEventLoop loop;
     QObject::connect(&task, &Task::completed, [&] { loop.exit(); });

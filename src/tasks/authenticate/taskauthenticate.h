@@ -19,10 +19,10 @@ class TaskAuthenticate final : public Task {
   explicit TaskAuthenticate(Core::AuthenticationType authenticationType);
   ~TaskAuthenticate();
 
-  void run(Core* core) override;
+  void run() override;
 
  private:
-  void authenticationCompleted(Core* core, const QByteArray& data);
+  void authenticationCompleted(const QByteArray& data);
 
  private:
   AuthenticationListener* m_authenticationListener = nullptr;

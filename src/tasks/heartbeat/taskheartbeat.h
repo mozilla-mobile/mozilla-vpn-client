@@ -16,7 +16,7 @@ class TaskHeartbeat final : public Task {
   TaskHeartbeat();
   ~TaskHeartbeat();
 
-  void run(Core* core) override;
+  void run() override;
 };
 
 #endif  // TASKHEARTBEAT_H

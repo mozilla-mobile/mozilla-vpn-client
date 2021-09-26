@@ -399,7 +399,7 @@ void Controller::disconnected() {
 
     TaskHeartbeat* task = new TaskHeartbeat();
     connect(task, &Task::completed, this, &Controller::heartbeatCompleted);
-    task->run(Core::instance());
+    task->run();
     return;
   }
 

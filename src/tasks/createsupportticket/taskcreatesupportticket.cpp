@@ -38,23 +38,23 @@ TaskCreateSupportTicket::~TaskCreateSupportTicket() {
   MVPN_COUNT_DTOR(TaskCreateSupportTicket);
 }
 
-void TaskCreateSupportTicket::run(Core* core) {
+void TaskCreateSupportTicket::run() {
   logger.debug() << "Sending the support ticket";
 
   NetworkRequest* request = NetworkRequest::createForSupportTicket(
       this, m_email, m_subject, m_issueText, m_logs, m_category);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to create support ticket" << error;
-            core->createTicketAnswerRecieved(false);
+            Core::instance()->createTicketAnswerRecieved(false);
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, core](const QByteArray&) {
+          [this](const QByteArray&) {
             logger.debug() << "Support ticket created";
-            core->createTicketAnswerRecieved(true);
+            Core::instance()->createTicketAnswerRecieved(true);
             emit completed();
           });
 }

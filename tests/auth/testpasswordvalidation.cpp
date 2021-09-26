@@ -110,7 +110,7 @@ void TestPasswordValidation::emailPassword() {
 
   // Starting the authentication flow.
   TaskAuthenticate task(Core::AuthenticationInApp);
-  task.run(Core::instance());
+  task.run();
 
   EventLoop loop;
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {

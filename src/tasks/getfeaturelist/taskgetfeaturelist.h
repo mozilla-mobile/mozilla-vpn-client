@@ -9,8 +9,6 @@
 
 #include <QObject>
 
-class Core;
-
 class TaskGetFeatureList final : public Task {
   Q_DISABLE_COPY_MOVE(TaskGetFeatureList)
 
@@ -18,7 +16,7 @@ class TaskGetFeatureList final : public Task {
   TaskGetFeatureList();
   ~TaskGetFeatureList();
 
-  void run(Core* core) override;
+  void run() override;
 };
 
 #endif  // TASKGETFEATURELIST_H

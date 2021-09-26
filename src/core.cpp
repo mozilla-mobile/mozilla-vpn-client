@@ -531,7 +531,7 @@ void Core::maybeRunTask() {
   QObject::connect(m_running_task, &Task::completed, this,
                    &Core::taskCompleted);
 
-  m_running_task->run(this);
+  m_running_task->run();
 }
 
 void Core::taskCompleted() {
@@ -576,7 +576,7 @@ void Core::authenticationCompleted(const QByteArray& json,
   if (FeatureInAppPurchase::instance()->isSupported()) {
     if (m_private->m_user.subscriptionNeeded()) {
       scheduleTask(new TaskProducts());
-      scheduleTask(new TaskFunction([this](Core*) { maybeStateMain(); }));
+      scheduleTask(new TaskFunction([this] { maybeStateMain(); }));
       return;
     }
   }
@@ -605,7 +605,7 @@ void Core::completeActivation() {
   }
 
   // Finally we are able to activate the client.
-  scheduleTask(new TaskFunction([this](Core*) {
+  scheduleTask(new TaskFunction([this] {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the authentication";
       errorHandle(ErrorHandler::RemoteServiceError);
@@ -689,7 +689,7 @@ void Core::removeDeviceFromPublicKey(const QString& publicKey) {
   addCurrentDeviceAndRefreshData();
 
   // Finally we are able to activate the client.
-  scheduleTask(new TaskFunction([this](Core*) {
+  scheduleTask(new TaskFunction([this] {
     if (m_state != StateDeviceLimit) {
       return;
     }
@@ -831,7 +831,7 @@ void Core::logout() {
     scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
   }
 
-  scheduleTask(new TaskFunction([](Core* core) { core->reset(false); }));
+  scheduleTask(new TaskFunction([this] { reset(false); }));
 }
 
 void Core::reset(bool forceInitialState) {
@@ -1315,9 +1315,8 @@ void Core::subscriptionStarted(const QString& productIdentifier) {
   // If IAP is not ready (race condition), register the products again.
   if (!iap->hasProductsRegistered()) {
     scheduleTask(new TaskProducts());
-    scheduleTask(new TaskFunction([productIdentifier](Core* core) {
-      core->subscriptionStarted(productIdentifier);
-    }));
+    scheduleTask(new TaskFunction(
+        [this, productIdentifier] { subscriptionStarted(productIdentifier); }));
 
     return;
   }
@@ -1382,7 +1381,7 @@ void Core::subscriptionFailedInternal(bool canceledByUser) {
   }
 
   scheduleTask(new TaskAccountAndServers());
-  scheduleTask(new TaskFunction([this](Core*) {
+  scheduleTask(new TaskFunction([this]() {
     if (!m_private->m_user.subscriptionNeeded() &&
         m_state == StateSubscriptionNeeded) {
       maybeStateMain();

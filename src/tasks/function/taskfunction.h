@@ -14,13 +14,13 @@ class TaskFunction final : public Task {
   Q_DISABLE_COPY_MOVE(TaskFunction)
 
  public:
-  TaskFunction(std::function<void(Core*)>&& callback);
+  TaskFunction(std::function<void()>&& callback);
   ~TaskFunction();
 
-  void run(Core* core) override;
+  void run() override;
 
  private:
-  std::function<void(Core*)> m_callback;
+  std::function<void()> m_callback;
 };
 
 #endif  // TASKFUNCTION_H

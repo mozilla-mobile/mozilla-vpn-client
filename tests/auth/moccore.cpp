@@ -37,7 +37,7 @@ void Core::openLink(LinkType) {}
 
 void Core::scheduleTask(Task* task) {
   connect(task, &Task::completed, task, &Task::deleteLater);
-  task->run(this);
+  task->run();
 }
 
 void Core::maybeRunTask() {}

@@ -16,7 +16,7 @@ class TaskProducts final : public Task {
   TaskProducts();
   ~TaskProducts();
 
-  void run(Core* core) override;
+  void run() override;
 };
 
 #endif  // TASKPRODUCTS_H

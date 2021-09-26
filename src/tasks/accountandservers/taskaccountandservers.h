@@ -17,7 +17,7 @@ class TaskAccountAndServers final : public Task {
   TaskAccountAndServers();
   ~TaskAccountAndServers();
 
-  void run(Core* core) override;
+  void run() override;
 
  private:
   void maybeCompleted();

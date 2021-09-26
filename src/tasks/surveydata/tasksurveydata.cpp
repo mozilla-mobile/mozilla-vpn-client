@@ -19,7 +19,7 @@ TaskSurveyData::TaskSurveyData() : Task("TaskSurveyData") {
 
 TaskSurveyData::~TaskSurveyData() { MVPN_COUNT_DTOR(TaskSurveyData); }
 
-void TaskSurveyData::run(Core* core) {
+void TaskSurveyData::run() {
   logger.debug() << "Fetch survey data";
 
   NetworkRequest* request = NetworkRequest::createForSurveyData(this);
@@ -31,9 +31,9 @@ void TaskSurveyData::run(Core* core) {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, core](const QByteArray& data) {
+          [this](const QByteArray& data) {
             logger.debug() << "Survey data fetched";
-            core->surveyChecked(data);
+            Core::instance()->surveyChecked(data);
             emit completed();
           });
 }

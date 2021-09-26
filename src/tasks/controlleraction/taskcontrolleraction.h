@@ -26,7 +26,7 @@ class TaskControllerAction final : public Task {
   explicit TaskControllerAction(TaskAction action);
   ~TaskControllerAction();
 
-  void run(Core* core) override;
+  void run() override;
 
  private slots:
   void stateChanged();

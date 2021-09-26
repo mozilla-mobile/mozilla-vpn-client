@@ -39,7 +39,7 @@ TaskAddDevice::TaskAddDevice(const QString& deviceName)
 
 TaskAddDevice::~TaskAddDevice() { MVPN_COUNT_DTOR(TaskAddDevice); }
 
-void TaskAddDevice::run(Core* core) {
+void TaskAddDevice::run() {
   logger.debug() << "Adding the device" << logger.sensitive(m_deviceName);
 
   QByteArray privateKey = generatePrivateKey();
@@ -52,16 +52,16 @@ void TaskAddDevice::run(Core* core) {
       NetworkRequest::createForDeviceCreation(this, m_deviceName, publicKey);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to add the device" << error;
-            core->errorHandle(ErrorHandler::toErrorType(error));
+            Core::instance()->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, core, publicKey, privateKey](const QByteArray&) {
+          [this, publicKey, privateKey](const QByteArray&) {
             logger.debug() << "Device added";
-            core->deviceAdded(m_deviceName, publicKey, privateKey);
+            Core::instance()->deviceAdded(m_deviceName, publicKey, privateKey);
             emit completed();
           });
 }

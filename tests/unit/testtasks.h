@@ -13,8 +13,6 @@ class TestTasks final : public TestHelper {
   void addDevice_success();
   void addDevice_failure();
 
-  void authenticate();
-
   void function();
 
   void removeDevice();

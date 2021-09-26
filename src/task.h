@@ -7,8 +7,6 @@
 
 #include <QObject>
 
-class Core;
-
 class Task : public QObject {
   Q_OBJECT
 
@@ -18,7 +16,7 @@ class Task : public QObject {
 
   const QString& name() const { return m_name; }
 
-  virtual void run(Core* core) = 0;
+  virtual void run() = 0;
 
  signals:
   void completed();

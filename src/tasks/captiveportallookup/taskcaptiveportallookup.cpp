@@ -22,20 +22,24 @@ TaskCaptivePortalLookup::~TaskCaptivePortalLookup() {
   MVPN_COUNT_DTOR(TaskCaptivePortalLookup);
 }
 
-void TaskCaptivePortalLookup::run(Core* core) {
+void TaskCaptivePortalLookup::run() {
   logger.debug() << "Resolving the captive portal detector URL";
 
   NetworkRequest* request = NetworkRequest::createForCaptivePortalLookup(this);
   connect(request, &NetworkRequest::requestFailed,
-          [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to obtain captive poral IPs" << error;
-            core->errorHandle(ErrorHandler::toErrorType(error));
+            Core::instance()->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, core](const QByteArray& data) {
+          [this](const QByteArray& data) {
             logger.debug() << "Lookup completed";
+
+            Core* core = Core::instance();
+            Q_ASSERT(core);
+
             if (core->captivePortal()->fromJson(data)) {
               core->captivePortal()->writeSettings();
             }

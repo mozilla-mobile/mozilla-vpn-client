@@ -16,7 +16,7 @@ class TaskSurveyData final : public Task {
   TaskSurveyData();
   ~TaskSurveyData();
 
-  void run(Core* core) override;
+  void run() override;
 };
 
 #endif  // TASKSURVEYDATA_H

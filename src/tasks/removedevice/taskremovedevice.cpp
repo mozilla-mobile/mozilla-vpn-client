@@ -21,23 +21,23 @@ TaskRemoveDevice::TaskRemoveDevice(const QString& publicKey)
 
 TaskRemoveDevice::~TaskRemoveDevice() { MVPN_COUNT_DTOR(TaskRemoveDevice); }
 
-void TaskRemoveDevice::run(Core* core) {
+void TaskRemoveDevice::run() {
   logger.debug() << "Removing the device with public key" << m_publicKey;
 
   NetworkRequest* request =
       NetworkRequest::createForDeviceRemoval(this, m_publicKey);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to remove the device" << error;
-            core->errorHandle(ErrorHandler::toErrorType(error));
+            Core::instance()->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, core](const QByteArray&) {
+          [this](const QByteArray&) {
             logger.debug() << "Device removed";
-            core->deviceRemoved(m_publicKey);
+            Core::instance()->deviceRemoved(m_publicKey);
             emit completed();
           });
 }
