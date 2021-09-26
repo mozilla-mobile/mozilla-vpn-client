@@ -15,6 +15,8 @@
 #include "features/featureinappauth.h"
 #include "features/featureinapppurchase.h"
 #include "features/featurelocalareaaccess.h"
+#include "features/featuremodulesend.h"
+#include "features/featuremodulevpn.h"
 #include "features/featuremultihop.h"
 #include "features/featurenotificationcontrol.h"
 #include "features/featuresplittunnel.h"
@@ -48,6 +50,8 @@ void FeatureList::initialize() {
   new FeatureInAppAuth();
   new FeatureInAppPurchase();
   new FeatureLocalAreaAccess();
+  new FeatureModuleSend();
+  new FeatureModuleVPN();
   new FeatureMultiHop();
   new FeatureNotificationControl();
   new FeatureSplitTunnel();

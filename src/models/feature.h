@@ -14,7 +14,7 @@
 class Feature : public QObject {
   Q_OBJECT
 
-  Q_PROPERTY(QString id MEMBER m_id CONSTANT)
+  Q_PROPERTY(QString id READ id CONSTANT)
   Q_PROPERTY(QString name MEMBER m_name CONSTANT)
   Q_PROPERTY(bool isMajor READ isMajor CONSTANT)
   Q_PROPERTY(QString displayName READ displayName CONSTANT)
@@ -27,15 +27,12 @@ class Feature : public QObject {
   Q_PROPERTY(bool devModeWriteable MEMBER m_devModeWriteable CONSTANT)
   Q_PROPERTY(bool isSupported READ isSupported NOTIFY supportedChanged)
 
-  // protected:
  public:
   Feature(const QString& id, const QString& name, bool isMajor,
           L18nStrings::String displayName_id, L18nStrings::String shortDesc_id,
           L18nStrings::String desc_id, const QString& imgPath,
           const QString& iconPath, const QString& releaseVersion,
           bool devModeWriteable = false);
-
- public:
   virtual ~Feature() = default;
 
   static QList<Feature*> getAll();

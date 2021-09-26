@@ -64,9 +64,13 @@
         <file>ui/states/StateUpdateRequired.qml</file>
         <file>ui/states/StateDeviceLimit.qml</file>
         <file>ui/states/StateBackendFailure.qml</file>
-        <file>ui/views/ViewMain.qml</file>
+        <file>ui/modules/Send.qml</file>
+        <file>ui/modules/SendWidget.qml</file>
+        <file>ui/modules/VPN.qml</file>
+        <file>ui/modules/VPNWidget.qml</file>
         <file>ui/views/ViewDevices.qml</file>
         <file>ui/views/ViewGetHelp.qml</file>
+        <file>ui/views/ViewDashboard.qml</file>
         <file>ui/developerMenu/ViewDeveloperMenu.qml</file>
         <file>ui/views/ViewServers.qml</file>
         <file>ui/views/ViewSettings.qml</file>
@@ -337,6 +341,7 @@
         <file>ui/resources/back-dark.svg</file>
         <file>ui/resources/settings.svg</file>
         <file>ui/resources/logo.svg</file>
+        <file>ui/resources/logoSend.png</file>
         <file>ui/resources/chevron.svg</file>
         <file>ui/resources/chevron-right-dark.svg</file>
         <file>ui/resources/chevron-purple.svg</file>

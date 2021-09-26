@@ -112,6 +112,8 @@ SOURCES += \
         models/feedbackcategorymodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
+        models/module.cpp \
+        models/modulemodel.cpp \
         models/server.cpp \
         models/servercity.cpp \
         models/servercountry.cpp \
@@ -122,6 +124,8 @@ SOURCES += \
         models/surveymodel.cpp \
         models/user.cpp \
         models/whatsnewmodel.cpp \
+        modules/modulesend.cpp \
+        modules/modulevpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
         networkwatcher.cpp \
@@ -239,6 +243,8 @@ HEADERS += \
         models/feedbackcategorymodel.h \
         models/helpmodel.h \
         models/keys.h \
+        models/module.h \
+        models/modulemodel.h \
         models/server.h \
         models/servercity.h \
         models/servercountry.h \
@@ -249,6 +255,8 @@ HEADERS += \
         models/surveymodel.h \
         models/user.h \
         models/whatsnewmodel.h \
+        modules/modulesend.h \
+        modules/modulevpn.h \
         networkmanager.h \
         networkrequest.h \
         networkwatcher.h \

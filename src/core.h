@@ -16,6 +16,7 @@
 #include "models/feedbackcategorymodel.h"
 #include "models/helpmodel.h"
 #include "models/keys.h"
+#include "models/modulemodel.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "models/supportcategorymodel.h"
@@ -185,6 +186,7 @@ class Core final : public QObject {
   }
   Keys* keys() { return &m_private->m_keys; }
   HelpModel* helpModel() { return &m_private->m_helpModel; }
+  ModuleModel* moduleModel() { return &m_private->m_moduleModel; }
   NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
   ServerCountryModel* serverCountryModel() {
@@ -364,6 +366,7 @@ class Core final : public QObject {
     SupportCategoryModel m_supportCategoryModel;
     Keys m_keys;
     HelpModel m_helpModel;
+    ModuleModel m_moduleModel;
     NetworkWatcher m_networkWatcher;
     ReleaseMonitor m_releaseMonitor;
     ServerCountryModel m_serverCountryModel;

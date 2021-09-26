@@ -4,11 +4,19 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
+import Mozilla.VPN 1.0
 
 import "../components"
 
 VPNStackView {
     id: stackview
 
-    initialItem: "../views/ViewMain.qml"
+    initialItem: VPNModuleModel.dashboardOrFirstView
+
+    Connections {
+        target: VPNModuleModel
+        function onModuleNeeded(view) {
+            stackview.push(view)
+        }
+    }
 }

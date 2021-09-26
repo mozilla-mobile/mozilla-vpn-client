@@ -355,6 +355,14 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 
+    qmlRegisterSingletonType<Core>(
+        "Mozilla.VPN", 1, 0, "VPNModuleModel",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = Core::instance()->moduleModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
 #ifdef MVPN_ANDROID
     qmlRegisterSingletonType<Core>("Mozilla.VPN", 1, 0, "VPNAndroidUtils",
                                    [](QQmlEngine*, QJSEngine*) -> QObject* {
