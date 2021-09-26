@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "tasksurveydata.h"
+#include "core.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 namespace {
@@ -19,7 +19,7 @@ TaskSurveyData::TaskSurveyData() : Task("TaskSurveyData") {
 
 TaskSurveyData::~TaskSurveyData() { MVPN_COUNT_DTOR(TaskSurveyData); }
 
-void TaskSurveyData::run(MozillaVPN* vpn) {
+void TaskSurveyData::run(Core* core) {
   logger.debug() << "Fetch survey data";
 
   NetworkRequest* request = NetworkRequest::createForSurveyData(this);
@@ -31,9 +31,9 @@ void TaskSurveyData::run(MozillaVPN* vpn) {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn](const QByteArray& data) {
+          [this, core](const QByteArray& data) {
             logger.debug() << "Survey data fetched";
-            vpn->surveyChecked(data);
+            core->surveyChecked(data);
             emit completed();
           });
 }

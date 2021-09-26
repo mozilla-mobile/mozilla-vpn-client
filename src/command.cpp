@@ -4,13 +4,13 @@
 
 #include "command.h"
 #include "commandlineparser.h"
+#include "core.h"
 #include "constants.h"
 #include "featurelist.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
 
@@ -51,25 +51,25 @@ bool Command::userAuthenticated() {
 }
 
 bool Command::loadModels() {
-  MozillaVPN* vpn = MozillaVPN::instance();
+  Core* core = Core::instance();
 
   // First the keys!
-  if (!vpn->keys()->fromSettings()) {
+  if (!core->keys()->fromSettings()) {
     QTextStream stream(stdout);
     stream << "No cache available" << Qt::endl;
     return false;
   }
 
-  if (!vpn->deviceModel()->fromSettings(vpn->keys()) ||
-      !vpn->serverCountryModel()->fromSettings() ||
-      !vpn->user()->fromSettings() || !vpn->currentServer()->fromSettings() ||
-      !vpn->modelsInitialized()) {
+  if (!core->deviceModel()->fromSettings(core->keys()) ||
+      !core->serverCountryModel()->fromSettings() ||
+      !core->user()->fromSettings() || !core->currentServer()->fromSettings() ||
+      !core->modelsInitialized()) {
     QTextStream stream(stdout);
     stream << "No cache available" << Qt::endl;
     return false;
   }
 
-  if (!vpn->captivePortal()->fromSettings()) {
+  if (!core->captivePortal()->fromSettings()) {
     // We do not care about these settings.
   }
 
@@ -89,7 +89,7 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   FeatureList::instance()->initialize();
 
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  logger.info() << "MozillaVPN" << APP_VERSION;
+  logger.info() << "Core" << APP_VERSION;
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
@@ -117,7 +117,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << APP_VERSION;
+  logger.info() << "Core" << APP_VERSION;
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());

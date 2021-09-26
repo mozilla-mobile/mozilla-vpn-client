@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testtasks.h"
-#include "../../src/mozillavpn.h"
+#include "../../src/core.h"
 #include "../../src/tasks/accountandservers/taskaccountandservers.h"
 #include "../../src/tasks/adddevice/taskadddevice.h"
 #include "../../src/tasks/function/taskfunction.h"
@@ -21,7 +21,7 @@ void TestTasks::accountAndServers() {
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
 
-    MozillaVPN::instance()->scheduleTask(task);
+    Core::instance()->scheduleTask(task);
     loop.exec();
   }
 
@@ -37,7 +37,7 @@ void TestTasks::accountAndServers() {
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
 
-    MozillaVPN::instance()->scheduleTask(task);
+    Core::instance()->scheduleTask(task);
     loop.exec();
   }
 }
@@ -51,7 +51,7 @@ void TestTasks::addDevice_success() {
   QEventLoop loop;
   connect(task, &Task::completed, [&]() { loop.exit(); });
 
-  MozillaVPN::instance()->scheduleTask(task);
+  Core::instance()->scheduleTask(task);
   loop.exec();
 }
 
@@ -64,7 +64,7 @@ void TestTasks::addDevice_failure() {
   QEventLoop loop;
   connect(task, &Task::completed, [&]() { loop.exit(); });
 
-  MozillaVPN::instance()->scheduleTask(task);
+  Core::instance()->scheduleTask(task);
   loop.exec();
 }
 
@@ -74,12 +74,12 @@ void TestTasks::authenticate() {
 
 void TestTasks::function() {
   bool completed = false;
-  TaskFunction* task = new TaskFunction([&](MozillaVPN* vpn) {
+  TaskFunction* task = new TaskFunction([&](Core* core) {
     completed = true;
-    QCOMPARE(vpn, MozillaVPN::instance());
+    QCOMPARE(core, Core::instance());
   });
 
-  MozillaVPN::instance()->scheduleTask(task);
+  Core::instance()->scheduleTask(task);
   QVERIFY(completed);
 }
 

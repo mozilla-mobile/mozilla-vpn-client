@@ -3,11 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskaccountandservers.h"
+#include "core.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/servercountrymodel.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 namespace {
@@ -22,7 +22,7 @@ TaskAccountAndServers::~TaskAccountAndServers() {
   MVPN_COUNT_DTOR(TaskAccountAndServers);
 }
 
-void TaskAccountAndServers::run(MozillaVPN* vpn) {
+void TaskAccountAndServers::run(Core* core) {
   // Account fetch and servers fetch run in parallel.
 
   // Account fetch
@@ -30,17 +30,17 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
     NetworkRequest* request = NetworkRequest::createForAccount(this);
 
     connect(request, &NetworkRequest::requestFailed,
-            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+            [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Account request failed" << error;
-              vpn->errorHandle(ErrorHandler::toErrorType(error));
+              core->errorHandle(ErrorHandler::toErrorType(error));
               m_accountCompleted = true;
               maybeCompleted();
             });
 
     connect(request, &NetworkRequest::requestCompleted,
-            [this, vpn](const QByteArray& data) {
+            [this, core](const QByteArray& data) {
               logger.error() << "Account request completed";
-              vpn->accountChecked(data);
+              core->accountChecked(data);
               m_accountCompleted = true;
               maybeCompleted();
             });
@@ -51,17 +51,17 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
     NetworkRequest* request = NetworkRequest::createForServers(this);
 
     connect(request, &NetworkRequest::requestFailed,
-            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+            [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Failed to retrieve servers";
-              vpn->errorHandle(ErrorHandler::toErrorType(error));
+              core->errorHandle(ErrorHandler::toErrorType(error));
               m_serversCompleted = true;
               maybeCompleted();
             });
 
     connect(request, &NetworkRequest::requestCompleted,
-            [this, vpn](const QByteArray& data) {
+            [this, core](const QByteArray& data) {
               logger.debug() << "Servers obtained";
-              vpn->serversFetched(data);
+              core->serversFetched(data);
               m_serversCompleted = true;
               maybeCompleted();
             });

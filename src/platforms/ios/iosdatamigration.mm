@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "iosdatamigration.h"
+#include "core.h"
 #include "device.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "user.h"
 
 #include <QByteArray>
@@ -20,8 +20,8 @@ namespace {
 Logger logger(LOG_IOS, "IOSDataMigration");
 
 void migrateUserDefaultData() {
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
+  Core* core = Core::instance();
+  Q_ASSERT(core);
 
   NSUserDefaults* sud = [NSUserDefaults standardUserDefaults];
   if (!sud) {
@@ -33,7 +33,7 @@ void migrateUserDefaultData() {
     QByteArray json = QByteArray::fromNSData(userData);
     if (!json.isEmpty()) {
       logger.debug() << "User data to be migrated";
-      vpn->accountChecked(json);
+      core->accountChecked(json);
     }
   }
 
@@ -62,7 +62,7 @@ void migrateUserDefaultData() {
 
       QJsonDocument doc;
       doc.setObject(countriesObj);
-      if (!vpn->setServerList(doc.toJson())) {
+      if (!core->setServerList(doc.toJson())) {
         logger.error() << "Server list cannot be imported";
         return;
       }
@@ -95,7 +95,7 @@ void migrateUserDefaultData() {
     }
 
     ServerData serverData;
-    if (vpn->serverCountryModel()->pickIfExists(code.toString(), name.toString(), serverData)) {
+    if (core->serverCountryModel()->pickIfExists(code.toString(), name.toString(), serverData)) {
       logger.debug() << "ServerCity found";
       serverData.writeSettings();
     }
@@ -156,10 +156,10 @@ void migrateKeychainData() {
     return;
   }
 
-  MozillaVPN::instance()->deviceAdded(Device::currentDeviceName(), publicKey.toString(),
-                                      privateKey.toString());
+  Core::instance()->deviceAdded(Device::currentDeviceName(), publicKey.toString(),
+                                privateKey.toString());
 
-  MozillaVPN::instance()->setToken(token.toString());
+  Core::instance()->setToken(token.toString());
 }
 }
 

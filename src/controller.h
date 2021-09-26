@@ -17,7 +17,7 @@
 #include <functional>
 
 class ControllerImpl;
-class MozillaVPN;
+class Core;
 class IPAddressRange;
 
 class Controller final : public QObject {

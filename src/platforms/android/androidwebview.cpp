@@ -4,10 +4,10 @@
 
 #include "androidwebview.h"
 #include "androidutils.h"
+#include "core.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkmanager.h"
 
 #include <QAndroidJniEnvironment>
@@ -208,7 +208,7 @@ void AndroidWebView::geometryChange(const QRectF& newGeometry,
 #endif
 
 void AndroidWebView::propagateError(ErrorHandler::ErrorType error) {
-  MozillaVPN::instance()->errorHandle(error);
+  Core::instance()->errorHandle(error);
   emit failure();
 }
 

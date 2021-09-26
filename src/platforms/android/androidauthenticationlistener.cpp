@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidauthenticationlistener.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "platforms/android/androidutils.h"
 #include "tasks/authenticate/desktopauthenticationlistener.h"
 
@@ -32,9 +32,8 @@ void AndroidAuthenticationListener::start(const QString& codeChallenge,
                                           const QString& emailAddress) {
   logger.debug() << "Authenticationlistener initialize";
 
-  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser,
-                                   codeChallenge, codeChallengeMethod,
-                                   emailAddress));
+  QUrl url(createAuthenticationUrl(Core::AuthenticationInBrowser, codeChallenge,
+                                   codeChallengeMethod, emailAddress));
 
   QAndroidJniObject activity = QtAndroid::androidActivity();
   jboolean supported = QAndroidJniObject::callStaticMethod<jboolean>(

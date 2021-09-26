@@ -4,9 +4,9 @@
 
 #include "apppermission.h"
 #include "applistprovider.h"
+#include "core.h"
 #include "logger.h"
 #include "leakdetector.h"
-#include "mozillavpn.h"
 #include <QApplication>
 #include <QVector>
 #include "settingsholder.h"

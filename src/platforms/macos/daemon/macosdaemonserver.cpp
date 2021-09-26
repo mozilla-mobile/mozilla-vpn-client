@@ -4,11 +4,11 @@
 
 #include "macosdaemonserver.h"
 #include "commandlineparser.h"
+#include "core.h"
 #include "daemon/daemonlocalserver.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "macosdaemon.h"
-#include "mozillavpn.h"
 #include "signalhandler.h"
 
 #include <QCoreApplication>

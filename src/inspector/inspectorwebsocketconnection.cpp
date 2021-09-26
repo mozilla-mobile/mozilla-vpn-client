@@ -3,11 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorwebsocketconnection.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
@@ -208,16 +208,12 @@ static QList<WebSocketSettingCommand> s_settingCommands{
     // server country
     WebSocketSettingCommand{
         "current-server-country-code", WebSocketSettingCommand::String, nullptr,
-        []() {
-          return MozillaVPN::instance()->currentServer()->exitCountryCode();
-        }},
+        []() { return Core::instance()->currentServer()->exitCountryCode(); }},
 
     // server city
     WebSocketSettingCommand{
         "current-server-city", WebSocketSettingCommand::String, nullptr,
-        []() {
-          return MozillaVPN::instance()->currentServer()->exitCityName();
-        }},
+        []() { return Core::instance()->currentServer()->exitCityName(); }},
 
     // glean-enabled
     WebSocketSettingCommand{
@@ -280,11 +276,11 @@ static QList<WebSocketCommand> s_commands{
 
     WebSocketCommand{"reset", "Reset the app", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN* vpn = MozillaVPN::instance();
-                       Q_ASSERT(vpn);
+                       Core* core = Core::instance();
+                       Q_ASSERT(core);
 
-                       vpn->reset(true);
-                       vpn->hideAlert();
+                       core->reset(true);
+                       core->hideAlert();
 
                        SettingsHolder* settingsHolder =
                            SettingsHolder::instance();
@@ -298,7 +294,7 @@ static QList<WebSocketCommand> s_commands{
 
     WebSocketCommand{"quit", "Quit the app", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()->controller()->quit();
+                       Core::instance()->controller()->quit();
                        return QJsonObject();
                      }},
 
@@ -443,58 +439,55 @@ static QList<WebSocketCommand> s_commands{
     WebSocketCommand{"force_update_check", "Force a version update check", 1,
                      [](const QList<QByteArray>& arguments) {
                        s_updateVersion = arguments[1];
-                       MozillaVPN::instance()->releaseMonitor()->runSoon();
-                       return QJsonObject();
-                     }},
-
-    WebSocketCommand{"force_captive_portal_check",
-                     "Force a captive portal check", 0,
-                     [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()
-                           ->captivePortalDetection()
-                           ->detectCaptivePortal();
-                       return QJsonObject();
-                     }},
-
-    WebSocketCommand{"force_captive_portal_detection",
-                     "Simulate a captive portal detection", 0,
-                     [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()
-                           ->captivePortalDetection()
-                           ->captivePortalDetected();
+                       Core::instance()->releaseMonitor()->runSoon();
                        return QJsonObject();
                      }},
 
     WebSocketCommand{
-        "force_unsecured_network", "Force an unsecured network detection", 0,
+        "force_captive_portal_check", "Force a captive portal check", 0,
         [](const QList<QByteArray>&) {
-          MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
-                                                                     "Dummy");
+          Core::instance()->captivePortalDetection()->detectCaptivePortal();
           return QJsonObject();
         }},
 
+    WebSocketCommand{
+        "force_captive_portal_detection", "Simulate a captive portal detection",
+        0,
+        [](const QList<QByteArray>&) {
+          Core::instance()->captivePortalDetection()->captivePortalDetected();
+          return QJsonObject();
+        }},
+
+    WebSocketCommand{"force_unsecured_network",
+                     "Force an unsecured network detection", 0,
+                     [](const QList<QByteArray>&) {
+                       Core::instance()->networkWatcher()->unsecuredNetwork(
+                           "Dummy", "Dummy");
+                       return QJsonObject();
+                     }},
+
     WebSocketCommand{"activate", "Activate the VPN", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()->activate();
+                       Core::instance()->activate();
                        return QJsonObject();
                      }},
 
     WebSocketCommand{"deactivate", "Deactivate the VPN", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()->deactivate();
+                       Core::instance()->deactivate();
                        return QJsonObject();
                      }},
 
     WebSocketCommand{"force_heartbeat_failure", "Force a heartbeat failure", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()->heartbeatCompleted(
+                       Core::instance()->heartbeatCompleted(
                            false /* success */);
                        return QJsonObject();
                      }},
 
     WebSocketCommand{"logout", "Logout the user", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()->logout();
+                       Core::instance()->logout();
                        return QJsonObject();
                      }},
 
@@ -690,8 +683,7 @@ static QList<WebSocketCommand> s_commands{
           QJsonObject obj;
 
           QJsonArray countryArray;
-          ServerCountryModel* scm =
-              MozillaVPN::instance()->serverCountryModel();
+          ServerCountryModel* scm = Core::instance()->serverCountryModel();
           for (const ServerCountry& country : scm->countries()) {
             QJsonArray cityArray;
             for (const ServerCity& city : country.cities()) {
@@ -749,10 +741,10 @@ static QList<WebSocketCommand> s_commands{
 
     WebSocketCommand{"devices", "Retrieve the list of devices", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN* vpn = MozillaVPN::instance();
-                       Q_ASSERT(vpn);
+                       Core* core = Core::instance();
+                       Q_ASSERT(core);
 
-                       DeviceModel* dm = vpn->deviceModel();
+                       DeviceModel* dm = core->deviceModel();
                        Q_ASSERT(dm);
 
                        QJsonArray deviceArray;
@@ -761,7 +753,7 @@ static QList<WebSocketCommand> s_commands{
                          deviceObj["name"] = device.name();
                          deviceObj["publicKey"] = device.publicKey();
                          deviceObj["currentDevice"] =
-                             device.isCurrentDevice(vpn->keys());
+                             device.isCurrentDevice(core->keys());
                          deviceArray.append(deviceObj);
                        }
 
@@ -774,24 +766,24 @@ static QList<WebSocketCommand> s_commands{
         "reset_devices",
         "Remove all the existing devices and add the current one if needed", 0,
         [](const QList<QByteArray>&) {
-          MozillaVPN* vpn = MozillaVPN::instance();
-          Q_ASSERT(vpn);
+          Core* core = Core::instance();
+          Q_ASSERT(core);
 
-          DeviceModel* dm = vpn->deviceModel();
+          DeviceModel* dm = core->deviceModel();
           Q_ASSERT(dm);
 
           bool hasCurrentOne = false;
           for (const Device& device : dm->devices()) {
-            if (device.isCurrentDevice(vpn->keys())) {
+            if (device.isCurrentDevice(core->keys())) {
               hasCurrentOne = true;
               continue;
             }
 
-            vpn->removeDeviceFromPublicKey(device.publicKey());
+            core->removeDeviceFromPublicKey(device.publicKey());
           }
 
           if (!hasCurrentOne) {
-            vpn->addCurrentDeviceAndRefreshData();
+            core->addCurrentDeviceAndRefreshData();
           }
 
           return QJsonObject();

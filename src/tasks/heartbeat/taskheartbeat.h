@@ -16,7 +16,7 @@ class TaskHeartbeat final : public Task {
   TaskHeartbeat();
   ~TaskHeartbeat();
 
-  void run(MozillaVPN* vpn) override;
+  void run(Core* core) override;
 };
 
 #endif  // TASKHEARTBEAT_H

@@ -51,7 +51,7 @@ HEADERS += \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/feature.h \
-    ../../src/mozillavpn.h \
+    ../../src/core.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
     ../../src/rfc/rfc1918.h \
@@ -71,7 +71,7 @@ HEADERS += \
     testsignupandin.h
 
 SOURCES += \
-    mocmozillavpn.cpp \
+    moccore.cpp \
     ../unit/mocinspectorwebsocketconnection.cpp \
     ../../src/authenticationinapp/authenticationinapp.cpp \
     ../../src/authenticationinapp/authenticationinapplistener.cpp \

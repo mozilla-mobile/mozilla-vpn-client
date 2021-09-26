@@ -4,8 +4,8 @@
 
 #include "commandstatus.h"
 #include "commandlineparser.h"
+#include "core.h"
 #include "leakdetector.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
@@ -48,7 +48,7 @@ int CommandStatus::run(QStringList& tokens) {
       return 0;
     }
 
-    MozillaVPN vpn;
+    Core core;
 
     if (!userAuthenticated()) {
       return 0;
@@ -63,14 +63,14 @@ int CommandStatus::run(QStringList& tokens) {
 
     if (!cacheOption.m_set) {
       TaskAccountAndServers task;
-      task.run(&vpn);
+      task.run(&core);
 
       QEventLoop loop;
       QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
       loop.exec();
     }
 
-    User* user = vpn.user();
+    User* user = core.user();
     Q_ASSERT(user);
     stream << "User avatar: " << user->avatar() << Qt::endl;
     stream << "User displayName: " << user->displayName() << Qt::endl;
@@ -79,11 +79,11 @@ int CommandStatus::run(QStringList& tokens) {
     stream << "User subscription needed: "
            << (user->subscriptionNeeded() ? "true" : "false") << Qt::endl;
 
-    DeviceModel* dm = vpn.deviceModel();
+    DeviceModel* dm = core.deviceModel();
     Q_ASSERT(dm);
     stream << "Active devices: " << dm->activeDevices() << Qt::endl;
 
-    const Device* cd = dm->currentDevice(vpn.keys());
+    const Device* cd = dm->currentDevice(core.keys());
     if (cd) {
       stream << "Current devices:" << cd->name() << Qt::endl;
     }
@@ -100,8 +100,8 @@ int CommandStatus::run(QStringList& tokens) {
       stream << " - ipv6 address: " << device.ipv6Address() << Qt::endl;
     }
 
-    ServerCountryModel* model = vpn.serverCountryModel();
-    ServerData* sd = vpn.currentServer();
+    ServerCountryModel* model = core.serverCountryModel();
+    ServerData* sd = core.currentServer();
     if (sd) {
       stream << "Server country code: " << sd->exitCountryCode() << Qt::endl;
       stream << "Server country: " << model->countryName(sd->exitCountryCode())

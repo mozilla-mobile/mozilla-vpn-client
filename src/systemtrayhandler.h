@@ -9,7 +9,6 @@
 #include <QSystemTrayIcon>
 #include <QTimer>
 
-class MozillaVPN;
 class QAction;
 
 class SystemTrayHandler : public QSystemTrayIcon {

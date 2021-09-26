@@ -26,9 +26,9 @@ Logger logger(LOG_MAIN, "AuthenticationListener");
 
 // static
 AuthenticationListener* AuthenticationListener::create(
-    QObject* parent, MozillaVPN::AuthenticationType authenticationType) {
+    QObject* parent, Core::AuthenticationType authenticationType) {
   switch (authenticationType) {
-    case MozillaVPN::AuthenticationInBrowser:
+    case Core::AuthenticationInBrowser:
 #if defined(MVPN_ANDROID)
       return new AndroidAuthenticationListener(parent);
 #elif defined(MVPN_IOS)
@@ -38,7 +38,7 @@ AuthenticationListener* AuthenticationListener::create(
 #else
       return new DesktopAuthenticationListener(parent);
 #endif
-    case MozillaVPN::AuthenticationInApp:
+    case Core::AuthenticationInApp:
       return new AuthenticationInAppListener(parent);
 
     default:
@@ -58,16 +58,15 @@ AuthenticationListener::~AuthenticationListener() {
 
 // static
 QUrl AuthenticationListener::createAuthenticationUrl(
-    MozillaVPN::AuthenticationType authenticationType,
-    const QString& codeChallenge, const QString& codeChallengeMethod,
-    const QString& emailAddress) {
+    Core::AuthenticationType authenticationType, const QString& codeChallenge,
+    const QString& codeChallengeMethod, const QString& emailAddress) {
   QString path("/api/v2/vpn/login/");
 
-  if (authenticationType == MozillaVPN::AuthenticationInApp) {
+  if (authenticationType == Core::AuthenticationInApp) {
     // hack!
     path.append("android");
   } else {
-    Q_ASSERT(authenticationType == MozillaVPN::AuthenticationInBrowser);
+    Q_ASSERT(authenticationType == Core::AuthenticationInBrowser);
 #if !defined(MVPN_DUMMY)
     path.append(Constants::PLATFORM_NAME);
 #else

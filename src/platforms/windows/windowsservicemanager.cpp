@@ -3,13 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsservicemanager.h"
-
+#include "core.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "windowscommons.h"
 
-#include "Windows.h"
-#include "Winsvc.h"
+#include <Windows.h>
+#include <Winsvc.h>
 #include <QTimer>
 
 namespace {

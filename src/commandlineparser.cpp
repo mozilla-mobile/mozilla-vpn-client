@@ -5,9 +5,9 @@
 #include "commandlineparser.h"
 #include "command.h"
 #include "commands/commandui.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 
 constexpr const char* CLP_DEFAULT_COMMAND = "ui";

@@ -4,9 +4,9 @@
 
 #include "networkrequest.h"
 #include "constants.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "timersingleshot.h"
 
 #include <QDir>
@@ -31,8 +31,7 @@ void createDummyRequest(NetworkRequest* r, const QString& resource) {
     }
 
     emit r->requestCompleted(data.replace(
-        "%%PUBLICKEY%%",
-        MozillaVPN::instance()->keys()->publicKey().toLocal8Bit()));
+        "%%PUBLICKEY%%", Core::instance()->keys()->publicKey().toLocal8Bit()));
   });
 }
 

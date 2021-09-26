@@ -109,8 +109,8 @@ void TestPasswordValidation::emailPassword() {
   QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
 
   // Starting the authentication flow.
-  TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
-  task.run(MozillaVPN::instance());
+  TaskAuthenticate task(Core::AuthenticationInApp);
+  task.run(Core::instance());
 
   EventLoop loop;
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {

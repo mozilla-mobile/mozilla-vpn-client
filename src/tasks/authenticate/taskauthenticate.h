@@ -6,7 +6,7 @@
 #define TASKAUTHENTICATE_H
 
 #include "task.h"
-#include "mozillavpn.h"
+#include "core.h"
 
 class QByteArray;
 class AuthenticationListener;
@@ -16,18 +16,17 @@ class TaskAuthenticate final : public Task {
   Q_DISABLE_COPY_MOVE(TaskAuthenticate)
 
  public:
-  explicit TaskAuthenticate(MozillaVPN::AuthenticationType authenticationType);
+  explicit TaskAuthenticate(Core::AuthenticationType authenticationType);
   ~TaskAuthenticate();
 
-  void run(MozillaVPN* vpn) override;
+  void run(Core* core) override;
 
  private:
-  void authenticationCompleted(MozillaVPN* vpn, const QByteArray& data);
+  void authenticationCompleted(Core* core, const QByteArray& data);
 
  private:
   AuthenticationListener* m_authenticationListener = nullptr;
-  MozillaVPN::AuthenticationType m_authenticationType =
-      MozillaVPN::AuthenticationInBrowser;
+  Core::AuthenticationType m_authenticationType = Core::AuthenticationInBrowser;
 };
 
 #endif  // TASKAUTHENTICATE_H

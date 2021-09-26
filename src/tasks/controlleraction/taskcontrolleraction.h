@@ -26,7 +26,7 @@ class TaskControllerAction final : public Task {
   explicit TaskControllerAction(TaskAction action);
   ~TaskControllerAction();
 
-  void run(MozillaVPN* vpn) override;
+  void run(Core* core) override;
 
  private slots:
   void stateChanged();

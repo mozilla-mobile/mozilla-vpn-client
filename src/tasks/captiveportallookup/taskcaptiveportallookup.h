@@ -16,7 +16,7 @@ class TaskCaptivePortalLookup final : public Task {
   TaskCaptivePortalLookup();
   ~TaskCaptivePortalLookup();
 
-  void run(MozillaVPN* vpn) override;
+  void run(Core* core) override;
 };
 
 #endif  // TASKCAPTIVEPORTALLOOKUP_H

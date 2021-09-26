@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wasmwindowcontroller.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "platforms/macos/macosmenubar.h"
 #include "systemtrayhandler.h"
 
@@ -49,7 +49,7 @@ WasmWindowController::WasmWindowController() {
     m_systemTrayMenuBar = new QMenuBar();
     layout->addWidget(m_systemTrayMenuBar);
 
-    StatusIcon* statusIcon = MozillaVPN::instance()->statusIcon();
+    StatusIcon* statusIcon = Core::instance()->statusIcon();
     connect(statusIcon, &StatusIcon::iconChanged, this,
             &WasmWindowController::iconChanged);
     iconChanged(statusIcon->iconString());

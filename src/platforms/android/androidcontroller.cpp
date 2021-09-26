@@ -3,13 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidcontroller.h"
+#include "core.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QAndroidBinder>
@@ -320,7 +320,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
       }
       break;
     case EVENT_ACTIVATION_ERROR:
-      MozillaVPN::instance()->errorHandle(ErrorHandler::ConnectionFailureError);
+      Core::instance()->errorHandle(ErrorHandler::ConnectionFailureError);
       emit m_controller->disconnected();
     default:
       logger.warning() << "Transact: Invalid!";

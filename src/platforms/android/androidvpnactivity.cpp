@@ -3,8 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidvpnactivity.h"
-
-#include "mozillavpn.h"
+#include "core.h"
 
 #include "jni.h"
 #include <QAndroidJniEnvironment>
@@ -41,5 +40,5 @@ void AndroidVPNActivity::init() {
 bool AndroidVPNActivity::handleBackButton(JNIEnv* env, jobject thiz) {
   Q_UNUSED(env);
   Q_UNUSED(thiz);
-  return MozillaVPN::instance()->closeEventHandler()->eventHandled();
+  return Core::instance()->closeEventHandler()->eventHandled();
 }

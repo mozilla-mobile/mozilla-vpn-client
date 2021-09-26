@@ -4,12 +4,12 @@
 
 #include "authenticationinapplistener.h"
 #include "authenticationinapp.h"
+#include "core.h"
 #include "featurelist.h"
 #include "features/featureinappaccountcreate.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "hkdf.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 #include <QCoreApplication>
@@ -49,9 +49,8 @@ void AuthenticationInAppListener::start(const QString& codeChallenge,
 
   aip->registerListener(this);
 
-  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInApp,
-                                   codeChallenge, codeChallengeMethod,
-                                   emailAddress));
+  QUrl url(createAuthenticationUrl(Core::AuthenticationInApp, codeChallenge,
+                                   codeChallengeMethod, emailAddress));
 
   NetworkRequest* request =
       NetworkRequest::createForGetUrl(this, url.toString());
@@ -132,7 +131,7 @@ void AuthenticationInAppListener::accountChecked(bool exists) {
       AuthenticationInApp::StateFallbackInBrowser, this);
 
   AuthenticationListener* fallbackListener =
-      create(this, MozillaVPN::AuthenticationInBrowser);
+      create(this, Core::AuthenticationInBrowser);
   fallbackListener->start(m_codeChallenge, m_codeChallengeMethod,
                           m_emailAddress);
 
@@ -309,8 +308,7 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             if (json.isNull()) {
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
+              Core::instance()->errorHandle(ErrorHandler::AuthenticationError);
               return;
             }
 
@@ -411,8 +409,7 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
 
         QJsonDocument json = QJsonDocument::fromJson(data);
         if (json.isNull()) {
-          MozillaVPN::instance()->errorHandle(
-              ErrorHandler::AuthenticationError);
+          Core::instance()->errorHandle(ErrorHandler::AuthenticationError);
           return;
         }
 
@@ -420,22 +417,19 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
         QJsonValue code = obj.value("code");
         if (!code.isString()) {
           logger.error() << "FxA Authz: code not found";
-          MozillaVPN::instance()->errorHandle(
-              ErrorHandler::AuthenticationError);
+          Core::instance()->errorHandle(ErrorHandler::AuthenticationError);
           return;
         }
         QJsonValue state = obj.value("state");
         if (!state.isString()) {
           logger.error() << "FxA Authz: state not found";
-          MozillaVPN::instance()->errorHandle(
-              ErrorHandler::AuthenticationError);
+          Core::instance()->errorHandle(ErrorHandler::AuthenticationError);
           return;
         }
         QJsonValue redirect = obj.value("redirect");
         if (!redirect.isString()) {
           logger.error() << "FxA Authz: redirect not found";
-          MozillaVPN::instance()->errorHandle(
-              ErrorHandler::AuthenticationError);
+          Core::instance()->errorHandle(ErrorHandler::AuthenticationError);
           return;
         }
 
@@ -462,7 +456,7 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
                       QUrlQuery(request->url()).queryItemValue("code");
                   if (code.isEmpty()) {
                     logger.error() << "Code not received!";
-                    MozillaVPN::instance()->errorHandle(
+                    Core::instance()->errorHandle(
                         ErrorHandler::AuthenticationError);
                     emit failed(ErrorHandler::AuthenticationError);
                     return;
@@ -696,6 +690,6 @@ void AuthenticationInAppListener::processRequestFailure(
     return;
   }
 
-  MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+  Core::instance()->errorHandle(ErrorHandler::toErrorType(error));
   emit failed(ErrorHandler::toErrorType(error));
 }

@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsdatamigration.h"
+#include "core.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QDir>
@@ -22,7 +22,7 @@ void migrateConfigFile(const QString& fileName) {
 
   QString token = settings.value("FxA/Token").toString();
   if (!token.isEmpty()) {
-    MozillaVPN::instance()->setToken(token);
+    Core::instance()->setToken(token);
   }
 
   QString language = settings.value("Language/PreferredLanguage").toString();
@@ -53,7 +53,7 @@ void migrateServersFile(const QString& fileName) {
     return;
   }
 
-  bool ok = MozillaVPN::instance()->setServerList(file.readAll());
+  bool ok = Core::instance()->setServerList(file.readAll());
   Q_UNUSED(ok);
 }
 
@@ -63,20 +63,20 @@ void migrateFxaFile(const QString& fileName) {
     return;
   }
 
-  MozillaVPN::instance()->accountChecked(file.readAll());
+  Core::instance()->accountChecked(file.readAll());
 }
 
 void migrateWireguardFile(const QString& fileName) {
-  MozillaVPN* vpn = MozillaVPN::instance();
+  Core* core = Core::instance();
 
   QSettings settings(fileName, QSettings::IniFormat);
 
-  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+  const Device* device = core->deviceModel()->currentDevice(core->keys());
   if (device) {
     QString privateKey = settings.value("Interface/PrivateKey").toString();
     if (!privateKey.isEmpty()) {
-      vpn->deviceAdded(Device::currentDeviceName(), device->publicKey(),
-                       privateKey);
+      core->deviceAdded(Device::currentDeviceName(), device->publicKey(),
+                        privateKey);
     }
   }
 
@@ -84,7 +84,7 @@ void migrateWireguardFile(const QString& fileName) {
       settings.value("Peer/Endpoint").toString().split(":").at(0);
   if (!endpoint.isEmpty()) {
     ServerData serverData;
-    if (vpn->serverCountryModel()->pickByIPv4Address(endpoint, serverData)) {
+    if (core->serverCountryModel()->pickByIPv4Address(endpoint, serverData)) {
       serverData.writeSettings();
     }
   }

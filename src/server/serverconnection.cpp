@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverconnection.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "mozillavpn.h"
 
 #include <functional>
 
@@ -29,20 +29,20 @@ struct RequestType {
 static QList<RequestType> s_types{
     RequestType{"activate",
                 [](const QJsonObject&) {
-                  MozillaVPN::instance()->activate();
+                  Core::instance()->activate();
                   return QJsonObject();
                 }},
 
     RequestType{"deactivate",
                 [](const QJsonObject&) {
-                  MozillaVPN::instance()->deactivate();
+                  Core::instance()->deactivate();
                   return QJsonObject();
                 }},
 
     RequestType{"servers",
                 [](const QJsonObject&) {
                   QByteArray serverJson =
-                      MozillaVPN::instance()->serverCountryModel()->rawJson();
+                      Core::instance()->serverCountryModel()->rawJson();
                   if (serverJson.isEmpty()) {
                     return QJsonObject();
                   }
@@ -78,11 +78,11 @@ ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
   connect(m_connection, &QTcpSocket::readyRead, this,
           &ServerConnection::readData);
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
+  Core* core = Core::instance();
+  Q_ASSERT(core);
 
-  connect(vpn, &MozillaVPN::stateChanged, this, &ServerConnection::writeState);
-  connect(vpn->controller(), &Controller::stateChanged, this,
+  connect(core, &Core::stateChanged, this, &ServerConnection::writeState);
+  connect(core->controller(), &Controller::stateChanged, this,
           &ServerConnection::writeState);
 }
 
@@ -151,50 +151,50 @@ void ServerConnection::writeData(const QByteArray& data) {
 }
 
 void ServerConnection::writeState() {
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
+  Core* core = Core::instance();
+  Q_ASSERT(core);
 
   QJsonObject obj;
   obj["t"] = "status";
 
   {
     QString stateStr;
-    switch (vpn->state()) {
-      case MozillaVPN::StateInitialize:
+    switch (core->state()) {
+      case Core::StateInitialize:
         stateStr = "initialize";
         break;
-      case MozillaVPN::StateAuthenticating:
+      case Core::StateAuthenticating:
         stateStr = "authenticating";
         break;
-      case MozillaVPN::StatePostAuthentication:
+      case Core::StatePostAuthentication:
         [[fallthrough]];
-      case MozillaVPN::StateTelemetryPolicy:
+      case Core::StateTelemetryPolicy:
         [[fallthrough]];
-      case MozillaVPN::StateMain:
+      case Core::StateMain:
         stateStr = "ready";
         break;
-      case MozillaVPN::StateUpdateRequired:
+      case Core::StateUpdateRequired:
         stateStr = "updateRequired";
         break;
-      case MozillaVPN::StateSubscriptionNeeded:
+      case Core::StateSubscriptionNeeded:
         stateStr = "subscriptionNeeded";
         break;
-      case MozillaVPN::StateSubscriptionInProgress:
+      case Core::StateSubscriptionInProgress:
         stateStr = "subscriptionInProgress";
         break;
-      case MozillaVPN::StateSubscriptionBlocked:
+      case Core::StateSubscriptionBlocked:
         stateStr = "subscriptionBlocked";
         break;
-      case MozillaVPN::StateDeviceLimit:
+      case Core::StateDeviceLimit:
         stateStr = "deviceLimit";
         break;
-      case MozillaVPN::StateBackendFailure:
+      case Core::StateBackendFailure:
         stateStr = "backendFailure";
         break;
-      case MozillaVPN::StateBillingNotAvailable:
+      case Core::StateBillingNotAvailable:
         stateStr = "billingNotAvailable";
         break;
-      case MozillaVPN::StateSubscriptionNotValidated:
+      case Core::StateSubscriptionNotValidated:
         stateStr = "subscriptionNotValidated";
         break;
       default:
@@ -207,7 +207,7 @@ void ServerConnection::writeState() {
 
   {
     QString controllerStateStr;
-    switch (vpn->controller()->state()) {
+    switch (core->controller()->state()) {
       case Controller::StateInitializing:
         controllerStateStr = "initializing";
         break;

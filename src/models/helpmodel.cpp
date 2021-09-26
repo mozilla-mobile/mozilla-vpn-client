@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "helpmodel.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "features/featureunauthsupport.h"
 
 namespace {
@@ -15,7 +15,7 @@ Logger logger(LOG_MAIN, "HelpModel");
 
 struct HelpEntry {
   HelpEntry(const char* nameId, bool externalLink, bool viewLog,
-            MozillaVPN::LinkType linkType)
+            Core::LinkType linkType)
       : m_nameId(nameId),
         m_externalLink(externalLink),
         m_viewLog(viewLog),
@@ -24,33 +24,33 @@ struct HelpEntry {
   const char* m_nameId;
   bool m_externalLink;
   bool m_viewLog;
-  MozillaVPN::LinkType m_linkType;
+  Core::LinkType m_linkType;
 };
 
 static QList<HelpEntry> s_helpEntries;
 
 void maybeInitialize() {
   if (s_initialized && s_contactUsExternalLink ==
-                           (!MozillaVPN::instance()->userAuthenticated() &&
+                           (!Core::instance()->userAuthenticated() &&
                             !FeatureUnauthSupport::instance()->isSupported())) {
     return;
   }
   s_helpEntries.clear();
 
   s_initialized = true;
-  s_contactUsExternalLink = (!MozillaVPN::instance()->userAuthenticated() &&
+  s_contactUsExternalLink = (!Core::instance()->userAuthenticated() &&
                              !FeatureUnauthSupport::instance()->isSupported());
   // Here we use the logger to force lrelease to add the help menu Ids.
 
   //% "Help center"
   logger.debug() << "Adding:" << qtTrId("help.helpCenter2");
   s_helpEntries.append(
-      HelpEntry("help.helpCenter", true, false, MozillaVPN::LinkHelpSupport));
+      HelpEntry("help.helpCenter", true, false, Core::LinkHelpSupport));
 
   //% "Contact us"
   logger.debug() << "Adding:" << qtTrId("help.contactUs");
   s_helpEntries.append(HelpEntry("help.contactUs", s_contactUsExternalLink,
-                                 false, MozillaVPN::LinkContact));
+                                 false, Core::LinkContact));
 
   //% "View log"
   logger.debug() << "Adding:" << qtTrId("help.viewLog");
@@ -60,7 +60,7 @@ void maybeInitialize() {
 #else
                                  true,
 #endif
-                                 true, MozillaVPN::LinkContact));
+                                 true, Core::LinkContact));
 }
 
 }  // namespace
@@ -75,16 +75,16 @@ void HelpModel::open(int id) {
 
   const HelpEntry& entry = s_helpEntries.at(id);
   if (entry.m_viewLog) {
-    emit MozillaVPN::instance()->requestViewLogs();
+    emit Core::instance()->requestViewLogs();
     return;
   }
 
-  if (!entry.m_externalLink && entry.m_linkType == MozillaVPN::LinkContact) {
-    emit MozillaVPN::instance()->requestContactUs();
+  if (!entry.m_externalLink && entry.m_linkType == Core::LinkContact) {
+    emit Core::instance()->requestContactUs();
     return;
   }
 
-  MozillaVPN::instance()->openLink(entry.m_linkType);
+  Core::instance()->openLink(entry.m_linkType);
 }
 
 void HelpModel::forEach(std::function<void(const char*, int)>&& a_callback) {

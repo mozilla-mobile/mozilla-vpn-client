@@ -4,9 +4,9 @@
 
 #include "androidiaphandler.h"
 #include "androidutils.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 #include <QAndroidJniEnvironment>
@@ -205,9 +205,9 @@ void AndroidIAPHandler::onBillingNotAvailable(JNIEnv* env, jobject thiz,
     // launch of the "Sign in to Play Store" window. But I'm not exactly sure
     // how to trigger a billing service disconnected and I'm not sure what the
     // right action should be.
-    MozillaVPN* vpn = MozillaVPN::instance();
-    if (vpn->user()->subscriptionNeeded()) {
-      vpn->reset(true);
+    Core* core = Core::instance();
+    if (core->user()->subscriptionNeeded()) {
+      core->reset(true);
       return;
     }
   }
@@ -291,8 +291,7 @@ void AndroidIAPHandler::processPurchase(QJsonObject purchase) {
     validatePurchase(purchase);
   }
 
-  if (purchaseAcknowledged &&
-      MozillaVPN::instance()->user()->subscriptionNeeded()) {
+  if (purchaseAcknowledged && Core::instance()->user()->subscriptionNeeded()) {
     logger.info() << "User is listed as subscriptionNeeded, but we have an "
                      "acknowledgedPurchase";
     stopSubscription();
@@ -316,7 +315,7 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
       request, &NetworkRequest::requestFailed,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Purchase validation request to guardian failed";
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        Core::instance()->errorHandle(ErrorHandler::toErrorType(error));
         stopSubscription();
         emit subscriptionNotValidated();
         return;

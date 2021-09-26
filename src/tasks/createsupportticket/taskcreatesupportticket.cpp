@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskcreatesupportticket.h"
+#include "core.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -37,23 +38,23 @@ TaskCreateSupportTicket::~TaskCreateSupportTicket() {
   MVPN_COUNT_DTOR(TaskCreateSupportTicket);
 }
 
-void TaskCreateSupportTicket::run(MozillaVPN* vpn) {
+void TaskCreateSupportTicket::run(Core* core) {
   logger.debug() << "Sending the support ticket";
 
   NetworkRequest* request = NetworkRequest::createForSupportTicket(
       this, m_email, m_subject, m_issueText, m_logs, m_category);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to create support ticket" << error;
-            vpn->createTicketAnswerRecieved(false);
+            core->createTicketAnswerRecieved(false);
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn](const QByteArray&) {
+          [this, core](const QByteArray&) {
             logger.debug() << "Support ticket created";
-            vpn->createTicketAnswerRecieved(true);
+            core->createTicketAnswerRecieved(true);
             emit completed();
           });
 }

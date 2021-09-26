@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskheartbeat.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 #include <QJsonDocument>
@@ -21,36 +21,37 @@ TaskHeartbeat::TaskHeartbeat() : Task("TaskHeartbeat") {
 
 TaskHeartbeat::~TaskHeartbeat() { MVPN_COUNT_DTOR(TaskHeartbeat); }
 
-void TaskHeartbeat::run(MozillaVPN* vpn) {
+void TaskHeartbeat::run(Core* core) {
   NetworkRequest* request = NetworkRequest::createForHeartbeat(this);
 
-  connect(request, &NetworkRequest::requestFailed,
-          [this, request, vpn](QNetworkReply::NetworkError, const QByteArray&) {
-            logger.error() << "Failed to talk with the server";
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this, request, core](QNetworkReply::NetworkError, const QByteArray&) {
+        logger.error() << "Failed to talk with the server";
 
-            int statusCode = request->statusCode();
+        int statusCode = request->statusCode();
 
-            // Internal server errors.
-            if (statusCode >= 500 && statusCode <= 509) {
-              vpn->heartbeatCompleted(false);
-              return;
-            }
+        // Internal server errors.
+        if (statusCode >= 500 && statusCode <= 509) {
+          core->heartbeatCompleted(false);
+          return;
+        }
 
-            // Request failure ((?!?)
-            if (statusCode >= 400 && statusCode <= 409) {
-              vpn->heartbeatCompleted(false);
-              return;
-            }
+        // Request failure ((?!?)
+        if (statusCode >= 400 && statusCode <= 409) {
+          core->heartbeatCompleted(false);
+          return;
+        }
 
-            // We don't know if this happeneded because of a global network
-            // failure or a local network issue. In general, let's ignore this
-            // error.
-            vpn->heartbeatCompleted(true);
-            emit completed();
-          });
+        // We don't know if this happeneded because of a global network
+        // failure or a local network issue. In general, let's ignore this
+        // error.
+        core->heartbeatCompleted(true);
+        emit completed();
+      });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn](const QByteArray& data) {
+          [this, core](const QByteArray& data) {
             logger.debug() << "Heartbeat content received:" << data;
 
             QJsonObject json = QJsonDocument::fromJson(data).object();
@@ -58,11 +59,11 @@ void TaskHeartbeat::run(MozillaVPN* vpn) {
             QJsonValue db = json.value("dbOK");
             if ((mullvad.isBool() && db.isBool()) &&
                 (!mullvad.toBool() || !db.toBool())) {
-              vpn->heartbeatCompleted(false);
+              core->heartbeatCompleted(false);
               return;
             }
 
-            vpn->heartbeatCompleted(true);
+            core->heartbeatCompleted(true);
             emit completed();
           });
 }

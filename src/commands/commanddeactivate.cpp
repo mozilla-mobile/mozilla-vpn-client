@@ -4,8 +4,8 @@
 
 #include "commanddeactivate.h"
 #include "commandlineparser.h"
+#include "core.h"
 #include "leakdetector.h"
-#include "mozillavpn.h"
 
 #include <QEventLoop>
 #include <QTextStream>
@@ -30,7 +30,7 @@ int CommandDeactivate::run(QStringList& tokens) {
       return 1;
     }
 
-    MozillaVPN vpn;
+    Core core;
     if (!loadModels()) {
       return 1;
     }

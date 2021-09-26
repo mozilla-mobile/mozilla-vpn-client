@@ -77,6 +77,7 @@ SOURCES += \
         connectionhealth.cpp \
         constants.cpp \
         controller.cpp \
+        core.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
         dnshelper.cpp \
@@ -121,7 +122,6 @@ SOURCES += \
         models/surveymodel.cpp \
         models/user.cpp \
         models/whatsnewmodel.cpp \
-        mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
         networkwatcher.cpp \
@@ -196,6 +196,7 @@ HEADERS += \
         constants.h \
         controller.h \
         controllerimpl.h \
+        core.h \
         cryptosettings.h \
         curve25519.h \
         dnshelper.h \
@@ -248,7 +249,6 @@ HEADERS += \
         models/surveymodel.h \
         models/user.h \
         models/whatsnewmodel.h \
-        mozillavpn.h \
         networkmanager.h \
         networkrequest.h \
         networkwatcher.h \

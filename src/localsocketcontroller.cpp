@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "localsocketcontroller.h"
+#include "core.h"
 #include "errorhandler.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
@@ -10,7 +11,6 @@
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QDir>
@@ -53,7 +53,7 @@ void LocalSocketController::errorOccurred(
   }
 
   m_state = eDisconnected;
-  MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+  Core::instance()->errorHandle(ErrorHandler::ControllerError);
   emit disconnected();
 }
 
@@ -357,7 +357,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "backendFailure") {
-    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+    Core::instance()->errorHandle(ErrorHandler::ControllerError);
     return;
   }
 

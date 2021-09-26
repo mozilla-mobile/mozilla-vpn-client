@@ -5,10 +5,10 @@
 #include "commandlogin.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "commandlineparser.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "models/devicemodel.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/authenticate/taskauthenticate.h"
 
@@ -65,12 +65,12 @@ int CommandLogin::run(QStringList& tokens) {
       return 1;
     }
 
-    MozillaVPN vpn;
+    Core core;
 
     if (!passwordOption.m_set) {
-      vpn.authenticateWithType(MozillaVPN::AuthenticationInBrowser);
+      core.authenticateWithType(Core::AuthenticationInBrowser);
     } else {
-      vpn.authenticateWithType(MozillaVPN::AuthenticationInApp);
+      core.authenticateWithType(Core::AuthenticationInApp);
     }
 
     QEventLoop loop;
@@ -169,25 +169,25 @@ int CommandLogin::run(QStringList& tokens) {
           });
     }
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, [&] {
-      if (vpn.state() == MozillaVPN::StatePostAuthentication ||
-          vpn.state() == MozillaVPN::StateTelemetryPolicy ||
-          vpn.state() == MozillaVPN::StateMain) {
+    QObject::connect(&core, &Core::stateChanged, [&] {
+      if (core.state() == Core::StatePostAuthentication ||
+          core.state() == Core::StateTelemetryPolicy ||
+          core.state() == Core::StateMain) {
         loop.exit();
       }
-      if (vpn.alert() == MozillaVPN::AuthenticationFailedAlert) {
+      if (core.alert() == Core::AuthenticationFailedAlert) {
         loop.exit();
       }
     });
 
     loop.exec();
 
-    if (vpn.alert() == MozillaVPN::AuthenticationFailedAlert) {
+    if (core.alert() == Core::AuthenticationFailedAlert) {
       QTextStream stream(stdout);
       stream << "Authentication failed" << Qt::endl;
       return 1;
     }
-    if (!vpn.deviceModel()->hasCurrentDevice(vpn.keys())) {
+    if (!core.deviceModel()->hasCurrentDevice(core.keys())) {
       QTextStream stream(stdout);
       stream << "Device limit reached" << Qt::endl;
       return 1;

@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandselect.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "localizer.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
 
@@ -35,7 +35,7 @@ int CommandSelect::run(QStringList& tokens) {
       return 1;
     }
 
-    MozillaVPN vpn;
+    Core core;
     if (!loadModels()) {
       return 1;
     }
@@ -56,8 +56,8 @@ int CommandSelect::run(QStringList& tokens) {
       return 1;
     }
 
-    vpn.changeServer(exitCountryCode, exitCityName, entryCountryCode,
-                     entryCityName);
+    core.changeServer(exitCountryCode, exitCityName, entryCountryCode,
+                      entryCityName);
     return 0;
   });
 }
@@ -65,7 +65,7 @@ int CommandSelect::run(QStringList& tokens) {
 bool CommandSelect::pickServer(const QString& hostname, QString& countryCode,
                                QString& cityName) {
   for (const ServerCountry& country :
-       MozillaVPN::instance()->serverCountryModel()->countries()) {
+       Core::instance()->serverCountryModel()->countries()) {
     for (const ServerCity& city : country.cities()) {
       for (const Server& server : city.servers()) {
         if (server.hostname() == hostname) {

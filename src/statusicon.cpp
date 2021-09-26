@@ -4,9 +4,9 @@
 
 #include "statusicon.h"
 #include "constants.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 
 #include <array>
 
@@ -59,15 +59,15 @@ void StatusIcon::stateChanged() {
 
   m_animatedIconTimer.stop();
 
-  MozillaVPN* vpn = MozillaVPN::instance();
+  Core* core = Core::instance();
 
   // If we are in a non-main state, we don't need to show special icons.
-  if (vpn->state() != MozillaVPN::StateMain) {
+  if (core->state() != Core::StateMain) {
     setIcon(ICON_GENERIC);
     return;
   }
 
-  switch (vpn->controller()->state()) {
+  switch (core->controller()->state()) {
     case Controller::StateOn:
       setIcon(ICON_ON);
       break;

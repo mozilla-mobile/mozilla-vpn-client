@@ -3,11 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskremovedevice.h"
+#include "core.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/user.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 namespace {
@@ -21,23 +21,23 @@ TaskRemoveDevice::TaskRemoveDevice(const QString& publicKey)
 
 TaskRemoveDevice::~TaskRemoveDevice() { MVPN_COUNT_DTOR(TaskRemoveDevice); }
 
-void TaskRemoveDevice::run(MozillaVPN* vpn) {
+void TaskRemoveDevice::run(Core* core) {
   logger.debug() << "Removing the device with public key" << m_publicKey;
 
   NetworkRequest* request =
       NetworkRequest::createForDeviceRemoval(this, m_publicKey);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to remove the device" << error;
-            vpn->errorHandle(ErrorHandler::toErrorType(error));
+            core->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn](const QByteArray&) {
+          [this, core](const QByteArray&) {
             logger.debug() << "Device removed";
-            vpn->deviceRemoved(m_publicKey);
+            core->deviceRemoved(m_publicKey);
             emit completed();
           });
 }

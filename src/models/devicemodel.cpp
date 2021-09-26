@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "devicemodel.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QJsonArray>
@@ -139,8 +139,8 @@ QVariant DeviceModel::data(const QModelIndex& index, int role) const {
       return QVariant(m_devices.at(index.row()).publicKey());
 
     case CurrentOneRole:
-      return QVariant(m_devices.at(index.row())
-                          .isCurrentDevice(MozillaVPN::instance()->keys()));
+      return QVariant(
+          m_devices.at(index.row()).isCurrentDevice(Core::instance()->keys()));
 
     case CreatedAtRole:
       return QVariant(m_devices.at(index.row()).createdAt());

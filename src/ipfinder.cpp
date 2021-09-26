@@ -4,10 +4,10 @@
 
 #include "ipfinder.h"
 #include "constants.h"
+#include "core.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 
@@ -102,7 +102,7 @@ void IPFinder::createRequest(const QHostAddress& address, bool ipv6) {
             ErrorHandler::ErrorType errorType =
                 ErrorHandler::toErrorType(error);
             if (errorType == ErrorHandler::AuthenticationError) {
-              MozillaVPN::instance()->errorHandle(errorType);
+              Core::instance()->errorHandle(errorType);
             }
 
             m_requestCount = 0;

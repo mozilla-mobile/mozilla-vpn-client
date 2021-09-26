@@ -5,7 +5,7 @@
 #ifndef HELPER_H
 #define HELPER_H
 
-#include "../../src/mozillavpn.h"
+#include "../../src/core.h"
 #include "../../src/controller.h"
 
 #include <QObject>
@@ -33,7 +33,7 @@ class TestHelper : public QObject {
 
   static QVector<NetworkConfig> networkConfig;
 
-  static MozillaVPN::State vpnState;
+  static Core::State coreState;
 
   static Controller::State controllerState;
 

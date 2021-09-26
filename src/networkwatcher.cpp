@@ -4,9 +4,9 @@
 
 #include "networkwatcher.h"
 #include "constants.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkwatcherimpl.h"
 #include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
@@ -98,15 +98,15 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
     return;
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
+  Core* core = Core::instance();
+  Q_ASSERT(core);
 
-  if (vpn->state() != MozillaVPN::StateMain) {
+  if (core->state() != Core::StateMain) {
     logger.debug() << "VPN not ready. Ignoring unsecured network";
     return;
   }
 
-  Controller::State state = vpn->controller()->state();
+  Controller::State state = core->controller()->state();
   if (state == Controller::StateOn || state == Controller::StateConnecting ||
       state == Controller::StateSwitching) {
     logger.debug() << "VPN on. Ignoring unsecured network";
@@ -141,6 +141,6 @@ void NetworkWatcher::notificationClicked(SystemTrayHandler::Message message) {
   logger.debug() << "Notification clicked";
 
   if (message == SystemTrayHandler::UnsecuredNetwork) {
-    MozillaVPN::instance()->activate();
+    Core::instance()->activate();
   }
 }

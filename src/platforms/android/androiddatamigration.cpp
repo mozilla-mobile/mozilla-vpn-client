@@ -4,8 +4,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androiddatamigration.h"
+#include "core.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 
@@ -66,7 +66,7 @@ void AndroidDataMigration::importDeviceInfo() {
     return;
   }
 
-  MozillaVPN::instance()->deviceAdded(name, pubKey, privateKey);
+  Core::instance()->deviceAdded(name, pubKey, privateKey);
   logger.debug() << "pref_current_device value was migrated";
 }
 
@@ -97,7 +97,7 @@ void AndroidDataMigration::importUserInfo() {
     return;
   }
 
-  MozillaVPN::instance()->accountChecked(json);
+  Core::instance()->accountChecked(json);
   logger.debug() << "user_info value was imported";
 }
 
@@ -129,7 +129,7 @@ void AndroidDataMigration::importLoginToken() {
     logger.error() << "Failed to read auth_token";
     return;
   }
-  MozillaVPN::instance()->setToken(loginToken.toString());
+  Core::instance()->setToken(loginToken.toString());
 
   logger.debug() << "auth_token value was imported";
 }
@@ -166,7 +166,7 @@ void AndroidDataMigration::importServerList() {
 
   logger.debug() << "Import JSON \n" << json;
 
-  bool ok = MozillaVPN::instance()->setServerList(json);
+  bool ok = Core::instance()->setServerList(json);
   if (!ok) {
     logger.error() << "pref_servers value was rejected";
     return;

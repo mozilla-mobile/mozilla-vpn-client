@@ -5,9 +5,9 @@
 #include "androidutils.h"
 #include "androidauthenticationlistener.h"
 #include "constants.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"
 
@@ -79,7 +79,7 @@ void AndroidUtils::startAuthentication(AuthenticationListener* listener,
   m_url = url;
   emit urlChanged();
 
-  emit MozillaVPN::instance()->loadAndroidAuthenticationView();
+  emit Core::instance()->loadAndroidAuthenticationView();
 }
 
 bool AndroidUtils::maybeCompleteAuthentication(const QString& url) {

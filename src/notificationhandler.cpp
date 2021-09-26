@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "notificationhandler.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #if defined(MVPN_IOS)
@@ -42,24 +42,24 @@ NotificationHandler::~NotificationHandler() {
 void NotificationHandler::showNotification() {
   logger.debug() << "Show notification";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() != MozillaVPN::StateMain &&
+  Core* core = Core::instance();
+  if (core->state() != Core::StateMain &&
       // The Disconnected notification should be triggerable
       // on StateInitialize, in case the user was connected during a log-out
       // Otherwise existing notifications showing "connected" would update
-      !(vpn->state() == MozillaVPN::StateInitialize &&
-        vpn->controller()->state() == Controller::StateOff)) {
+      !(core->state() == Core::StateInitialize &&
+        core->controller()->state() == Controller::StateOff)) {
     return;
   }
 
   QString title;
   QString message;
-  QString countryCode = vpn->currentServer()->exitCountryCode();
-  QString localizedCityName = vpn->currentServer()->localizedCityName();
+  QString countryCode = core->currentServer()->exitCountryCode();
+  QString localizedCityName = core->currentServer()->localizedCityName();
   QString localizedCountryName =
-      vpn->serverCountryModel()->localizedCountryName(countryCode);
+      core->serverCountryModel()->localizedCountryName(countryCode);
 
-  switch (vpn->controller()->state()) {
+  switch (core->controller()->state()) {
     case Controller::StateOn:
       m_connected = true;
 

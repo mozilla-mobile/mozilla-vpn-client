@@ -3,13 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ioscontroller.h"
-#include "Mozilla_VPN-Swift.h"
+#include "core.h"
 #include "device.h"
 #include "ipaddressrange.h"
 #include "keys.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
+#include "Mozilla_VPN-Swift.h"
 #include "server.h"
 #include "settingsholder.h"
 

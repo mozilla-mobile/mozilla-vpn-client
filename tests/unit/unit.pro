@@ -64,7 +64,7 @@ HEADERS += \
     ../../src/models/surveymodel.h \
     ../../src/models/user.h \
     ../../src/models/whatsnewmodel.h \
-    ../../src/mozillavpn.h \
+    ../../src/core.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
     ../../src/networkwatcher.h \
@@ -177,7 +177,7 @@ SOURCES += \
     main.cpp \
     moccontroller.cpp \
     mocinspectorwebsocketconnection.cpp \
-    mocmozillavpn.cpp \
+    moccore.cpp \
     mocnetworkrequest.cpp \
     testandroidmigration.cpp \
     testbigint.cpp \

@@ -4,8 +4,8 @@
 
 #include "commandactivate.h"
 #include "commandlineparser.h"
+#include "core.h"
 #include "leakdetector.h"
-#include "mozillavpn.h"
 
 #include <QEventLoop>
 #include <QTextStream>
@@ -30,54 +30,54 @@ int CommandActivate::run(QStringList& tokens) {
       return 1;
     }
 
-    MozillaVPN vpn;
+    Core core;
     if (!loadModels()) {
       return 1;
     }
 
     QEventLoop loop;
-    QObject::connect(vpn.controller(), &Controller::stateChanged, [&] {
-      if (vpn.controller()->state() == Controller::StateOff ||
-          vpn.controller()->state() == Controller::StateOn) {
+    QObject::connect(core.controller(), &Controller::stateChanged, [&] {
+      if (core.controller()->state() == Controller::StateOff ||
+          core.controller()->state() == Controller::StateOn) {
         loop.exit();
       }
     });
 
-    vpn.controller()->initialize();
+    core.controller()->initialize();
     loop.exec();
-    vpn.controller()->disconnect();
+    core.controller()->disconnect();
 
     // If we are connecting right now, we want to wait untile the operation is
     // completed.
-    if (vpn.controller()->state() != Controller::StateOff &&
-        vpn.controller()->state() != Controller::StateOn) {
-      QObject::connect(vpn.controller(), &Controller::stateChanged, [&] {
-        if (vpn.controller()->state() == Controller::StateOff ||
-            vpn.controller()->state() == Controller::StateOn) {
+    if (core.controller()->state() != Controller::StateOff &&
+        core.controller()->state() != Controller::StateOn) {
+      QObject::connect(core.controller(), &Controller::stateChanged, [&] {
+        if (core.controller()->state() == Controller::StateOff ||
+            core.controller()->state() == Controller::StateOn) {
           loop.exit();
         }
       });
       loop.exec();
-      vpn.controller()->disconnect();
+      core.controller()->disconnect();
     }
 
-    if (vpn.controller()->state() != Controller::StateOff) {
+    if (core.controller()->state() != Controller::StateOff) {
       QTextStream stream(stdout);
       stream << "The VPN tunnel is already active" << Qt::endl;
       return 0;
     }
 
-    QObject::connect(vpn.controller(), &Controller::stateChanged, [&] {
-      if (vpn.controller()->state() == Controller::StateOff ||
-          vpn.controller()->state() == Controller::StateOn) {
+    QObject::connect(core.controller(), &Controller::stateChanged, [&] {
+      if (core.controller()->state() == Controller::StateOff ||
+          core.controller()->state() == Controller::StateOn) {
         loop.exit();
       }
     });
-    vpn.controller()->activate();
+    core.controller()->activate();
     loop.exec();
-    vpn.controller()->disconnect();
+    core.controller()->disconnect();
 
-    if (vpn.controller()->state() == Controller::StateOn) {
+    if (core.controller()->state() == Controller::StateOn) {
       QTextStream stream(stdout);
       stream << "The VPN tunnel is now active" << Qt::endl;
       return 0;

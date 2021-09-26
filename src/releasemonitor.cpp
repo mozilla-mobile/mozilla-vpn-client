@@ -4,9 +4,9 @@
 
 #include "releasemonitor.h"
 #include "constants.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "timersingleshot.h"
 #include "update/updater.h"
 
@@ -50,13 +50,13 @@ void ReleaseMonitor::schedule() {
 
 void ReleaseMonitor::updateRequired() {
   logger.warning() << "update required";
-  MozillaVPN::instance()->setUpdateRecommended(false);
-  MozillaVPN::instance()->controller()->updateRequired();
+  Core::instance()->setUpdateRecommended(false);
+  Core::instance()->controller()->updateRequired();
 }
 
 void ReleaseMonitor::updateRecommended() {
   logger.debug() << "Update recommended";
-  MozillaVPN::instance()->setUpdateRecommended(true);
+  Core::instance()->setUpdateRecommended(true);
 }
 
 void ReleaseMonitor::update() {
@@ -66,20 +66,20 @@ void ReleaseMonitor::update() {
   if (!updater) {
     logger.warning() << "No updater supported for this platform. Fallback";
 
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
+    Core* core = Core::instance();
+    Q_ASSERT(core);
 
-    vpn->openLink(MozillaVPN::LinkUpdate);
-    vpn->setUpdating(false);
+    core->openLink(Core::LinkUpdate);
+    core->setUpdating(false);
     return;
   }
 
   // The updater, in download mode, is not destroyed. So, if this happens,
   // probably something went wrong.
   connect(updater, &QObject::destroyed, [] {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
-    vpn->setUpdating(false);
+    Core* core = Core::instance();
+    Q_ASSERT(core);
+    core->setUpdating(false);
   });
 
   updater->start();

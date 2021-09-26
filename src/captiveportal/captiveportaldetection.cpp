@@ -8,9 +8,9 @@
 #include "captiveportalmonitor.h"
 #include "captiveportalnotifier.h"
 #include "constants.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 
 namespace {
@@ -36,12 +36,12 @@ void CaptivePortalDetection::stateChanged() {
     return;
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
+  Core* core = Core::instance();
+  Q_ASSERT(core);
 
-  if ((vpn->controller()->state() != Controller::StateOn ||
-       vpn->connectionHealth()->stability() == ConnectionHealth::Stable) &&
-      vpn->controller()->state() != Controller::StateConfirming) {
+  if ((core->controller()->state() != Controller::StateOn ||
+       core->connectionHealth()->stability() == ConnectionHealth::Stable) &&
+      core->controller()->state() != Controller::StateConfirming) {
     logger.warning() << "No captive portal detection required";
     m_impl.reset();
     // Since we now reached a stable state, on the next time we have an
@@ -70,13 +70,13 @@ void CaptivePortalDetection::detectCaptivePortal() {
   // The monitor must be off when detecting the captive portal.
   captivePortalMonitor()->stop();
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
+  Core* core = Core::instance();
+  Q_ASSERT(core);
 
   // This method is called by the inspector too. Let's check the status of the
   // VPN.
-  if (vpn->controller()->state() != Controller::StateOn &&
-      vpn->controller()->state() != Controller::StateConfirming) {
+  if (core->controller()->state() != Controller::StateOn &&
+      core->controller()->state() != Controller::StateConfirming) {
     logger.warning() << "The VPN is not online. Ignore request.";
     return;
   }
@@ -131,11 +131,11 @@ void CaptivePortalDetection::captivePortalDetected() {
     return;
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
+  Core* core = Core::instance();
+  Q_ASSERT(core);
 
-  if (vpn->controller()->state() == Controller::StateOn ||
-      vpn->controller()->state() == Controller::StateConfirming) {
+  if (core->controller()->state() == Controller::StateOn ||
+      core->controller()->state() == Controller::StateConfirming) {
     captivePortalNotifier()->notifyCaptivePortalBlock();
   }
 }
@@ -143,9 +143,9 @@ void CaptivePortalDetection::captivePortalDetected() {
 void CaptivePortalDetection::captivePortalGone() {
   logger.debug() << "Portal gone";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() == MozillaVPN::StateMain &&
-      vpn->controller()->state() == Controller::StateOff) {
+  Core* core = Core::instance();
+  if (core->state() == Core::StateMain &&
+      core->controller()->state() == Controller::StateOff) {
     captivePortalNotifier()->notifyCaptivePortalUnblock();
     captivePortalMonitor()->stop();
   }
@@ -154,10 +154,10 @@ void CaptivePortalDetection::captivePortalGone() {
 void CaptivePortalDetection::deactivationRequired() {
   logger.debug() << "The user wants to deactivate the vpn";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
+  Core* core = Core::instance();
 
-  if (vpn->controller()->state() != Controller::StateOff) {
-    vpn->deactivate();
+  if (core->controller()->state() != Controller::StateOff) {
+    core->deactivate();
     captivePortalMonitor()->start();
   }
 }
@@ -165,11 +165,11 @@ void CaptivePortalDetection::deactivationRequired() {
 void CaptivePortalDetection::activationRequired() {
   logger.debug() << "User wants to activate the vpn";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
+  Core* core = Core::instance();
 
-  if (vpn->state() == MozillaVPN::StateMain &&
-      vpn->controller()->state() == Controller::StateOff) {
-    MozillaVPN::instance()->activate();
+  if (core->state() == Core::StateMain &&
+      core->controller()->state() == Controller::StateOff) {
+    Core::instance()->activate();
   }
 }
 

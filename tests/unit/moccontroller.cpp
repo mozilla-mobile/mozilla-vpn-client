@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/controllerimpl.h"
+#include "../../src/core.h"
 #include "../../src/ipaddressrange.h"
-#include "../../src/mozillavpn.h"
 #include "helper.h"
 
 Controller::Controller() {}

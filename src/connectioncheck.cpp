@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectioncheck.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 
 constexpr uint32_t CONNECTION_CHECK_TIMEOUT_MSEC = 10000;
 
@@ -27,7 +27,7 @@ ConnectionCheck::~ConnectionCheck() { MVPN_COUNT_DTOR(ConnectionCheck); }
 
 void ConnectionCheck::start() {
   logger.debug() << "Starting a connection check";
-  MozillaVPN::instance()->controller()->getStatus(
+  Core::instance()->controller()->getStatus(
       [this](const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
              uint64_t txBytes, uint64_t rxBytes) {
         Q_UNUSED(txBytes);

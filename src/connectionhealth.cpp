@@ -3,11 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionhealth.h"
+#include "core.h"
 #include "gleansample.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
-#include "mozillavpn.h"
 #include <QApplication>
 
 // In seconds, the timeout for unstable pings.
@@ -55,7 +55,7 @@ void ConnectionHealth::start(const QString& serverIpv4Gateway,
   logger.debug() << "ConnectionHealth activated";
 
   if (m_suspended || serverIpv4Gateway.isEmpty() ||
-      MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+      Core::instance()->controller()->state() != Controller::StateOn) {
     return;
   }
 
@@ -74,12 +74,12 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   logger.debug() << "Stability changed:" << stability;
 
   if (stability == Unstable) {
-    MozillaVPN::instance()->silentSwitch();
+    Core::instance()->silentSwitch();
 
-    emit MozillaVPN::instance()->triggerGleanSample(
+    emit Core::instance()->triggerGleanSample(
         GleanSample::connectionHealthUnstable);
   } else if (stability == NoSignal) {
-    emit MozillaVPN::instance()->triggerGleanSample(
+    emit Core::instance()->triggerGleanSample(
         GleanSample::connectionHealthNoSignal);
   }
 
@@ -90,12 +90,12 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
 void ConnectionHealth::connectionStateChanged() {
   logger.debug() << "Connection state changed";
 
-  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+  if (Core::instance()->controller()->state() != Controller::StateOn) {
     stop();
     return;
   }
 
-  MozillaVPN::instance()->controller()->getStatus(
+  Core::instance()->controller()->getStatus(
       [this](const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
              uint64_t txBytes, uint64_t rxBytes) {
         Q_UNUSED(txBytes);

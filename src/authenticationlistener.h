@@ -6,7 +6,7 @@
 #define AUTHENTICATIONLISTENER_H
 
 #include "errorhandler.h"
-#include "mozillavpn.h"
+#include "core.h"
 
 #include <QObject>
 #include <QUrl>
@@ -17,16 +17,15 @@ class AuthenticationListener : public QObject {
 
  public:
   static AuthenticationListener* create(
-      QObject* parent, MozillaVPN::AuthenticationType authenticationType);
+      QObject* parent, Core::AuthenticationType authenticationType);
 
   virtual void start(const QString& codeChallenge,
                      const QString& codeChallengeMethod,
                      const QString& emailAddress = QString()) = 0;
 
   static QUrl createAuthenticationUrl(
-      MozillaVPN::AuthenticationType authenticationType,
-      const QString& codeChallenge, const QString& codeChallengeMethod,
-      const QString& emailAddress);
+      Core::AuthenticationType authenticationType, const QString& codeChallenge,
+      const QString& codeChallengeMethod, const QString& emailAddress);
 
  signals:
   void completed(const QString& code);

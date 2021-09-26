@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosmenubar.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "qmlengineholder.h"
 #ifdef MVPN_MACOS
 #  include "platforms/macos/macosutils.h"
@@ -43,7 +43,7 @@ MacOSMenuBar* MacOSMenuBar::instance() {
 void MacOSMenuBar::initialize() {
   logger.debug() << "Creating menubar";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
+  Core* core = Core::instance();
 
   m_menuBar = new QMenuBar(nullptr);
 
@@ -52,20 +52,19 @@ void MacOSMenuBar::initialize() {
 
   // Do not use qtTrId here!
   QAction* quit =
-      fileMenu->addAction("quit", vpn->controller(), &Controller::quit);
+      fileMenu->addAction("quit", core->controller(), &Controller::quit);
   quit->setMenuRole(QAction::QuitRole);
 
   // Do not use qtTrId here!
-  m_aboutAction =
-      fileMenu->addAction("about.vpn", vpn, &MozillaVPN::requestAbout);
+  m_aboutAction = fileMenu->addAction("about.vpn", core, &Core::requestAbout);
   m_aboutAction->setMenuRole(QAction::AboutRole);
-  m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
+  m_aboutAction->setVisible(core->state() == Core::StateMain);
 
   // Do not use qtTrId here!
   m_preferencesAction =
-      fileMenu->addAction("preferences", vpn, &MozillaVPN::requestSettings);
+      fileMenu->addAction("preferences", core, &Core::requestSettings);
   m_preferencesAction->setMenuRole(QAction::PreferencesRole);
-  m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
+  m_preferencesAction->setVisible(core->state() == Core::StateMain);
 
   m_closeAction = fileMenu->addAction("close", []() {
     QmlEngineHolder::instance()->hideWindow();
@@ -81,9 +80,9 @@ void MacOSMenuBar::initialize() {
 };
 
 void MacOSMenuBar::controllerStateChanged() {
-  MozillaVPN* vpn = MozillaVPN::instance();
-  m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
-  m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
+  Core* core = Core::instance();
+  m_preferencesAction->setVisible(core->state() == Core::StateMain);
+  m_aboutAction->setVisible(core->state() == Core::StateMain);
 }
 
 void MacOSMenuBar::retranslate() {
@@ -98,9 +97,9 @@ void MacOSMenuBar::retranslate() {
     m_helpMenu->removeAction(action);
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  vpn->helpModel()->forEach([&](const char* nameId, int id) {
+  Core* core = Core::instance();
+  core->helpModel()->forEach([&](const char* nameId, int id) {
     m_helpMenu->addAction(qtTrId(nameId),
-                          [help = vpn->helpModel(), id]() { help->open(id); });
+                          [help = core->helpModel(), id]() { help->open(id); });
   });
 }

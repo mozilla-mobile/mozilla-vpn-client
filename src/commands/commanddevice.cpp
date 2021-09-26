@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commanddevice.h"
+#include "core.h"
 #include "leakdetector.h"
-#include "mozillavpn.h"
 #include "tasks/removedevice/taskremovedevice.h"
 
 #include <QTextStream>
@@ -33,7 +33,7 @@ int CommandDevice::run(QStringList& tokens) {
       return 1;
     }
 
-    MozillaVPN vpn;
+    Core core;
     if (!loadModels()) {
       return 1;
     }
@@ -46,7 +46,7 @@ int CommandDevice::run(QStringList& tokens) {
       return 1;
     }
 
-    DeviceModel* dm = vpn.deviceModel();
+    DeviceModel* dm = core.deviceModel();
     Q_ASSERT(dm);
 
     const QList<Device>& devices = dm->devices();
@@ -57,7 +57,7 @@ int CommandDevice::run(QStringList& tokens) {
     }
 
     const Device& device = devices.at(id - 1);
-    if (device.isCurrentDevice(vpn.keys())) {
+    if (device.isCurrentDevice(core.keys())) {
       QTextStream stream(stdout);
       stream
           << "Removing the current device is not allowed. Use 'logout' instead."
@@ -66,7 +66,7 @@ int CommandDevice::run(QStringList& tokens) {
     }
 
     TaskRemoveDevice task(device.publicKey());
-    task.run(&vpn);
+    task.run(&core);
 
     QEventLoop loop;
     QObject::connect(&task, &Task::completed, [&] { loop.exit(); });

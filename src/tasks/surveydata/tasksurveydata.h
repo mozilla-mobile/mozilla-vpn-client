@@ -16,7 +16,7 @@ class TaskSurveyData final : public Task {
   TaskSurveyData();
   ~TaskSurveyData();
 
-  void run(MozillaVPN* vpn) override;
+  void run(Core* core) override;
 };
 
 #endif  // TASKSURVEYDATA_H

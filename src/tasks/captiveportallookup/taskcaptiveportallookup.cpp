@@ -4,9 +4,9 @@
 
 #include "taskcaptiveportallookup.h"
 #include "captiveportal/captiveportal.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 namespace {
@@ -22,22 +22,22 @@ TaskCaptivePortalLookup::~TaskCaptivePortalLookup() {
   MVPN_COUNT_DTOR(TaskCaptivePortalLookup);
 }
 
-void TaskCaptivePortalLookup::run(MozillaVPN* vpn) {
+void TaskCaptivePortalLookup::run(Core* core) {
   logger.debug() << "Resolving the captive portal detector URL";
 
   NetworkRequest* request = NetworkRequest::createForCaptivePortalLookup(this);
   connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to obtain captive poral IPs" << error;
-            vpn->errorHandle(ErrorHandler::toErrorType(error));
+            core->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn](const QByteArray& data) {
+          [this, core](const QByteArray& data) {
             logger.debug() << "Lookup completed";
-            if (vpn->captivePortal()->fromJson(data)) {
-              vpn->captivePortal()->writeSettings();
+            if (core->captivePortal()->fromJson(data)) {
+              core->captivePortal()->writeSettings();
             }
 
             emit completed();

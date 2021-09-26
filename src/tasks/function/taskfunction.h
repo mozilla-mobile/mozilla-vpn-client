@@ -14,13 +14,13 @@ class TaskFunction final : public Task {
   Q_DISABLE_COPY_MOVE(TaskFunction)
 
  public:
-  TaskFunction(std::function<void(MozillaVPN*)>&& callback);
+  TaskFunction(std::function<void(Core*)>&& callback);
   ~TaskFunction();
 
-  void run(MozillaVPN* vpn) override;
+  void run(Core* core) override;
 
  private:
-  std::function<void(MozillaVPN*)> m_callback;
+  std::function<void(Core*)> m_callback;
 };
 
 #endif  // TASKFUNCTION_H

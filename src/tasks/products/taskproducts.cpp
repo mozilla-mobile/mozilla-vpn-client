@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskproducts.h"
+#include "core.h"
 #include "iaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 namespace {
@@ -19,13 +19,13 @@ TaskProducts::TaskProducts() : Task("TaskProducts") {
 
 TaskProducts::~TaskProducts() { MVPN_COUNT_DTOR(TaskProducts); }
 
-void TaskProducts::run(MozillaVPN* vpn) {
+void TaskProducts::run(Core* core) {
   NetworkRequest* request = NetworkRequest::createForProducts(this);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Products request to guardian failed" << error;
-            vpn->errorHandle(ErrorHandler::toErrorType(error));
+            core->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });
 

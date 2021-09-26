@@ -4,8 +4,8 @@
 
 #include "commandservers.h"
 #include "commandlineparser.h"
+#include "core.h"
 #include "leakdetector.h"
-#include "mozillavpn.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 
 #include <QEventLoop>
@@ -55,11 +55,11 @@ int CommandServers::run(QStringList& tokens) {
       return 1;
     }
 
-    MozillaVPN vpn;
+    Core core;
 
     if (!cacheOption.m_set) {
       TaskAccountAndServers task;
-      task.run(&vpn);
+      task.run(&core);
 
       QEventLoop loop;
       QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
@@ -69,7 +69,7 @@ int CommandServers::run(QStringList& tokens) {
     }
 
     if (jsonOption.m_set) {
-      ServerCountryModel* scm = vpn.serverCountryModel();
+      ServerCountryModel* scm = core.serverCountryModel();
       QJsonArray list;
       for (const ServerCountry& country : scm->countries()) {
         QJsonObject countryObj;
@@ -104,7 +104,7 @@ int CommandServers::run(QStringList& tokens) {
       QTextStream(stdout) << QJsonDocument(list).toJson() << Qt::endl;
     } else {
       QTextStream stream(stdout);
-      ServerCountryModel* scm = vpn.serverCountryModel();
+      ServerCountryModel* scm = core.serverCountryModel();
       for (const ServerCountry& country : scm->countries()) {
         stream << "- Country: " << country.name()
                << " (code: " << country.code() << ")" << Qt::endl;

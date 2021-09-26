@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskcontrolleraction.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 
 constexpr uint32_t TASKCONTROLLER_TIMER_MSEC = 3000;
 
@@ -28,10 +28,10 @@ TaskControllerAction::~TaskControllerAction() {
   MVPN_COUNT_DTOR(TaskControllerAction);
 }
 
-void TaskControllerAction::run(MozillaVPN* vpn) {
+void TaskControllerAction::run(Core* core) {
   logger.debug() << "TaskControllerAction run";
 
-  Controller* controller = vpn->controller();
+  Controller* controller = core->controller();
   Q_ASSERT(controller);
 
   if (m_action == eSilentSwitch) {
@@ -75,7 +75,7 @@ void TaskControllerAction::stateChanged() {
     return;
   }
 
-  Controller* controller = MozillaVPN::instance()->controller();
+  Controller* controller = Core::instance()->controller();
   Q_ASSERT(controller);
 
   Controller::State state = controller->state();

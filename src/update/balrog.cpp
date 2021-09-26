@@ -4,10 +4,10 @@
 
 #include "balrog.h"
 #include "constants.h"
+#include "core.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 #include <QJsonDocument>
@@ -503,15 +503,15 @@ void Balrog::propagateError(NetworkRequest* request,
                             QNetworkReply::NetworkError error) {
   Q_ASSERT(request);
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
+  Core* core = Core::instance();
+  Q_ASSERT(core);
 
   // 451 Unavailable For Legal Reasons
   if (request->statusCode() == 451) {
     logger.debug() << "Geo IP restriction detected";
-    vpn->errorHandle(ErrorHandler::GeoIpRestrictionError);
+    core->errorHandle(ErrorHandler::GeoIpRestrictionError);
     return;
   }
 
-  vpn->errorHandle(ErrorHandler::toErrorType(error));
+  core->errorHandle(ErrorHandler::toErrorType(error));
 }

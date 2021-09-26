@@ -5,12 +5,12 @@
 #include "networkrequest.h"
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
+#include "core.h"
 #include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
-#include "mozillavpn.h"
 
 #include <QHostAddress>
 #include <QJsonDocument>
@@ -311,7 +311,7 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
   QJsonObject obj;
   obj.insert("feedbackText", feedbackText);
   obj.insert("logs", logs);
-  obj.insert("versionString", MozillaVPN::instance()->versionString());
+  obj.insert("versionString", Core::instance()->versionString());
   obj.insert("platformVersion", QString(NetworkManager::osVersion()));
   obj.insert("rating", rating);
   obj.insert("category", category);
@@ -338,7 +338,7 @@ NetworkRequest* NetworkRequest::createForSupportTicket(
   QJsonObject obj;
   obj.insert("email", email);
   obj.insert("logs", logs);
-  obj.insert("versionString", MozillaVPN::instance()->versionString());
+  obj.insert("versionString", Core::instance()->versionString());
   obj.insert("platformVersion", QString(NetworkManager::osVersion()));
   obj.insert("subject", subject);
   obj.insert("issueText", issueText);

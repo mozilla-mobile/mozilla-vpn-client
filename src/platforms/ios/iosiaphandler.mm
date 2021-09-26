@@ -4,10 +4,10 @@
 
 #include "platforms/ios/iosiaphandler.h"
 #include "constants.h"
+#include "core.h"
 #include "iosutils.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 
@@ -152,7 +152,7 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
     logger.debug() << "Subscription completed - but all the transactions are known";
     QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
-  } else if (MozillaVPN::instance()->userAuthenticated()) {
+  } else if (Core::instance()->userAuthenticated()) {
     Q_ASSERT(completedTransactions);
     logger.debug() << "Subscription completed. Let's start the validation";
     QMetaObject::invokeMethod(m_handler, "processCompletedTransactions", Qt::QueuedConnection,
@@ -330,7 +330,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             if (!json.isObject()) {
-              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+              Core::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
               return;
             }
@@ -338,14 +338,14 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
             QJsonObject obj = json.object();
             QJsonValue errorValue = obj.value("errno");
             if (!errorValue.isDouble()) {
-              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+              Core::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
               return;
             }
 
             int errorNumber = errorValue.toInt();
             if (errorNumber != 145) {
-              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+              Core::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
               return;
             }

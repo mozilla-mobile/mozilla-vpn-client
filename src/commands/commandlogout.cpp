@@ -4,10 +4,10 @@
 
 #include "commandlogout.h"
 #include "commandlineparser.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "models/device.h"
-#include "mozillavpn.h"
 #include "tasks/removedevice/taskremovedevice.h"
 
 #include <QEventLoop>
@@ -33,7 +33,7 @@ int CommandLogout::run(QStringList& tokens) {
       return 1;
     }
 
-    MozillaVPN vpn;
+    Core core;
 
     if (!loadModels()) {
       QTextStream stream(stdout);
@@ -41,16 +41,17 @@ int CommandLogout::run(QStringList& tokens) {
       return 1;
     }
 
-    const Device* currentDevice = vpn.deviceModel()->currentDevice(vpn.keys());
+    const Device* currentDevice =
+        core.deviceModel()->currentDevice(core.keys());
     if (currentDevice) {
       TaskRemoveDevice task(currentDevice->publicKey());
-      task.run(&vpn);
+      task.run(&core);
 
       QEventLoop loop;
       QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
       loop.exec();
     }
-    vpn.reset(false);
+    core.reset(false);
 
     return 0;
   });

@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef MOZILLAVPN_H
-#define MOZILLAVPN_H
+#ifndef CORE_H
+#define CORE_H
 
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
@@ -39,9 +39,9 @@ class Task;
 class TestTasks;
 #endif
 
-class MozillaVPN final : public QObject {
+class Core final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(MozillaVPN)
+  Q_DISABLE_COPY_MOVE(Core)
 
  public:
   enum State {
@@ -107,10 +107,10 @@ class MozillaVPN final : public QObject {
                  currentViewChanged)
 
  public:
-  MozillaVPN();
-  ~MozillaVPN();
+  Core();
+  ~Core();
 
-  static MozillaVPN* instance();
+  static Core* instance();
 
   void initialize();
 
@@ -401,4 +401,4 @@ class MozillaVPN final : public QObject {
 #endif
 };
 
-#endif  // MOZILLAVPN_H
+#endif  // CORE_H

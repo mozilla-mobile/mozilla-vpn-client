@@ -3,11 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskadddevice.h"
+#include "core.h"
 #include "curve25519.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 #include <QRandomGenerator>
@@ -39,7 +39,7 @@ TaskAddDevice::TaskAddDevice(const QString& deviceName)
 
 TaskAddDevice::~TaskAddDevice() { MVPN_COUNT_DTOR(TaskAddDevice); }
 
-void TaskAddDevice::run(MozillaVPN* vpn) {
+void TaskAddDevice::run(Core* core) {
   logger.debug() << "Adding the device" << logger.sensitive(m_deviceName);
 
   QByteArray privateKey = generatePrivateKey();
@@ -52,16 +52,16 @@ void TaskAddDevice::run(MozillaVPN* vpn) {
       NetworkRequest::createForDeviceCreation(this, m_deviceName, publicKey);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this, core](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to add the device" << error;
-            vpn->errorHandle(ErrorHandler::toErrorType(error));
+            core->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn, publicKey, privateKey](const QByteArray&) {
+          [this, core, publicKey, privateKey](const QByteArray&) {
             logger.debug() << "Device added";
-            vpn->deviceAdded(m_deviceName, publicKey, privateKey);
+            core->deviceAdded(m_deviceName, publicKey, privateKey);
             emit completed();
           });
 }

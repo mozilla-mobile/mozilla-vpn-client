@@ -4,11 +4,11 @@
 
 #include "taskauthenticate.h"
 #include "authenticationlistener.h"
+#include "core.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/user.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 #include <QCryptographicHash>
@@ -41,15 +41,14 @@ QByteArray generatePkceCodeVerifier() {
 
 }  // anonymous namespace
 
-TaskAuthenticate::TaskAuthenticate(
-    MozillaVPN::AuthenticationType authenticationType)
+TaskAuthenticate::TaskAuthenticate(Core::AuthenticationType authenticationType)
     : Task("TaskAuthenticate"), m_authenticationType(authenticationType) {
   MVPN_COUNT_CTOR(TaskAuthenticate);
 }
 
 TaskAuthenticate::~TaskAuthenticate() { MVPN_COUNT_DTOR(TaskAuthenticate); }
 
-void TaskAuthenticate::run(MozillaVPN* vpn) {
+void TaskAuthenticate::run(Core* core) {
   logger.debug() << "TaskAuthenticate::Run";
 
   Q_ASSERT(!m_authenticationListener);
@@ -64,7 +63,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
       AuthenticationListener::create(this, m_authenticationType);
 
   connect(m_authenticationListener, &AuthenticationListener::completed,
-          [this, vpn, pkceCodeVerifier](const QString& pkceCodeSucces) {
+          [this, core, pkceCodeVerifier](const QString& pkceCodeSucces) {
             logger.debug() << "Authentication completed with code:"
                            << pkceCodeSucces;
 
@@ -74,48 +73,48 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
 
             connect(
                 request, &NetworkRequest::requestFailed,
-                [vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+                [core](QNetworkReply::NetworkError error, const QByteArray&) {
                   logger.error()
                       << "Failed to complete the authentication" << error;
-                  vpn->errorHandle(ErrorHandler::toErrorType(error));
+                  core->errorHandle(ErrorHandler::toErrorType(error));
                 });
 
             connect(request, &NetworkRequest::requestCompleted,
-                    [this, vpn](const QByteArray& data) {
+                    [this, core](const QByteArray& data) {
                       logger.debug() << "Authentication completed";
-                      authenticationCompleted(vpn, data);
+                      authenticationCompleted(core, data);
                     });
           });
 
   connect(m_authenticationListener, &AuthenticationListener::failed,
-          [this, vpn](const ErrorHandler::ErrorType error) {
-            vpn->errorHandle(error);
+          [this, core](const ErrorHandler::ErrorType error) {
+            core->errorHandle(error);
             emit completed();
           });
 
   connect(m_authenticationListener, &AuthenticationListener::abortedByUser,
-          [this, vpn]() {
-            vpn->abortAuthentication();
+          [this, core]() {
+            core->abortAuthentication();
             emit completed();
           });
 
   m_authenticationListener->start(pkceCodeChallenge, CODE_CHALLENGE_METHOD);
 }
 
-void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
+void TaskAuthenticate::authenticationCompleted(Core* core,
                                                const QByteArray& data) {
   logger.debug() << "Authentication completed";
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isNull()) {
-    vpn->errorHandle(ErrorHandler::RemoteServiceError);
+    core->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
   QJsonObject obj = json.object();
   QJsonValue userObj = obj.value("user");
   if (!userObj.isObject()) {
-    vpn->errorHandle(ErrorHandler::RemoteServiceError);
+    core->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
@@ -125,15 +124,15 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
 
   QJsonValue tokenValue = obj.value("token");
   if (!tokenValue.isString()) {
-    vpn->errorHandle(ErrorHandler::RemoteServiceError);
+    core->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
   QJsonDocument userDoc;
   userDoc.setObject(userObj.toObject());
 
-  vpn->authenticationCompleted(userDoc.toJson(QJsonDocument::Compact),
-                               tokenValue.toString());
+  core->authenticationCompleted(userDoc.toJson(QJsonDocument::Compact),
+                                tokenValue.toString());
 
   emit completed();
 }

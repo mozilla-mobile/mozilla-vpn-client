@@ -4,10 +4,10 @@
 
 #include "connectiondataholder.h"
 #include "constants.h"
+#include "core.h"
 #include "ipfinder.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "timersingleshot.h"
 
 #include <QJsonDocument>
@@ -29,7 +29,7 @@ ConnectionDataHolder::ConnectionDataHolder()
 
   connect(&m_ipAddressTimer, &QTimer::timeout, [this]() { updateIpAddress(); });
   connect(&m_checkStatusTimer, &QTimer::timeout, [this]() {
-    MozillaVPN::instance()->controller()->getStatus(
+    Core::instance()->controller()->getStatus(
         [this](const QString& serverIpv4Gateway,
                const QString& deviceIpv4Address, uint64_t txBytes,
                uint64_t rxBytes) {
@@ -206,7 +206,7 @@ void ConnectionDataHolder::reset() {
 
 void ConnectionDataHolder::updateIpAddress() {
   logger.debug() << "Updating IP address";
-  auto state = MozillaVPN::instance()->controller()->state();
+  auto state = Core::instance()->controller()->state();
   // Only start the check if we're actually connected/connecting
   if (state != Controller::StateOn && state != Controller::StateConfirming) {
     logger.warning() << "Skip Updating IP address, not connected";
@@ -229,10 +229,10 @@ void ConnectionDataHolder::updateIpAddress() {
           return;
         }
 
-        MozillaVPN* vpn = MozillaVPN::instance();
+        Core* core = Core::instance();
         logger.debug() << "IP address request completed";
         if (m_checkStatusTimer.isActive() &&
-            country != vpn->currentServer()->exitCountryCode()) {
+            country != core->currentServer()->exitCountryCode()) {
           // In case the country-we're reported in does not match the
           // connected server we may retry only once.
           logger.warning() << "Reported ip not in the right country, retry!";
@@ -277,9 +277,9 @@ quint64 ConnectionDataHolder::bytes(bool index) const {
 void ConnectionDataHolder::stateChanged() {
   logger.debug() << "state changed";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
+  Core* core = Core::instance();
 
-  if (vpn->state() != MozillaVPN::StateMain) {
+  if (core->state() != Core::StateMain) {
     disable();
     return;
   }
@@ -288,7 +288,7 @@ void ConnectionDataHolder::stateChanged() {
 
   reset();
 
-  if (m_txSeries && vpn->controller()->state() == Controller::StateOn) {
+  if (m_txSeries && core->controller()->state() == Controller::StateOn) {
     m_checkStatusTimer.start();
   }
 }

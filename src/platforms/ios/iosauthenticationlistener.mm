@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "iosauthenticationlistener.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "qmlengineholder.h"
 
 #include <QApplication>
@@ -66,7 +66,7 @@ void IOSAuthenticationListener::start(const QString& codeChallenge,
                                       const QString& emailAddress) {
   logger.debug() << "IOSAuthenticationListener initialize";
 
-  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser, codeChallenge,
+  QUrl url(createAuthenticationUrl(Core::AuthenticationInBrowser, codeChallenge,
                                    codeChallengeMethod, emailAddress));
   QUrlQuery query(url.query());
   query.addQueryItem("platform", "ios");

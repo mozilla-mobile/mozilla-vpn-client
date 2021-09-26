@@ -16,7 +16,7 @@ void TestStatusIcon::basic() {
   QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
 
-  TestHelper::vpnState = MozillaVPN::StateMain;
+  TestHelper::coreState = Core::StateMain;
   TestHelper::controllerState = Controller::StateOn;
   si.stateChanged();
   QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-on.svg");

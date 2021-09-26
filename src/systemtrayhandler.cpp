@@ -4,9 +4,9 @@
 
 #include "systemtrayhandler.h"
 #include "constants.h"
+#include "core.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "statusicon.h"
 
@@ -57,7 +57,7 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
   return;
 #endif
 
-  MozillaVPN* vpn = MozillaVPN::instance();
+  Core* core = Core::instance();
 
   setToolTip(qtTrId("vpn.main.productName"));
 
@@ -66,11 +66,11 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
   m_statusLabel->setEnabled(false);
 
   m_lastLocationLabel =
-      m_menu.addAction("", vpn->controller(), &Controller::activate);
+      m_menu.addAction("", core->controller(), &Controller::activate);
   m_lastLocationLabel->setEnabled(false);
 
   m_disconnectAction =
-      m_menu.addAction("", vpn->controller(), &Controller::deactivate);
+      m_menu.addAction("", core->controller(), &Controller::deactivate);
 
   m_separator = m_menu.addSeparator();
 
@@ -81,14 +81,14 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
 
   m_helpMenu = m_menu.addMenu("");
 
-  m_preferencesAction = m_menu.addAction("", vpn, &MozillaVPN::requestSettings);
+  m_preferencesAction = m_menu.addAction("", core, &Core::requestSettings);
 
   m_menu.addSeparator();
 
-  m_quitAction = m_menu.addAction("", vpn->controller(), &Controller::quit);
+  m_quitAction = m_menu.addAction("", core->controller(), &Controller::quit);
   setContextMenu(&m_menu);
 
-  updateIcon(MozillaVPN::instance()->statusIcon()->iconString());
+  updateIcon(Core::instance()->statusIcon()->iconString());
 
   connect(QmlEngineHolder::instance()->window(), &QWindow::visibleChanged, this,
           &SystemTrayHandler::updateContextMenu);
@@ -121,12 +121,12 @@ void SystemTrayHandler::updateContextMenu() {
     return;
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
+  Core* core = Core::instance();
 
-  bool isStateMain = vpn->state() == MozillaVPN::StateMain;
+  bool isStateMain = core->state() == Core::StateMain;
   m_preferencesAction->setVisible(isStateMain);
 
-  m_disconnectAction->setVisible(isStateMain && vpn->controller()->state() ==
+  m_disconnectAction->setVisible(isStateMain && core->controller()->state() ==
                                                     Controller::StateOn);
 
   m_statusLabel->setVisible(isStateMain);
@@ -149,7 +149,7 @@ void SystemTrayHandler::updateContextMenu() {
 
   QString statusLabel;
 
-  switch (vpn->controller()->state()) {
+  switch (core->controller()->state()) {
     case Controller::StateOn:
       //% "Connected to:"
       statusLabel = qtTrId("vpn.systray.status.connectedTo");
@@ -188,12 +188,12 @@ void SystemTrayHandler::updateContextMenu() {
   m_lastLocationLabel->setVisible(true);
 
   QIcon flagIcon(QString(":/ui/resources/flags/%1.png")
-                     .arg(vpn->currentServer()->exitCountryCode().toUpper()));
+                     .arg(core->currentServer()->exitCountryCode().toUpper()));
 
-  QString countryCode = vpn->currentServer()->exitCountryCode();
-  QString localizedCityName = vpn->currentServer()->localizedCityName();
+  QString countryCode = core->currentServer()->exitCountryCode();
+  QString localizedCityName = core->currentServer()->localizedCityName();
   QString localizedCountryName =
-      vpn->serverCountryModel()->localizedCountryName(countryCode);
+      core->serverCountryModel()->localizedCountryName(countryCode);
 
   m_lastLocationLabel->setIcon(flagIcon);
   m_lastLocationLabel->setText(
@@ -202,7 +202,7 @@ void SystemTrayHandler::updateContextMenu() {
       qtTrId("vpn.systray.location")
           .arg(localizedCountryName)
           .arg(localizedCityName));
-  m_lastLocationLabel->setEnabled(vpn->controller()->state() ==
+  m_lastLocationLabel->setEnabled(core->controller()->state() ==
                                   Controller::StateOff);
 }
 
@@ -287,10 +287,10 @@ void SystemTrayHandler::retranslate() {
     m_helpMenu->removeAction(action);
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  vpn->helpModel()->forEach([&](const char* nameId, int id) {
+  Core* core = Core::instance();
+  core->helpModel()->forEach([&](const char* nameId, int id) {
     m_helpMenu->addAction(qtTrId(nameId),
-                          [help = vpn->helpModel(), id]() { help->open(id); });
+                          [help = core->helpModel(), id]() { help->open(id); });
   });
 
   //% "Preferences…"

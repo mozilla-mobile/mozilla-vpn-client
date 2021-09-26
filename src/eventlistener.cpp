@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "eventlistener.h"
+#include "core.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "qmlengineholder.h"
 
 #include <QLocalSocket>
