@@ -335,15 +335,20 @@ static QList<WebSocketCommand> s_commands{
                          QMetaProperty mp = meta->property(i);
                          int padding = longest - strlen(mp.name());
                          QVariant value = mp.read(item);
-                         if (!result.isEmpty()) {
-                           result += "\n";
+                         QString name = mp.name() + QString(padding, ' ');
+
+                         if (value.type() == QVariant::StringList) {
+                           for (const QString& x : value.value<QStringList>()) {
+                             result += name + " = " + x + "\n";
+                             name.fill(' ', longest);
+                           }
+                           continue;
                          }
-                         result += QString(mp.name());
-                         result += QString(padding, ' ') + " = ";
-                         result += value.toString();
+
+                         result += name + " = " + value.toString() + "\n";
                        }
 
-                       obj["value"] = result;
+                       obj["value"] = result.trimmed();
                        return obj;
                      }},
 
