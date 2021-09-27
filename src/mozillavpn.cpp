@@ -203,7 +203,6 @@ void MozillaVPN::initialize() {
   // This is our first state.
   Q_ASSERT(m_state == StateInitialize);
 
-  setState(StateUpdateRequired);
   m_private->m_releaseMonitor.runSoon();
 
   scheduleTask(new TaskGetFeatureList());
