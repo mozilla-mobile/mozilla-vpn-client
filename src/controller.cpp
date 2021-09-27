@@ -42,6 +42,12 @@ constexpr const uint32_t TIMER_MSEC = 1000;
 // X connection retries.
 constexpr const int CONNECTION_MAX_RETRY = 9;
 
+// The Mullvad proxy services are located at internal IPv4 addresses in the
+// 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
+// private address range.
+constexpr const char* MULLVAD_PROXY_RANGE = "10.124.0.0";
+constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
+
 namespace {
 Logger logger(LOG_CONTROLLER, "Controller");
 
@@ -681,6 +687,10 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   }
 
   QList<IPAddressRange> list;
+
+  // Ensure that the Mullvad proxy services are always allowed.
+  list.append(IPAddressRange(MULLVAD_PROXY_RANGE, MULLVAD_PROXY_RANGE_LENGTH,
+                             IPAddressRange::IPv4));
 
   if (excludeIPv4s.isEmpty()) {
     logger.debug() << "Catch all IPv4";
