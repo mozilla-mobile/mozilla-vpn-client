@@ -203,6 +203,7 @@ void MozillaVPN::initialize() {
   // This is our first state.
   Q_ASSERT(m_state == StateInitialize);
 
+  setState(StateUpdateRequired);
   m_private->m_releaseMonitor.runSoon();
 
   scheduleTask(new TaskGetFeatureList());
@@ -304,7 +305,8 @@ void MozillaVPN::initialize() {
 }
 
 void MozillaVPN::setState(State state) {
-  logger.debug() << "Set state:" << QVariant::fromValue(state).toString();
+  logger.debug() << "Set state:" << state;
+
   m_state = state;
   emit stateChanged();
 
@@ -1043,8 +1045,7 @@ void MozillaVPN::setUpdateRecommended(bool value) {
 }
 
 void MozillaVPN::setUserAuthenticated(bool state) {
-  logger.debug() << "User authentication state:"
-                 << QVariant::fromValue(state).toString();
+  logger.debug() << "User authentication state:" << state;
   m_userAuthenticated = state;
   emit userAuthenticationChanged();
 }
