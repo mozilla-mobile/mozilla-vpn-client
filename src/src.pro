@@ -330,11 +330,6 @@ balrog {
     HEADERS += update/balrog.h
 }
 
-AUTHINAPP {
-    message(Authentication in-app enabled)
-    DEFINES += MVPN_AUTHINAPP
-}
-
 DUMMY {
     message(Dummy build)
 
