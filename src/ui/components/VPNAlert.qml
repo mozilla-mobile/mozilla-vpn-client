@@ -106,7 +106,6 @@ Rectangle {
                 closeIcon: darkCloseIcon
             }
         },
-
         State{
             name: stateNames.error
 
@@ -147,13 +146,13 @@ Rectangle {
           id: autoHideTimer
           running: false
           repeat: false
-          onTriggered: { closeAlert.start();}
+          onTriggered: { closeAlert.start(); }
     }
 
     DropShadow {
         anchors.fill: parent
         source: parent
-        opacity: .1
+        opacity: 0.1
         state: "overwrite-state"
         z: -1
         id: dropShadow
@@ -167,9 +166,9 @@ Rectangle {
         id: alertAction
         anchors.fill: alertBox
         radius: Theme.cornerRadius
-        enabled: alertActionText != ""
+        enabled: alertActionText !== ""
         onClicked: {
-            if(alertActionText != ""){
+            if (alertActionText !== ""){
               // Only Trigger an Action,
               // if we have an actionable text
               alertBox.onActionPressed();
@@ -205,19 +204,27 @@ Rectangle {
         states: [
             State {
                 name: Theme.uiState.stateDefault
-                PropertyChanges {target: alertBox; color: style.alertColor }
+                PropertyChanges {
+                    target: alertBox
+                    color: style.alertColor
+                }
             },
             State {
                 name: Theme.uiState.statePressed
-                PropertyChanges {target: alertBox; color: style.alertClickColor }
+                PropertyChanges {
+                    target: alertBox
+                    color: style.alertClickColor
+                }
             },
             State {
                 name: Theme.uiState.stateHovered
-                PropertyChanges {target: alertBox; color: style.alertHoverColor }
+                PropertyChanges {
+                    target: alertBox
+                    color: style.alertHoverColor
+                }
             }
         ]
     }
-
 
     VPNButtonBase {
         // Hack to create the two right angle corners
@@ -259,15 +266,24 @@ Rectangle {
             states: [
                 State {
                     name: Theme.uiState.stateDefault
-                    PropertyChanges {target: backgroundRect; color: style.alertColor }
+                    PropertyChanges {
+                        target: backgroundRect
+                        color: style.alertColor
+                    }
                 },
                 State {
                     name: Theme.uiState.statePressed
-                    PropertyChanges {target: backgroundRect; color: style.alertClickColor }
+                    PropertyChanges {
+                        target: backgroundRect
+                        color: style.alertClickColor
+                    }
                 },
                 State {
                     name: Theme.uiState.stateHovered
-                    PropertyChanges {target: backgroundRect; color: style.alertHoverColor }
+                    PropertyChanges {
+                        target: backgroundRect
+                        color: style.alertHoverColor
+                    }
                 }
             ]
         }
@@ -304,7 +320,7 @@ Rectangle {
 
     SequentialAnimation {
         id: showAlert
-        ScriptAction { script: show();}
+        ScriptAction { script: show(); }
 
         PropertyAnimation {
             targets: alertBox
@@ -317,27 +333,26 @@ Rectangle {
     function show() {
         if (!isLayout) {
             height = style.alertHeight;
-            width = Math.min(window.width - Theme.windowMargin, Theme.maxHorizontalContentWidth);
-            y = fullscreenRequired()? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
+            width = window.width - Theme.windowMargin * 2;
+            y = fullscreenRequired() ? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
             anchors.horizontalCenter = parent.horizontalCenter;
             anchors.margins = Theme.windowMargin / 2;
         }
-        if(alertBox.duration > 0){
-            console.log("Toasbox timer start")
+        if (alertBox.duration > 0) {
+            console.log("Toastbox timer start")
             autoHideTimer.start()
         }
     }
 
-    function remove(){
-
-        if(alertBox.destructive){
+    function remove() {
+        if (alertBox.destructive){
             alertBox.destroy(100)
         }
     }
 
     SequentialAnimation {
         property var closeTarget
-         id: closeAlert
+        id: closeAlert
         ScriptAction { script: show(); }
         PropertyAnimation {
             target: alertBox
