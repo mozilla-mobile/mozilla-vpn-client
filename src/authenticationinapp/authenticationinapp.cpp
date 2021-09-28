@@ -66,6 +66,12 @@ void AuthenticationInApp::checkAccount(const QString& emailAddress) {
   m_listener->checkAccount(emailAddress);
 }
 
+void AuthenticationInApp::reset() {
+  Q_ASSERT(m_listener);
+  logger.debug() << "Authentication reset";
+  setState(StateStart);
+}
+
 void AuthenticationInApp::setPassword(const QString& password) {
   Q_ASSERT(m_state == StateSignIn || m_state == StateSignUp);
   Q_ASSERT(m_listener);
