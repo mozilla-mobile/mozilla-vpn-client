@@ -207,7 +207,6 @@ HEADERS += \
         features/featureappreview.h \
         features/featurecaptiveportal.h \
         features/featurecustomdns.h \
-        features/featureglean.h \
         features/featureinappaccountCreate.h \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
