@@ -148,7 +148,17 @@ void AndroidController::activate(
       PERMISSIONHELPER_CLASS, "startService", "(Landroid/content/Context;)V",
       appContext.object());
 
-  Server server = serverList[0];
+  Server exitServer;
+  Server entryServer;
+
+  if(serverList.length() == 1){
+    exitServer = serverList.first();
+    entryServer = serverList.first();
+  }else {
+    exitServer = serverList.first();
+    entryServer = serverList.last();
+  }
+
   m_device = *device;
 
   // Serialise arguments for the VPNService
@@ -163,12 +173,18 @@ void AndroidController::activate(
   jKeys["privateKey"] = keys->privateKey();
 
   QJsonObject jServer;
-  jServer["ipv4AddrIn"] = server.ipv4AddrIn();
-  jServer["ipv4Gateway"] = server.ipv4Gateway();
-  jServer["ipv6AddrIn"] = server.ipv6AddrIn();
-  jServer["ipv6Gateway"] = server.ipv6Gateway();
-  jServer["publicKey"] = server.publicKey();
-  jServer["port"] = (int)server.choosePort();
+  logger.info() << "Server[0]" << entryServer.hostname();
+  jServer["ipv4AddrIn"] = entryServer.ipv4AddrIn();
+  jServer["ipv4Gateway"] = entryServer.ipv4Gateway();
+  jServer["ipv6AddrIn"] = entryServer.ipv6AddrIn();
+  jServer["ipv6Gateway"] = entryServer.ipv6Gateway();
+  jServer["publicKey"] = exitServer.publicKey();
+  jServer["port"] = (int)entryServer.choosePort();
+
+  if( serverList.length() != 1){
+    jServer["port"] = getMultiHopPort(exitServer);
+  }
+
 
   QJsonArray allowedIPs;
   foreach (auto item, allowedIPAddressRanges) {

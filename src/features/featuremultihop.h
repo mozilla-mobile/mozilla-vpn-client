@@ -20,13 +20,16 @@ class FeatureMultiHop : public Feature {
             L18nStrings::WhatsNewReleaseNotesMultiModalBodyText,  // LongDescr
             "../resources/features/multi-hop-preview.png",        // ImagePath
             "../resources/location-dark.svg",                     // IconPath
+#ifdef MVPN_ANDROID
+            "2.7",                                                // released
+#else 
             "2.5",                                                // released
             true  // Can be enabled in devmode
         ) {}
 
   bool checkSupportCallback() const override {
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS) || defined(MVPN_DUMMY) || \
-    defined(MVPN_MACOS_DAEMON)
+    defined(MVPN_MACOS_DAEMON) || defined(MVPN_ANDROID)
     return true;
 #else
     return false;
