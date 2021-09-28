@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import "./components"
+import "./components/forms"
 import "themes/themes.js" as Theme
 
 import org.mozilla.Glean 0.15
@@ -151,6 +152,16 @@ Window {
         anchors.topMargin: iosSafeAreaTopMargin.height + isWasmApp ? wasmMenuHeader.height : 0
         height: safeContentHeight
         clip: true
+    }
+
+    VPNTextField {
+        anchors.top: parent.top
+        anchors.topMargin: Theme.windowMargin
+        anchors.horizontalCenter: parent.horizontalCenter
+        height: Theme.rowHeight
+        isPassword: true
+        placeholderText: "Password"
+        width: parent.width - Theme.windowMargin * 2
     }
 
     Component {
