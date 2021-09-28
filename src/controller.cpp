@@ -574,7 +574,7 @@ bool Controller::processNextStep() {
 }
 
 void Controller::setState(State state) {
-  logger.debug() << "Setting state:" << QVariant::fromValue(state).toString();
+  logger.debug() << "Setting state:" << state;
 
   if (m_state != state) {
     m_state = state;
