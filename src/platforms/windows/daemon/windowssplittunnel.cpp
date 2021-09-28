@@ -8,15 +8,13 @@
 #include "windowsfirewall.h"
 #include "logger.h"
 
-#include <QNetworkInterface>
 #define PSAPI_VERSION 2
 #include <Windows.h>
 #include <psapi.h>
-#include <fwpmu.h>
-#include <initguid.h>
-#include <iphlpapi.h>
+
 #include <QCoreApplication>
 #include <QFileInfo>
+#include <QNetworkInterface>
 #include <QScopeGuard>
 
 namespace {

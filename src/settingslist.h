@@ -6,6 +6,10 @@
 // 2. include this file
 // 3. undefine the SETTING macro
 
+#if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
+#  error No supported
+#endif
+
 #define SETTING_BOOL(getter, ...) SETTING(bool, toBool, getter, __VA_ARGS__)
 
 #define SETTING_BYTEARRAY(getter, ...) \
