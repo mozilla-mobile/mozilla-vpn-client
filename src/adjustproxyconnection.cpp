@@ -154,10 +154,11 @@ void AdjustProxyConnection::filterParametersAndForwardRequest() {
         parameter.first == "reference_tag" ||
         parameter.first == "tracking_enabled" ||
         parameter.first == "zone_offset" || parameter.first == "att_status") {
-      newParameters.append(QPair(parameter.first, parameter.second));
-    } else {
       newParameters.append(
-          QPair(parameter.first, QByteArray(parameter.second.size(), '0')));
+          QPair<QString, QString>(parameter.first, parameter.second));
+    } else {
+      newParameters.append(QPair<QString, QString>(
+          parameter.first, QByteArray(parameter.second.size(), '0')));
     }
   }
 
@@ -173,8 +174,7 @@ void AdjustProxyConnection::forwardRequest() {
       this, m_method, m_route.toString(), m_headers, m_parameters.toString());
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, request](QNetworkReply::NetworkError error,
-                          const QByteArray& data) {
+          [this, request](QNetworkReply::NetworkError, const QByteArray& data) {
             QByteArray response(HTTP_RESPONSE);
             response.replace("<status>",
                              QByteArray::number(request->statusCode()));
