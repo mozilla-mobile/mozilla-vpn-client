@@ -20,7 +20,6 @@
 #  error "Unsupported platform"
 #endif
 
-#include <QApplication>
 #include <QDateTime>
 
 #include <cmath>
@@ -34,7 +33,7 @@ constexpr int PING_STATS_WINDOW = 32;
 namespace {
 Logger logger(LOG_NETWORKING, "PingHelper");
 bool s_has_critical_ping_error = false;
-}
+}  // namespace
 
 PingHelper::PingHelper() {
   MVPN_COUNT_CTOR(PingHelper);
@@ -217,8 +216,10 @@ void PingHelper::handlePingError() {
   stop();
   start(m_gateway, m_source);
 
-  TimerSingleShot::create(qApp, 600000, [&] {  // 10 Minutes
+  TimerSingleShot::create(this, 600000, [&] {  // 10 Minutes
     logger.debug() << "Removing ping error state";
     s_has_critical_ping_error = false;
+    stop();
+    start(m_gateway, m_source);
   });
 }
