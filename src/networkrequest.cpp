@@ -149,7 +149,7 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
   r->m_request.setUrl(url);
 
   QJsonObject headersObj;
-  for (QPair header : headers) {
+  for (QPair<QString, QString> header : headers) {
     if (header.first != "Host" && header.first != "Content-Length") {
       headersObj.insert(header.first, header.second);
     }
