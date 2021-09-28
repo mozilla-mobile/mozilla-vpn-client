@@ -58,7 +58,7 @@ void WindowsAppListProvider::addApplication(const QString& appPath) {
 
   QStringList applist = settingsHolder->missingApps();
   if (!applist.contains(appPath)) {
-    appList.append(appPath);
+    applist.append(appPath);
     settingsHolder->setMissingApps(applist);
   }
 
