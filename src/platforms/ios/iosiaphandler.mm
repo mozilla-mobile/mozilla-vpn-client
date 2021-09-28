@@ -319,7 +319,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
   NetworkRequest* request = NetworkRequest::createForIOSPurchase(this, receipt);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray& data, int) {
+          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Purchase request failed" << error;
 
             if (m_subscriptionState != eActive) {

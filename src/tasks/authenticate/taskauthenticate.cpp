@@ -73,8 +73,8 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
                     this, pkceCodeSucces, pkceCodeVerifier);
 
             connect(request, &NetworkRequest::requestFailed,
-                    [vpn](QNetworkReply::NetworkError error, const QByteArray&,
-                          int) {
+                    [vpn](QNetworkReply::NetworkError error,
+                          const QByteArray&) {
                       logger.error()
                           << "Failed to complete the authentication" << error;
                       vpn->errorHandle(ErrorHandler::toErrorType(error));

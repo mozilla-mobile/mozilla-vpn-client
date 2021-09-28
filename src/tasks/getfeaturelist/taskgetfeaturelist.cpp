@@ -30,7 +30,7 @@ void TaskGetFeatureList::run(MozillaVPN* vpn) {
   NetworkRequest* request = NetworkRequest::createForGetFeatureList(this);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&, int) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Get feature list is failed" << error;
             emit completed();
           });

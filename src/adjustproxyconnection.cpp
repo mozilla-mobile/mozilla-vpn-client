@@ -179,15 +179,16 @@ void AdjustProxyConnection::forwardRequest() {
     return;
   }
 
-  connect(
-      request, &NetworkRequest::requestFailed,
-      [this](QNetworkReply::NetworkError, const QByteArray& data, int status) {
-        QByteArray response(HTTP_RESPONSE);
-        response.replace("<status>", QByteArray::number(status));
-        response.replace("<message>", data);
-        m_connection->write(response);
-        m_connection->close();
-      });
+  connect(request, &NetworkRequest::requestFailed,
+          [this, request](QNetworkReply::NetworkError error,
+                          const QByteArray& data) {
+            QByteArray response(HTTP_RESPONSE);
+            response.replace("<status>",
+                             QByteArray::number(request->statusCode()));
+            response.replace("<message>", data);
+            m_connection->write(response);
+            m_connection->close();
+          });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {

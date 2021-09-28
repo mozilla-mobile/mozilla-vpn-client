@@ -156,8 +156,7 @@ class NetworkRequest final : public QObject {
 
  signals:
   void requestHeaderReceived(NetworkRequest* request);
-  void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data,
-                     int status);
+  void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data);
   void requestRedirected(NetworkRequest* request, const QUrl& url);
   void requestCompleted(const QByteArray& data);
 
