@@ -9,29 +9,42 @@
 
 #include <QHostAddress>
 #include <QTcpSocket>
-#include <QSslKey>
 
 namespace {
-Logger logger(LOG_MAIN, "AdjustProxy");
+Logger logger(LOG_ADJUST, "AdjustProxy");
+AdjustProxy* s_instance = nullptr;
 }
 
 AdjustProxy::AdjustProxy(QObject* parent) : QTcpServer(parent) {
   MVPN_COUNT_CTOR(AdjustProxy);
 
-  logger.debug() << "Creating the AdjustProxy websocket server";
+  Q_ASSERT(!s_instance);
+  s_instance = this;
 
-  if (!listen(QHostAddress::Any)) {
-    logger.error() << "Failed to listen on port";
-    return;
+  logger.debug() << "Creating the AdjustProxy server";
+}
+
+// static
+AdjustProxy* AdjustProxy::instance() {
+  Q_ASSERT(s_instance);
+  return s_instance;
+}
+
+AdjustProxy::~AdjustProxy() { MVPN_COUNT_DTOR(AdjustProxy); }
+
+bool AdjustProxy::initialize(quint16 port) {
+  if (!listen(QHostAddress::LocalHost, port)) {
+    logger.error() << "Failed to listen on port: " << port;
+    return false;
   }
 
   logger.debug() << "AdjustProxy listening on port " << serverPort();
 
   connect(this, &AdjustProxy::newConnection, this,
           &AdjustProxy::newConnectionReceived);
-}
 
-AdjustProxy::~AdjustProxy() { MVPN_COUNT_DTOR(AdjustProxy); }
+  return true;
+}
 
 void AdjustProxy::newConnectionReceived() {
   QTcpSocket* child = nextPendingConnection();

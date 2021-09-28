@@ -31,12 +31,12 @@ class NetworkRequest final : public QObject {
       const QString& pkceCodeVerifier);
 
   static NetworkRequest* createForAdjustForwardGet(
-      QObject* parent, const QByteArray& route,
-      const QHash<QByteArray, QByteArray>& headers);
+      QObject* parent, const QUrl& route,
+      const QList<QPair<QByteArray, QByteArray>>& headers);
 
   static NetworkRequest* createForAdjustForwardPost(
-      QObject* parent, const QByteArray& route,
-      const QHash<QByteArray, QByteArray>& headers,
+      QObject* parent, const QUrl& route,
+      const QList<QPair<QByteArray, QByteArray>>& headers,
       const QByteArray& parameters);
 
   static NetworkRequest* createForDeviceCreation(QObject* parent,
@@ -156,7 +156,8 @@ class NetworkRequest final : public QObject {
 
  signals:
   void requestHeaderReceived(NetworkRequest* request);
-  void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data);
+  void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data,
+                     int status);
   void requestRedirected(NetworkRequest* request, const QUrl& url);
   void requestCompleted(const QByteArray& data);
 

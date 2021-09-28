@@ -43,12 +43,13 @@ void TaskCreateSupportTicket::run(MozillaVPN* vpn) {
   NetworkRequest* request = NetworkRequest::createForSupportTicket(
       this, m_email, m_subject, m_issueText, m_logs, m_category);
 
-  connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Failed to create support ticket" << error;
-            vpn->createTicketAnswerRecieved(false);
-            emit completed();
-          });
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this, vpn](QNetworkReply::NetworkError error, const QByteArray&, int) {
+        logger.error() << "Failed to create support ticket" << error;
+        vpn->createTicketAnswerRecieved(false);
+        emit completed();
+      });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this, vpn](const QByteArray&) {

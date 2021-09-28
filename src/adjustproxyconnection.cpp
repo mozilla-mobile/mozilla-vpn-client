@@ -12,13 +12,15 @@
 #include <QFile>
 #include <QHostAddress>
 #include <QTcpSocket>
+#include <QUrl>
+#include <QUrlQuery>
 
-constexpr const char* HTTP_200_RESPONSE =
-    "HTTP/1.1 200 OK\nContent-Type: "
-    "application/json\n\n{}\n";
+constexpr const char* HTTP_RESPONSE =
+    "HTTP/1.1 <status>\nContent-Type: "
+    "application/json\n\n<message>\n";
 
 namespace {
-Logger logger(LOG_MAIN, "AdjustProxyConnection");
+Logger logger(LOG_ADJUST, "AdjustProxyConnection");
 }  // namespace
 
 AdjustProxyConnection::AdjustProxyConnection(QObject* parent,
@@ -43,7 +45,31 @@ void AdjustProxyConnection::readData() {
   QByteArray input = m_connection->readAll();
   m_buffer.append(input);
 
-  // Parsing method and route
+  switch (m_state) {
+    case ProcessingState::NotStarted:
+      if (m_buffer.isEmpty()) {
+        return;
+      }
+      processFirstLine();
+    case ProcessingState::FirstLineDone:
+      if (m_buffer.isEmpty()) {
+        return;
+      }
+      processHeaders();
+    case ProcessingState::HeadersDone:
+      processParameters();
+    case ProcessingState::ParametersDone:
+      break;
+    default:
+      logger.debug() << "Unknown ProcessingState: " << m_state;
+  }
+
+  if (m_state == ProcessingState::ParametersDone) {
+    filterParameters();
+  }
+}
+
+void AdjustProxyConnection::processFirstLine() {
   int pos = m_buffer.indexOf("\n");
   if (pos == -1) {
     return;
@@ -54,23 +80,19 @@ void AdjustProxyConnection::readData() {
 
   QList<QByteArray> parts = line.split(' ');
   if (parts.length() < 2) {
+    m_connection->close();
     return;
   }
 
   m_method.append(parts[0]);
-  m_route.append(parts[1]);
+  m_route = parts[1];
 
-  if (m_method == "GET") {
-    pos = m_route.indexOf('?');
-    if (pos > -1) {
-      m_parametersString = m_route.right(m_route.length() - (pos + 1));
-      m_route.remove(pos, m_route.length());
-    }
-  }
+  m_state = ProcessingState::FirstLineDone;
+}
 
-  // Parsing headers
+void AdjustProxyConnection::processHeaders() {
   while (true) {
-    pos = m_buffer.indexOf("\n");
+    int pos = m_buffer.indexOf("\n");
     if (pos == -1) {
       break;
     }
@@ -92,69 +114,71 @@ void AdjustProxyConnection::readData() {
     header.remove(0, pos + 1);
     QByteArray headerValue = header.trimmed();
 
-    m_headers.insert(headerName, headerValue);
+    QPair<QByteArray, QByteArray> headerPair;
+    headerPair.first = headerName;
+    headerPair.second = headerValue;
+
+    m_headers.append(headerPair);
   }
 
-  if (m_parametersString.isEmpty()) {
-    m_parametersString = m_buffer.trimmed();
-  }
-
-  // Parsing parameters
-  while (true) {
-    pos = m_parametersString.indexOf("&");
-    if (pos == -1) {
-      break;
-    }
-
-    QByteArray line = m_parametersString.left(pos);
-    m_parametersString.remove(0, pos + 1);
-
-    QByteArray property = line.trimmed();
-    if (property == "") {
-      break;
-    }
-
-    pos = property.indexOf("=");
-    if (pos == -1) {
-      continue;
-    }
-
-    QByteArray propertyName = property.left(pos);
-    property.remove(0, pos + 1);
-    QByteArray propertyValue = property.trimmed();
-
-    m_paramters.insert(propertyName, propertyValue);
-  }
-
-  filterParameters();
+  m_state = ProcessingState::HeadersDone;
 }
 
-void AdjustProxyConnection::filterParameters() { forwardRequest(); }
+void AdjustProxyConnection::processParameters() {
+  if (m_method == "GET") {
+    m_paramters = QUrlQuery(m_route);
+  } else {
+    if (m_buffer.isEmpty()) {
+      return;
+    }
+    m_paramters = QUrlQuery(m_buffer.trimmed());
+  }
+
+  m_state = ProcessingState::ParametersDone;
+}
+
+void AdjustProxyConnection::filterParameters() {
+  QList<QPair<QString, QString>> newParameters;
+
+  for (QPair<QString, QString> parameter : m_paramters.queryItems()) {
+  }
+
+  forwardRequest();
+}
 
 void AdjustProxyConnection::forwardRequest() {
   NetworkRequest* request;
   if (m_method == "GET") {
-    request = NetworkRequest::createForAdjustForwardGet(
-        this, m_route.append(m_parametersString), m_headers);
+    m_route.setQuery(m_paramters);
+
+    request =
+        NetworkRequest::createForAdjustForwardGet(this, m_route, m_headers);
   } else if (m_method == "POST") {
     request = NetworkRequest::createForAdjustForwardPost(
-        this, m_route, m_headers, m_parametersString);
+        this, m_route, m_headers, m_paramters.toString().toUtf8());
   } else {
     logger.warning() << "Method not supported!";
     return;
   }
 
-  connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.error() << "Failed adjust request" << error;
-            logger.debug() << data;
-          });
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this](QNetworkReply::NetworkError, const QByteArray& data, int status) {
+        QByteArray response(HTTP_RESPONSE);
+        response.replace("<status>", QByteArray::number(status));
+        response.replace("<message>", data);
+        m_connection->write(response);
+        m_connection->close();
+      });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
             logger.debug() << "Adjust request succeeded";
             logger.debug() << data;
-            m_connection->write(HTTP_200_RESPONSE);
+            QByteArray response(HTTP_RESPONSE);
+            response.replace("<status>", "200");
+            response.replace("<message>", data);
+            m_connection->write(response);
             m_connection->close();
           });
 }

@@ -15,12 +15,12 @@ class AdjustProxy final : public QTcpServer {
   explicit AdjustProxy(QObject* parent);
   ~AdjustProxy();
 
-  quint16 proxyPort();
+  bool initialize(quint16 port);
+
+  static AdjustProxy* instance();
 
  private:
   void newConnectionReceived();
-
-  quint16 m_port = 0;
 };
 
 #endif  // ADJUSTPROXY_H

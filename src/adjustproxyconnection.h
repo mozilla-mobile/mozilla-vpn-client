@@ -8,6 +8,8 @@
 #include <QByteArray>
 #include <QObject>
 #include <QHash>
+#include <QUrl>
+#include <QUrlQuery>
 
 class QTcpSocket;
 
@@ -22,19 +24,28 @@ class AdjustProxyConnection final : public QObject {
  private:
   void readData();
 
+  void processFirstLine();
+  void processHeaders();
+  void processParameters();
   void filterParameters();
-
   void forwardRequest();
 
  private:
-  QTcpSocket* m_connection;
+  enum ProcessingState {
+    NotStarted,
+    FirstLineDone,
+    HeadersDone,
+    ParametersDone
+  };
 
+  QTcpSocket* m_connection = nullptr;
+
+  ProcessingState m_state = ProcessingState::NotStarted;
   QByteArray m_buffer;
   QString m_method;
-  QByteArray m_route;
-  QByteArray m_parametersString;
-  QHash<QByteArray, QByteArray> m_headers;
-  QHash<QByteArray, QByteArray> m_paramters;
+  QUrl m_route;
+  QList<QPair<QByteArray, QByteArray>> m_headers;
+  QUrlQuery m_paramters;
 };
 
 #endif  // ADJUSTPROXYCONNECTION_H

@@ -11,6 +11,7 @@
 #include <QString>
 #include <QTextStream>
 
+constexpr const char* LOG_ADJUST = "adjust";
 constexpr const char* LOG_CAPTIVEPORTAL = "captiveportal";
 constexpr const char* LOG_CONTROLLER = "controller";
 constexpr const char* LOG_IAP = "iap";

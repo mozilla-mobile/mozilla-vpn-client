@@ -30,7 +30,7 @@ void VersionApi::start() {
   NetworkRequest* request = NetworkRequest::createForVersions(this);
 
   connect(request, &NetworkRequest::requestFailed,
-          [](QNetworkReply::NetworkError error, const QByteArray&) {
+          [](QNetworkReply::NetworkError error, const QByteArray&, int) {
             logger.error() << "Request failed" << error;
           });
 

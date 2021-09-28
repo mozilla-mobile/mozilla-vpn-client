@@ -135,25 +135,24 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 
 // static
 NetworkRequest* NetworkRequest::createForAdjustForwardGet(
-    QObject* parent, const QByteArray& route,
-    const QHash<QByteArray, QByteArray>& headers) {
+    QObject* parent, const QUrl& route,
+    const QList<QPair<QByteArray, QByteArray>>& headers) {
   Q_ASSERT(parent);
-
-  logger.debug() << "Sending Adjust GET request";
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  for (QByteArray key : headers.keys()) {
-    logger.debug() << key << ": " << headers.value(key);
-    QByteArray value = key == "Host" ? "app.adjust.com" : headers.value(key);
-    r->m_request.setRawHeader(key, value);
-  }
-
-  QUrl url("https://app.adjust.com");
-  url.setPath(route);
+  QString url(apiBaseUrl());
+  url.append("/api/v1/vpn/adjust");
+  url.append(route.path());
+  url.append("?");
+  url.append(route.query());
   r->m_request.setUrl(url);
 
-  logger.debug() << route;
+  for (QPair header : headers) {
+    if (header.first != "Host" && header.first != "Content-Length") {
+      r->m_request.setRawHeader(header.first, header.second);
+    }
+  }
 
   r->getRequest();
   return r;
@@ -161,26 +160,23 @@ NetworkRequest* NetworkRequest::createForAdjustForwardGet(
 
 // static
 NetworkRequest* NetworkRequest::createForAdjustForwardPost(
-    QObject* parent, const QByteArray& route,
-    const QHash<QByteArray, QByteArray>& headers,
+    QObject* parent, const QUrl& route,
+    const QList<QPair<QByteArray, QByteArray>>& headers,
     const QByteArray& parameters) {
   Q_ASSERT(parent);
 
-  logger.debug() << "Sending Adjust POST request";
-
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  for (QByteArray key : headers.keys()) {
-    QByteArray value = key == "Host" ? "app.adjust.com" : headers.value(key);
-    logger.debug() << key << ": " << value;
-    r->m_request.setRawHeader(key, value);
-  }
-
-  QUrl url("https://app.adjust.com:443");
-  url.setPath(route);
+  QString url(apiBaseUrl());
+  url.append("/api/v1/vpn/adjust");
+  url.append(route.path());
   r->m_request.setUrl(url);
 
-  logger.debug() << route;
+  for (QPair header : headers) {
+    if (header.first != "Host" && header.first != "Content-Length") {
+      r->m_request.setRawHeader(header.first, header.second);
+    }
+  }
 
   r->postRequest(parameters);
   return r;
@@ -789,7 +785,7 @@ void NetworkRequest::replyFinished() {
   if (m_reply->error() != QNetworkReply::NoError) {
     logger.error() << "Network error:" << m_reply->errorString()
                    << "status code:" << status << "- body:" << data;
-    emit requestFailed(m_reply->error(), data);
+    emit requestFailed(m_reply->error(), data, status);
     return;
   }
 
@@ -798,7 +794,7 @@ void NetworkRequest::replyFinished() {
   if (m_status && status != m_status) {
     logger.error() << "Status code unexpected - status code:" << status
                    << "- expected:" << m_status;
-    emit requestFailed(QNetworkReply::ConnectionRefusedError, data);
+    emit requestFailed(QNetworkReply::ConnectionRefusedError, data, status);
     return;
   }
 
@@ -832,7 +828,7 @@ void NetworkRequest::timeout() {
   m_reply->abort();
 
   logger.error() << "Network request timeout";
-  emit requestFailed(QNetworkReply::TimeoutError, QByteArray());
+  emit requestFailed(QNetworkReply::TimeoutError, QByteArray(), -1);
 }
 
 void NetworkRequest::getRequest() {

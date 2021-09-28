@@ -23,17 +23,20 @@ public class VPNApplication extends org.qtproject.qt5.android.bindings.QtApplica
       VPNApplication.instance = this;
   }
 
-  public static void onVpnInit(boolean inProduction) {
-      if(BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
-        String appToken = BuildConfig.ADJUST_SDK_TOKEN;
-        String environment = inProduction ? AdjustConfig.ENVIRONMENT_PRODUCTION : AdjustConfig.ENVIRONMENT_SANDBOX;
-        AdjustConfig config = new AdjustConfig(VPNApplication.instance, appToken, environment);
-        config.setLogLevel(LogLevel.DEBUG);
-        config.setSendInBackground(true);
-        Adjust.onCreate(config);
+  public static void onVpnInit(boolean inProduction, int proxyPort) {
+    if (BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
+      String appToken = BuildConfig.ADJUST_SDK_TOKEN;
+      String environment =
+          inProduction ? AdjustConfig.ENVIRONMENT_PRODUCTION : AdjustConfig.ENVIRONMENT_SANDBOX;
+      AdjustConfig config = new AdjustConfig(VPNApplication.instance, appToken, environment);
+      config.setLogLevel(LogLevel.DEBUG);
+      config.setSendInBackground(true);
+      AdjustFactory.setBaseUrl("http://localhost:" + proxyPort);
+      AdjustFactory.setGdprUrl("http://localhost:" + proxyPort);
+      Adjust.onCreate(config);
 
-        VPNApplication.instance.registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
-      }
+      VPNApplication.instance.registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
+    }
   }
 
   public static void trackEvent(String event) {

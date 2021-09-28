@@ -91,7 +91,7 @@ void IPFinder::createRequest(const QHostAddress& address, bool ipv6) {
   ++m_requestCount;
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&, int) {
             logger.error() << "IP address request failed" << error;
 
             // This lookup has been canceled in the meantime.

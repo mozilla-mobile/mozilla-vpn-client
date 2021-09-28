@@ -22,12 +22,13 @@ TaskProducts::~TaskProducts() { MVPN_COUNT_DTOR(TaskProducts); }
 void TaskProducts::run(MozillaVPN* vpn) {
   NetworkRequest* request = NetworkRequest::createForProducts(this);
 
-  connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Products request to guardian failed" << error;
-            vpn->errorHandle(ErrorHandler::toErrorType(error));
-            emit completed();
-          });
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this, vpn](QNetworkReply::NetworkError error, const QByteArray&, int) {
+        logger.error() << "Products request to guardian failed" << error;
+        vpn->errorHandle(ErrorHandler::toErrorType(error));
+        emit completed();
+      });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {

@@ -314,7 +314,7 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
 
   connect(
       request, &NetworkRequest::requestFailed,
-      [this](QNetworkReply::NetworkError error, const QByteArray&) {
+      [this](QNetworkReply::NetworkError error, const QByteArray&, int) {
         logger.error() << "Purchase validation request to guardian failed";
         MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
         stopSubscription();

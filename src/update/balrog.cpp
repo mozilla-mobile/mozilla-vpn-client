@@ -96,7 +96,7 @@ void Balrog::start() {
   NetworkRequest* request = NetworkRequest::createForGetUrl(this, url, 200);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&, int) {
             logger.error() << "Request failed" << error;
             deleteLater();
           });
@@ -151,7 +151,7 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
   NetworkRequest* x5uRequest = NetworkRequest::createForGetUrl(this, x5u, 200);
 
   connect(x5uRequest, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&, int) {
             logger.warning() << "Request failed" << error;
             deleteLater();
           });
@@ -286,7 +286,7 @@ bool Balrog::processData(const QByteArray& data) {
     NetworkRequest* request = NetworkRequest::createForGetUrl(this, url);
 
     connect(request, &NetworkRequest::requestFailed,
-            [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            [this](QNetworkReply::NetworkError error, const QByteArray&, int) {
               logger.error() << "Request failed" << error;
               deleteLater();
             });
@@ -339,13 +339,13 @@ bool Balrog::processData(const QByteArray& data) {
   // No timeout for this request.
   request->disableTimeout();
 
-  connect(
-      request, &NetworkRequest::requestFailed,
-      [this, request](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Request failed" << error;
-        propagateError(request, error);
-        deleteLater();
-      });
+  connect(request, &NetworkRequest::requestFailed,
+          [this, request](QNetworkReply::NetworkError error, const QByteArray&,
+                          int) {
+            logger.error() << "Request failed" << error;
+            propagateError(request, error);
+            deleteLater();
+          });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this, hashValue, hashFunction, url](const QByteArray& data) {

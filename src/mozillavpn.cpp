@@ -70,6 +70,7 @@
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
+#include <QRandomGenerator>
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
@@ -94,6 +95,13 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   AdjustProxy* adjustProxy = new AdjustProxy(qApp);
   QObject::connect(controller(), &Controller::readyToQuit, adjustProxy,
                    &AdjustProxy::close);
+  for (int i = 0; i < 5; i++) {
+    quint16 port = QRandomGenerator::global()->bounded(1024, 65536);
+    bool succeeded = adjustProxy->initialize(port);
+    if (succeeded) {
+      break;
+    }
+  }
   AdjustHandler::initialize(adjustProxy->serverPort());
   AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif

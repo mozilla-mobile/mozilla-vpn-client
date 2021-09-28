@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "adjusthandler.h"
+#include "adjustproxy.h"
 #include "constants.h"
 
 #ifdef MVPN_IOS
@@ -15,10 +16,14 @@
 #include <QString>
 
 void AdjustHandler::initialize(quint16 proxyPort) {
+  if (!AdjustProxy::instance()->isListening()) {
+    return;
+  }
+
 #ifdef MVPN_ANDROID
   QAndroidJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/qt/VPNApplication", "onVpnInit", "(Z)V",
-      Constants::inProduction());
+      "org/mozilla/firefox/vpn/qt/VPNApplication", "onVpnInit", "(ZI)V",
+      Constants::inProduction(), proxyPort);
 #endif
 
 #ifdef MVPN_IOS
@@ -27,6 +32,10 @@ void AdjustHandler::initialize(quint16 proxyPort) {
 }
 
 void AdjustHandler::trackEvent(const QString& event) {
+  if (!AdjustProxy::instance()->isListening()) {
+    return;
+  }
+
 #ifdef MVPN_ANDROID
   QAndroidJniObject javaMessage = QAndroidJniObject::fromString(event);
   QAndroidJniObject::callStaticMethod<void>(
