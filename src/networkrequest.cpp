@@ -134,51 +134,37 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForAdjustForwardGet(
-    QObject* parent, const QUrl& route,
-    const QList<QPair<QByteArray, QByteArray>>& headers) {
+NetworkRequest* NetworkRequest::createForAdjustProxy(
+    QObject* parent, const QString& method, const QString& route,
+    const QList<QPair<QString, QString>>& headers, const QString& parameters) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QString url(apiBaseUrl());
-  url.append("/api/v1/vpn/adjust");
-  url.append(route.path());
-  url.append("?");
-  url.append(route.query());
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/adjust");
   r->m_request.setUrl(url);
 
+  QJsonObject headersObj;
   for (QPair header : headers) {
     if (header.first != "Host" && header.first != "Content-Length") {
-      r->m_request.setRawHeader(header.first, header.second);
+      headersObj.insert(header.first, header.second);
     }
   }
 
-  r->getRequest();
-  return r;
-}
+  QJsonObject obj;
+  obj.insert("method", method);
+  obj.insert("path", route);
+  obj.insert("headers", headersObj);
+  obj.insert("parameters", parameters);
 
-// static
-NetworkRequest* NetworkRequest::createForAdjustForwardPost(
-    QObject* parent, const QUrl& route,
-    const QList<QPair<QByteArray, QByteArray>>& headers,
-    const QByteArray& parameters) {
-  Q_ASSERT(parent);
+  QJsonDocument json;
+  json.setObject(obj);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-
-  QString url(apiBaseUrl());
-  url.append("/api/v1/vpn/adjust");
-  url.append(route.path());
-  r->m_request.setUrl(url);
-
-  for (QPair header : headers) {
-    if (header.first != "Host" && header.first != "Content-Length") {
-      r->m_request.setRawHeader(header.first, header.second);
-    }
-  }
-
-  r->postRequest(parameters);
+  r->postRequest(json.toJson(QJsonDocument::Compact));
   return r;
 }
 
