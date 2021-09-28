@@ -266,7 +266,7 @@ QString TestSignUpAndIn::fetchCode(const QString& code) {
     QByteArray jsonData;
     EventLoop loop;
     connect(nr, &NetworkRequest::requestFailed,
-            [&](QNetworkReply::NetworkError, const QByteArray&) {
+            [&](QNetworkReply::NetworkError, const QByteArray&, int) {
               qDebug() << "Failed to fetch the restmail.net content";
               loop.exit();
             });

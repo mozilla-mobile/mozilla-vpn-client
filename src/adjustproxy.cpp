@@ -13,7 +13,7 @@
 namespace {
 Logger logger(LOG_ADJUST, "AdjustProxy");
 AdjustProxy* s_instance = nullptr;
-}
+}  // namespace
 
 AdjustProxy::AdjustProxy(QObject* parent) : QTcpServer(parent) {
   MVPN_COUNT_CTOR(AdjustProxy);

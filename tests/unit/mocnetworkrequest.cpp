@@ -25,7 +25,8 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
     deleteLater();
 
     if (nc.m_status == TestHelper::NetworkConfig::Failure) {
-      emit requestFailed(QNetworkReply::NetworkError::HostNotFoundError, "");
+      emit requestFailed(QNetworkReply::NetworkError::HostNotFoundError, "",
+                         nc.m_status);
     } else {
       Q_ASSERT(nc.m_status == TestHelper::NetworkConfig::Success);
 

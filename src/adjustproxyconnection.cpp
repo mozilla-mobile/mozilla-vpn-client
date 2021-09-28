@@ -141,7 +141,25 @@ void AdjustProxyConnection::filterParameters() {
   QList<QPair<QString, QString>> newParameters;
 
   for (QPair<QString, QString> parameter : m_paramters.queryItems()) {
+    if (parameter.first == "adid" || parameter.first == "app_token" ||
+        parameter.first == "attribution_deeplink" ||
+        parameter.first == "bundle_id" || parameter.first == "device_type" ||
+        parameter.first == "environment" || parameter.first == "event_token" ||
+        parameter.first == "idfv" ||
+        parameter.first == "needs_response_details" ||
+        parameter.first == "os_name" || parameter.first == "os_version" ||
+        parameter.first == "package name" ||
+        parameter.first == "reference_tag" ||
+        parameter.first == "tracking_enabled" ||
+        parameter.first == "zone_offset" || parameter.first == "att_status") {
+      newParameters.append(QPair(parameter.first, parameter.second));
+    } else {
+      newParameters.append(
+          QPair(parameter.first, QByteArray(parameter.second.size(), '0')));
+    }
   }
+
+  m_paramters.setQueryItems(newParameters);
 
   forwardRequest();
 }
