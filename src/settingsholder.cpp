@@ -104,17 +104,17 @@ QString SettingsHolder::getReport() {
   return buff;
 }
 
-#define SETTING(type, toType, getter, setter, has, key, defvalue, __VA_ARGS__) \
-  bool SettingsHolder::has() const { return m_settings.contains(key); }        \
-  type SettingsHolder::getter() const {                                        \
-    if (!has()) {                                                              \
-      return defvalue;                                                         \
-    }                                                                          \
-    return m_settings.value(key).toType();                                     \
-  }                                                                            \
-  void SettingsHolder::setter(const type& value) {                             \
-    m_settings.setValue(key, value);                                           \
-    emit getter##Changed(value);                                               \
+#define SETTING(type, toType, getter, setter, has, key, defvalue, ...)  \
+  bool SettingsHolder::has() const { return m_settings.contains(key); } \
+  type SettingsHolder::getter() const {                                 \
+    if (!has()) {                                                       \
+      return defvalue;                                                  \
+    }                                                                   \
+    return m_settings.value(key).toType();                              \
+  }                                                                     \
+  void SettingsHolder::setter(const type& value) {                      \
+    m_settings.setValue(key, value);                                    \
+    emit getter##Changed(value);                                        \
   }
 
 #include "settingslist.h"
