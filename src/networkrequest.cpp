@@ -139,6 +139,45 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 }
 
 // static
+NetworkRequest* NetworkRequest::createForAdjustProxy(
+    QObject* parent, const QString& method, const QString& route,
+    const QList<QPair<QString, QString>>& headers, const QString& parameters,
+    const QList<QString>& unknownParameters) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/adjust");
+  r->m_request.setUrl(url);
+
+  QJsonObject headersObj;
+  for (QPair<QString, QString> header : headers) {
+    headersObj.insert(header.first, header.second);
+  }
+
+  QJsonObject obj;
+  obj.insert("method", method);
+  obj.insert("path", route);
+  obj.insert("headers", headersObj);
+  obj.insert("parameters", parameters);
+
+  QJsonArray unknownParametersArray;
+  for (QString unknownParameter : unknownParameters) {
+    unknownParametersArray.append(unknownParameter);
+  }
+  obj.insert("unknownParameters", unknownParametersArray);
+
+  QJsonDocument json(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForDeviceCreation(
     QObject* parent, const QString& deviceName, const QString& pubKey) {
   Q_ASSERT(parent);
