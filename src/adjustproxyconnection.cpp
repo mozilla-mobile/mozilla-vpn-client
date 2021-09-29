@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// This is not afully functional http server
+// This is not a fully functional http server
+// It is just a proxy server designed to work with the Adjust SDK
 
 #include "adjustproxyconnection.h"
 #include "leakdetector.h"
@@ -17,28 +18,27 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-const QString HTTP_RESPONSE =
-    "HTTP/1.1 %1\nContent-Type: "
-    "application/json\n\n%2\n";
+const QString HTTP_RESPONSE(
+    "HTTP/1.1 %1\nContent-Type: application/json\n\n%2\n");
 
-const QList<QString> allowList = {"adid",
-                                  "app_token",
-                                  "attribution_deeplink",
-                                  "bundle_id",
-                                  "device_type",
-                                  "environment",
-                                  "event_token",
-                                  "idfv",
-                                  "needs_response_details",
-                                  "os_name",
-                                  "os_version",
-                                  "package_name",
-                                  "reference_tag",
-                                  "tracking_enabled",
-                                  "zone_offset",
-                                  "att_status"};
+const QList<QString> allowList{"adid",
+                               "app_token",
+                               "attribution_deeplink",
+                               "bundle_id",
+                               "device_type",
+                               "environment",
+                               "event_token",
+                               "idfv",
+                               "needs_response_details",
+                               "os_name",
+                               "os_version",
+                               "package_name",
+                               "reference_tag",
+                               "tracking_enabled",
+                               "zone_offset",
+                               "att_status"};
 
-const QList<QPair<QString, QString>> defaultValues = {
+const QList<QPair<QString, QString>> defaultValues{
     QPair<QString, QString>("app_name", "default"),
     QPair<QString, QString>("app_version", "2.0"),
     QPair<QString, QString>("app_version_short", "2.0"),
@@ -190,7 +190,9 @@ void AdjustProxyConnection::processHeaders() {
 }
 
 void AdjustProxyConnection::processParameters() {
-  if (m_buffer.trimmed().length() > m_contentLength) {
+  uint32_t bodyLength = m_buffer.trimmed().length();
+
+  if (bodyLength > m_contentLength) {
     logger.error() << "Buffer longer than the declared Contend-Length";
     m_connection->close();
     return;
@@ -199,7 +201,7 @@ void AdjustProxyConnection::processParameters() {
   if (m_method == "GET") {
     m_parameters = QUrlQuery(m_route);
   } else {
-    if (m_buffer.trimmed().length() < m_contentLength) {
+    if (bodyLength < m_contentLength) {
       return;
     }
     m_parameters = QUrlQuery(m_buffer.trimmed());
@@ -210,7 +212,6 @@ void AdjustProxyConnection::processParameters() {
 
 void AdjustProxyConnection::filterParametersAndForwardRequest() {
   QList<QPair<QString, QString>> newParameters;
-  QList<QPair<QString, QString>> unknownParameters;
 
   for (QPair<QString, QString> parameter : m_parameters.queryItems()) {
     if (allowList.contains(parameter.first)) {
@@ -220,13 +221,13 @@ void AdjustProxyConnection::filterParametersAndForwardRequest() {
       newParameters.append(
           QPair<QString, QString>(parameter.first, denyList[parameter.first]));
     } else {
-      unknownParameters.append(
+      newParameters.append(
           QPair<QString, QString>(parameter.first, parameter.second));
+      m_unknownParameters.append(parameter.first);
     }
   }
 
   m_parameters.setQueryItems(newParameters);
-  m_unknownParameters.setQueryItems(unknownParameters);
 
   forwardRequest();
 }
@@ -236,7 +237,7 @@ void AdjustProxyConnection::forwardRequest() {
 
   request = NetworkRequest::createForAdjustProxy(
       this, m_method, m_route.toString(), m_headers, m_parameters.toString(),
-      m_unknownParameters.toString());
+      m_unknownParameters);
 
   connect(
       request, &NetworkRequest::requestFailed,

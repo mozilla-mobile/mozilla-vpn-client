@@ -137,7 +137,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 NetworkRequest* NetworkRequest::createForAdjustProxy(
     QObject* parent, const QString& method, const QString& route,
     const QList<QPair<QString, QString>>& headers, const QString& parameters,
-    const QString& unknownParameters) {
+    const QList<QString>& unknownParameters) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -159,7 +159,12 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
   obj.insert("path", route);
   obj.insert("headers", headersObj);
   obj.insert("parameters", parameters);
-  obj.insert("unknownParameters", unknownParameters);
+
+  QJsonArray unknownParametersArray;
+  for (QString unknownParameter : unknownParameters) {
+    unknownParametersArray.append(unknownParameter);
+  }
+  obj.insert("unknownParameters", unknownParametersArray);
 
   QJsonDocument json(obj);
 

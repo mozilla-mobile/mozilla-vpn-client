@@ -47,7 +47,7 @@ class AdjustProxyConnection final : public QObject {
   QUrl m_route;
   QList<QPair<QString, QString>> m_headers;
   QUrlQuery m_parameters;
-  QUrlQuery m_unknownParameters;
+  QList<QString> m_unknownParameters;
 };
 
 #endif  // ADJUSTPROXYCONNECTION_H
