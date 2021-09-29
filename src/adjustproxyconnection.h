@@ -42,7 +42,7 @@ class AdjustProxyConnection final : public QObject {
 
   ProcessingState m_state = ProcessingState::NotStarted;
   QByteArray m_buffer;
-  int m_contentLength = 0;
+  uint32_t m_contentLength = 0;
   QString m_method;
   QUrl m_route;
   QList<QPair<QString, QString>> m_headers;

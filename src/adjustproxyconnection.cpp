@@ -174,7 +174,7 @@ void AdjustProxyConnection::processHeaders() {
     if (QString::compare(headerPair.first, "content-length",
                          Qt::CaseInsensitive) == 0) {
       bool ok;
-      m_contentLength = headerPair.second.toInt(&ok, 10);
+      m_contentLength = headerPair.second.toUInt(&ok, 10);
       if (!ok) {
         logger.error() << "Content Length could not be parsed";
         m_connection->close();
