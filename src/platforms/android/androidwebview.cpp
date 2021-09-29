@@ -11,7 +11,6 @@
 #include "networkmanager.h"
 
 #include <QAndroidJniEnvironment>
-#include <QDebug>
 #include <QQuickRenderControl>
 #include <QQuickWindow>
 #include <QThread>
