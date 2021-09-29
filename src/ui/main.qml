@@ -7,7 +7,6 @@ import QtQuick.Controls 2.14
 import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import "./components"
-import "./components/forms"
 import "themes/themes.js" as Theme
 
 import org.mozilla.Glean 0.15
