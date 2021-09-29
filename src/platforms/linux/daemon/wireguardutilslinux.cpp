@@ -193,7 +193,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   }
   device->first_peer = device->last_peer = peer;
 
-  logger.debug() << "Adding peer" << config.m_serverIpv4AddrIn;
+  logger.debug() << "Adding peer" << printablePubkey(config.m_serverPublicKey);
 
   // Public Key
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
@@ -254,6 +254,8 @@ bool WireguardUtilsLinux::deletePeer(const QString& pubkey) {
     return false;
   }
   device->first_peer = device->last_peer = peer;
+
+  logger.debug() << "Removing peer" << printablePubkey(pubkey);
 
   // Public Key
   peer->flags = (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REMOVE_ME);
@@ -634,4 +636,13 @@ bool WireguardUtilsLinux::buildAllowedIp(wg_allowedip* ip,
     return inet_pton(AF_INET6, qPrintable(prefix.ipAddress()), &ip->ip6) == 1;
   }
   return false;
+}
+
+// static
+QString WireguardUtilsLinux::printablePubkey(const QString& pubkey) {
+  if (pubkey.length() < 12) {
+    return pubkey;
+  } else {
+    return pubkey.left(6) + "..." + pubkey.right(6);
+  }
 }

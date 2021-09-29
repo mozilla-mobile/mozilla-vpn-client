@@ -223,21 +223,21 @@ void MozillaVPN::initialize() {
   Q_ASSERT(settingsHolder);
 
 #ifdef MVPN_IOS
-  if (!settingsHolder->hasNativeIOSDataMigrated()) {
+  if (!settingsHolder->nativeIOSDataMigrated()) {
     IOSDataMigration::migrate();
     settingsHolder->setNativeIOSDataMigrated(true);
   }
 #endif
 
 #ifdef MVPN_WINDOWS
-  if (!settingsHolder->hasNativeWindowsDataMigrated()) {
+  if (!settingsHolder->nativeWindowsDataMigrated()) {
     WindowsDataMigration::migrate();
     settingsHolder->setNativeWindowsDataMigrated(true);
   }
 #endif
 
 #ifdef MVPN_ANDROID
-  if (!settingsHolder->hasNativeAndroidDataMigrated()) {
+  if (!settingsHolder->nativeAndroidDataMigrated()) {
     AndroidDataMigration::migrate();
     settingsHolder->setNativeAndroidDataMigrated(true);
   }
@@ -316,7 +316,8 @@ void MozillaVPN::initialize() {
 }
 
 void MozillaVPN::setState(State state) {
-  logger.debug() << "Set state:" << QVariant::fromValue(state).toString();
+  logger.debug() << "Set state:" << state;
+
   m_state = state;
   emit stateChanged();
 
@@ -348,15 +349,13 @@ void MozillaVPN::maybeStateMain() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
 #if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
-  if (!settingsHolder->hasPostAuthenticationShown() ||
-      !settingsHolder->postAuthenticationShown()) {
+  if (!settingsHolder->postAuthenticationShown()) {
     setState(StatePostAuthentication);
     return;
   }
 #endif
 
-  if (!settingsHolder->hasTelemetryPolicyShown() ||
-      !settingsHolder->telemetryPolicyShown()) {
+  if (!settingsHolder->telemetryPolicyShown()) {
     setState(StateTelemetryPolicy);
     return;
   }
@@ -388,8 +387,7 @@ void MozillaVPN::getStarted() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-  if (!settingsHolder->hasTelemetryPolicyShown() ||
-      !settingsHolder->telemetryPolicyShown()) {
+  if (!settingsHolder->telemetryPolicyShown()) {
     setState(StateTelemetryPolicy);
     return;
   }
@@ -1058,8 +1056,7 @@ void MozillaVPN::setUpdateRecommended(bool value) {
 }
 
 void MozillaVPN::setUserAuthenticated(bool state) {
-  logger.debug() << "User authentication state:"
-                 << QVariant::fromValue(state).toString();
+  logger.debug() << "User authentication state:" << state;
   m_userAuthenticated = state;
   emit userAuthenticationChanged();
 }

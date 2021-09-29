@@ -330,11 +330,6 @@ balrog {
     HEADERS += update/balrog.h
 }
 
-AUTHINAPP {
-    message(Authentication in-app enabled)
-    DEFINES += MVPN_AUTHINAPP
-}
-
 DUMMY {
     message(Dummy build)
 
@@ -804,7 +799,7 @@ else:win* {
     TARGET = MozillaVPN
 
     CONFIG += c++1z
-    QMAKE_CXXFLAGS += -MP
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 
     QT += networkauth
     QT += svg

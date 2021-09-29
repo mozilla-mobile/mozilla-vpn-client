@@ -61,11 +61,8 @@ void FeatureList::initialize() {
 void FeatureList::devModeFlipFeatureFlag(const QString& feature) {
   logger.debug() << "Flipping " << feature;
 
-  QStringList flags;
   auto const settings = SettingsHolder::instance();
-  if (settings->hasDevModeFeatureFlags()) {
-    flags = settings->devModeFeatureFlags();
-  }
+  QStringList flags = settings->devModeFeatureFlags();
 
   logger.debug() << "Got List - size:" << flags.size();
 
