@@ -19,3 +19,6 @@
 	path = 3rdparty/wireguard-go
 	url = https://github.com/WireGuard/wireguard-go
         ignore=all
+[submodule "3rdparty/adjust-ios-sdk"]
+	path = 3rdparty/adjust-ios-sdk
+	url = https://github.com/adjust/ios_sdk.git

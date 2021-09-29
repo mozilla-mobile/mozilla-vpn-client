@@ -6,7 +6,7 @@
 #include "logger.h"
 #include "constants.h"
 
-#import <AdjustSdk/Adjust.h>
+#import "Adjust.h"
 
 namespace {
 

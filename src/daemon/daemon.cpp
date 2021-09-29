@@ -368,14 +368,18 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     }
   }
 
-  // Deactivate the old peer and remove its routes.
+  // Remove routing entries for the old peer.
   for (const IPAddressRange& ip : lastConfig.m_allowedIPAddressRanges) {
     if (!config.m_allowedIPAddressRanges.contains(ip)) {
       wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
     }
   }
-  if (!wgutils()->deletePeer(lastConfig.m_serverPublicKey)) {
-    return false;
+
+  // Remove the old peer if it is no longer necessary.
+  if (config.m_serverPublicKey != lastConfig.m_serverPublicKey) {
+    if (!wgutils()->deletePeer(lastConfig.m_serverPublicKey)) {
+      return false;
+    }
   }
 
   m_connections[config.m_hopindex] = ConnectionState(config);
