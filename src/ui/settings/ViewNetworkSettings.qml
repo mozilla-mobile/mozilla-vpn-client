@@ -106,7 +106,7 @@ Item {
 
                     //% "Advanced DNS Settings"
                     settingTitle: qsTrId("vpn.settings.networking.advancedDNSSettings")
-                    imageLeftSrc: "../resources/settings.svg"
+                    imageLeftSrc: "../resources/settings-dark.svg"
                     imageRightSrc: "../resources/chevron.svg"
                     onClicked: settingsStackView.push("../settings/ViewAdvancedDNSSettings.qml")
                     visible: VPNFeatureList.get("customDNS").isSupported
