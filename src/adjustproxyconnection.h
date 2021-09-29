@@ -42,10 +42,12 @@ class AdjustProxyConnection final : public QObject {
 
   ProcessingState m_state = ProcessingState::NotStarted;
   QByteArray m_buffer;
+  int m_contentLength = 0;
   QString m_method;
   QUrl m_route;
   QList<QPair<QString, QString>> m_headers;
   QUrlQuery m_parameters;
+  QUrlQuery m_unknownParameters;
 };
 
 #endif  // ADJUSTPROXYCONNECTION_H

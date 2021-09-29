@@ -8,6 +8,7 @@ import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.AdjustEvent;
+import com.adjust.sdk.AdjustFactory;
 import android.app.Activity;
 import android.os.Bundle;
 

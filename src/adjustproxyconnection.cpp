@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// This is not afully functional http server
+
 #include "adjustproxyconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -15,9 +17,48 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-constexpr const char* HTTP_RESPONSE =
-    "HTTP/1.1 <status>\nContent-Type: "
-    "application/json\n\n<message>\n";
+const QString HTTP_RESPONSE =
+    "HTTP/1.1 %1\nContent-Type: "
+    "application/json\n\n%2\n";
+
+const QList<QString> allowList = {"adid",
+                                  "app_token",
+                                  "attribution_deeplink",
+                                  "bundle_id",
+                                  "device_type",
+                                  "environment",
+                                  "event_token",
+                                  "idfv",
+                                  "needs_response_details",
+                                  "os_name",
+                                  "os_version",
+                                  "package_name",
+                                  "reference_tag",
+                                  "tracking_enabled",
+                                  "zone_offset",
+                                  "att_status"};
+
+const QList<QPair<QString, QString>> defaultValues = {
+    QPair<QString, QString>("app_name", "default"),
+    QPair<QString, QString>("app_version", "2.0"),
+    QPair<QString, QString>("app_version_short", "2.0"),
+    QPair<QString, QString>("base_amount", "0"),
+    QPair<QString, QString>("device_name", "default"),
+    QPair<QString, QString>("engagement_type", "0"),
+    QPair<QString, QString>("event_buffering_enabled", "0"),
+    QPair<QString, QString>("event_cost_id", "xxxxx"),
+    QPair<QString, QString>("ios_uuid", "xxxxx"),
+    QPair<QString, QString>("manufacturer", "default"),
+    QPair<QString, QString>("nonce", "0"),
+    QPair<QString, QString>("platform", "Default"),
+    QPair<QString, QString>("random_user_id", "xxxxx"),
+    QPair<QString, QString>("region", "xxxxx"),
+    QPair<QString, QString>("store_name", "xxxxx"),
+    QPair<QString, QString>("terms_signed", "0"),
+    QPair<QString, QString>("time_spent", "0"),
+    QPair<QString, QString>("tracker_token", "xxxxx")};
+
+QHash<QString, QString> denyList;
 
 namespace {
 Logger logger(LOG_ADJUST, "AdjustProxyConnection");
@@ -29,6 +70,10 @@ AdjustProxyConnection::AdjustProxyConnection(QObject* parent,
   MVPN_COUNT_CTOR(AdjustProxyConnection);
 
   logger.debug() << "New connection received";
+
+  for (const auto entry : defaultValues) {
+    denyList.insert(entry.first, entry.second);
+  }
 
   Q_ASSERT(m_connection);
   connect(m_connection, &QTcpSocket::readyRead, this,
@@ -47,15 +92,9 @@ void AdjustProxyConnection::readData() {
 
   switch (m_state) {
     case ProcessingState::NotStarted:
-      if (m_buffer.isEmpty()) {
-        return;
-      }
       processFirstLine();
       [[fallthrough]];
     case ProcessingState::FirstLineDone:
-      if (m_buffer.isEmpty()) {
-        return;
-      }
       processHeaders();
       [[fallthrough]];
     case ProcessingState::HeadersDone:
@@ -71,6 +110,10 @@ void AdjustProxyConnection::readData() {
 }
 
 void AdjustProxyConnection::processFirstLine() {
+  if (m_buffer.isEmpty()) {
+    return;
+  }
+
   int pos = m_buffer.indexOf("\n");
   if (pos == -1) {
     return;
@@ -81,7 +124,7 @@ void AdjustProxyConnection::processFirstLine() {
 
   QList<QByteArray> parts = line.split(' ');
   if (parts.length() < 2) {
-    logger.info() << "Invalid HTTP request";
+    logger.error() << "Invalid HTTP request";
     m_connection->close();
     return;
   }
@@ -93,10 +136,14 @@ void AdjustProxyConnection::processFirstLine() {
 }
 
 void AdjustProxyConnection::processHeaders() {
+  if (m_buffer.isEmpty()) {
+    return;
+  }
+
   while (true) {
     int pos = m_buffer.indexOf("\n");
     if (pos == -1) {
-      break;
+      return;
     }
 
     QByteArray line = m_buffer.left(pos);
@@ -120,6 +167,22 @@ void AdjustProxyConnection::processHeaders() {
     headerPair.first = QString(headerName);
     headerPair.second = QString(headerValue);
 
+    if (QString::compare(headerPair.first, "host", Qt::CaseInsensitive) == 0) {
+      continue;
+    }
+
+    if (QString::compare(headerPair.first, "content-length",
+                         Qt::CaseInsensitive) == 0) {
+      bool ok;
+      m_contentLength = headerPair.second.toInt(&ok, 10);
+      if (!ok) {
+        logger.error() << "Content Length could not be parsed";
+        m_connection->close();
+        return;
+      }
+      continue;
+    }
+
     m_headers.append(headerPair);
   }
 
@@ -127,10 +190,16 @@ void AdjustProxyConnection::processHeaders() {
 }
 
 void AdjustProxyConnection::processParameters() {
+  if (m_buffer.trimmed().length() > m_contentLength) {
+    logger.error() << "Buffer longer than the declared Contend-Length";
+    m_connection->close();
+    return;
+  }
+
   if (m_method == "GET") {
     m_parameters = QUrlQuery(m_route);
   } else {
-    if (m_buffer.isEmpty()) {
+    if (m_buffer.trimmed().length() < m_contentLength) {
       return;
     }
     m_parameters = QUrlQuery(m_buffer.trimmed());
@@ -141,28 +210,23 @@ void AdjustProxyConnection::processParameters() {
 
 void AdjustProxyConnection::filterParametersAndForwardRequest() {
   QList<QPair<QString, QString>> newParameters;
+  QList<QPair<QString, QString>> unknownParameters;
 
   for (QPair<QString, QString> parameter : m_parameters.queryItems()) {
-    if (parameter.first == "adid" || parameter.first == "app_token" ||
-        parameter.first == "attribution_deeplink" ||
-        parameter.first == "bundle_id" || parameter.first == "device_type" ||
-        parameter.first == "environment" || parameter.first == "event_token" ||
-        parameter.first == "idfv" ||
-        parameter.first == "needs_response_details" ||
-        parameter.first == "os_name" || parameter.first == "os_version" ||
-        parameter.first == "package name" ||
-        parameter.first == "reference_tag" ||
-        parameter.first == "tracking_enabled" ||
-        parameter.first == "zone_offset" || parameter.first == "att_status") {
+    if (allowList.contains(parameter.first)) {
       newParameters.append(
           QPair<QString, QString>(parameter.first, parameter.second));
+    } else if (denyList.contains(parameter.first)) {
+      newParameters.append(
+          QPair<QString, QString>(parameter.first, denyList[parameter.first]));
     } else {
-      newParameters.append(QPair<QString, QString>(
-          parameter.first, QByteArray(parameter.second.size(), '0')));
+      unknownParameters.append(
+          QPair<QString, QString>(parameter.first, parameter.second));
     }
   }
 
   m_parameters.setQueryItems(newParameters);
+  m_unknownParameters.setQueryItems(unknownParameters);
 
   forwardRequest();
 }
@@ -171,26 +235,24 @@ void AdjustProxyConnection::forwardRequest() {
   NetworkRequest* request;
 
   request = NetworkRequest::createForAdjustProxy(
-      this, m_method, m_route.toString(), m_headers, m_parameters.toString());
+      this, m_method, m_route.toString(), m_headers, m_parameters.toString(),
+      m_unknownParameters.toString());
 
-  connect(request, &NetworkRequest::requestFailed,
-          [this, request](QNetworkReply::NetworkError, const QByteArray& data) {
-            QByteArray response(HTTP_RESPONSE);
-            response.replace("<status>",
-                             QByteArray::number(request->statusCode()));
-            response.replace("<message>", data);
-            m_connection->write(response);
-            m_connection->close();
-          });
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this, request](QNetworkReply::NetworkError, const QByteArray& data) {
+        m_connection->write(
+            HTTP_RESPONSE.arg(QByteArray::number(request->statusCode()), data)
+                .toUtf8());
+        m_connection->close();
+      });
 
-  connect(request, &NetworkRequest::requestCompleted,
-          [this](const QByteArray& data) {
-            logger.debug() << "Adjust request succeeded";
-            logger.debug() << data;
-            QByteArray response(HTTP_RESPONSE);
-            response.replace("<status>", "200");
-            response.replace("<message>", data);
-            m_connection->write(response);
-            m_connection->close();
-          });
+  connect(
+      request, &NetworkRequest::requestCompleted,
+      [this, request](const QByteArray& data) {
+        m_connection->write(
+            HTTP_RESPONSE.arg(QByteArray::number(request->statusCode()), data)
+                .toUtf8());
+        m_connection->close();
+      });
 }

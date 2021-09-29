@@ -136,7 +136,8 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 // static
 NetworkRequest* NetworkRequest::createForAdjustProxy(
     QObject* parent, const QString& method, const QString& route,
-    const QList<QPair<QString, QString>>& headers, const QString& parameters) {
+    const QList<QPair<QString, QString>>& headers, const QString& parameters,
+    const QString& unknownParameters) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -150,9 +151,7 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
 
   QJsonObject headersObj;
   for (QPair<QString, QString> header : headers) {
-    if (header.first != "Host" && header.first != "Content-Length") {
-      headersObj.insert(header.first, header.second);
-    }
+    headersObj.insert(header.first, header.second);
   }
 
   QJsonObject obj;
@@ -160,9 +159,9 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
   obj.insert("path", route);
   obj.insert("headers", headersObj);
   obj.insert("parameters", parameters);
+  obj.insert("unknownParameters", unknownParameters);
 
-  QJsonDocument json;
-  json.setObject(obj);
+  QJsonDocument json(obj);
 
   r->postRequest(json.toJson(QJsonDocument::Compact));
   return r;
