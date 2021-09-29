@@ -154,16 +154,6 @@ Window {
         clip: true
     }
 
-    VPNTextField {
-        anchors.top: parent.top
-        anchors.topMargin: Theme.windowMargin
-        anchors.horizontalCenter: parent.horizontalCenter
-        height: Theme.rowHeight
-        isPassword: true
-        placeholderText: "Password"
-        width: parent.width - Theme.windowMargin * 2
-    }
-
     Component {
         id: mainView
 

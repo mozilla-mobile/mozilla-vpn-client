@@ -33,7 +33,6 @@ TextField {
     VPNIconButton {
         id: iconButton
 
-        accessibleName: "Toggle password visibility" // TODO: Add localized string
         anchors {
             right: parent.right
             rightMargin: Theme.listSpacing / 2
