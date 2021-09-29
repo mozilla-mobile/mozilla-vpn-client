@@ -961,13 +961,21 @@ QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
 
-debug {
-    SOURCES += gleantest.cpp
-    HEADERS += gleantest.h
-}
-
 coverage {
     message(Coverage enabled)
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
     QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
+}
+
+debug {
+    # If in debug mode, set mvpn_debug flag too.
+    CONFIG += mvpn_debug
+}
+
+mvpn_debug {
+    message(MVPN Debug enabled)
+    DEFINES += MVPN_DEBUG
+
+    SOURCES += gleantest.cpp
+    HEADERS += gleantest.h
 }
