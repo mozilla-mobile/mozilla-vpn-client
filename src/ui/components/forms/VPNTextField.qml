@@ -21,6 +21,9 @@ TextField {
     background: VPNInputBackground {
         id: textFieldBackground
     }
+    font.pixelSize: Theme.fontSizeSmall
+    font.family: Theme.fontInterFamily
+    padding: Theme.windowMargin * .75
     color: Color.input.default.text
     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
     onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(textField)
