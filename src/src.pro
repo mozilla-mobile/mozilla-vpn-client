@@ -362,7 +362,6 @@ DUMMY {
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/dummy/dummycryptosettings.cpp \
-            platforms/dummy/dummypingsender.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
