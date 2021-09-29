@@ -107,7 +107,7 @@ void ConnectionHealth::connectionStateChanged() {
 }
 
 void ConnectionHealth::pingSentAndReceived(qint64 msec) {
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   logger.debug() << "Ping answer received in msec:" << msec;
 #else
   Q_UNUSED(msec);
