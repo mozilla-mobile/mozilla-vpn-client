@@ -285,7 +285,7 @@ bool Daemon::deactivate(bool emitSignals) {
       return false;
     }
     if (emitSignals) {
-      emit disconnected(0);
+      emit disconnected();
     }
   }
 
@@ -417,21 +417,26 @@ QJsonObject Daemon::getStatus() {
 void Daemon::checkHandshake() {
   Q_ASSERT(wgutils() != nullptr);
 
+  logger.debug() << "Checking for handshake...";
+
   int pendingHandshakes = 0;
   QList<WireguardUtils::PeerStatus> peers = wgutils()->getPeerStatus();
   for (ConnectionState& connection : m_connections) {
+    const InterfaceConfig& config = connection.m_config;
     if (connection.m_date.isValid()) {
       continue;
     }
+    logger.debug() << "awaiting"
+                   << WireguardUtils::printableKey(config.m_serverPublicKey);
 
     // Check if the handshake has completed.
     for (const WireguardUtils::PeerStatus& status : peers) {
-      if (connection.m_config.m_serverPublicKey != status.m_pubkey) {
+      if (config.m_serverPublicKey != status.m_pubkey) {
         continue;
       }
       if (status.m_handshake != 0) {
         connection.m_date.setMSecsSinceEpoch(status.m_handshake);
-        emit connected(connection.m_config.m_hopindex);
+        emit connected(status.m_pubkey);
       }
     }
 

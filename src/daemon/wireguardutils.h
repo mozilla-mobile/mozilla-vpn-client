@@ -42,6 +42,15 @@ class WireguardUtils : public QObject {
                                  int hopindex) = 0;
   virtual bool deleteRoutePrefix(const IPAddressRange& prefix,
                                  int hopindex) = 0;
+
+  // static
+  static QString printableKey(const QString& pubkey) {
+    if (pubkey.length() < 12) {
+      return pubkey;
+    } else {
+      return pubkey.left(6) + "..." + pubkey.right(6);
+    }
+  }
 };
 
 #endif  // WIREGUARDUTILS_H

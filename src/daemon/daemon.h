@@ -41,8 +41,8 @@ class Daemon : public QObject {
   void cleanLogs();
 
  signals:
-  void connected(int hopindex);
-  void disconnected(int hopindex);
+  void connected(const QString& pubkey);
+  void disconnected();
   void backendFailure();
 
  protected:

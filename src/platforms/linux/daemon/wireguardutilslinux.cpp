@@ -34,6 +34,8 @@ extern "C" {
 #endif
 // End import wireguard
 
+constexpr uint16_t WG_KEEPALIVE_PERIOD = 60;
+
 /* Packets sent outside the VPN need to be marked for the routing policy
  * to direct them appropriately. The value of the mark and the table ID
  * aren't important, so long as they are unique.
@@ -193,7 +195,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   }
   device->first_peer = device->last_peer = peer;
 
-  logger.debug() << "Adding peer" << printablePubkey(config.m_serverPublicKey);
+  logger.debug() << "Adding peer" << printableKey(config.m_serverPublicKey);
 
   // Public Key
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
@@ -230,8 +232,10 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   // Set/update peer
   strncpy(device->name, WG_INTERFACE, IFNAMSIZ);
   device->flags = (wg_device_flags)0;
+  peer->persistent_keepalive_interval = WG_KEEPALIVE_PERIOD;
   peer->flags =
-      (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REPLACE_ALLOWEDIPS);
+      (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REPLACE_ALLOWEDIPS |
+                      WGPEER_HAS_PERSISTENT_KEEPALIVE_INTERVAL);
   if (wg_set_device(device) != 0) {
     logger.error() << "Failed to set the new peer hop" << config.m_hopindex;
     return false;
@@ -255,7 +259,7 @@ bool WireguardUtilsLinux::deletePeer(const QString& pubkey) {
   }
   device->first_peer = device->last_peer = peer;
 
-  logger.debug() << "Removing peer" << printablePubkey(pubkey);
+  logger.debug() << "Removing peer" << printableKey(pubkey);
 
   // Public Key
   peer->flags = (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REMOVE_ME);
@@ -313,6 +317,8 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
     status.m_handshake += peer->last_handshake_time.tv_nsec / 1000000;
     status.m_txBytes = peer->tx_bytes;
     status.m_rxBytes = peer->rx_bytes;
+    logger.debug() << "found" << printableKey(status.m_pubkey) << "handshake"
+                   << peer->last_handshake_time.tv_sec;
     peerList.append(status);
   }
   wg_free_device(device);
@@ -636,13 +642,4 @@ bool WireguardUtilsLinux::buildAllowedIp(wg_allowedip* ip,
     return inet_pton(AF_INET6, qPrintable(prefix.ipAddress()), &ip->ip6) == 1;
   }
   return false;
-}
-
-// static
-QString WireguardUtilsLinux::printablePubkey(const QString& pubkey) {
-  if (pubkey.length() < 12) {
-    return pubkey;
-  } else {
-    return pubkey.left(6) + "..." + pubkey.right(6);
-  }
 }

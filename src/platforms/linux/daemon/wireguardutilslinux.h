@@ -42,8 +42,6 @@ class WireguardUtilsLinux final : public WireguardUtils {
   static bool buildAllowedIp(struct wg_allowedip*,
                              const IPAddressRange& prefix);
 
-  static QString printablePubkey(const QString& pubkey);
-
   int m_nlsock = -1;
   int m_nlseq = 0;
   QSocketNotifier* m_notifier = nullptr;
