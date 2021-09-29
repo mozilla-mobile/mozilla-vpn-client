@@ -488,5 +488,6 @@
         <file>ui/components/VPNRecentConnections.qml</file>
         <file>ui/resources/settings/questionMark.svg</file>
         <file>ui/resources/settings/preferences.svg</file>
+        <file>ui/resources/settings-dark.svg</file>
     </qresource>
 </RCC>
