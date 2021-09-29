@@ -242,8 +242,7 @@ void AdjustProxyConnection::forwardRequest() {
       request, &NetworkRequest::requestFailed,
       [this, request](QNetworkReply::NetworkError, const QByteArray& data) {
         logger.debug() << "Adjust Proxy request completed with: "
-                       << request->statusCode() << ", "
-                       << data.replace('\n', ' ');
+                       << request->statusCode() << ", " << data;
         m_connection->write(
             HTTP_RESPONSE.arg(QByteArray::number(request->statusCode()), data)
                 .toUtf8());
@@ -254,8 +253,7 @@ void AdjustProxyConnection::forwardRequest() {
       request, &NetworkRequest::requestCompleted,
       [this, request](const QByteArray& data) {
         logger.debug() << "Adjust Proxy request completed with: "
-                       << request->statusCode() << ", "
-                       << data.replace('\n', ' ');
+                       << request->statusCode() << ", " << data;
         m_connection->write(
             HTTP_RESPONSE.arg(QByteArray::number(request->statusCode()), data)
                 .toUtf8());
