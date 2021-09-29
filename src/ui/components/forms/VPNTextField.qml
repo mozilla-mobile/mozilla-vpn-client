@@ -51,9 +51,9 @@ TextField {
 
             anchors.centerIn: iconButton
             fillMode: Image.PreserveAspectFit
-            source: charactersMasked ? "../../resources/faces/good.svg" : "../../resources/faces/poor.svg" // TODO: Replace with correct icons when available
-            sourceSize.height: Theme.iconSize
-            sourceSize.width: Theme.iconSize
+            source: charactersMasked ? "../../resources/eye-hidden.svg" : "../../resources/eye-visible.svg"
+            sourceSize.height: Theme.iconSize * 1.5
+            sourceSize.width: Theme.iconSize * 1.5
         }
     }
 

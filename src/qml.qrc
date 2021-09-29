@@ -488,5 +488,7 @@
         <file>ui/components/VPNRecentConnections.qml</file>
         <file>ui/resources/settings/questionMark.svg</file>
         <file>ui/resources/settings/preferences.svg</file>
+        <file>ui/resources/eye-visible.svg</file>
+        <file>ui/resources/eye-hidden.svg</file>
     </qresource>
 </RCC>
