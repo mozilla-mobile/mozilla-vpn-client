@@ -45,7 +45,7 @@ IPAddressRange& IPAddressRange::operator=(const IPAddressRange& other) {
   return *this;
 }
 
-bool IPAddressRange::operator==(const IPAddressRange& other) {
+bool IPAddressRange::operator==(const IPAddressRange& other) const {
   if (this == &other) return true;
 
   return m_ipAddress == other.m_ipAddress && m_range == other.m_range &&

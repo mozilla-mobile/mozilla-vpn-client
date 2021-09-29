@@ -21,9 +21,8 @@ Logger logger(LOG_CONTROLLER, "LinuxAppImageProvider");
 }
 
 LinuxAppImageProvider::LinuxAppImageProvider(QObject* parent)
-    : QQuickImageProvider(QQuickImageProvider::Image,
-                          QQmlImageProviderBase::ForceAsynchronousImageLoading),
-      QObject(parent) {
+    : AppImageProvider(parent, QQuickImageProvider::Image,
+                       QQmlImageProviderBase::ForceAsynchronousImageLoading) {
   MVPN_COUNT_CTOR(LinuxAppImageProvider);
 
   QStringList searchPaths = QIcon::fallbackSearchPaths();

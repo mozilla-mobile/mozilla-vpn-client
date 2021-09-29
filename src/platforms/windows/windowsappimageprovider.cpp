@@ -23,7 +23,7 @@ Logger logger(LOG_WINDOWS, "WindowsAppImageProvider");
 }
 
 WindowsAppImageProvider::WindowsAppImageProvider(QObject* parent)
-    : QQuickImageProvider(QQuickImageProvider::Pixmap), QObject(parent) {
+    : AppImageProvider(parent, QQuickImageProvider::Pixmap) {
   MVPN_COUNT_CTOR(WindowsAppImageProvider);
 }
 

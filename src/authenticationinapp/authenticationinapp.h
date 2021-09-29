@@ -79,6 +79,10 @@ class AuthenticationInApp final : public QObject {
   Q_INVOKABLE static bool validatePasswordLength(const QString& password);
   Q_INVOKABLE bool validatePasswordEmail(const QString& password);
 
+  // This method restarts the authentication flow and sets the state to
+  // StateStart.
+  Q_INVOKABLE void reset();
+
   // Sign In/Up.
   Q_INVOKABLE void signIn();
   Q_INVOKABLE void signUp();

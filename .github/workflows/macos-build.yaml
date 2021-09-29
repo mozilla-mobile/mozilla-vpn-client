@@ -227,6 +227,7 @@ jobs:
             CONFIG-=debug_and_release \
             CONFIG+=release \
             CONFIG+=production \
+            CONFIG+=webextension \
             QTPLUGIN+=qsvg \
             CONFIG-=static \
             CONFIG+=balrog \

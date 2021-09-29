@@ -43,12 +43,8 @@ bool DeviceModel::fromSettings(const Keys* keys) {
 
   logger.debug() << "Reading the device list from settings";
 
-  if (!settingsHolder->hasDevices()) {
-    return false;
-  }
-
   const QByteArray& json = settingsHolder->devices();
-  if (!fromJsonInternal(keys, json)) {
+  if (json.isEmpty() || !fromJsonInternal(keys, json)) {
     return false;
   }
 

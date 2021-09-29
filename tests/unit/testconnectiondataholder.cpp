@@ -11,6 +11,10 @@
 #include <QSplineSeries>
 #include <QValueAxis>
 
+#if QT_VERSION < 0x060000
+using namespace QtCharts;
+#endif
+
 void TestConnectionDataHolder::checkIpAddressFailure() {
   ConnectionDataHolder cdh;
 
@@ -90,10 +94,10 @@ void TestConnectionDataHolder::chart() {
   cdh.add(123, 123);
   QCOMPARE(spy.count(), 0);
 
-  QtCharts::QSplineSeries* txSeries = new QtCharts::QSplineSeries(this);
-  QtCharts::QSplineSeries* rxSeries = new QtCharts::QSplineSeries(this);
-  QtCharts::QValueAxis* axisX = new QtCharts::QValueAxis(this);
-  QtCharts::QValueAxis* axisY = new QtCharts::QValueAxis(this);
+  QSplineSeries* txSeries = new QSplineSeries(this);
+  QSplineSeries* rxSeries = new QSplineSeries(this);
+  QValueAxis* axisX = new QValueAxis(this);
+  QValueAxis* axisY = new QValueAxis(this);
 
   cdh.activate(QVariant::fromValue(txSeries), QVariant::fromValue(rxSeries),
                QVariant::fromValue(axisX), QVariant::fromValue(axisY));

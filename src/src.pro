@@ -21,7 +21,7 @@ QT += network
 QT += quick
 QT += widgets
 QT += charts
-QT+= websockets
+QT += websockets
 
 # for the inspector
 QT+= testlib
@@ -31,6 +31,7 @@ CONFIG += no_testcase_installs
 TEMPLATE  = app
 
 DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
 INCLUDEPATH += \
             hacl-star \
@@ -162,6 +163,7 @@ SOURCES += \
         urlopener.cpp
 
 HEADERS += \
+        appimageprovider.h \
         apppermission.h \
         applistprovider.h \
         authenticationlistener.h \
@@ -328,11 +330,6 @@ balrog {
 
     SOURCES += update/balrog.cpp
     HEADERS += update/balrog.h
-}
-
-AUTHINAPP {
-    message(Authentication in-app enabled)
-    DEFINES += MVPN_AUTHINAPP
 }
 
 DUMMY {
@@ -538,10 +535,13 @@ else:android {
     TARGET = mozillavpn
     QT += networkauth
     QT += svg
-    QT += androidextras
     QT += qml
     QT += xml
     LIBS += \-ljnigraphics\
+
+    !versionAtLeast(QT_VERSION, 6.0.0) {
+        QT += androidextras
+    }
 
     DEFINES += MVPN_ANDROID
 
@@ -791,7 +791,7 @@ else:win* {
     TARGET = MozillaVPN
 
     CONFIG += c++1z
-    QMAKE_CXXFLAGS += -MP
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 
     QT += networkauth
     QT += svg

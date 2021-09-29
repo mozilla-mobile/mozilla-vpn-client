@@ -5,8 +5,8 @@
 #include "pingsender.h"
 #include "logger.h"
 
-// QProcess is not supported on iOS
-#ifndef MVPN_IOS
+// QProcess is not supported on iOS and Wasm
+#if !defined(MVPN_IOS) && !defined(MVPN_WASM)
 #  include <QProcess>
 #endif
 
@@ -52,7 +52,7 @@ quint16 PingSender::inetChecksum(const void* data, size_t len) {
 }
 
 // QProcess is not supported on iOS
-#ifndef MVPN_IOS
+#if !defined(MVPN_IOS) && !defined(MVPN_WASM)
 // Send a ping by launching the "ping" command.
 void PingSender::genericSendPing(const QStringList& args, qint16 sequence) {
   QProcess* process = new QProcess(this);

@@ -1529,7 +1529,10 @@ void TestModels::surveyModelFromJson() {
         QCOMPARE(sm.surveys()[0].isTriggerable(), surveyTriggerable);
 
         if (surveyTriggerable) {
-          settingsHolder.addConsumedSurvey(surveyId);
+          QStringList list = settingsHolder.consumedSurveys();
+          list.append(surveyId);
+          settingsHolder.setConsumedSurveys(list);
+
           QVERIFY(!sm.surveys()[0].isTriggerable());
         }
       }

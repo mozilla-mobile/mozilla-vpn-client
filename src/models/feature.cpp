@@ -82,8 +82,8 @@ bool Feature::isDevModeEnabled() const {
   if (!m_devModeWriteable) {
     return false;
   }
-  const auto settings = SettingsHolder::instance();
-  return settings->hasDevModeFeatureFlag(m_id);
+
+  return SettingsHolder::instance()->devModeFeatureFlags().contains(m_id);
 }
 
 bool Feature::isSupported() const {

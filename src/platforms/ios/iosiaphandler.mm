@@ -114,8 +114,7 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
 
         completedTransactions = true;
 
-        SettingsHolder* settingsHolder = SettingsHolder::instance();
-        if (settingsHolder->hasSubscriptionTransaction(identifier)) {
+        if (SettingsHolder::instance()->subscriptionTransactions().contains(identifier)) {
           logger.warning() << "This transaction has already been processed. Let's ignore it.";
         } else {
           completedTransactionIds.append(identifier);
@@ -356,7 +355,12 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
 
   connect(request, &NetworkRequest::requestCompleted, [this, ids](const QByteArray&) {
     logger.debug() << "Purchase request completed";
-    SettingsHolder::instance()->addSubscriptionTransactions(ids);
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
+
+    QStringList transactions = settingsHolder->subscriptionTransactions();
+    transactions.append(ids);
+    settingsHolder->setSubscriptionTransactions(transactions);
 
     if (m_subscriptionState != eActive) {
       logger.warning() << "We have been canceled in the meantime";

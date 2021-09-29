@@ -321,11 +321,11 @@ static QList<WebSocketCommand> s_commands{
                        }
                        const QMetaObject* meta = item->metaObject();
                        int start = meta->propertyOffset();
-                       int longest = 0;
+                       size_t longest = 0;
 
                        for (int i = start; i < meta->propertyCount(); i++) {
                          QMetaProperty mp = meta->property(i);
-                         int namelen = strlen(mp.name());
+                         size_t namelen = strlen(mp.name());
                          if (namelen > longest) {
                            longest = namelen;
                          }
@@ -333,17 +333,22 @@ static QList<WebSocketCommand> s_commands{
 
                        for (int i = start; i < meta->propertyCount(); i++) {
                          QMetaProperty mp = meta->property(i);
-                         int padding = longest - strlen(mp.name());
+                         size_t padding = longest - strlen(mp.name());
                          QVariant value = mp.read(item);
-                         if (!result.isEmpty()) {
-                           result += "\n";
+                         QString name = mp.name() + QString(padding, ' ');
+
+                         if (value.type() == QVariant::StringList) {
+                           for (const QString& x : value.value<QStringList>()) {
+                             result += name + " = " + x + "\n";
+                             name.fill(' ', longest);
+                           }
+                           continue;
                          }
-                         result += QString(mp.name());
-                         result += QString(padding, ' ') + " = ";
-                         result += value.toString();
+
+                         result += name + " = " + value.toString() + "\n";
                        }
 
-                       obj["value"] = result;
+                       obj["value"] = result.trimmed();
                        return obj;
                      }},
 

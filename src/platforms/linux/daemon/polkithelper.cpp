@@ -4,9 +4,11 @@
 
 #include "polkithelper.h"
 
-#include "polkit/polkit.h"
-
 #include <QDebug>
+
+// No extra QT includes after this line!
+#undef Q_SIGNALS
+#include "polkit/polkit.h"
 
 class Helper final {
  public:

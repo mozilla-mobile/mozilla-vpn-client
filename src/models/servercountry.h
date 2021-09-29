@@ -12,7 +12,6 @@
 
 class ServerData;
 class QJsonObject;
-class QStringList;
 
 class ServerCountry final {
  public:

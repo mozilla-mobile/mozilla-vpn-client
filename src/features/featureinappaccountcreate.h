@@ -23,14 +23,7 @@ class FeatureInAppAccountCreate final : public Feature {
                 true                 // Can be enabled in devmode
         ) {}
 
-  bool checkSupportCallback() const override {
-#if defined(MVPN_IOS) || defined(UNIT_TEST)
-    // Soon-ish, android will have AIP. But not now yet.
-    return true;
-#else
-    return false;
-#endif
-  }
+  bool checkSupportCallback() const override { return false; }
 
   static const FeatureInAppAccountCreate* instance() {
     return static_cast<const FeatureInAppAccountCreate*>(

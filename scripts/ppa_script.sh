@@ -124,7 +124,7 @@ else
   rm -rf linux/debian || die "Failed"
   print G "done."
 
-  print Y "Downloading Go dependencies..."
+  printn Y "Downloading Go dependencies..."
   (cd linux/netfilter && go mod vendor)
   print G "done."
 
