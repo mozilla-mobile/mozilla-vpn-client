@@ -319,7 +319,6 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
   std::wstring wstr = exePath.toStdWString();
   PCWSTR appPath = wstr.c_str();
   FWP_BYTE_BLOB* appID = NULL;
-  uint64_t filterID = 0;
   result = FwpmGetAppIdFromFileName0(appPath, &appID);
   if (result != ERROR_SUCCESS) {
     WindowsCommons::windowsLog("FwpmGetAppIdFromFileName0 failure");

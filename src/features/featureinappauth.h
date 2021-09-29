@@ -23,13 +23,7 @@ class FeatureInAppAuth final : public Feature {
                 true                 // Can be enabled in devmode
         ) {}
 
-  bool checkSupportCallback() const override {
-#ifdef MVPN_AUTHINAPP
-    return true;
-#else
-    return false;
-#endif
-  }
+  bool checkSupportCallback() const override { return false; }
 
   static const FeatureInAppAuth* instance() {
     return static_cast<const FeatureInAppAuth*>(get(FEATURE_IN_APP_AUTH));

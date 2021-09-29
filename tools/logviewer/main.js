@@ -6,10 +6,14 @@ const LOG = 0;
 const SEPARATOR = 1;
 const SETTINGS_OR_DEVICE = 2;
 
+const TYPE_VPN_STATE = 1;
+const TYPE_CONTROLLER_STATE = 2;
+
 const Logger = {
   _modules: [],
   _components: [],
   _contexts: {},
+  _contextID: {},
   _currentContext: 'Client',
 
   async initialize(e) {
@@ -73,6 +77,7 @@ const Logger = {
     }
 
     this.createDateRange();
+    this.createContextIDs();
     this.createModuleList();
     this.createComponentList();
     this.populateLogTable();
@@ -102,6 +107,7 @@ const Logger = {
     const entry = {
       type: 'log',
       date: this.parseDate(dateString),
+      detectedType: this.detectType(modules, log),
       modules,
       component,
       log: [log],
@@ -122,6 +128,18 @@ const Logger = {
     if (!this._components.includes(component)) {
       this._components.push(component);
     }
+  },
+
+  detectType(modules, log) {
+    if (/Set state:/.exec(log) && modules.includes('main')) {
+      return TYPE_VPN_STATE;
+    }
+
+    if (/Setting state:/.exec(log) && modules.includes('controller')) {
+      return TYPE_CONTROLLER_STATE;
+    }
+
+    return null;
   },
 
   settingsOrDeviceLine(line) {
@@ -209,17 +227,29 @@ const Logger = {
         parseInt(document.getElementById('dateMaxRange').value, 10) * diff /
         100;
     if (minValue > maxValue) {
-      document.getElementById('dateRange').textContent = `Error`;
+      document.getElementById('dateMinRangeLabel').textContent = `Error`;
+      document.getElementById('dateMaxRangeLabel').textContent = `Error`;
       return;
     }
 
     const minDateValue = new Date((minValue + min));
     const maxDateValue = new Date((maxValue + min));
-    document.getElementById('dateRange').textContent =
-        `From ${minDateValue.toISOString()} to ${maxDateValue.toISOString()}`;
+    document.getElementById('dateMinRangeLabel').textContent =
+        minDateValue.toISOString();
+    document.getElementById('dateMaxRangeLabel').textContent =
+        maxDateValue.toISOString();
 
     this._minDateValue = minDateValue.getTime();
     this._maxDateValue = maxDateValue.getTime();
+  },
+
+  createContextIDs() {
+    const params = new URLSearchParams(window.location.search);
+    for (let key of params.keys()) {
+      if (key.startsWith('id-')) {
+        this._contextID[key.substr(3)] = parseInt(params.get(key), 10);
+      }
+    }
   },
 
   createModuleList() {
@@ -229,18 +259,26 @@ const Logger = {
 
     const ul = document.getElementById('moduleList');
     for (let module of this._modules.sort()) {
-      const li = document.createElement('li');
+      const div = document.createElement('div');
+      div.setAttribute('class', 'form-check form-switch');
+
       const checkbox = document.createElement('input');
+      checkbox.setAttribute('class', 'form-check-input');
       checkbox.setAttribute('type', 'checkbox');
       if (modules === null || modules.includes(module)) {
         checkbox.setAttribute('checked', 'checked');
       }
       checkbox.setAttribute('id', `module-${module}`);
       checkbox.onchange = () => this.populateLogTable();
-      li.appendChild(checkbox);
-      li.appendChild(document.createTextNode(
-          `${module} (${this.countLogInModule(module)})`));
-      ul.appendChild(li);
+      div.appendChild(checkbox);
+
+      const label = document.createElement('label');
+      label.setAttribute('class', 'form-check-label');
+      label.setAttribute('for', `module-${module}`);
+      label.textContent = `${module} (${this.countLogInModule(module)})`;
+      div.appendChild(label);
+
+      ul.appendChild(div);
     }
   },
 
@@ -251,18 +289,27 @@ const Logger = {
 
     const ul = document.getElementById('componentList');
     for (let component of this._components.sort()) {
-      const li = document.createElement('li');
+      const div = document.createElement('div');
+      div.setAttribute('class', 'form-check form-switch');
+
       const checkbox = document.createElement('input');
+      checkbox.setAttribute('class', 'form-check-input');
       checkbox.setAttribute('type', 'checkbox');
       if (components === null || components.includes(component)) {
         checkbox.setAttribute('checked', 'checked');
       }
       checkbox.setAttribute('id', `component-${component}`);
       checkbox.onchange = () => this.populateLogTable();
-      li.appendChild(checkbox);
-      li.appendChild(document.createTextNode(
-          `${component} (${this.countLogInComponent(component)})`));
-      ul.appendChild(li);
+      div.appendChild(checkbox);
+
+      const label = document.createElement('label');
+      label.setAttribute('class', 'form-check-label');
+      label.setAttribute('for', `component-${component}`);
+      label.textContent =
+          `${component} (${this.countLogInComponent(component)})`;
+      div.appendChild(label);
+
+      ul.appendChild(div);
     }
   },
 
@@ -313,6 +360,8 @@ const Logger = {
   },
 
   populateLogTable() {
+    const searchValue = document.getElementById('search').value.toLowerCase();
+
     const ulContexts = document.getElementById('contextsTabs');
     const divContexts = document.getElementById('contextsLog');
     if (ulContexts.children.length === 0) {
@@ -347,7 +396,7 @@ const Logger = {
         div.setAttribute('aria-labelledby', `${context}-tab`);
 
         const table = document.createElement('table');
-        table.setAttribute('class', 'table');
+        table.setAttribute('class', 'table table-hover table-sm');
         div.appendChild(table);
 
         const thead = document.createElement('thead');
@@ -402,10 +451,9 @@ const Logger = {
     for (let component of components) urlSearchParams.append('c', component);
     urlSearchParams.append('dm', document.getElementById('dateMinRange').value);
     urlSearchParams.append('dM', document.getElementById('dateMaxRange').value);
-
-    const url = new URL(window.location);
-    url.search = urlSearchParams.toString();
-    window.history.pushState({}, '', url);
+    for (let key of Object.keys(this._contextID))
+      urlSearchParams.append(`id-${key}`, this._contextID[key]);
+    this.updateHistory(urlSearchParams);
 
     for (let context of Object.keys(this._contexts)) {
       const table = document.getElementById(`logTable-${context}`);
@@ -419,12 +467,34 @@ const Logger = {
                    .includes(true))
             continue;
 
+          if (searchValue != '' &&
+              !entry.log.find(log => log.toLowerCase().includes(searchValue))) {
+            continue;
+          }
+
           const entryDateTime = entry.date.getTime();
           if (entryDateTime < this._minDateValue ||
               entryDateTime > this._maxDateValue)
             continue;
 
           const tr = document.createElement('tr');
+          tr.setAttribute('data-id', id);
+
+          switch (entry.detectedType) {
+            case TYPE_VPN_STATE:
+              tr.setAttribute('class', 'table-primary');
+              break
+
+                  case TYPE_CONTROLLER_STATE:
+                      tr.setAttribute('class', 'table-success');
+              break
+
+                  default: break
+          }
+
+          if ((context in this._contextID) && this._contextID[context] == id)
+            tr.classList.add('table-active');
+
           const th = document.createElement('th');
           th.setAttribute('scope', 'row');
           th.textContent = ++id;
@@ -454,6 +524,8 @@ const Logger = {
           tr.appendChild(tdLog);
 
           table.appendChild(tr);
+
+          tr.onclick = () => this.selectRow(context, tr);
           continue
         }
 
@@ -476,6 +548,48 @@ const Logger = {
         }
       }
     }
+  },
+
+  selectRow(context, row) {
+    if (row.classList.contains('table-active')) {
+      row.classList.remove('table-active');
+      delete this._contextID[context];
+    } else {
+      row.classList.add('table-active');
+      for (let prevRow = row.previousSibling; prevRow;
+           prevRow = prevRow.previousSibling)
+        prevRow.classList.remove('table-active');
+      for (let nextRow = row.nextSibling; nextRow;
+           nextRow = nextRow.nextSibling)
+        nextRow.classList.remove('table-active');
+
+      this._contextID[context] = parseInt(row.dataset.id, 10);
+    }
+
+    const url = new URL(window.location);
+    for (let key of url.searchParams.keys()) {
+      if (key.startsWith('id-')) {
+        url.searchParams.delete(key);
+      }
+    }
+
+    for (let key of Object.keys(this._contextID))
+      url.searchParams.append(`id-${key}`, this._contextID[key]);
+    this.updateHistory(url.searchParams);
+  },
+
+  keyboardSearchChanged() {
+    if (this._keyboardSearchTimerId) {
+      clearTimeout(this._keyboardSearchTimerId);
+    }
+    this._keyboardSearchTimerId =
+        setTimeout(() => this.populateLogTable(), 500);
+  },
+
+  updateHistory(urlSearchParams) {
+    const url = new URL(window.location);
+    url.search = urlSearchParams.toString();
+    window.history.pushState({}, '', url);
   }
 };
 
@@ -488,3 +602,5 @@ document.getElementById('componentSelectAll').onclick = () =>
     Logger.componentSelectAll();
 document.getElementById('componentUnselectAll').onclick = () =>
     Logger.componentUnselectAll();
+document.getElementById('search').onkeypress = () =>
+    Logger.keyboardSearchChanged();

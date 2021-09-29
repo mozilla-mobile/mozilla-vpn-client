@@ -8,6 +8,7 @@
 #include "loglevel.h"
 
 #include <QIODevice>
+#include <QObject>
 #include <QString>
 #include <QTextStream>
 
@@ -58,7 +59,19 @@ class Logger {
     Log& operator<<(QTextStreamFunction t);
     Log& operator<<(void* t);
 
+    // Q_ENUM
+    template <typename T>
+    typename std::enable_if<QtPrivate::IsQEnumHelper<T>::Value, Log&>::type
+    operator<<(T t) {
+      const QMetaObject* meta = qt_getEnumMetaObject(t);
+      const char* name = qt_getEnumName(t);
+      addMetaEnum(typename QFlags<T>::Int(t), meta, name);
+      return *this;
+    }
+
    private:
+    void addMetaEnum(quint64 value, const QMetaObject* meta, const char* name);
+
     Logger* m_logger;
     LogLevel m_logLevel;
 

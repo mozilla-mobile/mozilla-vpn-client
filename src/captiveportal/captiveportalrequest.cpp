@@ -25,13 +25,10 @@ CaptivePortalRequest::~CaptivePortalRequest() {
 void CaptivePortalRequest::run() {
   SettingsHolder* settings = SettingsHolder::instance();
 
-  QStringList ipv4Addresses;
-  if (settings->hasCaptivePortalIpv4Addresses()) {
-    ipv4Addresses = settings->captivePortalIpv4Addresses();
-  }
+  QStringList ipv4Addresses = settings->captivePortalIpv4Addresses();
 
   QStringList ipv6Addresses;
-  if (settings->ipv6Enabled() && settings->hasCaptivePortalIpv6Addresses()) {
+  if (settings->ipv6Enabled()) {
     ipv6Addresses = settings->captivePortalIpv6Addresses();
   }
 

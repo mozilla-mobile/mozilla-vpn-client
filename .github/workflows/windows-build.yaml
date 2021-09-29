@@ -57,7 +57,7 @@ jobs:
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          ./scripts/windows_compile.bat
+          ./scripts/windows_compile.bat -w
 
       - name: Create the zip package for signature
         shell: bash

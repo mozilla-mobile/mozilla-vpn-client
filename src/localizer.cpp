@@ -51,9 +51,7 @@ Localizer::Localizer() {
   s_instance = this;
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (settingsHolder->hasLanguageCode()) {
-    m_code = settingsHolder->languageCode();
-  }
+  m_code = settingsHolder->languageCode();
 
   initialize();
 }
@@ -72,20 +70,17 @@ void Localizer::initialize() {
   // If this is the first time we are here, we need to check if the current
   // language matches with the system one.
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (!settingsHolder->hasSystemLanguageCodeMigrated() ||
-      !settingsHolder->systemLanguageCodeMigrated()) {
+  if (!settingsHolder->systemLanguageCodeMigrated()) {
     settingsHolder->setSystemLanguageCodeMigrated(true);
 
-    if (settingsHolder->hasLanguageCode() &&
-        settingsHolder->languageCode() == systemCode) {
+    if (settingsHolder->languageCode() == systemCode) {
       settingsHolder->setPreviousLanguageCode(settingsHolder->languageCode());
       settingsHolder->setLanguageCode("");
     }
   }
 
   // We always need a previous code.
-  if (!settingsHolder->hasPreviousLanguageCode() ||
-      settingsHolder->previousLanguageCode().isEmpty()) {
+  if (settingsHolder->previousLanguageCode().isEmpty()) {
     settingsHolder->setPreviousLanguageCode(systemCode);
   }
 
@@ -261,6 +256,10 @@ bool Localizer::languageSort(const Localizer::Language& a,
 
 QString Localizer::previousCode() const {
   return SettingsHolder::instance()->previousLanguageCode();
+}
+
+QString Localizer::localizedCityName(const QString& code, const QString& city) {
+  return ServerI18N::translateCityName(code, city);
 }
 
 // static
