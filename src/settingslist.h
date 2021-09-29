@@ -426,12 +426,12 @@ SETTING_BOOL(nativeWindowsDataMigrated,     // getter
 )
 #endif
 
-#ifdef MVN_IOS
+#ifdef MVPN_IOS
 SETTING_BOOL(nativeIOSDataMigrated,     // getter
              setNativeIOSDataMigrated,  // setter
              hasNativeIOSDataMigrated,  // has
              "nativeIOSDataMigrated",   // key
-             false                      // default value
+             false,                     // default value
              false                      // remove when reset
 )
 
