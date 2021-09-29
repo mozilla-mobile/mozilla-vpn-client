@@ -23,6 +23,9 @@ TextField {
     background: VPNInputBackground {
         id: textFieldBackground
     }
+    font.pixelSize: Theme.fontSizeSmall
+    font.family: Theme.fontInterFamily
+    padding: Theme.windowMargin * .75
     color: Color.input.default.text
     echoMode: charactersMasked ? TextInput.Password : TextInput.Normal
     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData

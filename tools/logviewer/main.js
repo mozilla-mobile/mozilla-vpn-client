@@ -6,6 +6,9 @@ const LOG = 0;
 const SEPARATOR = 1;
 const SETTINGS_OR_DEVICE = 2;
 
+const TYPE_VPN_STATE = 1;
+const TYPE_CONTROLLER_STATE = 2;
+
 const Logger = {
   _modules: [],
   _components: [],
@@ -104,6 +107,7 @@ const Logger = {
     const entry = {
       type: 'log',
       date: this.parseDate(dateString),
+      detectedType: this.detectType(modules, log),
       modules,
       component,
       log: [log],
@@ -124,6 +128,18 @@ const Logger = {
     if (!this._components.includes(component)) {
       this._components.push(component);
     }
+  },
+
+  detectType(modules, log) {
+    if (/Set state:/.exec(log) && modules.includes('main')) {
+      return TYPE_VPN_STATE;
+    }
+
+    if (/Setting state:/.exec(log) && modules.includes('controller')) {
+      return TYPE_CONTROLLER_STATE;
+    }
+
+    return null;
   },
 
   settingsOrDeviceLine(line) {
@@ -211,14 +227,17 @@ const Logger = {
         parseInt(document.getElementById('dateMaxRange').value, 10) * diff /
         100;
     if (minValue > maxValue) {
-      document.getElementById('dateRange').textContent = `Error`;
+      document.getElementById('dateMinRangeLabel').textContent = `Error`;
+      document.getElementById('dateMaxRangeLabel').textContent = `Error`;
       return;
     }
 
     const minDateValue = new Date((minValue + min));
     const maxDateValue = new Date((maxValue + min));
-    document.getElementById('dateRange').textContent =
-        `From ${minDateValue.toISOString()} to ${maxDateValue.toISOString()}`;
+    document.getElementById('dateMinRangeLabel').textContent =
+        minDateValue.toISOString();
+    document.getElementById('dateMaxRangeLabel').textContent =
+        maxDateValue.toISOString();
 
     this._minDateValue = minDateValue.getTime();
     this._maxDateValue = maxDateValue.getTime();
@@ -240,18 +259,26 @@ const Logger = {
 
     const ul = document.getElementById('moduleList');
     for (let module of this._modules.sort()) {
-      const li = document.createElement('li');
+      const div = document.createElement('div');
+      div.setAttribute('class', 'form-check form-switch');
+
       const checkbox = document.createElement('input');
+      checkbox.setAttribute('class', 'form-check-input');
       checkbox.setAttribute('type', 'checkbox');
       if (modules === null || modules.includes(module)) {
         checkbox.setAttribute('checked', 'checked');
       }
       checkbox.setAttribute('id', `module-${module}`);
       checkbox.onchange = () => this.populateLogTable();
-      li.appendChild(checkbox);
-      li.appendChild(document.createTextNode(
-          `${module} (${this.countLogInModule(module)})`));
-      ul.appendChild(li);
+      div.appendChild(checkbox);
+
+      const label = document.createElement('label');
+      label.setAttribute('class', 'form-check-label');
+      label.setAttribute('for', `module-${module}`);
+      label.textContent = `${module} (${this.countLogInModule(module)})`;
+      div.appendChild(label);
+
+      ul.appendChild(div);
     }
   },
 
@@ -262,18 +289,27 @@ const Logger = {
 
     const ul = document.getElementById('componentList');
     for (let component of this._components.sort()) {
-      const li = document.createElement('li');
+      const div = document.createElement('div');
+      div.setAttribute('class', 'form-check form-switch');
+
       const checkbox = document.createElement('input');
+      checkbox.setAttribute('class', 'form-check-input');
       checkbox.setAttribute('type', 'checkbox');
       if (components === null || components.includes(component)) {
         checkbox.setAttribute('checked', 'checked');
       }
       checkbox.setAttribute('id', `component-${component}`);
       checkbox.onchange = () => this.populateLogTable();
-      li.appendChild(checkbox);
-      li.appendChild(document.createTextNode(
-          `${component} (${this.countLogInComponent(component)})`));
-      ul.appendChild(li);
+      div.appendChild(checkbox);
+
+      const label = document.createElement('label');
+      label.setAttribute('class', 'form-check-label');
+      label.setAttribute('for', `component-${component}`);
+      label.textContent =
+          `${component} (${this.countLogInComponent(component)})`;
+      div.appendChild(label);
+
+      ul.appendChild(div);
     }
   },
 
@@ -443,6 +479,18 @@ const Logger = {
 
           const tr = document.createElement('tr');
           tr.setAttribute('data-id', id);
+
+          switch (entry.detectedType) {
+            case TYPE_VPN_STATE:
+              tr.setAttribute('class', 'table-primary');
+              break
+
+                  case TYPE_CONTROLLER_STATE:
+                      tr.setAttribute('class', 'table-success');
+              break
+
+                  default: break
+          }
 
           if ((context in this._contextID) && this._contextID[context] == id)
             tr.classList.add('table-active');
