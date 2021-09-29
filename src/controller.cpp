@@ -179,13 +179,14 @@ void Controller::activateInternal() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  QList<Server> servers = vpn->exitServers();
-  Q_ASSERT(!servers.isEmpty());
+  Server exitServer = Server::weightChooser(vpn->exitServers());
+  if (!exitServer.initialized()) {
+    logger.error() << "Empty exit server list in state" << m_state;
+    backendFailure();
+    return;
+  }
 
-  Server server = Server::weightChooser(servers);
-  Q_ASSERT(server.initialized());
-
-  vpn->setServerPublicKey(server.publicKey());
+  vpn->setServerPublicKey(exitServer.publicKey());
 
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
 
@@ -198,16 +199,20 @@ void Controller::activateInternal() {
 
   // Multihop connections provide a list of servers, starting with the exit
   // node as the first element, and the entry node as the final entry.
-  QList<Server> serverList = {server};
+  QList<Server> serverList = {exitServer};
   if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
-    Server hop = Server::weightChooser(vpn->entryServers());
-    Q_ASSERT(hop.initialized());
-    serverList.append(hop);
+    Server entryServer = Server::weightChooser(vpn->entryServers());
+    if (!entryServer.initialized()) {
+      logger.error() << "Empty entry server list in state" << m_state;
+      backendFailure();
+      return;
+    }
+    serverList.append(entryServer);
   }
 
   // Use the Gateway as DNS Server
   // If the user as entered a valid DN, use that instead
-  QHostAddress dns = QHostAddress(DNSHelper::getDNS(server.ipv4Gateway()));
+  QHostAddress dns = QHostAddress(DNSHelper::getDNS(exitServer.ipv4Gateway()));
   logger.debug() << "DNS Set" << dns.toString();
 
   Q_ASSERT(m_impl);
@@ -507,7 +512,7 @@ void Controller::backendFailure() {
 
   m_nextStep = BackendFailure;
 
-  if (m_state == StateOn) {
+  if ((m_state == StateOn) || (m_state == StateSwitching)) {
     deactivate();
     return;
   }
