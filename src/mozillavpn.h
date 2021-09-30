@@ -307,6 +307,14 @@ class MozillaVPN final : public QObject {
 
   void completeActivation();
 
+  enum RemovalDeviceOption {
+    DeviceNotFound,
+    DeviceStillValid,
+    DeviceRemoved,
+  };
+
+  RemovalDeviceOption maybeRemoveCurrentDevice();
+
   void controllerStateChanged();
 
   void maybeRegenerateDeviceKey();

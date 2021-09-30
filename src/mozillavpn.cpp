@@ -596,8 +596,36 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   completeActivation();
 }
 
+MozillaVPN::RemovalDeviceOption MozillaVPN::maybeRemoveCurrentDevice() {
+  logger.debug() << "Maybe remove current device";
+
+  const Device* currentDevice = m_private->m_deviceModel.deviceFromUniqueId();
+  if (!currentDevice) {
+    logger.debug() << "No removal needed because the device doesn't exist yet";
+    return DeviceNotFound;
+  }
+
+  if (currentDevice->publicKey() == m_private->m_keys.publicKey() &&
+      !m_private->m_keys.privateKey().isEmpty()) {
+    logger.debug()
+        << "No removal needed because the private key is still fine.";
+    return DeviceStillValid;
+  }
+
+  logger.debug() << "Removal needed";
+  scheduleTask(new TaskRemoveDevice(currentDevice->publicKey()));
+  return DeviceRemoved;
+}
+
 void MozillaVPN::completeActivation() {
   int deviceCount = m_private->m_deviceModel.activeDevices();
+
+  // If we already have a device with the same name, let's remove it.
+  RemovalDeviceOption option = maybeRemoveCurrentDevice();
+  if (option == DeviceRemoved) {
+    --deviceCount;
+  }
+
   if (deviceCount >= m_private->m_user.maxDevices()) {
     maybeStateMain();
     return;
