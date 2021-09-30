@@ -8,15 +8,13 @@ package org.mozilla.firefox.vpn.qt
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
-import android.os.Build
 import android.provider.Settings
 
 // Companion for AndroidUtils.cpp
 object VPNUtils {
     @SuppressLint("NewApi")
     @JvmStatic
-    fun getDeviceID(ctx: Context):String{
-        return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.ANDROID_ID);
+    fun getDeviceID(ctx: Context): String {
+        return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.ANDROID_ID)
     }
 }
