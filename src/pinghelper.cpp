@@ -219,7 +219,9 @@ void PingHelper::handlePingError() {
   TimerSingleShot::create(this, 600000, [&] {  // 10 Minutes
     logger.debug() << "Removing ping error state";
     s_has_critical_ping_error = false;
-    stop();
-    start(m_gateway, m_source);
+    if (m_pingSender) {
+      stop();
+      start(m_gateway, m_source);
+    }
   });
 }
