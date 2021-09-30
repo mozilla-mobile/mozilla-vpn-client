@@ -65,32 +65,12 @@ Window {
             minimumWidth = Theme.desktopAppWidth
         }
 
-        Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled, {
+        Glean.initialize('MozillaVPN-debug', VPNSettings.gleanEnabled, {
           appBuild: `MozillaVPN/${VPN.versionString}`,
           appDisplayVersion: VPN.versionString,
-          httpClient: {
-                  post(url, body, headers) {
-                      if (typeof(VPNGleanTest) !== "undefined") {
-                          VPNGleanTest.requestDone(url, body);
-                      }
-                      if (VPN.stagingMode) {
-                          return Promise.reject('Glean disabled in staging mode');
-                      }
-
-                      return new Promise((resolve, reject) => {
-                          const xhr = new XMLHttpRequest();
-                          xhr.open("POST", url);
-
-                          for (const header in headers) {
-                            xhr.setRequestHeader(header, headers[header]);
-                          }
-                          xhr.onloadend = () => {
-                            resolve({status: xhr.status, result: 2 /* UploadResultStatus.Success */ });
-                          }
-                          xhr.send(body);
-
-                      });
-                  }
+          debug: {
+              logPings: true,
+              debugViewTag: 'MozillaVPN',
           }
         });
     }
