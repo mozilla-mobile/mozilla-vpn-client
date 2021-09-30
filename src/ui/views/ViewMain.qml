@@ -81,7 +81,42 @@ VPNFlickable {
             }
         }
 
-        VPNInputMessages {
+        VPNSearchBar {
+            id: testSearch
+            enabled: true
+            height: Theme.rowHeight
+            Layout.fillWidth: true
+            onTextChanged: () => {
+            }
+
+            VPNInputMessages {
+                y: 50
+                messages: [
+                    {
+                        type: "error",
+                        message: "Please help",
+                        fontColor: "red",
+                        iconSrc: "../../resources/warning.svg",
+                        visible: testSearch.text.length > 0
+                    },
+                    {
+                        type: "warning",
+                        message: "Ignore me",
+                        fontColor: "orange",
+                        iconSrc: "../../resources/warning-orange.svg",
+                        visible: testSearch.text.length > 1
+                    },
+                    {
+                        type: "info",
+                        message: "Only informational",
+                        fontColor: "blue",
+                        iconSrc: "../../resources/connection-info-dark.svg",
+                        visible: testSearch.text.length > 2
+                    }
+                ]
+            }
+
+            z: 1
         }
 
         VPNAlerts {
