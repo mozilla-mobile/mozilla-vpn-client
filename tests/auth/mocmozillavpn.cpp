@@ -52,9 +52,11 @@ void MozillaVPN::deviceAdded(const QString&, const QString&, const QString&) {}
 
 void MozillaVPN::deviceRemoved(const QString&) {}
 
-bool MozillaVPN::setServerList(const QByteArray&) { return true; }
+bool MozillaVPN::setServerList(const QByteArray&, const QByteArray&) {
+  return true;
+}
 
-void MozillaVPN::serversFetched(const QByteArray&) {}
+void MozillaVPN::serversFetched(const QByteArray&, const QByteArray&) {}
 
 void MozillaVPN::removeDeviceFromPublicKey(const QString&) {}
 
