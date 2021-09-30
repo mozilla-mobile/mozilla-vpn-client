@@ -53,6 +53,6 @@ try:
                    "-f", "javascript", "-o", "glean/telemetry", "--option", "platform=qt",
                    "--option", "version=0.15"])
 except:
-  print("glean_parser failed. Is it installed? Try with:\n\tpip3 install glean_parser");
+  print("glean_parser failed. Is it installed? Try with:\n\tpip3 install -r requirements.txt --user");
   exit(1)
 

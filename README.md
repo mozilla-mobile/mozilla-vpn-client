@@ -39,11 +39,9 @@ following dependencies:
 - wireguard-tools >=1.0.20200513
 - resolvconf >= 1.82
 - golang >= 1.13
+- python >= 3.6
 
-Python3 (pip) depedencies:
-
-- glean_parser==3.5
-- pyyaml
+For Python depedencies see requirements.txt
 
 #### QT5
 
@@ -152,8 +150,7 @@ This step needs to be updated each time XCode updates.
 ```
 4. Install python3 dependencies:
 ```
-  $ pip3 install 'glean_parser==3.5'
-  $ pip3 install pyyaml
+  $ pip3 install -r requirements.txt --user
 ```
 5. Copy `xcode.xconfig.template` to `xcode.xconfig`
 ```
@@ -212,8 +209,7 @@ Once Qt has been installed, the IOS procedure is similar to the macOS one:
 
 3. Install python3 dependencies:
 ```
-  $ pip3 install 'glean_parser==3.5'
-  $ pip3 install pyyaml
+  $ pip3 install -r requirements.txt --user
 ```
 
 4. Copy `xcode.xconfig.template` to `xcode.xconfig`
@@ -259,8 +255,7 @@ Add the Adjust SDK token with `-a | --adjust <adjust_token>`
 
 5. Install python3 dependencies:
 ```
-  $ pip3 install 'glean_parser==3.5'
-  $ pip3 install pyyaml
+  $ pip3 install -r requirements.txt --user
 ```
 
 6. Build the apk
@@ -286,7 +281,7 @@ The dependencies are:
 2. nasm: https://www.nasm.us/
 3. python3: https://www.python.org/downloads/windows/
 4. visual studio 2019: https://visualstudio.microsoft.com/vs/
-5. Install python3 dependencies (pip install "glean_parser==3.5" pyyaml)
+5. Install python3 dependencies (pip3 install -r requirements.txt --user)
 
 Openssl can be obtained from here: https://www.openssl.org/source/
 Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz
