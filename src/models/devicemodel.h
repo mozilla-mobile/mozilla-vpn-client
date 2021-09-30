@@ -49,6 +49,8 @@ class DeviceModel final : public QAbstractListModel {
 
   const Device* deviceFromPublicKey(const QString& publicKey) const;
 
+  const Device* deviceFromUniqueId() const;
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
