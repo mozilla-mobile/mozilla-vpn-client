@@ -7,6 +7,7 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
+import "../components/forms"
 import "../themes/themes.js" as Theme
 
 VPNFlickable {
@@ -78,6 +79,9 @@ VPNFlickable {
                 color: "#000000"
                 Layout.alignment: Qt.AlignVCenter
             }
+        }
+
+        VPNInputMessages {
         }
 
         VPNAlerts {

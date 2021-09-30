@@ -457,6 +457,7 @@
         <file>ui/components/VPNAvatar.qml</file>
         <file>ui/themes/colors.js</file>
         <file>ui/components/forms/VPNInputStates.qml</file>
+        <file>ui/components/forms/VPNInputMessages.qml</file>
         <file>ui/components/VPNSemiMonoLabel.qml</file>
         <file>ui/states/StateAuthenticationInApp.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationInApp.qml</file>
