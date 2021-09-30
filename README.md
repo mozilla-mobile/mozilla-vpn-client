@@ -301,6 +301,11 @@ When running MozillaVPN, go to http://localhost:8766 to view the inspector.
 
 From the inspector, type `help` to see the list of available commands.
 
+## Glean
+
+When the client is built in debug mode, ping contents will be logged to the client logs and will also be sent to the
+[glean debug viewer](https://debug-ping-preview.firebaseapp.com/pings/MozillaVPN) where they are retained for 3 weeks.
+
 ## Bug report
 
 Please file bugs here: https://github.com/mozilla-mobile/mozilla-vpn-client/issues
