@@ -13,10 +13,6 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
-#ifdef MVPN_DEBUG
-#  include "gleantest.h"
-#endif
-
 #include <functional>
 
 #include <QBuffer>
@@ -645,23 +641,6 @@ static QList<WebSocketCommand> s_commands{
 
           return QJsonObject();
         }},
-
-#ifdef MVPN_DEBUG
-    WebSocketCommand{"last_glean_request", "Retrieve the last glean request", 0,
-                     [](const QList<QByteArray>&) {
-                       GleanTest* gt = GleanTest::instance();
-
-                       QJsonObject glean;
-                       glean["url"] = QString(gt->lastUrl());
-                       glean["data"] = QString(gt->lastData());
-
-                       gt->reset();
-
-                       QJsonObject obj;
-                       obj["value"] = glean;
-                       return obj;
-                     }},
-#endif
 
     WebSocketCommand{"devices", "Retrieve the list of devices", 0,
                      [](const QList<QByteArray>&) {
