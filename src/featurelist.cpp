@@ -104,14 +104,38 @@ QObject* FeatureList::get(const QString& feature) {
 }
 
 void FeatureList::updateFeatureList(const QByteArray& data) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  bool changed = false;
+  QStringList devModeFeatureFlags = settingsHolder->devModeFeatureFlags();
+
   QJsonObject json = QJsonDocument::fromJson(data).object();
-  QJsonValue unauthSupportEnabled = json["unauthSupportEnabled"];
-  if (unauthSupportEnabled.isBool()) {
-    logger.debug() << "Setting unauth support enablet to: "
-                   << unauthSupportEnabled.toBool();
-    FeatureUnauthSupport::instance()->setIsSupported(
-        unauthSupportEnabled.toBool());
-  } else {
-    logger.error() << "Error in parsing unauth support response";
+  for (const QString& key : json.keys()) {
+    QJsonValue value = json.value(key);
+    if (!value.isBool()) {
+      logger.error() << "Error in parsing feature enabling:" << key;
+      continue;
+    }
+
+    const Feature* feature = Feature::getOrNull(key);
+    if (!feature) {
+      logger.error() << "No feature named" << key;
+      continue;
+    }
+
+    if (value.toBool() == false) {
+      if (devModeFeatureFlags.contains(key)) {
+        devModeFeatureFlags.removeAll(key);
+        changed = true;
+      }
+    } else if (!devModeFeatureFlags.contains(key)) {
+      devModeFeatureFlags.append(key);
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    settingsHolder->setDevModeFeatureFlags(devModeFeatureFlags);
   }
 }

@@ -100,6 +100,7 @@ HEADERS += \
     testbigintipv6addr.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
+    testfeature.h \
     testlocalizer.h \
     testlogger.h \
     testipaddress.h \
@@ -184,6 +185,7 @@ SOURCES += \
     testbigintipv6addr.cpp \
     testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
+    testfeature.cpp \
     testlocalizer.cpp \
     testlogger.cpp \
     testipaddress.cpp \
