@@ -8,8 +8,8 @@ import QtQuick.Controls 2.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-import org.mozilla.Glean 0.15
-import telemetry 0.15
+import org.mozilla.Glean 0.21
+import telemetry 0.21
 
 
 VPNStackView {
