@@ -7,6 +7,7 @@
 #include "constants.h"
 
 #import "Adjust.h"
+#import "ADJAdjustFactory.h"
 
 namespace {
 
@@ -14,8 +15,7 @@ Logger logger(LOG_IOS, "IOSAdjustHelper");
 
 }  // namespace
 
-void IOSAdjustHelper::initialize() {
-
+void IOSAdjustHelper::initialize(quint16 proxyPort) {
   NSString *adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
 
   if(adjustToken.length) {
@@ -23,6 +23,9 @@ void IOSAdjustHelper::initialize() {
     ADJConfig *adjustConfig = [ADJConfig configWithAppToken:adjustToken
                                                 environment:environment];
     [adjustConfig setLogLevel:ADJLogLevelDebug];
+    NSString* proxyAddress = [NSString stringWithFormat:@"http://localhost:%d", proxyPort];
+    [ADJAdjustFactory setBaseUrl:proxyAddress];
+    [ADJAdjustFactory setGdprUrl:proxyAddress];
     [Adjust appDidLaunch:adjustConfig];
   }
 }
