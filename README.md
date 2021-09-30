@@ -306,6 +306,8 @@ From the inspector, type `help` to see the list of available commands.
 When the client is built in debug mode, ping contents will be logged to the client logs and will also be sent to the
 [glean debug viewer](https://debug-ping-preview.firebaseapp.com/pings/MozillaVPN) where they are retained for 3 weeks.
 
+More info on debug view in [glean docs](https://mozilla.github.io/glean/book/user/debugging/index.html).
+
 ## Bug report
 
 Please file bugs here: https://github.com/mozilla-mobile/mozilla-vpn-client/issues
