@@ -55,11 +55,17 @@ QString Device::currentDeviceReport() {
   out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
   out << "APP Version -> " << APP_VERSION << Qt::endl;
   out << "Build ID -> " << BUILD_ID << Qt::endl;
+  out << "Device ID -> " << uniqueDeviceId();
 
   return buffer;
 }
 
-QString Device::uniqueDeviceId() { return QSysInfo::machineUniqueId(); }
+QString Device::uniqueDeviceId() {
+#if MVPN_ANDROID
+  return AndroidUtils::DeviceId();
+#endif
+  return QSysInfo::machineUniqueId();
+}
 
 Device::Device() { MVPN_COUNT_CTOR(Device); }
 
