@@ -1,0 +1,339 @@
+diff --git a/com/adjust/sdk/AdjustFactory.java b/com/adjust/sdk/AdjustFactory.java
+index 0895ff8c..b78a9034 100644
+--- a/com/adjust/sdk/AdjustFactory.java
++++ b/com/adjust/sdk/AdjustFactory.java
+@@ -7,7 +7,7 @@ import com.adjust.sdk.network.UtilNetworking;
+ 
+ import java.net.URL;
+ 
+-import javax.net.ssl.HttpsURLConnection;
++import java.net.HttpURLConnection;
+ 
+ public class AdjustFactory {
+     private static IPackageHandler packageHandler = null;
+@@ -28,14 +28,14 @@ public class AdjustFactory {
+     private static String gdprUrl = null;
+     private static String subscriptionUrl = null;
+     private static UtilNetworking.IConnectionOptions connectionOptions = null;
+-    private static UtilNetworking.IHttpsURLConnectionProvider httpsURLConnectionProvider = null;
++    private static UtilNetworking.IHttpURLConnectionProvider httpURLConnectionProvider = null;
+     private static boolean tryInstallReferrer = true;
+ 
+     public static class URLGetConnection {
+-        HttpsURLConnection httpsURLConnection;
++        HttpURLConnection httpURLConnection;
+         URL url;
+-        URLGetConnection(HttpsURLConnection httpsURLConnection, URL url) {
+-            this.httpsURLConnection = httpsURLConnection;
++        URLGetConnection(HttpURLConnection httpURLConnection, URL url) {
++            this.httpURLConnection = httpURLConnection;
+             this.url = url;
+         }
+     }
+@@ -181,11 +181,11 @@ public class AdjustFactory {
+         return connectionOptions;
+     }
+ 
+-    public static UtilNetworking.IHttpsURLConnectionProvider getHttpsURLConnectionProvider() {
+-        if (httpsURLConnectionProvider == null) {
+-            return UtilNetworking.createDefaultHttpsURLConnectionProvider();
++    public static UtilNetworking.IHttpURLConnectionProvider getHttpURLConnectionProvider() {
++        if (httpURLConnectionProvider == null) {
++            return UtilNetworking.createDefaultHttpURLConnectionProvider();
+         }
+-        return httpsURLConnectionProvider;
++        return httpURLConnectionProvider;
+     }
+ 
+     public static boolean getTryInstallReferrer() {
+@@ -252,10 +252,10 @@ public class AdjustFactory {
+         AdjustFactory.connectionOptions = connectionOptions;
+     }
+ 
+-    public static void setHttpsURLConnectionProvider(
+-            UtilNetworking.IHttpsURLConnectionProvider httpsURLConnectionProvider)
++    public static void setHttpURLConnectionProvider(
++            UtilNetworking.IHttpURLConnectionProvider httpURLConnectionProvider)
+     {
+-        AdjustFactory.httpsURLConnectionProvider = httpsURLConnectionProvider;
++        AdjustFactory.httpURLConnectionProvider = httpURLConnectionProvider;
+     }
+ 
+     public static void setTryInstallReferrer(boolean tryInstallReferrer) {
+@@ -314,7 +314,7 @@ public class AdjustFactory {
+         gdprUrl = Constants.GDPR_URL;
+         subscriptionUrl = Constants.SUBSCRIPTION_URL;
+         connectionOptions = null;
+-        httpsURLConnectionProvider = null;
++        httpURLConnectionProvider = null;
+         tryInstallReferrer = true;
+     }
+ }
+diff --git a/com/adjust/sdk/AdjustLinkResolution.java b/com/adjust/sdk/AdjustLinkResolution.java
+index 668fa208..b22ae305 100644
+--- a/com/adjust/sdk/AdjustLinkResolution.java
++++ b/com/adjust/sdk/AdjustLinkResolution.java
+@@ -13,7 +13,7 @@ public final class AdjustLinkResolution {
+         void resolvedLinkCallback(Uri resolvedLink);
+     }
+ 
+-    // https://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
++    // http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
+     private static volatile ExecutorService executor;
+ 
+     private static final int maxRecursions = 10;
+@@ -105,11 +105,11 @@ public final class AdjustLinkResolution {
+                                           final int recursionNumber,
+                                           final AdjustLinkResolutionCallback adjustLinkResolutionCallback)
+     {
+-        final URL httpsUrl = convertToHttps(urlToRequest);
++        final URL httpUrl = convertToHttp(urlToRequest);
+         URL resolvedURL = null;
+         HttpURLConnection ucon = null;
+         try {
+-            ucon = (HttpURLConnection) httpsUrl.openConnection();
++            ucon = (HttpURLConnection) httpUrl.openConnection();
+             ucon.setInstanceFollowRedirects(false);
+ 
+             ucon.connect();
+@@ -126,7 +126,7 @@ public final class AdjustLinkResolution {
+             }
+ 
+             resolveLink(resolvedURL,
+-                    httpsUrl,
++                    httpUrl,
+                     recursionNumber + 1,
+                     adjustLinkResolutionCallback);
+         }
+@@ -154,7 +154,7 @@ public final class AdjustLinkResolution {
+         return false;
+     }
+ 
+-    private static URL convertToHttps(final URL urlToConvert) {
++    private static URL convertToHttp(final URL urlToConvert) {
+         if (urlToConvert == null) {
+             return urlToConvert;
+         }
+@@ -171,7 +171,7 @@ public final class AdjustLinkResolution {
+ 
+         URL convertedUrl = urlToConvert;
+         try {
+-            convertedUrl = new URL("https:" + stringUrlToConvert.substring(5));
++            convertedUrl = new URL("http:" + stringUrlToConvert.substring(5));
+         } catch (final MalformedURLException ignored) { }
+ 
+         return convertedUrl;
+diff --git a/com/adjust/sdk/Constants.java b/com/adjust/sdk/Constants.java
+index c8f1a0ec..79d3651d 100644
+--- a/com/adjust/sdk/Constants.java
++++ b/com/adjust/sdk/Constants.java
+@@ -23,11 +23,11 @@ public interface Constants {
+     int SOCKET_TIMEOUT = Constants.ONE_MINUTE;
+     int MAX_WAIT_INTERVAL = Constants.ONE_MINUTE;
+ 
+-    String BASE_URL = "https://app.adjust.com";
+-    String GDPR_URL = "https://gdpr.adjust.com";
+-    String SUBSCRIPTION_URL = "https://subscription.adjust.com";
++    String BASE_URL = "http://app.adjust.com";
++    String GDPR_URL = "http://gdpr.adjust.com";
++    String SUBSCRIPTION_URL = "http://subscription.adjust.com";
+ 
+-    String SCHEME = "https";
++    String SCHEME = "http";
+     String AUTHORITY = "app.adjust.com";
+     String CLIENT_SDK = "android4.28.5";
+     String LOGTAG = "Adjust";
+diff --git a/com/adjust/sdk/network/ActivityPackageSender.java b/com/adjust/sdk/network/ActivityPackageSender.java
+index 297c9eaa..a4597fc8 100644
+--- a/com/adjust/sdk/network/ActivityPackageSender.java
++++ b/com/adjust/sdk/network/ActivityPackageSender.java
+@@ -13,7 +13,7 @@ import com.adjust.sdk.TrackingState;
+ import com.adjust.sdk.Util;
+ import com.adjust.sdk.scheduler.SingleThreadCachedScheduler;
+ import com.adjust.sdk.scheduler.ThreadExecutor;
+-import com.adjust.sdk.network.UtilNetworking.IHttpsURLConnectionProvider;
++import com.adjust.sdk.network.UtilNetworking.IHttpURLConnectionProvider;
+ import com.adjust.sdk.network.UtilNetworking.IConnectionOptions;
+ 
+ import org.json.JSONException;
+@@ -33,7 +33,7 @@ import java.net.URLEncoder;
+ import java.util.HashMap;
+ import java.util.Map;
+ 
+-import javax.net.ssl.HttpsURLConnection;
++import java.net.HttpURLConnection;
+ import javax.net.ssl.SSLHandshakeException;
+ 
+ public class ActivityPackageSender implements IActivityPackageSender {
+@@ -45,7 +45,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
+     private ILogger logger;
+     private ThreadExecutor executor;
+     private UrlStrategy urlStrategy;
+-    private IHttpsURLConnectionProvider httpsURLConnectionProvider;
++    private IHttpURLConnectionProvider httpURLConnectionProvider;
+     private IConnectionOptions connectionOptions;
+ 
+     public ActivityPackageSender(final String adjustUrlStrategy,
+@@ -69,7 +69,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
+                 AdjustFactory.getSubscriptionUrl(),
+                 adjustUrlStrategy);
+ 
+-        httpsURLConnectionProvider = AdjustFactory.getHttpsURLConnectionProvider();
++        httpURLConnectionProvider = AdjustFactory.getHttpURLConnectionProvider();
+ 
+         connectionOptions = AdjustFactory.getConnectionOptions();
+     }
+@@ -152,8 +152,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
+             }
+ 
+             final URL url = new URL(urlString);
+-            final HttpsURLConnection connection =
+-                    httpsURLConnectionProvider.generateHttpsURLConnection(url);
++            final HttpURLConnection connection =
++                    httpURLConnectionProvider.generateHttpURLConnection(url);
+ 
+             // get and apply connection options (default or for tests)
+             connectionOptions.applyConnectionOptions(connection, activityPackage.getClientSdk());
+@@ -179,7 +179,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
+                     responseData.jsonResponse != null
+                             && responseData.retryIn == null
+                             && responseCode != null
+-                            && responseCode.intValue() == HttpsURLConnection.HTTP_OK;
++                            && responseCode.intValue() == HttpURLConnection.HTTP_OK;
+             // it is only processed by the server if it contains
+             //  a JSON response *AND* does not contain a retry_in
+             responseData.willRetry =
+@@ -325,7 +325,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
+         }
+     }
+ 
+-    private DataOutputStream configConnectionForGET(final HttpsURLConnection connection)
++    private DataOutputStream configConnectionForGET(final HttpURLConnection connection)
+             throws ProtocolException
+     {
+         // set default GET configuration options
+@@ -334,7 +334,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
+         return null;
+     }
+ 
+-    private DataOutputStream configConnectionForPOST(final HttpsURLConnection connection,
++    private DataOutputStream configConnectionForPOST(final HttpURLConnection connection,
+                                                      final Map<String, String> activityPackageParameters,
+                                                      final Map<String, String> sendingParameters)
+             throws ProtocolException,
+@@ -410,7 +410,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
+         }
+     }
+ 
+-    Integer readConnectionResponse(final HttpsURLConnection connection,
++    Integer readConnectionResponse(final HttpURLConnection connection,
+                                 final ResponseData responseData)
+     {
+         final StringBuilder responseStringBuilder = new StringBuilder();
+@@ -469,7 +469,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
+         }
+ 
+         // log response message
+-        if (responseCode != null && responseCode.intValue() == HttpsURLConnection.HTTP_OK) {
++        if (responseCode != null && responseCode.intValue() == HttpURLConnection.HTTP_OK) {
+             logger.info("Response message: %s", responseMessage);
+         } else {
+             logger.error("Response message: %s", responseMessage);
+diff --git a/com/adjust/sdk/network/UrlStrategy.java b/com/adjust/sdk/network/UrlStrategy.java
+index 19f6be46..b1def020 100644
+--- a/com/adjust/sdk/network/UrlStrategy.java
++++ b/com/adjust/sdk/network/UrlStrategy.java
+@@ -14,25 +14,25 @@ import static com.adjust.sdk.AdjustConfig.URL_STRATEGY_INDIA;
+ import static com.adjust.sdk.AdjustConfig.DATA_RESIDENCY_EU;
+ 
+ public class UrlStrategy {
+-    private static final String BASE_URL_INDIA = "https://app.adjust.net.in";
+-    private static final String GDPR_URL_INDIA = "https://gdpr.adjust.net.in";
+-    private static final String SUBSCRIPTION_URL_INDIA = "https://subscription.adjust.net.in";
++    private static final String BASE_URL_INDIA = "http://app.adjust.net.in";
++    private static final String GDPR_URL_INDIA = "http://gdpr.adjust.net.in";
++    private static final String SUBSCRIPTION_URL_INDIA = "http://subscription.adjust.net.in";
+ 
+-    private static final String BASE_URL_CHINA = "https://app.adjust.world";
+-    private static final String GDPR_URL_CHINA = "https://gdpr.adjust.world";
+-    private static final String SUBSCRIPTION_URL_CHINA = "https://subscription.adjust.world";
++    private static final String BASE_URL_CHINA = "http://app.adjust.world";
++    private static final String GDPR_URL_CHINA = "http://gdpr.adjust.world";
++    private static final String SUBSCRIPTION_URL_CHINA = "http://subscription.adjust.world";
+ 
+-    private static final String BASE_URL_EU = "https://app.eu.adjust.com";
+-    private static final String GDPR_URL_EU = "https://gdpr.eu.adjust.com";
+-    private static final String SUBSCRIPTION_URL_EU = "https://subscription.eu.adjust.com";
++    private static final String BASE_URL_EU = "http://app.eu.adjust.com";
++    private static final String GDPR_URL_EU = "http://gdpr.eu.adjust.com";
++    private static final String SUBSCRIPTION_URL_EU = "http://subscription.eu.adjust.com";
+ 
+-    private static final String BASE_URL_TR = "https://app.tr.adjust.com";
+-    private static final String GDPR_URL_TR = "https://gdpr.tr.adjust.com";
+-    private static final String SUBSCRIPTION_URL_TR = "https://subscription.tr.adjust.com";
++    private static final String BASE_URL_TR = "http://app.tr.adjust.com";
++    private static final String GDPR_URL_TR = "http://gdpr.tr.adjust.com";
++    private static final String SUBSCRIPTION_URL_TR = "http://subscription.tr.adjust.com";
+ 
+-    private static final String BASE_URL_US = "https://app.us.adjust.com";
+-    private static final String GDPR_URL_US = "https://gdpr.us.adjust.com";
+-    private static final String SUBSCRIPTION_URL_US = "https://subscription.us.adjust.com";
++    private static final String BASE_URL_US = "http://app.us.adjust.com";
++    private static final String GDPR_URL_US = "http://gdpr.us.adjust.com";
++    private static final String SUBSCRIPTION_URL_US = "http://subscription.us.adjust.com";
+ 
+     private final String baseUrlOverwrite;
+     private final String gdprUrlOverwrite;
+diff --git a/com/adjust/sdk/network/UtilNetworking.java b/com/adjust/sdk/network/UtilNetworking.java
+index 3f297792..3c3447e2 100644
+--- a/com/adjust/sdk/network/UtilNetworking.java
++++ b/com/adjust/sdk/network/UtilNetworking.java
+@@ -9,7 +9,7 @@ import org.json.JSONObject;
+ import java.io.IOException;
+ import java.net.URL;
+ 
+-import javax.net.ssl.HttpsURLConnection;
++import java.net.HttpURLConnection;
+ 
+ /**
+  * Created by uerceg on 03/04/2017.
+@@ -27,13 +27,13 @@ public class UtilNetworking {
+     }
+ 
+     public interface IConnectionOptions {
+-        void applyConnectionOptions(HttpsURLConnection connection, String clientSdk);
++        void applyConnectionOptions(HttpURLConnection connection, String clientSdk);
+     }
+ 
+     public static IConnectionOptions createDefaultConnectionOptions() {
+         return new IConnectionOptions() {
+             @Override
+-            public void applyConnectionOptions(final HttpsURLConnection connection,
++            public void applyConnectionOptions(final HttpURLConnection connection,
+                                                final String clientSdk)
+             {
+                 connection.setRequestProperty("Client-SDK", clientSdk);
+@@ -48,17 +48,17 @@ public class UtilNetworking {
+         };
+     }
+ 
+-    public interface IHttpsURLConnectionProvider {
+-        HttpsURLConnection generateHttpsURLConnection(URL url) throws IOException;
++    public interface IHttpURLConnectionProvider {
++        HttpURLConnection generateHttpURLConnection(URL url) throws IOException;
+     }
+ 
+-    public static IHttpsURLConnectionProvider createDefaultHttpsURLConnectionProvider() {
+-        return new IHttpsURLConnectionProvider() {
++    public static IHttpURLConnectionProvider createDefaultHttpURLConnectionProvider() {
++        return new IHttpURLConnectionProvider() {
+             @Override
+-            public HttpsURLConnection generateHttpsURLConnection(final URL url)
++            public HttpURLConnection generateHttpURLConnection(final URL url)
+                     throws IOException
+             {
+-                return (HttpsURLConnection) url.openConnection();
++                return (HttpURLConnection) url.openConnection();
+             }
+         };
+     }
