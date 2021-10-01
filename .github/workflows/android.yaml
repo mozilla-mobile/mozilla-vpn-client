@@ -5,16 +5,16 @@ on:
       - main
 
 jobs:
+  compileAPK:
+   uses: strseb/mozilla-vpn-client/.github/workflows/build_android.yaml@main
+   with: 
+     adjustToken: secrets.ADJUST_SDK_TOKEN
   compile-android:
     runs-on: ubuntu-20.04
       
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
-      - name: Compile MozillaVPN for android
-        uses: strseb/mozilla-vpn-client/.github/workflows/build_android.yaml@main
-        with: 
-          adjustToken: secrets.ADJUST_SDK_TOKEN
       - name: Sign Android APK
         env:
           AUTOGRAPH_TOKEN: ${{ secrets.AUTOGRAPH_KEY }}
