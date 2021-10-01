@@ -9,8 +9,8 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import themes 0.1
 
-import org.mozilla.Glean 0.21
-import telemetry 0.21
+import org.mozilla.Glean 0.21.1
+import telemetry 0.21.1
 
 Item {
     id: box
