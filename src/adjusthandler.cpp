@@ -15,7 +15,15 @@
 
 #include <QString>
 
-void AdjustHandler::initialize(quint16 proxyPort) {
+namespace {
+bool s_initialized = false;
+}  // namespace
+
+void AdjustHandler::maybeInitialize(quint16 proxyPort) {
+  if (s_initialized) {
+    return;
+  }
+
   if (!AdjustProxy::instance()->isListening()) {
     return;
   }
@@ -29,6 +37,8 @@ void AdjustHandler::initialize(quint16 proxyPort) {
 #ifdef MVPN_IOS
   IOSAdjustHelper::initialize(proxyPort);
 #endif
+
+  s_initialized = true;
 }
 
 void AdjustHandler::trackEvent(const QString& event) {

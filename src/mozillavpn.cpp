@@ -102,7 +102,9 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
       break;
     }
   }
-  AdjustHandler::initialize(adjustProxy->serverPort());
+  connect(this, &MozillaVPN::stateChanged, [adjustProxy]() {
+    AdjustHandler::maybeInitialize(adjustProxy->serverPort());
+  });
 #endif
 
   Q_ASSERT(!s_instance);
