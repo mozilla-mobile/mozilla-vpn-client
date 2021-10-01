@@ -11,7 +11,7 @@ class AdjustHandler {
  public:
   AdjustHandler() = default;
 
-  static void maybeInitialize(quint16 proxyPort);
+  static void maybeInitialize();
   static void trackEvent(const QString& event);
 };
 
