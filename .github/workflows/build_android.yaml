@@ -9,7 +9,7 @@ on:
         type: string
       adjustToken:
         required: false
-        type:string
+        type: string
 
 jobs:
   compile-android:
