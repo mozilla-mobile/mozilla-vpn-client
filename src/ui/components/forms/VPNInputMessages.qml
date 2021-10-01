@@ -3,72 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.6
-import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.14
 import Qt.labs.qmlmodels 1.0
-import Mozilla.VPN 1.0
 
-import "../"
 import "../../themes/themes.js" as Theme
 import "../../themes/colors.js" as Color
 
 ColumnLayout {
     id: messagesContainer
     property var messages
-    spacing: 8
 
-    Component {
-        id: messageItem
-
-        RowLayout {
-            spacing: 0
-            visible: modelData.visible
-
-            VPNIcon {
-                id: warningIcon
-
-                source: modelData.iconSrc
-                sourceSize.height: 14
-                sourceSize.width: 14
-                Layout.alignment: Qt.AlignVCenter
-                Layout.leftMargin: 4
-                Layout.rightMargin: 8
-                Layout.preferredWidth: 14
-                Layout.preferredHeight: messageText.lineHeight
-                Layout.maximumHeight: messageText.lineHeight
-
-                // Rectangle {
-                //     height: parent.height
-                //     width: parent.width
-                //     z: -1
-                // }
-            }
-
-            VPNTextBlock {
-                id: messageText
-
-                text: modelData.message
-                color: modelData.fontColor
-                Layout.topMargin: 4
-
-                // Rectangle {
-                //     color: "lightgreen"
-                //     height: parent.height
-                //     width: parent.width
-                //     z: -1
-                // }
-            }
-
-
-            // Rectangle {
-            //     color: "lightblue"
-            //     height: parent.height
-            //     width: parent.width
-            //     z: -1
-            // }
-        }
-    }
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.topMargin: Theme.listSpacing
+    spacing: Theme.listSpacing / 4
 
     DelegateChooser {
         id: messagesChooser
@@ -76,15 +24,24 @@ ColumnLayout {
 
         DelegateChoice {
             roleValue: "info"
-            delegate: messageItem
+            delegate: VPNInputMessage {
+                fontColor: Color.informational.active
+                iconSrc: "../../resources/connection-info-dark.svg"
+            }
         }
         DelegateChoice {
             roleValue: "warning"
-            delegate: messageItem
+            delegate: VPNInputMessage {
+                fontColor: Color.warning.active
+                iconSrc: "../../resources/warning-orange.svg"
+            }
         }
         DelegateChoice {
             roleValue: "error"
-            delegate: messageItem
+            delegate: VPNInputMessage {
+                fontColor: Color.error.active
+                iconSrc: "../../resources/warning.svg"
+            }
         }
     }
 
@@ -92,12 +49,5 @@ ColumnLayout {
         id: messagesRepeater
         delegate: messagesChooser
         model: messages
-    }
-
-    Rectangle {
-        color: "white"
-        height: parent.height
-        width: parent.width
-        z: -1
     }
 }
