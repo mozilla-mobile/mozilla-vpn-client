@@ -128,6 +128,13 @@ print Y "Configuring the android build"
 if [[ "$ADJUST_SDK_TOKEN" ]]; then
   print Y "Use adjust config"
   ADJUST="CONFIG+=adjust"
+
+  command -v find >/dev/null 2>&1 || die "find must be installed to work with the Adjust SDK"
+  command -v sed >/dev/null 2>&1 || die "sed must be installed to work with the Adjust SDK"
+  rm -rf "android/src/com/adjust"
+  cp -a "3rdparty/adjust-android-sdk/Adjust/sdk-core/src/main/java/com/." "android/src/com/"
+  find "android/src/com/adjust" -name *.java -exec sed -i "" "s/javax.net.ssl.HttpsURLConnection/java.net.HttpURLConnection/g" {} \;
+  find "android/src/com/adjust" -name *.java -exec sed -i "" "s/ttps/ttp/g" {} \;
 else
   ADJUST="CONFIG-=adjust"
 fi
