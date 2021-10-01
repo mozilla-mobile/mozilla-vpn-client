@@ -7,7 +7,7 @@ on:
       args:
         required: false
         type: string
-      adjustToken:
+      adjust:
         required: false
         type: string
 
@@ -15,6 +15,8 @@ jobs:
   compile-android:
     runs-on: ubuntu-20.04      
     steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
@@ -50,17 +52,5 @@ jobs:
       - name: Compilation
         run: |
           export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
-          bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/5.15.2 -a ${{ adjustToken }} ${{ args }}
-      - name: Sign Android
-        if: ${{ !isDebugBuild }}
-        env:
-          AUTOGRAPH_TOKEN: ${{ secrets.AUTOGRAPH_KEY }}
-        run: |
-          bash ./scripts/android_sign.sh ${{ matrix.config.apk }}
-          rm ${{ matrix.config.apk }}/*unsigned.apk
+          bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/5.15.2 -a ${{ input.adjust }} ${{ input.args }}
 
-      - name: Upload APK${{ matrix.config.args }}
-        uses: actions/upload-artifact@v1
-        with:
-            name: ${{ matrix.config.name }}-build
-            path: ${{ matrix.config.apk }}

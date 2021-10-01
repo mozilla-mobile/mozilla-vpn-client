@@ -1,0 +1,29 @@
+name: Android
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  compile-android:
+    runs-on: ubuntu-20.04
+      
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Compile MozillaVPN for android
+        uses: strseb/mozilla-vpn-client/.github/workflows/build_android.yaml
+        with: 
+          adjust: secrets.ADJUST_SDK_TOKEN
+          debug: true
+      - name: Sign Android APK
+        env:
+          AUTOGRAPH_TOKEN: ${{ secrets.AUTOGRAPH_KEY }}
+        run: |
+          bash ./scripts/android_sign.sh .tmp/src/android-build/build/outputs/apk/release/
+          rm .tmp/src/android-build/build/outputs/apk/release//*unsigned.apk
+      - name: Upload APK 
+        uses: actions/upload-artifact@v1
+        with:
+            name: release-build
+            path: .tmp/src/android-build/build/outputs/apk/release/
