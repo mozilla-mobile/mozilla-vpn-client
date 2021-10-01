@@ -93,16 +93,13 @@ bool Feature::isDevModeEnabled() const {
 }
 
 bool Feature::isSupported() const {
-  logger.debug() << "Check feature " << m_id;
   if (isDevModeEnabled()) {
     logger.debug() << "Devmode Enabled " << m_id;
     return true;
   }
   if (!m_released) {
-    logger.debug() << "Not released " << m_id;
     return false;
   }
-  logger.debug() << "Check Support" << m_id;
   return checkSupportCallback();
 }
 
