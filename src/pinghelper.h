@@ -37,6 +37,7 @@ class PingHelper final : public QObject {
   void nextPing();
 
   void pingReceived(quint16 sequence);
+  void handlePingError();
 
  private:
   QString m_gateway;
