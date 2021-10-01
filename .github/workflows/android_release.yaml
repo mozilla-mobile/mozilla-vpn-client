@@ -5,12 +5,12 @@ on:
       - main
 
 jobs:
-  compileAPK:
+  build-android:
    uses: strseb/mozilla-vpn-client/.github/workflows/build_android.yaml@main
    with: 
      adjust: secrets.ADJUST_SDK_TOKEN
   compile-android:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
       
     steps:
       - name: Clone repository

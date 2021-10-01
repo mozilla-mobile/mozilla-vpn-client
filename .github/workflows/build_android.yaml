@@ -12,8 +12,8 @@ on:
         type: string
 
 jobs:
-  compile-android:
-    runs-on: ubuntu-20.04      
+  build-android:
+    runs-on: ubuntu-latest 
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
