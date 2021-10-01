@@ -234,6 +234,15 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForServerExtra(QObject* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+  r->m_request.setUrl(QUrl(Constants::MULLVAD_EXTRA_SERVER_URL));
+  r->getRequest();
+  return r;
+}
+
 NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
   Q_ASSERT(parent);
 

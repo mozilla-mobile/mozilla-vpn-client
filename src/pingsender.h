@@ -28,6 +28,7 @@ class PingSender : public QObject {
 
  signals:
   void recvPing(quint16 sequence);
+  void criticalPingError();
 };
 
 #endif  // PINGSENDER_H

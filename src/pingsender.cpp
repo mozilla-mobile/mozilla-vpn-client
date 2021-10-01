@@ -61,13 +61,21 @@ void PingSender::genericSendPing(const QStringList& args, qint16 sequence) {
 
   connect(process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
           this, [this, sequence](int exitCode, QProcess::ExitStatus) {
-            if (exitCode == 0) emit recvPing(sequence);
+            if (exitCode == 0) {
+              emit recvPing(sequence);
+              return;
+            }
+            // exitCode == 1 -> ok but no ping response
+            if (exitCode == 2) {
+              logger.info() << "QProcess-Ping encountered an error!";
+              emit criticalPingError();
+            }
           });
   connect(process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
           process, &QObject::deleteLater);
   connect(
       process, &QProcess::errorOccurred, this,
-      [this, sequence](QProcess::ProcessError error) {
+      [this](QProcess::ProcessError error) {
         switch (error) {
           case QProcess::ProcessError::Crashed:
             logger.error() << "Failed to use native Ping: Crashed";
@@ -93,7 +101,7 @@ void PingSender::genericSendPing(const QStringList& args, qint16 sequence) {
         // so lets just return a fake ping, so the user can use the app
         // but without the "no connection" / "no confirm"
         logger.info() << "Pushing fake ping response";
-        emit recvPing(sequence);
+        emit criticalPingError();
       },
       Qt::ConnectionType::QueuedConnection);
   connect(process, &QProcess::errorOccurred, process, &QObject::deleteLater);
