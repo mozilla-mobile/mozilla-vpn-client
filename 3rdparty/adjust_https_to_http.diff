@@ -70,18 +70,9 @@ index 0895ff8c..b78a9034 100644
      }
  }
 diff --git a/com/adjust/sdk/AdjustLinkResolution.java b/com/adjust/sdk/AdjustLinkResolution.java
-index 668fa208..b22ae305 100644
+index 668fa208..2317e3cd 100644
 --- a/com/adjust/sdk/AdjustLinkResolution.java
 +++ b/com/adjust/sdk/AdjustLinkResolution.java
-@@ -13,7 +13,7 @@ public final class AdjustLinkResolution {
-         void resolvedLinkCallback(Uri resolvedLink);
-     }
- 
--    // https://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
-+    // http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
-     private static volatile ExecutorService executor;
- 
-     private static final int maxRecursions = 10;
 @@ -105,11 +105,11 @@ public final class AdjustLinkResolution {
                                            final int recursionNumber,
                                            final AdjustLinkResolutionCallback adjustLinkResolutionCallback)
@@ -124,19 +115,12 @@ index 668fa208..b22ae305 100644
  
          return convertedUrl;
 diff --git a/com/adjust/sdk/Constants.java b/com/adjust/sdk/Constants.java
-index c8f1a0ec..79d3651d 100644
+index c8f1a0ec..2f07c2e3 100644
 --- a/com/adjust/sdk/Constants.java
 +++ b/com/adjust/sdk/Constants.java
-@@ -23,11 +23,11 @@ public interface Constants {
-     int SOCKET_TIMEOUT = Constants.ONE_MINUTE;
-     int MAX_WAIT_INTERVAL = Constants.ONE_MINUTE;
- 
--    String BASE_URL = "https://app.adjust.com";
--    String GDPR_URL = "https://gdpr.adjust.com";
--    String SUBSCRIPTION_URL = "https://subscription.adjust.com";
-+    String BASE_URL = "http://app.adjust.com";
-+    String GDPR_URL = "http://gdpr.adjust.com";
-+    String SUBSCRIPTION_URL = "http://subscription.adjust.com";
+@@ -27,7 +27,7 @@ public interface Constants {
+     String GDPR_URL = "https://gdpr.adjust.com";
+     String SUBSCRIPTION_URL = "https://subscription.adjust.com";
  
 -    String SCHEME = "https";
 +    String SCHEME = "http";
@@ -239,51 +223,6 @@ index 297c9eaa..a4597fc8 100644
              logger.info("Response message: %s", responseMessage);
          } else {
              logger.error("Response message: %s", responseMessage);
-diff --git a/com/adjust/sdk/network/UrlStrategy.java b/com/adjust/sdk/network/UrlStrategy.java
-index 19f6be46..b1def020 100644
---- a/com/adjust/sdk/network/UrlStrategy.java
-+++ b/com/adjust/sdk/network/UrlStrategy.java
-@@ -14,25 +14,25 @@ import static com.adjust.sdk.AdjustConfig.URL_STRATEGY_INDIA;
- import static com.adjust.sdk.AdjustConfig.DATA_RESIDENCY_EU;
- 
- public class UrlStrategy {
--    private static final String BASE_URL_INDIA = "https://app.adjust.net.in";
--    private static final String GDPR_URL_INDIA = "https://gdpr.adjust.net.in";
--    private static final String SUBSCRIPTION_URL_INDIA = "https://subscription.adjust.net.in";
-+    private static final String BASE_URL_INDIA = "http://app.adjust.net.in";
-+    private static final String GDPR_URL_INDIA = "http://gdpr.adjust.net.in";
-+    private static final String SUBSCRIPTION_URL_INDIA = "http://subscription.adjust.net.in";
- 
--    private static final String BASE_URL_CHINA = "https://app.adjust.world";
--    private static final String GDPR_URL_CHINA = "https://gdpr.adjust.world";
--    private static final String SUBSCRIPTION_URL_CHINA = "https://subscription.adjust.world";
-+    private static final String BASE_URL_CHINA = "http://app.adjust.world";
-+    private static final String GDPR_URL_CHINA = "http://gdpr.adjust.world";
-+    private static final String SUBSCRIPTION_URL_CHINA = "http://subscription.adjust.world";
- 
--    private static final String BASE_URL_EU = "https://app.eu.adjust.com";
--    private static final String GDPR_URL_EU = "https://gdpr.eu.adjust.com";
--    private static final String SUBSCRIPTION_URL_EU = "https://subscription.eu.adjust.com";
-+    private static final String BASE_URL_EU = "http://app.eu.adjust.com";
-+    private static final String GDPR_URL_EU = "http://gdpr.eu.adjust.com";
-+    private static final String SUBSCRIPTION_URL_EU = "http://subscription.eu.adjust.com";
- 
--    private static final String BASE_URL_TR = "https://app.tr.adjust.com";
--    private static final String GDPR_URL_TR = "https://gdpr.tr.adjust.com";
--    private static final String SUBSCRIPTION_URL_TR = "https://subscription.tr.adjust.com";
-+    private static final String BASE_URL_TR = "http://app.tr.adjust.com";
-+    private static final String GDPR_URL_TR = "http://gdpr.tr.adjust.com";
-+    private static final String SUBSCRIPTION_URL_TR = "http://subscription.tr.adjust.com";
- 
--    private static final String BASE_URL_US = "https://app.us.adjust.com";
--    private static final String GDPR_URL_US = "https://gdpr.us.adjust.com";
--    private static final String SUBSCRIPTION_URL_US = "https://subscription.us.adjust.com";
-+    private static final String BASE_URL_US = "http://app.us.adjust.com";
-+    private static final String GDPR_URL_US = "http://gdpr.us.adjust.com";
-+    private static final String SUBSCRIPTION_URL_US = "http://subscription.us.adjust.com";
- 
-     private final String baseUrlOverwrite;
-     private final String gdprUrlOverwrite;
 diff --git a/com/adjust/sdk/network/UtilNetworking.java b/com/adjust/sdk/network/UtilNetworking.java
 index 3f297792..3c3447e2 100644
 --- a/com/adjust/sdk/network/UtilNetworking.java
@@ -304,7 +243,7 @@ index 3f297792..3c3447e2 100644
 -        void applyConnectionOptions(HttpsURLConnection connection, String clientSdk);
 +        void applyConnectionOptions(HttpURLConnection connection, String clientSdk);
      }
- 
+
      public static IConnectionOptions createDefaultConnectionOptions() {
          return new IConnectionOptions() {
              @Override
