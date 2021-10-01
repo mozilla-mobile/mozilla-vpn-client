@@ -26,6 +26,8 @@ void AdjustHandler::maybeInitialize() {
     return;
   }
 
+  s_initialized = true;
+
   AdjustProxy* adjustProxy = new AdjustProxy(MozillaVPN::instance());
   QObject::connect(MozillaVPN::instance()->controller(),
                    &Controller::readyToQuit, adjustProxy, &AdjustProxy::close);
@@ -50,8 +52,6 @@ void AdjustHandler::maybeInitialize() {
 #ifdef MVPN_IOS
   IOSAdjustHelper::initialize(adjustProxy->serverPort());
 #endif
-
-  s_initialized = true;
 }
 
 void AdjustHandler::trackEvent(const QString& event) {

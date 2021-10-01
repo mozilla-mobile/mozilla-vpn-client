@@ -248,8 +248,9 @@ void AdjustProxyConnection::forwardRequest() {
   }
 
   logger.debug() << "Sending Adjust request with: " << m_method << ", "
-                 << headersString << m_queryParameters.toString() << ", "
-                 << m_bodyParameters.toString();
+                 << headersString
+                 << logger.sensitive(m_queryParameters.toString()) << ", "
+                 << logger.sensitive(m_bodyParameters.toString());
 
   request = NetworkRequest::createForAdjustProxy(
       this, m_method, m_route.toString(), m_headers,
