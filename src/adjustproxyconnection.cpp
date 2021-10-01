@@ -198,22 +198,20 @@ void AdjustProxyConnection::processParameters() {
     return;
   }
 
-  if (m_method == "GET") {
-    m_parameters = QUrlQuery(m_route);
-  } else {
-    if (bodyLength < m_contentLength) {
-      return;
-    }
-    m_parameters = QUrlQuery(m_buffer.trimmed());
+  if (bodyLength < m_contentLength) {
+    return;
   }
+  m_bodyParameters = QUrlQuery(m_buffer.trimmed());
+
+  m_queryParameters = QUrlQuery(m_route);
 
   m_state = ProcessingState::ParametersDone;
 }
 
-void AdjustProxyConnection::filterParametersAndForwardRequest() {
+void AdjustProxyConnection::filterParameters(QUrlQuery& parameters) {
   QList<QPair<QString, QString>> newParameters;
 
-  for (QPair<QString, QString> parameter : m_parameters.queryItems()) {
+  for (QPair<QString, QString> parameter : parameters.queryItems()) {
     if (allowList.contains(parameter.first)) {
       newParameters.append(
           QPair<QString, QString>(parameter.first, parameter.second));
@@ -227,7 +225,12 @@ void AdjustProxyConnection::filterParametersAndForwardRequest() {
     }
   }
 
-  m_parameters.setQueryItems(newParameters);
+  parameters.setQueryItems(newParameters);
+}
+
+void AdjustProxyConnection::filterParametersAndForwardRequest() {
+  filterParameters(m_queryParameters);
+  filterParameters(m_bodyParameters);
 
   forwardRequest();
 }
@@ -236,7 +239,8 @@ void AdjustProxyConnection::forwardRequest() {
   NetworkRequest* request;
 
   request = NetworkRequest::createForAdjustProxy(
-      this, m_method, m_route.toString(), m_headers, m_parameters.toString(),
+      this, m_method, m_route.toString(), m_headers,
+      m_queryParameters.toString(), m_bodyParameters.toString(),
       m_unknownParameters);
 
   connect(
