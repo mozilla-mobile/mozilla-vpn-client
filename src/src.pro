@@ -23,7 +23,11 @@ QT += widgets
 QT += charts
 QT += websockets
 
-# for the inspector
+# For Glean.js storage to work
+# (glean causes crash on iOS without it)
+QT += sql
+
+# For the inspector
 QT+= testlib
 QT.testlib.CONFIG -= console
 CONFIG += no_testcase_installs
