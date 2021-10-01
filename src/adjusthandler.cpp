@@ -5,6 +5,7 @@
 #include "adjusthandler.h"
 #include "adjustproxy.h"
 #include "constants.h"
+#include "mozillavpn.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosadjusthelper.h"
@@ -14,20 +15,42 @@
 #endif
 
 #include <QString>
+#include <QRandomGenerator>
 
-void AdjustHandler::initialize(quint16 proxyPort) {
-  if (!AdjustProxy::instance()->isListening()) {
+namespace {
+bool s_initialized = false;
+}  // namespace
+
+void AdjustHandler::maybeInitialize() {
+  if (s_initialized) {
+    return;
+  }
+
+  s_initialized = true;
+
+  AdjustProxy* adjustProxy = new AdjustProxy(MozillaVPN::instance());
+  QObject::connect(MozillaVPN::instance()->controller(),
+                   &Controller::readyToQuit, adjustProxy, &AdjustProxy::close);
+  for (int i = 0; i < 5; i++) {
+    quint16 port = QRandomGenerator::global()->bounded(1024, 65536);
+    bool succeeded = adjustProxy->initialize(port);
+    if (succeeded) {
+      break;
+    }
+  }
+
+  if (!adjustProxy->isListening()) {
     return;
   }
 
 #ifdef MVPN_ANDROID
   QAndroidJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/qt/VPNApplication", "onVpnInit", "(ZI)V",
-      Constants::inProduction(), proxyPort);
+      Constants::inProduction(), adjustProxy->serverPort());
 #endif
 
 #ifdef MVPN_IOS
-  IOSAdjustHelper::initialize(proxyPort);
+  IOSAdjustHelper::initialize(adjustProxy->serverPort());
 #endif
 }
 
