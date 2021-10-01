@@ -681,20 +681,23 @@ void MozillaVPN::deviceRemoved(const QString& publicKey) {
   m_private->m_deviceModel.removeDeviceFromPublicKey(publicKey);
 }
 
-bool MozillaVPN::setServerList(const QByteArray& serverData) {
-  if (!m_private->m_serverCountryModel.fromJson(serverData)) {
+bool MozillaVPN::setServerList(const QByteArray& serverData,
+                               const QByteArray& serverExtraData) {
+  if (!m_private->m_serverCountryModel.fromJson(serverData, serverExtraData)) {
     logger.error() << "Failed to store the server-countries";
     return false;
   }
 
   SettingsHolder::instance()->setServers(serverData);
+  SettingsHolder::instance()->setServerExtras(serverExtraData);
   return true;
 }
 
-void MozillaVPN::serversFetched(const QByteArray& serverData) {
+void MozillaVPN::serversFetched(const QByteArray& serverData,
+                                const QByteArray& serverExtraData) {
   logger.debug() << "Server fetched!";
 
-  if (!setServerList(serverData)) {
+  if (!setServerList(serverData, serverExtraData)) {
     // This is OK. The check is done elsewhere.
     return;
   }

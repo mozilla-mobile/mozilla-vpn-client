@@ -71,6 +71,10 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
+NetworkRequest* NetworkRequest::createForServerExtra(QObject* parent) {
+  return new NetworkRequest(parent, 1234, false);
+}
+
 NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
