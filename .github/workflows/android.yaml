@@ -12,7 +12,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v2
       - name: Compile MozillaVPN for android
-        uses: ${{GITHUB_REPOSITORY}}/.github/workflows/build_android.yaml
+        uses: strseb/mozilla-vpn-client/.github/workflows/build_android.yaml
         with: 
           adjustToken: secrets.ADJUST_SDK_TOKEN
       - name: Sign Android APK
