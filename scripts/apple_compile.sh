@@ -192,11 +192,12 @@ if [[ "$RELEASE" ]]; then
   print G "release"
   MODE="CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release"
 else
-  print G "debug"
   if [ "$OS" = "ios" ]; then
+    print G "ios debug"
     # Qt Debug is broken on iOS so we use mvpn_debug config flag.
-    MODE="CONFIG+=mvpn_debug"
+    MODE="CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=mvpn_debug"
   else
+    print G "macos debug"
     MODE="CONFIG+=debug CONFIG-=release CONFIG-=debug_and_release"
   fi
 fi
