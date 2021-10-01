@@ -75,26 +75,18 @@ ColumnLayout {
                     const connection = [];
 
                     for(let x = 0; x < servers.length; x++) {
-                        const server = servers[x].split(",");
-                        let serverCityName = server.slice(0, server.length -1)
-
-                        // catch us cities with state abbreviations
-                        // restyle the state string so that it can be sent in VPNController.changeServer
-                        // TODO - make this less chancy - is there a way to grab the localized city name?
-                        if (serverCityName.length > 1) {
-                            let abbreviatedStateName = serverCityName[serverCityName.length - 1].replace(" ", "");
-                            abbreviatedStateName = abbreviatedStateName.charAt(0).toUpperCase() + abbreviatedStateName.slice(1).toLowerCase();
-                            serverCityName[serverCityName.length - 1] = abbreviatedStateName;
-                            serverCityName = serverCityName.join(", ");
-                        } else {
-                            serverCityName = serverCityName.join("");
+                        let index = servers[x].lastIndexOf(",");
+                        if (index <= 0) {
+                            console.log("Unable to parse server from " + servers[x]);
+                            continue;
                         }
-
-                        const countryCode = server[server.length - 1].split(" ").join("");
+                        let countryCode = servers[x].slice(index+1).trim();
+                        let serverCityName = servers[x].slice(0, index).trim();
 
                         connection.push({
                              countryCode: countryCode,
-                             localizedCityName: serverCityName
+                             serverCityName: serverCityName,
+                             localizedCityName: VPNLocalizer.localizedCityName(countryCode, serverCityName)
                          });
                     }
 
@@ -129,10 +121,10 @@ ColumnLayout {
                     popStack();
 
                     if (isMultiHop) {
-                        return VPNController.changeServer(connection.get(1).countryCode, connection.get(1).localizedCityName, connection.get(0).countryCode, connection.get(0).localizedCityName)
+                        return VPNController.changeServer(connection.get(1).countryCode, connection.get(1).serverCityName, connection.get(0).countryCode, connection.get(0).serverCityName)
                     }
 
-                    return VPNController.changeServer(connection.get(0).countryCode, connection.get(0).localizedCityName)
+                    return VPNController.changeServer(connection.get(0).countryCode, connection.get(0).serverCityName)
 
                 }
 

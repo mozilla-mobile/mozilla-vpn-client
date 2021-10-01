@@ -21,6 +21,8 @@ class AndroidUtils final : public QObject {
  public:
   static QString GetDeviceName();
 
+  static QByteArray DeviceId();
+
   static AndroidUtils* instance();
 
   void startAuthentication(AuthenticationListener* listener, const QUrl& url);

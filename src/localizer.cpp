@@ -258,6 +258,10 @@ QString Localizer::previousCode() const {
   return SettingsHolder::instance()->previousLanguageCode();
 }
 
+QString Localizer::localizedCityName(const QString& code, const QString& city) {
+  return ServerI18N::translateCityName(code, city);
+}
+
 // static
 void Localizer::macOSInstallerStrings() {
   //% "Mozilla VPN for macOS"

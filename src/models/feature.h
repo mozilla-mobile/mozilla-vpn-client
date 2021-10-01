@@ -44,6 +44,10 @@ class Feature : public QObject {
   // feature does not exist :)
   static const Feature* get(const QString& featureID);
 
+  // Similar to the previous get, but it doesn't crash. This is meant to be
+  // used only to enable the features via REST API.
+  static const Feature* getOrNull(const QString& featureID);
+
   // Checks if the feature is released
   // or force enabled by the DevMode
   // returns the features checkSupportCallback otherwise.

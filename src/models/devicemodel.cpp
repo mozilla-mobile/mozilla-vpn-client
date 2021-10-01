@@ -191,6 +191,21 @@ const Device* DeviceModel::deviceFromPublicKey(const QString& publicKey) const {
   return nullptr;
 }
 
+const Device* DeviceModel::deviceFromUniqueId() const {
+  QString uniqueId = Device::uniqueDeviceId();
+  if (uniqueId.isEmpty()) {
+    return nullptr;
+  }
+
+  for (const Device& device : m_devices) {
+    if (device.uniqueId() == uniqueId) {
+      return &device;
+    }
+  }
+
+  return nullptr;
+}
+
 bool DeviceModel::hasCurrentDevice(const Keys* keys) const {
   return currentDevice(keys) != nullptr;
 }

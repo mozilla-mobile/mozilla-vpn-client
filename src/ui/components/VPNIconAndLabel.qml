@@ -30,6 +30,7 @@ Item {
 
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: 1
         color: fontColor
         // VPNIconAndLabel is only used inside a VPNClickableRow
         // which acts as atomic interactive control thus we want

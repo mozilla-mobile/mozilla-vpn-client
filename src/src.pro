@@ -330,11 +330,6 @@ balrog {
     HEADERS += update/balrog.h
 }
 
-AUTHINAPP {
-    message(Authentication in-app enabled)
-    DEFINES += MVPN_AUTHINAPP
-}
-
 DUMMY {
     message(Dummy build)
 
@@ -523,9 +518,13 @@ else:android {
         message(Adjust SDK enabled)
         DEFINES += MVPN_ADJUST
 
-        SOURCES += adjusthandler.cpp
+        SOURCES += adjusthandler.cpp \
+                   adjustproxy.cpp \
+                   adjustproxyconnection.cpp
 
-        HEADERS += adjusthandler.h
+        HEADERS += adjusthandler.h \
+                   adjustproxy.h \
+                   adjustproxyconnection.h
     }
 
     versionAtLeast(QT_VERSION, 5.15.1) {
@@ -729,10 +728,14 @@ else:ios {
 
         OBJECTIVE_SOURCES += \
             adjusthandler.cpp \
+            adjustproxy.cpp \
+            adjustproxyconnection.cpp \
             platforms/ios/iosadjusthelper.mm \
 
         OBJECTIVE_HEADERS += \
             adjusthandler.h \
+            adjustproxy.h \
+            adjustproxyconnection.h \
             platforms/ios/iosadjusthelper.h \
 
     }
@@ -796,7 +799,7 @@ else:win* {
     TARGET = MozillaVPN
 
     CONFIG += c++1z
-    QMAKE_CXXFLAGS += -MP
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 
     QT += networkauth
     QT += svg

@@ -147,6 +147,5 @@ QString WindowsCommons::getCurrentPath() {
     WindowsCommons::windowsLog("Err fetching dos path");
     return "";
   }
-  QString::fromWCharArray((wchar_t*)buffer.data());
   return QString::fromLocal8Bit(buffer);
 }

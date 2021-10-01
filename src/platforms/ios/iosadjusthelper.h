@@ -9,7 +9,7 @@
 
 class IOSAdjustHelper final {
  public:
-  static void initialize();
+  static void initialize(quint16 proxyPort);
   static void trackEvent(const QString& eventToken);
 };
 

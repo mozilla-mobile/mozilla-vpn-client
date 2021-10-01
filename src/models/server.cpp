@@ -115,7 +115,11 @@ bool Server::fromJson(const QJsonObject& obj) {
 
 // static
 const Server& Server::weightChooser(const QList<Server>& servers) {
-  Q_ASSERT(!servers.isEmpty());
+  static const Server emptyServer;
+  Q_ASSERT(!emptyServer.initialized());
+  if (servers.isEmpty()) {
+    return emptyServer;
+  }
 
   uint32_t weightSum = 0;
 
@@ -135,7 +139,7 @@ const Server& Server::weightChooser(const QList<Server>& servers) {
 
   // This should not happen.
   Q_ASSERT(false);
-  return servers[0];
+  return emptyServer;
 }
 
 uint32_t Server::choosePort() const {

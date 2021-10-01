@@ -65,4 +65,14 @@ Item {
         text: "Password email"
         visible: !VPNAuthInApp.validatePasswordEmail(passwordInput.text)
     }
+
+    VPNButton {
+        anchors.top: invalidString.bottom
+        anchors.bottomMargin: 24
+        text: "Reset" // TODO
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        radius: 5
+        onClicked: VPNAuthInApp.reset();
+    }
 }

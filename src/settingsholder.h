@@ -54,8 +54,6 @@ class SettingsHolder final : public QObject {
 
   QString envOrDefault(const QString& name, const QString& defaultValue) const;
 
- signals:
-
  private:
   explicit SettingsHolder(QObject* parent);
 

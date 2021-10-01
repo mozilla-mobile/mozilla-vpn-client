@@ -22,9 +22,13 @@ class Device final {
 
   static QString currentDeviceReport();
 
+  static QString uniqueDeviceId();
+
   [[nodiscard]] bool fromJson(const QJsonValue& json);
 
   const QString& name() const { return m_deviceName; }
+
+  const QString& uniqueId() const { return m_uniqueId; }
 
   const QDateTime& createdAt() const { return m_createdAt; }
 
@@ -42,6 +46,7 @@ class Device final {
 
  private:
   QString m_deviceName;
+  QString m_uniqueId;
   QDateTime m_createdAt;
   QString m_publicKey;
   QString m_ipv4Address;
