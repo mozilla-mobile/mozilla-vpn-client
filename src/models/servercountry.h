@@ -7,10 +7,12 @@
 
 #include "servercity.h"
 
+#include <QHash>
 #include <QList>
 #include <QString>
 
 class ServerData;
+class ServerExtra;
 class QJsonObject;
 
 class ServerCountry final {
@@ -20,7 +22,8 @@ class ServerCountry final {
   ServerCountry& operator=(const ServerCountry& other);
   ~ServerCountry();
 
-  [[nodiscard]] bool fromJson(const QJsonObject& obj);
+  [[nodiscard]] bool fromJson(const QJsonObject& obj,
+                              const QHash<QString, ServerExtra>& serverExtras);
 
   const QString& name() const { return m_name; }
 
