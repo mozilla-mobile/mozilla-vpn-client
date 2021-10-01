@@ -26,6 +26,7 @@ linux/netfilter/vendor/
 .qm
 .tmp
 .env
+.venv
 
 asset_catalog_compiler.Info.plist
 

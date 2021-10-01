@@ -3,100 +3,26 @@ on:
   push:
     branches:
       - main
-      - 'releases/**'
-  pull_request:
-    branches:
-      - main
-      - 'releases/**'
 
 jobs:
   compile-android:
-    strategy:
-      matrix:
-        config:
-            - { name: Release, args: "", apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
-            - { name: Debug, args: "--debug", apk: .tmp/src/android-build/mozillavpn.apk, sym: false, sign: false}
-
     runs-on: ubuntu-20.04
       
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
-
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v2
-        with:
-          host: 'linux'
-          version: '5.15.2'
-          target: 'android'
-          install-deps: 'true'
-          modules: 'qtcharts qtnetworkauth'
-
-      - name: set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-
-      - uses: nttld/setup-ndk@v1
-        id: setup-ndk
-        with:
-          ndk-version: r20b
-
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-
-      - name: Setup Glean Dependency
-        shell: bash
-        run: |
-          pip3 install "glean_parser==3.5"
-          pip3 install pyyaml
-
-      - name: Compilation
-        run: |
-          export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
-          bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/5.15.2 -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
-      - name: Sign Android
-        if: ${{ matrix.config.sign }}
+      - name: Compile MozillVPN for android
+        uses: ./build_android.yaml
+        with: 
+          adjustToken: secrets.ADJUST_SDK_TOKEN
+      - name: Sign Android APK
         env:
           AUTOGRAPH_TOKEN: ${{ secrets.AUTOGRAPH_KEY }}
         run: |
-          bash ./scripts/android_sign.sh ${{ matrix.config.apk }}
-          rm ${{ matrix.config.apk }}/*unsigned.apk
-
-      - name: Upload APK${{ matrix.config.args }}
+          bash ./scripts/android_sign.sh .tmp/src/android-build/build/outputs/apk/release/
+          rm .tmp/src/android-build/build/outputs/apk/release//*unsigned.apk
+      - name: Upload APK 
         uses: actions/upload-artifact@v1
         with:
-            name: ${{ matrix.config.name }}-build
-            path: ${{ matrix.config.apk }}
-
-      - name: Upload Debug Symbols (arm64-v8a)
-        if: ${{ matrix.config.sym }} 
-        uses: actions/upload-artifact@v1
-        with:
-            name: debug-sym(arm64-v8a)${{ matrix.config.args }}
-            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/arm64-v8a
-
-      - name: Upload Debug Symbols (armeabi-v7a)
-        if: ${{ matrix.config.sym }} 
-        uses: actions/upload-artifact@v1
-        with:
-            name: debug-sym(armeabi-v7a)${{ matrix.config.args }}
-            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/armeabi-v7a
-
-      - name: Upload Debug Symbols(x86)
-        if: ${{ matrix.config.sym }} 
-        uses: actions/upload-artifact@v1
-        with:
-            name: debug-sym(x86)${{ matrix.config.args }}
-            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/x86
-
-      - name: Upload Debug Symbols (x86_64)
-        if: ${{ matrix.config.sym }} 
-        uses: actions/upload-artifact@v1
-        with:
-            name: debug-sym(x86_64)${{ matrix.config.args }}
-            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/x86_64
+            name: release-build
+            path: .tmp/src/android-build/build/outputs/apk/release/
