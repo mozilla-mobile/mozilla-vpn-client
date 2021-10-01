@@ -21,11 +21,13 @@ class FeatureMultiHop : public Feature {
             "../resources/features/multi-hop-preview.png",        // ImagePath
             "../resources/location-dark.svg",                     // IconPath
 #ifdef MVPN_ANDROID
-            "2.7",                                                // released
-#else 
-            "2.5",                                                // released
+            "2.7",  // released for android
+#else
+            "2.5",  // released for desktop
+#endif
             true  // Can be enabled in devmode
-        ) {}
+        ) {
+  }
 
   bool checkSupportCallback() const override {
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS) || defined(MVPN_DUMMY) || \

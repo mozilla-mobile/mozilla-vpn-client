@@ -148,16 +148,9 @@ void AndroidController::activate(
       PERMISSIONHELPER_CLASS, "startService", "(Landroid/content/Context;)V",
       appContext.object());
 
-  Server exitServer;
-  Server entryServer;
-
-  if(serverList.length() == 1){
-    exitServer = serverList.first();
-    entryServer = serverList.first();
-  }else {
-    exitServer = serverList.first();
-    entryServer = serverList.last();
-  }
+  bool isMultihop = serverList.length() >1;
+  Server exitServer = serverList.first();
+  Server entryServer = serverList.last();
 
   m_device = *device;
 
@@ -178,13 +171,13 @@ void AndroidController::activate(
   jServer["ipv4Gateway"] = entryServer.ipv4Gateway();
   jServer["ipv6AddrIn"] = entryServer.ipv6AddrIn();
   jServer["ipv6Gateway"] = entryServer.ipv6Gateway();
+  
   jServer["publicKey"] = exitServer.publicKey();
-  jServer["port"] = (int)entryServer.choosePort();
+  jServer["port"] = (int) (isMultihop ? exitServer.multihopPort() : entryServer.choosePort());
 
-  if( serverList.length() != 1){
-    jServer["port"] = getMultiHopPort(exitServer);
+  if (serverList.length() != 1) {
+    jServer["port"] = (int)exitServer.multihopPort();
   }
-
 
   QJsonArray allowedIPs;
   foreach (auto item, allowedIPAddressRanges) {
