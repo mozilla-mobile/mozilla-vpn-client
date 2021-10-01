@@ -20,7 +20,7 @@ class FeatureMultiHop : public Feature {
             L18nStrings::WhatsNewReleaseNotesMultiModalBodyText,  // LongDescr
             "../resources/features/multi-hop-preview.png",        // ImagePath
             "../resources/location-dark.svg",                     // IconPath
-#ifdef MVPN_ANDROID
+#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
             "2.7",  // released for android
 #else
             "2.5",  // released for desktop
