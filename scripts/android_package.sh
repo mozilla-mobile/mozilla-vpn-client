@@ -122,6 +122,10 @@ print Y "Configuring the android build"
 if [[ "$ADJUST_SDK_TOKEN" ]]; then
   print Y "Use adjust config"
   ADJUST="CONFIG+=adjust"
+
+  rm -rf "android/src/com/adjust" || die "Failed to remove the adjust folder"
+  cp -a "3rdparty/adjust-android-sdk/Adjust/sdk-core/src/main/java/com/." "android/src/com/" || die "Failed to copy the adjust codebase"
+  git apply --directory="android/src/" "3rdparty/adjust_https_to_http.diff" || die "Failed to apply the adjust http patch"
 else
   ADJUST="CONFIG-=adjust"
 fi
