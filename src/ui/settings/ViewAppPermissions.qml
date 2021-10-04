@@ -8,6 +8,7 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
+import "../components/forms"
 import "../themes/themes.js" as Theme
 
 import org.mozilla.Glean 0.15
@@ -47,7 +48,7 @@ Item {
         }
 
         ColumnLayout{
-            id:messageBox
+            id: messageBox
             visible: true
             anchors.top: parent.top
             anchors.topMargin: Theme.windowMargin
@@ -55,17 +56,22 @@ Item {
             anchors.leftMargin: 8
             width: toggleCard.width-16
 
-            height:(vpnOnAlert.visible? vpnOnAlert.height:0)+(toast.visible? toast.height:0)
+            height: (vpnOnAlert.visible ? vpnOnAlert.height : 0) + (toast.visible ? toast.height : 0)
 
-            VPNCheckBoxAlert {
-                anchors.fill: parent
-                anchors.leftMargin: Theme.windowMargin
-                anchors.left: parent.left
+            VPNInputMessages {
                 id: vpnOnAlert
-                visible: !vpnFlickable.vpnIsOff
-                //% "VPN must be off to edit App Permissions"
-                //: Associated to a group of settings that require the VPN to be disconnected to change
-                errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
+                anchors.left: parent.left
+                anchors.leftMargin: Theme.windowMargin / 2
+
+                messages: [
+                    {
+                        type: "error",
+                        //% "VPN must be off to edit App Permissions"
+                        //: Associated to a group of settings that require the VPN to be disconnected to change
+                        message: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff"),
+                        visible: !vpnFlickable.vpnIsOff
+                    }
+                ]
             }
 
             Connections {
