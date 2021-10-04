@@ -56,8 +56,7 @@
 #endif
 
 #ifdef MVPN_ADJUST
-#  include "adjusthandler.h"
-#  include "adjustproxy.h"
+#  include "adjust/adjusthandler.h"
 #endif
 
 #include <QApplication>
