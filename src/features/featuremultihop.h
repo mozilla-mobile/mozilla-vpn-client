@@ -29,14 +29,7 @@ class FeatureMultiHop : public Feature {
         ) {
   }
 
-  bool checkSupportCallback() const override {
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS) || defined(MVPN_DUMMY) || \
-    defined(MVPN_MACOS_DAEMON) || defined(MVPN_ANDROID)
-    return true;
-#else
-    return false;
-#endif
-  }
+  bool checkSupportCallback() const override { return true; }
 
   static const FeatureMultiHop* instance() {
     return static_cast<const FeatureMultiHop*>(get(FEATURE_MULTI_HOP));
