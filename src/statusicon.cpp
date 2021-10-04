@@ -14,24 +14,24 @@ namespace {
 Logger logger(LOG_MAIN, "StatusIcon");
 
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-constexpr const std::array<const char*, 4> ANIMATED_ICON_STEPS = {
+constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
     ":/ui/resources/logo-animated1.png", ":/ui/resources/logo-animated2.png",
     ":/ui/resources/logo-animated3.png", ":/ui/resources/logo-animated4.png"};
 
-constexpr const char* ICON_ON = ":/ui/resources/logo-on.png";
-constexpr const char* ICON_GENERIC = ":/ui/resources/logo-generic.png";
+constexpr const char* LOGO_ON = ":/ui/resources/logo-on.png";
+constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic.png";
 #else
-constexpr const std::array<const char*, 4> ANIMATED_ICON_STEPS = {
+constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
     ":/ui/resources/logo-animated1.svg", ":/ui/resources/logo-animated2.svg",
     ":/ui/resources/logo-animated3.svg", ":/ui/resources/logo-animated4.svg"};
 
-constexpr const char* ICON_ON = ":/ui/resources/logo-on.svg";
-constexpr const char* ICON_GENERIC = ":/ui/resources/logo-generic.svg";
+constexpr const char* LOGO_ON = ":/ui/resources/logo-on.svg";
+constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic.svg";
 #endif
 
 }  // namespace
 
-StatusIcon::StatusIcon() : m_icon(ICON_GENERIC) {
+StatusIcon::StatusIcon() : m_icon(LOGO_GENERIC) {
   MVPN_COUNT_CTOR(StatusIcon);
 
   connect(&m_animatedIconTimer, &QTimer::timeout, this,
@@ -47,9 +47,9 @@ void StatusIcon::activateAnimation() {
 }
 
 void StatusIcon::animateIcon() {
-  Q_ASSERT(m_animatedIconIndex < ANIMATED_ICON_STEPS.size());
-  setIcon(ANIMATED_ICON_STEPS[m_animatedIconIndex++]);
-  if (m_animatedIconIndex == ANIMATED_ICON_STEPS.size()) {
+  Q_ASSERT(m_animatedIconIndex < ANIMATED_LOGO_STEPS.size());
+  setIcon(ANIMATED_LOGO_STEPS[m_animatedIconIndex++]);
+  if (m_animatedIconIndex == ANIMATED_LOGO_STEPS.size()) {
     m_animatedIconIndex = 0;
   }
 }
@@ -63,17 +63,17 @@ void StatusIcon::stateChanged() {
 
   // If we are in a non-main state, we don't need to show special icons.
   if (vpn->state() != MozillaVPN::StateMain) {
-    setIcon(ICON_GENERIC);
+    setIcon(LOGO_GENERIC);
     return;
   }
 
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
-      setIcon(ICON_ON);
+      setIcon(LOGO_ON);
       break;
 
     case Controller::StateOff:
-      setIcon(ICON_GENERIC);
+      setIcon(LOGO_GENERIC);
       break;
 
     case Controller::StateSwitching:
@@ -87,7 +87,7 @@ void StatusIcon::stateChanged() {
       break;
 
     default:
-      setIcon(ICON_GENERIC);
+      setIcon(LOGO_GENERIC);
       break;
   }
 }
