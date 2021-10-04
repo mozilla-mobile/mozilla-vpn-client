@@ -519,13 +519,13 @@ else:android {
         message(Adjust SDK enabled)
         DEFINES += MVPN_ADJUST
 
-        SOURCES += adjusthandler.cpp \
-                   adjustproxy.cpp \
-                   adjustproxyconnection.cpp
+        SOURCES += adjust/adjusthandler.cpp \
+                   adjust/adjustproxy.cpp \
+                   adjust/adjustproxyconnection.cpp
 
-        HEADERS += adjusthandler.h \
-                   adjustproxy.h \
-                   adjustproxyconnection.h
+        HEADERS += adjust/adjusthandler.h \
+                   adjust/adjustproxy.h \
+                   adjust/adjustproxyconnection.h
     }
 
     versionAtLeast(QT_VERSION, 5.15.1) {
@@ -728,16 +728,16 @@ else:ios {
         DEFINES += MVPN_ADJUST
 
         OBJECTIVE_SOURCES += \
-            adjusthandler.cpp \
-            adjustproxy.cpp \
-            adjustproxyconnection.cpp \
-            platforms/ios/iosadjusthelper.mm \
+            adjust/adjusthandler.cpp \
+            adjust/adjustproxy.cpp \
+            adjust/adjustproxyconnection.cpp \
+            platforms/ios/iosadjusthelper.mm
 
         OBJECTIVE_HEADERS += \
-            adjusthandler.h \
-            adjustproxy.h \
-            adjustproxyconnection.h \
-            platforms/ios/iosadjusthelper.h \
+            adjust/adjusthandler.h \
+            adjust/adjustproxy.h \
+            adjust/adjustproxyconnection.h \
+            platforms/ios/iosadjusthelper.h
 
     }
 
