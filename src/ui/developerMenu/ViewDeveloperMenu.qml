@@ -153,16 +153,29 @@ VPNFlickable {
         }
     }
 
-    VPNCheckBoxAlert {
-        id: restartRequired
+    VPNInputMessages {
+        id: restartMessage
+
+        property bool isVisible: false
+
+        anchors.left: inspectorLink.left
         anchors.top: inspectorLink.bottom
-        visible: false
+        messages: [
+            {
+                type: "warning",
+                message: VPNl18n.SettingsDevRestartRequired,
+                visible: isVisible
+            }
+        ]
+
         Connections {
             target: VPNSettings
-            function onStagingServerAddressChanged() { restartRequired.visible = true; }
-            function onStagingServerChanged() { restartRequired.visible = true; }
+            function onStagingServerAddressChanged() {
+                restartMessage.isVisible = true;
+            }
+            function onStagingServerChanged() {
+                restartMessage.isVisible = true;
+            }
         }
-
-        errorMessage: VPNl18n.SettingsDevRestartRequired
     }
 }

@@ -32,8 +32,8 @@ ColumnLayout {
         DelegateChoice {
             roleValue: "warning"
             delegate: VPNInputMessage {
-                fontColor: Color.warning.default
-                iconSrc: "../../resources/warning-orange.svg"
+                fontColor: Color.warning.active
+                iconSrc: "../../resources/warning-dark-orange.svg"
             }
         }
         DelegateChoice {
