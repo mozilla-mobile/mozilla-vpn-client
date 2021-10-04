@@ -10,6 +10,7 @@
 #include "../../src/models/servercity.h"
 #include "../../src/models/servercountry.h"
 #include "../../src/models/servercountrymodel.h"
+#include "../../src/models/serverextra.h"
 #include "../../src/models/serverdata.h"
 #include "../../src/models/surveymodel.h"
 #include "../../src/models/user.h"
@@ -590,7 +591,7 @@ void TestModels::serverFromJson() {
   QFETCH(bool, result);
 
   Server s;
-  QCOMPARE(s.fromJson(json), result);
+  QCOMPARE(s.fromJson(json, QHash<QString, ServerExtra>()), result);
 
   if (!result) {
     QVERIFY(!s.initialized());
@@ -620,6 +621,9 @@ void TestModels::serverFromJson() {
   QFETCH(int, weight);
   QCOMPARE(s.weight(), (uint32_t)weight);
 
+  QCOMPARE(s.socksName(), QString());
+  QCOMPARE(s.multihopPort(), (uint32_t)0);
+
   QFETCH(QList<int>, ports);
   Q_ASSERT(ports.length() >= 1);
   if (ports.length() == 1) {
@@ -637,6 +641,8 @@ void TestModels::serverFromJson() {
   QCOMPARE(sB.ipv6Gateway(), s.ipv6Gateway());
   QCOMPARE(sB.publicKey(), s.publicKey());
   QCOMPARE(sB.weight(), s.weight());
+  QCOMPARE(sB.socksName(), s.socksName());
+  QCOMPARE(sB.multihopPort(), s.multihopPort());
 
   Server sC;
   sC = s;
@@ -648,6 +654,8 @@ void TestModels::serverFromJson() {
   QCOMPARE(sC.ipv6Gateway(), s.ipv6Gateway());
   QCOMPARE(sC.publicKey(), s.publicKey());
   QCOMPARE(sC.weight(), s.weight());
+  QCOMPARE(sC.socksName(), s.socksName());
+  QCOMPARE(sC.multihopPort(), s.multihopPort());
 
   s = s;
 }
@@ -725,7 +733,7 @@ void TestModels::serverCityFromJson() {
   QFETCH(bool, result);
 
   ServerCity sc;
-  QCOMPARE(sc.fromJson(json), result);
+  QCOMPARE(sc.fromJson(json, QHash<QString, ServerExtra>()), result);
   if (!result) {
     QCOMPARE(sc.name(), "");
     QCOMPARE(sc.code(), "");
@@ -794,7 +802,7 @@ void TestModels::serverCountryFromJson() {
   QFETCH(bool, result);
 
   ServerCountry sc;
-  QCOMPARE(sc.fromJson(json), result);
+  QCOMPARE(sc.fromJson(json, QHash<QString, ServerExtra>()), result);
   if (!result) {
     QCOMPARE(sc.name(), "");
     QCOMPARE(sc.code(), "");
@@ -927,7 +935,7 @@ void TestModels::serverCountryModelFromJson() {
     SettingsHolder settingsHolder;
 
     ServerCountryModel m;
-    QCOMPARE(m.fromJson(json), result);
+    QCOMPARE(m.fromJson(json, ""), result);
 
     if (!result) {
       QVERIFY(!m.initialized());
@@ -957,7 +965,7 @@ void TestModels::serverCountryModelFromJson() {
       QCOMPARE(m.countryName(code.toString()), name.toString());
       QCOMPARE(m.countryName("invalid"), QString());
 
-      QVERIFY(m.fromJson(json));
+      QVERIFY(m.fromJson(json, ""));
     }
   }
 
@@ -1039,7 +1047,7 @@ void TestModels::serverCountryModelPick() {
   QByteArray json = QJsonDocument(obj).toJson();
 
   ServerCountryModel m;
-  QCOMPARE(m.fromJson(json), true);
+  QCOMPARE(m.fromJson(json, ""), true);
 
   {
     ServerData sd;
@@ -1080,6 +1088,146 @@ void TestModels::serverCountryModelPick() {
   }
 }
 
+void TestModels::serverCountryModelExtra_data() {
+  QTest::addColumn<QByteArray>("json");
+  QTest::addColumn<QString>("socksName");
+  QTest::addColumn<int>("multihopPort");
+
+  QTest::addRow("invalid") << QByteArray("") << "" << 0;
+  QTest::addRow("object") << QByteArray("{}") << "" << 0;
+
+  {
+    QJsonArray array;
+    QTest::addRow("empty") << QJsonDocument(array).toJson() << "" << 0;
+  }
+
+  {
+    QJsonArray array;
+    QJsonObject obj;
+    obj["type"] = "wireguard";
+    obj["pubkey"] = "pubKey";
+    obj["socks_name"] = "a";
+    obj["multihop_port"] = 1234;
+    array.append(obj);
+    QTest::addRow("good A") << QJsonDocument(array).toJson() << "a" << 1234;
+  }
+
+  {
+    QJsonArray array;
+    QJsonObject obj;
+    obj["type"] = "wireguard";
+    obj["pubkey"] = "pubKey";
+    obj["socks_name"] = "b";
+    array.append(obj);
+    QTest::addRow("good B") << QJsonDocument(array).toJson() << "b" << 0;
+  }
+
+  {
+    QJsonArray array;
+    QJsonObject obj;
+    obj["type"] = "wireguard";
+    obj["pubkey"] = "pubKey";
+    obj["multihop_port"] = 1234;
+    array.append(obj);
+    QTest::addRow("good C") << QJsonDocument(array).toJson() << "" << 1234;
+  }
+}
+
+void TestModels::serverCountryModelExtra() {
+  QByteArray jsonData;
+  {
+    QJsonObject server;
+    server.insert("hostname", "hostname");
+    server.insert("ipv4_addr_in", "ipv4AddrIn");
+    server.insert("ipv4_gateway", "ipv4Gateway");
+    server.insert("ipv6_addr_in", "ipv6AddrIn");
+    server.insert("ipv6_gateway", "ipv6Gateway");
+    server.insert("public_key", "pubKey");
+    server.insert("weight", 1234);
+    server.insert("port_ranges", QJsonArray());
+
+    QJsonArray servers;
+    servers.append(server);
+
+    QJsonObject city;
+    city.insert("code", "serverCityCode");
+    city.insert("name", "serverCityName");
+    city.insert("servers", servers);
+
+    QJsonArray cities;
+    cities.append(city);
+
+    QJsonObject country;
+    country.insert("name", "serverCountryName");
+    country.insert("code", "serverCountryCode");
+    country.insert("cities", cities);
+
+    QJsonArray countries;
+    countries.append(country);
+
+    QJsonObject obj;
+    obj.insert("countries", countries);
+
+    jsonData = QJsonDocument(obj).toJson();
+  }
+
+  // from json
+  {
+    SettingsHolder settingsHolder;
+
+    ServerCountryModel m;
+
+    QFETCH(QByteArray, json);
+    QCOMPARE(m.fromJson(jsonData, json), true);
+
+    QVERIFY(m.initialized());
+
+    QCOMPARE(m.countries().length(), 1);
+    const ServerCountry country = m.countries()[0];
+
+    QCOMPARE(country.cities().length(), 1);
+    const ServerCity city = country.cities()[0];
+
+    QCOMPARE(city.servers().length(), 1);
+    const Server server = city.servers()[0];
+
+    QFETCH(QString, socksName);
+    QCOMPARE(server.socksName(), socksName);
+
+    QFETCH(int, multihopPort);
+    QCOMPARE(server.multihopPort(), (uint32_t)multihopPort);
+  }
+
+  // from settings
+  {
+    SettingsHolder settingsHolder;
+
+    QFETCH(QByteArray, json);
+    SettingsHolder::instance()->setServers(jsonData);
+    SettingsHolder::instance()->setServerExtras(json);
+
+    ServerCountryModel m;
+    QCOMPARE(m.fromSettings(), true);
+
+    QVERIFY(m.initialized());
+
+    QCOMPARE(m.countries().length(), 1);
+    const ServerCountry country = m.countries()[0];
+
+    QCOMPARE(country.cities().length(), 1);
+    const ServerCity city = country.cities()[0];
+
+    QCOMPARE(city.servers().length(), 1);
+    const Server server = city.servers()[0];
+
+    QFETCH(QString, socksName);
+    QCOMPARE(server.socksName(), socksName);
+
+    QFETCH(int, multihopPort);
+    QCOMPARE(server.multihopPort(), (uint32_t)multihopPort);
+  }
+}
+
 // ServerData
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1100,7 +1248,7 @@ void TestModels::serverDataBasic() {
     countryObj.insert("code", "serverCountryCode");
     countryObj.insert("cities", QJsonArray());
     ServerCountry country;
-    QVERIFY(country.fromJson(countryObj));
+    QVERIFY(country.fromJson(countryObj, QHash<QString, ServerExtra>()));
 
     QJsonObject cityObj;
     cityObj.insert("code", "serverCityCode");
@@ -1108,7 +1256,7 @@ void TestModels::serverDataBasic() {
     cityObj.insert("servers", QJsonArray());
 
     ServerCity city;
-    QVERIFY(city.fromJson(cityObj));
+    QVERIFY(city.fromJson(cityObj, QHash<QString, ServerExtra>()));
 
     sd.update(country.code(), city.name());
     QCOMPARE(spy.count(), 1);
@@ -1520,18 +1668,18 @@ void TestModels::surveyModelFromJson() {
         QCOMPARE(sm.surveys()[0].url(), surveyUrl);
 
         QFETCH(int, surveyTriggerTime);
-        QCOMPARE(sm.surveys()[0].triggerTime(), surveyTriggerTime);
+        QCOMPARE((int)sm.surveys()[0].triggerTime(), surveyTriggerTime);
 
         Survey a(sm.surveys()[0]);
         QCOMPARE(a.id(), surveyId);
         QCOMPARE(a.url(), surveyUrl);
-        QCOMPARE(a.triggerTime(), surveyTriggerTime);
+        QCOMPARE((int)a.triggerTime(), surveyTriggerTime);
 
         Survey b;
         b = a;
         QCOMPARE(b.id(), surveyId);
         QCOMPARE(b.url(), surveyUrl);
-        QCOMPARE(b.triggerTime(), surveyTriggerTime);
+        QCOMPARE((int)b.triggerTime(), surveyTriggerTime);
 
         b = b;
       }
@@ -1563,7 +1711,7 @@ void TestModels::surveyModelFromJson() {
 
         QFETCH(int, surveyTriggerTime);
         QFETCH(bool, surveyTriggerable);
-        QCOMPARE(sm.surveys()[0].triggerTime(), surveyTriggerTime);
+        QCOMPARE((int)sm.surveys()[0].triggerTime(), surveyTriggerTime);
         QCOMPARE(sm.surveys()[0].isTriggerable(), surveyTriggerable);
 
         if (surveyTriggerable) {
@@ -1576,6 +1724,82 @@ void TestModels::surveyModelFromJson() {
       }
     }
   }
+}
+
+// ServerExtra
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::serverExtraBasic() {
+  ServerExtra s;
+  QCOMPARE(s.publicKey(), "");
+  QCOMPARE(s.socksName(), "");
+  QCOMPARE(s.multihopPort(), (uint32_t)0);
+}
+
+void TestModels::serverExtraFromJson_data() {
+  QTest::addColumn<QJsonObject>("json");
+  QTest::addColumn<bool>("result");
+  QTest::addColumn<QString>("publicKey");
+  QTest::addColumn<QString>("socksName");
+  QTest::addColumn<int>("multihopPort");
+
+  QJsonObject obj;
+  QTest::addRow("empty") << obj << false;
+
+  obj.insert("type", "foo");
+  QTest::addRow("unknown type") << obj << false;
+
+  obj.insert("type", "wireguard");
+  QTest::addRow("empty but good type") << obj << false;
+
+  obj.insert("pubkey", "publicKey");
+  QTest::addRow("publicKey") << obj << false;
+
+  obj.insert("socks_name", "socks_name");
+  QTest::addRow("socks_name") << obj << true << "publicKey"
+                              << "socks_name" << 0;
+
+  obj.insert("multihop_port", 1234);
+  QTest::addRow("multihop + socksname") << obj << true << "publicKey"
+                                        << "socks_name" << 1234;
+
+  obj.remove("socks_name");
+  QTest::addRow("multihop") << obj << true << "publicKey"
+                            << "" << 1234;
+}
+
+void TestModels::serverExtraFromJson() {
+  QFETCH(QJsonObject, json);
+  QFETCH(bool, result);
+
+  ServerExtra s;
+  QCOMPARE(s.fromJson(json), result);
+
+  if (!result) {
+    return;
+  }
+
+  QFETCH(QString, publicKey);
+  QCOMPARE(s.publicKey(), publicKey);
+
+  QFETCH(QString, socksName);
+  QCOMPARE(s.socksName(), socksName);
+
+  QFETCH(int, multihopPort);
+  QCOMPARE((int)s.multihopPort(), multihopPort);
+
+  ServerExtra sB(s);
+  QCOMPARE(sB.publicKey(), s.publicKey());
+  QCOMPARE(sB.socksName(), s.socksName());
+  QCOMPARE(sB.multihopPort(), s.multihopPort());
+
+  ServerExtra sC;
+  sC = s;
+  QCOMPARE(sC.publicKey(), s.publicKey());
+  QCOMPARE(sC.socksName(), s.socksName());
+  QCOMPARE(sC.multihopPort(), s.multihopPort());
+
+  s = s;
 }
 
 static TestModels s_testModels;

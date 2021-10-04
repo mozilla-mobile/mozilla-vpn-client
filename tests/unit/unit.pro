@@ -59,6 +59,7 @@ HEADERS += \
     ../../src/models/servercountry.h \
     ../../src/models/servercountrymodel.h \
     ../../src/models/serverdata.h \
+    ../../src/models/serverextra.h \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
@@ -100,6 +101,7 @@ HEADERS += \
     testbigintipv6addr.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
+    testfeature.h \
     testlocalizer.h \
     testlogger.h \
     testipaddress.h \
@@ -144,6 +146,7 @@ SOURCES += \
     ../../src/models/servercountry.cpp \
     ../../src/models/servercountrymodel.cpp \
     ../../src/models/serverdata.cpp \
+    ../../src/models/serverextra.cpp \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
@@ -184,6 +187,7 @@ SOURCES += \
     testbigintipv6addr.cpp \
     testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
+    testfeature.cpp \
     testlocalizer.cpp \
     testlogger.cpp \
     testipaddress.cpp \

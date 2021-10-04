@@ -68,14 +68,20 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
 QList<Feature*> Feature::getAll() { return s_features->values(); }
 
 // static
+const Feature* Feature::getOrNull(const QString& featureID) {
+  return s_features->value(featureID, nullptr);
+}
+
+// static
 const Feature* Feature::get(const QString& featureID) {
-  if (!s_features->contains(featureID)) {
+  const Feature* feature = getOrNull(featureID);
+  if (!feature) {
     logger.error() << "Invalid feature" << featureID;
     Q_ASSERT(false);
     return nullptr;
   };
 
-  return s_features->value(featureID, nullptr);
+  return feature;
 }
 
 bool Feature::isDevModeEnabled() const {
@@ -87,16 +93,13 @@ bool Feature::isDevModeEnabled() const {
 }
 
 bool Feature::isSupported() const {
-  logger.debug() << "Check feature " << m_id;
   if (isDevModeEnabled()) {
     logger.debug() << "Devmode Enabled " << m_id;
     return true;
   }
   if (!m_released) {
-    logger.debug() << "Not released " << m_id;
     return false;
   }
-  logger.debug() << "Check Support" << m_id;
   return checkSupportCallback();
 }
 

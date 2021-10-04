@@ -180,3 +180,28 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
   }
   return json.object();
 }
+
+QByteArray AndroidUtils::DeviceId() {
+  /*
+   * On Android 8.0 (API level 26) and higher versions of the platform,
+   * a 64-bit number (expressed as a hexadecimal string),
+   * unique to each combination of app-signing key, user, and device.
+   * Values of ANDROID_ID are scoped by signing key and user.
+   * The value may change if a factory reset is performed on the device or if an
+   * APK signing key changes.
+   */
+  QAndroidJniEnvironment env;
+  QAndroidJniObject activity = QtAndroid::androidActivity();
+  QAndroidJniObject string = QAndroidJniObject::callStaticObjectMethod(
+      "org/mozilla/firefox/vpn/qt/VPNUtils", "getDeviceID",
+      "(Landroid/content/Context;)Ljava/lang/String;", activity.object());
+  jstring value = (jstring)string.object();
+  const char* buffer = env->GetStringUTFChars(value, nullptr);
+  if (!buffer) {
+    return QString("").toUtf8();
+  }
+  QString res(buffer);
+  logger.info() << "DeviceID: " << res;
+  env->ReleaseStringUTFChars(value, buffer);
+  return res.toUtf8();
+}

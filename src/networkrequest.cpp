@@ -136,7 +136,8 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 // static
 NetworkRequest* NetworkRequest::createForAdjustProxy(
     QObject* parent, const QString& method, const QString& route,
-    const QList<QPair<QString, QString>>& headers, const QString& parameters,
+    const QList<QPair<QString, QString>>& headers,
+    const QString& queryParameters, const QString& bodyParameters,
     const QList<QString>& unknownParameters) {
   Q_ASSERT(parent);
 
@@ -158,7 +159,8 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
   obj.insert("method", method);
   obj.insert("path", route);
   obj.insert("headers", headersObj);
-  obj.insert("parameters", parameters);
+  obj.insert("queryParameters", queryParameters);
+  obj.insert("bodyParameters", bodyParameters);
 
   QJsonArray unknownParametersArray;
   for (QString unknownParameter : unknownParameters) {
@@ -228,6 +230,15 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   url.setPath("/api/v1/vpn/servers");
   r->m_request.setUrl(url);
 
+  r->getRequest();
+  return r;
+}
+
+NetworkRequest* NetworkRequest::createForServerExtra(QObject* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+  r->m_request.setUrl(QUrl(Constants::MULLVAD_EXTRA_SERVER_URL));
   r->getRequest();
   return r;
 }
