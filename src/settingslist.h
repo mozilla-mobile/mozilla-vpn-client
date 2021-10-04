@@ -289,8 +289,8 @@ SETTING_STRING(stagingServerAddress,     // getter
                hasStagingServerAddress,  // has
                "stagingServerAddress",   // key
                envOrDefault("MVPN_API_BASE_URL",
-                            Constants::API_PRODUCTION_URL),  // default value
-               false  // remove when reset
+                            Constants::API_STAGING_URL),  // default value
+               false                                      // remove when reset
 )
 
 SETTING_BOOL(stagingServer,     // getter
