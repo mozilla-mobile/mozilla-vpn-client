@@ -310,6 +310,10 @@ More info on debug view in [glean docs](https://mozilla.github.io/glean/book/use
 
 When the client is in staging mode, but not debug mode, pings will have the applicationId `MozillaVPN-staging` which allows for filtering between staging and production pings.
 
+#### A note on glean embedding
+
+Qt only accepts `major.minor` versions for importing. So if, for example, you're embedding glean v0.21.2 then it will still, for Qt's purpose, be v0.21.
+
 ## Bug report
 
 Please file bugs here: https://github.com/mozilla-mobile/mozilla-vpn-client/issues
