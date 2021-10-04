@@ -38,3 +38,11 @@ void IOSAdjustHelper::trackEvent(const QString& eventToken) {
     [Adjust trackEvent:event];
   }
 }
+
+void IOSAdjustHelper::forget() {
+  NSString* adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
+
+  if (adjustToken.length) {
+    [Adjust gdprForgetMe];
+  }
+}

@@ -17,8 +17,6 @@ class AdjustProxy final : public QTcpServer {
 
   bool initialize(quint16 port);
 
-  static AdjustProxy* instance();
-
  private:
   void newConnectionReceived();
 };
