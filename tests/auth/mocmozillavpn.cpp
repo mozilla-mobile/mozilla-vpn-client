@@ -26,6 +26,7 @@ MozillaVPN::~MozillaVPN() {}
 
 MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
 bool MozillaVPN::stagingMode() const { return true; }
+bool MozillaVPN::debugMode() const { return true; }
 
 void MozillaVPN::initialize() {}
 
@@ -163,3 +164,7 @@ void MozillaVPN::reset(bool) {}
 void MozillaVPN::maybeRegenerateDeviceKey() {}
 
 void MozillaVPN::hardResetAndQuit() {}
+
+const QString MozillaVPN::gleanApplicationId() {
+  return "MozillaVPN-tests-auth";
+}

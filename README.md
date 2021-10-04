@@ -303,10 +303,12 @@ From the inspector, type `help` to see the list of available commands.
 
 ## Glean
 
-When the client is built in debug mode, ping contents will be logged to the client logs and will also be sent to the
-[glean debug viewer](https://debug-ping-preview.firebaseapp.com/pings/MozillaVPN) where they are retained for 3 weeks.
+When the client is built in debug mode, pings will have the applicationId `MozillaVPN-debug`. Additionally, ping contents will be logged to the client logs and will also be sent to the
+[glean debug viewer](https://debug-ping-preview.firebaseapp.com/pings/MozillaVPN) (login required) where they are retained for 3 weeks.
 
 More info on debug view in [glean docs](https://mozilla.github.io/glean/book/user/debugging/index.html).
+
+When the client is in staging mode, but not debug mode, pings will have the applicationId `MozillaVPN-staging` which allows for filtering between staging and production pings.
 
 ## Bug report
 

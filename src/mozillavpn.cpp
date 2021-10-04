@@ -199,6 +199,25 @@ MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
 bool MozillaVPN::stagingMode() const { return !Constants::inProduction(); }
 
+bool MozillaVPN::debugMode() const {
+#ifdef MVPN_DEBUG
+  return true;
+#else
+  return false;
+#endif
+}
+
+const QString MozillaVPN::gleanApplicationId() {
+  QString applicationId = "MozillaVPN";
+  if (stagingMode()) {
+    applicationId = applicationId + "-staging";
+  }
+  if (debugMode()) {
+    applicationId = applicationId + "-debug";
+  }
+  return applicationId;
+}
+
 void MozillaVPN::initialize() {
   logger.debug() << "MozillaVPN Initialization";
 

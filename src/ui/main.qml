@@ -57,22 +57,28 @@ Window {
         if (VPN.startMinimized) {
             this.showMinimized();
         }
-
         if (!fullscreenRequired()) {
-            maximumHeight = Theme.desktopAppHeight
-            minimumHeight = Theme.desktopAppHeight
-            maximumWidth = Theme.desktopAppWidth
-            minimumWidth = Theme.desktopAppWidth
+            maximumHeight = Theme.desktopAppHeight;
+            minimumHeight = Theme.desktopAppHeight;
+            maximumWidth = Theme.desktopAppWidth;
+            minimumWidth = Theme.desktopAppWidth;
         }
-
-        Glean.initialize('MozillaVPN-debug', VPNSettings.gleanEnabled, {
-          appBuild: `MozillaVPN/${VPN.versionString}`,
-          appDisplayVersion: VPN.versionString,
-          debug: {
-              logPings: true,
-              debugViewTag: 'MozillaVPN',
-          }
-        });
+        if (VPN.debugMode) {
+            // Set-up debug properties for pings in debug mode
+            Glean.initialize(VPN.gleanApplicationId, VPNSettings.gleanEnabled, {
+                appBuild: "MozillaVPN/" + VPN.versionString,
+                appDisplayVersion: VPN.versionString,
+                debug: {
+                    logPings: true,
+                    debugViewTag: "MozillaVPN"
+                }
+            });
+        } else {
+            Glean.initialize(VPN.gleanApplicationId, VPNSettings.gleanEnabled, {
+                appBuild: "MozillaVPN/" + VPN.versionString,
+                appDisplayVersion: VPN.versionString,
+            });
+        }
     }
 
     MouseArea {
