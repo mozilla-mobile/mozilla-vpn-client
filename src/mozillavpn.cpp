@@ -56,8 +56,7 @@
 #endif
 
 #ifdef MVPN_ADJUST
-#  include "adjusthandler.h"
-#  include "adjustproxy.h"
+#  include "adjust/adjusthandler.h"
 #endif
 
 #include <QApplication>
@@ -70,7 +69,6 @@
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
-#include <QRandomGenerator>
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
@@ -92,17 +90,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   logger.debug() << "Creating MozillaVPN singleton";
 
 #ifdef MVPN_ADJUST
-  AdjustProxy* adjustProxy = new AdjustProxy(qApp);
-  QObject::connect(controller(), &Controller::readyToQuit, adjustProxy,
-                   &AdjustProxy::close);
-  for (int i = 0; i < 5; i++) {
-    quint16 port = QRandomGenerator::global()->bounded(1024, 65536);
-    bool succeeded = adjustProxy->initialize(port);
-    if (succeeded) {
-      break;
-    }
-  }
-  AdjustHandler::initialize(adjustProxy->serverPort());
+  connect(this, &MozillaVPN::stateChanged,
+          []() { AdjustHandler::maybeInitialize(); });
 #endif
 
   Q_ASSERT(!s_instance);
@@ -681,20 +670,23 @@ void MozillaVPN::deviceRemoved(const QString& publicKey) {
   m_private->m_deviceModel.removeDeviceFromPublicKey(publicKey);
 }
 
-bool MozillaVPN::setServerList(const QByteArray& serverData) {
-  if (!m_private->m_serverCountryModel.fromJson(serverData)) {
+bool MozillaVPN::setServerList(const QByteArray& serverData,
+                               const QByteArray& serverExtraData) {
+  if (!m_private->m_serverCountryModel.fromJson(serverData, serverExtraData)) {
     logger.error() << "Failed to store the server-countries";
     return false;
   }
 
   SettingsHolder::instance()->setServers(serverData);
+  SettingsHolder::instance()->setServerExtras(serverExtraData);
   return true;
 }
 
-void MozillaVPN::serversFetched(const QByteArray& serverData) {
+void MozillaVPN::serversFetched(const QByteArray& serverData,
+                                const QByteArray& serverExtraData) {
   logger.debug() << "Server fetched!";
 
-  if (!setServerList(serverData)) {
+  if (!setServerList(serverData, serverExtraData)) {
     // This is OK. The check is done elsewhere.
     return;
   }

@@ -15,6 +15,8 @@ void TestTasks::accountAndServers() {
         TestHelper::NetworkConfig::Failure, QByteArray()));
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Failure, QByteArray()));
+    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+        TestHelper::NetworkConfig::Failure, QByteArray()));
 
     TaskAccountAndServers* task = new TaskAccountAndServers();
 
@@ -27,6 +29,8 @@ void TestTasks::accountAndServers() {
 
   // Success
   {
+    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+        TestHelper::NetworkConfig::Success, QByteArray()));
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Success, QByteArray()));
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
