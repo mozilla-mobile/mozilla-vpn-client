@@ -121,82 +121,12 @@ VPNFlickable {
                         messages: [
                             {
                                 type: "error",
-                                message: VPNl18n.ServersViewSearchNoResultsLabel,
-                                visible: serverSearchInput.hasError
+                                message: ipInput.error,
+                                visible: ipInput.valueInvalid && ipInput.visible
                             }
                         ]
                     }
 
-                    VPNCheckBoxAlert {
-                            id: errorAlert
-                            errorMessage: ipInput.error
-                            anchors.left: undefined
-                            anchors.right: undefined
-                            anchors.leftMargin: undefined
-                            anchors.rightMargin: undefined
-                            anchors.top: undefined
-                            anchors.topMargin: undefined
-                            Layout.leftMargin: ipInput.Layout.leftMargin
-                            alertColor: Theme.red
-                            width: ipInput.width - ipInput.Layout.leftMargin
-
-                            states: [
-                                State {
-                                    name: "visible"
-                                    when: ipInput.valueInvalid && ipInput.visible
-                                    PropertyChanges {
-                                        target: errorAlert
-                                        visible: true
-                                        opacity: 1
-                                    }
-                                },
-                                State {
-                                    name: "hidden"
-                                    when: !ipInput.valueInvalid || !ipInput.visible
-                                    PropertyChanges {
-                                        target: errorAlert
-                                        visible: false
-                                        opacity: 0
-                                    }
-                                }
-                            ]
-
-                            transitions: [
-                                Transition {
-                                    to: "hidden"
-                                    SequentialAnimation {
-                                        PropertyAnimation {
-                                            target: errorAlert
-                                            property: "opacity"
-                                            to: 0
-                                            duration: 100
-                                        }
-                                        PropertyAction {
-                                            target: errorAlert
-                                            property: "visible"
-                                            value: false
-                                        }
-                                    }
-                                },
-                                Transition {
-                                    to: "visible"
-                                    SequentialAnimation {
-                                        PropertyAction {
-                                            target: errorAlert
-                                            property: "visible"
-                                            value: true
-                                        }
-                                        PropertyAnimation {
-                                            target: errorAlert
-                                            property: "opacity"
-                                            from: 0
-                                            to: 1
-                                            duration: 100
-                                        }
-                                    }
-                                }
-                            ]
-                        }
                 }
             }
         }
