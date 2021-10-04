@@ -8,6 +8,7 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
+import "../components/forms"
 import "../themes/themes.js" as Theme
 
 import org.mozilla.Glean 0.15
@@ -49,11 +50,17 @@ Item {
             anchors.topMargin: Theme.windowMargin
             spacing: Theme.windowMargin
 
-            VPNCheckBoxAlert {
-                id: alert
-                //% "VPN must be off to edit these settings"
-                //: Associated to a group of settings that require the VPN to be disconnected to change
-                errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
+            VPNInputMessages {
+                anchors.leftMargin: Theme.windowMargin
+                messages: [
+                    {
+                        type: "warning",
+                        //% "VPN must be off to edit these settings"
+                        //: Associated to a group of settings that require the VPN to be disconnected to change
+                        message: qsTrId("vpn.settings.vpnMustBeOff"),
+                        visible: VPNController.state !== VPNController.StateOff
+                    }
+                ]
             }
 
             VPNCheckBoxRow {

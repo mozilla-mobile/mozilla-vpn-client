@@ -113,6 +113,20 @@ VPNFlickable {
                         }
                     }
 
+                    VPNInputMessages {
+                        id: errorAlert
+                        anchors.top: serverSearchInput.bottom
+                        anchors.topMargin: Theme.listSpacing
+
+                        messages: [
+                            {
+                                type: "error",
+                                message: VPNl18n.ServersViewSearchNoResultsLabel,
+                                visible: serverSearchInput.hasError
+                            }
+                        ]
+                    }
+
                     VPNCheckBoxAlert {
                             id: errorAlert
                             errorMessage: ipInput.error
