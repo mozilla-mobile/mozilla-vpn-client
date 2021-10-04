@@ -25,21 +25,21 @@ ColumnLayout {
         DelegateChoice {
             roleValue: "info"
             delegate: VPNInputMessage {
-                fontColor: Color.informational.active
+                fontColor: Color.informational.default
                 iconSrc: "../../resources/connection-info-dark.svg"
             }
         }
         DelegateChoice {
             roleValue: "warning"
             delegate: VPNInputMessage {
-                fontColor: Color.warning.active
+                fontColor: Color.warning.default
                 iconSrc: "../../resources/warning-orange.svg"
             }
         }
         DelegateChoice {
             roleValue: "error"
             delegate: VPNInputMessage {
-                fontColor: Color.error.active
+                fontColor: Color.error.default
                 iconSrc: "../../resources/warning.svg"
             }
         }
