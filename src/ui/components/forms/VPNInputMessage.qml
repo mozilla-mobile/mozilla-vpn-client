@@ -69,15 +69,14 @@ RowLayout {
         Layout.rightMargin: Theme.listSpacing
     }
 
-    VPNInterLabel {
+    VPNTextBlock {
         id: messageText
 
         color: fontColor
-        horizontalAlignment: Text.AlignLeft
-        font.pixelSize: Theme.fontSizeSmall
         text: modelData.message
+        wrapMode: Text.WordWrap
 
         Layout.fillWidth: true
-        width: undefined
+        Layout.topMargin: Theme.listSpacing / 2
     }
 }

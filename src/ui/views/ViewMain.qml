@@ -81,35 +81,6 @@ VPNFlickable {
             }
         }
 
-        VPNSearchBar {
-            id: testSearch
-            enabled: true
-            height: Theme.rowHeight
-            z: 1
-            Layout.fillWidth: true
-
-            VPNInputMessages {
-                anchors.top: testSearch.bottom
-                messages: [
-                    {
-                        type: "error",
-                        message: "Error message",
-                        visible: testSearch.text.length > 0,
-                    },
-                    {
-                        type: "warning",
-                        message: "This is a warning",
-                        visible: testSearch.text.length > 1,
-                    },
-                    {
-                        type: "info",
-                        message: "Only informational",
-                        visible: testSearch.text.length > 2,
-                    }
-                ]
-            }
-        }
-
         VPNAlerts {
             id: notifications
         }

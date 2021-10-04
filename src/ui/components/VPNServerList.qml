@@ -111,6 +111,7 @@ FocusScope {
                 Keys.onDownPressed: recentConnections.visible ? recentConnections.focusItemAt(0) : countriesRepeater.itemAt(0).forceActiveFocus()
 
                 VPNInputMessages {
+                    id: searchWarning
                     anchors.top: serverSearchInput.bottom
                     anchors.topMargin: Theme.listSpacing
 

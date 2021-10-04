@@ -32,7 +32,6 @@
         <file>ui/components/VPNCheckBoxRow.qml</file>
         <file>ui/components/VPNMainImage.qml</file>
         <file>ui/components/VPNCheckBox.qml</file>
-        <file>ui/components/VPNCheckBoxAlert.qml</file>
         <file>ui/components/VPNRadioSublabel.qml</file>
         <file>ui/components/VPNLinkButton.qml</file>
         <file>ui/components/VPNGraphLegendMarker.qml</file>
