@@ -17,7 +17,41 @@ RowLayout {
 
     spacing: 0
     visible: modelData.visible
-
+    states: [
+        State {
+            name: "visible"
+            when: visible
+        },
+        State {
+            name: "hidden"
+            when: !visible
+        }
+    ]
+    transitions: [
+        Transition {
+            to: "hidden"
+            SequentialAnimation {
+                PropertyAnimation {
+                    target: messageItem
+                    property: "opacity"
+                    to: 0
+                    duration: 100
+                }
+            }
+        },
+        Transition {
+            to: "visible"
+            SequentialAnimation {
+                PropertyAnimation {
+                    target: messageItem
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: 100
+                }
+            }
+        }
+    ]
     Layout.fillWidth: true
 
     VPNIcon {
