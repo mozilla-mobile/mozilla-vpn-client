@@ -132,6 +132,7 @@ SOURCES += \
         platforms/dummy/dummyapplistprovider.cpp \
         platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
+        platforms/dummy/dummypingsender.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc/rfc1918.cpp \
@@ -261,6 +262,7 @@ HEADERS += \
         platforms/dummy/dummyapplistprovider.h \
         platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
+        platforms/dummy/dummypingsender.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc/rfc1918.h \
@@ -312,7 +314,6 @@ unix {
 }
 
 RESOURCES += qml.qrc
-RESOURCES += logo.qrc
 RESOURCES += inspector/inspector.qrc
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
@@ -359,13 +360,11 @@ DUMMY {
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/dummy/dummycryptosettings.cpp \
-            platforms/dummy/dummypingsender.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
     HEADERS += \
             platforms/dummy/dummycontroller.h \
-            platforms/dummy/dummypingsender.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 }
@@ -520,13 +519,13 @@ else:android {
         message(Adjust SDK enabled)
         DEFINES += MVPN_ADJUST
 
-        SOURCES += adjusthandler.cpp \
-                   adjustproxy.cpp \
-                   adjustproxyconnection.cpp
+        SOURCES += adjust/adjusthandler.cpp \
+                   adjust/adjustproxy.cpp \
+                   adjust/adjustproxyconnection.cpp
 
-        HEADERS += adjusthandler.h \
-                   adjustproxy.h \
-                   adjustproxyconnection.h
+        HEADERS += adjust/adjusthandler.h \
+                   adjust/adjustproxy.h \
+                   adjust/adjustproxyconnection.h
     }
 
     versionAtLeast(QT_VERSION, 5.15.1) {
@@ -729,16 +728,16 @@ else:ios {
         DEFINES += MVPN_ADJUST
 
         OBJECTIVE_SOURCES += \
-            adjusthandler.cpp \
-            adjustproxy.cpp \
-            adjustproxyconnection.cpp \
-            platforms/ios/iosadjusthelper.mm \
+            adjust/adjusthandler.cpp \
+            adjust/adjustproxy.cpp \
+            adjust/adjustproxyconnection.cpp \
+            platforms/ios/iosadjusthelper.mm
 
         OBJECTIVE_HEADERS += \
-            adjusthandler.h \
-            adjustproxy.h \
-            adjustproxyconnection.h \
-            platforms/ios/iosadjusthelper.h \
+            adjust/adjusthandler.h \
+            adjust/adjustproxy.h \
+            adjust/adjustproxyconnection.h \
+            platforms/ios/iosadjusthelper.h
 
     }
 
@@ -897,7 +896,6 @@ else:wasm {
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/dummy/dummycryptosettings.cpp \
-            platforms/dummy/dummypingsender.cpp \
             platforms/macos/macosmenubar.cpp \
             platforms/wasm/wasmauthenticationlistener.cpp \
             platforms/wasm/wasmnetworkrequest.cpp \
@@ -907,7 +905,6 @@ else:wasm {
 
     HEADERS += \
             platforms/dummy/dummycontroller.h \
-            platforms/dummy/dummypingsender.h \
             platforms/macos/macosmenubar.h \
             platforms/wasm/wasmauthenticationlistener.h \
             platforms/wasm/wasmnetworkwatcher.h \
