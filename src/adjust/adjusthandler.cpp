@@ -6,6 +6,7 @@
 #include "adjustproxy.h"
 #include "constants.h"
 #include "mozillavpn.h"
+#include "logger.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosadjusthelper.h"
@@ -18,6 +19,7 @@
 #include <QRandomGenerator>
 
 namespace {
+Logger logger(LOG_ADJUST, "AdjustHandler");
 bool s_initialized = false;
 }  // namespace
 
@@ -31,6 +33,11 @@ void AdjustHandler::maybeInitialize() {
   AdjustProxy* adjustProxy = new AdjustProxy(MozillaVPN::instance());
   QObject::connect(MozillaVPN::instance()->controller(),
                    &Controller::readyToQuit, adjustProxy, &AdjustProxy::close);
+  QObject::connect(adjustProxy, &AdjustProxy::acceptError,
+                   [](QAbstractSocket::SocketError socketError) {
+                     logger.error()
+                         << "Adjust Proxy connection error: " << socketError;
+                   });
   for (int i = 0; i < 5; i++) {
     quint16 port = QRandomGenerator::global()->bounded(1024, 65536);
     bool succeeded = adjustProxy->initialize(port);
@@ -40,6 +47,7 @@ void AdjustHandler::maybeInitialize() {
   }
 
   if (!adjustProxy->isListening()) {
+    logger.error() << "Adjust Proxy listening failed";
     return;
   }
 
@@ -56,6 +64,7 @@ void AdjustHandler::maybeInitialize() {
 
 void AdjustHandler::trackEvent(const QString& event) {
   if (!AdjustProxy::instance()->isListening()) {
+    logger.error() << "Adjust Proxy not listening; event tracking failed";
     return;
   }
 
