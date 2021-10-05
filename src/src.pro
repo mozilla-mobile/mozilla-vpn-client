@@ -314,7 +314,6 @@ unix {
 }
 
 RESOURCES += qml.qrc
-RESOURCES += logo.qrc
 RESOURCES += inspector/inspector.qrc
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
