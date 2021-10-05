@@ -47,7 +47,7 @@ bool AdjustProxy::initialize(quint16 port) {
 }
 
 void AdjustProxy::newConnectionReceived() {
-  logger.debug() << "New Adjust Proxy connection recieved";
+  logger.debug() << "New Adjust Proxy connection received";
 
   QTcpSocket* child = nextPendingConnection();
   Q_ASSERT(child);
