@@ -45,6 +45,7 @@ AdjustProxyConnection::~AdjustProxyConnection() {
 }
 
 void AdjustProxyConnection::readData() {
+  logger.debug() << "New data read";
   Q_ASSERT(m_connection);
   QByteArray input = m_connection->readAll();
   m_buffer.append(input);
@@ -69,6 +70,8 @@ void AdjustProxyConnection::readData() {
 }
 
 void AdjustProxyConnection::processFirstLine() {
+  logger.debug() << "Processing first line";
+
   if (m_buffer.isEmpty()) {
     return;
   }
@@ -95,6 +98,8 @@ void AdjustProxyConnection::processFirstLine() {
 }
 
 void AdjustProxyConnection::processHeaders() {
+  logger.debug() << "Processing headers";
+
   if (m_buffer.isEmpty()) {
     return;
   }
@@ -149,6 +154,8 @@ void AdjustProxyConnection::processHeaders() {
 }
 
 void AdjustProxyConnection::processParameters() {
+  logger.debug() << "Processing parameters";
+
   uint32_t bodyLength = m_buffer.trimmed().length();
 
   if (bodyLength > m_contentLength) {
@@ -168,6 +175,8 @@ void AdjustProxyConnection::processParameters() {
 }
 
 void AdjustProxyConnection::filterParametersAndForwardRequest() {
+  logger.debug() << "Filtering parameters";
+
   m_queryParameters =
       AdjustFiltering::filterParameters(m_queryParameters, m_unknownParameters);
   m_bodyParameters =
@@ -177,6 +186,8 @@ void AdjustProxyConnection::filterParametersAndForwardRequest() {
 }
 
 void AdjustProxyConnection::forwardRequest() {
+  logger.debug() << "Forwarding request";
+
   NetworkRequest* request;
 
   QString headersString;
