@@ -5,11 +5,13 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include <QHash>
 #include <QList>
 #include <QPair>
 #include <QString>
 
 class QJsonObject;
+class ServerExtra;
 
 class Server final {
  public:
@@ -18,7 +20,8 @@ class Server final {
   Server& operator=(const Server& other);
   ~Server();
 
-  [[nodiscard]] bool fromJson(const QJsonObject& obj);
+  [[nodiscard]] bool fromJson(const QJsonObject& obj,
+                              const QHash<QString, ServerExtra>& serverExtras);
 
   static const Server& weightChooser(const QList<Server>& servers);
 
@@ -36,9 +39,13 @@ class Server final {
 
   const QString& publicKey() const { return m_publicKey; }
 
+  const QString& socksName() const { return m_socksName; }
+
   uint32_t weight() const { return m_weight; }
 
   uint32_t choosePort() const;
+
+  uint32_t multihopPort() const { return m_multihopPort; }
 
   bool operator==(const Server& other) const {
     return m_publicKey == other.m_publicKey;
@@ -52,7 +59,9 @@ class Server final {
   QString m_ipv6Gateway;
   QList<QPair<uint32_t, uint32_t>> m_portRanges;
   QString m_publicKey;
+  QString m_socksName;
   uint32_t m_weight = 0;
+  uint32_t m_multihopPort = 0;
 };
 
 #endif  // SERVER_H

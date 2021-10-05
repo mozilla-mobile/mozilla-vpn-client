@@ -238,6 +238,20 @@ void AdjustProxyConnection::filterParametersAndForwardRequest() {
 void AdjustProxyConnection::forwardRequest() {
   NetworkRequest* request;
 
+  QString headersString;
+
+  for (QPair<QString, QString> header : m_headers) {
+    headersString.append(header.first);
+    headersString.append(": ");
+    headersString.append(header.second);
+    headersString.append(", ");
+  }
+
+  logger.debug() << "Sending Adjust request with: " << m_method << ", "
+                 << headersString
+                 << logger.sensitive(m_queryParameters.toString()) << ", "
+                 << logger.sensitive(m_bodyParameters.toString());
+
   request = NetworkRequest::createForAdjustProxy(
       this, m_method, m_route.toString(), m_headers,
       m_queryParameters.toString(), m_bodyParameters.toString(),
