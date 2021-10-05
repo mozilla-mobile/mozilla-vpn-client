@@ -113,7 +113,11 @@ void AdjustHandler::trackEvent(const QString& event) {
 }
 
 void AdjustHandler::forget() {
+  logger.debug() << "Adjust Proxy forget";
+
   if (!s_adjustProxy || !s_adjustProxy->isListening()) {
+    logger.error()
+        << "Adjust Proxy cannot forget because proxy is not listening!";
     return;
   }
 
