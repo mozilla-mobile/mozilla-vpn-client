@@ -65,11 +65,11 @@ void AdjustHandler::initialize() {
   s_adjustProxy = new AdjustProxy(vpn);
   QObject::connect(vpn->controller(), &Controller::readyToQuit, s_adjustProxy,
                    &AdjustProxy::close);
-  QObject::connect(adjustProxy, &AdjustProxy::acceptError,
-                  [](QAbstractSocket::SocketError socketError) {
-                    logger.error()
-                        << "Adjust Proxy connection error: " << socketError;
-                  });
+  QObject::connect(s_adjustProxy, &AdjustProxy::acceptError,
+                   [](QAbstractSocket::SocketError socketError) {
+                     logger.error()
+                         << "Adjust Proxy connection error: " << socketError;
+                   });
   for (int i = 0; i < 5; i++) {
     quint16 port = QRandomGenerator::global()->bounded(1024, 65536);
     bool succeeded = s_adjustProxy->initialize(port);
