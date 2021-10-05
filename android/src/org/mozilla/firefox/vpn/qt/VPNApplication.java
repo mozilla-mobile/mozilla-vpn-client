@@ -47,6 +47,12 @@ public class VPNApplication extends org.qtproject.qt5.android.bindings.QtApplica
     }
   }
 
+  public static void forget(Activity activity) {
+    if (BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
+      Adjust.gdprForgetMe(activity);
+    }
+  }
+
   private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
       @Override
       public void onActivityResumed(Activity activity) {
