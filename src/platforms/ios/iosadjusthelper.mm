@@ -23,7 +23,7 @@ void IOSAdjustHelper::initialize(quint16 proxyPort) {
     ADJConfig *adjustConfig = [ADJConfig configWithAppToken:adjustToken
                                                 environment:environment];
     [adjustConfig setLogLevel:ADJLogLevelDebug];
-    NSString* proxyAddress = [NSString stringWithFormat:@"http://localhost:%d", proxyPort];
+    NSString* proxyAddress = [NSString stringWithFormat:@"http://127.0.0.1:%d", proxyPort];
     [ADJAdjustFactory setBaseUrl:proxyAddress];
     [ADJAdjustFactory setGdprUrl:proxyAddress];
     [Adjust appDidLaunch:adjustConfig];
