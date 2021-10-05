@@ -81,7 +81,9 @@ void FeatureList::devModeFlipFeatureFlag(const QString& feature) {
 }
 
 QHash<int, QByteArray> FeatureList::roleNames() const {
-  return Feature::roleNames();
+  QHash<int, QByteArray> roles;
+  roles[FeatureRole] = "feature";
+  return roles;
 }
 
 int FeatureList::rowCount(const QModelIndex&) const {
@@ -90,10 +92,11 @@ int FeatureList::rowCount(const QModelIndex&) const {
 
 QVariant FeatureList::data(const QModelIndex& index, int role) const {
   auto feature = m_featurelist.at(index.row());
-  if (feature == nullptr) {
+  if (feature == nullptr || role != FeatureRole) {
     return QVariant();
   }
-  return feature->data(role);
+
+  return QVariant::fromValue(feature);
 };
 
 QObject* FeatureList::get(const QString& feature) {
