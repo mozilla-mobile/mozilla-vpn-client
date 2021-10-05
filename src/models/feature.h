@@ -54,7 +54,7 @@ class Feature : public QObject {
   bool isSupported() const;
 
   // Returns true if it was enabled via DevMode
-  bool isDevModeEnabled() const;
+  Q_INVOKABLE bool isDevModeEnabled() const;
 
   // Returns true if this is a newly introduced feature
   bool isNew() const { return m_new; }
@@ -68,26 +68,6 @@ class Feature : public QObject {
   QString shortDescription() const;
   QString imagePath() const { return m_imagePath; }
   QString iconPath() const { return m_iconPath; }
-
-  // For use in QAbstractListModel
-  static QHash<int, QByteArray> roleNames();
-  QVariant data(int role) const;
-
-  enum ModelRoles {
-    RoleId,
-    RoleName,
-    RoleDisplayName,
-    RoleDescription,
-    RoleShortDescription,
-    RoleImagePath,
-    RoleIconPath,
-    RoleReleased,
-    RoleSupported,
-    RoleNew,
-    RoleMajor,
-    RoleDevModeWriteable,
-    RoleDevModeEnabled
-  };
 
  signals:
   // Is send if the underlying factors for support changed
