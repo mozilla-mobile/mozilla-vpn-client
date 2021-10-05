@@ -295,6 +295,9 @@ GETSETDEFAULT(SETTINGS_DEFAULT_EMPTY_LIST, QStringList, toStringList,
               SETTINGS_RECENT_CONNECTIONS, hasRecentConnections,
               recentConnections, setRecentConnections,
               recentConnectionsChanged);
+GETSETDEFAULT(false, bool, toBool, SETTINGS_TELEMETRYPOLICYSHOWN,
+              hasTelemetryPolicyShown, telemetryPolicyShown,
+              setTelemetryPolicyShown, telemetryPolicyShownChanged);
 
 #undef GETSETDEFAULT
 
@@ -351,8 +354,6 @@ GETSET(QStringList, toStringList, SETTINGS_CAPTIVEPORTALIPV6ADDRESSES,
 GETSET(bool, toBool, SETTINGS_POSTAUTHENTICATIONSHOWN,
        hasPostAuthenticationShown, postAuthenticationShown,
        setPostAuthenticationShown);
-GETSET(bool, toBool, SETTINGS_TELEMETRYPOLICYSHOWN, hasTelemetryPolicyShown,
-       telemetryPolicyShown, setTelemetryPolicyShown);
 GETSET(QString, toString, SETTINGS_LANGUAGECODE, hasLanguageCode, languageCode,
        setLanguageCode);
 GETSET(QString, toString, SETTINGS_PREVIOUSLANGUAGECODE,
