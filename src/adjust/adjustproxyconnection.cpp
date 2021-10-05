@@ -6,6 +6,7 @@
 // It is just a proxy server designed to work with the Adjust SDK
 
 #include "adjustproxyconnection.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -40,10 +41,10 @@ const QList<QString> allowList{"adid",
 
 const QList<QPair<QString, QString>> defaultValues{
     QPair<QString, QString>("app_name", "default"),
-    QPair<QString, QString>("app_version", "2.0"),
-    QPair<QString, QString>("app_version_short", "2.0"),
+    QPair<QString, QString>("app_version", "2"),
+    QPair<QString, QString>("app_version_short", "2"),
     QPair<QString, QString>("base_amount", "0"),
-    QPair<QString, QString>("device_name", "default"),
+    QPair<QString, QString>("device_name", Constants::PLATFORM_NAME),
     QPair<QString, QString>("engagement_type", "0"),
     QPair<QString, QString>("event_buffering_enabled", "0"),
     QPair<QString, QString>("event_cost_id", "xxxxx"),
