@@ -18,6 +18,10 @@ class FeatureList final : public QAbstractListModel {
   FeatureList() = default;
 
  public:
+  enum ModelRoles {
+    FeatureRole = Qt::UserRole + 1,
+  };
+
   static FeatureList* instance();
 
   void initialize();
