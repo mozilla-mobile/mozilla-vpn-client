@@ -519,11 +519,13 @@ else:android {
         message(Adjust SDK enabled)
         DEFINES += MVPN_ADJUST
 
-        SOURCES += adjust/adjusthandler.cpp \
+        SOURCES += adjust/adjustfiltering.cpp \
+                   adjust/adjusthandler.cpp \
                    adjust/adjustproxy.cpp \
                    adjust/adjustproxyconnection.cpp
 
-        HEADERS += adjust/adjusthandler.h \
+        HEADERS += adjust/adjustfiltering.h \
+                   adjust/adjusthandler.h \
                    adjust/adjustproxy.h \
                    adjust/adjustproxyconnection.h
     }
@@ -727,18 +729,19 @@ else:ios {
         message(Adjust SDK enabled)
         DEFINES += MVPN_ADJUST
 
-        OBJECTIVE_SOURCES += \
-            adjust/adjusthandler.cpp \
-            adjust/adjustproxy.cpp \
-            adjust/adjustproxyconnection.cpp \
-            platforms/ios/iosadjusthelper.mm
+        SOURCES += adjust/adjustfiltering.cpp \
+                   adjust/adjusthandler.cpp \
+                   adjust/adjustproxy.cpp \
+                   adjust/adjustproxyconnection.cpp
 
-        OBJECTIVE_HEADERS += \
-            adjust/adjusthandler.h \
-            adjust/adjustproxy.h \
-            adjust/adjustproxyconnection.h \
-            platforms/ios/iosadjusthelper.h
+        OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm
 
+        HEADERS += adjust/adjustfiltering.h \
+                   adjust/adjusthandler.h \
+                   adjust/adjustproxy.h \
+                   adjust/adjustproxyconnection.h
+
+        OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h
     }
 
     TARGET = MozillaVPN
