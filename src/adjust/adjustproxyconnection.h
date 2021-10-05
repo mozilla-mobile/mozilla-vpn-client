@@ -27,7 +27,6 @@ class AdjustProxyConnection final : public QObject {
   void processFirstLine();
   void processHeaders();
   void processParameters();
-  void filterParameters(QUrlQuery& parameters);
   void filterParametersAndForwardRequest();
   void forwardRequest();
 
@@ -49,7 +48,7 @@ class AdjustProxyConnection final : public QObject {
   QList<QPair<QString, QString>> m_headers;
   QUrlQuery m_queryParameters;
   QUrlQuery m_bodyParameters;
-  QList<QString> m_unknownParameters;
+  QStringList m_unknownParameters;
 };
 
 #endif  // ADJUSTPROXYCONNECTION_H
