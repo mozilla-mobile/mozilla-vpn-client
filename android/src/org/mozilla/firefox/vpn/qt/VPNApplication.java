@@ -32,8 +32,8 @@ public class VPNApplication extends org.qtproject.qt5.android.bindings.QtApplica
       AdjustConfig config = new AdjustConfig(VPNApplication.instance, appToken, environment);
       config.setLogLevel(LogLevel.DEBUG);
       config.setSendInBackground(true);
-      AdjustFactory.setBaseUrl("http://localhost:" + proxyPort);
-      AdjustFactory.setGdprUrl("http://localhost:" + proxyPort);
+      AdjustFactory.setBaseUrl("http://127.0.0.1:" + proxyPort);
+      AdjustFactory.setGdprUrl("http://127.0.0.1:" + proxyPort);
       Adjust.onCreate(config);
 
       VPNApplication.instance.registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
