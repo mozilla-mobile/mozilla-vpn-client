@@ -89,13 +89,12 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   logger.debug() << "Creating MozillaVPN singleton";
 
-#ifdef MVPN_ADJUST
-  connect(this, &MozillaVPN::stateChanged,
-          []() { AdjustHandler::maybeInitialize(); });
-#endif
-
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+#ifdef MVPN_ADJUST
+  AdjustHandler::initialize();
+#endif
 
   connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 

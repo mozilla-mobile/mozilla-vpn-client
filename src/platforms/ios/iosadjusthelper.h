@@ -11,6 +11,7 @@ class IOSAdjustHelper final {
  public:
   static void initialize(quint16 proxyPort);
   static void trackEvent(const QString& eventToken);
+  static void forget();
 };
 
 #endif  // IOSADJUSTHELPER_H

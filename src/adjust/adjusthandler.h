@@ -11,8 +11,9 @@ class AdjustHandler {
  public:
   AdjustHandler() = default;
 
-  static void maybeInitialize();
+  static void initialize();
   static void trackEvent(const QString& event);
+  static void forget();
 };
 
 #endif  // ADJUSTHELPER_H

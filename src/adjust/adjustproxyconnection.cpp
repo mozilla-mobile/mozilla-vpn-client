@@ -6,6 +6,8 @@
 // It is just a proxy server designed to work with the Adjust SDK
 
 #include "adjustproxyconnection.h"
+#include "adjustfiltering.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -21,45 +23,6 @@
 const QString HTTP_RESPONSE(
     "HTTP/1.1 %1\nContent-Type: application/json\n\n%2\n");
 
-const QList<QString> allowList{"adid",
-                               "app_token",
-                               "attribution_deeplink",
-                               "bundle_id",
-                               "device_type",
-                               "environment",
-                               "event_token",
-                               "idfv",
-                               "needs_response_details",
-                               "os_name",
-                               "os_version",
-                               "package_name",
-                               "reference_tag",
-                               "tracking_enabled",
-                               "zone_offset",
-                               "att_status"};
-
-const QList<QPair<QString, QString>> defaultValues{
-    QPair<QString, QString>("app_name", "default"),
-    QPair<QString, QString>("app_version", "2.0"),
-    QPair<QString, QString>("app_version_short", "2.0"),
-    QPair<QString, QString>("base_amount", "0"),
-    QPair<QString, QString>("device_name", "default"),
-    QPair<QString, QString>("engagement_type", "0"),
-    QPair<QString, QString>("event_buffering_enabled", "0"),
-    QPair<QString, QString>("event_cost_id", "xxxxx"),
-    QPair<QString, QString>("ios_uuid", "xxxxx"),
-    QPair<QString, QString>("manufacturer", "default"),
-    QPair<QString, QString>("nonce", "0"),
-    QPair<QString, QString>("platform", "Default"),
-    QPair<QString, QString>("random_user_id", "xxxxx"),
-    QPair<QString, QString>("region", "xxxxx"),
-    QPair<QString, QString>("store_name", "xxxxx"),
-    QPair<QString, QString>("terms_signed", "0"),
-    QPair<QString, QString>("time_spent", "0"),
-    QPair<QString, QString>("tracker_token", "xxxxx")};
-
-QHash<QString, QString> denyList;
-
 namespace {
 Logger logger(LOG_ADJUST, "AdjustProxyConnection");
 }  // namespace
@@ -70,10 +33,6 @@ AdjustProxyConnection::AdjustProxyConnection(QObject* parent,
   MVPN_COUNT_CTOR(AdjustProxyConnection);
 
   logger.debug() << "New connection received";
-
-  for (const auto entry : defaultValues) {
-    denyList.insert(entry.first, entry.second);
-  }
 
   Q_ASSERT(m_connection);
   connect(m_connection, &QTcpSocket::readyRead, this,
@@ -86,6 +45,7 @@ AdjustProxyConnection::~AdjustProxyConnection() {
 }
 
 void AdjustProxyConnection::readData() {
+  logger.debug() << "New data read";
   Q_ASSERT(m_connection);
   QByteArray input = m_connection->readAll();
   m_buffer.append(input);
@@ -110,6 +70,8 @@ void AdjustProxyConnection::readData() {
 }
 
 void AdjustProxyConnection::processFirstLine() {
+  logger.debug() << "Processing first line";
+
   if (m_buffer.isEmpty()) {
     return;
   }
@@ -136,6 +98,8 @@ void AdjustProxyConnection::processFirstLine() {
 }
 
 void AdjustProxyConnection::processHeaders() {
+  logger.debug() << "Processing headers";
+
   if (m_buffer.isEmpty()) {
     return;
   }
@@ -190,6 +154,8 @@ void AdjustProxyConnection::processHeaders() {
 }
 
 void AdjustProxyConnection::processParameters() {
+  logger.debug() << "Processing parameters";
+
   uint32_t bodyLength = m_buffer.trimmed().length();
 
   if (bodyLength > m_contentLength) {
@@ -208,34 +174,20 @@ void AdjustProxyConnection::processParameters() {
   m_state = ProcessingState::ParametersDone;
 }
 
-void AdjustProxyConnection::filterParameters(QUrlQuery& parameters) {
-  QList<QPair<QString, QString>> newParameters;
-
-  for (QPair<QString, QString> parameter : parameters.queryItems()) {
-    if (allowList.contains(parameter.first)) {
-      newParameters.append(
-          QPair<QString, QString>(parameter.first, parameter.second));
-    } else if (denyList.contains(parameter.first)) {
-      newParameters.append(
-          QPair<QString, QString>(parameter.first, denyList[parameter.first]));
-    } else {
-      newParameters.append(
-          QPair<QString, QString>(parameter.first, parameter.second));
-      m_unknownParameters.append(parameter.first);
-    }
-  }
-
-  parameters.setQueryItems(newParameters);
-}
-
 void AdjustProxyConnection::filterParametersAndForwardRequest() {
-  filterParameters(m_queryParameters);
-  filterParameters(m_bodyParameters);
+  logger.debug() << "Filtering parameters";
+
+  m_queryParameters =
+      AdjustFiltering::filterParameters(m_queryParameters, m_unknownParameters);
+  m_bodyParameters =
+      AdjustFiltering::filterParameters(m_bodyParameters, m_unknownParameters);
 
   forwardRequest();
 }
 
 void AdjustProxyConnection::forwardRequest() {
+  logger.debug() << "Forwarding request";
+
   NetworkRequest* request;
 
   QString headersString;
