@@ -27,6 +27,9 @@ linux/netfilter/vendor/
 .tmp
 .env
 
+#Github Codespaces
+.venv 
+
 asset_catalog_compiler.Info.plist
 
 # Ignore files that might be added by Android Studio
