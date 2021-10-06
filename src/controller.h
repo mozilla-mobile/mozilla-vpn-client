@@ -28,6 +28,7 @@ class Controller final : public QObject {
   enum State {
     StateInitializing,
     StateOff,
+    StateCaptivePortalBlock,
     StateConnecting,
     StateConfirming,
     StateOn,
@@ -89,6 +90,9 @@ class Controller final : public QObject {
   bool activate();
   bool deactivate();
 
+  void captivePortalPresent();
+  void captivePortalGone();
+
   Q_INVOKABLE void quit();
 
  private slots:
@@ -131,6 +135,8 @@ class Controller final : public QObject {
   State m_state = StateInitializing;
 
   QTimer m_timer;
+
+  bool m_portalDetected = false;
 
   QDateTime m_connectedTimeInUTC;
 

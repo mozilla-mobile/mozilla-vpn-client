@@ -55,7 +55,6 @@ SOURCES += \
         authenticationinapp/incrementaldecoder.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportaldetection.cpp \
-        captiveportal/captiveportaldetectionimpl.cpp \
         captiveportal/captiveportalmonitor.cpp \
         captiveportal/captiveportalnotifier.cpp \
         captiveportal/captiveportalrequest.cpp \
@@ -174,7 +173,6 @@ HEADERS += \
         bigintipv6addr.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
-        captiveportal/captiveportaldetectionimpl.h \
         captiveportal/captiveportalmonitor.h \
         captiveportal/captiveportalnotifier.h \
         captiveportal/captiveportalrequest.h \

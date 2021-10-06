@@ -64,6 +64,7 @@
         <file>ui/states/StateUpdateRequired.qml</file>
         <file>ui/states/StateDeviceLimit.qml</file>
         <file>ui/states/StateBackendFailure.qml</file>
+        <file>ui/views/ViewCaptivePortalInfo.qml</file>
         <file>ui/views/ViewMain.qml</file>
         <file>ui/views/ViewDevices.qml</file>
         <file>ui/views/ViewGetHelp.qml</file>
@@ -352,6 +353,7 @@
         <file>ui/resources/magic-dark.svg</file>
         <file>ui/resources/magic-purple.svg</file>
         <file>ui/resources/gift-dark.svg</file>
+        <file>ui/resources/globe-warning.svg</file>
         <file>ui/resources/onboarding/onboarding1.svg</file>
         <file>ui/resources/onboarding/onboarding4.svg</file>
         <file>ui/resources/onboarding/onboarding3.svg</file>

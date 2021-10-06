@@ -4,6 +4,7 @@
 
 #include "captiveportalmonitor.h"
 #include "captiveportalrequest.h"
+#include "captiveportalresult.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -29,6 +30,9 @@ void CaptivePortalMonitor::start() {
 }
 
 void CaptivePortalMonitor::stop() {
+  if (!m_timer.isActive()) {
+    return;
+  }
   logger.debug() << "Captive portal monitor stop";
   m_timer.stop();
 }
@@ -37,14 +41,19 @@ void CaptivePortalMonitor::check() {
   logger.debug() << "Checking the internet connectivity";
 
   CaptivePortalRequest* request = new CaptivePortalRequest(this);
-  connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
-    logger.debug() << "Captive portal detection:" << detected;
-
-    if (detected || !m_timer.isActive()) {
+  connect(request, &CaptivePortalRequest::completed, [this](CaptivePortalResult result) {
+    logger.debug() << "Captive portal detection:" << result;
+    if (!m_timer.isActive()) {
       return;
     }
-
-    // It seems that the captive-portal is gone. We can reactivate the VPN.
+    if(result == CaptivePortalResult::Failure){
+      return;
+    }
+    if(result == CaptivePortalResult::PortalDetected){
+      emit offline();
+      return;
+    }
+    // It seems that the captive-portal is gone.
     emit online();
   });
 

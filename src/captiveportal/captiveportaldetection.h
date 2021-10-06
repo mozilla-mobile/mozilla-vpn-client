@@ -8,7 +8,6 @@
 #include <QObject>
 #include "captiveportalresult.h"
 
-class CaptivePortalDetectionImpl;
 class CaptivePortalMonitor;
 class CaptivePortalNotifier;
 
@@ -32,24 +31,28 @@ class CaptivePortalDetection final : public QObject {
   void detectionCompleted(CaptivePortalResult detected);
   void captivePortalGone();
 
+
   void activationRequired();
   void deactivationRequired();
 
  private:
   CaptivePortalMonitor* captivePortalMonitor();
+  CaptivePortalMonitor* captivePortalBackgroundMonitor();
+  
   CaptivePortalNotifier* captivePortalNotifier();
 
  private:
   bool m_active = false;
   bool m_shouldRun = true;
+  
 
   // Don't use it directly. Use captivePortalMonitor().
   CaptivePortalMonitor* m_captivePortalMonitor = nullptr;
 
+  CaptivePortalMonitor* m_captivePortalBackgroundMonitor = nullptr;
+
   // Don't use it directly. Use captivePortalNotifier().
   CaptivePortalNotifier* m_captivePortalNotifier = nullptr;
-
-  QScopedPointer<CaptivePortalDetectionImpl> m_impl;
 };
 
 #endif  // CAPTIVEPORTALDETECTION_H

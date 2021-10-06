@@ -40,6 +40,15 @@ VPNFlickable {
         }
     ]
 
+    Connections{
+     target: VPNController
+     onStateChanged:{
+         if(VPNController.state === VPNController.StateCaptivePortalBlock){
+            stackview.push("ViewCaptivePortalInfo.qml")
+         }
+       }
+    }
+
     MouseArea {
         anchors.fill: parent
         enabled: box.connectionInfoVisible

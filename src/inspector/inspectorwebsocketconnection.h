@@ -5,6 +5,7 @@
 #ifndef INSPECTORWEBSOCKETCONNECTION_H
 #define INSPECTORWEBSOCKETCONNECTION_H
 
+#include "../captiveportal/captiveportalresult.h"
 #include <QByteArray>
 #include <QObject>
 
@@ -23,6 +24,7 @@ class InspectorWebSocketConnection final : public QObject {
   static void setLastUrl(const QUrl& url);
   static bool stealUrls();
   static QString appVersionForUpdate();
+  static CaptivePortalResult fakeCaptivePortalResult();
 
  private:
   void textMessageReceived(const QString& message);

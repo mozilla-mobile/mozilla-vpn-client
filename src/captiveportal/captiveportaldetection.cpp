@@ -4,10 +4,11 @@
 
 #include "captiveportaldetection.h"
 #include "captiveportal.h"
-#include "captiveportaldetectionimpl.h"
 #include "captiveportalmonitor.h"
 #include "captiveportalnotifier.h"
+#include "captiveportalmultirequest.h"
 #include "constants.h"
+#include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -38,12 +39,22 @@ void CaptivePortalDetection::stateChanged() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
+  Controller::State state = vpn->controller()->state();
 
-  if ((vpn->controller()->state() != Controller::StateOn ||
+  if(state == Controller::StateOff || 
+     state == Controller::StateCaptivePortalBlock){
+    // We're not connected yet - start a captivePortal Monitor
+    logger.info() << "Not connected, starting captive-portal Monitor";
+    captivePortalBackgroundMonitor()->start();
+    return;
+  }
+  captivePortalBackgroundMonitor()->stop();
+
+
+  if ((state != Controller::StateOn ||
        vpn->connectionHealth()->stability() == ConnectionHealth::Stable) &&
-      vpn->controller()->state() != Controller::StateConfirming) {
+      state != Controller::StateConfirming) {
     logger.warning() << "No captive portal detection required";
-    m_impl.reset();
     // Since we now reached a stable state, on the next time we have an
     // instablity check for portal again.
     m_shouldRun = true;
@@ -81,20 +92,16 @@ void CaptivePortalDetection::detectCaptivePortal() {
     return;
   }
 
-#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
-  m_impl.reset(new CaptivePortalDetectionImpl());
-#else
-  logger.warning()
-      << "This platform does not support captive portal detection yet";
-  return;
-#endif
+  logger.debug() << "Captive portal detection started";
 
-  Q_ASSERT(m_impl);
+  CaptivePortalMultiRequest* request = new CaptivePortalMultiRequest(this);
+  connect(request, &CaptivePortalMultiRequest::completed,
+          [this](CaptivePortalResult detected) {
+            logger.debug() << "Captive portal detection:" << detected;
+            emit detectionCompleted(detected);
+          });
 
-  connect(m_impl.get(), &CaptivePortalDetectionImpl::detectionCompleted, this,
-          &CaptivePortalDetection::detectionCompleted);
-
-  m_impl->start();
+  request->run();
 }
 
 void CaptivePortalDetection::settingsChanged() {
@@ -103,14 +110,13 @@ void CaptivePortalDetection::settingsChanged() {
 
   if (!m_active) {
     captivePortalMonitor()->stop();
-    m_impl.reset();
+    captivePortalBackgroundMonitor()->stop();
   }
 }
 
 void CaptivePortalDetection::detectionCompleted(CaptivePortalResult detected) {
   logger.debug() << "Detection completed:" << detected;
 
-  m_impl.reset();
   m_shouldRun = false;
   switch (detected) {
     case CaptivePortalResult::NoPortal:
@@ -166,7 +172,6 @@ void CaptivePortalDetection::activationRequired() {
   logger.debug() << "User wants to activate the vpn";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-
   if (vpn->state() == MozillaVPN::StateMain &&
       vpn->controller()->state() == Controller::StateOff) {
     MozillaVPN::instance()->activate();
@@ -177,11 +182,24 @@ CaptivePortalMonitor* CaptivePortalDetection::captivePortalMonitor() {
   if (!m_captivePortalMonitor) {
     m_captivePortalMonitor = new CaptivePortalMonitor(this);
 
-    connect(m_captivePortalMonitor, &CaptivePortalMonitor::online, this,
+  connect(m_captivePortalMonitor, &CaptivePortalMonitor::online, this,
             &CaptivePortalDetection::captivePortalGone);
-  }
+  }  
 
   return m_captivePortalMonitor;
+}
+
+CaptivePortalMonitor* CaptivePortalDetection::captivePortalBackgroundMonitor() {
+  if (!m_captivePortalBackgroundMonitor) {
+    m_captivePortalBackgroundMonitor = new CaptivePortalMonitor(this);
+
+  connect(m_captivePortalBackgroundMonitor, &CaptivePortalMonitor::online,MozillaVPN::instance()->controller(),
+  &Controller::captivePortalGone);
+  connect(m_captivePortalBackgroundMonitor, &CaptivePortalMonitor::offline,MozillaVPN::instance()->controller(),
+  &Controller::captivePortalPresent);
+  }
+  
+  return m_captivePortalBackgroundMonitor;
 }
 
 CaptivePortalNotifier* CaptivePortalDetection::captivePortalNotifier() {

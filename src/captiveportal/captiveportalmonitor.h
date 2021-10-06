@@ -20,6 +20,7 @@ class CaptivePortalMonitor final : public QObject {
 
  signals:
   void online();
+  void offline();
 
  private:
   void check();

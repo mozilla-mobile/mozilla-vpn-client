@@ -501,6 +501,10 @@ void MozillaVPN::openLink(LinkType linkType) {
       Q_ASSERT(!Constants::inProduction());
       url = "http://localhost:8766/";
       break;
+    case LinkCaptivePortal:
+    // TODO: get link
+      url = QString("http://%1/success.txt").arg(SettingsHolder::instance()->captivePortalIpv4Addresses().first());
+      break;
 
     default:
       qFatal("Unsupported link type!");
