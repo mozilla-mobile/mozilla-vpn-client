@@ -200,6 +200,7 @@ class SettingsHolder final : public QObject {
   void entryServerCountryCodeChanged(const QString& value);
   void entryServerCityChanged(const QString& value);
   void recentConnectionsChanged(const QStringList& value);
+  void telemetryPolicyShownChanged(bool value);
 
  private:
   explicit SettingsHolder(QObject* parent);

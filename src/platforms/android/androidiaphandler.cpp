@@ -43,7 +43,7 @@ void AndroidIAPHandler::maybeInit() {
   if (!appContext.isValid()) {
     // This is a race condition, we could be here while android has not finished
     // activity::onCreate on the Ui thread. In this case the context is null.
-      logger.debug() << "Android IAP handler init skipped";
+    logger.debug() << "Android IAP handler init skipped";
     return;
   }
   logger.debug() << "Android IAP handler init";
