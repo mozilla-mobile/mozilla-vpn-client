@@ -5,6 +5,7 @@
 #include "adjusthandler.h"
 #include "adjustproxy.h"
 #include "constants.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
@@ -20,6 +21,7 @@
 #include <QRandomGenerator>
 
 namespace {
+Logger logger(LOG_ADJUST, "AdjustHandler");
 bool s_initialized = false;
 AdjustProxy* s_adjustProxy = nullptr;
 }  // namespace
@@ -63,6 +65,11 @@ void AdjustHandler::initialize() {
   s_adjustProxy = new AdjustProxy(vpn);
   QObject::connect(vpn->controller(), &Controller::readyToQuit, s_adjustProxy,
                    &AdjustProxy::close);
+  QObject::connect(s_adjustProxy, &AdjustProxy::acceptError,
+                   [](QAbstractSocket::SocketError socketError) {
+                     logger.error()
+                         << "Adjust Proxy connection error: " << socketError;
+                   });
   for (int i = 0; i < 5; i++) {
     quint16 port = QRandomGenerator::global()->bounded(1024, 65536);
     bool succeeded = s_adjustProxy->initialize(port);
@@ -72,6 +79,7 @@ void AdjustHandler::initialize() {
   }
 
   if (!s_adjustProxy->isListening()) {
+    logger.error() << "Adjust Proxy listening failed";
     return;
   }
 
@@ -88,6 +96,7 @@ void AdjustHandler::initialize() {
 
 void AdjustHandler::trackEvent(const QString& event) {
   if (!s_adjustProxy || !s_adjustProxy->isListening()) {
+    logger.error() << "Adjust Proxy not listening; event tracking failed";
     return;
   }
 
@@ -104,7 +113,11 @@ void AdjustHandler::trackEvent(const QString& event) {
 }
 
 void AdjustHandler::forget() {
+  logger.debug() << "Adjust Proxy forget";
+
   if (!s_adjustProxy || !s_adjustProxy->isListening()) {
+    logger.error()
+        << "Adjust Proxy cannot forget because proxy is not listening!";
     return;
   }
 
