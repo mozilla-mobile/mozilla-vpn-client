@@ -10,7 +10,10 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QTextStream>
-#include <QSslSocket>
+
+#ifndef MVPN_WASM
+  #include <QSslSocket>
+#endif
 
 #ifdef QT_DEBUG
 #  include <QRandomGenerator>
@@ -57,8 +60,12 @@ QString Device::currentDeviceReport() {
   out << "APP Version -> " << APP_VERSION << Qt::endl;
   out << "Build ID -> " << BUILD_ID << Qt::endl;
   out << "Device ID -> " << uniqueDeviceId() << Qt::endl;
+  
+#ifndef MVPN_WASM // No ssl on wasm
   out << "SSL Lib:" << QSslSocket::sslLibraryVersionString()
-      << QSslSocket::sslLibraryVersionNumber();
+      << QSslSocket::sslLibraryVersionNumber() << Qt::endl;
+#endif
+
   return buffer;
 }
 
