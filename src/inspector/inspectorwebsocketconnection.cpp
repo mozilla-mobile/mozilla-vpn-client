@@ -419,6 +419,8 @@ static QList<WebSocketCommand> s_commands{
     WebSocketCommand{"lasturl", "Retrieve the last opened URL", 0,
                      [](const QList<QByteArray>&) {
                        QJsonObject obj;
+                       logger.debug() << "last URL is:"
+                                      << s_lastUrl.toString(QUrl::RemoveQuery);
                        obj["value"] = s_lastUrl.toString();
                        return obj;
                      }},
