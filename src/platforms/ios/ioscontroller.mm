@@ -135,7 +135,6 @@ void IOSController::activate(const QList<Server>& serverList, const Device* devi
             serverIpv4AddrIn:entryServer.ipv4AddrIn().toNSString()
                   serverPort:isMultihop ? exitServer.multihopPort() : entryServer.choosePort()
       allowedIPAddressRanges:allowedIPAddressRangesNS
-                 ipv6Enabled:SettingsHolder::instance()->ipv6Enabled()
                       reason:reason
              failureCallback:^() {
                logger.error() << "IOSSWiftController - connection failed";
