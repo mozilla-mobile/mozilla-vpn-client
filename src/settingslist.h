@@ -160,7 +160,7 @@ SETTING_BOOL(gleanEnabled,     // getter
              setGleanEnabled,  // setter
              hasGleanEnabled,  // has
              "gleanEnabled",   // key
-             true,             // default value
+             false,            // default value
              false             // remove when reset
 )
 
