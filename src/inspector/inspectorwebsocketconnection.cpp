@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorwebsocketconnection.h"
+#include "inspectoreventplayer.h"
+#include "inspectoreventrecorder.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -35,6 +37,11 @@ Logger logger(LOG_INSPECTOR, "InspectorWebSocketConnection");
 bool s_stealUrls = false;
 QUrl s_lastUrl;
 QString s_updateVersion;
+QStringList s_pickedElements;
+bool s_pickedElementsSet = false;
+bool s_isReplayingEvents = false;
+
+InspectorEventRecorder* s_recorder = nullptr;
 
 }  // namespace
 
@@ -277,6 +284,33 @@ static QList<WebSocketCommand> s_commands{
                        return QJsonObject();
                      }},
 
+    WebSocketCommand{"pick", "Wait for a click to select an element", 0,
+                     [](const QList<QByteArray>&) {
+                       if (!s_recorder) {
+                         s_recorder = new InspectorEventRecorder(
+                             qApp, InspectorEventRecorder::Picker);
+                         qApp->installEventFilter(s_recorder);
+                       }
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{"picked", "Retrieve what has been selected with a click",
+                     0,
+                     [](const QList<QByteArray>&) {
+                       QJsonArray array;
+                       for (const QString& element : s_pickedElements) {
+                         array.append(element);
+                       }
+
+                       QJsonObject obj;
+                       obj["value"] = array;
+                       obj["clicked"] = s_pickedElementsSet;
+
+                       s_pickedElementsSet = false;
+                       s_pickedElements.clear();
+                       return obj;
+                     }},
+
     WebSocketCommand{"has", "Check if an object exists", 1,
                      [](const QList<QByteArray>& arguments) {
                        QJsonObject obj;
@@ -326,6 +360,29 @@ static QList<WebSocketCommand> s_commands{
                        obj["value"] = result.trimmed();
                        return obj;
                      }},
+
+    WebSocketCommand{
+        "list_json", "List all properties for an object in a json format", 1,
+        [](const QList<QByteArray>& arguments) {
+          QJsonObject obj;
+
+          QObject* item = findObject(arguments[1]);
+          if (!item) {
+            obj["error"] = "Object not found";
+            return obj;
+          }
+
+          QJsonObject propObj;
+
+          const QMetaObject* meta = item->metaObject();
+          for (int i = 0; i < meta->propertyCount(); i++) {
+            QMetaProperty mp = meta->property(i);
+            propObj[mp.name()] = QJsonValue::fromVariant(mp.read(item));
+          }
+
+          obj["value"] = propObj;
+          return obj;
+        }},
 
     WebSocketCommand{"property", "Retrieve a property value from an object", 2,
                      [](const QList<QByteArray>& arguments) {
@@ -702,6 +759,42 @@ static QList<WebSocketCommand> s_commands{
 
           return QJsonObject();
         }},
+
+    WebSocketCommand{"start_recording", "Start the recording", 2,
+                     [](const QList<QByteArray>& arguments) {
+                       if (!s_recorder) {
+                         s_recorder = new InspectorEventRecorder(
+                             qApp, InspectorEventRecorder::Recorder,
+                             arguments[1], arguments[2] == "true");
+                         qApp->installEventFilter(s_recorder);
+                       }
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{"stop_recording", "Stop the recording", 0,
+                     [](const QList<QByteArray>&) {
+                       if (s_recorder) {
+                         qApp->removeEventFilter(s_recorder);
+                         s_recorder->deleteLater();
+                         s_recorder = nullptr;
+                       }
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{"replay", "Re-play a recording section", 1,
+                     [](const QList<QByteArray>& arguments) {
+                       s_isReplayingEvents = true;
+                       new InspectorEventPlayer(qApp, arguments[1]);
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{"is_replaying", "Retrieve if we are playing events", 0,
+                     [](const QList<QByteArray>&) {
+                       QJsonObject obj;
+                       obj["value"] = s_isReplayingEvents;
+                       return obj;
+                     }},
+
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(
@@ -823,4 +916,22 @@ QString InspectorWebSocketConnection::appVersionForUpdate() {
   }
 
   return s_updateVersion;
+}
+
+// static
+void InspectorWebSocketConnection::pickedElements(
+    const QStringList& objectNames) {
+  s_pickedElements = objectNames;
+  s_pickedElementsSet = true;
+
+  if (s_recorder) {
+    qApp->removeEventFilter(s_recorder);
+    s_recorder->deleteLater();
+    s_recorder = nullptr;
+  }
+}
+
+// static
+void InspectorWebSocketConnection::eventReplayCompleted() {
+  s_isReplayingEvents = false;
 }

@@ -1,0 +1,13 @@
+{
+  "name": "testify",
+  "version": "1.0.0",
+  "description": "A simple test writer",
+  "main": "testify.js",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^8.2.0",
+    "websocket": "^1.0.34"
+  }
+}

@@ -196,6 +196,25 @@ module.exports = {
     return json.value || '';
   },
 
+  async sendEvents(events) {
+    fs.writeFileSync(
+        '/tmp/foo.txt', events.map(e => JSON.stringify(e)).join('\n'));
+    const json = await this._writeCommand('replay /tmp/foo.txt');
+    assert(
+        json.type === 'replay' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+
+    return this.waitForCondition(async () => !(await this.isReplayEvents()));
+  },
+
+  async isReplayEvents() {
+    const json = await this._writeCommand('is_replaying');
+    assert(
+        json.type === 'is_replaying' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value || false;
+  },
+
   async waitForCondition(condition) {
     while (true) {
       if (await condition()) return;

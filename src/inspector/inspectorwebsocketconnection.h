@@ -23,6 +23,8 @@ class InspectorWebSocketConnection final : public QObject {
   static void setLastUrl(const QUrl& url);
   static bool stealUrls();
   static QString appVersionForUpdate();
+  static void pickedElements(const QStringList& objectNames);
+  static void eventReplayCompleted();
 
  private:
   void textMessageReceived(const QString& message);
