@@ -18,5 +18,9 @@ python3 scripts/generate_glean.py
 brew install go
 
 export QT_IOS_BIN=`pwd`/qt_ios_build/ios/bin
+export PATH=`pwd`/qt_ios_build/ios/bin:$PATH
+
+git submodule update --remote --depth 1 i18n
+python3 scripts/importLanguages.py -m
 
 ./scripts/apple_compile.sh ios
