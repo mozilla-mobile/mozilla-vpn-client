@@ -14,9 +14,6 @@
 #include "qmlengineholder.h"
 #include "networkrequest.h"
 
-#include <QFile>
-#include <QHostAddress>
-#include <QTcpSocket>
 #include <QUrl>
 #include <QUrlQuery>
 
@@ -29,7 +26,7 @@ Logger logger(LOG_ADJUST, "AdjustProxyConnection");
 
 AdjustProxyConnection::AdjustProxyConnection(QObject* parent,
                                              QTcpSocket* connection)
-    : QObject(parent), m_connection(connection), m_packageHandler(this) {
+    : QObject(parent), m_connection(connection) {
   MVPN_COUNT_CTOR(AdjustProxyConnection);
 
   logger.debug() << "New connection received";
@@ -65,7 +62,7 @@ void AdjustProxyConnection::forwardRequest() {
   logger.debug() << "Forwarding request";
 
   QString headersString;
-  QList<QPair<QString, QString>> headers = m_packageHandler.getHeaders();
+  const QList<QPair<QString, QString>>& headers = m_packageHandler.getHeaders();
 
   for (QPair<QString, QString> header : headers) {
     headersString.append(header.first);
@@ -74,11 +71,12 @@ void AdjustProxyConnection::forwardRequest() {
     headersString.append(", ");
   }
 
-  QString method = m_packageHandler.getMethod();
-  QString path = m_packageHandler.getPath();
-  QString queryParameters = m_packageHandler.getQueryParameters();
-  QString bodyParameters = m_packageHandler.getBodyParameters();
-  QStringList unknownParameters = m_packageHandler.getUnknownParameters();
+  const QString& method = m_packageHandler.getMethod();
+  const QString& path = m_packageHandler.getPath();
+  const QString queryParameters = m_packageHandler.getQueryParameters();
+  const QString bodyParameters = m_packageHandler.getBodyParameters();
+  const QStringList& unknownParameters =
+      m_packageHandler.getUnknownParameters();
 
   logger.debug() << "Sending Adjust request with: " << method << ", " << path
                  << ", " << headersString << logger.sensitive(queryParameters)

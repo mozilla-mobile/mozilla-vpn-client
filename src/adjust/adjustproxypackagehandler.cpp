@@ -21,8 +21,7 @@ namespace {
 Logger logger(LOG_ADJUST, "AdjustProxyPackageHandler");
 }  // namespace
 
-AdjustProxyPackageHandler::AdjustProxyPackageHandler(QObject* parent)
-    : QObject(parent) {
+AdjustProxyPackageHandler::AdjustProxyPackageHandler() {
   MVPN_COUNT_CTOR(AdjustProxyPackageHandler);
 
   logger.debug() << "New package handler created";
@@ -145,7 +144,6 @@ bool AdjustProxyPackageHandler::processHeaders() {
     }
 
     m_headers.append(headerPair);
-    logger.debug() << headerPair.first << ": " << headerPair.second;
   }
 
   m_state = ProcessingState::HeadersDone;
@@ -172,8 +170,6 @@ bool AdjustProxyPackageHandler::processParameters() {
   m_queryParameters = QUrlQuery(m_route);
 
   m_state = ProcessingState::ParametersDone;
-  logger.debug() << "Query: " << m_queryParameters.toString();
-  logger.debug() << "Body: " << m_bodyParameters.toString();
   return true;
 }
 
@@ -186,6 +182,4 @@ void AdjustProxyPackageHandler::filterParameters() {
       AdjustFiltering::filterParameters(m_bodyParameters, m_unknownParameters);
 
   m_state = ProcessingState::ProcessingDone;
-  logger.debug() << "Filtered Query: " << m_queryParameters.toString();
-  logger.debug() << "Filtered Body: " << m_bodyParameters.toString();
 }

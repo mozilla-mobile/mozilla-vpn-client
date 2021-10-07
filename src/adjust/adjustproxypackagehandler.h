@@ -11,8 +11,7 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-class AdjustProxyPackageHandler final : public QObject {
-  Q_OBJECT
+class AdjustProxyPackageHandler final {
   Q_DISABLE_COPY_MOVE(AdjustProxyPackageHandler)
 
  public:
@@ -25,7 +24,7 @@ class AdjustProxyPackageHandler final : public QObject {
     InvalidRequest
   };
 
-  AdjustProxyPackageHandler(QObject* parent);
+  AdjustProxyPackageHandler();
   ~AdjustProxyPackageHandler();
 
   void processData(const QByteArray& input);
@@ -33,12 +32,18 @@ class AdjustProxyPackageHandler final : public QObject {
   bool isProcessingDone() { return m_state == ProcessingState::ProcessingDone; }
   bool isInvalidRequest() { return m_state == ProcessingState::InvalidRequest; }
 
-  QString getMethod() { return m_method; }
-  QString getPath() { return m_path; }
-  QString getQueryParameters() { return m_queryParameters.toString(); }
-  QString getBodyParameters() { return m_bodyParameters.toString(); }
-  QStringList getUnknownParameters() { return m_unknownParameters; }
-  QList<QPair<QString, QString>> getHeaders() { return m_headers; }
+  const QString& getMethod() const { return m_method; }
+  const QString& getPath() const { return m_path; }
+  const QString getQueryParameters() const {
+    return m_queryParameters.toString();
+  }
+  const QString getBodyParameters() const {
+    return m_bodyParameters.toString();
+  }
+  const QStringList& getUnknownParameters() const {
+    return m_unknownParameters;
+  }
+  const QList<QPair<QString, QString>>& getHeaders() const { return m_headers; }
 
  private:
   bool processFirstLine();
