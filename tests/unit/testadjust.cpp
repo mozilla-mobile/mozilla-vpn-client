@@ -108,8 +108,7 @@ void TestAdjust::stateMachine_data() {
 }
 
 void TestAdjust::stateMachine() {
-  AdjustProxyPackageHandler* packageHandler =
-      new AdjustProxyPackageHandler(this);
+  AdjustProxyPackageHandler* packageHandler = new AdjustProxyPackageHandler();
 
   QCOMPARE(packageHandler->getProcessingState(),
            AdjustProxyPackageHandler::ProcessingState::NotStarted);
