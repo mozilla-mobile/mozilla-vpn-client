@@ -87,6 +87,8 @@ void MozillaVPN::changeServer(const QString&, const QString&, const QString&,
 
 void MozillaVPN::postAuthenticationCompleted() {}
 
+void MozillaVPN::mainWindowLoaded() {}
+
 void MozillaVPN::telemetryPolicyCompleted() {}
 
 void MozillaVPN::setUpdateRecommended(bool) {}
