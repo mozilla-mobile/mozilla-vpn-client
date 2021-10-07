@@ -63,22 +63,7 @@ Window {
             maximumWidth = Theme.desktopAppWidth;
             minimumWidth = Theme.desktopAppWidth;
         }
-        if (VPN.debugMode) {
-            // Set-up debug properties for pings in debug mode
-            Glean.initialize(VPN.gleanApplicationId, VPNSettings.gleanEnabled, {
-                appBuild: "MozillaVPN/" + VPN.versionString,
-                appDisplayVersion: VPN.versionString,
-                debug: {
-                    logPings: true,
-                    debugViewTag: "MozillaVPN"
-                }
-            });
-        } else {
-            Glean.initialize(VPN.gleanApplicationId, VPNSettings.gleanEnabled, {
-                appBuild: "MozillaVPN/" + VPN.versionString,
-                appDisplayVersion: VPN.versionString,
-            });
-        }
+        VPN.mainWindowLoaded()
     }
 
     MouseArea {
@@ -300,29 +285,55 @@ Window {
             mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
         }
 
-        function onSendGleanPings() {
-            if (VPNSettings.gleanEnabled) {
-                Pings.main.submit();
+        function onInitializeGlean() {
+            console.log("Glean main.qml - onInitializeGlean");
+            if (!VPNSettings.telemetryPolicyShown) {
+                // If we haven't shown the telemetry policy yet, bail.
+                console.log("Glean main.qml - Telemetry policy not shown yet, bailing.");
+                return;
+            }
+            console.log("Glean main.qml - Initializing with", VPN.gleanApplicationId, VPNSettings.gleanEnabled);
+            if (VPN.debugMode) {
+                // Set-up debug properties for pings in debug mode
+                console.log("Glean main.qml - Initializing with debug mode ON");
+                Glean.initialize(VPN.gleanApplicationId, VPNSettings.gleanEnabled, {
+                    appBuild: "MozillaVPN/" + VPN.versionString,
+                    appDisplayVersion: VPN.versionString,
+                    debug: {
+                        logPings: true,
+                        debugViewTag: "MozillaVPN"
+                    }
+                });
+            } else {
+                console.log("Glean main.qml - Initializing with debug mode OFF");
+                Glean.initialize(VPN.gleanApplicationId, VPNSettings.gleanEnabled, {
+                    appBuild: "MozillaVPN/" + VPN.versionString,
+                    appDisplayVersion: VPN.versionString,
+                });
             }
         }
 
-        function onTriggerGleanSample(sample) {
+        function onSendGleanPings() {
+            console.log("Glean main.qml - onSendGleanPings");
+            Pings.main.submit();
+        }
+
+        function onRecordGleanEvent(sample) {
+            console.log("Glean main.qml - onRecordGleanEvent");
             Sample[sample].record();
         }
 
         function onAboutToQuit() {
-            // We are about to quit. Let's see if we are fast enough to send
-            // the last chunck of data to the glean servers.
-            if (VPNSettings.gleanEnabled) {
-              Pings.main.submit();
-            }
+            console.log("Glean main.qml - onAboutToQuit");
+            Pings.main.submit();
         }
     }
 
     Connections {
         target: VPNSettings
         function onGleanEnabledChanged() {
-            Glean.setUploadEnabled(VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported);
+            console.log("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
+            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }
     }
 

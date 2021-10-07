@@ -76,10 +76,10 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
 
-    emit MozillaVPN::instance()->triggerGleanSample(
+    emit MozillaVPN::instance()->recordGleanEvent(
         GleanSample::connectionHealthUnstable);
   } else if (stability == NoSignal) {
-    emit MozillaVPN::instance()->triggerGleanSample(
+    emit MozillaVPN::instance()->recordGleanEvent(
         GleanSample::connectionHealthNoSignal);
   }
 
