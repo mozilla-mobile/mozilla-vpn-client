@@ -15,6 +15,8 @@ pip3 install pyhumps
 pip3 install pyyaml
 python3 scripts/generate_glean.py
 
+brew install go
+
 export QT_IOS_BIN=`pwd`/qt_ios_build/ios/bin
 
 ./scripts/apple_compile.sh ios
