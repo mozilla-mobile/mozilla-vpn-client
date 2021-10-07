@@ -332,8 +332,11 @@ Window {
     Connections {
         target: VPNSettings
         function onGleanEnabledChanged() {
-            console.log("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
-            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
+            // Ensure we don't try and run this off the telemetryPolicy page (before Glean is initialized).
+            if (VPNSettings.telemetryPolicyShown) {
+                console.log("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
+                Glean.setUploadEnabled(VPNSettings.gleanEnabled);
+            }
         }
     }
 
