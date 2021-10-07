@@ -75,18 +75,18 @@ void AdjustProxyConnection::forwardRequest() {
   }
 
   QString method = m_packageHandler.getMethod();
-  QString route = m_packageHandler.getRoute();
+  QString path = m_packageHandler.getPath();
   QString queryParameters = m_packageHandler.getQueryParameters();
   QString bodyParameters = m_packageHandler.getBodyParameters();
   QStringList unknownParameters = m_packageHandler.getUnknownParameters();
 
-  logger.debug() << "Sending Adjust request with: " << method << ", " << route
+  logger.debug() << "Sending Adjust request with: " << method << ", " << path
                  << ", " << headersString << logger.sensitive(queryParameters)
                  << ", " << logger.sensitive(bodyParameters) << ", "
                  << unknownParameters;
 
   NetworkRequest* request = NetworkRequest::createForAdjustProxy(
-      this, method, route, headers, queryParameters, bodyParameters,
+      this, method, path, headers, queryParameters, bodyParameters,
       unknownParameters);
 
   connect(

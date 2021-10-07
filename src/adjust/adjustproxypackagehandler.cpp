@@ -86,9 +86,10 @@ bool AdjustProxyPackageHandler::processFirstLine() {
 
   m_method.append(parts[0]);
   m_route = parts[1].trimmed();
+  m_path = m_route.path();
 
   m_state = ProcessingState::FirstLineDone;
-  logger.debug() << m_method << ", " << m_route.toString();
+  logger.debug() << m_method << ", " << m_path;
   return true;
 }
 

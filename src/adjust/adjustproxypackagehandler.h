@@ -34,7 +34,7 @@ class AdjustProxyPackageHandler final : public QObject {
   bool isInvalidRequest() { return m_state == ProcessingState::InvalidRequest; }
 
   QString getMethod() { return m_method; }
-  QString getRoute() { return m_route.toString(); }
+  QString getPath() { return m_path; }
   QString getQueryParameters() { return m_queryParameters.toString(); }
   QString getBodyParameters() { return m_bodyParameters.toString(); }
   QStringList getUnknownParameters() { return m_unknownParameters; }
@@ -52,6 +52,7 @@ class AdjustProxyPackageHandler final : public QObject {
   uint32_t m_contentLength = 0;
   QString m_method;
   QUrl m_route;
+  QString m_path;
   QList<QPair<QString, QString>> m_headers;
   QUrlQuery m_queryParameters;
   QUrlQuery m_bodyParameters;
