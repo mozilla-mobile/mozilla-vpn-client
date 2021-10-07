@@ -11,6 +11,7 @@
 #include <functional>
 
 #include <QHostAddress>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QTcpSocket>
@@ -25,6 +26,52 @@ struct RequestType {
   QString m_name;
   std::function<QJsonObject(const QJsonObject&)> m_callback;
 };
+
+void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
+  QJsonArray countries;
+
+  for (const ServerCountry& country : model->countries()) {
+    QJsonObject countryObj;
+    countryObj["name"] = country.name();
+    countryObj["code"] = country.code();
+
+    QJsonArray cities;
+    for (const ServerCity& city : country.cities()) {
+      QJsonObject cityObj;
+      cityObj["name"] = city.name();
+      cityObj["code"] = city.code();
+
+      QJsonArray servers;
+      for (const Server& server : city.servers()) {
+        QJsonObject serverObj;
+        serverObj["hostname"] = server.hostname();
+        serverObj["ipv4_gateway"] = server.ipv4Gateway();
+        serverObj["ipv6_gateway"] = server.ipv6Gateway();
+        serverObj["weight"] = (double)server.weight();
+
+        const QString& socksName = server.socksName();
+        if (!socksName.isEmpty()) {
+          serverObj["socksName"] = socksName;
+        }
+
+        uint32_t multihopPort = server.multihopPort();
+        if (multihopPort) {
+          serverObj["multihopPort"] = (double)multihopPort;
+        }
+
+        servers.append(serverObj);
+      }
+
+      cityObj["servers"] = servers;
+      cities.append(cityObj);
+    }
+
+    countryObj["cities"] = cities;
+    countries.append(countryObj);
+  }
+
+  obj["countries"] = countries;
+}
 
 static QList<RequestType> s_types{
     RequestType{"activate",
@@ -41,19 +88,11 @@ static QList<RequestType> s_types{
 
     RequestType{"servers",
                 [](const QJsonObject&) {
-                  QByteArray serverJson =
-                      MozillaVPN::instance()->serverCountryModel()->rawJson();
-                  if (serverJson.isEmpty()) {
-                    return QJsonObject();
-                  }
-
-                  QJsonDocument doc = QJsonDocument::fromJson(serverJson);
-                  Q_ASSERT(doc.isObject());
-
                   QJsonObject obj;
+                  serializeServerCountry(
+                      MozillaVPN::instance()->serverCountryModel(), obj);
 
-                  // TODO: remove some of the unused fields
-                  obj["servers"] = doc.object();
+                  obj["servers"] = obj;
                   return obj;
                 }},
 };

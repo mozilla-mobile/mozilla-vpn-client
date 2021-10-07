@@ -22,34 +22,66 @@
   <div class="container">
     <div class="row">
       <div class="col-4">
-        <h4>Date</h4>
-        <input type="range" id="dateMinRange" min="0" max="100" value="0" />
-        <label for="dateMinRange">From</label><br/>
-        <input type="range" id="dateMaxRange" min="0" max="100" value="100" />
-        <label for="dateMaxRange">Max</label><br />
-        <p id="dateRange"></p>
+        <div class="card mb-3">
+          <div class="card-header">Search</div>
+          <div class="card-body">
+            <input type="text" class="form-control me-2" id="search" />
+          </div>
+        </div>
 
-        <h4>Modules</h4>
-        <ul id="moduleList"></ul>
+        <div class="card mb-3">
+          <div class="card-header">Date</div>
+          <div class="card-body">
+            <div class="row">
+              <label for="dateMinRange" class="col-sm-3 col-form-label">From</label>
+              <div class="col-sm-9">
+                <input class="form-control" type="range" id="dateMinRange" min="0" max="100" value="0" />
+              </div>
+            </div>
+            <div class="row" style="text-align:center"><p id="dateMinRangeLabel"></p></div>
+            <div class="row">
+              <label for="dateMaxRange" class="col-sm-3 col-form-label">To</label>
+              <div class="col-sm-9">
+                <input class="form-control" type="range" id="dateMaxRange" min="0" max="100" value="100" />
+              </div>
+            </div>
+            <div class="row" style="text-align:center"><p id="dateMaxRangeLabel"></p></div>
+          </div>
+        </div>
 
-        <h4>Components</h4>
-        <ul id="componentList"></ul>
+        <div class="card mb-3">
+          <div class="card-header">Modules</div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="btn-group btn-group-sm" role="group" aria-label="Module selection">
+                <button type="button" class="btn btn-outline-secondary" id="moduleSelectAll">Select all</button>
+                <button type="button" class="btn btn-outline-secondary" id="moduleUnselectAll">Unselect all</button>
+              </div>
+            </div>
 
+            <div class="row mb-3"><div id="moduleList"></div></div>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header">Components</div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="btn-group btn-group-sm" role="group" aria-label="Component selection">
+                <button type="button" class="btn btn-outline-secondary" id="componentSelectAll">Select all</button>
+                <button type="button" class="btn btn-outline-secondary" id="componentUnselectAll">Unselect all</button>
+              </div>
+            </div>
+
+            <div class="row mb-3"><div id="componentList"></div></div>
+          </div>
+        </div>
       </div>
+
       <div class="col-8">
         <h4>Logs</h4>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Modules</th>
-              <th scope="col">Components</th>
-              <th scope="col">Log</th>
-            </tr>
-          </thead>
-          <tbody id="logTable">
-          </tbody>
-        </table>
+        <ul class="nav nav-tabs" id="contextsTabs" role="tablist"></ul>
+        <div class="tab-content" id="contextsLog"></div>
       </div>
     </div>
   </div>

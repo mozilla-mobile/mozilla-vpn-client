@@ -5,6 +5,8 @@
 #include "logger.h"
 #include "loghandler.h"
 
+#include <QMetaEnum>
+
 Logger::Logger(const QString& module, const QString& className)
     : Logger(QStringList({module}), className) {}
 
@@ -56,4 +58,30 @@ QString Logger::sensitive(const QString& input) {
 #else
   return QString(input.length(), 'X');
 #endif
+}
+
+void Logger::Log::addMetaEnum(quint64 value, const QMetaObject* meta,
+                              const char* name) {
+  QMetaEnum me = meta->enumerator(meta->indexOfEnumerator(name));
+
+  QString out;
+  QTextStream ts(&out);
+
+  if (const char* scope = me.scope()) {
+    ts << scope << "::";
+  }
+
+  const char* key = me.valueToKey(value);
+  const bool scoped = me.isScoped();
+  if (scoped || !key) {
+    ts << me.enumName() << (!key ? "(" : "::");
+  }
+
+  if (key) {
+    ts << key;
+  } else {
+    ts << value << ")";
+  }
+
+  m_data->m_ts << out;
 }

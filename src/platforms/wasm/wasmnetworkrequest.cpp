@@ -56,7 +56,11 @@ void NetworkRequest::abort() {}
 
 // static
 QString NetworkRequest::apiBaseUrl() {
-  return QString(Constants::API_STAGING_URL);
+  if (Constants::inProduction()) {
+    return Constants::API_PRODUCTION_URL;
+  }
+
+  return Constants::getStagingServerAddress();
 }
 
 // static
@@ -109,6 +113,14 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r, ":/networkrequests/servers.json");
+  return r;
+}
+
+NetworkRequest* NetworkRequest::createForServerExtra(QObject* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
   return r;
 }
 

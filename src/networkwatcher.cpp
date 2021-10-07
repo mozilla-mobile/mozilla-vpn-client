@@ -73,7 +73,7 @@ void NetworkWatcher::initialize() {
           &NetworkWatcher::settingsChanged);
 }
 
-void NetworkWatcher::settingsChanged(bool active) {
+void NetworkWatcher::settingsChanged(const bool& active) {
   logger.debug() << "Settings changed:" << active;
   if (m_active == active) {
     return;

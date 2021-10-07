@@ -34,6 +34,8 @@ Item {
     }
 
     VPNButton {
+        id: signInButton
+
         anchors.top: passwordInput.bottom
         anchors.bottomMargin: 24
         text: "Sign In" // TODO
@@ -44,5 +46,15 @@ Item {
           VPNAuthInApp.setPassword(passwordInput.text);
           VPNAuthInApp.signIn();
         }
+    }
+
+    VPNButton {
+        anchors.top: signInButton.bottom
+        anchors.bottomMargin: 24
+        text: "Reset" // TODO
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        radius: 5
+        onClicked: VPNAuthInApp.reset();
     }
 }

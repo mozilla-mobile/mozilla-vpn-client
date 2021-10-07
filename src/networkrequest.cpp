@@ -19,7 +19,6 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QProcessEnvironment>
 #include <QUrl>
 #include <QUrlQuery>
 
@@ -88,11 +87,7 @@ QString NetworkRequest::apiBaseUrl() {
     return Constants::API_PRODUCTION_URL;
   }
 
-  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  if (pe.contains("MVPN_API_BASE_URL")) {
-    return pe.value("MVPN_API_BASE_URL");
-  }
-  return Constants::API_STAGING_URL;
+  return Constants::getStagingServerAddress();
 }
 
 // static
@@ -133,6 +128,47 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 
   QJsonDocument json;
   json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForAdjustProxy(
+    QObject* parent, const QString& method, const QString& route,
+    const QList<QPair<QString, QString>>& headers,
+    const QString& queryParameters, const QString& bodyParameters,
+    const QList<QString>& unknownParameters) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/adjust");
+  r->m_request.setUrl(url);
+
+  QJsonObject headersObj;
+  for (QPair<QString, QString> header : headers) {
+    headersObj.insert(header.first, header.second);
+  }
+
+  QJsonObject obj;
+  obj.insert("method", method);
+  obj.insert("path", route);
+  obj.insert("headers", headersObj);
+  obj.insert("queryParameters", queryParameters);
+  obj.insert("bodyParameters", bodyParameters);
+
+  QJsonArray unknownParametersArray;
+  for (QString unknownParameter : unknownParameters) {
+    unknownParametersArray.append(unknownParameter);
+  }
+  obj.insert("unknownParameters", unknownParametersArray);
+
+  QJsonDocument json(obj);
 
   r->postRequest(json.toJson(QJsonDocument::Compact));
   return r;
@@ -194,6 +230,15 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   url.setPath("/api/v1/vpn/servers");
   r->m_request.setUrl(url);
 
+  r->getRequest();
+  return r;
+}
+
+NetworkRequest* NetworkRequest::createForServerExtra(QObject* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+  r->m_request.setUrl(QUrl(Constants::MULLVAD_EXTRA_SERVER_URL));
   r->getRequest();
   return r;
 }
@@ -739,8 +784,10 @@ void NetworkRequest::replyFinished() {
   QByteArray data = m_reply->readAll();
 
   if (m_reply->error() != QNetworkReply::NoError) {
+    QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
     logger.error() << "Network error:" << m_reply->errorString()
                    << "status code:" << status << "- body:" << data;
+    logger.error() << "Failed to access:" << m_request.url().toString(options);
     emit requestFailed(m_reply->error(), data);
     return;
   }

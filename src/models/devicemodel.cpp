@@ -43,12 +43,8 @@ bool DeviceModel::fromSettings(const Keys* keys) {
 
   logger.debug() << "Reading the device list from settings";
 
-  if (!settingsHolder->hasDevices()) {
-    return false;
-  }
-
   const QByteArray& json = settingsHolder->devices();
-  if (!fromJsonInternal(keys, json)) {
+  if (json.isEmpty() || !fromJsonInternal(keys, json)) {
     return false;
   }
 
@@ -188,6 +184,21 @@ const Device* DeviceModel::currentDevice(const Keys* keys) const {
 const Device* DeviceModel::deviceFromPublicKey(const QString& publicKey) const {
   for (const Device& device : m_devices) {
     if (device.publicKey() == publicKey) {
+      return &device;
+    }
+  }
+
+  return nullptr;
+}
+
+const Device* DeviceModel::deviceFromUniqueId() const {
+  QString uniqueId = Device::uniqueDeviceId();
+  if (uniqueId.isEmpty()) {
+    return nullptr;
+  }
+
+  for (const Device& device : m_devices) {
+    if (device.uniqueId() == uniqueId) {
       return &device;
     }
   }

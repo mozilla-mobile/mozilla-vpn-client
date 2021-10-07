@@ -12,6 +12,7 @@ DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += BUILD_ID=\\\"1234\\\"
 
 DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 DEFINES += UNIT_TEST
 
 TEMPLATE = app
@@ -26,6 +27,7 @@ INCLUDEPATH += \
             ../../translations/generated
 
 HEADERS += \
+    ../../src/adjust/adjustfiltering.h \
     ../../src/bigint.h \
     ../../src/bigintipv6addr.h \
     ../../src/captiveportal/captiveportal.h \
@@ -58,6 +60,7 @@ HEADERS += \
     ../../src/models/servercountry.h \
     ../../src/models/servercountrymodel.h \
     ../../src/models/serverdata.h \
+    ../../src/models/serverextra.h \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
@@ -94,11 +97,13 @@ HEADERS += \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
     helper.h \
+    testadjust.h \
     testandroidmigration.h \
     testbigint.h \
     testbigintipv6addr.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
+    testfeature.h \
     testlocalizer.h \
     testlogger.h \
     testipaddress.h \
@@ -111,6 +116,7 @@ HEADERS += \
     testtimersingleshot.h
 
 SOURCES += \
+    ../../src/adjust/adjustfiltering.cpp \
     ../../src/captiveportal/captiveportal.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
@@ -143,6 +149,7 @@ SOURCES += \
     ../../src/models/servercountry.cpp \
     ../../src/models/servercountrymodel.cpp \
     ../../src/models/serverdata.cpp \
+    ../../src/models/serverextra.cpp \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
@@ -178,11 +185,13 @@ SOURCES += \
     mocinspectorwebsocketconnection.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
+    testadjust.cpp \
     testandroidmigration.cpp \
     testbigint.cpp \
     testbigintipv6addr.cpp \
     testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
+    testfeature.cpp \
     testlocalizer.cpp \
     testlogger.cpp \
     testipaddress.cpp \

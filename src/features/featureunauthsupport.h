@@ -26,16 +26,11 @@ class FeatureUnauthSupport final : public Feature {
             true  // Can be enabled in devmode
         ) {}
 
-  bool checkSupportCallback() const override { return m_supported; }
+  bool checkSupportCallback() const override { return false; }
 
   static FeatureUnauthSupport* instance() {
     return (FeatureUnauthSupport*)(get(FEATURE_UNAUTH_SUPPORT));
   }
-
-  void setIsSupported(bool enabled) { m_supported = enabled; }
-
- private:
-  bool m_supported = false;
 };
 
 #endif  // FEATURE_UNAUTH_SUPPORT_H

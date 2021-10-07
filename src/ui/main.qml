@@ -331,7 +331,7 @@ Window {
     Connections {
         target: VPNSettings
         function onGleanEnabledChanged() {
-            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
+            Glean.setUploadEnabled(VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported);
         }
     }
 

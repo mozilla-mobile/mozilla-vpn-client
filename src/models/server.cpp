@@ -4,6 +4,7 @@
 
 #include "server.h"
 #include "leakdetector.h"
+#include "serverextra.h"
 
 #include <QJsonArray>
 #include <QJsonObject>
@@ -28,13 +29,16 @@ Server& Server::operator=(const Server& other) {
   m_portRanges = other.m_portRanges;
   m_publicKey = other.m_publicKey;
   m_weight = other.m_weight;
+  m_socksName = other.m_socksName;
+  m_multihopPort = other.m_multihopPort;
 
   return *this;
 }
 
 Server::~Server() { MVPN_COUNT_DTOR(Server); }
 
-bool Server::fromJson(const QJsonObject& obj) {
+bool Server::fromJson(const QJsonObject& obj,
+                      const QHash<QString, ServerExtra>& serverExtras) {
   // Reset.
   m_hostname = "";
 
@@ -110,12 +114,20 @@ bool Server::fromJson(const QJsonObject& obj) {
   m_publicKey = publicKey.toString();
   m_weight = weight.toInt();
 
+  ServerExtra extra = serverExtras.value(m_publicKey);
+  m_socksName = extra.socksName();
+  m_multihopPort = extra.multihopPort();
+
   return true;
 }
 
 // static
 const Server& Server::weightChooser(const QList<Server>& servers) {
-  Q_ASSERT(!servers.isEmpty());
+  static const Server emptyServer;
+  Q_ASSERT(!emptyServer.initialized());
+  if (servers.isEmpty()) {
+    return emptyServer;
+  }
 
   uint32_t weightSum = 0;
 
@@ -135,7 +147,7 @@ const Server& Server::weightChooser(const QList<Server>& servers) {
 
   // This should not happen.
   Q_ASSERT(false);
-  return servers[0];
+  return emptyServer;
 }
 
 uint32_t Server::choosePort() const {

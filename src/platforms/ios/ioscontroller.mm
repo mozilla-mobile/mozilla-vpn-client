@@ -104,13 +104,14 @@ void IOSController::activate(const QList<Server>& serverList, const Device* devi
   Q_UNUSED(device);
   Q_UNUSED(keys);
 
-  Q_ASSERT(serverList.length() == 1);
-  const Server& server = serverList[0];
+  bool isMultihop = serverList.length() > 1;
+  Server exitServer = serverList.first();
+  Server entryServer = serverList.last();
 
   // This feature is not supported on macos/ios yet.
   Q_ASSERT(vpnDisabledApps.isEmpty());
 
-  logger.debug() << "IOSController activating" << server.hostname();
+  logger.debug() << "IOSController activating" << entryServer.hostname();
 
   if (!impl) {
     logger.error() << "Controller not correctly initialized";
@@ -129,10 +130,10 @@ void IOSController::activate(const QList<Server>& serverList, const Device* devi
   }
 
   [impl connectWithDnsServer:dnsServer.toString().toNSString()
-           serverIpv6Gateway:server.ipv6Gateway().toNSString()
-             serverPublicKey:server.publicKey().toNSString()
-            serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
-                  serverPort:server.choosePort()
+           serverIpv6Gateway:entryServer.ipv6Gateway().toNSString()
+             serverPublicKey:exitServer.publicKey().toNSString()
+            serverIpv4AddrIn:entryServer.ipv4AddrIn().toNSString()
+                  serverPort:isMultihop ? exitServer.multihopPort() : entryServer.choosePort()
       allowedIPAddressRanges:allowedIPAddressRangesNS
                  ipv6Enabled:SettingsHolder::instance()->ipv6Enabled()
                       reason:reason

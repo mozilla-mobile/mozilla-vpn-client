@@ -46,7 +46,7 @@ void maybeInitialize() {
   //% "Help center"
   logger.debug() << "Adding:" << qtTrId("help.helpCenter2");
   s_helpEntries.append(
-      HelpEntry("help.helpCenter", true, false, MozillaVPN::LinkHelpSupport));
+      HelpEntry("help.helpCenter2", true, false, MozillaVPN::LinkHelpSupport));
 
   //% "Contact us"
   logger.debug() << "Adding:" << qtTrId("help.contactUs");
