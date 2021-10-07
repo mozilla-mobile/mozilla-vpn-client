@@ -20,7 +20,7 @@ class WgQuickProcess final {
       const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
       const QString& serverPublicKey, const QString& serverIpv4AddrIn,
       const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
-      int serverPort, bool ipv6Enabled, const QString& dnsServer);
+      int serverPort, const QString& dnsServer);
 
   static bool createConfigFile(
       const QString& outputFile, const InterfaceConfig& config,

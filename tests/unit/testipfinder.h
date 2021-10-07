@@ -9,6 +9,5 @@ class TestIpFinder final : public TestHelper {
 
  private slots:
   void abort();
-  void ipv4Only();
   void ipv4AndIpv6();
 };

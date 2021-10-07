@@ -231,6 +231,9 @@ void ConnectionDataHolder::updateIpAddress() {
 
         MozillaVPN* vpn = MozillaVPN::instance();
         logger.debug() << "IP address request completed";
+
+    // Let's skip this for unit-tests to make them simpler.
+#ifndef UNIT_TEST
         if (m_checkStatusTimer.isActive() &&
             country != vpn->currentServer()->exitCountryCode()) {
           // In case the country-we're reported in does not match the
@@ -238,6 +241,7 @@ void ConnectionDataHolder::updateIpAddress() {
           logger.warning() << "Reported ip not in the right country, retry!";
           TimerSingleShot::create(this, 3000, [this]() { updateIpAddress(); });
         }
+#endif
 
         if (!ipv4.isEmpty()) {
           m_ipv4Address = ipv4;

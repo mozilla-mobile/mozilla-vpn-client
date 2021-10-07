@@ -19,8 +19,9 @@ void TestConnectionDataHolder::checkIpAddressFailure() {
   ConnectionDataHolder cdh;
 
   SettingsHolder settingsHolder;
-  settingsHolder.setIpv6Enabled(false);
 
+  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+      TestHelper::NetworkConfig::Failure, QByteArray()));
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
 
@@ -59,9 +60,12 @@ void TestConnectionDataHolder::checkIpAddressSucceess() {
   QSignalSpy spy(&cdh, &ConnectionDataHolder::ipv4AddressChanged);
 
   SettingsHolder settingsHolder;
-  settingsHolder.setIpv6Enabled(false);
+
+  TestHelper::networkConfig.clear();
 
   QFETCH(QByteArray, json);
+  TestHelper::networkConfig.append(
+      TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
   TestHelper::networkConfig.append(
       TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
 
@@ -86,8 +90,9 @@ void TestConnectionDataHolder::chart() {
   QSignalSpy spy(&cdh, &ConnectionDataHolder::bytesChanged);
 
   SettingsHolder settingsHolder;
-  settingsHolder.setIpv6Enabled(false);
 
+  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+      TestHelper::NetworkConfig::Success, QString("{'ip':'42'}").toUtf8()));
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Success, QString("{'ip':'42'}").toUtf8()));
 

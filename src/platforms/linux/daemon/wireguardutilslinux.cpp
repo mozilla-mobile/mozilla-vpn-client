@@ -166,15 +166,15 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
     NetfilterMarkCgroup(VPN_EXCLUDE_CLASS_ID, device->fwmark);
     NetfilterBlockCgroup(VPN_BLOCK_CLASS_ID);
   }
-  if (config.m_ipv6Enabled) {
-    int slashPos = config.m_deviceIpv6Address.indexOf('/');
-    GoString goIpv6Address = {.p = qPrintable(config.m_deviceIpv6Address),
-                              .n = config.m_deviceIpv6Address.length()};
-    if (slashPos != -1) {
-      goIpv6Address.n = slashPos;
-    }
-    NetfilterIsolateIpv6(goIfname, goIpv6Address);
+
+  int slashPos = config.m_deviceIpv6Address.indexOf('/');
+  GoString goIpv6Address = {.p = qPrintable(config.m_deviceIpv6Address),
+                            .n = config.m_deviceIpv6Address.length()};
+  if (slashPos != -1) {
+    goIpv6Address.n = slashPos;
   }
+  NetfilterIsolateIpv6(goIfname, goIpv6Address);
+
   return true;
 }
 
