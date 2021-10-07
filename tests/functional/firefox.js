@@ -44,7 +44,9 @@ module.exports = class FirefoxHelper {
           const path =
               process.env.ARTIFACT_DIR + '/screencapture/webdriver.png';
           console.log('DEBUG: saving webdriver screenshot to', path);
-          driver.captureScreenshot(path);
+          driver.takeScreenshot().then(function(image) {
+            require('fs').writeFileSync(path, image, 'base64');
+          })
         }
 
         setTimeout(check, 500);
