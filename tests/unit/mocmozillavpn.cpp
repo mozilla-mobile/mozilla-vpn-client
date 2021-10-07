@@ -166,7 +166,3 @@ void MozillaVPN::reset(bool) {}
 void MozillaVPN::maybeRegenerateDeviceKey() {}
 
 void MozillaVPN::hardResetAndQuit() {}
-
-const QString MozillaVPN::gleanApplicationId() {
-  return "MozillaVPN-tests-unit";
-}

@@ -286,45 +286,37 @@ Window {
         }
 
         function onInitializeGlean() {
-            console.log("Glean main.qml - onInitializeGlean");
             if (!VPNSettings.telemetryPolicyShown) {
                 // If we haven't shown the telemetry policy yet, bail.
-                console.log("Glean main.qml - Telemetry policy not shown yet, bailing.");
+                console.log("Telemetry policy not shown yet, do not initialize Glean.");
                 return;
             }
-            console.log("Glean main.qml - Initializing with", VPN.gleanApplicationId, VPNSettings.gleanEnabled);
+            var debug = {};
             if (VPN.debugMode) {
-                // Set-up debug properties for pings in debug mode
-                console.log("Glean main.qml - Initializing with debug mode ON");
-                Glean.initialize(VPN.gleanApplicationId, VPNSettings.gleanEnabled, {
-                    appBuild: "MozillaVPN/" + VPN.versionString,
-                    appDisplayVersion: VPN.versionString,
-                    debug: {
-                        logPings: true,
-                        debugViewTag: "MozillaVPN"
-                    }
-                });
-            } else {
-                console.log("Glean main.qml - Initializing with debug mode OFF");
-                Glean.initialize(VPN.gleanApplicationId, VPNSettings.gleanEnabled, {
-                    appBuild: "MozillaVPN/" + VPN.versionString,
-                    appDisplayVersion: VPN.versionString,
-                });
-            }
+                console.debug("Initializing glean with debug mode");
+                debug = {
+                    logPings: true,
+                    debugViewTag: "MozillaVPN"
+                }
+            Glean.initialize("mozillavpn", VPNSettings.gleanEnabled, {
+                appBuild: "MozillaVPN/" + VPN.versionString,
+                appDisplayVersion: VPN.versionString,
+                channel: VPNSettings.stagingMode ? "staging" : "production";
+            });
         }
 
         function onSendGleanPings() {
-            console.log("Glean main.qml - onSendGleanPings");
+            console.debug("sending Glean pings");
             Pings.main.submit();
         }
 
         function onRecordGleanEvent(sample) {
-            console.log("Glean main.qml - onRecordGleanEvent");
+            console.debug("recording Glean event");
             Sample[sample].record();
         }
 
         function onAboutToQuit() {
-            console.log("Glean main.qml - onAboutToQuit");
+            console.debug("about to quit, shutdown Glean");
             // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
             Glean.shutdown();
         }

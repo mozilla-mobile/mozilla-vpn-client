@@ -203,17 +203,6 @@ bool MozillaVPN::debugMode() const {
 #endif
 }
 
-const QString MozillaVPN::gleanApplicationId() {
-  QString applicationId = "MozillaVPN";
-  if (stagingMode()) {
-    applicationId = applicationId + "-staging";
-  }
-  if (debugMode()) {
-    applicationId = applicationId + "-debug";
-  }
-  return applicationId;
-}
-
 void MozillaVPN::initialize() {
   logger.debug() << "MozillaVPN Initialization";
 
