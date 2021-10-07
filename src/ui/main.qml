@@ -325,7 +325,8 @@ Window {
 
         function onAboutToQuit() {
             console.log("Glean main.qml - onAboutToQuit");
-            Pings.main.submit();
+            // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
+            Glean.shutdown();
         }
     }
 
