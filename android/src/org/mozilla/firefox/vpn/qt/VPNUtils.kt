@@ -51,7 +51,11 @@ object VPNUtils {
         if (tx == null) {
             return false
         }
-        tx.writer(Charsets.UTF_8)?.write(text)
+        try {
+            tx.writer(Charsets.UTF_8)?.write(text)
+        } catch (e: IOException) {
+            return false
+        }
         tx.close()
         // Now update the Files meta data that the file exists
         fileMetaData.clear()

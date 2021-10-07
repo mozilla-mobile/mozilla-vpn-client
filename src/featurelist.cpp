@@ -51,11 +51,11 @@ void FeatureList::initialize() {
   new FeatureLocalAreaAccess();
   new FeatureMultiHop();
   new FeatureNotificationControl();
+  new FeatureShareLogs();
   new FeatureSplitTunnel();
   new FeatureStartOnBoot();
   new FeatureUnauthSupport();
   new FeatureUnsecuredNetworkNotification();
-  new FeatureShareLogs();
 
   m_featurelist = Feature::getAll();
 }

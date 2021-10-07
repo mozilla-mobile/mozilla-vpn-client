@@ -8,8 +8,8 @@
 
 #include <QDateTime>
 #include <QString>
-#include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtGui>
+#include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtQuick>
 
 #import <UIKit/UIKit.h>
