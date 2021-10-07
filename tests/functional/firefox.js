@@ -1,4 +1,5 @@
 const assert = require('assert');
+const fs = require('fs');
 const firefox = require('selenium-webdriver/firefox');
 const webdriver = require('selenium-webdriver');
 
@@ -22,6 +23,8 @@ module.exports = class FirefoxHelper {
   static async waitForURL(driver, url) {
     await driver.setContext('content');
 
+    // If the webdriver takes a suspiciously long time, grab a screenshot
+    // after about 25 seconds.
     let retries = 50;
 
     // I'm sure there is something better than this, but this is the only
@@ -41,11 +44,14 @@ module.exports = class FirefoxHelper {
 
         retries--;
         if (('ARTIFACT_DIR' in process.env) && (retries == 0)) {
-          const path =
-              process.env.ARTIFACT_DIR + '/screencapture/webdriver.png';
+          const dir = process.env.ARTIFACT_DIR + '/screencapture';
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+          }
+          const path = dir + '/webdriver.png';
           console.log('DEBUG: saving webdriver screenshot to', path);
           driver.takeScreenshot().then(function(image) {
-            require('fs').writeFileSync(path, image, 'base64');
+            fs.writeFileSync(path, image, 'base64');
           })
         }
 
