@@ -11,8 +11,8 @@
 #include <QJsonValue>
 #include <QTextStream>
 
-#ifndef MVPN_WASM
-  #include <QSslSocket>
+#ifdef MVPN_WINDOWS
+#  include <QSslSocket>
 #endif
 
 #ifdef QT_DEBUG
@@ -60,8 +60,8 @@ QString Device::currentDeviceReport() {
   out << "APP Version -> " << APP_VERSION << Qt::endl;
   out << "Build ID -> " << BUILD_ID << Qt::endl;
   out << "Device ID -> " << uniqueDeviceId() << Qt::endl;
-  
-#ifndef MVPN_WASM // No ssl on wasm
+
+#ifdef MVPN_WINDOWS
   out << "SSL Lib:" << QSslSocket::sslLibraryVersionString()
       << QSslSocket::sslLibraryVersionNumber() << Qt::endl;
 #endif
