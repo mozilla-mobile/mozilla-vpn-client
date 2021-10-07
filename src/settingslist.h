@@ -180,14 +180,6 @@ SETTING_DATETIME(installationTime,     // getter
                  false                 // remove when reset
 )
 
-SETTING_BOOL(ipv6Enabled,     // getter
-             setIpv6Enabled,  // setter
-             hasIpv6Enabled,  // has
-             "ipv6Enabled",   // key
-             true,            // default value
-             false            // remove when reset
-)
-
 SETTING_STRING(languageCode,     // getter
                setLanguageCode,  // setter
                hasLanguageCode,  // has
