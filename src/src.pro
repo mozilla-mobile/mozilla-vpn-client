@@ -108,9 +108,12 @@ SOURCES += \
         hkdf.cpp \
         iaphandler.cpp \
         imageproviderfactory.cpp \
+        inspector/inspectoritempicker.cpp \
+        inspector/inspectorutils.cpp \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
+        itempicker.cpp \
         l18nstringsimpl.cpp \
         leakdetector.cpp \
         localizer.cpp \
@@ -177,6 +180,7 @@ SOURCES += \
         taskscheduler.cpp \
         theme.cpp \
         timersingleshot.cpp \
+        tutorial.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
         urlopener.cpp
@@ -242,9 +246,12 @@ HEADERS += \
         hkdf.h \
         iaphandler.h \
         imageproviderfactory.h \
+        inspector/inspectoritempicker.h \
+        inspector/inspectorutils.h \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
+        itempicker.h \
         leakdetector.h \
         localizer.h \
         logger.h \
@@ -311,6 +318,7 @@ HEADERS += \
         taskscheduler.h \
         theme.h \
         timersingleshot.h \
+        tutorial.h \
         update/updater.h \
         update/versionapi.h \
         urlopener.h

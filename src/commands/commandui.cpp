@@ -13,9 +13,10 @@
 #include "features/featureinapppurchase.h"
 #include "filterproxymodel.h"
 #include "fontloader.h"
-#include "l18nstrings.h"
 #include "iaphandler.h"
+#include "imageproviderfactory.h"
 #include "inspector/inspectorwebsocketserver.h"
+#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -24,8 +25,8 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "imageproviderfactory.h"
 #include "theme.h"
+#include "tutorial.h"
 
 #include <glean.h>
 #include <lottie.h>
@@ -433,6 +434,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNErrorHandler",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = ErrorHandler::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNTutorial",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = Tutorial::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
