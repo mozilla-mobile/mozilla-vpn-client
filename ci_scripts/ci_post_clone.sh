@@ -10,6 +10,8 @@ cd /Volumes/workspace/repository
 
 git clone https://github.com/mbirghan/qt_ios_build
 
+gem install xcodeproj -v 0.28.2
+
 pip3 install "glean_parser==3.5"
 pip3 install pyhumps
 pip3 install pyyaml
