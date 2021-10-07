@@ -76,4 +76,5 @@ void IOSUtils::shareLogs(const QString& logs) {
 
   UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[url] applicationActivities:nil];
   [qtController presentViewController:activityViewController animated:YES completion:nil];
+  [activityViewController release];
 }
