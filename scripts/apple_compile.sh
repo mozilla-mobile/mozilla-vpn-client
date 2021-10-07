@@ -168,6 +168,15 @@ IOS_FLAGS="
   MVPN_IOS=1
 "
 
+printn Y "Mode: "
+if [[ "$RELEASE" ]]; then
+  print G "release"
+  MODE="CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release"
+else
+  print G "debug"
+  MODE="CONFIG+=debug CONFIG-=release CONFIG-=debug_and_release"
+fi
+
 OSRUBY=$OS
 printn Y "OS: "
 print G "$OS"
@@ -185,21 +194,6 @@ elif [ "$OS" = "ios" ]; then
   fi
 else
   die "Why we are here?"
-fi
-
-printn Y "Mode: "
-if [[ "$RELEASE" ]]; then
-  print G "release"
-  MODE="CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release"
-else
-  if [ "$OS" = "ios" ]; then
-    print G "ios debug"
-    # Qt Debug is broken on iOS so we use mvpn_debug config flag.
-    MODE="CONFIG-=debug CONFIG-=debug_and_release CONFIG+=release CONFIG+=mvpn_debug"
-  else
-    print G "macos debug"
-    MODE="CONFIG+=debug CONFIG-=release CONFIG-=debug_and_release"
-  fi
 fi
 
 VPNMODE=
