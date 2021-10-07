@@ -372,14 +372,6 @@ void MozillaVPN::setServerPublicKey(const QString& publicKey) {
 
 void MozillaVPN::getStarted() {
   logger.debug() << "Get started";
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-
-  if (!settingsHolder->telemetryPolicyShown()) {
-    setState(StateTelemetryPolicy);
-    return;
-  }
-
   authenticate();
 }
 

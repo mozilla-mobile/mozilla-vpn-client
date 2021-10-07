@@ -203,7 +203,7 @@ module.exports = {
     return new Promise(resolve => setTimeout(resolve, 1000));
   },
 
-  async authenticate(resetting = true, telemetry = true) {
+  async authenticate(resetting = true) {
     if (resetting) await this.reset();
 
     let driver = await FirefoxHelper.createDriver();
@@ -215,13 +215,6 @@ module.exports = {
         await this.getElementProperty('learnMoreLink', 'visible') === 'true');
 
     await this.clickOnElement('getStarted');
-
-    if (telemetry) {
-      await this.waitForElement('telemetryPolicyButton');
-      await this.waitForElementProperty(
-          'telemetryPolicyButton', 'visible', 'true');
-      await this.clickOnElement('telemetryPolicyButton');
-    }
 
     await this.waitForCondition(async () => {
       const url = await this.getLastUrl();
