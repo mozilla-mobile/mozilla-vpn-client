@@ -143,9 +143,6 @@ print Y "Importing translation files..."
 git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
 python3 scripts/importLanguages.py $([[ "$OS" = "macos" ]] && echo "-m" || echo "") || die "Failed to import languages"
 
-print Y "Generating glean samples..."
-python3 scripts/generate_glean.py || die "Failed to generate glean samples"
-
 printn Y "Extract the project version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
 FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
