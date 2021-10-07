@@ -1197,22 +1197,24 @@ void MozillaVPN::serializeLogs(QTextStream* out,
       });
 }
 
-void MozillaVPN::viewLogs() {
+bool MozillaVPN::viewLogs() {
   logger.debug() << "View logs";
 
   if (!FeatureShareLogs::instance()->isSupported()) {
     logger.error() << "ViewLogs Called on unsupported OS or version!";
+    return false;
   }
 
 #if defined(MVPN_ANDROID) || defined(MVPN_IOS)
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
-  serializeLogs(out, [buffer, out]() {
+  bool ok = true;
+  serializeLogs(out, [buffer, out, &ok]() {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
 #  if defined(MVPN_ANDROID)
-    AndroidUtils::ShareText(*buffer);
+    ok = AndroidUtils::ShareText(*buffer);
 #  else
     IOSUtils::shareLogs(*buffer);
 #  endif
@@ -1220,23 +1222,24 @@ void MozillaVPN::viewLogs() {
     delete out;
     delete buffer;
   });
-  return;
+  return ok;
 #endif
 
   if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {
-    return;
+    return true;
   }
 
   if (writeAndShowLogs(QStandardPaths::HomeLocation)) {
-    return;
+    return true;
   }
 
   if (writeAndShowLogs(QStandardPaths::TempLocation)) {
-    return;
+    return true;
   }
 
   qWarning()
       << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
+  return false;
 }
 
 void MozillaVPN::retrieveLogs() {

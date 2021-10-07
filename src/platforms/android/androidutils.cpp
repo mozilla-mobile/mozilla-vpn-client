@@ -10,6 +10,7 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"
+#include "jni.h"
 
 #include <QAndroidJniEnvironment>
 #include <QAndroidJniObject>
@@ -183,10 +184,9 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
 }
 
 bool AndroidUtils::ShareText(const QString& text) {
-  QAndroidJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/qt/VPNShareUtils", "sharePlainText",
-      "(Ljava/lang/String;)V", QAndroidJniObject::fromString(text).object());
-  return true;
+  return (bool)QAndroidJniObject::callStaticMethod<jboolean>(
+      "org/mozilla/firefox/vpn/qt/VPNUtils", "sharePlainText",
+      "(Ljava/lang/String;)Z", QAndroidJniObject::fromString(text).object());
 }
 
 QByteArray AndroidUtils::DeviceId() {
@@ -213,4 +213,3 @@ QByteArray AndroidUtils::DeviceId() {
   env->ReleaseStringUTFChars(value, buffer);
   return res.toUtf8();
 }
-
