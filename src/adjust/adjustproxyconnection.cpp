@@ -29,7 +29,7 @@ Logger logger(LOG_ADJUST, "AdjustProxyConnection");
 
 AdjustProxyConnection::AdjustProxyConnection(QObject* parent,
                                              QTcpSocket* connection)
-    : QObject(parent), m_connection(connection) {
+    : QObject(parent), m_connection(connection), m_packageHandler(this) {
   MVPN_COUNT_CTOR(AdjustProxyConnection);
 
   logger.debug() << "New connection received";
@@ -48,166 +48,46 @@ void AdjustProxyConnection::readData() {
   logger.debug() << "New data read";
   Q_ASSERT(m_connection);
   QByteArray input = m_connection->readAll();
-  m_buffer.append(input);
 
-  switch (m_state) {
-    case ProcessingState::NotStarted:
-      processFirstLine();
-      [[fallthrough]];
-    case ProcessingState::FirstLineDone:
-      processHeaders();
-      [[fallthrough]];
-    case ProcessingState::HeadersDone:
-      processParameters();
-      [[fallthrough]];
-    case ProcessingState::ParametersDone:
-      filterParametersAndForwardRequest();
-      break;
-    default:
-      Q_ASSERT(false);
-      logger.debug() << "Unknown ProcessingState: " << m_state;
-  }
-}
+  m_packageHandler.processData(input);
 
-void AdjustProxyConnection::processFirstLine() {
-  logger.debug() << "Processing first line";
-
-  if (m_buffer.isEmpty()) {
-    return;
-  }
-
-  int pos = m_buffer.indexOf("\n");
-  if (pos == -1) {
-    return;
-  }
-
-  QByteArray line = m_buffer.left(pos);
-  m_buffer.remove(0, pos + 1);
-
-  QList<QByteArray> parts = line.split(' ');
-  if (parts.length() < 2) {
-    logger.error() << "Invalid HTTP request";
+  if (m_packageHandler.isInvalidRequest()) {
     m_connection->close();
     return;
   }
 
-  m_method.append(parts[0]);
-  m_route = parts[1].trimmed();
-
-  m_state = ProcessingState::FirstLineDone;
-}
-
-void AdjustProxyConnection::processHeaders() {
-  logger.debug() << "Processing headers";
-
-  if (m_buffer.isEmpty()) {
-    return;
+  if (m_packageHandler.isProcessingDone()) {
+    forwardRequest();
   }
-
-  while (true) {
-    int pos = m_buffer.indexOf("\n");
-    if (pos == -1) {
-      return;
-    }
-
-    QByteArray line = m_buffer.left(pos);
-    m_buffer.remove(0, pos + 1);
-
-    QByteArray header = line.trimmed();
-    if (header.isEmpty()) {
-      break;
-    }
-
-    pos = header.indexOf(":");
-    if (pos == -1) {
-      continue;
-    }
-
-    QByteArray headerName = header.left(pos);
-    header.remove(0, pos + 1);
-    QByteArray headerValue = header.trimmed();
-
-    QPair<QString, QString> headerPair;
-    headerPair.first = QString(headerName);
-    headerPair.second = QString(headerValue);
-
-    if (QString::compare(headerPair.first, "host", Qt::CaseInsensitive) == 0) {
-      continue;
-    }
-
-    if (QString::compare(headerPair.first, "content-length",
-                         Qt::CaseInsensitive) == 0) {
-      bool ok;
-      m_contentLength = headerPair.second.toUInt(&ok, 10);
-      if (!ok) {
-        logger.error() << "Content Length could not be parsed";
-        m_connection->close();
-        return;
-      }
-      continue;
-    }
-
-    m_headers.append(headerPair);
-  }
-
-  m_state = ProcessingState::HeadersDone;
-}
-
-void AdjustProxyConnection::processParameters() {
-  logger.debug() << "Processing parameters";
-
-  uint32_t bodyLength = m_buffer.trimmed().length();
-
-  if (bodyLength > m_contentLength) {
-    logger.error() << "Buffer longer than the declared Contend-Length";
-    m_connection->close();
-    return;
-  }
-
-  if (bodyLength < m_contentLength) {
-    return;
-  }
-  m_bodyParameters = QUrlQuery(m_buffer.trimmed());
-
-  m_queryParameters = QUrlQuery(m_route);
-
-  m_state = ProcessingState::ParametersDone;
-}
-
-void AdjustProxyConnection::filterParametersAndForwardRequest() {
-  logger.debug() << "Filtering parameters";
-
-  m_queryParameters =
-      AdjustFiltering::filterParameters(m_queryParameters, m_unknownParameters);
-  m_bodyParameters =
-      AdjustFiltering::filterParameters(m_bodyParameters, m_unknownParameters);
-
-  forwardRequest();
 }
 
 void AdjustProxyConnection::forwardRequest() {
   logger.debug() << "Forwarding request";
 
-  NetworkRequest* request;
-
   QString headersString;
+  QList<QPair<QString, QString>> headers = m_packageHandler.getHeaders();
 
-  for (QPair<QString, QString> header : m_headers) {
+  for (QPair<QString, QString> header : headers) {
     headersString.append(header.first);
     headersString.append(": ");
     headersString.append(header.second);
     headersString.append(", ");
   }
 
-  logger.debug() << "Sending Adjust request with: " << m_method << ", "
-                 << headersString
-                 << logger.sensitive(m_queryParameters.toString()) << ", "
-                 << logger.sensitive(m_bodyParameters.toString());
+  QString method = m_packageHandler.getMethod();
+  QString route = m_packageHandler.getRoute();
+  QString queryParameters = m_packageHandler.getQueryParameters();
+  QString bodyParameters = m_packageHandler.getBodyParameters();
+  QStringList unknownParameters = m_packageHandler.getUnknownParameters();
 
-  request = NetworkRequest::createForAdjustProxy(
-      this, m_method, m_route.toString(), m_headers,
-      m_queryParameters.toString(), m_bodyParameters.toString(),
-      m_unknownParameters);
+  logger.debug() << "Sending Adjust request with: " << method << ", " << route
+                 << ", " << headersString << logger.sensitive(queryParameters)
+                 << ", " << logger.sensitive(bodyParameters) << ", "
+                 << unknownParameters;
+
+  NetworkRequest* request = NetworkRequest::createForAdjustProxy(
+      this, method, route, headers, queryParameters, bodyParameters,
+      unknownParameters);
 
   connect(
       request, &NetworkRequest::requestFailed,

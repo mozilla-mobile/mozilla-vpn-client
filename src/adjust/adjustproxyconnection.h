@@ -5,11 +5,7 @@
 #ifndef ADJUSTPROXYCONNECTION_H
 #define ADJUSTPROXYCONNECTION_H
 
-#include <QByteArray>
-#include <QObject>
-#include <QHash>
-#include <QUrl>
-#include <QUrlQuery>
+#include "adjustproxypackagehandler.h"
 
 class QTcpSocket;
 
@@ -23,32 +19,11 @@ class AdjustProxyConnection final : public QObject {
 
  private:
   void readData();
-
-  void processFirstLine();
-  void processHeaders();
-  void processParameters();
-  void filterParametersAndForwardRequest();
   void forwardRequest();
 
  private:
-  enum ProcessingState {
-    NotStarted,
-    FirstLineDone,
-    HeadersDone,
-    ParametersDone
-  };
-
   QTcpSocket* m_connection = nullptr;
-
-  ProcessingState m_state = ProcessingState::NotStarted;
-  QByteArray m_buffer;
-  uint32_t m_contentLength = 0;
-  QString m_method;
-  QUrl m_route;
-  QList<QPair<QString, QString>> m_headers;
-  QUrlQuery m_queryParameters;
-  QUrlQuery m_bodyParameters;
-  QStringList m_unknownParameters;
+  AdjustProxyPackageHandler m_packageHandler;
 };
 
 #endif  // ADJUSTPROXYCONNECTION_H
