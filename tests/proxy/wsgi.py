@@ -17,6 +17,10 @@ app = Flask(__name__)
 ## Proxy configuration
 upstream = 'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net'
 
+## Device mocking
+mock_devices = False
+mock_device_set = {}
+
 #----------------------------------------------------------
 # Request handling and forwarding
 #----------------------------------------------------------
@@ -107,9 +111,18 @@ def api_error(errno, code=400, message='Bad Request'):
 #----------------------------------------------------------
 # Redirect authentication to the staging server
 #----------------------------------------------------------
+def mangle_verify(jsdata):
+    userdata = jsdata["user"]
+    userdata["devices"] = [ device for device in mock_device_set.values() ]
+    jsdata["user"] = userdata
+    return jsdata
+
 @app.route('/api/v2/vpn/login/verify', methods=['POST'])
-def intercept_login():
-    return forward_upstream(request)
+def intercept_verify():
+    if not mock_devices:
+        return forward_upstream(request)
+    else:
+        return forward_upstream(request, mangle=mangle_verify)
 
 @app.route('/api/v2/vpn/login/<path:text>')
 def redirect_login(text):
@@ -125,9 +138,6 @@ def redirect_login(text):
 #----------------------------------------------------------
 # Device and account mocking
 #----------------------------------------------------------
-mock_devices = False
-mock_device_set = {}
-
 def mangle_account(jsdata):
     jsdata['devices'] = [ device for device in mock_device_set.values() ]
     return jsdata
@@ -144,6 +154,11 @@ def post_new_device():
     if not mock_devices:
         return forward_upstream(request)
 
+    # Log the request
+    print(f"REQUEST {request.method} -> {request.path}")
+    if log_match(request.path):
+        log_headers(request.headers)
+
     # Parse the request
     try:
         name = request.json['name']
@@ -151,6 +166,7 @@ def post_new_device():
         mock_device_set[pubkey] = {
             'name': name,
             'pubkey': pubkey,
+            'unique_id': "TestDevice-" + pubkey[0:6] + ".." + pubkey[-6:],
             'ipv4_address': '10.67.123.45/32',
             'ipv6_address': 'fc00:bbbb:bbbb:bb01::dead:beef/128',
             'created_at': datetime.utcnow().isoformat() + 'Z'
@@ -164,7 +180,7 @@ def post_new_device():
 def delete_device(pubkey):
     if not mock_devices:
         # Flask insists on URL-decoding, so we must re-encode the public key.
-        encpubkey = urllib.parse.quote(encpubkey, safe='')
+        encpubkey = urllib.parse.quote(pubkey, safe='')
         return forward_upstream(request, desturl=f"{upstream}/api/v1/vpn/device/{encpubkey}")
 
     if pubkey not in mock_device_set:
