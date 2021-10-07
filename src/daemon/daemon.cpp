@@ -105,8 +105,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
 
     // If the DNS is not the Gateway, it's a user defined DNS
     // thus, not add any other :)
-    if (config.m_ipv6Enabled &&
-        config.m_dnsServer == config.m_serverIpv4Gateway) {
+    if (config.m_dnsServer == config.m_serverIpv4Gateway) {
       resolvers.append(QHostAddress(config.m_serverIpv6Gateway));
     }
 
@@ -160,7 +159,6 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   GETVALUE("privateKey", config.m_privateKey, String);
   GETVALUE("serverPublicKey", config.m_serverPublicKey, String);
   GETVALUE("serverPort", config.m_serverPort, Double);
-  GETVALUE("ipv6Enabled", config.m_ipv6Enabled, Bool);
 
   config.m_deviceIpv4Address = obj.value("deviceIpv4Address").toString();
   config.m_deviceIpv6Address = obj.value("deviceIpv6Address").toString();
@@ -241,10 +239,6 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
         logger.error() << JSON_ALLOWEDIPADDRESSRANGES
                        << "object must have a boolean isIpv6";
         return false;
-      }
-
-      if (isIpv6.toBool() && !config.m_ipv6Enabled) {
-        continue;
       }
 
       config.m_allowedIPAddressRanges.append(IPAddressRange(
