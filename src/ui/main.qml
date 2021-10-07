@@ -297,11 +297,12 @@ Window {
                 debug = {
                     logPings: true,
                     debugViewTag: "MozillaVPN"
-                }
+                };
+            }
             Glean.initialize("mozillavpn", VPNSettings.gleanEnabled, {
                 appBuild: "MozillaVPN/" + VPN.versionString,
                 appDisplayVersion: VPN.versionString,
-                channel: VPNSettings.stagingMode ? "staging" : "production";
+                channel: VPNSettings.stagingMode ? "staging" : "production",
             });
         }
 
