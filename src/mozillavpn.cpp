@@ -1222,7 +1222,7 @@ bool MozillaVPN::viewLogs() {
     delete out;
     delete buffer;
   });
-  return ok; 
+  return ok;
 #endif
 
   if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {

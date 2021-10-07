@@ -7,17 +7,13 @@
 package org.mozilla.firefox.vpn.qt
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.provider.Settings
-import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-
-
+import android.provider.Settings
 
 // Companion for AndroidUtils.cpp
 object VPNUtils {
@@ -27,13 +23,12 @@ object VPNUtils {
         return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-
     @SuppressLint("NewApi")
     @JvmStatic
-    fun sharePlainText(text: String):Boolean {
+    fun sharePlainText(text: String): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             // Not supported on oldies. :c
-            return false;
+            return false
         }
         val ctx: Context = VPNActivity.getInstance()
         val resolver = ctx.contentResolver
@@ -48,13 +43,13 @@ object VPNUtils {
         }
         // Create the File and get the URI
         val fileURI: Uri? = resolver.insert(collection, fileMetaData)
-        if(fileURI == null){
-            return false;
+        if (fileURI == null) {
+            return false
         }
-        
+
         val tx = resolver.openOutputStream(fileURI)
-        if(tx == null){
-            return false;
+        if (tx == null) {
+            return false
         }
         tx.writer(Charsets.UTF_8)?.write(text)
         tx.close()
@@ -69,6 +64,6 @@ object VPNUtils {
 
         val chooseIntent = Intent.createChooser(sendIntent, "Share Logs")
         ctx.startActivity(chooseIntent)
-        return true;
+        return true
     }
 }
