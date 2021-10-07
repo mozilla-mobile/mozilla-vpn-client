@@ -73,6 +73,96 @@ void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
   obj["countries"] = countries;
 }
 
+QJsonObject serializeStatus() {
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  QJsonObject obj;
+
+  obj["authenticated"] = vpn->userAuthenticated();
+
+  {
+    QString stateStr;
+    switch (vpn->state()) {
+      case MozillaVPN::StateInitialize:
+        stateStr = "initialize";
+        break;
+      case MozillaVPN::StateAuthenticating:
+        stateStr = "authenticating";
+        break;
+      case MozillaVPN::StatePostAuthentication:
+        [[fallthrough]];
+      case MozillaVPN::StateTelemetryPolicy:
+        [[fallthrough]];
+      case MozillaVPN::StateMain:
+        stateStr = "ready";
+        break;
+      case MozillaVPN::StateUpdateRequired:
+        stateStr = "updateRequired";
+        break;
+      case MozillaVPN::StateSubscriptionNeeded:
+        stateStr = "subscriptionNeeded";
+        break;
+      case MozillaVPN::StateSubscriptionInProgress:
+        stateStr = "subscriptionInProgress";
+        break;
+      case MozillaVPN::StateSubscriptionBlocked:
+        stateStr = "subscriptionBlocked";
+        break;
+      case MozillaVPN::StateDeviceLimit:
+        stateStr = "deviceLimit";
+        break;
+      case MozillaVPN::StateBackendFailure:
+        stateStr = "backendFailure";
+        break;
+      case MozillaVPN::StateBillingNotAvailable:
+        stateStr = "billingNotAvailable";
+        break;
+      case MozillaVPN::StateSubscriptionNotValidated:
+        stateStr = "subscriptionNotValidated";
+        break;
+      default:
+        Q_ASSERT(false);
+        break;
+    }
+
+    obj["app"] = stateStr;
+  }
+
+  {
+    QString controllerStateStr;
+    switch (vpn->controller()->state()) {
+      case Controller::StateInitializing:
+        controllerStateStr = "initializing";
+        break;
+      case Controller::StateOff:
+        controllerStateStr = "off";
+        break;
+      case Controller::StateConnecting:
+        controllerStateStr = "connecting";
+        break;
+      case Controller::StateConfirming:
+        controllerStateStr = "confirming";
+        break;
+      case Controller::StateOn:
+        controllerStateStr = "on";
+        break;
+      case Controller::StateDisconnecting:
+        controllerStateStr = "disconnecting";
+        break;
+      case Controller::StateSwitching:
+        controllerStateStr = "switching";
+        break;
+      default:
+        Q_ASSERT(false);
+        break;
+    }
+
+    obj["vpn"] = controllerStateStr;
+  }
+
+  return obj;
+}
+
 static QList<RequestType> s_types{
     RequestType{"activate",
                 [](const QJsonObject&) {
@@ -93,6 +183,13 @@ static QList<RequestType> s_types{
                       MozillaVPN::instance()->serverCountryModel(), obj);
 
                   obj["servers"] = obj;
+                  return obj;
+                }},
+
+    RequestType{"status",
+                [](const QJsonObject&) {
+                  QJsonObject obj;
+                  obj["status"] = serializeStatus();
                   return obj;
                 }},
 };
@@ -190,91 +287,8 @@ void ServerConnection::writeData(const QByteArray& data) {
 }
 
 void ServerConnection::writeState() {
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-
-  QJsonObject obj;
+  QJsonObject obj = serializeStatus();
   obj["t"] = "status";
-
-  {
-    QString stateStr;
-    switch (vpn->state()) {
-      case MozillaVPN::StateInitialize:
-        stateStr = "initialize";
-        break;
-      case MozillaVPN::StateAuthenticating:
-        stateStr = "authenticating";
-        break;
-      case MozillaVPN::StatePostAuthentication:
-        [[fallthrough]];
-      case MozillaVPN::StateTelemetryPolicy:
-        [[fallthrough]];
-      case MozillaVPN::StateMain:
-        stateStr = "ready";
-        break;
-      case MozillaVPN::StateUpdateRequired:
-        stateStr = "updateRequired";
-        break;
-      case MozillaVPN::StateSubscriptionNeeded:
-        stateStr = "subscriptionNeeded";
-        break;
-      case MozillaVPN::StateSubscriptionInProgress:
-        stateStr = "subscriptionInProgress";
-        break;
-      case MozillaVPN::StateSubscriptionBlocked:
-        stateStr = "subscriptionBlocked";
-        break;
-      case MozillaVPN::StateDeviceLimit:
-        stateStr = "deviceLimit";
-        break;
-      case MozillaVPN::StateBackendFailure:
-        stateStr = "backendFailure";
-        break;
-      case MozillaVPN::StateBillingNotAvailable:
-        stateStr = "billingNotAvailable";
-        break;
-      case MozillaVPN::StateSubscriptionNotValidated:
-        stateStr = "subscriptionNotValidated";
-        break;
-      default:
-        Q_ASSERT(false);
-        break;
-    }
-
-    obj["app"] = stateStr;
-  }
-
-  {
-    QString controllerStateStr;
-    switch (vpn->controller()->state()) {
-      case Controller::StateInitializing:
-        controllerStateStr = "initializing";
-        break;
-      case Controller::StateOff:
-        controllerStateStr = "off";
-        break;
-      case Controller::StateConnecting:
-        controllerStateStr = "connecting";
-        break;
-      case Controller::StateConfirming:
-        controllerStateStr = "confirming";
-        break;
-      case Controller::StateOn:
-        controllerStateStr = "on";
-        break;
-      case Controller::StateDisconnecting:
-        controllerStateStr = "disconnecting";
-        break;
-      case Controller::StateSwitching:
-        controllerStateStr = "switching";
-        break;
-      default:
-        Q_ASSERT(false);
-        break;
-    }
-
-    obj["vpn"] = controllerStateStr;
-  }
 
   writeData(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
