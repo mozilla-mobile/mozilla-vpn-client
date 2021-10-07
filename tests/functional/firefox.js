@@ -22,6 +22,8 @@ module.exports = class FirefoxHelper {
   static async waitForURL(driver, url) {
     await driver.setContext('content');
 
+    let retries = 50;
+
     // I'm sure there is something better than this, but this is the only
     // solution to monitor the tab loading so far.
     return await new Promise(resolve => {
@@ -30,10 +32,19 @@ module.exports = class FirefoxHelper {
         for (let handle of handles) {
           await driver.switchTo().window(handle);
           const t = await driver.getCurrentUrl();
+          console.log('DEBUG: webdriver URL', t.split('?')[0])
           if (t.includes(url)) {
             resolve(handle);
             return;
           }
+        }
+
+        retries--;
+        if (('ARTIFACT_DIR' in process.env) && (retries == 0)) {
+          const path =
+              process.env.ARTIFACT_DIR + '/screencapture/webdriver.png';
+          console.log('DEBUG: saving webdriver screenshot to', path);
+          driver.captureScreenshot(path);
         }
 
         setTimeout(check, 500);

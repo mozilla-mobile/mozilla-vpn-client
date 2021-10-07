@@ -228,46 +228,59 @@ module.exports = {
       return url.includes('/api/v2/vpn/login');
     });
 
+    console.log('DEBUG: A');
     await this.wait();
 
     await this.waitForElement('authenticatingView');
     await this.waitForElementProperty('authenticatingView', 'visible', 'true');
 
+    console.log('DEBUG: B');
     const url = await this.getLastUrl();
 
+    console.log('DEBUG: C');
     await driver.setContext('content');
     await driver.navigate().to(url);
 
+    console.log('DEBUG: D');
     await FirefoxHelper.waitForURL(
         driver, 'https://accounts.stage.mozaws.net/oauth/');
 
+    console.log('DEBUG: E');
     const emailField = await driver.findElement(By.className('email'));
     assert.ok(!!emailField);
     await emailField.sendKeys(process.env.ACCOUNT_EMAIL);
 
+    console.log('DEBUG: F');
     let buttonElm = await driver.findElement(By.id('submit-btn'));
     assert.ok(!!buttonElm);
     buttonElm.click();
 
+    console.log('DEBUG: G');
     await FirefoxHelper.waitForURL(
         driver, 'https://accounts.stage.mozaws.net/oauth/signin');
 
+    console.log('DEBUG: H');
     const passwordField = await driver.findElement(By.id('password'));
     assert.ok(!!passwordField);
     passwordField.sendKeys(process.env.ACCOUNT_PASSWORD);
 
+    console.log('DEBUG: I');
     buttonElm = await driver.findElement(By.id('submit-btn'));
     assert.ok(!!buttonElm);
     await buttonElm.click();
 
+    console.log('DEBUG: J');
     await FirefoxHelper.waitForURL(
         driver,
         'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
 
     await this.waitForElement('postAuthenticationButton');
 
+    console.log('DEBUG: K');
+
     await this._maybeRemoveExistingDevices();
 
+    console.log('DEBUG: L');
     await driver.quit();
   },
 
