@@ -332,7 +332,9 @@ Window {
     Connections {
         target: VPNSettings
         function onGleanEnabledChanged() {
-            // Ensure we don't try and run this off the telemetryPolicy page (before Glean is initialized).
+            // We should not run `Glean.setUploadEnabled` before running `Glean.initialize`.
+            // https://mozilla.github.io/glean/book/reference/general/toggling-upload-status.html#do-not-call-setuploadenabled-before-initializing-2
+            // Use telemetryPolicyShown as proxy for this.
             if (VPNSettings.telemetryPolicyShown) {
                 console.log("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
                 Glean.setUploadEnabled(VPNSettings.gleanEnabled);
