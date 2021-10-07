@@ -183,10 +183,9 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
 }
 
 bool AndroidUtils::ShareText(const QString& text) {
-  QAndroidJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/qt/VPNShareUtils", "sharePlainText",
-      "(Ljava/lang/String;)V", QAndroidJniObject::fromString(text).object());
-  return true;
+  return QAndroidJniObject::callStaticMethod<bool>(
+      "org/mozilla/firefox/vpn/qt/VPNUtils", "sharePlainText",
+      "(Ljava/lang/String;)z", QAndroidJniObject::fromString(text).object());
 }
 
 QByteArray AndroidUtils::DeviceId() {
