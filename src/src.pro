@@ -22,6 +22,7 @@ QT += quick
 QT += widgets
 QT += charts
 QT += websockets
+QT += sql
 
 # For the inspector
 QT+= testlib
