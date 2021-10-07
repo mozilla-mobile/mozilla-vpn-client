@@ -24,6 +24,8 @@ class WindowsCommons final {
   static int AdapterIndexTo(const QHostAddress& dst);
   // Returns the Path of the Current process
   static QString getCurrentPath();
+  // Returns the Major Version Of windows
+  static QString WindowsVersion();
 };
 
 #endif  // WINDOWSCOMMONS_H

@@ -8,7 +8,9 @@
 #include <QDir>
 #include <QtEndian>
 #include <QHostAddress>
+#include <QSettings>
 #include <QStandardPaths>
+#include <QSysInfo>
 #include <QNetworkInterface>
 
 #include <Windows.h>
@@ -18,6 +20,8 @@
 
 constexpr const char* VPN_NAME = "MozillaVPN";
 
+constexpr const int WINDOWS_11_BUILD =
+    22000;  // Build Number of the first release win 11 iso
 namespace {
 Logger logger(LOG_MAIN, "WindowsCommons");
 }
@@ -148,4 +152,27 @@ QString WindowsCommons::getCurrentPath() {
     return "";
   }
   return QString::fromLocal8Bit(buffer);
+}
+
+// Static
+QString WindowsCommons::WindowsVersion() {
+  /* The Tradegy of Getting a somewhat working windows verison:
+    - GetVersion() -> Depricated and Reports win 8.1 for MozillaVPN... its tied
+    to some .exe flags
+    - NetWkstaGetInfo -> Reports Windows 10 on windows 11
+    There is also the regirstry HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows
+    NT\CurrentVersion
+    -> CurrentMajorVersion reports 10 on win 11
+    -> CurrentBuild seems to be correct, so lets infer it
+  */
+
+  QSettings regCurrentVersion(
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+      QSettings::NativeFormat);
+
+  int buildNr = regCurrentVersion.value("CurrentBuild").toInt();
+  if (buildNr >= WINDOWS_11_BUILD) {
+    return "11";
+  }
+  return QSysInfo::productVersion();
 }
