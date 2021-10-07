@@ -151,16 +151,6 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->startAtBoot() ? "true" : "false";
         }},
 
-    // ipv6
-    WebSocketSettingCommand{
-        "ipv6-enabled", WebSocketSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setIpv6Enabled(value == "true");
-        },
-        []() {
-          return SettingsHolder::instance()->ipv6Enabled() ? "true" : "false";
-        }},
-
     // local area network access
     WebSocketSettingCommand{
         "local-network-access", WebSocketSettingCommand::Boolean,
