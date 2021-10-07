@@ -61,8 +61,6 @@ void IPFinder::dnsLookupCompleted(const QHostInfo& hostInfo) {
     return;
   }
 
-  bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
-
   for (const QHostAddress& address : hostInfo.addresses()) {
     if (address.isNull() || address.isBroadcast()) continue;
 
@@ -71,7 +69,7 @@ void IPFinder::dnsLookupCompleted(const QHostInfo& hostInfo) {
       createRequest(address, false);
     }
 
-    if (address.protocol() == QAbstractSocket::IPv6Protocol && ipv6Enabled) {
+    if (address.protocol() == QAbstractSocket::IPv6Protocol) {
       logger.debug() << "Ipv6:" << address.toString();
       createRequest(address, true);
     }

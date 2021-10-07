@@ -20,18 +20,16 @@ class FeatureMultiHop : public Feature {
             L18nStrings::WhatsNewReleaseNotesMultiModalBodyText,  // LongDescr
             "../resources/features/multi-hop-preview.png",        // ImagePath
             "../resources/location-dark.svg",                     // IconPath
-            "2.5",                                                // released
-            true  // Can be enabled in devmode
-        ) {}
-
-  bool checkSupportCallback() const override {
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS) || defined(MVPN_DUMMY) || \
-    defined(MVPN_MACOS_DAEMON)
-    return true;
+#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
+            "2.7",  // released for android
 #else
-    return false;
+            "2.5",  // released for desktop
 #endif
+            true  // Can be enabled in devmode
+        ) {
   }
+
+  bool checkSupportCallback() const override { return true; }
 
   static const FeatureMultiHop* instance() {
     return static_cast<const FeatureMultiHop*>(get(FEATURE_MULTI_HOP));

@@ -90,7 +90,6 @@ describe('Settings', function() {
     await vpn.clickOnElement('settingsNetworking');
     await vpn.wait();
 
-    await checkSetting('settingIpv6Enabled', 'ipv6-enabled');
     await checkSetting('settingLocalNetworkAccess', 'local-network-access');
 
     await vpn.waitForElement('settingsBackButton');
