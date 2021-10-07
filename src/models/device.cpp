@@ -10,6 +10,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QTextStream>
+#include <QSslSocket>
 
 #ifdef QT_DEBUG
 #  include <QRandomGenerator>
@@ -55,8 +56,9 @@ QString Device::currentDeviceReport() {
   out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
   out << "APP Version -> " << APP_VERSION << Qt::endl;
   out << "Build ID -> " << BUILD_ID << Qt::endl;
-  out << "Device ID -> " << uniqueDeviceId();
-
+  out << "Device ID -> " << uniqueDeviceId() << Qt::endl;
+  out << "SSL Lib:" << QSslSocket::sslLibraryVersionString()
+      << QSslSocket::sslLibraryVersionNumber();
   return buffer;
 }
 

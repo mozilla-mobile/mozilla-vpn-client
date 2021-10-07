@@ -146,3 +146,7 @@ NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
 void NetworkRequest::replyFinished() { QFAIL("Not called!"); }
 
 void NetworkRequest::timeout() {}
+
+void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
+  Q_UNUSED(errors);
+}

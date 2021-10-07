@@ -363,3 +363,7 @@ void NetworkRequest::postRequest(const QByteArray&) {}
 void NetworkRequest::handleReply(QNetworkReply*) {}
 
 int NetworkRequest::statusCode() const { return 200; }
+
+void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
+  Q_UNUSED(errors);
+}
