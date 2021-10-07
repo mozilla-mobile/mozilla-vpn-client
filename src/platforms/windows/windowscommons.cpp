@@ -156,8 +156,8 @@ QString WindowsCommons::getCurrentPath() {
 
 // Static
 QString WindowsCommons::WindowsVersion() {
-  /* The Tradegy of Getting a somewhat working windows verison:
-    - GetVersion() -> Depricated and Reports win 8.1 for MozillaVPN... its tied
+  /* The Tradegy of Getting a somewhat working windows version:
+    - GetVersion() -> deprecated and Reports win 8.1 for MozillaVPN... its tied
     to some .exe flags
     - NetWkstaGetInfo -> Reports Windows 10 on windows 11
     There is also the regirstry HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows
