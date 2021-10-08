@@ -25,4 +25,13 @@ export QT_IOS_BIN=`pwd`/qt_ios_build/ios/bin
 git submodule update --remote --depth 1 i18n
 python3 scripts/importLanguages.py -m
 
+echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
+echo "GROUP_ID_MACOS = group.org.mozilla.macos.Guardian" >> xcode.xconfig
+echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
+echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
+echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
+echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
+echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
+echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
+
 ./scripts/apple_compile.sh ios
