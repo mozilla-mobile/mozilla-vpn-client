@@ -57,25 +57,6 @@ Item {
             }
 
             VPNCheckBoxRow {
-                id: ipv6
-                objectName: "settingIpv6Enabled"
-                width: parent.width - Theme.windowMargin
-                showDivider: false
-
-                //% "IPv6"
-                labelText: qsTrId("vpn.settings.ipv6")
-                //% "Push the internet forward with the latest version of the Internet Protocol"
-                subLabelText: qsTrId("vpn.settings.ipv6.description")
-                isChecked: (VPNSettings.ipv6Enabled)
-                isEnabled: vpnFlickable.vpnIsOff
-                onClicked: {
-                    if (vpnFlickable.vpnIsOff) {
-                        VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
-                    }
-                }
-            }
-
-            VPNCheckBoxRow {
                 id: localNetwork
                 objectName: "settingLocalNetworkAccess"
                 visible: VPNFeatureList.get("lanAccess").isSupported

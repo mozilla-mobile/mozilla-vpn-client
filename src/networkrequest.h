@@ -152,6 +152,7 @@ class NetworkRequest final : public QObject {
  private slots:
   void replyFinished();
   void timeout();
+  void sslErrors(const QList<QSslError>& errors);
 
  signals:
   void requestHeaderReceived(NetworkRequest* request);
