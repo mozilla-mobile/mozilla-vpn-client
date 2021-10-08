@@ -31,7 +31,7 @@ class NetworkRequest final : public QObject {
       const QString& pkceCodeVerifier);
 
   static NetworkRequest* createForAdjustProxy(
-      QObject* parent, const QString& method, const QString& route,
+      QObject* parent, const QString& method, const QString& path,
       const QList<QPair<QString, QString>>& headers,
       const QString& queryParameters, const QString& bodyParameters,
       const QList<QString>& unknownParameters);
