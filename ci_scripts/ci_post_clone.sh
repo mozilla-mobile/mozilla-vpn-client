@@ -35,3 +35,4 @@ echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
 echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
 
 ./scripts/apple_compile.sh ios
+
