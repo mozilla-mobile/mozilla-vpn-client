@@ -299,10 +299,13 @@ Window {
                     debugViewTag: "MozillaVPN"
                 };
             }
+            var channel = VPN.stagingMode ? "staging" : "production";
+            console.debug("Initializing glean with channel set to:", channel);
             Glean.initialize("mozillavpn", VPNSettings.gleanEnabled, {
                 appBuild: "MozillaVPN/" + VPN.versionString,
                 appDisplayVersion: VPN.versionString,
-                channel: VPNSettings.stagingMode ? "staging" : "production",
+                channel: channel,
+                debug: debug,
             });
         }
 
