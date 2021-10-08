@@ -10,6 +10,7 @@ cd /Volumes/workspace/repository
 
 git clone https://github.com/mbirghan/qt_ios_build
 
+export PATH=`pwd`/qt_ios_build/ios/bin:/Users/local/.gem/ruby/2.6.0/bin:$PATH
 gem install xcodeproj -v 0.28.2 --user-install
 
 pip3 install "glean_parser==3.5"
@@ -20,7 +21,6 @@ python3 scripts/generate_glean.py
 brew install go
 
 export QT_IOS_BIN=`pwd`/qt_ios_build/ios/bin
-export PATH=`pwd`/qt_ios_build/ios/bin:$PATH
 
 git submodule update --remote --depth 1 i18n
 python3 scripts/importLanguages.py -m
