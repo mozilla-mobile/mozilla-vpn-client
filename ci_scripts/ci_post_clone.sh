@@ -18,7 +18,10 @@ pip3 install pyhumps --user
 pip3 install pyyaml --user
 python3 scripts/generate_glean.py
 
-brew install go
+# brew install go
+wget -nc https://golang.org/dl/go1.16.9.darwin-amd64.tar.gz
+tar -xzf go1.16.9.darwin-amd64.tar.gz
+export PATH=`pwd`/go/bin:$PATH
 
 export QT_IOS_BIN=`pwd`/qt_ios_build/ios/bin
 
