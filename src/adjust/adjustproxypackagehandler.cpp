@@ -7,13 +7,8 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "qmlengineholder.h"
-#include "networkrequest.h"
 
-#include <QFile>
-#include <QHostAddress>
-#include <QTcpSocket>
 #include <QUrl>
 #include <QUrlQuery>
 

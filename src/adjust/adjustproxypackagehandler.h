@@ -6,8 +6,6 @@
 #define ADJUSTPROXYPACKAGEHANDLER_H
 
 #include <QByteArray>
-#include <QObject>
-#include <QHash>
 #include <QUrl>
 #include <QUrlQuery>
 

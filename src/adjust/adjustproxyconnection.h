@@ -7,6 +7,8 @@
 
 #include "adjustproxypackagehandler.h"
 
+#include <QObject>
+
 class QTcpSocket;
 
 class AdjustProxyConnection final : public QObject {
