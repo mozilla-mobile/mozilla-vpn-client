@@ -99,7 +99,7 @@ function setSourceTags(value) {
  * @returns A promise which resolves once shutdown is complete.
  */
 function shutdown() {
-  return Glean.shutdown();
+  return Glean.Glean.default.shutdown();
 }
 
 const _private = Glean.Glean.default._private;
