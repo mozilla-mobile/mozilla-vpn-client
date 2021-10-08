@@ -3,48 +3,61 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const fs = require('fs');
-const util = require('util');
 const vpn = require('./helper.js');
 
 describe('Glean event logging', function() {
-  this.timeout(60000);
+  this.timeout(5000);
 
   before(async () => {
     await vpn.connect();
   });
 
-  beforeEach(() => {});
+  beforeEach(async () => {
+    await vpn.reset();
+    await vpn.setGleanAutomationHeader();
+  });
 
-  afterEach(vpn.dumpFailure);
+  afterEach(async () => {
+    await vpn.dumpFailure();
+  });
 
   after(async () => {
+    await vpn.quit();
     vpn.disconnect();
-  });
+  })
 
-  it('reset the app', async () => await vpn.reset());
+  /*
+  I would like to do the following suite of tests:
+  * set telemetryPolicyShown to false, call initializeGlean, ensure glean is not
+  initialized
+  * set telemetryPolicyShown to true, call initializeGlean, ensure glean is
+  initialized
+  * set debugMode to true/false, ensure glean is initialized appropriately
+  * set stagingMode to true/false, ensure glean is initialized appropriately
+  * change VPNSettings.glean-enabled and ensure glean upload enabled has been
+  changed
+  * make an event and ensure the right data is in the ping
+  * ensure that a call to sendPings, sends pings
+  * ensure that startup in a logged in state causes a glean initialization
+  * ensure Glean.shutdown is called onAboutToQuit
 
-  it('initial view', async () => {
-    const glean = await vpn.getLastGleanRequest();
-    assert('url' in glean);
-    assert(glean.url === '');
-    assert('data' in glean);
-    assert(glean.data === '');
+  Do we want to test for each glean event that should generate a ping?
 
-    await vpn.waitForElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-    await vpn.wait();
-  });
+  Update the testTelemetryView tests to
+  * ensure that "Accept telemetry" and "Reject telemetry" result in the correct
+  glean initalization
 
-  it('Start and abort the authentication (logging)', async () => {
-    await vpn.setSetting('glean-enabled', true);
-    await vpn.wait();
+  Possible c++ unit tests:
+  * ensure that timer to sendPings is setup
 
-    await vpn.authenticate();
+  We do not need to test that glean does the right thing e.g. testing for a
+  deletion request. As long as we check that we've told glean to
+  setUploadEnabled to false, then its handling of that is a glean implementation
+  detail and glean tests their own code.
+  */
 
-    await vpn.waitForElement('postAuthenticationButton');
-    await vpn.clickOnElement('postAuthenticationButton');
-    await vpn.wait();
+  it('Generates a glean event when canceling authentication', async () => {
+    await vpn.clickOnElement('getStarted');
 
     await vpn.waitForElement('telemetryPolicyButton');
     await vpn.waitForElementProperty(
@@ -53,44 +66,20 @@ describe('Glean event logging', function() {
 
     await vpn.wait();
 
-    await vpn.waitForCondition(async () => {
-      let glean = await vpn.getLastGleanRequest();
-      if (glean.url === '') return false;
+    await vpn.waitForElement('authenticatingView');
+    await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
 
-      assert(glean.url !== '');
-      assert(glean.data !== '');
-      return true;
-    });
+    await vpn.waitForElement('cancelFooterLink');
+    await vpn.waitForElementProperty('cancelFooterLink', 'visible', 'true');
+
+    await vpn.clickOnElement('cancelFooterLink');
+
+    await vpn.wait();
 
     glean = await vpn.getLastGleanRequest();
     assert(glean.url === '');
     assert(glean.data === '');
+
+    // Test for sending?
   });
-
-  it('reset the app', async () => await vpn.reset());
-
-  it('Start and abort the authentication (no logging)', async () => {
-    let glean = await vpn.getLastGleanRequest();
-    if (glean.url !== '') {
-      assert(glean.url.includes('deletion-request'));
-    }
-
-    await vpn.authenticate();
-
-    await vpn.waitForElement('postAuthenticationButton');
-    await vpn.clickOnElement('postAuthenticationButton');
-    await vpn.wait();
-
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.waitForElementProperty(
-        'telemetryPolicyButton', 'visible', 'true');
-    await vpn.clickOnElement('declineTelemetryLink');
-
-    await vpn.wait();
-
-    glean = await vpn.getLastGleanRequest();
-    assert(glean.url.includes('deletion-request'));
-  });
-
-  it('quit the app', async () => await vpn.quit());
 });

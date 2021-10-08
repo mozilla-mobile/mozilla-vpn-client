@@ -176,6 +176,10 @@ module.exports = {
     }
   },
 
+  async setGleanAutomationHeader() {
+    await this._writeCommand('set_glean_automation_header');
+  }
+
   async getLastGleanRequest() {
     const json = await this._writeCommand('last_glean_request');
     assert(
