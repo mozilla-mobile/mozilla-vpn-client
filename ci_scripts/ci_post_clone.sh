@@ -10,7 +10,7 @@ cd /Volumes/workspace/repository
 
 git clone https://github.com/mbirghan/qt_ios_build
 
-export PATH=`pwd`/qt_ios_build/ios/bin:/Users/local/.gem/ruby/2.6.0/bin:$PATH
+export PATH=`pwd`/qt_ios_build/ios/bin:/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
 gem install xcodeproj --user-install
 
 pip3 install "glean_parser==3.5" --user
