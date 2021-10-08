@@ -6,4 +6,5 @@ port.onMessage.addListener((response) => {
 
 setInterval(() => {
   port.postMessage({t: 'servers'});
+  port.postMessage({t: 'status'});
 }, 1000);
