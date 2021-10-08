@@ -4,10 +4,13 @@
 
 #include "helper.h"
 
-class TestIpFinder final : public TestHelper {
+class TestAdjust final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void abort();
-  void ipv4AndIpv6();
+  void paramFiltering_data();
+  void paramFiltering();
+
+  void stateMachine_data();
+  void stateMachine();
 };

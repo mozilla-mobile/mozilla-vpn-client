@@ -27,6 +27,8 @@ INCLUDEPATH += \
             ../../translations/generated
 
 HEADERS += \
+    ../../src/adjust/adjustfiltering.h \
+    ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/bigint.h \
     ../../src/bigintipv6addr.h \
     ../../src/captiveportal/captiveportal.h \
@@ -96,6 +98,7 @@ HEADERS += \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
     helper.h \
+    testadjust.h \
     testandroidmigration.h \
     testbigint.h \
     testbigintipv6addr.h \
@@ -114,6 +117,8 @@ HEADERS += \
     testtimersingleshot.h
 
 SOURCES += \
+    ../../src/adjust/adjustfiltering.cpp \
+    ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
@@ -182,6 +187,7 @@ SOURCES += \
     mocinspectorwebsocketconnection.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
+    testadjust.cpp \
     testandroidmigration.cpp \
     testbigint.cpp \
     testbigintipv6addr.cpp \
