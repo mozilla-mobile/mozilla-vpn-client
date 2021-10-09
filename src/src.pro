@@ -523,12 +523,14 @@ else:android {
         SOURCES += adjust/adjustfiltering.cpp \
                    adjust/adjusthandler.cpp \
                    adjust/adjustproxy.cpp \
-                   adjust/adjustproxyconnection.cpp
+                   adjust/adjustproxyconnection.cpp \
+                   adjust/adjustproxypackagehandler.cpp
 
         HEADERS += adjust/adjustfiltering.h \
                    adjust/adjusthandler.h \
                    adjust/adjustproxy.h \
-                   adjust/adjustproxyconnection.h
+                   adjust/adjustproxyconnection.h \
+                   adjust/adjustproxypackagehandler.h
     }
 
     versionAtLeast(QT_VERSION, 5.15.1) {
@@ -733,14 +735,16 @@ else:ios {
         SOURCES += adjust/adjustfiltering.cpp \
                    adjust/adjusthandler.cpp \
                    adjust/adjustproxy.cpp \
-                   adjust/adjustproxyconnection.cpp
+                   adjust/adjustproxyconnection.cpp \
+                   adjust/adjustproxypackagehandler.cpp
 
         OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm
 
         HEADERS += adjust/adjustfiltering.h \
                    adjust/adjusthandler.h \
                    adjust/adjustproxy.h \
-                   adjust/adjustproxyconnection.h
+                   adjust/adjustproxyconnection.h \
+                   adjust/adjustproxypackagehandler.h
 
         OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h
     }

@@ -26,11 +26,7 @@ void CaptivePortalRequest::run() {
   SettingsHolder* settings = SettingsHolder::instance();
 
   QStringList ipv4Addresses = settings->captivePortalIpv4Addresses();
-
-  QStringList ipv6Addresses;
-  if (settings->ipv6Enabled()) {
-    ipv6Addresses = settings->captivePortalIpv6Addresses();
-  }
+  QStringList ipv6Addresses = settings->captivePortalIpv6Addresses();
 
   // We do not have IPs to check.
   if (ipv4Addresses.isEmpty() && ipv6Addresses.isEmpty()) {

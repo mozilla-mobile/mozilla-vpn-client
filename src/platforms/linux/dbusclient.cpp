@@ -60,8 +60,6 @@ QDBusPendingCallWatcher* DBusClient::activate(
   json.insert("serverIpv4AddrIn", QJsonValue(server.ipv4AddrIn()));
   json.insert("serverIpv6AddrIn", QJsonValue(server.ipv6AddrIn()));
   json.insert("serverPort", QJsonValue((double)server.choosePort()));
-  json.insert("ipv6Enabled",
-              QJsonValue(SettingsHolder::instance()->ipv6Enabled()));
   json.insert("dnsServer", QJsonValue(dnsServer.toString()));
   json.insert("hopindex", QJsonValue((double)hopindex));
 

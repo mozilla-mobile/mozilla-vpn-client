@@ -135,7 +135,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 
 // static
 NetworkRequest* NetworkRequest::createForAdjustProxy(
-    QObject* parent, const QString& method, const QString& route,
+    QObject* parent, const QString& method, const QString& path,
     const QList<QPair<QString, QString>>& headers,
     const QString& queryParameters, const QString& bodyParameters,
     const QList<QString>& unknownParameters) {
@@ -157,7 +157,7 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
 
   QJsonObject obj;
   obj.insert("method", method);
-  obj.insert("path", route);
+  obj.insert("path", path);
   obj.insert("headers", headersObj);
   obj.insert("queryParameters", queryParameters);
   obj.insert("bodyParameters", bodyParameters);
@@ -864,6 +864,7 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
 
   connect(m_reply, &QNetworkReply::finished, this,
           &NetworkRequest::replyFinished);
+  connect(m_reply, &QNetworkReply::sslErrors, this, &NetworkRequest::sslErrors);
   connect(m_reply, &QNetworkReply::metaDataChanged, this,
           &NetworkRequest::handleHeaderReceived);
   connect(m_reply, &QNetworkReply::redirected, this,
@@ -903,4 +904,19 @@ void NetworkRequest::abort() {
   }
 
   m_reply->abort();
+}
+
+void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
+  if (!m_reply) {
+    return;
+  }
+  logger.error() << "SSL Error on " << m_reply->url().host();
+  for (const auto& error : errors) {
+    logger.error() << error.errorString();
+    auto cert = error.certificate();
+    if (!cert.isNull()) {
+      logger.info() << "Related Cert:";
+      logger.info() << cert.toText();
+    }
+  }
 }
