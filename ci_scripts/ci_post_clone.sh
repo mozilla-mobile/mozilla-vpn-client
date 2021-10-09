@@ -48,5 +48,3 @@ echo "	<key>IDEWorkspaceSharedSettings_AutocreateContextsIfNeeded</key>" >> ./Mo
 echo "	<false/>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
 echo "</dict>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
 echo "</plist>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-
-
