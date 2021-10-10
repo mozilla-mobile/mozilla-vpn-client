@@ -13,27 +13,8 @@
 #include <QUrlQuery>
 
 namespace {
-
 Logger logger(LOG_MAIN, "DesktopAuthenticationListener");
-
-int choosePort(QVector<quint16> triedPorts) {
-  logger.debug() << "Choosing port";
-
-  while (true) {
-    quint32 v = QRandomGenerator::global()->generate();
-    quint16 port = 1024 + (v % (std::numeric_limits<quint16>::max() - 1024));
-    logger.debug() << "Random port:" << port;
-
-    if (!triedPorts.contains(port)) {
-      triedPorts.append(port);
-      return port;
-    }
-
-    logger.debug() << "Already tried!";
-  }
 }
-
-}  // anonymous namespace
 
 DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
     : AuthenticationListener(parent) {
@@ -69,13 +50,7 @@ void DesktopAuthenticationListener::start(const QString& codeChallenge,
                                    emailAddress));
 
   if (!m_server->isListening()) {
-    QVector<quint16> triedPorts;
-    for (int i = 0; i < 50; ++i) {
-      int port = choosePort(triedPorts);
-      if (m_server->listen(QHostAddress::LocalHost, port)) {
-        break;
-      }
-    }
+    m_server->listen(QHostAddress::LocalHost);
   }
 
   if (!m_server->isListening()) {
