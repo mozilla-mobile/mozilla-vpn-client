@@ -4,7 +4,6 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../../themes/themes.js" as Theme
@@ -109,17 +108,6 @@ ComboBox {
                 radius: Theme.cornerRadius
             }
 
-            DropShadow {
-                source: shadowMask
-                anchors.fill: shadowMask
-                samples: 16
-                transparentBorder: true
-                radius: 7.5
-                color: "#0C0C0D"
-                z: -1
-                opacity: .1
-                cached: true
-            }
             VPNInputBackground {
                 id: bg
                 anchors.fill: parent

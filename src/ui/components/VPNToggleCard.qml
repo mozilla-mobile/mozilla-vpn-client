@@ -20,14 +20,6 @@ Item {
     property alias toolTipTitleText: toggle.toolTipTitle
     property alias toggleObjectName: toggle.objectName
 
-    VPNDropShadow {
-        anchors.fill: rect
-        source: rect
-        z: -2
-        state: "overwrite-state"
-        opacity: .2
-    }
-
     Rectangle {
         id: rect
         anchors.fill: enableAppList

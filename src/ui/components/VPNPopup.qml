@@ -4,7 +4,6 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.14
 import "../themes/themes.js" as Theme
 
 Popup {
@@ -34,21 +33,6 @@ Popup {
             z: -1
         }
 
-        DropShadow {
-            id: popupShadow
-
-            anchors.fill: popUpShadowSource
-            cached: true
-            color: "black"
-            opacity: 0.2
-            radius: 16
-            samples: 33
-            source: popUpShadowSource
-            spread: 0.1
-            transparentBorder: true
-            verticalOffset: 4
-            z: -1
-        }
 
         // Close button
         VPNIconButton {

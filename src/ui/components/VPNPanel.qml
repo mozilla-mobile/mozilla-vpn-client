@@ -4,7 +4,6 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
-import QtGraphicalEffects 1.14
 
 import "../themes/themes.js" as Theme
 Item {
@@ -54,10 +53,6 @@ Item {
                     anchors.fill: parent
                     radius: logoSize / 2
                     visible: false
-                }
-
-                layer.effect: OpacityMask {
-                    maskSource: maskImage ? mask : undefined
                 }
             }
 
