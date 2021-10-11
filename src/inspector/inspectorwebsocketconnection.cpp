@@ -12,6 +12,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
+#include "networkmanager.h"
 
 #ifdef QT_DEBUG
 #  include "gleantest.h"
@@ -25,6 +26,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QHostAddress>
+#include <QNetworkAccessManager>
 #include <QPixmap>
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -429,6 +431,12 @@ static QList<WebSocketCommand> s_commands{
                        MozillaVPN::instance()->releaseMonitor()->runSoon();
                        return QJsonObject();
                      }},
+    WebSocketCommand{"force_update_check", "Force a version update check", 1,
+                     [](const QList<QByteArray>& arguments) {
+                       s_updateVersion = arguments[1];
+                       MozillaVPN::instance()->releaseMonitor()->runSoon();
+                       return QJsonObject();
+                     }},
 
     WebSocketCommand{"force_captive_portal_check",
                      "Force a captive portal check", 0,
@@ -750,6 +758,8 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
 
   connect(SystemTrayHandler::instance(), &SystemTrayHandler::notificationShown,
           this, &InspectorWebSocketConnection::notificationShown);
+  connect(NetworkManager::instance()->networkAccessManager(), &QNetworkAccessManager::finished,
+          this, &InspectorWebSocketConnection::networkRequestFinished);
 }
 
 InspectorWebSocketConnection::~InspectorWebSocketConnection() {
@@ -825,6 +835,75 @@ void InspectorWebSocketConnection::notificationShown(const QString& title,
   obj["message"] = message;
   m_connection->sendTextMessage(
       QJsonDocument(obj).toJson(QJsonDocument::Compact));
+}
+
+void InspectorWebSocketConnection::networkRequestFinished(QNetworkReply* reply){
+    QJsonObject obj;
+    obj["type"] = "network";
+    QJsonObject request;
+    QJsonObject response;
+
+    // Serialize the Response
+    QJsonObject responseHeader;
+    for(auto headerPair : reply->rawHeaderPairs()){
+        responseHeader[QString(headerPair.first)]=QString(headerPair.second);
+    }
+    response["headers"]=responseHeader;
+    response["errors"]="";
+    if(reply->error() != QNetworkReply::NoError){
+       response["errors"]= reply->errorString();
+    }
+    response["body"]= QString(reply->readAll());
+
+    auto qrequest = reply->request();
+    // Serialize the Request
+    QJsonArray requestHeaders;
+    for(auto header : qrequest.rawHeaderList()){
+        requestHeaders.append(QString(header));
+    }
+    request["headers"]=requestHeaders;
+    request["url"]=qrequest.url().toString();
+    request["initiator"]=getObjectClass(qrequest.originatingObject());
+
+    obj["request"]=request;
+    obj["response"]=response;
+    m_connection->sendTextMessage(
+        QJsonDocument(obj).toJson(QJsonDocument::Compact));
+}
+
+QString InspectorWebSocketConnection::getObjectClass(const QObject* target){
+    if(target==nullptr){
+        return "unkown";
+    }
+     auto metaObject = target->metaObject();
+     return metaObject->className();
+}
+
+//static
+// This Serializeses any QObject's properties into JSON - use it for qml stuff!
+QJsonObject InspectorWebSocketConnection::serialize(const QObject* target, bool recursive){
+    Q_UNUSED(recursive);
+    QJsonObject out;
+    auto metaObject = target->metaObject();
+    int propertyCount = metaObject->propertyOffset()-metaObject->propertyCount();
+    out["__propertyCount__"]=propertyCount;
+    out["__proto__"]=metaObject->className();
+
+    for(int i=0+metaObject->propertyOffset(); i< metaObject->propertyCount(); i++){
+        auto property = metaObject->property(i);
+        auto name = property.name();
+        auto value = property.read(target);
+        if(value.type() == QMetaType::VoidStar || value.type() == QMetaType::QObjectStar){
+            if(recursive){
+                // Todo: Nest Serialisation
+                out[name]= "[object object]";
+                continue;
+            }
+            continue;
+        }
+        out[name]=value.toJsonValue();
+    }
+    return out;
 }
 
 // static

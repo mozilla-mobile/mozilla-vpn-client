@@ -11,6 +11,7 @@
 class QUrl;
 class QQuickItem;
 class QWebSocket;
+class QNetworkReply;
 
 class InspectorWebSocketConnection final : public QObject {
   Q_OBJECT
@@ -34,6 +35,10 @@ class InspectorWebSocketConnection final : public QObject {
 
   void notificationShown(const QString& title, const QString& message);
 
+  void networkRequestFinished(QNetworkReply* reply);
+
+  QJsonObject serialize(const QObject* target, bool requirsive);
+  QString getObjectClass(const QObject* target);
  private:
   QWebSocket* m_connection;
 
