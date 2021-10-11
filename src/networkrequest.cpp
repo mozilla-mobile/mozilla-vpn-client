@@ -304,6 +304,8 @@ NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
   // validate the SSL certificate using the hostname and not the Host-header
   // value.
   Q_ASSERT(r->m_reply);
+
+  disconnect(r->m_reply, &QNetworkReply::sslErrors,0,0); // Remove the logger from it :)
   r->m_reply->ignoreSslErrors();
 
   return r;
