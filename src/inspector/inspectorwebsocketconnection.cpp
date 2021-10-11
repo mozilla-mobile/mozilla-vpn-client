@@ -214,6 +214,17 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->gleanEnabled() ? "true" : "false";
         }},
 
+    // telemetry-policy-shown
+    WebSocketSettingCommand{
+        "telemetry-policy-shown", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setTelemetryPolicyShown(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->telemetryPolicyShown() ? "true"
+                                                                    : "false";
+        }},
+
 };
 
 struct WebSocketCommand {

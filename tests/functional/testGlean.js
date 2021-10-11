@@ -18,7 +18,7 @@ describe('Glean event logging', function() {
   });
 
   afterEach(async () => {
-    await vpn.dumpFailure();
+    await vpn.dumpFailure;
   });
 
   after(async () => {
@@ -57,6 +57,7 @@ describe('Glean event logging', function() {
   */
 
   it('Generates a glean event when canceling authentication', async () => {
+    assert(await vpn.getSetting('telemetry-policy-shown') === 'false');
     await vpn.clickOnElement('getStarted');
 
     await vpn.waitForElement('telemetryPolicyButton');
