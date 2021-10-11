@@ -81,6 +81,15 @@ module.exports = {
         `Invalid answer: ${json.error}`);
   },
 
+  async waitForMainView() {
+    await this.waitForElement('getHelpLink');
+    await this.waitForElementProperty('getHelpLink', 'visible', 'true');
+    assert(await this.getElementProperty('getStarted', 'visible') === 'true');
+    assert(
+        await this.getElementProperty('learnMoreLink', 'visible') === 'true');
+  },
+
+
   async forceHeartbeatFailure() {
     const json = await this._writeCommand('force_heartbeat_failure');
     assert(

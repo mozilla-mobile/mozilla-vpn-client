@@ -13,24 +13,23 @@ describe('Telemetry view', function() {
     await vpn.connect();
   });
 
-  beforeEach(() => {});
+  beforeEach(async () => {
+    await vpn.reset();
+    await vpn.waitForMainView();
+  });
 
-  afterEach(vpn.dumpFailure);
+  afterEach(async () => {
+    await vpn.dumpFailure;
+  });
 
   after(async () => {
+    await vpn.quit();
     vpn.disconnect();
-  });
-
-  it('reset the app', async () => await vpn.reset());
-
-  it('wait for the main view', async () => {
-    await vpn.waitForElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-    assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
-  });
+  })
 
   it('Accept telemetry', async () => {
+    assert(await vpn.getSetting('telemetry-policy-shown') === 'false');
+
     await vpn.clickOnElement('getStarted');
 
     assert(await vpn.getSetting('glean-enabled') === 'true');
@@ -46,19 +45,14 @@ describe('Telemetry view', function() {
         'telemetryPolicyButton', 'visible', 'true');
     await vpn.clickOnElement('telemetryPolicyButton');
 
+    await vpn.wait();
+
+    assert(await vpn.getSetting('telemetry-policy-shown') === 'true');
     assert(await vpn.getSetting('glean-enabled') === 'true');
   });
 
-  it('reset the app', async () => await vpn.reset());
-
-  it('wait for the main view', async () => {
-    await vpn.waitForElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-    assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
-  });
-
   it('Deny telemetry', async () => {
+    assert(await vpn.getSetting('telemetry-policy-shown') === 'false');
     await vpn.clickOnElement('getStarted');
 
     await vpn.authenticate();
@@ -73,8 +67,8 @@ describe('Telemetry view', function() {
 
     await vpn.wait();
 
+    assert(await vpn.getSetting('telemetry-policy-shown') === 'true');
     assert((await vpn.getSetting('glean-enabled')) === 'false');
   });
 
-  it('quit the app', async () => await vpn.quit());
 });
