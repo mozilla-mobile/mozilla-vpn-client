@@ -198,7 +198,8 @@ QByteArray AndroidUtils::DeviceId() {
   jstring value = (jstring)string.object();
   const char* buffer = env->GetStringUTFChars(value, nullptr);
   if (!buffer) {
-    return QString("").toUtf8();
+    logger.error() << "Failed to fetch DeviceID";
+    return QByteArray();
   }
   QString res(buffer);
   logger.info() << "DeviceID: " << res;
