@@ -57,6 +57,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 // static
 NetworkRequest* NetworkRequest::createForDeviceCreation(QObject* parent,
                                                         const QString&,
+                                                        const QString&,
                                                         const QString&) {
   return new NetworkRequest(parent, 1234, false);
 }
