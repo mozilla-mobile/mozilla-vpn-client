@@ -50,7 +50,7 @@ void TestTasks::addDevice_success() {
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Success, QByteArray()));
 
-  TaskAddDevice* task = new TaskAddDevice("foobar","id");
+  TaskAddDevice* task = new TaskAddDevice("foobar", "id");
 
   QEventLoop loop;
   connect(task, &Task::completed, [&]() { loop.exit(); });
@@ -63,7 +63,7 @@ void TestTasks::addDevice_failure() {
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
 
-  TaskAddDevice* task = new TaskAddDevice("foobar","id");
+  TaskAddDevice* task = new TaskAddDevice("foobar", "id");
 
   QEventLoop loop;
   connect(task, &Task::completed, [&]() { loop.exit(); });

@@ -48,8 +48,8 @@ void TaskAddDevice::run(MozillaVPN* vpn) {
   logger.debug() << "Private key: " << logger.sensitive(privateKey);
   logger.debug() << "Public key: " << logger.sensitive(publicKey);
 
-  NetworkRequest* request =
-      NetworkRequest::createForDeviceCreation(this, m_deviceName, publicKey, m_deviceID);
+  NetworkRequest* request = NetworkRequest::createForDeviceCreation(
+      this, m_deviceName, publicKey, m_deviceID);
 
   connect(request, &NetworkRequest::requestFailed,
           [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {

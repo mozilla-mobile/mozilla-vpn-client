@@ -13,7 +13,7 @@ class TaskAddDevice final : public Task {
   Q_DISABLE_COPY_MOVE(TaskAddDevice)
 
  public:
-  explicit TaskAddDevice(const QString& deviceName, const QString& deviceID);
+  TaskAddDevice(const QString& deviceName, const QString& deviceID);
   ~TaskAddDevice();
 
   void run(MozillaVPN* vpn) override;

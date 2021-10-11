@@ -176,7 +176,8 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
 
 // static
 NetworkRequest* NetworkRequest::createForDeviceCreation(
-    QObject* parent, const QString& deviceName, const QString& pubKey, const QString& deviceId) {
+    QObject* parent, const QString& deviceName, const QString& pubKey,
+    const QString& deviceId) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 201, true);
