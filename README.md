@@ -24,7 +24,21 @@ After checking out the code:
 
 * Install the git pre-commit hook (`./scripts/git-pre-commit-format install`)
 * Build the source (See below)
-* Run the tests `./scripts/test_coverage.sh` or `./scripts/test_function.sh`
+* Run the unit tests with `./scripts/test_coverage.sh` or see below for running the functional tests.
+
+### Running the functional tests
+
+* Make sure you’ve globally installed all of the dependencies including geckodriver. See the [workflows file](/.github/workflows/functional_tests.yaml).
+* Make a .env file with ACCOUNT_EMAIL and ACCOUNT_PASSWORD
+* In one window run `./tests/proxy/wsgi.py` --mock-devices
+* In window where you'll run tests, run `export MVPN_API_BASE_URL=http://localhost:5000`
+* To run, say, the authentication tests: `./scripts/test_function.sh ./build/mozillavpn tests/functional/testAuthentication.js` (the second argument is the location of your mozillavpn executable).
+
+Misc tips from core devs:
+* Make sure there are read/write permissions at every level of your build path
+* Suggest building with the flags used in CI `qmake CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug CONFIG+=inspector QT+=svg`
+* Using a headless browser locally may cause the tests to stall out.
+
 
 ## How to build from the source code
 
