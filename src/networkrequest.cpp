@@ -305,7 +305,7 @@ NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
   // value.
   Q_ASSERT(r->m_reply);
 
-  disconnect(r->m_reply, &QNetworkReply::sslErrors,0,0); // Remove the logger from it :)
+  disconnect(r->m_reply, &QNetworkReply::sslErrors, 0, 0);
   r->m_reply->ignoreSslErrors();
 
   return r;
