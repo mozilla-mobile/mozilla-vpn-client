@@ -131,7 +131,9 @@ int CommandUI::run(QStringList& tokens) {
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+    engine->addImportPath("qrc:///components");
     engine->addImportPath("qrc:///glean");
+    engine->addImportPath("qrc:///themes");
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);

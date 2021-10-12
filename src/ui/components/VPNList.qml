@@ -4,7 +4,8 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.5
-import "../themes/themes.js" as Theme
+
+import themes 0.1
 
 ListView {
     id: list

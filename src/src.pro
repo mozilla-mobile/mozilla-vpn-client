@@ -314,8 +314,11 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += qml.qrc
 RESOURCES += inspector/inspector.qrc
+RESOURCES += ui/components.qrc
+RESOURCES += ui/resources.qrc
+RESOURCES += ui/themes.qrc
+RESOURCES += ui/ui.qrc
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
     RESOURCES += $$PWD/../glean/glean.qrc

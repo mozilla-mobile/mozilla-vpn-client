@@ -4,8 +4,9 @@
 
 import QtQuick 2.5
 import QtGraphicalEffects 1.12
+
 import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
+import themes 0.1
 
 Rectangle {
     id: logo
@@ -26,7 +27,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "../resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
 
@@ -41,7 +42,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "../resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
 
@@ -56,7 +57,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "../resources/shield-off.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
 
@@ -84,7 +85,7 @@ Rectangle {
 
             PropertyChanges {
                 target: insetIcon
-                source: "../resources/shield-off.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
 
@@ -99,7 +100,7 @@ Rectangle {
 
             PropertyChanges {
                 target: insetIcon
-                source: "../resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
 
@@ -115,7 +116,7 @@ Rectangle {
 
             PropertyChanges {
                 target: insetIcon
-                source: "../resources/shield-off.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
 
@@ -272,7 +273,7 @@ Rectangle {
             anchors.centerIn: insetCircle
             sourceSize.height: 32
             sourceSize.width: 32
-            source: "../resources/switching.svg"
+            source: "qrc:/ui/resources/switching.svg"
             opacity: 0
              PropertyAnimation {
                  id: spin
@@ -289,7 +290,7 @@ Rectangle {
 
     Image {
         id: globe
-        source: "../resources/globe.svg";
+        source: "qrc:/ui/resources/globe.svg";
         sourceSize.height: logo.height
         sourceSize.width: logo.width
         visible: false

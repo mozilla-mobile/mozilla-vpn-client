@@ -4,11 +4,12 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
-import "../themes/themes.js" as Theme
+
+import themes 0.1
 
 // VPNChevron
 Image {
-    source: "../resources/chevron.svg"
+    source: "qrc:/ui/resources/chevron.svg"
     sourceSize.height: 24
     sourceSize.width: 24
     fillMode: Image.PreserveAspectFit

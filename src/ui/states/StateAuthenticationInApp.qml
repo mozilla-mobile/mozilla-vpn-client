@@ -5,10 +5,10 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
-import "../components"
+import components 0.1
 
 VPNStackView {
     id: stackview
 
-    initialItem: "../authenticationInApp/ViewAuthenticationInApp.qml"
+    initialItem: "qrc:/ui/authenticationInApp/ViewAuthenticationInApp.qml"
 }
