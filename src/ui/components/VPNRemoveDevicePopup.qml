@@ -6,8 +6,9 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import QtGraphicalEffects 1.14
+
 import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
+import themes 0.1
 
 Popup {
     id: popup
@@ -100,7 +101,7 @@ Popup {
 
             Image {
                 fillMode: Image.PreserveAspectFit
-                source: "../resources/devicesRemove.svg"
+                source: "qrc:/ui/resources/devicesRemove.svg"
                 sourceSize: Qt.size(116, 80)
 
                 Layout.alignment: Qt.AlignHCenter
