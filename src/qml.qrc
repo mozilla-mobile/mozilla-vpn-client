@@ -489,5 +489,6 @@
         <file>ui/resources/settings/questionMark.svg</file>
         <file>ui/resources/settings/preferences.svg</file>
         <file>ui/resources/settings-dark.svg</file>
+        <file>ui/shaders/testShader.frag.qsb</file>
     </qresource>
 </RCC>
