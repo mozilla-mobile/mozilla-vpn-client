@@ -11,8 +11,10 @@
 #include <functional>
 
 #include <QHostAddress>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMetaEnum>
 #include <QTcpSocket>
 
 constexpr uint32_t MAX_MSG_SIZE = 1024 * 1024;
@@ -25,6 +27,77 @@ struct RequestType {
   QString m_name;
   std::function<QJsonObject(const QJsonObject&)> m_callback;
 };
+
+void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
+  QJsonArray countries;
+
+  for (const ServerCountry& country : model->countries()) {
+    QJsonObject countryObj;
+    countryObj["name"] = country.name();
+    countryObj["code"] = country.code();
+
+    QJsonArray cities;
+    for (const ServerCity& city : country.cities()) {
+      QJsonObject cityObj;
+      cityObj["name"] = city.name();
+      cityObj["code"] = city.code();
+
+      QJsonArray servers;
+      for (const Server& server : city.servers()) {
+        QJsonObject serverObj;
+        serverObj["hostname"] = server.hostname();
+        serverObj["ipv4_gateway"] = server.ipv4Gateway();
+        serverObj["ipv6_gateway"] = server.ipv6Gateway();
+        serverObj["weight"] = (double)server.weight();
+
+        const QString& socksName = server.socksName();
+        if (!socksName.isEmpty()) {
+          serverObj["socksName"] = socksName;
+        }
+
+        uint32_t multihopPort = server.multihopPort();
+        if (multihopPort) {
+          serverObj["multihopPort"] = (double)multihopPort;
+        }
+
+        servers.append(serverObj);
+      }
+
+      cityObj["servers"] = servers;
+      cities.append(cityObj);
+    }
+
+    countryObj["cities"] = cities;
+    countries.append(countryObj);
+  }
+
+  obj["countries"] = countries;
+}
+
+QJsonObject serializeStatus() {
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  QJsonObject obj;
+
+  obj["authenticated"] = vpn->userAuthenticated();
+  obj["location"] = vpn->currentServer()->toString();
+
+  {
+    MozillaVPN::State state = vpn->state();
+    const QMetaObject* meta = qt_getEnumMetaObject(state);
+    int index = meta->indexOfEnumerator(qt_getEnumName(state));
+    obj["app"] = meta->enumerator(index).valueToKey(state);
+  }
+
+  {
+    Controller::State state = vpn->controller()->state();
+    const QMetaObject* meta = qt_getEnumMetaObject(state);
+    int index = meta->indexOfEnumerator(qt_getEnumName(state));
+    obj["vpn"] = meta->enumerator(index).valueToKey(state);
+  }
+
+  return obj;
+}
 
 static QList<RequestType> s_types{
     RequestType{"activate",
@@ -41,19 +114,18 @@ static QList<RequestType> s_types{
 
     RequestType{"servers",
                 [](const QJsonObject&) {
-                  QByteArray serverJson =
-                      MozillaVPN::instance()->serverCountryModel()->rawJson();
-                  if (serverJson.isEmpty()) {
-                    return QJsonObject();
-                  }
-
-                  QJsonDocument doc = QJsonDocument::fromJson(serverJson);
-                  Q_ASSERT(doc.isObject());
-
                   QJsonObject obj;
+                  serializeServerCountry(
+                      MozillaVPN::instance()->serverCountryModel(), obj);
 
-                  // TODO: remove some of the unused fields
-                  obj["servers"] = doc.object();
+                  obj["servers"] = obj;
+                  return obj;
+                }},
+
+    RequestType{"status",
+                [](const QJsonObject&) {
+                  QJsonObject obj;
+                  obj["status"] = serializeStatus();
                   return obj;
                 }},
 };
@@ -151,91 +223,8 @@ void ServerConnection::writeData(const QByteArray& data) {
 }
 
 void ServerConnection::writeState() {
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-
-  QJsonObject obj;
+  QJsonObject obj = serializeStatus();
   obj["t"] = "status";
-
-  {
-    QString stateStr;
-    switch (vpn->state()) {
-      case MozillaVPN::StateInitialize:
-        stateStr = "initialize";
-        break;
-      case MozillaVPN::StateAuthenticating:
-        stateStr = "authenticating";
-        break;
-      case MozillaVPN::StatePostAuthentication:
-        [[fallthrough]];
-      case MozillaVPN::StateTelemetryPolicy:
-        [[fallthrough]];
-      case MozillaVPN::StateMain:
-        stateStr = "ready";
-        break;
-      case MozillaVPN::StateUpdateRequired:
-        stateStr = "updateRequired";
-        break;
-      case MozillaVPN::StateSubscriptionNeeded:
-        stateStr = "subscriptionNeeded";
-        break;
-      case MozillaVPN::StateSubscriptionInProgress:
-        stateStr = "subscriptionInProgress";
-        break;
-      case MozillaVPN::StateSubscriptionBlocked:
-        stateStr = "subscriptionBlocked";
-        break;
-      case MozillaVPN::StateDeviceLimit:
-        stateStr = "deviceLimit";
-        break;
-      case MozillaVPN::StateBackendFailure:
-        stateStr = "backendFailure";
-        break;
-      case MozillaVPN::StateBillingNotAvailable:
-        stateStr = "billingNotAvailable";
-        break;
-      case MozillaVPN::StateSubscriptionNotValidated:
-        stateStr = "subscriptionNotValidated";
-        break;
-      default:
-        Q_ASSERT(false);
-        break;
-    }
-
-    obj["app"] = stateStr;
-  }
-
-  {
-    QString controllerStateStr;
-    switch (vpn->controller()->state()) {
-      case Controller::StateInitializing:
-        controllerStateStr = "initializing";
-        break;
-      case Controller::StateOff:
-        controllerStateStr = "off";
-        break;
-      case Controller::StateConnecting:
-        controllerStateStr = "connecting";
-        break;
-      case Controller::StateConfirming:
-        controllerStateStr = "confirming";
-        break;
-      case Controller::StateOn:
-        controllerStateStr = "on";
-        break;
-      case Controller::StateDisconnecting:
-        controllerStateStr = "disconnecting";
-        break;
-      case Controller::StateSwitching:
-        controllerStateStr = "switching";
-        break;
-      default:
-        Q_ASSERT(false);
-        break;
-    }
-
-    obj["vpn"] = controllerStateStr;
-  }
 
   writeData(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }

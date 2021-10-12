@@ -27,6 +27,8 @@ INCLUDEPATH += \
             ../../translations/generated
 
 HEADERS += \
+    ../../src/adjust/adjustfiltering.h \
+    ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/bigint.h \
     ../../src/bigintipv6addr.h \
     ../../src/captiveportal/captiveportal.h \
@@ -43,7 +45,6 @@ HEADERS += \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
     ../../src/ipfinder.h \
-    ../../src/l18nstringsimpl.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
@@ -59,6 +60,7 @@ HEADERS += \
     ../../src/models/servercountry.h \
     ../../src/models/servercountrymodel.h \
     ../../src/models/serverdata.h \
+    ../../src/models/serverextra.h \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
@@ -95,11 +97,13 @@ HEADERS += \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
     helper.h \
+    testadjust.h \
     testandroidmigration.h \
     testbigint.h \
     testbigintipv6addr.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
+    testfeature.h \
     testlocalizer.h \
     testlogger.h \
     testipaddress.h \
@@ -112,6 +116,8 @@ HEADERS += \
     testtimersingleshot.h
 
 SOURCES += \
+    ../../src/adjust/adjustfiltering.cpp \
+    ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
@@ -144,6 +150,7 @@ SOURCES += \
     ../../src/models/servercountry.cpp \
     ../../src/models/servercountrymodel.cpp \
     ../../src/models/serverdata.cpp \
+    ../../src/models/serverextra.cpp \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
@@ -179,11 +186,13 @@ SOURCES += \
     mocinspectorwebsocketconnection.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
+    testadjust.cpp \
     testandroidmigration.cpp \
     testbigint.cpp \
     testbigintipv6addr.cpp \
     testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
+    testfeature.cpp \
     testlocalizer.cpp \
     testlogger.cpp \
     testipaddress.cpp \

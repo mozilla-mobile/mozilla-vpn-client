@@ -86,8 +86,7 @@ bool Survey::isTriggerable() const {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  if (settingsHolder->hasConsumedSurveys() &&
-      settingsHolder->consumedSurveys().contains(m_id)) {
+  if (settingsHolder->consumedSurveys().contains(m_id)) {
     return false;
   }
 

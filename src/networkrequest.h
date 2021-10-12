@@ -30,14 +30,23 @@ class NetworkRequest final : public QObject {
       QObject* parent, const QString& pkceCodeSuccess,
       const QString& pkceCodeVerifier);
 
+  static NetworkRequest* createForAdjustProxy(
+      QObject* parent, const QString& method, const QString& path,
+      const QList<QPair<QString, QString>>& headers,
+      const QString& queryParameters, const QString& bodyParameters,
+      const QList<QString>& unknownParameters);
+
   static NetworkRequest* createForDeviceCreation(QObject* parent,
                                                  const QString& deviceName,
-                                                 const QString& pubKey);
+                                                 const QString& pubKey,
+                                                 const QString& deviceId);
 
   static NetworkRequest* createForDeviceRemoval(QObject* parent,
                                                 const QString& pubKey);
 
   static NetworkRequest* createForServers(QObject* parent);
+
+  static NetworkRequest* createForServerExtra(QObject* parent);
 
   static NetworkRequest* createForAccount(QObject* parent);
 
@@ -144,6 +153,7 @@ class NetworkRequest final : public QObject {
  private slots:
   void replyFinished();
   void timeout();
+  void sslErrors(const QList<QSslError>& errors);
 
  signals:
   void requestHeaderReceived(NetworkRequest* request);

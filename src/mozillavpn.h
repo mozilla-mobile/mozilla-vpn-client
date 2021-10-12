@@ -204,7 +204,8 @@ class MozillaVPN final : public QObject {
 
   void deviceRemoved(const QString& publicKey);
 
-  void serversFetched(const QByteArray& serverData);
+  void serversFetched(const QByteArray& serverData,
+                      const QByteArray& serverExtraData);
 
   void accountChecked(const QByteArray& json);
 
@@ -244,7 +245,9 @@ class MozillaVPN final : public QObject {
 
   void setToken(const QString& token);
 
-  [[nodiscard]] bool setServerList(const QByteArray& serverData);
+  [[nodiscard]] bool setServerList(
+      const QByteArray& serverData,
+      const QByteArray& serverExtraData = QByteArray());
 
   Q_INVOKABLE void reset(bool forceInitialState);
 
@@ -306,6 +309,14 @@ class MozillaVPN final : public QObject {
   void subscriptionNotValidated();
 
   void completeActivation();
+
+  enum RemovalDeviceOption {
+    DeviceNotFound,
+    DeviceStillValid,
+    DeviceRemoved,
+  };
+
+  RemovalDeviceOption maybeRemoveCurrentDevice();
 
   void controllerStateChanged();
 

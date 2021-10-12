@@ -26,17 +26,12 @@ RowLayout {
 
         color: Theme.bgColor
         opacity: .8
+        minimumPixelSize: Theme.fontSizeSmall / 2
         Accessible.name: text
         Accessible.role: Accessible.StaticText
         verticalAlignment: Text.AlignVCenter
         Layout.maximumWidth: maxPaintedTextWidth
-        Layout.preferredWidth: paintedWidth
-
-        Component.onCompleted: {
-            if (paintedWidth > maxPaintedTextWidth) {
-                fontSizeMode = Text.Fit;
-                minimumPixelSize =  6;
-            }
-        }
+        textFormat: Text.PlainText
+        fontSizeMode: Text.HorizontalFit
     }
 }

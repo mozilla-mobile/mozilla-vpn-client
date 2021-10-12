@@ -58,6 +58,9 @@ class Localizer final : public QAbstractListModel {
 
   QVariant data(const QModelIndex& index, int role) const override;
 
+  Q_INVOKABLE QString localizedCityName(const QString& code,
+                                        const QString& city);
+
  signals:
   void codeChanged();
   void previousCodeChanged();

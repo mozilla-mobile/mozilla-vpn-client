@@ -68,35 +68,38 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
 QList<Feature*> Feature::getAll() { return s_features->values(); }
 
 // static
+const Feature* Feature::getOrNull(const QString& featureID) {
+  return s_features->value(featureID, nullptr);
+}
+
+// static
 const Feature* Feature::get(const QString& featureID) {
-  if (!s_features->contains(featureID)) {
+  const Feature* feature = getOrNull(featureID);
+  if (!feature) {
     logger.error() << "Invalid feature" << featureID;
     Q_ASSERT(false);
     return nullptr;
   };
 
-  return s_features->value(featureID, nullptr);
+  return feature;
 }
 
 bool Feature::isDevModeEnabled() const {
   if (!m_devModeWriteable) {
     return false;
   }
-  const auto settings = SettingsHolder::instance();
-  return settings->hasDevModeFeatureFlag(m_id);
+
+  return SettingsHolder::instance()->devModeFeatureFlags().contains(m_id);
 }
 
 bool Feature::isSupported() const {
-  logger.debug() << "Check feature " << m_id;
   if (isDevModeEnabled()) {
     logger.debug() << "Devmode Enabled " << m_id;
     return true;
   }
   if (!m_released) {
-    logger.debug() << "Not released " << m_id;
     return false;
   }
-  logger.debug() << "Check Support" << m_id;
   return checkSupportCallback();
 }
 
@@ -108,55 +111,4 @@ QString Feature::description() const {
 }
 QString Feature::shortDescription() const {
   return L18nStrings::instance()->t(m_shortDescription_id);
-}
-
-QVariant Feature::data(int role) const {
-  switch ((ModelRoles)role) {
-    case RoleId:
-      return m_id;
-    case RoleName:
-      return m_name;
-    case RoleDisplayName:
-      return displayName();
-    case RoleDescription:
-      return description();
-    case RoleShortDescription:
-      return shortDescription();
-    case RoleImagePath:
-      return m_imagePath;
-    case RoleIconPath:
-      return m_iconPath;
-    case RoleReleased:
-      return m_released;
-    case RoleSupported:
-      return isSupported();
-    case RoleDevModeWriteable:
-      return m_devModeWriteable;
-    case RoleDevModeEnabled:
-      return isDevModeEnabled();
-    case RoleNew:
-      return m_new;
-    case RoleMajor:
-      return m_majorFeature;
-    default:
-      return QVariant();
-  }
-};
-
-QHash<int, QByteArray> Feature::roleNames() {
-  // TODO: we probably could cleanup & remove the role enum
-  // and just get this via the Q_metaobject
-  return QHash<int, QByteArray>({{RoleId, "id"},
-                                 {RoleName, "name"},
-                                 {RoleDisplayName, "displayName"},
-                                 {RoleDescription, "description"},
-                                 {RoleShortDescription, "shortDescription"},
-                                 {RoleImagePath, "imagePath"},
-                                 {RoleIconPath, "iconPath"},
-                                 {RoleReleased, "featureReleased"},
-                                 {RoleNew, "isNew"},
-                                 {RoleMajor, "isMajor"},
-                                 {RoleSupported, "supported"},
-                                 {RoleDevModeWriteable, "devModeWriteable"},
-                                 {RoleDevModeEnabled, "devModeEnabled"}});
 }

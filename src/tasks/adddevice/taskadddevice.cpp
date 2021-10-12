@@ -32,8 +32,8 @@ QByteArray generatePrivateKey() {
 
 }  // anonymous namespace
 
-TaskAddDevice::TaskAddDevice(const QString& deviceName)
-    : Task("TaskAddDevice"), m_deviceName(deviceName) {
+TaskAddDevice::TaskAddDevice(const QString& deviceName, const QString& deviceID)
+    : Task("TaskAddDevice"), m_deviceName(deviceName), m_deviceID(deviceID) {
   MVPN_COUNT_CTOR(TaskAddDevice);
 }
 
@@ -48,8 +48,8 @@ void TaskAddDevice::run(MozillaVPN* vpn) {
   logger.debug() << "Private key: " << logger.sensitive(privateKey);
   logger.debug() << "Public key: " << logger.sensitive(publicKey);
 
-  NetworkRequest* request =
-      NetworkRequest::createForDeviceCreation(this, m_deviceName, publicKey);
+  NetworkRequest* request = NetworkRequest::createForDeviceCreation(
+      this, m_deviceName, publicKey, m_deviceID);
 
   connect(request, &NetworkRequest::requestFailed,
           [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {

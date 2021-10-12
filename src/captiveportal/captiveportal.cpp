@@ -74,12 +74,8 @@ bool CaptivePortal::fromSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  if (settingsHolder->hasCaptivePortalIpv4Addresses()) {
-    m_ipv4Addresses = settingsHolder->captivePortalIpv4Addresses();
-  }
-  if (settingsHolder->hasCaptivePortalIpv6Addresses()) {
-    m_ipv6Addresses = settingsHolder->captivePortalIpv6Addresses();
-  }
+  m_ipv4Addresses = settingsHolder->captivePortalIpv4Addresses();
+  m_ipv6Addresses = settingsHolder->captivePortalIpv6Addresses();
 
   return true;
 }

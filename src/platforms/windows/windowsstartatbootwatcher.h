@@ -15,8 +15,7 @@ class WindowsStartAtBootWatcher final : public QObject {
   explicit WindowsStartAtBootWatcher(bool startAtBoot);
   ~WindowsStartAtBootWatcher();
 
- public slots:
-  void startAtBootChanged(bool value);
+  void startAtBootChanged(const bool& startAtBoot);
 };
 
 #endif  // WINDOWSSTARTATBOOTWATCHER_H

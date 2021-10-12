@@ -225,8 +225,7 @@ bool WindowsFirewall::enablePeerTraffic(const InterfaceConfig& config) {
     // In some cases, we might configure a 2nd DNS server for IPv6, however
     // this should probably be cleaned up by converting m_dnsServer into
     // a QStringList instead.
-    if (config.m_ipv6Enabled &&
-        config.m_dnsServer == config.m_serverIpv4Gateway) {
+    if (config.m_dnsServer == config.m_serverIpv4Gateway) {
       if (!allowTrafficTo(QHostAddress(config.m_serverIpv6Gateway), 53,
                           HIGH_WEIGHT, "Allow extra IPv6 DNS-Server",
                           config.m_serverPublicKey)) {
@@ -319,7 +318,6 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
   std::wstring wstr = exePath.toStdWString();
   PCWSTR appPath = wstr.c_str();
   FWP_BYTE_BLOB* appID = NULL;
-  uint64_t filterID = 0;
   result = FwpmGetAppIdFromFileName0(appPath, &appID);
   if (result != ERROR_SUCCESS) {
     WindowsCommons::windowsLog("FwpmGetAppIdFromFileName0 failure");

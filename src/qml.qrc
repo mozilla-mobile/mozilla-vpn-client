@@ -337,6 +337,7 @@
         <file>ui/resources/back-dark.svg</file>
         <file>ui/resources/settings.svg</file>
         <file>ui/resources/logo.svg</file>
+        <file>ui/resources/logo-dock.png</file>
         <file>ui/resources/chevron.svg</file>
         <file>ui/resources/chevron-right-dark.svg</file>
         <file>ui/resources/chevron-purple.svg</file>
@@ -488,5 +489,6 @@
         <file>ui/components/VPNRecentConnections.qml</file>
         <file>ui/resources/settings/questionMark.svg</file>
         <file>ui/resources/settings/preferences.svg</file>
+        <file>ui/resources/settings-dark.svg</file>
     </qresource>
 </RCC>

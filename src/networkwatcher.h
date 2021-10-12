@@ -27,7 +27,7 @@ class NetworkWatcher final : public QObject {
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
 
  private:
-  void settingsChanged(bool active);
+  void settingsChanged(const bool& value);
 
   void notificationClicked(SystemTrayHandler::Message message);
 
