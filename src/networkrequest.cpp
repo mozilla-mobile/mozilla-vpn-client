@@ -55,6 +55,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
     // Global Privacy Control: https://globalprivacycontrol.github.io/gpc-spec/
     m_request.setRawHeader("Sec-GPC", "1");
   }
+  m_request.setOriginatingObject(parent);
 
   if (setAuthorizationHeader) {
     QByteArray authorizationHeader = "Bearer ";

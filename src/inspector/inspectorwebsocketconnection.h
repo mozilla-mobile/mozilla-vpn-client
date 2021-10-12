@@ -24,6 +24,10 @@ class InspectorWebSocketConnection final : public QObject {
   static void setLastUrl(const QUrl& url);
   static bool stealUrls();
   static QString appVersionForUpdate();
+  static QString getObjectClass(const QObject* target);
+  static QJsonObject getViewTree();
+  static QJsonObject serialize(QQuickItem* item);
+
 
  private:
   void textMessageReceived(const QString& message);
@@ -37,8 +41,7 @@ class InspectorWebSocketConnection final : public QObject {
 
   void networkRequestFinished(QNetworkReply* reply);
 
-  QJsonObject serialize(const QObject* target, bool requirsive);
-  QString getObjectClass(const QObject* target);
+ 
  private:
   QWebSocket* m_connection;
 

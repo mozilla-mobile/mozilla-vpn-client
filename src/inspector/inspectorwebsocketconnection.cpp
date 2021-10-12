@@ -275,6 +275,10 @@ static QList<WebSocketCommand> s_commands{
 
                        return QJsonObject();
                      }},
+    WebSocketCommand{"view_tree", "Sends a view tree", 0,
+                     [](const QList<QByteArray>&) {
+                       return InspectorWebSocketConnection::getViewTree();
+                     }},
 
     WebSocketCommand{"quit", "Quit the app", 0,
                      [](const QList<QByteArray>&) {
@@ -612,7 +616,7 @@ static QList<WebSocketCommand> s_commands{
                            return obj;
                          }
                        }
-
+                       obj["type"]="screen";
                        obj["value"] =
                            QString(data.toBase64(QByteArray::Base64Encoding));
                        return obj;
@@ -838,10 +842,15 @@ void InspectorWebSocketConnection::notificationShown(const QString& title,
 }
 
 void InspectorWebSocketConnection::networkRequestFinished(QNetworkReply* reply){
+    logger.debug() << "Network REquest finished";
     QJsonObject obj;
     obj["type"] = "network";
     QJsonObject request;
     QJsonObject response;
+
+     QVariant statusCode =
+      reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    response["status"] = statusCode.isValid() ? statusCode.toInt() : -1;
 
     // Serialize the Response
     QJsonObject responseHeader;
@@ -879,9 +888,116 @@ QString InspectorWebSocketConnection::getObjectClass(const QObject* target){
      return metaObject->className();
 }
 
+
+// static
+void InspectorWebSocketConnection::setLastUrl(const QUrl& url) {
+  s_lastUrl = url;
+}
+
+// static
+bool InspectorWebSocketConnection::stealUrls() { return s_stealUrls; }
+
+// static
+QString InspectorWebSocketConnection::appVersionForUpdate() {
+  if (s_updateVersion.isEmpty()) {
+    return APP_VERSION;
+  }
+
+  return s_updateVersion;
+}
+
 //static
-// This Serializeses any QObject's properties into JSON - use it for qml stuff!
-QJsonObject InspectorWebSocketConnection::serialize(const QObject* target, bool recursive){
+QJsonObject InspectorWebSocketConnection::getViewTree(){
+  QJsonObject out;
+  out["type"]="qml_tree";
+
+  QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+  QJsonArray viewRoots;
+  for( auto& root : engine->rootObjects()){
+      QQuickWindow *window = qobject_cast<QQuickWindow *>(root);
+      if(window == nullptr){
+          continue;
+      }
+      QQuickItem* content = window->contentItem();
+      viewRoots.append(serialize(content));
+  }
+  out["tree"]=viewRoots;
+  return out;
+}
+
+//static
+QJsonObject InspectorWebSocketConnection::serialize(QQuickItem* item){
+  QJsonObject out;
+  if(item == nullptr){
+      return out;
+  }
+  out["__class__"]= getObjectClass(item);
+
+
+#define PUT(func)\
+    out[#func]= item->func();
+  PUT(x);
+  PUT(y);
+  PUT(z);
+  PUT(height);
+  PUT(width);
+  PUT(hasFocus);
+  PUT(isEnabled);
+  PUT(scale);
+  PUT(state);
+
+  // Todo: Check QObject subelements for the Layout Element
+
+  auto metaObject = item->metaObject();
+  int propertyCount = metaObject->propertyCount();
+  out["__propertyCount__"]=propertyCount;
+  QJsonArray props;
+  for(int i=0; i< metaObject->propertyCount(); i++){
+      auto property = metaObject->property(i);
+      if(!property.isValid()){
+          continue;
+      }
+      QJsonObject prop;
+      auto name = property.name();
+      auto value = property.read(item);
+      if(value.type() == QMetaType::VoidStar || value.type() == QMetaType::QObjectStar){
+          prop[name]="[object Object]";
+          continue;
+      }
+      if(value.canConvert<QJsonValue>()){
+         out[name]=value.toJsonValue();
+      }else if(value.canConvert<QString>()){
+          out[name]=value.toString();
+      }else if(value.canConvert<QStringList>()){
+          auto list = value.toStringList();
+          QJsonArray somelist;
+          for(const QString& s:list){
+              somelist.append(s);
+          }
+          out[name]=somelist;
+      }
+      else{
+          out[name]=value.typeName();
+      }
+  }
+
+
+
+
+  QJsonArray subView;
+  auto children = item->childItems();
+  out["__child_item_count"]=children.length();
+  for( auto& c: children){
+      subView.append(serialize(c));
+  }
+  out["subItems"]=subView;
+  return out;
+}
+
+
+/*
+ *
+ * QJsonObject InspectorWebSocketConnection::serialize(const QObject* target, bool recursive){
     Q_UNUSED(recursive);
     QJsonObject out;
     auto metaObject = target->metaObject();
@@ -904,21 +1020,4 @@ QJsonObject InspectorWebSocketConnection::serialize(const QObject* target, bool 
         out[name]=value.toJsonValue();
     }
     return out;
-}
-
-// static
-void InspectorWebSocketConnection::setLastUrl(const QUrl& url) {
-  s_lastUrl = url;
-}
-
-// static
-bool InspectorWebSocketConnection::stealUrls() { return s_stealUrls; }
-
-// static
-QString InspectorWebSocketConnection::appVersionForUpdate() {
-  if (s_updateVersion.isEmpty()) {
-    return APP_VERSION;
-  }
-
-  return s_updateVersion;
-}
+}*/
