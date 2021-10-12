@@ -131,9 +131,7 @@ VPNFlickable {
             imageRightSrc: "../resources/chevron.svg"
             onClicked: {
                 Sample.getHelpClickedViewSettings.record();
-                settingsStackView.push("../views/ViewGetHelp.qml", {
-                                           isSettingsView: true
-                                       })
+                settingsStackView.push("../views/ViewGetHelp.qml", {isSettingsView: true})
             }
         }
 
