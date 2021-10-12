@@ -238,3 +238,9 @@ customDNSSettings:
 
 networkSettings:
   multihopTitle: Multi-hop tunnel
+
+captivePortalAlert:
+  title: Captive portal detected!
+  header: A captive portal is when the guest Wi-Fi you are using requires you to log in to get internet access. 
+  action: You can turn on your VPN once you have gained internet access by logging in to the portal. 
+  buttonText: Okay

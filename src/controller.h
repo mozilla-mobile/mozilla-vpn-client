@@ -28,7 +28,6 @@ class Controller final : public QObject {
   enum State {
     StateInitializing,
     StateOff,
-    StateCaptivePortalBlock,
     StateConnecting,
     StateConfirming,
     StateOn,
@@ -116,6 +115,7 @@ class Controller final : public QObject {
   void readyToBackendFailure();
   void connectionRetryChanged();
   void silentSwitchDone();
+  void activationBlockedForCaptivePortal();
 
  private:
   void setState(State state);

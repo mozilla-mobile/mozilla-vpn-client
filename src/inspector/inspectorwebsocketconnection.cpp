@@ -442,6 +442,7 @@ static QList<WebSocketCommand> s_commands{
                        }
                        QJsonObject result;
                        result["ok"]=ok;
+                       result["value"] = "Force CaptivePortal Result!";
                        return result;
                      }},
 

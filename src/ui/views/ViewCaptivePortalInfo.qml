@@ -15,16 +15,6 @@ VPNFlickable {
     flickContentHeight: vpnPanel.height + alertWrapperBackground.height + footerContent.height + (Theme.windowMargin * 4)
     state: "required"
 
-    Connections{
-     target: VPNController
-     onStateChanged:{
-         if(VPNController.state !== VPNController.StateCaptivePortalBlock){
-            // Once we no longer are blocked, remove this
-            stackview.pop()
-         }
-       }
-    }
-
     Item {
         id: spacer1
 
@@ -42,9 +32,9 @@ VPNFlickable {
         width: Math.min(vpnFlickable.width - Theme.windowMargin * 2, Theme.maxHorizontalContentWidth)
         logoSize: 80
 
-        logoTitle: "Captive Portal Detected!"
+        logoTitle: VPNl18n.CaptivePortalAlertTitle
 
-        logoSubtitle: "A captive portal is when the guest Wi-Fi you are using requires you to log in to get internet access. "
+        logoSubtitle: VPNl18n.CaptivePortalAlertHeader
         logo: "../resources/globe-warning.svg"
     }
 
@@ -67,7 +57,7 @@ VPNFlickable {
             color: Theme.fontColor
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
-            text: "You can turn on your VPN once you have gained internet access by logging in to the portal. "
+            text: VPNl18n.CaptivePortalAlertAction
     }
 
 
@@ -88,9 +78,12 @@ VPNFlickable {
 
         VPNButton {
             id: openPortalButton
-            text: "Okay"
+            text: VPNl18n.CaptivePortalAlertButtonText
             radius: 4
-            onClicked: VPN.openLink(VPN.LinkCaptivePortal);
+            onClicked: {
+                VPN.openLink(VPN.LinkCaptivePortal);
+                stackview.pop()
+            }
         }
 
         Rectangle {

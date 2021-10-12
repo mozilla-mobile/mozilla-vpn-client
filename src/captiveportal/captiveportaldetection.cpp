@@ -41,8 +41,7 @@ void CaptivePortalDetection::stateChanged() {
   Q_ASSERT(vpn);
   Controller::State state = vpn->controller()->state();
 
-  if(state == Controller::StateOff || 
-     state == Controller::StateCaptivePortalBlock){
+  if (state == Controller::StateOff) {
     // We're not connected yet - start a captivePortal Monitor
     logger.info() << "Not connected, starting captive-portal Monitor";
     captivePortalBackgroundMonitor()->start();

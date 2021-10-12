@@ -42,10 +42,8 @@ VPNFlickable {
 
     Connections{
      target: VPNController
-     onStateChanged:{
-         if(VPNController.state === VPNController.StateCaptivePortalBlock){
-            stackview.push("ViewCaptivePortalInfo.qml")
-         }
+     onActivationBlockedForCaptivePortal:{
+        stackview.push("ViewCaptivePortalInfo.qml")
        }
     }
 

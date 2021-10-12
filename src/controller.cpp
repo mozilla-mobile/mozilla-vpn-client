@@ -162,10 +162,9 @@ bool Controller::activate() {
 
   if (m_state == StateOff) {
     if(m_portalDetected){
-      setState(StateCaptivePortalBlock);
+      emit activationBlockedForCaptivePortal();
       return true;
     }
-    setState(StateConnecting);
   }
 
   m_timer.stop();
@@ -776,13 +775,7 @@ QString Controller::switchingLocalizedCityName() const {
 
 void Controller::captivePortalGone(){
   m_portalDetected = false;
-  if(m_state == StateCaptivePortalBlock){
-    logger.info() << "Captive-Portal Gone, continue activation";
-    setState(StateOff);
-    activate();
-  }else{
     logger.info() << "Captive-Portal Gone, next activation will not show prompt";
-  }
 }
 void Controller::captivePortalPresent(){
   if(m_portalDetected){return;}
