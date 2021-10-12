@@ -100,7 +100,7 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation,
   return true;
 }
 
-void MozillaVPN::viewLogs() {}
+bool MozillaVPN::viewLogs() {}
 
 bool MozillaVPN::modelsInitialized() const { return true; }
 

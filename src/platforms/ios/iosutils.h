@@ -12,6 +12,8 @@ class IOSUtils final {
   static QString computerName();
 
   static QString IAPReceipt();
+
+  static void shareLogs(const QString& logs);
 };
 
 #endif  // IOSUTILS_H
