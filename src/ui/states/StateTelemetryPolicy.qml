@@ -6,9 +6,10 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
-import "../components"
+import components 0.1
+import themes 0.1
 
 VPNFlickable {
     id: vpnFlickable
@@ -31,7 +32,7 @@ VPNFlickable {
         }
 
         VPNPanel {
-            logo: "../resources/updateRecommended.svg"
+            logo: "qrc:/ui/resources/updateRecommended.svg"
             logoTitle: qsTrId("vpn.settings.dataCollection")
             //% "We strive to provide you with choices and collect only the technical data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional."
             logoSubtitle: qsTrId("vpn.telemetryPolicy.updatedTelemetryDisclaimer")

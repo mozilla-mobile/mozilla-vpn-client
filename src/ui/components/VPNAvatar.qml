@@ -33,7 +33,7 @@ Item {
         anchors.fill: parent
         fillMode: Image.PreserveAspectFit
         smooth: true
-        source: "../resources/avatar-default.png"
+        source: "qrc:/ui/resources/avatar-default.png"
         sourceSize.height: avatarSourceSize
         sourceSize.width: avatarSourceSize
         visible: avatar.status !== Image.Ready

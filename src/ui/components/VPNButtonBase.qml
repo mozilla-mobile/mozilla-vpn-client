@@ -5,7 +5,8 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.14
-import "../themes/themes.js" as Theme
+
+import themes 0.1
 
 RoundButton {
     id: root
