@@ -35,7 +35,7 @@ class FeatureShareLogs : public Feature {
 
   bool checkSupportCallback() const override {
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
-    defined(MVPN_IOS)
+    defined(MVPN_IOS) || defined(MVPN_DUMMY)
     return true;
 #elif defined(MVPN_ANDROID)
     return QtAndroid::androidSdkVersion() >=
