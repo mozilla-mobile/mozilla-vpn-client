@@ -100,8 +100,17 @@ QString SettingsHolder::getReport() {
       out << setting << " -> <Sensitive>" << Qt::endl;
       continue;
     }
-    out << setting << " -> " << m_settings.value(setting).toString()
-        << Qt::endl;
+    out << setting << " -> ";
+    QVariant value = m_settings.value(setting);
+    switch(value.type()){
+        case QVariant::List:
+        case QVariant::StringList:
+            out << '[' << value.toStringList().join(",") << ']' << ' ';
+         break;
+        default:
+          out << value.toString();
+     }
+    out << Qt::endl;
   }
   return buff;
 }

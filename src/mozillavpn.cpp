@@ -297,6 +297,8 @@ void MozillaVPN::initialize() {
 
   scheduleTask(new TaskCaptivePortalLookup());
 
+  scheduleTask(new TaskSurveyData());
+
   if (FeatureInAppPurchase::instance()->isSupported()) {
     scheduleTask(new TaskProducts());
   }
