@@ -28,8 +28,10 @@ After checking out the code:
 
 ### Running the functional tests
 
-* Make sure you’ve globally installed all of the dependencies including geckodriver. See the [workflows file](/.github/workflows/functional_tests.yaml).
-* Make a .env file with ACCOUNT_EMAIL and ACCOUNT_PASSWORD
+* Install node (if needed) and then `npm install` to install the testing dependencies
+* Install geckodriver and ensure it's on your path.
+  [Docs](https://www.selenium.dev/documentation/getting_started/installing_browser_drivers/)
+* Make a .env file with ACCOUNT_EMAIL and ACCOUNT_PASSWORD (the account should have an active subscription on staging).
 * In one window run `./tests/proxy/wsgi.py` --mock-devices
 * In window where you'll run tests, run `export MVPN_API_BASE_URL=http://localhost:5000`
 * To run, say, the authentication tests: `./scripts/test_function.sh ./build/mozillavpn tests/functional/testAuthentication.js` (the second argument is the location of your mozillavpn executable).
@@ -38,7 +40,9 @@ Misc tips from core devs:
 * Make sure there are read/write permissions at every level of your build path
 * Suggest building with the flags used in CI `qmake CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug CONFIG+=inspector QT+=svg`
 * Using a headless browser locally may cause the tests to stall out.
-
+* See the [workflows file](/.github/workflows/functional_tests.yaml) which runs the functional tests in ci for pointers
+  if you're stuck.
+* If you're a conda user you can conda install node and geckodriver from conda-forge packages.
 
 ## How to build from the source code
 

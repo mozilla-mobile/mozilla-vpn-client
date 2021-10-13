@@ -120,10 +120,7 @@ jobs:
           sudo dpkg -i build/archive/*.deb
           sudo apt install --no-upgrade firefox xvfb -y
           pip3 install -r requirements.txt
-          npm install dotenv
-          npm install selenium-webdriver
-          npm install mocha
-          npm install websocket
+          npm install
       
       - name: Check build
         shell: bash
