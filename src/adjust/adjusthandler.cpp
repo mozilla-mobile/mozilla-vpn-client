@@ -31,18 +31,19 @@ void AdjustHandler::initialize() {
     return;
   }
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 
-  // If the user has not seen the telemetry policy view yet, we must wait.
-  if (!settingsHolder->telemetryPolicyShown()) {
-    QObject::connect(settingsHolder,
-                     &SettingsHolder::telemetryPolicyShownChanged,
-                     AdjustHandler::initialize);
+  // If the app has not started yet, let's wait.
+  if (vpn->state() == MozillaVPN::StateInitialize) {
+    QObject::connect(vpn, &MozillaVPN::state, AdjustHandler::initialize);
     return;
   }
 
   s_initialized = true;
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
   if (!settingsHolder->gleanEnabled()) {
     // The user doesn't want to be tracked. Good!
@@ -58,9 +59,6 @@ void AdjustHandler::initialize() {
                        return;
                      }
                    });
-
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   s_adjustProxy = new AdjustProxy(vpn);
   QObject::connect(vpn->controller(), &Controller::readyToQuit, s_adjustProxy,
