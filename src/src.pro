@@ -320,11 +320,11 @@ RESOURCES += ui/resources.qrc
 RESOURCES += ui/themes.qrc
 RESOURCES += ui/ui.qrc
 
-#versionAtLeast(QT_VERSION, 6.0.0) {
-#    RESOURCES += ui/qt6.qrc
-#} else {
-#    RESOURCES += ui/qt5.qrc
-#}
+versionAtLeast(QT_VERSION, 6.0.0) {
+    RESOURCES += ui/compatQt6.qrc
+} else {
+    RESOURCES += ui/compatQt5.qrc
+}
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
     RESOURCES += $$PWD/../glean/glean.qrc
