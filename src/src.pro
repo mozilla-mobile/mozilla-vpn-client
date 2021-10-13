@@ -213,7 +213,7 @@ HEADERS += \
         features/featurelocalareaaccess.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
-        features/featuresShareLogs.h \
+        features/featuressharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
         features/featureunsecurednetworknotification.h \
