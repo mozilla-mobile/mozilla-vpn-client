@@ -26,6 +26,9 @@
 #define SETTING_STRINGLIST(getter, ...) \
   SETTING(QStringList, toStringList, getter, __VA_ARGS__)
 
+#define SETTING_MAP(getter, ...) \
+  SETTING(QVariantMap, toMap, getter, __VA_ARGS__)
+
 // Please! Keep the alphabetic order!
 
 SETTING_BOOL(captivePortalAlert,                               // getter
@@ -202,6 +205,14 @@ SETTING_STRINGLIST(missingApps,     // getter
                    "MissingApps",   // key
                    QStringList(),   // default value
                    false            // remove when reset
+)
+
+SETTING_MAP(persistentTimerState,     // getter
+            setPersistentTimerState,  // setter
+            hasPersistentTimerState,  // has
+            "persistentTimerState",   // key
+            QVariantMap(),            // default value
+            true                      // remove when reset
 )
 
 SETTING_BOOL(postAuthenticationShown,     // getter

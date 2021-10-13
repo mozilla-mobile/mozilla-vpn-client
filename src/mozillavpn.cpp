@@ -19,6 +19,7 @@
 #include "logoutobserver.h"
 #include "models/device.h"
 #include "networkrequest.h"
+#include "persistenttimer.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
@@ -86,7 +87,11 @@ MozillaVPN* MozillaVPN::instance() {
   return s_instance;
 }
 
-MozillaVPN::MozillaVPN() : m_private(new Private()) {
+MozillaVPN::MozillaVPN()
+    : m_private(new Private()),
+      m_periodicOperationsTimer(
+          PersistentTimer(this, "MozillaVPN::periodicOperationsTimer",
+                          Constants::scheduleAccountAndServersTimerMsec())) {
   MVPN_COUNT_CTOR(MozillaVPN);
 
   logger.debug() << "Creating MozillaVPN singleton";
@@ -100,12 +105,15 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
-  connect(&m_periodicOperationsTimer, &QTimer::timeout, [this]() {
+  connect(&m_periodicOperationsTimer, &PersistentTimer::timeout, [this]() {
+    scheduleTask(new TaskGetFeatureList());
+    if (m_state != StateMain) {
+      return;
+    }
     scheduleTask(new TaskAccountAndServers());
     scheduleTask(new TaskCaptivePortalLookup());
     scheduleTask(new TaskHeartbeat());
     scheduleTask(new TaskSurveyData());
-    scheduleTask(new TaskGetFeatureList());
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -315,8 +323,6 @@ void MozillaVPN::setState(State state) {
   if (m_state == StateMain) {
     m_private->m_controller.initialize();
     startSchedulingPeriodicOperations();
-  } else {
-    stopSchedulingPeriodicOperations();
   }
 }
 
@@ -1085,14 +1091,9 @@ void MozillaVPN::setUserAuthenticated(bool state) {
 void MozillaVPN::startSchedulingPeriodicOperations() {
   logger.debug() << "Start scheduling account and servers"
                  << Constants::scheduleAccountAndServersTimerMsec();
-  m_periodicOperationsTimer.start(
-      Constants::scheduleAccountAndServersTimerMsec());
+  m_periodicOperationsTimer.start();
 }
 
-void MozillaVPN::stopSchedulingPeriodicOperations() {
-  logger.debug() << "Stop scheduling account and servers";
-  m_periodicOperationsTimer.stop();
-}
 
 bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location) {
   return writeLogs(location, [](const QString& filename) {

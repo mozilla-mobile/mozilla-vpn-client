@@ -23,6 +23,7 @@
 #include "models/user.h"
 #include "models/whatsnewmodel.h"
 #include "networkwatcher.h"
+#include "persistenttimer.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
 
@@ -287,8 +288,6 @@ class MozillaVPN final : public QObject {
 
   void startSchedulingPeriodicOperations();
 
-  void stopSchedulingPeriodicOperations();
-
   void setAlert(AlertType alert);
 
   bool writeAndShowLogs(QStandardPaths::StandardLocation location);
@@ -398,7 +397,7 @@ class MozillaVPN final : public QObject {
   QString m_serverPublicKey;
 
   QTimer m_alertTimer;
-  QTimer m_periodicOperationsTimer;
+  PersistentTimer m_periodicOperationsTimer;
   QTimer m_gleanTimer;
 
   bool m_updateRecommended = false;

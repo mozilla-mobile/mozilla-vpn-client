@@ -127,6 +127,7 @@ SOURCES += \
         networkrequest.cpp \
         networkwatcher.cpp \
         notificationhandler.cpp \
+        persistenttimer.cpp \
         pinghelper.cpp \
         pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
@@ -258,6 +259,7 @@ HEADERS += \
         networkwatcher.h \
         networkwatcherimpl.h \
         notificationhandler.h \
+        persistenttimer.h \
         pinghelper.h \
         pingsender.h \
         platforms/dummy/dummyapplistprovider.h \
