@@ -96,10 +96,10 @@ VPNFlickable {
         width: vpnFlickable.width
     }
 
-    VPNDropShadow {
-        anchors.fill: alertWrapperBackground
-        source: alertWrapperBackground
-    }
+    // VPNDropShadow {
+    //     anchors.fill: alertWrapperBackground
+    //     source: alertWrapperBackground
+    // }
 
     Rectangle {
         id: alertWrapperBackground

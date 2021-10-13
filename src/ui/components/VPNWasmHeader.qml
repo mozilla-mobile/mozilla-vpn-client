@@ -4,7 +4,7 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.12
+// import QtGraphicalEffects 1.12
 import QtQuick.Layouts 1.14
 import QtQuick.Window 2.12
 
@@ -55,28 +55,28 @@ Button {
         height: 1
         anchors.bottom: wasmHeader.bottom
 
-        LinearGradient {
-            property var parentWidth: parent.width
-            anchors.fill: parent
-            start: Qt.point(0, 0)
-            end: Qt.point(parentWidth, 0)
-            source: parent
-            z: 2
-            opacity: .7
-            gradient: Gradient {
-                GradientStop {
-                    position: 1.0
-                    color: "#6173ff"
-                }
-                GradientStop {
-                    position: 0.5
-                    color: "#f10366"
-                }
-                GradientStop {
-                    position: 0.0
-                    color: "#ff9100"
-                }
-            }
-        }
+        // LinearGradient {
+        //     property var parentWidth: parent.width
+        //     anchors.fill: parent
+        //     start: Qt.point(0, 0)
+        //     end: Qt.point(parentWidth, 0)
+        //     source: parent
+        //     z: 2
+        //     opacity: .7
+        //     gradient: Gradient {
+        //         GradientStop {
+        //             position: 1.0
+        //             color: "#6173ff"
+        //         }
+        //         GradientStop {
+        //             position: 0.5
+        //             color: "#f10366"
+        //         }
+        //         GradientStop {
+        //             position: 0.0
+        //             color: "#ff9100"
+        //         }
+        //     }
+        // }
     }
 }

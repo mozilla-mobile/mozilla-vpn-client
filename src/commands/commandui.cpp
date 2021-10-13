@@ -134,6 +134,7 @@ int CommandUI::run(QStringList& tokens) {
     engine->addImportPath("qrc:///components");
     engine->addImportPath("qrc:///glean");
     engine->addImportPath("qrc:///themes");
+    engine->addImportPath("qrc:///compat");
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);

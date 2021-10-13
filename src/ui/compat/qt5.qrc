@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/qt5">
-        <file>qt5/qmldir</file>
-        <file>qt5/VPNCompatTest.qml</file>
-    </qresource>
-</RCC>

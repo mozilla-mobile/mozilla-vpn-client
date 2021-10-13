@@ -4,7 +4,7 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
-import QtGraphicalEffects 1.14
+// import QtGraphicalEffects 1.14
 
 import themes 0.1
 
@@ -57,9 +57,9 @@ Item {
                     visible: false
                 }
 
-                layer.effect: OpacityMask {
-                    maskSource: maskImage ? mask : undefined
-                }
+                // layer.effect: OpacityMask {
+                //     maskSource: maskImage ? mask : undefined
+                // }
             }
 
             VPNAvatar {

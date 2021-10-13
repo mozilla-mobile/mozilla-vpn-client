@@ -5,7 +5,7 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.12
+// import QtGraphicalEffects 1.12
 
 import Mozilla.VPN 1.0
 import components 0.1

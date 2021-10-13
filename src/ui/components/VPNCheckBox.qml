@@ -4,7 +4,7 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.14
+// import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
@@ -134,13 +134,13 @@ CheckBox {
             anchors.centerIn: checkmark
         }
 
-        OpacityMask {
-            anchors.centerIn: checkmark
-            height: checkmarkIcon.height
-            width: checkmarkIcon.width
-            source: checkmarkBg
-            maskSource: checkmarkIcon
-        }
+        // OpacityMask {
+        //     anchors.centerIn: checkmark
+        //     height: checkmarkIcon.height
+        //     width: checkmarkIcon.width
+        //     source: checkmarkBg
+        //     maskSource: checkmarkIcon
+        // }
 
         Behavior on opacity {
             PropertyAnimation {

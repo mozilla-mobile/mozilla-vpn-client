@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtGraphicalEffects 1.12
+// import QtGraphicalEffects 1.12
 
 import Mozilla.VPN 1.0
 import themes 0.1
@@ -296,31 +296,31 @@ Rectangle {
         visible: false
     }
 
-    LinearGradient {
-        id: gradient
-        anchors.fill: logo
-        start: Qt.point(0, logo.width)
-        end: Qt.point(logo.height,0)
-        gradient:
-            Gradient {
-                  GradientStop {
-                      id: stop1
-                      position: 0
-                      color: logo.showVPNOnIcon ? "#0090ED": "#FD3296"
-                  }
-                  GradientStop {
-                      id: stop2
-                      position: 1
-                      color: logo.showVPNOnIcon ? "#B833E1" : "#9D62FC"
-                  }
-              }
-        visible: false
-    }
+    // LinearGradient {
+    //     id: gradient
+    //     anchors.fill: logo
+    //     start: Qt.point(0, logo.width)
+    //     end: Qt.point(logo.height,0)
+    //     gradient:
+    //         Gradient {
+    //               GradientStop {
+    //                   id: stop1
+    //                   position: 0
+    //                   color: logo.showVPNOnIcon ? "#0090ED": "#FD3296"
+    //               }
+    //               GradientStop {
+    //                   id: stop2
+    //                   position: 1
+    //                   color: logo.showVPNOnIcon ? "#B833E1" : "#9D62FC"
+    //               }
+    //           }
+    //     visible: false
+    // }
 
-    OpacityMask {
-       anchors.fill: globe
-       source: gradient
-       maskSource: globe
-       cached: true
-   }
+//     OpacityMask {
+//        anchors.fill: globe
+//        source: gradient
+//        maskSource: globe
+//        cached: true
+//    }
 }

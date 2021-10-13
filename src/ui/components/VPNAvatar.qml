@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.0
-import QtGraphicalEffects 1.14
+// import QtGraphicalEffects 1.14
 
 Item {
     id: logoRoot
@@ -18,9 +18,9 @@ Item {
         height: logoRoot.height
         fillMode: Image.PreserveAspectFit
         layer.enabled: true
-        layer.effect: OpacityMask {
-            maskSource: avatarMask
-        }
+        // layer.effect: OpacityMask {
+        //     maskSource: avatarMask
+        // }
         smooth: true
         source: isDefaultAvatar() ? "" : avatarUrl
     }

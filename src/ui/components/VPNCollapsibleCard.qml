@@ -22,14 +22,14 @@ Rectangle {
     radius: Theme.cornerRadius
     width: parent.width
 
-    VPNDropShadow {
-        anchors.fill: shadowSource
-        source: shadowSource
-        state: "overwrite-state"
-        cached: true
-        transparentBorder: true
-        z: -1
-    }
+    // VPNDropShadow {
+    //     anchors.fill: shadowSource
+    //     source: shadowSource
+    //     state: "overwrite-state"
+    //     cached: true
+    //     transparentBorder: true
+    //     z: -1
+    // }
 
     Rectangle {
         id: shadowSource

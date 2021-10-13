@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.0
-import QtGraphicalEffects 1.0
+// import QtGraphicalEffects 1.0
 import Mozilla.VPN 1.0
 
 DropShadow {

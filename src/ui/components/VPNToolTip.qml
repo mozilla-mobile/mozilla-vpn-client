@@ -4,7 +4,7 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.0
+// import QtGraphicalEffects 1.0
 
 import themes 0.1
 
@@ -60,15 +60,15 @@ ToolTip {
         color: Theme.bgColor
         z: -1
 
-        RectangularGlow {
-            anchors.fill: glowClippingPath
-            glowRadius: 2
-            spread: 0.5
-            color: "#0C0C0D"
-            cornerRadius: glowClippingPath.radius + glowRadius
-            opacity: 0.1
-            z: -2
-        }
+        // RectangularGlow {
+        //     anchors.fill: glowClippingPath
+        //     glowRadius: 2
+        //     spread: 0.5
+        //     color: "#0C0C0D"
+        //     cornerRadius: glowClippingPath.radius + glowRadius
+        //     opacity: 0.1
+        //     z: -2
+        // }
 
     }
 
