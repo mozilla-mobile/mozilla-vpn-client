@@ -88,16 +88,6 @@ VPNFlickable {
             id: box
         }
 
-        ShaderEffect {
-            fragmentShader: "./testShader.frag.qsb"
-
-            height: 100
-            width: 100
-            Layout.right: Qt.AlignRight
-            Layout.top: Qt.AlignTop
-            z: 1
-        }
-
         VPNControllerNav {
             function handleClick() {
                 if (disableRowWhen) {

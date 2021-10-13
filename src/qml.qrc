@@ -489,6 +489,7 @@
         <file>ui/resources/settings/questionMark.svg</file>
         <file>ui/resources/settings/preferences.svg</file>
         <file>ui/resources/settings-dark.svg</file>
-        <file>ui/shaders/testShader.frag.qsb</file>
+        <file>ui/resources/shaders/src/animatedRings.frag</file>
+        <file>ui/resources/shaders/baked/animatedRings.frag.qsb</file>
     </qresource>
 </RCC>
