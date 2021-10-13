@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "platforms/linux/linuxsystemtrayhandler.h"
+#include "platforms/linux/linuxsystemtraynotificationhandler.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -15,11 +15,11 @@ constexpr const char* DBUS_INTERFACE = "org.freedesktop.Notifications";
 constexpr const char* ACTION_ID = "mozilla_vpn_notification";
 
 namespace {
-Logger logger(LOG_LINUX, "LinuxSystemTrayHandler");
+Logger logger(LOG_LINUX, "LinuxSystemTrayNotificationHandler");
 }  // namespace
 
 // static
-bool LinuxSystemTrayHandler::requiredCustomImpl() {
+bool LinuxSystemTrayNotificationHandler::requiredCustomImpl() {
   if (!QDBusConnection::sessionBus().isConnected()) {
     return false;
   }
@@ -35,28 +35,29 @@ bool LinuxSystemTrayHandler::requiredCustomImpl() {
   return registeredServices.contains("com.canonical.Unity");
 }
 
-LinuxSystemTrayHandler::LinuxSystemTrayHandler(QObject* parent)
-    : SystemTrayHandler(parent) {
-  MVPN_COUNT_CTOR(LinuxSystemTrayHandler);
+LinuxSystemTrayNotificationHandler::LinuxSystemTrayNotificationHandler(
+    QObject* parent)
+    : SystemTrayNotificationHandler(parent) {
+  MVPN_COUNT_CTOR(LinuxSystemTrayNotificationHandler);
 
   QDBusConnection::sessionBus().connect(DBUS_ITEM, DBUS_PATH, DBUS_INTERFACE,
                                         "ActionInvoked", this,
                                         SLOT(actionInvoked(uint, QString)));
 }
 
-LinuxSystemTrayHandler::~LinuxSystemTrayHandler() {
-  MVPN_COUNT_DTOR(LinuxSystemTrayHandler);
+LinuxSystemTrayNotificationHandler::~LinuxSystemTrayNotificationHandler() {
+  MVPN_COUNT_DTOR(LinuxSystemTrayNotificationHandler);
 }
 
-void LinuxSystemTrayHandler::showNotificationInternal(Message type,
-                                                      const QString& title,
-                                                      const QString& message,
-                                                      int timerMsec) {
+void LinuxSystemTrayNotificationHandler::notify(Message type,
+                                                const QString& title,
+                                                const QString& message,
+                                                int timerMsec) {
   QString actionMessage;
   switch (type) {
     case None:
-      return SystemTrayHandler::showNotificationInternal(type, title, message,
-                                                         timerMsec);
+      return SystemTrayNotificationHandler::notify(type, title, message,
+                                                   timerMsec);
 
     case UnsecuredNetwork:
       actionMessage = qtTrId("vpn.toggle.on");
@@ -98,7 +99,8 @@ void LinuxSystemTrayHandler::showNotificationInternal(Message type,
   m_lastNotificationId = reply;
 }
 
-void LinuxSystemTrayHandler::actionInvoked(uint actionId, QString action) {
+void LinuxSystemTrayNotificationHandler::actionInvoked(uint actionId,
+                                                       QString action) {
   logger.debug() << "Notification clicked" << actionId << action;
 
   if (action == ACTION_ID && m_lastNotificationId == actionId) {
