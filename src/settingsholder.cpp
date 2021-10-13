@@ -102,14 +102,14 @@ QString SettingsHolder::getReport() {
     }
     out << setting << " -> ";
     QVariant value = m_settings.value(setting);
-    switch(value.type()){
-        case QVariant::List:
-        case QVariant::StringList:
-            out << '[' << value.toStringList().join(",") << ']' << ' ';
-         break;
-        default:
-          out << value.toString();
-     }
+    switch (value.type()) {
+      case QVariant::List:
+      case QVariant::StringList:
+        out << '[' << value.toStringList().join(",") << ']' << ' ';
+        break;
+      default:
+        out << value.toString();
+    }
     out << Qt::endl;
   }
   return buff;

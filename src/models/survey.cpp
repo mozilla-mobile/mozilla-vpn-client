@@ -87,13 +87,13 @@ bool Survey::isTriggerable() const {
   Q_ASSERT(settingsHolder);
 
   if (settingsHolder->consumedSurveys().contains(m_id)) {
-     logger.debug() << "Survey already consumed";
+    logger.debug() << "Survey already consumed";
     return false;
   }
 
   if (!m_platforms.isEmpty() &&
       !m_platforms.contains(Constants::PLATFORM_NAME)) {
-      logger.debug() << "is not right plattform";
+    logger.debug() << "is not right plattform";
     return false;
   }
 
@@ -102,8 +102,9 @@ bool Survey::isTriggerable() const {
 
   // Note: m_triggerTime is seconds!
   bool ok = (installation.secsTo(now)) >= m_triggerTime;
-  if(!ok){
-    logger.debug() << "This survey will be shown in: "<<m_triggerTime - installation.secsTo(now) <<"s";
+  if (!ok) {
+    logger.debug() << "This survey will be shown in: "
+                   << m_triggerTime - installation.secsTo(now) << "s";
   }
   return ok;
 }
