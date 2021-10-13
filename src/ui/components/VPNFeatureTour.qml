@@ -5,8 +5,9 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
+import themes 0.1
 
 ColumnLayout {
     id: tour
@@ -89,7 +90,7 @@ ColumnLayout {
 
             anchors.centerIn: backButton
             fillMode: Image.PreserveAspectFit
-            source: "../resources/back-dark.svg"
+            source: "qrc:/ui/resources/back-dark.svg"
             sourceSize.height: Theme.iconSize * 1.5
             sourceSize.width: Theme.iconSize * 1.5
         }
@@ -175,7 +176,7 @@ ColumnLayout {
                 property int slideIndex: 0
                 property string featureName: VPNl18n.WhatsNewReleaseNotesTourModalHeader
                 property string featureDescription: VPNl18n.WhatsNewReleaseNotesTourModalBodyText
-                property string featureImagePath: "../resources/features/features-tour-hero.png"
+                property string featureImagePath: "qrc:/ui/resources/features/features-tour-hero.png"
 
                 active: SwipeView.isCurrentItem | SwipeView.isPreviousItem | SwipeView.isNextItem
                 asynchronous: true
@@ -264,7 +265,7 @@ ColumnLayout {
                     verticalCenter: resumeButton.verticalCenter
                 }
                 fillMode: Image.PreserveAspectFit
-                source: "../resources/arrow-forward-white.svg"
+                source: "qrc:/ui/resources/arrow-forward-white.svg"
                 sourceSize.height: Theme.iconSize * 1.5
                 sourceSize.width: Theme.iconSize * 1.5
                 visible: false

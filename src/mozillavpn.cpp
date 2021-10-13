@@ -10,6 +10,7 @@
 #include "features/featureinapppurchase.h"
 #include "features/featureinappauth.h"
 #include "features/featureinappaccountcreate.h"
+#include "features/featuresharelogs.h"
 #include "gleansample.h"
 #include "iaphandler.h"
 #include "leakdetector.h"
@@ -53,6 +54,7 @@
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androiddatamigration.h"
 #  include "platforms/android/androidvpnactivity.h"
+#  include "platforms/android/androidutils.h"
 #endif
 
 #ifdef MVPN_ADJUST
@@ -1187,23 +1189,49 @@ void MozillaVPN::serializeLogs(QTextStream* out,
       });
 }
 
-void MozillaVPN::viewLogs() {
+bool MozillaVPN::viewLogs() {
   logger.debug() << "View logs";
 
+  if (!FeatureShareLogs::instance()->isSupported()) {
+    logger.error() << "ViewLogs Called on unsupported OS or version!";
+    return false;
+  }
+
+#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
+  QString* buffer = new QString();
+  QTextStream* out = new QTextStream(buffer);
+  bool ok = true;
+  serializeLogs(out, [buffer, out, &ok]() {
+    Q_ASSERT(out);
+    Q_ASSERT(buffer);
+
+#  if defined(MVPN_ANDROID)
+    ok = AndroidUtils::ShareText(*buffer);
+#  else
+    IOSUtils::shareLogs(*buffer);
+#  endif
+
+    delete out;
+    delete buffer;
+  });
+  return ok;
+#endif
+
   if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {
-    return;
+    return true;
   }
 
   if (writeAndShowLogs(QStandardPaths::HomeLocation)) {
-    return;
+    return true;
   }
 
   if (writeAndShowLogs(QStandardPaths::TempLocation)) {
-    return;
+    return true;
   }
 
   qWarning()
       << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
+  return false;
 }
 
 void MozillaVPN::retrieveLogs() {
@@ -1500,7 +1528,8 @@ void MozillaVPN::heartbeatCompleted(bool success) {
 void MozillaVPN::triggerHeartbeat() { scheduleTask(new TaskHeartbeat()); }
 
 void MozillaVPN::addCurrentDeviceAndRefreshData() {
-  scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
+  scheduleTask(
+      new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
   scheduleTask(new TaskAccountAndServers());
 }
 

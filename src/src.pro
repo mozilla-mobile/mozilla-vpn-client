@@ -213,6 +213,7 @@ HEADERS += \
         features/featurelocalareaaccess.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
+        features/featuressharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
         features/featureunsecurednetworknotification.h \
@@ -313,8 +314,11 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += qml.qrc
 RESOURCES += inspector/inspector.qrc
+RESOURCES += ui/components.qrc
+RESOURCES += ui/resources.qrc
+RESOURCES += ui/themes.qrc
+RESOURCES += ui/ui.qrc
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
     RESOURCES += $$PWD/../glean/glean.qrc
@@ -522,12 +526,14 @@ else:android {
         SOURCES += adjust/adjustfiltering.cpp \
                    adjust/adjusthandler.cpp \
                    adjust/adjustproxy.cpp \
-                   adjust/adjustproxyconnection.cpp
+                   adjust/adjustproxyconnection.cpp \
+                   adjust/adjustproxypackagehandler.cpp
 
         HEADERS += adjust/adjustfiltering.h \
                    adjust/adjusthandler.h \
                    adjust/adjustproxy.h \
-                   adjust/adjustproxyconnection.h
+                   adjust/adjustproxyconnection.h \
+                   adjust/adjustproxypackagehandler.h
     }
 
     versionAtLeast(QT_VERSION, 5.15.1) {
@@ -732,14 +738,16 @@ else:ios {
         SOURCES += adjust/adjustfiltering.cpp \
                    adjust/adjusthandler.cpp \
                    adjust/adjustproxy.cpp \
-                   adjust/adjustproxyconnection.cpp
+                   adjust/adjustproxyconnection.cpp \
+                   adjust/adjustproxypackagehandler.cpp
 
         OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm
 
         HEADERS += adjust/adjustfiltering.h \
                    adjust/adjusthandler.h \
                    adjust/adjustproxy.h \
-                   adjust/adjustproxyconnection.h
+                   adjust/adjustproxyconnection.h \
+                   adjust/adjustproxypackagehandler.h
 
         OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h
     }

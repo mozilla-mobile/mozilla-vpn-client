@@ -5,10 +5,10 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../../themes/themes.js" as Theme
-import "../../themes/colors.js" as Color
-import "./../../components"
+import components 0.1
+import themes 0.1
 
 TextField {
     // TODO Add strings for Accessible.description, Accessible.name

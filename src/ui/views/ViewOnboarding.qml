@@ -4,10 +4,11 @@
 
 import QtQuick 2.5
 import QtGraphicalEffects 1.14
-import Mozilla.VPN 1.0
 import QtQuick.Controls 2.14
-import "../components"
-import "../themes/themes.js" as Theme
+
+import Mozilla.VPN 1.0
+import components 0.1
+import themes 0.1
 
 Item {
     id: onboardingPanel
@@ -30,7 +31,7 @@ Item {
             id: onboardingModel
 
             ListElement {
-                image: "../resources/onboarding/onboarding1.svg"
+                image: "qrc:/ui/resources/onboarding/onboarding1.svg"
                 //% "Device-level encryption"
                 headline: qsTrId("vpn.onboarding.headline.1")
                 //% "Encrypt your traffic so that it can’t be read by your ISP or eavesdroppers."
@@ -38,7 +39,7 @@ Item {
             }
 
             ListElement {
-                image: "../resources/onboarding/onboarding2.svg"
+                image: "qrc:/ui/resources/onboarding/onboarding2.svg"
                 //: The + after the number stands for “more than”. If you change the number of countries here, please update ViewSubscriptionNeeded.qml too.
                 //% "Servers in 30+ countries"
                 headline: qsTrId("vpn.onboarding.headline.2")
@@ -47,7 +48,7 @@ Item {
             }
 
             ListElement {
-                image: "../resources/onboarding/onboarding3.svg"
+                image: "qrc:/ui/resources/onboarding/onboarding3.svg"
                 //% "No bandwidth restrictions"
                 headline: qsTrId("vpn.onboarding.headline.3")
                 //% "Stream, download, and game without limits, monthly caps or ISP throttling."
@@ -55,7 +56,7 @@ Item {
             }
 
             ListElement {
-                image: "../resources/onboarding/onboarding4.svg"
+                image: "qrc:/ui/resources/onboarding/onboarding4.svg"
                 //% "No online activity logs"
                 headline: qsTrId("vpn.onboarding.headline.4")
                 //% "We are committed to not monitoring or logging your browsing or network history."

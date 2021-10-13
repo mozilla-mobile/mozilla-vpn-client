@@ -28,6 +28,7 @@ INCLUDEPATH += \
 
 HEADERS += \
     ../../src/adjust/adjustfiltering.h \
+    ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/bigint.h \
     ../../src/bigintipv6addr.h \
     ../../src/captiveportal/captiveportal.h \
@@ -44,7 +45,6 @@ HEADERS += \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
     ../../src/ipfinder.h \
-    ../../src/l18nstringsimpl.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
@@ -117,6 +117,7 @@ HEADERS += \
 
 SOURCES += \
     ../../src/adjust/adjustfiltering.cpp \
+    ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \

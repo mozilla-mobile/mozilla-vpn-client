@@ -4,7 +4,8 @@
 
 import QtQuick 2.0
 import QtQuick.Controls 2.14
-import "../../themes/colors.js" as Color
+
+import themes 0.1
 
 Item {
     property variant itemToTarget

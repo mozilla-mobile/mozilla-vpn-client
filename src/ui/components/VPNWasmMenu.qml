@@ -6,7 +6,8 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import QtQuick.Window 2.12
-import "../themes/themes.js" as Theme
+
+import themes 0.1
 
 VPNFlickable {
     flickContentHeight: col.childrenRect.height
@@ -48,55 +49,55 @@ VPNFlickable {
         VPNWasmMenuButton {
             Layout.fillWidth: true
             text: "Main"
-            onClicked: mainStackView.replace("../states/StateMain.qml", StackView.Immediate)
+            onClicked: mainStackView.replace("qrc:/ui/states/StateMain.qml", StackView.Immediate)
         }
 
         VPNWasmMenuButton {
             Layout.fillWidth: true
             text: "Subscription Needed (IAP)"
-            onClicked: mainStackView.replace("../states/StateSubscriptionNeeded.qml", {wasmView: true}, StackView.Immediate)
+            onClicked: mainStackView.replace("qrc:/ui/states/StateSubscriptionNeeded.qml", {wasmView: true}, StackView.Immediate)
         }
 
         VPNWasmMenuButton {
             Layout.fillWidth: true
             text: "Subscription Blocked (IAP)"
-            onClicked: mainStackView.replace("../states/StateSubscriptionBlocked.qml", {wasmView: true}, StackView.Immediate)
+            onClicked: mainStackView.replace("qrc:/ui/states/StateSubscriptionBlocked.qml", {wasmView: true}, StackView.Immediate)
         }
 
         VPNWasmMenuButton {
             Layout.fillWidth: true
             text: "Billing not available (IAP) - Android"
-            onClicked: mainStackView.replace("../states/StateBillingNotAvailable.qml", {wasmView: true}, StackView.Immediate)
+            onClicked: mainStackView.replace("qrc:/ui/states/StateBillingNotAvailable.qml", {wasmView: true}, StackView.Immediate)
         }
 
         VPNWasmMenuButton {
             Layout.fillWidth: true
             text: "Subscription not validated (IAP) - Android"
-            onClicked: mainStackView.replace("../states/StateSubscriptionNotValidated.qml", {wasmView: true}, StackView.Immediate)
+            onClicked: mainStackView.replace("qrc:/ui/states/StateSubscriptionNotValidated.qml", {wasmView: true}, StackView.Immediate)
         }
 
         VPNWasmMenuButton {
             Layout.fillWidth: true
             text: "Device list: Max number of devices reached"
-            onClicked: mainStackView.replace("../views/ViewDevices.qml", {wasmView: true}, StackView.Immediate)
+            onClicked: mainStackView.replace("qrc:/ui/views/ViewDevices.qml", {wasmView: true}, StackView.Immediate)
         }
 
         VPNWasmMenuButton {
             Layout.fillWidth: true
             text: "Update Required"
-            onClicked: mainStackView.replace("../views/ViewUpdate.qml", {state: "required"}, StackView.Immediate)
+            onClicked: mainStackView.replace("qrc:/ui/views/ViewUpdate.qml", {state: "required"}, StackView.Immediate)
         }
 
         VPNWasmMenuButton {
             Layout.fillWidth: true
             text: "Update Recommended"
-            onClicked: mainStackView.replace("../views/ViewUpdate.qml", {state: "recommended"}, StackView.Immediate)
+            onClicked: mainStackView.replace("qrc:/ui/views/ViewUpdate.qml", {state: "recommended"}, StackView.Immediate)
         }
 
         VPNWasmMenuButton {
             Layout.fillWidth: true
             text: "Backend failure"
-            onClicked: mainStackView.replace("../states/StateBackendFailure.qml", StackView.Immediate)
+            onClicked: mainStackView.replace("qrc:/ui/states/StateBackendFailure.qml", StackView.Immediate)
         }
 
         // TODO
@@ -133,7 +134,7 @@ VPNFlickable {
         VPNWasmMenuButton {
             Layout.fillWidth: true
             text: "Alerts"
-            onClicked: mainStackView.replace("../components/VPNWasmAlerts.qml", StackView.Immediate)
+            onClicked: mainStackView.replace("qrc:/components/components/VPNWasmAlerts.qml", StackView.Immediate)
         }
 
         VPNRemoveDevicePopup {
