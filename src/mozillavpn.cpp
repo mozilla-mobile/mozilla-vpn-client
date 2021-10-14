@@ -1331,9 +1331,16 @@ void MozillaVPN::subscriptionCompleted() {
   }
 
   logger.debug() << "Subscription completed";
+
 #ifdef MVPN_ADJUST
   AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
+
+  // When the subscription is completed, we do not need adjustSDK anymore. We
+  // cannot disable it at runtime, but we can disable it for the next
+  // execution.
+  SettingsHolder::instance()->setAdjustActivatable(false);
 #endif
+
   completeActivation();
 }
 
@@ -1507,4 +1514,13 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   // We do not need to remove the current device! guardian-website "overwrites"
   // the current device key when we submit a new one.
   addCurrentDeviceAndRefreshData();
+}
+
+void MozillaVPN::hardResetAndQuit() {
+  logger.debug() << "Hard reset and quit";
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+  settingsHolder->hardReset();
+  quit();
 }

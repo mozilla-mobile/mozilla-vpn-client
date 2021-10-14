@@ -56,6 +56,8 @@ class SettingsHolder final : public QObject {
 
   static SettingsHolder* instance();
 
+  bool firstExecution() const { return m_firstExecution; }
+
   enum DnsProvider {
     Gateway = 0,
     BlockAll = 1,
@@ -175,9 +177,17 @@ class SettingsHolder final : public QObject {
          setNativeAndroidDataMigrated)
 #endif
 
+#if defined(MVPN_ADJUST)
+  GETSET(bool, hasAdjustActivatable, adjustActivatable, setAdjustActivatable);
+#endif
+
 #undef GETSET
 
   QString placeholderUserDNS() const;
+
+  // Delete _ALL_ the settings. Probably this method is not what you want to
+  // use.
+  void hardReset();
 
  signals:
   void ipv6EnabledChanged(bool value);
@@ -207,6 +217,7 @@ class SettingsHolder final : public QObject {
 
  private:
   QSettings m_settings;
+  bool m_firstExecution = false;
 };
 
 #endif  // SETTINGSHOLDER_H

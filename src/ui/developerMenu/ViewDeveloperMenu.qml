@@ -55,6 +55,7 @@ VPNFlickable {
             }
         }
     }
+
     VPNSettingsItem {
         id: featureListLink
         objectName: "settingsFeatureList"
@@ -71,6 +72,7 @@ VPNFlickable {
         imageRightSrc: "../resources/chevron.svg"
         onClicked: stackview.push("../developerMenu/ViewFeatureList.qml")
     }
+
     VPNExternalLinkListItem {
         id:inspectorLink
         visible: stagingServer.isChecked && !restartRequired.visible
@@ -90,8 +92,30 @@ VPNFlickable {
         }
     }
 
+    VPNButton {
+        id:resetAndQuit
+        property int clickNeeded: 5
+
+        anchors.top: stagingServer.isChecked && !restartRequired.visible ? inspectorLink.bottom : featureListLink.bottom
+        anchors.topMargin: Theme.windowMargin
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        text: "Reset and Quit"
+        onClicked: {
+            if (clickNeeded) {
+             text = "Reset and Quit (" + clickNeeded + ")";
+              --clickNeeded;
+             return;
+            }
+
+            VPN.hardResetAndQuit()
+        }
+    }
+
     VPNCheckBoxAlert {
-        anchors.top: inspectorLink.bottom
+        id: restartRequired
+        anchors.top: resetAndQuit.bottom
         visible: VPN.stagingMode != VPNSettings.stagingServer
 
         errorMessage: VPNl18n.SettingsDevRestartRequired

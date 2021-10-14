@@ -91,6 +91,10 @@ constexpr const char* SETTINGS_NATIVEANDROIDSDATAMIGRATED =
     "nativeAndroidDataMigrated";
 #endif
 
+#ifdef MVPN_ADJUST
+constexpr const char* SETTINGS_ADJUSTACTIVATABLE = "adjustActivatable";
+#endif
+
 #ifdef MVPN_WINDOWS
 constexpr const char* SETTINGS_NATIVEWINDOWSDATAMIGRATED =
     "nativeWindowsDataMigrated";
@@ -151,6 +155,7 @@ SettingsHolder::SettingsHolder()
   s_instance = this;
 
   if (!hasInstallationTime()) {
+    m_firstExecution = true;
     setInstallationTime(QDateTime::currentDateTime());
   }
 }
@@ -187,8 +192,11 @@ void SettingsHolder::clear() {
   m_settings.remove(SETTINGS_IAPPRODUCTS);
   m_settings.remove(SETTINGS_POSTAUTHENTICATIONSHOWN);
   m_settings.remove(SETTINGS_RECENT_CONNECTIONS);
+}
 
-  // We do not remove language, ipv6 and localnetwork settings.
+void SettingsHolder::hardReset() {
+  logger.debug() << "Hard reset";
+  m_settings.clear();
 }
 
 // Returns a Report which settings are set
@@ -370,6 +378,11 @@ GETSET(QString, toString, SETTINGS_DEVICEKEYVERSION, hasDeviceKeyVersion,
 GETSET(bool, toBool, SETTINGS_NATIVEANDROIDSDATAMIGRATED,
        hasNativeAndroidDataMigrated, nativeAndroidDataMigrated,
        setNativeAndroidDataMigrated);
+#endif
+
+#ifdef MVPN_ADJUST
+GETSET(bool, toBool, SETTINGS_ADJUSTACTIVATABLE, hasAdjustActivatable,
+       adjustActivatable, setAdjustActivatable);
 #endif
 
 #ifdef MVPN_IOS
