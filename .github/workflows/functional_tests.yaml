@@ -132,11 +132,16 @@ jobs:
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
-        run: |
-          export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
-          export HEADLESS=yes
-          mkdir -p $ARTIFACT_DIR
-          xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 5
+          command: |
+            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+            export HEADLESS=yes
+            mkdir -p $ARTIFACT_DIR
+            xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
+          on_retry_command: npm run cleanup-flaky-script-output
         env:
           ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
           ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
