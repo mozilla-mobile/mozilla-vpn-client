@@ -211,7 +211,7 @@ describe('Backend failure', function() {
   });
 
   it('connecting', async () => {
-    await vpn.activate();
+    //await vpn.activate();
 
     await vpn.waitForCondition(async () => {
       let connectingMsg =
