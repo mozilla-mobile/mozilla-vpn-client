@@ -55,32 +55,4 @@ describe('Glean event logging', function() {
   setUploadEnabled to false, then its handling of that is a glean implementation
   detail and glean tests their own code.
   */
-
-  it('Generates a glean event when canceling authentication', async () => {
-    assert(await vpn.getSetting('telemetry-policy-shown') === 'false');
-    await vpn.clickOnElement('getStarted');
-
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.waitForElementProperty(
-        'telemetryPolicyButton', 'visible', 'true');
-    await vpn.clickOnElement('telemetryPolicyButton');
-
-    await vpn.wait();
-
-    await vpn.waitForElement('authenticatingView');
-    await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
-
-    await vpn.waitForElement('cancelFooterLink');
-    await vpn.waitForElementProperty('cancelFooterLink', 'visible', 'true');
-
-    await vpn.clickOnElement('cancelFooterLink');
-
-    await vpn.wait();
-
-    glean = await vpn.getLastGleanRequest();
-    assert(glean.url === '');
-    assert(glean.data === '');
-
-    // Test for sending?
-  });
 });
