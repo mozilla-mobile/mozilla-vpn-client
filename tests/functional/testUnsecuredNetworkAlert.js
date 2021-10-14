@@ -50,18 +50,6 @@ describe('Unsecured network alert', function() {
 
     await vpn.clickOnElement('getStarted');
 
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.waitForElementProperty(
-        'telemetryPolicyButton', 'visible', 'true');
-
-    await vpn.forceUnsecuredNetworkAlert();
-    await vpn.wait();
-
-    assert(vpn.lastNotification().title === null);
-
-    await vpn.clickOnElement('telemetryPolicyButton');
-    await vpn.wait();
-
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.includes('/api/v2/vpn/login');
@@ -88,7 +76,7 @@ describe('Unsecured network alert', function() {
     await vpn.waitForElementProperty('getStarted', 'visible', 'true');
   });
 
-  it('authenticate', async () => await vpn.authenticate(false, false));
+  it('authenticate', async () => await vpn.authenticate(false));
 
   it('Unsecured network alert in the Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
@@ -100,6 +88,19 @@ describe('Unsecured network alert', function() {
     assert(vpn.lastNotification().title === null);
 
     await vpn.clickOnElement('postAuthenticationButton');
+    await vpn.wait();
+  });
+
+  it('Unsecured network alert in the Telemetry policy view', async () => {
+    await vpn.waitForElement('telemetryPolicyButton');
+
+    await vpn.forceUnsecuredNetworkAlert();
+    await vpn.wait();
+
+    // Notifications are not OK yet.
+    assert(vpn.lastNotification().title === null);
+
+    await vpn.clickOnElement('telemetryPolicyButton');
     await vpn.wait();
   });
 
