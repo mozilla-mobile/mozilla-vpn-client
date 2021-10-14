@@ -32,6 +32,7 @@ HEADERS += \
     ../../src/bigint.h \
     ../../src/bigintipv6addr.h \
     ../../src/captiveportal/captiveportal.h \
+    ../../src/collator.h \
     ../../src/command.h \
     ../../src/commandlineparser.h \
     ../../src/connectioncheck.h \
@@ -119,6 +120,7 @@ SOURCES += \
     ../../src/adjust/adjustfiltering.cpp \
     ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
+    ../../src/collator.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
     ../../src/connectioncheck.cpp \

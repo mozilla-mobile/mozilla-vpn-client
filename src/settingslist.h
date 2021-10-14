@@ -406,7 +406,7 @@ SETTING_STRINGLIST(vpnDisabledApps,     // getter
                    false                // remove when reset
 )
 
-#ifdef MVPN_ANDROID
+#if defined(MVPN_ANDROID)
 SETTING_BOOL(nativeAndroidDataMigrated,     // getter
              setNativeAndroidDataMigrated,  // setter
              hasNativeAndroidDataMigrated,  // has
@@ -416,7 +416,7 @@ SETTING_BOOL(nativeAndroidDataMigrated,     // getter
 )
 #endif
 
-#ifdef MVPN_WINDOWS
+#if defined(MVPN_WINDOWS)
 SETTING_BOOL(nativeWindowsDataMigrated,     // getter
              setNativeWindowsDataMigrated,  // setter
              hasNativeWindowsDataMigrated,  // has
@@ -426,7 +426,7 @@ SETTING_BOOL(nativeWindowsDataMigrated,     // getter
 )
 #endif
 
-#ifdef MVPN_IOS
+#if defined(MVPN_IOS)
 SETTING_BOOL(nativeIOSDataMigrated,     // getter
              setNativeIOSDataMigrated,  // setter
              hasNativeIOSDataMigrated,  // has

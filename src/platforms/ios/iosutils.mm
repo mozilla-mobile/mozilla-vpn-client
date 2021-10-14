@@ -78,3 +78,21 @@ void IOSUtils::shareLogs(const QString& logs) {
   [qtController presentViewController:activityViewController animated:YES completion:nil];
   [activityViewController release];
 }
+
+// static
+int IOSUtils::compareStrings(const QString& a, const QString& b) {
+  NSString* aNS = a.toNSString();
+  NSString* bNS = b.toNSString();
+  NSComparisonResult result = [aNS compare:bNS];
+  switch (result) {
+    case NSOrderedAscending:
+      return -1;
+    case NSOrderedDescending:
+      return 1;
+    case NSOrderedSame:
+      return 0;
+    default:
+      Q_ASSERT(false);
+      return -1;
+  }
+}

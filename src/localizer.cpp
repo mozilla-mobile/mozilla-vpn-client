@@ -3,13 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "localizer.h"
+#include "collator.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
 
-#include <QCollator>
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -104,7 +104,7 @@ void Localizer::initialize() {
   }
 
   // Sorting languages.
-  QCollator collator;
+  Collator collator;
   std::sort(m_languages.begin(), m_languages.end(),
             std::bind(languageSort, std::placeholders::_1,
                       std::placeholders::_2, &collator));
@@ -248,8 +248,7 @@ QStringList Localizer::languages() const {
 }
 
 bool Localizer::languageSort(const Localizer::Language& a,
-                             const Localizer::Language& b,
-                             QCollator* collator) {
+                             const Localizer::Language& b, Collator* collator) {
   Q_ASSERT(collator);
   return collator->compare(a.m_localizedName, b.m_localizedName) < 0;
 }
