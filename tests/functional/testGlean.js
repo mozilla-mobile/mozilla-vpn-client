@@ -27,6 +27,8 @@ describe('Glean event logging', function() {
   })
 
   /*
+  (UPDATE THIS BASED ON NEW TELEMETRY PAGE POSITION)
+
   I would like to do the following suite of tests:
   * set telemetryPolicyShown to false, call initializeGlean, ensure glean is not
   initialized

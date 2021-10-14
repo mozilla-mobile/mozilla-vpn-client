@@ -286,11 +286,6 @@ Window {
         }
 
         function onInitializeGlean() {
-            if (!VPNSettings.telemetryPolicyShown) {
-                // If we haven't shown the telemetry policy yet, bail.
-                console.log("Telemetry policy not shown yet, do not initialize Glean.");
-                return;
-            }
             var debug = {};
             if (VPN.debugMode) {
                 console.debug("Initializing glean with debug mode");
@@ -329,13 +324,8 @@ Window {
     Connections {
         target: VPNSettings
         function onGleanEnabledChanged() {
-            // We should not run `Glean.setUploadEnabled` before running `Glean.initialize`.
-            // https://mozilla.github.io/glean/book/reference/general/toggling-upload-status.html#do-not-call-setuploadenabled-before-initializing-2
-            // Use telemetryPolicyShown as proxy for this.
-            if (VPNSettings.telemetryPolicyShown) {
-                console.log("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
-                Glean.setUploadEnabled(VPNSettings.gleanEnabled);
-            }
+            console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
+            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }
     }
 

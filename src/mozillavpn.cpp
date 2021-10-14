@@ -1078,7 +1078,7 @@ void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "Initializing Glean";
   emit initializeGlean();
 
-  // Setup regular ping sending
+  // Setup regular glean ping sending
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
   m_gleanTimer.start(Constants::gleanTimeoutMsec());
   m_gleanTimer.setSingleShot(false);
@@ -1089,8 +1089,6 @@ void MozillaVPN::telemetryPolicyCompleted() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   settingsHolder->setTelemetryPolicyShown(true);
-
-  emit initializeGlean();
 
   // Super racy, but it could happen that we are already in update-required
   // state.

@@ -156,12 +156,15 @@ SETTING_BOOL(featuresTourShown,     // getter
              false                  // remove when reset
 )
 
+// This would be better named "telemetryEnabled", but as we already
+// shipped with it called gleanEnabled it's non-trivial to change
+// the name.
 SETTING_BOOL(gleanEnabled,     // getter
              setGleanEnabled,  // setter
              hasGleanEnabled,  // has
              "gleanEnabled",   // key
-             false,            // default value
-             false             // remove when reset
+             true,             // default value
+             true              // remove when reset
 )
 
 SETTING_STRINGLIST(iapProducts,     // getter
