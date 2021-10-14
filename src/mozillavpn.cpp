@@ -365,6 +365,16 @@ void MozillaVPN::maybeStateMain() {
   if (m_state != StateUpdateRequired) {
     setState(StateMain);
   }
+
+#ifdef MVPN_ADJUST
+  // When the client is ready to be activated, we do not need adjustSDK anymore
+  // (the subscription is done, and no extra events will be dispatched). We
+  // cannot disable AdjustSDK at runtime, but we can disable it for the next
+  // execution.
+  if (settingsHolder->hasAdjustActivatable()) {
+    settingsHolder->setAdjustActivatable(false);
+  }
+#endif
 }
 
 void MozillaVPN::setServerPublicKey(const QString& publicKey) {
@@ -1391,11 +1401,6 @@ void MozillaVPN::subscriptionCompleted() {
 
 #ifdef MVPN_ADJUST
   AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
-
-  // When the subscription is completed, we do not need adjustSDK anymore. We
-  // cannot disable it at runtime, but we can disable it for the next
-  // execution.
-  SettingsHolder::instance()->setAdjustActivatable(false);
 #endif
 
   completeActivation();
