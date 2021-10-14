@@ -5,6 +5,8 @@
 import QtQuick 2.0
 import Mozilla.VPN 1.0
 
+import compat 0.1
+
 VPNDropShadow {
     id: dropShadow
 

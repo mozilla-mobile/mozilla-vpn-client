@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
+import compat 0.1
 import themes 0.1
 
 CheckBox {
@@ -133,13 +134,13 @@ CheckBox {
             anchors.centerIn: checkmark
         }
 
-        // OpacityMask {
-        //     anchors.centerIn: checkmark
-        //     height: checkmarkIcon.height
-        //     width: checkmarkIcon.width
-        //     source: checkmarkBg
-        //     maskSource: checkmarkIcon
-        // }
+        VPNOpacityMask {
+            anchors.centerIn: checkmark
+            height: checkmarkIcon.height
+            width: checkmarkIcon.width
+            source: checkmarkBg
+            maskSource: checkmarkIcon
+        }
 
         Behavior on opacity {
             PropertyAnimation {

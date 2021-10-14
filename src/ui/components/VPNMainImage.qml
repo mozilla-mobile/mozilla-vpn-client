@@ -5,6 +5,7 @@
 import QtQuick 2.5
 
 import Mozilla.VPN 1.0
+import compat 0.1
 import themes 0.1
 
 Rectangle {
@@ -316,10 +317,10 @@ Rectangle {
     //     visible: false
     // }
 
-//     OpacityMask {
-//        anchors.fill: globe
-//        source: gradient
-//        maskSource: globe
-//        cached: true
-//    }
+    VPNOpacityMask {
+       anchors.fill: globe
+       source: gradient
+       maskSource: globe
+       cached: true
+   }
 }
