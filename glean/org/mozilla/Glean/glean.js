@@ -13,8 +13,10 @@
 
 .pragma library
 
-.import QtQuick.LocalStorage 2.15 as LocalStorage
+.import QtQuick.LocalStorage 2.0 as LocalStorage
 .import "glean.lib.js" as Glean
+
+const ErrorType = Glean.Glean.default.ErrorType;
 
 /**
  * Initialize Glean. This method should only be called once, subsequent calls will be no-op.
@@ -100,6 +102,24 @@ function setSourceTags(value) {
  */
 function shutdown() {
   return Glean.Glean.default.shutdown();
+}
+
+/**
+ * Test-only API**
+ *
+ * Resets the Glean singleton to its initial state and re-initializes it.
+ *
+ * TODO: Only allow this function to be called on test mode (depends on Bug 1682771).
+ *
+ * @param applicationId The application ID (will be sanitized during initialization).
+ * @param uploadEnabled Determines whether telemetry is enabled.
+ *        If disabled, all persisted metrics, events and queued pings (except
+ *        first_run_date) are cleared. Default to `true`.
+ * @param config Glean configuration options.
+ * @returns A promise that resolves when the initialization is complete.
+ */
+function testResetGlean(applicationId, uploadEnabled, config) {
+  return Glean.Glean.default.testResetGlean(applicationId, uploadEnabled, config);
 }
 
 const _private = Glean.Glean.default._private;
