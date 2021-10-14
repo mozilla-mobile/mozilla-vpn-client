@@ -143,11 +143,13 @@ Rectangle {
     ]
 
     Timer {
-          interval: alertBox.duration
-          id: autoHideTimer
-          running: false
-          repeat: false
-          onTriggered: { closeAlert.start();}
+        interval: alertBox.duration
+        id: autoHideTimer
+        running: false
+        repeat: false
+        onTriggered: {
+            closeAlert.start();
+        }
     }
 
     VPNDropShadow {

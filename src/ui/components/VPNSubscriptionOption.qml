@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
+import compat 0.1
 import themes 0.1
 
 RadioDelegate {
@@ -39,13 +40,13 @@ RadioDelegate {
         color: Theme.white
         radius: Theme.cornerRadius
 
-        // RectangularGlow {
-        //     anchors.fill: bg
-        //     glowRadius: checked ? 8 : 1
-        //     spread: checked ? 0.1 : 0
-        //     color: "#4D0C0C0D"
-        //     cornerRadius: rect.radius + glowRadius
-        // }
+        VPNRectangularGlow {
+            anchors.fill: bg
+            glowRadius: checked ? 8 : 1
+            spread: checked ? 0.1 : 0
+            color: "#4D0C0C0D"
+            cornerRadius: rect.radius + glowRadius
+        }
 
         Rectangle {
             id: rect

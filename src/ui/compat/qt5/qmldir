@@ -1,3 +1,4 @@
 VPNDropShadow 0.1 VPNDropShadow.qml
-VPNOpacityMask 0.1 VPNOpacityMask.qml
 VPNLinearGradient 0.1 VPNLinearGradient.qml
+VPNOpacityMask 0.1 VPNOpacityMask.qml
+VPNRectangularGlow 0.1 VPNRectangularGlow.qml
