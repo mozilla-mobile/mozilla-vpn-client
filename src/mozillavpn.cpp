@@ -365,6 +365,16 @@ void MozillaVPN::maybeStateMain() {
   if (m_state != StateUpdateRequired) {
     setState(StateMain);
   }
+
+#ifdef MVPN_ADJUST
+  // When the client is ready to be activated, we do not need adjustSDK anymore
+  // (the subscription is done, and no extra events will be dispatched). We
+  // cannot disable AdjustSDK at runtime, but we can disable it for the next
+  // execution.
+  if (settingsHolder->hasAdjustActivatable()) {
+    settingsHolder->setAdjustActivatable(false);
+  }
+#endif
 }
 
 void MozillaVPN::setServerPublicKey(const QString& publicKey) {
@@ -1388,9 +1398,11 @@ void MozillaVPN::subscriptionCompleted() {
   }
 
   logger.debug() << "Subscription completed";
+
 #ifdef MVPN_ADJUST
   AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
+
   completeActivation();
 }
 
@@ -1565,4 +1577,13 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   // We do not need to remove the current device! guardian-website "overwrites"
   // the current device key when we submit a new one.
   addCurrentDeviceAndRefreshData();
+}
+
+void MozillaVPN::hardResetAndQuit() {
+  logger.debug() << "Hard reset and quit";
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+  settingsHolder->hardReset();
+  quit();
 }

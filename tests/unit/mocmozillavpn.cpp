@@ -156,3 +156,5 @@ bool MozillaVPN::validateUserDNS(const QString&) const { return false; }
 void MozillaVPN::reset(bool) {}
 
 void MozillaVPN::maybeRegenerateDeviceKey() {}
+
+void MozillaVPN::hardResetAndQuit() {}

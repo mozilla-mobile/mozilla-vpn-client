@@ -5,6 +5,8 @@
 #ifndef WINDOWSFIREWALL_H
 #define WINDOWSFIREWALL_H
 
+#pragma comment(lib, "Fwpuclnt")
+
 #include "../../daemon/interfaceconfig.h"
 
 #include <windows.h>

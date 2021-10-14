@@ -820,9 +820,6 @@ else:win* {
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
     DEFINES += WIN32_LEAN_AND_MEAN #Solves Redifinition Errors Of Winsock
-    LIBS += Fwpuclnt.lib #Windows Filtering Plattform
-    LIBS += Rpcrt4.lib
-    LIBS += Advapi32.lib
 
     RC_ICONS = ui/resources/logo.ico
 
