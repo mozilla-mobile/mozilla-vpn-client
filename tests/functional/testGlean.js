@@ -30,24 +30,19 @@ describe('Glean event logging', function() {
   (UPDATE THIS BASED ON NEW TELEMETRY PAGE POSITION)
 
   I would like to do the following suite of tests:
-  * set telemetryPolicyShown to false, call initializeGlean, ensure glean is not
-  initialized
-  * set telemetryPolicyShown to true, call initializeGlean, ensure glean is
-  initialized
   * set debugMode to true/false, ensure glean is initialized appropriately
   * set stagingMode to true/false, ensure glean is initialized appropriately
   * change VPNSettings.glean-enabled and ensure glean upload enabled has been
   changed
   * make an event and ensure the right data is in the ping
   * ensure that a call to sendPings, sends pings
-  * ensure that startup in a logged in state causes a glean initialization
   * ensure Glean.shutdown is called onAboutToQuit
 
   Do we want to test for each glean event that should generate a ping?
 
   Update the testTelemetryView tests to
   * ensure that "Accept telemetry" and "Reject telemetry" result in the correct
-  glean initalization
+  glean state change
 
   Possible c++ unit tests:
   * ensure that timer to sendPings is setup
