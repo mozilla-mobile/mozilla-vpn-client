@@ -1074,6 +1074,7 @@ void MozillaVPN::postAuthenticationCompleted() {
 void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
 
+#ifndef MVPN_WASM
   // Initialize glean
   logger.debug() << "Initializing Glean";
   emit initializeGlean();
@@ -1082,6 +1083,7 @@ void MozillaVPN::mainWindowLoaded() {
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
   m_gleanTimer.start(Constants::gleanTimeoutMsec());
   m_gleanTimer.setSingleShot(false);
+#endif
 }
 
 void MozillaVPN::telemetryPolicyCompleted() {

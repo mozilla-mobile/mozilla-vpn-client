@@ -901,6 +901,8 @@ else:wasm {
 
     TARGET = mozillavpn
     QT += svg
+    # sql not available for wasm.
+    QT -= sql
 
     CONFIG += c++1z
 
