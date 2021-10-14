@@ -59,6 +59,7 @@ SettingsHolder::SettingsHolder()
   s_instance = this;
 
   if (!hasInstallationTime()) {
+    m_firstExecution = true;
     setInstallationTime(QDateTime::currentDateTime());
   }
 }
@@ -85,8 +86,11 @@ void SettingsHolder::clear() {
 
 #include "settingslist.h"
 #undef SETTING
+}
 
-  // We do not remove language, ipv6 and localnetwork settings.
+void SettingsHolder::hardReset() {
+  logger.debug() << "Hard reset";
+  m_settings.clear();
 }
 
 // Returns a Report which settings are set
