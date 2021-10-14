@@ -49,7 +49,6 @@ void CaptivePortalDetection::stateChanged() {
   }
   captivePortalBackgroundMonitor()->stop();
 
-
   if ((state != Controller::StateOn ||
        vpn->connectionHealth()->stability() == ConnectionHealth::Stable) &&
       state != Controller::StateConfirming) {
@@ -120,6 +119,7 @@ void CaptivePortalDetection::detectionCompleted(CaptivePortalResult detected) {
   switch (detected) {
     case CaptivePortalResult::NoPortal:
     case CaptivePortalResult::Failure:
+    case CaptivePortalResult::Invalid:
       return;
     case CaptivePortalResult::PortalDetected:
       captivePortalDetected();
@@ -181,9 +181,9 @@ CaptivePortalMonitor* CaptivePortalDetection::captivePortalMonitor() {
   if (!m_captivePortalMonitor) {
     m_captivePortalMonitor = new CaptivePortalMonitor(this);
 
-  connect(m_captivePortalMonitor, &CaptivePortalMonitor::online, this,
+    connect(m_captivePortalMonitor, &CaptivePortalMonitor::online, this,
             &CaptivePortalDetection::captivePortalGone);
-  }  
+  }
 
   return m_captivePortalMonitor;
 }
@@ -192,12 +192,14 @@ CaptivePortalMonitor* CaptivePortalDetection::captivePortalBackgroundMonitor() {
   if (!m_captivePortalBackgroundMonitor) {
     m_captivePortalBackgroundMonitor = new CaptivePortalMonitor(this);
 
-  connect(m_captivePortalBackgroundMonitor, &CaptivePortalMonitor::online,MozillaVPN::instance()->controller(),
-  &Controller::captivePortalGone);
-  connect(m_captivePortalBackgroundMonitor, &CaptivePortalMonitor::offline,MozillaVPN::instance()->controller(),
-  &Controller::captivePortalPresent);
+    connect(m_captivePortalBackgroundMonitor, &CaptivePortalMonitor::online,
+            MozillaVPN::instance()->controller(),
+            &Controller::captivePortalGone);
+    connect(m_captivePortalBackgroundMonitor, &CaptivePortalMonitor::offline,
+            MozillaVPN::instance()->controller(),
+            &Controller::captivePortalPresent);
   }
-  
+
   return m_captivePortalBackgroundMonitor;
 }
 

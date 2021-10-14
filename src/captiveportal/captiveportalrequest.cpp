@@ -25,9 +25,11 @@ CaptivePortalRequest::~CaptivePortalRequest() {
 }
 
 void CaptivePortalRequest::run() {
-  CaptivePortalResult fakeResult = InspectorWebSocketConnection::fakeCaptivePortalResult();
-  if (!Constants::inProduction() && fakeResult != CaptivePortalResult::Invalid) {
-    // Inspector is active and we have set a result, just return it. 
+  CaptivePortalResult fakeResult =
+      InspectorWebSocketConnection::fakeCaptivePortalResult();
+  if (!Constants::inProduction() &&
+      fakeResult != CaptivePortalResult::Invalid) {
+    // Inspector is active and we have set a result, just return it.
     logger.info() << "CaptivePortal result is set using inspector!";
     emit completed(fakeResult);
     deleteLater();

@@ -40,7 +40,8 @@ Logger logger(LOG_INSPECTOR, "InspectorWebSocketConnection");
 bool s_stealUrls = false;
 QUrl s_lastUrl;
 QString s_updateVersion;
-CaptivePortalResult s_forced_captivePortal_result = CaptivePortalResult::Invalid;
+CaptivePortalResult s_forced_captivePortal_result =
+    CaptivePortalResult::Invalid;
 
 }  // namespace
 
@@ -437,11 +438,12 @@ static QList<WebSocketCommand> s_commands{
                        QString arg(arguments[1]);
                        bool ok = true;
                        int code = arg.toInt(&ok);
-                       if(ok){
-                          s_forced_captivePortal_result = static_cast<CaptivePortalResult>(code);
+                       if (ok) {
+                         s_forced_captivePortal_result =
+                             static_cast<CaptivePortalResult>(code);
                        }
                        QJsonObject result;
-                       result["ok"]=ok;
+                       result["ok"] = ok;
                        result["value"] = "Force CaptivePortal Result!";
                        return result;
                      }},

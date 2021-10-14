@@ -41,21 +41,22 @@ void CaptivePortalMonitor::check() {
   logger.debug() << "Checking the internet connectivity";
 
   CaptivePortalRequest* request = new CaptivePortalRequest(this);
-  connect(request, &CaptivePortalRequest::completed, [this](CaptivePortalResult result) {
-    logger.debug() << "Captive portal detection:" << result;
-    if (!m_timer.isActive()) {
-      return;
-    }
-    if(result == CaptivePortalResult::Failure){
-      return;
-    }
-    if(result == CaptivePortalResult::PortalDetected){
-      emit offline();
-      return;
-    }
-    // It seems that the captive-portal is gone.
-    emit online();
-  });
+  connect(request, &CaptivePortalRequest::completed,
+          [this](CaptivePortalResult result) {
+            logger.debug() << "Captive portal detection:" << result;
+            if (!m_timer.isActive()) {
+              return;
+            }
+            if (result == CaptivePortalResult::Failure) {
+              return;
+            }
+            if (result == CaptivePortalResult::PortalDetected) {
+              emit offline();
+              return;
+            }
+            // It seems that the captive-portal is gone.
+            emit online();
+          });
 
   request->run();
 }

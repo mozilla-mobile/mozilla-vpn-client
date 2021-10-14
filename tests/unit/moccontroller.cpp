@@ -76,6 +76,10 @@ void Controller::heartbeatCompleted() {}
 
 void Controller::backendFailure() {}
 
+void Controller::captivePortalPresent() {}
+
+void Controller::captivePortalGone() {}
+
 QString Controller::currentLocalizedCityName() const { return ""; }
 
 QString Controller::switchingLocalizedCityName() const { return ""; }

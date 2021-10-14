@@ -31,20 +31,18 @@ class CaptivePortalDetection final : public QObject {
   void detectionCompleted(CaptivePortalResult detected);
   void captivePortalGone();
 
-
   void activationRequired();
   void deactivationRequired();
 
  private:
   CaptivePortalMonitor* captivePortalMonitor();
   CaptivePortalMonitor* captivePortalBackgroundMonitor();
-  
+
   CaptivePortalNotifier* captivePortalNotifier();
 
  private:
   bool m_active = false;
   bool m_shouldRun = true;
-  
 
   // Don't use it directly. Use captivePortalMonitor().
   CaptivePortalMonitor* m_captivePortalMonitor = nullptr;

@@ -5,6 +5,11 @@
 #ifndef CAPTIVEPORTALRESULT_H
 #define CAPTIVEPORTALRESULT_H
 
-enum CaptivePortalResult { Invalid=-1,NoPortal =0, PortalDetected =1, Failure =2 };
+enum CaptivePortalResult {
+  Invalid = -1,
+  NoPortal = 0,
+  PortalDetected = 1,
+  Failure = 2
+};
 
 #endif  // CAPTIVEPORTALRESULT_H
