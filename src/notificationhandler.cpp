@@ -3,7 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "notificationhandler.h"
+#include "constants.h"
 #include "leakdetector.h"
+#include "l18nstrings.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
@@ -13,12 +15,19 @@
 #elif defined(MVPN_ANDROID)
 #  include "platforms/android/androidnotificationhandler.h"
 #else
+
+#  if defined(MVPN_LINUX)
+#    include "platforms/linux/linuxsystemtraynotificationhandler.h"
+#  endif
+
 #  include "systemtraynotificationhandler.h"
 #endif
 
 namespace {
 Logger logger(LOG_MAIN, "NotificationHandler");
-}
+
+NotificationHandler* s_instance = nullptr;
+}  // namespace
 
 // static
 NotificationHandler* NotificationHandler::create(QObject* parent) {
@@ -27,16 +36,35 @@ NotificationHandler* NotificationHandler::create(QObject* parent) {
 #elif defined(MVPN_ANDROID)
   return new AndroidNotificationHandler(parent);
 #else
+
+#  if defined(MVPN_LINUX)
+  if (LinuxSystemTrayNotificationHandler::requiredCustomImpl()) {
+    return new LinuxSystemTrayNotificationHandler(parent);
+  }
+#  endif
+
   return new SystemTrayNotificationHandler(parent);
 #endif
 }
 
+// static
+NotificationHandler* NotificationHandler::instance() {
+  Q_ASSERT(s_instance);
+  return s_instance;
+}
+
 NotificationHandler::NotificationHandler(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(NotificationHandler);
+
+  Q_ASSERT(!s_instance);
+  s_instance = this;
 }
 
 NotificationHandler::~NotificationHandler() {
   MVPN_COUNT_DTOR(NotificationHandler);
+
+  Q_ASSERT(s_instance == this);
+  s_instance = nullptr;
 }
 
 void NotificationHandler::showNotification() {
@@ -137,6 +165,74 @@ void NotificationHandler::showNotification() {
   Q_ASSERT(title.isEmpty() == message.isEmpty());
 
   if (!title.isEmpty()) {
-    notify(title, message, 2);
+    notifyInternal(None, title, message, 2000);
   }
+}
+
+void NotificationHandler::captivePortalBlockNotificationRequired() {
+  logger.debug() << "Captive portal block notification shown";
+
+  L18nStrings* l18nStrings = L18nStrings::instance();
+  Q_ASSERT(l18nStrings);
+
+  QString title =
+      l18nStrings->t(L18nStrings::NotificationsCaptivePortalBlockTitle);
+  QString message =
+      l18nStrings->t(L18nStrings::NotificationsCaptivePortalBlockMessage);
+
+  notifyInternal(CaptivePortalBlock, title, message,
+                 Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+}
+
+void NotificationHandler::captivePortalUnblockNotificationRequired() {
+  logger.debug() << "Captive portal unblock notification shown";
+
+  L18nStrings* l18nStrings = L18nStrings::instance();
+  Q_ASSERT(l18nStrings);
+
+  QString title =
+      l18nStrings->t(L18nStrings::NotificationsCaptivePortalUnblockTitle);
+  QString message =
+      l18nStrings->t(L18nStrings::NotificationsCaptivePortalUnblockMessage);
+
+  notifyInternal(CaptivePortalUnblock, title, message,
+                 Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+}
+
+void NotificationHandler::unsecuredNetworkNotification(
+    const QString& networkName) {
+  logger.debug() << "Unsecured network notification shown";
+
+  L18nStrings* l18nStrings = L18nStrings::instance();
+  Q_ASSERT(l18nStrings);
+
+  QString title =
+      l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkTitle);
+  QString message =
+      l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkMessage)
+          .arg(networkName);
+
+  notifyInternal(UnsecuredNetwork, title, message,
+                 Constants::UNSECURED_NETWORK_ALERT_MSEC);
+}
+
+void NotificationHandler::notifyInternal(Message type, const QString& title,
+                                         const QString& message,
+                                         int timerMsec) {
+  m_lastMessage = type;
+
+  emit notificationShown(title, message);
+  notify(type, title, message, timerMsec);
+}
+
+void NotificationHandler::messageClickHandle() {
+  logger.debug() << "Message clicked";
+
+  if (m_lastMessage == None) {
+    logger.warning() << "Random message clicked received";
+    return;
+  }
+
+  emit notificationClicked(m_lastMessage);
+  m_lastMessage = None;
 }
