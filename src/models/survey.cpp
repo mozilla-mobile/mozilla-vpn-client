@@ -29,7 +29,7 @@ Survey& Survey::operator=(const Survey& other) {
 
   m_id = other.m_id;
   m_url = other.m_url;
-  m_triggerTime = other.m_triggerTime;
+  m_triggerTimeSec = other.m_triggerTimeSec;
   m_platforms = other.m_platforms;
 
   return *this;
@@ -75,7 +75,7 @@ bool Survey::fromJson(const QJsonValue& json) {
 
   m_id = id.toString();
   m_url = url.toString();
-  m_triggerTime = triggerTime.toInt();
+  m_triggerTimeSec = triggerTime.toInt();
 
   return true;
 }
@@ -100,11 +100,11 @@ bool Survey::isTriggerable() const {
   QDateTime now = QDateTime::currentDateTime();
   QDateTime installation = settingsHolder->installationTime();
 
-  // Note: m_triggerTime is seconds!
-  bool ok = (installation.secsTo(now)) >= m_triggerTime;
+  // Note: m_triggerTimeSec is seconds!
+  bool ok = (installation.secsTo(now)) >= m_triggerTimeSec;
   if (!ok) {
     logger.debug() << "This survey will be shown in: "
-                   << m_triggerTime - installation.secsTo(now) << "s";
+                   << m_triggerTimeSec - installation.secsTo(now) << "s";
   }
   return ok;
 }
