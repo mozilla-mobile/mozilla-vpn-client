@@ -119,6 +119,7 @@ VPNFlickable {
             }
         }
     }
+
     VPNSettingsItem {
         id: featureListLink
         objectName: "settingsFeatureList"
@@ -135,6 +136,7 @@ VPNFlickable {
         imageRightSrc: "qrc:/ui/resources/chevron.svg"
         onClicked: stackview.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
     }
+
     VPNExternalLinkListItem {
         id:inspectorLink
         visible: stagingServerCheckBox.checked && !restartRequired.visible
@@ -154,9 +156,30 @@ VPNFlickable {
         }
     }
 
+    VPNButton {
+        id:resetAndQuit
+        property int clickNeeded: 5
+
+        anchors.top: stagingServerCheckBox.checked && !restartRequired.visible ? inspectorLink.bottom : featureListLink.bottom
+        anchors.topMargin: Theme.windowMargin
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        text: "Reset and Quit"
+        onClicked: {
+            if (clickNeeded) {
+             text = "Reset and Quit (" + clickNeeded + ")";
+              --clickNeeded;
+             return;
+            }
+
+            VPN.hardResetAndQuit()
+        }
+    }
+
     VPNCheckBoxAlert {
         id: restartRequired
-        anchors.top: inspectorLink.bottom
+        anchors.top: resetAndQuit.bottom
         visible: false
         Connections {
             target: VPNSettings
