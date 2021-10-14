@@ -9,7 +9,6 @@ import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import components 0.1
 import themes 0.1
-import compat 0.1
 
 import org.mozilla.Glean 0.15
 import telemetry 0.15

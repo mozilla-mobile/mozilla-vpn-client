@@ -5,8 +5,8 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
-// import QtGraphicalEffects 1.0
 
+import compat 0.1
 import themes 0.1
 
 Rectangle {
@@ -150,18 +150,18 @@ Rectangle {
           onTriggered: { closeAlert.start();}
     }
 
-//     DropShadow {
-//         anchors.fill: parent
-//         source: parent
-//         opacity: .1
-//         state: "overwrite-state"
-//         z: -1
-//         id: dropShadow
-//         horizontalOffset: 1
-//         verticalOffset: 1
-//         radius: 5.5
-//         color: "#0C0C0D"
-//    }
+    VPNDropShadow {
+        anchors.fill: parent
+        source: parent
+        opacity: .1
+        state: "overwrite-state"
+        z: -1
+        id: dropShadow
+        horizontalOffset: 1
+        verticalOffset: 1
+        radius: 5.5
+        color: "#0C0C0D"
+   }
 
     VPNButtonBase {
         id: alertAction

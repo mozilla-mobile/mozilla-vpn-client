@@ -2,5 +2,6 @@
     <qresource prefix="/compat">
         <file alias="compat/qmldir">compat/qt6/qmldir</file>
         <file alias="compat/VPNCompatTest.qml">compat/qt6/VPNCompatTest.qml</file>
+        <file alias="compat/VPNDropShadow.qml">compat/qt6/VPNDropShadow.qml</file>
     </qresource>
 </RCC>
