@@ -301,6 +301,8 @@ Window {
                 appDisplayVersion: VPN.versionString,
                 channel: channel,
                 debug: debug,
+                osVersion: VPN.osVersion,
+                architecture: VPN.architecture,
             });
         }
 

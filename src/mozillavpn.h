@@ -96,6 +96,8 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
   Q_PROPERTY(QString versionString READ versionString CONSTANT)
   Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
+  Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
+  Q_PROPERTY(QString architecture READ architecture CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
                  updateRecommendedChanged)
   Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
@@ -236,6 +238,16 @@ class MozillaVPN final : public QObject {
 
   const QString versionString() const { return QString(APP_VERSION); }
   const QString buildNumber() const { return QString(BUILD_ID); }
+  const QString osVersion() const {
+#ifdef MVPN_WINDOWS
+    return WindowsCommons::WindowsVersion();
+#else
+    return QSysInfo::productVersion();
+#endif
+  }
+  const QString architecture() const {
+    return QSysInfo::currentCpuArchitecture();
+  }
 
   void logout();
 
