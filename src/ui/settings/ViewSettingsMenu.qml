@@ -10,8 +10,8 @@ import Mozilla.VPN 1.0
 import components 0.1
 import themes 0.1
 
-import org.mozilla.Glean 0.22
-import telemetry 0.22
+import org.mozilla.Glean 0.23
+import telemetry 0.23
 
 VPNFlickable {
     id: vpnFlickable
