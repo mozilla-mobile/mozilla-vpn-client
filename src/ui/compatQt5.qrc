@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/compat">
         <file alias="compat/qmldir">compat/qt5/qmldir</file>
-        <file alias="compat/VPNCompatTest.qml">compat/qt5/VPNCompatTest.qml</file>
         <file alias="compat/VPNDropShadow.qml">compat/qt5/VPNDropShadow.qml</file>
         <file alias="compat/VPNOpacityMask.qml">compat/qt5/VPNOpacityMask.qml</file>
+        <file alias="compat/VPNLinearGradient.qml">compat/qt5/VPNLinearGradient.qml</file>
     </qresource>
 </RCC>

@@ -145,8 +145,6 @@ Window {
         anchors.topMargin: iosSafeAreaTopMargin.height
     }
 
-    VPNCompatTest {}
-
     VPNStackView {
         id: mainStackView
         initialItem: mainView
