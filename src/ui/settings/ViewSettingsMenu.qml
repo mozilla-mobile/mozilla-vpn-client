@@ -104,15 +104,12 @@ VPNFlickable {
                                               })
         }
         VPNSettingsItem {
-            property string prefs: qsTrId("systray.preferences")
-            property string notificationsTitle: qsTrId("vpn.settings.notifications")
-            property string languageTitle: qsTrId("vpn.settings.language")
             //% "Launch VPN app on startup"
             property string startAtBootTitle: qsTrId("vpn.settings.runOnBoot2")
 
             id: preferencesSetting
             objectName: "settingsPreferences"
-            settingTitle: prefs.replace("…", "").replace("...", "")
+            settingTitle: VPNl18n.SettingsPreferences
             imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
             imageRightSrc: "qrc:/ui/resources/chevron.svg"
             onClicked: settingsStackView.push("qrc:/ui/settings/ViewPrivacySecurity.qml", {
