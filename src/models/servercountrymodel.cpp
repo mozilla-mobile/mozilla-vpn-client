@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "servercountrymodel.h"
+#include "collator.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "servercountry.h"
@@ -11,7 +12,6 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
-#include <QCollator>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -282,7 +282,7 @@ void ServerCountryModel::retranslate() {
 namespace {
 
 bool sortCountryCallback(const ServerCountry& a, const ServerCountry& b,
-                         QCollator* collator) {
+                         Collator* collator) {
   Q_ASSERT(collator);
   return collator->compare(
              ServerI18N::translateCountryName(a.code(), a.name()),
@@ -292,7 +292,7 @@ bool sortCountryCallback(const ServerCountry& a, const ServerCountry& b,
 }  // anonymous namespace
 
 void ServerCountryModel::sortCountries() {
-  QCollator collator;
+  Collator collator;
   std::sort(m_countries.begin(), m_countries.end(),
             std::bind(sortCountryCallback, std::placeholders::_1,
                       std::placeholders::_2, &collator));

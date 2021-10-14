@@ -61,6 +61,7 @@ SOURCES += \
         captiveportal/captiveportalrequest.cpp \
         captiveportal/captiveportalmultirequest.cpp \
         closeeventhandler.cpp \
+        collator.cpp \
         command.cpp \
         commandlineparser.cpp \
         commands/commandactivate.cpp \
@@ -181,6 +182,7 @@ HEADERS += \
         captiveportal/captiveportalmultirequest.h \
         captiveportal/captiveportalresult.h \
         closeeventhandler.h \
+        collator.h \
         command.h \
         commandlineparser.h \
         commands/commandactivate.h \
@@ -213,7 +215,7 @@ HEADERS += \
         features/featurelocalareaaccess.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
-        features/featuresShareLogs.h \
+        features/featuressharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
         features/featureunsecurednetworknotification.h \

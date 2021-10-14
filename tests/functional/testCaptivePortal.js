@@ -50,11 +50,6 @@ describe('Captive portal', function() {
 
     await vpn.clickOnElement('getStarted');
 
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.waitForElementProperty(
-        'telemetryPolicyButton', 'visible', 'true');
-    await vpn.clickOnElement('telemetryPolicyButton');
-
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.includes('/api/v2/vpn/login');
@@ -94,6 +89,18 @@ describe('Captive portal', function() {
 
     await vpn.clickOnElement('postAuthenticationButton');
     await vpn.wait();
+  });
+
+  it('Captive portal in the Telemetry policy view', async () => {
+    await vpn.waitForElement('telemetryPolicyButton');
+
+    await vpn.forceCaptivePortalDetection();
+    await vpn.wait();
+
+    // Notifications are not OK yet.
+    assert(vpn.lastNotification().title === null);
+
+    await vpn.clickOnElement('telemetryPolicyButton');
   });
 
   it('Captive portal in the Controller view', async () => {
