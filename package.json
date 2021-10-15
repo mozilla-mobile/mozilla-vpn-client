@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "functionalTest": "mocha --require ./tests/functional/setupVpn.js"
+    "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
