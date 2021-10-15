@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "functionalTest": "mocha --file ./tests/functional/setupVpn.js --bail"
+    "functionalTest": "mocha --require ./tests/functional/setupVpn.js"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
