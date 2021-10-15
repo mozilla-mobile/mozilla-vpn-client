@@ -7,23 +7,58 @@
 
 #include <QObject>
 
+class QMenu;
+
 class NotificationHandler : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(NotificationHandler)
 
  public:
+  enum Message {
+    None,
+    UnsecuredNetwork,
+    CaptivePortalBlock,
+    CaptivePortalUnblock,
+  };
+
   static NotificationHandler* create(QObject* parent);
+
+  static NotificationHandler* instance();
 
   virtual ~NotificationHandler();
 
- public slots:
+  void captivePortalBlockNotificationRequired();
+  void captivePortalUnblockNotificationRequired();
+
+  void unsecuredNetworkNotification(const QString& networkName);
+
   void showNotification();
+
+  void messageClickHandle();
+
+  virtual void retranslate() {}
+
+#ifdef MVPN_WASM
+  virtual QMenu* contextMenu() { return nullptr; }
+#endif
+
+ signals:
+  void notificationShown(const QString& title, const QString& message);
+
+  void notificationClicked(Message message);
 
  protected:
   explicit NotificationHandler(QObject* parent);
 
-  virtual void notify(const QString& title, const QString& message,
-                      int timerSec) = 0;
+  virtual void notify(Message type, const QString& title,
+                      const QString& message, int timerMsec) = 0;
+
+ private:
+  virtual void notifyInternal(Message type, const QString& title,
+                              const QString& message, int timerMsec);
+
+ protected:
+  Message m_lastMessage = None;
 
  private:
   QString m_switchingLocalizedServerCountry;

@@ -9,7 +9,10 @@
 static MozillaVPN* s_instance = nullptr;
 
 // static
-MozillaVPN* MozillaVPN::instance() {
+MozillaVPN* MozillaVPN::instance() { return maybeInstance(); }
+
+// static
+MozillaVPN* MozillaVPN::maybeInstance() {
   if (!s_instance) {
     s_instance = new MozillaVPN();
   }
@@ -51,6 +54,8 @@ void MozillaVPN::authenticationCompleted(const QByteArray&, const QString&) {}
 void MozillaVPN::deviceAdded(const QString&, const QString&, const QString&) {}
 
 void MozillaVPN::deviceRemoved(const QString&) {}
+
+void MozillaVPN::deviceRemovalCompleted(const QString&) {}
 
 bool MozillaVPN::setServerList(const QByteArray&, const QByteArray&) {
   return true;
@@ -98,7 +103,7 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation,
   return true;
 }
 
-bool MozillaVPN::viewLogs() {}
+bool MozillaVPN::viewLogs() { return true; }
 
 bool MozillaVPN::modelsInitialized() const { return true; }
 

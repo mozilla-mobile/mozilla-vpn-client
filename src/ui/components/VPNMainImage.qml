@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtGraphicalEffects 1.12
 
 import Mozilla.VPN 1.0
+import compat 0.1
 import themes 0.1
 
 Rectangle {
@@ -296,7 +296,7 @@ Rectangle {
         visible: false
     }
 
-    LinearGradient {
+    VPNLinearGradient {
         id: gradient
         anchors.fill: logo
         start: Qt.point(0, logo.width)
@@ -317,7 +317,7 @@ Rectangle {
         visible: false
     }
 
-    OpacityMask {
+    VPNOpacityMask {
        anchors.fill: globe
        source: gradient
        maskSource: globe
