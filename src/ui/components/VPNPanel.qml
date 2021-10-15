@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
+import compat 0.1
 import themes 0.1
 
 Item {
@@ -54,6 +55,10 @@ Item {
                     anchors.fill: parent
                     radius: logoSize / 2
                     visible: false
+                }
+
+                layer.effect: VPNOpacityMask {
+                    maskSource: maskImage ? mask : undefined
                 }
             }
 

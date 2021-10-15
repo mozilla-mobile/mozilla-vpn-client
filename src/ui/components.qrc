@@ -31,7 +31,7 @@
         <file>components/VPNControllerView.qml</file>
         <file>components/VPNDeviceListItem.qml</file>
         <file>components/VPNDevicesListHeader.qml</file>
-        <file>components/VPNDropShadow.qml</file>
+        <file>components/VPNDropShadowWithStates.qml</file>
         <file>components/VPNExpandableAppList.qml</file>
         <file>components/VPNExternalLinkListItem.qml</file>
         <file>components/VPNFeatureTourPopup.qml</file>

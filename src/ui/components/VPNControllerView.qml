@@ -51,6 +51,14 @@ Item {
         antialiasing: true
     }
 
+    VPNDropShadowWithStates {
+        anchors.fill: boxBackground
+        source: boxBackground
+        cached: true
+        transparentBorder: true
+        z: -1
+    }
+
     states: [
         State {
             name: VPNController.StateInitializing

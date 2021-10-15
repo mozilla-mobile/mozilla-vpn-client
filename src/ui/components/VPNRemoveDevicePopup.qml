@@ -5,9 +5,9 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
-import QtGraphicalEffects 1.14
 
 import Mozilla.VPN 1.0
+import compat 0.1
 import themes 0.1
 
 Popup {
@@ -71,6 +71,21 @@ Popup {
         anchors.margins: 0
         color: Theme.bgColor
         radius: 8
+
+        VPNDropShadow {
+            id: popupShadow
+
+            anchors.fill: popupBackground
+            cached: true
+            color: "black"
+            opacity: 0.2
+            radius: 16
+            source: popupBackground
+            spread: 0.1
+            transparentBorder: true
+            verticalOffset: 4
+            z: -1
+        }
     }
 
     contentItem: Item {

@@ -4,6 +4,8 @@
 
 import QtQuick 2.0
 
+import compat 0.1
+
 Item {
     id: logoRoot
 
@@ -17,6 +19,9 @@ Item {
         height: logoRoot.height
         fillMode: Image.PreserveAspectFit
         layer.enabled: true
+        layer.effect: VPNOpacityMask {
+            maskSource: avatarMask
+        }
         smooth: true
         source: isDefaultAvatar() ? "" : avatarUrl
     }
