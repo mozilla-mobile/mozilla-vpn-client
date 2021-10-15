@@ -3,11 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import Mozilla.VPN 1.0
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.15
-import "./../components"
-import "./../themes/themes.js" as Theme
+
+import Mozilla.VPN 1.0
+import components 0.1
+import themes 0.1
 
 ColumnLayout {
     property bool isWasmViewer: false
@@ -30,7 +31,7 @@ ColumnLayout {
         alertActionText: qsTrId("vpn.updates.updateNow")
 
         onActionPressed: ()=>{
-            stackview.push("../views/ViewUpdate.qml", stackviewMode);
+            stackview.push("qrc:/ui/views/ViewUpdate.qml", stackviewMode);
         }
         onClosePressed: ()=>{
              VPN.hideUpdateRecommendedAlert();

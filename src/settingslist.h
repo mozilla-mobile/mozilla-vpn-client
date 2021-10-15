@@ -180,14 +180,6 @@ SETTING_DATETIME(installationTime,     // getter
                  false                 // remove when reset
 )
 
-SETTING_BOOL(ipv6Enabled,     // getter
-             setIpv6Enabled,  // setter
-             hasIpv6Enabled,  // has
-             "ipv6Enabled",   // key
-             true,            // default value
-             false            // remove when reset
-)
-
 SETTING_STRING(languageCode,     // getter
                setLanguageCode,  // setter
                hasLanguageCode,  // has
@@ -414,7 +406,17 @@ SETTING_STRINGLIST(vpnDisabledApps,     // getter
                    false                // remove when reset
 )
 
-#ifdef MVPN_ANDROID
+#if defined(MVPN_ADJUST)
+SETTING_BOOL(adjustActivatable,     // getter
+             setAdjustActivatable,  // setter
+             hasAdjustActivatable,  // has
+             "adjustActivatable",   // key
+             false,                 // default value
+             false                  // remove when reset
+)
+#endif
+
+#if defined(MVPN_ANDROID)
 SETTING_BOOL(nativeAndroidDataMigrated,     // getter
              setNativeAndroidDataMigrated,  // setter
              hasNativeAndroidDataMigrated,  // has
@@ -424,7 +426,7 @@ SETTING_BOOL(nativeAndroidDataMigrated,     // getter
 )
 #endif
 
-#ifdef MVPN_WINDOWS
+#if defined(MVPN_WINDOWS)
 SETTING_BOOL(nativeWindowsDataMigrated,     // getter
              setNativeWindowsDataMigrated,  // setter
              hasNativeWindowsDataMigrated,  // has
@@ -434,7 +436,7 @@ SETTING_BOOL(nativeWindowsDataMigrated,     // getter
 )
 #endif
 
-#ifdef MVPN_IOS
+#if defined(MVPN_IOS)
 SETTING_BOOL(nativeIOSDataMigrated,     // getter
              setNativeIOSDataMigrated,  // setter
              hasNativeIOSDataMigrated,  // has

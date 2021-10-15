@@ -5,10 +5,9 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-
-import "../themes/themes.js" as Theme
-
+import themes 0.1
 
 Item {
     id: device
@@ -81,7 +80,7 @@ Item {
             PropertyAction {
                 target: iconButton
                 property: "iconSource"
-                value: "../resources/spinner.svg"
+                value: "qrc:/ui/resources/spinner.svg"
             }
 
             ParallelAnimation {
@@ -115,7 +114,7 @@ Item {
         VPNIcon {
             id: deviceIcon
 
-            source: "../resources/devices.svg"
+            source: "qrc:/ui/resources/devices.svg"
             fillMode: Image.PreserveAspectFit
             Layout.leftMargin: Theme.windowMargin
             Layout.rightMargin: Theme.windowMargin
@@ -178,7 +177,7 @@ Item {
         VPNIconButton {
             id: iconButton
 
-            property var iconSource: "../resources/delete.svg"
+            property var iconSource: "qrc:/ui/resources/delete.svg"
             property real iconHeightWidth: 22
             property bool startRotation: false
 

@@ -10,6 +10,7 @@
 #include "features/featureinapppurchase.h"
 #include "features/featureinappauth.h"
 #include "features/featureinappaccountcreate.h"
+#include "features/featuresharelogs.h"
 #include "gleansample.h"
 #include "iaphandler.h"
 #include "leakdetector.h"
@@ -53,6 +54,7 @@
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androiddatamigration.h"
 #  include "platforms/android/androidvpnactivity.h"
+#  include "platforms/android/androidutils.h"
 #endif
 
 #ifdef MVPN_ADJUST
@@ -366,6 +368,16 @@ void MozillaVPN::maybeStateMain() {
   if (m_state != StateUpdateRequired) {
     setState(StateMain);
   }
+
+#ifdef MVPN_ADJUST
+  // When the client is ready to be activated, we do not need adjustSDK anymore
+  // (the subscription is done, and no extra events will be dispatched). We
+  // cannot disable AdjustSDK at runtime, but we can disable it for the next
+  // execution.
+  if (settingsHolder->hasAdjustActivatable()) {
+    settingsHolder->setAdjustActivatable(false);
+  }
+#endif
 }
 
 void MozillaVPN::setServerPublicKey(const QString& publicKey) {
@@ -375,14 +387,6 @@ void MozillaVPN::setServerPublicKey(const QString& publicKey) {
 
 void MozillaVPN::getStarted() {
   logger.debug() << "Get started";
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-
-  if (!settingsHolder->telemetryPolicyShown()) {
-    setState(StateTelemetryPolicy);
-    return;
-  }
-
   authenticate();
 }
 
@@ -1209,23 +1213,49 @@ void MozillaVPN::serializeLogs(QTextStream* out,
       });
 }
 
-void MozillaVPN::viewLogs() {
+bool MozillaVPN::viewLogs() {
   logger.debug() << "View logs";
 
+  if (!FeatureShareLogs::instance()->isSupported()) {
+    logger.error() << "ViewLogs Called on unsupported OS or version!";
+    return false;
+  }
+
+#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
+  QString* buffer = new QString();
+  QTextStream* out = new QTextStream(buffer);
+  bool ok = true;
+  serializeLogs(out, [buffer, out, &ok]() {
+    Q_ASSERT(out);
+    Q_ASSERT(buffer);
+
+#  if defined(MVPN_ANDROID)
+    ok = AndroidUtils::ShareText(*buffer);
+#  else
+    IOSUtils::shareLogs(*buffer);
+#  endif
+
+    delete out;
+    delete buffer;
+  });
+  return ok;
+#endif
+
   if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {
-    return;
+    return true;
   }
 
   if (writeAndShowLogs(QStandardPaths::HomeLocation)) {
-    return;
+    return true;
   }
 
   if (writeAndShowLogs(QStandardPaths::TempLocation)) {
-    return;
+    return true;
   }
 
   qWarning()
       << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
+  return false;
 }
 
 void MozillaVPN::retrieveLogs() {
@@ -1382,9 +1412,11 @@ void MozillaVPN::subscriptionCompleted() {
   }
 
   logger.debug() << "Subscription completed";
+
 #ifdef MVPN_ADJUST
   AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
+
   completeActivation();
 }
 
@@ -1522,7 +1554,8 @@ void MozillaVPN::heartbeatCompleted(bool success) {
 void MozillaVPN::triggerHeartbeat() { scheduleTask(new TaskHeartbeat()); }
 
 void MozillaVPN::addCurrentDeviceAndRefreshData() {
-  scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
+  scheduleTask(
+      new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
   scheduleTask(new TaskAccountAndServers());
 }
 
@@ -1558,4 +1591,13 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   // We do not need to remove the current device! guardian-website "overwrites"
   // the current device key when we submit a new one.
   addCurrentDeviceAndRefreshData();
+}
+
+void MozillaVPN::hardResetAndQuit() {
+  logger.debug() << "Hard reset and quit";
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+  settingsHolder->hardReset();
+  quit();
 }

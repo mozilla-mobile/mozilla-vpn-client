@@ -23,9 +23,11 @@ namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 // Setting Keys That won't show up in a report;
 QVector<QString> SENSITIVE_SETTINGS({
-    "token", "privateKey",
-    "servers",  // Those 2 are not sensitive but
-    "devices",  // are more noise then info
+    "token",
+    "privateKey",
+    "servers",       // Those 3 are not sensitive but
+    "serverExtras",  // are more noise then info
+    "devices",
 });
 
 SettingsHolder* s_instance = nullptr;
@@ -57,6 +59,7 @@ SettingsHolder::SettingsHolder()
   s_instance = this;
 
   if (!hasInstallationTime()) {
+    m_firstExecution = true;
     setInstallationTime(QDateTime::currentDateTime());
   }
 }
@@ -83,8 +86,11 @@ void SettingsHolder::clear() {
 
 #include "settingslist.h"
 #undef SETTING
+}
 
-  // We do not remove language, ipv6 and localnetwork settings.
+void SettingsHolder::hardReset() {
+  logger.debug() << "Hard reset";
+  m_settings.clear();
 }
 
 // Returns a Report which settings are set

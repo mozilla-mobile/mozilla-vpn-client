@@ -30,9 +30,6 @@ void migrateConfigFile(const QString& fileName) {
     settingsHolder->setLanguageCode(language);
   }
 
-  bool ipv6Enabled = settings.value("Network/EnableIPv6").toBool();
-  settingsHolder->setIpv6Enabled(ipv6Enabled);
-
   bool captivePortalAlert =
       settings.value("Network/CaptivePortalAlert").toBool();
   settingsHolder->setCaptivePortalAlert(captivePortalAlert);

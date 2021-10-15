@@ -4,8 +4,9 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.14
-import "../themes/themes.js" as Theme
+
+import compat 0.1
+import themes 0.1
 
 Popup {
     id: popup
@@ -34,7 +35,7 @@ Popup {
             z: -1
         }
 
-        DropShadow {
+        VPNDropShadow {
             id: popupShadow
 
             anchors.fill: popUpShadowSource
@@ -42,7 +43,6 @@ Popup {
             color: "black"
             opacity: 0.2
             radius: 16
-            samples: 33
             source: popUpShadowSource
             spread: 0.1
             transparentBorder: true
@@ -70,7 +70,7 @@ Popup {
 
                 anchors.centerIn: closeButton
                 fillMode: Image.PreserveAspectFit
-                source: "../resources/close-darker.svg"
+                source: "qrc:/ui/resources/close-darker.svg"
                 sourceSize.height: Theme.iconSize
                 sourceSize.width: Theme.iconSize
             }

@@ -7,7 +7,7 @@ import QtQuick.Layouts 1.14
 
 // VPNServerListToggle
 VPNIcon {
-    source: "../resources/arrow-toggle.svg"
+    source: "qrc:/ui/resources/arrow-toggle.svg"
     transformOrigin: Image.Center
     smooth: true
     rotation: -90

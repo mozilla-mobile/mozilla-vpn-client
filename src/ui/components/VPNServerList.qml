@@ -6,12 +6,11 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import QtQml.Models 2.2
-import Mozilla.VPN 1.0
-import "../components"
-import "../components/forms"
-import "../themes/themes.js" as Theme
-import "../themes/colors.js" as Color
 
+import Mozilla.VPN 1.0
+import components 0.1
+import components.forms 0.1
+import themes 0.1
 
 FocusScope {
     id: focusScope
@@ -122,7 +121,7 @@ FocusScope {
                     VPNIcon {
                         id: warningIcon
 
-                        source: "../resources/warning.svg"
+                        source: "qrc:/ui/resources/warning.svg"
                         sourceSize.height: 14
                         sourceSize.width: 14
                         Layout.alignment: Qt.AlignTop

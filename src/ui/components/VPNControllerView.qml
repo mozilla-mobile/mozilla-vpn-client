@@ -4,11 +4,10 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
-import "../themes/colors.js" as Color
+import themes 0.1
 
 import org.mozilla.Glean 0.15
 import telemetry 0.15
@@ -52,7 +51,7 @@ Item {
         antialiasing: true
     }
 
-    VPNDropShadow {
+    VPNDropShadowWithStates {
         anchors.fill: boxBackground
         source: boxBackground
         cached: true
@@ -91,7 +90,7 @@ Item {
 
             PropertyChanges {
                 target: settingsImage
-                source: "../resources/settings.svg"
+                source: "qrc:/ui/resources/settings.svg"
             }
 
             PropertyChanges {
@@ -144,7 +143,7 @@ Item {
 
             PropertyChanges {
                 target: settingsImage
-                source: "../resources/settings.svg"
+                source: "qrc:/ui/resources/settings.svg"
             }
 
             PropertyChanges {
@@ -199,7 +198,7 @@ Item {
 
             PropertyChanges {
                 target: settingsImage
-                source: "../resources/settings-white.svg"
+                source: "qrc:/ui/resources/settings-white.svg"
             }
 
             PropertyChanges {
@@ -260,7 +259,7 @@ Item {
 
             PropertyChanges {
                 target: settingsImage
-                source: "../resources/settings-white.svg"
+                source: "qrc:/ui/resources/settings-white.svg"
             }
 
             PropertyChanges {
@@ -321,7 +320,7 @@ Item {
 
             PropertyChanges {
                 target: settingsImage
-                source: "../resources/settings-white.svg"
+                source: "qrc:/ui/resources/settings-white.svg"
             }
 
             PropertyChanges {
@@ -368,7 +367,7 @@ Item {
 
             PropertyChanges {
                 target: settingsImage
-                source: "../resources/settings.svg"
+                source: "qrc:/ui/resources/settings.svg"
             }
 
             PropertyChanges {
@@ -429,7 +428,7 @@ Item {
 
             PropertyChanges {
                 target: settingsImage
-                source: "../resources/settings-white.svg"
+                source: "qrc:/ui/resources/settings-white.svg"
             }
 
             PropertyChanges {
@@ -545,7 +544,7 @@ Item {
         VPNIcon {
             id: connectionInfoImage
 
-            source: "../resources/connection-info.svg"
+            source: "qrc:/ui/resources/connection-info.svg"
             anchors.centerIn: connectionInfoButton
             sourceSize.height: 20
             sourceSize.width: 20
@@ -568,7 +567,7 @@ Item {
 
         onClicked: {
             Sample.settingsViewOpened.record();
-            stackview.push("../views/ViewSettings.qml", StackView.Immediate)
+            stackview.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate)
         }
 
         anchors.top: parent.top
@@ -646,7 +645,7 @@ Item {
                 while(stackview.depth > 1) {
                     stackview.pop(null, StackView.Immediate);
                 }
-                stackview.push("../views/ViewSettings.qml", StackView.Immediate);
+                stackview.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
             }
             function onAboutNeeded() {
                 while(stackview.depth > 1) {

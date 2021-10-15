@@ -18,6 +18,7 @@
 #include "features/featuremultihop.h"
 #include "features/featurenotificationcontrol.h"
 #include "features/featuresplittunnel.h"
+#include "features/featuresharelogs.h"
 #include "features/featurestartonboot.h"
 #include "features/featureunauthsupport.h"
 #include "features/featureunsecurednetworknotification.h"
@@ -50,6 +51,7 @@ void FeatureList::initialize() {
   new FeatureLocalAreaAccess();
   new FeatureMultiHop();
   new FeatureNotificationControl();
+  new FeatureShareLogs();
   new FeatureSplitTunnel();
   new FeatureStartOnBoot();
   new FeatureUnauthSupport();

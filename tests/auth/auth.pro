@@ -46,7 +46,6 @@ HEADERS += \
     ../../src/inspector/inspectorwebsocketconnection.h \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
-    ../../src/l18nstringsimpl.h \
     ../../src/leakdetector.h \
     ../../src/logger.h \
     ../../src/loghandler.h \

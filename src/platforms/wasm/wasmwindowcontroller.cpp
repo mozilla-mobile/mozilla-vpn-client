@@ -6,8 +6,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "notificationhandler.h"
 #include "platforms/macos/macosmenubar.h"
-#include "systemtrayhandler.h"
 
 #include <QGuiApplication>
 #include <QLabel>
@@ -54,7 +54,7 @@ WasmWindowController::WasmWindowController() {
             &WasmWindowController::iconChanged);
     iconChanged(statusIcon->iconString());
 
-    QMenu* menu = SystemTrayHandler::instance()->contextMenu();
+    QMenu* menu = NotificationHandler::instance()->contextMenu();
     m_systemTrayMenuBar->addMenu(menu);
   }
 
@@ -95,8 +95,9 @@ WasmWindowController::WasmWindowController() {
 
   // System tray has a different message for internal notifications (not
   // related to the VPN status).
-  connect(SystemTrayHandler::instance(), &SystemTrayHandler::notificationShown,
-          this, &WasmWindowController::notification);
+  connect(NotificationHandler::instance(),
+          &NotificationHandler::notificationShown, this,
+          &WasmWindowController::notification);
 }
 
 WasmWindowController::~WasmWindowController() {
@@ -115,7 +116,7 @@ void WasmWindowController::iconChanged(const QString& icon) {
   QIcon menuIcon(icon);
   menuIcon.setIsMask(true);
 
-  QMenu* menu = SystemTrayHandler::instance()->contextMenu();
+  QMenu* menu = NotificationHandler::instance()->contextMenu();
   menu->setIcon(menuIcon);
 }
 
@@ -128,7 +129,7 @@ void WasmWindowController::notification(const QString& title,
 }
 
 void WasmWindowController::retranslate() {
-  QMenu* menu = SystemTrayHandler::instance()->contextMenu();
+  QMenu* menu = NotificationHandler::instance()->contextMenu();
   m_systemTrayMenuBar->addMenu(menu);
 
   m_macOSMenuBar->retranslate();

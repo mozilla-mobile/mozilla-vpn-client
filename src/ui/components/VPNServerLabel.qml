@@ -4,7 +4,8 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
-import "../themes/themes.js" as Theme
+
+import themes 0.1
 
 RowLayout {
     property var serversList
@@ -32,14 +33,14 @@ RowLayout {
 
                     Component.onCompleted: {
                         if (typeof(countryCode) !== "undefined") {
-                            return source = "../resources/flags/" + countryCode.toUpperCase() + ".png"
+                            return source = "qrc:/ui/resources/flags/" + countryCode.toUpperCase() + ".png"
                         }
 
                         if (typeof(modelData.countryCode) === "undefined" || modelData.countryCode === "") {
                             return visible = false;
                         }
 
-                        source = "../resources/flags/" + modelData.countryCode.toUpperCase() + ".png"
+                        source = "qrc:/ui/resources/flags/" + modelData.countryCode.toUpperCase() + ".png"
 
                     }
                 }
@@ -62,7 +63,7 @@ RowLayout {
                 VPNIcon {
                     id: arrowIcon
 
-                    source: "../resources/arrow-forward.svg"
+                    source: "qrc:/ui/resources/arrow-forward.svg"
                     sourceSize.height: Theme.iconSize
                     sourceSize.width: Theme.iconSize
                     Layout.leftMargin: Theme.listSpacing

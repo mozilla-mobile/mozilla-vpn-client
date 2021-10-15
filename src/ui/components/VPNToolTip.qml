@@ -4,9 +4,9 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.0
-import "../themes/themes.js" as Theme
 
+import compat 0.1
+import themes 0.1
 
 ToolTip {
     id: toolTip
@@ -60,7 +60,7 @@ ToolTip {
         color: Theme.bgColor
         z: -1
 
-        RectangularGlow {
+        VPNRectangularGlow {
             anchors.fill: glowClippingPath
             glowRadius: 2
             spread: 0.5
