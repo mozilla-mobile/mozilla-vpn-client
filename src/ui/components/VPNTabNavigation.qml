@@ -5,9 +5,10 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+
 import Mozilla.VPN 1.0
-import "../themes/colors.js" as Color
-import "../themes/themes.js" as Theme
+import themes 0.1
+
 Item {
     id: root
 

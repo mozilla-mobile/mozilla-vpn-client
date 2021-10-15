@@ -4,7 +4,9 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import "../themes/themes.js" as Theme
+import QtGraphicalEffects 1.14
+
+import themes 0.1
 
 Popup {
     id: popup
@@ -54,7 +56,7 @@ Popup {
 
                 anchors.centerIn: closeButton
                 fillMode: Image.PreserveAspectFit
-                source: "../resources/close-darker.svg"
+                source: "qrc:/ui/resources/close-darker.svg"
                 sourceSize.height: Theme.iconSize
                 sourceSize.width: Theme.iconSize
             }

@@ -4,9 +4,11 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
+import QtGraphicalEffects 1.14
+
 import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
-import "../components"
+import components 0.1
+import themes 0.1
 
 Item {
     id: root
@@ -36,7 +38,7 @@ Item {
         anchors.verticalCenter: root.verticalCenter
         sourceSize.height: 80
         fillMode: Image.PreserveAspectFit
-        source: "../resources/spinner.svg"
+        source: "qrc:/ui/resources/spinner.svg"
 
         ParallelAnimation {
             id: startSpinning

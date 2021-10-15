@@ -61,6 +61,7 @@ SOURCES += \
         captiveportal/captiveportalrequest.cpp \
         captiveportal/captiveportalmultirequest.cpp \
         closeeventhandler.cpp \
+        collator.cpp \
         command.cpp \
         commandlineparser.cpp \
         commands/commandactivate.cpp \
@@ -181,6 +182,7 @@ HEADERS += \
         captiveportal/captiveportalmultirequest.h \
         captiveportal/captiveportalresult.h \
         closeeventhandler.h \
+        collator.h \
         command.h \
         commandlineparser.h \
         commands/commandactivate.h \
@@ -213,6 +215,7 @@ HEADERS += \
         features/featurelocalareaaccess.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
+        features/featuressharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
         features/featureunsecurednetworknotification.h \
@@ -313,8 +316,11 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += qml.qrc
 RESOURCES += inspector/inspector.qrc
+RESOURCES += ui/components.qrc
+RESOURCES += ui/resources.qrc
+RESOURCES += ui/themes.qrc
+RESOURCES += ui/ui.qrc
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
     RESOURCES += $$PWD/../glean/glean.qrc

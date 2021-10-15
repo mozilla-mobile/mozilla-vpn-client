@@ -7,10 +7,8 @@ import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
 
 import Mozilla.VPN 1.0
-
-import "../components"
-import "../themes/themes.js" as Theme
-import "../themes/colors.js" as Color
+import components 0.1
+import themes 0.1
 
 Item {
     property string _menuTitle: VPNl18n.WhatsNewReleaseNotesTourPageHeader
@@ -37,8 +35,8 @@ Item {
 
             VPNSettingsItem {                
                 settingTitle: VPNl18n.WhatsNewReleaseNotesTourSubHeader
-                imageLeftSrc: hovered ? "../resources/magic-purple.svg" : "../resources/magic-dark.svg"
-                imageRightSrc: hovered ? "../resources/chevron-purple.svg" : "../resources/chevron.svg"
+                imageLeftSrc: hovered ? "qrc:/ui/resources/magic-purple.svg" : "qrc:/ui/resources/magic-dark.svg"
+                imageRightSrc: hovered ? "qrc:/ui/resources/chevron-purple.svg" : "qrc:/ui/resources/chevron.svg"
                 backgroundColor: Theme.clickableRowPurple
                 fontColor: hovered ? Color.purple70 : Theme.fontColorDark
 

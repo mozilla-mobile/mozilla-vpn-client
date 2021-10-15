@@ -4,8 +4,9 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import "../themes/themes.js" as Theme
+import QtGraphicalEffects 1.0
 
+import themes 0.1
 
 ToolTip {
     id: toolTip

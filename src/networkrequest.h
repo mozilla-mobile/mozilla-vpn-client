@@ -38,7 +38,8 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForDeviceCreation(QObject* parent,
                                                  const QString& deviceName,
-                                                 const QString& pubKey);
+                                                 const QString& pubKey,
+                                                 const QString& deviceId);
 
   static NetworkRequest* createForDeviceRemoval(QObject* parent,
                                                 const QString& pubKey);

@@ -6,9 +6,10 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import QtQuick.Window 2.12
+
 import Mozilla.VPN 1.0
-import "../components"
-import "../themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 
 Button {
@@ -18,7 +19,7 @@ Button {
     width: parent.width
     z: 2
     clip: true
-    onClicked: mainStackView.replace("../components/VPNWasmMenu.qml", StackView.Immediate)
+    onClicked: mainStackView.replace("qrc:/components/components/VPNWasmMenu.qml", StackView.Immediate)
     background: Rectangle {
         color: Theme.bgColor
         anchors.fill: parent

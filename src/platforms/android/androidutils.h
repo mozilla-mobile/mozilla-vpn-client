@@ -21,6 +21,9 @@ class AndroidUtils final : public QObject {
  public:
   static QString GetDeviceName();
 
+  // Creates a "share" intent to Open/Send Plaintext
+  static bool ShareText(const QString& plainText);
+
   static QByteArray DeviceId();
 
   static AndroidUtils* instance();

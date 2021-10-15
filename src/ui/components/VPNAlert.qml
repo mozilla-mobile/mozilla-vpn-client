@@ -5,8 +5,9 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
-import "../themes/themes.js" as Theme
+import QtGraphicalEffects 1.0
 
+import themes 0.1
 
 Rectangle {
     id: alertBox
@@ -48,8 +49,8 @@ Rectangle {
     // Private Properties, will be changed depnding on alertType
     QtObject {
         id: style
-        readonly property string darkCloseIcon: "../resources/close-dark.svg"
-        readonly property string whiteCloseIcon: "../resources/close-white.svg"
+        readonly property string darkCloseIcon: "qrc:/ui/resources/close-dark.svg"
+        readonly property string whiteCloseIcon: "qrc:/ui/resources/close-white.svg"
         property var alertColor: "black";
         property var alertHoverColor: "gray";
         property var alertClickColor: "white";
