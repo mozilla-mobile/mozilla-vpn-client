@@ -502,7 +502,7 @@ Item {
         }
     ]
 
-    VPNAnimatedRingsShader {
+    VPNAnimatedRings {
         id: animatedRings
         // Make sure we only do the render animation when
         // The element is visible &&

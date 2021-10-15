@@ -4,7 +4,9 @@
 
 import QtQuick 2.0
 
-ShaderEffect {
+import compat 0.1
+
+VPNAnimatedRingsShader {
     id: ringAnimation
 
     property bool isCurrentyVisible: false
@@ -23,8 +25,8 @@ ShaderEffect {
         id: ringAnimationTimer
 
         interval: 25
-        running: ringAnimation.visible && isCurrentyVisible
         repeat: true
+        running: ringAnimation.visible && isCurrentyVisible
 
         onTriggered: {
             const animationSpeed = 0.001;
@@ -51,10 +53,7 @@ ShaderEffect {
         }
     }
 
-    fragmentShader: "qrc:/ui/resources/shaders/baked/animatedRings.frag.qsb"
-
     function resetAnimation() {
         animationProgress = 0.0;
     }
 }
-
