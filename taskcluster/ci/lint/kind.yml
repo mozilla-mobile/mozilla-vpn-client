@@ -53,12 +53,12 @@ jobs:
         treeherder:
             symbol: l10n
             tier: 1
-    ktlint:
-        description: 'ktlint'
-        run:
-            using: run-task
-            cwd: '{checkout}'
-            command: ktlint --reporter=checkstyle --relative
-        treeherder:
-            symbol: ktlint
-            tier: 1
+#    ktlint:
+#        description: 'ktlint'
+#        run:
+#            using: run-task
+#            cwd: '{checkout}'
+#            command: ktlint --reporter=checkstyle --relative
+#        treeherder:
+#            symbol: ktlint
+#            tier: 1
