@@ -443,5 +443,4 @@ describe('Settings', function() {
     await vpn.wait();
   });
 
-  it('quit the app', async () => await vpn.quit());
 });

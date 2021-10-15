@@ -24,8 +24,6 @@ describe('User authentication', function() {
   });
 
 
-  it('reset the app', async () => await vpn.reset());
-
   it('wait for the main view', async () => {
     assert.strictEqual(await vpn.getLastUrl(), '');
 
@@ -133,5 +131,4 @@ describe('User authentication', function() {
     await vpn.wait();
   });
 
-  it('quit the app', async () => await vpn.quit());
 });

@@ -2,29 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');
 const vpn = require('./helper.js');
 
 describe('Glean event logging', function() {
   this.timeout(5000);
 
-  before(async () => {
-    await vpn.connect();
-  });
-
   beforeEach(async () => {
-    await vpn.reset();
     await vpn.setGleanAutomationHeader();
   });
-
-  afterEach(async () => {
-    await vpn.dumpFailure;
-  });
-
-  after(async () => {
-    await vpn.quit();
-    vpn.disconnect();
-  })
 
   /*
   (UPDATE THIS BASED ON NEW TELEMETRY PAGE POSITION)

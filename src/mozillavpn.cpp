@@ -1634,11 +1634,14 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   addCurrentDeviceAndRefreshData();
 }
 
-void MozillaVPN::hardResetAndQuit() {
-  logger.debug() << "Hard reset and quit";
-
+void MozillaVPN::hardReset() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
   settingsHolder->hardReset();
+}
+
+void MozillaVPN::hardResetAndQuit() {
+  logger.debug() << "Hard reset and quit";
+  hardReset();
   quit();
 }

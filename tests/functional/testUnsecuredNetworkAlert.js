@@ -21,8 +21,6 @@ describe('Unsecured network alert', function() {
     vpn.disconnect();
   });
 
-  it('reset the app', async () => await vpn.reset());
-
   it('Enable unsecured-network-alert feature', async () => {
     await vpn.setSetting('unsecured-network-alert', 'false');
     assert(await vpn.getSetting('unsecured-network-alert') === 'false');
@@ -76,7 +74,7 @@ describe('Unsecured network alert', function() {
     await vpn.waitForElementProperty('getStarted', 'visible', 'true');
   });
 
-  it('authenticate', async () => await vpn.authenticate(false));
+  it('authenticate', async () => await vpn.authenticate());
 
   it('Unsecured network alert in the Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
@@ -191,5 +189,4 @@ describe('Unsecured network alert', function() {
     await vpn.wait();
   });
 
-  it('quit the app', async () => await vpn.quit());
 });

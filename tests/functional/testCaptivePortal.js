@@ -21,8 +21,6 @@ describe('Captive portal', function() {
     vpn.disconnect();
   });
 
-  it('reset the app', async () => await vpn.reset());
-
   it('Enable captive-portal-alert feature', async () => {
     await vpn.setSetting('captive-portal-alert', 'false');
     assert(await vpn.getSetting('captive-portal-alert') === 'false');
@@ -76,7 +74,7 @@ describe('Captive portal', function() {
     await vpn.waitForElementProperty('getStarted', 'visible', 'true');
   });
 
-  it('authenticate', async () => await vpn.authenticate(false, false));
+  it('authenticate', async () => await vpn.authenticate());
 
   it('Captive portal in the Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
@@ -195,5 +193,4 @@ describe('Captive portal', function() {
     await vpn.wait();
   });
 
-  it('quit the app', async () => await vpn.quit());
 });

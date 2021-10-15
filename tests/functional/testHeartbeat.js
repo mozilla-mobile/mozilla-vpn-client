@@ -33,8 +33,6 @@ describe('Backend failure', function() {
     vpn.disconnect();
   });
 
-  it('reset the app', async () => await vpn.reset());
-
   it('Backend failure during the main view', async () => {
     assert(await vpn.getLastUrl() === '');
 
@@ -126,7 +124,7 @@ describe('Backend failure', function() {
     await vpn.wait();
   });
 
-  it('authenticate', async () => await vpn.authenticate(false));
+  it('authenticate', async () => await vpn.authenticate());
 
   it('BackendFailure in the Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
@@ -251,5 +249,4 @@ describe('Backend failure', function() {
     await vpn.wait();
   });
 
-  it('quit the app', async () => await vpn.quit());
 });

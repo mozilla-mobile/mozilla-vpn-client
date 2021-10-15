@@ -46,9 +46,11 @@ exports.mochaHooks = {
     });
     // Connect to VPN
     await vpn.connect();
-    // Reset the VPN
-    await vpn.reset();
-    vpn.resetLastNotification();
+    // NOTE - It's important that the hard reset is at the start.
+    // That way if there's any left over state from the previous test
+    // or other work it'll get cleaned up - this is most likely to happen
+    // on a dev's machine.
+    await vpn.hardReset();
   },
   async afterEach() {
     // Collect errors on failure
@@ -72,7 +74,7 @@ exports.mochaHooks = {
     // Reset error logs
     stdErr = '';
     // Close VPN app
-    await vpn.quit()
+    await vpn.quit();
     vpn.disconnect();
     vpnProcess.kill();
   }
