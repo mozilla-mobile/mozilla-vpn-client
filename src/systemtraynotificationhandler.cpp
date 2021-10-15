@@ -207,7 +207,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
       vpn->serverCountryModel()->localizedCountryName(countryCode);
 
   m_lastLocationLabel->setIcon(flagIcon);
-  m_lastLocationLabel->setText(l18nStrings->t(L18nStrings::SystrayLocation)
+  m_lastLocationLabel->setText(l18nStrings->t(L18nStrings::SystrayLocation2)
                                    .arg(localizedCountryName)
                                    .arg(localizedCityName));
   m_lastLocationLabel->setEnabled(vpn->controller()->state() ==

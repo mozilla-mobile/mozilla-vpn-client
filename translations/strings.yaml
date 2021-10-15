@@ -256,7 +256,8 @@ systray:
   statusConnectTo: "Connect to the last location:"
   statusConnectingTo: "Connecting to:"
   statusDisconnectingFrom: "Disconnecting from:"
-  location:
+  # location2 to avoid conflicts with other branches
+  location2:
     value: "%1, %2"
     comment: Location in the systray. %1 is the country, %2 is the city.
   disconnect: Disconnect
