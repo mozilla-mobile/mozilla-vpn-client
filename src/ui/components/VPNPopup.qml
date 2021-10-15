@@ -4,8 +4,8 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.14
 
+import compat 0.1
 import themes 0.1
 
 Popup {
@@ -35,7 +35,7 @@ Popup {
             z: -1
         }
 
-        DropShadow {
+        VPNDropShadow {
             id: popupShadow
 
             anchors.fill: popUpShadowSource
@@ -43,7 +43,6 @@ Popup {
             color: "black"
             opacity: 0.2
             radius: 16
-            samples: 33
             source: popUpShadowSource
             spread: 0.1
             transparentBorder: true

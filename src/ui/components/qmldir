@@ -20,7 +20,7 @@ VPNControllerNav 0.1 VPNControllerNav.qml
 VPNControllerView 0.1 VPNControllerView.qml
 VPNDeviceListItem 0.1 VPNDeviceListItem.qml
 VPNDevicesListHeader 0.1 VPNDevicesListHeader.qml
-VPNDropShadow 0.1 VPNDropShadow.qml
+VPNDropShadowWithStates 0.1 VPNDropShadowWithStates.qml
 VPNExpandableAppList 0.1 VPNExpandableAppList.qml
 VPNExternalLinkListItem 0.1 VPNExternalLinkListItem.qml
 VPNFeatureTour 0.1 VPNFeatureTour.qml
