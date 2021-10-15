@@ -2,20 +2,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* This is a GLOBAL setup file.
- * before applies to before running all tests.
- * beforeEach applies to running before every test.
- */
-const {config} = require('dotenv');
+/*
+
+This is a GLOBAL setup file.
+
+before applies to before running all tests.
+beforeEach applies to running before every test.
+
+*/
+
+// Load config as early as possible
+const dotenv = require('dotenv');
+dotenv.config();
+
 const fs = require('fs');
 const {exec, spawn} = require('child_process');
 const vpn = require('./helper.js');
-const {assert} = require('console');
 
-// Inject environment variables from .env file.
-config();
-
-const app = process.env.MVPN_TEST_BIN;
+const app = process.env.MVPN_BIN;
 let vpnProcess = null;
 let stdErr = '';
 

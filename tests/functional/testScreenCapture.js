@@ -4,12 +4,11 @@
 
 const assert = require('assert');
 const fs = require('fs');
-const util = require('util');
 const vpn = require('./helper.js');
 
 const dir = process.env.ARTIFACT_DIR + '/screencapture';
 
-describe('Take screenshots for each view', function() {
+describe.skip('Take screenshots for each view', function() {
   let languages = [];
   let servers;
 

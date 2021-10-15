@@ -13,7 +13,7 @@ print N ""
 
 runTest() {
   print Y "Running the test: $1"
-  mocha --file ./tests/functional/setup-vpn.js --bail $1
+  npm run functionalTest -- $1
 }
 
 if ! [ -d "src" ] || ! [ -d "tests" ]; then
