@@ -31,10 +31,13 @@ After checking out the code:
 * Install node (if needed) and then `npm install` to install the testing dependencies
 * Install geckodriver and ensure it's on your path.
   [Docs](https://www.selenium.dev/documentation/getting_started/installing_browser_drivers/)
-* Make a .env file with ACCOUNT_EMAIL and ACCOUNT_PASSWORD (the account should have an active subscription on staging).
+* Make a .env file with:
+ * `ACCOUNT_EMAIL` and `ACCOUNT_PASSWORD` (the account should have an active subscription on staging).
+ * `MVPN_API_BASE_URL` (where proxy runs, most likely http://localhost:5000)
+ * `MVPN_BIN` (location of compiled mvpn binary)
+ * `ARTIFACT_DIR` (directory to put screenshots from test failures)
 * In one window run `./tests/proxy/wsgi.py` --mock-devices
-* In window where you'll run tests, run `export MVPN_API_BASE_URL=http://localhost:5000`
-* To run, say, the authentication tests: `./scripts/test_function.sh ./build/mozillavpn tests/functional/testAuthentication.js` (the second argument is the location of your mozillavpn executable).
+* To run, say, the authentication tests: `./scripts/test_function.sh tests/functional/testAuthentication.js`.
 
 Misc tips from core devs:
 * Make sure there are read/write permissions at every level of your build path
