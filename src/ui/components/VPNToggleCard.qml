@@ -21,7 +21,7 @@ Item {
     property alias toolTipTitleText: toggle.toolTipTitle
     property alias toggleObjectName: toggle.objectName
 
-    VPNDropShadow {
+    VPNDropShadowWithStates {
         anchors.fill: rect
         source: rect
         z: -2
