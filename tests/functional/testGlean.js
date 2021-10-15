@@ -38,8 +38,6 @@ describe('Glean event logging', function() {
   * ensure that a call to sendPings, sends pings
   * ensure Glean.shutdown is called onAboutToQuit
 
-  Do we want to test for each glean event that should generate a ping?
-
   Update the testTelemetryView tests to
   * ensure that "Accept telemetry" and "Reject telemetry" result in the correct
   glean state change
