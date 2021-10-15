@@ -32,6 +32,10 @@ Window {
     width: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
     height: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
 
+    //These need to be bound before onComplete so that the window buttons, menus and title bar double click behave properly
+    maximumWidth: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
+    maximumHeight: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
+
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
@@ -59,9 +63,7 @@ Window {
         }
 
         if (!fullscreenRequired()) {
-            maximumHeight = Theme.desktopAppHeight
             minimumHeight = Theme.desktopAppHeight
-            maximumWidth = Theme.desktopAppWidth
             minimumWidth = Theme.desktopAppWidth
         }
 
