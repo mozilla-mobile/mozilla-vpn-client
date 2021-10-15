@@ -3,29 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const util = require('util');
 const vpn = require('./helper.js');
 
 describe('Telemetry view', function() {
   this.timeout(60000);
 
-  before(async () => {
-    await vpn.connect();
-  });
-
   beforeEach(async () => {
-    await vpn.reset();
     await vpn.waitForMainView();
   });
-
-  afterEach(async () => {
-    await vpn.dumpFailure;
-  });
-
-  after(async () => {
-    await vpn.quit();
-    vpn.disconnect();
-  })
 
   it('Accept telemetry', async () => {
     assert(await vpn.getSetting('telemetry-policy-shown') === 'false');
