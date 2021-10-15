@@ -103,7 +103,7 @@ splittunnel:
       - Displayed in a notification as "call to action" when apps are missing from the split-tunnel settings.
   missingAppMultiple:
     value:
-      - "%1 apps missing from list"
+      - "%1 apps missing from list."
     comment:
       - Apps listed in the split-tunnel settings. %1 is the number of missing apps
       - If necessary, this can be translated as "Apps missing from list :%1"
