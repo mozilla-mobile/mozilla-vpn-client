@@ -136,12 +136,16 @@ jobs:
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
-        run: |
-          export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
-          export HEADLESS=yes
-
-          mkdir -p $ARTIFACT_DIR
-          xvfb-run -a ./scripts/test_function.sh ./build/mozillavpn ${{matrix.test.path}}
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 5
+          command: |
+            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+            export HEADLESS=yes
+            mkdir -p $ARTIFACT_DIR
+            xvfb-run -a ./scripts/test_function.sh ./build/mozillavpn ${{matrix.test.path}}
+          on_retry_command: npm run cleanup-flaky-script-output
         env:
           MVPN_API_BASE_URL: http://localhost:5000
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
@@ -150,7 +154,7 @@ jobs:
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v1
-        if: ${{ always() && steps.runTests.outcome != 'success' }}
+        if: ${{ always() }}
         with:
           name: ${{matrix.test.name}} Logs
           path: ${{ runner.temp }}/artifacts

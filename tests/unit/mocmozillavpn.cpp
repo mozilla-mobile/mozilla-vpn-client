@@ -100,7 +100,7 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation,
   return true;
 }
 
-bool MozillaVPN::viewLogs() {}
+bool MozillaVPN::viewLogs() { return true; }
 
 bool MozillaVPN::modelsInitialized() const { return true; }
 
@@ -156,3 +156,5 @@ bool MozillaVPN::validateUserDNS(const QString&) const { return false; }
 void MozillaVPN::reset(bool) {}
 
 void MozillaVPN::maybeRegenerateDeviceKey() {}
+
+void MozillaVPN::hardResetAndQuit() {}

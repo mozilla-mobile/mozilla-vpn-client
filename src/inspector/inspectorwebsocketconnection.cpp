@@ -8,10 +8,10 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "mozillavpn.h"
+#include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
-#include "systemtrayhandler.h"
 
 #ifdef QT_DEBUG
 #  include "gleantest.h"
@@ -394,7 +394,7 @@ static QList<WebSocketCommand> s_commands{
 
     WebSocketCommand{"click_notification", "Click on a notification", 0,
                      [](const QList<QByteArray>&) {
-                       SystemTrayHandler::instance()->messageClickHandle();
+                       NotificationHandler::instance()->messageClickHandle();
                        return QJsonObject();
                      }},
 
@@ -738,8 +738,9 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
   connect(LogHandler::instance(), &LogHandler::logEntryAdded, this,
           &InspectorWebSocketConnection::logEntryAdded);
 
-  connect(SystemTrayHandler::instance(), &SystemTrayHandler::notificationShown,
-          this, &InspectorWebSocketConnection::notificationShown);
+  connect(NotificationHandler::instance(),
+          &NotificationHandler::notificationShown, this,
+          &InspectorWebSocketConnection::notificationShown);
 }
 
 InspectorWebSocketConnection::~InspectorWebSocketConnection() {
