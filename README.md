@@ -66,13 +66,12 @@ See https://wiki.qt.io/Building_Qt_5_from_Git#Linux.2FX11 if you get stuck or ar
 
 If you are building Qt from sources, be sure to **add `$(pwd)/qt/qt/bin` to `PATH`.**
 
-For Ubuntu 21.04 and later, the `qt5-default` package has been deprecated, but Qt 5.15 is now
+For Ubuntu/21.04 and later, the `qt5-default` package has been deprecated, but Qt 5.15 is now
 available as a native package. For these distributions, you can install the necessary Qt
-build-dependencies as follows:
+dependencies as follows:
 ```
 sudo apt-get install devscripts equivs
 sudo mk-build-deps --install linux/debian/control.$(lsb_release -sc)
-sudo apt-get install wireguard wireguard-tools
 sudo apt-get install qml-module-qtcharts qml-module-qtgraphicaleffects \
                      qml-module-qtquick-controls qml-module-qtquick-controls2 \
                      qml-module-qtquick-extras qml-module-qtquick-layouts \
