@@ -373,11 +373,13 @@ static QList<WebSocketCommand> s_commands{
 
                        QObject* qmlobj = findObject(arguments[1]);
                        if (!qmlobj) {
+                         logger.error() << "Did not find object to click on";
                          obj["error"] = "Object not found";
                          return obj;
                        }
                        QQuickItem* item = qobject_cast<QQuickItem*>(qmlobj);
                        if (!item) {
+                            logger.error() << "Object is not clickable";
                          obj["error"] = "Object is not clickable";
                          return obj;
                        }
@@ -386,8 +388,15 @@ static QList<WebSocketCommand> s_commands{
                        QPoint point = pointF.toPoint();
                        point.rx() += item->width() / 2;
                        point.ry() += item->height() / 2;
-                       QTest::mouseClick(item->window(), Qt::LeftButton,
-                                         Qt::NoModifier, point);
+                       //QTest::mouseClick(item->window(), Qt::LeftButton,
+                       //                  Qt::NoModifier, point);
+
+                      
+                      QEvent* evtPress = new QEvent(QEvent::MouseButtonPress);
+                      QEvent* evtRelease = new QEvent(QEvent::MouseButtonRelease);
+
+                      QCoreApplication::instance()->postEvent(qmlobj,evtPress);
+                      QCoreApplication::instance()->postEvent(qmlobj,evtRelease);
 
                        return obj;
                      }},
@@ -643,6 +652,22 @@ static QList<WebSocketCommand> s_commands{
           settingsHolder->setInstallationTime(QDateTime::currentDateTime());
           settingsHolder->setConsumedSurveys(QStringList());
 
+          return QJsonObject();
+        }},
+    WebSocketCommand{
+        "dismiss_surveys",
+        "Dismisses all surveys", 0,
+        [](const QList<QByteArray>&) {
+          SettingsHolder* settingsHolder = SettingsHolder::instance();
+          Q_ASSERT(settingsHolder);
+          auto surveys = MozillaVPN::instance()->surveyModel()->surveys();
+          QStringList consumedSurveys;
+          for(auto& survey:surveys){
+              consumedSurveys.append(survey.id());
+          }
+          settingsHolder->setInstallationTime(QDateTime::currentDateTime());
+          settingsHolder->setConsumedSurveys(consumedSurveys);
+          MozillaVPN::instance()->surveyModel()->dismissCurrentSurvey();
           return QJsonObject();
         }},
 
