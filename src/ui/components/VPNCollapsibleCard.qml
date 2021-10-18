@@ -22,7 +22,7 @@ Rectangle {
     radius: Theme.cornerRadius
     width: parent.width
 
-    VPNDropShadow {
+    VPNDropShadowWithStates {
         anchors.fill: shadowSource
         source: shadowSource
         state: "overwrite-state"

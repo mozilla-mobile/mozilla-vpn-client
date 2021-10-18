@@ -401,6 +401,64 @@ void TestModels::deviceModelFromJson() {
   }
 }
 
+void TestModels::deviceModelRemoval() {
+  QJsonObject d1;
+  d1.insert("name", "deviceName");
+  d1.insert("unique_id", "d1");
+  d1.insert("pubkey", "devicePubkey1");
+  d1.insert("created_at", "2017-07-24T15:46:29");
+  d1.insert("ipv4_address", "deviceIpv4");
+  d1.insert("ipv6_address", "deviceIpv6");
+
+  QJsonObject d2;
+  d2.insert("name", "deviceName");
+  d2.insert("unique_id", "d2");
+  d2.insert("pubkey", "devicePubkey2");
+  d2.insert("created_at", "2017-07-24T15:46:29");
+  d2.insert("ipv4_address", "deviceIpv4");
+  d2.insert("ipv6_address", "deviceIpv6");
+
+  QJsonArray devices;
+  devices.append(d1);
+  devices.append(d2);
+
+  QJsonObject obj;
+  obj.insert("devices", devices);
+
+  Keys keys;
+  keys.storeKeys("private", "currentDevicePubkey");
+
+  DeviceModel dm;
+  QCOMPARE(dm.fromJson(&keys, QJsonDocument(obj).toJson()), true);
+
+  QCOMPARE(dm.rowCount(QModelIndex()), 2);
+
+  // Let's start the removal.
+  dm.startDeviceRemovalFromPublicKey("devicePubkey1");
+  QCOMPARE(dm.rowCount(QModelIndex()), 1);
+
+  // Refresh the model. The removed device is still gone.
+  QCOMPARE(dm.fromJson(&keys, QJsonDocument(obj).toJson()), true);
+  QCOMPARE(dm.rowCount(QModelIndex()), 1);
+
+  // Complete the removal without removing the device for real (simulate a
+  // failure).
+  dm.stopDeviceRemovalFromPublicKey("devicePubkey1", &keys);
+  QCOMPARE(dm.rowCount(QModelIndex()), 2);
+
+  // Let's start the removal again.
+  dm.startDeviceRemovalFromPublicKey("devicePubkey1");
+  QCOMPARE(dm.rowCount(QModelIndex()), 1);
+
+  // Remove the device for real.
+  dm.removeDeviceFromPublicKey("devicePubkey1");
+  QCOMPARE(dm.rowCount(QModelIndex()), 1);
+
+  // We have only 1 device left.
+  dm.stopDeviceRemovalFromPublicKey("devicePubkey1", &keys);
+  QCOMPARE(dm.rowCount(QModelIndex()), 1);
+}
+
 // Feedback Category
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

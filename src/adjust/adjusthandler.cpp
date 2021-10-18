@@ -31,22 +31,36 @@ void AdjustHandler::initialize() {
     return;
   }
 
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  if (settingsHolder->firstExecution() &&
+      !settingsHolder->hasAdjustActivatable()) {
+    // We want to activate Adjust only for new users.
+    logger.debug() << "First execution detected. Let's make adjust activatable";
+    settingsHolder->setAdjustActivatable(true);
+  }
+
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
   // If the app has not started yet, let's wait.
   if (vpn->state() == MozillaVPN::StateInitialize) {
-    QObject::connect(vpn, &MozillaVPN::state, AdjustHandler::initialize);
+    QObject::connect(vpn, &MozillaVPN::stateChanged, AdjustHandler::initialize);
     return;
   }
 
   s_initialized = true;
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
   if (!settingsHolder->gleanEnabled()) {
     // The user doesn't want to be tracked. Good!
+    logger.debug() << "Telemetry policy disabled. Bail out";
+    return;
+  }
+
+  if (!settingsHolder->adjustActivatable()) {
+    // This is a pre-adjustSDK user. We don't want to activate the tracking.
+    logger.debug() << "Adjust is not activatable. Bail out";
     return;
   }
 
@@ -95,6 +109,11 @@ void AdjustHandler::initialize() {
 void AdjustHandler::trackEvent(const QString& event) {
   if (!s_adjustProxy || !s_adjustProxy->isListening()) {
     logger.error() << "Adjust Proxy not listening; event tracking failed";
+    return;
+  }
+
+  if (!SettingsHolder::instance()->adjustActivatable()) {
+    logger.debug() << "Adjust is not activatable. Bail out";
     return;
   }
 

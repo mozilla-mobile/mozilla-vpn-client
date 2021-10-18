@@ -86,6 +86,9 @@ MozillaVPN* MozillaVPN::instance() {
   return s_instance;
 }
 
+// static
+MozillaVPN* MozillaVPN::maybeInstance() { return s_instance; }
+
 MozillaVPN::MozillaVPN() : m_private(new Private()) {
   MVPN_COUNT_CTOR(MozillaVPN);
 
@@ -365,6 +368,16 @@ void MozillaVPN::maybeStateMain() {
   if (m_state != StateUpdateRequired) {
     setState(StateMain);
   }
+
+#ifdef MVPN_ADJUST
+  // When the client is ready to be activated, we do not need adjustSDK anymore
+  // (the subscription is done, and no extra events will be dispatched). We
+  // cannot disable AdjustSDK at runtime, but we can disable it for the next
+  // execution.
+  if (settingsHolder->hasAdjustActivatable()) {
+    settingsHolder->setAdjustActivatable(false);
+  }
+#endif
 }
 
 void MozillaVPN::setServerPublicKey(const QString& publicKey) {
@@ -693,6 +706,11 @@ void MozillaVPN::serversFetched(const QByteArray& serverData,
   }
 }
 
+void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
+  logger.debug() << "Device removal task completed";
+  m_private->m_deviceModel.stopDeviceRemovalFromPublicKey(publicKey, keys());
+}
+
 void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   logger.debug() << "Remove device";
 
@@ -702,6 +720,12 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
     // Let's inform the UI about what is going to happen.
     emit deviceRemoving(publicKey);
     scheduleTask(new TaskRemoveDevice(publicKey));
+
+    if (m_state != StateDeviceLimit) {
+      // To have a faster UI, we inform the device-model that this public key
+      // is going to be removed.
+      m_private->m_deviceModel.startDeviceRemovalFromPublicKey(publicKey);
+    }
   }
 
   if (m_state != StateDeviceLimit) {
@@ -1388,9 +1412,11 @@ void MozillaVPN::subscriptionCompleted() {
   }
 
   logger.debug() << "Subscription completed";
+
 #ifdef MVPN_ADJUST
   AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
+
   completeActivation();
 }
 
@@ -1565,4 +1591,13 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   // We do not need to remove the current device! guardian-website "overwrites"
   // the current device key when we submit a new one.
   addCurrentDeviceAndRefreshData();
+}
+
+void MozillaVPN::hardResetAndQuit() {
+  logger.debug() << "Hard reset and quit";
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+  settingsHolder->hardReset();
+  quit();
 }

@@ -5,8 +5,8 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
-import QtGraphicalEffects 1.0
 
+import compat 0.1
 import themes 0.1
 
 Rectangle {
@@ -145,14 +145,16 @@ Rectangle {
     ]
 
     Timer {
-          interval: alertBox.duration
-          id: autoHideTimer
-          running: false
-          repeat: false
-          onTriggered: { closeAlert.start();}
+        interval: alertBox.duration
+        id: autoHideTimer
+        running: false
+        repeat: false
+        onTriggered: {
+            closeAlert.start();
+        }
     }
 
-    DropShadow {
+    VPNDropShadow {
         anchors.fill: parent
         source: parent
         opacity: .1

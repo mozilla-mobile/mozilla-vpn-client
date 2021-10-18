@@ -112,6 +112,10 @@ class MozillaVPN final : public QObject {
 
   static MozillaVPN* instance();
 
+  // This is exactly like the ::instance() method, but it doesn't crash if the
+  // MozillaVPN is null. It should be used rarely.
+  static MozillaVPN* maybeInstance();
+
   void initialize();
 
   State state() const;
@@ -154,6 +158,7 @@ class MozillaVPN final : public QObject {
                                        const QString& issueText,
                                        const QString& category);
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
+  Q_INVOKABLE void hardResetAndQuit();
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
@@ -203,6 +208,7 @@ class MozillaVPN final : public QObject {
                    const QString& privateKey);
 
   void deviceRemoved(const QString& publicKey);
+  void deviceRemovalCompleted(const QString& publicKey);
 
   void serversFetched(const QByteArray& serverData,
                       const QByteArray& serverExtraData);

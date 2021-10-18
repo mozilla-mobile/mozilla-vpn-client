@@ -19,8 +19,11 @@ AndroidNotificationHandler::~AndroidNotificationHandler() {
   MVPN_COUNT_DTOR(AndroidNotificationHandler);
 }
 
-void AndroidNotificationHandler::notify(const QString& title,
-                                        const QString& message, int timerSec) {
+void AndroidNotificationHandler::notify(NotificationHandler::Message type,
+                                        const QString& title,
+                                        const QString& message, int timerMsec) {
+  Q_UNUSED(type);
   logger.debug() << "Send notification - " << message;
-  AndroidController::instance()->setNotificationText(title, message, timerSec);
+  AndroidController::instance()->setNotificationText(title, message,
+                                                     timerMsec / 1000);
 }

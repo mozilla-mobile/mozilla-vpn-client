@@ -406,6 +406,16 @@ SETTING_STRINGLIST(vpnDisabledApps,     // getter
                    false                // remove when reset
 )
 
+#if defined(MVPN_ADJUST)
+SETTING_BOOL(adjustActivatable,     // getter
+             setAdjustActivatable,  // setter
+             hasAdjustActivatable,  // has
+             "adjustActivatable",   // key
+             false,                 // default value
+             false                  // remove when reset
+)
+#endif
+
 #if defined(MVPN_ANDROID)
 SETTING_BOOL(nativeAndroidDataMigrated,     // getter
              setNativeAndroidDataMigrated,  // setter
