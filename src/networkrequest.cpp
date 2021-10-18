@@ -70,7 +70,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
   connect(&m_timer, &QTimer::timeout, this, &QObject::deleteLater);
 
   NetworkManager::instance()->increaseNetworkRequestCount();
-  maybeEnableSSLIntervention();
+  enableSSLIntervention();
 }
 
 NetworkRequest::~NetworkRequest() {
@@ -923,21 +923,9 @@ void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
       logger.info() << cert.toText();
     }
   }
-
-  // Do not active the intervention on hostname Mismatch,
-  // as the captive-portal endpoint triggers it.
-  // Also adding new CA-Certs wont help :)
-  if (errors.contains(QSslError::HostNameMismatch)) {
-    return;
-  }
-  SettingsHolder::instance()->setSslInterVentionEnabled(true);
 }
 
-void NetworkRequest::maybeEnableSSLIntervention() {
-  if (!SettingsHolder::instance()->sslInterVentionEnabled()) {
-    return;
-  }
-
+void NetworkRequest::enableSSLIntervention() {
   if (s_intervention_certs.isEmpty()) {
     QDirIterator certFolder(":/certs");
     while (certFolder.hasNext()) {
@@ -947,11 +935,12 @@ void NetworkRequest::maybeEnableSSLIntervention() {
       if (!cert.isNull()) {
         logger.info() << "Imported cert from: " << cert.issuerDisplayName();
         s_intervention_certs.append(cert);
+      } else {
+        logger.error() << "Failed to import cert -" << f.fileName();
       }
     }
   }
   if (s_intervention_certs.isEmpty()) {
-    logger.error() << "Intervention fired but no certs present?!";
     return;
   }
   auto conf = QSslConfiguration::defaultConfiguration();
