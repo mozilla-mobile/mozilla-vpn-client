@@ -20,7 +20,7 @@ class FeatureInAppPurchase final : public Feature {
                 "",                  // ImagePath
                 "",                  // IconPath
                 "2.4",               // released
-                true                 // Can be enabled in devmode
+                false                // Can be enabled in devmode
         ){};
 
   bool checkSupportCallback() const override {

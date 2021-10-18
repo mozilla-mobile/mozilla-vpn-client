@@ -3,8 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+
 import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
+import themes 0.1
 
 Item {
     id: listHeader
@@ -70,7 +71,7 @@ Item {
 
         anchors.top: spacer.bottom
         logoSize: 80
-        logo: "../resources/devicesLimit.svg"
+        logo: "qrc:/ui/resources/devicesLimit.svg"
         //% "Remove a device"
         logoTitle: qsTrId("vpn.devices.doDeviceRemoval")
         //% "You’ve reached the device limit. To turn on the VPN on this device, you’ll need to remove one."

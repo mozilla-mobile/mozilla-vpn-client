@@ -18,6 +18,7 @@
 #include "features/featuremultihop.h"
 #include "features/featurenotificationcontrol.h"
 #include "features/featuresplittunnel.h"
+#include "features/featuresharelogs.h"
 #include "features/featurestartonboot.h"
 #include "features/featureunauthsupport.h"
 #include "features/featureunsecurednetworknotification.h"
@@ -50,6 +51,7 @@ void FeatureList::initialize() {
   new FeatureLocalAreaAccess();
   new FeatureMultiHop();
   new FeatureNotificationControl();
+  new FeatureShareLogs();
   new FeatureSplitTunnel();
   new FeatureStartOnBoot();
   new FeatureUnauthSupport();
@@ -81,7 +83,9 @@ void FeatureList::devModeFlipFeatureFlag(const QString& feature) {
 }
 
 QHash<int, QByteArray> FeatureList::roleNames() const {
-  return Feature::roleNames();
+  QHash<int, QByteArray> roles;
+  roles[FeatureRole] = "feature";
+  return roles;
 }
 
 int FeatureList::rowCount(const QModelIndex&) const {
@@ -90,10 +94,11 @@ int FeatureList::rowCount(const QModelIndex&) const {
 
 QVariant FeatureList::data(const QModelIndex& index, int role) const {
   auto feature = m_featurelist.at(index.row());
-  if (feature == nullptr) {
+  if (feature == nullptr || role != FeatureRole) {
     return QVariant();
   }
-  return feature->data(role);
+
+  return QVariant::fromValue(feature);
 };
 
 QObject* FeatureList::get(const QString& feature) {
@@ -104,14 +109,38 @@ QObject* FeatureList::get(const QString& feature) {
 }
 
 void FeatureList::updateFeatureList(const QByteArray& data) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  bool changed = false;
+  QStringList devModeFeatureFlags = settingsHolder->devModeFeatureFlags();
+
   QJsonObject json = QJsonDocument::fromJson(data).object();
-  QJsonValue unauthSupportEnabled = json["unauthSupportEnabled"];
-  if (unauthSupportEnabled.isBool()) {
-    logger.debug() << "Setting unauth support enablet to: "
-                   << unauthSupportEnabled.toBool();
-    FeatureUnauthSupport::instance()->setIsSupported(
-        unauthSupportEnabled.toBool());
-  } else {
-    logger.error() << "Error in parsing unauth support response";
+  for (const QString& key : json.keys()) {
+    QJsonValue value = json.value(key);
+    if (!value.isBool()) {
+      logger.error() << "Error in parsing feature enabling:" << key;
+      continue;
+    }
+
+    const Feature* feature = Feature::getOrNull(key);
+    if (!feature) {
+      logger.error() << "No feature named" << key;
+      continue;
+    }
+
+    if (value.toBool() == false) {
+      if (devModeFeatureFlags.contains(key)) {
+        devModeFeatureFlags.removeAll(key);
+        changed = true;
+      }
+    } else if (!devModeFeatureFlags.contains(key)) {
+      devModeFeatureFlags.append(key);
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    settingsHolder->setDevModeFeatureFlags(devModeFeatureFlags);
   }
 }

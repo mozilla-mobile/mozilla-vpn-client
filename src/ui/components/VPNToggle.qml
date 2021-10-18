@@ -4,9 +4,10 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.5
-import Mozilla.VPN 1.0
 
-import "../themes/themes.js" as Theme
+import Mozilla.VPN 1.0
+import components 0.1
+import themes 0.1
 
 VPNButtonBase {
     id: toggleButton

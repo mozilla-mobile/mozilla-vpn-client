@@ -44,13 +44,17 @@ class Feature : public QObject {
   // feature does not exist :)
   static const Feature* get(const QString& featureID);
 
+  // Similar to the previous get, but it doesn't crash. This is meant to be
+  // used only to enable the features via REST API.
+  static const Feature* getOrNull(const QString& featureID);
+
   // Checks if the feature is released
   // or force enabled by the DevMode
   // returns the features checkSupportCallback otherwise.
   bool isSupported() const;
 
   // Returns true if it was enabled via DevMode
-  bool isDevModeEnabled() const;
+  Q_INVOKABLE bool isDevModeEnabled() const;
 
   // Returns true if this is a newly introduced feature
   bool isNew() const { return m_new; }
@@ -64,26 +68,6 @@ class Feature : public QObject {
   QString shortDescription() const;
   QString imagePath() const { return m_imagePath; }
   QString iconPath() const { return m_iconPath; }
-
-  // For use in QAbstractListModel
-  static QHash<int, QByteArray> roleNames();
-  QVariant data(int role) const;
-
-  enum ModelRoles {
-    RoleId,
-    RoleName,
-    RoleDisplayName,
-    RoleDescription,
-    RoleShortDescription,
-    RoleImagePath,
-    RoleIconPath,
-    RoleReleased,
-    RoleSupported,
-    RoleNew,
-    RoleMajor,
-    RoleDevModeWriteable,
-    RoleDevModeEnabled
-  };
 
  signals:
   // Is send if the underlying factors for support changed

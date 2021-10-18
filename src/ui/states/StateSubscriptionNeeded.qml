@@ -8,5 +8,5 @@ import QtQuick.Controls 2.14
 StackView {
     id: stackview
 
-    initialItem: "../views/ViewSubscriptionNeeded.qml"
+    initialItem: "qrc:/ui/views/ViewSubscriptionNeeded.qml"
 }

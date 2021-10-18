@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+
 import Mozilla.VPN 1.0
-import "../components"
-import "../themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 import org.mozilla.Glean 0.15
 import telemetry 0.15
@@ -21,12 +22,12 @@ Item {
         labelText: qsTrId("vpn.main.getHelp2")
         onClicked: {
             Sample.getHelpClickedInitialize.record();
-            stackview.push("../views/ViewGetHelp.qml", {isSettingsView: false});
+            stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false});
         }
     }
 
     VPNPanel {
-        logo: "../resources/logo.svg"
+        logo: "qrc:/ui/resources/logo.svg"
         logoTitle: qsTrId("vpn.main.productName")
         //% "A fast, secure and easy to use VPN. Built by the makers of Firefox."
         logoSubtitle: qsTrId("vpn.main.productDescription")

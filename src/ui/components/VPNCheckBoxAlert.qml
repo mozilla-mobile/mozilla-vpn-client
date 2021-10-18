@@ -4,8 +4,9 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
+import themes 0.1
 
 RowLayout {
     property var leftMargin:  Theme.menuHeight
@@ -32,7 +33,7 @@ RowLayout {
         VPNIcon {
             id: warningIcon
 
-            source: alertColor === Theme.red ?  "../resources/warning.svg" : "../resources/warning-dark-orange.svg"
+            source: alertColor === Theme.red ?  "qrc:/ui/resources/warning.svg" : "qrc:/ui/resources/warning-dark-orange.svg"
             sourceSize.height: 14
             sourceSize.width: 14
             Layout.alignment: Qt.AlignVCenter

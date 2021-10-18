@@ -9,10 +9,11 @@
 
 #include <QAbstractListModel>
 #include <QByteArray>
+#include <QHash>
 #include <QObject>
-#include <QPointer>
 
 class ServerData;
+class ServerExtra;
 
 class ServerCountryModel final : public QAbstractListModel {
   Q_OBJECT
@@ -31,7 +32,8 @@ class ServerCountryModel final : public QAbstractListModel {
 
   [[nodiscard]] bool fromSettings();
 
-  [[nodiscard]] bool fromJson(const QByteArray& data);
+  [[nodiscard]] bool fromJson(const QByteArray& data,
+                              const QByteArray& extraData);
 
   bool initialized() const { return !m_rawJson.isEmpty(); }
 
@@ -68,12 +70,17 @@ class ServerCountryModel final : public QAbstractListModel {
   QVariant data(const QModelIndex& index, int role) const override;
 
  private:
-  [[nodiscard]] bool fromJsonInternal(const QByteArray& data);
+  [[nodiscard]] bool fromJsonInternal(const QByteArray& data,
+                                      const QByteArray& dataExtra);
+
+  void parseExtraData(const QByteArray& json,
+                      QHash<QString, ServerExtra>& serverExtras);
 
   void sortCountries();
 
  private:
   QByteArray m_rawJson;
+  QByteArray m_rawExtraJson;
 
   QList<ServerCountry> m_countries;
 };

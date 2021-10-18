@@ -5,10 +5,10 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../../themes/themes.js" as Theme
-import "../../themes/colors.js" as Color
-import "./../../components"
+import components 0.1
+import themes 0.1
 
 TextField {
     // TODO Add strings for Accessible.description, Accessible.name
@@ -53,7 +53,7 @@ TextField {
 
             anchors.centerIn: iconButton
             fillMode: Image.PreserveAspectFit
-            source: charactersMasked ? "../../resources/eye-hidden.svg" : "../../resources/eye-visible.svg"
+            source: charactersMasked ? "qrc://ui/resources/eye-hidden.svg" : "qrc://ui/resources/eye-visible.svg"
             sourceSize.height: Theme.iconSize * 1.5
             sourceSize.width: Theme.iconSize * 1.5
         }

@@ -8,11 +8,10 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "mozillavpn.h"
+#include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
-#include "systemtrayhandler.h"
-#include "features/featureunauthsupport.h"
 
 #ifdef QT_DEBUG
 #  include "gleantest.h"
@@ -152,16 +151,6 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->startAtBoot() ? "true" : "false";
         }},
 
-    // ipv6
-    WebSocketSettingCommand{
-        "ipv6-enabled", WebSocketSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setIpv6Enabled(value == "true");
-        },
-        []() {
-          return SettingsHolder::instance()->ipv6Enabled() ? "true" : "false";
-        }},
-
     // local area network access
     WebSocketSettingCommand{
         "local-network-access", WebSocketSettingCommand::Boolean,
@@ -229,27 +218,6 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->gleanEnabled() ? "true" : "false";
         }},
 
-};
-
-struct WebSocketFeatureCommand {
-  QString m_featureName;
-
-  std::function<void(bool)> m_set;
-  std::function<QJsonValue()> m_get;
-};
-
-// The list of features exposed to the websocket.
-static QList<WebSocketFeatureCommand> s_featureCommands{
-    // Unauth Support
-    WebSocketFeatureCommand{
-        "unauth-support",
-        [](bool enabled) {
-          FeatureUnauthSupport::instance()->setIsSupported(enabled);
-        },
-        []() {
-          return FeatureUnauthSupport::instance()->isSupported() ? "true"
-                                                                 : "false";
-        }},
 };
 
 struct WebSocketCommand {
@@ -426,7 +394,7 @@ static QList<WebSocketCommand> s_commands{
 
     WebSocketCommand{"click_notification", "Click on a notification", 0,
                      [](const QList<QByteArray>&) {
-                       SystemTrayHandler::instance()->messageClickHandle();
+                       NotificationHandler::instance()->messageClickHandle();
                        return QJsonObject();
                      }},
 
@@ -569,63 +537,6 @@ static QList<WebSocketCommand> s_commands{
 
           obj["error"] = QString("Invalid settings. The options are: %1")
                              .arg(settings.join(", "));
-          return obj;
-        }},
-
-    WebSocketCommand{
-        "set_feature", "Set a feature", 2,
-        [](const QList<QByteArray>& arguments) {
-          QJsonObject obj;
-
-          for (const WebSocketFeatureCommand& feature : s_featureCommands) {
-            if (arguments[1] == feature.m_featureName) {
-              if (arguments[2] != "true" && arguments[2] != "false") {
-                obj["error"] =
-                    QString("Expected boolean (true/false) for features %1")
-                        .arg(QString(arguments[1]));
-                return obj;
-              }
-
-              if (!feature.m_set) {
-                obj["error"] =
-                    QString("Read-only settings %1").arg(QString(arguments[1]));
-                return obj;
-              }
-
-              feature.m_set(arguments[2] == "true");
-              return obj;
-            }
-          }
-
-          QStringList features;
-          for (const WebSocketFeatureCommand& feature : s_featureCommands) {
-            features.append(feature.m_featureName);
-          }
-
-          obj["error"] = QString("Invalid features. The options are: %1")
-                             .arg(features.join(", "));
-          return obj;
-        }},
-
-    WebSocketCommand{
-        "feature", "Get a feature value", 1,
-        [](const QList<QByteArray>& arguments) {
-          QJsonObject obj;
-
-          for (const WebSocketFeatureCommand& feature : s_featureCommands) {
-            if (arguments[1] == feature.m_featureName) {
-              obj["value"] = feature.m_get();
-              return obj;
-            }
-          }
-
-          QStringList features;
-          for (const WebSocketFeatureCommand& feature : s_featureCommands) {
-            features.append(feature.m_featureName);
-          }
-
-          obj["error"] = QString("Invalid features. The options are: %1")
-                             .arg(features.join(", "));
           return obj;
         }},
 
@@ -827,8 +738,9 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
   connect(LogHandler::instance(), &LogHandler::logEntryAdded, this,
           &InspectorWebSocketConnection::logEntryAdded);
 
-  connect(SystemTrayHandler::instance(), &SystemTrayHandler::notificationShown,
-          this, &InspectorWebSocketConnection::notificationShown);
+  connect(NotificationHandler::instance(),
+          &NotificationHandler::notificationShown, this,
+          &InspectorWebSocketConnection::notificationShown);
 }
 
 InspectorWebSocketConnection::~InspectorWebSocketConnection() {

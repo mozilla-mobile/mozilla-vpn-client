@@ -9,7 +9,6 @@
 
 void TestIpFinder::abort() {
   SettingsHolder settingsHolder;
-  settingsHolder.setIpv6Enabled(false);
 
   IPFinder* ipFinder = new IPFinder(this);
 
@@ -17,32 +16,8 @@ void TestIpFinder::abort() {
   delete ipFinder;
 }
 
-void TestIpFinder::ipv4Only() {
-  SettingsHolder settingsHolder;
-  settingsHolder.setIpv6Enabled(false);
-
-  IPFinder* ipFinder = new IPFinder(this);
-
-  QEventLoop loop;
-  connect(
-      ipFinder, &IPFinder::completed,
-      [&](const QString& ipv4, const QString& ipv6, const QString& country) {
-        QCOMPARE(ipv4, "42");
-        QCOMPARE(country, "123");
-        loop.exit();
-      });
-
-  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-      TestHelper::NetworkConfig::Success,
-      QString("{\"ip\":\"42\", \"country\": \"123\"}").toUtf8()));
-
-  ipFinder->start();
-  loop.exec();
-}
-
 void TestIpFinder::ipv4AndIpv6() {
   SettingsHolder settingsHolder;
-  settingsHolder.setIpv6Enabled(true);
 
   IPFinder* ipFinder = new IPFinder(this);
 

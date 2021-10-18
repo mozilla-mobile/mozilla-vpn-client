@@ -5,11 +5,13 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Window 2.12
+
 import Mozilla.VPN 1.0
-import "./components"
-import "themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 import org.mozilla.Glean 0.15
+import compat 0.1
 import telemetry 0.15
 
 Window {
@@ -290,14 +292,14 @@ Window {
     Connections {
         target: VPN
         function onViewLogsNeeded() {
-            if (Qt.platform.os !== "android" &&
-                    Qt.platform.os !== "ios" &&
-                    Qt.platform.os !== "tvos" &&
-                    Qt.platform.os !== "wasm")  {
-                VPN.viewLogs();
-            } else {
-                mainStackView.push("views/ViewLogs.qml");
+            if (VPNFeatureList.get("shareLogs").isSupported)  {
+                if(VPN.viewLogs()){
+                    return;
+                };
             }
+            // If we cant show logs natively, open the viewer
+            mainStackView.push("views/ViewLogs.qml");
+            
         }
 
         function onContactUsNeeded() {
@@ -309,7 +311,7 @@ Window {
                 console.log("Unexpected android authentication view request!");
             }
 
-            mainStackView.push("../platforms/android/androidauthenticationview.qml", StackView.Immediate)
+            mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
         }
 
         function onSendGleanPings() {
@@ -334,7 +336,7 @@ Window {
     Connections {
         target: VPNSettings
         function onGleanEnabledChanged() {
-            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
+            Glean.setUploadEnabled(VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported);
         }
     }
 

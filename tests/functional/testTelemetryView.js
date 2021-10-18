@@ -33,12 +33,18 @@ describe('Telemetry view', function() {
   it('Accept telemetry', async () => {
     await vpn.clickOnElement('getStarted');
 
+    assert(await vpn.getSetting('glean-enabled') === 'true');
+    await vpn.authenticate();
+
+    await vpn.waitForElement('postAuthenticationButton');
+    await vpn.clickOnElement('postAuthenticationButton');
+    await vpn.wait();
+
+    // Default value
     await vpn.waitForElement('telemetryPolicyButton');
     await vpn.waitForElementProperty(
         'telemetryPolicyButton', 'visible', 'true');
     await vpn.clickOnElement('telemetryPolicyButton');
-
-    await vpn.wait();
 
     assert(await vpn.getSetting('glean-enabled') === 'true');
   });
@@ -54,6 +60,12 @@ describe('Telemetry view', function() {
 
   it('Deny telemetry', async () => {
     await vpn.clickOnElement('getStarted');
+
+    await vpn.authenticate();
+
+    await vpn.waitForElement('postAuthenticationButton');
+    await vpn.clickOnElement('postAuthenticationButton');
+    await vpn.wait();
 
     await vpn.waitForElement('declineTelemetryLink');
     await vpn.waitForElementProperty('declineTelemetryLink', 'visible', 'true');
