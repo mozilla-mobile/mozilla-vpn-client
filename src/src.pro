@@ -319,6 +319,7 @@ RESOURCES += ui/components.qrc
 RESOURCES += ui/resources.qrc
 RESOURCES += ui/themes.qrc
 RESOURCES += ui/ui.qrc
+RESOURCES += ui/resources/certs/certs.qrc
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
     RESOURCES += $$PWD/../glean/glean.qrc

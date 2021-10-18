@@ -165,6 +165,8 @@ class NetworkRequest final : public QObject {
   QNetworkRequest m_request;
   QTimer m_timer;
 
+  void maybeEnableSSLIntervention();
+
   QNetworkReply* m_reply = nullptr;
   int m_status = 0;
   bool m_completed = false;

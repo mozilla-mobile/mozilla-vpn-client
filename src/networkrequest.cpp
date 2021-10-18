@@ -12,6 +12,7 @@
 #include "settingsholder.h"
 #include "mozillavpn.h"
 
+#include <QDirIterator>
 #include <QHostAddress>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -31,13 +32,13 @@ constexpr const char* IPINFO_URL_IPV6 = "https://[%1]/api/v1/vpn/ipinfo";
 
 namespace {
 Logger logger(LOG_NETWORKING, "NetworkRequest");
+QList<QSslCertificate> s_intervention_certs;
 }
 
 NetworkRequest::NetworkRequest(QObject* parent, int status,
                                bool setAuthorizationHeader)
     : QObject(parent), m_status(status) {
   MVPN_COUNT_CTOR(NetworkRequest);
-
   logger.debug() << "Network request created";
 
 #ifndef MVPN_WASM
@@ -69,6 +70,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
   connect(&m_timer, &QTimer::timeout, this, &QObject::deleteLater);
 
   NetworkManager::instance()->increaseNetworkRequestCount();
+  maybeEnableSSLIntervention();
 }
 
 NetworkRequest::~NetworkRequest() {
@@ -921,4 +923,37 @@ void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
       logger.info() << cert.toText();
     }
   }
+
+  // Do not active the intervention on hostname Mismatch,
+  // as the captive-portal endpoint triggers it.
+  // Also adding new CA-Certs wont help :)
+  if (errors.contains(QSslError::HostNameMismatch)) {
+    return;
+  }
+  SettingsHolder::instance()->setSslInterVentionEnabled(true);
+}
+
+void NetworkRequest::maybeEnableSSLIntervention() {
+  if (!SettingsHolder::instance()->sslInterVentionEnabled()) {
+    return;
+  }
+
+  if (s_intervention_certs.isEmpty()) {
+    QDirIterator certFolder(":/certs");
+    while (certFolder.hasNext()) {
+      QFile f(certFolder.next());
+      f.open(QIODevice::ReadOnly);
+      QSslCertificate cert(&f, QSsl::Pem);
+      if (!cert.isNull()) {
+        logger.info() << "Imported cert from: " << cert.issuerDisplayName();
+        s_intervention_certs.append(cert);
+      }
+    }
+  }
+  if (s_intervention_certs.isEmpty()) {
+    logger.error() << "Intervention fired but no certs present?!";
+  }
+  auto conf = QSslConfiguration::defaultConfiguration();
+  conf.addCaCertificates(s_intervention_certs);
+  m_request.setSslConfiguration(conf);
 }
