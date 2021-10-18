@@ -73,7 +73,7 @@ Item {
                 function onNotification(type,message,action) {
                     console.log("Got notification: "+type + "  message:"+message);
                     var component = Qt.createComponent("qrc:/components/components/VPNAlert.qml");
-                    if( component.status != Component.Ready )
+                    if(component.status !== Component.Ready)
                         {
                             if( component.status == Component.Error )
                                 console.debug("Error:"+ component.errorString() );

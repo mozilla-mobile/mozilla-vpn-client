@@ -322,10 +322,10 @@ Rectangle {
         if (!isLayout) {
             height = style.alertHeight;
             width = Math.min(window.width - Theme.windowMargin, Theme.maxHorizontalContentWidth);
-            if(setY > 0){
+            if (setY > 0) {
                 y = setY;
-            }else{
-                y = fullscreenRequired()? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
+            } else {
+                y = fullscreenRequired() ? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
             }
             anchors.horizontalCenter = parent.horizontalCenter;
             anchors.margins = Theme.windowMargin / 2;
