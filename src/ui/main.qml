@@ -7,12 +7,12 @@ import QtQuick.Controls 2.14
 import QtQuick.Window 2.12
 
 import Mozilla.VPN 1.0
+import compat 0.1
 import components 0.1
 import themes 0.1
 
-import org.mozilla.Glean 0.15
-import compat 0.1
-import telemetry 0.15
+import org.mozilla.Glean 0.23
+import telemetry 0.23
 
 Window {
     id: window
@@ -57,42 +57,13 @@ Window {
         if (VPN.startMinimized) {
             this.showMinimized();
         }
-
         if (!fullscreenRequired()) {
-            maximumHeight = Theme.desktopAppHeight
-            minimumHeight = Theme.desktopAppHeight
-            maximumWidth = Theme.desktopAppWidth
-            minimumWidth = Theme.desktopAppWidth
+            maximumHeight = Theme.desktopAppHeight;
+            minimumHeight = Theme.desktopAppHeight;
+            maximumWidth = Theme.desktopAppWidth;
+            minimumWidth = Theme.desktopAppWidth;
         }
-
-        Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported, {
-          appBuild: `MozillaVPN/${VPN.versionString}`,
-          appDisplayVersion: VPN.versionString,
-          httpClient: {
-                  post(url, body, headers) {
-                      if (typeof(VPNGleanTest) !== "undefined") {
-                          VPNGleanTest.requestDone(url, body);
-                      }
-                      if (VPN.stagingMode) {
-                          return Promise.reject('Glean disabled in staging mode');
-                      }
-
-                      return new Promise((resolve, reject) => {
-                          const xhr = new XMLHttpRequest();
-                          xhr.open("POST", url);
-
-                          for (const header in headers) {
-                            xhr.setRequestHeader(header, headers[header]);
-                          }
-                          xhr.onloadend = () => {
-                            resolve({status: xhr.status, result: 2 /* UploadResultStatus.Success */ });
-                          }
-                          xhr.send(body);
-
-                      });
-                  }
-          }
-        });
+        VPN.mainWindowLoaded()
     }
 
     MouseArea {
@@ -314,29 +285,49 @@ Window {
             mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
         }
 
-        function onSendGleanPings() {
-            if (VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported) {
-                Pings.main.submit();
+        function onInitializeGlean() {
+            var debug = {};
+            if (VPN.debugMode) {
+                console.debug("Initializing glean with debug mode");
+                debug = {
+                    logPings: true,
+                    debugViewTag: "MozillaVPN"
+                };
             }
+            var channel = VPN.stagingMode ? "staging" : "production";
+            console.debug("Initializing glean with channel set to:", channel);
+            Glean.initialize("mozillavpn", VPNSettings.gleanEnabled, {
+                appBuild: "MozillaVPN/" + VPN.versionString,
+                appDisplayVersion: VPN.versionString,
+                channel: channel,
+                debug: debug,
+                osVersion: VPN.osVersion,
+                architecture: VPN.architecture,
+            });
         }
 
-        function onTriggerGleanSample(sample) {
+        function onSendGleanPings() {
+            console.debug("sending Glean pings");
+            Pings.main.submit();
+        }
+
+        function onRecordGleanEvent(sample) {
+            console.debug("recording Glean event");
             Sample[sample].record();
         }
 
         function onAboutToQuit() {
-            // We are about to quit. Let's see if we are fast enough to send
-            // the last chunck of data to the glean servers.
-            if (VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported) {
-              Pings.main.submit();
-            }
+            console.debug("about to quit, shutdown Glean");
+            // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
+            Glean.shutdown();
         }
     }
 
     Connections {
         target: VPNSettings
         function onGleanEnabledChanged() {
-            Glean.setUploadEnabled(VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported);
+            console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
+            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }
     }
 
