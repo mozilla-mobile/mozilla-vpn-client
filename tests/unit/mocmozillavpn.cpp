@@ -28,6 +28,7 @@ MozillaVPN::~MozillaVPN() {}
 MozillaVPN::State MozillaVPN::state() const { return TestHelper::vpnState; }
 
 bool MozillaVPN::stagingMode() const { return true; }
+bool MozillaVPN::debugMode() const { return true; }
 
 void MozillaVPN::initialize() {}
 
@@ -85,6 +86,8 @@ void MozillaVPN::changeServer(const QString&, const QString&, const QString&,
                               const QString&) {}
 
 void MozillaVPN::postAuthenticationCompleted() {}
+
+void MozillaVPN::mainWindowLoaded() {}
 
 void MozillaVPN::telemetryPolicyCompleted() {}
 

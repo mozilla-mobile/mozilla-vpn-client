@@ -96,6 +96,8 @@ class XCodeprojPatcher
       else
         groupId = configHash['GROUP_ID_IOS']
         config.build_settings['GROUP_ID_IOS'] ||= configHash['GROUP_ID_IOS']
+        # Force xcode to not set QT_LIBRARY_SUFFIX to "_debug", which causes crash
+        config.build_settings['QT_LIBRARY_SUFFIX'] = ""
       end
 
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [

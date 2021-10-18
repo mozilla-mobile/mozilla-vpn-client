@@ -9,20 +9,20 @@
 #include <QObject>
 #include <QTextStream>
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
 static QMutex s_leakDetector;
 
 QHash<QString, QHash<void*, uint32_t>> s_leaks;
 #endif
 
 LeakDetector::LeakDetector() {
-#ifndef QT_DEBUG
+#ifndef MVPN_DEBUG
   qFatal("LeakDetector _must_ be created in debug builds only!");
 #endif
 }
 
 LeakDetector::~LeakDetector() {
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   QTextStream out(stderr);
 
   out << "== Mozilla VPN - Leak report ===================" << Qt::endl;
@@ -49,7 +49,7 @@ LeakDetector::~LeakDetector() {
 #endif
 }
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
 void LeakDetector::logCtor(void* ptr, const char* typeName, uint32_t size) {
   QMutexLocker lock(&s_leakDetector);
 
