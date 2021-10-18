@@ -4,11 +4,11 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../components"
-import "../themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 import org.mozilla.Glean 0.15
 import telemetry 0.15
@@ -57,25 +57,6 @@ Item {
             }
 
             VPNCheckBoxRow {
-                id: ipv6
-                objectName: "settingIpv6Enabled"
-                width: parent.width - Theme.windowMargin
-                showDivider: false
-
-                //% "IPv6"
-                labelText: qsTrId("vpn.settings.ipv6")
-                //% "Push the internet forward with the latest version of the Internet Protocol"
-                subLabelText: qsTrId("vpn.settings.ipv6.description")
-                isChecked: (VPNSettings.ipv6Enabled)
-                isEnabled: vpnFlickable.vpnIsOff
-                onClicked: {
-                    if (vpnFlickable.vpnIsOff) {
-                        VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
-                    }
-                }
-            }
-
-            VPNCheckBoxRow {
                 id: localNetwork
                 objectName: "settingLocalNetworkAccess"
                 visible: VPNFeatureList.get("lanAccess").isSupported
@@ -106,9 +87,9 @@ Item {
 
                     //% "Advanced DNS Settings"
                     settingTitle: qsTrId("vpn.settings.networking.advancedDNSSettings")
-                    imageLeftSrc: "../resources/settings.svg"
-                    imageRightSrc: "../resources/chevron.svg"
-                    onClicked: settingsStackView.push("../settings/ViewAdvancedDNSSettings.qml")
+                    imageLeftSrc: "qrc:/ui/resources/settings-dark.svg"
+                    imageRightSrc: "qrc:/ui/resources/chevron.svg"
+                    onClicked: settingsStackView.push("qrc:/ui/settings/ViewAdvancedDNSSettings.qml")
                     visible: VPNFeatureList.get("customDNS").isSupported
                     enabled: vpnFlickable.vpnIsOff
                     opacity: enabled ? 1 : .5
@@ -120,9 +101,9 @@ Item {
                     anchors.right: parent.right
                     width: parent.width - Theme.windowMargin
                     settingTitle: _appPermissionsTitle
-                    imageLeftSrc: "../resources/settings/apps.svg"
-                    imageRightSrc: "../resources/chevron.svg"
-                    onClicked: settingsStackView.push("../settings/ViewAppPermissions.qml")
+                    imageLeftSrc: "qrc:/ui/resources/settings/apps.svg"
+                    imageRightSrc: "qrc:/ui/resources/chevron.svg"
+                    onClicked: settingsStackView.push("qrc:/ui/settings/ViewAppPermissions.qml")
                     visible: VPNFeatureList.get("splitTunnel").isSupported
                     enabled: vpnFlickable.vpnIsOff
                     opacity: enabled ? 1 : .5

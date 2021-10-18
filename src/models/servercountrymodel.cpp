@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "servercountrymodel.h"
+#include "collator.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "servercountry.h"
 #include "serverdata.h"
+#include "serverextra.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
 
-#include <QCollator>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -34,12 +35,9 @@ bool ServerCountryModel::fromSettings() {
 
   logger.debug() << "Reading the server list from settings";
 
-  if (!settingsHolder->hasServers()) {
-    return false;
-  }
-
   const QByteArray json = settingsHolder->servers();
-  if (!fromJsonInternal(json)) {
+  const QByteArray jsonExtra = settingsHolder->serverExtras();
+  if (json.isEmpty() || !fromJsonInternal(json, jsonExtra)) {
     return false;
   }
 
@@ -47,27 +45,34 @@ bool ServerCountryModel::fromSettings() {
   return true;
 }
 
-bool ServerCountryModel::fromJson(const QByteArray& s) {
+bool ServerCountryModel::fromJson(const QByteArray& s, const QByteArray& se) {
   logger.debug() << "Reading from JSON";
 
-  if (!s.isEmpty() && m_rawJson == s) {
+  if (!s.isEmpty() && m_rawJson == s && m_rawExtraJson == se) {
     logger.debug() << "Nothing has changed";
     return true;
   }
 
-  if (!fromJsonInternal(s)) {
+  if (!fromJsonInternal(s, se)) {
     return false;
   }
 
   m_rawJson = s;
+  m_rawExtraJson = se;
   return true;
 }
 
-bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
+bool ServerCountryModel::fromJsonInternal(const QByteArray& s,
+                                          const QByteArray& se) {
   beginResetModel();
 
   m_rawJson = "";
   m_countries.clear();
+
+  QHash<QString, ServerExtra> serverExtras;
+  if (!se.isEmpty()) {
+    parseExtraData(se, serverExtras);
+  }
 
   QJsonDocument doc = QJsonDocument::fromJson(s);
   if (!doc.isObject()) {
@@ -90,7 +95,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
     QJsonObject countryObj = countryValue.toObject();
 
     ServerCountry country;
-    if (!country.fromJson(countryObj)) {
+    if (!country.fromJson(countryObj, serverExtras)) {
       return false;
     }
 
@@ -277,7 +282,7 @@ void ServerCountryModel::retranslate() {
 namespace {
 
 bool sortCountryCallback(const ServerCountry& a, const ServerCountry& b,
-                         QCollator* collator) {
+                         Collator* collator) {
   Q_ASSERT(collator);
   return collator->compare(
              ServerI18N::translateCountryName(a.code(), a.name()),
@@ -287,12 +292,38 @@ bool sortCountryCallback(const ServerCountry& a, const ServerCountry& b,
 }  // anonymous namespace
 
 void ServerCountryModel::sortCountries() {
-  QCollator collator;
+  Collator collator;
   std::sort(m_countries.begin(), m_countries.end(),
             std::bind(sortCountryCallback, std::placeholders::_1,
                       std::placeholders::_2, &collator));
 
   for (ServerCountry& country : m_countries) {
     country.sortCities();
+  }
+}
+
+void ServerCountryModel::parseExtraData(
+    const QByteArray& json, QHash<QString, ServerExtra>& serverExtras) {
+  QJsonDocument doc = QJsonDocument::fromJson(json);
+  if (!doc.isArray()) {
+    return;
+  }
+
+  QJsonArray array = doc.array();
+  for (QJsonValue value : array) {
+    if (!value.isObject()) {
+      return;
+    }
+
+    QJsonObject obj = value.toObject();
+
+    ServerExtra serverExtra;
+    if (!serverExtra.fromJson(obj)) {
+      // This is OK. Maybe the type is not the right one, or maybe there are
+      // other issues.
+      continue;
+    }
+
+    serverExtras.insert(serverExtra.publicKey(), serverExtra);
   }
 }

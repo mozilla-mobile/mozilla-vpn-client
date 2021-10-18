@@ -22,3 +22,6 @@
 [submodule "3rdparty/adjust-ios-sdk"]
 	path = 3rdparty/adjust-ios-sdk
 	url = https://github.com/adjust/ios_sdk.git
+[submodule "3rdparty/adjust-android-sdk"]
+	path = 3rdparty/adjust-android-sdk
+	url = https://github.com/adjust/android_sdk

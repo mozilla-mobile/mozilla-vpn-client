@@ -112,6 +112,10 @@ class MozillaVPN final : public QObject {
 
   static MozillaVPN* instance();
 
+  // This is exactly like the ::instance() method, but it doesn't crash if the
+  // MozillaVPN is null. It should be used rarely.
+  static MozillaVPN* maybeInstance();
+
   void initialize();
 
   State state() const;
@@ -136,7 +140,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
-  Q_INVOKABLE void viewLogs();
+  Q_INVOKABLE bool viewLogs();
   Q_INVOKABLE void retrieveLogs();
   Q_INVOKABLE void cleanupLogs();
   Q_INVOKABLE void storeInClipboard(const QString& text);
@@ -154,6 +158,7 @@ class MozillaVPN final : public QObject {
                                        const QString& issueText,
                                        const QString& category);
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
+  Q_INVOKABLE void hardResetAndQuit();
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
@@ -203,8 +208,10 @@ class MozillaVPN final : public QObject {
                    const QString& privateKey);
 
   void deviceRemoved(const QString& publicKey);
+  void deviceRemovalCompleted(const QString& publicKey);
 
-  void serversFetched(const QByteArray& serverData);
+  void serversFetched(const QByteArray& serverData,
+                      const QByteArray& serverExtraData);
 
   void accountChecked(const QByteArray& json);
 
@@ -244,7 +251,9 @@ class MozillaVPN final : public QObject {
 
   void setToken(const QString& token);
 
-  [[nodiscard]] bool setServerList(const QByteArray& serverData);
+  [[nodiscard]] bool setServerList(
+      const QByteArray& serverData,
+      const QByteArray& serverExtraData = QByteArray());
 
   Q_INVOKABLE void reset(bool forceInitialState);
 
@@ -306,6 +315,14 @@ class MozillaVPN final : public QObject {
   void subscriptionNotValidated();
 
   void completeActivation();
+
+  enum RemovalDeviceOption {
+    DeviceNotFound,
+    DeviceStillValid,
+    DeviceRemoved,
+  };
+
+  RemovalDeviceOption maybeRemoveCurrentDevice();
 
   void controllerStateChanged();
 

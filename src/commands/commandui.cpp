@@ -25,7 +25,6 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "systemtrayhandler.h"
 
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
@@ -131,7 +130,10 @@ int CommandUI::run(QStringList& tokens) {
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+    engine->addImportPath("qrc:///components");
     engine->addImportPath("qrc:///glean");
+    engine->addImportPath("qrc:///themes");
+    engine->addImportPath("qrc:///compat");
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
@@ -424,23 +426,8 @@ int CommandUI::run(QStringList& tokens) {
         Qt::QueuedConnection);
     engine->load(url);
 
-    SystemTrayHandler* systemTrayHandler =
-        SystemTrayHandler::create(&engineHolder);
-    Q_ASSERT(systemTrayHandler);
-
-    systemTrayHandler->show();
-
     NotificationHandler* notificationHandler =
-        NotificationHandler::create(qApp);
-
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, systemTrayHandler,
-                     &SystemTrayHandler::updateContextMenu);
-
-    QObject::connect(vpn.currentServer(), &ServerData::changed,
-                     systemTrayHandler, &SystemTrayHandler::updateContextMenu);
-
-    QObject::connect(vpn.controller(), &Controller::stateChanged,
-                     systemTrayHandler, &SystemTrayHandler::updateContextMenu);
+        NotificationHandler::create(&engineHolder);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
                      notificationHandler,
@@ -458,13 +445,10 @@ int CommandUI::run(QStringList& tokens) {
 
 #endif
 
-    QObject::connect(vpn.statusIcon(), &StatusIcon::iconChanged,
-                     systemTrayHandler, &SystemTrayHandler::updateIcon);
-
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
       logger.debug() << "Retranslating";
       QmlEngineHolder::instance()->engine()->retranslate();
-      SystemTrayHandler::instance()->retranslate();
+      NotificationHandler::instance()->retranslate();
       L18nStrings::instance()->retranslate();
 
 #ifdef MVPN_MACOS

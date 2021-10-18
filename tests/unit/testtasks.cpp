@@ -15,6 +15,8 @@ void TestTasks::accountAndServers() {
         TestHelper::NetworkConfig::Failure, QByteArray()));
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Failure, QByteArray()));
+    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+        TestHelper::NetworkConfig::Failure, QByteArray()));
 
     TaskAccountAndServers* task = new TaskAccountAndServers();
 
@@ -27,6 +29,8 @@ void TestTasks::accountAndServers() {
 
   // Success
   {
+    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+        TestHelper::NetworkConfig::Success, QByteArray()));
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Success, QByteArray()));
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
@@ -46,7 +50,7 @@ void TestTasks::addDevice_success() {
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Success, QByteArray()));
 
-  TaskAddDevice* task = new TaskAddDevice("foobar");
+  TaskAddDevice* task = new TaskAddDevice("foobar", "id");
 
   QEventLoop loop;
   connect(task, &Task::completed, [&]() { loop.exit(); });
@@ -59,7 +63,7 @@ void TestTasks::addDevice_failure() {
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
 
-  TaskAddDevice* task = new TaskAddDevice("foobar");
+  TaskAddDevice* task = new TaskAddDevice("foobar", "id");
 
   QEventLoop loop;
   connect(task, &Task::completed, [&]() { loop.exit(); });

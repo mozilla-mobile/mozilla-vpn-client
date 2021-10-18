@@ -57,6 +57,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 // static
 NetworkRequest* NetworkRequest::createForDeviceCreation(QObject* parent,
                                                         const QString&,
+                                                        const QString&,
                                                         const QString&) {
   return new NetworkRequest(parent, 1234, false);
 }
@@ -68,6 +69,10 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
 }
 
 NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
+  return new NetworkRequest(parent, 1234, false);
+}
+
+NetworkRequest* NetworkRequest::createForServerExtra(QObject* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
@@ -142,3 +147,7 @@ NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
 void NetworkRequest::replyFinished() { QFAIL("Not called!"); }
 
 void NetworkRequest::timeout() {}
+
+void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
+  Q_UNUSED(errors);
+}

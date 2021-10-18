@@ -3,13 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "localizer.h"
+#include "collator.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
 
-#include <QCollator>
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -51,9 +51,7 @@ Localizer::Localizer() {
   s_instance = this;
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (settingsHolder->hasLanguageCode()) {
-    m_code = settingsHolder->languageCode();
-  }
+  m_code = settingsHolder->languageCode();
 
   initialize();
 }
@@ -72,20 +70,17 @@ void Localizer::initialize() {
   // If this is the first time we are here, we need to check if the current
   // language matches with the system one.
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (!settingsHolder->hasSystemLanguageCodeMigrated() ||
-      !settingsHolder->systemLanguageCodeMigrated()) {
+  if (!settingsHolder->systemLanguageCodeMigrated()) {
     settingsHolder->setSystemLanguageCodeMigrated(true);
 
-    if (settingsHolder->hasLanguageCode() &&
-        settingsHolder->languageCode() == systemCode) {
+    if (settingsHolder->languageCode() == systemCode) {
       settingsHolder->setPreviousLanguageCode(settingsHolder->languageCode());
       settingsHolder->setLanguageCode("");
     }
   }
 
   // We always need a previous code.
-  if (!settingsHolder->hasPreviousLanguageCode() ||
-      settingsHolder->previousLanguageCode().isEmpty()) {
+  if (settingsHolder->previousLanguageCode().isEmpty()) {
     settingsHolder->setPreviousLanguageCode(systemCode);
   }
 
@@ -109,7 +104,7 @@ void Localizer::initialize() {
   }
 
   // Sorting languages.
-  QCollator collator;
+  Collator collator;
   std::sort(m_languages.begin(), m_languages.end(),
             std::bind(languageSort, std::placeholders::_1,
                       std::placeholders::_2, &collator));
@@ -253,14 +248,17 @@ QStringList Localizer::languages() const {
 }
 
 bool Localizer::languageSort(const Localizer::Language& a,
-                             const Localizer::Language& b,
-                             QCollator* collator) {
+                             const Localizer::Language& b, Collator* collator) {
   Q_ASSERT(collator);
   return collator->compare(a.m_localizedName, b.m_localizedName) < 0;
 }
 
 QString Localizer::previousCode() const {
   return SettingsHolder::instance()->previousLanguageCode();
+}
+
+QString Localizer::localizedCityName(const QString& code, const QString& city) {
+  return ServerI18N::translateCityName(code, city);
 }
 
 // static

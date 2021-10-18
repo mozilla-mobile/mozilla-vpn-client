@@ -69,11 +69,11 @@ bool WhatsNewModel::hasUnseenFeature() {
   Q_ASSERT(settingsHolder);
 
   logger.debug() << "Reading seen features from settings";
-  if (!settingsHolder->hasSeenFeatures()) {
+  const QStringList& seenFeatureList = settingsHolder->seenFeatures();
+  if (seenFeatureList.isEmpty()) {
     return false;
   }
 
-  const QStringList& seenFeatureList = settingsHolder->seenFeatures();
   for (Feature* feature : m_featurelist) {
     if (!seenFeatureList.contains(feature->id())) {
       return true;
@@ -89,11 +89,7 @@ void WhatsNewModel::markFeaturesAsSeen() {
 
   logger.debug() << "Add seen features to settings";
 
-  QStringList seenfeatureslist;
-  if (settingsHolder->hasSeenFeatures()) {
-    seenfeatureslist = settingsHolder->seenFeatures();
-  }
-
+  QStringList seenfeatureslist = settingsHolder->seenFeatures();
   for (Feature* feature : m_featurelist) {
     const QString& featureID = feature->id();
 

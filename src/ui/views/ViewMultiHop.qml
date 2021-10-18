@@ -5,10 +5,10 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../themes/colors.js" as Color
-import "../themes/themes.js" as Theme
-import "../components"
+import components 0.1
+import themes 0.1
 
 StackView {
     id: multiHopStackView
@@ -34,7 +34,7 @@ StackView {
             VPNCollapsibleCard {
                 title: VPNl18n.MultiHopFeatureMultiHopCardHeader
 
-                iconSrc: "../resources/tip.svg"
+                iconSrc: "qrc:/ui/resources/tip.svg"
                 contentItem: VPNTextBlock {
                     text: VPNl18n.MultiHopFeatureMultiHopCardBody
                     textFormat: Text.StyledText
@@ -52,7 +52,7 @@ StackView {
             VPNControllerNav {
                 function handleClick() {
                     multiHopStackView.push(
-                        "../components/VPNServerList.qml",
+                        "qrc://components/components/VPNServerList.qml",
                         {
                             currentServer: entryLabel.serversList[0],
                             showRecentConnections: false
@@ -85,7 +85,7 @@ StackView {
                 spacing: 8
                 VPNControllerNav {
                     function handleClick() {
-                        multiHopStackView.push("../components/VPNServerList.qml",
+                        multiHopStackView.push("qrc:/components/components/VPNServerList.qml",
                            {
                                 currentServer:  exitLabel.serversList[0],
                                 showRecentConnections: false
@@ -128,7 +128,7 @@ StackView {
 
                         VPNIcon {
                             id: warningIcon
-                            source: "../resources/connection-info-dark.svg"
+                            source: "qrc:/ui/resources/connection-info-dark.svg"
                             sourceSize.height: 18
                             sourceSize.width: 18
                             anchors.centerIn: parent

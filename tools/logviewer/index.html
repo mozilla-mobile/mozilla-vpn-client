@@ -22,33 +22,66 @@
   <div class="container">
     <div class="row">
       <div class="col-4">
-        <h4>Date</h4>
-        <input type="range" id="dateMinRange" min="0" max="100" value="0" />
-        <label for="dateMinRange">From</label><br/>
-        <input type="range" id="dateMaxRange" min="0" max="100" value="100" />
-        <label for="dateMaxRange">To</label><br />
-        <p id="dateRange"></p>
-
-        <h4>Modules</h4>
-        <div class="btn-group" role="group" aria-label="Module selection">
-          <button type="button" class="btn btn-primary" id="moduleSelectAll">Select all</button>
-          <button type="button" class="btn btn-primary" id="moduleUnselectAll">Unselect all</button>
+        <div class="card mb-3">
+          <div class="card-header">Search</div>
+          <div class="card-body">
+            <input type="text" class="form-control me-2" id="search" />
+          </div>
         </div>
-        <ul id="moduleList"></ul>
 
-        <h4>Components</h4>
-        <div class="btn-group" role="group" aria-label="Component selection">
-          <button type="button" class="btn btn-primary" id="componentSelectAll">Select all</button>
-          <button type="button" class="btn btn-primary" id="componentUnselectAll">Unselect all</button>
+        <div class="card mb-3">
+          <div class="card-header">Date</div>
+          <div class="card-body">
+            <div class="row">
+              <label for="dateMinRange" class="col-sm-3 col-form-label">From</label>
+              <div class="col-sm-9">
+                <input class="form-control" type="range" id="dateMinRange" min="0" max="100" value="0" />
+              </div>
+            </div>
+            <div class="row" style="text-align:center"><p id="dateMinRangeLabel"></p></div>
+            <div class="row">
+              <label for="dateMaxRange" class="col-sm-3 col-form-label">To</label>
+              <div class="col-sm-9">
+                <input class="form-control" type="range" id="dateMaxRange" min="0" max="100" value="100" />
+              </div>
+            </div>
+            <div class="row" style="text-align:center"><p id="dateMaxRangeLabel"></p></div>
+          </div>
         </div>
-        <ul id="componentList"></ul>
 
+        <div class="card mb-3">
+          <div class="card-header">Modules</div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="btn-group btn-group-sm" role="group" aria-label="Module selection">
+                <button type="button" class="btn btn-outline-secondary" id="moduleSelectAll">Select all</button>
+                <button type="button" class="btn btn-outline-secondary" id="moduleUnselectAll">Unselect all</button>
+              </div>
+            </div>
+
+            <div class="row mb-3"><div id="moduleList"></div></div>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header">Components</div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="btn-group btn-group-sm" role="group" aria-label="Component selection">
+                <button type="button" class="btn btn-outline-secondary" id="componentSelectAll">Select all</button>
+                <button type="button" class="btn btn-outline-secondary" id="componentUnselectAll">Unselect all</button>
+              </div>
+            </div>
+
+            <div class="row mb-3"><div id="componentList"></div></div>
+          </div>
+        </div>
       </div>
+
       <div class="col-8">
         <h4>Logs</h4>
         <ul class="nav nav-tabs" id="contextsTabs" role="tablist"></ul>
         <div class="tab-content" id="contextsLog"></div>
-        </table>
       </div>
     </div>
   </div>

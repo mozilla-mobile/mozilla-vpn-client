@@ -56,12 +56,8 @@ bool SurveyModel::fromSettings() {
 
   logger.debug() << "Reading the survey list from settings";
 
-  if (!settingsHolder->hasSurveys()) {
-    return false;
-  }
-
   const QByteArray& json = settingsHolder->surveys();
-  if (!fromJsonInternal(json)) {
+  if (json.isEmpty() || !fromJsonInternal(json)) {
     return false;
   }
 
@@ -137,7 +133,9 @@ void SurveyModel::dismissCurrentSurvey() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  settingsHolder->addConsumedSurvey(m_currentSurveyId);
+  QStringList list = settingsHolder->consumedSurveys();
+  list.append(m_currentSurveyId);
+  settingsHolder->setConsumedSurveys(list);
 
   m_currentSurveyId.clear();
   emit hasSurveyChanged();

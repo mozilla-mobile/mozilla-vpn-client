@@ -5,9 +5,9 @@
 import QtQuick 2.5
 import QtCharts 2.0
 import QtQuick.Controls 2.14
-import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
 
+import Mozilla.VPN 1.0
+import themes 0.1
 
 Item {
     property var rBytes: VPNConnectionData.rxBytes
@@ -175,7 +175,7 @@ Item {
 
         Image {
             anchors.centerIn: backButton
-            source: "../resources/close-white.svg"
+            source: "qrc:/ui/resources/close-white.svg"
             sourceSize.height: 16
             sourceSize.width: 16
         }

@@ -31,6 +31,14 @@ describe('Devices', function() {
     await vpn.wait();
   });
 
+  it('Telemetry policy view', async () => {
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+    await vpn.clickOnElement('telemetryPolicyButton');
+    await vpn.wait();
+  });
+
   it('opening the device list', async () => {
     await vpn.waitForElement('deviceListButton');
     await vpn.waitForElementProperty('deviceListButton', 'visible', 'true');

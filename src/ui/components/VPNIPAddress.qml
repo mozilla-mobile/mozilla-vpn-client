@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.0
-import Mozilla.VPN 1.0
 import QtQuick.Layouts 1.14
-import "../themes/themes.js" as Theme
+
+import Mozilla.VPN 1.0
+import themes 0.1
 
 RowLayout {
     property real maxPaintedTextWidth: box.width - ipVersion.paintedWidth - Theme.windowMargin
@@ -26,17 +27,12 @@ RowLayout {
 
         color: Theme.bgColor
         opacity: .8
+        minimumPixelSize: Theme.fontSizeSmall / 2
         Accessible.name: text
         Accessible.role: Accessible.StaticText
         verticalAlignment: Text.AlignVCenter
         Layout.maximumWidth: maxPaintedTextWidth
-        Layout.preferredWidth: paintedWidth
-
-        Component.onCompleted: {
-            if (paintedWidth > maxPaintedTextWidth) {
-                fontSizeMode = Text.Fit;
-                minimumPixelSize =  6;
-            }
-        }
+        textFormat: Text.PlainText
+        fontSizeMode: Text.HorizontalFit
     }
 }

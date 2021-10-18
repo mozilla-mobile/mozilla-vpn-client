@@ -10,6 +10,7 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"
+#include "jni.h"
 
 #include <QAndroidJniEnvironment>
 #include <QAndroidJniObject>
@@ -19,6 +20,7 @@
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
 #include <QtAndroid>
+#include <QAndroidIntent>
 
 namespace {
 AndroidUtils* s_instance = nullptr;
@@ -179,4 +181,36 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
     return QJsonObject();
   }
   return json.object();
+}
+
+bool AndroidUtils::ShareText(const QString& text) {
+  return (bool)QAndroidJniObject::callStaticMethod<jboolean>(
+      "org/mozilla/firefox/vpn/qt/VPNUtils", "sharePlainText",
+      "(Ljava/lang/String;)Z", QAndroidJniObject::fromString(text).object());
+}
+
+QByteArray AndroidUtils::DeviceId() {
+  /*
+   * On Android 8.0 (API level 26) and higher versions of the platform,
+   * a 64-bit number (expressed as a hexadecimal string),
+   * unique to each combination of app-signing key, user, and device.
+   * Values of ANDROID_ID are scoped by signing key and user.
+   * The value may change if a factory reset is performed on the device or if an
+   * APK signing key changes.
+   */
+  QAndroidJniEnvironment env;
+  QAndroidJniObject activity = QtAndroid::androidActivity();
+  QAndroidJniObject string = QAndroidJniObject::callStaticObjectMethod(
+      "org/mozilla/firefox/vpn/qt/VPNUtils", "getDeviceID",
+      "(Landroid/content/Context;)Ljava/lang/String;", activity.object());
+  jstring value = (jstring)string.object();
+  const char* buffer = env->GetStringUTFChars(value, nullptr);
+  if (!buffer) {
+    logger.error() << "Failed to fetch DeviceID";
+    return QByteArray();
+  }
+  QString res(buffer);
+  logger.info() << "DeviceID: " << res;
+  env->ReleaseStringUTFChars(value, buffer);
+  return res.toUtf8();
 }
