@@ -930,7 +930,9 @@ void NetworkRequest::enableSSLIntervention() {
     QDirIterator certFolder(":/certs");
     while (certFolder.hasNext()) {
       QFile f(certFolder.next());
-      f.open(QIODevice::ReadOnly);
+      if (!f.open(QIODevice::ReadOnly)) {
+        continue;
+      }
       QSslCertificate cert(&f, QSsl::Pem);
       if (!cert.isNull()) {
         logger.info() << "Imported cert from: " << cert.issuerDisplayName();
