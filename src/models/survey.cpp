@@ -93,7 +93,7 @@ bool Survey::isTriggerable() const {
 
   if (!m_platforms.isEmpty() &&
       !m_platforms.contains(Constants::PLATFORM_NAME)) {
-    logger.debug() << "is not right plattform";
+    logger.debug() << "is not right Platform";
     return false;
   }
 
