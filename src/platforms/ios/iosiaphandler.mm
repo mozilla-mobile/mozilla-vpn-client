@@ -84,7 +84,7 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
   for (SKPaymentTransaction* transaction in transactions) {
     switch (transaction.transactionState) {
       case SKPaymentTransactionStateFailed:
-        logger.error() << "transaction failed";
+        logger.error() << "transaction failed: " << transaction.error.code;
 
         if (transaction.error.code == SKErrorPaymentCancelled) {
           canceledTransactions = true;
@@ -180,17 +180,11 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
 }
 
 - (void)requestDidFinish:(SKRequest*)request {
-  logger.debug() << "Receipt refreshed correctly";
-  QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
-  QMetaObject::invokeMethod(m_handler, "processCompletedTransactions", Qt::QueuedConnection,
-                            Q_ARG(QStringList, QStringList()));
+  logger.debug() << "Product request finished";
 }
 
 - (void)request:(SKRequest*)request didFailWithError:(NSError*)error {
-  logger.error() << "Failed to refresh the receipt"
-                 << QString::fromNSString(error.localizedDescription);
-  QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
-  QMetaObject::invokeMethod(m_handler, "subscriptionFailed", Qt::QueuedConnection);
+  logger.error() << "Failed product request: " << QString::fromNSString(error.localizedDescription);
 }
 
 @end
@@ -304,8 +298,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
   logger.debug() << "process completed transactions";
 
   if (m_subscriptionState != eActive) {
-    logger.warning() << "Random transaction to be completed. Let's ignore it";
-    return;
+    logger.warning() << "Completing transaction out of subscription process!";
   }
 
   QString receipt = IOSUtils::IAPReceipt();
@@ -320,11 +313,6 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Purchase request failed" << error;
-
-            if (m_subscriptionState != eActive) {
-              logger.warning() << "We have been canceled in the meantime";
-              return;
-            }
 
             stopSubscription();
 
@@ -361,12 +349,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
     QStringList transactions = settingsHolder->subscriptionTransactions();
     transactions.append(ids);
     settingsHolder->setSubscriptionTransactions(transactions);
-
-    if (m_subscriptionState != eActive) {
-      logger.warning() << "We have been canceled in the meantime";
-      return;
-    }
-
+    
     stopSubscription();
     emit subscriptionCompleted();
   });
