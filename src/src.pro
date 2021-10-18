@@ -61,6 +61,7 @@ SOURCES += \
         captiveportal/captiveportalrequest.cpp \
         captiveportal/captiveportalmultirequest.cpp \
         closeeventhandler.cpp \
+        collator.cpp \
         command.cpp \
         commandlineparser.cpp \
         commands/commandactivate.cpp \
@@ -143,7 +144,6 @@ SOURCES += \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
-        systemtrayhandler.cpp \
         tasks/accountandservers/taskaccountandservers.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
@@ -181,6 +181,7 @@ HEADERS += \
         captiveportal/captiveportalmultirequest.h \
         captiveportal/captiveportalresult.h \
         closeeventhandler.h \
+        collator.h \
         command.h \
         commandlineparser.h \
         commands/commandactivate.h \
@@ -274,7 +275,6 @@ HEADERS += \
         settingsholder.h \
         simplenetworkmanager.h \
         statusicon.h \
-        systemtrayhandler.h \
         task.h \
         tasks/accountandservers/taskaccountandservers.h \
         tasks/adddevice/taskadddevice.h \
@@ -320,6 +320,12 @@ RESOURCES += ui/resources.qrc
 RESOURCES += ui/themes.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += ui/resources/certs/certs.qrc
+
+versionAtLeast(QT_VERSION, 6.0.0) {
+    RESOURCES += ui/compatQt6.qrc
+} else {
+    RESOURCES += ui/compatQt5.qrc
+}
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
     RESOURCES += $$PWD/../glean/glean.qrc
@@ -404,7 +410,7 @@ else:linux:!android {
             platforms/linux/linuxnetworkwatcher.cpp \
             platforms/linux/linuxnetworkwatcherworker.cpp \
             platforms/linux/linuxpingsender.cpp \
-            platforms/linux/linuxsystemtrayhandler.cpp \
+            platforms/linux/linuxsystemtraynotificationhandler.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
@@ -419,7 +425,7 @@ else:linux:!android {
             platforms/linux/linuxnetworkwatcher.h \
             platforms/linux/linuxnetworkwatcherworker.h \
             platforms/linux/linuxpingsender.h \
-            platforms/linux/linuxsystemtrayhandler.h \
+            platforms/linux/linuxsystemtraynotificationhandler.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 
@@ -821,9 +827,6 @@ else:win* {
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
     DEFINES += WIN32_LEAN_AND_MEAN #Solves Redifinition Errors Of Winsock
-    LIBS += Fwpuclnt.lib #Windows Filtering Plattform
-    LIBS += Rpcrt4.lib
-    LIBS += Advapi32.lib
 
     RC_ICONS = ui/resources/logo.ico
 

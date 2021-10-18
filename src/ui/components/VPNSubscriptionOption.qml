@@ -5,10 +5,10 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
-import QtGraphicalEffects 1.0
 
 import Mozilla.VPN 1.0
 import components 0.1
+import compat 0.1
 import themes 0.1
 
 RadioDelegate {
@@ -40,7 +40,7 @@ RadioDelegate {
         color: Theme.white
         radius: Theme.cornerRadius
 
-        RectangularGlow {
+        VPNRectangularGlow {
             anchors.fill: bg
             glowRadius: checked ? 8 : 1
             spread: checked ? 0.1 : 0

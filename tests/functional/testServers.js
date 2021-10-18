@@ -36,6 +36,14 @@ describe('Server list', function() {
     await vpn.wait();
   });
 
+  it('Telemetry policy view', async () => {
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+    await vpn.clickOnElement('telemetryPolicyButton');
+    await vpn.wait();
+  });
+
   it('opening the server list', async () => {
     await vpn.waitForElement('serverListButton');
     await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
