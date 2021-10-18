@@ -33,7 +33,7 @@ constexpr const char* IPINFO_URL_IPV6 = "https://[%1]/api/v1/vpn/ipinfo";
 namespace {
 Logger logger(LOG_NETWORKING, "NetworkRequest");
 QList<QSslCertificate> s_intervention_certs;
-}
+}  // namespace
 
 NetworkRequest::NetworkRequest(QObject* parent, int status,
                                bool setAuthorizationHeader)
@@ -952,6 +952,7 @@ void NetworkRequest::maybeEnableSSLIntervention() {
   }
   if (s_intervention_certs.isEmpty()) {
     logger.error() << "Intervention fired but no certs present?!";
+    return;
   }
   auto conf = QSslConfiguration::defaultConfiguration();
   conf.addCaCertificates(s_intervention_certs);
