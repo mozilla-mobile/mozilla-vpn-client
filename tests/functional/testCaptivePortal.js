@@ -188,9 +188,4 @@ describe('Captive portal', function() {
     });
   });
 
-  it('Logout', async () => {
-    await vpn.logout();
-    await vpn.wait();
-  });
-
 });

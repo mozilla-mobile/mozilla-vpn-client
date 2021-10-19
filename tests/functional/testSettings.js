@@ -438,9 +438,4 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('settingsLogout', 'visible', 'true');
   });
 
-  it('Logout', async () => {
-    await vpn.logout();
-    await vpn.wait();
-  });
-
 });

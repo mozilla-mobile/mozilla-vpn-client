@@ -63,9 +63,4 @@ describe('Devices', function() {
   // TODO: remove a device
   // TODO: max number of devices
 
-  it('Logout', async () => {
-    await vpn.logout();
-    await vpn.wait();
-  });
-
 });

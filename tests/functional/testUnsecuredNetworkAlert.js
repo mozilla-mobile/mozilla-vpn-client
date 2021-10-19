@@ -184,9 +184,4 @@ describe('Unsecured network alert', function() {
     assert(vpn.lastNotification().title === null);
   });
 
-  it('Logout', async () => {
-    await vpn.logout();
-    await vpn.wait();
-  });
-
 });

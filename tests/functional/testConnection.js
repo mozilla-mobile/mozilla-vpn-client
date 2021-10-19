@@ -125,13 +125,6 @@ describe('Connectivity', function() {
 
     assert(vpn.lastNotification().title === 'VPN Disconnected');
     assert(vpn.lastNotification().message.startsWith('Disconnected from '));
-
-    vpn.wait();
-  });
-
-  it('Logout', async () => {
-    await vpn.logout();
-    await vpn.wait();
   });
 
 });

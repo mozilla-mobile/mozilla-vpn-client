@@ -244,9 +244,4 @@ describe('Backend failure', function() {
         'VPN is off');
   });
 
-  it('Logout', async () => {
-    await vpn.logout();
-    await vpn.wait();
-  });
-
 });

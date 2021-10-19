@@ -275,9 +275,4 @@ describe('Server list', function() {
 
   // TODO: server list disabled when reached the device limit
 
-  it('Logout', async () => {
-    await vpn.logout();
-    await vpn.wait();
-  });
-
 });
