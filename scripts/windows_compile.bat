@@ -94,9 +94,6 @@ python scripts\importLanguages.py
 ECHO Generating glean samples...
 python scripts\generate_glean.py
 
-ECHO Bake shaders...
-sh scripts\bake_shaders.sh
-
 qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project

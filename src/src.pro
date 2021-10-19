@@ -322,6 +322,7 @@ RESOURCES += ui/ui.qrc
 
 versionAtLeast(QT_VERSION, 6.0.0) {
     RESOURCES += ui/compatQt6.qrc
+    RESOURCES += ui/resourcesQt6.qrc
 } else {
     RESOURCES += ui/compatQt5.qrc
 }

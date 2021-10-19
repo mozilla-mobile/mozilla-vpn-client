@@ -115,9 +115,6 @@ print Y "Importing translation files..."
 git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
 python3 scripts/importLanguages.py || die "Failed to import languages"
 
-print Y "Bake shaders..."
-sh scripts/bake_shaders.sh || die "Failed to bake shaders"
-
 print Y "Generating glean samples..."
 python3 scripts/generate_glean.py || die "Failed to generate glean samples"
 

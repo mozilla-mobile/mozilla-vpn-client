@@ -120,9 +120,6 @@ else
   print Y "Generating glean samples..."
   python3 scripts/generate_glean.py || die "Failed to generate glean samples"
 
-  print Y "Bake shaders..."
-  sh scripts/bake_shaders.sh || die "Failed to bake shaders"
-
   printn Y "Removing the debian template folder... "
   rm -rf linux/debian || die "Failed"
   print G "done."
