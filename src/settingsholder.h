@@ -29,6 +29,8 @@ class SettingsHolder final : public QObject {
 
   static SettingsHolder* instance();
 
+  bool firstExecution() const { return m_firstExecution; }
+
   enum DnsProvider {
     Gateway = 0,
     BlockAll = 1,
@@ -54,6 +56,10 @@ class SettingsHolder final : public QObject {
 
   QString envOrDefault(const QString& name, const QString& defaultValue) const;
 
+  // Delete _ALL_ the settings. Probably this method is not what you want to
+  // use.
+  void hardReset();
+
  private:
   explicit SettingsHolder(QObject* parent);
 
@@ -61,6 +67,7 @@ class SettingsHolder final : public QObject {
 
  private:
   QSettings m_settings;
+  bool m_firstExecution = false;
 };
 
 #endif  // SETTINGSHOLDER_H

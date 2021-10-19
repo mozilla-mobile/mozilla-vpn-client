@@ -6,8 +6,7 @@ import QtQuick 2.6
 import QtQuick.Layouts 1.14
 import Qt.labs.qmlmodels 1.0
 
-import "../../themes/themes.js" as Theme
-import "../../themes/colors.js" as Color
+import themes 0.1
 
 ColumnLayout {
     id: messagesContainer
@@ -26,21 +25,21 @@ ColumnLayout {
             roleValue: "info"
             delegate: VPNInputMessage {
                 fontColor: Color.informational.default
-                iconSrc: "../../resources/connection-info-dark.svg"
+                iconSrc: "qrc:/ui/resources/connection-info-dark.svg"
             }
         }
         DelegateChoice {
             roleValue: "warning"
             delegate: VPNInputMessage {
                 fontColor: Color.warning.active
-                iconSrc: "../../resources/warning-dark-orange.svg"
+                iconSrc: "qrc:/ui/resources/warning-dark-orange.svg"
             }
         }
         DelegateChoice {
             roleValue: "error"
             delegate: VPNInputMessage {
                 fontColor: Color.error.default
-                iconSrc: "../../resources/warning.svg"
+                iconSrc: "qrc:/ui/resources/warning.svg"
             }
         }
     }

@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
 #  define MVPN_COUNT_CTOR(_type)                                 \
     do {                                                         \
       static_assert(std::is_class<_type>(),                      \
@@ -32,7 +32,7 @@ class LeakDetector {
   LeakDetector();
   ~LeakDetector();
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   static void logCtor(void* ptr, const char* typeName, uint32_t size);
   static void logDtor(void* ptr, const char* typeName, uint32_t size);
 #endif

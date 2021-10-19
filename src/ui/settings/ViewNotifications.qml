@@ -5,13 +5,13 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
-import Mozilla.VPN 1.0
-import "../components"
-import "../components/forms"
-import "../themes/themes.js" as Theme
 
-import org.mozilla.Glean 0.15
-import telemetry 0.15
+import Mozilla.VPN 1.0
+import components 0.1
+import themes 0.1
+
+import org.mozilla.Glean 0.23
+import telemetry 0.23
 
 Item {
     id: root

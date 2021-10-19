@@ -59,8 +59,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
     QStringList dnsServers(config.m_dnsServer);
     // If the DNS is not the Gateway, it's a user defined DNS
     // thus, not add any other :)
-    if ((config.m_ipv6Enabled) &&
-        (config.m_dnsServer == config.m_serverIpv4Gateway)) {
+    if (config.m_dnsServer == config.m_serverIpv4Gateway) {
       dnsServers.append(config.m_serverIpv6Gateway);
     }
     out << "DNS = " << dnsServers.join(", ") << "\n";
@@ -85,10 +84,8 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
 
   /* In theory, we should use the ipv6 endpoint, but wireguard doesn't seem
    * to be happy if there are 2 endpoints.
-  if (ipv6Enabled) {
-    out << "Endpoint = [" << config.m_serverIpv6AddrIn << "]:"
-        << config.m_serverPort << "\n";
-  }
+  out << "Endpoint = [" << config.m_serverIpv6AddrIn << "]:"
+      << config.m_serverPort << "\n";
   */
   QStringList ranges;
   for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
@@ -97,7 +94,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
 #endif
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   logger.debug() << content;
 #endif
 
@@ -124,7 +121,7 @@ bool WgQuickProcess::createConfigFile(
     const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
     const QString& serverPublicKey, const QString& serverIpv4AddrIn,
     const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
-    int serverPort, bool ipv6Enabled, const QString& dnsServer) {
+    int serverPort, const QString& dnsServer) {
   Q_UNUSED(serverIpv6AddrIn);
 
   InterfaceConfig config;
@@ -138,7 +135,6 @@ bool WgQuickProcess::createConfigFile(
   config.m_serverIpv6AddrIn = serverIpv6AddrIn;
   config.m_dnsServer = dnsServer;
   config.m_serverPort = serverPort;
-  config.m_ipv6Enabled = ipv6Enabled;
 
   for (const QString& range : allowedIPAddressRanges.split(',')) {
     config.m_allowedIPAddressRanges.append(IPAddressRange(range));

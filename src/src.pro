@@ -22,8 +22,9 @@ QT += quick
 QT += widgets
 QT += charts
 QT += websockets
+QT += sql
 
-# for the inspector
+# For the inspector
 QT+= testlib
 QT.testlib.CONFIG -= console
 CONFIG += no_testcase_installs
@@ -61,6 +62,7 @@ SOURCES += \
         captiveportal/captiveportalrequest.cpp \
         captiveportal/captiveportalmultirequest.cpp \
         closeeventhandler.cpp \
+        collator.cpp \
         command.cpp \
         commandlineparser.cpp \
         commands/commandactivate.cpp \
@@ -143,7 +145,6 @@ SOURCES += \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
-        systemtrayhandler.cpp \
         tasks/accountandservers/taskaccountandservers.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
@@ -181,6 +182,7 @@ HEADERS += \
         captiveportal/captiveportalmultirequest.h \
         captiveportal/captiveportalresult.h \
         closeeventhandler.h \
+        collator.h \
         command.h \
         commandlineparser.h \
         commands/commandactivate.h \
@@ -206,13 +208,13 @@ HEADERS += \
         features/featureappreview.h \
         features/featurecaptiveportal.h \
         features/featurecustomdns.h \
-        features/featureglean.h \
         features/featureinappaccountCreate.h \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
         features/featurelocalareaaccess.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
+        features/featuressharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
         features/featureunsecurednetworknotification.h \
@@ -273,7 +275,6 @@ HEADERS += \
         settingsholder.h \
         simplenetworkmanager.h \
         statusicon.h \
-        systemtrayhandler.h \
         task.h \
         tasks/accountandservers/taskaccountandservers.h \
         tasks/adddevice/taskadddevice.h \
@@ -313,9 +314,17 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += qml.qrc
-RESOURCES += logo.qrc
 RESOURCES += inspector/inspector.qrc
+RESOURCES += ui/components.qrc
+RESOURCES += ui/resources.qrc
+RESOURCES += ui/themes.qrc
+RESOURCES += ui/ui.qrc
+
+versionAtLeast(QT_VERSION, 6.0.0) {
+    RESOURCES += ui/compatQt6.qrc
+} else {
+    RESOURCES += ui/compatQt5.qrc
+}
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
     RESOURCES += $$PWD/../glean/glean.qrc
@@ -400,7 +409,7 @@ else:linux:!android {
             platforms/linux/linuxnetworkwatcher.cpp \
             platforms/linux/linuxnetworkwatcherworker.cpp \
             platforms/linux/linuxpingsender.cpp \
-            platforms/linux/linuxsystemtrayhandler.cpp \
+            platforms/linux/linuxsystemtraynotificationhandler.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
@@ -415,7 +424,7 @@ else:linux:!android {
             platforms/linux/linuxnetworkwatcher.h \
             platforms/linux/linuxnetworkwatcherworker.h \
             platforms/linux/linuxpingsender.h \
-            platforms/linux/linuxsystemtrayhandler.h \
+            platforms/linux/linuxsystemtraynotificationhandler.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 
@@ -520,13 +529,17 @@ else:android {
         message(Adjust SDK enabled)
         DEFINES += MVPN_ADJUST
 
-        SOURCES += adjusthandler.cpp \
-                   adjustproxy.cpp \
-                   adjustproxyconnection.cpp
+        SOURCES += adjust/adjustfiltering.cpp \
+                   adjust/adjusthandler.cpp \
+                   adjust/adjustproxy.cpp \
+                   adjust/adjustproxyconnection.cpp \
+                   adjust/adjustproxypackagehandler.cpp
 
-        HEADERS += adjusthandler.h \
-                   adjustproxy.h \
-                   adjustproxyconnection.h
+        HEADERS += adjust/adjustfiltering.h \
+                   adjust/adjusthandler.h \
+                   adjust/adjustproxy.h \
+                   adjust/adjustproxyconnection.h \
+                   adjust/adjustproxypackagehandler.h
     }
 
     versionAtLeast(QT_VERSION, 5.15.1) {
@@ -728,18 +741,21 @@ else:ios {
         message(Adjust SDK enabled)
         DEFINES += MVPN_ADJUST
 
-        OBJECTIVE_SOURCES += \
-            adjusthandler.cpp \
-            adjustproxy.cpp \
-            adjustproxyconnection.cpp \
-            platforms/ios/iosadjusthelper.mm \
+        SOURCES += adjust/adjustfiltering.cpp \
+                   adjust/adjusthandler.cpp \
+                   adjust/adjustproxy.cpp \
+                   adjust/adjustproxyconnection.cpp \
+                   adjust/adjustproxypackagehandler.cpp
 
-        OBJECTIVE_HEADERS += \
-            adjusthandler.h \
-            adjustproxy.h \
-            adjustproxyconnection.h \
-            platforms/ios/iosadjusthelper.h \
+        OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm
 
+        HEADERS += adjust/adjustfiltering.h \
+                   adjust/adjusthandler.h \
+                   adjust/adjustproxy.h \
+                   adjust/adjustproxyconnection.h \
+                   adjust/adjustproxypackagehandler.h
+
+        OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h
     }
 
     TARGET = MozillaVPN
@@ -810,9 +826,6 @@ else:win* {
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
     DEFINES += WIN32_LEAN_AND_MEAN #Solves Redifinition Errors Of Winsock
-    LIBS += Fwpuclnt.lib #Windows Filtering Plattform
-    LIBS += Rpcrt4.lib
-    LIBS += Advapi32.lib
 
     RC_ICONS = ui/resources/logo.ico
 
@@ -888,6 +901,8 @@ else:wasm {
 
     TARGET = mozillavpn
     QT += svg
+    # sql not available for wasm.
+    QT -= sql
 
     CONFIG += c++1z
 
@@ -949,13 +964,18 @@ QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
 
-debug {
-    SOURCES += gleantest.cpp
-    HEADERS += gleantest.h
-}
-
 coverage {
     message(Coverage enabled)
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
     QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
+}
+
+debug {
+    # If in debug mode, set mvpn_debug flag too.
+    CONFIG += mvpn_debug
+}
+
+mvpn_debug {
+    message(MVPN Debug enabled)
+    DEFINES += MVPN_DEBUG
 }

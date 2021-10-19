@@ -5,11 +5,10 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
-import Mozilla.VPN 1.0
-import QtGraphicalEffects 1.0
 
-import "../components"
-import "../themes/themes.js" as Theme
+import Mozilla.VPN 1.0
+import components 0.1
+import themes 0.1
 
 VPNFlickable {
     id: vpnFlickable
@@ -28,7 +27,7 @@ VPNFlickable {
         id: headerLink
 
         labelText: qsTrId("vpn.main.getHelp2")
-        onClicked: stackview.push("../views/ViewGetHelp.qml", {isSettingsView: false})
+        onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false})
     }
 
     Image {
@@ -36,7 +35,7 @@ VPNFlickable {
         sourceSize.height: 48
         sourceSize.width: 48
         smooth: true
-        source: "../resources/logo.svg"
+        source: "qrc:/ui/resources/logo.svg"
         anchors.horizontalCenter: parent.horizontalCenter
         antialiasing: true
         anchors.top: headerLink.bottom
@@ -68,19 +67,19 @@ VPNFlickable {
             VPNCallout {
                 //% "No activity logs"
                 calloutCopy: qsTrId("vpn.subscription.featureTitle1")
-                calloutImage: "../resources/onboarding/onboarding4.svg"
+                calloutImage: "qrc:/ui/resources/onboarding/onboarding4.svg"
             }
 
             VPNCallout {
                 // "Device level encryption" - String defined in ViewOnboarding.qml
                 calloutCopy: qsTrId("vpn.onboarding.headline.1")
-                calloutImage: "../resources/onboarding/onboarding1.svg"
+                calloutImage: "qrc:/ui/resources/onboarding/onboarding1.svg"
             }
 
             VPNCallout {
                 // Servers in 30+ countries - String defined in ViewOnboarding.qml
                 calloutCopy: qsTrId("vpn.onboarding.headline.2")
-                calloutImage: "../resources/onboarding/onboarding2.svg"
+                calloutImage: "qrc:/ui/resources/onboarding/onboarding2.svg"
             }
 
             VPNCallout {
@@ -89,7 +88,7 @@ VPNFlickable {
                 //: Note: there is currently no support for proper plurals
                 calloutCopy: qsTrId("vpn.subscription.featureTitle4").arg(
                                  VPNUser.maxDevices)
-                calloutImage: "../resources/onboarding/onboarding3.svg"
+                calloutImage: "qrc:/ui/resources/onboarding/onboarding3.svg"
             }
         }
 

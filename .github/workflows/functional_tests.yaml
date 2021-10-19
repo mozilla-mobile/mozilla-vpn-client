@@ -77,8 +77,7 @@ jobs:
         run: |
           export PATH=/opt/qt515/bin:$PATH
 
-          pip3 install glean_parser
-          pip3 install pyyaml
+          pip3 install -r requirements.txt
 
           git submodule update --remote --depth 1 i18n
           python3 scripts/importLanguages.py
@@ -120,7 +119,7 @@ jobs:
         run: |
           sudo dpkg -i build/archive/*.deb
           sudo apt install --no-upgrade firefox xvfb -y
-          pip3 install flask
+          pip3 install -r requirements.txt
           npm install dotenv
           npm install selenium-webdriver
           npm install mocha
@@ -136,12 +135,16 @@ jobs:
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
-        run: |
-          export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
-          export HEADLESS=yes
-
-          mkdir -p $ARTIFACT_DIR
-          xvfb-run -a ./scripts/test_function.sh ./build/mozillavpn ${{matrix.test.path}}
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 5
+          command: |
+            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+            export HEADLESS=yes
+            mkdir -p $ARTIFACT_DIR
+            xvfb-run -a ./scripts/test_function.sh ./build/mozillavpn ${{matrix.test.path}}
+          on_retry_command: npm run cleanup-flaky-script-output
         env:
           MVPN_API_BASE_URL: http://localhost:5000
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
@@ -150,7 +153,7 @@ jobs:
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v1
-        if: ${{ always() && steps.runTests.outcome != 'success' }}
+        if: ${{ always() }}
         with:
           name: ${{matrix.test.name}} Logs
           path: ${{ runner.temp }}/artifacts

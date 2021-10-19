@@ -6,8 +6,8 @@ import QtQuick 2.6
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 
-import "../"
-import "../../themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 RowLayout {
     id: messageItem

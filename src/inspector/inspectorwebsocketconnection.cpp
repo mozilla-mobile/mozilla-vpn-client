@@ -8,14 +8,10 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "mozillavpn.h"
+#include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
-#include "systemtrayhandler.h"
-
-#ifdef QT_DEBUG
-#  include "gleantest.h"
-#endif
 
 #include <functional>
 
@@ -151,16 +147,6 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->startAtBoot() ? "true" : "false";
         }},
 
-    // ipv6
-    WebSocketSettingCommand{
-        "ipv6-enabled", WebSocketSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setIpv6Enabled(value == "true");
-        },
-        []() {
-          return SettingsHolder::instance()->ipv6Enabled() ? "true" : "false";
-        }},
-
     // local area network access
     WebSocketSettingCommand{
         "local-network-access", WebSocketSettingCommand::Boolean,
@@ -226,6 +212,17 @@ static QList<WebSocketSettingCommand> s_settingCommands{
         },
         []() {
           return SettingsHolder::instance()->gleanEnabled() ? "true" : "false";
+        }},
+
+    // telemetry-policy-shown
+    WebSocketSettingCommand{
+        "telemetry-policy-shown", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setTelemetryPolicyShown(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->telemetryPolicyShown() ? "true"
+                                                                    : "false";
         }},
 
 };
@@ -404,7 +401,7 @@ static QList<WebSocketCommand> s_commands{
 
     WebSocketCommand{"click_notification", "Click on a notification", 0,
                      [](const QList<QByteArray>&) {
-                       SystemTrayHandler::instance()->messageClickHandle();
+                       NotificationHandler::instance()->messageClickHandle();
                        return QJsonObject();
                      }},
 
@@ -656,23 +653,6 @@ static QList<WebSocketCommand> s_commands{
           return QJsonObject();
         }},
 
-#ifdef QT_DEBUG
-    WebSocketCommand{"last_glean_request", "Retrieve the last glean request", 0,
-                     [](const QList<QByteArray>&) {
-                       GleanTest* gt = GleanTest::instance();
-
-                       QJsonObject glean;
-                       glean["url"] = QString(gt->lastUrl());
-                       glean["data"] = QString(gt->lastData());
-
-                       gt->reset();
-
-                       QJsonObject obj;
-                       obj["value"] = glean;
-                       return obj;
-                     }},
-#endif
-
     WebSocketCommand{"devices", "Retrieve the list of devices", 0,
                      [](const QList<QByteArray>&) {
                        MozillaVPN* vpn = MozillaVPN::instance();
@@ -748,8 +728,9 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
   connect(LogHandler::instance(), &LogHandler::logEntryAdded, this,
           &InspectorWebSocketConnection::logEntryAdded);
 
-  connect(SystemTrayHandler::instance(), &SystemTrayHandler::notificationShown,
-          this, &InspectorWebSocketConnection::notificationShown);
+  connect(NotificationHandler::instance(),
+          &NotificationHandler::notificationShown, this,
+          &InspectorWebSocketConnection::notificationShown);
 }
 
 InspectorWebSocketConnection::~InspectorWebSocketConnection() {

@@ -55,7 +55,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0-alpha02"
     implementation "androidx.security:security-crypto:1.1.0-alpha03"
     implementation "androidx.security:security-identity-credential:1.0.0-alpha02"
-    implementation 'com.adjust.sdk:adjust-android:4.28.2'
     implementation 'com.google.android.gms:play-services-ads-identifier:17.0.1'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.0.10"

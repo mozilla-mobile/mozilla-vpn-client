@@ -5,10 +5,11 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../components"
-import "../components/forms"
-import "../themes/themes.js" as Theme
+import components 0.1
+import components.forms 0.1
+import themes 0.1
 
 VPNFlickable {
     property string _menuTitle: VPNl18n.SettingsDevTitle
@@ -118,6 +119,7 @@ VPNFlickable {
             }
         }
     }
+
     VPNSettingsItem {
         id: featureListLink
         objectName: "settingsFeatureList"
@@ -130,10 +132,11 @@ VPNFlickable {
 
         // Do not translate this string!
         settingTitle: "Feature list"
-        imageLeftSrc: "../resources/settings/whatsnew.svg"
-        imageRightSrc: "../resources/chevron.svg"
-        onClicked: stackview.push("../developerMenu/ViewFeatureList.qml")
+        imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+        imageRightSrc: "qrc:/ui/resources/chevron.svg"
+        onClicked: stackview.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
     }
+
     VPNExternalLinkListItem {
         id:inspectorLink
         visible: stagingServerCheckBox.checked && !restartRequired.visible
@@ -146,10 +149,31 @@ VPNFlickable {
         objectName: "openInspector"
         title: "Open Inspector"
         accessibleName: "Open Inspector"
-        iconSource:  "../resources/externalLink.svg"
+        iconSource:  "qrc:/ui/resources/externalLink.svg"
         backgroundColor: Theme.clickableRowBlue
         onClicked: {
             VPN.openLink(VPN.LinkInspector)
+        }
+    }
+
+    VPNButton {
+        id: resetAndQuit
+        property int clickNeeded: 5
+
+        anchors.top: stagingServerCheckBox.checked && !restartRequired.visible ? inspectorLink.bottom : featureListLink.bottom
+        anchors.topMargin: Theme.windowMargin
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        text: "Reset and Quit"
+        onClicked: {
+            if (clickNeeded) {
+             text = "Reset and Quit (" + clickNeeded + ")";
+              --clickNeeded;
+             return;
+            }
+
+            VPN.hardResetAndQuit()
         }
     }
 
