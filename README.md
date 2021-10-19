@@ -78,6 +78,8 @@ git submodule update
 ./scripts/generate_glean.py
 # translations
 ./scripts/importLanguages.py
+# Bake shaders
+sh ./scripts/bake_shaders.sh
 ```
 
 #### Build

@@ -55,6 +55,12 @@ jobs:
           git submodule update --remote --depth 1 i18n
           python3 scripts/importLanguages.py -m
 
+      - name: Bake shaders
+        shell: bash
+        run: |
+          export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
+          sh scripts/bake_shaders.sh
+
       - name: Install the Apple certificate and provisioning profile
         env:
           MACOS_CERTIFICATE_DEVID_BASE64: ${{ secrets.MACOS_CERTIFICATE_DEVID_BASE64 }}
