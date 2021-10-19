@@ -1,26 +1,15 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 const assert = require('assert');
-const util = require('util');
 const vpn = require('./helper.js');
 
-const exec = util.promisify(require('child_process').exec);
-
 describe('Settings', function() {
-  this.timeout(600000);
-
-  before(async () => {
-    await vpn.connect();
-  });
-
-  beforeEach(() => {});
-
-  afterEach(vpn.dumpFailure);
-
-  after(async () => {
-    vpn.disconnect();
+  beforeEach(async () => {
+    await vpn.authenticate(true, true);
+    await vpn.waitForElement('settingsButton');
+    await vpn.clickOnElement('settingsButton');
+    await vpn.wait();
   });
 
   async function checkSetting(objectName, settingKey) {
@@ -41,30 +30,9 @@ describe('Settings', function() {
     await vpn.wait();
   }
 
-  it('authenticate', async () => await vpn.authenticate());
-
-  it('Post authentication view', async () => {
-    await vpn.waitForElement('postAuthenticationButton');
-    await vpn.clickOnElement('postAuthenticationButton');
-    await vpn.wait();
-  });
-
-  it('Telemetry policy view', async () => {
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.waitForElementProperty(
-        'telemetryPolicyButton', 'visible', 'true');
-    await vpn.clickOnElement('telemetryPolicyButton');
-    await vpn.wait();
-  });
-
   it('Opening and closing the settings view', async () => {
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
-    await vpn.wait();
-
     await vpn.waitForElement('settingsCloseButton');
     await vpn.waitForElementProperty('settingsCloseButton', 'visible', 'true');
-
     await vpn.clickOnElement('settingsCloseButton');
     await vpn.wait();
 
@@ -73,10 +41,6 @@ describe('Settings', function() {
   });
 
   it('Checking settings entries', async () => {
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
-    await vpn.wait();
-
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
     await vpn.clickOnElement('manageAccountButton');
@@ -436,6 +400,9 @@ describe('Settings', function() {
   it('Checking the logout', async () => {
     await vpn.waitForElement('settingsLogout');
     await vpn.waitForElementProperty('settingsLogout', 'visible', 'true');
+    // TODO - Should be able to click on SignOut and observe
+    // the signout, but the next line doesn't work
+    // await vpn.clickOnElement('settingsLogout');
+    // await vpn.waitForMainView();
   });
-
 });
