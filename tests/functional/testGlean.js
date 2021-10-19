@@ -5,7 +5,6 @@
 const vpn = require('./helper.js');
 
 describe('Glean event logging', function() {
-  this.timeout(5000);
 
   beforeEach(async () => {
     await vpn.setGleanAutomationHeader();
