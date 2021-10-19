@@ -13,7 +13,7 @@
 namespace {
 Logger logger(LOG_ANDROID, "AndroidSharedPrefs");
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
 const QString SHARED_PREF_FOLDER =
     "/data/data/org.mozilla.firefox.vpn.debug/shared_prefs";
 #else

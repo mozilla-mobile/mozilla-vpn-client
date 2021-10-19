@@ -13,10 +13,6 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
-#ifdef QT_DEBUG
-#  include "gleantest.h"
-#endif
-
 #include <functional>
 
 #include <QBuffer>
@@ -217,6 +213,17 @@ static QList<WebSocketSettingCommand> s_settingCommands{
         },
         []() {
           return SettingsHolder::instance()->gleanEnabled() ? "true" : "false";
+        }},
+
+    // telemetry-policy-shown
+    WebSocketSettingCommand{
+        "telemetry-policy-shown", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setTelemetryPolicyShown(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->telemetryPolicyShown() ? "true"
+                                                                    : "false";
         }},
 
 };
@@ -686,23 +693,6 @@ static QList<WebSocketCommand> s_commands{
           MozillaVPN::instance()->surveyModel()->dismissCurrentSurvey();
           return QJsonObject();
         }},
-
-#ifdef QT_DEBUG
-    WebSocketCommand{"last_glean_request", "Retrieve the last glean request", 0,
-                     [](const QList<QByteArray>&) {
-                       GleanTest* gt = GleanTest::instance();
-
-                       QJsonObject glean;
-                       glean["url"] = QString(gt->lastUrl());
-                       glean["data"] = QString(gt->lastData());
-
-                       gt->reset();
-
-                       QJsonObject obj;
-                       obj["value"] = glean;
-                       return obj;
-                     }},
-#endif
 
     WebSocketCommand{"devices", "Retrieve the list of devices", 0,
                      [](const QList<QByteArray>&) {

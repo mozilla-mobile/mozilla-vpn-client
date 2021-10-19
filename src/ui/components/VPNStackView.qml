@@ -27,22 +27,4 @@ StackView {
             }
         }
     }
-
-    // This function Wrapps Push -> takes a QMLCompnent
-    // and put's it onto the stackview
-    function debugPush(url){
-        // The original StackView::Push requires a QML function
-        // as argument which then returns the Component/URL. This one is less 
-        // messy from the c++ side :)
-
-        var component = Qt.createComponent(url);
-        if(component.status !== Component.Ready)
-            {
-                if( component.status === Component.Error )
-                    console.debug("Error:"+ component.errorString() );
-
-            }
-        var element = component.createObject(this);
-        push(element)
-    }
 }

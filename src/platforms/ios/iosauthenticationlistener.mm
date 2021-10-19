@@ -72,7 +72,7 @@ void IOSAuthenticationListener::start(const QString& codeChallenge,
   query.addQueryItem("platform", "ios");
   url.setQuery(query);
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   logger.debug() << "Authentication URL:" << url.toString();
 #endif
 

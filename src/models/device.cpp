@@ -15,7 +15,7 @@
 #  include <QSslSocket>
 #endif
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
 #  include <QRandomGenerator>
 #endif
 
@@ -60,6 +60,7 @@ QString Device::currentDeviceReport() {
   QTextStream out(&buffer);
   out << "Name -> " << currentDeviceName() << Qt::endl;
   out << "ABI -> " << QSysInfo::buildAbi() << Qt::endl;
+  out << "Machine arch -> " << QSysInfo::currentCpuArchitecture() << Qt::endl;
   out << "OS -> " << QSysInfo::productType() << Qt::endl;
 #ifdef MVPN_WINDOWS
   out << "OS Version -> " << WindowsCommons::WindowsVersion() << Qt::endl;

@@ -76,10 +76,10 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
 
-    emit MozillaVPN::instance()->triggerGleanSample(
+    emit MozillaVPN::instance()->recordGleanEvent(
         GleanSample::connectionHealthUnstable);
   } else if (stability == NoSignal) {
-    emit MozillaVPN::instance()->triggerGleanSample(
+    emit MozillaVPN::instance()->recordGleanEvent(
         GleanSample::connectionHealthNoSignal);
   }
 
@@ -107,7 +107,7 @@ void ConnectionHealth::connectionStateChanged() {
 }
 
 void ConnectionHealth::pingSentAndReceived(qint64 msec) {
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   logger.debug() << "Ping answer received in msec:" << msec;
 #else
   Q_UNUSED(msec);

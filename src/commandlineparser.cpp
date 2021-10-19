@@ -43,7 +43,7 @@ int CommandLineParser::parse(int argc, char* argv[]) {
 
   QStringList tokens;
   for (int i = 0; i < argc; ++i) {
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
     if (QString(argv[i]).startsWith("-qmljsdebugger")) {
       continue;
     }

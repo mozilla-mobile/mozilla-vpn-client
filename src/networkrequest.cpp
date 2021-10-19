@@ -215,7 +215,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
   QUrl u(url);
   r->m_request.setUrl(QUrl(url));
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   logger.debug() << "Network starting" << r->m_request.url().toString();
 #endif
 

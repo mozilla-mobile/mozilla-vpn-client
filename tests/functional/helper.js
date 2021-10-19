@@ -176,6 +176,10 @@ module.exports = {
     }
   },
 
+  async setGleanAutomationHeader() {
+    await this._writeCommand('set_glean_automation_header');
+  },
+
   async getLastGleanRequest() {
     const json = await this._writeCommand('last_glean_request');
     assert(
@@ -318,12 +322,6 @@ module.exports = {
         `Invalid answer: ${json.error}`);
     return json.value;
   },
-  async pushViewTo(stackview,url) {
-    const json = await this._writeCommand(`pushViewTo ${stackview} ${url}`);
-    assert(!('error' in json),`Invalid answer: ${json.error}`);
-    return json.value;
-  },
-
   async dumpFailure() {
     if (this.currentTest.state === 'failed') {
       const data = await module.exports.screenCapture();
