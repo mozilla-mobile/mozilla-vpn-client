@@ -137,6 +137,7 @@ SOURCES += \
         platforms/dummy/dummypingsender.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
+        rfc/rfc1112.cpp \
         rfc/rfc1918.cpp \
         rfc/rfc4193.cpp \
         rfc/rfc4291.cpp \
@@ -267,6 +268,7 @@ HEADERS += \
         platforms/dummy/dummypingsender.h \
         qmlengineholder.h \
         releasemonitor.h \
+        rfc/rfc1112.h \
         rfc/rfc1918.h \
         rfc/rfc4193.h \
         rfc/rfc4291.h \
