@@ -156,6 +156,9 @@ SETTING_BOOL(featuresTourShown,     // getter
              false                  // remove when reset
 )
 
+// TODO - This would be better named "telemetryEnabled", but as we already
+// shipped with it called gleanEnabled it's non-trivial to change
+// the name. https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2050
 SETTING_BOOL(gleanEnabled,     // getter
              setGleanEnabled,  // setter
              hasGleanEnabled,  // has

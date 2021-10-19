@@ -22,8 +22,9 @@ QT += quick
 QT += widgets
 QT += charts
 QT += websockets
+QT += sql
 
-# for the inspector
+# For the inspector
 QT+= testlib
 QT.testlib.CONFIG -= console
 CONFIG += no_testcase_installs
@@ -207,7 +208,6 @@ HEADERS += \
         features/featureappreview.h \
         features/featurecaptiveportal.h \
         features/featurecustomdns.h \
-        features/featureglean.h \
         features/featureinappaccountCreate.h \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
@@ -902,6 +902,8 @@ else:wasm {
 
     TARGET = mozillavpn
     QT += svg
+    # sql not available for wasm.
+    QT -= sql
 
     CONFIG += c++1z
 
@@ -963,13 +965,18 @@ QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
 
-debug {
-    SOURCES += gleantest.cpp
-    HEADERS += gleantest.h
-}
-
 coverage {
     message(Coverage enabled)
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
     QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
+}
+
+debug {
+    # If in debug mode, set mvpn_debug flag too.
+    CONFIG += mvpn_debug
+}
+
+mvpn_debug {
+    message(MVPN Debug enabled)
+    DEFINES += MVPN_DEBUG
 }
