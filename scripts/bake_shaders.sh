@@ -22,25 +22,16 @@ if [[ $totalCount -eq 0 ]]; then
   exit 0
 fi
 
-fileCounter=0
 for inputFilePath in "$shaderSourceDir"/*
 do
-  fileCounter=$[$fileCounter + 1]
   filename=$(basename "$inputFilePath")
   outputFilePath="$shaderDistDir"/"$filename".qsb
-  shaderLabel="Shader $fileCounter/$totalCount"
 
   # Generate shader with qsb
   # For options and arguments see QSB Manual:
   # https://doc.qt.io/qt-6/qtshadertools-qsb.html
-  if qsb --glsl "100 es,120,150" --hlsl 50 --msl 12 -o "$outputFilePath" "$inputFilePath"; then
-    print G "$shaderLabel (baked): $filename"
-    print N "$inputFilePath -> $outputFilePath"
-  else
-    print R "$shaderLabel (failed): $filename"
-    print N "$inputFilePath"
-  fi
+  command -v qsb &>/dev/null || die "qsb not found"
+  qsb --glsl "100 es,120,150" --hlsl 50 --msl 12 -o "$outputFilePath" "$inputFilePath" || die "Failed to generate the shader file"
 done
 
-print N ""
 print N "Done baking shaders!"
