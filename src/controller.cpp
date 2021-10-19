@@ -10,8 +10,10 @@
 #include "features/featurecaptiveportal.h"
 #include "features/featurelocalareaaccess.h"
 #include "features/featuremultihop.h"
+#include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
+#include "rfc/rfc4291.h"
 
 #include "ipaddress.h"
 #include "ipaddressrange.h"
@@ -679,6 +681,10 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
 
     logger.debug() << "Filtering out the local area networks (rfc 4193)";
     excludeIPv6s.append(RFC4193::ipv6());
+
+    logger.debug() << "Filtering out multicast addresses";
+    excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
+    excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
   }
   if (DNSHelper::shouldExcludeDNS()) {
     auto dns = DNSHelper::getDNS(server.ipv4Gateway());
