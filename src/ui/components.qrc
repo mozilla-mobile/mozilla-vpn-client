@@ -12,7 +12,7 @@
         <file>components/VPNAboutUs.qml</file>
         <file>components/VPNAlert.qml</file>
         <file>components/VPNAlerts.qml</file>
-        <file>components/VPNAnimatedRingsShader.qml</file>
+        <file>components/VPNAnimatedRings.qml</file>
         <file>components/VPNAvatar.qml</file>
         <file>components/VPNBoldLabel.qml</file>
         <file>components/VPNButtonBase.qml</file>
