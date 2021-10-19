@@ -10,8 +10,8 @@ import Mozilla.VPN 1.0
 import components 0.1
 import themes 0.1
 
-import org.mozilla.Glean 0.15
-import telemetry 0.15
+import org.mozilla.Glean 0.23
+import telemetry 0.23
 
 
 Item {
@@ -72,8 +72,14 @@ Item {
                 target: VPNAppPermissions
                 function onNotification(type,message,action) {
                     console.log("Got notification: "+type + "  message:"+message);
-                    var component = Qt.createComponent("qrc://components/components/VPNAlert.qml");
-                    component.createObject(root, {
+                    var component = Qt.createComponent("qrc:/components/components/VPNAlert.qml");
+                    if(component.status !== Component.Ready)
+                        {
+                            if( component.status == Component.Error )
+                                console.debug("Error:"+ component.errorString() );
+                            
+                        }
+                    var alert = component.createObject(root, {
                                                isLayout:false,
                                                visible:true,
                                                alertText: message,
@@ -81,8 +87,12 @@ Item {
                                                alertActionText: action,
                                                duration:type === "warning"? 0: 2000,
                                                destructive:true,
+                                               // Pin y hight to be below the alert bar as we can't render above it
+                                               setY: vpnFlickable.y+Theme.windowMargin, 
                                                onActionPressed: ()=>{VPNAppPermissions.openFilePicker();},
                                            });
+
+                    alert.show();
                 }
             }
 

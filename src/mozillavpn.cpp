@@ -86,6 +86,9 @@ MozillaVPN* MozillaVPN::instance() {
   return s_instance;
 }
 
+// static
+MozillaVPN* MozillaVPN::maybeInstance() { return s_instance; }
+
 MozillaVPN::MozillaVPN() : m_private(new Private()) {
   MVPN_COUNT_CTOR(MozillaVPN);
 
@@ -175,10 +178,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     connect(iap, &IAPHandler::subscriptionNotValidated, this,
             &MozillaVPN::subscriptionNotValidated);
   }
-
-  connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
-  m_gleanTimer.start(Constants::gleanTimeoutMsec());
-  m_gleanTimer.setSingleShot(false);
 }
 
 MozillaVPN::~MozillaVPN() {
@@ -195,6 +194,14 @@ MozillaVPN::~MozillaVPN() {
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
 bool MozillaVPN::stagingMode() const { return !Constants::inProduction(); }
+
+bool MozillaVPN::debugMode() const {
+#ifdef MVPN_DEBUG
+  return true;
+#else
+  return false;
+#endif
+}
 
 void MozillaVPN::initialize() {
   logger.debug() << "MozillaVPN Initialization";
@@ -353,7 +360,7 @@ void MozillaVPN::maybeStateMain() {
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
     Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
              m_private->m_user.maxDevices());
-    emit triggerGleanSample(GleanSample::maxDeviceReached);
+    emit recordGleanEvent(GleanSample::maxDeviceReached);
     setState(StateDeviceLimit);
     return;
   }
@@ -413,7 +420,7 @@ void MozillaVPN::authenticateWithType(
     return;
   }
 
-  emit triggerGleanSample(GleanSample::authenticationStarted);
+  emit recordGleanEvent(GleanSample::authenticationStarted);
 
   scheduleTask(new TaskHeartbeat());
 
@@ -425,7 +432,7 @@ void MozillaVPN::abortAuthentication() {
   Q_ASSERT(m_state == StateAuthenticating);
   setState(StateInitialize);
 
-  emit triggerGleanSample(GleanSample::authenticationAborted);
+  emit recordGleanEvent(GleanSample::authenticationAborted);
 }
 
 void MozillaVPN::openLink(LinkType linkType) {
@@ -557,7 +564,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
                                          const QString& token) {
   logger.debug() << "Authentication completed";
 
-  emit triggerGleanSample(GleanSample::authenticationCompleted);
+  emit recordGleanEvent(GleanSample::authenticationCompleted);
 
   if (!m_private->m_user.fromJson(json)) {
     logger.error() << "Failed to parse the User JSON data";
@@ -703,6 +710,11 @@ void MozillaVPN::serversFetched(const QByteArray& serverData,
   }
 }
 
+void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
+  logger.debug() << "Device removal task completed";
+  m_private->m_deviceModel.stopDeviceRemovalFromPublicKey(publicKey, keys());
+}
+
 void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   logger.debug() << "Remove device";
 
@@ -712,6 +724,12 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
     // Let's inform the UI about what is going to happen.
     emit deviceRemoving(publicKey);
     scheduleTask(new TaskRemoveDevice(publicKey));
+
+    if (m_state != StateDeviceLimit) {
+      // To have a faster UI, we inform the device-model that this public key
+      // is going to be removed.
+      m_private->m_deviceModel.startDeviceRemovalFromPublicKey(publicKey);
+    }
   }
 
   if (m_state != StateDeviceLimit) {
@@ -841,7 +859,7 @@ void MozillaVPN::cancelAuthentication() {
     return;
   }
 
-  emit triggerGleanSample(GleanSample::authenticationAborted);
+  emit recordGleanEvent(GleanSample::authenticationAborted);
 
   reset(true);
 }
@@ -983,9 +1001,9 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
   // Any error in authenticating state sends to the Initial state.
   if (m_state == StateAuthenticating) {
     if (alert == GeoIpRestrictionAlert) {
-      emit triggerGleanSample(GleanSample::authenticationFailureByGeo);
+      emit recordGleanEvent(GleanSample::authenticationFailureByGeo);
     } else {
-      emit triggerGleanSample(GleanSample::authenticationFailure);
+      emit recordGleanEvent(GleanSample::authenticationFailure);
     }
     setState(StateInitialize);
     return;
@@ -1051,6 +1069,21 @@ void MozillaVPN::postAuthenticationCompleted() {
   }
 
   maybeStateMain();
+}
+
+void MozillaVPN::mainWindowLoaded() {
+  logger.debug() << "main window loaded";
+
+#ifndef MVPN_WASM
+  // Initialize glean
+  logger.debug() << "Initializing Glean";
+  emit initializeGlean();
+
+  // Setup regular glean ping sending
+  connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
+  m_gleanTimer.start(Constants::gleanTimeoutMsec());
+  m_gleanTimer.setSingleShot(false);
+#endif
 }
 
 void MozillaVPN::telemetryPolicyCompleted() {
