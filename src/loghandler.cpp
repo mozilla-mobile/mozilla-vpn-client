@@ -167,7 +167,7 @@ LogHandler::LogHandler(LogLevel minLogLevel, const QStringList& modules,
     : m_minLogLevel(minLogLevel), m_modules(modules) {
   Q_UNUSED(proofOfLock);
 
-#if defined(QT_DEBUG) || defined(MVPN_WASM)
+#if defined(MVPN_DEBUG) || defined(MVPN_WASM)
   m_showDebug = true;
 #endif
 
@@ -202,7 +202,7 @@ void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
 
   emit logEntryAdded(buffer);
 
-#if defined(MVPN_ANDROID) && defined(QT_DEBUG)
+#if defined(MVPN_ANDROID) && defined(MVPN_DEBUG)
   const char* str = buffer.constData();
   if (str) {
     __android_log_write(ANDROID_LOG_DEBUG, "mozillavpn", str);

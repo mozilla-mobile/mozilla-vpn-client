@@ -58,7 +58,7 @@ QUrlQuery AdjustFiltering::filterParameters(QUrlQuery& parameters,
                                             QStringList& unknownParameters) {
   QUrlQuery newParameters;
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   // We use the binary-search algorithm. The arrays must be alphabetically
   // sorted. Let's check this in debug builds.
 

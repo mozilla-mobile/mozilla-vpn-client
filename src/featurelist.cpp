@@ -10,7 +10,6 @@
 #include "features/featureappreview.h"
 #include "features/featurecaptiveportal.h"
 #include "features/featurecustomdns.h"
-#include "features/featureglean.h"
 #include "features/featureinappaccountcreate.h"
 #include "features/featureinappauth.h"
 #include "features/featureinapppurchase.h"
@@ -44,7 +43,6 @@ void FeatureList::initialize() {
   new FeatureAppReview();
   new FeatureCaptivePortal();
   new FeatureCustomDNS();
-  new FeatureGlean();
   new FeatureInAppAccountCreate();
   new FeatureInAppAuth();
   new FeatureInAppPurchase();
