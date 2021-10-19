@@ -32,6 +32,10 @@
 #include <QStandardPaths>
 #include <QTimer>
 
+#ifdef MVPN_WINDOWS
+#  include "platforms/windows/windowscommons.h"
+#endif
+
 class QTextStream;
 class Task;
 
