@@ -58,9 +58,7 @@ describe('Captive portal', function() {
   });
 
   it('Captive portal in the Telemetry policy view', async () => {
-    await vpn.authenticate();
-    await vpn.clickOnElement('postAuthenticationButton');
-    await vpn.wait();
+    await vpn.authenticate(true, false);
     // Setup - end
 
     await vpn.waitForElement('telemetryPolicyButton');
@@ -72,13 +70,7 @@ describe('Captive portal', function() {
   });
 
   it('Captive portal in the Controller view', async () => {
-    await vpn.authenticate();
-    await vpn.clickOnElement('postAuthenticationButton');
-    await vpn.wait();
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.clickOnElement('telemetryPolicyButton');
-    // Setup - end
-
+    await vpn.authenticate(true, true);
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(
@@ -96,11 +88,7 @@ describe('Captive portal', function() {
   // TODO - this test is causing me timing issues.
   /*
   it('Activate the VPN', async () => {
-    await vpn.authenticate();
-    await vpn.clickOnElement('postAuthenticationButton');
-    await vpn.wait();
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.clickOnElement('telemetryPolicyButton');
+    await vpn.authenticate(true, true);
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(await vpn.getElementProperty('controllerTitle', 'text') === 'VPN is
@@ -129,11 +117,7 @@ describe('Captive portal', function() {
   */
 
   it('Captive portal when connected', async () => {
-    await vpn.authenticate();
-    await vpn.clickOnElement('postAuthenticationButton');
-    await vpn.wait();
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.clickOnElement('telemetryPolicyButton');
+    await vpn.authenticate(true, true);
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(

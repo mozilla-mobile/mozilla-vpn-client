@@ -3,44 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const util = require('util');
 const vpn = require('./helper.js');
 
-const exec = util.promisify(require('child_process').exec);
-
 describe('Connectivity', function() {
-  this.timeout(300000);
-
-  before(async () => {
-    await vpn.connect();
-  });
-
-  beforeEach(() => {});
-
-  afterEach(vpn.dumpFailure);
-
-  after(async () => {
-    vpn.disconnect();
-  });
-
-
-  it('authenticate', async () => await vpn.authenticate());
-
-  it('Post authentication view', async () => {
-    await vpn.waitForElement('postAuthenticationButton');
-    await vpn.clickOnElement('postAuthenticationButton');
-    await vpn.wait();
-  });
-
-  it('Telemetry policy view', async () => {
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.waitForElementProperty(
-        'telemetryPolicyButton', 'visible', 'true');
-    await vpn.clickOnElement('telemetryPolicyButton');
-    await vpn.wait();
-  });
-
   it('check the ui', async () => {
+    await vpn.authenticate(true, true);
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(
@@ -55,7 +22,10 @@ describe('Connectivity', function() {
     await vpn.waitForElementProperty('controllerToggle', 'visible', 'true');
   });
 
-  it('connecting', async () => {
+  it('Connect to VPN', async () => {
+    await vpn.authenticate(true, true);
+    await vpn.waitForElement('controllerTitle');
+
     await vpn.setSetting('connection-change-notification', 'true');
     // TODO: investigate why the click doesn't work on github.
     // await vpn.clickOnElement('controllerToggle');
@@ -70,9 +40,7 @@ describe('Connectivity', function() {
     assert(
         await vpn.getElementProperty('controllerSubTitle', 'text') ===
         'Masking connection and location');
-  });
 
-  it('connected', async () => {
     await vpn.waitForCondition(async () => {
       return await vpn.getElementProperty('controllerTitle', 'text') ==
           'VPN is on';
@@ -87,14 +55,18 @@ describe('Connectivity', function() {
 
     assert(vpn.lastNotification().title === 'VPN Connected');
     assert(vpn.lastNotification().message.startsWith('Connected to '));
-
-    vpn.wait();
   });
 
-  it('disconnecting', async () => {
-    // TODO: investigate why the click doesn't work on github.
-    // await vpn.clickOnElement('controllerToggle');
+  it('Disconnecting and disconnected', async () => {
+    await vpn.authenticate(true, true);
+    await vpn.waitForElement('controllerTitle');
+
     await vpn.setSetting('connection-change-notification', 'true');
+    await vpn.activate();
+    await vpn.waitForCondition(async () => {
+      return await vpn.getElementProperty('controllerTitle', 'text') ==
+          'VPN is on';
+    });
     await vpn.deactivate();
 
     await vpn.waitForCondition(async () => {
@@ -107,9 +79,7 @@ describe('Connectivity', function() {
         'Unmasking connection and location');
 
     vpn.wait();
-  });
 
-  it('disconnected', async () => {
     await vpn.waitForCondition(async () => {
       return await vpn.getElementProperty('controllerTitle', 'text') ===
           'VPN is off';
@@ -126,5 +96,4 @@ describe('Connectivity', function() {
     assert(vpn.lastNotification().title === 'VPN Disconnected');
     assert(vpn.lastNotification().message.startsWith('Disconnected from '));
   });
-
 });

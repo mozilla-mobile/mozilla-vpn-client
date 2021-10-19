@@ -217,7 +217,7 @@ module.exports = {
 
   // TODO - The expected staging urls are hardcoded, we may want to
   // move these hardcoded urls out if testing in alternate environments.
-  async authenticate() {
+  async authenticate(clickOnPostAuthenticate = false, acceptTelemetry = false) {
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForMainView();
 
@@ -269,6 +269,15 @@ module.exports = {
     // Clean-up extra devices (otherwise test account will fill up in a
     // heartbeats)
     await this._maybeRemoveExistingDevices();
+
+    if (clickOnPostAuthenticate) {
+      await this.clickOnElement('postAuthenticationButton');
+      await this.wait();
+    }
+    if (acceptTelemetry) {
+      await this.waitForElement('telemetryPolicyButton');
+      await this.clickOnElement('telemetryPolicyButton');
+    }
   },
 
   async logout() {
