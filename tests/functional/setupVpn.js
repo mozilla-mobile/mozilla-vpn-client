@@ -51,6 +51,8 @@ exports.mochaHooks = {
     // or other work it'll get cleaned up - this is most likely to happen
     // on a dev's machine.
     await vpn.hardReset();
+
+    console.log('Starting test:', this.currentTest.title);
   },
   async afterEach() {
     // Collect errors on failure

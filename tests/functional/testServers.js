@@ -1,76 +1,27 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 const assert = require('assert');
-const util = require('util');
 const vpn = require('./helper.js');
-
-const webdriver = require('selenium-webdriver'), By = webdriver.By,
-      Keys = webdriver.Key, until = webdriver.until;
 
 describe('Server list', function() {
   let servers;
   let currentCountryCode;
   let currentCity;
 
-  this.timeout(2000000);
+  this.timeout(120000);
 
-  before(async () => {
-    await vpn.connect();
-  });
-
-  beforeEach(() => {});
-
-  afterEach(vpn.dumpFailure);
-
-  after(async () => {
-    vpn.disconnect();
-  });
-
-  it('authenticate', async () => await vpn.authenticate());
-
-  it('Post authentication view', async () => {
-    await vpn.waitForElement('postAuthenticationButton');
-    await vpn.clickOnElement('postAuthenticationButton');
-    await vpn.wait();
-  });
-
-  it('Telemetry policy view', async () => {
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.waitForElementProperty(
-        'telemetryPolicyButton', 'visible', 'true');
-    await vpn.clickOnElement('telemetryPolicyButton');
-    await vpn.wait();
-  });
-
-  it('opening the server list', async () => {
+  beforeEach(async () => {
+    await vpn.authenticate(true, true);
     await vpn.waitForElement('serverListButton');
     await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
-    await vpn.wait();
-
     await vpn.clickOnElement('serverListButton');
     await vpn.wait();
 
-    await vpn.waitForElement('serverListBackButton');
-    await vpn.waitForElementProperty('serverListBackButton', 'visible', 'true');
-    await vpn.clickOnElement('serverListBackButton');
-    await vpn.wait();
-
-    await vpn.waitForElement('serverListButton');
-    await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
-    await vpn.wait();
-
-    await vpn.clickOnElement('serverListButton');
-    await vpn.wait();
-  });
-
-  it('retrieve list of servers and the current one', async () => {
     servers = await vpn.servers();
     currentCountryCode = await vpn.getSetting('current-server-country-code');
     currentCity = await vpn.getSetting('current-server-city');
 
-    // Let's "convert" current-city to its localized name.
     for (let server of servers) {
       if (currentCountryCode === server.code) {
         for (let city of server.cities) {
@@ -81,6 +32,19 @@ describe('Server list', function() {
         }
       }
     }
+    console.log(
+        'Current city (localized):', currentCity,
+        '| Current country code:', currentCountryCode);
+  });
+
+  it('opening the server list', async () => {
+    await vpn.waitForElement('serverListBackButton');
+    await vpn.waitForElementProperty('serverListBackButton', 'visible', 'true');
+    await vpn.clickOnElement('serverListBackButton');
+    await vpn.wait();
+
+    await vpn.waitForElement('serverListButton');
+    await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
   });
 
   it('check the countries and cities', async () => {
@@ -108,6 +72,7 @@ describe('Server list', function() {
       for (let city of server.cities) {
         const cityId = countryId + '/serverCityList/serverCity-' +
             city.name.replace(/ /g, '_');
+        console.log('  Waiting for cityId:', cityId);
         await vpn.waitForElement(cityId);
         await vpn.waitForElementProperty(cityId, 'visible', 'true');
         await vpn.waitForElementProperty(
@@ -120,7 +85,7 @@ describe('Server list', function() {
     }
   });
 
-  it('pick cities', async () => {
+  it('Pick cities', async () => {
     for (let server of servers) {
       const countryId = 'serverCountryList/serverCountry-' + server.code;
       await vpn.waitForElement(countryId);
@@ -138,6 +103,14 @@ describe('Server list', function() {
       await vpn.waitForElementProperty(countryId, 'cityListVisible', 'true');
 
       for (let city of server.cities) {
+        // This test is very long and running all cities doesn't add much value.
+        // This bails 50% of the time to cut the test time in half, but still
+        // get the value of the test.
+        if (Math.floor(Math.random() * 2)) {
+          console.log('  Skipping city: ', city)
+          break;
+        }
+        console.log('  Start test for city:', city);
         const cityId = countryId + '/serverCityList/serverCity-' +
             city.name.replace(/ /g, '_');
         await vpn.waitForElement(cityId);
@@ -176,7 +149,7 @@ describe('Server list', function() {
     }
   });
 
-  it('server switching', async () => {
+  it('Server switching', async () => {
     await vpn.setSetting('server-switch-notification', 'true');
     await vpn.setSetting('connection-change-notification', 'true');
     await vpn.waitForElement('serverListBackButton');
