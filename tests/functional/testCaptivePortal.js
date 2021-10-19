@@ -145,12 +145,7 @@ describe('Captive portal', function() {
   });
 
   it('Clicking the notification and wait for recovering', async () => {
-    await vpn.authenticate();
-    await vpn.clickOnElement('postAuthenticationButton');
-    await vpn.wait();
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.clickOnElement('telemetryPolicyButton');
-    await vpn.waitForElement('controllerTitle');
+    await vpn.authenticate(true, true);
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(
         await vpn.getElementProperty('controllerTitle', 'text') ===

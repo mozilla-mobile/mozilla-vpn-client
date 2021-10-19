@@ -277,6 +277,7 @@ module.exports = {
     if (acceptTelemetry) {
       await this.waitForElement('telemetryPolicyButton');
       await this.clickOnElement('telemetryPolicyButton');
+      await this.waitForElement('controllerTitle');
     }
   },
 
