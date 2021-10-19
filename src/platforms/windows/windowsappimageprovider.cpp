@@ -8,7 +8,6 @@
 #include "leakdetector.h"
 #include "windowscommons.h"
 
-#include <shellapi.h>
 #include <QObject>
 #include <QDir>
 #include <QPixmap>
@@ -17,6 +16,9 @@
 #include <QStringList>
 #include <QSysInfo>
 #include <QtWin>
+
+#include <Windows.h>
+#include <shellapi.h>
 
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsAppImageProvider");

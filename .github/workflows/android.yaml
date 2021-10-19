@@ -53,8 +53,7 @@ jobs:
       - name: Setup Glean Dependency
         shell: bash
         run: |
-          pip3 install "glean_parser==3.5"
-          pip3 install pyyaml
+          pip3 install -r requirements.txt
 
       - name: Compilation
         run: |

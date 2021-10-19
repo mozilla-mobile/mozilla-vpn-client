@@ -92,21 +92,21 @@ void CloseEventHandler::removeItem(QObject* item) {
   logger.debug() << "Remove item";
   Q_ASSERT(item);
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   bool found = false;
 #endif
 
   for (int i = 0; i < m_layers.length(); ++i) {
     if (m_layers.at(i).m_layer == item) {
       m_layers.removeAt(i);
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
       found = true;
 #endif
       break;
     }
   }
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   Q_ASSERT(found);
 #endif
 }
