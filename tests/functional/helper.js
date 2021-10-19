@@ -318,6 +318,11 @@ module.exports = {
         `Invalid answer: ${json.error}`);
     return json.value;
   },
+  async pushViewTo(stackview,url) {
+    const json = await this._writeCommand(`pushViewTo ${stackview} ${url}`);
+    assert(!('error' in json),`Invalid answer: ${json.error}`);
+    return json.value;
+  },
 
   async dumpFailure() {
     if (this.currentTest.state === 'failed') {

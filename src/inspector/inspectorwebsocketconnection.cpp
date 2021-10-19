@@ -25,6 +25,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QHostAddress>
+#include <QMetaObject>
 #include <QPixmap>
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -388,18 +389,31 @@ static QList<WebSocketCommand> s_commands{
                        QPoint point = pointF.toPoint();
                        point.rx() += item->width() / 2;
                        point.ry() += item->height() / 2;
-                       //QTest::mouseClick(item->window(), Qt::LeftButton,
-                       //                  Qt::NoModifier, point);
-
-                      
-                      QEvent* evtPress = new QEvent(QEvent::MouseButtonPress);
-                      QEvent* evtRelease = new QEvent(QEvent::MouseButtonRelease);
-
-                      QCoreApplication::instance()->postEvent(qmlobj,evtPress);
-                      QCoreApplication::instance()->postEvent(qmlobj,evtRelease);
-
+                       QTest::mouseClick(item->window(), Qt::LeftButton,Qt::NoModifier, point);
                        return obj;
                      }},
+    WebSocketCommand{"pushViewTo", "Push a QML View to a StackView", 2,
+                     [](const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       QString stackViewName(arguments[1]);
+                       QUrl qrcPath(arguments[2]);
+                       if(!qrcPath.isValid()){
+                           obj["error"] =" Not a valid URL!";
+                           logger.error() << "Not a valid URL!";
+                       }
+
+                       QObject* qmlobj = findObject(stackViewName);
+                       if(qmlobj == nullptr){
+                         obj["error"]="Cant find, stackview :"+ stackViewName;
+
+                       }
+
+                       QVariant arg = QVariant::fromValue(qrcPath.toString());
+
+                       bool ok = QMetaObject::invokeMethod(qmlobj,"debugPush",QGenericReturnArgument(),Q_ARG(QVariant,arg));
+                       logger.info() << "WAS OK ->" << ok;
+                       return obj;
+    }},
 
     WebSocketCommand{"click_notification", "Click on a notification", 0,
                      [](const QList<QByteArray>&) {
