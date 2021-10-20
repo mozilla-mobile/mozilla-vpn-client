@@ -10,6 +10,8 @@ describe('Devices', function() {
     await vpn.waitForElementProperty('deviceListButton', 'visible', 'true');
     await vpn.wait();
 
+    await vpn._writeCommand('dismiss_surveys');
+    await vpn.wait();
     await vpn.clickOnElement('deviceListButton');
     await vpn.wait();
 
