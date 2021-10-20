@@ -9,7 +9,7 @@ describe('Server list', function() {
   let currentCountryCode;
   let currentCity;
 
-  this.timeout(120000);
+  this.timeout(240000);
 
   beforeEach(async () => {
     await vpn.authenticate(true, true);
@@ -103,13 +103,6 @@ describe('Server list', function() {
       await vpn.waitForElementProperty(countryId, 'cityListVisible', 'true');
 
       for (let city of server.cities) {
-        // This test is very long and running all cities doesn't add much value.
-        // This bails 50% of the time to cut the test time in half, but still
-        // get the value of the test.
-        if (Math.floor(Math.random() * 2)) {
-          console.log('  Skipping city: ', city)
-          break;
-        }
         console.log('  Start test for city:', city);
         const cityId = countryId + '/serverCityList/serverCity-' +
             city.name.replace(/ /g, '_');
