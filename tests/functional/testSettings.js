@@ -5,6 +5,8 @@ const assert = require('assert');
 const vpn = require('./helper.js');
 
 describe('Settings', function() {
+  this.timeout(60000);
+
   beforeEach(async () => {
     await vpn.authenticate(true, true);
     await vpn.waitForElement('settingsButton');
