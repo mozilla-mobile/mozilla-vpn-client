@@ -255,6 +255,16 @@ void MozillaVPN::initialize() {
     return;
   }
 
+  if (FeatureInAppPurchase::instance()->isSupported()) {
+    if (m_private->m_user.subscriptionNeeded()) {
+      setUserAuthenticated(true);
+      setState(StateAuthenticating);
+      scheduleTask(new TaskProducts());
+      scheduleTask(new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
+      return;
+    }
+  }
+
   if (!m_private->m_keys.fromSettings()) {
     logger.error() << "No keys found";
     settingsHolder->clear();
