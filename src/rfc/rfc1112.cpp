@@ -2,14 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "rfc4291.h"
+#include "rfc1112.h"
 
 // static
-IPAddress RFC4291::ipv6LoopbackAddressBlock() {
-  return IPAddress::create("::1/128");
-}
-
-// static
-IPAddress RFC4291::ipv6MulticastAddressBlock() {
-  return IPAddress::create("ff00::/8");
+IPAddress RFC1112::ipv4MulticastAddressBlock() {
+  return IPAddress::create("224.0.0.0/4");
 }
