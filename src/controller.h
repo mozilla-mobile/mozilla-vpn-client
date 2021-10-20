@@ -45,6 +45,8 @@ class Controller final : public QObject {
                  NOTIFY stateChanged)
   Q_PROPERTY(
       int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
+  Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
+                 NOTIFY enableDisconnectInConfirmingChanged);
 
  public:
   Controller();
@@ -81,6 +83,10 @@ class Controller final : public QObject {
 
   int connectionRetry() const { return m_connectionRetry; }
 
+  bool enableDisconnectInConfirming() const {
+    return m_enableDisconnectInConfirming;
+  }
+
   void backendFailure();
 
  public slots:
@@ -111,6 +117,7 @@ class Controller final : public QObject {
   void readyToUpdate();
   void readyToBackendFailure();
   void connectionRetryChanged();
+  void enableDisconnectInConfirmingChanged();
   void silentSwitchDone();
 
  private:
@@ -143,6 +150,9 @@ class Controller final : public QObject {
   QString m_switchingExitCity;
   QString m_switchingEntryCountry;
   QString m_switchingEntryCity;
+
+  QTimer m_connectingTimer;
+  bool m_enableDisconnectInConfirming = false;
 
   enum NextStep {
     None,

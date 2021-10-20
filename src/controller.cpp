@@ -44,6 +44,8 @@ constexpr const uint32_t TIMER_MSEC = 1000;
 // X connection retries.
 constexpr const int CONNECTION_MAX_RETRY = 9;
 
+constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
+
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
 // private address range.
@@ -76,6 +78,11 @@ Controller::Controller() {
           &Controller::connectionConfirmed);
   connect(&m_connectionCheck, &ConnectionCheck::failure, this,
           &Controller::connectionFailed);
+  connect(&m_connectingTimer, &QTimer::timeout, [this]() {
+    m_enableDisconnectInConfirming = true;
+    emit enableDisconnectInConfirmingChanged();
+    m_connectingTimer.stop();
+  });
 }
 
 Controller::~Controller() { MVPN_COUNT_DTOR(Controller); }
@@ -580,6 +587,13 @@ void Controller::setState(State state) {
 
   if (m_state != state) {
     m_state = state;
+    if (m_state == StateConfirming) {
+      m_connectingTimer.start(CONFIRMING_TIMOUT_SEC * 1000);
+    } else {
+      m_enableDisconnectInConfirming = false;
+      emit enableDisconnectInConfirmingChanged();
+      m_connectingTimer.stop();
+    }
     emit stateChanged();
   }
 }
