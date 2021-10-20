@@ -1439,6 +1439,10 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 }
 
 void MozillaVPN::subscriptionCompleted() {
+#ifdef MVPN_ANDROID
+  // This is Android only
+  // iOS can end up here if the subsciption get finished outside of the IAP
+  // process
   if (m_state != StateSubscriptionInProgress) {
     // We could hit this in android flow if we're doing a late acknowledgement.
     // And ignoring is fine.
@@ -1446,6 +1450,7 @@ void MozillaVPN::subscriptionCompleted() {
         << "Random subscription completion received. Let's ignore it.";
     return;
   }
+#endif
 
   logger.debug() << "Subscription completed";
 
