@@ -304,6 +304,8 @@ void MozillaVPN::initialize() {
 
   scheduleTask(new TaskCaptivePortalLookup());
 
+  scheduleTask(new TaskSurveyData());
+
   if (FeatureInAppPurchase::instance()->isSupported()) {
     scheduleTask(new TaskProducts());
   }
@@ -642,6 +644,7 @@ void MozillaVPN::completeActivation() {
   if (FeatureInAppPurchase::instance()->isSupported()) {
     scheduleTask(new TaskProducts());
   }
+  scheduleTask(new TaskSurveyData());
 
   // Finally we are able to activate the client.
   scheduleTask(new TaskFunction([this](MozillaVPN*) {

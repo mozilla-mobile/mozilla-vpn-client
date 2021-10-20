@@ -322,7 +322,6 @@ module.exports = {
         `Invalid answer: ${json.error}`);
     return json.value;
   },
-
   async dumpFailure() {
     if (this.currentTest.state === 'failed') {
       const data = await module.exports.screenCapture();
