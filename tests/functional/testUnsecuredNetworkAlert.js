@@ -125,7 +125,7 @@ describe('Unsecured network alert', function() {
       await vpn.wait();
     })
 
-    it('Clicking the notification', async () => {
+    it('Clicking the notification activates the VPN', async () => {
       await vpn.forceUnsecuredNetworkAlert();
       await vpn.wait();
       assert(
@@ -152,7 +152,7 @@ describe('Unsecured network alert', function() {
       assert(vpn.lastNotification().title === null);
     });
 
-    it('Unsecured network alert when connected', async () => {
+    it('Unsecured network alert should not show when connected', async () => {
       await vpn.activate();
       await vpn.waitForCondition(async () => {
         return await vpn.getElementProperty('controllerTitle', 'text') ===
@@ -172,7 +172,7 @@ describe('Unsecured network alert', function() {
       assert(vpn.lastNotification().title === null);
     });
 
-    it('disconnecting', async () => {
+    it('After disconnecting unsecured network alert should show', async () => {
       await vpn.activate();
       await vpn.waitForCondition(async () => {
         return await vpn.getElementProperty('controllerTitle', 'text') ===
@@ -190,12 +190,14 @@ describe('Unsecured network alert', function() {
       });
 
       vpn.resetLastNotification();
+      assert(vpn.lastNotification().title === null);
 
       await vpn.forceUnsecuredNetworkAlert();
       await vpn.wait();
 
-      // Notifications are not OK when disconnected.
-      assert(vpn.lastNotification().title === null);
+      // Notifications are OK when disconnected.
+      assert(
+          vpn.lastNotification().title === 'Unsecured Wi-Fi network detected');
     });
   });
 });
