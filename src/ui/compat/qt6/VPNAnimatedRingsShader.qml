@@ -2,14 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.5
-import QtQuick.Controls 2.14
+import QtQuick 2.0
 
-import components 0.1
+ShaderEffect {
+    property string shaderSrc: "qrc:/ui/resources/shaders/baked/animatedRings.frag.qsb"
 
-VPNStackView {
-    id: stackview
-    objectName: "ViewMainStackView"
-
-    initialItem: "qrc:/ui/views/ViewMain.qml"
+    fragmentShader: shaderSrc
 }
