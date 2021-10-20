@@ -255,6 +255,20 @@ void MozillaVPN::initialize() {
     return;
   }
 
+  // This step is done to keep users logged in even if they did not complete the
+  // subscription. This will fix some of the edge cases for iOS IAP. We do this
+  // here as after this point only settings are checked that are set after a
+  // successfull subscription.
+  if (FeatureInAppPurchase::instance()->isSupported()) {
+    if (m_private->m_user.subscriptionNeeded()) {
+      setUserAuthenticated(true);
+      setState(StateAuthenticating);
+      scheduleTask(new TaskProducts());
+      scheduleTask(new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
+      return;
+    }
+  }
+
   if (!m_private->m_keys.fromSettings()) {
     logger.error() << "No keys found";
     settingsHolder->clear();
