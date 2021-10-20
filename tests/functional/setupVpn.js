@@ -63,15 +63,17 @@ exports.mochaHooks = {
       console.log('::endgroup');
 
       // Screenshot of failure state
-      const data = await vpn.screenCapture();
-      const buffer = Buffer.from(data, 'base64');
-      const dir = process.env.ARTIFACT_DIR + '/screencapture';
-      const title = this.currentTest.title.toLowerCase();
-      const filename = title.replace(/[^a-z0-9]/g, '_');
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
+      if (('ARTIFACT_DIR' in process.env)) {
+        const dir = process.env.ARTIFACT_DIR + '/screencapture';
+        const data = await vpn.screenCapture();
+        const buffer = Buffer.from(data, 'base64');
+        const title = this.currentTest.title.toLowerCase();
+        const filename = title.replace(/[^a-z0-9]/g, '_');
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir);
+        }
+        fs.writeFileSync(`${dir}/${filename}.png`, buffer);
       }
-      fs.writeFileSync(`${dir}/${filename}.png`, buffer);
     }
     // Reset error logs
     stdErr = '';
