@@ -4,11 +4,11 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../components"
-import "../themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 Item {
     id: root
@@ -131,7 +131,7 @@ Item {
 
                     labelText: qsTrId("vpn.main.getHelp2")
                     Layout.alignment: Qt.AlignHCenter
-                    onClicked: stackview.push("../views/ViewGetHelp.qml", {isSettingsView: false})
+                    onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false})
                     Layout.preferredHeight: Theme.rowHeight
                 }
 

@@ -10,7 +10,6 @@
 #include "features/featureappreview.h"
 #include "features/featurecaptiveportal.h"
 #include "features/featurecustomdns.h"
-#include "features/featureglean.h"
 #include "features/featureinappaccountcreate.h"
 #include "features/featureinappauth.h"
 #include "features/featureinapppurchase.h"
@@ -18,6 +17,7 @@
 #include "features/featuremultihop.h"
 #include "features/featurenotificationcontrol.h"
 #include "features/featuresplittunnel.h"
+#include "features/featuresharelogs.h"
 #include "features/featurestartonboot.h"
 #include "features/featureunauthsupport.h"
 #include "features/featureunsecurednetworknotification.h"
@@ -43,13 +43,13 @@ void FeatureList::initialize() {
   new FeatureAppReview();
   new FeatureCaptivePortal();
   new FeatureCustomDNS();
-  new FeatureGlean();
   new FeatureInAppAccountCreate();
   new FeatureInAppAuth();
   new FeatureInAppPurchase();
   new FeatureLocalAreaAccess();
   new FeatureMultiHop();
   new FeatureNotificationControl();
+  new FeatureShareLogs();
   new FeatureSplitTunnel();
   new FeatureStartOnBoot();
   new FeatureUnauthSupport();

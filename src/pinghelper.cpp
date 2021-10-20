@@ -94,7 +94,7 @@ void PingHelper::stop() {
 }
 
 void PingHelper::nextPing() {
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   logger.debug() << "Sending ping seq:" << m_sequence;
 #endif
 
@@ -116,7 +116,7 @@ void PingHelper::pingReceived(quint16 sequence) {
     qint64 sendTime = m_pingData[index].timestamp;
     m_pingData[index].latency = QDateTime::currentMSecsSinceEpoch() - sendTime;
     emit pingSentAndReceived(m_pingData[index].latency);
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
     logger.debug() << "Ping answer received seq:" << sequence
                    << "avg:" << latency()
                    << "loss:" << QString("%1%").arg(loss() * 100.0)

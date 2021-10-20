@@ -5,52 +5,6 @@
 import QtQuick 2.0
 
 ShaderEffect {
-    id: ringAnimation
-
-    property bool isCurrentyVisible: false
-    property bool startAnimation: false
-    property real animationProgress
-    property real animationOpacity
-
-    anchors.horizontalCenter: parent.horizontalCenter
-    animationProgress: 0.0
-    animationOpacity: ringAnimationTimer.running ? 1.0 : 0.5
-    blending: true
-    height: parent.height
-    width: parent.height
-
-    Timer {
-        id: ringAnimationTimer
-
-        interval: 25
-        running: ringAnimation.visible && isCurrentyVisible
-        repeat: true
-
-        onTriggered: {
-            const animationSpeed = 0.001;
-            if (ringAnimation.animationProgress < 1.0) {
-                ringAnimation.animationProgress += animationSpeed
-            } else {
-                ringAnimation.animationProgress = 0.0;
-            }
-        }
-    }
-
-    onIsCurrentyVisibleChanged: {
-        resetAnimation();
-    }
-
-    onStartAnimationChanged: {
-        resetAnimation();
-    }
-
-    Behavior on animationOpacity {
-        PropertyAnimation {
-            duration: 1750
-            easing.type: Easing.OutCirc
-        }
-    }
-
     fragmentShader: "
         #ifdef GL_ES
         precision mediump float;
@@ -108,9 +62,5 @@ ShaderEffect {
             gl_FragColor = color * rings - gradientMask;
         }
     "
-
-    function resetAnimation() {
-        animationProgress = 0.0;
-    }
 }
 

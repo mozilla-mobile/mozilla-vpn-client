@@ -53,7 +53,7 @@ Logger::Log& Logger::Log::operator<<(QTextStreamFunction t) {
 
 // static
 QString Logger::sensitive(const QString& input) {
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   return input;
 #else
   return QString(input.length(), 'X');

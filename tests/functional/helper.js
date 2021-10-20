@@ -176,6 +176,10 @@ module.exports = {
     }
   },
 
+  async setGleanAutomationHeader() {
+    await this._writeCommand('set_glean_automation_header');
+  },
+
   async getLastGleanRequest() {
     const json = await this._writeCommand('last_glean_request');
     assert(
@@ -203,7 +207,7 @@ module.exports = {
     return new Promise(resolve => setTimeout(resolve, 1000));
   },
 
-  async authenticate(resetting = true, telemetry = true) {
+  async authenticate(resetting = true) {
     if (resetting) await this.reset();
 
     let driver = await FirefoxHelper.createDriver();
@@ -215,13 +219,6 @@ module.exports = {
         await this.getElementProperty('learnMoreLink', 'visible') === 'true');
 
     await this.clickOnElement('getStarted');
-
-    if (telemetry) {
-      await this.waitForElement('telemetryPolicyButton');
-      await this.waitForElementProperty(
-          'telemetryPolicyButton', 'visible', 'true');
-      await this.clickOnElement('telemetryPolicyButton');
-    }
 
     await this.waitForCondition(async () => {
       const url = await this.getLastUrl();
@@ -325,7 +322,6 @@ module.exports = {
         `Invalid answer: ${json.error}`);
     return json.value;
   },
-
   async dumpFailure() {
     if (this.currentTest.state === 'failed') {
       const data = await module.exports.screenCapture();

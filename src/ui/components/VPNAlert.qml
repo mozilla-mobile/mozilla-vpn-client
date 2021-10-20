@@ -5,9 +5,9 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
-import QtGraphicalEffects 1.0
-import "../themes/themes.js" as Theme
 
+import compat 0.1
+import themes 0.1
 
 Rectangle {
     id: alertBox
@@ -31,6 +31,8 @@ Rectangle {
     property var duration: 0
     // Delete itself after closing
     property var destructive: false
+    // Fixes the Y on show() if the alert does not use Layout
+    property var setY: 0
 
     Layout.minimumHeight: style.alertHeight
     Layout.maximumHeight: style.alertHeight
@@ -49,8 +51,8 @@ Rectangle {
     // Private Properties, will be changed depnding on alertType
     QtObject {
         id: style
-        readonly property string darkCloseIcon: "../resources/close-dark.svg"
-        readonly property string whiteCloseIcon: "../resources/close-white.svg"
+        readonly property string darkCloseIcon: "qrc:/ui/resources/close-dark.svg"
+        readonly property string whiteCloseIcon: "qrc:/ui/resources/close-white.svg"
         property var alertColor: "black";
         property var alertHoverColor: "gray";
         property var alertClickColor: "white";
@@ -143,14 +145,16 @@ Rectangle {
     ]
 
     Timer {
-          interval: alertBox.duration
-          id: autoHideTimer
-          running: false
-          repeat: false
-          onTriggered: { closeAlert.start();}
+        interval: alertBox.duration
+        id: autoHideTimer
+        running: false
+        repeat: false
+        onTriggered: {
+            closeAlert.start();
+        }
     }
 
-    DropShadow {
+    VPNDropShadow {
         anchors.fill: parent
         source: parent
         opacity: .1
@@ -318,12 +322,16 @@ Rectangle {
         if (!isLayout) {
             height = style.alertHeight;
             width = Math.min(window.width - Theme.windowMargin, Theme.maxHorizontalContentWidth);
-            y = fullscreenRequired()? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
+            if (setY > 0) {
+                y = setY;
+            } else {
+                y = fullscreenRequired() ? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
+            }
             anchors.horizontalCenter = parent.horizontalCenter;
             anchors.margins = Theme.windowMargin / 2;
         }
         if(alertBox.duration > 0){
-            console.log("Toasbox timer start")
+            console.log("Toastbox timer start")
             autoHideTimer.start()
         }
     }

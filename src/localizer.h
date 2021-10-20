@@ -8,7 +8,7 @@
 #include <QAbstractListModel>
 #include <QTranslator>
 
-class QCollator;
+class Collator;
 class SettingsHolder;
 
 class Localizer final : public QAbstractListModel {
@@ -69,7 +69,7 @@ class Localizer final : public QAbstractListModel {
   static QString languageName(const QString& code);
   static QString localizedLanguageName(const QString& code);
   static bool languageSort(const Language& a, const Language& b,
-                           QCollator* collator);
+                           Collator* collator);
 
   bool loadLanguageInternal(const QString& code);
 

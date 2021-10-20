@@ -6,11 +6,10 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
-import QtGraphicalEffects 1.14
 
 import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
-import "forms"
+import components.forms 0.1
+import themes 0.1
 
 ColumnLayout {
     id: appListContainer
@@ -168,7 +167,7 @@ ColumnLayout {
             RowLayout {
                 anchors.centerIn: parent
                 VPNIcon {
-                    source: "../resources/plus.svg"
+                    source: "qrc:/ui/resources/plus.svg"
                     sourceSize.height: Theme.windowMargin
                     sourceSize.width: Theme.windowMargin
                 }

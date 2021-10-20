@@ -10,8 +10,10 @@
 #include "features/featurecaptiveportal.h"
 #include "features/featurelocalareaaccess.h"
 #include "features/featuremultihop.h"
+#include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
+#include "rfc/rfc4291.h"
 
 #include "ipaddress.h"
 #include "ipaddressrange.h"
@@ -650,8 +652,6 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     const QList<Server>& serverList) {
   logger.debug() << "Computing the allowed ip addresses";
 
-  bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
-
   QList<IPAddress> excludeIPv4s;
   QList<IPAddress> excludeIPv6s;
   // For multi-hop connections, the last entry in the server list is the
@@ -679,10 +679,12 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     logger.debug() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());
 
-    if (ipv6Enabled) {
-      logger.debug() << "Filtering out the local area networks (rfc 4193)";
-      excludeIPv6s.append(RFC4193::ipv6());
-    }
+    logger.debug() << "Filtering out the local area networks (rfc 4193)";
+    excludeIPv6s.append(RFC4193::ipv6());
+
+    logger.debug() << "Filtering out multicast addresses";
+    excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
+    excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
   }
   if (DNSHelper::shouldExcludeDNS()) {
     auto dns = DNSHelper::getDNS(server.ipv4Gateway());
@@ -713,23 +715,21 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
   }
 
-  if (ipv6Enabled) {
-    if (excludeIPv6s.isEmpty()) {
-      logger.debug() << "Catch all IPv6";
-      list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
-    } else {
-      QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
+  if (excludeIPv6s.isEmpty()) {
+    logger.debug() << "Catch all IPv6";
+    list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
+  } else {
+    QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
 
-      logger.debug() << "Exclude the ingress server:" << server.ipv6AddrIn();
-      excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
+    logger.debug() << "Exclude the ingress server:" << server.ipv6AddrIn();
+    excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
 
-      allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
-      list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
+    allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
+    list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
 
-      logger.debug() << "Allow the ingress server:" << server.ipv6Gateway();
-      list.append(
-          IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
-    }
+    logger.debug() << "Allow the ingress server:" << server.ipv6Gateway();
+    list.append(
+        IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
   }
 
   return list;

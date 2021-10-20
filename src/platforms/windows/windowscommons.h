@@ -6,14 +6,13 @@
 #define WINDOWSCOMMONS_H
 
 #include <QString>
-#include <Windows.h>
+
 class QHostAddress;
 
 class WindowsCommons final {
  public:
   static QString getErrorMessage();
   static void windowsLog(const QString& msg);
-  static void windowsLog(const QString& msg, DWORD err);
 
   static QString tunnelConfigFile();
   static QString tunnelLogFile();
@@ -24,6 +23,8 @@ class WindowsCommons final {
   static int AdapterIndexTo(const QHostAddress& dst);
   // Returns the Path of the Current process
   static QString getCurrentPath();
+  // Returns the major version of Windows
+  static QString WindowsVersion();
 };
 
 #endif  // WINDOWSCOMMONS_H

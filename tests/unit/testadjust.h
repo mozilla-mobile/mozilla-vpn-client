@@ -10,4 +10,7 @@ class TestAdjust final : public TestHelper {
  private slots:
   void paramFiltering_data();
   void paramFiltering();
+
+  void stateMachine_data();
+  void stateMachine();
 };

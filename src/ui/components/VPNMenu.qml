@@ -3,7 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import "../themes/themes.js" as Theme
+
+import themes 0.1
 
 Item {
     id: menuBar
@@ -63,7 +64,7 @@ Item {
         Image {
             id: backImage
 
-            source: "../resources/back.svg"
+            source: "qrc:/ui/resources/back.svg"
             sourceSize.width: Theme.iconSize
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton

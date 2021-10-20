@@ -49,6 +49,14 @@ describe('Settings', function() {
     await vpn.wait();
   });
 
+  it('Telemetry policy view', async () => {
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+    await vpn.clickOnElement('telemetryPolicyButton');
+    await vpn.wait();
+  });
+
   it('Opening and closing the settings view', async () => {
     await vpn.waitForElement('settingsButton');
     await vpn.clickOnElement('settingsButton');
@@ -90,7 +98,6 @@ describe('Settings', function() {
     await vpn.clickOnElement('settingsNetworking');
     await vpn.wait();
 
-    await checkSetting('settingIpv6Enabled', 'ipv6-enabled');
     await checkSetting('settingLocalNetworkAccess', 'local-network-access');
 
     await vpn.waitForElement('settingsBackButton');
