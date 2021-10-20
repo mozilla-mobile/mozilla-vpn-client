@@ -179,14 +179,6 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
   }
 }
 
-- (void)requestDidFinish:(SKRequest*)request {
-  logger.debug() << "Product request finished";
-}
-
-- (void)request:(SKRequest*)request didFailWithError:(NSError*)error {
-  logger.error() << "Failed product request: " << QString::fromNSString(error.localizedDescription);
-}
-
 @end
 
 IOSIAPHandler::IOSIAPHandler(QObject* parent) : IAPHandler(parent) {

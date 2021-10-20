@@ -1422,7 +1422,7 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 }
 
 void MozillaVPN::subscriptionCompleted() {
-#ifdef MVPN_IOS
+#ifdef MVPN_ANDROID
   // This is Android only
   // iOS can end up here if the subsciption get finished outside of the IAP
   // process
