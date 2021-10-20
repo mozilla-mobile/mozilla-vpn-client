@@ -36,7 +36,7 @@ After checking out the code:
  * `MVPN_API_BASE_URL` (where proxy runs, most likely http://localhost:5000)
  * `MVPN_BIN` (location of compiled mvpn binary)
  * `ARTIFACT_DIR` (directory to put screenshots from test failures)
-* In one window run `./tests/proxy/wsgi.py` --mock-devices
+* (Optional) In one window run `./tests/proxy/wsgi.py --mock-devices`
 * To run, say, the authentication tests: `./scripts/test_function.sh tests/functional/testAuthentication.js`.
 
 Misc tips from core devs:
