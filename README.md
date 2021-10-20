@@ -46,6 +46,7 @@ Misc tips from core devs:
 * See the [workflows file](/.github/workflows/functional_tests.yaml) which runs the functional tests in ci for pointers
   if you're stuck.
 * If you're a conda user you can conda install node and geckodriver from conda-forge packages.
+* If you're trying to just iterate on one test change `it("....)` to `it.only("...)`. And only that one test will run.... don't forget to undo!
 
 ## How to build from the source code
 
