@@ -109,11 +109,13 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
-  async quit() {
+  async quit(raiseAssertion = true) {
     const json = await this._writeCommand('quit');
-    assert(
-        !('type' in json) || (json.type === 'quit' && !('error' in json)),
-        `Command failed: ${json.error}`);
+    if (raiseAssertion) {
+      assert(
+          !('type' in json) || (json.type === 'quit' && !('error' in json)),
+          `Command failed: ${json.error}`);
+    }
   },
 
   async hasElement(id) {
