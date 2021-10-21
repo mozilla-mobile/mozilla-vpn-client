@@ -10,7 +10,6 @@
 
 namespace {
 bool s_initialized = false;
-bool s_contactUsExternalLink = false;
 Logger logger(LOG_MAIN, "HelpModel");
 
 struct HelpEntry {
