@@ -192,9 +192,9 @@ describe('Take screenshots for each view', function() {
       }
     });
 
-    it.only('connecting and disconnecting', async () => {
+    it('connecting and disconnecting', async () => {
       await vpn.authenticate(true, true);
-      for (let language of languages.slice(0, 5)) {
+      for (let language of languages) {
         // Activate
         await vpn.setSetting('language-code', 'en');
         await new Promise(r => setTimeout(r, 100));
