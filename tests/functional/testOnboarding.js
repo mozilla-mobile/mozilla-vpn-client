@@ -3,12 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const util = require('util');
 const vpn = require('./helper.js');
 
 describe('Initial view and onboarding', function() {
-  this.timeout(300000);
-
   beforeEach(async () => {
     assert(await vpn.getLastUrl() === '');
   })
