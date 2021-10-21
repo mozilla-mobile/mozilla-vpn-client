@@ -21,6 +21,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QHostAddress>
+#include <QMetaObject>
 #include <QPixmap>
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -380,11 +381,13 @@ static QList<WebSocketCommand> s_commands{
 
                        QObject* qmlobj = findObject(arguments[1]);
                        if (!qmlobj) {
+                         logger.error() << "Did not find object to click on";
                          obj["error"] = "Object not found";
                          return obj;
                        }
                        QQuickItem* item = qobject_cast<QQuickItem*>(qmlobj);
                        if (!item) {
+                         logger.error() << "Object is not clickable";
                          obj["error"] = "Object is not clickable";
                          return obj;
                        }
@@ -395,7 +398,30 @@ static QList<WebSocketCommand> s_commands{
                        point.ry() += item->height() / 2;
                        QTest::mouseClick(item->window(), Qt::LeftButton,
                                          Qt::NoModifier, point);
+                       return obj;
+                     }},
+    WebSocketCommand{"pushViewTo", "Push a QML View to a StackView", 2,
+                     [](const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       QString stackViewName(arguments[1]);
+                       QUrl qrcPath(arguments[2]);
+                       if (!qrcPath.isValid()) {
+                         obj["error"] = " Not a valid URL!";
+                         logger.error() << "Not a valid URL!";
+                       }
 
+                       QObject* qmlobj = findObject(stackViewName);
+                       if (qmlobj == nullptr) {
+                         obj["error"] =
+                             "Cant find, stackview :" + stackViewName;
+                       }
+
+                       QVariant arg = QVariant::fromValue(qrcPath.toString());
+
+                       bool ok = QMetaObject::invokeMethod(
+                           qmlobj, "debugPush", QGenericReturnArgument(),
+                           Q_ARG(QVariant, arg));
+                       logger.info() << "WAS OK ->" << ok;
                        return obj;
                      }},
 
@@ -469,6 +495,12 @@ static QList<WebSocketCommand> s_commands{
                      [](const QList<QByteArray>&) {
                        MozillaVPN::instance()->heartbeatCompleted(
                            false /* success */);
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{"hard_reset", "Hard reset (wipe all settings).", 0,
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN::instance()->hardReset();
                        return QJsonObject();
                      }},
 
@@ -650,6 +682,21 @@ static QList<WebSocketCommand> s_commands{
           settingsHolder->setInstallationTime(QDateTime::currentDateTime());
           settingsHolder->setConsumedSurveys(QStringList());
 
+          return QJsonObject();
+        }},
+    WebSocketCommand{
+        "dismiss_surveys", "Dismisses all surveys", 0,
+        [](const QList<QByteArray>&) {
+          SettingsHolder* settingsHolder = SettingsHolder::instance();
+          Q_ASSERT(settingsHolder);
+          auto surveys = MozillaVPN::instance()->surveyModel()->surveys();
+          QStringList consumedSurveys;
+          for (auto& survey : surveys) {
+            consumedSurveys.append(survey.id());
+          }
+          settingsHolder->setInstallationTime(QDateTime::currentDateTime());
+          settingsHolder->setConsumedSurveys(consumedSurveys);
+          MozillaVPN::instance()->surveyModel()->dismissCurrentSurvey();
           return QJsonObject();
         }},
 

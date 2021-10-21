@@ -3,12 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const fs = require('fs');
 const websocket = require('websocket').w3cwebsocket;
 const FirefoxHelper = require('./firefox.js');
 
-const webdriver = require('selenium-webdriver'), By = webdriver.By,
-      Keys = webdriver.Key, until = webdriver.until;
+const webdriver = require('selenium-webdriver'), By = webdriver.By;
 
 let client;
 
@@ -29,7 +27,7 @@ module.exports = {
           const json = await this._writeCommand('stealurls');
           assert(
               json.type === 'stealurls' && !('error' in json),
-              `Invalid answer: ${json.error}`);
+              `Command failed: ${json.error}`);
           resolve(true);
         };
 
@@ -64,56 +62,65 @@ module.exports = {
     const json = await this._writeCommand('activate');
     assert(
         json.type === 'activate' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
   },
 
   async deactivate() {
     const json = await this._writeCommand('deactivate');
     assert(
         json.type === 'deactivate' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
   },
 
-  async reset() {
-    const json = await this._writeCommand('reset');
+  async hardReset() {
+    const json = await this._writeCommand('hard_reset');
     assert(
-        json.type === 'reset' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        json.type === 'hard_reset' && !('error' in json),
+        `Command failed: ${json.error}`);
   },
+
+  async waitForMainView() {
+    await this.waitForElement('getHelpLink');
+    await this.waitForElementProperty('getHelpLink', 'visible', 'true');
+    assert(await this.getElementProperty('getStarted', 'visible') === 'true');
+    assert(
+        await this.getElementProperty('learnMoreLink', 'visible') === 'true');
+  },
+
 
   async forceHeartbeatFailure() {
     const json = await this._writeCommand('force_heartbeat_failure');
     assert(
         json.type === 'force_heartbeat_failure' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
   },
 
   async forceUnsecuredNetworkAlert() {
     const json = await this._writeCommand('force_unsecured_network');
     assert(
         json.type === 'force_unsecured_network' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
   },
 
   async forceCaptivePortalDetection() {
     const json = await this._writeCommand('force_captive_portal_detection');
     assert(
         json.type === 'force_captive_portal_detection' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
   },
 
   async quit() {
     const json = await this._writeCommand('quit');
     assert(
         !('type' in json) || (json.type === 'quit' && !('error' in json)),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
   },
 
   async hasElement(id) {
     const json = await this._writeCommand(`has ${id}`);
     assert(
         json.type === 'has' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
     return json.value || false;
   },
 
@@ -128,14 +135,14 @@ module.exports = {
     const json = await this._writeCommand(`click ${id}`);
     assert(
         json.type === 'click' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
   },
 
   async clickOnNotification() {
     const json = await this._writeCommand('click_notification');
     assert(
         json.type === 'click_notification' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
   },
 
   async getElementProperty(id, property) {
@@ -145,7 +152,7 @@ module.exports = {
     const json = await this._writeCommand(`property ${id} ${property}`);
     assert(
         json.type === 'property' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
     return json.value || '';
   },
 
@@ -157,7 +164,7 @@ module.exports = {
         `set_property ${id} ${property} ${type} ${value}`);
     assert(
         json.type === 'set_property' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
   },
 
   async waitForElementProperty(id, property, value) {
@@ -184,7 +191,7 @@ module.exports = {
     const json = await this._writeCommand('last_glean_request');
     assert(
         json.type === 'last_glean_request' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
     return json.value || null;
   },
 
@@ -192,7 +199,7 @@ module.exports = {
     const json = await this._writeCommand('lasturl');
     assert(
         json.type === 'lasturl' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
     return json.value || '';
   },
 
@@ -207,86 +214,91 @@ module.exports = {
     return new Promise(resolve => setTimeout(resolve, 1000));
   },
 
-  async authenticate(resetting = true) {
-    if (resetting) await this.reset();
+  // TODO - The expected staging urls are hardcoded, we may want to
+  // move these hardcoded urls out if testing in alternate environments.
+  async authenticate(clickOnPostAuthenticate = false, acceptTelemetry = false) {
+    // This method must be called when the client is on the "Get Started" view.
+    await this.waitForMainView();
 
-    let driver = await FirefoxHelper.createDriver();
-
-    await this.waitForElement('getHelpLink');
-    await this.waitForElementProperty('getHelpLink', 'visible', 'true');
-    assert(await this.getElementProperty('getStarted', 'visible') === 'true');
-    assert(
-        await this.getElementProperty('learnMoreLink', 'visible') === 'true');
-
+    // Click on get started and wait for authenticating view
     await this.clickOnElement('getStarted');
-
     await this.waitForCondition(async () => {
       const url = await this.getLastUrl();
       return url.includes('/api/v2/vpn/login');
     });
-
     await this.wait();
 
     await this.waitForElement('authenticatingView');
     await this.waitForElementProperty('authenticatingView', 'visible', 'true');
 
+    // Slight deviation from real-world authentication, we manually
+    // open and verify the login.
     const url = await this.getLastUrl();
-
+    let driver = await FirefoxHelper.createDriver();
     await driver.setContext('content');
     await driver.navigate().to(url);
-
     await FirefoxHelper.waitForURL(
         driver, 'https://accounts.stage.mozaws.net/oauth/');
 
+    // Perform login based on stored credentials in environment
     const emailField = await driver.findElement(By.className('email'));
     assert.ok(!!emailField);
     await emailField.sendKeys(process.env.ACCOUNT_EMAIL);
-
     let buttonElm = await driver.findElement(By.id('submit-btn'));
     assert.ok(!!buttonElm);
     buttonElm.click();
-
     await FirefoxHelper.waitForURL(
         driver, 'https://accounts.stage.mozaws.net/oauth/signin');
-
     const passwordField = await driver.findElement(By.id('password'));
     assert.ok(!!passwordField);
     passwordField.sendKeys(process.env.ACCOUNT_PASSWORD);
-
     buttonElm = await driver.findElement(By.id('submit-btn'));
     assert.ok(!!buttonElm);
     await buttonElm.click();
 
+    // Verify that we've been redirected to guardian success page
     await FirefoxHelper.waitForURL(
         driver,
         'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
 
+    // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForElement('postAuthenticationButton');
+    await driver.quit();
 
+    // Clean-up extra devices (otherwise test account will fill up in a
+    // heartbeats)
     await this._maybeRemoveExistingDevices();
 
-    await driver.quit();
+    if (clickOnPostAuthenticate) {
+      await this.clickOnElement('postAuthenticationButton');
+      await this.wait();
+    }
+    if (acceptTelemetry) {
+      await this.waitForElement('telemetryPolicyButton');
+      await this.clickOnElement('telemetryPolicyButton');
+      await this.waitForElement('controllerTitle');
+    }
   },
 
   async logout() {
     const json = await this._writeCommand('logout');
     assert(
         json.type === 'logout' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
   },
 
   async setSetting(key, value) {
     const json = await this._writeCommand(`set_setting ${key} ${value}`);
     assert(
         json.type === 'set_setting' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
   },
 
   async getSetting(key) {
     const json = await this._writeCommand(`setting ${key}`);
     assert(
         json.type === 'setting' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
     return json.value;
   },
 
@@ -303,7 +315,7 @@ module.exports = {
     const json = await this._writeCommand('languages');
     assert(
         json.type === 'languages' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
     return json.value;
   },
 
@@ -311,7 +323,7 @@ module.exports = {
     const json = await this._writeCommand('servers');
     assert(
         json.type === 'servers' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
     return json.value;
   },
 
@@ -319,22 +331,8 @@ module.exports = {
     const json = await this._writeCommand('screen_capture');
     assert(
         json.type === 'screen_capture' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
     return json.value;
-  },
-
-  async dumpFailure() {
-    if (this.currentTest.state === 'failed') {
-      const data = await module.exports.screenCapture();
-      const buffer = Buffer.from(data, 'base64');
-      const dir = process.env.ARTIFACT_DIR + '/screencapture';
-      const title = this.currentTest.title.toLowerCase();
-      const filename = title.replace(/[^a-z0-9]/g, '_');
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
-      }
-      fs.writeFileSync(`${dir}/${filename}.png`, buffer);
-    }
   },
 
   // Internal methods.
@@ -359,7 +357,7 @@ module.exports = {
     const json = await this._writeCommand('devices');
     assert(
         json.type === 'devices' && !('error' in json),
-        `Invalid answer: ${json.error}`);
+        `Command failed: ${json.error}`);
 
     if (json.value.find(device => device.currentDevice)) {
       return;
@@ -368,13 +366,13 @@ module.exports = {
     const addJson = await this._writeCommand('reset_devices');
     assert(
         addJson.type === 'reset_devices' && !('error' in addJson),
-        `Invalid answer: ${addJson.error}`);
+        `Command failed: ${addJson.error}`);
 
     await this.waitForCondition(async () => {
       const json = await this._writeCommand('devices');
       assert(
           json.type === 'devices' && !('error' in json),
-          `Invalid answer: ${json.error}`);
+          `Command failed: ${json.error}`);
       return json.value.find(device => device.currentDevice);
     });
   },
