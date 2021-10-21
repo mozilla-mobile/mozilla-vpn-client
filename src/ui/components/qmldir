@@ -1,7 +1,7 @@
 VPNAboutUs 0.1 VPNAboutUs.qml
 VPNAlert 0.1 VPNAlert.qml
 VPNAlerts 0.1 VPNAlerts.qml
-VPNAnimatedRingsShader 0.1 VPNAnimatedRingsShader.qml
+VPNAnimatedRings 0.1 VPNAnimatedRings.qml
 VPNAvatar 0.1 VPNAvatar.qml
 VPNBoldLabel 0.1 VPNBoldLabel.qml
 VPNButton 0.1 VPNButton.qml

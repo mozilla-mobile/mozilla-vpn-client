@@ -29,7 +29,7 @@ Survey& Survey::operator=(const Survey& other) {
 
   m_id = other.m_id;
   m_url = other.m_url;
-  m_triggerTime = other.m_triggerTime;
+  m_triggerTimeSec = other.m_triggerTimeSec;
   m_platforms = other.m_platforms;
 
   return *this;
@@ -75,29 +75,36 @@ bool Survey::fromJson(const QJsonValue& json) {
 
   m_id = id.toString();
   m_url = url.toString();
-  m_triggerTime = triggerTime.toInt();
+  m_triggerTimeSec = triggerTime.toInt();
 
   return true;
 }
 
 bool Survey::isTriggerable() const {
-  logger.debug() << "is triggerable";
+  logger.debug() << "Survey check for" << m_id;
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
   if (settingsHolder->consumedSurveys().contains(m_id)) {
+    logger.debug() << "Survey already consumed";
     return false;
   }
 
   if (!m_platforms.isEmpty() &&
       !m_platforms.contains(Constants::PLATFORM_NAME)) {
+    logger.debug() << "is not right Platform";
     return false;
   }
 
   QDateTime now = QDateTime::currentDateTime();
   QDateTime installation = settingsHolder->installationTime();
 
-  // In minutes
-  return (installation.secsTo(now) / 60) >= m_triggerTime;
+  // Note: m_triggerTimeSec is seconds!
+  bool ok = (installation.secsTo(now)) >= m_triggerTimeSec;
+  if (!ok) {
+    logger.debug() << "This survey will be shown in: "
+                   << m_triggerTimeSec - installation.secsTo(now) << "s";
+  }
+  return ok;
 }
