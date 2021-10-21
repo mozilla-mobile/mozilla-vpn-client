@@ -85,15 +85,12 @@ describe('Captive portal', function() {
   });
 
 
-  // TODO - this test is causing me timing issues.
-  /*
   it('Activate the VPN', async () => {
     await vpn.authenticate(true, true);
-    await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
-    assert(await vpn.getElementProperty('controllerTitle', 'text') === 'VPN is
-  off');
-    // Setup - end
+    assert(
+        await vpn.getElementProperty('controllerTitle', 'text') ===
+        'VPN is off');
 
     await vpn.activate();
     await vpn.waitForCondition(async () => {
@@ -101,10 +98,6 @@ describe('Captive portal', function() {
           await vpn.getElementProperty('controllerTitle', 'text');
       return connectingMsg === 'Connecting…';
     });
-    assert(
-        await vpn.getElementProperty('controllerSubTitle', 'text') ===
-        'Masking connection and location');
-
     await vpn.forceCaptivePortalDetection();
     await vpn.wait();
 
@@ -113,8 +106,12 @@ describe('Captive portal', function() {
       return vpn.lastNotification().title === null;
     });
     assert(vpn.lastNotification().title === null);
+
+    // Something about this test upsets the next tests,
+    // adding these waits gives everything a change to resolve.
+    await vpn.wait();
+    await vpn.wait();
   });
-  */
 
   it('Captive portal when connected', async () => {
     await vpn.authenticate(true, true);
