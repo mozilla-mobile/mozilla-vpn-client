@@ -148,5 +148,5 @@ jobs:
         uses: actions/upload-artifact@v1
         if: ${{ always() }}
         with:
-          name: ${{matrix.test.name}} Logs
+          name: ${{matrix.test.name}}
           path: ${{ runner.temp }}/artifacts
