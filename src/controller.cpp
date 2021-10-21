@@ -124,6 +124,8 @@ void Controller::initialize() {
           &Controller::implInitialized);
   connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
           &Controller::statusUpdated);
+  connect(this, &Controller::stateChanged, this,
+          &Controller::maybeEnableDisconnectInConfirming);
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
@@ -583,20 +585,23 @@ bool Controller::processNextStep() {
   return false;
 }
 
+void Controller::maybeEnableDisconnectInConfirming() {
+  if (m_state == StateConfirming) {
+    m_enableDisconnectInConfirming = false;
+    emit enableDisconnectInConfirmingChanged();
+    m_connectingTimer.start(CONFIRMING_TIMOUT_SEC * 1000);
+  } else {
+    m_enableDisconnectInConfirming = false;
+    emit enableDisconnectInConfirmingChanged();
+    m_connectingTimer.stop();
+  }
+}
+
 void Controller::setState(State state) {
   logger.debug() << "Setting state:" << state;
 
   if (m_state != state) {
     m_state = state;
-    if (m_state == StateConfirming) {
-      m_enableDisconnectInConfirming = false;
-      emit enableDisconnectInConfirmingChanged();
-      m_connectingTimer.start(CONFIRMING_TIMOUT_SEC * 1000);
-    } else {
-      m_enableDisconnectInConfirming = false;
-      emit enableDisconnectInConfirmingChanged();
-      m_connectingTimer.stop();
-    }
     emit stateChanged();
   }
 }

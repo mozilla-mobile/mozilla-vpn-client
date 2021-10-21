@@ -123,6 +123,8 @@ class Controller final : public QObject {
  private:
   void setState(State state);
 
+  void maybeEnableDisconnectInConfirming();
+
   bool processNextStep();
   QList<IPAddressRange> getAllowedIPAddressRanges(const QList<Server>& servers);
 
