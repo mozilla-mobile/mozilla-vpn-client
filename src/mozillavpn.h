@@ -298,6 +298,8 @@ class MozillaVPN final : public QObject {
     emit ticketCreationAnswer(successful);
   }
 
+  void hardReset();
+
  private:
   void setState(State state);
 

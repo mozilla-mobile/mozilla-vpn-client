@@ -24,7 +24,29 @@ After checking out the code:
 
 * Install the git pre-commit hook (`./scripts/git-pre-commit-format install`)
 * Build the source (See below)
-* Run the tests `./scripts/test_coverage.sh` or `./scripts/test_function.sh`
+* Run the unit tests with `./scripts/test_coverage.sh` or see below for running the functional tests.
+
+### Running the functional tests
+
+* Install node (if needed) and then `npm install` to install the testing dependencies
+* Install geckodriver and ensure it's on your path.
+  [Docs](https://www.selenium.dev/documentation/getting_started/installing_browser_drivers/)
+* Make a .env file with:
+ * `ACCOUNT_EMAIL` and `ACCOUNT_PASSWORD` (the account should have an active subscription on staging).
+ * `MVPN_API_BASE_URL` (where proxy runs, most likely http://localhost:5000)
+ * `MVPN_BIN` (location of compiled mvpn binary)
+ * `ARTIFACT_DIR` (directory to put screenshots from test failures)
+* (Optional) In one window run `./tests/proxy/wsgi.py --mock-devices`
+* To run, say, the authentication tests: `./scripts/test_function.sh tests/functional/testAuthentication.js`.
+
+Misc tips from core devs:
+* Make sure there are read/write permissions at every level of your build path
+* Suggest building with the flags used in CI `qmake CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug CONFIG+=inspector QT+=svg`
+* Using a headless browser locally may cause the tests to stall out.
+* See the [workflows file](/.github/workflows/functional_tests.yaml) which runs the functional tests in ci for pointers
+  if you're stuck.
+* If you're a conda user you can conda install node and geckodriver from conda-forge packages.
+* If you're trying to just iterate on one test change `it("....)` to `it.only("...)`. And only that one test will run.... don't forget to undo!
 
 ## How to build from the source code
 
