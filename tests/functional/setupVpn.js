@@ -78,7 +78,14 @@ exports.mochaHooks = {
     // Reset error logs
     stdErr = '';
     // Close VPN app
-    await vpn.quit();
+    // If something's gone really wrong with the test,
+    // then this can fail and cause the tests to hang.
+    // Logging the error lets us clean-up and move on.
+    try {
+      await vpn.quit();
+    } catch (error) {
+      console.error(error);
+    }
     vpn.disconnect();
     vpnProcess.kill();
     // Give each test 2 seconds to chill!

@@ -6,8 +6,7 @@ const assert = require('assert');
 const websocket = require('websocket').w3cwebsocket;
 const FirefoxHelper = require('./firefox.js');
 
-const webdriver = require('selenium-webdriver'), By = webdriver.By,
-      Keys = webdriver.Key, until = webdriver.until;
+const webdriver = require('selenium-webdriver'), By = webdriver.By;
 
 let client;
 
