@@ -219,7 +219,6 @@ HEADERS += \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
         features/featureunsecurednetworknotification.h \
-        features/featureunauthsupport.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
