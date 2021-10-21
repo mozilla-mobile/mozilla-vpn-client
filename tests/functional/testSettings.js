@@ -254,6 +254,7 @@ describe('Settings', function() {
 
 
   it('Checking the get help', async () => {
+    console.log('  Checkpoint a');
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
 
@@ -261,6 +262,7 @@ describe('Settings', function() {
         'settingsView', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('settingsGetHelp', 'y')));
     await vpn.wait();
+    console.log('  Checkpoint b');
 
     await vpn.clickOnElement('settingsGetHelp');
     await vpn.wait();
@@ -270,6 +272,7 @@ describe('Settings', function() {
 
     await vpn.waitForElement('getHelpLinks');
     await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
+    console.log('  Checkpoint c');
 
     await vpn.waitForElement('getHelpLinks/getHelpBackList');
     await vpn.waitForElementProperty(
@@ -281,6 +284,7 @@ describe('Settings', function() {
 
     await vpn.clickOnElement('getHelpLinks/settingsGiveFeedback');
     await vpn.wait();
+    console.log('  Checkpoint d');
 
     await vpn.waitForElement('giveFeedbackView');
     await vpn.waitForElementProperty(
@@ -292,6 +296,7 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
     await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
+    console.log('  Checkpoint e');
 
     await vpn.waitForElement('getHelpLinks');
     await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
@@ -301,6 +306,7 @@ describe('Settings', function() {
     await vpn.waitForElement('getHelpLinks/getHelpBackList-2');
     await vpn.waitForElementProperty(
         'getHelpLinks/getHelpBackList-2', 'visible', 'true');
+    console.log('  Checkpoint f');
 
     await vpn.clickOnElement('getHelpLinks/getHelpBackList-2');
 
@@ -309,6 +315,7 @@ describe('Settings', function() {
       return url.startsWith('file://') && url.includes('mozillavpn') &&
           url.endsWith('.txt');
     });
+    console.log('  Checkpoint g');
 
     await vpn.waitForElement('getHelpLinks/getHelpBackList-0')
         await vpn.waitForElementProperty(
@@ -319,6 +326,7 @@ describe('Settings', function() {
       const url = await vpn.getLastUrl();
       return url.endsWith('/r/vpn/support');
     });
+    console.log('  Checkpoint h');
 
     /* TODO:  Reinstate this test correctly
         https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1638
@@ -335,6 +343,7 @@ describe('Settings', function() {
     await vpn.wait();
     await vpn.waitForElement('settingsBackButton');
     await vpn.clickOnElement('settingsBackButton');
+    console.log('  Checkpoint i');
 
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
