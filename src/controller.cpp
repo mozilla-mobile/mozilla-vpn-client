@@ -72,6 +72,8 @@ ControllerImpl::Reason stateToReason(Controller::State state) {
 Controller::Controller() {
   MVPN_COUNT_CTOR(Controller);
 
+  m_connectingTimer.setSingleShot(true);
+
   connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
 
   connect(&m_connectionCheck, &ConnectionCheck::success, this,
@@ -81,7 +83,6 @@ Controller::Controller() {
   connect(&m_connectingTimer, &QTimer::timeout, [this]() {
     m_enableDisconnectInConfirming = true;
     emit enableDisconnectInConfirmingChanged();
-    m_connectingTimer.stop();
   });
 }
 
@@ -588,6 +589,8 @@ void Controller::setState(State state) {
   if (m_state != state) {
     m_state = state;
     if (m_state == StateConfirming) {
+      m_enableDisconnectInConfirming = false;
+      emit enableDisconnectInConfirmingChanged();
       m_connectingTimer.start(CONFIRMING_TIMOUT_SEC * 1000);
     } else {
       m_enableDisconnectInConfirming = false;
