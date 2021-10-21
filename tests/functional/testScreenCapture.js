@@ -4,12 +4,11 @@
 
 const assert = require('assert');
 const fs = require('fs');
-const util = require('util');
 const vpn = require('./helper.js');
 
 const dir = process.env.ARTIFACT_DIR + '/screencapture';
 
-describe('Take screenshots for each view', function() {
+describe.skip('Take screenshots for each view', function() {
   let languages = [];
   let servers;
 
@@ -65,8 +64,6 @@ describe('Take screenshots for each view', function() {
     languages.push('en');
   });
 
-  it('reset the app', async () => await vpn.reset());
-
   it('initial view', async () => {
     await vpn.waitForElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
@@ -77,7 +74,6 @@ describe('Take screenshots for each view', function() {
 
   it('heartbeat', async () => {
     await screenCapture('heartbeat', async () => {
-      await vpn.reset();
       await vpn.forceHeartbeatFailure();
 
       await vpn.waitForElement('heartbeatTryButton');
@@ -532,5 +528,4 @@ describe('Take screenshots for each view', function() {
     });
   });
 
-  it('quit the app', async () => await vpn.quit());
 });

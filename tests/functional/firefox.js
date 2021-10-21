@@ -5,18 +5,14 @@ const webdriver = require('selenium-webdriver');
 
 module.exports = class FirefoxHelper {
   static async createDriver() {
-    require('dotenv').config();
-
     const options = new firefox.Options();
     if (process.env.HEADLESS) {
       options.headless();
     }
-
     const driver = await new webdriver.Builder()
                        .forBrowser('firefox')
                        .setFirefoxOptions(options)
                        .build();
-
     return driver;
   }
 
