@@ -304,6 +304,10 @@ Window {
                 osVersion: VPN.osVersion,
                 architecture: VPN.architecture,
             });
+            if (VPN.platform == "dummy") {
+                console.debug("Setting glean tags for automation");
+                Glean.setSourceTags(["automation"])
+            }
         }
 
         function onSendGleanPings() {
