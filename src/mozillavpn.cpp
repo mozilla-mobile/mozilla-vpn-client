@@ -492,12 +492,6 @@ void MozillaVPN::openLink(LinkType linkType) {
 #endif
       break;
 
-    case LinkLicense:
-      url =
-          "https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/"
-          "LICENSE.md";
-      break;
-
     case LinkTermsOfService:
       url = NetworkRequest::apiBaseUrl();
       url.append("/r/vpn/terms");
@@ -535,6 +529,11 @@ void MozillaVPN::openLink(LinkType linkType) {
   }
 
   UrlOpener::open(url, addEmailAddress);
+}
+
+void MozillaVPN::openLinkUrl(const QString& linkUrl) {
+  logger.debug() << "Opening link: " << linkUrl;
+  UrlOpener::open(linkUrl);
 }
 
 void MozillaVPN::scheduleTask(Task* task) {

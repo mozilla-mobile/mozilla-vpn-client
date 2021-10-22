@@ -456,6 +456,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
+
 The MIT License (MIT) - Adjust
 ==============================
 
@@ -481,8 +482,9 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-GNU Lesser General Public License
-=================================
+
+GNU Lesser General Public License 2.1
+=====================================
 
 _Version 2.1, February 1999_
 _Copyright © 1991, 1999 Free Software Foundation, Inc._
@@ -977,8 +979,8 @@ necessary.  Here is a sample; alter the names:
 That's all there is to it!
 
 
-GNU Lesser General Public License
-=================================
+GNU Lesser General Public License 3
+===================================
 
 _Version 3, 29 June 2007_
 _Copyright © 2007 Free Software Foundation, Inc. &lt;<http://fsf.org/>&gt;_

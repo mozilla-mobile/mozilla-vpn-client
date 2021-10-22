@@ -16,6 +16,7 @@
 #include "models/feedbackcategorymodel.h"
 #include "models/helpmodel.h"
 #include "models/keys.h"
+#include "models/licensemodel.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "models/supportcategorymodel.h"
@@ -84,7 +85,6 @@ class MozillaVPN final : public QObject {
     LinkContact,
     LinkFeedback,
     LinkLeaveReview,
-    LinkLicense,
     LinkHelpSupport,
     LinkTermsOfService,
     LinkPrivacyNotice,
@@ -143,6 +143,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void openLink(LinkType linkType);
+  Q_INVOKABLE void openLinkUrl(const QString& linkUrl);
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
   Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
@@ -198,6 +199,7 @@ class MozillaVPN final : public QObject {
     return &m_private->m_supportCategoryModel;
   }
   Keys* keys() { return &m_private->m_keys; }
+  LicenseModel* licenseModel() { return &m_private->m_licenseModel; }
   HelpModel* helpModel() { return &m_private->m_helpModel; }
   NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
@@ -401,6 +403,7 @@ class MozillaVPN final : public QObject {
     FeedbackCategoryModel m_feedbackCategoryModel;
     SupportCategoryModel m_supportCategoryModel;
     Keys m_keys;
+    LicenseModel m_licenseModel;
     HelpModel m_helpModel;
     NetworkWatcher m_networkWatcher;
     ReleaseMonitor m_releaseMonitor;
