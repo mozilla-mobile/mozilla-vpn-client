@@ -31,7 +31,7 @@ jobs:
         run:
             using: run-task
             cwd: '{checkout}'
-            command: find . -type f \( -iname "*.c" -or -iname "*.h" -or -iname "*.C" -or -iname "*.H" -or -iname "*.cpp" -or -iname "*.hpp" -or -iname "*.cc" -or -iname "*.hh" -or -iname "*.c++" -or -iname "*.h++" -or -iname "*.cxx" -or -iname "*.hxx" \) | xargs -P1 -n25 clang-format-11 --style=file -i
+            command: find . -type f \( -iname "*.c" -or -iname "*.h" -or -iname "*.C" -or -iname "*.H" -or -iname "*.cpp" -or -iname "*.hpp" -or -iname "*.cc" -or -iname "*.hh" -or -iname "*.c++" -or -iname "*.h++" -or -iname "*.cxx" -or -iname "*.hxx" \) | xargs -P1 -n10 clang-format-11 --style=file -i
         treeherder:
             symbol: clang
             tier: 1
