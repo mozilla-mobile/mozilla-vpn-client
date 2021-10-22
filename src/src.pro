@@ -113,6 +113,7 @@ SOURCES += \
         models/feedbackcategorymodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
+        models/licensemodel.cpp \
         models/server.cpp \
         models/servercity.cpp \
         models/servercountry.cpp \
@@ -243,6 +244,7 @@ HEADERS += \
         models/feedbackcategorymodel.h \
         models/helpmodel.h \
         models/keys.h \
+        models/licensemodel.h \
         models/server.h \
         models/servercity.h \
         models/servercountry.h \
@@ -318,6 +320,7 @@ unix {
 
 RESOURCES += inspector/inspector.qrc
 RESOURCES += ui/components.qrc
+RESOURCES += ui/license.qrc
 RESOURCES += ui/resources.qrc
 RESOURCES += ui/themes.qrc
 RESOURCES += ui/ui.qrc
