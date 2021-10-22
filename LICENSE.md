@@ -8,19 +8,19 @@ Mozilla's website](https://www.mozilla.org/en-US/MPL/2.0/) and a copy is
 provided below.
 
 This project relies on [QT Quick](https://doc.qt.io/qt-5/qtquick-index.html),
-provided by [the QT Company](http://www.qt.io/about-us/) and used unmodified
+provided by [the QT Company](https://www.qt.io/company) and used unmodified
 under the terms of the Lesser GNU Public License 3.0 (*LGPL-3.0*). The full
 text of the LGPL3 is [available
 here](https://opensource.org/licenses/lgpl-3.0) and a copy is provided below.
 
 On MacOS and iOS, this project depends on several files provided by the
-[WireGuard project](https://github.com/WireGuard/wireguard-apple/) under the
-terms of the MIT Public License (*MIT*), a copy of which is [available
+[WireGuard project](https://git.zx2c4.com/wireguard-apple) under the terms of
+the MIT Public License (*MIT*), a copy of which is [available
 here](https://opensource.org/licenses/MIT) and a copy is provided below.
 
 The Linux release of this project also relies on several files from the
-[WireGuard Tools](https://github.com/WireGuard/wireguard-tools/) repository,
-as well as the FreeDesktop project's [polkit
+[WireGuard Tools](https://git.zx2c4.com/wireguard-tools) repository, as well as
+the FreeDesktop project's [polkit
 library](https://gitlab.freedesktop.org/polkit/polkit/), all of which are
 provided under the terms of the Lesser GNU Public License 2.0 (*LGPL-2.0*). A
 copy of the LGPL-2.0 is [available
@@ -41,9 +41,10 @@ Framework](https://www.adjust.com) under the terms of the MIT Public License
 (*MIT*), a copy of which is available [available
 here](https://opensource.org/license/MIT) and a copy is provided below.
 
-Finally, this project uses EC25519 and CHACHA-POLY implementations from HACL\*,
-available under the terms of the MIT Public License (*MIT*) and copyright (c)
-2016-2020 INRIA, CMU, and Microsoft Corporation.
+Finally, this project uses EC25519 and CHACHA-POLY implementations from
+[HACL\*](https://hacl-star.github.io/), available under the terms of the MIT
+Public License (*MIT*) and copyright (c) 2016-2020 INRIA, CMU, and Microsoft
+Corporation.
 
 
 Mozilla Public License Version 2.0
