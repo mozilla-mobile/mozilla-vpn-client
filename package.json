@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000 --retries 3"
+  },
+  "devDependencies": {
+    "dotenv": "^10.0.0",
+    "mocha": "^9.1.2",
+    "selenium-webdriver": "^4.0.0-rc-2",
+    "websocket": "^1.0.34"
+  }
+}
