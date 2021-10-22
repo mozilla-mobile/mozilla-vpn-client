@@ -14,23 +14,23 @@ void TestFeature::enableByAPI() {
 
   FeatureList::instance()->initialize();
 
-  const Feature* feature = Feature::get(FEATURE_SHARE_LOGS);
-  QVERIFY(!feature->isSupported());
+  const Feature* feature = Feature::get(FEATURE_MULTI_HOP);
+  QVERIFY(feature->isSupported());
 
   QJsonObject obj;
-  obj["shareLogs"] = true;
+  obj["multiHop"] = false;
 
   QJsonObject json;
   json["features"] = obj;
 
   FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
-  QVERIFY(feature->isSupported());
+  QVERIFY(!feature->isSupported());
 
-  obj["shareLogs"] = false;
+  obj["multiHop"] = true;
   json["features"] = obj;
 
   FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
-  QVERIFY(!feature->isSupported());
+  QVERIFY(feature->isSupported());
 }
 
 static TestFeature s_testFeature;
