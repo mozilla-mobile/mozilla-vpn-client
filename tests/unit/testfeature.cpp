@@ -4,7 +4,7 @@
 
 #include "testfeature.h"
 #include "../../src/featurelist.h"
-#include "../../src/features/featuresharelogs.h"
+#include "../../src/features/featuremultihop.h"
 #include "../../src/models/feature.h"
 #include "../../src/settingsholder.h"
 #include "helper.h"
