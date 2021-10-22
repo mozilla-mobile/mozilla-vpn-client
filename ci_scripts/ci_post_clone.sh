@@ -53,6 +53,7 @@ echo "</plist>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/Works
 
 rm ./MozillaVPN.xcodeproj/xcshareddata/xcschemes/MozillaVPN.xcscheme
 mv MozillaVPN.xcscheme ./MozillaVPN.xcodeproj/xcshareddata/xcschemes/
+mv MozillaVPN.xcscheme ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/xcschemes/
 
 # /Volumes/workspace/repository/qt_ios_build/ios/bin/rcc -name qml src/qml.qrc -o .rcc/qrc_qml.cpp
 # /Volumes/workspace/repository/qt_ios_build/ios/bin/rcc -name inspector src/inspector/inspector.qrc -o .rcc/qrc_inspector.cpp
