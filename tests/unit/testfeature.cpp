@@ -17,13 +17,17 @@ void TestFeature::enableByAPI() {
   const Feature* feature = Feature::get(FEATURE_SHARE_LOGS);
   QVERIFY(!feature->isSupported());
 
+  QJsonObject obj;
+  obj["shareLogs"] = true;
+
   QJsonObject json;
-  json["shareLogs"] = true;
+  json["features"] = obj;
 
   FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(feature->isSupported());
 
-  json["shareLogs"] = false;
+  obj["shareLogs"] = false;
+  json["features"] = obj;
 
   FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(!feature->isSupported());
