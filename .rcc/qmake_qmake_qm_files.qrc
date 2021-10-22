@@ -1,0 +1,31 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="i18n">
+<file alias="mozillavpn_sk.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_sk.qm</file>
+<file alias="mozillavpn_sv_SE.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_sv_SE.qm</file>
+<file alias="mozillavpn_pt_BR.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_pt_BR.qm</file>
+<file alias="mozillavpn_ja.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_ja.qm</file>
+<file alias="mozillavpn_el.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_el.qm</file>
+<file alias="mozillavpn_co.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_co.qm</file>
+<file alias="mozillavpn_it.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_it.qm</file>
+<file alias="mozillavpn_zh_TW.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_zh_TW.qm</file>
+<file alias="mozillavpn_ia.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_ia.qm</file>
+<file alias="mozillavpn_en_CA.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_en_CA.qm</file>
+<file alias="mozillavpn_ru.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_ru.qm</file>
+<file alias="mozillavpn_hsb.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_hsb.qm</file>
+<file alias="mozillavpn_uk.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_uk.qm</file>
+<file alias="mozillavpn_en_GB.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_en_GB.qm</file>
+<file alias="mozillavpn_es_MX.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_es_MX.qm</file>
+<file alias="mozillavpn_hu.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_hu.qm</file>
+<file alias="mozillavpn_nl.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_nl.qm</file>
+<file alias="mozillavpn_es_AR.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_es_AR.qm</file>
+<file alias="mozillavpn_de.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_de.qm</file>
+<file alias="mozillavpn_es_CL.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_es_CL.qm</file>
+<file alias="mozillavpn_id.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_id.qm</file>
+<file alias="mozillavpn_fr.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_fr.qm</file>
+<file alias="mozillavpn_en.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_en.qm</file>
+<file alias="mozillavpn_cy.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_cy.qm</file>
+<file alias="mozillavpn_es_ES.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_es_ES.qm</file>
+<file alias="mozillavpn_dsb.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_dsb.qm</file>
+<file alias="mozillavpn_fy_NL.qm">/Users/mozilla/Development/mozilla-vpn-client-4/.qm/mozillavpn_fy_NL.qm</file>
+</qresource>
+</RCC>
