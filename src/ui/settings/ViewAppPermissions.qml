@@ -103,6 +103,7 @@ Item {
             id: toggleCard
 
             toggleObjectName: "settingsAppPermissionsToggle"
+            toggleEnabled: vpnFlickable.vpnIsOff
             anchors.left: parent.left
             anchors.right: parent.right
             height: childrenRect.height
