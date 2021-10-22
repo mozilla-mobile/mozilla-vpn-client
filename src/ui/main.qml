@@ -173,7 +173,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "states/StateMain.qml"
+                        source: "states/StateSubscriptionNeeded.qml"
                     }
 
                 },

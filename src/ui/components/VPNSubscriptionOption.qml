@@ -17,7 +17,7 @@ RadioDelegate {
 
     id: radioDelegate
     Layout.fillWidth: true
-    Layout.minimumHeight: 68
+    Layout.minimumHeight: 150
     Layout.preferredHeight: implicitContentHeight
     checked: productFeatured
 
@@ -31,7 +31,8 @@ RadioDelegate {
 
     onPressed: {
         if (checked) {
-           return  VPNIAP.subscribe(subscriptionOptions.checkedButton.productId)
+            return false;
+        //    return  VPNIAP.subscribe(subscriptionOptions.checkedButton.productId)
         }
     }
 
@@ -114,11 +115,11 @@ RadioDelegate {
             id: col
                 function getSubscriptionDuration(product) {
                     switch (product) {
-                    case VPNIAP.ProductMonthly:
+                    case "VPNIAP.ProductMonthly":
                         return 1;
-                    case VPNIAP.ProductHalfYearly:
+                    case "VPNIAP.ProductHalfYearly":
                         return 6;
-                    case VPNIAP.ProductYearly:
+                    case "VPNIAP.ProductYearly":
                         return 12;
                     default:
                         return 0;
@@ -126,18 +127,18 @@ RadioDelegate {
                 }
 
             // TODO (maybe) - Do we want to add the subscription duration in months to the model?
-            property var subscriptionDuration: getSubscriptionDuration(productType)
+            property var subscriptionDuration: getSubscriptionDuration(modelData.productType)
 
             //% "Monthly plan"
             property string productSingleMonth: qsTrId("vpn.subscription.monthlyPlan")
 
             //: %1 is replaced by the subscription duration in months. %2 is replaced by the total subscription cost.
             //% "%1-month plan: %2"
-            property string productMultiMonth: qsTrId("vpn.subscription.multiMonthPlan").arg(subscriptionDuration).arg(productPrice)
+            property string productMultiMonth: qsTrId("vpn.subscription.multiMonthPlan").arg(col.subscriptionDuration).arg(modelData.productPrice)
 
             //: “/month” stands for “per month”. %1 is replaced by the monthly cost (including currency).
             //% "%1/month"
-            property string monthlyPrice: qsTrId("vpn.subscription.price").arg(productMonthlyPrice)
+            property string monthlyPrice: qsTrId("vpn.subscription.price").arg(modelData.productMonthlyPrice)
 
             spacing: 0
 
@@ -153,6 +154,27 @@ RadioDelegate {
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
             }
+
+            VPNLightLabel {
+                text: "-------------"
+                font.pixelSize: 11
+            }
+            VPNLightLabel {
+                text: "subscriptionDuration: " + col.subscriptionDuration
+                font.pixelSize: 11
+            }
+            VPNLightLabel {
+                text: "productSingleMonth: " + col.productSingleMonth
+                font.pixelSize: 11
+            }
+            VPNLightLabel {
+                text: "productMultiMonth: " + col. productMultiMonth
+                font.pixelSize: 11
+            }
+            VPNLightLabel {
+                text: "monthlyPrice: " + col.monthlyPrice
+                font.pixelSize: 11
+            }
         }
 
         ColumnLayout {
@@ -167,9 +189,9 @@ RadioDelegate {
             VPNInterLabel {
                 //: Appears on the in-app purchase view beside a subscription plan. "%1" is replaced by the percentage amount saved when selecting that plan.
                 //% "Save %1%"
-                text: qsTrId("vpn.subscription.savePercent").arg(productSavings)
+                text: qsTrId("vpn.subscription.savePercent").arg(modelData.productSavings)
 
-                visible: productSavings > 0
+                visible: modelData.productSavings > 0
                 color: Theme.purple60
                 font.family: Theme.fontBoldFamily
                 horizontalAlignment: Qt.AlignRight
