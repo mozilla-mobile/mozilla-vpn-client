@@ -7,3 +7,5 @@
 #
 
 ls -la /Volumes/workspace/repository
+ls -la /Volumes/workspace/repository/.moc
+ls -la /Volumes/workspace/repository/.rcc
