@@ -8,7 +8,8 @@
 
 cd /Volumes/workspace/repository
 
-git submodule sync --recursive
+git submodule init
+git submodule update
 
 git clone https://github.com/mbirghan/qt_ios_build
 
@@ -29,7 +30,7 @@ go env GOROOT
 
 export QT_IOS_BIN=`pwd`/qt_ios_build/ios/bin
 
-git submodule update --remote --depth 1 i18n
+# git submodule update --remote --depth 1 i18n
 python3 scripts/importLanguages.py -m
 
 echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
