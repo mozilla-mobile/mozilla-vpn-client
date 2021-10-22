@@ -51,8 +51,11 @@ echo "	<false/>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/Work
 echo "</dict>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
 echo "</plist>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
 
-/Volumes/workspace/repository/qt_ios_build/ios/bin/rcc -name qml src/qml.qrc -o .rcc/qrc_qml.cpp
-/Volumes/workspace/repository/qt_ios_build/ios/bin/rcc -name inspector src/inspector/inspector.qrc -o .rcc/qrc_inspector.cpp
-/Volumes/workspace/repository/qt_ios_build/ios/bin/rcc -name glean glean/glean.qrc -o .rcc/qrc_glean.cpp
-/Volumes/workspace/repository/qt_ios_build/ios/bin/rcc -name servers translations/servers.qrc -o .rcc/qrc_servers.cpp
+rm ./MozillaVPN.xcodeproj/xcshareddata/xcschemes/MozillaVPN.xcscheme
+mv MozillaVPN.xcscheme ./MozillaVPN.xcodeproj/xcshareddata/xcschemes/
+
+# /Volumes/workspace/repository/qt_ios_build/ios/bin/rcc -name qml src/qml.qrc -o .rcc/qrc_qml.cpp
+# /Volumes/workspace/repository/qt_ios_build/ios/bin/rcc -name inspector src/inspector/inspector.qrc -o .rcc/qrc_inspector.cpp
+# /Volumes/workspace/repository/qt_ios_build/ios/bin/rcc -name glean glean/glean.qrc -o .rcc/qrc_glean.cpp
+# /Volumes/workspace/repository/qt_ios_build/ios/bin/rcc -name servers translations/servers.qrc -o .rcc/qrc_servers.cpp
 # /Volumes/workspace/repository/qt_ios_build/ios/bin/rcc -name qmake_qmake_qm_files .rcc/qmake_qmake_qm_files.qrc -o .rcc/qrc_qmake_qmake_qm_files.cpp
