@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/certs">
+        <file>isrgrootx1.pem</file>
+    </qresource>
+</RCC>
