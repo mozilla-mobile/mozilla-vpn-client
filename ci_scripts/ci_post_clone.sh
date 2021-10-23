@@ -30,7 +30,7 @@ pip3 install pyhumps --user
 pip3 install pyyaml --user
 python3 scripts/generate_glean.py
 
-HOMEBREW_NO_AUTO_UPDATE=1 brew install go
+brew install go
 # wget -nc https://golang.org/dl/go1.16.9.darwin-amd64.tar.gz
 # tar -xzf go1.16.9.darwin-amd64.tar.gz
 # export PATH=`pwd`/go/bin:$PATH
