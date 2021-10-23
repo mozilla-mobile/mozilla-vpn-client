@@ -4,14 +4,18 @@
 #  MozillaVPN
 #
 #  Created by mozilla on 29.07.21.
-#  
+#
 
 cd /Volumes/workspace/repository
 
 git submodule init
 git submodule update
 
+cd qt_ios_build
 git clone https://github.com/mbirghan/qt_ios_build
+cat x* > qt_static.tar.gz
+tar xf qt_static.tar.gz
+cd ..
 
 export PATH=`pwd`/qt_ios_build/ios/bin:/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
 gem install xcodeproj --user-install
@@ -21,10 +25,10 @@ pip3 install pyhumps --user
 pip3 install pyyaml --user
 python3 scripts/generate_glean.py
 
-brew install go
-# wget -nc https://golang.org/dl/go1.16.9.darwin-amd64.tar.gz
-# tar -xzf go1.16.9.darwin-amd64.tar.gz
-# export PATH=`pwd`/go/bin:$PATH
+# brew install go
+wget -nc https://golang.org/dl/go1.16.9.darwin-amd64.tar.gz
+tar -xzf go1.16.9.darwin-amd64.tar.gz
+export PATH=`pwd`/go/bin:$PATH
 
 go env GOROOT
 
