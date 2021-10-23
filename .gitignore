@@ -2,6 +2,8 @@
 Makefile
 *.o
 .obj
+.moc
+.rcc
 *.pro.user
 *.pro.user*
 src/mozillavpn
