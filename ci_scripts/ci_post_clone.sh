@@ -6,9 +6,6 @@
 #  Created by mozilla on 29.07.21.
 #
 
-ls -la /Volumes/workspace/
-ls -la /Volumes/workspace/repository
-
 cd /Volumes/workspace/repository
 
 git submodule init
