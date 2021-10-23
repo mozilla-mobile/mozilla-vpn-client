@@ -11,8 +11,8 @@ cd /Volumes/workspace/repository
 git submodule init
 git submodule update
 
-cd qt_ios_build
 git clone https://github.com/mbirghan/qt_ios_build
+cd qt_ios_build
 cat x* > qt_static.tar.gz
 tar xf qt_static.tar.gz
 cd ..
