@@ -6,6 +6,9 @@
 #  Created by mozilla on 29.07.21.
 #
 
+ls -la /Volumes/workspace/
+ls -la /Volumes/workspace/repository
+
 cd /Volumes/workspace/repository
 
 git submodule init
@@ -17,6 +20,8 @@ cat x* > qt_static.tar.gz
 tar xf qt_static.tar.gz
 cd ..
 
+export QT_IOS_BIN=`pwd`/qt_ios_build/ios/bin
+
 export PATH=`pwd`/qt_ios_build/ios/bin:/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
 gem install xcodeproj --user-install
 
@@ -25,18 +30,13 @@ pip3 install pyhumps --user
 pip3 install pyyaml --user
 python3 scripts/generate_glean.py
 
-# brew install go
-wget -nc https://golang.org/dl/go1.16.9.darwin-amd64.tar.gz
-tar -xzf go1.16.9.darwin-amd64.tar.gz
-export PATH=`pwd`/go/bin:$PATH
-export GOROOT=`pwd`/go
-export GOPATH=`pwd`
+brew install go
+# wget -nc https://golang.org/dl/go1.16.9.darwin-amd64.tar.gz
+# tar -xzf go1.16.9.darwin-amd64.tar.gz
+# export PATH=`pwd`/go/bin:$PATH
+# export GOROOT=`pwd`/go
+# export GOPATH=`pwd`
 
-go env GOROOT
-
-export QT_IOS_BIN=`pwd`/qt_ios_build/ios/bin
-
-# git submodule update --remote --depth 1 i18n
 python3 scripts/importLanguages.py -m
 
 echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
