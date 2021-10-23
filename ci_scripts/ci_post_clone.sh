@@ -59,3 +59,6 @@ echo "</plist>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/Works
 
 rm ./MozillaVPN.xcodeproj/xcshareddata/xcschemes/MozillaVPN.xcscheme
 mv MozillaVPN.xcscheme ./MozillaVPN.xcodeproj/xcshareddata/xcschemes/
+
+make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
+make -f MozillaVPN.xcodeproj/qt_preprocess.mak
