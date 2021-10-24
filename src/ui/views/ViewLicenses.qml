@@ -32,23 +32,32 @@ Item {
             top: menu.bottom
         }
         height: root.height - menu.height
-        flickContentHeight: body.height + Theme.windowMargin * 4
+        flickContentHeight: body.height + Theme.windowMargin * 2
         width: root.width
 
         Column {
             id: body
 
-            spacing: Theme.listSpacing * 2
+            spacing: Theme.listSpacing
             width: licenses.width
 
+            VPNVerticalSpacer {
+                height: Theme.listSpacing
+            }
+
             VPNTextBlock {
-               id: mainLicense
+                id: mainLicense
 
-               anchors.horizontalCenter: parent.horizontalCenter
-               text: VPNLicenseModel.contentLicense
-               textFormat: Text.MarkdownText
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: VPNLicenseModel.contentLicense
+                textFormat: Text.MarkdownText
+                width: parent.width - Theme.windowMargin * 2
 
-               onLinkActivated: link => VPN.openLinkUrl(link)
+                onLinkActivated: link => VPN.openLinkUrl(link)
+            }
+
+            VPNVerticalSpacer {
+                height: Theme.listSpacing * 0.5
             }
 
             Repeater {
