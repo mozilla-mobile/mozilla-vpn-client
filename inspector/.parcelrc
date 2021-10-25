@@ -1,0 +1,6 @@
+{
+  "extends": "@parcel/config-default",
+  "compressors": {
+    "*.{html,xhtml}": ["@parcel/compressor-raw"]
+  }
+}

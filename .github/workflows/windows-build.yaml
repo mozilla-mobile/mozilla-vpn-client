@@ -49,6 +49,16 @@ jobs:
         run: |
           pip3 install -r requirements.txt
 
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install inspector depedencies
+        shell: bash
+        run: |
+          cd inspector/
+          npm install
+          cd ../ 
+
       - name: Adding msbuild to PATH
         uses: ilammy/msvc-dev-cmd@v1
 

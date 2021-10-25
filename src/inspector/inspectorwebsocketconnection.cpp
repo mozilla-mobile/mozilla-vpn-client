@@ -984,10 +984,6 @@ QJsonObject InspectorWebSocketConnection::serialize(QQuickItem* item){
       QJsonObject prop;
       auto name = property.name();
       auto value = property.read(item);
-      if(value.type() == QMetaType::VoidStar || value.type() == QMetaType::QObjectStar){
-          prop[name]="[object Object]";
-          continue;
-      }
       if(value.canConvert<QJsonValue>()){
          out[name]=value.toJsonValue();
       }else if(value.canConvert<QString>()){

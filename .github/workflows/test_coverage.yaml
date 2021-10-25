@@ -39,9 +39,10 @@ jobs:
       - name: Building Inspector
         shell: bash
         run: |
-          - cd inspector/
-          - npm install
-          - npm run build
+          cd inspector/
+          npm install
+          npm run build
+          cd ../
 
       - name: Importing translation files
         shell: bash

@@ -43,6 +43,18 @@ jobs:
         with:
           ndk-version: r20b
 
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          
+      - name: Install inspector depedencies
+        shell: bash
+        run: |
+          cd inspector/
+          npm install
+          cd ../ 
+
+
       - name: Checkout submodules
         shell: bash
         run: |
