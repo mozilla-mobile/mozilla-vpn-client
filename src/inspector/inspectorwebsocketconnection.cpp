@@ -13,6 +13,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "networkmanager.h"
+#include "task.h"
 
 #include <functional>
 
@@ -458,12 +459,6 @@ static QList<WebSocketCommand> s_commands{
                        MozillaVPN::instance()->releaseMonitor()->runSoon();
                        return QJsonObject();
                      }},
-    WebSocketCommand{"force_update_check", "Force a version update check", 1,
-                     [](const QList<QByteArray>& arguments) {
-                       s_updateVersion = arguments[1];
-                       MozillaVPN::instance()->releaseMonitor()->runSoon();
-                       return QJsonObject();
-                     }},
 
     WebSocketCommand{"force_captive_portal_check",
                      "Force a captive portal check", 0,
@@ -894,7 +889,14 @@ void InspectorWebSocketConnection::networkRequestFinished(QNetworkReply* reply){
     }
     request["headers"]=requestHeaders;
     request["url"]=qrequest.url().toString();
-    request["initiator"]=getObjectClass(qrequest.originatingObject());
+    auto initator = qrequest.originatingObject();
+    Task* maybe_task = dynamic_cast<Task*>(initator);
+    if(maybe_task){
+         request["initiator"]=maybe_task->name();
+    }else{
+     request["initiator"]=getObjectClass(initator);
+    }
+
 
     obj["request"]=request;
     obj["response"]=response;
