@@ -12,29 +12,17 @@ import compat 0.1
 import themes 0.1
 
 RadioDelegate {
+    id: radioDelegate
+
     // used by the `Subscribe Now` to pass productIdentifier to VPNIAP.subscribe()
     property var productId: productIdentifier
 
-    id: radioDelegate
-    Layout.fillWidth: true
-    Layout.minimumHeight: 150
-    Layout.preferredHeight: implicitContentHeight
-    checked: productFeatured
-
-    ButtonGroup.group: subscriptionOptions
     activeFocusOnTab: true
-    onFocusChanged: {
-        if (focus) {
-            vpnFlickable.ensureVisible(radioDelegate)
-        }
-    }
-
-    onPressed: {
-        if (checked) {
-            return false;
-        //    return  VPNIAP.subscribe(subscriptionOptions.checkedButton.productId)
-        }
-    }
+    checked: modelData.productFeatured
+    ButtonGroup.group: subscriptionOptions
+    Layout.fillWidth: true
+    Layout.minimumHeight: 68
+    Layout.preferredHeight: row.implicitHeight + Theme.windowMargin * 2
 
     background: Rectangle {
         id: bg
@@ -43,8 +31,8 @@ RadioDelegate {
 
         VPNRectangularGlow {
             anchors.fill: bg
-            glowRadius: checked ? 8 : 1
-            spread: checked ? 0.1 : 0
+            glowRadius: radioDelegate.checked ? 8 : 1
+            spread: radioDelegate.checked ? 0.1 : 0
             color: "#4D0C0C0D"
             cornerRadius: rect.radius + glowRadius
         }
@@ -57,7 +45,6 @@ RadioDelegate {
             clip: true
         }
     }
-
     indicator: Item {
         anchors.fill: parent
         activeFocusOnTab: false
@@ -66,8 +53,8 @@ RadioDelegate {
         // visible when product is selected
         Rectangle {
             radius: Theme.cornerRadius
-            opacity: checked ? 1 : 0
-            color: checked ? Theme.purple60 : Theme.white
+            opacity: radioDelegate.checked ? 1 : 0
+            color: radioDelegate.checked ? Theme.purple60 : Theme.white
             width: Theme.windowMargin
             anchors.left: parent.left
             anchors.top: parent.top
@@ -77,7 +64,7 @@ RadioDelegate {
                 anchors.right: parent.right
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                width: 4
+                width: Theme.listSpacing * 0.5
                 color: Theme.white
             }
 
@@ -92,7 +79,7 @@ RadioDelegate {
         Rectangle {
             anchors.fill: parent
             radius: Theme.cornerRadius
-            border.color: checked || radioDelegate.focus ? Theme.purple60 : Theme.white
+            border.color: (radioDelegate.checked || radioDelegate.focus) ? Theme.purple60 : Theme.white
             color: "transparent"
 
             Behavior on border.color {
@@ -102,29 +89,31 @@ RadioDelegate {
             }
         }
     }
+    onFocusChanged: {
+        if (focus) {
+            vpnFlickable.ensureVisible(radioDelegate)
+        }
+    }
+    onPressed: {
+        if (radioDelegate.checked) {
+            return false;
+        //    return  VPNIAP.subscribe(subscriptionOptions.checkedButton.productId)
+        }
+    }
 
     RowLayout {
-        anchors.fill: parent
-        anchors.margins: 12
-        anchors.leftMargin: 24
-        anchors.rightMargin: 24
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.bottomMargin: 12
+        id: row
+
+        anchors {
+            fill: parent
+            leftMargin: Theme.windowMargin * 1.5
+            rightMargin: Theme.windowMargin * 1.5
+            verticalCenter: parent.verticalCenter
+        }
+        spacing: Theme.listSpacing
 
         ColumnLayout {
             id: col
-                function getSubscriptionDuration(product) {
-                    switch (product) {
-                    case "VPNIAP.ProductMonthly":
-                        return 1;
-                    case "VPNIAP.ProductHalfYearly":
-                        return 6;
-                    case "VPNIAP.ProductYearly":
-                        return 12;
-                    default:
-                        return 0;
-                    }
-                }
 
             // TODO (maybe) - Do we want to add the subscription duration in months to the model?
             property var subscriptionDuration: getSubscriptionDuration(modelData.productType)
@@ -140,66 +129,89 @@ RadioDelegate {
             //% "%1/month"
             property string monthlyPrice: qsTrId("vpn.subscription.price").arg(modelData.productMonthlyPrice)
 
-            spacing: 0
+            spacing: Theme.listSpacing * 0.5
 
             VPNBoldLabel {
-                text: col.subscriptionDuration > 1 ? col.productMultiMonth : col.monthlyPrice
-                lineHeightMode: Text.FixedHeight
+                font.pixelSize: Theme.fontSize * 1.1
                 lineHeight: Theme.labelLineHeight
+                lineHeightMode: Text.FixedHeight
+                text: col.subscriptionDuration > 1 ? col.productMultiMonth : col.monthlyPrice
                 verticalAlignment: Text.AlignTop
-            }
-
-            VPNLightLabel {
-                text: col.subscriptionDuration > 0 ? (col.subscriptionDuration> 1 ? col.monthlyPrice : col.productSingleMonth) : ""
-                Layout.fillWidth: true
                 wrapMode: Text.WordWrap
+
+                Layout.fillWidth: true
             }
 
             VPNLightLabel {
-                text: "-------------"
-                font.pixelSize: 11
+                font.pixelSize: Theme.fontSize
+                text: col.subscriptionDuration > 0 ? (col.subscriptionDuration > 1 ? col.monthlyPrice : col.productSingleMonth) : ""
+                wrapMode: Text.WordWrap
+
+                Layout.fillWidth: true
             }
-            VPNLightLabel {
-                text: "subscriptionDuration: " + col.subscriptionDuration
-                font.pixelSize: 11
-            }
-            VPNLightLabel {
-                text: "productSingleMonth: " + col.productSingleMonth
-                font.pixelSize: 11
-            }
-            VPNLightLabel {
-                text: "productMultiMonth: " + col. productMultiMonth
-                font.pixelSize: 11
-            }
-            VPNLightLabel {
-                text: "monthlyPrice: " + col.monthlyPrice
-                font.pixelSize: 11
+
+            // VPNLightLabel {
+            //     text: "-------------"
+            //     font.pixelSize: 11
+            // }
+            // VPNLightLabel {
+            //     text: "subscriptionDuration: " + col.subscriptionDuration
+            //     font.pixelSize: 11
+            // }
+            // VPNLightLabel {
+            //     text: "productSingleMonth: " + col.productSingleMonth
+            //     font.pixelSize: 11
+            // }
+            // VPNLightLabel {
+            //     text: "productMultiMonth: " + col. productMultiMonth
+            //     font.pixelSize: 11
+            // }
+            // VPNLightLabel {
+            //     text: "monthlyPrice: " + col.monthlyPrice
+            //     font.pixelSize: 11
+            // }
+            // VPNLightLabel {
+            //     text: "productFeatured: " + (modelData.productFeatured ? ":)" : ":(")
+            //     font.pixelSize: 11
+            // }
+
+            function getSubscriptionDuration(product) {
+                switch (product) {
+                case "VPNIAP.ProductMonthly":
+                    return 1;
+                case "VPNIAP.ProductHalfYearly":
+                    return 6;
+                case "VPNIAP.ProductYearly":
+                    return 12;
+                default:
+                    return 0;
+                }
             }
         }
 
         ColumnLayout {
-            Layout.fillWidth: true
-        }
-
-        ColumnLayout {
+            spacing: 0
 
             Layout.alignment: Qt.AlignTop
-            spacing: 0
+            Layout.fillWidth: true
+            Layout.topMargin: Theme.windowMargin
 
             VPNInterLabel {
                 //: Appears on the in-app purchase view beside a subscription plan. "%1" is replaced by the percentage amount saved when selecting that plan.
                 //% "Save %1%"
                 text: qsTrId("vpn.subscription.savePercent").arg(modelData.productSavings)
 
-                visible: modelData.productSavings > 0
                 color: Theme.purple60
                 font.family: Theme.fontBoldFamily
                 horizontalAlignment: Qt.AlignRight
-                verticalAlignment: Text.AlignVCenter
-                Layout.fillWidth: true
-                wrapMode: Text.WordWrap
+                lineHeight: Theme.labelLineHeight * 0.9
                 lineHeightMode: Text.FixedHeight
-                lineHeight: Theme.labelLineHeight
+                verticalAlignment: Text.AlignVCenter
+                visible: modelData.productSavings > 0
+                wrapMode: Text.WordWrap
+
+                Layout.minimumWidth: row.width * 0.3
+                Layout.fillWidth: true
             }
         }
     }
