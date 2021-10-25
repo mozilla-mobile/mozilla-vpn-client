@@ -27,6 +27,9 @@ linux/netfilter/vendor/
 .tmp
 .env
 
+# Node (for functional tests)
+node_modules
+
 #Github Codespaces
 .venv 
 
@@ -126,7 +129,7 @@ tools/ipmonitor/ipmonitor
 tools/ipmonitor/ipmonitor.exe
 
 # inspector
-inspector/.cache
-inspector/.parcel-cache
-inspector/dist
-inspector/node_modules
+tools/inspector/.cache
+tools/inspector/.parcel-cache
+tools/inspector/dist
+tools/inspector/node_modules

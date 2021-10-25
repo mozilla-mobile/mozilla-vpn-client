@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/webserver">
-        <file alias="index.html">../../inspector/dist/index.html</file>
     </qresource>
 </RCC>
 

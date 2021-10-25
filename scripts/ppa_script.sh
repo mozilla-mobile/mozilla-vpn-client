@@ -119,9 +119,6 @@ else
 
   print Y "Generating glean samples..."
   python3 scripts/generate_glean.py || die "Failed to generate glean samples"
-  
-  print Y "Building Inspector..."
-  npm --prefix ./inspector run build
 
   printn Y "Removing the debian template folder... "
   rm -rf linux/debian || die "Failed"

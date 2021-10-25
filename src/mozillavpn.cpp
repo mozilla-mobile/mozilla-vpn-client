@@ -255,6 +255,20 @@ void MozillaVPN::initialize() {
     return;
   }
 
+  // This step is done to keep users logged in even if they did not complete the
+  // subscription. This will fix some of the edge cases for iOS IAP. We do this
+  // here as after this point only settings are checked that are set after a
+  // successfull subscription.
+  if (FeatureInAppPurchase::instance()->isSupported()) {
+    if (m_private->m_user.subscriptionNeeded()) {
+      setUserAuthenticated(true);
+      setState(StateAuthenticating);
+      scheduleTask(new TaskProducts());
+      scheduleTask(new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
+      return;
+    }
+  }
+
   if (!m_private->m_keys.fromSettings()) {
     logger.error() << "No keys found";
     settingsHolder->clear();
@@ -1425,6 +1439,10 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 }
 
 void MozillaVPN::subscriptionCompleted() {
+#ifdef MVPN_ANDROID
+  // This is Android only
+  // iOS can end up here if the subsciption get finished outside of the IAP
+  // process
   if (m_state != StateSubscriptionInProgress) {
     // We could hit this in android flow if we're doing a late acknowledgement.
     // And ignoring is fine.
@@ -1432,6 +1450,7 @@ void MozillaVPN::subscriptionCompleted() {
         << "Random subscription completion received. Let's ignore it.";
     return;
   }
+#endif
 
   logger.debug() << "Subscription completed";
 
@@ -1615,11 +1634,14 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   addCurrentDeviceAndRefreshData();
 }
 
-void MozillaVPN::hardResetAndQuit() {
-  logger.debug() << "Hard reset and quit";
-
+void MozillaVPN::hardReset() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
   settingsHolder->hardReset();
+}
+
+void MozillaVPN::hardResetAndQuit() {
+  logger.debug() << "Hard reset and quit";
+  hardReset();
   quit();
 }

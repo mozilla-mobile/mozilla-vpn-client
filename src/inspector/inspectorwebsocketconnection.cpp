@@ -505,6 +505,12 @@ static QList<WebSocketCommand> s_commands{
                        return QJsonObject();
                      }},
 
+    WebSocketCommand{"hard_reset", "Hard reset (wipe all settings).", 0,
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN::instance()->hardReset();
+                       return QJsonObject();
+                     }},
+
     WebSocketCommand{"logout", "Logout the user", 0,
                      [](const QList<QByteArray>&) {
                        MozillaVPN::instance()->logout();

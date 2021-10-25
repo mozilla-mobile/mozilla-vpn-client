@@ -10,6 +10,7 @@
 #include "closeeventhandler.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
+#include "constants.h"
 #include "controller.h"
 #include "errorhandler.h"
 #include "models/devicemodel.h"
@@ -102,6 +103,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
   Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
   Q_PROPERTY(QString architecture READ architecture CONSTANT)
+  Q_PROPERTY(QString platform READ platform CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
                  updateRecommendedChanged)
   Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
@@ -252,6 +254,7 @@ class MozillaVPN final : public QObject {
   const QString architecture() const {
     return QSysInfo::currentCpuArchitecture();
   }
+  const QString platform() const { return Constants::PLATFORM_NAME; }
 
   void logout();
 
@@ -297,6 +300,8 @@ class MozillaVPN final : public QObject {
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);
   }
+
+  void hardReset();
 
  private:
   void setState(State state);

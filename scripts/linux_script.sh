@@ -86,9 +86,8 @@ done
 
 printn Y "Computing the version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
-FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
 WORKDIR=mozillavpn-$SHORTVERSION
-print G "$SHORTVERSION - $FULLVERSION"
+print G "$SHORTVERSION"
 
 rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
@@ -109,9 +108,6 @@ print G "done."
 
 print Y "Generating glean samples..."
 (cd $WORKDIR && python3 scripts/generate_glean.py) || die "Failed to generate glean samples"
-
-print Y "Building Inspector..."
-npm --prefix ./inspector run build
 
 printn Y "Downloading Go dependencies..."
 (cd $WORKDIR/linux/netfilter && go mod vendor)
@@ -157,7 +153,6 @@ build_deb_source() {
   sed -i -e "s/VERSION/$buildrev/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/RELEASE/$distro/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/DATE/$(date -R)/g" $WORKDIR/debian/changelog || die "Failed"
-  sed -i -e "s/FULLVERSION/$FULLVERSION/g" $WORKDIR/debian/rules || die "Failed"
 
   (cd $WORKDIR && dpkg-buildpackage --build=source $DPKG_SIGN --no-check-builddeps) || die "Failed"
 }

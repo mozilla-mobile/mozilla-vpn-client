@@ -32,6 +32,10 @@ Window {
     width: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
     height: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
 
+    //These need to be bound before onComplete so that the window buttons, menus and title bar double click behave properly
+    maximumWidth: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
+    maximumHeight: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
+
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
@@ -58,10 +62,9 @@ Window {
             this.showMinimized();
         }
         if (!fullscreenRequired()) {
-            maximumHeight = Theme.desktopAppHeight;
-            minimumHeight = Theme.desktopAppHeight;
-            maximumWidth = Theme.desktopAppWidth;
-            minimumWidth = Theme.desktopAppWidth;
+            minimumHeight = Theme.desktopAppHeight
+            minimumWidth = Theme.desktopAppWidth
+
         }
         VPN.mainWindowLoaded()
     }
@@ -304,6 +307,10 @@ Window {
                 osVersion: VPN.osVersion,
                 architecture: VPN.architecture,
             });
+            if (VPN.platform == "dummy") {
+                console.debug("Setting glean tags for automation");
+                Glean.setSourceTags(["automation"])
+            }
         }
 
         function onSendGleanPings() {

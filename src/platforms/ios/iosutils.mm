@@ -75,6 +75,11 @@ void IOSUtils::shareLogs(const QString& logs) {
   [data writeToURL:url atomically:NO];
 
   UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[url] applicationActivities:nil];
+  if (activityViewController.popoverPresentationController) {
+    activityViewController.popoverPresentationController.sourceView = view;
+    activityViewController.popoverPresentationController.sourceRect =
+        CGRectMake(view.bounds.size.width / 2, view.bounds.size.height, 0, 0);
+  }
   [qtController presentViewController:activityViewController animated:YES completion:nil];
   [activityViewController release];
 }

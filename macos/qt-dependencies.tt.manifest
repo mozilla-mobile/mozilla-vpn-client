@@ -1,0 +1,10 @@
+[
+  {
+    "filename": "qt_static.tar.gz",
+    "size": 154114596,
+    "algorithm": "sha512",
+    "digest": "2711f85a6da3967a6929224e238d9c6e918484bf6a35a2430a55cbca6a67689f98642a5ed625e2ff1a59d7190b08f4eb20b49e23e351aa1b7325ab0a70fde085",
+    "unpack": true,
+    "visibility": "internal"
+  }
+]

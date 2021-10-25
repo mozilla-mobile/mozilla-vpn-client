@@ -36,14 +36,6 @@ jobs:
           pip3 install -r requirements.txt
           python3 scripts/generate_glean.py
 
-      - name: Building Inspector
-        shell: bash
-        run: |
-          cd inspector/
-          npm install
-          npm run build
-          cd ../
-
       - name: Importing translation files
         shell: bash
         run: |

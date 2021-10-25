@@ -36,10 +36,6 @@ jobs:
           tar xf qt_static.tar.gz
           cd ..
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
       - name: Retrieving wireguard-go version
         shell: bash
         run: |
@@ -50,14 +46,6 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           python3 scripts/generate_glean.py
-
-      - name: Building Inspector
-        shell: bash
-        run: |
-          cd inspector/
-          npm install
-          npm run build
-          cd ../
 
       - name: Importing translation files
         shell: bash
@@ -195,9 +183,6 @@ jobs:
           cat x* > qt_static.tar.gz
           tar xf qt_static.tar.gz
           cd ..
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
 
       - name: Retrieving wireguard-go version
         shell: bash
@@ -209,14 +194,6 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           python3 scripts/generate_glean.py
-
-      - name: Building Inspector
-        shell: bash
-        run: |
-          cd inspector/
-          npm install
-          npm run build
-          cd ../
 
       - name: Importing translation files
         shell: bash
