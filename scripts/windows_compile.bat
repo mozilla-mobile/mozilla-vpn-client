@@ -34,7 +34,7 @@ if "%1" NEQ "" (
     if "%1" NEQ "--test" (
       if "%1" NEQ "-w" (
         if "%1" NEQ "--webextension" (
-	  if "%1" NEQ "--debug" (
+          if "%1" NEQ "--debug" (
              SET SHOW_HELP=T
           )
         )
@@ -119,11 +119,11 @@ ECHO BUILD_BUILD = %DEBUG_BUILD%
 
 IF %DEBUG_BUILD%==T (
 ECHO Generating Debug Build
-%BUILDDIR%\bin\qmake -tp vc extension\app\app.pro CONFIG+=debug 
+qmake -tp vc extension\app\app.pro CONFIG+=debug 
 )
 IF %DEBUG_BUILD%==F (
 ECHO Generating Release Build
-%BUILDDIR%\bin\qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
 )
 
 
@@ -155,13 +155,13 @@ IF %ERRORLEVEL% NEQ 0 (
 ECHO Creating the project with flags: %FLAGS%
 
 if %DEBUG_BUILD% == T (
-ECHO Generating Debug Project
-%BUILDDIR%\bin\qmake -tp vc src/src.pro CONFIG+=debug %FLAGS%
-xcopy /y debug\ release\
+  ECHO Generating Debug Project
+  qmake -tp vc src/src.pro CONFIG+=debug %FLAGS%
+  xcopy /y debug\ release\
 )
 if %DEBUG_BUILD% == F (
-ECHO Generating Release Build
-%BUILDDIR%\bin\qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%
+  ECHO Generating Release Build
+  qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%
 )
 
 
@@ -177,6 +177,7 @@ IF NOT EXIST MozillaVPN.vcxproj (
 
 ECHO Compiling the balrog.dll...
 CALL balrog\build.cmd
+
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to compile balrog.dll
   EXIT 1
