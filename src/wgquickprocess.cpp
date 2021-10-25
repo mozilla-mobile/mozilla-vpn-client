@@ -94,7 +94,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
 #endif
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   logger.debug() << content;
 #endif
 

@@ -17,13 +17,17 @@ void TestFeature::enableByAPI() {
   const Feature* feature = Feature::get(FEATURE_UNAUTH_SUPPORT);
   QVERIFY(!feature->isSupported());
 
+  QJsonObject obj;
+  obj["unauthSupport"] = true;
+
   QJsonObject json;
-  json["unauthSupport"] = true;
+  json["features"] = obj;
 
   FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(feature->isSupported());
 
-  json["unauthSupport"] = false;
+  obj["unauthSupport"] = false;
+  json["features"] = obj;
 
   FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(!feature->isSupported());

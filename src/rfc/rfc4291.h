@@ -8,10 +8,11 @@
 #include "ipaddress.h"
 
 // Clearly, this is not the full implementation of the RFC4291. We care just
-// about the loopback block.
+// about the loopback and multicast blocks.
 class RFC4291 final {
  public:
   static IPAddress ipv6LoopbackAddressBlock();
+  static IPAddress ipv6MulticastAddressBlock();
 };
 
 #endif  // RFC4291_H

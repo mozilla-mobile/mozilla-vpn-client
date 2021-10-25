@@ -12,6 +12,7 @@
 #include "settingsholder.h"
 #include "mozillavpn.h"
 
+#include <QDirIterator>
 #include <QHostAddress>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -31,13 +32,13 @@ constexpr const char* IPINFO_URL_IPV6 = "https://[%1]/api/v1/vpn/ipinfo";
 
 namespace {
 Logger logger(LOG_NETWORKING, "NetworkRequest");
-}
+QList<QSslCertificate> s_intervention_certs;
+}  // namespace
 
 NetworkRequest::NetworkRequest(QObject* parent, int status,
                                bool setAuthorizationHeader)
     : QObject(parent), m_status(status) {
   MVPN_COUNT_CTOR(NetworkRequest);
-
   logger.debug() << "Network request created";
 
 #ifndef MVPN_WASM
@@ -69,6 +70,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
   connect(&m_timer, &QTimer::timeout, this, &QObject::deleteLater);
 
   NetworkManager::instance()->increaseNetworkRequestCount();
+  enableSSLIntervention();
 }
 
 NetworkRequest::~NetworkRequest() {
@@ -215,7 +217,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
   QUrl u(url);
   r->m_request.setUrl(QUrl(url));
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   logger.debug() << "Network starting" << r->m_request.url().toString();
 #endif
 
@@ -921,4 +923,29 @@ void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
       logger.info() << cert.toText();
     }
   }
+}
+
+void NetworkRequest::enableSSLIntervention() {
+  if (s_intervention_certs.isEmpty()) {
+    QDirIterator certFolder(":/certs");
+    while (certFolder.hasNext()) {
+      QFile f(certFolder.next());
+      if (!f.open(QIODevice::ReadOnly)) {
+        continue;
+      }
+      QSslCertificate cert(&f, QSsl::Pem);
+      if (!cert.isNull()) {
+        logger.info() << "Imported cert from: " << cert.issuerDisplayName();
+        s_intervention_certs.append(cert);
+      } else {
+        logger.error() << "Failed to import cert -" << f.fileName();
+      }
+    }
+  }
+  if (s_intervention_certs.isEmpty()) {
+    return;
+  }
+  auto conf = QSslConfiguration::defaultConfiguration();
+  conf.addCaCertificates(s_intervention_certs);
+  m_request.setSslConfiguration(conf);
 }

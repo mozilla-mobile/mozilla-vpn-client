@@ -16,13 +16,31 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
-      
+
+      - name: Generate build version
+        shell: bash
+        env:
+          GITREF: ${{github.ref}}
+        run: |
+          VERSION=$(grep ':VERSION' version.pri | cut -d= -f2 | tr -d '[:space:]')
+          if [[ "$GITREF" =~ ^refs/pull/([0-9]+)/merge ]]; then
+            BUILDREV="~pr${BASH_REMATCH[1]}"
+          elif [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
+            git fetch --unshallow
+            BUILDREV="~rc$(git rev-list --count --first-parent origin/main..HEAD)"
+            VERSION=${BASH_REMATCH[1]}
+          else
+            BUILDREV="~github${{github.run_number}}"
+          fi
+
+          # Force the upstream package version
+          sed -i "s/:VERSION.*/:VERSION = ${VERSION}${BUILDREV}/" version.pri
+
       - name: Install source dependencies
         shell: bash
         run: |
           sudo apt-get install golang debhelper -y
-          pip3 install "glean_parser==3.5"
-          pip3 install pyyaml
+          pip3 install -r requirements.txt
 
       - name: Build source bundle
         shell: bash
@@ -110,6 +128,7 @@ jobs:
       matrix:
         config:
             - { name: "Hirsute", dist: hirsute }
+            - { name: "Impish", dist: impish }
 
     runs-on: ubuntu-latest
     env:
@@ -123,6 +142,7 @@ jobs:
       - name: Create base ${{ matrix.config.dist }} image
         run: |
           pip3 install pyyaml
+          sudo apt-get update
           sudo apt-get install pbuilder debootstrap debhelper devscripts -y
           sudo pbuilder create --distribution ${{ matrix.config.dist }} --basetgz $BASETGZ --debootstrapopts --variant=buildd
 

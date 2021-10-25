@@ -5,7 +5,7 @@
 // This file is the actual entry point file for Glean.js in QML, that users will interact with.
 //
 // I was not able to figure out a way to simply use the Webpack generated file to
-// be the entry point in Qt, because of the unusual syntax allowed in Qt Javascript.
+// be the entry point in Qt, because of the unusual syntax allowed in Qt JavaScript.
 // Thus, we compile the Glean.js library normaly into the `glean.lib.js` file and then
 // we have this file which interacts opaquely with the Webpack generated one.
 //
@@ -13,7 +13,10 @@
 
 .pragma library
 
+.import QtQuick.LocalStorage 2.0 as LocalStorage
 .import "glean.lib.js" as Glean
+
+const ErrorType = Glean.Glean.default.ErrorType;
 
 /**
  * Initialize Glean. This method should only be called once, subsequent calls will be no-op.
@@ -88,6 +91,35 @@ function setDebugViewTag(value) {
  */
 function setSourceTags(value) {
   Glean.Glean.default.setSourceTags(value);
+}
+
+/**
+ * Finishes executing any ongoing tasks and shuts down Glean.
+ *
+ * This will attempt to send pending pings before resolving.
+ *
+ * @returns A promise which resolves once shutdown is complete.
+ */
+function shutdown() {
+  return Glean.Glean.default.shutdown();
+}
+
+/**
+ * Test-only API**
+ *
+ * Resets the Glean singleton to its initial state and re-initializes it.
+ *
+ * TODO: Only allow this function to be called on test mode (depends on Bug 1682771).
+ *
+ * @param applicationId The application ID (will be sanitized during initialization).
+ * @param uploadEnabled Determines whether telemetry is enabled.
+ *        If disabled, all persisted metrics, events and queued pings (except
+ *        first_run_date) are cleared. Default to `true`.
+ * @param config Glean configuration options.
+ * @returns A promise that resolves when the initialization is complete.
+ */
+function testResetGlean(applicationId, uploadEnabled, config) {
+  return Glean.Glean.default.testResetGlean(applicationId, uploadEnabled, config);
 }
 
 const _private = Glean.Glean.default._private;

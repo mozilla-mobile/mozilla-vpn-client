@@ -10,6 +10,7 @@
 #include "closeeventhandler.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
+#include "constants.h"
 #include "controller.h"
 #include "errorhandler.h"
 #include "models/devicemodel.h"
@@ -31,6 +32,10 @@
 #include <QObject>
 #include <QStandardPaths>
 #include <QTimer>
+
+#ifdef MVPN_WINDOWS
+#  include "platforms/windows/windowscommons.h"
+#endif
 
 class QTextStream;
 class Task;
@@ -96,6 +101,9 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
   Q_PROPERTY(QString versionString READ versionString CONSTANT)
   Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
+  Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
+  Q_PROPERTY(QString architecture READ architecture CONSTANT)
+  Q_PROPERTY(QString platform READ platform CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
                  updateRecommendedChanged)
   Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
@@ -103,6 +111,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
   Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
+  Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
   Q_PROPERTY(QString currentView READ currentView WRITE setCurrentView NOTIFY
                  currentViewChanged)
 
@@ -112,6 +121,10 @@ class MozillaVPN final : public QObject {
 
   static MozillaVPN* instance();
 
+  // This is exactly like the ::instance() method, but it doesn't crash if the
+  // MozillaVPN is null. It should be used rarely.
+  static MozillaVPN* maybeInstance();
+
   void initialize();
 
   State state() const;
@@ -120,6 +133,7 @@ class MozillaVPN final : public QObject {
   const QString& serverPublicKey() const { return m_serverPublicKey; }
 
   bool stagingMode() const;
+  bool debugMode() const;
 
   enum AuthenticationType {
     AuthenticationInBrowser,
@@ -136,6 +150,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
+  Q_INVOKABLE void mainWindowLoaded();
   Q_INVOKABLE bool viewLogs();
   Q_INVOKABLE void retrieveLogs();
   Q_INVOKABLE void cleanupLogs();
@@ -204,6 +219,7 @@ class MozillaVPN final : public QObject {
                    const QString& privateKey);
 
   void deviceRemoved(const QString& publicKey);
+  void deviceRemovalCompleted(const QString& publicKey);
 
   void serversFetched(const QByteArray& serverData,
                       const QByteArray& serverExtraData);
@@ -227,8 +243,18 @@ class MozillaVPN final : public QObject {
   void silentSwitch();
 
   const QString versionString() const { return QString(APP_VERSION); }
-
   const QString buildNumber() const { return QString(BUILD_ID); }
+  const QString osVersion() const {
+#ifdef MVPN_WINDOWS
+    return WindowsCommons::WindowsVersion();
+#else
+    return QSysInfo::productVersion();
+#endif
+  }
+  const QString architecture() const {
+    return QSysInfo::currentCpuArchitecture();
+  }
+  const QString platform() const { return Constants::PLATFORM_NAME; }
 
   void logout();
 
@@ -274,6 +300,8 @@ class MozillaVPN final : public QObject {
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);
   }
+
+  void hardReset();
 
  private:
   void setState(State state);
@@ -345,8 +373,9 @@ class MozillaVPN final : public QObject {
   void updatingChanged();
 
   // For Glean
+  void initializeGlean();
   void sendGleanPings();
-  void triggerGleanSample(const QString& gleanSampleName);
+  void recordGleanEvent(const QString& gleanSampleName);
 
   void aboutToQuit();
 

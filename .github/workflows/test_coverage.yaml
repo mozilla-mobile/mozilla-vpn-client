@@ -33,8 +33,7 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
-          pip3 install glean_parser
-          pip3 install pyyaml
+          pip3 install -r requirements.txt
           python3 scripts/generate_glean.py
 
       - name: Importing translation files

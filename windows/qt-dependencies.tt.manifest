@@ -1,0 +1,18 @@
+[
+  {
+    "filename": "msm.tar.gz",
+    "size": 2214831,
+    "algorithm": "sha512",
+    "digest": "89dbbb2954a2314ffacc117a9a6a6c0921c0e7205539c0d6cb5c885a15454600cdb6fc31befd36c891454d0a7e666387da7333c2377d130363cc1fc85266f36c",
+    "unpack": true,
+    "visibility": "internal"
+  },
+  {
+    "filename": "qt_static.tar.bz2",
+    "size": 196937849,
+    "algorithm": "sha512",
+    "digest": "dd3f40379a5f2870f8cef3e93e1f1886acf17721d512b402e14560a308a759b23901b60bc1a4607c68599adb9253ced62103c33c2bcc099614783cfbbe611705",
+    "unpack": true,
+    "visibility": "internal"
+  }
+]

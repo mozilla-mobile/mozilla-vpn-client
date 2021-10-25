@@ -21,14 +21,14 @@ class Survey final {
 
   const QString& id() const { return m_id; }
   const QString& url() const { return m_url; }
-  uint32_t triggerTime() const { return m_triggerTime; }
+  uint32_t triggerTime() const { return m_triggerTimeSec; }
 
   bool isTriggerable() const;
 
  private:
   QString m_id;
   QString m_url;
-  uint32_t m_triggerTime;
+  uint32_t m_triggerTimeSec;
   QStringList m_platforms;
 };
 

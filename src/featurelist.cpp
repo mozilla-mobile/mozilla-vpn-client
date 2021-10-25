@@ -10,7 +10,6 @@
 #include "features/featureappreview.h"
 #include "features/featurecaptiveportal.h"
 #include "features/featurecustomdns.h"
-#include "features/featureglean.h"
 #include "features/featureinappaccountcreate.h"
 #include "features/featureinappauth.h"
 #include "features/featureinapppurchase.h"
@@ -44,7 +43,6 @@ void FeatureList::initialize() {
   new FeatureAppReview();
   new FeatureCaptivePortal();
   new FeatureCustomDNS();
-  new FeatureGlean();
   new FeatureInAppAccountCreate();
   new FeatureInAppAuth();
   new FeatureInAppPurchase();
@@ -116,8 +114,15 @@ void FeatureList::updateFeatureList(const QByteArray& data) {
   QStringList devModeFeatureFlags = settingsHolder->devModeFeatureFlags();
 
   QJsonObject json = QJsonDocument::fromJson(data).object();
-  for (const QString& key : json.keys()) {
-    QJsonValue value = json.value(key);
+  QJsonValue featuresValue = json["features"];
+  if (!featuresValue.isObject()) {
+    logger.error() << "Error in the json format";
+    return;
+  }
+
+  QJsonObject featuresObj = featuresValue.toObject();
+  for (const QString& key : featuresObj.keys()) {
+    QJsonValue value = featuresObj.value(key);
     if (!value.isBool()) {
       logger.error() << "Error in parsing feature enabling:" << key;
       continue;
