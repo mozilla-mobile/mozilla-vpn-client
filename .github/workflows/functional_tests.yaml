@@ -82,6 +82,7 @@ jobs:
           git submodule update --remote --depth 1 i18n
           python3 scripts/importLanguages.py
           python3 scripts/generate_glean.py
+          cd inspector && npm install && npm run build && cd ../
 
           # Delete unit tests, so we can get to testing faster
           sed -i '/tests\/unit/d' mozillavpn.pro

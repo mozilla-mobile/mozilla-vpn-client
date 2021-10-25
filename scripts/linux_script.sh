@@ -110,6 +110,9 @@ print G "done."
 print Y "Generating glean samples..."
 (cd $WORKDIR && python3 scripts/generate_glean.py) || die "Failed to generate glean samples"
 
+print Y "Building Inspector..."
+npm --prefix ./inspector run build
+
 printn Y "Downloading Go dependencies..."
 (cd $WORKDIR/linux/netfilter && go mod vendor)
 print G "done."

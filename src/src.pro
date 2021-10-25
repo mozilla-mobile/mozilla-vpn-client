@@ -335,6 +335,12 @@ exists($$PWD/../glean/telemetry/gleansample.h) {
     error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
 }
 
+exists($$PWD/../inspector/dist/index.html){
+    message("Inspector Ready")
+} else {
+    error("Inspector Missing, please build it using `npm --prefix ./inspector run build`")
+}
+
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 

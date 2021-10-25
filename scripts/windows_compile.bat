@@ -94,6 +94,9 @@ python scripts\importLanguages.py
 ECHO Generating glean samples...
 python scripts\generate_glean.py
 
+ECHO Build Inspector
+npm --prefix ./inspector run build
+
 qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project

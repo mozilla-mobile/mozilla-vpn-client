@@ -70,6 +70,8 @@ python3 scripts/importLanguages.py || die "Failed to import languages"
 
 print Y "Generating glean samples..."
 python3 scripts/generate_glean.py || die "Failed to generate glean samples"
+print Y "Building Inspector..."
+npm --prefix ./inspector run build
 
 print Y "Configuring the project via qmake..."
 $QMAKE CONFIG-=debug  CONFIG-=debug_and_release CONFIG+=release BUILD_ID=$FULLVERSION || die "Compilation failed"

@@ -91,6 +91,8 @@ git submodule update
 ./scripts/importLanguages.py
 # Bake shaders
 sh ./scripts/bake_shaders.sh
+# Build inspector
+cd inspector && npm install && npm run build
 ```
 
 #### Build

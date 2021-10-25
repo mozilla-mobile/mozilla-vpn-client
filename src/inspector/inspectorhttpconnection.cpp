@@ -26,9 +26,8 @@ struct Path {
 };
 
 static QList<Path> s_paths{
-    Path{"/", ":webserver/index.html", "text/html"},
+    Path{"/", ":webserver/index.html", "text/html; charset=UTF-8"},
     Path{"/index.html", ":webserver/index.html", "text/html"},
-    Path{"/main.css", ":webserver/main.css", "text/css"},
 };
 
 }  // namespace
