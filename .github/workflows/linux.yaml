@@ -142,6 +142,7 @@ jobs:
       - name: Create base ${{ matrix.config.dist }} image
         run: |
           pip3 install pyyaml
+          sudo apt-get update
           sudo apt-get install pbuilder debootstrap debhelper devscripts -y
           sudo pbuilder create --distribution ${{ matrix.config.dist }} --basetgz $BASETGZ --debootstrapopts --variant=buildd
 
