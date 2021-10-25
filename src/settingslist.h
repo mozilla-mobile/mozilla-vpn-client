@@ -286,7 +286,6 @@ SETTING_BOOL(serverSwitchNotification,     // getter
              true,                         // default value
              false                         // remove when reset
 )
-
 SETTING_STRING(stagingServerAddress,     // getter
                setStagingServerAddress,  // setter
                hasStagingServerAddress,  // has
