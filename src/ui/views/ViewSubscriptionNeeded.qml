@@ -105,31 +105,8 @@ VPNFlickable {
 
             Repeater {
                 id: productList
-                // model: VPNIAP
-                model: [
-                    {
-                        productMonthlyPrice: "9.99",
-                        productPrice: "9.99",
-                        productSavings: 0,
-                        productType: "VPNIAP.ProductMonthly",
-                        productFeatured: false,
-                    },
-                    {
-                        productMonthlyPrice: "41.94",
-                        productPrice: "6.99",
-                        productSavings: 30,
-                        productType: "VPNIAP.ProductHalfYearly",
-                        productFeatured: false,
-                    },
-                    {
-                        productMonthlyPrice: "59.88",
-                        productPrice: "4.99",
-                        productSavings: 50,
-                        productType: "VPNIAP.ProductYearly",
-                        productFeatured: true,
-                    },
-                ];
-                delegate: VPNSubscriptionOption { }
+                model: VPNIAP
+                delegate: VPNSubscriptionOption {}
             }
         }
 

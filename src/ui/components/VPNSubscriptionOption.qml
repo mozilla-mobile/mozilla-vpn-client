@@ -96,8 +96,7 @@ RadioDelegate {
     }
     onPressed: {
         if (radioDelegate.checked) {
-            return false;
-        //    return  VPNIAP.subscribe(subscriptionOptions.checkedButton.productId)
+            return VPNIAP.subscribe(subscriptionOptions.checkedButton.productId)
         }
     }
 
@@ -150,38 +149,13 @@ RadioDelegate {
                 Layout.fillWidth: true
             }
 
-            // VPNLightLabel {
-            //     text: "-------------"
-            //     font.pixelSize: 11
-            // }
-            // VPNLightLabel {
-            //     text: "subscriptionDuration: " + col.subscriptionDuration
-            //     font.pixelSize: 11
-            // }
-            // VPNLightLabel {
-            //     text: "productSingleMonth: " + col.productSingleMonth
-            //     font.pixelSize: 11
-            // }
-            // VPNLightLabel {
-            //     text: "productMultiMonth: " + col. productMultiMonth
-            //     font.pixelSize: 11
-            // }
-            // VPNLightLabel {
-            //     text: "monthlyPrice: " + col.monthlyPrice
-            //     font.pixelSize: 11
-            // }
-            // VPNLightLabel {
-            //     text: "productFeatured: " + (modelData.productFeatured ? ":)" : ":(")
-            //     font.pixelSize: 11
-            // }
-
             function getSubscriptionDuration(product) {
                 switch (product) {
-                case "VPNIAP.ProductMonthly":
+                case VPNIAP.ProductMonthly:
                     return 1;
-                case "VPNIAP.ProductHalfYearly":
+                case VPNIAP.ProductHalfYearly:
                     return 6;
-                case "VPNIAP.ProductYearly":
+                case VPNIAP.ProductYearly:
                     return 12;
                 default:
                     return 0;
