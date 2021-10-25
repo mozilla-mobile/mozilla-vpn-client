@@ -238,11 +238,11 @@ describe('Settings', function() {
     });
 
     await vpn.clickOnElement('aboutUsList/aboutUsList-license');
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
-      return url ===
-          'https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/LICENSE.md';
-    });
+
+    await vpn.waitForElement('licenseBackButton');
+    await vpn.waitForElementProperty('licenseBackButton', 'visible', 'true');
+    await vpn.clickOnElement('licenseBackButton');
+    await vpn.wait();
 
     await vpn.waitForElement('settingsBackButton');
     await vpn.clickOnElement('settingsBackButton');

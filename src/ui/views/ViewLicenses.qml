@@ -19,7 +19,7 @@ Item {
 
     VPNMenu {
         id: menu
-        objectName: "aboutUsBackButton"
+        objectName: "licenseBackButton"
         title: qsTrId("vpn.aboutUs.license")
     }
 
