@@ -10,15 +10,12 @@ import Mozilla.VPN 1.0
 import components 0.1
 import themes 0.1
 
-VPNFlickable {
-    id: licenses
+Item {
+    id: root
 
     property alias isSettingsView: menu.isSettingsView
     property alias isMainView: menu.isMainView
-    property string _menuTitle:  qsTrId("vpn.aboutUs.license")
-
-    flickContentHeight: menu.height + body.height + (Theme.windowMargin * 4)
-    width: parent.width
+    property string _menuTitle: qsTrId("vpn.aboutUs.license")
 
     VPNMenu {
         id: menu
@@ -26,45 +23,64 @@ VPNFlickable {
         title: qsTrId("vpn.aboutUs.license")
     }
 
-    Column {
-        id: body
+    VPNFlickable {
+        id: licenses
 
-        anchors.right: parent.right
-        anchors.left: parent.left
-        anchors.top: menu.bottom
-
-        width: licenses.width
-
-        VPNTextBlock {
-            id: mainLicense
-
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            textFormat: Text.MarkdownText
-            text: VPNLicenseModel.contentLicense
-
-            onLinkActivated: link => VPN.openLinkUrl(link)
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: menu.bottom
         }
+        height: root.height - menu.height
+        flickContentHeight: body.height + Theme.windowMargin * 2
+        width: root.width
 
-        Repeater {
-            model: VPNLicenseModel
+        Column {
+            id: body
 
-            VPNExternalLinkListItem {
-                title: licenseTitle
-                accessibleName: licenseTitle
-                onClicked: {
-                    if (isSettingsView) {
-                        settingsStackView.push("qrc:/ui/views/ViewLicense.qml", { isSettingsView, isMainView, licenseTitle, licenseContent })
-                    } else if (isMainView) {
-                        mainStackView.push("qrc:/ui/views/ViewLicense.qml", { isSettingsView, isMainView, licenseTitle, licenseContent })
-                    } else {
-                        stackview.push("qrc:/ui/views/ViewLicense.qml", { isSettingsView, isMainView, licenseTitle, licenseContent })
+            spacing: Theme.listSpacing
+            width: licenses.width
+
+            VPNVerticalSpacer {
+                height: Theme.listSpacing
+            }
+
+            VPNTextBlock {
+                id: mainLicense
+
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: VPNLicenseModel.contentLicense
+                textFormat: Text.MarkdownText
+                width: parent.width - Theme.windowMargin * 2
+
+                onLinkActivated: link => VPN.openLinkUrl(link)
+            }
+
+            VPNVerticalSpacer {
+                height: Theme.listSpacing * 0.5
+            }
+
+            Repeater {
+                model: VPNLicenseModel
+
+                VPNExternalLinkListItem {
+                    accessibleName: licenseTitle
+                    title: licenseTitle
+                    iconSource: "qrc:/ui/resources/chevron.svg"
+
+                    onClicked: {
+                        if (isSettingsView) {
+                            settingsStackView.push("qrc:/ui/views/ViewLicense.qml", { isSettingsView, isMainView, licenseTitle, licenseContent })
+                        } else if (isMainView) {
+                            mainStackView.push("qrc:/ui/views/ViewLicense.qml", { isSettingsView, isMainView, licenseTitle, licenseContent })
+                        } else {
+                            stackview.push("qrc:/ui/views/ViewLicense.qml", { isSettingsView, isMainView, licenseTitle, licenseContent })
+                        }
                     }
                 }
-                iconSource: "qrc:/ui/resources/chevron.svg"
             }
         }
-    }
 
-    Component.onCompleted: VPNLicenseModel.initialize()
+        Component.onCompleted: VPNLicenseModel.initialize()
+    }
 }

@@ -11,33 +11,39 @@ import components 0.1
 import components.forms 0.1
 import themes 0.1
 
-VPNFlickable {
-    id: license
+Item {
+    id: root
 
-    property alias isSettingsView: menu.isSettingsView
-    property alias isMainView: menu.isMainView
-    property alias licenseTitle: menu.title
-    property alias licenseContent: licenseText.text
     property alias _menuTitle: menu.title
-
-    flickContentHeight: menu.height + licenseText.height + (Theme.windowMargin * 4)
+    property alias isMainView: menu.isMainView
+    property alias isSettingsView: menu.isSettingsView
+    property alias licenseContent: licenseText.text
+    property alias licenseTitle: menu.title
 
     VPNMenu {
         id: menu
     }
 
-    VPNTextBlock {
-        id: licenseText
+    VPNFlickable {
+        id: license
 
+        anchors {
+            top: menu.bottom
+            topMargin: Theme.listSpacing * 2
+        }
+        height: root.height - menu.height
+        flickContentHeight: licenseText.height + Theme.windowMargin * 4
         width: parent.width
-        textFormat: Text.MarkdownText
 
-        anchors.right: parent.right
-        anchors.left: parent.left
-        anchors.top: menu.bottom
-        anchors.leftMargin: Theme.windowMargin
-        anchors.rightMargin: Theme.windowMargin
+        VPNTextBlock {
+            id: licenseText
 
-        onLinkActivated: link => VPN.openLinkUrl(link)
+            anchors.horizontalCenter: parent.horizontalCenter
+            textFormat: Text.MarkdownText
+            width: parent.width - Theme.windowMargin * 2
+
+            onLinkActivated: link => VPN.openLinkUrl(link)
+        }
     }
+
 }
