@@ -28,7 +28,6 @@ class InspectorWebSocketConnection final : public QObject {
   static QJsonObject getViewTree();
   static QJsonObject serialize(QQuickItem* item);
 
-
  private:
   void textMessageReceived(const QString& message);
   void binaryMessageReceived(const QByteArray& message);
@@ -41,7 +40,6 @@ class InspectorWebSocketConnection final : public QObject {
 
   void networkRequestFinished(QNetworkReply* reply);
 
- 
  private:
   QWebSocket* m_connection;
 

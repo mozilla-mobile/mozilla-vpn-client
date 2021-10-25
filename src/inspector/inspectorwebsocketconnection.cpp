@@ -640,7 +640,7 @@ static QList<WebSocketCommand> s_commands{
                            return obj;
                          }
                        }
-                       obj["type"]="screen";
+                       obj["type"] = "screen";
                        obj["value"] =
                            QString(data.toBase64(QByteArray::Base64Encoding));
                        return obj;
@@ -785,8 +785,9 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
   connect(NotificationHandler::instance(),
           &NotificationHandler::notificationShown, this,
           &InspectorWebSocketConnection::notificationShown);
-  connect(NetworkManager::instance()->networkAccessManager(), &QNetworkAccessManager::finished,
-          this, &InspectorWebSocketConnection::networkRequestFinished);
+  connect(NetworkManager::instance()->networkAccessManager(),
+          &QNetworkAccessManager::finished, this,
+          &InspectorWebSocketConnection::networkRequestFinished);
 }
 
 InspectorWebSocketConnection::~InspectorWebSocketConnection() {
@@ -864,60 +865,59 @@ void InspectorWebSocketConnection::notificationShown(const QString& title,
       QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
-void InspectorWebSocketConnection::networkRequestFinished(QNetworkReply* reply){
-    logger.debug() << "Network REquest finished";
-    QJsonObject obj;
-    obj["type"] = "network";
-    QJsonObject request;
-    QJsonObject response;
+void InspectorWebSocketConnection::networkRequestFinished(
+    QNetworkReply* reply) {
+  logger.debug() << "Network REquest finished";
+  QJsonObject obj;
+  obj["type"] = "network";
+  QJsonObject request;
+  QJsonObject response;
 
-     QVariant statusCode =
+  QVariant statusCode =
       reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-    response["status"] = statusCode.isValid() ? statusCode.toInt() : -1;
+  response["status"] = statusCode.isValid() ? statusCode.toInt() : -1;
 
-    // Serialize the Response
-    QJsonObject responseHeader;
-    for(auto headerPair : reply->rawHeaderPairs()){
-        responseHeader[QString(headerPair.first)]=QString(headerPair.second);
-    }
-    response["headers"]=responseHeader;
-    response["errors"]="";
-    if(reply->error() != QNetworkReply::NoError){
-       response["errors"]= reply->errorString();
-    }
-    response["body"]= QString(reply->readAll());
+  // Serialize the Response
+  QJsonObject responseHeader;
+  for (auto headerPair : reply->rawHeaderPairs()) {
+    responseHeader[QString(headerPair.first)] = QString(headerPair.second);
+  }
+  response["headers"] = responseHeader;
+  response["errors"] = "";
+  if (reply->error() != QNetworkReply::NoError) {
+    response["errors"] = reply->errorString();
+  }
+  response["body"] = QString(reply->readAll());
 
-    auto qrequest = reply->request();
-    // Serialize the Request
-    QJsonArray requestHeaders;
-    for(auto header : qrequest.rawHeaderList()){
-        requestHeaders.append(QString(header));
-    }
-    request["headers"]=requestHeaders;
-    request["url"]=qrequest.url().toString();
-    auto initator = qrequest.originatingObject();
-    Task* maybe_task = dynamic_cast<Task*>(initator);
-    if(maybe_task){
-         request["initiator"]=maybe_task->name();
-    }else{
-     request["initiator"]=getObjectClass(initator);
-    }
+  auto qrequest = reply->request();
+  // Serialize the Request
+  QJsonArray requestHeaders;
+  for (auto header : qrequest.rawHeaderList()) {
+    requestHeaders.append(QString(header));
+  }
+  request["headers"] = requestHeaders;
+  request["url"] = qrequest.url().toString();
+  auto initator = qrequest.originatingObject();
+  Task* maybe_task = dynamic_cast<Task*>(initator);
+  if (maybe_task) {
+    request["initiator"] = maybe_task->name();
+  } else {
+    request["initiator"] = getObjectClass(initator);
+  }
 
-
-    obj["request"]=request;
-    obj["response"]=response;
-    m_connection->sendTextMessage(
-        QJsonDocument(obj).toJson(QJsonDocument::Compact));
+  obj["request"] = request;
+  obj["response"] = response;
+  m_connection->sendTextMessage(
+      QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
-QString InspectorWebSocketConnection::getObjectClass(const QObject* target){
-    if(target==nullptr){
-        return "unkown";
-    }
-     auto metaObject = target->metaObject();
-     return metaObject->className();
+QString InspectorWebSocketConnection::getObjectClass(const QObject* target) {
+  if (target == nullptr) {
+    return "unkown";
+  }
+  auto metaObject = target->metaObject();
+  return metaObject->className();
 }
-
 
 // static
 void InspectorWebSocketConnection::setLastUrl(const QUrl& url) {
@@ -936,36 +936,34 @@ QString InspectorWebSocketConnection::appVersionForUpdate() {
   return s_updateVersion;
 }
 
-//static
-QJsonObject InspectorWebSocketConnection::getViewTree(){
+// static
+QJsonObject InspectorWebSocketConnection::getViewTree() {
   QJsonObject out;
-  out["type"]="qml_tree";
+  out["type"] = "qml_tree";
 
   QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
   QJsonArray viewRoots;
-  for( auto& root : engine->rootObjects()){
-      QQuickWindow *window = qobject_cast<QQuickWindow *>(root);
-      if(window == nullptr){
-          continue;
-      }
-      QQuickItem* content = window->contentItem();
-      viewRoots.append(serialize(content));
+  for (auto& root : engine->rootObjects()) {
+    QQuickWindow* window = qobject_cast<QQuickWindow*>(root);
+    if (window == nullptr) {
+      continue;
+    }
+    QQuickItem* content = window->contentItem();
+    viewRoots.append(serialize(content));
   }
-  out["tree"]=viewRoots;
+  out["tree"] = viewRoots;
   return out;
 }
 
-//static
-QJsonObject InspectorWebSocketConnection::serialize(QQuickItem* item){
+// static
+QJsonObject InspectorWebSocketConnection::serialize(QQuickItem* item) {
   QJsonObject out;
-  if(item == nullptr){
-      return out;
+  if (item == nullptr) {
+    return out;
   }
-  out["__class__"]= getObjectClass(item);
+  out["__class__"] = getObjectClass(item);
 
-
-#define PUT(func)\
-    out[#func]= item->func();
+#define PUT(func) out[#func] = item->func();
   PUT(x);
   PUT(y);
   PUT(z);
@@ -980,63 +978,55 @@ QJsonObject InspectorWebSocketConnection::serialize(QQuickItem* item){
 
   auto metaObject = item->metaObject();
   int propertyCount = metaObject->propertyCount();
-  out["__propertyCount__"]=propertyCount;
+  out["__propertyCount__"] = propertyCount;
   QJsonArray props;
-  for(int i=0; i< metaObject->propertyCount(); i++){
-      auto property = metaObject->property(i);
-      if(!property.isValid()){
-          continue;
+  for (int i = 0; i < metaObject->propertyCount(); i++) {
+    auto property = metaObject->property(i);
+    if (!property.isValid()) {
+      continue;
+    }
+    QJsonObject prop;
+    auto name = property.name();
+    auto value = property.read(item);
+    if (value.canConvert<QJsonValue>()) {
+      out[name] = value.toJsonValue();
+    } else if (value.canConvert<QString>()) {
+      out[name] = value.toString();
+    } else if (value.canConvert<QStringList>()) {
+      auto list = value.toStringList();
+      QJsonArray somelist;
+      for (const QString& s : list) {
+        somelist.append(s);
       }
-      QJsonObject prop;
-      auto name = property.name();
-      auto value = property.read(item);
-      if(value.canConvert<QJsonValue>()){
-         out[name]=value.toJsonValue();
-      }else if(value.canConvert<QString>()){
-          out[name]=value.toString();
-      }else if(value.canConvert<QStringList>()){
-          auto list = value.toStringList();
-          QJsonArray somelist;
-          for(const QString& s:list){
-              somelist.append(s);
-          }
-          out[name]=somelist;
-      }
-      else{
-          out[name]=value.typeName();
-      }
+      out[name] = somelist;
+    } else {
+      out[name] = value.typeName();
+    }
   }
-
-
-
 
   QJsonArray subView;
   auto children = item->childItems();
-  out["__child_item_count"]=children.length();
-  for( auto& c: children){
-      subView.append(serialize(c));
+  out["__child_item_count"] = children.length();
+  for (auto& c : children) {
+    subView.append(serialize(c));
   }
-  out["subItems"]=subView;
+  out["subItems"] = subView;
   return out;
 }
 
-
 /*
  *
- * QJsonObject InspectorWebSocketConnection::serialize(const QObject* target, bool recursive){
-    Q_UNUSED(recursive);
-    QJsonObject out;
-    auto metaObject = target->metaObject();
-    int propertyCount = metaObject->propertyOffset()-metaObject->propertyCount();
+ * QJsonObject InspectorWebSocketConnection::serialize(const QObject* target,
+bool recursive){ Q_UNUSED(recursive); QJsonObject out; auto metaObject =
+target->metaObject(); int propertyCount =
+metaObject->propertyOffset()-metaObject->propertyCount();
     out["__propertyCount__"]=propertyCount;
     out["__proto__"]=metaObject->className();
 
-    for(int i=0+metaObject->propertyOffset(); i< metaObject->propertyCount(); i++){
-        auto property = metaObject->property(i);
-        auto name = property.name();
-        auto value = property.read(target);
-        if(value.type() == QMetaType::VoidStar || value.type() == QMetaType::QObjectStar){
-            if(recursive){
+    for(int i=0+metaObject->propertyOffset(); i< metaObject->propertyCount();
+i++){ auto property = metaObject->property(i); auto name = property.name(); auto
+value = property.read(target); if(value.type() == QMetaType::VoidStar ||
+value.type() == QMetaType::QObjectStar){ if(recursive){
                 // Todo: Nest Serialisation
                 out[name]= "[object object]";
                 continue;
