@@ -27,10 +27,7 @@ Item {
     VPNFlickable {
         id: license
 
-        anchors {
-            top: menu.bottom
-            topMargin: Theme.listSpacing * 2
-        }
+        anchors.top: menu.bottom
         height: root.height - menu.height
         flickContentHeight: licenseText.height + Theme.windowMargin * 4
         width: parent.width
@@ -40,6 +37,7 @@ Item {
 
             anchors.horizontalCenter: parent.horizontalCenter
             textFormat: Text.MarkdownText
+            y: Theme.listSpacing * 2
             width: parent.width - Theme.windowMargin * 2
 
             onLinkActivated: link => VPN.openLinkUrl(link)
