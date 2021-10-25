@@ -215,7 +215,7 @@ HEADERS += \
         features/featurelocalareaaccess.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
-        features/featuressharelogs.h \
+        features/featuresharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
         features/featureunsecurednetworknotification.h \
@@ -821,6 +821,10 @@ else:win* {
 
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+    CONFIG(debug, debug|release) {
+        QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
+        QMAKE_LFLAGS_WINDOWS += /DEBUG
+    }
 
     QT += networkauth
     QT += svg
