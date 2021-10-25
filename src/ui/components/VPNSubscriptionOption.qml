@@ -20,6 +20,7 @@ RadioDelegate {
     activeFocusOnTab: true
     checked: modelData.productFeatured
     ButtonGroup.group: subscriptionOptions
+
     Layout.fillWidth: true
     Layout.minimumHeight: 68
     Layout.preferredHeight: row.implicitHeight + Theme.windowMargin * 2
@@ -52,20 +53,24 @@ RadioDelegate {
         // Purple left-hand indicator bar
         // visible when product is selected
         Rectangle {
-            radius: Theme.cornerRadius
-            opacity: radioDelegate.checked ? 1 : 0
+            anchors {
+                bottom: parent.bottom
+                left: parent.left
+                top: parent.top
+            }
             color: radioDelegate.checked ? Theme.purple60 : Theme.white
+            opacity: radioDelegate.checked ? 1 : 0
+            radius: Theme.cornerRadius
             width: Theme.windowMargin
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
 
             Rectangle {
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                width: Theme.listSpacing * 0.5
+                anchors {
+                    bottom: parent.bottom
+                    right: parent.right
+                    top: parent.top
+                }
                 color: Theme.white
+                width: Theme.listSpacing * 0.5
             }
 
             Behavior on color {
@@ -78,9 +83,9 @@ RadioDelegate {
         // Purple border when product is selected or focused
         Rectangle {
             anchors.fill: parent
-            radius: Theme.cornerRadius
             border.color: (radioDelegate.checked || radioDelegate.focus) ? Theme.purple60 : Theme.white
             color: "transparent"
+            radius: Theme.cornerRadius
 
             Behavior on border.color {
                 ColorAnimation {
@@ -151,14 +156,14 @@ RadioDelegate {
 
             function getSubscriptionDuration(product) {
                 switch (product) {
-                case VPNIAP.ProductMonthly:
-                    return 1;
-                case VPNIAP.ProductHalfYearly:
-                    return 6;
-                case VPNIAP.ProductYearly:
-                    return 12;
-                default:
-                    return 0;
+                    case VPNIAP.ProductMonthly:
+                        return 1;
+                    case VPNIAP.ProductHalfYearly:
+                        return 6;
+                    case VPNIAP.ProductYearly:
+                        return 12;
+                    default:
+                        return 0;
                 }
             }
         }
