@@ -18,7 +18,7 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   void retranslate() override;
 
 #ifdef MVPN_WASM
-  QMenu* contextMenu() override { m_systemTrayIcon.contextMenu(); }
+  QMenu* contextMenu() override { return m_systemTrayIcon.contextMenu(); }
 #endif
 
  protected:
