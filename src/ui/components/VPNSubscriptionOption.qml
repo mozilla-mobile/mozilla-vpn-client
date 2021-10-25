@@ -18,7 +18,7 @@ RadioDelegate {
     property var productId: productIdentifier
 
     activeFocusOnTab: true
-    checked: modelData.productFeatured
+    checked: productFeatured
     ButtonGroup.group: subscriptionOptions
 
     Layout.fillWidth: true
@@ -50,8 +50,8 @@ RadioDelegate {
         anchors.fill: parent
         activeFocusOnTab: false
 
-        // Purple left-hand indicator bar
-        // visible when product is selected
+        // Purple left-hand indicator bar visible
+        // when product is selected
         Rectangle {
             anchors {
                 bottom: parent.bottom
@@ -96,12 +96,12 @@ RadioDelegate {
     }
     onFocusChanged: {
         if (focus) {
-            vpnFlickable.ensureVisible(radioDelegate)
+            vpnFlickable.ensureVisible(radioDelegate);
         }
     }
     onPressed: {
         if (radioDelegate.checked) {
-            return VPNIAP.subscribe(subscriptionOptions.checkedButton.productId)
+            return VPNIAP.subscribe(subscriptionOptions.checkedButton.productId);
         }
     }
 
@@ -111,7 +111,7 @@ RadioDelegate {
         anchors {
             fill: parent
             leftMargin: Theme.windowMargin * 1.5
-            rightMargin: Theme.windowMargin * 1.5
+            rightMargin: Theme.windowMargin
             verticalCenter: parent.verticalCenter
         }
         spacing: Theme.listSpacing
@@ -120,18 +120,18 @@ RadioDelegate {
             id: col
 
             // TODO (maybe) - Do we want to add the subscription duration in months to the model?
-            property var subscriptionDuration: getSubscriptionDuration(modelData.productType)
+            property var subscriptionDuration: getSubscriptionDuration(productType)
 
             //% "Monthly plan"
             property string productSingleMonth: qsTrId("vpn.subscription.monthlyPlan")
 
             //: %1 is replaced by the subscription duration in months. %2 is replaced by the total subscription cost.
             //% "%1-month plan: %2"
-            property string productMultiMonth: qsTrId("vpn.subscription.multiMonthPlan").arg(col.subscriptionDuration).arg(modelData.productPrice)
+            property string productMultiMonth: qsTrId("vpn.subscription.multiMonthPlan").arg(col.subscriptionDuration).arg(productPrice)
 
             //: “/month” stands for “per month”. %1 is replaced by the monthly cost (including currency).
             //% "%1/month"
-            property string monthlyPrice: qsTrId("vpn.subscription.price").arg(modelData.productMonthlyPrice)
+            property string monthlyPrice: qsTrId("vpn.subscription.price").arg(productMonthlyPrice)
 
             spacing: Theme.listSpacing * 0.5
 
@@ -148,7 +148,7 @@ RadioDelegate {
 
             VPNLightLabel {
                 font.pixelSize: Theme.fontSize
-                text: col.subscriptionDuration > 0 ? (col.subscriptionDuration > 1 ? col.monthlyPrice : col.productSingleMonth) : ""
+                text: col.subscriptionDuration !== -1 ? (col.subscriptionDuration > 1 ? col.monthlyPrice : col.productSingleMonth) : ""
                 wrapMode: Text.WordWrap
 
                 Layout.fillWidth: true
@@ -163,7 +163,7 @@ RadioDelegate {
                     case VPNIAP.ProductYearly:
                         return 12;
                     default:
-                        return 0;
+                        return -1;
                 }
             }
         }
@@ -178,7 +178,7 @@ RadioDelegate {
             VPNInterLabel {
                 //: Appears on the in-app purchase view beside a subscription plan. "%1" is replaced by the percentage amount saved when selecting that plan.
                 //% "Save %1%"
-                text: qsTrId("vpn.subscription.savePercent").arg(modelData.productSavings)
+                text: qsTrId("vpn.subscription.savePercent").arg(productSavings)
 
                 color: Theme.purple60
                 font.family: Theme.fontBoldFamily
@@ -186,7 +186,7 @@ RadioDelegate {
                 lineHeight: Theme.labelLineHeight * 0.9
                 lineHeightMode: Text.FixedHeight
                 verticalAlignment: Text.AlignVCenter
-                visible: modelData.productSavings > 0
+                visible: productSavings > 0
                 wrapMode: Text.WordWrap
 
                 Layout.minimumWidth: row.width * 0.3
