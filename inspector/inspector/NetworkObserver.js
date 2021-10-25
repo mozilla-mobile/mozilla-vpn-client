@@ -1,0 +1,29 @@
+import { Client } from './client'
+import { GenericDispatcher } from './genericdispatcher'
+
+const MAX_REQUEST_COUNT = 50
+class _NetworkObserver extends GenericDispatcher {
+  constructor () {
+    super()
+    Client.on('network', (r) => this.onIncomingRequest(r))
+    this.counter = 0
+    this.requests = []
+  }
+
+  onIncomingRequest (networkRequest) {
+    const { request, response } = networkRequest
+    request.url = new URL(request.url)
+    this.counter++
+    this.requests.push({ id: this.counter, request, response })
+    if (this.requests.length > MAX_REQUEST_COUNT) {
+      this.requests.shift()
+    }
+    this.emit({ type: 'update', list: this.requests })
+  }
+
+  get (id) {
+    return this.requests[id]
+  }
+}
+
+export const NetworkObserver = new _NetworkObserver()

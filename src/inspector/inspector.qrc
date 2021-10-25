@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>webserver/index.html</file>
-        <file alias="webserver/main.css">../../wasm/main.css</file>
+        <file>../../inspector/dist/index.html</file>
     </qresource>
 </RCC>
 

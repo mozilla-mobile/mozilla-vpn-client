@@ -1,0 +1,39 @@
+html{
+    margin:0;
+}
+body{
+    margin:0;
+}
+
+*{
+    font-family: sans-serif;
+}
+
+body > main {
+
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+main >*{
+  overflow:hidden;
+}
+
+.xterm{
+  margin: 20px;
+  border-radius: 20px;
+  padding: 10px;
+  background: black;
+}
+
+.xterm-dom-renderer-owner-1 .xterm-rows *{
+  font-family: "Cascadia Code", Menlo, monospace;
+}
