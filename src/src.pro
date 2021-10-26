@@ -320,6 +320,7 @@ RESOURCES += ui/components.qrc
 RESOURCES += ui/resources.qrc
 RESOURCES += ui/themes.qrc
 RESOURCES += ui/ui.qrc
+RESOURCES += resources/certs/certs.qrc
 
 versionAtLeast(QT_VERSION, 6.0.0) {
     RESOURCES += ui/compatQt6.qrc
