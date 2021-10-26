@@ -9,6 +9,16 @@ module.exports = class FirefoxHelper {
     if (process.env.HEADLESS) {
       options.headless();
     }
+    if ('ARTIFACT_DIR' in process.env) {
+      // Configure firefox to export HAR files as test artifacts
+      options.setPreference(
+          'devtools.netmonitor.har.defaultFileName', 'firefox');
+      options.setPreference(
+          'devtools.netmonitor.har.defaultLogDir', process.env.ARTIFACT_DIR);
+      options.setPreference(
+          'devtools.netmonitor.har.enableAutoExportToFile', true);
+      options.addArguments('-devtools');
+    }
     const driver = await new webdriver.Builder()
                        .forBrowser('firefox')
                        .setFirefoxOptions(options)

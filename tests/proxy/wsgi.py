@@ -94,9 +94,11 @@ def forward_upstream(req, desturl=None, verbose=None, mangle=None):
     if verbose:
         log_headers(reply_headers)
     if verbose and reply_content:
-        jscontent = json.loads(reply_content)
-        print(f"RESPONSE JSON -> {req.path}")
-        print('\t' + json.dumps(jscontent, indent=3).replace('\n', '\n\t'))
+        content_type = str(upstream_request.headers['content-type'])
+        if content_type == 'application/json':
+            jscontent = json.loads(reply_content)
+            print(f"RESPONSE JSON -> {req.path}")
+            print('\t' + json.dumps(jscontent, indent=3).replace('\n', '\n\t'))
 
     return Response(reply_content, upstream_request.status_code, reply_headers)
 
