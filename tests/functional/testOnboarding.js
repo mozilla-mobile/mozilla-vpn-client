@@ -58,6 +58,9 @@ describe('Initial view and onboarding', function() {
     });
 
     await vpn.clickOnElement('getHelpLinks/getHelpBackList-1');
+    await vpn.waitForElementProperty('contactUsRoot', 'visible', 'false');
+
+    await vpn.waitForElement('contactUsRoot');
     await vpn.waitForElementProperty('contactUsRoot', 'visible', 'true');
   });
 
