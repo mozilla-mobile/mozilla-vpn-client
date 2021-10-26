@@ -56,6 +56,7 @@ HEADERS += \
     ../../src/models/feedbackcategorymodel.h \
     ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
+    ../../src/models/licensemodel.h \
     ../../src/models/server.h \
     ../../src/models/servercity.h \
     ../../src/models/servercountry.h \
@@ -108,6 +109,7 @@ HEADERS += \
     testlogger.h \
     testipaddress.h \
     testipfinder.h \
+    testlicense.h \
     testmodels.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
@@ -146,6 +148,7 @@ SOURCES += \
     ../../src/models/feedbackcategorymodel.cpp \
     ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
+    ../../src/models/licensemodel.cpp \
     ../../src/models/server.cpp \
     ../../src/models/servercity.cpp \
     ../../src/models/servercountry.cpp \
@@ -197,6 +200,7 @@ SOURCES += \
     testlogger.cpp \
     testipaddress.cpp \
     testipfinder.cpp \
+    testlicense.cpp \
     testmodels.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \
@@ -246,6 +250,8 @@ OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
+
+RESOURCES += ../../src/ui/license.qrc
 
 coverage {
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping

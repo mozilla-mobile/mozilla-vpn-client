@@ -10,12 +10,14 @@
 #include "closeeventhandler.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
+#include "constants.h"
 #include "controller.h"
 #include "errorhandler.h"
 #include "models/devicemodel.h"
 #include "models/feedbackcategorymodel.h"
 #include "models/helpmodel.h"
 #include "models/keys.h"
+#include "models/licensemodel.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "models/supportcategorymodel.h"
@@ -84,7 +86,6 @@ class MozillaVPN final : public QObject {
     LinkContact,
     LinkFeedback,
     LinkLeaveReview,
-    LinkLicense,
     LinkHelpSupport,
     LinkTermsOfService,
     LinkPrivacyNotice,
@@ -102,6 +103,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
   Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
   Q_PROPERTY(QString architecture READ architecture CONSTANT)
+  Q_PROPERTY(QString platform READ platform CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
                  updateRecommendedChanged)
   Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
@@ -143,6 +145,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void openLink(LinkType linkType);
+  Q_INVOKABLE void openLinkUrl(const QString& linkUrl);
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
   Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
@@ -198,6 +201,7 @@ class MozillaVPN final : public QObject {
     return &m_private->m_supportCategoryModel;
   }
   Keys* keys() { return &m_private->m_keys; }
+  LicenseModel* licenseModel() { return &m_private->m_licenseModel; }
   HelpModel* helpModel() { return &m_private->m_helpModel; }
   NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
@@ -252,6 +256,7 @@ class MozillaVPN final : public QObject {
   const QString architecture() const {
     return QSysInfo::currentCpuArchitecture();
   }
+  const QString platform() const { return Constants::PLATFORM_NAME; }
 
   void logout();
 
@@ -401,6 +406,7 @@ class MozillaVPN final : public QObject {
     FeedbackCategoryModel m_feedbackCategoryModel;
     SupportCategoryModel m_supportCategoryModel;
     Keys m_keys;
+    LicenseModel m_licenseModel;
     HelpModel m_helpModel;
     NetworkWatcher m_networkWatcher;
     ReleaseMonitor m_releaseMonitor;

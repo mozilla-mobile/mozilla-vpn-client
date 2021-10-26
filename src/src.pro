@@ -113,6 +113,7 @@ SOURCES += \
         models/feedbackcategorymodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
+        models/licensemodel.cpp \
         models/server.cpp \
         models/servercity.cpp \
         models/servercountry.cpp \
@@ -215,7 +216,7 @@ HEADERS += \
         features/featurelocalareaaccess.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
-        features/featuressharelogs.h \
+        features/featuresharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
         features/featureunsecurednetworknotification.h \
@@ -243,6 +244,7 @@ HEADERS += \
         models/feedbackcategorymodel.h \
         models/helpmodel.h \
         models/keys.h \
+        models/licensemodel.h \
         models/server.h \
         models/servercity.h \
         models/servercountry.h \
@@ -318,9 +320,11 @@ unix {
 
 RESOURCES += inspector/inspector.qrc
 RESOURCES += ui/components.qrc
+RESOURCES += ui/license.qrc
 RESOURCES += ui/resources.qrc
 RESOURCES += ui/themes.qrc
 RESOURCES += ui/ui.qrc
+RESOURCES += resources/certs/certs.qrc
 
 versionAtLeast(QT_VERSION, 6.0.0) {
     RESOURCES += ui/compatQt6.qrc
@@ -821,6 +825,10 @@ else:win* {
 
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+    CONFIG(debug, debug|release) {
+        QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
+        QMAKE_LFLAGS_WINDOWS += /DEBUG
+    }
 
     QT += networkauth
     QT += svg
