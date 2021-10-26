@@ -66,6 +66,7 @@ Item {
 
     Component {
         id: contactUsView
+        objectName: "contactUsView"
         VPNFlickable {
             id: vpnFlickable
             property var appRating

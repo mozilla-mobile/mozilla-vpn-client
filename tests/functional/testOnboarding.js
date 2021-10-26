@@ -58,10 +58,10 @@ describe('Initial view and onboarding', function() {
     });
 
     await vpn.clickOnElement('getHelpLinks/getHelpBackList-1');
-    await vpn.waitForElementProperty('contactUsRoot', 'visible', 'false');
+    await vpn.waitForElementProperty('contactUsView', 'visible', 'false');
 
-    await vpn.waitForElement('contactUsRoot');
-    await vpn.waitForElementProperty('contactUsRoot', 'visible', 'true');
+    await vpn.waitForElement('contactUsView');
+    await vpn.waitForElementProperty('contactUsView', 'visible', 'true');
   });
 
   it('Complete the onboarding (aborting in each phase)', async () => {
