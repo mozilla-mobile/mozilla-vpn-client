@@ -29,6 +29,7 @@ Item {
 
     VPNMenu {
         id: menu
+        objectName: "supportTicketScreen"
         title: VPNl18n.InAppSupportWorkflowSupportNavLinkText
 
         // this view gets pushed to mainStackView from backend always
@@ -66,7 +67,6 @@ Item {
 
     Component {
         id: contactUsView
-        objectName: "contactUsView"
         VPNFlickable {
             id: vpnFlickable
             property var appRating
