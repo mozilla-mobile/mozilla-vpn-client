@@ -93,8 +93,6 @@ SOURCES += \
         hawkauth.cpp \
         hkdf.cpp \
         iaphandler.cpp \
-        inspector/inspectorhttpconnection.cpp \
-        inspector/inspectorhttpserver.cpp \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
@@ -225,8 +223,6 @@ HEADERS += \
         hawkauth.h \
         hkdf.h \
         iaphandler.h \
-        inspector/inspectorhttpconnection.h \
-        inspector/inspectorhttpserver.h \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
