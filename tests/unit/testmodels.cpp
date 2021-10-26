@@ -678,6 +678,9 @@ void TestModels::serverFromJson() {
   QFETCH(int, weight);
   QCOMPARE(s.weight(), (uint32_t)weight);
 
+  QCOMPARE(s.socksName(), QString());
+  QCOMPARE(s.multihopPort(), (uint32_t)0);
+
   QFETCH(QList<int>, ports);
   Q_ASSERT(ports.length() >= 1);
   if (ports.length() == 1) {
@@ -695,6 +698,8 @@ void TestModels::serverFromJson() {
   QCOMPARE(sB.ipv6Gateway(), s.ipv6Gateway());
   QCOMPARE(sB.publicKey(), s.publicKey());
   QCOMPARE(sB.weight(), s.weight());
+  QCOMPARE(sB.socksName(), s.socksName());
+  QCOMPARE(sB.multihopPort(), s.multihopPort());
 
   Server sC;
   sC = s;
@@ -706,6 +711,8 @@ void TestModels::serverFromJson() {
   QCOMPARE(sC.ipv6Gateway(), s.ipv6Gateway());
   QCOMPARE(sC.publicKey(), s.publicKey());
   QCOMPARE(sC.weight(), s.weight());
+  QCOMPARE(sC.socksName(), s.socksName());
+  QCOMPARE(sC.multihopPort(), s.multihopPort());
 
   s = s;
 }
@@ -1578,18 +1585,18 @@ void TestModels::surveyModelFromJson() {
         QCOMPARE(sm.surveys()[0].url(), surveyUrl);
 
         QFETCH(int, surveyTriggerTime);
-        QCOMPARE(sm.surveys()[0].triggerTime(), surveyTriggerTime);
+        QCOMPARE((int)sm.surveys()[0].triggerTime(), surveyTriggerTime);
 
         Survey a(sm.surveys()[0]);
         QCOMPARE(a.id(), surveyId);
         QCOMPARE(a.url(), surveyUrl);
-        QCOMPARE(a.triggerTime(), surveyTriggerTime);
+        QCOMPARE((int)a.triggerTime(), surveyTriggerTime);
 
         Survey b;
         b = a;
         QCOMPARE(b.id(), surveyId);
         QCOMPARE(b.url(), surveyUrl);
-        QCOMPARE(b.triggerTime(), surveyTriggerTime);
+        QCOMPARE((int)b.triggerTime(), surveyTriggerTime);
 
         b = b;
       }
@@ -1621,7 +1628,7 @@ void TestModels::surveyModelFromJson() {
 
         QFETCH(int, surveyTriggerTime);
         QFETCH(bool, surveyTriggerable);
-        QCOMPARE(sm.surveys()[0].triggerTime(), surveyTriggerTime);
+        QCOMPARE((int)sm.surveys()[0].triggerTime(), surveyTriggerTime);
         QCOMPARE(sm.surveys()[0].isTriggerable(), surveyTriggerable);
 
         if (surveyTriggerable) {

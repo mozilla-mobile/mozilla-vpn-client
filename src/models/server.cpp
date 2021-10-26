@@ -28,6 +28,8 @@ Server& Server::operator=(const Server& other) {
   m_portRanges = other.m_portRanges;
   m_publicKey = other.m_publicKey;
   m_weight = other.m_weight;
+  m_socksName = other.m_socksName;
+  m_multihopPort = other.m_multihopPort;
 
   return *this;
 }
@@ -76,6 +78,16 @@ bool Server::fromJson(const QJsonObject& obj) {
     return false;
   }
 
+  QJsonValue socks5_name = obj.value("socks5_name");
+  if (!socks5_name.isString()) {
+    return false;
+  }
+
+  QJsonValue multihop_port = obj.value("multihop_port");
+  if (!multihop_port.isDouble()) {
+    return false;
+  }
+
   QList<QPair<uint32_t, uint32_t>> prList;
   QJsonArray portRangesArray = portRanges.toArray();
   for (QJsonValue portRangeValue : portRangesArray) {
@@ -109,6 +121,8 @@ bool Server::fromJson(const QJsonObject& obj) {
   m_portRanges.swap(prList);
   m_publicKey = publicKey.toString();
   m_weight = weight.toInt();
+  m_socksName = socks5_name.toString();
+  m_multihopPort = multihop_port.toInt();
 
   return true;
 }
