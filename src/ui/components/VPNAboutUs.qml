@@ -40,9 +40,8 @@ Item {
 
             //% "License"
             linkTitle: qsTrId("vpn.aboutUs.license")
-            openUrl: VPN.LinkLicense
+            openView: "qrc:/ui/views/ViewLicenses.qml"
         }
-
     }
 
     VPNMenu {
@@ -139,7 +138,21 @@ Item {
             objectName: "aboutUsList-" + linkId
             title: linkTitle
             accessibleName: linkTitle
-            onClicked: VPN.openLink(openUrl)
+            onClicked: {
+                if (openUrl) {
+                    VPN.openLink(openUrl)
+                }
+                if (openView) {
+                    if (isSettingsView) {
+                        settingsStackView.push(openView, { isSettingsView, isMainView })
+                    } else if (isMainView) {
+                        mainStackView.push(openView, { isSettingsView, isMainView })
+                    } else {
+                        stackview.push(openView, { isSettingsView, isMainView })
+                    }
+                }
+            }
+            iconSource: openUrl ? "qrc:/ui/resources/externalLink.svg" : "qrc:/ui/resources/chevron.svg"
         }
 
         ScrollBar.vertical: ScrollBar {
