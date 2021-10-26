@@ -44,6 +44,8 @@ constexpr const uint32_t TIMER_MSEC = 1000;
 // X connection retries.
 constexpr const int CONNECTION_MAX_RETRY = 9;
 
+constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
+
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
 // private address range.
@@ -70,12 +72,18 @@ ControllerImpl::Reason stateToReason(Controller::State state) {
 Controller::Controller() {
   MVPN_COUNT_CTOR(Controller);
 
+  m_connectingTimer.setSingleShot(true);
+
   connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
 
   connect(&m_connectionCheck, &ConnectionCheck::success, this,
           &Controller::connectionConfirmed);
   connect(&m_connectionCheck, &ConnectionCheck::failure, this,
           &Controller::connectionFailed);
+  connect(&m_connectingTimer, &QTimer::timeout, [this]() {
+    m_enableDisconnectInConfirming = true;
+    emit enableDisconnectInConfirmingChanged();
+  });
 }
 
 Controller::~Controller() { MVPN_COUNT_DTOR(Controller); }
@@ -116,6 +124,8 @@ void Controller::initialize() {
           &Controller::implInitialized);
   connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
           &Controller::statusUpdated);
+  connect(this, &Controller::stateChanged, this,
+          &Controller::maybeEnableDisconnectInConfirming);
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
@@ -573,6 +583,18 @@ bool Controller::processNextStep() {
   }
 
   return false;
+}
+
+void Controller::maybeEnableDisconnectInConfirming() {
+  if (m_state == StateConfirming) {
+    m_enableDisconnectInConfirming = false;
+    emit enableDisconnectInConfirmingChanged();
+    m_connectingTimer.start(CONFIRMING_TIMOUT_SEC * 1000);
+  } else {
+    m_enableDisconnectInConfirming = false;
+    emit enableDisconnectInConfirmingChanged();
+    m_connectingTimer.stop();
+  }
 }
 
 void Controller::setState(State state) {
