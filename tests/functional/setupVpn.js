@@ -92,5 +92,14 @@ exports.mochaHooks = {
     // Seems to help with tests that are slow to close vpn app at end.
     await vpn.wait();
     await vpn.wait();
+  },
+  async afterAll() {
+    // Save the client logs as a test artifact
+    if (('ARTIFACT_DIR' in process.env)) {
+      const logfile = process.env.HOME + '/.local/share/mozillavpn.txt';
+      if (fs.existsSync(logfile)) {
+        fs.copyFileSync(logfile, process.env.ARTIFACT_DIR + '/mozillavpn.txt');
+      }
+    }
   }
 }
