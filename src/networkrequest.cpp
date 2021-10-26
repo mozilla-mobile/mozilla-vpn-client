@@ -380,10 +380,18 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
 NetworkRequest* NetworkRequest::createForSupportTicket(
     QObject* parent, const QString& email, const QString& subject,
     const QString& issueText, const QString& logs, const QString& category) {
-  NetworkRequest* r = new NetworkRequest(parent, 201, true);
+  bool isAuthenticated = MozillaVPN::instance()->userAuthenticated();
+
+  NetworkRequest* r = new NetworkRequest(parent, 201, isAuthenticated);
 
   QUrl url(apiBaseUrl());
-  url.setPath("/api/v1/vpn/createSupportTicket");
+
+  if (isAuthenticated) {
+    url.setPath("/api/v1/vpn/createSupportTicket");
+  } else {
+    url.setPath("/api/v1/vpn/createGuestSupportTicket");
+  }
+
   r->m_request.setUrl(url);
 
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,

@@ -4,7 +4,7 @@
 
 #include "testfeature.h"
 #include "../../src/featurelist.h"
-#include "../../src/features/featureunauthsupport.h"
+#include "../../src/features/featurecustomdns.h"
 #include "../../src/models/feature.h"
 #include "../../src/settingsholder.h"
 #include "helper.h"
@@ -14,11 +14,11 @@ void TestFeature::enableByAPI() {
 
   FeatureList::instance()->initialize();
 
-  const Feature* feature = Feature::get(FEATURE_UNAUTH_SUPPORT);
-  QVERIFY(!feature->isSupported());
+  const Feature* feature = Feature::get(FEATURE_CUSTOM_DNS);
+  QVERIFY(feature->isSupported());
 
   QJsonObject obj;
-  obj["unauthSupport"] = true;
+  obj["customDNS"] = false;
 
   QJsonObject json;
   json["features"] = obj;
@@ -26,11 +26,11 @@ void TestFeature::enableByAPI() {
   FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(feature->isSupported());
 
-  obj["unauthSupport"] = false;
+  obj["customDNS"] = true;
   json["features"] = obj;
 
   FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
-  QVERIFY(!feature->isSupported());
+  QVERIFY(feature->isSupported());
 }
 
 static TestFeature s_testFeature;
