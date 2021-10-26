@@ -10,19 +10,15 @@ on:
       - 'releases/**'
 
 jobs:
-  test_list:
-    name: Generate Tasklist
+  prepare_tests:
+    name: Prepare Tests
     runs-on: ubuntu-20.04
     outputs:
       matrix: ${{ steps.testGen.outputs.tests }}
     steps:
-      - name: Install Packages
-        run: |
-          sudo apt update
-          sudo apt install jq -y
-      
       - name: Clone repository
         uses: actions/checkout@v2
+
       - id: testGen
         shell: bash
         run: |
@@ -30,26 +26,6 @@ jobs:
           for test in $(find tests/functional -name 'test*.js' | sort); do
             printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
           done | jq -s -c
-      - name: Check Tests
-        shell: bash
-        env:
-          TEST_LIST: ${{ steps.testGen.outputs.tests }}
-        run: |
-          echo $TEST_LIST | jq
-
-  build_test_app:
-    name: Build Test Client
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
       - name: Cache build
         id: cache-build
@@ -57,6 +33,14 @@ jobs:
         with:
           path: build/
           key: ${{ github.sha }}
+
+      - name: Checkout submodules
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
       - name: Install Linux packages
         if: steps.cache-build.outputs.cache-hit != 'true'
@@ -90,20 +74,22 @@ jobs:
           cp ./src/mozillavpn build/
 
       - name: Check build
+        env:
+          TEST_LIST: ${{ steps.testGen.outputs.tests }}
         run: |
           ls -ial build/
+          echo $TEST_LIST | jq
 
   functionaltests:
     name: Functional tests
-    needs: 
-      - build_test_app
-      - test_list
+    needs:
+      - prepare_tests
     runs-on: ubuntu-20.04
     timeout-minutes: 45
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
       matrix:
-        test: ${{ fromJson(needs.test_list.outputs.matrix) }}
+        test: ${{ fromJson(needs.prepare_tests.outputs.matrix) }}
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
