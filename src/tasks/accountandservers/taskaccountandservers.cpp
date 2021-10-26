@@ -59,42 +59,17 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
             });
 
     connect(request, &NetworkRequest::requestCompleted,
-            [this](const QByteArray& data) {
+            [this, vpn](const QByteArray& data) {
               logger.debug() << "Servers obtained";
-              m_serverData = data;
+              vpn->serversFetched(data);
               m_serversCompleted = true;
-              maybeCompleted();
-            });
-  }
-
-  // Server extra fetch
-  {
-    NetworkRequest* request = NetworkRequest::createForServerExtra(this);
-
-    connect(request, &NetworkRequest::requestFailed,
-            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-              logger.error() << "Failed to retrieve extra servers data";
-              vpn->errorHandle(ErrorHandler::toErrorType(error));
-              m_serverExtraCompleted = true;
-              maybeCompleted();
-            });
-
-    connect(request, &NetworkRequest::requestCompleted,
-            [this](const QByteArray& data) {
-              logger.debug() << "Extra server data obtained";
-              m_serverExtraData = data;
-              m_serverExtraCompleted = true;
               maybeCompleted();
             });
   }
 }
 
 void TaskAccountAndServers::maybeCompleted() {
-  if (m_accountCompleted && m_serversCompleted && m_serverExtraCompleted) {
-    if (!m_serverData.isEmpty()) {
-      MozillaVPN::instance()->serversFetched(m_serverData, m_serverExtraData);
-    }
-
+  if (m_accountCompleted && m_serversCompleted) {
     emit completed();
   }
 }

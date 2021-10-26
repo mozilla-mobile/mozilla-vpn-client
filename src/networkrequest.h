@@ -46,8 +46,6 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForServers(QObject* parent);
 
-  static NetworkRequest* createForServerExtra(QObject* parent);
-
   static NetworkRequest* createForAccount(QObject* parent);
 
   static NetworkRequest* createForVersions(QObject* parent);

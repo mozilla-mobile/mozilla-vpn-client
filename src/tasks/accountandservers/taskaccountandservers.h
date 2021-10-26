@@ -8,6 +8,7 @@
 #include "task.h"
 
 #include <QObject>
+#include <QPointer>
 
 class TaskAccountAndServers final : public Task {
   Q_DISABLE_COPY_MOVE(TaskAccountAndServers)
@@ -22,12 +23,8 @@ class TaskAccountAndServers final : public Task {
   void maybeCompleted();
 
  private:
-  QByteArray m_serverData;
-  QByteArray m_serverExtraData;
-
   bool m_accountCompleted = false;
   bool m_serversCompleted = false;
-  bool m_serverExtraCompleted = false;
 };
 
 #endif  // TASKACCOUNTANDSERVERS_H
