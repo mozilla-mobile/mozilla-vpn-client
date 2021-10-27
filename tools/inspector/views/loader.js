@@ -1,11 +1,9 @@
-import './view-shell'
-import './logs'
-import './view-network'
-import './view-ui'
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Imports the Module that defines <tag></tag>
 export async function loadView (tag) {
-  /* not useful until we can have code-splitting -> see index.html
     switch(tag){
         case "view-shell":
             return import("./view-shell.js")
@@ -15,7 +13,5 @@ export async function loadView (tag) {
             return import("./view-network.js")
         case "view-ui":
             return import("./view-ui.js")
-        case "view-todo":
-            return import("./view-todo.js")
-    } */
+    } 
 }

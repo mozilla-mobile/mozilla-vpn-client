@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 import { html, css, LitElement } from 'lit'
 import { UIObserver } from '../inspector/UiObserver'
 import '../elements/pill-toggle'
@@ -114,7 +118,7 @@ export class ViewUi extends LitElement {
   }
 
   renderTree (rootObject) {
-    if (rootObject.__child_item_count == 0) {
+    if (rootObject.subItems.length == 0) {
       return ''
     }
     return html`
@@ -140,7 +144,7 @@ export class ViewUi extends LitElement {
     const cleanClassname = node.__class__.split('_QMLTYPE_')[0].split('_QML_')[0]
 
     const text = (node.objectName != '') ? node.objectName : cleanClassname
-    const hasChilden = node.__child_item_count > 0
+    const hasChilden = node.subItems.length > 0
     const isDetail = this.detail == node
     const isCollapsed = node.__collapsed__
     return html`
@@ -148,7 +152,7 @@ export class ViewUi extends LitElement {
         ${hasChilden
 ? html`
             <span class="indicator" @click="${(e) => { this.toggleCollapse(e, node) }}">
-            ${isCollapsed ? '🙈' : '🐵'}
+            ${isCollapsed ? '➡️' : '⬇️'}
             </span>
         `
 : ''}   
@@ -195,6 +199,9 @@ export class ViewUi extends LitElement {
     this.settings[id] = !this.settings[id]
     this.requestUpdate('settings')
   }
+  saveImage(){
+    this.renderRoot.querySelector("live-view").saveImage();
+  }
 
   toggleCollapse (event, node) {
     node.__collapsed__ = !node.__collapsed__
@@ -204,6 +211,7 @@ export class ViewUi extends LitElement {
   render () {
     return html`
          <nav>
+            <pill-toggle noActive="true"  @click=${(e) => {this.saveImage()}}>Download Image</pill-toggle>
             <span>Settings:</span>
             ${Object.keys(this.settings).map(e => html` <pill-toggle id="${e}" @click=${() => this.quickFilterChange(e)}>${e}</pill-toggle>`)}
         </nav>

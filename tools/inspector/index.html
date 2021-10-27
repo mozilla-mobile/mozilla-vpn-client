@@ -5,10 +5,9 @@
         <style>
             @import url("app.css");
             @import url("/node_modules/xterm/css/xterm.css");     
-        </style>
+        </style>        
     </head>
     <body>
-    </body>
         <connection-killswitch></connection-killswitch>
         <tab-navigation target="main">
             <inspector-tab  class="active" tag="view-shell">🐚 Shell</inspector-tab>
@@ -16,14 +15,9 @@
             <inspector-tab  tag="view-network">📡 Network Inspector</inspector-tab>
             <inspector-tab  tag="view-ui" command="view_tree">✨ QML Inspector</inspector-tab>
         </tab-navigation>
-        <main>
-        </main>
-    <script type="module">
-        // TODO: we need to generate a .qrc for the parcel build
-        // output, so we can use code-splitting :) 
-        import "./app.js"
-        import "./elements/tab-navigation.js"
-        import "./elements/connection-killswitch.js"
-    </script>
-   
+        <main></main>
+    <script type="module" src="app.js"></script>
+    <script type="module" src="elements/tab-navigation.js"></script>
+    <script type="module" src="elements/connection-killswitch.js"></script>
+    </body>
 </html>

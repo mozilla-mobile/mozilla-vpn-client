@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 import { html, css, LitElement } from 'lit'
 import { UIObserver } from '../inspector/UiObserver'
 
@@ -24,6 +28,14 @@ export class LiveView extends LitElement {
     this.refreshTime = 1000
     this.showRulers = false
     this.qmlHighlight = null
+  }
+
+  saveImage(){
+    const canvas = this.renderRoot.querySelector('canvas')
+    var link = this.renderRoot.getElementById('link');
+    link.setAttribute('download', 'Screenshot.png');
+    link.setAttribute('href', canvas.toDataURL("image/png").replace("image/png", "image/octet-stream"));
+    link.click();
   }
 
   connectedCallback () {
@@ -114,6 +126,7 @@ export class LiveView extends LitElement {
     }
     return html`
        <div id="canvasHolder">
+         <a id="link" style="display:none">downloadImage</a>
         <canvas style="background:pink;" width=${this.qmlRoot.width} height=${this.qmlRoot.height}></canvas>
        </div>
     `
