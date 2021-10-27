@@ -37,6 +37,7 @@ namespace {
 Logger logger(LOG_INSPECTOR, "InspectorWebSocketConnection");
 
 bool s_stealUrls = false;
+bool s_forwardNetwork = false;
 QUrl s_lastUrl;
 QString s_updateVersion;
 
@@ -272,6 +273,12 @@ static QList<WebSocketCommand> s_commands{
                        // Extra cleanup for testing
                        settingsHolder->setTelemetryPolicyShown(false);
 
+                       return QJsonObject();
+                     }},
+    WebSocketCommand{"fetch_network", "Enables forwarding of networkRequests",
+                     0,
+                     [](const QList<QByteArray>&) {
+                       s_forwardNetwork = true;
                        return QJsonObject();
                      }},
     WebSocketCommand{"view_tree", "Sends a view tree", 0,
@@ -867,6 +874,9 @@ void InspectorWebSocketConnection::notificationShown(const QString& title,
 
 void InspectorWebSocketConnection::networkRequestFinished(
     QNetworkReply* reply) {
+  if (!s_forwardNetwork) {
+    return;
+  }
   logger.debug() << "Network Request finished";
   QJsonObject obj;
   obj["type"] = "network";

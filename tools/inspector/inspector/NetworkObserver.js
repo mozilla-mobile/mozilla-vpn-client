@@ -28,6 +28,10 @@ class _NetworkObserver extends GenericDispatcher {
   get (id) {
     return this.requests[id]
   }
+  start() {
+    console.log('Start network Recording');
+    Client.sendCommand('fetch_network');
+  }
 }
 
 export const NetworkObserver = new _NetworkObserver()

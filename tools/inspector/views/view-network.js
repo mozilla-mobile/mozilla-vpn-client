@@ -133,6 +133,7 @@ export class ViewNetwork extends LitElement {
   connectedCallback () {
     super.connectedCallback()
     NetworkObserver.onAny(() => { this.onRequest() })
+    NetworkObserver.start();
   }
 
   onRequest () {
