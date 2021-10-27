@@ -32,7 +32,6 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
     connect(request, &NetworkRequest::requestFailed,
             [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Account request failed" << error;
-              vpn->errorHandle(ErrorHandler::toErrorType(error));
               m_accountCompleted = true;
               maybeCompleted();
             });
@@ -53,7 +52,6 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
     connect(request, &NetworkRequest::requestFailed,
             [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Failed to retrieve servers";
-              vpn->errorHandle(ErrorHandler::toErrorType(error));
               m_serversCompleted = true;
               maybeCompleted();
             });
@@ -74,7 +72,6 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
     connect(request, &NetworkRequest::requestFailed,
             [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Failed to retrieve extra servers data";
-              vpn->errorHandle(ErrorHandler::toErrorType(error));
               m_serverExtraCompleted = true;
               maybeCompleted();
             });

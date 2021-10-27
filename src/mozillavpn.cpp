@@ -975,6 +975,9 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       break;
 
     case ErrorHandler::NoConnectionError:
+      if (controller()->state() == Controller::State::StateConfirming) {
+        break;
+      }
       alert = NoConnectionAlert;
       break;
 
