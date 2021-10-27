@@ -267,3 +267,6 @@ systray:
 
 settings:
   preferences: Preferences
+
+aboutUs:
+  licenses: Licenses

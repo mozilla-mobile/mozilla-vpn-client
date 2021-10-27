@@ -35,11 +35,11 @@ Item {
             linkTitle: qsTrId("vpn.aboutUs.privacyNotice2")
             openUrl: VPN.LinkPrivacyNotice
         }
+
         ListElement {
             linkId: "license"
 
-            //% "License"
-            linkTitle: qsTrId("vpn.aboutUs.license")
+            linkTitleId: "AboutUsLicenses"
             openView: "qrc:/ui/views/ViewLicenses.qml"
         }
     }
@@ -136,8 +136,8 @@ Item {
 
         delegate: VPNExternalLinkListItem {
             objectName: "aboutUsList-" + linkId
-            title: linkTitle
-            accessibleName: linkTitle
+            title: linkTitleId ? VPNl18n[linkTitleId] : linkTitle
+            accessibleName: title
             onClicked: {
                 if (openUrl) {
                     VPN.openLink(openUrl)
