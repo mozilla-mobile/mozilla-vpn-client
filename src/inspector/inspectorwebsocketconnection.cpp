@@ -18,11 +18,11 @@
 #include <functional>
 
 #include <QBuffer>
+#include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QHostAddress>
 #include <QNetworkAccessManager>
 #include <QMetaObject>
 #include <QPixmap>
@@ -30,8 +30,8 @@
 #include <QQuickWindow>
 #include <QScreen>
 #include <QStandardPaths>
-#include <QWebSocket>
 #include <QTest>
+#include <QWebSocket>
 
 namespace {
 Logger logger(LOG_INSPECTOR, "InspectorWebSocketConnection");
@@ -867,7 +867,7 @@ void InspectorWebSocketConnection::notificationShown(const QString& title,
 
 void InspectorWebSocketConnection::networkRequestFinished(
     QNetworkReply* reply) {
-  logger.debug() << "Network REquest finished";
+  logger.debug() << "Network Request finished";
   QJsonObject obj;
   obj["type"] = "network";
   QJsonObject request;
@@ -911,6 +911,7 @@ void InspectorWebSocketConnection::networkRequestFinished(
       QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
+// static
 QString InspectorWebSocketConnection::getObjectClass(const QObject* target) {
   if (target == nullptr) {
     return "unkown";
@@ -963,19 +964,7 @@ QJsonObject InspectorWebSocketConnection::serialize(QQuickItem* item) {
   }
   out["__class__"] = getObjectClass(item);
 
-#define PUT(func) out[#func] = item->func();
-  PUT(x);
-  PUT(y);
-  PUT(z);
-  PUT(height);
-  PUT(width);
-  PUT(hasFocus);
-  PUT(isEnabled);
-  PUT(scale);
-  PUT(state);
-
   // Todo: Check QObject subelements for the Layout Element
-
   auto metaObject = item->metaObject();
   int propertyCount = metaObject->propertyCount();
   out["__propertyCount__"] = propertyCount;
@@ -1006,34 +995,9 @@ QJsonObject InspectorWebSocketConnection::serialize(QQuickItem* item) {
 
   QJsonArray subView;
   auto children = item->childItems();
-  out["__child_item_count"] = children.length();
   for (auto& c : children) {
     subView.append(serialize(c));
   }
   out["subItems"] = subView;
   return out;
 }
-
-/*
- *
- * QJsonObject InspectorWebSocketConnection::serialize(const QObject* target,
-bool recursive){ Q_UNUSED(recursive); QJsonObject out; auto metaObject =
-target->metaObject(); int propertyCount =
-metaObject->propertyOffset()-metaObject->propertyCount();
-    out["__propertyCount__"]=propertyCount;
-    out["__proto__"]=metaObject->className();
-
-    for(int i=0+metaObject->propertyOffset(); i< metaObject->propertyCount();
-i++){ auto property = metaObject->property(i); auto name = property.name(); auto
-value = property.read(target); if(value.type() == QMetaType::VoidStar ||
-value.type() == QMetaType::QObjectStar){ if(recursive){
-                // Todo: Nest Serialisation
-                out[name]= "[object object]";
-                continue;
-            }
-            continue;
-        }
-        out[name]=value.toJsonValue();
-    }
-    return out;
-}*/

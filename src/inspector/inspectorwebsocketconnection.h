@@ -8,10 +8,10 @@
 #include <QByteArray>
 #include <QObject>
 
+class QNetworkReply;
 class QUrl;
 class QQuickItem;
 class QWebSocket;
-class QNetworkReply;
 
 class InspectorWebSocketConnection final : public QObject {
   Q_OBJECT
