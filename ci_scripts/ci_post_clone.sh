@@ -72,3 +72,4 @@ mv ./ci_scripts/MozillaVPN.xcscheme ./MozillaVPN.xcodeproj/xcshareddata/xcscheme
 # build Qt before we call xcodebuild
 make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
 make -f MozillaVPN.xcodeproj/qt_preprocess.mak
+
