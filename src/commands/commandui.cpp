@@ -15,7 +15,6 @@
 #include "fontloader.h"
 #include "l18nstrings.h"
 #include "iaphandler.h"
-#include "inspector/inspectorhttpserver.h"
 #include "inspector/inspectorwebsocketserver.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -443,10 +442,6 @@ int CommandUI::run(QStringList& tokens) {
     });
 
     if (!Constants::inProduction()) {
-      InspectorHttpServer* inspectHttpServer = new InspectorHttpServer(qApp);
-      QObject::connect(vpn.controller(), &Controller::readyToQuit,
-                       inspectHttpServer, &InspectorHttpServer::close);
-
       InspectorWebSocketServer* inspectWebSocketServer =
           new InspectorWebSocketServer(qApp);
       QObject::connect(vpn.controller(), &Controller::readyToQuit,

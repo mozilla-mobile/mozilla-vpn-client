@@ -312,7 +312,6 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += inspector/inspector.qrc
 RESOURCES += ui/components.qrc
 RESOURCES += ui/resources.qrc
 RESOURCES += ui/themes.qrc
