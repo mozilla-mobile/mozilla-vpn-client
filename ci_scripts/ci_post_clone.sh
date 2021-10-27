@@ -63,10 +63,6 @@ echo "	<false/>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/Work
 echo "</dict>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
 echo "</plist>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
 
-# use correct scheme
-# rm ./MozillaVPN.xcodeproj/xcshareddata/xcschemes/MozillaVPN.xcscheme
-# mv ./ci_scripts/MozillaVPN.xcscheme ./MozillaVPN.xcodeproj/xcshareddata/xcschemes/
-
 # build Qt resources
 # XCode Cloud has some problem with dependencies and timing therefore we have to
 # build Qt before we call xcodebuild
