@@ -34,6 +34,8 @@ void MozillaVPN::initialize() {}
 
 void MozillaVPN::setState(State) {}
 
+bool MozillaVPN::setServerList(QByteArray const&) { return true; }
+
 void MozillaVPN::getStarted() {}
 
 void MozillaVPN::authenticate() {}
