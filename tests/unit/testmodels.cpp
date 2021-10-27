@@ -590,6 +590,12 @@ void TestModels::serverFromJson_data() {
   obj.insert("weight", 1234);
   QTest::addRow("weight") << obj << false;
 
+  obj.insert("socks5_name", "socks5_name");
+  QTest::addRow("socks5_name") << obj << false;
+
+  obj.insert("multihop_port", 1337);
+  QTest::addRow("multihop_port") << obj << false;
+
   QJsonArray portRanges;
   obj.insert("port_ranges", portRanges);
   QTest::addRow("portRanges") << obj << true << "hostname"
@@ -678,8 +684,8 @@ void TestModels::serverFromJson() {
   QFETCH(int, weight);
   QCOMPARE(s.weight(), (uint32_t)weight);
 
-  QCOMPARE(s.socksName(), QString());
-  QCOMPARE(s.multihopPort(), (uint32_t)0);
+  QCOMPARE(s.socksName(), "socks5_name");
+  QCOMPARE(s.multihopPort(), 1337);
 
   QFETCH(QList<int>, ports);
   Q_ASSERT(ports.length() >= 1);
@@ -775,6 +781,8 @@ void TestModels::serverCityFromJson_data() {
   server.insert("ipv6_gateway", "ipv6Gateway");
   server.insert("public_key", "publicKey");
   server.insert("weight", 1234);
+  server.insert("multihop_port", 1234);
+  server.insert("socks5_name", "socks5_name");
 
   QJsonArray portRanges;
   server.insert("port_ranges", portRanges);
@@ -1078,6 +1086,8 @@ void TestModels::serverCountryModelPick() {
   server.insert("public_key", "publicKey");
   server.insert("weight", 1234);
   server.insert("port_ranges", QJsonArray());
+  server.insert("multihop_port", 1234);
+  server.insert("socks5_name", "socks5_name");
 
   QJsonArray servers;
   servers.append(server);
