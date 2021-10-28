@@ -25,10 +25,19 @@ VPNFlickable {
     flickContentHeight: col.height + Theme.menuHeight*2
     interactive: flickContentHeight > height
 
+    VPNCheckBoxAlert {
+        id: alert
+        //% "VPN must be off to edit these settings"
+        //: Associated to a group of settings that require the VPN to be disconnected to change
+        errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
+        anchors.top: parent.top
+        anchors.topMargin: 18
+    }
+
     ColumnLayout {
         id: col
         width: parent.width
-        anchors.top: parent.top
+        anchors.top: alert.visible ? alert.bottom : parent.top
         anchors.topMargin: 18
         anchors.left: parent.left
         anchors.leftMargin: 18
@@ -36,13 +45,6 @@ VPNFlickable {
         anchors.rightMargin: Theme.windowMargin
         spacing: Theme.vSpacing
 
-        VPNCheckBoxAlert {
-            id: alert
-            //% "VPN must be off to edit these settings"
-            //: Associated to a group of settings that require the VPN to be disconnected to change
-            errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
-        }
-            
         Repeater {
             id: repeater
 
