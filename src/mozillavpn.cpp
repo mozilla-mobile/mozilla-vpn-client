@@ -886,6 +886,8 @@ void MozillaVPN::logout() {
 
   setAlert(LogoutAlert);
 
+  setUserAuthenticated(false);
+
   deleteTasks();
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
@@ -1130,8 +1132,10 @@ void MozillaVPN::setUpdateRecommended(bool value) {
 
 void MozillaVPN::setUserAuthenticated(bool state) {
   logger.debug() << "User authentication state:" << state;
-  m_userAuthenticated = state;
-  emit userAuthenticationChanged();
+  if (m_userAuthenticated != state) {
+    m_userAuthenticated = state;
+    emit userAuthenticationChanged();
+  }
 }
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
