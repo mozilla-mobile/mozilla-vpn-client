@@ -23,7 +23,7 @@ namespace {
 
 Logger logger({LOG_IOS, LOG_MAIN}, "IOSAuthenticationListener");
 
-ASWebAuthenticationSession* session = nullptr;
+ASWebAuthenticationSession* s_session = nullptr;
 
 }  // namespace
 
@@ -45,7 +45,7 @@ ASWebAuthenticationSession* session = nullptr;
 
 #  pragma mark - ASWebAuthenticationPresentationContextProviding
 - (nonnull ASPresentationAnchor)presentationAnchorForWebAuthenticationSession:
-    (nonnull ASWebAuthenticationSession*)session API_AVAILABLE(ios(13.0)) {
+    (nonnull ASWebAuthenticationSession*)s_session API_AVAILABLE(ios(13.0)) {
   return m_view.window;
 }
 
@@ -59,6 +59,14 @@ IOSAuthenticationListener::IOSAuthenticationListener(QObject* parent)
 
 IOSAuthenticationListener::~IOSAuthenticationListener() {
   MVPN_COUNT_DTOR(IOSAuthenticationListener);
+
+  if (s_session) {
+    logger.info() << "Canceling the session";
+    [s_session cancel];
+
+    [s_session dealloc];
+    s_session = nullptr;
+  }
 }
 
 void IOSAuthenticationListener::start(const QString& codeChallenge,
@@ -76,17 +84,22 @@ void IOSAuthenticationListener::start(const QString& codeChallenge,
   logger.debug() << "Authentication URL:" << url.toString();
 #endif
 
-  if (session) {
-    [session dealloc];
-    session = nullptr;
+  if (s_session) {
+    [s_session dealloc];
+    s_session = nullptr;
   }
 
-  session = [[ASWebAuthenticationSession alloc]
+  s_session = [[ASWebAuthenticationSession alloc]
             initWithURL:url.toNSURL()
       callbackURLScheme:@"mozilla-vpn"
       completionHandler:^(NSURL* _Nullable callbackURL, NSError* _Nullable error) {
-        [session dealloc];
-        session = nullptr;
+        if (!s_session) {
+          logger.info() << "The operation has been aborted in the meantime.";
+          return;
+        }
+
+        [s_session dealloc];
+        s_session = nullptr;
 
         if (error) {
           logger.error() << "Authentication failed:"
@@ -125,13 +138,13 @@ void IOSAuthenticationListener::start(const QString& codeChallenge,
       QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", window));
 
   if (@available(iOS 13, *)) {
-    session.presentationContextProvider = [[ContextProvider alloc] initWithUIView:view];
+    s_session.presentationContextProvider = [[ContextProvider alloc] initWithUIView:view];
   }
 #endif
 
-  if (![session start]) {
-    [session dealloc];
-    session = nullptr;
+  if (![s_session start]) {
+    [s_session dealloc];
+    s_session = nullptr;
 
     logger.error() << "Authentication failed: session doesn't start.";
     emit failed(ErrorHandler::RemoteServiceError);
