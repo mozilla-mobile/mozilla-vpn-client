@@ -25,9 +25,9 @@ class Task : public QObject {
 
  protected:
   bool cancelled = false;
+
  private:
   QString m_name;
-  
 };
 
 #endif  // TASK_H
