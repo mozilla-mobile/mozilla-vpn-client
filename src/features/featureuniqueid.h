@@ -8,7 +8,7 @@
 #include "constants.h"
 #include "models/feature.h"
 
-constexpr const char* FEATURE_UNIQUE_ID = "shareLogs";
+constexpr const char* FEATURE_UNIQUE_ID = "uniqueID";
 /*
  * This Featureflag describes if the Client
  * creates a guardian Device using it's unique ID
@@ -24,14 +24,14 @@ class FeatureUniqueID : public Feature {
                 "",                  // ImagePath
                 "",                  // IconPath
                 "2.6",               // released
-                false                // Can be enabled in devmode
+                true                 // Can be enabled in devmode
         ) {}
 
   bool checkSupportCallback() const override {
-        // This feature can't be enabled in production: 
-        // We need to solve the underlying guardian issue,
-        // See: https://mozilla-hub.atlassian.net/browse/VPN-1177
-      return !Constants::inProduction();
+    // This feature can't be enabled in production:
+    // We need to solve the underlying guardian issue,
+    // See: https://mozilla-hub.atlassian.net/browse/VPN-1177
+    return !Constants::inProduction();
   }
 
   static const FeatureUniqueID* instance() {
