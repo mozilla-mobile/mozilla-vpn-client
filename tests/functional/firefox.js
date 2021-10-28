@@ -45,6 +45,17 @@ module.exports = class FirefoxHelper {
             resolve(handle);
             return;
           }
+
+          // If we found an error instead, then throw an exception.
+          let errors =
+              await driver.findElements(webdriver.By.className('error'));
+          for (let err of errors) {
+            let errtext = await err.getText();
+            if (errtext.length > 0) {
+              console.log('Error encountered:', errtext);
+              throw errtext;
+            }
+          }
         }
 
         screenshotRetries--;

@@ -252,14 +252,26 @@ module.exports = {
     const passwordField = await driver.findElement(By.id('password'));
     assert.ok(!!passwordField);
     passwordField.sendKeys(process.env.ACCOUNT_PASSWORD);
-    buttonElm = await driver.findElement(By.id('submit-btn'));
-    assert.ok(!!buttonElm);
-    await buttonElm.click();
 
-    // Verify that we've been redirected to guardian success page
-    await FirefoxHelper.waitForURL(
-        driver,
-        'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
+    let loginRetries = 3;
+    while (loginRetries > 0) {
+      try {
+        // Click the submit button
+        buttonElm = await driver.findElement(By.id('submit-btn'));
+        assert.ok(!!buttonElm);
+        await buttonElm.click();
+
+        // Verify that we've been redirected to guardian success page
+        await FirefoxHelper.waitForURL(
+            driver,
+            'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
+      } catch (e) {
+        console.error('Login attempt failed: ', e.message);
+        loginRetries--;
+        continue;
+      }
+      break;
+    }
 
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForElement('postAuthenticationButton');
