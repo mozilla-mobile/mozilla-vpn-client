@@ -19,12 +19,15 @@ class Task : public QObject {
   const QString& name() const { return m_name; }
 
   virtual void run(MozillaVPN* vpn) = 0;
-
+  void cancel() { cancelled = true; }
  signals:
   void completed();
 
+ protected:
+  bool cancelled = false;
  private:
   QString m_name;
+  
 };
 
 #endif  // TASK_H

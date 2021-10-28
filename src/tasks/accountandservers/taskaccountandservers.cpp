@@ -30,8 +30,12 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
     NetworkRequest* request = NetworkRequest::createForAccount(this);
 
     connect(request, &NetworkRequest::requestFailed,
-            [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+              if (cancelled) {
+                return;
+              }
               logger.error() << "Account request failed" << error;
+              vpn->errorHandle(ErrorHandler::toErrorType(error));
               m_accountCompleted = true;
               maybeCompleted();
             });
@@ -50,8 +54,12 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
     NetworkRequest* request = NetworkRequest::createForServers(this);
 
     connect(request, &NetworkRequest::requestFailed,
-            [this](QNetworkReply::NetworkError error, const QByteArray&) {
-              logger.error() << "Failed to retrieve servers.  Error: " << error;
+            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+              if (cancelled) {
+                return;
+              }
+              logger.error() << "Failed to retrieve servers";
+              vpn->errorHandle(ErrorHandler::toErrorType(error));
               m_serversCompleted = true;
               maybeCompleted();
             });
@@ -70,8 +78,12 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
     NetworkRequest* request = NetworkRequest::createForServerExtra(this);
 
     connect(request, &NetworkRequest::requestFailed,
-            [this](QNetworkReply::NetworkError error, const QByteArray&) {
-              logger.error() << "Failed to retrieve extra servers data.  Error: " << error;
+            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+              if (cancelled) {
+                return;
+              }
+              logger.error() << "Failed to retrieve extra servers data";
+              vpn->errorHandle(ErrorHandler::toErrorType(error));
               m_serverExtraCompleted = true;
               maybeCompleted();
             });
