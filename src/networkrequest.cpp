@@ -193,7 +193,14 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
 
   QJsonObject obj;
   obj.insert("name", deviceName);
-  obj.insert("unique_id", deviceId);
+
+  if (!Constants::inProduction()) {
+    // TODO: Remove this.
+    // We need to solve the underlying guardian issue,
+    // before we can send this info to guardian-prod
+    // See: https://mozilla-hub.atlassian.net/browse/VPN-1177
+    obj.insert("unique_id", deviceId);
+  }
   obj.insert("pubkey", pubKey);
 
   QJsonDocument json;
