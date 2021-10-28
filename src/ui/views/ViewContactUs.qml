@@ -12,7 +12,10 @@ import components.forms 0.1
 import themes 0.1
 
 Item {
-    property string _menuTitle:  VPNl18n.InAppSupportWorkflowSupportNavLinkText
+    property string _menuTitle: VPNl18n.InAppSupportWorkflowSupportNavLinkText
+
+    // This property is used to cache the emailAddress between the sub-views.
+    property string emailAddress: ""
 
     id: contactUsRoot
 
@@ -255,7 +258,10 @@ Item {
 
                         VPNButton {
                             text: VPNl18n.InAppSupportWorkflowSupportPrimaryButtonText
-                            onClicked: contactUsRoot.createSupportTicket((VPN.userAuthenticated ? VPNUser.email : emailInput.text), subjectInput.text, textArea.userEntry, dropDown.currentValue);
+                            onClicked: {
+                              contactUsRoot.emailAddress = (VPN.userAuthenticated ? VPNUser.email : emailInput.text);
+                              contactUsRoot.createSupportTicket(contactUsRoot.emailAddress, subjectInput.text, textArea.userEntry, dropDown.currentValue);
+                            }
                             enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
                                      (VPN.userAuthenticated ? true :
                                         (VPNAuthInApp.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
@@ -304,7 +310,7 @@ Item {
                     id: panel
                     logo: "qrc:/ui/resources/heart-check.svg"
                     logoTitle: VPNl18n.InAppSupportWorkflowSupportResponseHeader
-                    logoSubtitle: VPNl18n.InAppSupportWorkflowSupportResponseBody.arg((VPN.userAuthenticated ? VPNUser.email : emailInput.text))
+                    logoSubtitle: VPNl18n.InAppSupportWorkflowSupportResponseBody.arg(contactUsRoot.emailAddress)
                     anchors.horizontalCenter: undefined
                     Layout.fillWidth: true
                 }
