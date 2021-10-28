@@ -933,12 +933,12 @@ void MozillaVPN::reset(bool forceInitialState) {
 void MozillaVPN::deleteTasks() {
   for (Task* task : m_tasks) {
     task->deleteLater();
-    task->cancel();
   }
 
   m_tasks.clear();
 
   if (m_running_task) {
+    m_running_task->cancel();
     m_running_task->deleteLater();
     m_running_task->disconnect();
     m_running_task = nullptr;
