@@ -29,6 +29,7 @@ Item {
 
     VPNMenu {
         id: menu
+        objectName: "supportTicketScreen"
         title: VPNl18n.InAppSupportWorkflowSupportNavLinkText
 
         // this view gets pushed to mainStackView from backend always

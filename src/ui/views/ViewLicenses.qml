@@ -15,12 +15,12 @@ Item {
 
     property alias isSettingsView: menu.isSettingsView
     property alias isMainView: menu.isMainView
-    property string _menuTitle: qsTrId("vpn.aboutUs.license")
+    property string _menuTitle: VPNl18n.AboutUsLicenses
 
     VPNMenu {
         id: menu
         objectName: "licenseBackButton"
-        title: qsTrId("vpn.aboutUs.license")
+        title: VPNl18n.AboutUsLicenses
     }
 
     VPNFlickable {
