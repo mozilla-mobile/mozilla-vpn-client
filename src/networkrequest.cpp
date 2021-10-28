@@ -5,6 +5,7 @@
 #include "networkrequest.h"
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
+#include "features/featureuniqueid.h"
 #include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -194,11 +195,7 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
   QJsonObject obj;
   obj.insert("name", deviceName);
 
-  if (!Constants::inProduction()) {
-    // TODO: Remove this.
-    // We need to solve the underlying guardian issue,
-    // before we can send this info to guardian-prod
-    // See: https://mozilla-hub.atlassian.net/browse/VPN-1177
+  if (!FeatureUniqueID::instance()->isSupported()) {
     obj.insert("unique_id", deviceId);
   }
   obj.insert("pubkey", pubKey);
