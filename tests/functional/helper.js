@@ -273,6 +273,9 @@ module.exports = {
       break;
     }
 
+    // DEBUG: Make it easer to spot if a retry occurred.
+    assert.strictEqual(loginRetries, 3);
+
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForElement('postAuthenticationButton');
     await driver.quit();
