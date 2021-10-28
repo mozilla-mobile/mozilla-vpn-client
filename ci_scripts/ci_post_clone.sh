@@ -41,27 +41,30 @@ python3 scripts/importLanguages.py -m
 brew install go
 
 # create xcode.xconfig
-echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
-echo "GROUP_ID_MACOS = group.org.mozilla.macos.Guardian" >> xcode.xconfig
-echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
-echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
-echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
-echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
-echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
-echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
+cat > xcode.xconfig << EOF
+DEVELOPMENT_TEAM = 43AQ936H96
+GROUP_ID_MACOS = group.org.mozilla.macos.Guardian
+APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
+NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension
+LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
+GROUP_ID_IOS = group.org.mozilla.ios.Guardian
+APP_ID_IOS = org.mozilla.ios.FirefoxVPN
+NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
+EOF
 
 ./scripts/apple_compile.sh ios
 
 # use New Build System instead of legacy build system
-rm ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-echo "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd\">" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-echo "<plist version=\"1.0\">" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-echo "<dict>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-echo "	<key>IDEWorkspaceSharedSettings_AutocreateContextsIfNeeded</key>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-echo "	<false/>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-echo "</dict>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-echo "</plist>" >> ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+cat > ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>IDEWorkspaceSharedSettings_AutocreateContextsIfNeeded</key>
+    <false/>
+  </dict>
+</plist>
+EOF
 
 # build Qt resources
 # XCode Cloud has some problem with dependencies and timing therefore we have to
