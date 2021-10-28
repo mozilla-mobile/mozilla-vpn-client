@@ -56,24 +56,17 @@ exports.mochaHooks = {
   },
   async afterEach() {
     // Collect errors on failure
-    if (this.currentTest.state === 'failed') {
-      // Print error logs
-      console.log('::group::Error Logs');
-      console.log(stdErr);
-      console.log('::endgroup');
-
-      // Screenshot of failure state
-      if (('ARTIFACT_DIR' in process.env)) {
-        const dir = process.env.ARTIFACT_DIR + '/screencapture';
-        const data = await vpn.screenCapture();
-        const buffer = Buffer.from(data, 'base64');
-        const title = this.currentTest.title.toLowerCase();
-        const filename = title.replace(/[^a-z0-9]/g, '_');
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir);
-        }
-        fs.writeFileSync(`${dir}/${filename}.png`, buffer);
+    if ((this.currentTest.state === 'failed') &&
+        ('ARTIFACT_DIR' in process.env)) {
+      const dir = process.env.ARTIFACT_DIR + '/screencapture';
+      const data = await vpn.screenCapture();
+      const buffer = Buffer.from(data, 'base64');
+      const title = this.currentTest.title.toLowerCase();
+      const filename = title.replace(/[^a-z0-9]/g, '_');
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
       }
+      fs.writeFileSync(`${dir}/${filename}.png`, buffer);
     }
     // Reset error logs
     stdErr = '';
