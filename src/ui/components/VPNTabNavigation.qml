@@ -47,7 +47,8 @@ Item {
             delegate: TabButton {
                 id: btn
                 objectName: tabButtonId
-                height: bar.height
+                height: bar.contentHeight
+                width: stack.children.length > 0 ? (bar.width / stack.children.length) : bar.width
                 onClicked: handleTabClick(btn)
 
                 background: Rectangle {
