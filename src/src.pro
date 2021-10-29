@@ -118,7 +118,6 @@ SOURCES += \
         models/servercountry.cpp \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
-        models/serverextra.cpp \
         models/supportcategorymodel.cpp \
         models/survey.cpp \
         models/surveymodel.cpp \
@@ -248,7 +247,6 @@ HEADERS += \
         models/servercountry.h \
         models/servercountrymodel.h \
         models/serverdata.h \
-        models/serverextra.h \
         models/supportcategorymodel.h \
         models/survey.h \
         models/surveymodel.h \

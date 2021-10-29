@@ -271,14 +271,6 @@ SETTING_BYTEARRAY(servers,     // getter
                   true         // remove when reset
 )
 
-SETTING_BYTEARRAY(serverExtras,     // getter
-                  setServerExtras,  // setter
-                  hasServerExtras,  // has
-                  "serverExtras",   // key
-                  "",               // default value
-                  true              // remove when reset
-)
-
 SETTING_BOOL(serverSwitchNotification,     // getter
              setServerSwitchNotification,  // setter
              hasServerSwitchNotification,  // has
