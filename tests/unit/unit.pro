@@ -62,7 +62,6 @@ HEADERS += \
     ../../src/models/servercountry.h \
     ../../src/models/servercountrymodel.h \
     ../../src/models/serverdata.h \
-    ../../src/models/serverextra.h \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
@@ -154,7 +153,6 @@ SOURCES += \
     ../../src/models/servercountry.cpp \
     ../../src/models/servercountrymodel.cpp \
     ../../src/models/serverdata.cpp \
-    ../../src/models/serverextra.cpp \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
