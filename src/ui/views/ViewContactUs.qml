@@ -102,7 +102,7 @@ Item {
                     ColumnLayout {
                         Layout.fillHeight: true
                         spacing: 24
-                        visible: !VPN.userAuthenticated
+                        visible: !VPN.userAuthenticated || VPN.StateInitialize
                         Layout.fillWidth: true
 
                         ColumnLayout {
@@ -145,7 +145,7 @@ Item {
                         Layout.fillWidth: true
                         Layout.preferredWidth: parent.width
                         RowLayout {
-                            visible: VPN.userAuthenticated
+                            visible: VPN.userAuthenticated && !VPN.StateInitialize
                             spacing: 15
                             Layout.fillWidth: true
                             Layout.bottomMargin: 15
@@ -259,11 +259,11 @@ Item {
                         VPNButton {
                             text: VPNl18n.InAppSupportWorkflowSupportPrimaryButtonText
                             onClicked: {
-                              contactUsRoot.emailAddress = (VPN.userAuthenticated ? VPNUser.email : emailInput.text);
+                              contactUsRoot.emailAddress = (VPN.userAuthenticated && !VPN.StateInitialize ? VPNUser.email : emailInput.text);
                               contactUsRoot.createSupportTicket(contactUsRoot.emailAddress, subjectInput.text, textArea.userEntry, dropDown.currentValue);
                             }
                             enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
-                                     (VPN.userAuthenticated ? true :
+                                     (VPN.userAuthenticated && !VPN.StateInitialize ? true :
                                         (VPNAuthInApp.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
                                      )
                             opacity: enabled ? 1 : .5
