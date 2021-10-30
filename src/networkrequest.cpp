@@ -5,6 +5,7 @@
 #include "networkrequest.h"
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
+#include "features/featureuniqueid.h"
 #include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -193,7 +194,10 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
 
   QJsonObject obj;
   obj.insert("name", deviceName);
-  obj.insert("unique_id", deviceId);
+
+  if (!FeatureUniqueID::instance()->isSupported()) {
+    obj.insert("unique_id", deviceId);
+  }
   obj.insert("pubkey", pubKey);
 
   QJsonDocument json;
