@@ -882,8 +882,6 @@ void MozillaVPN::logout() {
 
   setAlert(LogoutAlert);
 
-  setUserAuthenticated(false);
-
   deleteTasks();
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
