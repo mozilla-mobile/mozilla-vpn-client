@@ -89,6 +89,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 // static
 NetworkRequest* NetworkRequest::createForDeviceCreation(QObject* parent,
                                                         const QString&,
+                                                        const QString&,
                                                         const QString&) {
   Q_ASSERT(parent);
 
@@ -113,14 +114,6 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r, ":/networkrequests/servers.json");
-  return r;
-}
-
-NetworkRequest* NetworkRequest::createForServerExtra(QObject* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
   return r;
 }
 
@@ -363,3 +356,7 @@ void NetworkRequest::postRequest(const QByteArray&) {}
 void NetworkRequest::handleReply(QNetworkReply*) {}
 
 int NetworkRequest::statusCode() const { return 200; }
+
+void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
+  Q_UNUSED(errors);
+}

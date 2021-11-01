@@ -7,5 +7,5 @@ import QtQuick 2.5
 Loader {
     id: loader
 
-    source: "../views/ViewUpdate.qml"
+    source: "qrc:/ui/views/ViewUpdate.qml"
 }

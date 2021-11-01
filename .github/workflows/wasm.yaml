@@ -31,12 +31,11 @@ jobs:
           python3 -m pip install aqtinstall
           python3 -m aqt install --outputdir /opt 5.15.0 linux desktop wasm_32 -m qtcharts
 
-      - name: Install glean depedencies
+      - name: Install python dependencies
         shell: bash
         run: |
-          pip3 install "glean_parser==3.5"
-          pip3 install pyyaml
-
+          pip install -r requirements.txt
+  
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v7
         with:

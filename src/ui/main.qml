@@ -5,12 +5,14 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Window 2.12
-import Mozilla.VPN 1.0
-import "./components"
-import "themes/themes.js" as Theme
 
-import org.mozilla.Glean 0.15
-import telemetry 0.15
+import Mozilla.VPN 1.0
+import compat 0.1
+import components 0.1
+import themes 0.1
+
+import org.mozilla.Glean 0.23
+import telemetry 0.23
 
 Window {
     id: window
@@ -29,6 +31,10 @@ Window {
 
     width: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
     height: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
+
+    //These need to be bound before onComplete so that the window buttons, menus and title bar double click behave properly
+    maximumWidth: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
+    maximumHeight: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
 
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
@@ -55,42 +61,12 @@ Window {
         if (VPN.startMinimized) {
             this.showMinimized();
         }
-
         if (!fullscreenRequired()) {
-            maximumHeight = Theme.desktopAppHeight
             minimumHeight = Theme.desktopAppHeight
-            maximumWidth = Theme.desktopAppWidth
             minimumWidth = Theme.desktopAppWidth
+
         }
-
-        Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported, {
-          appBuild: `MozillaVPN/${VPN.versionString}`,
-          appDisplayVersion: VPN.versionString,
-          httpClient: {
-                  post(url, body, headers) {
-                      if (typeof(VPNGleanTest) !== "undefined") {
-                          VPNGleanTest.requestDone(url, body);
-                      }
-                      if (VPN.stagingMode) {
-                          return Promise.reject('Glean disabled in staging mode');
-                      }
-
-                      return new Promise((resolve, reject) => {
-                          const xhr = new XMLHttpRequest();
-                          xhr.open("POST", url);
-
-                          for (const header in headers) {
-                            xhr.setRequestHeader(header, headers[header]);
-                          }
-                          xhr.onloadend = () => {
-                            resolve({status: xhr.status, result: 2 /* UploadResultStatus.Success */ });
-                          }
-                          xhr.send(body);
-
-                      });
-                  }
-          }
-        });
+        VPN.mainWindowLoaded()
     }
 
     MouseArea {
@@ -290,14 +266,14 @@ Window {
     Connections {
         target: VPN
         function onViewLogsNeeded() {
-            if (Qt.platform.os !== "android" &&
-                    Qt.platform.os !== "ios" &&
-                    Qt.platform.os !== "tvos" &&
-                    Qt.platform.os !== "wasm")  {
-                VPN.viewLogs();
-            } else {
-                mainStackView.push("views/ViewLogs.qml");
+            if (VPNFeatureList.get("shareLogs").isSupported)  {
+                if(VPN.viewLogs()){
+                    return;
+                };
             }
+            // If we cant show logs natively, open the viewer
+            mainStackView.push("views/ViewLogs.qml");
+            
         }
 
         function onContactUsNeeded() {
@@ -309,32 +285,56 @@ Window {
                 console.log("Unexpected android authentication view request!");
             }
 
-            mainStackView.push("../platforms/android/androidauthenticationview.qml", StackView.Immediate)
+            mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
         }
 
-        function onSendGleanPings() {
-            if (VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported) {
-                Pings.main.submit();
+        function onInitializeGlean() {
+            var debug = {};
+            if (VPN.debugMode) {
+                console.debug("Initializing glean with debug mode");
+                debug = {
+                    logPings: true,
+                    debugViewTag: "MozillaVPN"
+                };
+            }
+            var channel = VPN.stagingMode ? "staging" : "production";
+            console.debug("Initializing glean with channel set to:", channel);
+            Glean.initialize("mozillavpn", VPNSettings.gleanEnabled, {
+                appBuild: "MozillaVPN/" + VPN.versionString,
+                appDisplayVersion: VPN.versionString,
+                channel: channel,
+                debug: debug,
+                osVersion: VPN.osVersion,
+                architecture: VPN.architecture,
+            });
+            if (VPN.platform == "dummy") {
+                console.debug("Setting glean tags for automation");
+                Glean.setSourceTags(["automation"])
             }
         }
 
-        function onTriggerGleanSample(sample) {
+        function onSendGleanPings() {
+            console.debug("sending Glean pings");
+            Pings.main.submit();
+        }
+
+        function onRecordGleanEvent(sample) {
+            console.debug("recording Glean event");
             Sample[sample].record();
         }
 
         function onAboutToQuit() {
-            // We are about to quit. Let's see if we are fast enough to send
-            // the last chunck of data to the glean servers.
-            if (VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported) {
-              Pings.main.submit();
-            }
+            console.debug("about to quit, shutdown Glean");
+            // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
+            Glean.shutdown();
         }
     }
 
     Connections {
         target: VPNSettings
         function onGleanEnabledChanged() {
-            Glean.setUploadEnabled(VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported);
+            console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
+            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }
     }
 

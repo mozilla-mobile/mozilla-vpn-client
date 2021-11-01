@@ -3,12 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 CONFIG += c++1z
-
+# No QT for this project
+CONFIG -= qt
+CONFIG += console
 TEMPLATE  = app
 TARGET = mozillavpnnp
-
-# No QT for this project
-QT =
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
@@ -27,7 +26,8 @@ SOURCES += \
 HEADERS += \
         handler.h \
         logger.h \
-        vpnconnection.h
+        vpnconnection.h \
+        json.hpp
 
 linux:!android {
     target.path = /usr/lib/mozillavpn
@@ -45,9 +45,15 @@ linux:!android {
     manifestChromium.files = manifests/linux/mozillavpn.json
     INSTALLS += manifestChromium
 } else:win* {
+    CONFIG(release, debug|release) {
+        QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+    } else {
+        QMAKE_CXXFLAGS += /Z7 /ZI /Zo /FdMozillaVPN.PDB /DEBUG
+        QMAKE_LFLAGS_WINDOWS += /DEBUG
+    }
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
-
+    DEFINES += WIN32_LEAN_AND_MEAN
     # To avoid conficts between the 2 projects
     OBJECTS_DIR = .npobj
     MOC_DIR = .npmoc

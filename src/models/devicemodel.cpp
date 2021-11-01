@@ -71,8 +71,19 @@ bool sortCallback(const Device& a, const Device& b, const Keys* keys) {
 bool DeviceModel::fromJsonInternal(const Keys* keys, const QByteArray& json) {
   beginResetModel();
 
+  // Maybe we have to refresh the device list during a removal operation. If
+  // this happens, maybe we have to store some of the "incoming" devices in the
+  // list of the removed ones.
+  // This is done comparing the list of the publicKeys of the removed devices
+  // with the new ones.
+  QStringList removedPublicKeys;
+  for (const Device& removedDevice : m_removedDevices) {
+    removedPublicKeys.append(removedDevice.publicKey());
+  }
+
   m_rawJson = "";
   m_devices.clear();
+  m_removedDevices.clear();
 
   QJsonDocument doc = QJsonDocument::fromJson(json);
   if (!doc.isObject()) {
@@ -96,7 +107,12 @@ bool DeviceModel::fromJsonInternal(const Keys* keys, const QByteArray& json) {
     if (!device.fromJson(deviceValue)) {
       return false;
     }
-    m_devices.append(device);
+
+    if (removedPublicKeys.contains(device.publicKey())) {
+      m_removedDevices.append(device);
+    } else {
+      m_devices.append(device);
+    }
   }
 
   std::sort(m_devices.begin(), m_devices.end(),
@@ -150,7 +166,51 @@ QVariant DeviceModel::data(const QModelIndex& index, int role) const {
   }
 }
 
+void DeviceModel::startDeviceRemovalFromPublicKey(const QString& publicKey) {
+  for (int i = 0; i < m_devices.length(); ++i) {
+    if (m_devices.at(i).publicKey() == publicKey) {
+      // Let's remove this device in a separate list to restore it in case the
+      // removal fails or in case we have to refresh the whole model.
+      m_removedDevices.append(m_devices.at(i));
+      removeRow(i);
+      emit changed();
+      return;
+    }
+  }
+}
+
+void DeviceModel::stopDeviceRemovalFromPublicKey(const QString& publicKey,
+                                                 const Keys* keys) {
+  for (auto i = m_removedDevices.begin(); i != m_removedDevices.end(); ++i) {
+    if (i->publicKey() == publicKey) {
+      // We were not supposed to find the device in this list. If this happens
+      // is because something went wrong during the removal operation. Let's
+      // bring the device back.
+      beginResetModel();
+
+      m_devices.append(*i);
+
+      std::sort(m_devices.begin(), m_devices.end(),
+                std::bind(sortCallback, std::placeholders::_1,
+                          std::placeholders::_2, keys));
+
+      m_removedDevices.erase(i);
+
+      endResetModel();
+      emit changed();
+      break;
+    }
+  }
+}
+
 void DeviceModel::removeDeviceFromPublicKey(const QString& publicKey) {
+  for (auto i = m_removedDevices.begin(); i != m_removedDevices.end(); ++i) {
+    if (i->publicKey() == publicKey) {
+      m_removedDevices.erase(i);
+      break;
+    }
+  }
+
   for (int i = 0; i < m_devices.length(); ++i) {
     if (m_devices.at(i).publicKey() == publicKey) {
       removeRow(i);

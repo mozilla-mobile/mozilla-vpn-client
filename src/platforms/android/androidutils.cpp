@@ -10,6 +10,7 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"
+#include "jni.h"
 
 #include <QAndroidJniEnvironment>
 #include <QAndroidJniObject>
@@ -19,6 +20,7 @@
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
 #include <QtAndroid>
+#include <QAndroidIntent>
 
 namespace {
 AndroidUtils* s_instance = nullptr;
@@ -181,6 +183,12 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
   return json.object();
 }
 
+bool AndroidUtils::ShareText(const QString& text) {
+  return (bool)QAndroidJniObject::callStaticMethod<jboolean>(
+      "org/mozilla/firefox/vpn/qt/VPNUtils", "sharePlainText",
+      "(Ljava/lang/String;)Z", QAndroidJniObject::fromString(text).object());
+}
+
 QByteArray AndroidUtils::DeviceId() {
   /*
    * On Android 8.0 (API level 26) and higher versions of the platform,
@@ -198,7 +206,8 @@ QByteArray AndroidUtils::DeviceId() {
   jstring value = (jstring)string.object();
   const char* buffer = env->GetStringUTFChars(value, nullptr);
   if (!buffer) {
-    return QString("").toUtf8();
+    logger.error() << "Failed to fetch DeviceID";
+    return QByteArray();
   }
   QString res(buffer);
   logger.info() << "DeviceID: " << res;

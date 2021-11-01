@@ -156,6 +156,9 @@ SETTING_BOOL(featuresTourShown,     // getter
              false                  // remove when reset
 )
 
+// TODO - This would be better named "telemetryEnabled", but as we already
+// shipped with it called gleanEnabled it's non-trivial to change
+// the name. https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2050
 SETTING_BOOL(gleanEnabled,     // getter
              setGleanEnabled,  // setter
              hasGleanEnabled,  // has
@@ -178,14 +181,6 @@ SETTING_DATETIME(installationTime,     // getter
                  "installationTime",   // key
                  QDateTime(),          // default value
                  false                 // remove when reset
-)
-
-SETTING_BOOL(ipv6Enabled,     // getter
-             setIpv6Enabled,  // setter
-             hasIpv6Enabled,  // has
-             "ipv6Enabled",   // key
-             true,            // default value
-             false            // remove when reset
 )
 
 SETTING_STRING(languageCode,     // getter
@@ -276,14 +271,6 @@ SETTING_BYTEARRAY(servers,     // getter
                   true         // remove when reset
 )
 
-SETTING_BYTEARRAY(serverExtras,     // getter
-                  setServerExtras,  // setter
-                  hasServerExtras,  // has
-                  "serverExtras",   // key
-                  "",               // default value
-                  true              // remove when reset
-)
-
 SETTING_BOOL(serverSwitchNotification,     // getter
              setServerSwitchNotification,  // setter
              hasServerSwitchNotification,  // has
@@ -291,7 +278,6 @@ SETTING_BOOL(serverSwitchNotification,     // getter
              true,                         // default value
              false                         // remove when reset
 )
-
 SETTING_STRING(stagingServerAddress,     // getter
                setStagingServerAddress,  // setter
                hasStagingServerAddress,  // has
@@ -414,7 +400,17 @@ SETTING_STRINGLIST(vpnDisabledApps,     // getter
                    false                // remove when reset
 )
 
-#ifdef MVPN_ANDROID
+#if defined(MVPN_ADJUST)
+SETTING_BOOL(adjustActivatable,     // getter
+             setAdjustActivatable,  // setter
+             hasAdjustActivatable,  // has
+             "adjustActivatable",   // key
+             false,                 // default value
+             false                  // remove when reset
+)
+#endif
+
+#if defined(MVPN_ANDROID)
 SETTING_BOOL(nativeAndroidDataMigrated,     // getter
              setNativeAndroidDataMigrated,  // setter
              hasNativeAndroidDataMigrated,  // has
@@ -424,7 +420,7 @@ SETTING_BOOL(nativeAndroidDataMigrated,     // getter
 )
 #endif
 
-#ifdef MVPN_WINDOWS
+#if defined(MVPN_WINDOWS)
 SETTING_BOOL(nativeWindowsDataMigrated,     // getter
              setNativeWindowsDataMigrated,  // setter
              hasNativeWindowsDataMigrated,  // has
@@ -434,7 +430,7 @@ SETTING_BOOL(nativeWindowsDataMigrated,     // getter
 )
 #endif
 
-#ifdef MVPN_IOS
+#if defined(MVPN_IOS)
 SETTING_BOOL(nativeIOSDataMigrated,     // getter
              setNativeIOSDataMigrated,  // setter
              hasNativeIOSDataMigrated,  // has

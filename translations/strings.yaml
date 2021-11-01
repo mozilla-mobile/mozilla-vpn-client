@@ -103,7 +103,7 @@ splittunnel:
       - Displayed in a notification as "call to action" when apps are missing from the split-tunnel settings.
   missingAppMultiple:
     value:
-      - \%1 apps missing from list.
+      - "%1 apps missing from list."
     comment:
       - Apps listed in the split-tunnel settings. %1 is the number of missing apps
       - If necessary, this can be translated as "Apps missing from list :%1"
@@ -239,8 +239,42 @@ customDNSSettings:
 networkSettings:
   multihopTitle: Multi-hop tunnel
 
+
 captivePortalAlert:
   title: Captive portal detected!
   header: A captive portal is when the guest Wi-Fi you are using requires you to log in to get internet access. 
   action: You can turn on your VPN once you have gained internet access by logging in to the portal. 
   buttonText: Okay
+
+notifications:
+  captivePortalBlockTitle: Guest Wi-Fi portal blocked
+  captivePortalBlockMessage: The guest Wi-Fi network you’re connected to requires action. Click here to turn off VPN to see the portal.
+  captivePortalUnblockTitle: Guest Wi-Fi portal detected
+  captivePortalUnblockMessage: The guest Wi-Fi network you’re connected to may not be secure. Click here to turn on VPN to secure your device.
+  unsecuredNetworkTitle: Unsecured Wi-Fi network detected
+  unsecuredNetworkMessage:
+    value: "%1 is not secure. Click here to turn on VPN and secure your device."
+    comment: "%1 is the Wi-Fi network name"
+
+systray:
+  hide: Hide Mozilla VPN
+  show: Show Mozilla VPN
+  statusConnectedTo: "Connected to:"
+  statusConnectTo: "Connect to the last location:"
+  statusConnectingTo: "Connecting to:"
+  statusDisconnectingFrom: "Disconnecting from:"
+  # location2 to avoid conflicts with other branches
+  location2:
+    value: "%1, %2"
+    comment: Location in the systray. %1 is the country, %2 is the city.
+  disconnect: Disconnect
+  help: Help
+  preferences: Preferences…
+  quit: Quit Mozilla VPN
+
+settings:
+  preferences: Preferences
+
+aboutUs:
+  licenses: Licenses
+

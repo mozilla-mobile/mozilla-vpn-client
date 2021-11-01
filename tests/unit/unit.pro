@@ -28,9 +28,11 @@ INCLUDEPATH += \
 
 HEADERS += \
     ../../src/adjust/adjustfiltering.h \
+    ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/bigint.h \
     ../../src/bigintipv6addr.h \
     ../../src/captiveportal/captiveportal.h \
+    ../../src/collator.h \
     ../../src/command.h \
     ../../src/commandlineparser.h \
     ../../src/connectioncheck.h \
@@ -44,7 +46,6 @@ HEADERS += \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
     ../../src/ipfinder.h \
-    ../../src/l18nstringsimpl.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
@@ -55,12 +56,12 @@ HEADERS += \
     ../../src/models/feedbackcategorymodel.h \
     ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
+    ../../src/models/licensemodel.h \
     ../../src/models/server.h \
     ../../src/models/servercity.h \
     ../../src/models/servercountry.h \
     ../../src/models/servercountrymodel.h \
     ../../src/models/serverdata.h \
-    ../../src/models/serverextra.h \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
@@ -87,7 +88,6 @@ HEADERS += \
     ../../src/settingsholder.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
-    ../../src/systemtrayhandler.h \
     ../../src/task.h \
     ../../src/tasks/accountandservers/taskaccountandservers.h \
     ../../src/tasks/adddevice/taskadddevice.h \
@@ -108,6 +108,7 @@ HEADERS += \
     testlogger.h \
     testipaddress.h \
     testipfinder.h \
+    testlicense.h \
     testmodels.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
@@ -117,7 +118,9 @@ HEADERS += \
 
 SOURCES += \
     ../../src/adjust/adjustfiltering.cpp \
+    ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
+    ../../src/collator.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
     ../../src/connectioncheck.cpp \
@@ -144,12 +147,12 @@ SOURCES += \
     ../../src/models/feedbackcategorymodel.cpp \
     ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
+    ../../src/models/licensemodel.cpp \
     ../../src/models/server.cpp \
     ../../src/models/servercity.cpp \
     ../../src/models/servercountry.cpp \
     ../../src/models/servercountrymodel.cpp \
     ../../src/models/serverdata.cpp \
-    ../../src/models/serverextra.cpp \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
@@ -172,7 +175,6 @@ SOURCES += \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \
-    ../../src/systemtrayhandler.cpp \
     ../../src/tasks/accountandservers/taskaccountandservers.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/function/taskfunction.cpp \
@@ -196,6 +198,7 @@ SOURCES += \
     testlogger.cpp \
     testipaddress.cpp \
     testipfinder.cpp \
+    testlicense.cpp \
     testmodels.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \
@@ -245,6 +248,8 @@ OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
+
+RESOURCES += ../../src/ui/license.qrc
 
 coverage {
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping

@@ -5,13 +5,11 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <QHash>
 #include <QList>
 #include <QPair>
 #include <QString>
 
 class QJsonObject;
-class ServerExtra;
 
 class Server final {
  public:
@@ -20,8 +18,7 @@ class Server final {
   Server& operator=(const Server& other);
   ~Server();
 
-  [[nodiscard]] bool fromJson(const QJsonObject& obj,
-                              const QHash<QString, ServerExtra>& serverExtras);
+  [[nodiscard]] bool fromJson(const QJsonObject& obj);
 
   static const Server& weightChooser(const QList<Server>& servers);
 

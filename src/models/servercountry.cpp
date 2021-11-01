@@ -3,11 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "servercountry.h"
+#include "collator.h"
 #include "leakdetector.h"
 #include "serverdata.h"
 #include "serveri18n.h"
 
-#include <QCollator>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -32,8 +32,7 @@ ServerCountry& ServerCountry::operator=(const ServerCountry& other) {
 
 ServerCountry::~ServerCountry() { MVPN_COUNT_DTOR(ServerCountry); }
 
-bool ServerCountry::fromJson(const QJsonObject& countryObj,
-                             const QHash<QString, ServerExtra>& serverExtras) {
+bool ServerCountry::fromJson(const QJsonObject& countryObj) {
   QJsonValue countryName = countryObj.value("name");
   if (!countryName.isString()) {
     return false;
@@ -59,7 +58,7 @@ bool ServerCountry::fromJson(const QJsonObject& countryObj,
     QJsonObject cityObject = cityValue.toObject();
 
     ServerCity serverCity;
-    if (!serverCity.fromJson(cityObject, serverExtras)) {
+    if (!serverCity.fromJson(cityObject)) {
       return false;
     }
 
@@ -88,7 +87,7 @@ const QList<Server> ServerCountry::servers(const ServerData& data) const {
 namespace {
 
 bool sortCityCallback(const ServerCity& a, const ServerCity& b,
-                      const QString& countryCode, QCollator* collator) {
+                      const QString& countryCode, Collator* collator) {
   Q_ASSERT(collator);
   return collator->compare(
              ServerI18N::translateCityName(countryCode, a.name()),
@@ -98,7 +97,7 @@ bool sortCityCallback(const ServerCity& a, const ServerCity& b,
 }  // anonymous namespace
 
 void ServerCountry::sortCities() {
-  QCollator collator;
+  Collator collator;
 
   std::sort(m_cities.begin(), m_cities.end(),
             std::bind(sortCityCallback, std::placeholders::_1,

@@ -6,11 +6,10 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "features/featureunauthsupport.h"
+#include "features/featuresharelogs.h"
 
 namespace {
 bool s_initialized = false;
-bool s_contactUsExternalLink = false;
 Logger logger(LOG_MAIN, "HelpModel");
 
 struct HelpEntry {
@@ -30,16 +29,13 @@ struct HelpEntry {
 static QList<HelpEntry> s_helpEntries;
 
 void maybeInitialize() {
-  if (s_initialized && s_contactUsExternalLink ==
-                           (!MozillaVPN::instance()->userAuthenticated() &&
-                            !FeatureUnauthSupport::instance()->isSupported())) {
+  if (s_initialized) {
     return;
   }
+
   s_helpEntries.clear();
 
   s_initialized = true;
-  s_contactUsExternalLink = (!MozillaVPN::instance()->userAuthenticated() &&
-                             !FeatureUnauthSupport::instance()->isSupported());
   // Here we use the logger to force lrelease to add the help menu Ids.
 
   //% "Help center"
@@ -49,17 +45,13 @@ void maybeInitialize() {
 
   //% "Contact us"
   logger.debug() << "Adding:" << qtTrId("help.contactUs");
-  s_helpEntries.append(HelpEntry("help.contactUs", s_contactUsExternalLink,
-                                 false, MozillaVPN::LinkContact));
+  s_helpEntries.append(
+      HelpEntry("help.contactUs", false, false, MozillaVPN::LinkContact));
 
   //% "View log"
   logger.debug() << "Adding:" << qtTrId("help.viewLog");
   s_helpEntries.append(HelpEntry("help.viewLog",
-#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
-                                 false,
-#else
-                                 true,
-#endif
+                                 FeatureShareLogs::instance()->isSupported(),
                                  true, MozillaVPN::LinkContact));
 }
 

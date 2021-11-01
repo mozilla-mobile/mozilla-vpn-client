@@ -7,8 +7,8 @@ import QtQuick.Controls 2.15
 import QtWebView 1.15
 
 import Mozilla.VPN 1.0
-import "../../ui/components"
-import "../../ui/themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 Item {
     Item {

@@ -10,12 +10,14 @@
 #include "closeeventhandler.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
+#include "constants.h"
 #include "controller.h"
 #include "errorhandler.h"
 #include "models/devicemodel.h"
 #include "models/feedbackcategorymodel.h"
 #include "models/helpmodel.h"
 #include "models/keys.h"
+#include "models/licensemodel.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "models/supportcategorymodel.h"
@@ -31,6 +33,10 @@
 #include <QObject>
 #include <QStandardPaths>
 #include <QTimer>
+
+#ifdef MVPN_WINDOWS
+#  include "platforms/windows/windowscommons.h"
+#endif
 
 class QTextStream;
 class Task;
@@ -80,7 +86,6 @@ class MozillaVPN final : public QObject {
     LinkContact,
     LinkFeedback,
     LinkLeaveReview,
-    LinkLicense,
     LinkHelpSupport,
     LinkTermsOfService,
     LinkPrivacyNotice,
@@ -97,6 +102,9 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
   Q_PROPERTY(QString versionString READ versionString CONSTANT)
   Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
+  Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
+  Q_PROPERTY(QString architecture READ architecture CONSTANT)
+  Q_PROPERTY(QString platform READ platform CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
                  updateRecommendedChanged)
   Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
@@ -104,6 +112,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
   Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
+  Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
   Q_PROPERTY(QString currentView READ currentView WRITE setCurrentView NOTIFY
                  currentViewChanged)
 
@@ -113,6 +122,10 @@ class MozillaVPN final : public QObject {
 
   static MozillaVPN* instance();
 
+  // This is exactly like the ::instance() method, but it doesn't crash if the
+  // MozillaVPN is null. It should be used rarely.
+  static MozillaVPN* maybeInstance();
+
   void initialize();
 
   State state() const;
@@ -121,6 +134,7 @@ class MozillaVPN final : public QObject {
   const QString& serverPublicKey() const { return m_serverPublicKey; }
 
   bool stagingMode() const;
+  bool debugMode() const;
 
   enum AuthenticationType {
     AuthenticationInBrowser,
@@ -132,12 +146,14 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void openLink(LinkType linkType);
+  Q_INVOKABLE void openLinkUrl(const QString& linkUrl);
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
   Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
-  Q_INVOKABLE void viewLogs();
+  Q_INVOKABLE void mainWindowLoaded();
+  Q_INVOKABLE bool viewLogs();
   Q_INVOKABLE void retrieveLogs();
   Q_INVOKABLE void cleanupLogs();
   Q_INVOKABLE void storeInClipboard(const QString& text);
@@ -155,6 +171,7 @@ class MozillaVPN final : public QObject {
                                        const QString& issueText,
                                        const QString& category);
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
+  Q_INVOKABLE void hardResetAndQuit();
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
@@ -185,6 +202,7 @@ class MozillaVPN final : public QObject {
     return &m_private->m_supportCategoryModel;
   }
   Keys* keys() { return &m_private->m_keys; }
+  LicenseModel* licenseModel() { return &m_private->m_licenseModel; }
   HelpModel* helpModel() { return &m_private->m_helpModel; }
   NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
@@ -204,9 +222,9 @@ class MozillaVPN final : public QObject {
                    const QString& privateKey);
 
   void deviceRemoved(const QString& publicKey);
+  void deviceRemovalCompleted(const QString& publicKey);
 
-  void serversFetched(const QByteArray& serverData,
-                      const QByteArray& serverExtraData);
+  void serversFetched(const QByteArray& serverData);
 
   void accountChecked(const QByteArray& json);
 
@@ -227,8 +245,18 @@ class MozillaVPN final : public QObject {
   void silentSwitch();
 
   const QString versionString() const { return QString(APP_VERSION); }
-
   const QString buildNumber() const { return QString(BUILD_ID); }
+  const QString osVersion() const {
+#ifdef MVPN_WINDOWS
+    return WindowsCommons::WindowsVersion();
+#else
+    return QSysInfo::productVersion();
+#endif
+  }
+  const QString architecture() const {
+    return QSysInfo::currentCpuArchitecture();
+  }
+  const QString platform() const { return Constants::PLATFORM_NAME; }
 
   void logout();
 
@@ -246,9 +274,7 @@ class MozillaVPN final : public QObject {
 
   void setToken(const QString& token);
 
-  [[nodiscard]] bool setServerList(
-      const QByteArray& serverData,
-      const QByteArray& serverExtraData = QByteArray());
+  [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
   Q_INVOKABLE void reset(bool forceInitialState);
 
@@ -274,6 +300,8 @@ class MozillaVPN final : public QObject {
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);
   }
+
+  void hardReset();
 
  private:
   void setState(State state);
@@ -345,8 +373,9 @@ class MozillaVPN final : public QObject {
   void updatingChanged();
 
   // For Glean
+  void initializeGlean();
   void sendGleanPings();
-  void triggerGleanSample(const QString& gleanSampleName);
+  void recordGleanEvent(const QString& gleanSampleName);
 
   void aboutToQuit();
 
@@ -375,6 +404,7 @@ class MozillaVPN final : public QObject {
     FeedbackCategoryModel m_feedbackCategoryModel;
     SupportCategoryModel m_supportCategoryModel;
     Keys m_keys;
+    LicenseModel m_licenseModel;
     HelpModel m_helpModel;
     NetworkWatcher m_networkWatcher;
     ReleaseMonitor m_releaseMonitor;

@@ -58,7 +58,10 @@ IOSNotificationHandler::IOSNotificationHandler(QObject* parent) : NotificationHa
 
 IOSNotificationHandler::~IOSNotificationHandler() { MVPN_COUNT_DTOR(IOSNotificationHandler); }
 
-void IOSNotificationHandler::notify(const QString& title, const QString& message, int timerSec) {
+void IOSNotificationHandler::notify(NotificationHandler::Message type, const QString& title,
+                                    const QString& message, int timerMsec) {
+  Q_UNUSED(type);
+
   if (!m_delegate) {
     return;
   }
@@ -68,6 +71,7 @@ void IOSNotificationHandler::notify(const QString& title, const QString& message
   content.body = message.toNSString();
   content.sound = [UNNotificationSound defaultSound];
 
+  int timerSec = timerMsec / 1000;
   UNTimeIntervalNotificationTrigger* trigger =
       [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:timerSec repeats:NO];
 

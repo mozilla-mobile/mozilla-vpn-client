@@ -10,6 +10,7 @@
 #include "features/featureinapppurchase.h"
 #include "features/featureinappauth.h"
 #include "features/featureinappaccountcreate.h"
+#include "features/featuresharelogs.h"
 #include "gleansample.h"
 #include "iaphandler.h"
 #include "leakdetector.h"
@@ -53,6 +54,7 @@
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androiddatamigration.h"
 #  include "platforms/android/androidvpnactivity.h"
+#  include "platforms/android/androidutils.h"
 #endif
 
 #ifdef MVPN_ADJUST
@@ -83,6 +85,9 @@ MozillaVPN* MozillaVPN::instance() {
   Q_ASSERT(s_instance);
   return s_instance;
 }
+
+// static
+MozillaVPN* MozillaVPN::maybeInstance() { return s_instance; }
 
 MozillaVPN::MozillaVPN() : m_private(new Private()) {
   MVPN_COUNT_CTOR(MozillaVPN);
@@ -173,10 +178,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     connect(iap, &IAPHandler::subscriptionNotValidated, this,
             &MozillaVPN::subscriptionNotValidated);
   }
-
-  connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
-  m_gleanTimer.start(Constants::gleanTimeoutMsec());
-  m_gleanTimer.setSingleShot(false);
 }
 
 MozillaVPN::~MozillaVPN() {
@@ -193,6 +194,14 @@ MozillaVPN::~MozillaVPN() {
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
 bool MozillaVPN::stagingMode() const { return !Constants::inProduction(); }
+
+bool MozillaVPN::debugMode() const {
+#ifdef MVPN_DEBUG
+  return true;
+#else
+  return false;
+#endif
+}
 
 void MozillaVPN::initialize() {
   logger.debug() << "MozillaVPN Initialization";
@@ -246,6 +255,20 @@ void MozillaVPN::initialize() {
     return;
   }
 
+  // This step is done to keep users logged in even if they did not complete the
+  // subscription. This will fix some of the edge cases for iOS IAP. We do this
+  // here as after this point only settings are checked that are set after a
+  // successfull subscription.
+  if (FeatureInAppPurchase::instance()->isSupported()) {
+    if (m_private->m_user.subscriptionNeeded()) {
+      setUserAuthenticated(true);
+      setState(StateAuthenticating);
+      scheduleTask(new TaskProducts());
+      scheduleTask(new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
+      return;
+    }
+  }
+
   if (!m_private->m_keys.fromSettings()) {
     logger.error() << "No keys found";
     settingsHolder->clear();
@@ -294,6 +317,8 @@ void MozillaVPN::initialize() {
   scheduleTask(new TaskAccountAndServers());
 
   scheduleTask(new TaskCaptivePortalLookup());
+
+  scheduleTask(new TaskSurveyData());
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
     scheduleTask(new TaskProducts());
@@ -351,7 +376,7 @@ void MozillaVPN::maybeStateMain() {
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
     Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
              m_private->m_user.maxDevices());
-    emit triggerGleanSample(GleanSample::maxDeviceReached);
+    emit recordGleanEvent(GleanSample::maxDeviceReached);
     setState(StateDeviceLimit);
     return;
   }
@@ -363,6 +388,16 @@ void MozillaVPN::maybeStateMain() {
   if (m_state != StateUpdateRequired) {
     setState(StateMain);
   }
+
+#ifdef MVPN_ADJUST
+  // When the client is ready to be activated, we do not need adjustSDK anymore
+  // (the subscription is done, and no extra events will be dispatched). We
+  // cannot disable AdjustSDK at runtime, but we can disable it for the next
+  // execution.
+  if (settingsHolder->hasAdjustActivatable()) {
+    settingsHolder->setAdjustActivatable(false);
+  }
+#endif
 }
 
 void MozillaVPN::setServerPublicKey(const QString& publicKey) {
@@ -372,14 +407,6 @@ void MozillaVPN::setServerPublicKey(const QString& publicKey) {
 
 void MozillaVPN::getStarted() {
   logger.debug() << "Get started";
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-
-  if (!settingsHolder->telemetryPolicyShown()) {
-    setState(StateTelemetryPolicy);
-    return;
-  }
-
   authenticate();
 }
 
@@ -409,7 +436,7 @@ void MozillaVPN::authenticateWithType(
     return;
   }
 
-  emit triggerGleanSample(GleanSample::authenticationStarted);
+  emit recordGleanEvent(GleanSample::authenticationStarted);
 
   scheduleTask(new TaskHeartbeat());
 
@@ -421,7 +448,7 @@ void MozillaVPN::abortAuthentication() {
   Q_ASSERT(m_state == StateAuthenticating);
   setState(StateInitialize);
 
-  emit triggerGleanSample(GleanSample::authenticationAborted);
+  emit recordGleanEvent(GleanSample::authenticationAborted);
 }
 
 void MozillaVPN::openLink(LinkType linkType) {
@@ -463,12 +490,6 @@ void MozillaVPN::openLink(LinkType linkType) {
 #else
           "";
 #endif
-      break;
-
-    case LinkLicense:
-      url =
-          "https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/"
-          "LICENSE.md";
       break;
 
     case LinkTermsOfService:
@@ -517,6 +538,11 @@ void MozillaVPN::openLink(LinkType linkType) {
   UrlOpener::open(url, addEmailAddress);
 }
 
+void MozillaVPN::openLinkUrl(const QString& linkUrl) {
+  logger.debug() << "Opening link: " << linkUrl;
+  UrlOpener::open(linkUrl);
+}
+
 void MozillaVPN::scheduleTask(Task* task) {
   Q_ASSERT(task);
   logger.debug() << "Scheduling task: " << task->name();
@@ -560,7 +586,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
                                          const QString& token) {
   logger.debug() << "Authentication completed";
 
-  emit triggerGleanSample(GleanSample::authenticationCompleted);
+  emit recordGleanEvent(GleanSample::authenticationCompleted);
 
   if (!m_private->m_user.fromJson(json)) {
     logger.error() << "Failed to parse the User JSON data";
@@ -638,6 +664,7 @@ void MozillaVPN::completeActivation() {
   if (FeatureInAppPurchase::instance()->isSupported()) {
     scheduleTask(new TaskProducts());
   }
+  scheduleTask(new TaskSurveyData());
 
   // Finally we are able to activate the client.
   scheduleTask(new TaskFunction([this](MozillaVPN*) {
@@ -676,23 +703,20 @@ void MozillaVPN::deviceRemoved(const QString& publicKey) {
   m_private->m_deviceModel.removeDeviceFromPublicKey(publicKey);
 }
 
-bool MozillaVPN::setServerList(const QByteArray& serverData,
-                               const QByteArray& serverExtraData) {
-  if (!m_private->m_serverCountryModel.fromJson(serverData, serverExtraData)) {
+bool MozillaVPN::setServerList(const QByteArray& serverData) {
+  if (!m_private->m_serverCountryModel.fromJson(serverData)) {
     logger.error() << "Failed to store the server-countries";
     return false;
   }
 
   SettingsHolder::instance()->setServers(serverData);
-  SettingsHolder::instance()->setServerExtras(serverExtraData);
   return true;
 }
 
-void MozillaVPN::serversFetched(const QByteArray& serverData,
-                                const QByteArray& serverExtraData) {
+void MozillaVPN::serversFetched(const QByteArray& serverData) {
   logger.debug() << "Server fetched!";
 
-  if (!setServerList(serverData, serverExtraData)) {
+  if (!setServerList(serverData)) {
     // This is OK. The check is done elsewhere.
     return;
   }
@@ -706,6 +730,11 @@ void MozillaVPN::serversFetched(const QByteArray& serverData,
   }
 }
 
+void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
+  logger.debug() << "Device removal task completed";
+  m_private->m_deviceModel.stopDeviceRemovalFromPublicKey(publicKey, keys());
+}
+
 void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   logger.debug() << "Remove device";
 
@@ -715,6 +744,12 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
     // Let's inform the UI about what is going to happen.
     emit deviceRemoving(publicKey);
     scheduleTask(new TaskRemoveDevice(publicKey));
+
+    if (m_state != StateDeviceLimit) {
+      // To have a faster UI, we inform the device-model that this public key
+      // is going to be removed.
+      m_private->m_deviceModel.startDeviceRemovalFromPublicKey(publicKey);
+    }
   }
 
   if (m_state != StateDeviceLimit) {
@@ -844,7 +879,7 @@ void MozillaVPN::cancelAuthentication() {
     return;
   }
 
-  emit triggerGleanSample(GleanSample::authenticationAborted);
+  emit recordGleanEvent(GleanSample::authenticationAborted);
 
   reset(true);
 }
@@ -986,9 +1021,9 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
   // Any error in authenticating state sends to the Initial state.
   if (m_state == StateAuthenticating) {
     if (alert == GeoIpRestrictionAlert) {
-      emit triggerGleanSample(GleanSample::authenticationFailureByGeo);
+      emit recordGleanEvent(GleanSample::authenticationFailureByGeo);
     } else {
-      emit triggerGleanSample(GleanSample::authenticationFailure);
+      emit recordGleanEvent(GleanSample::authenticationFailure);
     }
     setState(StateInitialize);
     return;
@@ -1056,6 +1091,21 @@ void MozillaVPN::postAuthenticationCompleted() {
   maybeStateMain();
 }
 
+void MozillaVPN::mainWindowLoaded() {
+  logger.debug() << "main window loaded";
+
+#ifndef MVPN_WASM
+  // Initialize glean
+  logger.debug() << "Initializing Glean";
+  emit initializeGlean();
+
+  // Setup regular glean ping sending
+  connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
+  m_gleanTimer.start(Constants::gleanTimeoutMsec());
+  m_gleanTimer.setSingleShot(false);
+#endif
+}
+
 void MozillaVPN::telemetryPolicyCompleted() {
   logger.debug() << "telemetry policy completed";
 
@@ -1083,8 +1133,10 @@ void MozillaVPN::setUpdateRecommended(bool value) {
 
 void MozillaVPN::setUserAuthenticated(bool state) {
   logger.debug() << "User authentication state:" << state;
-  m_userAuthenticated = state;
-  emit userAuthenticationChanged();
+  if (m_userAuthenticated != state) {
+    m_userAuthenticated = state;
+    emit userAuthenticationChanged();
+  }
 }
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
@@ -1202,23 +1254,49 @@ void MozillaVPN::serializeLogs(QTextStream* out,
       });
 }
 
-void MozillaVPN::viewLogs() {
+bool MozillaVPN::viewLogs() {
   logger.debug() << "View logs";
 
+  if (!FeatureShareLogs::instance()->isSupported()) {
+    logger.error() << "ViewLogs Called on unsupported OS or version!";
+    return false;
+  }
+
+#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
+  QString* buffer = new QString();
+  QTextStream* out = new QTextStream(buffer);
+  bool ok = true;
+  serializeLogs(out, [buffer, out, &ok]() {
+    Q_ASSERT(out);
+    Q_ASSERT(buffer);
+
+#  if defined(MVPN_ANDROID)
+    ok = AndroidUtils::ShareText(*buffer);
+#  else
+    IOSUtils::shareLogs(*buffer);
+#  endif
+
+    delete out;
+    delete buffer;
+  });
+  return ok;
+#endif
+
   if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {
-    return;
+    return true;
   }
 
   if (writeAndShowLogs(QStandardPaths::HomeLocation)) {
-    return;
+    return true;
   }
 
   if (writeAndShowLogs(QStandardPaths::TempLocation)) {
-    return;
+    return true;
   }
 
   qWarning()
       << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
+  return false;
 }
 
 void MozillaVPN::retrieveLogs() {
@@ -1366,6 +1444,10 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 }
 
 void MozillaVPN::subscriptionCompleted() {
+#ifdef MVPN_ANDROID
+  // This is Android only
+  // iOS can end up here if the subsciption get finished outside of the IAP
+  // process
   if (m_state != StateSubscriptionInProgress) {
     // We could hit this in android flow if we're doing a late acknowledgement.
     // And ignoring is fine.
@@ -1373,11 +1455,14 @@ void MozillaVPN::subscriptionCompleted() {
         << "Random subscription completion received. Let's ignore it.";
     return;
   }
+#endif
 
   logger.debug() << "Subscription completed";
+
 #ifdef MVPN_ADJUST
   AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
+
   completeActivation();
 }
 
@@ -1515,7 +1600,8 @@ void MozillaVPN::heartbeatCompleted(bool success) {
 void MozillaVPN::triggerHeartbeat() { scheduleTask(new TaskHeartbeat()); }
 
 void MozillaVPN::addCurrentDeviceAndRefreshData() {
-  scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
+  scheduleTask(
+      new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
   scheduleTask(new TaskAccountAndServers());
 }
 
@@ -1551,4 +1637,16 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   // We do not need to remove the current device! guardian-website "overwrites"
   // the current device key when we submit a new one.
   addCurrentDeviceAndRefreshData();
+}
+
+void MozillaVPN::hardReset() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+  settingsHolder->hardReset();
+}
+
+void MozillaVPN::hardResetAndQuit() {
+  logger.debug() << "Hard reset and quit";
+  hardReset();
+  quit();
 }

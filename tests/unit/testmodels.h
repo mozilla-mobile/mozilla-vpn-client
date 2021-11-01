@@ -16,6 +16,7 @@ class TestModels final : public TestHelper {
   void deviceModelBasic();
   void deviceModelFromJson_data();
   void deviceModelFromJson();
+  void deviceModelRemoval();
 
   void feedbackCategoryBasic();
 
@@ -38,14 +39,8 @@ class TestModels final : public TestHelper {
   void serverCountryModelFromJson_data();
   void serverCountryModelFromJson();
   void serverCountryModelPick();
-  void serverCountryModelExtra_data();
-  void serverCountryModelExtra();
 
   void serverDataBasic();
-
-  void serverExtraBasic();
-  void serverExtraFromJson_data();
-  void serverExtraFromJson();
 
   void userBasic();
   void userFromJson_data();

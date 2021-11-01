@@ -4,9 +4,10 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
-import QtGraphicalEffects 1.14
 
-import "../themes/themes.js" as Theme
+import compat 0.1
+import themes 0.1
+
 Item {
     property alias logo: logo.source
     property alias logoTitle: logoTitle.text
@@ -56,7 +57,7 @@ Item {
                     visible: false
                 }
 
-                layer.effect: OpacityMask {
+                layer.effect: VPNOpacityMask {
                     maskSource: maskImage ? mask : undefined
                 }
             }

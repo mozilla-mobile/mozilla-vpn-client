@@ -28,8 +28,7 @@ ServerCity& ServerCity::operator=(const ServerCity& other) {
 
 ServerCity::~ServerCity() { MVPN_COUNT_DTOR(ServerCity); }
 
-bool ServerCity::fromJson(const QJsonObject& obj,
-                          const QHash<QString, ServerExtra>& serverExtras) {
+bool ServerCity::fromJson(const QJsonObject& obj) {
   QJsonValue name = obj.value("name");
   if (!name.isString()) {
     return false;
@@ -55,7 +54,7 @@ bool ServerCity::fromJson(const QJsonObject& obj,
     QJsonObject serverObj = serverValue.toObject();
 
     Server server;
-    if (!server.fromJson(serverObj, serverExtras)) {
+    if (!server.fromJson(serverObj)) {
       return false;
     }
 

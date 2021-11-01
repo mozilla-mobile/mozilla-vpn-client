@@ -9,7 +9,10 @@
 static MozillaVPN* s_instance = nullptr;
 
 // static
-MozillaVPN* MozillaVPN::instance() {
+MozillaVPN* MozillaVPN::instance() { return maybeInstance(); }
+
+// static
+MozillaVPN* MozillaVPN::maybeInstance() {
   if (!s_instance) {
     s_instance = new MozillaVPN();
   }
@@ -23,6 +26,7 @@ MozillaVPN::~MozillaVPN() {}
 
 MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
 bool MozillaVPN::stagingMode() const { return true; }
+bool MozillaVPN::debugMode() const { return true; }
 
 void MozillaVPN::initialize() {}
 
@@ -34,6 +38,7 @@ void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(MozillaVPN::AuthenticationType) {}
 
 void MozillaVPN::openLink(LinkType) {}
+void MozillaVPN::openLinkUrl(const QString&) {}
 
 void MozillaVPN::scheduleTask(Task* task) {
   connect(task, &Task::completed, task, &Task::deleteLater);
@@ -52,11 +57,9 @@ void MozillaVPN::deviceAdded(const QString&, const QString&, const QString&) {}
 
 void MozillaVPN::deviceRemoved(const QString&) {}
 
-bool MozillaVPN::setServerList(const QByteArray&, const QByteArray&) {
-  return true;
-}
+void MozillaVPN::deviceRemovalCompleted(const QString&) {}
 
-void MozillaVPN::serversFetched(const QByteArray&, const QByteArray&) {}
+void MozillaVPN::serversFetched(const QByteArray&) {}
 
 void MozillaVPN::removeDeviceFromPublicKey(const QString&) {}
 
@@ -79,6 +82,8 @@ void MozillaVPN::changeServer(const QString&, const QString&, const QString&,
 
 void MozillaVPN::postAuthenticationCompleted() {}
 
+void MozillaVPN::mainWindowLoaded() {}
+
 void MozillaVPN::telemetryPolicyCompleted() {}
 
 void MozillaVPN::setUpdateRecommended(bool) {}
@@ -98,7 +103,7 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation,
   return true;
 }
 
-void MozillaVPN::viewLogs() {}
+bool MozillaVPN::viewLogs() { return true; }
 
 bool MozillaVPN::modelsInitialized() const { return true; }
 
@@ -156,3 +161,7 @@ bool MozillaVPN::validateUserDNS(const QString&) const { return false; }
 void MozillaVPN::reset(bool) {}
 
 void MozillaVPN::maybeRegenerateDeviceKey() {}
+
+void MozillaVPN::hardResetAndQuit() {}
+
+void MozillaVPN::hardReset() {}
