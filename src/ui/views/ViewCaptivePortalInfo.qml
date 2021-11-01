@@ -6,8 +6,8 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
-import "../components"
-import "../themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 VPNFlickable {
     id: vpnFlickable
@@ -17,47 +17,42 @@ VPNFlickable {
 
     Item {
         id: spacer1
-
         height: Math.max(Theme.windowMargin * 2, ( window.safeContentHeight - flickContentHeight ) / 2)
         width: vpnFlickable.width
     }
 
     VPNPanel {
         id: vpnPanel
-
         property var childRectHeight: vpnPanel.childrenRect.height
 
         anchors.top: spacer1.bottom
         anchors.topMargin: 80
         width: Math.min(vpnFlickable.width - Theme.windowMargin * 2, Theme.maxHorizontalContentWidth)
         logoSize: 80
-
         logoTitle: VPNl18n.CaptivePortalAlertTitle
-
         logoSubtitle: VPNl18n.CaptivePortalAlertHeader
-        logo: "../resources/globe-warning.svg"
+        logo: "qrc:/ui/resources/globe-warning.svg"
     }
 
     Item {
         id: spacer2
-
         anchors.top: vpnPanel.bottom
-        height: Math.max(Theme.windowMargin * 2, (window.safeContentHeight -flickContentHeight ) / 2)
+        height: Math.max(Theme.windowMargin * 2, (window.safeContentHeight - flickContentHeight ) / 2)
         width: vpnFlickable.width
     }
 
     VPNSubtitle {
-            id: subTextBlock
-            anchors.top: spacer2.bottom
-            anchors.topMargin: Theme.windowMargin
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: Math.min(vpnFlickable.width - (Theme.windowMargin * 4), Theme.maxHorizontalContentWidth)
-            font.family: Theme.fontBoldFamily
-            font.pixelSize: Theme.fontSizeSmall
-            color: Theme.fontColor
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignHCenter
-            text: VPNl18n.CaptivePortalAlertAction
+        id: subTextBlock
+        anchors.top: spacer2.bottom
+        anchors.topMargin: Theme.windowMargin
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: Math.min(vpnFlickable.width - (Theme.windowMargin * 4), Theme.maxHorizontalContentWidth)
+        font.family: Theme.fontBoldFamily
+        font.pixelSize: Theme.fontSizeSmall
+        color: Theme.fontColor
+        Layout.fillWidth: true
+        Layout.alignment: Qt.AlignHCenter
+        text: VPNl18n.CaptivePortalAlertAction
     }
 
 
@@ -70,10 +65,9 @@ VPNFlickable {
         width: Math.min(parent.width, Theme.maxHorizontalContentWidth)
         spacing: Theme.windowMargin * 1.25
 
-        Rectangle {
+        Item {
             Layout.fillWidth: true
             Layout.preferredHeight: Theme.windowMargin / 2
-            color: "transparent"
         }
 
         VPNButton {
@@ -82,16 +76,13 @@ VPNFlickable {
             radius: 4
             onClicked: {
                 VPN.openLink(VPN.LinkCaptivePortal);
-                stackview.pop()
+                stackview.pop();
             }
         }
 
-        Rectangle {
+        Item {
             Layout.fillWidth: true
             Layout.preferredHeight: Theme.windowMargin * 2
-            color: "transparent"
         }
-
     }
-
 }

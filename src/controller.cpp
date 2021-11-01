@@ -175,6 +175,7 @@ bool Controller::activate() {
   if (m_state == StateOff) {
     if(m_portalDetected){
       emit activationBlockedForCaptivePortal();
+      m_portalDetected=false;
       return true;
     }
   }

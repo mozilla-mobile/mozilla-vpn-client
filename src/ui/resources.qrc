@@ -330,6 +330,7 @@
         <file>resources/copy.svg</file>
         <file>resources/settings/lock.svg</file>
         <file>resources/globe.svg</file>
+        <file>resources/globe-warning.svg</file>
         <file>resources/heart-check.svg</file>
         <file>resources/app-rating.svg</file>
         <file>resources/faces/average.svg</file>
