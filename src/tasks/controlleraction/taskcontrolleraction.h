@@ -33,6 +33,7 @@ class TaskControllerAction final : public Task {
   void stateChanged();
   void silentSwitchDone();
   void checkStatus();
+
  private:
   const TaskAction m_action;
   Controller::State m_lastState;
