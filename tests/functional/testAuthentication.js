@@ -72,13 +72,17 @@ describe('User authentication', function() {
   });
 
   it('Completes authentication', async () => {
-    await vpn.authenticate();
+    await vpn.authenticate(true, true);
   });
 
-  if ('Logout again', async () => {
-        await vpn.logout();
-      })
-    ;
+  it('Logout again', async () => {
+    await vpn.waitForElement('settingsButton');
+    await vpn.clickOnElement('settingsButton');
+
+    await vpn.waitForElement('settingsLogout');
+    await vpn.clickOnElement('settingsLogout');
+    await vpn.waitForMainView();
+  });
 
   it('Login again', async () => {
     await vpn.authenticate();
