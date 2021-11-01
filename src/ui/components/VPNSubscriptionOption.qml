@@ -12,28 +12,18 @@ import compat 0.1
 import themes 0.1
 
 RadioDelegate {
+    id: radioDelegate
+
     // used by the `Subscribe Now` to pass productIdentifier to VPNIAP.subscribe()
     property var productId: productIdentifier
 
-    id: radioDelegate
+    activeFocusOnTab: true
+    checked: productFeatured
+    ButtonGroup.group: subscriptionOptions
+
     Layout.fillWidth: true
     Layout.minimumHeight: 68
-    Layout.preferredHeight: implicitContentHeight
-    checked: productFeatured
-
-    ButtonGroup.group: subscriptionOptions
-    activeFocusOnTab: true
-    onFocusChanged: {
-        if (focus) {
-            vpnFlickable.ensureVisible(radioDelegate)
-        }
-    }
-
-    onPressed: {
-        if (checked) {
-           return  VPNIAP.subscribe(subscriptionOptions.checkedButton.productId)
-        }
-    }
+    Layout.preferredHeight: row.implicitHeight + Theme.windowMargin * 2
 
     background: Rectangle {
         id: bg
@@ -42,8 +32,8 @@ RadioDelegate {
 
         VPNRectangularGlow {
             anchors.fill: bg
-            glowRadius: checked ? 8 : 1
-            spread: checked ? 0.1 : 0
+            glowRadius: radioDelegate.checked ? 8 : 1
+            spread: radioDelegate.checked ? 0.1 : 0
             color: "#4D0C0C0D"
             cornerRadius: rect.radius + glowRadius
         }
@@ -56,28 +46,31 @@ RadioDelegate {
             clip: true
         }
     }
-
     indicator: Item {
         anchors.fill: parent
         activeFocusOnTab: false
 
-        // Purple left-hand indicator bar
-        // visible when product is selected
+        // Purple left-hand indicator bar visible
+        // when product is selected
         Rectangle {
+            anchors {
+                bottom: parent.bottom
+                left: parent.left
+                top: parent.top
+            }
+            color: radioDelegate.checked ? Theme.purple60 : Theme.white
+            opacity: radioDelegate.checked ? 1 : 0
             radius: Theme.cornerRadius
-            opacity: checked ? 1 : 0
-            color: checked ? Theme.purple60 : Theme.white
             width: Theme.windowMargin
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
 
             Rectangle {
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                width: 4
+                anchors {
+                    bottom: parent.bottom
+                    right: parent.right
+                    top: parent.top
+                }
                 color: Theme.white
+                width: Theme.listSpacing * 0.5
             }
 
             Behavior on color {
@@ -90,9 +83,9 @@ RadioDelegate {
         // Purple border when product is selected or focused
         Rectangle {
             anchors.fill: parent
-            radius: Theme.cornerRadius
-            border.color: checked || radioDelegate.focus ? Theme.purple60 : Theme.white
+            border.color: (radioDelegate.checked || radioDelegate.focus) ? Theme.purple60 : Theme.white
             color: "transparent"
+            radius: Theme.cornerRadius
 
             Behavior on border.color {
                 ColorAnimation {
@@ -101,29 +94,30 @@ RadioDelegate {
             }
         }
     }
+    onFocusChanged: {
+        if (focus) {
+            vpnFlickable.ensureVisible(radioDelegate);
+        }
+    }
+    onPressed: {
+        if (radioDelegate.checked) {
+            return VPNIAP.subscribe(subscriptionOptions.checkedButton.productId);
+        }
+    }
 
     RowLayout {
-        anchors.fill: parent
-        anchors.margins: 12
-        anchors.leftMargin: 24
-        anchors.rightMargin: 24
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.bottomMargin: 12
+        id: row
+
+        anchors {
+            fill: parent
+            leftMargin: Theme.windowMargin * 1.5
+            rightMargin: Theme.windowMargin
+            verticalCenter: parent.verticalCenter
+        }
+        spacing: Theme.listSpacing
 
         ColumnLayout {
             id: col
-                function getSubscriptionDuration(product) {
-                    switch (product) {
-                    case VPNIAP.ProductMonthly:
-                        return 1;
-                    case VPNIAP.ProductHalfYearly:
-                        return 6;
-                    case VPNIAP.ProductYearly:
-                        return 12;
-                    default:
-                        return 0;
-                    }
-                }
 
             // TODO (maybe) - Do we want to add the subscription duration in months to the model?
             property var subscriptionDuration: getSubscriptionDuration(productType)
@@ -133,51 +127,70 @@ RadioDelegate {
 
             //: %1 is replaced by the subscription duration in months. %2 is replaced by the total subscription cost.
             //% "%1-month plan: %2"
-            property string productMultiMonth: qsTrId("vpn.subscription.multiMonthPlan").arg(subscriptionDuration).arg(productPrice)
+            property string productMultiMonth: qsTrId("vpn.subscription.multiMonthPlan").arg(col.subscriptionDuration).arg(productPrice)
 
             //: “/month” stands for “per month”. %1 is replaced by the monthly cost (including currency).
             //% "%1/month"
             property string monthlyPrice: qsTrId("vpn.subscription.price").arg(productMonthlyPrice)
 
-            spacing: 0
+            spacing: Theme.listSpacing * 0.5
 
             VPNBoldLabel {
-                text: col.subscriptionDuration > 1 ? col.productMultiMonth : col.monthlyPrice
-                lineHeightMode: Text.FixedHeight
+                font.pixelSize: Theme.fontSize * 1.1
                 lineHeight: Theme.labelLineHeight
+                lineHeightMode: Text.FixedHeight
+                text: col.subscriptionDuration > 1 ? col.productMultiMonth : col.monthlyPrice
                 verticalAlignment: Text.AlignTop
+                wrapMode: Text.WordWrap
+
+                Layout.fillWidth: true
             }
 
             VPNLightLabel {
-                text: col.subscriptionDuration > 0 ? (col.subscriptionDuration> 1 ? col.monthlyPrice : col.productSingleMonth) : ""
-                Layout.fillWidth: true
+                font.pixelSize: Theme.fontSize
+                text: col.subscriptionDuration !== -1 ? (col.subscriptionDuration > 1 ? col.monthlyPrice : col.productSingleMonth) : ""
                 wrapMode: Text.WordWrap
+
+                Layout.fillWidth: true
+            }
+
+            function getSubscriptionDuration(product) {
+                switch (product) {
+                    case VPNIAP.ProductMonthly:
+                        return 1;
+                    case VPNIAP.ProductHalfYearly:
+                        return 6;
+                    case VPNIAP.ProductYearly:
+                        return 12;
+                    default:
+                        return -1;
+                }
             }
         }
 
         ColumnLayout {
-            Layout.fillWidth: true
-        }
-
-        ColumnLayout {
+            spacing: 0
 
             Layout.alignment: Qt.AlignTop
-            spacing: 0
+            Layout.fillWidth: true
+            Layout.topMargin: Theme.windowMargin
 
             VPNInterLabel {
                 //: Appears on the in-app purchase view beside a subscription plan. "%1" is replaced by the percentage amount saved when selecting that plan.
                 //% "Save %1%"
                 text: qsTrId("vpn.subscription.savePercent").arg(productSavings)
 
-                visible: productSavings > 0
                 color: Theme.purple60
                 font.family: Theme.fontBoldFamily
                 horizontalAlignment: Qt.AlignRight
-                verticalAlignment: Text.AlignVCenter
-                Layout.fillWidth: true
-                wrapMode: Text.WordWrap
+                lineHeight: Theme.labelLineHeight * 0.9
                 lineHeightMode: Text.FixedHeight
-                lineHeight: Theme.labelLineHeight
+                verticalAlignment: Text.AlignVCenter
+                visible: productSavings > 0
+                wrapMode: Text.WordWrap
+
+                Layout.minimumWidth: row.width * 0.3
+                Layout.fillWidth: true
             }
         }
     }

@@ -91,8 +91,6 @@ Item {
                     imageRightSrc: "qrc:/ui/resources/chevron.svg"
                     onClicked: settingsStackView.push("qrc:/ui/settings/ViewAdvancedDNSSettings.qml")
                     visible: VPNFeatureList.get("customDNS").isSupported
-                    enabled: vpnFlickable.vpnIsOff
-                    opacity: enabled ? 1 : .5
                 }
 
                 VPNSettingsItem {
@@ -105,8 +103,6 @@ Item {
                     imageRightSrc: "qrc:/ui/resources/chevron.svg"
                     onClicked: settingsStackView.push("qrc:/ui/settings/ViewAppPermissions.qml")
                     visible: VPNFeatureList.get("splitTunnel").isSupported
-                    enabled: vpnFlickable.vpnIsOff
-                    opacity: enabled ? 1 : .5
                 }
             }
         }

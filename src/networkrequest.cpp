@@ -5,6 +5,7 @@
 #include "networkrequest.h"
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
+#include "features/featureuniqueid.h"
 #include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -193,7 +194,10 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
 
   QJsonObject obj;
   obj.insert("name", deviceName);
-  obj.insert("unique_id", deviceId);
+
+  if (!FeatureUniqueID::instance()->isSupported()) {
+    obj.insert("unique_id", deviceId);
+  }
   obj.insert("pubkey", pubKey);
 
   QJsonDocument json;
@@ -234,15 +238,6 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   url.setPath("/api/v1/vpn/servers");
   r->m_request.setUrl(url);
 
-  r->getRequest();
-  return r;
-}
-
-NetworkRequest* NetworkRequest::createForServerExtra(QObject* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, true);
-  r->m_request.setUrl(QUrl(Constants::MULLVAD_EXTRA_SERVER_URL));
   r->getRequest();
   return r;
 }

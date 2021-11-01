@@ -119,7 +119,6 @@ SOURCES += \
         models/servercountry.cpp \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
-        models/serverextra.cpp \
         models/supportcategorymodel.cpp \
         models/survey.cpp \
         models/surveymodel.cpp \
@@ -219,6 +218,7 @@ HEADERS += \
         features/featuresharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
+        features/featureuniqueid.h \
         features/featureunsecurednetworknotification.h \
         filterproxymodel.h \
         fontloader.h \
@@ -249,7 +249,6 @@ HEADERS += \
         models/servercountry.h \
         models/servercountrymodel.h \
         models/serverdata.h \
-        models/serverextra.h \
         models/supportcategorymodel.h \
         models/survey.h \
         models/surveymodel.h \

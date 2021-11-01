@@ -4,7 +4,6 @@
 
 #include "server.h"
 #include "leakdetector.h"
-#include "serverextra.h"
 
 #include <QJsonArray>
 #include <QJsonObject>
@@ -37,8 +36,7 @@ Server& Server::operator=(const Server& other) {
 
 Server::~Server() { MVPN_COUNT_DTOR(Server); }
 
-bool Server::fromJson(const QJsonObject& obj,
-                      const QHash<QString, ServerExtra>& serverExtras) {
+bool Server::fromJson(const QJsonObject& obj) {
   // Reset.
   m_hostname = "";
 
@@ -80,6 +78,16 @@ bool Server::fromJson(const QJsonObject& obj,
     return false;
   }
 
+  QJsonValue socks5_name = obj.value("socks5_name");
+  if (!socks5_name.isString()) {
+    return false;
+  }
+
+  QJsonValue multihop_port = obj.value("multihop_port");
+  if (!multihop_port.isDouble()) {
+    return false;
+  }
+
   QList<QPair<uint32_t, uint32_t>> prList;
   QJsonArray portRangesArray = portRanges.toArray();
   for (QJsonValue portRangeValue : portRangesArray) {
@@ -113,10 +121,8 @@ bool Server::fromJson(const QJsonObject& obj,
   m_portRanges.swap(prList);
   m_publicKey = publicKey.toString();
   m_weight = weight.toInt();
-
-  ServerExtra extra = serverExtras.value(m_publicKey);
-  m_socksName = extra.socksName();
-  m_multihopPort = extra.multihopPort();
+  m_socksName = socks5_name.toString();
+  m_multihopPort = multihop_port.toInt();
 
   return true;
 }

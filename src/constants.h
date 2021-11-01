@@ -25,9 +25,6 @@ constexpr uint32_t UNSECURED_NETWORK_ALERT_MSEC = 4000;
 // Number of recent connections to retain.
 constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 
-constexpr const char* MULLVAD_EXTRA_SERVER_URL =
-    "https://api.mullvad.net/www/relays/all/";
-
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
                     testingValue)                                 \
