@@ -104,14 +104,11 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, [this]() {
-    if (controller()->state() != Controller::State::StateConnecting &&
-        controller()->state() != Controller::State::StateConfirming) {
       scheduleTask(new TaskAccountAndServers());
       scheduleTask(new TaskCaptivePortalLookup());
       scheduleTask(new TaskHeartbeat());
       scheduleTask(new TaskSurveyData());
       scheduleTask(new TaskGetFeatureList());
-    }
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
