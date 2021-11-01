@@ -75,4 +75,13 @@ describe('User authentication', function() {
     await vpn.authenticate();
   });
 
+  if ('Logout again', async () => {
+        await vpn.logout();
+      })
+    ;
+
+  it('Login again', async () => {
+    await vpn.authenticate();
+  });
+
 });
