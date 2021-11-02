@@ -67,7 +67,7 @@ Item {
             iconSource: "qrc:/ui/resources/chevron.svg"
             backgroundColor: Theme.iconButtonLightBackground
             width: parent.width - Theme.windowMargin
-            visible: VPN.userAuthenticated
+            visible: VPN.userState === VPN.UserAuthenticated
         }
 
         Repeater {

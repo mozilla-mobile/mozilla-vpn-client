@@ -17,8 +17,6 @@ Item {
     // This property is used to cache the emailAddress between the sub-views.
     property string emailAddress: ""
 
-    property bool showAuthenticated: VPN.userAuthenticated && VPN.state != VPN.StateInitialize
-
     id: contactUsRoot
 
     function tryAgain() {
@@ -104,7 +102,7 @@ Item {
                     ColumnLayout {
                         Layout.fillHeight: true
                         spacing: 24
-                        visible: !showAuthenticated
+                        visible: VPN.userState !== VPN.UserAuthenticated
                         Layout.fillWidth: true
 
                         ColumnLayout {
@@ -147,7 +145,7 @@ Item {
                         Layout.fillWidth: true
                         Layout.preferredWidth: parent.width
                         RowLayout {
-                            visible: showAuthenticated
+                            visible: VPN.userState === VPN.UserAuthenticated
                             spacing: 15
                             Layout.fillWidth: true
                             Layout.bottomMargin: 15
@@ -261,11 +259,11 @@ Item {
                         VPNButton {
                             text: VPNl18n.InAppSupportWorkflowSupportPrimaryButtonText
                             onClicked: {
-                              contactUsRoot.emailAddress = (showAuthenticated ? VPNUser.email : emailInput.text);
+                              contactUsRoot.emailAddress = (VPN.userState === VPN.UserAuthenticated ? VPNUser.email : emailInput.text);
                               contactUsRoot.createSupportTicket(contactUsRoot.emailAddress, subjectInput.text, textArea.userEntry, dropDown.currentValue);
                             }
                             enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
-                                     (showAuthenticated ? true :
+                                     (VPN.userState === VPN.UserAuthenticated ? true :
                                         (VPNAuthInApp.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
                                      )
                             opacity: enabled ? 1 : .5

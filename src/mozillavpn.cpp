@@ -261,7 +261,7 @@ void MozillaVPN::initialize() {
   // successfull subscription.
   if (FeatureInAppPurchase::instance()->isSupported()) {
     if (m_private->m_user.subscriptionNeeded()) {
-      setUserAuthenticated(true);
+      setUserState(UserAuthenticated);
       setState(StateAuthenticating);
       scheduleTask(new TaskProducts());
       scheduleTask(new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
@@ -324,7 +324,7 @@ void MozillaVPN::initialize() {
     scheduleTask(new TaskProducts());
   }
 
-  setUserAuthenticated(true);
+  setUserState(UserAuthenticated);
   maybeStateMain();
 }
 
@@ -424,7 +424,11 @@ void MozillaVPN::authenticateWithType(
 
   hideAlert();
 
-  if (m_userAuthenticated) {
+  if (m_userState != UserNotAuthenticated) {
+    // If we try to start an authentication flow when already logged in, there
+    // is a bug elsewhere.
+    Q_ASSERT(m_userState == UserLoggingOut);
+
     LogoutObserver* lo = new LogoutObserver(this);
     // Let's use QueuedConnection to avoid nexted tasks executions.
     connect(
@@ -597,7 +601,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   m_private->m_deviceModel.writeSettings();
 
   setToken(token);
-  setUserAuthenticated(true);
+  setUserState(UserAuthenticated);
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
     if (m_private->m_user.subscriptionNeeded()) {
@@ -664,7 +668,7 @@ void MozillaVPN::completeActivation() {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the authentication";
       errorHandle(ErrorHandler::RemoteServiceError);
-      setUserAuthenticated(false);
+      setUserState(UserNotAuthenticated);
       return;
     }
 
@@ -881,6 +885,7 @@ void MozillaVPN::logout() {
   logger.debug() << "Logout";
 
   setAlert(LogoutAlert);
+  setUserState(UserLoggingOut);
 
   deleteTasks();
 
@@ -917,7 +922,7 @@ void MozillaVPN::reset(bool forceInitialState) {
     iap->stopProductsRegistration();
   }
 
-  setUserAuthenticated(false);
+  setUserState(UserNotAuthenticated);
 
   if (forceInitialState) {
     setState(StateInitialize);
@@ -1112,7 +1117,7 @@ void MozillaVPN::telemetryPolicyCompleted() {
     return;
   }
 
-  if (!m_userAuthenticated) {
+  if (m_userState != UserAuthenticated) {
     authenticate();
     return;
   }
@@ -1125,11 +1130,11 @@ void MozillaVPN::setUpdateRecommended(bool value) {
   emit updateRecommendedChanged();
 }
 
-void MozillaVPN::setUserAuthenticated(bool state) {
+void MozillaVPN::setUserState(UserState state) {
   logger.debug() << "User authentication state:" << state;
-  if (m_userAuthenticated != state) {
-    m_userAuthenticated = state;
-    emit userAuthenticationChanged();
+  if (m_userState != state) {
+    m_userState = state;
+    emit userStateChanged();
   }
 }
 
@@ -1583,7 +1588,7 @@ void MozillaVPN::heartbeatCompleted(bool success) {
     return;
   }
 
-  if (!modelsInitialized() || !m_userAuthenticated) {
+  if (!modelsInitialized() || m_userState != UserAuthenticated) {
     setState(StateInitialize);
     return;
   }
