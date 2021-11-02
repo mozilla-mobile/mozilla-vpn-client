@@ -67,6 +67,24 @@ class MozillaVPN final : public QObject {
   };
   Q_ENUM(State);
 
+  enum UserState {
+    // The user is not authenticated and there is not a logging-out operation
+    // in progress. Maybe we are running the authentication flow (to know if we
+    // are running the authentication flow, please use the
+    // `StateAuthenticating` state).
+    UserNotAuthenticated,
+
+    // The user is authenticated and there is not a logging-out operation in
+    // progress.
+    UserAuthenticated,
+
+    // We are logging out the user. There are a few steps to run in order to
+    // complete the logout. In the meantime, the user should be considered as
+    // not-authenticated. The next state will be `UserNotAuthenticated`.
+    UserLoggingOut,
+  };
+  Q_ENUM(UserState);
+
   enum AlertType {
     NoAlert,
     AuthenticationFailedAlert,
@@ -106,8 +124,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(QString platform READ platform CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
                  updateRecommendedChanged)
-  Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
-                 userAuthenticationChanged)
+  Q_PROPERTY(UserState userState READ userState NOTIFY userStateChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
   Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
@@ -263,7 +280,7 @@ class MozillaVPN final : public QObject {
 
   void setUpdateRecommended(bool value);
 
-  bool userAuthenticated() const { return m_userAuthenticated; }
+  UserState userState() const { return m_userState; }
 
   bool startMinimized() const { return m_startMinimized; }
 
@@ -311,7 +328,7 @@ class MozillaVPN final : public QObject {
   void maybeRunTask();
   void deleteTasks();
 
-  void setUserAuthenticated(bool state);
+  void setUserState(UserState userState);
 
   void startSchedulingPeriodicOperations();
 
@@ -363,7 +380,7 @@ class MozillaVPN final : public QObject {
   void stateChanged();
   void alertChanged();
   void updateRecommendedChanged();
-  void userAuthenticationChanged();
+  void userStateChanged();
   void deviceRemoving(const QString& publicKey);
   void settingsNeeded();
   void aboutNeeded();
@@ -425,6 +442,8 @@ class MozillaVPN final : public QObject {
   AlertType m_alert = NoAlert;
   QString m_currentView;
 
+  UserState m_userState = UserNotAuthenticated;
+
   QString m_serverPublicKey;
 
   QTimer m_alertTimer;
@@ -432,7 +451,6 @@ class MozillaVPN final : public QObject {
   QTimer m_gleanTimer;
 
   bool m_updateRecommended = false;
-  bool m_userAuthenticated = false;
   bool m_startMinimized = false;
   bool m_updating = false;
   bool m_controllerInitialized = false;
