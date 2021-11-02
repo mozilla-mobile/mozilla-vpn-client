@@ -72,6 +72,7 @@ VPNFlickable {
 
         VPNButton {
             id: openPortalButton
+            objectName: "openCaptivePortalButton"
             text: VPNl18n.CaptivePortalAlertButtonText
             radius: 4
             onClicked: {

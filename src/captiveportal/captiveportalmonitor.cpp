@@ -37,6 +37,13 @@ void CaptivePortalMonitor::stop() {
   m_timer.stop();
 }
 
+
+void CaptivePortalMonitor::maybeCheck(){
+    if(m_timer.isActive()){
+        check();
+    }
+}
+
 void CaptivePortalMonitor::check() {
   logger.debug() << "Checking the internet connectivity";
 

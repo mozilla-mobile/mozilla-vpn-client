@@ -13,7 +13,6 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
-#include "../captiveportal/captiveportalresult.h"
 
 #ifdef QT_DEBUG
 #  include "gleantest.h"
@@ -43,8 +42,6 @@ Logger logger(LOG_INSPECTOR, "InspectorWebSocketConnection");
 bool s_stealUrls = false;
 QUrl s_lastUrl;
 QString s_updateVersion;
-CaptivePortalResult s_forced_captivePortal_result =
-    CaptivePortalResult::Invalid;
 
 }  // namespace
 
@@ -461,22 +458,6 @@ static QList<WebSocketCommand> s_commands{
                        MozillaVPN::instance()->releaseMonitor()->runSoon();
                        return QJsonObject();
                      }},
-    WebSocketCommand{"force_captive_portal_result",
-                     "Forces a detection result see CaptivePortalResult.h", 1,
-                     [](const QList<QByteArray>& arguments) {
-                       QString arg(arguments[1]);
-                       bool ok = true;
-                       int code = arg.toInt(&ok);
-                       if (ok) {
-                         s_forced_captivePortal_result =
-                             static_cast<CaptivePortalResult>(code);
-                       }
-                       QJsonObject result;
-                       result["ok"] = ok;
-                       result["value"] = "Force CaptivePortal Result!";
-                       return result;
-                     }},
-
     WebSocketCommand{"force_captive_portal_check",
                      "Force a captive portal check", 0,
                      [](const QList<QByteArray>&) {
@@ -492,6 +473,7 @@ static QList<WebSocketCommand> s_commands{
                        MozillaVPN::instance()
                            ->captivePortalDetection()
                            ->captivePortalDetected();
+                       MozillaVPN::instance()->controller()->captivePortalPresent();
                        return QJsonObject();
                      }},
 
@@ -894,9 +876,4 @@ QString InspectorWebSocketConnection::appVersionForUpdate() {
   }
 
   return s_updateVersion;
-}
-
-// static
-CaptivePortalResult InspectorWebSocketConnection::fakeCaptivePortalResult() {
-  return s_forced_captivePortal_result;
 }

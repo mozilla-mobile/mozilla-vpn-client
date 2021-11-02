@@ -43,10 +43,11 @@ void CaptivePortalDetection::stateChanged() {
 
   if (state == Controller::StateOff) {
     // We're not connected yet - start a captivePortal Monitor
-    logger.info() << "Not connected, starting captive-portal Monitor";
+    logger.info() << "Not connected, starting background captive-portal Monitor";
     captivePortalBackgroundMonitor()->start();
     return;
   }
+  logger.info() << "connecting, stopping background captive-portal Monitor";
   captivePortalBackgroundMonitor()->stop();
 
   if ((state != Controller::StateOn ||
@@ -75,6 +76,7 @@ void CaptivePortalDetection::detectCaptivePortal() {
   if (!m_active) {
     return;
   }
+  captivePortalBackgroundMonitor()->maybeCheck();
 
   // The monitor must be off when detecting the captive portal.
   captivePortalMonitor()->stop();

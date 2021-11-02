@@ -5,7 +5,6 @@
 #include "captiveportalrequest.h"
 #include "captiveportal.h"
 #include "constants.h"
-#include "../inspector/inspectorwebsocketconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
@@ -25,17 +24,6 @@ CaptivePortalRequest::~CaptivePortalRequest() {
 }
 
 void CaptivePortalRequest::run() {
-  CaptivePortalResult fakeResult =
-      InspectorWebSocketConnection::fakeCaptivePortalResult();
-  if (!Constants::inProduction() &&
-      fakeResult != CaptivePortalResult::Invalid) {
-    // Inspector is active and we have set a result, just return it.
-    logger.info() << "CaptivePortal result is set using inspector!";
-    emit completed(fakeResult);
-    deleteLater();
-    return;
-  }
-
   SettingsHolder* settings = SettingsHolder::instance();
 
   QStringList ipv4Addresses = settings->captivePortalIpv4Addresses();
