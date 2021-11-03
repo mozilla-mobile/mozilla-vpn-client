@@ -39,11 +39,6 @@
 #endif
 
 class QTextStream;
-class Task;
-
-#ifdef UNIT_TEST
-class TestTasks;
-#endif
 
 class MozillaVPN final : public QObject {
   Q_OBJECT
@@ -324,10 +319,6 @@ class MozillaVPN final : public QObject {
 
   void maybeStateMain();
 
-  void scheduleTask(Task* task);
-  void maybeRunTask();
-  void deleteTasks();
-
   void setUserState(UserState userState);
 
   void startSchedulingPeriodicOperations();
@@ -372,9 +363,6 @@ class MozillaVPN final : public QObject {
   void requestAbout();
   void requestViewLogs();
   void requestContactUs();
-
- private slots:
-  void taskCompleted();
 
  signals:
   void stateChanged();
@@ -434,10 +422,6 @@ class MozillaVPN final : public QObject {
 
   Private* m_private = nullptr;
 
-  // Task handling.
-  Task* m_running_task = nullptr;
-  QList<Task*> m_tasks;
-
   State m_state = StateInitialize;
   AlertType m_alert = NoAlert;
   QString m_currentView;
@@ -454,10 +438,6 @@ class MozillaVPN final : public QObject {
   bool m_startMinimized = false;
   bool m_updating = false;
   bool m_controllerInitialized = false;
-
-#ifdef UNIT_TEST
-  friend class TestTasks;
-#endif
 };
 
 #endif  // MOZILLAVPN_H
