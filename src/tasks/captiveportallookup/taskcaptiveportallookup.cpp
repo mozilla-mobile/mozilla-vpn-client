@@ -22,23 +22,26 @@ TaskCaptivePortalLookup::~TaskCaptivePortalLookup() {
   MVPN_COUNT_DTOR(TaskCaptivePortalLookup);
 }
 
-void TaskCaptivePortalLookup::run(MozillaVPN* vpn) {
+void TaskCaptivePortalLookup::run() {
   logger.debug() << "Resolving the captive portal detector URL";
 
   NetworkRequest* request = NetworkRequest::createForCaptivePortalLookup(this);
-  connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-            if (m_cancelled) {
-              return;
-            }
-            logger.error() << "Failed to obtain captive portal IPs" << error;
-            vpn->errorHandle(ErrorHandler::toErrorType(error));
-            emit completed();
-          });
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this](QNetworkReply::NetworkError error, const QByteArray&) {
+        if (m_cancelled) {
+          return;
+        }
+        logger.error() << "Failed to obtain captive portal IPs" << error;
+        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        emit completed();
+      });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn](const QByteArray& data) {
+          [this](const QByteArray& data) {
             logger.debug() << "Lookup completed";
+
+            MozillaVPN* vpn = MozillaVPN::instance();
             if (vpn->captivePortal()->fromJson(data)) {
               vpn->captivePortal()->writeSettings();
             }

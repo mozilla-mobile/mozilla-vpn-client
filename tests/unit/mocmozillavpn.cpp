@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/mozillavpn.h"
-#include "../../src/task.h"
 #include "helper.h"
 
 // The singleton.
@@ -43,15 +42,6 @@ void MozillaVPN::authenticateWithType(MozillaVPN::AuthenticationType) {}
 
 void MozillaVPN::openLink(LinkType) {}
 void MozillaVPN::openLinkUrl(const QString&) {}
-
-void MozillaVPN::scheduleTask(Task* task) {
-  connect(task, &Task::completed, task, &Task::deleteLater);
-  task->run(this);
-}
-
-void MozillaVPN::maybeRunTask() {}
-
-void MozillaVPN::deleteTasks() {}
 
 void MozillaVPN::setToken(const QString&) {}
 
@@ -110,8 +100,6 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation,
 bool MozillaVPN::viewLogs() { return true; }
 
 bool MozillaVPN::modelsInitialized() const { return true; }
-
-void MozillaVPN::taskCompleted() {}
 
 void MozillaVPN::requestSettings() {}
 
