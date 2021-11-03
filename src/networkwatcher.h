@@ -5,7 +5,7 @@
 #ifndef NETWORKWATCHER_H
 #define NETWORKWATCHER_H
 
-#include "systemtrayhandler.h"
+#include "notificationhandler.h"
 
 #include <QElapsedTimer>
 #include <QMap>
@@ -27,9 +27,9 @@ class NetworkWatcher final : public QObject {
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
 
  private:
-  void settingsChanged(bool active);
+  void settingsChanged(const bool& value);
 
-  void notificationClicked(SystemTrayHandler::Message message);
+  void notificationClicked(NotificationHandler::Message message);
 
  private:
   bool m_active = false;
@@ -39,7 +39,7 @@ class NetworkWatcher final : public QObject {
 
   QMap<QString, QElapsedTimer> m_networks;
 
-  // This is used to connect systemTrayHandler lazily.
+  // This is used to connect NotificationHandler lazily.
   bool m_firstNotification = true;
 };
 

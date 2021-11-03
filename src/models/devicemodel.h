@@ -37,6 +37,10 @@ class DeviceModel final : public QAbstractListModel {
 
   void writeSettings();
 
+  void startDeviceRemovalFromPublicKey(const QString& publicKey);
+  void stopDeviceRemovalFromPublicKey(const QString& publicKey,
+                                      const Keys* keys);
+
   void removeDeviceFromPublicKey(const QString& publicKey);
 
   int activeDevices() const { return m_devices.count(); }
@@ -48,6 +52,8 @@ class DeviceModel final : public QAbstractListModel {
   bool hasCurrentDevice(const Keys* keys) const;
 
   const Device* deviceFromPublicKey(const QString& publicKey) const;
+
+  const Device* deviceFromUniqueId() const;
 
   // QAbstractListModel methods
 
@@ -70,6 +76,9 @@ class DeviceModel final : public QAbstractListModel {
   QByteArray m_rawJson;
 
   QList<Device> m_devices;
+
+  // This list contains the list of devices that are about to be removed.
+  QList<Device> m_removedDevices;
 };
 
 #endif  // DEVICEMODEL_H

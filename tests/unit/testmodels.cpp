@@ -26,6 +26,7 @@
 void TestModels::deviceBasic() {
   Device device;
   QCOMPARE(device.name(), "");
+  QCOMPARE(device.uniqueId(), "");
   QCOMPARE(device.createdAt(), QDateTime());
   QCOMPARE(device.publicKey(), "");
   QCOMPARE(device.ipv4Address(), "");
@@ -41,6 +42,7 @@ void TestModels::deviceFromJson_data() {
   QTest::addColumn<QByteArray>("json");
   QTest::addColumn<bool>("result");
   QTest::addColumn<QString>("name");
+  QTest::addColumn<QString>("uniqueId");
   QTest::addColumn<QString>("publicKey");
   QTest::addColumn<QDateTime>("createdAt");
   QTest::addColumn<QString>("ipv4Address");
@@ -49,24 +51,35 @@ void TestModels::deviceFromJson_data() {
   QJsonObject obj;
   obj.insert("test", "");
   QTest::addRow("null") << QJsonDocument(obj).toJson() << false << ""
+                        << ""
                         << "" << QDateTime() << ""
                         << "";
 
   QJsonObject d;
   obj.insert("test", d);
   QTest::addRow("empty") << QJsonDocument(obj).toJson() << false << ""
+                         << ""
                          << "" << QDateTime() << ""
                          << "";
 
   d.insert("name", "deviceName");
   obj.insert("test", d);
   QTest::addRow("name") << QJsonDocument(obj).toJson() << false << ""
+                        << ""
+                        << "" << QDateTime() << ""
+                        << "";
+
+  d.insert("unique_id", "uniqueId");
+  obj.insert("test", d);
+  QTest::addRow("name") << QJsonDocument(obj).toJson() << false << ""
+                        << ""
                         << "" << QDateTime() << ""
                         << "";
 
   d.insert("pubkey", "devicePubkey");
   obj.insert("test", d);
   QTest::addRow("pubKey") << QJsonDocument(obj).toJson() << false << ""
+                          << ""
                           << "" << QDateTime() << ""
                           << "";
 
@@ -74,6 +87,7 @@ void TestModels::deviceFromJson_data() {
   obj.insert("test", d);
   QTest::addRow("createdAt (invalid)")
       << QJsonDocument(obj).toJson() << false << ""
+      << ""
       << "" << QDateTime() << ""
       << "";
 
@@ -81,18 +95,21 @@ void TestModels::deviceFromJson_data() {
   obj.insert("test", d);
   QTest::addRow("createdAt (invalid string)")
       << QJsonDocument(obj).toJson() << false << ""
+      << ""
       << "" << QDateTime() << ""
       << "";
 
   d.insert("created_at", "2017-07-24T15:46:29");
   obj.insert("test", d);
   QTest::addRow("createdAt") << QJsonDocument(obj).toJson() << false << ""
+                             << ""
                              << "" << QDateTime() << ""
                              << "";
 
   d.insert("ipv4_address", "deviceIpv4");
   obj.insert("test", d);
   QTest::addRow("ipv4Address") << QJsonDocument(obj).toJson() << false << ""
+                               << ""
                                << "" << QDateTime() << ""
                                << "";
 
@@ -100,6 +117,17 @@ void TestModels::deviceFromJson_data() {
   obj.insert("test", d);
   QTest::addRow("ipv6Address")
       << QJsonDocument(obj).toJson() << true << "deviceName"
+      << "uniqueId"
+      << "devicePubkey"
+      << QDateTime::fromString("2017-07-24T15:46:29", Qt::ISODate)
+      << "deviceIpv4"
+      << "deviceIpv6";
+
+  d.remove("unique_id");
+  obj.insert("test", d);
+  QTest::addRow("no unique_id")
+      << QJsonDocument(obj).toJson() << true << "deviceName"
+      << ""
       << "devicePubkey"
       << QDateTime::fromString("2017-07-24T15:46:29", Qt::ISODate)
       << "deviceIpv4"
@@ -122,6 +150,9 @@ void TestModels::deviceFromJson() {
   QFETCH(QString, name);
   QCOMPARE(device.name(), name);
 
+  QFETCH(QString, uniqueId);
+  QCOMPARE(device.uniqueId(), uniqueId);
+
   QFETCH(QString, publicKey);
   QCOMPARE(device.publicKey(), publicKey);
 
@@ -136,6 +167,7 @@ void TestModels::deviceFromJson() {
 
   Device deviceB(device);
   QCOMPARE(deviceB.name(), device.name());
+  QCOMPARE(deviceB.uniqueId(), device.uniqueId());
   QCOMPARE(deviceB.createdAt(), device.createdAt());
   QCOMPARE(deviceB.publicKey(), device.publicKey());
   QCOMPARE(deviceB.ipv4Address(), device.ipv4Address());
@@ -144,6 +176,7 @@ void TestModels::deviceFromJson() {
   Device deviceC;
   deviceC = device;
   QCOMPARE(deviceC.name(), device.name());
+  QCOMPARE(deviceC.uniqueId(), device.uniqueId());
   QCOMPARE(deviceC.createdAt(), device.createdAt());
   QCOMPARE(deviceC.publicKey(), device.publicKey());
   QCOMPARE(deviceC.ipv4Address(), device.ipv4Address());
@@ -160,6 +193,7 @@ void TestModels::deviceModelBasic() {
   QVERIFY(!dm.initialized());
   dm.removeDeviceFromPublicKey("foo");
   QCOMPARE(dm.deviceFromPublicKey("foo"), nullptr);
+  QCOMPARE(dm.deviceFromUniqueId(), nullptr);
   QCOMPARE(dm.activeDevices(), 0);
 
   Keys keys;
@@ -213,6 +247,7 @@ void TestModels::deviceModelFromJson_data() {
 
   QJsonObject d;
   d.insert("name", "deviceName");
+  d.insert("unique_id", Device::uniqueDeviceId());
   d.insert("pubkey", "devicePubkey");
   d.insert("created_at", "2017-07-24T15:46:29");
   d.insert("ipv4_address", "deviceIpv4");
@@ -227,6 +262,7 @@ void TestModels::deviceModelFromJson_data() {
                                                           Qt::ISODate));
 
   d.insert("name", Device::currentDeviceName());
+  d.insert("unique_id", "43");
   d.insert("pubkey", "currentDevicePubkey");
   d.insert("created_at", "2017-07-24T15:46:29");
   d.insert("ipv4_address", "deviceIpv4");
@@ -291,6 +327,7 @@ void TestModels::deviceModelFromJson() {
 
       if (devices > 0) {
         QVERIFY(dm.deviceFromPublicKey(devicePublicKey.toString()) != nullptr);
+        QVERIFY(dm.deviceFromUniqueId() != nullptr);
 
         dm.removeDeviceFromPublicKey("FOO");
         QCOMPARE(dm.activeDevices(), devices);
@@ -351,6 +388,7 @@ void TestModels::deviceModelFromJson() {
 
       if (devices > 0) {
         QVERIFY(dm.deviceFromPublicKey(devicePublicKey.toString()) != nullptr);
+        QVERIFY(dm.deviceFromUniqueId() != nullptr);
 
         dm.removeDeviceFromPublicKey("FOO");
         QCOMPARE(dm.activeDevices(), devices);
@@ -360,6 +398,64 @@ void TestModels::deviceModelFromJson() {
       }
     }
   }
+}
+
+void TestModels::deviceModelRemoval() {
+  QJsonObject d1;
+  d1.insert("name", "deviceName");
+  d1.insert("unique_id", "d1");
+  d1.insert("pubkey", "devicePubkey1");
+  d1.insert("created_at", "2017-07-24T15:46:29");
+  d1.insert("ipv4_address", "deviceIpv4");
+  d1.insert("ipv6_address", "deviceIpv6");
+
+  QJsonObject d2;
+  d2.insert("name", "deviceName");
+  d2.insert("unique_id", "d2");
+  d2.insert("pubkey", "devicePubkey2");
+  d2.insert("created_at", "2017-07-24T15:46:29");
+  d2.insert("ipv4_address", "deviceIpv4");
+  d2.insert("ipv6_address", "deviceIpv6");
+
+  QJsonArray devices;
+  devices.append(d1);
+  devices.append(d2);
+
+  QJsonObject obj;
+  obj.insert("devices", devices);
+
+  Keys keys;
+  keys.storeKeys("private", "currentDevicePubkey");
+
+  DeviceModel dm;
+  QCOMPARE(dm.fromJson(&keys, QJsonDocument(obj).toJson()), true);
+
+  QCOMPARE(dm.rowCount(QModelIndex()), 2);
+
+  // Let's start the removal.
+  dm.startDeviceRemovalFromPublicKey("devicePubkey1");
+  QCOMPARE(dm.rowCount(QModelIndex()), 1);
+
+  // Refresh the model. The removed device is still gone.
+  QCOMPARE(dm.fromJson(&keys, QJsonDocument(obj).toJson()), true);
+  QCOMPARE(dm.rowCount(QModelIndex()), 1);
+
+  // Complete the removal without removing the device for real (simulate a
+  // failure).
+  dm.stopDeviceRemovalFromPublicKey("devicePubkey1", &keys);
+  QCOMPARE(dm.rowCount(QModelIndex()), 2);
+
+  // Let's start the removal again.
+  dm.startDeviceRemovalFromPublicKey("devicePubkey1");
+  QCOMPARE(dm.rowCount(QModelIndex()), 1);
+
+  // Remove the device for real.
+  dm.removeDeviceFromPublicKey("devicePubkey1");
+  QCOMPARE(dm.rowCount(QModelIndex()), 1);
+
+  // We have only 1 device left.
+  dm.stopDeviceRemovalFromPublicKey("devicePubkey1", &keys);
+  QCOMPARE(dm.rowCount(QModelIndex()), 1);
 }
 
 // Feedback Category
@@ -494,6 +590,12 @@ void TestModels::serverFromJson_data() {
   obj.insert("weight", 1234);
   QTest::addRow("weight") << obj << false;
 
+  obj.insert("socks5_name", "socks5_name");
+  QTest::addRow("socks5_name") << obj << false;
+
+  obj.insert("multihop_port", 1337);
+  QTest::addRow("multihop_port") << obj << false;
+
   QJsonArray portRanges;
   obj.insert("port_ranges", portRanges);
   QTest::addRow("portRanges") << obj << true << "hostname"
@@ -582,6 +684,9 @@ void TestModels::serverFromJson() {
   QFETCH(int, weight);
   QCOMPARE(s.weight(), (uint32_t)weight);
 
+  QCOMPARE(s.socksName(), "socks5_name");
+  QCOMPARE(s.multihopPort(), 1337);
+
   QFETCH(QList<int>, ports);
   Q_ASSERT(ports.length() >= 1);
   if (ports.length() == 1) {
@@ -599,6 +704,8 @@ void TestModels::serverFromJson() {
   QCOMPARE(sB.ipv6Gateway(), s.ipv6Gateway());
   QCOMPARE(sB.publicKey(), s.publicKey());
   QCOMPARE(sB.weight(), s.weight());
+  QCOMPARE(sB.socksName(), s.socksName());
+  QCOMPARE(sB.multihopPort(), s.multihopPort());
 
   Server sC;
   sC = s;
@@ -610,6 +717,8 @@ void TestModels::serverFromJson() {
   QCOMPARE(sC.ipv6Gateway(), s.ipv6Gateway());
   QCOMPARE(sC.publicKey(), s.publicKey());
   QCOMPARE(sC.weight(), s.weight());
+  QCOMPARE(sC.socksName(), s.socksName());
+  QCOMPARE(sC.multihopPort(), s.multihopPort());
 
   s = s;
 }
@@ -672,6 +781,8 @@ void TestModels::serverCityFromJson_data() {
   server.insert("ipv6_gateway", "ipv6Gateway");
   server.insert("public_key", "publicKey");
   server.insert("weight", 1234);
+  server.insert("multihop_port", 1234);
+  server.insert("socks5_name", "socks5_name");
 
   QJsonArray portRanges;
   server.insert("port_ranges", portRanges);
@@ -975,6 +1086,8 @@ void TestModels::serverCountryModelPick() {
   server.insert("public_key", "publicKey");
   server.insert("weight", 1234);
   server.insert("port_ranges", QJsonArray());
+  server.insert("multihop_port", 1234);
+  server.insert("socks5_name", "socks5_name");
 
   QJsonArray servers;
   servers.append(server);
@@ -1482,18 +1595,18 @@ void TestModels::surveyModelFromJson() {
         QCOMPARE(sm.surveys()[0].url(), surveyUrl);
 
         QFETCH(int, surveyTriggerTime);
-        QCOMPARE(sm.surveys()[0].triggerTime(), surveyTriggerTime);
+        QCOMPARE((int)sm.surveys()[0].triggerTime(), surveyTriggerTime);
 
         Survey a(sm.surveys()[0]);
         QCOMPARE(a.id(), surveyId);
         QCOMPARE(a.url(), surveyUrl);
-        QCOMPARE(a.triggerTime(), surveyTriggerTime);
+        QCOMPARE((int)a.triggerTime(), surveyTriggerTime);
 
         Survey b;
         b = a;
         QCOMPARE(b.id(), surveyId);
         QCOMPARE(b.url(), surveyUrl);
-        QCOMPARE(b.triggerTime(), surveyTriggerTime);
+        QCOMPARE((int)b.triggerTime(), surveyTriggerTime);
 
         b = b;
       }
@@ -1525,11 +1638,14 @@ void TestModels::surveyModelFromJson() {
 
         QFETCH(int, surveyTriggerTime);
         QFETCH(bool, surveyTriggerable);
-        QCOMPARE(sm.surveys()[0].triggerTime(), surveyTriggerTime);
+        QCOMPARE((int)sm.surveys()[0].triggerTime(), surveyTriggerTime);
         QCOMPARE(sm.surveys()[0].isTriggerable(), surveyTriggerable);
 
         if (surveyTriggerable) {
-          settingsHolder.addConsumedSurvey(surveyId);
+          QStringList list = settingsHolder.consumedSurveys();
+          list.append(surveyId);
+          settingsHolder.setConsumedSurveys(list);
+
           QVERIFY(!sm.surveys()[0].isTriggerable());
         }
       }

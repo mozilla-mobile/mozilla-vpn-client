@@ -7,10 +7,13 @@
 
 #include <stdint.h>
 
+class QString;
+
 namespace Constants {
 
 // Returns true if we are in a production environment.
 bool inProduction();
+const QString& getStagingServerAddress();
 void setStaging();
 
 // Number of msecs for the captive-portal block alert.
@@ -56,7 +59,7 @@ CONSTEXPR(uint32_t, captivePortalRequestTimeoutMsec, 10000, 4000, 0)
 CONSTEXPR(uint32_t, statusIconAnimationMsec, 200, 200, 0)
 
 // How often glean pings are sent
-CONSTEXPR(uint32_t, gleanTimeoutMsec, 1200000, 1000, 0)
+CONSTEXPR(uint32_t, gleanTimeoutMsec, 1200000, 4000, 0)
 
 // How often we check the surveys to be executed (no network requests are done
 // for this check)
@@ -68,8 +71,6 @@ CONSTEXPR(uint32_t, surveyTimerMsec, 300000, 4000, 0)
   inline type functionName() { return inProduction() ? prod : beta; }
 
 constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
-constexpr const char* API_STAGING_URL =
-    "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
 constexpr const char* LOGO_URL = ":/ui/resources/logo-dock.png";
 

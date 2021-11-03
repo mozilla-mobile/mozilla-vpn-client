@@ -84,7 +84,7 @@ QVariant AppPermission::data(const QModelIndex& index, int role) const {
     case AppIdRole:
       return QVariant(app.id);
     case AppEnabledRole:
-      if (!SettingsHolder::instance()->hasVpnDisabledApps()) {
+      if (SettingsHolder::instance()->vpnDisabledApps().isEmpty()) {
         // All are enabled then
         return true;
       }
@@ -96,14 +96,15 @@ QVariant AppPermission::data(const QModelIndex& index, int role) const {
 
 void AppPermission::flip(const QString& appID) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (settingsHolder->hasVpnDisabledApp(appID)) {
+  QStringList applist = settingsHolder->vpnDisabledApps();
+  if (settingsHolder->vpnDisabledApps().contains(appID)) {
     logger.debug() << "Enabled --" << appID << " for VPN";
-    settingsHolder->removeVpnDisabledApp(appID);
-
+    applist.removeAll(appID);
   } else {
     logger.debug() << "Disabled --" << appID << " for VPN";
-    settingsHolder->addVpnDisabledApp(appID);
+    applist.append(appID);
   }
+  settingsHolder->setVpnDisabledApps(applist);
 
   int index = m_applist.indexOf(AppDescription(appID));
   dataChanged(createIndex(index, 0), createIndex(index, 0));
@@ -115,42 +116,60 @@ void AppPermission::requestApplist() {
 }
 
 void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
   QMap<QString, QString> applistCopy = applist;
-  QList<QString> removedMissingApps;
+  QStringList removedMissingApps;
+
   // Add Missing apps, cleanup ones that we can't find anymore.
   // If that happens
-  if (SettingsHolder::instance()->hasMissingApps()) {
-    auto missingAppList = SettingsHolder::instance()->missingApps();
-    for (const auto& appPath : missingAppList) {
-      // Check if the App Still exists, otherwise clean up.
-      if (!m_listprovider->isValidAppId(appPath)) {
-        SettingsHolder::instance()->removeMissingApp(appPath);
-        removedMissingApps.append(m_listprovider->getAppName(appPath));
-      } else {
-        applistCopy.insert(appPath, m_listprovider->getAppName(appPath));
-      }
+
+  QStringList missingAppList = settingsHolder->missingApps();
+  QMutableStringListIterator iter(missingAppList);
+  while (iter.hasNext()) {
+    const QString& appPath = iter.next();
+    // Check if the App Still exists, otherwise clean up.
+    if (!m_listprovider->isValidAppId(appPath)) {
+      removedMissingApps.append(m_listprovider->getAppName(appPath));
+      iter.remove();
+      continue;
     }
+    applistCopy.insert(appPath, m_listprovider->getAppName(appPath));
+  }
+
+  if (!removedMissingApps.isEmpty()) {
+    settingsHolder->setMissingApps(missingAppList);
   }
 
   auto keys = applistCopy.keys();
   if (!m_applist.isEmpty()) {
+    QStringList disabledApps = settingsHolder->vpnDisabledApps();
     // Check the Disabled-List
-    SettingsHolder* settingsHolder = SettingsHolder::instance();
-    foreach (QString blockedAppId, settingsHolder->vpnDisabledApps()) {
+    QMutableStringListIterator iter(disabledApps);
+    while (iter.hasNext()) {
+      const QString& blockedAppId = iter.next();
+
       if (!m_listprovider->isValidAppId(blockedAppId)) {
         // In case the AppID is no longer valid we don't need to keep it
         logger.debug() << "Removed obsolete appid" << blockedAppId;
-        settingsHolder->removeVpnDisabledApp(blockedAppId);
         removedMissingApps.append(m_listprovider->getAppName(blockedAppId));
-      } else if (!keys.contains(blockedAppId)) {
-        // In case the AppID is valid but not in our applist, we need to create
-        // an entry
+        iter.remove();
+        continue;
+      }
+
+      if (!keys.contains(blockedAppId)) {
+        // In case the AppID is valid but not in our applist, we need to
+        // create an entry
         logger.debug() << "Added missing appid" << blockedAppId;
         m_applist.append(
             AppDescription(blockedAppId, applistCopy[blockedAppId]));
       }
     }
+
+    settingsHolder->setVpnDisabledApps(disabledApps);
   }
+
   beginResetModel();
   logger.debug() << "Recived new Applist -- Entrys: " << applistCopy.size();
   m_applist.clear();
@@ -166,9 +185,9 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
     return;
   }
   auto strings = L18nStrings::instance();
-  QString action = strings->tr(L18nStrings::SplittunnelMissingAppActionButton);
+  QString action = strings->t(L18nStrings::SplittunnelMissingAppActionButton);
 
-  QString message = strings->tr(L18nStrings::SplittunnelMissingAppMultiple)
+  QString message = strings->t(L18nStrings::SplittunnelMissingAppMultiple)
                         .arg(removedMissingApps.count());
   emit notification("warning", message, action);
 }
@@ -231,7 +250,7 @@ void AppPermission::openFilePicker() {
   m_listprovider->addApplication(fileNames[0]);
 
   QString message = L18nStrings::instance()
-                        ->tr(L18nStrings::SplittunnelMissingAppAddedOne)
+                        ->t(L18nStrings::SplittunnelMissingAppAddedOne)
                         .arg(m_listprovider->getAppName(fileNames[0]));
   emit notification("success", message);
 }

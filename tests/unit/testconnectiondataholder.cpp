@@ -11,12 +11,17 @@
 #include <QSplineSeries>
 #include <QValueAxis>
 
+#if QT_VERSION < 0x060000
+using namespace QtCharts;
+#endif
+
 void TestConnectionDataHolder::checkIpAddressFailure() {
   ConnectionDataHolder cdh;
 
   SettingsHolder settingsHolder;
-  settingsHolder.setIpv6Enabled(false);
 
+  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+      TestHelper::NetworkConfig::Failure, QByteArray()));
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
 
@@ -55,9 +60,12 @@ void TestConnectionDataHolder::checkIpAddressSucceess() {
   QSignalSpy spy(&cdh, &ConnectionDataHolder::ipv4AddressChanged);
 
   SettingsHolder settingsHolder;
-  settingsHolder.setIpv6Enabled(false);
+
+  TestHelper::networkConfig.clear();
 
   QFETCH(QByteArray, json);
+  TestHelper::networkConfig.append(
+      TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
   TestHelper::networkConfig.append(
       TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
 
@@ -82,18 +90,19 @@ void TestConnectionDataHolder::chart() {
   QSignalSpy spy(&cdh, &ConnectionDataHolder::bytesChanged);
 
   SettingsHolder settingsHolder;
-  settingsHolder.setIpv6Enabled(false);
 
+  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+      TestHelper::NetworkConfig::Success, QString("{'ip':'42'}").toUtf8()));
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Success, QString("{'ip':'42'}").toUtf8()));
 
   cdh.add(123, 123);
   QCOMPARE(spy.count(), 0);
 
-  QtCharts::QSplineSeries* txSeries = new QtCharts::QSplineSeries(this);
-  QtCharts::QSplineSeries* rxSeries = new QtCharts::QSplineSeries(this);
-  QtCharts::QValueAxis* axisX = new QtCharts::QValueAxis(this);
-  QtCharts::QValueAxis* axisY = new QtCharts::QValueAxis(this);
+  QSplineSeries* txSeries = new QSplineSeries(this);
+  QSplineSeries* rxSeries = new QSplineSeries(this);
+  QValueAxis* axisX = new QValueAxis(this);
+  QValueAxis* axisY = new QValueAxis(this);
 
   cdh.activate(QVariant::fromValue(txSeries), QVariant::fromValue(rxSeries),
                QVariant::fromValue(axisX), QVariant::fromValue(axisY));

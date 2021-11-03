@@ -8,6 +8,7 @@ import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.AdjustEvent;
+import com.adjust.sdk.AdjustFactory;
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -23,23 +24,32 @@ public class VPNApplication extends org.qtproject.qt5.android.bindings.QtApplica
       VPNApplication.instance = this;
   }
 
-  public static void onVpnInit(boolean inProduction) {
-      if(BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
-        String appToken = BuildConfig.ADJUST_SDK_TOKEN;
-        String environment = inProduction ? AdjustConfig.ENVIRONMENT_PRODUCTION : AdjustConfig.ENVIRONMENT_SANDBOX;
-        AdjustConfig config = new AdjustConfig(VPNApplication.instance, appToken, environment);
-        config.setLogLevel(LogLevel.DEBUG);
-        config.setSendInBackground(true);
-        Adjust.onCreate(config);
+  public static void onVpnInit(boolean inProduction, int proxyPort) {
+    if (BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
+      String appToken = BuildConfig.ADJUST_SDK_TOKEN;
+      String environment =
+          inProduction ? AdjustConfig.ENVIRONMENT_PRODUCTION : AdjustConfig.ENVIRONMENT_SANDBOX;
+      AdjustConfig config = new AdjustConfig(VPNApplication.instance, appToken, environment);
+      config.setLogLevel(LogLevel.DEBUG);
+      config.setSendInBackground(true);
+      AdjustFactory.setBaseUrl("http://127.0.0.1:" + proxyPort);
+      AdjustFactory.setGdprUrl("http://127.0.0.1:" + proxyPort);
+      Adjust.onCreate(config);
 
-        VPNApplication.instance.registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
-      }
+      VPNApplication.instance.registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
+    }
   }
 
   public static void trackEvent(String event) {
     if (BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
       AdjustEvent adjustEvent = new AdjustEvent(event);
       Adjust.trackEvent(adjustEvent);
+    }
+  }
+
+  public static void forget(Activity activity) {
+    if (BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
+      Adjust.gdprForgetMe(activity);
     }
   }
 

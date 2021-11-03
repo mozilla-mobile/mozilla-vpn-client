@@ -25,7 +25,6 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "systemtrayhandler.h"
 
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
@@ -64,11 +63,6 @@
 #endif
 
 #include <QApplication>
-
-#ifdef QT_DEBUG
-#  include "gleantest.h"
-#  include <QLoggingCategory>
-#endif
 
 namespace {
 Logger logger(LOG_MAIN, "CommandUI");
@@ -131,15 +125,13 @@ int CommandUI::run(QStringList& tokens) {
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+    engine->addImportPath("qrc:///components");
     engine->addImportPath("qrc:///glean");
+    engine->addImportPath("qrc:///themes");
+    engine->addImportPath("qrc:///compat");
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
-
-#ifdef QT_DEBUG
-    // This is a collector of glean HTTP requests to see if we leak something.
-    GleanTest gleanTest;
-#endif
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
     // If there is another instance, the execution terminates here.
@@ -247,6 +239,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNFeedbackCategoryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->feedbackCategoryModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNLicenseModel",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->licenseModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -377,16 +377,6 @@ int CommandUI::run(QStringList& tokens) {
           });
     }
 
-#ifdef QT_DEBUG
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNGleanTest",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = GleanTest::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-#endif
-
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNAuthInApp",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
@@ -424,23 +414,8 @@ int CommandUI::run(QStringList& tokens) {
         Qt::QueuedConnection);
     engine->load(url);
 
-    SystemTrayHandler* systemTrayHandler =
-        SystemTrayHandler::create(&engineHolder);
-    Q_ASSERT(systemTrayHandler);
-
-    systemTrayHandler->show();
-
     NotificationHandler* notificationHandler =
-        NotificationHandler::create(qApp);
-
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, systemTrayHandler,
-                     &SystemTrayHandler::updateContextMenu);
-
-    QObject::connect(vpn.currentServer(), &ServerData::changed,
-                     systemTrayHandler, &SystemTrayHandler::updateContextMenu);
-
-    QObject::connect(vpn.controller(), &Controller::stateChanged,
-                     systemTrayHandler, &SystemTrayHandler::updateContextMenu);
+        NotificationHandler::create(&engineHolder);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
                      notificationHandler,
@@ -458,13 +433,10 @@ int CommandUI::run(QStringList& tokens) {
 
 #endif
 
-    QObject::connect(vpn.statusIcon(), &StatusIcon::iconChanged,
-                     systemTrayHandler, &SystemTrayHandler::updateIcon);
-
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
       logger.debug() << "Retranslating";
       QmlEngineHolder::instance()->engine()->retranslate();
-      SystemTrayHandler::instance()->retranslate();
+      NotificationHandler::instance()->retranslate();
       L18nStrings::instance()->retranslate();
 
 #ifdef MVPN_MACOS

@@ -5,9 +5,10 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../components"
-import "../themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 Item {
     property alias isSettingsView: menu.isSettingsView
@@ -62,11 +63,11 @@ Item {
 
             accessibleName: title
             title: qsTrId("vpn.settings.giveFeedback")
-            onClicked: isSettingsView ? settingsStackView.push("../settings/ViewGiveFeedback.qml") : isMainView? mainStackView.push("../settings/ViewGiveFeedback.qml") : stackview.push("../settings/ViewGiveFeedback.qml", {isMainView: true})
-            iconSource: "../resources/chevron.svg"
+            onClicked: isSettingsView ? settingsStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml") : isMainView? mainStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml") : stackview.push("qrc:/ui/settings/ViewGiveFeedback.qml", {isMainView: true})
+            iconSource: "qrc:/ui/resources/chevron.svg"
             backgroundColor: Theme.iconButtonLightBackground
             width: parent.width - Theme.windowMargin
-            visible: VPN.userAuthenticated
+            visible: VPN.userState === VPN.UserAuthenticated
         }
 
         Repeater {
@@ -80,7 +81,7 @@ Item {
                 objectName: "getHelpBackList-" + id
                 title: name
                 accessibleName: name
-                iconSource: externalLink ? "../resources/externalLink.svg" : "../resources/chevron.svg"
+                iconSource: externalLink ? "qrc:/ui/resources/externalLink.svg" : "qrc:/ui/resources/chevron.svg"
                 backgroundColor: externalLink ? Theme.clickableRowBlue : Theme.iconButtonLightBackground
                 onClicked: {
                     VPNHelpModel.open(id)
@@ -98,14 +99,14 @@ Item {
 
             //% "Developer Options"
             settingTitle: qsTrId("vpn.settings.developer")
-            imageLeftSrc: "../resources/developer.svg"
-            imageRightSrc: "../resources/chevron.svg"
+            imageLeftSrc: "qrc:/ui/resources/developer.svg"
+            imageRightSrc: "qrc:/ui/resources/chevron.svg"
             visible: VPNSettings.developerUnlock
             onClicked: {
                 if (isSettingsView) {
-                    settingsStackView.push("../developerMenu/ViewDeveloperMenu.qml", {isSettingsView: true})
+                    settingsStackView.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml", {isSettingsView: true})
                 } else {
-                    stackview.push("../developerMenu/ViewDeveloperMenu.qml", {isSettingsView: false})
+                    stackview.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml", {isSettingsView: false})
                 }
             }
         }

@@ -8,7 +8,6 @@
 #include "leakdetector.h"
 #include "windowscommons.h"
 
-#include <shellapi.h>
 #include <QObject>
 #include <QDir>
 #include <QPixmap>
@@ -18,12 +17,15 @@
 #include <QSysInfo>
 #include <QtWin>
 
+#include <Windows.h>
+#include <shellapi.h>
+
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsAppImageProvider");
 }
 
 WindowsAppImageProvider::WindowsAppImageProvider(QObject* parent)
-    : QQuickImageProvider(QQuickImageProvider::Pixmap), QObject(parent) {
+    : AppImageProvider(parent, QQuickImageProvider::Pixmap) {
   MVPN_COUNT_CTOR(WindowsAppImageProvider);
 }
 

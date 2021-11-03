@@ -22,7 +22,7 @@ MacOSStartAtBootWatcher::~MacOSStartAtBootWatcher() {
   MVPN_COUNT_DTOR(MacOSStartAtBootWatcher);
 }
 
-void MacOSStartAtBootWatcher::startAtBootChanged(bool startAtBoot) {
+void MacOSStartAtBootWatcher::startAtBootChanged(const bool& startAtBoot) {
   logger.debug() << "StartAtBoot changed:" << startAtBoot;
   MacOSUtils::enableLoginItem(startAtBoot);
 }

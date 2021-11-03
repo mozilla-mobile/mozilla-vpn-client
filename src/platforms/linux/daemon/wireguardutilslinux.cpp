@@ -166,15 +166,15 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
     NetfilterMarkCgroup(VPN_EXCLUDE_CLASS_ID, device->fwmark);
     NetfilterBlockCgroup(VPN_BLOCK_CLASS_ID);
   }
-  if (config.m_ipv6Enabled) {
-    int slashPos = config.m_deviceIpv6Address.indexOf('/');
-    GoString goIpv6Address = {.p = qPrintable(config.m_deviceIpv6Address),
-                              .n = config.m_deviceIpv6Address.length()};
-    if (slashPos != -1) {
-      goIpv6Address.n = slashPos;
-    }
-    NetfilterIsolateIpv6(goIfname, goIpv6Address);
+
+  int slashPos = config.m_deviceIpv6Address.indexOf('/');
+  GoString goIpv6Address = {.p = qPrintable(config.m_deviceIpv6Address),
+                            .n = config.m_deviceIpv6Address.length()};
+  if (slashPos != -1) {
+    goIpv6Address.n = slashPos;
   }
+  NetfilterIsolateIpv6(goIfname, goIpv6Address);
+
   return true;
 }
 
@@ -193,7 +193,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   }
   device->first_peer = device->last_peer = peer;
 
-  logger.debug() << "Adding peer" << config.m_serverIpv4AddrIn;
+  logger.debug() << "Adding peer" << printablePubkey(config.m_serverPublicKey);
 
   // Public Key
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
@@ -254,6 +254,8 @@ bool WireguardUtilsLinux::deletePeer(const QString& pubkey) {
     return false;
   }
   device->first_peer = device->last_peer = peer;
+
+  logger.debug() << "Removing peer" << printablePubkey(pubkey);
 
   // Public Key
   peer->flags = (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REMOVE_ME);
@@ -634,4 +636,13 @@ bool WireguardUtilsLinux::buildAllowedIp(wg_allowedip* ip,
     return inet_pton(AF_INET6, qPrintable(prefix.ipAddress()), &ip->ip6) == 1;
   }
   return false;
+}
+
+// static
+QString WireguardUtilsLinux::printablePubkey(const QString& pubkey) {
+  if (pubkey.length() < 12) {
+    return pubkey;
+  } else {
+    return pubkey.left(6) + "..." + pubkey.right(6);
+  }
 }

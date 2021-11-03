@@ -33,8 +33,7 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
-          pip3 install glean_parser
-          pip3 install pyyaml
+          pip3 install -r requirements.txt
           python3 scripts/generate_glean.py
 
       - name: Importing translation files
@@ -57,4 +56,5 @@ jobs:
         run: |
           # Manually add QT executables to path
           export PATH=/opt/qt515/bin:$PATH
+          export MVPN_API_BASE_URL="https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net"
           ./scripts/test_coverage.sh -j 8

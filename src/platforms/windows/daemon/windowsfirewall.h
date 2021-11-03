@@ -5,6 +5,8 @@
 #ifndef WINDOWSFIREWALL_H
 #define WINDOWSFIREWALL_H
 
+#pragma comment(lib, "Fwpuclnt")
+
 #include "../../daemon/interfaceconfig.h"
 
 #include <windows.h>
@@ -49,6 +51,7 @@ class WindowsFirewall final : public QObject {
                              const QString& title);
   bool allowDHCPTraffic(uint8_t weight, const QString& title);
   bool allowHyperVTraffic(uint8_t weight, const QString& title);
+  bool allowLoopbackTraffic(uint8_t weight, const QString& title);
 
   // Utils
   QString getCurrentPath();

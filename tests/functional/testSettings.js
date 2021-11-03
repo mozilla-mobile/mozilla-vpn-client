@@ -1,26 +1,17 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 const assert = require('assert');
-const util = require('util');
 const vpn = require('./helper.js');
 
-const exec = util.promisify(require('child_process').exec);
-
 describe('Settings', function() {
-  this.timeout(600000);
+  this.timeout(60000);
 
-  before(async () => {
-    await vpn.connect();
-  });
-
-  beforeEach(() => {});
-
-  afterEach(vpn.dumpFailure);
-
-  after(async () => {
-    vpn.disconnect();
+  beforeEach(async () => {
+    await vpn.authenticate(true, true);
+    await vpn.waitForElement('settingsButton');
+    await vpn.clickOnElement('settingsButton');
+    await vpn.wait();
   });
 
   async function checkSetting(objectName, settingKey) {
@@ -41,22 +32,9 @@ describe('Settings', function() {
     await vpn.wait();
   }
 
-  it('authenticate', async () => await vpn.authenticate());
-
-  it('Post authentication view', async () => {
-    await vpn.waitForElement('postAuthenticationButton');
-    await vpn.clickOnElement('postAuthenticationButton');
-    await vpn.wait();
-  });
-
   it('Opening and closing the settings view', async () => {
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
-    await vpn.wait();
-
     await vpn.waitForElement('settingsCloseButton');
     await vpn.waitForElementProperty('settingsCloseButton', 'visible', 'true');
-
     await vpn.clickOnElement('settingsCloseButton');
     await vpn.wait();
 
@@ -65,10 +43,6 @@ describe('Settings', function() {
   });
 
   it('Checking settings entries', async () => {
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
-    await vpn.wait();
-
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
     await vpn.clickOnElement('manageAccountButton');
@@ -90,7 +64,6 @@ describe('Settings', function() {
     await vpn.clickOnElement('settingsNetworking');
     await vpn.wait();
 
-    await checkSetting('settingIpv6Enabled', 'ipv6-enabled');
     await checkSetting('settingLocalNetworkAccess', 'local-network-access');
 
     await vpn.waitForElement('settingsBackButton');
@@ -265,11 +238,11 @@ describe('Settings', function() {
     });
 
     await vpn.clickOnElement('aboutUsList/aboutUsList-license');
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
-      return url ===
-          'https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/LICENSE.md';
-    });
+
+    await vpn.waitForElement('licenseBackButton');
+    await vpn.waitForElementProperty('licenseBackButton', 'visible', 'true');
+    await vpn.clickOnElement('licenseBackButton');
+    await vpn.wait();
 
     await vpn.waitForElement('settingsBackButton');
     await vpn.clickOnElement('settingsBackButton');
@@ -281,6 +254,7 @@ describe('Settings', function() {
 
 
   it('Checking the get help', async () => {
+    console.log('  Checkpoint a');
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
 
@@ -288,6 +262,7 @@ describe('Settings', function() {
         'settingsView', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('settingsGetHelp', 'y')));
     await vpn.wait();
+    console.log('  Checkpoint b');
 
     await vpn.clickOnElement('settingsGetHelp');
     await vpn.wait();
@@ -297,6 +272,7 @@ describe('Settings', function() {
 
     await vpn.waitForElement('getHelpLinks');
     await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
+    console.log('  Checkpoint c');
 
     await vpn.waitForElement('getHelpLinks/getHelpBackList');
     await vpn.waitForElementProperty(
@@ -308,6 +284,7 @@ describe('Settings', function() {
 
     await vpn.clickOnElement('getHelpLinks/settingsGiveFeedback');
     await vpn.wait();
+    console.log('  Checkpoint d');
 
     await vpn.waitForElement('giveFeedbackView');
     await vpn.waitForElementProperty(
@@ -319,6 +296,7 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
     await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
+    console.log('  Checkpoint e');
 
     await vpn.waitForElement('getHelpLinks');
     await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
@@ -328,6 +306,7 @@ describe('Settings', function() {
     await vpn.waitForElement('getHelpLinks/getHelpBackList-2');
     await vpn.waitForElementProperty(
         'getHelpLinks/getHelpBackList-2', 'visible', 'true');
+    console.log('  Checkpoint f');
 
     await vpn.clickOnElement('getHelpLinks/getHelpBackList-2');
 
@@ -336,6 +315,7 @@ describe('Settings', function() {
       return url.startsWith('file://') && url.includes('mozillavpn') &&
           url.endsWith('.txt');
     });
+    console.log('  Checkpoint g');
 
     await vpn.waitForElement('getHelpLinks/getHelpBackList-0')
         await vpn.waitForElementProperty(
@@ -346,6 +326,7 @@ describe('Settings', function() {
       const url = await vpn.getLastUrl();
       return url.endsWith('/r/vpn/support');
     });
+    console.log('  Checkpoint h');
 
     /* TODO:  Reinstate this test correctly
         https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1638
@@ -362,6 +343,7 @@ describe('Settings', function() {
     await vpn.wait();
     await vpn.waitForElement('settingsBackButton');
     await vpn.clickOnElement('settingsBackButton');
+    console.log('  Checkpoint i');
 
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
@@ -429,12 +411,9 @@ describe('Settings', function() {
   it('Checking the logout', async () => {
     await vpn.waitForElement('settingsLogout');
     await vpn.waitForElementProperty('settingsLogout', 'visible', 'true');
+    // TODO - Should be able to click on SignOut and observe
+    // the signout, but the next line doesn't work
+    // await vpn.clickOnElement('settingsLogout');
+    // await vpn.waitForMainView();
   });
-
-  it('Logout', async () => {
-    await vpn.logout();
-    await vpn.wait();
-  });
-
-  it('quit the app', async () => await vpn.quit());
 });

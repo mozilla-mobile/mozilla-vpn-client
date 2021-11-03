@@ -5,9 +5,10 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../components"
-import "../themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 VPNFlickable {
     id: vpnFlickable
@@ -24,7 +25,7 @@ VPNFlickable {
                 logoTitle: qsTrId("vpn.updates.updateRecomended")
                 //% "Please update the app before you continue to use the VPN"
                 logoSubtitle: qsTrId("vpn.updates.updateRecomended.description")
-                logo: "../resources/updateRecommended.svg"
+                logo: "qrc:/ui/resources/updateRecommended.svg"
             }
 
             PropertyChanges {
@@ -52,12 +53,12 @@ VPNFlickable {
                 logoTitle: qsTrId("vpn.updates.updateRequired")
                 //% "We detected and fixed a serious bug. You must update your app."
                 logoSubtitle: qsTrId("vpn.updates.updateRequire.reason")
-                logo: "../resources/updateRequired.svg"
+                logo: "qrc:/ui/resources/updateRequired.svg"
             }
 
             PropertyChanges {
                 target: signOff
-                visible: VPN.userAuthenticated
+                visible: VPN.userState === VPN.UserAuthenticated
             }
 
             PropertyChanges {
@@ -95,7 +96,7 @@ VPNFlickable {
         width: vpnFlickable.width
     }
 
-    VPNDropShadow {
+    VPNDropShadowWithStates {
         anchors.fill: alertWrapperBackground
         source: alertWrapperBackground
     }
@@ -129,7 +130,7 @@ VPNFlickable {
             spacing: 16
 
             Image {
-                source: "../resources/connection-info-dark.svg"
+                source: "qrc:/ui/resources/connection-info-dark.svg"
                 sourceSize.width: 20
                 sourceSize.height: 20
                 antialiasing: true

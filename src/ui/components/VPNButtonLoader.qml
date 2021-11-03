@@ -3,7 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import "../themes/themes.js" as Theme
+
+import themes 0.1
 
 Rectangle {
     id: loader
@@ -77,7 +78,7 @@ Rectangle {
     VPNIcon {
         id: loadingIcon
 
-        source: "../resources/buttonLoader.svg"
+        source: "qrc:/ui/resources/buttonLoader.svg"
         anchors.centerIn: loader
         sourceSize.height: 28
         sourceSize.width: 28

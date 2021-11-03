@@ -5,7 +5,7 @@
 #ifndef CAPTIVEPORTALNOTIFIER_H
 #define CAPTIVEPORTALNOTIFIER_H
 
-#include "systemtrayhandler.h"
+#include "notificationhandler.h"
 
 #include <QTimer>
 
@@ -24,7 +24,7 @@ class CaptivePortalNotifier final : public QObject {
   void deactivationRequired();
 
  private:
-  void notificationClicked(SystemTrayHandler::Message message);
+  void notificationClicked(NotificationHandler::Message message);
 };
 
 #endif  // CAPTIVEPORTALNOTIFIER_H

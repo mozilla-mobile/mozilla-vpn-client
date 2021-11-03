@@ -34,15 +34,7 @@ IPUtilsLinux::~IPUtilsLinux() {
 }
 
 bool IPUtilsLinux::addInterfaceIPs(const InterfaceConfig& config) {
-  if (!addIP4AddressToDevice(config)) {
-    return false;
-  }
-  if (config.m_ipv6Enabled) {
-    if (!addIP6AddressToDevice(config)) {
-      return false;
-    }
-  }
-  return true;
+  return addIP4AddressToDevice(config) && addIP6AddressToDevice(config);
 }
 
 bool IPUtilsLinux::setMTUAndUp(const InterfaceConfig& config) {

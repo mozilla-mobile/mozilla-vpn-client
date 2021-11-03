@@ -10,7 +10,6 @@
 #include "networkwatcherimpl.h"
 #include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
-#include "systemtrayhandler.h"
 
 #ifdef MVPN_WINDOWS
 #  include "platforms/windows/windowsnetworkwatcher.h"
@@ -73,7 +72,7 @@ void NetworkWatcher::initialize() {
           &NetworkWatcher::settingsChanged);
 }
 
-void NetworkWatcher::settingsChanged(bool active) {
+void NetworkWatcher::settingsChanged(const bool& active) {
   logger.debug() << "Settings changed:" << active;
   if (m_active == active) {
     return;
@@ -124,23 +123,23 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
   m_networks[networkId].start();
 
   // We don't connect the system tray handler in the CTOR because it can be too
-  // early. Maybe the SystemTrayHandler has not been created yet. We do it at
+  // early. Maybe the NotificationHandler has not been created yet. We do it at
   // the first detection of an unsecured network.
   if (m_firstNotification) {
-    connect(SystemTrayHandler::instance(),
-            &SystemTrayHandler::notificationClicked, this,
+    connect(NotificationHandler::instance(),
+            &NotificationHandler::notificationClicked, this,
             &NetworkWatcher::notificationClicked);
     m_firstNotification = false;
   }
 
-  SystemTrayHandler::instance()->unsecuredNetworkNotification(networkName);
+  NotificationHandler::instance()->unsecuredNetworkNotification(networkName);
 #endif
 }
 
-void NetworkWatcher::notificationClicked(SystemTrayHandler::Message message) {
+void NetworkWatcher::notificationClicked(NotificationHandler::Message message) {
   logger.debug() << "Notification clicked";
 
-  if (message == SystemTrayHandler::UnsecuredNetwork) {
+  if (message == NotificationHandler::UnsecuredNetwork) {
     MozillaVPN::instance()->activate();
   }
 }

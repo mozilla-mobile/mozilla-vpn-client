@@ -12,6 +12,10 @@ class IOSUtils final {
   static QString computerName();
 
   static QString IAPReceipt();
+
+  static void shareLogs(const QString& logs);
+
+  static int compareStrings(const QString& a, const QString& b);
 };
 
 #endif  // IOSUTILS_H

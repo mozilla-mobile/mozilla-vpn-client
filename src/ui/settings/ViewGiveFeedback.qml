@@ -1,5 +1,3 @@
-
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,10 +5,11 @@ import QtQuick 2.5
 
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../components"
-import "../components/forms"
-import "../themes/themes.js" as Theme
+import components 0.1
+import components.forms 0.1
+import themes 0.1
 
 Item {
     property string _menuTitle: qsTrId("vpn.settings.giveFeedback")
@@ -93,7 +92,7 @@ Item {
                         VPNFeedbackRadioDelegate {
                             //% "Very poor"
                             Accessible.name: qsTrId("vpn.feedbackForm.veryPoor")
-                            iconSource: "../resources/faces/veryPoor.svg"
+                            iconSource: "qrc:/ui/resources/faces/veryPoor.svg"
                             value: 1
                         }
                         VPNVerticalSpacer {
@@ -104,7 +103,7 @@ Item {
                         VPNFeedbackRadioDelegate {
                             //% "Poor"
                             Accessible.name: qsTrId("vpn.feedbackForm.poor")
-                            iconSource: "../resources/faces/poor.svg"
+                            iconSource: "qrc:/ui/resources/faces/poor.svg"
                             value: 2
                         }
 
@@ -116,7 +115,7 @@ Item {
                         VPNFeedbackRadioDelegate {
                             //% "Average"
                             Accessible.name: qsTrId("vpn.feedbackForm.average")
-                            iconSource: "../resources/faces/average.svg"
+                            iconSource: "qrc:/ui/resources/faces/average.svg"
                             value: 3
                         }
 
@@ -128,7 +127,7 @@ Item {
                         VPNFeedbackRadioDelegate {
                             //% "Good"
                             Accessible.name: qsTrId("vpn.feedbackForm.good")
-                            iconSource: "../resources/faces/good.svg"
+                            iconSource: "qrc:/ui/resources/faces/good.svg"
                             value: 4
                         }
 
@@ -139,7 +138,7 @@ Item {
 
                         VPNFeedbackRadioDelegate {
                             Accessible.name: VPNl18n.FeedbackFormExcellentLabel
-                            iconSource: "../resources/faces/veryGood.svg"
+                            iconSource: "qrc:/ui/resources/faces/veryGood.svg"
                             value: 5
                         }
                     }
@@ -358,7 +357,7 @@ Item {
                 width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
                 VPNPanel {
                     id: panel
-                    logo: "../resources/heart-check.svg"
+                    logo: "qrc:/ui/resources/heart-check.svg"
                     //% "Thank you!"
                     logoTitle: qsTrId("vpn.feedbackForm.thankyou")
                     //% "We appreciate your feedback. You’re helping us improve Mozilla VPN."
@@ -389,27 +388,20 @@ Item {
     Component {
         id: appReviewView
         Item {
-            ColumnLayout {
-                id: col
-                anchors.top: parent.top
-                anchors.topMargin: window.height * .10
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
-                VPNPanel {
-                    id: panel
-                    logo: "../resources/app-rating.svg"
-                    logoTitle: VPNl18n.FeedbackFormReviewHeader
-                    logoSubtitle: VPNl18n.FeedbackFormReviewBody
-                    anchors.horizontalCenter: undefined
-                    Layout.fillWidth: true
-                }
+            VPNPanel {
+                id: panel
+                logo: "qrc:/ui/resources/app-rating.svg"
+                logoTitle: VPNl18n.FeedbackFormReviewHeader
+                logoSubtitle: VPNl18n.FeedbackFormReviewBody
+                height: parent.height - (reviewButton.height + reviewButton.anchors.bottomMargin + skipLink.height + skipLink.anchors.bottomMargin)
             }
 
             VPNButton {
                 id: reviewButton
                 text: VPNl18n.FeedbackFormLeaveReviewButton
-                anchors.top: col.bottom
-                anchors.topMargin: Theme.vSpacing
+                anchors.bottom: skipLink.top
+                anchors.bottomMargin: 24
+                anchors.horizontalCenterOffset: 0
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     VPN.openAppStoreReviewLink();
@@ -417,10 +409,8 @@ Item {
                }
             }
 
-            VPNLinkButton {
-                anchors.top: reviewButton.bottom
-                anchors.topMargin: Theme.vSpacing
-                anchors.horizontalCenter: parent.horizontalCenter
+            VPNFooterLink {
+                id: skipLink
 
                 labelText: qsTrId("vpn.feedbackForm.skip")
                 onClicked: feedbackStackView.push(thankYouView);

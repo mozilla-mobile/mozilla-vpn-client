@@ -8,7 +8,6 @@
 #include "task.h"
 
 #include <QObject>
-#include <QPointer>
 
 class TaskAccountAndServers final : public Task {
   Q_DISABLE_COPY_MOVE(TaskAccountAndServers)

@@ -7,6 +7,7 @@
 #include "helper.h"
 #include "networkrequest.h"
 #include "constants.h"
+#include "settingsholder.h"
 
 namespace {};
 
@@ -37,7 +38,8 @@ NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
 
 // static
 QString NetworkRequest::apiBaseUrl() {
-  return QString(Constants::API_STAGING_URL);
+  return SettingsHolder::instance()->envOrDefault(
+      "MVPN_API_BASE_URL", Constants::API_PRODUCTION_URL);
 }
 
 // static
@@ -54,6 +56,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 
 // static
 NetworkRequest* NetworkRequest::createForDeviceCreation(QObject* parent,
+                                                        const QString&,
                                                         const QString&,
                                                         const QString&) {
   return new NetworkRequest(parent, 1234, false);
@@ -140,3 +143,7 @@ NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
 void NetworkRequest::replyFinished() { QFAIL("Not called!"); }
 
 void NetworkRequest::timeout() {}
+
+void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
+  Q_UNUSED(errors);
+}

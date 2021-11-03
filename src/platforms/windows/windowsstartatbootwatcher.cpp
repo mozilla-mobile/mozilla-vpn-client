@@ -5,6 +5,8 @@
 #include "windowsstartatbootwatcher.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "settingsholder.h"
+
 #include <QCoreApplication>
 #include <QSettings>
 #include <QDir>
@@ -23,7 +25,7 @@ WindowsStartAtBootWatcher::~WindowsStartAtBootWatcher() {
   MVPN_COUNT_DTOR(WindowsStartAtBootWatcher);
 }
 
-void WindowsStartAtBootWatcher::startAtBootChanged(bool startAtBoot) {
+void WindowsStartAtBootWatcher::startAtBootChanged(const bool& startAtBoot) {
   logger.debug() << "StartAtBoot changed:" << startAtBoot;
   QSettings settings(
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",

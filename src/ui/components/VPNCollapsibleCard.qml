@@ -6,8 +6,7 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
 
-import "../themes/themes.js" as Theme
-import "../themes/colors.js" as Color
+import themes 0.1
 
 Rectangle {
     id: root
@@ -23,7 +22,7 @@ Rectangle {
     radius: Theme.cornerRadius
     width: parent.width
 
-    VPNDropShadow {
+    VPNDropShadowWithStates {
         anchors.fill: shadowSource
         source: shadowSource
         state: "overwrite-state"
@@ -128,7 +127,7 @@ Rectangle {
                     id: chevron
 
                     anchors.centerIn: stateIndicator
-                    source: "../resources/chevron-right-dark.svg"
+                    source: "qrc:/ui/resources/chevron-right-dark.svg"
 
                     Behavior on rotation {
                         NumberAnimation {

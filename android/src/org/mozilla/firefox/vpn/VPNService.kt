@@ -10,12 +10,14 @@ import android.os.Build
 import android.os.IBinder
 import android.system.OsConstants
 import com.wireguard.android.util.SharedLibraryLoader
-import com.wireguard.config.Config
+import com.wireguard.config.*
+import com.wireguard.crypto.Key
+import org.json.JSONObject
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
-    private var mConfig: Config? = null
+    private var mConfig: JSONObject? = null
     private var mConnectionTime: Long = 0
     private var mAlreadyInitialised = false
 
@@ -65,7 +67,6 @@ class VPNService : android.net.VpnService() {
             }
         }
         // This start is from always-on
-
         if (this.mConfig == null) {
             // We don't have tunnel to turn on - Try to create one with last config the service got
             val prefs = Prefs.get(this)
@@ -78,7 +79,7 @@ class VPNService : android.net.VpnService() {
                 )
                 return super.onStartCommand(intent, flags, startId)
             }
-            this.mConfig = mBinder.buildConfigFromJSON(lastConfString)
+            this.mConfig = JSONObject(lastConfString)
         }
         turnOn(this.mConfig!!)
         return super.onStartCommand(intent, flags, startId)
@@ -109,22 +110,21 @@ class VPNService : android.net.VpnService() {
             mBinder.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
             mConnectionTime = 0
         }
-    val totalRx: Int
+    val status: JSONObject
         get() {
-            val value = getConfigValue("rx_bytes") ?: return 0
-            return value.toInt()
+            val deviceIpv4: String = ""
+            return JSONObject().apply {
+                putOpt("rx_bytes", getConfigValue("rx_bytes"))
+                putOpt("tx_bytes", getConfigValue("tx_bytes"))
+                putOpt("endpoint", mConfig?.getJSONObject("server")?.getString("ipv4Gateway"))
+                putOpt("deviceIpv4", mConfig?.getJSONObject("device")?.getString("ipv4Address"))
+            }
         }
-    val totalTx: Int
-        get() {
-            val value = getConfigValue("tx_bytes") ?: return 0
-            return value.toInt()
-        }
-
-     /*
-     * Checks if the VPN Permission is given. 
-     * If the permission is given, returns true
-     * Requests permission and returns false if not.
-     */
+      /*
+      * Checks if the VPN Permission is given. 
+      * If the permission is given, returns true
+      * Requests permission and returns false if not.
+      */
     fun checkPermissions(): Boolean {
         // See https://developer.android.com/guide/topics/connectivity/vpn#connect_a_service
         // Call Prepare, if we get an Intent back, we dont have the VPN Permission
@@ -138,27 +138,24 @@ class VPNService : android.net.VpnService() {
         return false
     }
 
-    fun turnOn(newConf: Config?) {
-        if (newConf == null) {
-            return
-        }
+    fun turnOn(json: JSONObject) {
+        Log.sensitive(tag, json.toString())
+        val wireguard_conf = buildWireugardConfig(json)
+
         if (!checkPermissions()) {
             Log.e(tag, "turn on was called without no permissions present!")
             isUp = false
             return
         }
         Log.i(tag, "Permission okay")
-        mConfig = newConf
         if (currentTunnelHandle != -1) {
             Log.e(tag, "Tunnel already up")
             // Turn the tunnel down because this might be a switch
             wgTurnOff(currentTunnelHandle)
         }
-
-        val wgConfig: String = newConf!!.toWgUserspaceString()
-
+        val wgConfig: String = wireguard_conf!!.toWgUserspaceString()
         val builder = Builder()
-        setupBuilder(newConf, builder)
+        setupBuilder(wireguard_conf, builder)
         builder.setSession("mvpn0")
         builder.establish().use { tun ->
             if (tun == null)return
@@ -172,7 +169,16 @@ class VPNService : android.net.VpnService() {
         }
         protect(wgGetSocketV4(currentTunnelHandle))
         protect(wgGetSocketV6(currentTunnelHandle))
+        mConfig = json
         isUp = true
+
+        // Store the config in case the service gets
+        // asked boot vpn from the OS
+        val prefs = Prefs.get(this)
+        prefs.edit()
+            .putString("lastConf", json.toString())
+            .apply()
+
         NotificationUtil.get(this)?.show(this) // Go foreground
     }
 
@@ -232,6 +238,49 @@ class VPNService : android.net.VpnService() {
             }
         }
         return null
+    }
+
+    /**
+     * Create a Wireguard [Config]  from a [json] string -
+     * The [json] will be created in AndroidController.cpp
+     */
+    private fun buildWireugardConfig(obj: JSONObject): Config {
+        val confBuilder = Config.Builder()
+        val jServer = obj.getJSONObject("server")
+        val peerBuilder = Peer.Builder()
+        val ep =
+            InetEndpoint.parse(jServer.getString("ipv4AddrIn") + ":" + jServer.getString("port"))
+        peerBuilder.setEndpoint(ep)
+        peerBuilder.setPublicKey(Key.fromBase64(jServer.getString("publicKey")))
+
+        val jAllowedIPList = obj.getJSONArray("allowedIPs")
+        if (jAllowedIPList.length() == 0) {
+            val internet = InetNetwork.parse("0.0.0.0/0") // aka The whole internet.
+            peerBuilder.addAllowedIp(internet)
+        } else {
+            (0 until jAllowedIPList.length()).toList().forEach {
+                val network = InetNetwork.parse(jAllowedIPList.getString(it))
+                peerBuilder.addAllowedIp(network)
+            }
+        }
+
+        confBuilder.addPeer(peerBuilder.build())
+
+        val privateKey = obj.getJSONObject("keys").getString("privateKey")
+        val jDevice = obj.getJSONObject("device")
+
+        val ifaceBuilder = Interface.Builder()
+        ifaceBuilder.parsePrivateKey(privateKey)
+        ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv4Address")))
+        ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv6Address")))
+        ifaceBuilder.addDnsServer(InetNetwork.parse(obj.getString("dns")).address)
+        val jExcludedApplication = obj.getJSONArray("excludedApps")
+        (0 until jExcludedApplication.length()).toList().forEach {
+            val appName = jExcludedApplication.get(it).toString()
+            ifaceBuilder.excludeApplication(appName)
+        }
+        confBuilder.setInterface(ifaceBuilder.build())
+        return confBuilder.build()
     }
 
     companion object {

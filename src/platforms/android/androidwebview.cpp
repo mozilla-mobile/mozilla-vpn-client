@@ -11,7 +11,6 @@
 #include "networkmanager.h"
 
 #include <QAndroidJniEnvironment>
-#include <QDebug>
 #include <QQuickRenderControl>
 #include <QQuickWindow>
 #include <QThread>
@@ -189,6 +188,7 @@ void AndroidWebView::updatePolish() {
   m_window->setVisible(isVisible());
 }
 
+#if QT_VERSION < 0x060000
 void AndroidWebView::geometryChanged(const QRectF& newGeometry,
                                      const QRectF& oldGeometry) {
   QQuickItem::geometryChanged(newGeometry, oldGeometry);
@@ -196,6 +196,15 @@ void AndroidWebView::geometryChanged(const QRectF& newGeometry,
     polish();
   }
 }
+#else
+void AndroidWebView::geometryChange(const QRectF& newGeometry,
+                                    const QRectF& oldGeometry) {
+  QQuickItem::geometryChange(newGeometry, oldGeometry);
+  if (newGeometry.isValid()) {
+    polish();
+  }
+}
+#endif
 
 void AndroidWebView::propagateError(ErrorHandler::ErrorType error) {
   MozillaVPN::instance()->errorHandle(error);

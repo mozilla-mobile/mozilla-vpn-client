@@ -11,7 +11,11 @@
 #include <QJsonValue>
 #include <QTextStream>
 
-#ifdef QT_DEBUG
+#ifdef MVPN_WINDOWS
+#  include <QSslSocket>
+#endif
+
+#ifdef MVPN_DEBUG
 #  include <QRandomGenerator>
 #endif
 
@@ -21,6 +25,8 @@
 #  include "platforms/macos/macosutils.h"
 #elif MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
+#elif MVPN_WINDOWS
+#  include "platforms/windows/windowscommons.h"
 #endif
 
 // static
@@ -37,6 +43,9 @@ QString Device::currentDeviceName() {
       AndroidUtils::GetDeviceName();
 #elif MVPN_WASM
       "WASM";
+#elif MVPN_WINDOWS
+      QSysInfo::machineHostName() + " " + QSysInfo::productType() + " " +
+      WindowsCommons::WindowsVersion();
 #else
       QSysInfo::machineHostName() + " " + QSysInfo::productType() + " " +
       QSysInfo::productVersion();
@@ -51,12 +60,30 @@ QString Device::currentDeviceReport() {
   QTextStream out(&buffer);
   out << "Name -> " << currentDeviceName() << Qt::endl;
   out << "ABI -> " << QSysInfo::buildAbi() << Qt::endl;
+  out << "Machine arch -> " << QSysInfo::currentCpuArchitecture() << Qt::endl;
   out << "OS -> " << QSysInfo::productType() << Qt::endl;
+#ifdef MVPN_WINDOWS
+  out << "OS Version -> " << WindowsCommons::WindowsVersion() << Qt::endl;
+#else
   out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
+#endif
   out << "APP Version -> " << APP_VERSION << Qt::endl;
   out << "Build ID -> " << BUILD_ID << Qt::endl;
+  out << "Device ID -> " << uniqueDeviceId() << Qt::endl;
+
+#ifdef MVPN_WINDOWS
+  out << "SSL Lib:" << QSslSocket::sslLibraryVersionString()
+      << QSslSocket::sslLibraryVersionNumber() << Qt::endl;
+#endif
 
   return buffer;
+}
+
+QString Device::uniqueDeviceId() {
+#if MVPN_ANDROID
+  return AndroidUtils::DeviceId();
+#endif
+  return QSysInfo::machineUniqueId();
 }
 
 Device::Device() { MVPN_COUNT_CTOR(Device); }
@@ -70,6 +97,7 @@ Device& Device::operator=(const Device& other) {
   if (this == &other) return *this;
 
   m_deviceName = other.m_deviceName;
+  m_uniqueId = other.m_uniqueId;
   m_createdAt = other.m_createdAt;
   m_publicKey = other.m_publicKey;
   m_ipv4Address = other.m_ipv4Address;
@@ -91,6 +119,9 @@ bool Device::fromJson(const QJsonValue& json) {
   if (!name.isString()) {
     return false;
   }
+
+  QJsonValue uniqueId = obj.value("unique_id");
+  // No checks here.
 
   QJsonValue pubKey = obj.value("pubkey");
   if (!pubKey.isString()) {
@@ -118,6 +149,7 @@ bool Device::fromJson(const QJsonValue& json) {
   }
 
   m_deviceName = name.toString();
+  m_uniqueId = uniqueId.isString() ? uniqueId.toString() : "";
   m_createdAt = date;
   m_publicKey = pubKey.toString();
   m_ipv4Address = ipv4Address.toString();

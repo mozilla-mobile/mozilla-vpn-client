@@ -4,9 +4,9 @@
 
 import QtQuick 2.0
 import QtQuick.Layouts 1.14
-import Mozilla.VPN 1.0
 
-import "../themes/themes.js" as Theme
+import Mozilla.VPN 1.0
+import themes 0.1
 
 RowLayout {
     property real defaultWidth: Theme.fontSize * 0.25

@@ -5,9 +5,10 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../components"
-import "../themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 Item {
     id: viewAboutUs
@@ -34,14 +35,13 @@ Item {
             linkTitle: qsTrId("vpn.aboutUs.privacyNotice2")
             openUrl: VPN.LinkPrivacyNotice
         }
+
         ListElement {
             linkId: "license"
 
-            //% "License"
-            linkTitle: qsTrId("vpn.aboutUs.license")
-            openUrl: VPN.LinkLicense
+            linkTitleId: "AboutUsLicenses"
+            openView: "qrc:/ui/views/ViewLicenses.qml"
         }
-
     }
 
     VPNMenu {
@@ -136,9 +136,23 @@ Item {
 
         delegate: VPNExternalLinkListItem {
             objectName: "aboutUsList-" + linkId
-            title: linkTitle
-            accessibleName: linkTitle
-            onClicked: VPN.openLink(openUrl)
+            title: linkTitleId ? VPNl18n[linkTitleId] : linkTitle
+            accessibleName: title
+            onClicked: {
+                if (openUrl) {
+                    VPN.openLink(openUrl)
+                }
+                if (openView) {
+                    if (isSettingsView) {
+                        settingsStackView.push(openView, { isSettingsView, isMainView })
+                    } else if (isMainView) {
+                        mainStackView.push(openView, { isSettingsView, isMainView })
+                    } else {
+                        stackview.push(openView, { isSettingsView, isMainView })
+                    }
+                }
+            }
+            iconSource: openUrl ? "qrc:/ui/resources/externalLink.svg" : "qrc:/ui/resources/chevron.svg"
         }
 
         ScrollBar.vertical: ScrollBar {

@@ -56,7 +56,11 @@ void NetworkRequest::abort() {}
 
 // static
 QString NetworkRequest::apiBaseUrl() {
-  return QString(Constants::API_STAGING_URL);
+  if (Constants::inProduction()) {
+    return Constants::API_PRODUCTION_URL;
+  }
+
+  return Constants::getStagingServerAddress();
 }
 
 // static
@@ -84,6 +88,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 
 // static
 NetworkRequest* NetworkRequest::createForDeviceCreation(QObject* parent,
+                                                        const QString&,
                                                         const QString&,
                                                         const QString&) {
   Q_ASSERT(parent);
@@ -351,3 +356,7 @@ void NetworkRequest::postRequest(const QByteArray&) {}
 void NetworkRequest::handleReply(QNetworkReply*) {}
 
 int NetworkRequest::statusCode() const { return 200; }
+
+void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
+  Q_UNUSED(errors);
+}

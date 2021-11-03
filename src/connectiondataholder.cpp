@@ -110,8 +110,8 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
   logger.info() << "Activated";
   updateIpAddress();
 
-  QtCharts::QSplineSeries* txSeries =
-      qobject_cast<QtCharts::QSplineSeries*>(a_txSeries.value<QObject*>());
+  QSplineSeries* txSeries =
+      qobject_cast<QSplineSeries*>(a_txSeries.value<QObject*>());
   Q_ASSERT(txSeries);
 
   if (m_txSeries != txSeries) {
@@ -120,8 +120,8 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
             &ConnectionDataHolder::deactivate);
   }
 
-  QtCharts::QSplineSeries* rxSeries =
-      qobject_cast<QtCharts::QSplineSeries*>(a_rxSeries.value<QObject*>());
+  QSplineSeries* rxSeries =
+      qobject_cast<QSplineSeries*>(a_rxSeries.value<QObject*>());
   Q_ASSERT(rxSeries);
 
   if (m_rxSeries != rxSeries) {
@@ -130,8 +130,7 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
             &ConnectionDataHolder::deactivate);
   }
 
-  QtCharts::QValueAxis* axisX =
-      qobject_cast<QtCharts::QValueAxis*>(a_axisX.value<QObject*>());
+  QValueAxis* axisX = qobject_cast<QValueAxis*>(a_axisX.value<QObject*>());
   Q_ASSERT(axisX);
 
   if (m_axisX != axisX) {
@@ -140,8 +139,7 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
             &ConnectionDataHolder::deactivate);
   }
 
-  QtCharts::QValueAxis* axisY =
-      qobject_cast<QtCharts::QValueAxis*>(a_axisY.value<QObject*>());
+  QValueAxis* axisY = qobject_cast<QValueAxis*>(a_axisY.value<QObject*>());
   Q_ASSERT(axisY);
 
   if (m_axisY != axisY) {
@@ -231,15 +229,19 @@ void ConnectionDataHolder::updateIpAddress() {
           return;
         }
 
-        MozillaVPN* vpn = MozillaVPN::instance();
         logger.debug() << "IP address request completed";
+
+    // Let's skip this for unit-tests to make them simpler.
+#ifndef UNIT_TEST
         if (m_checkStatusTimer.isActive() &&
-            country != vpn->currentServer()->exitCountryCode()) {
+            country !=
+                MozillaVPN::instance()->currentServer()->exitCountryCode()) {
           // In case the country-we're reported in does not match the
           // connected server we may retry only once.
           logger.warning() << "Reported ip not in the right country, retry!";
           TimerSingleShot::create(this, 3000, [this]() { updateIpAddress(); });
         }
+#endif
 
         if (!ipv4.isEmpty()) {
           m_ipv4Address = ipv4;

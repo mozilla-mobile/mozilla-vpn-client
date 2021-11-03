@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/leakdetector.h"
+#include "../../src/settingsholder.h"
 #include "constants.h"
 #include "helper.h"
 
@@ -14,11 +15,14 @@ QVector<QObject*> TestHelper::testList;
 TestHelper::TestHelper() { testList.append(this); }
 
 int main(int argc, char* argv[]) {
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);
 #endif
-  Constants::setStaging();
+  {
+    SettingsHolder settingsHolder;
+    Constants::setStaging();
+  }
 
   QCoreApplication a(argc, argv);
 

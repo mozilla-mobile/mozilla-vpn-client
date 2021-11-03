@@ -5,10 +5,10 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
-import "../components"
+import components 0.1
 
 VPNStackView {
     id: moduleStackview
 
-    initialItem: "../modules/ModuleMain.qml"
+    initialItem: "qrc:/ui/modules/ModuleMain.qml"
 }

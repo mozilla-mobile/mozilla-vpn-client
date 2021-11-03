@@ -15,13 +15,15 @@ Logger logger(QStringList{LOG_MAIN, LOG_CONTROLLER}, "TaskControllerAction");
 
 TaskControllerAction::TaskControllerAction(
     TaskControllerAction::TaskAction action)
-    : Task("TaskControllerAction"), m_action(action) {
+    : Task("TaskControllerAction"),
+      m_action(action),
+      m_lastState(Controller::State::StateOff) {
   MVPN_COUNT_CTOR(TaskControllerAction);
 
   logger.debug() << "TaskControllerAction created for"
                  << (action == eActivate ? "activation" : "deactivation");
 
-  connect(&m_timer, &QTimer::timeout, this, &TaskControllerAction::completed);
+  connect(&m_timer, &QTimer::timeout, this, &TaskControllerAction::checkStatus);
 }
 
 TaskControllerAction::~TaskControllerAction() {
@@ -43,6 +45,8 @@ void TaskControllerAction::run(MozillaVPN* vpn) {
   }
 
   bool expectSignal = false;
+
+  m_lastState = controller->state();
 
   switch (m_action) {
     case eActivate:
@@ -91,4 +95,15 @@ void TaskControllerAction::silentSwitchDone() {
   logger.debug() << "Operation completed";
   m_timer.stop();
   emit completed();
+}
+
+void TaskControllerAction::checkStatus() {
+  Controller* controller = MozillaVPN::instance()->controller();
+  Q_ASSERT(controller);
+  if (controller->state() == m_lastState) {
+    m_timer.stop();
+    emit completed();
+  } else {
+    m_lastState = controller->state();
+  }
 }

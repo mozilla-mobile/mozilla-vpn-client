@@ -39,7 +39,7 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
 
     connect(request, &NetworkRequest::requestCompleted,
             [this, vpn](const QByteArray& data) {
-              logger.error() << "Account request completed";
+              logger.debug() << "Account request completed";
               vpn->accountChecked(data);
               m_accountCompleted = true;
               maybeCompleted();

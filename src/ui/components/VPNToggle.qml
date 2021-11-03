@@ -4,14 +4,16 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.5
-import Mozilla.VPN 1.0
 
-import "../themes/themes.js" as Theme
+import Mozilla.VPN 1.0
+import components 0.1
+import themes 0.1
 
 VPNButtonBase {
     id: toggleButton
 
     property var connectionRetryOverX: VPNController.connectionRetry > 1
+    property var enableDisconnectInConfirming: VPNController.enableDisconnectInConfirming
     property var toggleColor: Theme.vpnToggleDisconnected
     property var toolTipTitle: ""
     Accessible.name: toolTipTitle
@@ -270,7 +272,8 @@ VPNButtonBase {
         return VPN.state === VPN.StateMain &&
                (VPNController.state === VPNController.StateOn ||
                 VPNController.state === VPNController.StateOff ||
-                (VPNController.state === VPNController.StateConfirming && connectionRetryOverX));
+                (VPNController.state === VPNController.StateConfirming &&
+                 (connectionRetryOverX || enableDisconnectInConfirming)));
     }
 
     // Toggle background color changes on hover and press

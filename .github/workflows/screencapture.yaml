@@ -40,8 +40,7 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
-          pip3 install glean_parser
-          pip3 install pyyaml
+          pip3 install -r requirements.txt
           python3 scripts/generate_glean.py
 
       - name: Importing translation files
@@ -76,6 +75,7 @@ jobs:
         run: |
           export PATH=.:$(npm bin):$PATH
           export HEADLESS=yes
+          export MVPN_API_BASE_URL="https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net"
           xvfb-run -a ./scripts/test_function.sh ./src/mozillavpn tests/functional/screenCapture.js
         env:
           ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}

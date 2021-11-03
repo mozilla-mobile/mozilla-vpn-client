@@ -12,9 +12,10 @@ DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += BUILD_ID=\\\"1234\\\"
 
 DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 DEFINES += UNIT_TEST
 
-config += debug
+config += mvpn_debug
 
 TEMPLATE = app
 TARGET = tests
@@ -45,7 +46,6 @@ HEADERS += \
     ../../src/inspector/inspectorwebsocketconnection.h \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
-    ../../src/l18nstringsimpl.h \
     ../../src/leakdetector.h \
     ../../src/logger.h \
     ../../src/loghandler.h \

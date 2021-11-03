@@ -84,7 +84,7 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
   for (SKPaymentTransaction* transaction in transactions) {
     switch (transaction.transactionState) {
       case SKPaymentTransactionStateFailed:
-        logger.error() << "transaction failed";
+        logger.error() << "transaction failed: " << transaction.error.code;
 
         if (transaction.error.code == SKErrorPaymentCancelled) {
           canceledTransactions = true;
@@ -114,8 +114,7 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
 
         completedTransactions = true;
 
-        SettingsHolder* settingsHolder = SettingsHolder::instance();
-        if (settingsHolder->hasSubscriptionTransaction(identifier)) {
+        if (SettingsHolder::instance()->subscriptionTransactions().contains(identifier)) {
           logger.warning() << "This transaction has already been processed. Let's ignore it.";
         } else {
           completedTransactionIds.append(identifier);
@@ -153,7 +152,7 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
     logger.debug() << "Subscription completed - but all the transactions are known";
     QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
-  } else if (MozillaVPN::instance()->userAuthenticated()) {
+  } else if (MozillaVPN::instance()->userState() == MozillaVPN::UserAuthenticated) {
     Q_ASSERT(completedTransactions);
     logger.debug() << "Subscription completed. Let's start the validation";
     QMetaObject::invokeMethod(m_handler, "processCompletedTransactions", Qt::QueuedConnection,
@@ -178,20 +177,6 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
         break;
     }
   }
-}
-
-- (void)requestDidFinish:(SKRequest*)request {
-  logger.debug() << "Receipt refreshed correctly";
-  QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
-  QMetaObject::invokeMethod(m_handler, "processCompletedTransactions", Qt::QueuedConnection,
-                            Q_ARG(QStringList, QStringList()));
-}
-
-- (void)request:(SKRequest*)request didFailWithError:(NSError*)error {
-  logger.error() << "Failed to refresh the receipt"
-                 << QString::fromNSString(error.localizedDescription);
-  QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
-  QMetaObject::invokeMethod(m_handler, "subscriptionFailed", Qt::QueuedConnection);
 }
 
 @end
@@ -305,8 +290,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
   logger.debug() << "process completed transactions";
 
   if (m_subscriptionState != eActive) {
-    logger.warning() << "Random transaction to be completed. Let's ignore it";
-    return;
+    logger.warning() << "Completing transaction out of subscription process!";
   }
 
   QString receipt = IOSUtils::IAPReceipt();
@@ -321,11 +305,6 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Purchase request failed" << error;
-
-            if (m_subscriptionState != eActive) {
-              logger.warning() << "We have been canceled in the meantime";
-              return;
-            }
 
             stopSubscription();
 
@@ -356,13 +335,13 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
 
   connect(request, &NetworkRequest::requestCompleted, [this, ids](const QByteArray&) {
     logger.debug() << "Purchase request completed";
-    SettingsHolder::instance()->addSubscriptionTransactions(ids);
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
 
-    if (m_subscriptionState != eActive) {
-      logger.warning() << "We have been canceled in the meantime";
-      return;
-    }
-
+    QStringList transactions = settingsHolder->subscriptionTransactions();
+    transactions.append(ids);
+    settingsHolder->setSubscriptionTransactions(transactions);
+    
     stopSubscription();
     emit subscriptionCompleted();
   });

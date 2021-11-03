@@ -17,18 +17,20 @@
 #include <QtTest/QtTest>
 
 int main(int argc, char* argv[]) {
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);
 #endif
 
+  SettingsHolder settingsHolder;
   Constants::setStaging();
 
   QCoreApplication a(argc, argv);
 
   SimpleNetworkManager snm;
-  SettingsHolder settingsHolder;
   FeatureList::instance()->initialize();
+
+  settingsHolder.setDevModeFeatureFlags(QStringList{"inAppAccountCreate"});
 
   int failures = 0;
   TestEmailValidation tev;

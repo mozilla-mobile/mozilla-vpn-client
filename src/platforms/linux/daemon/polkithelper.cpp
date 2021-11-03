@@ -3,10 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "polkithelper.h"
+#include "logger.h"
 
+// No extra QT includes after this line!
+#undef Q_SIGNALS
 #include "polkit/polkit.h"
 
-#include <QDebug>
+namespace {
+Logger logger(LOG_LINUX, "PolkitHelper");
+}  // namespace
 
 class Helper final {
  public:
@@ -38,14 +43,14 @@ PolkitHelper* PolkitHelper::instance() {
 }
 
 bool PolkitHelper::checkAuthorization(const QString& actionId) {
-  qDebug() << "Check Authorization for" << actionId;
+  logger.debug() << "Check Authorization for" << actionId;
 
   Helper h;
 
   PolkitAuthority* authority = polkit_authority_get_sync(NULL, &h.m_error);
   if (h.m_error) {
-    qDebug() << "Fail to generate a polkit authority object:"
-             << h.m_error->message;
+    logger.debug() << "Fail to generate a polkit authority object:"
+                   << h.m_error->message;
     return false;
   }
 
@@ -56,7 +61,7 @@ bool PolkitHelper::checkAuthorization(const QString& actionId) {
       POLKIT_CHECK_AUTHORIZATION_FLAGS_ALLOW_USER_INTERACTION, nullptr,
       &h.m_error);
   if (h.m_error) {
-    qDebug() << "Authorization sync failed:" << h.m_error->message;
+    logger.debug() << "Authorization sync failed:" << h.m_error->message;
     return false;
   }
 

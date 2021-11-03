@@ -10,7 +10,6 @@
 #include <QAbstractListModel>
 #include <QByteArray>
 #include <QObject>
-#include <QPointer>
 
 class ServerData;
 
@@ -56,9 +55,6 @@ class ServerCountryModel final : public QAbstractListModel {
   const QList<ServerCountry>& countries() const { return m_countries; }
 
   void retranslate();
-
-  // For the web-extension
-  const QByteArray& rawJson() const { return m_rawJson; }
 
   // QAbstractListModel methods
 
