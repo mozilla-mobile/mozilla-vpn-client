@@ -38,7 +38,7 @@ class User final : public QObject {
 
   const QString& email() const { return m_email; }
 
-  int maxDevices() const { return (int)m_maxDevices; }
+  int maxDevices() const { return m_maxDevices; }
 
   bool subscriptionNeeded() const { return m_subscriptionNeeded; }
 
