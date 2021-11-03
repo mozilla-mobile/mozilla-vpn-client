@@ -82,8 +82,8 @@ class NotificationUtil {
             .putString("fallbackNotificationMessage", content.getString("idleText"))
             .apply()
 
-        val channelName = content.getString("group_statusChange")
-        val channelDescription = content.getString("group_statusChange_desc")
+        val channelName = content.getString("notification_group_name")
+        val channelDescription = ""
         updateNotificationChannel(channelName, channelDescription)
 
         Log.v(tag, "Saved new fallback message -> ${content.getString("title")}")
@@ -124,7 +124,7 @@ class NotificationUtil {
             return
         }
         val name = aTitle ?: "General"
-        val descriptionText = aDescription ?: "All thze notifications!"
+        val descriptionText = aDescription ?: ""
         val importance = NotificationManager.IMPORTANCE_LOW
         val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance).apply {
             description = descriptionText

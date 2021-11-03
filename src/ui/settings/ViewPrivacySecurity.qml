@@ -90,7 +90,7 @@ Item {
                     imageLeftSrc: "qrc:/ui/resources/settings/notifications.svg"
                     imageRightSrc: "qrc:/ui/resources/chevron.svg"
                     onClicked: {
-                        if(Qt.platform.os == "android"){
+                        if(Qt.platform.os === "android"){
                             VPNAndroidUtils.openNotificationSettings();
                             return;
                         }

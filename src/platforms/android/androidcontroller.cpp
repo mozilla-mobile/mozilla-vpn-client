@@ -125,17 +125,14 @@ void AndroidController::setNotificationText(const QString& title,
  * e.g via always-on vpn
  */
 void AndroidController::applyStrings() {
-#define GETSTRING(key) \
-  L18nStrings::instance()->tr(L18nStrings::AndroidNotifications##key);
-
   QJsonObject localisedMessages;
   localisedMessages["productName"] = qtTrId("vpn.main.productName");
   //% "Ready for you to connect"
   //: Refers to the app - which is currently running the background and waiting
   localisedMessages["idleText"] = qtTrId("vpn.android.notification.isIDLE");
-  localisedMessages["group_statusChange"] = GETSTRING(StatusChanges);
-  localisedMessages["group_statusChange_desc"] =
-      GETSTRING(StatusChangesDescription);
+  localisedMessages["notification_group_name"] = L18nStrings::instance()->t(
+      L18nStrings::AndroidNotificationsGeneralNotifications);
+
 #undef MESSAGE
   QJsonDocument doc(localisedMessages);
   QAndroidParcel data;

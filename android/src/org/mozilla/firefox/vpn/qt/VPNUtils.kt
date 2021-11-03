@@ -84,7 +84,7 @@ object VPNUtils {
             intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS")
             intent.putExtra("app_package", context.getPackageName())
             intent.putExtra("app_uid", context.getApplicationInfo().uid)
-        context.startActivity(intent)
         }
+        context.startActivity(intent)
     }
 }

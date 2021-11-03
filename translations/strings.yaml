@@ -271,11 +271,7 @@ settings:
 aboutUs:
   licenses: Licenses
 
-## TODO Ask crooney for proper strings :) 
 AndroidNotifications:
-  StatusChanges:
-    value: Connection Status Changes
-    comment: Type of Notification - I.e. User wants to be notified if the "Status changes"
-  StatusChangesDescription:
-    value: Get notifications if the vpn status changes
-    comment: Description of the Status Changes notification type.
+  GeneralNotifications:
+    value: General Notifications
+    comment: A notification channel; so the user can subscribe to "General Notifications"
