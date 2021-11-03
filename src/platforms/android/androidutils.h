@@ -36,6 +36,8 @@ class AndroidUtils final : public QObject {
 
   Q_INVOKABLE bool maybeCompleteAuthentication(const QString& url);
 
+  Q_INVOKABLE void openNotificationSettings();
+
   static void dispatchToMainThread(std::function<void()> callback);
 
   static QByteArray getQByteArrayFromJString(JNIEnv* env, jstring data);
