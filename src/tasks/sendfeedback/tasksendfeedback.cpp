@@ -30,9 +30,7 @@ TaskSendFeedback::TaskSendFeedback(const QString& feedbackText,
 
 TaskSendFeedback::~TaskSendFeedback() { MVPN_COUNT_DTOR(TaskSendFeedback); }
 
-void TaskSendFeedback::run(MozillaVPN* vpn) {
-  Q_UNUSED(vpn);
-
+void TaskSendFeedback::run() {
   logger.debug() << "Sending the feedback";
 
   NetworkRequest* request = NetworkRequest::createForFeedback(

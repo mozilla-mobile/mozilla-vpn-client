@@ -55,7 +55,7 @@ void TaskScheduler::maybeRunTask() {
   QObject::connect(m_running_task, &Task::completed, this,
                    &TaskScheduler::taskCompleted);
 
-  m_running_task->run(MozillaVPN::instance());
+  m_running_task->run();
 }
 
 void TaskScheduler::taskCompleted() {

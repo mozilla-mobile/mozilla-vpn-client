@@ -31,23 +31,24 @@ TaskRemoveDevice::~TaskRemoveDevice() {
   }
 }
 
-void TaskRemoveDevice::run(MozillaVPN* vpn) {
+void TaskRemoveDevice::run() {
   logger.debug() << "Removing the device with public key" << m_publicKey;
 
   NetworkRequest* request =
       NetworkRequest::createForDeviceRemoval(this, m_publicKey);
 
-  connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Failed to remove the device" << error;
-            vpn->errorHandle(ErrorHandler::toErrorType(error));
-            emit completed();
-          });
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this](QNetworkReply::NetworkError error, const QByteArray&) {
+        logger.error() << "Failed to remove the device" << error;
+        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        emit completed();
+      });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn](const QByteArray&) {
+          [this](const QByteArray&) {
             logger.debug() << "Device removed";
-            vpn->deviceRemoved(m_publicKey);
+            MozillaVPN::instance()->deviceRemoved(m_publicKey);
             emit completed();
           });
 }

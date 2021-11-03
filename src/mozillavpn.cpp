@@ -267,7 +267,7 @@ void MozillaVPN::initialize() {
       setState(StateAuthenticating);
       TaskScheduler::scheduleTask(new TaskProducts());
       TaskScheduler::scheduleTask(
-          new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
+          new TaskFunction([this]() { maybeStateMain(); }));
       return;
     }
   }
@@ -572,7 +572,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
     if (m_private->m_user.subscriptionNeeded()) {
       TaskScheduler::scheduleTask(new TaskProducts());
       TaskScheduler::scheduleTask(
-          new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
+          new TaskFunction([this]() { maybeStateMain(); }));
       return;
     }
   }
@@ -631,7 +631,7 @@ void MozillaVPN::completeActivation() {
   TaskScheduler::scheduleTask(new TaskSurveyData());
 
   // Finally we are able to activate the client.
-  TaskScheduler::scheduleTask(new TaskFunction([this](MozillaVPN*) {
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the authentication";
       errorHandle(ErrorHandler::RemoteServiceError);
@@ -727,7 +727,7 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   addCurrentDeviceAndRefreshData();
 
   // Finally we are able to activate the client.
-  TaskScheduler::scheduleTask(new TaskFunction([this](MozillaVPN*) {
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (m_state != StateDeviceLimit) {
       return;
     }
@@ -873,8 +873,7 @@ void MozillaVPN::logout() {
     TaskScheduler::scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
   }
 
-  TaskScheduler::scheduleTask(
-      new TaskFunction([](MozillaVPN* vpn) { vpn->reset(false); }));
+  TaskScheduler::scheduleTask(new TaskFunction([this]() { reset(false); }));
 }
 
 void MozillaVPN::reset(bool forceInitialState) {
@@ -1390,10 +1389,9 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   // If IAP is not ready (race condition), register the products again.
   if (!iap->hasProductsRegistered()) {
     TaskScheduler::scheduleTask(new TaskProducts());
-    TaskScheduler::scheduleTask(
-        new TaskFunction([productIdentifier](MozillaVPN* vpn) {
-          vpn->subscriptionStarted(productIdentifier);
-        }));
+    TaskScheduler::scheduleTask(new TaskFunction([this, productIdentifier]() {
+      subscriptionStarted(productIdentifier);
+    }));
 
     return;
   }
@@ -1465,7 +1463,7 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
   }
 
   TaskScheduler::scheduleTask(new TaskAccountAndServers());
-  TaskScheduler::scheduleTask(new TaskFunction([this](MozillaVPN*) {
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!m_private->m_user.subscriptionNeeded() &&
         m_state == StateSubscriptionNeeded) {
       maybeStateMain();

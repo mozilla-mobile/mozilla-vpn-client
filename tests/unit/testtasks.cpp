@@ -75,10 +75,7 @@ void TestTasks::authenticate() {
 
 void TestTasks::function() {
   bool completed = false;
-  TaskFunction* task = new TaskFunction([&](MozillaVPN* vpn) {
-    completed = true;
-    QCOMPARE(vpn, MozillaVPN::instance());
-  });
+  TaskFunction* task = new TaskFunction([&]() { completed = true; });
 
   TaskScheduler::scheduleTask(task);
   QVERIFY(completed);
