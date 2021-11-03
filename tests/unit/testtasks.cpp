@@ -7,6 +7,7 @@
 #include "../../src/tasks/accountandservers/taskaccountandservers.h"
 #include "../../src/tasks/adddevice/taskadddevice.h"
 #include "../../src/tasks/function/taskfunction.h"
+#include "../../src/taskscheduler.h"
 
 void TestTasks::accountAndServers() {
   // Failure
@@ -21,7 +22,7 @@ void TestTasks::accountAndServers() {
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
 
-    MozillaVPN::instance()->scheduleTask(task);
+    TaskScheduler::scheduleTask(task);
     loop.exec();
   }
 
@@ -37,7 +38,7 @@ void TestTasks::accountAndServers() {
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
 
-    MozillaVPN::instance()->scheduleTask(task);
+    TaskScheduler::scheduleTask(task);
     loop.exec();
   }
 }
@@ -51,7 +52,7 @@ void TestTasks::addDevice_success() {
   QEventLoop loop;
   connect(task, &Task::completed, [&]() { loop.exit(); });
 
-  MozillaVPN::instance()->scheduleTask(task);
+  TaskScheduler::scheduleTask(task);
   loop.exec();
 }
 
@@ -64,7 +65,7 @@ void TestTasks::addDevice_failure() {
   QEventLoop loop;
   connect(task, &Task::completed, [&]() { loop.exit(); });
 
-  MozillaVPN::instance()->scheduleTask(task);
+  TaskScheduler::scheduleTask(task);
   loop.exec();
 }
 
@@ -79,7 +80,7 @@ void TestTasks::function() {
     QCOMPARE(vpn, MozillaVPN::instance());
   });
 
-  MozillaVPN::instance()->scheduleTask(task);
+  TaskScheduler::scheduleTask(task);
   QVERIFY(completed);
 }
 
