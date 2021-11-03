@@ -266,7 +266,7 @@ systray:
   quit: Quit Mozilla VPN
 
 settings:
-  preferences: Preferences
+  systemPreferences: System preferences
 
 aboutUs:
   licenses: Licenses
