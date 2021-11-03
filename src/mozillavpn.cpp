@@ -770,6 +770,7 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
       logger.warning() << "Models not initialized yet";
       errorHandle(ErrorHandler::RemoteServiceError);
       SettingsHolder::instance()->clear();
+      setUserState(UserNotAuthenticated);
       setState(StateInitialize);
       return;
     }
