@@ -10,7 +10,6 @@
 
 namespace {
 Logger logger(LOG_MAIN, "TaskScheduler");
-TaskScheduler* s_taskScheduler = nullptr;
 }  // namespace
 
 // static
@@ -25,6 +24,7 @@ void TaskScheduler::deleteTasks() { maybeCreate()->deleteTasksInternal(); }
 
 // static
 TaskScheduler* TaskScheduler::maybeCreate() {
+  static TaskScheduler* s_taskScheduler = nullptr;
   if (!s_taskScheduler) {
     s_taskScheduler = new TaskScheduler(MozillaVPN::instance());
   }

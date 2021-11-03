@@ -9,7 +9,7 @@
 
 class Task;
 
-class TaskScheduler : public QObject {
+class TaskScheduler final : public QObject {
   Q_OBJECT
 
  public:
