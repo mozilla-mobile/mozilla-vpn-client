@@ -86,6 +86,7 @@ void MacOSPingSender::sendPing(const QString& dest, quint16 sequence) {
   if (sendto(m_socket, (char*)&packet, sizeof(packet), 0,
              (struct sockaddr*)&addr, sizeof(addr)) != sizeof(packet)) {
     logger.error() << "ping sending failed:" << strerror(errno);
+    emit criticalPingError();
     return;
   }
 }
