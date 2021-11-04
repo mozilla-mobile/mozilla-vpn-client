@@ -4,6 +4,7 @@
 
 import QtQuick 2.0
 
+import Mozilla.VPN 1.0
 import themes 0.1
 
 VPNFooterLink {
@@ -11,4 +12,5 @@ VPNFooterLink {
     labelText: qsTrId("vpn.main.signOut2")
     fontName: Theme.fontBoldFamily
     linkColor: Theme.redButton
+    onClicked: VPNController.logout()
 }

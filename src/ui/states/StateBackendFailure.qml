@@ -28,11 +28,11 @@ VPNStackView {
                 errorMessage: qsTrId("vpn.errors.unableToEstablishConnection"),
 
                 //% "Try Again"
-                buttonText: qsTrId("vpn.errors.tryAgain"),
+                primaryButtonText: qsTrId("vpn.errors.tryAgain"),
 
-                buttonObjectName: "heartbeatTryButton",
-                buttonOnClick: stackview.handleButtonClick,
-                signOffLinkVisible: false,
+                primaryButtonObjectName: "heartbeatTryButton",
+                primaryButtonOnClick: stackview.handleButtonClick,
+                secondaryButtonIsSignOff: false,
                 getHelpLinkVisible: true,
                 statusLinkVisible: true
             }

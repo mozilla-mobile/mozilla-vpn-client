@@ -28,10 +28,10 @@ VPNStackView {
             errorMessage: VPNl18n.NotSignedInGoogleGoogleModalBodyText,
 
             // Go to Play Store
-            buttonText: VPNl18n.NotSignedInGoogleGoogleModalLinkText,
-            buttonObjectName: "errorGetHelpButton",
-            buttonOnClick: stackview.handleButtonClick,
-            signOffLinkVisible: true,
+            primaryButtonText: VPNl18n.NotSignedInGoogleGoogleModalLinkText,
+            primaryButtonObjectName: "errorGetHelpButton",
+            primaryButtonOnClick: stackview.handleButtonClick,
+            secondaryButtonIsSignOff: true,
             getHelpLinkVisible: true
             }
         );

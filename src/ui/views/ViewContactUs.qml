@@ -58,9 +58,9 @@ Item {
                     mainStackView.replace("qrc:/ui/views/ViewErrorFullScreen.qml", {
                         headlineText: VPNl18n.InAppSupportWorkflowSupportErrorHeader,
                         errorMessage: VPNl18n.InAppSupportWorkflowSupportErrorText,
-                        buttonText: VPNl18n.InAppSupportWorkflowSupportErrorButton,
-                        buttonOnClick: contactUsRoot.tryAgain,
-                        buttonObjectName: "errorTryAgainButton"
+                        primaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorButton,
+                        primaryButtonOnClick: contactUsRoot.tryAgain,
+                        primaryButtonObjectName: "errorTryAgainButton"
                         }
                     );
                 }

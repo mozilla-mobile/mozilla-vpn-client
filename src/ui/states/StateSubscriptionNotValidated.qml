@@ -28,10 +28,10 @@ VPNStackView {
             errorMessage: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorText,
 
             // "Try again"
-            buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
-            buttonObjectName: "errorGetHelpButton",
-            buttonOnClick: stackview.handleButtonClick,
-            signOffLinkVisible: false,
+            primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
+            primaryButtonObjectName: "errorGetHelpButton",
+            primaryButtonOnClick: stackview.handleButtonClick,
+            secondaryButtonIsSignOff: false,
             getHelpLinkVisible: true,
             }
         );

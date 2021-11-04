@@ -31,10 +31,10 @@ VPNStackView {
             errorMessage2: qsTrId("vpn.subscriptionBlocked.visitHelpCenter"),
 
             //% "Get Help"
-            buttonText: qsTrId("vpn.subscriptionBlocked.getHelp"),
-            buttonObjectName: "errorGetHelpButton",
-            buttonOnClick: stackview.handleButtonClick,
-            signOffLinkVisible: true,
+            primaryButtonText: qsTrId("vpn.subscriptionBlocked.getHelp"),
+            primaryButtonObjectName: "errorGetHelpButton",
+            primaryButtonOnClick: stackview.handleButtonClick,
+            secondaryButtonIsSignOff: true,
             getHelpLinkVisible: false
             }
         );

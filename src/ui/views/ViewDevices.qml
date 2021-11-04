@@ -142,9 +142,6 @@ Item {
                     anchors.bottomMargin: undefined
                     Layout.alignment: Qt.AlignHCenter
                     Layout.preferredHeight: Theme.rowHeight
-                    onClicked: {
-                        VPNController.logout();
-                    }
                 }
             }
         }
