@@ -6,7 +6,7 @@
 #include "leakdetector.h"
 #include <iostream>
 
-#ifdef MVPN_WINDOWS&& MVPN_DEBUG
+#if defined MVPN_WINDOWS && defined MVPN_DEBUG 
 #  include <windows.h>
 #endif
 
