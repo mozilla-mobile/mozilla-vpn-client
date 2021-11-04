@@ -18,8 +18,8 @@ class FeatureMultiHop : public Feature {
             L18nStrings::WhatsNewReleaseNotesMultiModalHeader,   // Display name
             L18nStrings::WhatsNewReleaseNotesMultiListItemBody,  // Description
             L18nStrings::WhatsNewReleaseNotesMultiModalBodyText,  // LongDescr
-            "../resources/features/multi-hop-preview.png",        // ImagePath
-            "../resources/location-dark.svg",                     // IconPath
+            "qrc:/ui/resources/features/multi-hop-preview.png",   // ImagePath
+            "qrc:/ui/resources/location-dark.svg",                // IconPath
 #if defined(MVPN_ANDROID) || defined(MVPN_IOS)
             "2.7",  // released for android
 #else
