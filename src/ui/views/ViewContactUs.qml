@@ -30,6 +30,11 @@ Item {
         VPN.createSupportTicket(email, subject, issueText, category);
     }
 
+    function fxaBrowserLink() {
+        VPN.openLink(VPN.LinkContact);
+        contactUsRoot.tryAgain();
+    }
+
     VPNMenu {
         id: menu
         objectName: "supportTicketScreen"
@@ -60,7 +65,11 @@ Item {
                         errorMessage: VPNl18n.InAppSupportWorkflowSupportErrorText,
                         primaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorButton,
                         primaryButtonOnClick: contactUsRoot.tryAgain,
-                        primaryButtonObjectName: "errorTryAgainButton"
+                        primaryButtonObjectName: "errorTryAgainButton",
+                        secondaryButtonIsSignOff: false,
+                        secondaryButtonText: VPNl18n.InAppSupportWorkflowFxALinkText,
+                        secondaryButtonObjctName: "errorFxALinkButton",
+                        secondaryButtonOnClick: contactUsRoot.fxaBrowserLink
                         }
                     );
                 }
