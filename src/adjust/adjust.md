@@ -4,10 +4,12 @@ This document contains the list of data collected by the adjust.sdk framework on
 Currently these fields are sent:
 
 - adid: main adjust generated identifier
+- android_uuid: internal adjust identifier
 - app_token: What identifies one adjust app from another
 - att_status: determing apple ATT status
 - attribution_deeplink: attributing to deeplink-based engagements
 - bundle_id: apple universal linking, some partner requests, general troubleshooting
+- gps_adid: primary advertising id on google android
 - device_type: to determine if it's request is a tablet or phone
 - environment: production or sandbox (so test data vs live data)
 - event token: distinguishes what that event is in adjust (is it a purchase, or a signup for your app)
