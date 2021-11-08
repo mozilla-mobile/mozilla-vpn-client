@@ -13,12 +13,6 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
-
-#ifdef QT_DEBUG
-#  include "gleantest.h"
-#endif
-
-
 #include <functional>
 
 #include <QBuffer>
@@ -467,15 +461,16 @@ static QList<WebSocketCommand> s_commands{
                        return QJsonObject();
                      }},
 
-    WebSocketCommand{"force_captive_portal_detection",
-                     "Simulate a captive portal detection", 0,
-                     [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()
-                           ->captivePortalDetection()
-                           ->captivePortalDetected();
-                       MozillaVPN::instance()->controller()->captivePortalPresent();
-                       return QJsonObject();
-                     }},
+    WebSocketCommand{
+        "force_captive_portal_detection", "Simulate a captive portal detection",
+        0,
+        [](const QList<QByteArray>&) {
+          MozillaVPN::instance()
+              ->captivePortalDetection()
+              ->captivePortalDetected();
+          MozillaVPN::instance()->controller()->captivePortalPresent();
+          return QJsonObject();
+        }},
 
     WebSocketCommand{
         "force_unsecured_network", "Force an unsecured network detection", 0,

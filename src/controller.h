@@ -98,8 +98,6 @@ class Controller final : public QObject {
   bool activate();
   bool deactivate();
 
-
-
   Q_INVOKABLE void quit();
 
  private slots:
