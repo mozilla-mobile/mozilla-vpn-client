@@ -51,7 +51,7 @@ void TestSignUpAndIn::signUp() {
 
   // Starting the authentication flow.
   TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
-  task.run(MozillaVPN::instance());
+  task.run();
 
   EventLoop loop;
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {
@@ -133,7 +133,7 @@ void TestSignUpAndIn::signIn() {
 
   // Starting the authentication flow.
   TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
-  task.run(MozillaVPN::instance());
+  task.run();
 
   EventLoop loop;
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {

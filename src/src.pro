@@ -158,6 +158,7 @@ SOURCES += \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
         tasks/surveydata/tasksurveydata.cpp \
+        taskscheduler.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -289,6 +290,7 @@ HEADERS += \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
         tasks/surveydata/tasksurveydata.h \
+        taskscheduler.h \
         timercontroller.h \
         timersingleshot.h \
         update/updater.h \

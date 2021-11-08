@@ -30,7 +30,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val requestCleanupLog = 6
         const val resumeActivate = 7
         const val setNotificationText = 8
-        const val setFallBackNotification = 9
+        const val setStrings = 9
     }
 
     /**
@@ -113,11 +113,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 return true
             }
             ACTIONS.setNotificationText -> {
-                NotificationUtil.update(data)
+                NotificationUtil.get(mService)?.update(data)
                 return true
             }
-            ACTIONS.setFallBackNotification -> {
-                NotificationUtil.saveFallBackMessage(data, mService)
+            ACTIONS.setStrings -> {
+                NotificationUtil.get(mService)?.updateStrings(data, mService)
                 return true
             }
             IBinder.LAST_CALL_TRANSACTION -> {

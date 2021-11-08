@@ -278,3 +278,7 @@ settings:
 aboutUs:
   licenses: Licenses
 
+AndroidNotifications:
+  GeneralNotifications:
+    value: General Notifications
+    comment: A notification channel; so the user can subscribe to "General Notifications"

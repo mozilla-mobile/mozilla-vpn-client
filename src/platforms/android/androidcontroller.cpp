@@ -9,8 +9,10 @@
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
+#include "notificationhandler.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "l18nstrings.h"
 
 #include <QAndroidBinder>
 #include <QAndroidIntent>
@@ -122,13 +124,17 @@ void AndroidController::setNotificationText(const QString& title,
  * switches into the Connected state without the app open
  * e.g via always-on vpn
  */
-void AndroidController::setFallbackConnectedNotification() {
-  QJsonObject args;
-  args["title"] = qtTrId("vpn.main.productName");
+void AndroidController::applyStrings() {
+  QJsonObject localisedMessages;
+  localisedMessages["productName"] = qtTrId("vpn.main.productName");
   //% "Ready for you to connect"
   //: Refers to the app - which is currently running the background and waiting
-  args["message"] = qtTrId("vpn.android.notification.isIDLE");
-  QJsonDocument doc(args);
+  localisedMessages["idleText"] = qtTrId("vpn.android.notification.isIDLE");
+  localisedMessages["notification_group_name"] = L18nStrings::instance()->t(
+      L18nStrings::AndroidNotificationsGeneralNotifications);
+
+#undef MESSAGE
+  QJsonDocument doc(localisedMessages);
   QAndroidParcel data;
   data.writeData(doc.toJson());
   m_serviceBinder.transact(ACTION_SET_NOTIFICATION_FALLBACK, data, nullptr);
@@ -300,7 +306,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
           QDateTime::fromMSecsSinceEpoch(
               doc.object()["time"].toVariant().toLongLong()));
       // Pass a localised version of the Fallback string for the Notification
-      m_controller->setFallbackConnectedNotification();
+      m_controller->applyStrings();
 
       break;
     case EVENT_CONNECTED:

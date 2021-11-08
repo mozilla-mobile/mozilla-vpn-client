@@ -49,7 +49,6 @@ Item {
             textMargin: Theme.windowMargin * .75
             padding: 0
             Keys.onTabPressed: nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason)
-            onTextChanged: if (length > maxCharacterCount) remove(maxCharacterCount, length)
             selectByMouse: true
             selectionColor: Theme.input.highlight
             inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData

@@ -179,7 +179,7 @@ class VPNService : android.net.VpnService() {
             .putString("lastConf", json.toString())
             .apply()
 
-        NotificationUtil.show(this) // Go foreground
+        NotificationUtil.get(this)?.show(this) // Go foreground
     }
 
     fun turnOff() {
