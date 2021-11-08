@@ -17,11 +17,11 @@ import telemetry 0.24
 Item {
     id: root
 
-    //% "Search Apps"
+    //% "Search apps"
     //: Search bar placeholder text
     property string searchApps: qsTrId("vpn.protectSelectedApps.searchApps")
 
-    //% "Add Application"
+    //% "Add application"
     //: Button label
     property string addApplication: qsTrId("vpn.protectSelectedApps.addApplication")
     property string _menuTitle: qsTrId("vpn.settings.appPermissions2")
