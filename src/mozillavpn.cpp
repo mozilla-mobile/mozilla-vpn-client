@@ -915,25 +915,18 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
   Q_ASSERT(error != ErrorHandler::NoError);
 
   AlertType alert = NoAlert;
-  bool intercepted = false;
 
   switch (error) {
     case ErrorHandler::VPNDependentConnectionError:
-      switch (controller()->state()) {
-          // connection likely isn't stable yet
-        case Controller::State::StateOn:
-        case Controller::State::StateConfirming:
-          logger.error()
-              << "Ignore network error probably caused by enabled VPN";
-          return;
-          // We are connected or off, so this means a request failed, not the
-          // VPN. Change it to No Connection
-        case Controller::State::StateOff:
-          alert = NoConnectionAlert;
-          intercepted = true;
-          break;
-      }
-      if (intercepted) {
+      if (controller()->state() == Controller::State::StateOn ||
+          controller()->state() == Controller::State::StateConfirming) {
+        // connection likely isn't stable yet
+        logger.error() << "Ignore network error probably caused by enabled VPN";
+        return;
+      } else if (controller()->state() == Controller::State::StateOff) {
+        // We are off, so this means a request failed, not the
+        // VPN. Change it to No Connection
+        alert = NoConnectionAlert;
         break;
       }
       [[fallthrough]];
