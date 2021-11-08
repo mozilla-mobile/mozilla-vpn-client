@@ -46,7 +46,7 @@ Item {
                 objectName: "settingStartAtBoot"
 
                 labelText: _startAtBootTitle
-                subLabelText: ""
+                subLabelText: VPNl18n.SettingsStartAtBootDescription
                 isChecked: VPNSettings.startAtBoot
                 isEnabled: true
                 showDivider: false

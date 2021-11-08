@@ -109,7 +109,7 @@ VPNFlickable {
 
             id: preferencesSetting
             objectName: "settingsPreferences"
-            settingTitle: VPNl18n.SettingsPreferences
+            settingTitle: VPNl18n.SettingsSystemPreferences
             imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
             imageRightSrc: "qrc:/ui/resources/chevron.svg"
             onClicked: settingsStackView.push("qrc:/ui/settings/ViewPrivacySecurity.qml", {

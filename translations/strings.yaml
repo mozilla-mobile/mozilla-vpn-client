@@ -266,7 +266,8 @@ systray:
   quit: Quit Mozilla VPN
 
 settings:
-  preferences: Preferences
+  systemPreferences: System preferences
+  startAtBootDescription: Mozilla VPN will launch when you open the app
 
 aboutUs:
   licenses: Licenses
