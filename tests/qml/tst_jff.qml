@@ -9,6 +9,6 @@ TestCase {
     }
 
     function test_fail() {
-        compare(2 + 2, 5, "2 + 2 = 5")
+        compare(2 + 33, 7, "2 + 33 = 7")
     }
 }
