@@ -3,6 +3,34 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "errorhandler.h"
+#include "leakdetector.h"
+#include "logger.h"
+
+namespace {
+ErrorHandler* s_instance = nullptr;
+Logger logger(LOG_MAIN, "ErrorHandler");
+}  // namespace
+
+// static
+ErrorHandler* ErrorHandler::instance() {
+  if (!s_instance) {
+    s_instance = new ErrorHandler();
+  };
+  return s_instance;
+}
+
+ErrorHandler::ErrorHandler() { MVPN_COUNT_CTOR(ErrorHandler); }
+
+ErrorHandler::~ErrorHandler() { MVPN_COUNT_DTOR(ErrorHandler); }
+
+#define ERROR(name)                                \
+  void ErrorHandler::name##Error() {               \
+    logger.warning() << #name << " error handled"; \
+    emit name();                                   \
+  }
+
+#include "errorlist.h"
+#undef ERROR
 
 // static
 ErrorHandler::ErrorType ErrorHandler::toErrorType(
