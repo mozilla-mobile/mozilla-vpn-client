@@ -128,7 +128,6 @@ Item {
         anchors.top: divider.bottom
         anchors.topMargin: 16
         anchors.bottomMargin: Theme.vSpacing
-        height: parent.height
         width: viewAboutUs.width
         spacing: Theme.listSpacing
         model: aboutUsListModel
@@ -159,6 +158,37 @@ Item {
             Accessible.ignored: true
         }
 
+    }
+
+    VPNButton{
+        id:updateButton
+        anchors.top: settingList.bottom
+        anchors.topMargin: 16
+        anchors.bottomMargin: Theme.vSpacing
+        anchors.horizontalCenter : viewAboutUs.horizontalCenter 
+
+        contentItem: Item{
+            id: buttonContent
+            width:updateButton.width
+            height:updateButton.height
+            VPNIcon {
+                id: deviceIcon
+                anchors.right: updateBtnLabel.left
+                source: "qrc:/ui/resources/devices.svg"
+                fillMode: Image.PreserveAspectFit
+                anchors.leftMargin: Theme.windowMargin
+                anchors.rightMargin: Theme.windowMargin
+            }
+            Label {
+                id: updateBtnLabel
+                anchors.verticalCenter: updateButton.verticalCenter
+                color: Theme.white
+                text: "Check for Updates"
+                elide: Text.ElideRight
+                font.family: Theme.fontBoldFamily
+                font.pixelSize: Theme.fontSize
+            }   
+        }
     }
 
 }

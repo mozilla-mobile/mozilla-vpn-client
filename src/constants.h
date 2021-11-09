@@ -38,7 +38,7 @@ constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 #endif
 
 // Let's refresh the IP address any 10 minutes (in milliseconds).
-CONSTEXPR(uint32_t, ipAddressTimerMsec, 600000, 10000, 0)
+CONSTEXPR(uint32_t, ipAddressTimerMsec, 600000, 300000, 0)
 
 // Let's check the connection status any second.
 CONSTEXPR(uint32_t, checkStatusTimerMsec, 1000, 1000, 0)
@@ -47,23 +47,23 @@ CONSTEXPR(uint32_t, checkStatusTimerMsec, 1000, 1000, 0)
 CONSTEXPR(int, chartsMaxPoints, 30, 30, 30);
 
 // Any 6 hours, a new check
-CONSTEXPR(uint32_t, releaseMonitorMsec, 21600000, 4000, 0)
+CONSTEXPR(uint32_t, releaseMonitorMsec, 21600000, 10800000, 0)
 
 // in milliseconds, how often we should fetch the server list and the account.
-CONSTEXPR(uint32_t, scheduleAccountAndServersTimerMsec, 3600000, 4000, 0)
+CONSTEXPR(uint32_t, scheduleAccountAndServersTimerMsec, 3600000, 1800000, 0)
 
 // how often we check the captive portal when the VPN is on.
-CONSTEXPR(uint32_t, captivePortalRequestTimeoutMsec, 10000, 4000, 0)
+CONSTEXPR(uint32_t, captivePortalRequestTimeoutMsec, 10000, 5000, 0)
 
 // How fast the animated icon should move
 CONSTEXPR(uint32_t, statusIconAnimationMsec, 200, 200, 0)
 
 // How often glean pings are sent
-CONSTEXPR(uint32_t, gleanTimeoutMsec, 1200000, 4000, 0)
+CONSTEXPR(uint32_t, gleanTimeoutMsec, 1200000, 600000, 0)
 
 // How often we check the surveys to be executed (no network requests are done
 // for this check)
-CONSTEXPR(uint32_t, surveyTimerMsec, 300000, 4000, 0)
+CONSTEXPR(uint32_t, surveyTimerMsec, 300000, 150000, 0)
 
 #undef CONSTEXPR
 
