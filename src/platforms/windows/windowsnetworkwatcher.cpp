@@ -68,6 +68,7 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
     logger.debug() << "The watcher is off";
     return;
   }
+  emit networkChanged();
 
   if (data->NotificationSource != WLAN_NOTIFICATION_SOURCE_MSM) {
     logger.debug() << "The wlan source is not MSM";
@@ -101,7 +102,7 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
           DOT11_CIPHER_ALGO_WEP40 &&
       connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
           DOT11_CIPHER_ALGO_WEP104) {
-    logger.debug() << "The network is secure enought";
+    logger.debug() << "The network is secure enough";
     return;
   }
 

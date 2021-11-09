@@ -24,7 +24,10 @@ class NetworkWatcherImpl : public QObject {
   bool isActive() const { return m_active; }
 
  signals:
+  // Fires when the Device Connects to an unsecured Network
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
+  // Fires on any networkChange
+  void networkChanged();
 
  private:
   bool m_active = false;

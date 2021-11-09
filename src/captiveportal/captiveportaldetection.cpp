@@ -27,6 +27,23 @@ CaptivePortalDetection::~CaptivePortalDetection() {
 
 void CaptivePortalDetection::initialize() {
   m_active = SettingsHolder::instance()->captivePortalAlert();
+  const auto networkWatcher = MozillaVPN::instance()->networkWatcher();
+  connect(networkWatcher, &NetworkWatcher::networkChange, this,
+          &CaptivePortalDetection::networkChanged);
+}
+
+void CaptivePortalDetection::networkChanged() {
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+
+  if (vpn->controller()->state() != Controller::StateOn &&
+      vpn->controller()->state() != Controller::StateConfirming) {
+    // Network Changed but we're not connected, no need to test for captive
+    // portal
+    return;
+  }
+  logger.debug() << "Current Network Changed";
+  detectCaptivePortal();
 }
 
 void CaptivePortalDetection::stateChanged() {
