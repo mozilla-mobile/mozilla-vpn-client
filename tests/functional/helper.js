@@ -184,7 +184,11 @@ module.exports = {
   },
 
   async setGleanAutomationHeader() {
-    await this._writeCommand('set_glean_automation_header');
+    const json = await this._writeCommand('set_glean_source_tags automation');
+    assert(
+        json.type === 'set_glean_source_tags' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value || null;
   },
 
   async getLastGleanRequest() {
