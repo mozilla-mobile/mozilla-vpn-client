@@ -14,6 +14,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += src
 SUBDIRS += tests/unit
+SUBDIRS += tests/qml
 
 # separate flag because an extra dependency is needed: liboath
 AUTHTEST {
