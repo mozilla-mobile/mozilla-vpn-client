@@ -275,3 +275,12 @@ AndroidNotifications:
   GeneralNotifications:
     value: General Notifications
     comment: A notification channel; so the user can subscribe to "General Notifications"
+
+updateButton:
+  checkForUpdateButtonText: Check for Updates
+  titleNoUpdate: You are up to date
+  descriptionNoUpdate: There is no new update available at this time
+  actionNoUpdate: Okay
+  titleOnUpdate: Updates available
+  descriptionOnUpdate: Click to update to the latest version of the application
+  actionOnUpdate: Update now

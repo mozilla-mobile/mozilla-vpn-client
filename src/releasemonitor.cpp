@@ -39,7 +39,10 @@ void ReleaseMonitor::runInternal() {
           &ReleaseMonitor::updateRequired);
   connect(updater, &Updater::updateRecommended, this,
           &ReleaseMonitor::updateRecommended);
-  connect(updater, &QObject::destroyed, this, &ReleaseMonitor::releaseChecked);
+  connect(updater, &QObject::destroyed, [this]() {
+    emit updateCheckResult(false);
+    emit releaseChecked();
+  });
   connect(updater, &QObject::destroyed, this, &ReleaseMonitor::schedule);
 }
 
@@ -50,12 +53,14 @@ void ReleaseMonitor::schedule() {
 
 void ReleaseMonitor::updateRequired() {
   logger.warning() << "update required";
+  emit updateCheckResult(true);
   MozillaVPN::instance()->setUpdateRecommended(false);
   MozillaVPN::instance()->controller()->updateRequired();
 }
 
 void ReleaseMonitor::updateRecommended() {
   logger.debug() << "Update recommended";
+  emit updateCheckResult(true);
   MozillaVPN::instance()->setUpdateRecommended(true);
 }
 
