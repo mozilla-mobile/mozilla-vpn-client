@@ -93,27 +93,6 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
 
   auto guard = qScopeGuard([&] { WlanFreeMemory(connectionInfo); });
 
-  if (connectionInfo->wlanSecurityAttributes.dot11AuthAlgorithm !=
-          DOT11_AUTH_ALGO_80211_OPEN &&
-      connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
-          DOT11_CIPHER_ALGO_WEP &&
-      connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
-          DOT11_CIPHER_ALGO_WEP40 &&
-      connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
-          DOT11_CIPHER_ALGO_WEP104) {
-    logger.debug() << "The network is secure enought";
-    return;
-  }
-
-  QString ssid;
-  for (size_t i = 0;
-       i < connectionInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength;
-       ++i) {
-    ssid.append(QString::asprintf(
-        "%c",
-        (char)connectionInfo->wlanAssociationAttributes.dot11Ssid.ucSSID[i]));
-  }
-
   QString bssid;
   for (size_t i = 0;
        i < sizeof(connectionInfo->wlanAssociationAttributes.dot11Bssid); ++i) {
@@ -124,6 +103,31 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
       bssid.append(QString::asprintf(
           "%.2X-", connectionInfo->wlanAssociationAttributes.dot11Bssid[i]));
     }
+  }
+  if (bssid != m_lastBSSID) {
+    emit networkChanged(bssid);
+    m_lastBSSID = bssid;
+  }
+
+  if (connectionInfo->wlanSecurityAttributes.dot11AuthAlgorithm !=
+          DOT11_AUTH_ALGO_80211_OPEN &&
+      connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
+          DOT11_CIPHER_ALGO_WEP &&
+      connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
+          DOT11_CIPHER_ALGO_WEP40 &&
+      connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
+          DOT11_CIPHER_ALGO_WEP104) {
+    logger.debug() << "The network is secure enough";
+    return;
+  }
+
+  QString ssid;
+  for (size_t i = 0;
+       i < connectionInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength;
+       ++i) {
+    ssid.append(QString::asprintf(
+        "%c",
+        (char)connectionInfo->wlanAssociationAttributes.dot11Ssid.ucSSID[i]));
   }
 
   logger.debug() << "Unsecure network:" << ssid << "id:" << bssid;
