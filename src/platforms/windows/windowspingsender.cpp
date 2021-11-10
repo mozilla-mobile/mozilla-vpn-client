@@ -63,7 +63,6 @@ void WindowsPingSender::sendPing(const QString& dest, quint16 sequence) {
     QString errmsg = WindowsCommons::getErrorMessage();
     logger.error() << "failed to start Code: " << status
                    << " Message: " << errmsg << " dest:" << dest;
-    emit criticalPingError();
   }
 }
 
