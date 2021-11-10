@@ -324,8 +324,8 @@ bool AndroidController::VPNBinder::onTransact(int code,
       doc = QJsonDocument::fromJson(data.readData());
       emit m_controller->statusUpdated(doc.object()["endpoint"].toString(),
                                        doc.object()["deviceIpv4"].toString(),
-                                       doc.object()["totalTX"].toInt(),
-                                       doc.object()["totalRX"].toInt());
+                                       doc.object()["tx_bytes"].toInt(),
+                                       doc.object()["rx_bytes"].toInt());
       break;
     case EVENT_BACKEND_LOGS:
       logger.debug() << "Transact: backend logs";
