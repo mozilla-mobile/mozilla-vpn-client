@@ -26,7 +26,7 @@ class WindowsNetworkWatcher final : public NetworkWatcherImpl {
   // The handle is set during the initialization. Windows calls processWlan()
   // to inform about network changes.
   HANDLE m_wlanHandle = nullptr;
-  QString m_lastSSID;
+  QString m_lastBSSID;
 };
 
 #endif  // WINDOWSNETWORKWATCHER_H

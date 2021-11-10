@@ -104,9 +104,9 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
           "%.2X-", connectionInfo->wlanAssociationAttributes.dot11Bssid[i]));
     }
   }
-    if(bssid != m_lastSSID){
+  if (bssid != m_lastBSSID) {
     emit networkChanged(bssid);
-    m_lastSSID = bssid;
+    m_lastBSSID = bssid;
   }
 
   if (connectionInfo->wlanSecurityAttributes.dot11AuthAlgorithm !=
@@ -120,7 +120,7 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
     logger.debug() << "The network is secure enough";
     return;
   }
-  
+
   QString ssid;
   for (size_t i = 0;
        i < connectionInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength;
@@ -129,8 +129,6 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
         "%c",
         (char)connectionInfo->wlanAssociationAttributes.dot11Ssid.ucSSID[i]));
   }
-
-
 
   logger.debug() << "Unsecure network:" << ssid << "id:" << bssid;
   emit unsecuredNetwork(ssid, bssid);

@@ -65,7 +65,8 @@ void NetworkWatcher::initialize() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  m_active = settingsHolder->unsecuredNetworkAlert() || settingsHolder->captivePortalAlert();
+  m_active = settingsHolder->unsecuredNetworkAlert() ||
+             settingsHolder->captivePortalAlert();
   m_reportUnsecuredNetwork = settingsHolder->unsecuredNetworkAlert();
   if (m_active) {
     m_impl->start();
@@ -80,11 +81,14 @@ void NetworkWatcher::initialize() {
 void NetworkWatcher::settingsChanged(const bool& active) {
   Q_UNUSED(active);
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  m_active = settingsHolder->unsecuredNetworkAlert() || settingsHolder->captivePortalAlert();
+  m_active = settingsHolder->unsecuredNetworkAlert() ||
+             settingsHolder->captivePortalAlert();
   m_reportUnsecuredNetwork = settingsHolder->unsecuredNetworkAlert();
 
   if (m_active) {
-    logger.debug() << "Starting Network Watcher; Reporting of Unsecured Networks: " << m_reportUnsecuredNetwork;
+    logger.debug()
+        << "Starting Network Watcher; Reporting of Unsecured Networks: "
+        << m_reportUnsecuredNetwork;
     m_impl->start();
   } else {
     logger.debug() << "Stopping Network Watcher";

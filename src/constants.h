@@ -33,7 +33,7 @@ constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
                     testingValue)                                 \
     inline type functionName() {                                  \
-      return inProduction() ? releaseValue : releaseValue;          \
+      return inProduction() ? releaseValue : debugValue;          \
     }
 #endif
 
