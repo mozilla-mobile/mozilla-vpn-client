@@ -329,6 +329,11 @@ versionAtLeast(QT_VERSION, 6.0.0) {
 }
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
+    !wasm {
+        message(Include QSQlite plugin)
+        QTPLUGIN += qsqlite
+    }
+
     RESOURCES += $$PWD/../glean/glean.qrc
 } else {
     error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
