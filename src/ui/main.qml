@@ -307,10 +307,11 @@ Window {
                 osVersion: VPN.osVersion,
                 architecture: VPN.architecture,
             });
-            if (VPN.platform == "dummy") {
-                console.debug("Setting glean tags for automation");
-                Glean.setSourceTags(["automation"])
-            }
+        }
+
+        function onSetGleanSourceTags(tags) {
+            console.debug("Setting source tags to:", tags);
+            Glean.setSourceTags(tags);
         }
 
         function onSendGleanPings() {
