@@ -316,7 +316,9 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
 
   r->m_request.setUrl(url);
   r->m_request.setRawHeader("Host", host);
-
+  // This enables the QNetworkReply::redirected for every type of redirect.
+  r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                            QNetworkRequest::UserVerifiedRedirectPolicy);
   r->getRequest();
   return r;
 }
@@ -375,7 +377,8 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
 NetworkRequest* NetworkRequest::createForSupportTicket(
     QObject* parent, const QString& email, const QString& subject,
     const QString& issueText, const QString& logs, const QString& category) {
-  bool isAuthenticated = MozillaVPN::instance()->userAuthenticated();
+  bool isAuthenticated =
+      MozillaVPN::instance()->userState() == MozillaVPN::UserAuthenticated;
 
   NetworkRequest* r = new NetworkRequest(parent, 201, isAuthenticated);
 

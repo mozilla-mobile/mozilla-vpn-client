@@ -92,6 +92,7 @@ HEADERS += \
     ../../src/tasks/accountandservers/taskaccountandservers.h \
     ../../src/tasks/adddevice/taskadddevice.h \
     ../../src/tasks/function/taskfunction.h \
+    ../../src/taskscheduler.h \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
@@ -178,6 +179,7 @@ SOURCES += \
     ../../src/tasks/accountandservers/taskaccountandservers.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/function/taskfunction.cpp \
+    ../../src/taskscheduler.cpp \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \

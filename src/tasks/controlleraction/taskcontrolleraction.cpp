@@ -30,10 +30,10 @@ TaskControllerAction::~TaskControllerAction() {
   MVPN_COUNT_DTOR(TaskControllerAction);
 }
 
-void TaskControllerAction::run(MozillaVPN* vpn) {
+void TaskControllerAction::run() {
   logger.debug() << "TaskControllerAction run";
 
-  Controller* controller = vpn->controller();
+  Controller* controller = MozillaVPN::instance()->controller();
   Q_ASSERT(controller);
 
   if (m_action == eSilentSwitch) {

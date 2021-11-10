@@ -24,9 +24,7 @@ TaskGetFeatureList::~TaskGetFeatureList() {
   MVPN_COUNT_DTOR(TaskGetFeatureList);
 }
 
-void TaskGetFeatureList::run(MozillaVPN* vpn) {
-  Q_UNUSED(vpn);
-
+void TaskGetFeatureList::run() {
   NetworkRequest* request = NetworkRequest::createForGetFeatureList(this);
 
   connect(request, &NetworkRequest::requestFailed,

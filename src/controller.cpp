@@ -417,7 +417,7 @@ void Controller::disconnected() {
 
     TaskHeartbeat* task = new TaskHeartbeat();
     connect(task, &Task::completed, this, &Controller::heartbeatCompleted);
-    task->run(MozillaVPN::instance());
+    task->run();
     return;
   }
 
@@ -717,42 +717,29 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
 
   QList<IPAddressRange> list;
 
+  // filtering out the ingress server's public IPv4 and IPv6 addresses.
+  logger.debug() << "Exclude the ingress server:" << server.ipv4AddrIn();
+  excludeIPv4s.append(IPAddress::create(server.ipv4AddrIn()));
+  logger.debug() << "Allow the ingress server:" << server.ipv4Gateway();
+  list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
+
+  logger.debug() << "Exclude the ingress server:" << server.ipv6AddrIn();
+  excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
+  logger.debug() << "Allow the ingress server:" << server.ipv6Gateway();
+  list.append(IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
+
   // Ensure that the Mullvad proxy services are always allowed.
   list.append(IPAddressRange(MULLVAD_PROXY_RANGE, MULLVAD_PROXY_RANGE_LENGTH,
                              IPAddressRange::IPv4));
 
-  if (excludeIPv4s.isEmpty()) {
-    logger.debug() << "Catch all IPv4";
-    list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
-  } else {
-    QList<IPAddress> allowedIPv4s{IPAddress::create("0.0.0.0/0")};
+  // Allow access to everything not covered by an excluded address.
+  QList<IPAddress> allowedIPv4s{IPAddress::create("0.0.0.0/0")};
+  allowedIPv4s = IPAddress::excludeAddresses(allowedIPv4s, excludeIPv4s);
+  list.append(IPAddressRange::fromIPAddressList(allowedIPv4s));
 
-    logger.debug() << "Exclude the ingress server:" << server.ipv4AddrIn();
-    excludeIPv4s.append(IPAddress::create(server.ipv4AddrIn()));
-
-    allowedIPv4s = IPAddress::excludeAddresses(allowedIPv4s, excludeIPv4s);
-    list.append(IPAddressRange::fromIPAddressList(allowedIPv4s));
-
-    logger.debug() << "Allow the ingress server:" << server.ipv4Gateway();
-    list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
-  }
-
-  if (excludeIPv6s.isEmpty()) {
-    logger.debug() << "Catch all IPv6";
-    list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
-  } else {
-    QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
-
-    logger.debug() << "Exclude the ingress server:" << server.ipv6AddrIn();
-    excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
-
-    allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
-    list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
-
-    logger.debug() << "Allow the ingress server:" << server.ipv6Gateway();
-    list.append(
-        IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
-  }
+  QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
+  allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
+  list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
 
   return list;
 }

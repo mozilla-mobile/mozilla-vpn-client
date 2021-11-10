@@ -6,7 +6,6 @@
 #define TASKGETFEATURELIST_H
 
 #include "task.h"
-#include "mozillavpn.h"
 
 #include <QObject>
 
@@ -17,7 +16,7 @@ class TaskGetFeatureList final : public Task {
   TaskGetFeatureList();
   ~TaskGetFeatureList();
 
-  void run(MozillaVPN* vpn) override;
+  void run() override;
 };
 
 #endif  // TASKGETFEATURELIST_H

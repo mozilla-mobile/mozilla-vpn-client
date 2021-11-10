@@ -16,7 +16,7 @@ class TaskAccountAndServers final : public Task {
   TaskAccountAndServers();
   ~TaskAccountAndServers();
 
-  void run(MozillaVPN* vpn) override;
+  void run() override;
 
  private:
   void maybeCompleted();

@@ -78,15 +78,9 @@ bool Server::fromJson(const QJsonObject& obj) {
     return false;
   }
 
+  // optional properties.
   QJsonValue socks5_name = obj.value("socks5_name");
-  if (!socks5_name.isString()) {
-    return false;
-  }
-
   QJsonValue multihop_port = obj.value("multihop_port");
-  if (!multihop_port.isDouble()) {
-    return false;
-  }
 
   QList<QPair<uint32_t, uint32_t>> prList;
   QJsonArray portRangesArray = portRanges.toArray();
