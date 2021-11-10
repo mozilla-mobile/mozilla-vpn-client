@@ -42,7 +42,7 @@ void CaptivePortalDetection::networkChanged() {
     // portal
     return;
   }
-  logger.debug() << "Current Network Changed";
+  logger.debug() << "Current Network Changed, checking for Portal";
   detectCaptivePortal();
 }
 

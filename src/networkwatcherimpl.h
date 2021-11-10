@@ -26,8 +26,9 @@ class NetworkWatcherImpl : public QObject {
  signals:
   // Fires when the Device Connects to an unsecured Network
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
-  // Fires on any networkChange
-  void networkChanged();
+  // Fires on when the connected WIFI Changes
+  // TODO: Only windows-networkwatcher has this, the other plattforms should too.
+  void networkChanged(QString newBSSID);
 
  private:
   bool m_active = false;

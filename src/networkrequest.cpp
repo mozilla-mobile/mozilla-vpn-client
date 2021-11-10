@@ -316,7 +316,9 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
 
   r->m_request.setUrl(url);
   r->m_request.setRawHeader("Host", host);
-
+  // This enables the QNetworkReply::redirected for every type of redirect.
+  r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,QNetworkRequest::UserVerifiedRedirectPolicy);
+  // One of my portals does http->https->http :c
   r->getRequest();
   return r;
 }

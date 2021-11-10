@@ -85,7 +85,6 @@ void MacOSNetworkWatcher::start() {
 
 void MacOSNetworkWatcher::checkInterface() {
   logger.debug() << "Checking interface";
-  emit networkChanged();
 
   if (!isActive()) {
     logger.debug() << "Feature disabled";

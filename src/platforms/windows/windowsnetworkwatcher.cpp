@@ -68,7 +68,6 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
     logger.debug() << "The watcher is off";
     return;
   }
-  emit networkChanged();
 
   if (data->NotificationSource != WLAN_NOTIFICATION_SOURCE_MSM) {
     logger.debug() << "The wlan source is not MSM";
@@ -94,27 +93,6 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
 
   auto guard = qScopeGuard([&] { WlanFreeMemory(connectionInfo); });
 
-  if (connectionInfo->wlanSecurityAttributes.dot11AuthAlgorithm !=
-          DOT11_AUTH_ALGO_80211_OPEN &&
-      connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
-          DOT11_CIPHER_ALGO_WEP &&
-      connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
-          DOT11_CIPHER_ALGO_WEP40 &&
-      connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
-          DOT11_CIPHER_ALGO_WEP104) {
-    logger.debug() << "The network is secure enough";
-    return;
-  }
-
-  QString ssid;
-  for (size_t i = 0;
-       i < connectionInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength;
-       ++i) {
-    ssid.append(QString::asprintf(
-        "%c",
-        (char)connectionInfo->wlanAssociationAttributes.dot11Ssid.ucSSID[i]));
-  }
-
   QString bssid;
   for (size_t i = 0;
        i < sizeof(connectionInfo->wlanAssociationAttributes.dot11Bssid); ++i) {
@@ -126,6 +104,33 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
           "%.2X-", connectionInfo->wlanAssociationAttributes.dot11Bssid[i]));
     }
   }
+    if(bssid != m_lastSSID){
+    emit networkChanged(bssid);
+    m_lastSSID = bssid;
+  }
+
+  if (connectionInfo->wlanSecurityAttributes.dot11AuthAlgorithm !=
+          DOT11_AUTH_ALGO_80211_OPEN &&
+      connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
+          DOT11_CIPHER_ALGO_WEP &&
+      connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
+          DOT11_CIPHER_ALGO_WEP40 &&
+      connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
+          DOT11_CIPHER_ALGO_WEP104) {
+    logger.debug() << "The network is secure enough";
+    return;
+  }
+  
+  QString ssid;
+  for (size_t i = 0;
+       i < connectionInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength;
+       ++i) {
+    ssid.append(QString::asprintf(
+        "%c",
+        (char)connectionInfo->wlanAssociationAttributes.dot11Ssid.ucSSID[i]));
+  }
+
+
 
   logger.debug() << "Unsecure network:" << ssid << "id:" << bssid;
   emit unsecuredNetwork(ssid, bssid);

@@ -127,7 +127,6 @@ void LinuxNetworkWatcherWorker::propertyChanged(QString interface,
     logger.debug() << "Access point did not changed. Ignoring the changes";
     return;
   }
-  emit networkChange();
 
   checkDevices();
 }
