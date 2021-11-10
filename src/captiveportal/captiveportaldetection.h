@@ -28,6 +28,7 @@ class CaptivePortalDetection final : public QObject {
 
  public slots:
   void stateChanged();
+  void networkChanged();
   void settingsChanged();
   void detectionCompleted(CaptivePortalResult detected);
   void captivePortalGone();
