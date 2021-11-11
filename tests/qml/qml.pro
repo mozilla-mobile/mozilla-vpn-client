@@ -28,10 +28,36 @@ INCLUDEPATH += \
 SOURCES += \
     mocmozillavpn.cpp \
     main.cpp \
+    ../unit/mocinspectorwebsocketconnection.cpp \
+    ../../src/constants.cpp \
+    ../../src/featurelist.cpp \
+    ../../src/hawkauth.cpp \
+    ../../src/hkdf.cpp \
     ../../src/l18nstringsimpl.cpp \
+    ../../src/logger.cpp \
+    ../../src/loghandler.cpp \
+    ../../src/models/feature.cpp \
+    ../../src/networkmanager.cpp \
+    ../../src/networkrequest.cpp \
+    ../../src/settingsholder.cpp \
+    ../../src/update/updater.cpp \
+    ../../src/update/versionapi.cpp \
 
 HEADERS += \
+    ../../src/constants.h \
+    ../../src/featurelist.h \
+    ../../src/hawkauth.h \
+    ../../src/hkdf.h \
+    ../../src/inspector/inspectorwebsocketconnection.h \
+    ../../src/logger.h \
+    ../../src/loghandler.h \
+    ../../src/models/feature.h \
     ../../src/mozillavpn.h \
+    ../../src/networkmanager.h \
+    ../../src/networkrequest.h \
+    ../../src/settingsholder.h \
+    ../../src/update/updater.h \
+    ../../src/update/versionapi.h \
 
 exists($$PWD/../../translations/generated/l18nstrings.h) {
     SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp

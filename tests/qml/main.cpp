@@ -6,6 +6,9 @@
 #include <QQmlContext>
 
 #include "l18nstrings.h"
+#include "../../src/constants.h"
+#include "../../src/featurelist.h"
+#include "../../src/settingsholder.h"
 #include "../../src/mozillavpn.h"
 
 // For info on the slots we can use
@@ -18,6 +21,10 @@ class Setup : public QObject {
 
  public slots:
   void qmlEngineAvailable(QQmlEngine* engine) {
+    SettingsHolder settingsHolder;
+    Constants::setStaging();
+    FeatureList::instance()->initialize();
+
     engine->addImportPath("qrc:///compat");
     engine->addImportPath("qrc:///components");
     engine->addImportPath("qrc:///glean");
@@ -39,8 +46,13 @@ class Setup : public QObject {
           return obj;
         });
 
-    engine->rootContext()->setContextProperty("myContextProperty",
-                                              QVariant(true));
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNSettings",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = SettingsHolder::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
   }
 };
 
