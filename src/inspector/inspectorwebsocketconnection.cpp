@@ -12,28 +12,32 @@
 #include "qmlengineholder.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
+#include "networkmanager.h"
+#include "task.h"
 
 #include <functional>
 
 #include <QBuffer>
+#include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QHostAddress>
+#include <QNetworkAccessManager>
 #include <QMetaObject>
 #include <QPixmap>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
 #include <QStandardPaths>
-#include <QWebSocket>
 #include <QTest>
+#include <QWebSocket>
 
 namespace {
 Logger logger(LOG_INSPECTOR, "InspectorWebSocketConnection");
 
 bool s_stealUrls = false;
+bool s_forwardNetwork = false;
 QUrl s_lastUrl;
 QString s_updateVersion;
 
@@ -270,6 +274,16 @@ static QList<WebSocketCommand> s_commands{
                        settingsHolder->setTelemetryPolicyShown(false);
 
                        return QJsonObject();
+                     }},
+    WebSocketCommand{"fetch_network", "Enables forwarding of networkRequests",
+                     0,
+                     [](const QList<QByteArray>&) {
+                       s_forwardNetwork = true;
+                       return QJsonObject();
+                     }},
+    WebSocketCommand{"view_tree", "Sends a view tree", 0,
+                     [](const QList<QByteArray>&) {
+                       return InspectorWebSocketConnection::getViewTree();
                      }},
 
     WebSocketCommand{"quit", "Quit the app", 0,
@@ -641,7 +655,7 @@ static QList<WebSocketCommand> s_commands{
                            return obj;
                          }
                        }
-
+                       obj["type"] = "screen";
                        obj["value"] =
                            QString(data.toBase64(QByteArray::Base64Encoding));
                        return obj;
@@ -786,6 +800,9 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
   connect(NotificationHandler::instance(),
           &NotificationHandler::notificationShown, this,
           &InspectorWebSocketConnection::notificationShown);
+  connect(NetworkManager::instance()->networkAccessManager(),
+          &QNetworkAccessManager::finished, this,
+          &InspectorWebSocketConnection::networkRequestFinished);
 }
 
 InspectorWebSocketConnection::~InspectorWebSocketConnection() {
@@ -863,6 +880,64 @@ void InspectorWebSocketConnection::notificationShown(const QString& title,
       QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
+void InspectorWebSocketConnection::networkRequestFinished(
+    QNetworkReply* reply) {
+  if (!s_forwardNetwork) {
+    return;
+  }
+  logger.debug() << "Network Request finished";
+  QJsonObject obj;
+  obj["type"] = "network";
+  QJsonObject request;
+  QJsonObject response;
+
+  QVariant statusCode =
+      reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+  response["status"] = statusCode.isValid() ? statusCode.toInt() : -1;
+
+  // Serialize the Response
+  QJsonObject responseHeader;
+  for (auto headerPair : reply->rawHeaderPairs()) {
+    responseHeader[QString(headerPair.first)] = QString(headerPair.second);
+  }
+  response["headers"] = responseHeader;
+  response["errors"] = "";
+  if (reply->error() != QNetworkReply::NoError) {
+    response["errors"] = reply->errorString();
+  }
+  response["body"] = QString(reply->readAll());
+
+  auto qrequest = reply->request();
+  // Serialize the Request
+  QJsonArray requestHeaders;
+  for (auto header : qrequest.rawHeaderList()) {
+    requestHeaders.append(QString(header));
+  }
+  request["headers"] = requestHeaders;
+  request["url"] = qrequest.url().toString();
+  auto initator = qrequest.originatingObject();
+  Task* maybe_task = dynamic_cast<Task*>(initator);
+  if (maybe_task) {
+    request["initiator"] = maybe_task->name();
+  } else {
+    request["initiator"] = getObjectClass(initator);
+  }
+
+  obj["request"] = request;
+  obj["response"] = response;
+  m_connection->sendTextMessage(
+      QJsonDocument(obj).toJson(QJsonDocument::Compact));
+}
+
+// static
+QString InspectorWebSocketConnection::getObjectClass(const QObject* target) {
+  if (target == nullptr) {
+    return "unkown";
+  }
+  auto metaObject = target->metaObject();
+  return metaObject->className();
+}
+
 // static
 void InspectorWebSocketConnection::setLastUrl(const QUrl& url) {
   s_lastUrl = url;
@@ -878,4 +953,69 @@ QString InspectorWebSocketConnection::appVersionForUpdate() {
   }
 
   return s_updateVersion;
+}
+
+// static
+QJsonObject InspectorWebSocketConnection::getViewTree() {
+  QJsonObject out;
+  out["type"] = "qml_tree";
+
+  QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+  QJsonArray viewRoots;
+  for (auto& root : engine->rootObjects()) {
+    QQuickWindow* window = qobject_cast<QQuickWindow*>(root);
+    if (window == nullptr) {
+      continue;
+    }
+    QQuickItem* content = window->contentItem();
+    viewRoots.append(serialize(content));
+  }
+  out["tree"] = viewRoots;
+  return out;
+}
+
+// static
+QJsonObject InspectorWebSocketConnection::serialize(QQuickItem* item) {
+  QJsonObject out;
+  if (item == nullptr) {
+    return out;
+  }
+  out["__class__"] = getObjectClass(item);
+
+  // Todo: Check QObject subelements for the Layout Element
+  auto metaObject = item->metaObject();
+  int propertyCount = metaObject->propertyCount();
+  out["__propertyCount__"] = propertyCount;
+  QJsonArray props;
+  for (int i = 0; i < metaObject->propertyCount(); i++) {
+    auto property = metaObject->property(i);
+    if (!property.isValid()) {
+      continue;
+    }
+    QJsonObject prop;
+    auto name = property.name();
+    auto value = property.read(item);
+    if (value.canConvert<QJsonValue>()) {
+      out[name] = value.toJsonValue();
+    } else if (value.canConvert<QString>()) {
+      out[name] = value.toString();
+    } else if (value.canConvert<QStringList>()) {
+      auto list = value.toStringList();
+      QJsonArray somelist;
+      for (const QString& s : list) {
+        somelist.append(s);
+      }
+      out[name] = somelist;
+    } else {
+      out[name] = value.typeName();
+    }
+  }
+
+  QJsonArray subView;
+  auto children = item->childItems();
+  for (auto& c : children) {
+    subView.append(serialize(c));
+  }
+  out["subItems"] = subView;
+  return out;
 }
