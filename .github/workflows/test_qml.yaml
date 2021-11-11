@@ -18,7 +18,7 @@ jobs:
           # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
           sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
           sudo apt update
-          sudo apt install git qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev clang-10 qt515websockets liboath-dev -y
+          sudo apt install git qt515tools qt515quickcontrols qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev clang-10 qt515websockets liboath-dev -y
 
       - name: Clone repository
         uses: actions/checkout@v2
