@@ -46,4 +46,4 @@ QUICK_TEST_MAIN_WITH_SETUP(qml_tests, Setup)
 
 // I don't understand why we need this line, but the docs say we do:
 // https://doc.qt.io/qt-5/qtquicktest-index.html#executing-c-before-qml-tests
-#include "tst_main.moc"
+#include "main.moc"
