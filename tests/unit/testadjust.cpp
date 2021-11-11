@@ -17,13 +17,12 @@ void TestAdjust::paramFiltering_data() {
   QTest::addColumn<QStringList>("unknownParams");
 
   QTest::addRow("unknown 1")
-      << QUrlQuery{{"unknown", "test"}}.toString()
-      << QUrlQuery{{"unknown", "test"}}.toString() << QStringList{"unknown"};
+      << QUrlQuery{{"unknown", "test"}}.toString() << QUrlQuery().toString()
+      << QStringList{"unknown"};
 
   QTest::addRow("unknown 1")
       << QUrlQuery{{"unknown", "test"}, {"unknown2", "test"}}.toString()
-      << QUrlQuery{{"unknown", "test"}, {"unknown2", "test"}}.toString()
-      << QStringList{"unknown", "unknown2"};
+      << QUrlQuery().toString() << QStringList{"unknown", "unknown2"};
 
   QTest::addRow("allow")
       << QUrlQuery{{"adid", "a"}, {"idfv", "b"}, {"zone_offset", "c"}}
@@ -57,7 +56,6 @@ void TestAdjust::paramFiltering_data() {
                                                     {"region", "what"}}
                                               .toString()
                                        << QUrlQuery{{"device_name", "dummy"},
-                                                    {"foo", "bar"},
                                                     {"os_name", "os"},
                                                     {"region", "xxxxx"}}
                                               .toString()
