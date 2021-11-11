@@ -21,9 +21,8 @@ class Setup : public QObject {
     engine->addImportPath("qrc:///compat");
     engine->addImportPath("qrc:///components");
     engine->addImportPath("qrc:///glean");
-    engine->addImportPath("qrc:///main");
     engine->addImportPath("qrc:///themes");
-    engine->addImportPath("qrc:///ui");
+    engine->addImportPath("qrc:///");
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {

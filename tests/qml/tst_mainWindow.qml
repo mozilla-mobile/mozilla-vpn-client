@@ -1,10 +1,10 @@
 import QtQuick 2.3
 import QtTest 1.0
 
-import main 0.1
+import ui 0.1
 
 Item {
-    VPN {
+    Main {
         id: mainTest
     }
 
@@ -13,8 +13,7 @@ Item {
         when: windowShown
 
         function test_isWasmApp() {
-            //verify(mainTest.iosSafeAreaTopMargin.color, "blue")
-            verify(mainTest.isWasmApp === false, "isWasmApp is not false. " + mainTest.isWasmApp)
+            compare(mainTest.isWasmApp, false)
         }
     }
 }
