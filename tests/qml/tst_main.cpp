@@ -5,6 +5,15 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 
+#include "../../src/mozillavpn.h"
+
+#include "../../src/authenticationinapp/authenticationinapp.h"
+#include "../../src/constants.h"
+#include "../../src/featurelist.h"
+#include "../../src/leakdetector.h"
+#include "../../src/settingsholder.h"
+#include "../../src/simplenetworkmanager.h"
+
 // For info on the slots we can use
 // https://doc.qt.io/qt-5/qtquicktest-index.html#executing-c-before-qml-tests
 class Setup : public QObject {
@@ -19,6 +28,14 @@ class Setup : public QObject {
     engine->addImportPath("qrc:///glean");
     engine->addImportPath("qrc:///themes");
     engine->addImportPath("qrc:///compat");
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
     engine->rootContext()->setContextProperty("myContextProperty",
                                               QVariant(true));
   }
