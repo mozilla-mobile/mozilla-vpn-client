@@ -114,8 +114,8 @@ class VPNService : android.net.VpnService() {
         get() {
             val deviceIpv4: String = ""
             return JSONObject().apply {
-                putOpt("rx_bytes", getConfigValue("rx_bytes"))
-                putOpt("tx_bytes", getConfigValue("tx_bytes"))
+                putOpt("rx_bytes", getConfigValue("rx_bytes")?.toInt())
+                putOpt("tx_bytes", getConfigValue("tx_bytes")?.toInt())
                 putOpt("endpoint", mConfig?.getJSONObject("server")?.getString("ipv4Gateway"))
                 putOpt("deviceIpv4", mConfig?.getJSONObject("device")?.getString("ipv4Address"))
             }
@@ -179,7 +179,7 @@ class VPNService : android.net.VpnService() {
             .putString("lastConf", json.toString())
             .apply()
 
-        NotificationUtil.show(this) // Go foreground
+        NotificationUtil.get(this)?.show(this) // Go foreground
     }
 
     fun turnOff() {

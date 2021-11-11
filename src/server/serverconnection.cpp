@@ -49,6 +49,17 @@ void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
         serverObj["ipv4_gateway"] = server.ipv4Gateway();
         serverObj["ipv6_gateway"] = server.ipv6Gateway();
         serverObj["weight"] = (double)server.weight();
+
+        const QString& socksName = server.socksName();
+        if (!socksName.isEmpty()) {
+          serverObj["socksName"] = socksName;
+        }
+
+        uint32_t multihopPort = server.multihopPort();
+        if (multihopPort) {
+          serverObj["multihopPort"] = (double)multihopPort;
+        }
+
         servers.append(serverObj);
       }
 
@@ -68,7 +79,7 @@ QJsonObject serializeStatus() {
   Q_ASSERT(vpn);
   QJsonObject obj;
 
-  obj["authenticated"] = vpn->userAuthenticated();
+  obj["authenticated"] = vpn->userState() == MozillaVPN::UserAuthenticated;
   obj["location"] = vpn->currentServer()->toString();
 
   {

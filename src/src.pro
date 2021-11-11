@@ -159,6 +159,7 @@ SOURCES += \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
         tasks/surveydata/tasksurveydata.cpp \
+        taskscheduler.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -291,6 +292,7 @@ HEADERS += \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
         tasks/surveydata/tasksurveydata.h \
+        taskscheduler.h \
         timercontroller.h \
         timersingleshot.h \
         update/updater.h \
@@ -332,6 +334,11 @@ versionAtLeast(QT_VERSION, 6.0.0) {
 }
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
+    !wasm {
+        message(Include QSQlite plugin)
+        QTPLUGIN += qsqlite
+    }
+
     RESOURCES += $$PWD/../glean/glean.qrc
 } else {
     error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)

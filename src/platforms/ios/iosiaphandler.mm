@@ -152,7 +152,7 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
     logger.debug() << "Subscription completed - but all the transactions are known";
     QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
-  } else if (MozillaVPN::instance()->userAuthenticated()) {
+  } else if (MozillaVPN::instance()->userState() == MozillaVPN::UserAuthenticated) {
     Q_ASSERT(completedTransactions);
     logger.debug() << "Subscription completed. Let's start the validation";
     QMetaObject::invokeMethod(m_handler, "processCompletedTransactions", Qt::QueuedConnection,

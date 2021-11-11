@@ -49,7 +49,7 @@ TaskAuthenticate::TaskAuthenticate(
 
 TaskAuthenticate::~TaskAuthenticate() { MVPN_COUNT_DTOR(TaskAuthenticate); }
 
-void TaskAuthenticate::run(MozillaVPN* vpn) {
+void TaskAuthenticate::run() {
   logger.debug() << "TaskAuthenticate::Run";
 
   Q_ASSERT(!m_authenticationListener);
@@ -64,7 +64,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
       AuthenticationListener::create(this, m_authenticationType);
 
   connect(m_authenticationListener, &AuthenticationListener::completed,
-          [this, vpn, pkceCodeVerifier](const QString& pkceCodeSucces) {
+          [this, pkceCodeVerifier](const QString& pkceCodeSucces) {
             logger.debug() << "Authentication completed with code:"
                            << pkceCodeSucces;
 
@@ -72,39 +72,41 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
                 NetworkRequest::createForAuthenticationVerification(
                     this, pkceCodeSucces, pkceCodeVerifier);
 
-            connect(
-                request, &NetworkRequest::requestFailed,
-                [vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-                  logger.error()
-                      << "Failed to complete the authentication" << error;
-                  vpn->errorHandle(ErrorHandler::toErrorType(error));
-                });
+            connect(request, &NetworkRequest::requestFailed,
+                    [](QNetworkReply::NetworkError error, const QByteArray&) {
+                      logger.error()
+                          << "Failed to complete the authentication" << error;
+                      MozillaVPN::instance()->errorHandle(
+                          ErrorHandler::toErrorType(error));
+                    });
 
             connect(request, &NetworkRequest::requestCompleted,
-                    [this, vpn](const QByteArray& data) {
+                    [this](const QByteArray& data) {
                       logger.debug() << "Authentication completed";
-                      authenticationCompleted(vpn, data);
+                      authenticationCompleted(data);
                     });
           });
 
   connect(m_authenticationListener, &AuthenticationListener::failed,
-          [this, vpn](const ErrorHandler::ErrorType error) {
-            vpn->errorHandle(error);
+          [this](const ErrorHandler::ErrorType error) {
+            MozillaVPN::instance()->errorHandle(error);
             emit completed();
           });
 
   connect(m_authenticationListener, &AuthenticationListener::abortedByUser,
-          [this, vpn]() {
-            vpn->abortAuthentication();
+          [this]() {
+            MozillaVPN::instance()->abortAuthentication();
             emit completed();
           });
 
   m_authenticationListener->start(pkceCodeChallenge, CODE_CHALLENGE_METHOD);
 }
 
-void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
-                                               const QByteArray& data) {
+void TaskAuthenticate::authenticationCompleted(const QByteArray& data) {
   logger.debug() << "Authentication completed";
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isNull()) {
@@ -132,8 +134,8 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
   QJsonDocument userDoc;
   userDoc.setObject(userObj.toObject());
 
-  vpn->authenticationCompleted(userDoc.toJson(QJsonDocument::Compact),
-                               tokenValue.toString());
+  MozillaVPN::instance()->authenticationCompleted(
+      userDoc.toJson(QJsonDocument::Compact), tokenValue.toString());
 
   emit completed();
 }

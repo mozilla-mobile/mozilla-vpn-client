@@ -25,7 +25,7 @@
 #include <cmath>
 
 // Any X seconds, a new ping.
-constexpr uint32_t PING_TIMOUT_SEC = 1;
+constexpr uint32_t PING_TIMEOUT_SEC = 1;
 
 // Maximum window size for ping statistics.
 constexpr int PING_STATS_WINDOW = 32;
@@ -79,7 +79,7 @@ void PingHelper::start(const QString& serverIpv4Gateway,
     m_pingData[i].sequence = 0;
   }
 
-  m_pingTimer.start(PING_TIMOUT_SEC * 1000);
+  m_pingTimer.start(PING_TIMEOUT_SEC * 1000);
 }
 
 void PingHelper::stop() {
@@ -185,7 +185,7 @@ double PingHelper::loss() const {
   int recvCount = 0;
   // Don't count pings that are possibly still in flight as losses.
   qint64 sendBefore =
-      QDateTime::currentMSecsSinceEpoch() - (PING_TIMOUT_SEC * 1000);
+      QDateTime::currentMSecsSinceEpoch() - (PING_TIMEOUT_SEC * 1000);
 
   for (const PingSendData& data : m_pingData) {
     if (data.latency >= 0) {

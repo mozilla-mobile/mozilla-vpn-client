@@ -17,7 +17,7 @@ class TaskSendFeedback final : public Task {
                             const qint8 rating, const QString& category);
   ~TaskSendFeedback();
 
-  void run(MozillaVPN* vpn) override;
+  void run() override;
 
  private:
   QString m_feedbackText;

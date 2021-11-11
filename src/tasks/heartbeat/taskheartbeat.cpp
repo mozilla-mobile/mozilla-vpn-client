@@ -21,12 +21,15 @@ TaskHeartbeat::TaskHeartbeat() : Task("TaskHeartbeat") {
 
 TaskHeartbeat::~TaskHeartbeat() { MVPN_COUNT_DTOR(TaskHeartbeat); }
 
-void TaskHeartbeat::run(MozillaVPN* vpn) {
+void TaskHeartbeat::run() {
   NetworkRequest* request = NetworkRequest::createForHeartbeat(this);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, request, vpn](QNetworkReply::NetworkError, const QByteArray&) {
+          [this, request](QNetworkReply::NetworkError, const QByteArray&) {
             logger.error() << "Failed to talk with the server";
+
+            MozillaVPN* vpn = MozillaVPN::instance();
+            Q_ASSERT(vpn);
 
             int statusCode = request->statusCode();
 
@@ -50,8 +53,11 @@ void TaskHeartbeat::run(MozillaVPN* vpn) {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn](const QByteArray& data) {
+          [this](const QByteArray& data) {
             logger.debug() << "Heartbeat content received:" << data;
+
+            MozillaVPN* vpn = MozillaVPN::instance();
+            Q_ASSERT(vpn);
 
             QJsonObject json = QJsonDocument::fromJson(data).object();
             QJsonValue mullvad = json.value("mullvadOK");
