@@ -1,22 +1,13 @@
 import QtQuick 2.3
 import QtTest 1.0
 
-import components 0.1
+TestCase {
+    name: "WindowTests"
+    when: windowShown
 
-Item {
-    width: 600;
-    height: 800;
-
-    Window {
-        id: windowTest
-    }
-
-    TestCase {
-        name: "WindowTests"
-        when: windowShown
-
-        function test_isWasmApp() {
-            verify(windowTest.isWasmApp === false, "isWasmApp is not false.")
-        }
+    function test_isWasmApp() {
+        wait(2000)
+        //verify(window.iosSafeAreaTopMargin.color, "blue")
+        //verify(window.isWasmApp === false, "isWasmApp is not false. " + window.isWasmApp)
     }
 }
