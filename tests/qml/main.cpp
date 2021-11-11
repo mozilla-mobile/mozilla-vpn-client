@@ -6,8 +6,6 @@
 #include <QQmlContext>
 
 #include "l18nstrings.h"
-#include "../../src/constants.h"
-#include "../../src/featurelist.h"
 #include "../../src/mozillavpn.h"
 
 // For info on the slots we can use
