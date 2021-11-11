@@ -37,11 +37,12 @@ jobs:
       - name: Compile test client
         shell: bash
         run: |
+          export PATH=/opt/qt515/bin:$PATH
+
           pip3 install -r requirements.txt
           python3 scripts/importLanguages.py
           python3 scripts/generate_glean.py
 
-          export PATH=/opt/qt515/bin:$PATH
           qmake CONFIG+=DUMMY QMAKE_CXX=clang++-10 QMAKE_LINK=clang++-10 CONFIG+=debug QT+=svg
           make -j$(nproc)
 
