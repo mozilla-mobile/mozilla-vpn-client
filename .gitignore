@@ -64,6 +64,7 @@ macos/gobridge/wireguard-go-version.h
 *.swp
 .idea/
 .vscode/
+vscode-cpptools/*
 MozillaVPN.xcodeproj/
 MozillaVPN.vcxproj*
 *.autosave
@@ -105,6 +106,7 @@ mozillavpnnp.vcxproj*
 # glean
 /glean/telemetry/*
 !/glean/telemetry/.keepme
+android/src/org/mozilla/firefox/vpn/glean/GleanEvents.kt
 
 # For users compiling QT per the README
 /qt/

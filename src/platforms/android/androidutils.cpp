@@ -219,3 +219,16 @@ void AndroidUtils::openNotificationSettings() {
   QAndroidJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/qt/VPNUtils", "openNotificationSettings", "()V");
 }
+
+JNIEXPORT void JNICALL Java_org_mozilla_firefox_vpn_qt_VPNUtils_sendGleanEvent(
+    JNIEnv* env, jobject VPNUtils, jstring event) {
+  Q_UNUSED(VPNUtils);
+  const char* buffer = env->GetStringUTFChars(event, nullptr);
+  if (!buffer) {
+    return;
+  }
+  QString eventString(buffer);
+  logger.info() << "Glean Event via JNI:" << eventString;
+  emit MozillaVPN::instance()->recordGleanEvent(eventString);
+  env->ReleaseStringUTFChars(event, buffer);
+}
