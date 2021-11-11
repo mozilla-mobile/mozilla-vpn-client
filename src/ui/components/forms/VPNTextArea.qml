@@ -88,15 +88,15 @@ Item {
                 const textInputLength = updatedTextLength - textLength;
                 const exceedsCharLimit = textLength + textInputLength > textArea.maxCharacterCount;
 
-                // Remove overflowing chars in case text input
-                // exceeds the maximum length
+                // Remove most recently added characters in case
+                // the text input exceeds the maximum length
                 if (exceedsCharLimit) {
                     // Remember cursor position
                     const prevCursorPosition = textArea.cursorPosition - textInputLength;
-                    // Remove overflowing chars
-                    const trimmedString = removeCharsInRange(text, prevCursorPosition, prevCursorPosition + textInputLength);
-                    textArea.text = trimmedString;
-                    // Restore cursor previous cursor position
+                    // Strip overflowing chars
+                    const strippedString = removeCharsInRange(text, prevCursorPosition, prevCursorPosition + textInputLength);
+                    textArea.text = strippedString;
+                    // Restore previous cursor position
                     textArea.cursorPosition = prevCursorPosition;
                 }
             }
