@@ -3,7 +3,6 @@ import QtTest 1.0
 
 import components 0.1
 
-// Canvas for the unit tests
 Item {
     width: 600;
     height: 800;
@@ -13,11 +12,12 @@ Item {
     }
 
     TestCase {
-        name: "AboutUsTests"
+        name: "VPNAboutUsTests"
         when: windowShown
 
         function test_releaseVersion() {
-            const expected = "testme"
+            // These values were set in qml.pro
+            const expected = "QMLTest_AppVersion (QMLTest_BuildID)"
             const actual = vpnAboutUsTest.releaseVersionText
             verify(expected === actual, `releaseVersion was ${actual} not ${expected}.`)
         }

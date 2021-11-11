@@ -3,8 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 CONFIG += warn_on qmltestcase
 
-DEFINES += APP_VERSION=\\\"QMLTest1234\\\"
-DEFINES += BUILD_ID=\\\"QMLTest1234-Build1\\\"
+DEFINES += APP_VERSION=\\\"QMLTest_AppVersion\\\"
+DEFINES += BUILD_ID=\\\"QMLTest_BuildID\\\"
 
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
