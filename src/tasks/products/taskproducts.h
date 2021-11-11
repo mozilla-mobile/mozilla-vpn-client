@@ -16,7 +16,7 @@ class TaskProducts final : public Task {
   TaskProducts();
   ~TaskProducts();
 
-  void run(MozillaVPN* vpn) override;
+  void run() override;
 };
 
 #endif  // TASKPRODUCTS_H

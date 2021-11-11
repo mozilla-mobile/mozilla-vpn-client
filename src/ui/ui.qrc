@@ -41,6 +41,8 @@
         <file>views/ViewErrorFullScreen.qml</file>
         <file>views/ViewGetHelp.qml</file>
         <file>views/ViewInitialize.qml</file>
+        <file>views/ViewLicense.qml</file>
+        <file>views/ViewLicenses.qml</file>
         <file>views/ViewLogs.qml</file>
         <file>views/ViewMain.qml</file>
         <file>views/ViewMultiHop.qml</file>

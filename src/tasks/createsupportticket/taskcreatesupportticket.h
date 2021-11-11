@@ -6,7 +6,6 @@
 #define TASKCREATESUPPORTTICKET_H
 
 #include "task.h"
-#include "mozillavpn.h"
 
 #include <QObject>
 
@@ -19,7 +18,7 @@ class TaskCreateSupportTicket final : public Task {
                           const QString& category);
   ~TaskCreateSupportTicket();
 
-  void run(MozillaVPN* vpn) override;
+  void run() override;
 
  private:
   QString m_email;

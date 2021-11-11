@@ -51,6 +51,7 @@ exports.mochaHooks = {
     // or other work it'll get cleaned up - this is most likely to happen
     // on a dev's machine.
     await vpn.hardReset();
+    await vpn.setGleanAutomationHeader();
 
     console.log('Starting test:', this.currentTest.title);
   },

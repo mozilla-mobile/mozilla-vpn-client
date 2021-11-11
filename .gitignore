@@ -133,3 +133,5 @@ tools/inspector/.cache
 tools/inspector/.parcel-cache
 tools/inspector/dist
 tools/inspector/node_modules
+
+*.PDB

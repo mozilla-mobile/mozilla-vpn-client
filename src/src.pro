@@ -111,12 +111,12 @@ SOURCES += \
         models/feedbackcategorymodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
+        models/licensemodel.cpp \
         models/server.cpp \
         models/servercity.cpp \
         models/servercountry.cpp \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
-        models/serverextra.cpp \
         models/supportcategorymodel.cpp \
         models/survey.cpp \
         models/surveymodel.cpp \
@@ -157,6 +157,7 @@ SOURCES += \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
         tasks/surveydata/tasksurveydata.cpp \
+        taskscheduler.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -213,11 +214,11 @@ HEADERS += \
         features/featurelocalareaaccess.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
-        features/featuressharelogs.h \
+        features/featuresharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
+        features/featureuniqueid.h \
         features/featureunsecurednetworknotification.h \
-        features/featureunauthsupport.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
@@ -239,12 +240,12 @@ HEADERS += \
         models/feedbackcategorymodel.h \
         models/helpmodel.h \
         models/keys.h \
+        models/licensemodel.h \
         models/server.h \
         models/servercity.h \
         models/servercountry.h \
         models/servercountrymodel.h \
         models/serverdata.h \
-        models/serverextra.h \
         models/supportcategorymodel.h \
         models/survey.h \
         models/surveymodel.h \
@@ -287,6 +288,7 @@ HEADERS += \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
         tasks/surveydata/tasksurveydata.h \
+        taskscheduler.h \
         timercontroller.h \
         timersingleshot.h \
         update/updater.h \
@@ -313,6 +315,7 @@ unix {
 }
 
 RESOURCES += ui/components.qrc
+RESOURCES += ui/license.qrc
 RESOURCES += ui/resources.qrc
 RESOURCES += ui/themes.qrc
 RESOURCES += ui/ui.qrc
@@ -326,6 +329,11 @@ versionAtLeast(QT_VERSION, 6.0.0) {
 }
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
+    !wasm {
+        message(Include QSQlite plugin)
+        QTPLUGIN += qsqlite
+    }
+
     RESOURCES += $$PWD/../glean/glean.qrc
 } else {
     error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
@@ -817,6 +825,10 @@ else:win* {
 
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+    CONFIG(debug, debug|release) {
+        QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
+        QMAKE_LFLAGS_WINDOWS += /DEBUG
+    }
 
     QT += networkauth
     QT += svg

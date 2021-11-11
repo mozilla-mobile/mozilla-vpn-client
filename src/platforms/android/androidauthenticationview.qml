@@ -47,7 +47,7 @@ Item {
             Image {
                 id: backImage
 
-                source: "../../ui/resources/close-dark.svg"
+                source: "qrc:/ui/resources/close-dark.svg"
                 sourceSize.width: Theme.iconSize
                 fillMode: Image.PreserveAspectFit
                 anchors.centerIn: iconButton

@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/mozillavpn.h"
-#include "../../src/task.h"
 
 // The singleton.
 static MozillaVPN* s_instance = nullptr;
@@ -38,15 +37,7 @@ void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(MozillaVPN::AuthenticationType) {}
 
 void MozillaVPN::openLink(LinkType) {}
-
-void MozillaVPN::scheduleTask(Task* task) {
-  connect(task, &Task::completed, task, &Task::deleteLater);
-  task->run(this);
-}
-
-void MozillaVPN::maybeRunTask() {}
-
-void MozillaVPN::deleteTasks() {}
+void MozillaVPN::openLinkUrl(const QString&) {}
 
 void MozillaVPN::setToken(const QString&) {}
 
@@ -58,11 +49,7 @@ void MozillaVPN::deviceRemoved(const QString&) {}
 
 void MozillaVPN::deviceRemovalCompleted(const QString&) {}
 
-bool MozillaVPN::setServerList(const QByteArray&, const QByteArray&) {
-  return true;
-}
-
-void MozillaVPN::serversFetched(const QByteArray&, const QByteArray&) {}
+void MozillaVPN::serversFetched(const QByteArray&) {}
 
 void MozillaVPN::removeDeviceFromPublicKey(const QString&) {}
 
@@ -91,7 +78,7 @@ void MozillaVPN::telemetryPolicyCompleted() {}
 
 void MozillaVPN::setUpdateRecommended(bool) {}
 
-void MozillaVPN::setUserAuthenticated(bool) {}
+void MozillaVPN::setUserState(UserState) {}
 
 void MozillaVPN::startSchedulingPeriodicOperations() {}
 
@@ -109,8 +96,6 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation,
 bool MozillaVPN::viewLogs() { return true; }
 
 bool MozillaVPN::modelsInitialized() const { return true; }
-
-void MozillaVPN::taskCompleted() {}
 
 void MozillaVPN::requestSettings() {}
 

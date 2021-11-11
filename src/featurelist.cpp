@@ -18,8 +18,8 @@
 #include "features/featurenotificationcontrol.h"
 #include "features/featuresplittunnel.h"
 #include "features/featuresharelogs.h"
+#include "features/featureuniqueid.h"
 #include "features/featurestartonboot.h"
-#include "features/featureunauthsupport.h"
 #include "features/featureunsecurednetworknotification.h"
 
 #include <QJsonDocument>
@@ -52,7 +52,7 @@ void FeatureList::initialize() {
   new FeatureShareLogs();
   new FeatureSplitTunnel();
   new FeatureStartOnBoot();
-  new FeatureUnauthSupport();
+  new FeatureUniqueID();
   new FeatureUnsecuredNetworkNotification();
 
   m_featurelist = Feature::getAll();

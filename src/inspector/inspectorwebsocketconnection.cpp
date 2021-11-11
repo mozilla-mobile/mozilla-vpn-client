@@ -460,6 +460,14 @@ static QList<WebSocketCommand> s_commands{
                        return obj;
                      }},
 
+    WebSocketCommand{"set_glean_source_tags",
+                     "Set Glean Source Tags (supply a comma seperated list)", 1,
+                     [](const QList<QByteArray>& arguments) {
+                       QStringList tags = QString(arguments[1]).split(',');
+                       MozillaVPN::instance()->setGleanSourceTags(tags);
+                       return QJsonObject();
+                     }},
+
     WebSocketCommand{"force_update_check", "Force a version update check", 1,
                      [](const QList<QByteArray>& arguments) {
                        s_updateVersion = arguments[1];

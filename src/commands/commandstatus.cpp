@@ -63,7 +63,7 @@ int CommandStatus::run(QStringList& tokens) {
 
     if (!cacheOption.m_set) {
       TaskAccountAndServers task;
-      task.run(&vpn);
+      task.run();
 
       QEventLoop loop;
       QObject::connect(&task, &Task::completed, [&] { loop.exit(); });

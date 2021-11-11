@@ -11,8 +11,8 @@ import compat 0.1
 import components 0.1
 import themes 0.1
 
-import org.mozilla.Glean 0.23
-import telemetry 0.23
+import org.mozilla.Glean 0.24
+import telemetry 0.24
 
 Window {
     id: window
@@ -307,10 +307,11 @@ Window {
                 osVersion: VPN.osVersion,
                 architecture: VPN.architecture,
             });
-            if (VPN.platform == "dummy") {
-                console.debug("Setting glean tags for automation");
-                Glean.setSourceTags(["automation"])
-            }
+        }
+
+        function onSetGleanSourceTags(tags) {
+            console.debug("Setting source tags to:", tags);
+            Glean.setSourceTags(tags);
         }
 
         function onSendGleanPings() {
