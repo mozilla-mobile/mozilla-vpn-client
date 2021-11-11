@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/main">
+        <file>main/qmldir</file>
+        <file>main/VPN.qml</file>
+    </qresource>
+</RCC>

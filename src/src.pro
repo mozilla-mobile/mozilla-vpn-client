@@ -316,6 +316,7 @@ unix {
 
 RESOURCES += ui/components.qrc
 RESOURCES += ui/license.qrc
+RESOURCES += ui/main.qrc
 RESOURCES += ui/resources.qrc
 RESOURCES += ui/themes.qrc
 RESOURCES += ui/ui.qrc
