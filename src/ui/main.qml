@@ -140,7 +140,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "qrc:/ui/states/StateInitialize.qml"
+                        source: "states/StateInitialize.qml"
                     }
 
                 },
@@ -149,7 +149,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: VPNFeatureList.get("inAppAuthentication").isSupported ? "qrc:/ui/states/StateAuthenticationInApp.qml" : "qrc:/ui/states/StateAuthenticating.qml"
+                        source: VPNFeatureList.get("inAppAuthentication").isSupported ? "states/StateAuthenticationInApp.qml" : "states/StateAuthenticating.qml"
                     }
 
                 },
@@ -158,7 +158,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "qrc:/ui/states/StatePostAuthentication.qml"
+                        source: "states/StatePostAuthentication.qml"
                     }
 
                 },
@@ -167,7 +167,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "qrc:/ui/states/StateTelemetryPolicy.qml"
+                        source: "states/StateTelemetryPolicy.qml"
                     }
 
                 },
@@ -176,7 +176,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "qrc:/ui/states/StateMain.qml"
+                        source: "states/StateMain.qml"
                     }
 
                 },
@@ -185,7 +185,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "qrc:/ui/states/StateUpdateRequired.qml"
+                        source: "states/StateUpdateRequired.qml"
                     }
 
                 },
@@ -194,7 +194,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "qrc:/ui/states/StateSubscriptionNeeded.qml"
+                        source: "states/StateSubscriptionNeeded.qml"
                     }
 
                 },
@@ -203,7 +203,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "qrc:/ui/states/StateSubscriptionInProgress.qml"
+                        source: "states/StateSubscriptionInProgress.qml"
                     }
 
                 },
@@ -212,7 +212,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "qrc:/ui/states/StateSubscriptionBlocked.qml"
+                        source: "states/StateSubscriptionBlocked.qml"
                     }
 
                 },
@@ -221,7 +221,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "qrc:/ui/states/StateDeviceLimit.qml"
+                        source: "states/StateDeviceLimit.qml"
                     }
 
                 },
@@ -230,7 +230,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "qrc:/ui/states/StateBackendFailure.qml"
+                        source: "states/StateBackendFailure.qml"
                     }
 
                 },
@@ -239,7 +239,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "qrc:/ui/states/StateBillingNotAvailable.qml"
+                        source: "states/StateBillingNotAvailable.qml"
                     }
                 },
                 State {
@@ -247,7 +247,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "qrc:/ui/states/StateSubscriptionNotValidated.qml"
+                        source: "states/StateSubscriptionNotValidated.qml"
                     }
                 }
             ]

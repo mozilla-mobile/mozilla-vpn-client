@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/ui">
-        <file>../platforms/android/androidauthenticationview.qml</file>
         <file>authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
         <file>authenticationInApp/ViewAuthenticationInApp.qml</file>
         <file>authenticationInApp/ViewAuthenticationInitializing.qml</file>
@@ -12,6 +11,8 @@
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
         <file>developerMenu/ViewDeveloperMenu.qml</file>
         <file>developerMenu/ViewFeatureList.qml</file>
+        <file>main.qml</file>
+        <file>../platforms/android/androidauthenticationview.qml</file>
         <file>settings/ViewAdvancedDNSSettings.qml</file>
         <file>settings/ViewAppPermissions.qml</file>
         <file>settings/ViewGiveFeedback.qml</file>

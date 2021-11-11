@@ -402,7 +402,7 @@ int CommandUI::run(QStringList& tokens) {
                      &MozillaVPN::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
-    const QUrl url(QStringLiteral("qrc:/main/main/VPN.qml"));
+    const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
     QObject::connect(
         engine, &QQmlApplicationEngine::objectCreated, qApp,
         [url](QObject* obj, const QUrl& objUrl) {
