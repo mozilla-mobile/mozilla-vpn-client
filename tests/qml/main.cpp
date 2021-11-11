@@ -18,10 +18,12 @@ class Setup : public QObject {
 
  public slots:
   void qmlEngineAvailable(QQmlEngine* engine) {
+    engine->addImportPath("qrc:///compat");
     engine->addImportPath("qrc:///components");
     engine->addImportPath("qrc:///glean");
+    engine->addImportPath("qrc:///main");
     engine->addImportPath("qrc:///themes");
-    engine->addImportPath("qrc:///compat");
+    engine->addImportPath("qrc:///ui");
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {

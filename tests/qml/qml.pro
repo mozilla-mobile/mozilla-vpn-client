@@ -21,6 +21,7 @@ RESOURCES += \
     $$PWD/../../src/ui/compatQt5.qrc \
     $$PWD/../../src/ui/compatQt6.qrc \
     $$PWD/../../src/ui/components.qrc \
+    $$PWD/../../src/ui/main.qrc \
     $$PWD/../../src/ui/resources.qrc \
     $$PWD/../../src/ui/themes.qrc \
     $$PWD/../../src/ui/ui.qrc \
