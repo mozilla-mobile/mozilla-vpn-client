@@ -15,6 +15,10 @@ class Setup : public QObject {
 
  public slots:
   void qmlEngineAvailable(QQmlEngine* engine) {
+    engine->addImportPath("qrc:///components");
+    engine->addImportPath("qrc:///glean");
+    engine->addImportPath("qrc:///themes");
+    engine->addImportPath("qrc:///compat");
     engine->rootContext()->setContextProperty("myContextProperty",
                                               QVariant(true));
   }

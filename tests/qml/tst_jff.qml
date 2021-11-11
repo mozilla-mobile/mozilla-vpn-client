@@ -1,14 +1,23 @@
 import QtQuick 2.3
 import QtTest 1.0
 
-TestCase {
-    name: "MathTests"
+import components 0.1
 
-    function test_math() {
-        compare(2 + 2, 4, "2 + 2 = 4")
+// Canvas for the unit tests
+Item {
+    width: 600;
+    height: 800;
+
+    VPNAboutUs {
+        id: vpnAboutUsTest
     }
 
-    function test_fail() {
-        compare(2 + 33, 7, "2 + 33 = 7")
+    TestCase {
+        name: "AboutUsTests"
+        when: windowShown
+
+        function test_releaseVersion() {
+            verify(vpnAboutUsTest.releaseVersion === "testme", "test failed - booo" + vpnAboutUsTest.releaseVersion)
+        }
     }
 }
