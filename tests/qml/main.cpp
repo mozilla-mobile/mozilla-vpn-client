@@ -5,14 +5,10 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 
-#include "../../src/mozillavpn.h"
-
-#include "../../src/authenticationinapp/authenticationinapp.h"
+#include "l18nstrings.h"
 #include "../../src/constants.h"
 #include "../../src/featurelist.h"
-#include "../../src/leakdetector.h"
-#include "../../src/settingsholder.h"
-#include "../../src/simplenetworkmanager.h"
+#include "../../src/mozillavpn.h"
 
 // For info on the slots we can use
 // https://doc.qt.io/qt-5/qtquicktest-index.html#executing-c-before-qml-tests
@@ -32,6 +28,14 @@ class Setup : public QObject {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNl18n",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = L18nStrings::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

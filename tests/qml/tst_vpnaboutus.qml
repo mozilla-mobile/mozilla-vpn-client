@@ -17,7 +17,9 @@ Item {
         when: windowShown
 
         function test_releaseVersion() {
-            verify(vpnAboutUsTest.releaseVersion === "testme", "test failed - booo" + vpnAboutUsTest.releaseVersion)
+            const expected = "testme"
+            const actual = vpnAboutUsTest.releaseVersionText
+            verify(expected === actual, `releaseVersion was ${actual} not ${expected}.`)
         }
     }
 }
