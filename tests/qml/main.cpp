@@ -6,10 +6,9 @@
 #include <QQmlContext>
 
 #include "l18nstrings.h"
-#include "../../src/constants.h"
-#include "../../src/featurelist.h"
-#include "../../src/settingsholder.h"
 #include "../../src/mozillavpn.h"
+#include "../../src/settingsholder.h"
+#include "helper.h"
 
 // For info on the slots we can use
 // https://doc.qt.io/qt-5/qtquicktest-index.html#executing-c-before-qml-tests
@@ -22,7 +21,6 @@ class Setup : public QObject {
  public slots:
   void qmlEngineAvailable(QQmlEngine* engine) {
     SettingsHolder settingsHolder;
-    Constants::setStaging();
     FeatureList::instance()->initialize();
 
     engine->addImportPath("qrc:///compat");
@@ -49,7 +47,23 @@ class Setup : public QObject {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNSettings",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = SettingsHolder::instance();
+          QObject* obj = TestHelper::instance()->settingsHolder();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNCloseEventHandler",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = TestHelper::instance()->closeEventHandler();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNWhatsNewModel",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = TestHelper::instance()->whatsNewModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

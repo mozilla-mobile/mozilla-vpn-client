@@ -4,10 +4,13 @@
 TEMPLATE = app
 TARGET = qml_tests
 
+QT += quick
+
 CONFIG += warn_on qmltestcase
 
 # Allows us to be a supported platform
 DEFINES += UNIT_TEST
+DEFINES += MVPN_DUMMY
 # Sets up app and build id which we test for in test_VPNAboutUs
 DEFINES += APP_VERSION=\\\"QMLTest_AppVersion\\\"
 DEFINES += BUILD_ID=\\\"QMLTest_BuildID\\\"
@@ -22,13 +25,16 @@ RESOURCES += \
     $$PWD/../../src/ui/ui.qrc \
 
 INCLUDEPATH += \
+            . \   
             ../../src \
             ../../translations/generated \
 
 SOURCES += \
-    mocmozillavpn.cpp \
+    helper.cpp \
     main.cpp \
+    mocmozillavpn.cpp \
     ../unit/mocinspectorwebsocketconnection.cpp \
+    ../../src/closeeventhandler.cpp \
     ../../src/constants.cpp \
     ../../src/featurelist.cpp \
     ../../src/hawkauth.cpp \
@@ -37,6 +43,7 @@ SOURCES += \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
     ../../src/settingsholder.cpp \
@@ -44,6 +51,8 @@ SOURCES += \
     ../../src/update/versionapi.cpp \
 
 HEADERS += \
+    helper.h \
+    ../../src/closeeventhandler.h \
     ../../src/constants.h \
     ../../src/featurelist.h \
     ../../src/hawkauth.h \
@@ -52,6 +61,7 @@ HEADERS += \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/feature.h \
+    ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
