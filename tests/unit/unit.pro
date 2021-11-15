@@ -253,6 +253,24 @@ UI_DIR = .ui
 
 RESOURCES += ../../src/ui/license.qrc
 
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../glean/release/ -lglean
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../glean/debug/ -lglean
+else:unix:
+    LIBS += -L$$PWD/../glean/ -lglean
+    INCLUDEPATH += $$PWD/../../glean
+    CONFIG(debug, debug|release) {
+    DEPENDPATH += $$PWD/../../glean/debug
+}
+CONFIG(release, debug|release) {
+    DEPENDPATH += $$PWD/../../glean/release
+}
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../nebula/release/ -lnebula
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../nebula/debug/ -lnebula
+else:unix: LIBS += -L$$PWD/../../nebula/ -lnebula
+
+INCLUDEPATH += $$PWD/../../nebula
+DEPENDPATH += $$PWD/../../nebula
 coverage {
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
     QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
