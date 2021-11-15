@@ -221,12 +221,12 @@ else
     ..//mozillavpn.pro || die "Qmake failed"
 fi
 
-cd glean
+pushd ..//glean
 make -j $JOBS sub-src-apk_install_target || die "Compile of Glean QT project failed"
-cd ..
-cd nebula
+popd
+pushd ..//nebula
 make -j $JOBS sub-src-apk_install_target || die "Compile of Nebula QT project failed"
-cd ..
+popd
 
 print Y "Compiling apk_install_target in .tmp/"
 make -j $JOBS sub-src-apk_install_target || die "Compile of QT project failed"
