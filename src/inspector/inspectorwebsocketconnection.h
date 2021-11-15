@@ -5,7 +5,6 @@
 #ifndef INSPECTORWEBSOCKETCONNECTION_H
 #define INSPECTORWEBSOCKETCONNECTION_H
 
-#include "../captiveportal/captiveportalresult.h"
 #include <QByteArray>
 #include <QObject>
 

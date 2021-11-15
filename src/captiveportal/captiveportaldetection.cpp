@@ -122,7 +122,6 @@ void CaptivePortalDetection::detectionCompleted(CaptivePortalResult detected) {
   switch (detected) {
     case CaptivePortalResult::NoPortal:
     case CaptivePortalResult::Failure:
-    case CaptivePortalResult::Invalid:
       return;
     case CaptivePortalResult::PortalDetected:
       captivePortalDetected();

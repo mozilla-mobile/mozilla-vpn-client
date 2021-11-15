@@ -173,11 +173,12 @@ bool Controller::activate() {
   }
 
   if (m_state == StateOff) {
-    if(m_portalDetected){
+    if (m_portalDetected) {
       emit activationBlockedForCaptivePortal();
-      m_portalDetected=false;
+      m_portalDetected = false;
       return true;
     }
+    setState(StateConnecting);
   }
 
   m_timer.stop();
@@ -796,12 +797,14 @@ QString Controller::switchingLocalizedCityName() const {
                                        m_switchingExitCity);
 }
 
-void Controller::captivePortalGone(){
+void Controller::captivePortalGone() {
   m_portalDetected = false;
-    logger.info() << "Captive-Portal Gone, next activation will not show prompt";
+  logger.info() << "Captive-Portal Gone, next activation will not show prompt";
 }
-void Controller::captivePortalPresent(){
-  if(m_portalDetected){return;}
+void Controller::captivePortalPresent() {
+  if (m_portalDetected) {
+    return;
+  }
   m_portalDetected = true;
   logger.info() << "Captive-Portal Present, next activation will show prompt";
 }

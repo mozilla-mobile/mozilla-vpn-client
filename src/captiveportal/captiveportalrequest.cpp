@@ -97,7 +97,7 @@ void CaptivePortalRequest::onResult(CaptivePortalResult portalDetected) {
   }
 
   // If any request detects a portal, we can terminate immediately.
-  if (portalDetected == PortalDetected || true) {
+  if (portalDetected == PortalDetected) {
     deleteLater();
     emit completed(portalDetected);
     return;
