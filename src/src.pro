@@ -313,12 +313,10 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += inspector/inspector.qrc
 RESOURCES += ui/resources.qrc
 RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
-
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../glean/release/ -lglean
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../glean/debug/ -lglean
