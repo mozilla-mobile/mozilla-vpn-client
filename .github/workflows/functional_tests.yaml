@@ -84,9 +84,11 @@ jobs:
           python3 scripts/generate_glean.py
           cd glean
           qmake QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug
+          make -j$(nproc)
           cd ..
           cd nebula
           qmake CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug
+          make -j$(nproc)
           cd ..
           # Delete unit tests, so we can get to testing faster
           sed -i '/tests\/unit/d' mozillavpn.pro
