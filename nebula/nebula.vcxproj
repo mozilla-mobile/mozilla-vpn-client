@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9CD3DD8A-58FC-3548-892A-C7AF1E74FFB4}</ProjectGuid>
+    <RootNamespace>nebula</RootNamespace>
+    <Keyword>Qt4VSv1.0</Keyword>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.19041.0</WindowsTargetPlatformMinVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;" Label="Configuration">
+    <PlatformToolset>v142</PlatformToolset>
+    <OutputDirectory>debug\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <IntermediateDirectory>debug\</IntermediateDirectory>
+    <PrimaryOutput>nebula</PrimaryOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;" Label="Configuration">
+    <PlatformToolset>v142</PlatformToolset>
+    <OutputDirectory>release\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <IntermediateDirectory>release\</IntermediateDirectory>
+    <PrimaryOutput>nebula</PrimaryOutput>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists(&apos;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&apos;)" />
+  </ImportGroup>
+  <ImportGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists(&apos;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&apos;)" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\</OutDir>
+    <IntDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\</IntDir>
+    <TargetName Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">nebula</TargetName>
+    <IgnoreImportLibrary Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</IgnoreImportLibrary>
+    <OutDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\</OutDir>
+    <IntDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\</IntDir>
+    <TargetName Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">nebula</TargetName>
+    <IgnoreImportLibrary Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</IgnoreImportLibrary>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.;C:\Qt\5.15.2\msvc2015_64\include;C:\Qt\5.15.2\msvc2015_64\include\QtQml;C:\Qt\5.15.2\msvc2015_64\include\QtNetwork;C:\Qt\5.15.2\msvc2015_64\include\QtCore;debug;C:\Qt\5.15.2\msvc2015_64\mkspecs\win32-msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>debug\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4577;4467;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>debug\</ObjectFileName>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_QML_LIB;QT_NETWORK_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)\nebula.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_QML_LIB;QT_NETWORK_LIB;QT_CORE_LIB;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.;C:\Qt\5.15.2\msvc2015_64\include;C:\Qt\5.15.2\msvc2015_64\include\QtQml;C:\Qt\5.15.2\msvc2015_64\include\QtNetwork;C:\Qt\5.15.2\msvc2015_64\include\QtCore;release;C:\Qt\5.15.2\msvc2015_64\mkspecs\win32-msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>release\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <DisableSpecificWarnings>4577;4467;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>release\</ObjectFileName>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_NO_DEBUG;QT_QML_LIB;QT_NETWORK_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <ProgramDataBaseFileName></ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)\nebula.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_NO_DEBUG;QT_QML_LIB;QT_NETWORK_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="nebula.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="nebula.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="debug\moc_predefs.h.cbt">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">C:\Qt\5.15.2\msvc2015_64\mkspecs\features\data\dummy.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">cl -BxC:\Qt\5.15.2\msvc2015_64\bin\qmake.exe -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -Zi -MDd -W3 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 -wd4577 -wd4467 -E C:\Qt\5.15.2\msvc2015_64\mkspecs\features\data\dummy.cpp 2&gt;NUL &gt;debug\moc_predefs.h</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">Generate moc_predefs.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\moc_predefs.h;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="release\moc_predefs.h.cbt">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</ExcludedFromBuild>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">C:\Qt\5.15.2\msvc2015_64\mkspecs\features\data\dummy.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">cl -BxC:\Qt\5.15.2\msvc2015_64\bin\qmake.exe -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -O2 -MD -W3 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 -wd4577 -wd4467 -E C:\Qt\5.15.2\msvc2015_64\mkspecs\features\data\dummy.cpp 2&gt;NUL &gt;release\moc_predefs.h</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">Generate moc_predefs.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\moc_predefs.h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClCompile Include="debug\qrc_compatQt5.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="release\qrc_compatQt5.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="debug\qrc_components.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="release\qrc_components.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="debug\qrc_nebula_resources.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="release\qrc_nebula_resources.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="debug\qrc_themes.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="release\qrc_themes.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ui\resources\flags\AC.png" />
+    <None Include="ui\resources\flags\AD.png" />
+    <None Include="ui\resources\flags\AE.png" />
+    <None Include="ui\resources\flags\AF.png" />
+    <None Include="ui\resources\flags\AG.png" />
+    <None Include="ui\resources\flags\AI.png" />
+    <None Include="ui\resources\flags\AL.png" />
+    <None Include="ui\resources\flags\AM.png" />
+    <None Include="ui\resources\flags\AO.png" />
+    <None Include="ui\resources\flags\AQ.png" />
+    <None Include="ui\resources\flags\AR.png" />
+    <None Include="ui\resources\flags\AS.png" />
+    <None Include="ui\resources\flags\AT.png" />
+    <None Include="ui\resources\flags\AU.png" />
+    <None Include="ui\resources\flags\AW.png" />
+    <None Include="ui\resources\flags\AX.png" />
+    <None Include="ui\resources\flags\AZ.png" />
+    <None Include="ui\resources\flags\BA.png" />
+    <None Include="ui\resources\flags\BB.png" />
+    <None Include="ui\resources\flags\BD.png" />
+    <None Include="ui\resources\flags\BE.png" />
+    <None Include="ui\resources\flags\BF.png" />
+    <None Include="ui\resources\flags\BG.png" />
+    <None Include="ui\resources\flags\BH.png" />
+    <None Include="ui\resources\flags\BI.png" />
+    <None Include="ui\resources\flags\BJ.png" />
+    <None Include="ui\resources\flags\BL.png" />
+    <None Include="ui\resources\flags\BM.png" />
+    <None Include="ui\resources\flags\BN.png" />
+    <None Include="ui\resources\flags\BO.png" />
+    <None Include="ui\resources\flags\BQ.png" />
+    <None Include="ui\resources\flags\BR.png" />
+    <None Include="ui\resources\flags\BS.png" />
+    <None Include="ui\resources\flags\BT.png" />
+    <None Include="ui\resources\flags\BV.png" />
+    <None Include="ui\resources\flags\BW.png" />
+    <None Include="ui\resources\flags\BY.png" />
+    <None Include="ui\resources\flags\BZ.png" />
+    <None Include="ui\resources\flags\CA.png" />
+    <None Include="ui\resources\flags\CC.png" />
+    <None Include="ui\resources\flags\CD.png" />
+    <None Include="ui\resources\flags\CF.png" />
+    <None Include="ui\resources\flags\CG.png" />
+    <None Include="ui\resources\flags\CH.png" />
+    <None Include="ui\resources\flags\CI.png" />
+    <None Include="ui\resources\flags\CK.png" />
+    <None Include="ui\resources\flags\CL.png" />
+    <None Include="ui\resources\flags\CM.png" />
+    <None Include="ui\resources\flags\CN.png" />
+    <None Include="ui\resources\flags\CO.png" />
+    <None Include="ui\resources\flags\CP.png" />
+    <None Include="ui\resources\flags\CR.png" />
+    <None Include="ui\resources\flags\CU.png" />
+    <None Include="ui\resources\flags\CV.png" />
+    <None Include="ui\resources\flags\CW.png" />
+    <None Include="ui\resources\flags\CX.png" />
+    <None Include="ui\resources\flags\CY.png" />
+    <None Include="ui\resources\flags\CZ.png" />
+    <None Include="ui\resources\flags\DE.png" />
+    <None Include="ui\resources\flags\DG.png" />
+    <None Include="ui\resources\flags\DJ.png" />
+    <None Include="ui\resources\flags\DK.png" />
+    <None Include="ui\resources\flags\DM.png" />
+    <None Include="ui\resources\flags\DO.png" />
+    <None Include="ui\resources\flags\DZ.png" />
+    <None Include="ui\resources\flags\EA.png" />
+    <None Include="ui\resources\flags\EC.png" />
+    <None Include="ui\resources\flags\EE.png" />
+    <None Include="ui\resources\flags\EG.png" />
+    <None Include="ui\resources\flags\EH.png" />
+    <None Include="ui\resources\flags\ER.png" />
+    <None Include="ui\resources\flags\ES.png" />
+    <None Include="ui\resources\flags\ET.png" />
+    <None Include="ui\resources\flags\EU.png" />
+    <None Include="ui\resources\flags\FI.png" />
+    <None Include="ui\resources\flags\FJ.png" />
+    <None Include="ui\resources\flags\FK.png" />
+    <None Include="ui\resources\flags\FM.png" />
+    <None Include="ui\resources\flags\FO.png" />
+    <None Include="ui\resources\flags\FR.png" />
+    <None Include="ui\resources\flags\GA.png" />
+    <None Include="ui\resources\flags\GB.png" />
+    <None Include="ui\resources\flags\GD.png" />
+    <None Include="ui\resources\flags\GE.png" />
+    <None Include="ui\resources\flags\GF.png" />
+    <None Include="ui\resources\flags\GG.png" />
+    <None Include="ui\resources\flags\GH.png" />
+    <None Include="ui\resources\flags\GI.png" />
+    <None Include="ui\resources\flags\GL.png" />
+    <None Include="ui\resources\flags\GM.png" />
+    <None Include="ui\resources\flags\GN.png" />
+    <None Include="ui\resources\flags\GP.png" />
+    <None Include="ui\resources\flags\GQ.png" />
+    <None Include="ui\resources\flags\GR.png" />
+    <None Include="ui\resources\flags\GS.png" />
+    <None Include="ui\resources\flags\GT.png" />
+    <None Include="ui\resources\flags\GU.png" />
+    <None Include="ui\resources\flags\GW.png" />
+    <None Include="ui\resources\flags\GY.png" />
+    <None Include="ui\resources\flags\HK.png" />
+    <None Include="ui\resources\flags\HM.png" />
+    <None Include="ui\resources\flags\HN.png" />
+    <None Include="ui\resources\flags\HR.png" />
+    <None Include="ui\resources\flags\HT.png" />
+    <None Include="ui\resources\flags\HU.png" />
+    <None Include="ui\resources\flags\IC.png" />
+    <None Include="ui\resources\flags\ID.png" />
+    <None Include="ui\resources\flags\IE.png" />
+    <None Include="ui\resources\flags\IL.png" />
+    <None Include="ui\resources\flags\IM.png" />
+    <None Include="ui\resources\flags\IN.png" />
+    <None Include="ui\resources\flags\IO.png" />
+    <None Include="ui\resources\flags\IQ.png" />
+    <None Include="ui\resources\flags\IR.png" />
+    <None Include="ui\resources\flags\IS.png" />
+    <None Include="ui\resources\flags\IT.png" />
+    <None Include="ui\resources\fonts\InterUI.otf" />
+    <None Include="ui\resources\flags\JE.png" />
+    <None Include="ui\resources\flags\JM.png" />
+    <None Include="ui\resources\flags\JO.png" />
+    <None Include="ui\resources\flags\JP.png" />
+    <None Include="ui\resources\flags\KE.png" />
+    <None Include="ui\resources\flags\KG.png" />
+    <None Include="ui\resources\flags\KH.png" />
+    <None Include="ui\resources\flags\KI.png" />
+    <None Include="ui\resources\flags\KM.png" />
+    <None Include="ui\resources\flags\KN.png" />
+    <None Include="ui\resources\flags\KP.png" />
+    <None Include="ui\resources\flags\KR.png" />
+    <None Include="ui\resources\flags\KW.png" />
+    <None Include="ui\resources\flags\KY.png" />
+    <None Include="ui\resources\flags\KZ.png" />
+    <None Include="ui\resources\flags\LA.png" />
+    <None Include="ui\resources\flags\LB.png" />
+    <None Include="ui\resources\flags\LC.png" />
+    <None Include="ui\resources\flags\LI.png" />
+    <None Include="ui\resources\flags\LK.png" />
+    <None Include="ui\resources\flags\LR.png" />
+    <None Include="ui\resources\flags\LS.png" />
+    <None Include="ui\resources\flags\LT.png" />
+    <None Include="ui\resources\flags\LU.png" />
+    <None Include="ui\resources\flags\LV.png" />
+    <None Include="ui\resources\flags\LY.png" />
+    <None Include="ui\resources\flags\MA.png" />
+    <None Include="ui\resources\flags\MC.png" />
+    <None Include="ui\resources\flags\MD.png" />
+    <None Include="ui\resources\flags\ME.png" />
+    <None Include="ui\resources\flags\MF.png" />
+    <None Include="ui\resources\flags\MG.png" />
+    <None Include="ui\resources\flags\MH.png" />
+    <None Include="ui\resources\flags\MK.png" />
+    <None Include="ui\resources\flags\ML.png" />
+    <None Include="ui\resources\flags\MM.png" />
+    <None Include="ui\resources\flags\MN.png" />
+    <None Include="ui\resources\flags\MO.png" />
+    <None Include="ui\resources\flags\MP.png" />
+    <None Include="ui\resources\flags\MQ.png" />
+    <None Include="ui\resources\flags\MR.png" />
+    <None Include="ui\resources\flags\MS.png" />
+    <None Include="ui\resources\flags\MT.png" />
+    <None Include="ui\resources\flags\MU.png" />
+    <None Include="ui\resources\flags\MV.png" />
+    <None Include="ui\resources\flags\MW.png" />
+    <None Include="ui\resources\flags\MX.png" />
+    <None Include="ui\resources\flags\MY.png" />
+    <None Include="ui\resources\flags\MZ.png" />
+    <None Include="ui\resources\fonts\Metropolis-SemiBold.otf" />
+    <None Include="ui\resources\fonts\Metropolis.otf" />
+    <None Include="ui\resources\flags\NA.png" />
+    <None Include="ui\resources\flags\NC.png" />
+    <None Include="ui\resources\flags\NE.png" />
+    <None Include="ui\resources\flags\NF.png" />
+    <None Include="ui\resources\flags\NG.png" />
+    <None Include="ui\resources\flags\NI.png" />
+    <None Include="ui\resources\flags\NL.png" />
+    <None Include="ui\resources\flags\NO.png" />
+    <None Include="ui\resources\flags\NP.png" />
+    <None Include="ui\resources\flags\NR.png" />
+    <None Include="ui\resources\flags\NU.png" />
+    <None Include="ui\resources\flags\NZ.png" />
+    <None Include="ui\resources\flags\OM.png" />
+    <None Include="ui\resources\flags\PA.png" />
+    <None Include="ui\resources\flags\PE.png" />
+    <None Include="ui\resources\flags\PF.png" />
+    <None Include="ui\resources\flags\PG.png" />
+    <None Include="ui\resources\flags\PH.png" />
+    <None Include="ui\resources\flags\PK.png" />
+    <None Include="ui\resources\flags\PL.png" />
+    <None Include="ui\resources\flags\PM.png" />
+    <None Include="ui\resources\flags\PN.png" />
+    <None Include="ui\resources\flags\PR.png" />
+    <None Include="ui\resources\flags\PS.png" />
+    <None Include="ui\resources\flags\PT.png" />
+    <None Include="ui\resources\flags\PW.png" />
+    <None Include="ui\resources\flags\PY.png" />
+    <None Include="ui\resources\flags\QA.png" />
+    <None Include="ui\resources\flags\RE.png" />
+    <None Include="ui\resources\flags\RO.png" />
+    <None Include="ui\resources\flags\RS.png" />
+    <None Include="ui\resources\flags\RU.png" />
+    <None Include="ui\resources\flags\RW.png" />
+    <None Include="ui\resources\flags\SA.png" />
+    <None Include="ui\resources\flags\SB.png" />
+    <None Include="ui\resources\flags\SC.png" />
+    <None Include="ui\resources\flags\SD.png" />
+    <None Include="ui\resources\flags\SE.png" />
+    <None Include="ui\resources\flags\SG.png" />
+    <None Include="ui\resources\flags\SH.png" />
+    <None Include="ui\resources\flags\SI.png" />
+    <None Include="ui\resources\flags\SJ.png" />
+    <None Include="ui\resources\flags\SK.png" />
+    <None Include="ui\resources\flags\SL.png" />
+    <None Include="ui\resources\flags\SM.png" />
+    <None Include="ui\resources\flags\SN.png" />
+    <None Include="ui\resources\flags\SO.png" />
+    <None Include="ui\resources\flags\SR.png" />
+    <None Include="ui\resources\flags\SS.png" />
+    <None Include="ui\resources\flags\ST.png" />
+    <None Include="ui\resources\flags\SV.png" />
+    <None Include="ui\resources\flags\SX.png" />
+    <None Include="ui\resources\flags\SY.png" />
+    <None Include="ui\resources\flags\SZ.png" />
+    <None Include="ui\resources\flags\TA.png" />
+    <None Include="ui\resources\flags\TC.png" />
+    <None Include="ui\resources\flags\TD.png" />
+    <None Include="ui\resources\flags\TF.png" />
+    <None Include="ui\resources\flags\TG.png" />
+    <None Include="ui\resources\flags\TH.png" />
+    <None Include="ui\resources\flags\TJ.png" />
+    <None Include="ui\resources\flags\TK.png" />
+    <None Include="ui\resources\flags\TL.png" />
+    <None Include="ui\resources\flags\TM.png" />
+    <None Include="ui\resources\flags\TN.png" />
+    <None Include="ui\resources\flags\TO.png" />
+    <None Include="ui\resources\flags\TR.png" />
+    <None Include="ui\resources\flags\TT.png" />
+    <None Include="ui\resources\flags\TV.png" />
+    <None Include="ui\resources\flags\TW.png" />
+    <None Include="ui\resources\flags\TZ.png" />
+    <None Include="ui\resources\flags\UA.png" />
+    <None Include="ui\resources\flags\UG.png" />
+    <None Include="ui\resources\flags\UM.png" />
+    <None Include="ui\resources\flags\UN.png" />
+    <None Include="ui\resources\flags\US.png" />
+    <None Include="ui\resources\flags\UY.png" />
+    <None Include="ui\resources\flags\UZ.png" />
+    <None Include="ui\resources\flags\VA.png" />
+    <None Include="ui\resources\flags\VC.png" />
+    <None Include="ui\resources\flags\VE.png" />
+    <None Include="ui\resources\flags\VG.png" />
+    <None Include="ui\resources\flags\VI.png" />
+    <None Include="ui\resources\flags\VN.png" />
+    <None Include="ui\components\VPNAboutUs.qml" />
+    <None Include="ui\components\VPNAlert.qml" />
+    <None Include="ui\components\VPNAlerts.qml" />
+    <None Include="ui\components\VPNAnimatedRings.qml" />
+    <None Include="ui\compat\qt5\VPNAnimatedRingsShader.qml" />
+    <None Include="ui\components\VPNAvatar.qml" />
+    <None Include="ui\components\VPNBoldLabel.qml" />
+    <None Include="ui\components\VPNButton.qml" />
+    <None Include="ui\components\VPNButtonBase.qml" />
+    <None Include="ui\components\VPNButtonLoader.qml" />
+    <None Include="ui\components\VPNCallout.qml" />
+    <None Include="ui\components\VPNCheckBox.qml" />
+    <None Include="ui\components\VPNCheckBoxAlert.qml" />
+    <None Include="ui\components\VPNCheckBoxRow.qml" />
+    <None Include="ui\components\VPNChevron.qml" />
+    <None Include="ui\components\VPNClickableRow.qml" />
+    <None Include="ui\components\VPNCollapsibleCard.qml" />
+    <None Include="ui\compat\qt5\VPNColorOverlay.qml" />
+    <None Include="ui\components\forms\VPNComboBox.qml" />
+    <None Include="ui\components\VPNConnectionInfo.qml" />
+    <None Include="ui\components\VPNConnectionStability.qml" />
+    <None Include="ui\components\VPNControllerNav.qml" />
+    <None Include="ui\components\VPNControllerView.qml" />
+    <None Include="ui\components\VPNDeviceListItem.qml" />
+    <None Include="ui\components\VPNDevicesListHeader.qml" />
+    <None Include="ui\compat\qt5\VPNDropShadow.qml" />
+    <None Include="ui\components\VPNDropShadowWithStates.qml" />
+    <None Include="ui\components\VPNExpandableAppList.qml" />
+    <None Include="ui\components\VPNExternalLinkListItem.qml" />
+    <None Include="ui\components\VPNFeatureTour.qml" />
+    <None Include="ui\components\VPNFeatureTourPopup.qml" />
+    <None Include="ui\components\VPNFeedbackRadioDelegate.qml" />
+    <None Include="ui\components\VPNFlickable.qml" />
+    <None Include="ui\components\VPNFocusBorder.qml" />
+    <None Include="ui\components\VPNFocusOutline.qml" />
+    <None Include="ui\components\VPNFooterLink.qml" />
+    <None Include="ui\components\VPNGraphLegendMarker.qml" />
+    <None Include="ui\components\VPNGreyLink.qml" />
+    <None Include="ui\components\VPNHeaderLink.qml" />
+    <None Include="ui\components\VPNHeadline.qml" />
+    <None Include="ui\components\VPNIPAddress.qml" />
+    <None Include="ui\components\VPNIcon.qml" />
+    <None Include="ui\components\VPNIconAndLabel.qml" />
+    <None Include="ui\components\VPNIconButton.qml" />
+    <None Include="ui\components\forms\VPNInputBackground.qml" />
+    <None Include="ui\components\forms\VPNInputStates.qml" />
+    <None Include="ui\components\VPNInterLabel.qml" />
+    <None Include="ui\components\VPNLightLabel.qml" />
+    <None Include="ui\compat\qt5\VPNLinearGradient.qml" />
+    <None Include="ui\components\VPNLinkButton.qml" />
+    <None Include="ui\components\VPNList.qml" />
+    <None Include="ui\components\VPNLoader.qml" />
+    <None Include="ui\components\VPNLogsButton.qml" />
+    <None Include="ui\components\VPNMainImage.qml" />
+    <None Include="ui\components\VPNMenu.qml" />
+    <None Include="ui\components\VPNMetropolisLabel.qml" />
+    <None Include="ui\components\VPNMouseArea.qml" />
+    <None Include="ui\compat\qt5\VPNOpacityMask.qml" />
+    <None Include="ui\components\VPNPanel.qml" />
+    <None Include="ui\components\VPNPopup.qml" />
+    <None Include="ui\components\VPNPopupButton.qml" />
+    <None Include="ui\components\forms\VPNRadioButton.qml" />
+    <None Include="ui\components\VPNRadioButtonLabel.qml" />
+    <None Include="ui\components\VPNRadioDelegate.qml" />
+    <None Include="ui\components\VPNRadioSublabel.qml" />
+    <None Include="ui\components\VPNRecentConnections.qml" />
+    <None Include="ui\compat\qt5\VPNRectangularGlow.qml" />
+    <None Include="ui\components\VPNRemoveDevicePopup.qml" />
+    <None Include="ui\components\forms\VPNSearchBar.qml" />
+    <None Include="ui\components\VPNSemiMonoLabel.qml" />
+    <None Include="ui\components\VPNServerCountry.qml" />
+    <None Include="ui\components\VPNServerLabel.qml" />
+    <None Include="ui\components\VPNServerList.qml" />
+    <None Include="ui\components\VPNServerListToggle.qml" />
+    <None Include="ui\components\VPNSettingsItem.qml" />
+    <None Include="ui\components\VPNSettingsToggle.qml" />
+    <None Include="ui\components\VPNSignOut.qml" />
+    <None Include="ui\components\VPNStackView.qml" />
+    <None Include="ui\components\VPNSubscriptionOption.qml" />
+    <None Include="ui\components\VPNSubtitle.qml" />
+    <None Include="ui\components\VPNSystemAlert.qml" />
+    <None Include="ui\components\VPNTabNavigation.qml" />
+    <None Include="ui\components\forms\VPNTextArea.qml" />
+    <None Include="ui\components\VPNTextBlock.qml" />
+    <None Include="ui\components\forms\VPNTextField.qml" />
+    <None Include="ui\components\VPNToggle.qml" />
+    <None Include="ui\components\VPNToggleCard.qml" />
+    <None Include="ui\components\VPNToolTip.qml" />
+    <None Include="ui\components\VPNUIStates.qml" />
+    <None Include="ui\components\VPNVerticalSpacer.qml" />
+    <None Include="ui\components\VPNViewDNSSettings.qml" />
+    <None Include="ui\components\VPNWasmAlerts.qml" />
+    <None Include="ui\components\VPNWasmHeader.qml" />
+    <None Include="ui\components\VPNWasmMenu.qml" />
+    <None Include="ui\components\VPNWasmMenuButton.qml" />
+    <None Include="ui\resources\flags\VU.png" />
+    <None Include="ui\resources\flags\WF.png" />
+    <None Include="ui\resources\flags\WS.png" />
+    <None Include="ui\resources\flags\XK.png" />
+    <None Include="ui\resources\flags\YE.png" />
+    <None Include="ui\resources\flags\YT.png" />
+    <None Include="ui\resources\flags\ZA.png" />
+    <None Include="ui\resources\flags\ZM.png" />
+    <None Include="ui\resources\flags\ZW.png" />
+    <None Include="ui\resources\app-rating.svg" />
+    <None Include="ui\resources\arrow-forward-white.svg" />
+    <None Include="ui\resources\arrow-forward.svg" />
+    <None Include="ui\resources\arrow-toggle.svg" />
+    <None Include="ui\resources\avatar-default.png" />
+    <None Include="ui\resources\back-dark.svg" />
+    <None Include="ui\resources\back.svg" />
+    <None Include="ui\resources\buttonLoader.svg" />
+    <None Include="ui\resources\checkmark.svg" />
+    <None Include="ui\resources\chevron-purple.svg" />
+    <None Include="ui\resources\chevron-right-dark.svg" />
+    <None Include="ui\resources\chevron.svg" />
+    <None Include="ui\resources\close-dark.svg" />
+    <None Include="ui\resources\close-darker.svg" />
+    <None Include="ui\resources\close-white.svg" />
+    <None Include="ui\themes\colors.js" />
+    <CustomBuild Include="ui\compatQt5.qrc">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">ui\compatQt5.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;ui\compat\qt5\VPNDropShadow.qml;ui\compat\qt5\VPNLinearGradient.qml;ui\compat\qt5\VPNAnimatedRingsShader.qml;ui\compat\qt5\VPNOpacityMask.qml;ui\compat\qt5\VPNRectangularGlow.qml;ui\compat\qt5\qmldir;ui\compat\qt5\VPNColorOverlay.qml;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name compatQt5 ui\compatQt5.qrc -o debug\qrc_compatQt5.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">RCC ui/compatQt5.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\qrc_compatQt5.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">ui\compatQt5.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;ui\compat\qt5\VPNDropShadow.qml;ui\compat\qt5\VPNLinearGradient.qml;ui\compat\qt5\VPNAnimatedRingsShader.qml;ui\compat\qt5\VPNOpacityMask.qml;ui\compat\qt5\VPNRectangularGlow.qml;ui\compat\qt5\qmldir;ui\compat\qt5\VPNColorOverlay.qml;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name compatQt5 ui\compatQt5.qrc -o release\qrc_compatQt5.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">RCC ui/compatQt5.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\qrc_compatQt5.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="ui\components.qrc">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">ui\components.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;ui\components\VPNAlert.qml;ui\components\VPNToggleCard.qml;ui\components\VPNRemoveDevicePopup.qml;ui\components\VPNControllerView.qml;ui\components\VPNMouseArea.qml;ui\components\VPNToolTip.qml;ui\components\VPNPanel.qml;ui\components\VPNAlerts.qml;ui\components\VPNLogsButton.qml;ui\components\VPNHeaderLink.qml;ui\components\VPNControllerNav.qml;ui\components\VPNConnectionInfo.qml;ui\components\VPNGreyLink.qml;ui\components\VPNFooterLink.qml;ui\components\VPNIconButton.qml;ui\components\VPNGraphLegendMarker.qml;ui\components\VPNDeviceListItem.qml;ui\components\VPNPopup.qml;ui\components\qmldir;ui\components\VPNFeatureTour.qml;ui\components\VPNChevron.qml;ui\components\VPNDropShadowWithStates.qml;ui\components\VPNWasmMenuButton.qml;ui\components\VPNRadioSublabel.qml;ui\components\VPNLoader.qml;ui\components\VPNSettingsItem.qml;ui\components\VPNRadioButtonLabel.qml;ui\components\VPNSignOut.qml;ui\components\VPNRadioDelegate.qml;ui\components\VPNAboutUs.qml;ui\components\VPNFocusBorder.qml;ui\components\VPNClickableRow.qml;ui\components\VPNExternalLinkListItem.qml;ui\components\VPNButtonBase.qml;ui\components\VPNMainImage.qml;ui\components\VPNTabNavigation.qml;ui\components\VPNServerCountry.qml;ui\components\VPNIconAndLabel.qml;ui\components\VPNServerLabel.qml;ui\components\VPNFeedbackRadioDelegate.qml;ui\components\VPNDevicesListHeader.qml;ui\components\VPNPopupButton.qml;ui\components\VPNSubscriptionOption.qml;ui\components\VPNUIStates.qml;ui\components\VPNCheckBoxRow.qml;ui\components\VPNSystemAlert.qml;ui\components\VPNExpandableAppList.qml;ui\components\VPNMenu.qml;ui\components\VPNSemiMonoLabel.qml;ui\components\VPNCollapsibleCard.qml;ui\components\VPNTextBlock.qml;ui\components\VPNIPAddress.qml;ui\components\VPNSettingsToggle.qml;ui\components\VPNWasmAlerts.qml;ui\components\VPNAnimatedRings.qml;ui\components\VPNToggle.qml;ui\components\VPNLinkButton.qml;ui\components\VPNBoldLabel.qml;ui\components\VPNMetropolisLabel.qml;ui\components\VPNConnectionStability.qml;ui\components\VPNViewDNSSettings.qml;ui\components\VPNServerListToggle.qml;ui\components\VPNWasmMenu.qml;ui\components\VPNButtonLoader.qml;ui\components\VPNWasmHeader.qml;ui\components\VPNLightLabel.qml;ui\components\VPNCallout.qml;ui\components\VPNButton.qml;ui\components\VPNIcon.qml;ui\components\VPNRecentConnections.qml;ui\components\VPNCheckBox.qml;ui\components\VPNAvatar.qml;ui\components\VPNList.qml;ui\components\VPNInterLabel.qml;ui\components\VPNStackView.qml;ui\components\VPNFocusOutline.qml;ui\components\VPNFlickable.qml;ui\components\VPNServerList.qml;ui\components\VPNSubtitle.qml;ui\components\VPNVerticalSpacer.qml;ui\components\VPNCheckBoxAlert.qml;ui\components\VPNFeatureTourPopup.qml;ui\components\VPNHeadline.qml;ui\components\forms\VPNSearchBar.qml;ui\components\forms\VPNTextArea.qml;ui\components\forms\VPNInputBackground.qml;ui\components\forms\VPNRadioButton.qml;ui\components\forms\VPNTextField.qml;ui\components\forms\qmldir;ui\components\forms\VPNComboBox.qml;ui\components\forms\VPNInputStates.qml;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name components ui\components.qrc -o debug\qrc_components.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">RCC ui/components.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\qrc_components.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">ui\components.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;ui\components\VPNAlert.qml;ui\components\VPNToggleCard.qml;ui\components\VPNRemoveDevicePopup.qml;ui\components\VPNControllerView.qml;ui\components\VPNMouseArea.qml;ui\components\VPNToolTip.qml;ui\components\VPNPanel.qml;ui\components\VPNAlerts.qml;ui\components\VPNLogsButton.qml;ui\components\VPNHeaderLink.qml;ui\components\VPNControllerNav.qml;ui\components\VPNConnectionInfo.qml;ui\components\VPNGreyLink.qml;ui\components\VPNFooterLink.qml;ui\components\VPNIconButton.qml;ui\components\VPNGraphLegendMarker.qml;ui\components\VPNDeviceListItem.qml;ui\components\VPNPopup.qml;ui\components\qmldir;ui\components\VPNFeatureTour.qml;ui\components\VPNChevron.qml;ui\components\VPNDropShadowWithStates.qml;ui\components\VPNWasmMenuButton.qml;ui\components\VPNRadioSublabel.qml;ui\components\VPNLoader.qml;ui\components\VPNSettingsItem.qml;ui\components\VPNRadioButtonLabel.qml;ui\components\VPNSignOut.qml;ui\components\VPNRadioDelegate.qml;ui\components\VPNAboutUs.qml;ui\components\VPNFocusBorder.qml;ui\components\VPNClickableRow.qml;ui\components\VPNExternalLinkListItem.qml;ui\components\VPNButtonBase.qml;ui\components\VPNMainImage.qml;ui\components\VPNTabNavigation.qml;ui\components\VPNServerCountry.qml;ui\components\VPNIconAndLabel.qml;ui\components\VPNServerLabel.qml;ui\components\VPNFeedbackRadioDelegate.qml;ui\components\VPNDevicesListHeader.qml;ui\components\VPNPopupButton.qml;ui\components\VPNSubscriptionOption.qml;ui\components\VPNUIStates.qml;ui\components\VPNCheckBoxRow.qml;ui\components\VPNSystemAlert.qml;ui\components\VPNExpandableAppList.qml;ui\components\VPNMenu.qml;ui\components\VPNSemiMonoLabel.qml;ui\components\VPNCollapsibleCard.qml;ui\components\VPNTextBlock.qml;ui\components\VPNIPAddress.qml;ui\components\VPNSettingsToggle.qml;ui\components\VPNWasmAlerts.qml;ui\components\VPNAnimatedRings.qml;ui\components\VPNToggle.qml;ui\components\VPNLinkButton.qml;ui\components\VPNBoldLabel.qml;ui\components\VPNMetropolisLabel.qml;ui\components\VPNConnectionStability.qml;ui\components\VPNViewDNSSettings.qml;ui\components\VPNServerListToggle.qml;ui\components\VPNWasmMenu.qml;ui\components\VPNButtonLoader.qml;ui\components\VPNWasmHeader.qml;ui\components\VPNLightLabel.qml;ui\components\VPNCallout.qml;ui\components\VPNButton.qml;ui\components\VPNIcon.qml;ui\components\VPNRecentConnections.qml;ui\components\VPNCheckBox.qml;ui\components\VPNAvatar.qml;ui\components\VPNList.qml;ui\components\VPNInterLabel.qml;ui\components\VPNStackView.qml;ui\components\VPNFocusOutline.qml;ui\components\VPNFlickable.qml;ui\components\VPNServerList.qml;ui\components\VPNSubtitle.qml;ui\components\VPNVerticalSpacer.qml;ui\components\VPNCheckBoxAlert.qml;ui\components\VPNFeatureTourPopup.qml;ui\components\VPNHeadline.qml;ui\components\forms\VPNSearchBar.qml;ui\components\forms\VPNTextArea.qml;ui\components\forms\VPNInputBackground.qml;ui\components\forms\VPNRadioButton.qml;ui\components\forms\VPNTextField.qml;ui\components\forms\qmldir;ui\components\forms\VPNComboBox.qml;ui\components\forms\VPNInputStates.qml;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name components ui\components.qrc -o release\qrc_components.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">RCC ui/components.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\qrc_components.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="ui\resources\connection-info.svg" />
+    <None Include="ui\resources\connection.svg" />
+    <None Include="ui\resources\copy.svg" />
+    <None Include="ui\resources\delete.svg" />
+    <None Include="ui\resources\devices.svg" />
+    <None Include="ui\resources\devicesLimit.svg" />
+    <None Include="ui\resources\devicesRemove.svg" />
+    <None Include="ui\resources\down.svg" />
+    <None Include="ui\resources\externalLink.svg" />
+    <None Include="ui\resources\gift-dark.svg" />
+    <None Include="ui\resources\globe.svg" />
+    <None Include="ui\resources\heart-check.svg" />
+    <None Include="ui\resources\location-dark.svg" />
+    <None Include="ui\resources\logo-dock.png" />
+    <None Include="ui\resources\logo.svg" />
+    <None Include="ui\resources\magic-dark.svg" />
+    <None Include="ui\resources\magic-purple.svg" />
+    <CustomBuild Include="ui\nebula_resources.qrc">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">ui\nebula_resources.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;ui\resources\arrow-forward-white.svg;ui\resources\plus.svg;ui\resources\globe.svg;ui\resources\shield-off.svg;ui\resources\settings.svg;ui\resources\close-darker.svg;ui\resources\devicesRemove.svg;ui\resources\warning-dark-orange.svg;ui\resources\down.svg;ui\resources\close-white.svg;ui\resources\update-lock.svg;ui\resources\checkmark.svg;ui\resources\connection.svg;ui\resources\chevron-right-dark.svg;ui\resources\close-dark.svg;ui\resources\spinner.svg;ui\resources\avatar-default.png;ui\resources\heart-check.svg;ui\resources\chevron-purple.svg;ui\resources\devicesLimit.svg;ui\resources\warning.svg;ui\resources\warning-orange.svg;ui\resources\logo-dock.png;ui\resources\delete.svg;ui\resources\shield-on.svg;ui\resources\chevron.svg;ui\resources\magic-purple.svg;ui\resources\switching.svg;ui\resources\search.svg;ui\resources\back-dark.svg;ui\resources\copy.svg;ui\resources\gift-dark.svg;ui\resources\magic-dark.svg;ui\resources\buttonLoader.svg;ui\resources\app-rating.svg;ui\resources\back.svg;ui\resources\location-dark.svg;ui\resources\logo.svg;ui\resources\arrow-forward.svg;ui\resources\arrow-toggle.svg;ui\resources\connection-info.svg;ui\resources\settings-white.svg;ui\resources\warning-white.svg;ui\resources\devices.svg;ui\resources\externalLink.svg;ui\resources\fonts\InterUI.otf;ui\resources\fonts\Metropolis-SemiBold.otf;ui\resources\fonts\Metropolis.otf;ui\resources\flags\AI.png;ui\resources\flags\MM.png;ui\resources\flags\PF.png;ui\resources\flags\KP.png;ui\resources\flags\BE.png;ui\resources\flags\NI.png;ui\resources\flags\IS.png;ui\resources\flags\ZM.png;ui\resources\flags\SZ.png;ui\resources\flags\CA.png;ui\resources\flags\JO.png;ui\resources\flags\AD.png;ui\resources\flags\MH.png;ui\resources\flags\HR.png;ui\resources\flags\TV.png;ui\resources\flags\PA.png;ui\resources\flags\IN.png;ui\resources\flags\GQ.png;ui\resources\flags\XK.png;ui\resources\flags\ET.png;ui\resources\flags\VN.png;ui\resources\flags\MC.png;ui\resources\flags\HM.png;ui\resources\flags\CW.png;ui\resources\flags\AZ.png;ui\resources\flags\UM.png;ui\resources\flags\PW.png;ui\resources\flags\LB.png;ui\resources\flags\GL.png;ui\resources\flags\BV.png;ui\resources\flags\NZ.png;ui\resources\flags\JE.png;ui\resources\flags\VI.png;ui\resources\flags\TL.png;ui\resources\flags\CR.png;ui\resources\flags\FK.png;ui\resources\flags\AU.png;ui\resources\flags\RO.png;ui\resources\flags\MY.png;ui\resources\flags\ID.png;ui\resources\flags\PR.png;ui\resources\flags\GG.png;ui\resources\flags\SK.png;ui\resources\flags\BQ.png;ui\resources\flags\NU.png;ui\resources\flags\CM.png;ui\resources\flags\TG.png;ui\resources\flags\MT.png;ui\resources\flags\PM.png;ui\resources\flags\KW.png;ui\resources\flags\GB.png;ui\resources\flags\BL.png;ui\resources\flags\NP.png;ui\resources\flags\EE.png;ui\resources\flags\LS.png;ui\resources\flags\CH.png;ui\resources\flags\RE.png;ui\resources\flags\MO.png;ui\resources\flags\PH.png;ui\resources\flags\KR.png;ui\resources\flags\BG.png;ui\resources\flags\SA.png;ui\resources\flags\UY.png;ui\resources\flags\CC.png;ui\resources\flags\VU.png;ui\resources\flags\AF.png;ui\resources\flags\HT.png;ui\resources\flags\KM.png;ui\resources\flags\BB.png;ui\resources\flags\NF.png;ui\resources\flags\DZ.png;ui\resources\flags\LI.png;ui\resources\flags\GS.png;ui\resources\flags\ME.png;ui\resources\flags\CY.png;ui\resources\flags\KH.png;ui\resources\flags\FR.png;ui\resources\flags\NA.png;ui\resources\flags\PY.png;ui\resources\flags\GN.png;ui\resources\flags\SR.png;ui\resources\flags\TN.png;ui\resources\flags\FM.png;ui\resources\flags\AW.png;ui\resources\flags\PT.png;ui\resources\flags\GI.png;ui\resources\flags\SM.png;ui\resources\flags\BS.png;ui\resources\flags\CO.png;ui\resources\flags\AR.png;ui\resources\flags\MV.png;ui\resources\flags\DK.png;ui\resources\flags\KY.png;ui\resources\flags\GD.png;ui\resources\flags\BN.png;ui\resources\flags\SH.png;ui\resources\flags\NR.png;ui\resources\flags\EG.png;ui\resources\flags\VA.png;ui\resources\flags\LU.png;ui\resources\flags\TD.png;ui\resources\flags\AM.png;ui\resources\flags\MQ.png;ui\resources\flags\BI.png;ui\resources\flags\SC.png;ui\resources\flags\ML.png;ui\resources\flags\TZ.png;ui\resources\flags\PE.png;ui\resources\flags\WS.png;ui\resources\flags\BD.png;ui\resources\flags\IR.png;ui\resources\flags\QA.png;ui\resources\flags\LK.png;ui\resources\flags\GU.png;ui\resources\flags\SY.png;ui\resources\flags\AC.png;ui\resources\flags\MG.png;ui\resources\flags\NC.png;ui\resources\flags\IM.png;ui\resources\flags\GP.png;ui\resources\flags\BZ.png;ui\resources\flags\ST.png;ui\resources\flags\ES.png;ui\resources\flags\CV.png;ui\resources\flags\KE.png;ui\resources\flags\FO.png;ui\resources\flags\RS.png;ui\resources\flags\LA.png;ui\resources\flags\SO.png;ui\resources\flags\TK.png;ui\resources\flags\FJ.png;ui\resources\flags\AT.png;ui\resources\flags\MX.png;ui\resources\flags\IC.png;ui\resources\flags\UG.png;ui\resources\flags\DM.png;ui\resources\flags\GF.png;ui\resources\flags\SJ.png;ui\resources\flags\VC.png;ui\resources\flags\CL.png;ui\resources\flags\TF.png;ui\resources\flags\AO.png;ui\resources\flags\MS.png;ui\resources\flags\PL.png;ui\resources\flags\GA.png;ui\resources\flags\SE.png;ui\resources\flags\NO.png;ui\resources\flags\LR.png;ui\resources\flags\CG.png;ui\resources\flags\TA.png;ui\resources\flags\MN.png;ui\resources\flags\PG.png;ui\resources\flags\BF.png;ui\resources\flags\IT.png;ui\resources\flags\GW.png;ui\resources\flags\JP.png;ui\resources\flags\AE.png;ui\resources\flags\TW.png;ui\resources\flags\BA.png;ui\resources\flags\NE.png;ui\resources\flags\IO.png;ui\resources\flags\US.png;ui\resources\flags\GR.png;ui\resources\flags\SV.png;ui\resources\flags\EU.png;ui\resources\flags\MD.png;ui\resources\flags\HN.png;ui\resources\flags\CX.png;ui\resources\flags\TR.png;ui\resources\flags\KG.png;ui\resources\flags\RU.png;ui\resources\flags\UN.png;ui\resources\flags\LC.png;ui\resources\flags\GM.png;ui\resources\flags\BW.png;ui\resources\flags\TM.png;ui\resources\flags\WF.png;ui\resources\flags\MZ.png;ui\resources\flags\IE.png;ui\resources\flags\DO.png;ui\resources\flags\PS.png;ui\resources\flags\GH.png;ui\resources\flags\BR.png;ui\resources\flags\SL.png;ui\resources\flags\VE.png;ui\resources\flags\LY.png;ui\resources\flags\TH.png;ui\resources\flags\CN.png;ui\resources\flags\AQ.png;ui\resources\flags\MU.png;ui\resources\flags\DJ.png;ui\resources\flags\PN.png;ui\resources\flags\SG.png;ui\resources\flags\BM.png;ui\resources\flags\LT.png;ui\resources\flags\CI.png;ui\resources\flags\TC.png;ui\resources\flags\OM.png;ui\resources\flags\AL.png;ui\resources\flags\MP.png;ui\resources\flags\YT.png;ui\resources\flags\DE.png;ui\resources\flags\BH.png;ui\resources\flags\SB.png;ui\resources\flags\NL.png;ui\resources\flags\UZ.png;ui\resources\flags\EA.png;ui\resources\flags\GY.png;ui\resources\flags\CD.png;ui\resources\flags\AG.png;ui\resources\flags\MK.png;ui\resources\flags\HU.png;ui\resources\flags\KN.png;ui\resources\flags\NG.png;ui\resources\flags\IQ.png;ui\resources\flags\GT.png;ui\resources\flags\SX.png;ui\resources\flags\JM.png;ui\resources\flags\MF.png;ui\resources\flags\CZ.png;ui\resources\flags\TT.png;ui\resources\flags\KI.png;ui\resources\flags\RW.png;ui\resources\flags\IL.png;ui\resources\flags\BY.png;ui\resources\flags\SS.png;ui\resources\flags\ER.png;ui\resources\flags\MA.png;ui\resources\flags\YE.png;ui\resources\flags\HK.png;ui\resources\flags\CU.png;ui\resources\flags\TO.png;ui\resources\flags\AX.png;ui\resources\flags\ZA.png;ui\resources\flags\BT.png;ui\resources\flags\SN.png;ui\resources\flags\VG.png;ui\resources\flags\TJ.png;ui\resources\flags\CP.png;ui\resources\flags\FI.png;ui\resources\flags\AS.png;ui\resources\flags\MW.png;ui\resources\flags\KZ.png;ui\resources\flags\GE.png;ui\resources\flags\SI.png;ui\resources\flags\BO.png;ui\resources\flags\ZW.png;ui\resources\flags\EH.png;ui\resources\flags\LV.png;ui\resources\flags\CK.png;ui\resources\flags\MR.png;ui\resources\flags\DG.png;ui\resources\flags\UA.png;ui\resources\flags\PK.png;ui\resources\flags\BJ.png;ui\resources\flags\SD.png;ui\resources\flags\EC.png;ui\resources\flags\CF.png;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name nebula_resources ui\nebula_resources.qrc -o debug\qrc_nebula_resources.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">RCC ui/nebula_resources.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\qrc_nebula_resources.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">ui\nebula_resources.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;ui\resources\arrow-forward-white.svg;ui\resources\plus.svg;ui\resources\globe.svg;ui\resources\shield-off.svg;ui\resources\settings.svg;ui\resources\close-darker.svg;ui\resources\devicesRemove.svg;ui\resources\warning-dark-orange.svg;ui\resources\down.svg;ui\resources\close-white.svg;ui\resources\update-lock.svg;ui\resources\checkmark.svg;ui\resources\connection.svg;ui\resources\chevron-right-dark.svg;ui\resources\close-dark.svg;ui\resources\spinner.svg;ui\resources\avatar-default.png;ui\resources\heart-check.svg;ui\resources\chevron-purple.svg;ui\resources\devicesLimit.svg;ui\resources\warning.svg;ui\resources\warning-orange.svg;ui\resources\logo-dock.png;ui\resources\delete.svg;ui\resources\shield-on.svg;ui\resources\chevron.svg;ui\resources\magic-purple.svg;ui\resources\switching.svg;ui\resources\search.svg;ui\resources\back-dark.svg;ui\resources\copy.svg;ui\resources\gift-dark.svg;ui\resources\magic-dark.svg;ui\resources\buttonLoader.svg;ui\resources\app-rating.svg;ui\resources\back.svg;ui\resources\location-dark.svg;ui\resources\logo.svg;ui\resources\arrow-forward.svg;ui\resources\arrow-toggle.svg;ui\resources\connection-info.svg;ui\resources\settings-white.svg;ui\resources\warning-white.svg;ui\resources\devices.svg;ui\resources\externalLink.svg;ui\resources\fonts\InterUI.otf;ui\resources\fonts\Metropolis-SemiBold.otf;ui\resources\fonts\Metropolis.otf;ui\resources\flags\AI.png;ui\resources\flags\MM.png;ui\resources\flags\PF.png;ui\resources\flags\KP.png;ui\resources\flags\BE.png;ui\resources\flags\NI.png;ui\resources\flags\IS.png;ui\resources\flags\ZM.png;ui\resources\flags\SZ.png;ui\resources\flags\CA.png;ui\resources\flags\JO.png;ui\resources\flags\AD.png;ui\resources\flags\MH.png;ui\resources\flags\HR.png;ui\resources\flags\TV.png;ui\resources\flags\PA.png;ui\resources\flags\IN.png;ui\resources\flags\GQ.png;ui\resources\flags\XK.png;ui\resources\flags\ET.png;ui\resources\flags\VN.png;ui\resources\flags\MC.png;ui\resources\flags\HM.png;ui\resources\flags\CW.png;ui\resources\flags\AZ.png;ui\resources\flags\UM.png;ui\resources\flags\PW.png;ui\resources\flags\LB.png;ui\resources\flags\GL.png;ui\resources\flags\BV.png;ui\resources\flags\NZ.png;ui\resources\flags\JE.png;ui\resources\flags\VI.png;ui\resources\flags\TL.png;ui\resources\flags\CR.png;ui\resources\flags\FK.png;ui\resources\flags\AU.png;ui\resources\flags\RO.png;ui\resources\flags\MY.png;ui\resources\flags\ID.png;ui\resources\flags\PR.png;ui\resources\flags\GG.png;ui\resources\flags\SK.png;ui\resources\flags\BQ.png;ui\resources\flags\NU.png;ui\resources\flags\CM.png;ui\resources\flags\TG.png;ui\resources\flags\MT.png;ui\resources\flags\PM.png;ui\resources\flags\KW.png;ui\resources\flags\GB.png;ui\resources\flags\BL.png;ui\resources\flags\NP.png;ui\resources\flags\EE.png;ui\resources\flags\LS.png;ui\resources\flags\CH.png;ui\resources\flags\RE.png;ui\resources\flags\MO.png;ui\resources\flags\PH.png;ui\resources\flags\KR.png;ui\resources\flags\BG.png;ui\resources\flags\SA.png;ui\resources\flags\UY.png;ui\resources\flags\CC.png;ui\resources\flags\VU.png;ui\resources\flags\AF.png;ui\resources\flags\HT.png;ui\resources\flags\KM.png;ui\resources\flags\BB.png;ui\resources\flags\NF.png;ui\resources\flags\DZ.png;ui\resources\flags\LI.png;ui\resources\flags\GS.png;ui\resources\flags\ME.png;ui\resources\flags\CY.png;ui\resources\flags\KH.png;ui\resources\flags\FR.png;ui\resources\flags\NA.png;ui\resources\flags\PY.png;ui\resources\flags\GN.png;ui\resources\flags\SR.png;ui\resources\flags\TN.png;ui\resources\flags\FM.png;ui\resources\flags\AW.png;ui\resources\flags\PT.png;ui\resources\flags\GI.png;ui\resources\flags\SM.png;ui\resources\flags\BS.png;ui\resources\flags\CO.png;ui\resources\flags\AR.png;ui\resources\flags\MV.png;ui\resources\flags\DK.png;ui\resources\flags\KY.png;ui\resources\flags\GD.png;ui\resources\flags\BN.png;ui\resources\flags\SH.png;ui\resources\flags\NR.png;ui\resources\flags\EG.png;ui\resources\flags\VA.png;ui\resources\flags\LU.png;ui\resources\flags\TD.png;ui\resources\flags\AM.png;ui\resources\flags\MQ.png;ui\resources\flags\BI.png;ui\resources\flags\SC.png;ui\resources\flags\ML.png;ui\resources\flags\TZ.png;ui\resources\flags\PE.png;ui\resources\flags\WS.png;ui\resources\flags\BD.png;ui\resources\flags\IR.png;ui\resources\flags\QA.png;ui\resources\flags\LK.png;ui\resources\flags\GU.png;ui\resources\flags\SY.png;ui\resources\flags\AC.png;ui\resources\flags\MG.png;ui\resources\flags\NC.png;ui\resources\flags\IM.png;ui\resources\flags\GP.png;ui\resources\flags\BZ.png;ui\resources\flags\ST.png;ui\resources\flags\ES.png;ui\resources\flags\CV.png;ui\resources\flags\KE.png;ui\resources\flags\FO.png;ui\resources\flags\RS.png;ui\resources\flags\LA.png;ui\resources\flags\SO.png;ui\resources\flags\TK.png;ui\resources\flags\FJ.png;ui\resources\flags\AT.png;ui\resources\flags\MX.png;ui\resources\flags\IC.png;ui\resources\flags\UG.png;ui\resources\flags\DM.png;ui\resources\flags\GF.png;ui\resources\flags\SJ.png;ui\resources\flags\VC.png;ui\resources\flags\CL.png;ui\resources\flags\TF.png;ui\resources\flags\AO.png;ui\resources\flags\MS.png;ui\resources\flags\PL.png;ui\resources\flags\GA.png;ui\resources\flags\SE.png;ui\resources\flags\NO.png;ui\resources\flags\LR.png;ui\resources\flags\CG.png;ui\resources\flags\TA.png;ui\resources\flags\MN.png;ui\resources\flags\PG.png;ui\resources\flags\BF.png;ui\resources\flags\IT.png;ui\resources\flags\GW.png;ui\resources\flags\JP.png;ui\resources\flags\AE.png;ui\resources\flags\TW.png;ui\resources\flags\BA.png;ui\resources\flags\NE.png;ui\resources\flags\IO.png;ui\resources\flags\US.png;ui\resources\flags\GR.png;ui\resources\flags\SV.png;ui\resources\flags\EU.png;ui\resources\flags\MD.png;ui\resources\flags\HN.png;ui\resources\flags\CX.png;ui\resources\flags\TR.png;ui\resources\flags\KG.png;ui\resources\flags\RU.png;ui\resources\flags\UN.png;ui\resources\flags\LC.png;ui\resources\flags\GM.png;ui\resources\flags\BW.png;ui\resources\flags\TM.png;ui\resources\flags\WF.png;ui\resources\flags\MZ.png;ui\resources\flags\IE.png;ui\resources\flags\DO.png;ui\resources\flags\PS.png;ui\resources\flags\GH.png;ui\resources\flags\BR.png;ui\resources\flags\SL.png;ui\resources\flags\VE.png;ui\resources\flags\LY.png;ui\resources\flags\TH.png;ui\resources\flags\CN.png;ui\resources\flags\AQ.png;ui\resources\flags\MU.png;ui\resources\flags\DJ.png;ui\resources\flags\PN.png;ui\resources\flags\SG.png;ui\resources\flags\BM.png;ui\resources\flags\LT.png;ui\resources\flags\CI.png;ui\resources\flags\TC.png;ui\resources\flags\OM.png;ui\resources\flags\AL.png;ui\resources\flags\MP.png;ui\resources\flags\YT.png;ui\resources\flags\DE.png;ui\resources\flags\BH.png;ui\resources\flags\SB.png;ui\resources\flags\NL.png;ui\resources\flags\UZ.png;ui\resources\flags\EA.png;ui\resources\flags\GY.png;ui\resources\flags\CD.png;ui\resources\flags\AG.png;ui\resources\flags\MK.png;ui\resources\flags\HU.png;ui\resources\flags\KN.png;ui\resources\flags\NG.png;ui\resources\flags\IQ.png;ui\resources\flags\GT.png;ui\resources\flags\SX.png;ui\resources\flags\JM.png;ui\resources\flags\MF.png;ui\resources\flags\CZ.png;ui\resources\flags\TT.png;ui\resources\flags\KI.png;ui\resources\flags\RW.png;ui\resources\flags\IL.png;ui\resources\flags\BY.png;ui\resources\flags\SS.png;ui\resources\flags\ER.png;ui\resources\flags\MA.png;ui\resources\flags\YE.png;ui\resources\flags\HK.png;ui\resources\flags\CU.png;ui\resources\flags\TO.png;ui\resources\flags\AX.png;ui\resources\flags\ZA.png;ui\resources\flags\BT.png;ui\resources\flags\SN.png;ui\resources\flags\VG.png;ui\resources\flags\TJ.png;ui\resources\flags\CP.png;ui\resources\flags\FI.png;ui\resources\flags\AS.png;ui\resources\flags\MW.png;ui\resources\flags\KZ.png;ui\resources\flags\GE.png;ui\resources\flags\SI.png;ui\resources\flags\BO.png;ui\resources\flags\ZW.png;ui\resources\flags\EH.png;ui\resources\flags\LV.png;ui\resources\flags\CK.png;ui\resources\flags\MR.png;ui\resources\flags\DG.png;ui\resources\flags\UA.png;ui\resources\flags\PK.png;ui\resources\flags\BJ.png;ui\resources\flags\SD.png;ui\resources\flags\EC.png;ui\resources\flags\CF.png;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name nebula_resources ui\nebula_resources.qrc -o release\qrc_nebula_resources.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">RCC ui/nebula_resources.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\qrc_nebula_resources.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="ui\resources\plus.svg" />
+    <None Include="ui\compat\qt5\qmldir" />
+    <None Include="ui\components\forms\qmldir" />
+    <None Include="ui\components\qmldir" />
+    <None Include="ui\themes\qmldir" />
+    <None Include="ui\resources\search.svg" />
+    <None Include="ui\resources\settings-white.svg" />
+    <None Include="ui\resources\settings.svg" />
+    <None Include="ui\resources\shield-off.svg" />
+    <None Include="ui\resources\shield-on.svg" />
+    <None Include="ui\resources\spinner.svg" />
+    <None Include="ui\resources\switching.svg" />
+    <None Include="ui\themes\themes.js" />
+    <CustomBuild Include="ui\themes.qrc">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">ui\themes.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;ui\themes\colors.js;ui\themes\themes.js;ui\themes\qmldir;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name themes ui\themes.qrc -o debug\qrc_themes.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">RCC ui/themes.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\qrc_themes.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">ui\themes.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;ui\themes\colors.js;ui\themes\themes.js;ui\themes\qmldir;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name themes ui\themes.qrc -o release\qrc_themes.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">RCC ui/themes.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\qrc_themes.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="ui\resources\update-lock.svg" />
+    <None Include="ui\resources\warning-dark-orange.svg" />
+    <None Include="ui\resources\warning-orange.svg" />
+    <None Include="ui\resources\warning-white.svg" />
+    <None Include="ui\resources\warning.svg" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

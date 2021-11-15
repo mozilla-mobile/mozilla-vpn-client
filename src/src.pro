@@ -38,7 +38,6 @@ INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
-            ../glean/telemetry \
             ../translations/generated
 
 DEPENDPATH  += $${INCLUDEPATH}
@@ -314,30 +313,25 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += ui/components.qrc
-RESOURCES += ui/license.qrc
+RESOURCES += inspector/inspector.qrc
 RESOURCES += ui/resources.qrc
-RESOURCES += ui/themes.qrc
+RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
 
-versionAtLeast(QT_VERSION, 6.0.0) {
-    RESOURCES += ui/compatQt6.qrc
-    RESOURCES += ui/resourcesQt6.qrc
-} else {
-    RESOURCES += ui/compatQt5.qrc
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../glean/release/ -lglean
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../glean/debug/ -lglean
+else:unix:
+    LIBS += -L$$PWD/../glean/ -lglean
+    INCLUDEPATH += $$PWD/../glean
+    CONFIG(debug, debug|release) {
+    DEPENDPATH += $$PWD/../glean/debug
+}
+CONFIG(release, debug|release) {
+    DEPENDPATH += $$PWD/../glean/release
 }
 
-exists($$PWD/../glean/telemetry/gleansample.h) {
-    !wasm {
-        message(Include QSQlite plugin)
-        QTPLUGIN += qsqlite
-    }
-
-    RESOURCES += $$PWD/../glean/glean.qrc
-} else {
-    error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
-}
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
@@ -475,7 +469,7 @@ else:linux:!android {
     DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
     GO_MODULES = ../linux/netfilter/netfilter.go
-    
+
     target.path = $${USRPATH}/bin
     INSTALLS += target
 
@@ -833,6 +827,22 @@ else:win* {
 
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+
+    #Crashpad support
+    exists($$PWD/../3rdparty/crashpad/win64/release/include) {
+        CONFIG(debug, debug|release) {
+            LIBS += -L"$$PWD/../3rdparty/crashpad/win64/release/lib_md"
+        }
+        CONFIG(release, debug|release) {
+            LIBS += -L"$$PWD/../3rdparty/crashpad/win64/release/lib_mt"
+        }
+        LIBS += -lutil
+        LIBS += -lclient
+        LIBS += -lbase
+    }else{
+        error("Crashpad could not be found.  Have you run windows_compile.bat?")
+    }
+
     CONFIG(debug, debug|release) {
         QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
         QMAKE_LFLAGS_WINDOWS += /DEBUG
@@ -845,6 +855,8 @@ else:win* {
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
     DEFINES += WIN32_LEAN_AND_MEAN #Solves Redifinition Errors Of Winsock
+
+
 
     RC_ICONS = ui/resources/logo.ico
 
@@ -889,7 +901,7 @@ else:win* {
         eventlistener.h \
         localsocketcontroller.h \
         platforms/windows/windowsapplistprovider.h \
-        platforms/windows/windowsappimageprovider.h \ 
+        platforms/windows/windowsappimageprovider.h \
         platforms/windows/daemon/dnsutilswindows.h \
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
@@ -1000,3 +1012,10 @@ mvpn_debug {
     message(MVPN Debug enabled)
     DEFINES += MVPN_DEBUG
 }
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../nebula/release/ -lnebula
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../nebula/debug/ -lnebula
+else:unix: LIBS += -L$$PWD/../nebula/ -lnebula
+
+INCLUDEPATH += $$PWD/../nebula
+DEPENDPATH += $$PWD/../nebula

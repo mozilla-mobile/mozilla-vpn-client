@@ -25,6 +25,9 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 
+#include <glean.h>
+#include <nebula.h>
+
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
@@ -124,10 +127,9 @@ int CommandUI::run(QStringList& tokens) {
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
-    engine->addImportPath("qrc:///components");
-    engine->addImportPath("qrc:///glean");
-    engine->addImportPath("qrc:///themes");
-    engine->addImportPath("qrc:///compat");
+
+    Glean::Initialize(engine);
+    Nebula::Initialize(engine);
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
@@ -415,7 +417,8 @@ int CommandUI::run(QStringList& tokens) {
         engine, &QQmlApplicationEngine::objectCreated, qApp,
         [url](QObject* obj, const QUrl& objUrl) {
           if (!obj && url == objUrl) {
-            QGuiApplication::exit(-1);
+            logger.error() << "Failed to load " << objUrl.toString();
+            // QGuiApplication::exit(-1);
           }
         },
         Qt::QueuedConnection);
