@@ -222,10 +222,10 @@ else
 fi
 
 pushd ..//glean
-make -j $JOBS sub-src-apk_install_target || die "Compile of Glean QT project failed"
+make -j $JOBS || die "Compile of Glean QT project failed"
 popd
 pushd ..//nebula
-make -j $JOBS sub-src-apk_install_target || die "Compile of Nebula QT project failed"
+make -j $JOBS || die "Compile of Nebula QT project failed"
 popd
 
 print Y "Compiling apk_install_target in .tmp/"
