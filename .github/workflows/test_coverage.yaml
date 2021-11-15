@@ -53,6 +53,7 @@ jobs:
           popd
           pushd nebula
           qmake QMAKE_CXX=clang++-10 QMAKE_LINK=clang++-10
+          popd
           qmake CONFIG+=DUMMY QMAKE_CXX=clang++-10 QMAKE_LINK=clang++-10 CONFIG+=debug QT+=svg CONFIG+=webextension CONFIG+=coverage CONFIG+=AUTHTEST
           make -j8
 
