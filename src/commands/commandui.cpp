@@ -410,7 +410,7 @@ int CommandUI::run(QStringList& tokens) {
         [url](QObject* obj, const QUrl& objUrl) {
           if (!obj && url == objUrl) {
             logger.error() << "Failed to load " << objUrl.toString();
-            // QGuiApplication::exit(-1);
+            QGuiApplication::exit(-1);
           }
         },
         Qt::QueuedConnection);
