@@ -126,7 +126,6 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
   Q_PROPERTY(QString currentView READ currentView WRITE setCurrentView NOTIFY
                  currentViewChanged)
-  Q_PROPERTY(QObject* releaseMonitor READ releaseMonitor CONSTANT)
 
  public:
   MozillaVPN();

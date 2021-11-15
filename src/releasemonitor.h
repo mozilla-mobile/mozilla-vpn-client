@@ -25,7 +25,8 @@ class ReleaseMonitor final : public QObject {
   void releaseChecked();
   // Is fired once balrog was checked
   // Retuns if any update is available (both recommended/required)
-  void updateCheckResult(bool updateAvailable);
+  void updateRequiredOrRecommended();
+  void updateNotAvailable();
 
  private:
   void schedule();

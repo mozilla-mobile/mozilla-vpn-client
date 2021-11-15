@@ -16,7 +16,7 @@ Item {
     property alias isMainView: menu.isMainView
     //% "About us"
     property string _menuTitle: qsTrId("vpn.settings.aboutUs")
-
+    property var listenForUpdateEvents:false;
     ListModel {
         id: aboutUsListModel
 
@@ -168,6 +168,7 @@ Item {
         anchors.horizontalCenter : viewAboutUs.horizontalCenter
 
         onClicked: {
+            listenForUpdateEvents=true;
             updateButtonImageAnimation.start();
             VPN.releaseMonitor.runSoon();
         }
@@ -204,14 +205,18 @@ Item {
         }
     }
     Connections {
-        target: VPN.releaseMonitor
-        function onUpdateCheckResult(updateAvailable) {
+        target: VPNReleaseMonitor
+        function onUpdateRequiredOrRecommended() {
+            if(!listenForUpdateEvents){return;}
             updateButtonImageAnimation.stop();
-            if(updateAvailable){
-                updateAvailablePopup.open()
-            }else{
-                noUpdateAvailablePopup.open()
-            }
+            updateAvailablePopup.open()
+            listenForUpdateEvents=false;
+        }
+        function onUpdateNotAvailable() {
+            if(!listenForUpdateEvents){return;}
+            updateButtonImageAnimation.stop();
+            noUpdateAvailablePopup.open()
+            listenForUpdateEvents=false;
         }
     }
     VPNPopup {

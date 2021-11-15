@@ -22,6 +22,7 @@ class Updater : public QObject {
  signals:
   void updateRequired();
   void updateRecommended();
+  void updateNotAvailable();
 
  protected:
   static QString appVersion();

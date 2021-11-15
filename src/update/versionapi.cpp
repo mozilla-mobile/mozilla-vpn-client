@@ -39,6 +39,7 @@ void VersionApi::start() {
             logger.debug() << "Request completed";
 
             if (!processData(data)) {
+              emit updateNotAvailable();
               logger.debug() << "Ignore failure.";
             }
           });
@@ -116,6 +117,7 @@ bool VersionApi::processData(const QByteArray& data) {
     logger.debug() << "Update recommended.";
     emit updateRecommended();
   }
+  emit updateNotAvailable();
   return true;
 }
 
