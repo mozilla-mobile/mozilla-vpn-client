@@ -188,6 +188,13 @@ if [[ "$RELEASE" ]]; then
     CONFIG+=release \
     $ADJUST \
     ..//mozillavpn.pro  || die "Qmake failed"
+    
+    pushd ..//glean
+    make -j $JOBS release || die "Compile of Glean QT project failed"
+    popd
+    pushd ..//nebula
+    make -j $JOBS release || die "Compile of Nebula QT project failed"
+    popd
 else
   printn Y "Use debug config \n"
   $QTPATH/bin/qmake -spec android-clang \
@@ -219,14 +226,14 @@ else
     CONFIG+=qml_debug \
     $ADJUST \
     ..//mozillavpn.pro || die "Qmake failed"
+    
+    pushd ..//glean
+    make -j $JOBS debug || die "Compile of Glean QT project failed"
+    popd
+    pushd ..//nebula
+    make -j $JOBS debug || die "Compile of Nebula QT project failed"
+    popd
 fi
-
-pushd ..//glean
-make -j $JOBS || die "Compile of Glean QT project failed"
-popd
-pushd ..//nebula
-make -j $JOBS || die "Compile of Nebula QT project failed"
-popd
 
 print Y "Compiling apk_install_target in .tmp/"
 make -j $JOBS sub-src-apk_install_target || die "Compile of QT project failed"
