@@ -1,0 +1,1316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="nebula.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="nebula.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="debug\moc_predefs.h.cbt">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="release\moc_predefs.h.cbt">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <ClCompile Include="debug\qrc_compatQt5.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\qrc_compatQt5.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\qrc_components.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\qrc_components.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\qrc_nebula_resources.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\qrc_nebula_resources.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\qrc_themes.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\qrc_themes.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ui\resources\flags\AC.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AD.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AF.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AI.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AL.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AO.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AQ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AS.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AT.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AU.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AW.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AX.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\AZ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BB.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BD.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BF.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BH.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BI.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BJ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BL.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BN.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BO.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BQ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BS.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BT.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BV.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BW.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BY.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\BZ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CC.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CD.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CF.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CH.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CI.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CK.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CL.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CN.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CO.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CP.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CU.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CV.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CW.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CX.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CY.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\CZ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\DE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\DG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\DJ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\DK.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\DM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\DO.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\DZ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\EA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\EC.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\EE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\EG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\EH.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\ER.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\ES.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\ET.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\EU.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\FI.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\FJ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\FK.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\FM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\FO.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\FR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GB.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GD.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GF.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GH.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GI.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GL.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GN.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GP.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GQ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GS.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GT.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GU.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GW.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\GY.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\HK.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\HM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\HN.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\HR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\HT.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\HU.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\IC.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\ID.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\IE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\IL.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\IM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\IN.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\IO.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\IQ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\IR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\IS.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\IT.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\fonts\InterUI.otf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\JE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\JM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\JO.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\JP.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\KE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\KG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\KH.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\KI.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\KM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\KN.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\KP.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\KR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\KW.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\KY.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\KZ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\LA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\LB.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\LC.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\LI.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\LK.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\LR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\LS.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\LT.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\LU.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\LV.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\LY.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MC.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MD.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\ME.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MF.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MH.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MK.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\ML.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MN.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MO.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MP.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MQ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MS.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MT.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MU.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MV.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MW.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MX.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MY.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\MZ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\fonts\Metropolis-SemiBold.otf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\fonts\Metropolis.otf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\NA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\NC.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\NE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\NF.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\NG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\NI.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\NL.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\NO.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\NP.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\NR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\NU.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\NZ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\OM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PF.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PH.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PK.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PL.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PN.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PS.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PT.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PW.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\PY.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\QA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\RE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\RO.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\RS.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\RU.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\RW.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SB.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SC.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SD.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SH.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SI.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SJ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SK.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SL.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SN.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SO.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SS.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\ST.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SV.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SX.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SY.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\SZ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TC.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TD.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TF.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TH.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TJ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TK.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TL.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TN.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TO.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TR.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TT.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TV.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TW.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\TZ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\UA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\UG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\UM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\UN.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\US.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\UY.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\UZ.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\VA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\VC.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\VE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\VG.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\VI.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\VN.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNAboutUs.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNAlert.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNAlerts.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNAnimatedRings.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\compat\qt5\VPNAnimatedRingsShader.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNAvatar.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNBoldLabel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNButton.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNButtonBase.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNButtonLoader.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNCallout.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNCheckBox.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNCheckBoxAlert.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNCheckBoxRow.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNChevron.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNClickableRow.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNCollapsibleCard.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\compat\qt5\VPNColorOverlay.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\forms\VPNComboBox.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNConnectionInfo.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNConnectionStability.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNControllerNav.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNControllerView.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNDeviceListItem.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNDevicesListHeader.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\compat\qt5\VPNDropShadow.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNDropShadowWithStates.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNExpandableAppList.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNExternalLinkListItem.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNFeatureTour.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNFeatureTourPopup.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNFeedbackRadioDelegate.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNFlickable.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNFocusBorder.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNFocusOutline.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNFooterLink.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNGraphLegendMarker.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNGreyLink.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNHeaderLink.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNHeadline.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNIPAddress.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNIcon.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNIconAndLabel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNIconButton.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\forms\VPNInputBackground.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\forms\VPNInputStates.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNInterLabel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNLightLabel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\compat\qt5\VPNLinearGradient.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNLinkButton.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNList.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNLoader.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNLogsButton.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNMainImage.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNMenu.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNMetropolisLabel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNMouseArea.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\compat\qt5\VPNOpacityMask.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNPanel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNPopup.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNPopupButton.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\forms\VPNRadioButton.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNRadioButtonLabel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNRadioDelegate.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNRadioSublabel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNRecentConnections.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\compat\qt5\VPNRectangularGlow.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNRemoveDevicePopup.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\forms\VPNSearchBar.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNSemiMonoLabel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNServerCountry.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNServerLabel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNServerList.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNServerListToggle.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNSettingsItem.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNSettingsToggle.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNSignOut.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNStackView.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNSubscriptionOption.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNSubtitle.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNSystemAlert.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNTabNavigation.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\forms\VPNTextArea.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNTextBlock.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\forms\VPNTextField.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNToggle.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNToggleCard.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNToolTip.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNUIStates.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNVerticalSpacer.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNViewDNSSettings.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNWasmAlerts.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNWasmHeader.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNWasmMenu.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\VPNWasmMenuButton.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\VU.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\WF.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\WS.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\XK.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\YE.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\YT.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\ZA.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\ZM.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\flags\ZW.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\app-rating.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\arrow-forward-white.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\arrow-forward.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\arrow-toggle.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\avatar-default.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\back-dark.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\back.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\buttonLoader.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\checkmark.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\chevron-purple.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\chevron-right-dark.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\chevron.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\close-dark.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\close-darker.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\close-white.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\themes\colors.js">
+      <Filter>Resource Files</Filter>
+    </None>
+    <CustomBuild Include="ui\compatQt5.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ui\components.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <None Include="ui\resources\connection-info.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\connection.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\copy.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\delete.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\devices.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\devicesLimit.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\devicesRemove.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\down.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\externalLink.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\gift-dark.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\globe.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\heart-check.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\location-dark.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\logo-dock.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\logo.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\magic-dark.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\magic-purple.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <CustomBuild Include="ui\nebula_resources.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <None Include="ui\resources\plus.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\compat\qt5\qmldir">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\forms\qmldir">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\components\qmldir">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\themes\qmldir">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\search.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\settings-white.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\settings.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\shield-off.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\shield-on.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\spinner.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\switching.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\themes\themes.js">
+      <Filter>Resource Files</Filter>
+    </None>
+    <CustomBuild Include="ui\themes.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <None Include="ui\resources\update-lock.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\warning-dark-orange.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\warning-orange.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\warning-white.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ui\resources\warning.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

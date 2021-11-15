@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/compat">
+        <file alias="compat/qmldir">compat/qt6/qmldir</file>
+        <file alias="compat/VPNAnimatedRingsShader.qml">compat/qt6/VPNAnimatedRingsShader.qml</file>
+        <file alias="compat/VPNColorOverlay.qml">compat/qt6/VPNColorOverlay.qml</file>
+        <file alias="compat/VPNDropShadow.qml">compat/qt6/VPNDropShadow.qml</file>
+        <file alias="compat/VPNLinearGradient.qml">compat/qt6/VPNLinearGradient.qml</file>
+        <file alias="compat/VPNOpacityMask.qml">compat/qt6/VPNOpacityMask.qml</file>
+        <file alias="compat/VPNRectangularGlow.qml">compat/qt6/VPNRectangularGlow.qml</file>
+    </qresource>
+</RCC>

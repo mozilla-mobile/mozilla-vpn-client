@@ -11,7 +11,7 @@
 #include "features/featureinappauth.h"
 #include "features/featureinappaccountcreate.h"
 #include "features/featuresharelogs.h"
-#include "gleansample.h"
+#include <telemetry/gleansample.h>
 #include "iaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"

@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A69A6A92-0CEB-34DF-8E18-212609A2F786}</ProjectGuid>
+    <RootNamespace>nebula</RootNamespace>
+    <Keyword>Qt4VSv1.0</Keyword>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.19041.0</WindowsTargetPlatformMinVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;" Label="Configuration">
+    <PlatformToolset>v142</PlatformToolset>
+    <OutputDirectory>debug\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <IntermediateDirectory>debug\</IntermediateDirectory>
+    <PrimaryOutput>nebula</PrimaryOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;" Label="Configuration">
+    <PlatformToolset>v142</PlatformToolset>
+    <OutputDirectory>release\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <IntermediateDirectory>release\</IntermediateDirectory>
+    <PrimaryOutput>nebula</PrimaryOutput>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists(&apos;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&apos;)" />
+  </ImportGroup>
+  <ImportGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists(&apos;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&apos;)" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\</OutDir>
+    <IntDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\</IntDir>
+    <TargetName Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">nebula</TargetName>
+    <IgnoreImportLibrary Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</IgnoreImportLibrary>
+    <OutDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\</OutDir>
+    <IntDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\</IntDir>
+    <TargetName Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">nebula</TargetName>
+    <IgnoreImportLibrary Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</IgnoreImportLibrary>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">
+    <ClCompile>
+      <AdditionalIncludeDirectories>nebula;.;C:\Qt\5.15.2\msvc2015_64\include;C:\Qt\5.15.2\msvc2015_64\include\QtQml;C:\Qt\5.15.2\msvc2015_64\include\QtNetwork;C:\Qt\5.15.2\msvc2015_64\include\QtCore;debug;C:\Qt\5.15.2\msvc2015_64\mkspecs\win32-msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>debug\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4577;4467;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>debug\</ObjectFileName>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_QML_LIB;QT_NETWORK_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)\nebula.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_QML_LIB;QT_NETWORK_LIB;QT_CORE_LIB;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">
+    <ClCompile>
+      <AdditionalIncludeDirectories>nebula;.;C:\Qt\5.15.2\msvc2015_64\include;C:\Qt\5.15.2\msvc2015_64\include\QtQml;C:\Qt\5.15.2\msvc2015_64\include\QtNetwork;C:\Qt\5.15.2\msvc2015_64\include\QtCore;release;C:\Qt\5.15.2\msvc2015_64\mkspecs\win32-msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>release\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <DisableSpecificWarnings>4577;4467;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>release\</ObjectFileName>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_NO_DEBUG;QT_QML_LIB;QT_NETWORK_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <ProgramDataBaseFileName></ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)\nebula.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_NO_DEBUG;QT_QML_LIB;QT_NETWORK_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="nebula\nebula.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="nebula\nebula.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="debug\moc_predefs.h.cbt">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">C:\Qt\5.15.2\msvc2015_64\mkspecs\features\data\dummy.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">cl -BxC:\Qt\5.15.2\msvc2015_64\bin\qmake.exe -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -Zi -MDd -W3 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 -wd4577 -wd4467 -E C:\Qt\5.15.2\msvc2015_64\mkspecs\features\data\dummy.cpp 2&gt;NUL &gt;debug\moc_predefs.h</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">Generate moc_predefs.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\moc_predefs.h;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="release\moc_predefs.h.cbt">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</ExcludedFromBuild>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">C:\Qt\5.15.2\msvc2015_64\mkspecs\features\data\dummy.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">cl -BxC:\Qt\5.15.2\msvc2015_64\bin\qmake.exe -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -O2 -MD -W3 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 -wd4577 -wd4467 -E C:\Qt\5.15.2\msvc2015_64\mkspecs\features\data\dummy.cpp 2&gt;NUL &gt;release\moc_predefs.h</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">Generate moc_predefs.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\moc_predefs.h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClCompile Include="debug\qrc_compatQt5.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="release\qrc_compatQt5.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="debug\qrc_components.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="release\qrc_components.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="debug\qrc_nebula_resources.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="release\qrc_nebula_resources.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="debug\qrc_themes.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="release\qrc_themes.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="nebula\ui\resources\flags\AC.png" />
+    <None Include="nebula\ui\resources\flags\AD.png" />
+    <None Include="nebula\ui\resources\flags\AE.png" />
+    <None Include="nebula\ui\resources\flags\AF.png" />
+    <None Include="nebula\ui\resources\flags\AG.png" />
+    <None Include="nebula\ui\resources\flags\AI.png" />
+    <None Include="nebula\ui\resources\flags\AL.png" />
+    <None Include="nebula\ui\resources\flags\AM.png" />
+    <None Include="nebula\ui\resources\flags\AO.png" />
+    <None Include="nebula\ui\resources\flags\AQ.png" />
+    <None Include="nebula\ui\resources\flags\AR.png" />
+    <None Include="nebula\ui\resources\flags\AS.png" />
+    <None Include="nebula\ui\resources\flags\AT.png" />
+    <None Include="nebula\ui\resources\flags\AU.png" />
+    <None Include="nebula\ui\resources\flags\AW.png" />
+    <None Include="nebula\ui\resources\flags\AX.png" />
+    <None Include="nebula\ui\resources\flags\AZ.png" />
+    <None Include="nebula\ui\resources\flags\BA.png" />
+    <None Include="nebula\ui\resources\flags\BB.png" />
+    <None Include="nebula\ui\resources\flags\BD.png" />
+    <None Include="nebula\ui\resources\flags\BE.png" />
+    <None Include="nebula\ui\resources\flags\BF.png" />
+    <None Include="nebula\ui\resources\flags\BG.png" />
+    <None Include="nebula\ui\resources\flags\BH.png" />
+    <None Include="nebula\ui\resources\flags\BI.png" />
+    <None Include="nebula\ui\resources\flags\BJ.png" />
+    <None Include="nebula\ui\resources\flags\BL.png" />
+    <None Include="nebula\ui\resources\flags\BM.png" />
+    <None Include="nebula\ui\resources\flags\BN.png" />
+    <None Include="nebula\ui\resources\flags\BO.png" />
+    <None Include="nebula\ui\resources\flags\BQ.png" />
+    <None Include="nebula\ui\resources\flags\BR.png" />
+    <None Include="nebula\ui\resources\flags\BS.png" />
+    <None Include="nebula\ui\resources\flags\BT.png" />
+    <None Include="nebula\ui\resources\flags\BV.png" />
+    <None Include="nebula\ui\resources\flags\BW.png" />
+    <None Include="nebula\ui\resources\flags\BY.png" />
+    <None Include="nebula\ui\resources\flags\BZ.png" />
+    <None Include="nebula\ui\resources\flags\CA.png" />
+    <None Include="nebula\ui\resources\flags\CC.png" />
+    <None Include="nebula\ui\resources\flags\CD.png" />
+    <None Include="nebula\ui\resources\flags\CF.png" />
+    <None Include="nebula\ui\resources\flags\CG.png" />
+    <None Include="nebula\ui\resources\flags\CH.png" />
+    <None Include="nebula\ui\resources\flags\CI.png" />
+    <None Include="nebula\ui\resources\flags\CK.png" />
+    <None Include="nebula\ui\resources\flags\CL.png" />
+    <None Include="nebula\ui\resources\flags\CM.png" />
+    <None Include="nebula\ui\resources\flags\CN.png" />
+    <None Include="nebula\ui\resources\flags\CO.png" />
+    <None Include="nebula\ui\resources\flags\CP.png" />
+    <None Include="nebula\ui\resources\flags\CR.png" />
+    <None Include="nebula\ui\resources\flags\CU.png" />
+    <None Include="nebula\ui\resources\flags\CV.png" />
+    <None Include="nebula\ui\resources\flags\CW.png" />
+    <None Include="nebula\ui\resources\flags\CX.png" />
+    <None Include="nebula\ui\resources\flags\CY.png" />
+    <None Include="nebula\ui\resources\flags\CZ.png" />
+    <None Include="nebula\ui\resources\flags\DE.png" />
+    <None Include="nebula\ui\resources\flags\DG.png" />
+    <None Include="nebula\ui\resources\flags\DJ.png" />
+    <None Include="nebula\ui\resources\flags\DK.png" />
+    <None Include="nebula\ui\resources\flags\DM.png" />
+    <None Include="nebula\ui\resources\flags\DO.png" />
+    <None Include="nebula\ui\resources\flags\DZ.png" />
+    <None Include="nebula\ui\resources\flags\EA.png" />
+    <None Include="nebula\ui\resources\flags\EC.png" />
+    <None Include="nebula\ui\resources\flags\EE.png" />
+    <None Include="nebula\ui\resources\flags\EG.png" />
+    <None Include="nebula\ui\resources\flags\EH.png" />
+    <None Include="nebula\ui\resources\flags\ER.png" />
+    <None Include="nebula\ui\resources\flags\ES.png" />
+    <None Include="nebula\ui\resources\flags\ET.png" />
+    <None Include="nebula\ui\resources\flags\EU.png" />
+    <None Include="nebula\ui\resources\flags\FI.png" />
+    <None Include="nebula\ui\resources\flags\FJ.png" />
+    <None Include="nebula\ui\resources\flags\FK.png" />
+    <None Include="nebula\ui\resources\flags\FM.png" />
+    <None Include="nebula\ui\resources\flags\FO.png" />
+    <None Include="nebula\ui\resources\flags\FR.png" />
+    <None Include="nebula\ui\resources\flags\GA.png" />
+    <None Include="nebula\ui\resources\flags\GB.png" />
+    <None Include="nebula\ui\resources\flags\GD.png" />
+    <None Include="nebula\ui\resources\flags\GE.png" />
+    <None Include="nebula\ui\resources\flags\GF.png" />
+    <None Include="nebula\ui\resources\flags\GG.png" />
+    <None Include="nebula\ui\resources\flags\GH.png" />
+    <None Include="nebula\ui\resources\flags\GI.png" />
+    <None Include="nebula\ui\resources\flags\GL.png" />
+    <None Include="nebula\ui\resources\flags\GM.png" />
+    <None Include="nebula\ui\resources\flags\GN.png" />
+    <None Include="nebula\ui\resources\flags\GP.png" />
+    <None Include="nebula\ui\resources\flags\GQ.png" />
+    <None Include="nebula\ui\resources\flags\GR.png" />
+    <None Include="nebula\ui\resources\flags\GS.png" />
+    <None Include="nebula\ui\resources\flags\GT.png" />
+    <None Include="nebula\ui\resources\flags\GU.png" />
+    <None Include="nebula\ui\resources\flags\GW.png" />
+    <None Include="nebula\ui\resources\flags\GY.png" />
+    <None Include="nebula\ui\resources\flags\HK.png" />
+    <None Include="nebula\ui\resources\flags\HM.png" />
+    <None Include="nebula\ui\resources\flags\HN.png" />
+    <None Include="nebula\ui\resources\flags\HR.png" />
+    <None Include="nebula\ui\resources\flags\HT.png" />
+    <None Include="nebula\ui\resources\flags\HU.png" />
+    <None Include="nebula\ui\resources\flags\IC.png" />
+    <None Include="nebula\ui\resources\flags\ID.png" />
+    <None Include="nebula\ui\resources\flags\IE.png" />
+    <None Include="nebula\ui\resources\flags\IL.png" />
+    <None Include="nebula\ui\resources\flags\IM.png" />
+    <None Include="nebula\ui\resources\flags\IN.png" />
+    <None Include="nebula\ui\resources\flags\IO.png" />
+    <None Include="nebula\ui\resources\flags\IQ.png" />
+    <None Include="nebula\ui\resources\flags\IR.png" />
+    <None Include="nebula\ui\resources\flags\IS.png" />
+    <None Include="nebula\ui\resources\flags\IT.png" />
+    <None Include="nebula\ui\resources\fonts\InterUI.otf" />
+    <None Include="nebula\ui\resources\flags\JE.png" />
+    <None Include="nebula\ui\resources\flags\JM.png" />
+    <None Include="nebula\ui\resources\flags\JO.png" />
+    <None Include="nebula\ui\resources\flags\JP.png" />
+    <None Include="nebula\ui\resources\flags\KE.png" />
+    <None Include="nebula\ui\resources\flags\KG.png" />
+    <None Include="nebula\ui\resources\flags\KH.png" />
+    <None Include="nebula\ui\resources\flags\KI.png" />
+    <None Include="nebula\ui\resources\flags\KM.png" />
+    <None Include="nebula\ui\resources\flags\KN.png" />
+    <None Include="nebula\ui\resources\flags\KP.png" />
+    <None Include="nebula\ui\resources\flags\KR.png" />
+    <None Include="nebula\ui\resources\flags\KW.png" />
+    <None Include="nebula\ui\resources\flags\KY.png" />
+    <None Include="nebula\ui\resources\flags\KZ.png" />
+    <None Include="nebula\ui\resources\flags\LA.png" />
+    <None Include="nebula\ui\resources\flags\LB.png" />
+    <None Include="nebula\ui\resources\flags\LC.png" />
+    <None Include="nebula\ui\resources\flags\LI.png" />
+    <None Include="nebula\ui\resources\flags\LK.png" />
+    <None Include="nebula\ui\resources\flags\LR.png" />
+    <None Include="nebula\ui\resources\flags\LS.png" />
+    <None Include="nebula\ui\resources\flags\LT.png" />
+    <None Include="nebula\ui\resources\flags\LU.png" />
+    <None Include="nebula\ui\resources\flags\LV.png" />
+    <None Include="nebula\ui\resources\flags\LY.png" />
+    <None Include="nebula\ui\resources\flags\MA.png" />
+    <None Include="nebula\ui\resources\flags\MC.png" />
+    <None Include="nebula\ui\resources\flags\MD.png" />
+    <None Include="nebula\ui\resources\flags\ME.png" />
+    <None Include="nebula\ui\resources\flags\MF.png" />
+    <None Include="nebula\ui\resources\flags\MG.png" />
+    <None Include="nebula\ui\resources\flags\MH.png" />
+    <None Include="nebula\ui\resources\flags\MK.png" />
+    <None Include="nebula\ui\resources\flags\ML.png" />
+    <None Include="nebula\ui\resources\flags\MM.png" />
+    <None Include="nebula\ui\resources\flags\MN.png" />
+    <None Include="nebula\ui\resources\flags\MO.png" />
+    <None Include="nebula\ui\resources\flags\MP.png" />
+    <None Include="nebula\ui\resources\flags\MQ.png" />
+    <None Include="nebula\ui\resources\flags\MR.png" />
+    <None Include="nebula\ui\resources\flags\MS.png" />
+    <None Include="nebula\ui\resources\flags\MT.png" />
+    <None Include="nebula\ui\resources\flags\MU.png" />
+    <None Include="nebula\ui\resources\flags\MV.png" />
+    <None Include="nebula\ui\resources\flags\MW.png" />
+    <None Include="nebula\ui\resources\flags\MX.png" />
+    <None Include="nebula\ui\resources\flags\MY.png" />
+    <None Include="nebula\ui\resources\flags\MZ.png" />
+    <None Include="nebula\ui\resources\fonts\Metropolis-SemiBold.otf" />
+    <None Include="nebula\ui\resources\fonts\Metropolis.otf" />
+    <None Include="nebula\ui\resources\flags\NA.png" />
+    <None Include="nebula\ui\resources\flags\NC.png" />
+    <None Include="nebula\ui\resources\flags\NE.png" />
+    <None Include="nebula\ui\resources\flags\NF.png" />
+    <None Include="nebula\ui\resources\flags\NG.png" />
+    <None Include="nebula\ui\resources\flags\NI.png" />
+    <None Include="nebula\ui\resources\flags\NL.png" />
+    <None Include="nebula\ui\resources\flags\NO.png" />
+    <None Include="nebula\ui\resources\flags\NP.png" />
+    <None Include="nebula\ui\resources\flags\NR.png" />
+    <None Include="nebula\ui\resources\flags\NU.png" />
+    <None Include="nebula\ui\resources\flags\NZ.png" />
+    <None Include="nebula\ui\resources\flags\OM.png" />
+    <None Include="nebula\ui\resources\flags\PA.png" />
+    <None Include="nebula\ui\resources\flags\PE.png" />
+    <None Include="nebula\ui\resources\flags\PF.png" />
+    <None Include="nebula\ui\resources\flags\PG.png" />
+    <None Include="nebula\ui\resources\flags\PH.png" />
+    <None Include="nebula\ui\resources\flags\PK.png" />
+    <None Include="nebula\ui\resources\flags\PL.png" />
+    <None Include="nebula\ui\resources\flags\PM.png" />
+    <None Include="nebula\ui\resources\flags\PN.png" />
+    <None Include="nebula\ui\resources\flags\PR.png" />
+    <None Include="nebula\ui\resources\flags\PS.png" />
+    <None Include="nebula\ui\resources\flags\PT.png" />
+    <None Include="nebula\ui\resources\flags\PW.png" />
+    <None Include="nebula\ui\resources\flags\PY.png" />
+    <None Include="nebula\ui\resources\flags\QA.png" />
+    <None Include="nebula\ui\resources\flags\RE.png" />
+    <None Include="nebula\ui\resources\flags\RO.png" />
+    <None Include="nebula\ui\resources\flags\RS.png" />
+    <None Include="nebula\ui\resources\flags\RU.png" />
+    <None Include="nebula\ui\resources\flags\RW.png" />
+    <None Include="nebula\ui\resources\flags\SA.png" />
+    <None Include="nebula\ui\resources\flags\SB.png" />
+    <None Include="nebula\ui\resources\flags\SC.png" />
+    <None Include="nebula\ui\resources\flags\SD.png" />
+    <None Include="nebula\ui\resources\flags\SE.png" />
+    <None Include="nebula\ui\resources\flags\SG.png" />
+    <None Include="nebula\ui\resources\flags\SH.png" />
+    <None Include="nebula\ui\resources\flags\SI.png" />
+    <None Include="nebula\ui\resources\flags\SJ.png" />
+    <None Include="nebula\ui\resources\flags\SK.png" />
+    <None Include="nebula\ui\resources\flags\SL.png" />
+    <None Include="nebula\ui\resources\flags\SM.png" />
+    <None Include="nebula\ui\resources\flags\SN.png" />
+    <None Include="nebula\ui\resources\flags\SO.png" />
+    <None Include="nebula\ui\resources\flags\SR.png" />
+    <None Include="nebula\ui\resources\flags\SS.png" />
+    <None Include="nebula\ui\resources\flags\ST.png" />
+    <None Include="nebula\ui\resources\flags\SV.png" />
+    <None Include="nebula\ui\resources\flags\SX.png" />
+    <None Include="nebula\ui\resources\flags\SY.png" />
+    <None Include="nebula\ui\resources\flags\SZ.png" />
+    <None Include="nebula\ui\resources\flags\TA.png" />
+    <None Include="nebula\ui\resources\flags\TC.png" />
+    <None Include="nebula\ui\resources\flags\TD.png" />
+    <None Include="nebula\ui\resources\flags\TF.png" />
+    <None Include="nebula\ui\resources\flags\TG.png" />
+    <None Include="nebula\ui\resources\flags\TH.png" />
+    <None Include="nebula\ui\resources\flags\TJ.png" />
+    <None Include="nebula\ui\resources\flags\TK.png" />
+    <None Include="nebula\ui\resources\flags\TL.png" />
+    <None Include="nebula\ui\resources\flags\TM.png" />
+    <None Include="nebula\ui\resources\flags\TN.png" />
+    <None Include="nebula\ui\resources\flags\TO.png" />
+    <None Include="nebula\ui\resources\flags\TR.png" />
+    <None Include="nebula\ui\resources\flags\TT.png" />
+    <None Include="nebula\ui\resources\flags\TV.png" />
+    <None Include="nebula\ui\resources\flags\TW.png" />
+    <None Include="nebula\ui\resources\flags\TZ.png" />
+    <None Include="nebula\ui\resources\flags\UA.png" />
+    <None Include="nebula\ui\resources\flags\UG.png" />
+    <None Include="nebula\ui\resources\flags\UM.png" />
+    <None Include="nebula\ui\resources\flags\UN.png" />
+    <None Include="nebula\ui\resources\flags\US.png" />
+    <None Include="nebula\ui\resources\flags\UY.png" />
+    <None Include="nebula\ui\resources\flags\UZ.png" />
+    <None Include="nebula\ui\resources\flags\VA.png" />
+    <None Include="nebula\ui\resources\flags\VC.png" />
+    <None Include="nebula\ui\resources\flags\VE.png" />
+    <None Include="nebula\ui\resources\flags\VG.png" />
+    <None Include="nebula\ui\resources\flags\VI.png" />
+    <None Include="nebula\ui\resources\flags\VN.png" />
+    <None Include="nebula\ui\components\VPNAboutUs.qml" />
+    <None Include="nebula\ui\components\VPNAlert.qml" />
+    <None Include="nebula\ui\components\VPNAlerts.qml" />
+    <None Include="nebula\ui\components\VPNAnimatedRings.qml" />
+    <None Include="nebula\ui\compat\qt5\VPNAnimatedRingsShader.qml" />
+    <None Include="nebula\ui\components\VPNAvatar.qml" />
+    <None Include="nebula\ui\components\VPNBoldLabel.qml" />
+    <None Include="nebula\ui\components\VPNButton.qml" />
+    <None Include="nebula\ui\components\VPNButtonBase.qml" />
+    <None Include="nebula\ui\components\VPNButtonLoader.qml" />
+    <None Include="nebula\ui\components\VPNCallout.qml" />
+    <None Include="nebula\ui\components\VPNCheckBox.qml" />
+    <None Include="nebula\ui\components\VPNCheckBoxAlert.qml" />
+    <None Include="nebula\ui\components\VPNCheckBoxRow.qml" />
+    <None Include="nebula\ui\components\VPNChevron.qml" />
+    <None Include="nebula\ui\components\VPNClickableRow.qml" />
+    <None Include="nebula\ui\components\VPNCollapsibleCard.qml" />
+    <None Include="nebula\ui\compat\qt5\VPNColorOverlay.qml" />
+    <None Include="nebula\ui\components\forms\VPNComboBox.qml" />
+    <None Include="nebula\ui\components\VPNConnectionInfo.qml" />
+    <None Include="nebula\ui\components\VPNConnectionStability.qml" />
+    <None Include="nebula\ui\components\VPNControllerNav.qml" />
+    <None Include="nebula\ui\components\VPNControllerView.qml" />
+    <None Include="nebula\ui\components\VPNDeviceListItem.qml" />
+    <None Include="nebula\ui\components\VPNDevicesListHeader.qml" />
+    <None Include="nebula\ui\compat\qt5\VPNDropShadow.qml" />
+    <None Include="nebula\ui\components\VPNDropShadowWithStates.qml" />
+    <None Include="nebula\ui\components\VPNExpandableAppList.qml" />
+    <None Include="nebula\ui\components\VPNExternalLinkListItem.qml" />
+    <None Include="nebula\ui\components\VPNFeatureTour.qml" />
+    <None Include="nebula\ui\components\VPNFeatureTourPopup.qml" />
+    <None Include="nebula\ui\components\VPNFeedbackRadioDelegate.qml" />
+    <None Include="nebula\ui\components\VPNFlickable.qml" />
+    <None Include="nebula\ui\components\VPNFocusBorder.qml" />
+    <None Include="nebula\ui\components\VPNFocusOutline.qml" />
+    <None Include="nebula\ui\components\VPNFooterLink.qml" />
+    <None Include="nebula\ui\components\VPNGraphLegendMarker.qml" />
+    <None Include="nebula\ui\components\VPNGreyLink.qml" />
+    <None Include="nebula\ui\components\VPNHeaderLink.qml" />
+    <None Include="nebula\ui\components\VPNHeadline.qml" />
+    <None Include="nebula\ui\components\VPNIPAddress.qml" />
+    <None Include="nebula\ui\components\VPNIcon.qml" />
+    <None Include="nebula\ui\components\VPNIconAndLabel.qml" />
+    <None Include="nebula\ui\components\VPNIconButton.qml" />
+    <None Include="nebula\ui\components\forms\VPNInputBackground.qml" />
+    <None Include="nebula\ui\components\forms\VPNInputStates.qml" />
+    <None Include="nebula\ui\components\VPNInterLabel.qml" />
+    <None Include="nebula\ui\components\VPNLightLabel.qml" />
+    <None Include="nebula\ui\compat\qt5\VPNLinearGradient.qml" />
+    <None Include="nebula\ui\components\VPNLinkButton.qml" />
+    <None Include="nebula\ui\components\VPNList.qml" />
+    <None Include="nebula\ui\components\VPNLoader.qml" />
+    <None Include="nebula\ui\components\VPNLogsButton.qml" />
+    <None Include="nebula\ui\components\VPNMainImage.qml" />
+    <None Include="nebula\ui\components\VPNMenu.qml" />
+    <None Include="nebula\ui\components\VPNMetropolisLabel.qml" />
+    <None Include="nebula\ui\components\VPNMouseArea.qml" />
+    <None Include="nebula\ui\compat\qt5\VPNOpacityMask.qml" />
+    <None Include="nebula\ui\components\VPNPanel.qml" />
+    <None Include="nebula\ui\components\VPNPopup.qml" />
+    <None Include="nebula\ui\components\VPNPopupButton.qml" />
+    <None Include="nebula\ui\components\forms\VPNRadioButton.qml" />
+    <None Include="nebula\ui\components\VPNRadioButtonLabel.qml" />
+    <None Include="nebula\ui\components\VPNRadioDelegate.qml" />
+    <None Include="nebula\ui\components\VPNRadioSublabel.qml" />
+    <None Include="nebula\ui\components\VPNRecentConnections.qml" />
+    <None Include="nebula\ui\compat\qt5\VPNRectangularGlow.qml" />
+    <None Include="nebula\ui\components\VPNRemoveDevicePopup.qml" />
+    <None Include="nebula\ui\components\forms\VPNSearchBar.qml" />
+    <None Include="nebula\ui\components\VPNSemiMonoLabel.qml" />
+    <None Include="nebula\ui\components\VPNServerCountry.qml" />
+    <None Include="nebula\ui\components\VPNServerLabel.qml" />
+    <None Include="nebula\ui\components\VPNServerList.qml" />
+    <None Include="nebula\ui\components\VPNServerListToggle.qml" />
+    <None Include="nebula\ui\components\VPNSettingsItem.qml" />
+    <None Include="nebula\ui\components\VPNSettingsToggle.qml" />
+    <None Include="nebula\ui\components\VPNSignOut.qml" />
+    <None Include="nebula\ui\components\VPNStackView.qml" />
+    <None Include="nebula\ui\components\VPNSubscriptionOption.qml" />
+    <None Include="nebula\ui\components\VPNSubtitle.qml" />
+    <None Include="nebula\ui\components\VPNSystemAlert.qml" />
+    <None Include="nebula\ui\components\VPNTabNavigation.qml" />
+    <None Include="nebula\ui\components\forms\VPNTextArea.qml" />
+    <None Include="nebula\ui\components\VPNTextBlock.qml" />
+    <None Include="nebula\ui\components\forms\VPNTextField.qml" />
+    <None Include="nebula\ui\components\VPNToggle.qml" />
+    <None Include="nebula\ui\components\VPNToggleCard.qml" />
+    <None Include="nebula\ui\components\VPNToolTip.qml" />
+    <None Include="nebula\ui\components\VPNUIStates.qml" />
+    <None Include="nebula\ui\components\VPNVerticalSpacer.qml" />
+    <None Include="nebula\ui\components\VPNViewDNSSettings.qml" />
+    <None Include="nebula\ui\components\VPNWasmAlerts.qml" />
+    <None Include="nebula\ui\components\VPNWasmHeader.qml" />
+    <None Include="nebula\ui\components\VPNWasmMenu.qml" />
+    <None Include="nebula\ui\components\VPNWasmMenuButton.qml" />
+    <None Include="nebula\ui\resources\flags\VU.png" />
+    <None Include="nebula\ui\resources\flags\WF.png" />
+    <None Include="nebula\ui\resources\flags\WS.png" />
+    <None Include="nebula\ui\resources\flags\XK.png" />
+    <None Include="nebula\ui\resources\flags\YE.png" />
+    <None Include="nebula\ui\resources\flags\YT.png" />
+    <None Include="nebula\ui\resources\flags\ZA.png" />
+    <None Include="nebula\ui\resources\flags\ZM.png" />
+    <None Include="nebula\ui\resources\flags\ZW.png" />
+    <None Include="nebula\ui\resources\app-rating.svg" />
+    <None Include="nebula\ui\resources\arrow-forward-white.svg" />
+    <None Include="nebula\ui\resources\arrow-forward.svg" />
+    <None Include="nebula\ui\resources\arrow-toggle.svg" />
+    <None Include="nebula\ui\resources\avatar-default.png" />
+    <None Include="nebula\ui\resources\back-dark.svg" />
+    <None Include="nebula\ui\resources\back.svg" />
+    <None Include="nebula\ui\resources\buttonLoader.svg" />
+    <None Include="nebula\ui\resources\checkmark.svg" />
+    <None Include="nebula\ui\resources\chevron-purple.svg" />
+    <None Include="nebula\ui\resources\chevron-right-dark.svg" />
+    <None Include="nebula\ui\resources\chevron.svg" />
+    <None Include="nebula\ui\resources\close-dark.svg" />
+    <None Include="nebula\ui\resources\close-darker.svg" />
+    <None Include="nebula\ui\resources\close-white.svg" />
+    <None Include="nebula\ui\themes\colors.js" />
+    <CustomBuild Include="nebula\ui\compatQt5.qrc">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">nebula\ui\compatQt5.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;nebula\ui\compat\qt5\VPNDropShadow.qml;nebula\ui\compat\qt5\VPNLinearGradient.qml;nebula\ui\compat\qt5\VPNAnimatedRingsShader.qml;nebula\ui\compat\qt5\VPNOpacityMask.qml;nebula\ui\compat\qt5\VPNRectangularGlow.qml;nebula\ui\compat\qt5\qmldir;nebula\ui\compat\qt5\VPNColorOverlay.qml;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name compatQt5 nebula\ui\compatQt5.qrc -o debug\qrc_compatQt5.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">RCC nebula/ui/compatQt5.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\qrc_compatQt5.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">nebula\ui\compatQt5.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;nebula\ui\compat\qt5\VPNDropShadow.qml;nebula\ui\compat\qt5\VPNLinearGradient.qml;nebula\ui\compat\qt5\VPNAnimatedRingsShader.qml;nebula\ui\compat\qt5\VPNOpacityMask.qml;nebula\ui\compat\qt5\VPNRectangularGlow.qml;nebula\ui\compat\qt5\qmldir;nebula\ui\compat\qt5\VPNColorOverlay.qml;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name compatQt5 nebula\ui\compatQt5.qrc -o release\qrc_compatQt5.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">RCC nebula/ui/compatQt5.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\qrc_compatQt5.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="nebula\ui\components.qrc">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">nebula\ui\components.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;nebula\ui\components\VPNAlert.qml;nebula\ui\components\VPNToggleCard.qml;nebula\ui\components\VPNRemoveDevicePopup.qml;nebula\ui\components\VPNControllerView.qml;nebula\ui\components\VPNMouseArea.qml;nebula\ui\components\VPNToolTip.qml;nebula\ui\components\VPNPanel.qml;nebula\ui\components\VPNAlerts.qml;nebula\ui\components\VPNLogsButton.qml;nebula\ui\components\VPNHeaderLink.qml;nebula\ui\components\VPNControllerNav.qml;nebula\ui\components\VPNConnectionInfo.qml;nebula\ui\components\VPNGreyLink.qml;nebula\ui\components\VPNFooterLink.qml;nebula\ui\components\VPNIconButton.qml;nebula\ui\components\VPNGraphLegendMarker.qml;nebula\ui\components\VPNDeviceListItem.qml;nebula\ui\components\VPNPopup.qml;nebula\ui\components\qmldir;nebula\ui\components\VPNFeatureTour.qml;nebula\ui\components\VPNChevron.qml;nebula\ui\components\VPNDropShadowWithStates.qml;nebula\ui\components\VPNWasmMenuButton.qml;nebula\ui\components\VPNRadioSublabel.qml;nebula\ui\components\VPNLoader.qml;nebula\ui\components\VPNSettingsItem.qml;nebula\ui\components\VPNRadioButtonLabel.qml;nebula\ui\components\VPNSignOut.qml;nebula\ui\components\VPNRadioDelegate.qml;nebula\ui\components\VPNAboutUs.qml;nebula\ui\components\VPNFocusBorder.qml;nebula\ui\components\VPNClickableRow.qml;nebula\ui\components\VPNExternalLinkListItem.qml;nebula\ui\components\VPNButtonBase.qml;nebula\ui\components\VPNMainImage.qml;nebula\ui\components\VPNTabNavigation.qml;nebula\ui\components\VPNServerCountry.qml;nebula\ui\components\VPNIconAndLabel.qml;nebula\ui\components\VPNServerLabel.qml;nebula\ui\components\VPNFeedbackRadioDelegate.qml;nebula\ui\components\VPNDevicesListHeader.qml;nebula\ui\components\VPNPopupButton.qml;nebula\ui\components\VPNSubscriptionOption.qml;nebula\ui\components\VPNUIStates.qml;nebula\ui\components\VPNCheckBoxRow.qml;nebula\ui\components\VPNSystemAlert.qml;nebula\ui\components\VPNExpandableAppList.qml;nebula\ui\components\VPNMenu.qml;nebula\ui\components\VPNSemiMonoLabel.qml;nebula\ui\components\VPNCollapsibleCard.qml;nebula\ui\components\VPNTextBlock.qml;nebula\ui\components\VPNIPAddress.qml;nebula\ui\components\VPNSettingsToggle.qml;nebula\ui\components\VPNWasmAlerts.qml;nebula\ui\components\VPNAnimatedRings.qml;nebula\ui\components\VPNToggle.qml;nebula\ui\components\VPNLinkButton.qml;nebula\ui\components\VPNBoldLabel.qml;nebula\ui\components\VPNMetropolisLabel.qml;nebula\ui\components\VPNConnectionStability.qml;nebula\ui\components\VPNViewDNSSettings.qml;nebula\ui\components\VPNServerListToggle.qml;nebula\ui\components\VPNWasmMenu.qml;nebula\ui\components\VPNButtonLoader.qml;nebula\ui\components\VPNWasmHeader.qml;nebula\ui\components\VPNLightLabel.qml;nebula\ui\components\VPNCallout.qml;nebula\ui\components\VPNButton.qml;nebula\ui\components\VPNIcon.qml;nebula\ui\components\VPNRecentConnections.qml;nebula\ui\components\VPNCheckBox.qml;nebula\ui\components\VPNAvatar.qml;nebula\ui\components\VPNList.qml;nebula\ui\components\VPNInterLabel.qml;nebula\ui\components\VPNStackView.qml;nebula\ui\components\VPNFocusOutline.qml;nebula\ui\components\VPNFlickable.qml;nebula\ui\components\VPNServerList.qml;nebula\ui\components\VPNSubtitle.qml;nebula\ui\components\VPNVerticalSpacer.qml;nebula\ui\components\VPNCheckBoxAlert.qml;nebula\ui\components\VPNFeatureTourPopup.qml;nebula\ui\components\VPNHeadline.qml;nebula\ui\components\forms\VPNSearchBar.qml;nebula\ui\components\forms\VPNTextArea.qml;nebula\ui\components\forms\VPNInputBackground.qml;nebula\ui\components\forms\VPNRadioButton.qml;nebula\ui\components\forms\VPNTextField.qml;nebula\ui\components\forms\qmldir;nebula\ui\components\forms\VPNComboBox.qml;nebula\ui\components\forms\VPNInputStates.qml;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name components nebula\ui\components.qrc -o debug\qrc_components.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">RCC nebula/ui/components.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\qrc_components.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">nebula\ui\components.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;nebula\ui\components\VPNAlert.qml;nebula\ui\components\VPNToggleCard.qml;nebula\ui\components\VPNRemoveDevicePopup.qml;nebula\ui\components\VPNControllerView.qml;nebula\ui\components\VPNMouseArea.qml;nebula\ui\components\VPNToolTip.qml;nebula\ui\components\VPNPanel.qml;nebula\ui\components\VPNAlerts.qml;nebula\ui\components\VPNLogsButton.qml;nebula\ui\components\VPNHeaderLink.qml;nebula\ui\components\VPNControllerNav.qml;nebula\ui\components\VPNConnectionInfo.qml;nebula\ui\components\VPNGreyLink.qml;nebula\ui\components\VPNFooterLink.qml;nebula\ui\components\VPNIconButton.qml;nebula\ui\components\VPNGraphLegendMarker.qml;nebula\ui\components\VPNDeviceListItem.qml;nebula\ui\components\VPNPopup.qml;nebula\ui\components\qmldir;nebula\ui\components\VPNFeatureTour.qml;nebula\ui\components\VPNChevron.qml;nebula\ui\components\VPNDropShadowWithStates.qml;nebula\ui\components\VPNWasmMenuButton.qml;nebula\ui\components\VPNRadioSublabel.qml;nebula\ui\components\VPNLoader.qml;nebula\ui\components\VPNSettingsItem.qml;nebula\ui\components\VPNRadioButtonLabel.qml;nebula\ui\components\VPNSignOut.qml;nebula\ui\components\VPNRadioDelegate.qml;nebula\ui\components\VPNAboutUs.qml;nebula\ui\components\VPNFocusBorder.qml;nebula\ui\components\VPNClickableRow.qml;nebula\ui\components\VPNExternalLinkListItem.qml;nebula\ui\components\VPNButtonBase.qml;nebula\ui\components\VPNMainImage.qml;nebula\ui\components\VPNTabNavigation.qml;nebula\ui\components\VPNServerCountry.qml;nebula\ui\components\VPNIconAndLabel.qml;nebula\ui\components\VPNServerLabel.qml;nebula\ui\components\VPNFeedbackRadioDelegate.qml;nebula\ui\components\VPNDevicesListHeader.qml;nebula\ui\components\VPNPopupButton.qml;nebula\ui\components\VPNSubscriptionOption.qml;nebula\ui\components\VPNUIStates.qml;nebula\ui\components\VPNCheckBoxRow.qml;nebula\ui\components\VPNSystemAlert.qml;nebula\ui\components\VPNExpandableAppList.qml;nebula\ui\components\VPNMenu.qml;nebula\ui\components\VPNSemiMonoLabel.qml;nebula\ui\components\VPNCollapsibleCard.qml;nebula\ui\components\VPNTextBlock.qml;nebula\ui\components\VPNIPAddress.qml;nebula\ui\components\VPNSettingsToggle.qml;nebula\ui\components\VPNWasmAlerts.qml;nebula\ui\components\VPNAnimatedRings.qml;nebula\ui\components\VPNToggle.qml;nebula\ui\components\VPNLinkButton.qml;nebula\ui\components\VPNBoldLabel.qml;nebula\ui\components\VPNMetropolisLabel.qml;nebula\ui\components\VPNConnectionStability.qml;nebula\ui\components\VPNViewDNSSettings.qml;nebula\ui\components\VPNServerListToggle.qml;nebula\ui\components\VPNWasmMenu.qml;nebula\ui\components\VPNButtonLoader.qml;nebula\ui\components\VPNWasmHeader.qml;nebula\ui\components\VPNLightLabel.qml;nebula\ui\components\VPNCallout.qml;nebula\ui\components\VPNButton.qml;nebula\ui\components\VPNIcon.qml;nebula\ui\components\VPNRecentConnections.qml;nebula\ui\components\VPNCheckBox.qml;nebula\ui\components\VPNAvatar.qml;nebula\ui\components\VPNList.qml;nebula\ui\components\VPNInterLabel.qml;nebula\ui\components\VPNStackView.qml;nebula\ui\components\VPNFocusOutline.qml;nebula\ui\components\VPNFlickable.qml;nebula\ui\components\VPNServerList.qml;nebula\ui\components\VPNSubtitle.qml;nebula\ui\components\VPNVerticalSpacer.qml;nebula\ui\components\VPNCheckBoxAlert.qml;nebula\ui\components\VPNFeatureTourPopup.qml;nebula\ui\components\VPNHeadline.qml;nebula\ui\components\forms\VPNSearchBar.qml;nebula\ui\components\forms\VPNTextArea.qml;nebula\ui\components\forms\VPNInputBackground.qml;nebula\ui\components\forms\VPNRadioButton.qml;nebula\ui\components\forms\VPNTextField.qml;nebula\ui\components\forms\qmldir;nebula\ui\components\forms\VPNComboBox.qml;nebula\ui\components\forms\VPNInputStates.qml;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name components nebula\ui\components.qrc -o release\qrc_components.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">RCC nebula/ui/components.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\qrc_components.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="nebula\ui\resources\connection-info.svg" />
+    <None Include="nebula\ui\resources\connection.svg" />
+    <None Include="nebula\ui\resources\copy.svg" />
+    <None Include="nebula\ui\resources\delete.svg" />
+    <None Include="nebula\ui\resources\devices.svg" />
+    <None Include="nebula\ui\resources\devicesLimit.svg" />
+    <None Include="nebula\ui\resources\devicesRemove.svg" />
+    <None Include="nebula\ui\resources\down.svg" />
+    <None Include="nebula\ui\resources\externalLink.svg" />
+    <None Include="nebula\ui\resources\gift-dark.svg" />
+    <None Include="nebula\ui\resources\globe.svg" />
+    <None Include="nebula\ui\resources\heart-check.svg" />
+    <None Include="nebula\ui\resources\location-dark.svg" />
+    <None Include="nebula\ui\resources\logo-dock.png" />
+    <None Include="nebula\ui\resources\logo.svg" />
+    <None Include="nebula\ui\resources\magic-dark.svg" />
+    <None Include="nebula\ui\resources\magic-purple.svg" />
+    <CustomBuild Include="nebula\ui\nebula_resources.qrc">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">nebula\ui\nebula_resources.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;nebula\ui\resources\arrow-forward-white.svg;nebula\ui\resources\plus.svg;nebula\ui\resources\globe.svg;nebula\ui\resources\shield-off.svg;nebula\ui\resources\settings.svg;nebula\ui\resources\close-darker.svg;nebula\ui\resources\devicesRemove.svg;nebula\ui\resources\warning-dark-orange.svg;nebula\ui\resources\down.svg;nebula\ui\resources\close-white.svg;nebula\ui\resources\update-lock.svg;nebula\ui\resources\checkmark.svg;nebula\ui\resources\connection.svg;nebula\ui\resources\chevron-right-dark.svg;nebula\ui\resources\close-dark.svg;nebula\ui\resources\spinner.svg;nebula\ui\resources\avatar-default.png;nebula\ui\resources\heart-check.svg;nebula\ui\resources\chevron-purple.svg;nebula\ui\resources\devicesLimit.svg;nebula\ui\resources\warning.svg;nebula\ui\resources\warning-orange.svg;nebula\ui\resources\logo-dock.png;nebula\ui\resources\delete.svg;nebula\ui\resources\shield-on.svg;nebula\ui\resources\chevron.svg;nebula\ui\resources\magic-purple.svg;nebula\ui\resources\switching.svg;nebula\ui\resources\search.svg;nebula\ui\resources\back-dark.svg;nebula\ui\resources\copy.svg;nebula\ui\resources\gift-dark.svg;nebula\ui\resources\magic-dark.svg;nebula\ui\resources\buttonLoader.svg;nebula\ui\resources\app-rating.svg;nebula\ui\resources\back.svg;nebula\ui\resources\location-dark.svg;nebula\ui\resources\logo.svg;nebula\ui\resources\arrow-forward.svg;nebula\ui\resources\arrow-toggle.svg;nebula\ui\resources\connection-info.svg;nebula\ui\resources\settings-white.svg;nebula\ui\resources\warning-white.svg;nebula\ui\resources\devices.svg;nebula\ui\resources\externalLink.svg;nebula\ui\resources\fonts\InterUI.otf;nebula\ui\resources\fonts\Metropolis-SemiBold.otf;nebula\ui\resources\fonts\Metropolis.otf;nebula\ui\resources\flags\AI.png;nebula\ui\resources\flags\MM.png;nebula\ui\resources\flags\PF.png;nebula\ui\resources\flags\KP.png;nebula\ui\resources\flags\BE.png;nebula\ui\resources\flags\NI.png;nebula\ui\resources\flags\IS.png;nebula\ui\resources\flags\ZM.png;nebula\ui\resources\flags\SZ.png;nebula\ui\resources\flags\CA.png;nebula\ui\resources\flags\JO.png;nebula\ui\resources\flags\AD.png;nebula\ui\resources\flags\MH.png;nebula\ui\resources\flags\HR.png;nebula\ui\resources\flags\TV.png;nebula\ui\resources\flags\PA.png;nebula\ui\resources\flags\IN.png;nebula\ui\resources\flags\GQ.png;nebula\ui\resources\flags\XK.png;nebula\ui\resources\flags\ET.png;nebula\ui\resources\flags\VN.png;nebula\ui\resources\flags\MC.png;nebula\ui\resources\flags\HM.png;nebula\ui\resources\flags\CW.png;nebula\ui\resources\flags\AZ.png;nebula\ui\resources\flags\UM.png;nebula\ui\resources\flags\PW.png;nebula\ui\resources\flags\LB.png;nebula\ui\resources\flags\GL.png;nebula\ui\resources\flags\BV.png;nebula\ui\resources\flags\NZ.png;nebula\ui\resources\flags\JE.png;nebula\ui\resources\flags\VI.png;nebula\ui\resources\flags\TL.png;nebula\ui\resources\flags\CR.png;nebula\ui\resources\flags\FK.png;nebula\ui\resources\flags\AU.png;nebula\ui\resources\flags\RO.png;nebula\ui\resources\flags\MY.png;nebula\ui\resources\flags\ID.png;nebula\ui\resources\flags\PR.png;nebula\ui\resources\flags\GG.png;nebula\ui\resources\flags\SK.png;nebula\ui\resources\flags\BQ.png;nebula\ui\resources\flags\NU.png;nebula\ui\resources\flags\CM.png;nebula\ui\resources\flags\TG.png;nebula\ui\resources\flags\MT.png;nebula\ui\resources\flags\PM.png;nebula\ui\resources\flags\KW.png;nebula\ui\resources\flags\GB.png;nebula\ui\resources\flags\BL.png;nebula\ui\resources\flags\NP.png;nebula\ui\resources\flags\EE.png;nebula\ui\resources\flags\LS.png;nebula\ui\resources\flags\CH.png;nebula\ui\resources\flags\RE.png;nebula\ui\resources\flags\MO.png;nebula\ui\resources\flags\PH.png;nebula\ui\resources\flags\KR.png;nebula\ui\resources\flags\BG.png;nebula\ui\resources\flags\SA.png;nebula\ui\resources\flags\UY.png;nebula\ui\resources\flags\CC.png;nebula\ui\resources\flags\VU.png;nebula\ui\resources\flags\AF.png;nebula\ui\resources\flags\HT.png;nebula\ui\resources\flags\KM.png;nebula\ui\resources\flags\BB.png;nebula\ui\resources\flags\NF.png;nebula\ui\resources\flags\DZ.png;nebula\ui\resources\flags\LI.png;nebula\ui\resources\flags\GS.png;nebula\ui\resources\flags\ME.png;nebula\ui\resources\flags\CY.png;nebula\ui\resources\flags\KH.png;nebula\ui\resources\flags\FR.png;nebula\ui\resources\flags\NA.png;nebula\ui\resources\flags\PY.png;nebula\ui\resources\flags\GN.png;nebula\ui\resources\flags\SR.png;nebula\ui\resources\flags\TN.png;nebula\ui\resources\flags\FM.png;nebula\ui\resources\flags\AW.png;nebula\ui\resources\flags\PT.png;nebula\ui\resources\flags\GI.png;nebula\ui\resources\flags\SM.png;nebula\ui\resources\flags\BS.png;nebula\ui\resources\flags\CO.png;nebula\ui\resources\flags\AR.png;nebula\ui\resources\flags\MV.png;nebula\ui\resources\flags\DK.png;nebula\ui\resources\flags\KY.png;nebula\ui\resources\flags\GD.png;nebula\ui\resources\flags\BN.png;nebula\ui\resources\flags\SH.png;nebula\ui\resources\flags\NR.png;nebula\ui\resources\flags\EG.png;nebula\ui\resources\flags\VA.png;nebula\ui\resources\flags\LU.png;nebula\ui\resources\flags\TD.png;nebula\ui\resources\flags\AM.png;nebula\ui\resources\flags\MQ.png;nebula\ui\resources\flags\BI.png;nebula\ui\resources\flags\SC.png;nebula\ui\resources\flags\ML.png;nebula\ui\resources\flags\TZ.png;nebula\ui\resources\flags\PE.png;nebula\ui\resources\flags\WS.png;nebula\ui\resources\flags\BD.png;nebula\ui\resources\flags\IR.png;nebula\ui\resources\flags\QA.png;nebula\ui\resources\flags\LK.png;nebula\ui\resources\flags\GU.png;nebula\ui\resources\flags\SY.png;nebula\ui\resources\flags\AC.png;nebula\ui\resources\flags\MG.png;nebula\ui\resources\flags\NC.png;nebula\ui\resources\flags\IM.png;nebula\ui\resources\flags\GP.png;nebula\ui\resources\flags\BZ.png;nebula\ui\resources\flags\ST.png;nebula\ui\resources\flags\ES.png;nebula\ui\resources\flags\CV.png;nebula\ui\resources\flags\KE.png;nebula\ui\resources\flags\FO.png;nebula\ui\resources\flags\RS.png;nebula\ui\resources\flags\LA.png;nebula\ui\resources\flags\SO.png;nebula\ui\resources\flags\TK.png;nebula\ui\resources\flags\FJ.png;nebula\ui\resources\flags\AT.png;nebula\ui\resources\flags\MX.png;nebula\ui\resources\flags\IC.png;nebula\ui\resources\flags\UG.png;nebula\ui\resources\flags\DM.png;nebula\ui\resources\flags\GF.png;nebula\ui\resources\flags\SJ.png;nebula\ui\resources\flags\VC.png;nebula\ui\resources\flags\CL.png;nebula\ui\resources\flags\TF.png;nebula\ui\resources\flags\AO.png;nebula\ui\resources\flags\MS.png;nebula\ui\resources\flags\PL.png;nebula\ui\resources\flags\GA.png;nebula\ui\resources\flags\SE.png;nebula\ui\resources\flags\NO.png;nebula\ui\resources\flags\LR.png;nebula\ui\resources\flags\CG.png;nebula\ui\resources\flags\TA.png;nebula\ui\resources\flags\MN.png;nebula\ui\resources\flags\PG.png;nebula\ui\resources\flags\BF.png;nebula\ui\resources\flags\IT.png;nebula\ui\resources\flags\GW.png;nebula\ui\resources\flags\JP.png;nebula\ui\resources\flags\AE.png;nebula\ui\resources\flags\TW.png;nebula\ui\resources\flags\BA.png;nebula\ui\resources\flags\NE.png;nebula\ui\resources\flags\IO.png;nebula\ui\resources\flags\US.png;nebula\ui\resources\flags\GR.png;nebula\ui\resources\flags\SV.png;nebula\ui\resources\flags\EU.png;nebula\ui\resources\flags\MD.png;nebula\ui\resources\flags\HN.png;nebula\ui\resources\flags\CX.png;nebula\ui\resources\flags\TR.png;nebula\ui\resources\flags\KG.png;nebula\ui\resources\flags\RU.png;nebula\ui\resources\flags\UN.png;nebula\ui\resources\flags\LC.png;nebula\ui\resources\flags\GM.png;nebula\ui\resources\flags\BW.png;nebula\ui\resources\flags\TM.png;nebula\ui\resources\flags\WF.png;nebula\ui\resources\flags\MZ.png;nebula\ui\resources\flags\IE.png;nebula\ui\resources\flags\DO.png;nebula\ui\resources\flags\PS.png;nebula\ui\resources\flags\GH.png;nebula\ui\resources\flags\BR.png;nebula\ui\resources\flags\SL.png;nebula\ui\resources\flags\VE.png;nebula\ui\resources\flags\LY.png;nebula\ui\resources\flags\TH.png;nebula\ui\resources\flags\CN.png;nebula\ui\resources\flags\AQ.png;nebula\ui\resources\flags\MU.png;nebula\ui\resources\flags\DJ.png;nebula\ui\resources\flags\PN.png;nebula\ui\resources\flags\SG.png;nebula\ui\resources\flags\BM.png;nebula\ui\resources\flags\LT.png;nebula\ui\resources\flags\CI.png;nebula\ui\resources\flags\TC.png;nebula\ui\resources\flags\OM.png;nebula\ui\resources\flags\AL.png;nebula\ui\resources\flags\MP.png;nebula\ui\resources\flags\YT.png;nebula\ui\resources\flags\DE.png;nebula\ui\resources\flags\BH.png;nebula\ui\resources\flags\SB.png;nebula\ui\resources\flags\NL.png;nebula\ui\resources\flags\UZ.png;nebula\ui\resources\flags\EA.png;nebula\ui\resources\flags\GY.png;nebula\ui\resources\flags\CD.png;nebula\ui\resources\flags\AG.png;nebula\ui\resources\flags\MK.png;nebula\ui\resources\flags\HU.png;nebula\ui\resources\flags\KN.png;nebula\ui\resources\flags\NG.png;nebula\ui\resources\flags\IQ.png;nebula\ui\resources\flags\GT.png;nebula\ui\resources\flags\SX.png;nebula\ui\resources\flags\JM.png;nebula\ui\resources\flags\MF.png;nebula\ui\resources\flags\CZ.png;nebula\ui\resources\flags\TT.png;nebula\ui\resources\flags\KI.png;nebula\ui\resources\flags\RW.png;nebula\ui\resources\flags\IL.png;nebula\ui\resources\flags\BY.png;nebula\ui\resources\flags\SS.png;nebula\ui\resources\flags\ER.png;nebula\ui\resources\flags\MA.png;nebula\ui\resources\flags\YE.png;nebula\ui\resources\flags\HK.png;nebula\ui\resources\flags\CU.png;nebula\ui\resources\flags\TO.png;nebula\ui\resources\flags\AX.png;nebula\ui\resources\flags\ZA.png;nebula\ui\resources\flags\BT.png;nebula\ui\resources\flags\SN.png;nebula\ui\resources\flags\VG.png;nebula\ui\resources\flags\TJ.png;nebula\ui\resources\flags\CP.png;nebula\ui\resources\flags\FI.png;nebula\ui\resources\flags\AS.png;nebula\ui\resources\flags\MW.png;nebula\ui\resources\flags\KZ.png;nebula\ui\resources\flags\GE.png;nebula\ui\resources\flags\SI.png;nebula\ui\resources\flags\BO.png;nebula\ui\resources\flags\ZW.png;nebula\ui\resources\flags\EH.png;nebula\ui\resources\flags\LV.png;nebula\ui\resources\flags\CK.png;nebula\ui\resources\flags\MR.png;nebula\ui\resources\flags\DG.png;nebula\ui\resources\flags\UA.png;nebula\ui\resources\flags\PK.png;nebula\ui\resources\flags\BJ.png;nebula\ui\resources\flags\SD.png;nebula\ui\resources\flags\EC.png;nebula\ui\resources\flags\CF.png;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name nebula_resources nebula\ui\nebula_resources.qrc -o debug\qrc_nebula_resources.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">RCC nebula/ui/nebula_resources.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\qrc_nebula_resources.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">nebula\ui\nebula_resources.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;nebula\ui\resources\arrow-forward-white.svg;nebula\ui\resources\plus.svg;nebula\ui\resources\globe.svg;nebula\ui\resources\shield-off.svg;nebula\ui\resources\settings.svg;nebula\ui\resources\close-darker.svg;nebula\ui\resources\devicesRemove.svg;nebula\ui\resources\warning-dark-orange.svg;nebula\ui\resources\down.svg;nebula\ui\resources\close-white.svg;nebula\ui\resources\update-lock.svg;nebula\ui\resources\checkmark.svg;nebula\ui\resources\connection.svg;nebula\ui\resources\chevron-right-dark.svg;nebula\ui\resources\close-dark.svg;nebula\ui\resources\spinner.svg;nebula\ui\resources\avatar-default.png;nebula\ui\resources\heart-check.svg;nebula\ui\resources\chevron-purple.svg;nebula\ui\resources\devicesLimit.svg;nebula\ui\resources\warning.svg;nebula\ui\resources\warning-orange.svg;nebula\ui\resources\logo-dock.png;nebula\ui\resources\delete.svg;nebula\ui\resources\shield-on.svg;nebula\ui\resources\chevron.svg;nebula\ui\resources\magic-purple.svg;nebula\ui\resources\switching.svg;nebula\ui\resources\search.svg;nebula\ui\resources\back-dark.svg;nebula\ui\resources\copy.svg;nebula\ui\resources\gift-dark.svg;nebula\ui\resources\magic-dark.svg;nebula\ui\resources\buttonLoader.svg;nebula\ui\resources\app-rating.svg;nebula\ui\resources\back.svg;nebula\ui\resources\location-dark.svg;nebula\ui\resources\logo.svg;nebula\ui\resources\arrow-forward.svg;nebula\ui\resources\arrow-toggle.svg;nebula\ui\resources\connection-info.svg;nebula\ui\resources\settings-white.svg;nebula\ui\resources\warning-white.svg;nebula\ui\resources\devices.svg;nebula\ui\resources\externalLink.svg;nebula\ui\resources\fonts\InterUI.otf;nebula\ui\resources\fonts\Metropolis-SemiBold.otf;nebula\ui\resources\fonts\Metropolis.otf;nebula\ui\resources\flags\AI.png;nebula\ui\resources\flags\MM.png;nebula\ui\resources\flags\PF.png;nebula\ui\resources\flags\KP.png;nebula\ui\resources\flags\BE.png;nebula\ui\resources\flags\NI.png;nebula\ui\resources\flags\IS.png;nebula\ui\resources\flags\ZM.png;nebula\ui\resources\flags\SZ.png;nebula\ui\resources\flags\CA.png;nebula\ui\resources\flags\JO.png;nebula\ui\resources\flags\AD.png;nebula\ui\resources\flags\MH.png;nebula\ui\resources\flags\HR.png;nebula\ui\resources\flags\TV.png;nebula\ui\resources\flags\PA.png;nebula\ui\resources\flags\IN.png;nebula\ui\resources\flags\GQ.png;nebula\ui\resources\flags\XK.png;nebula\ui\resources\flags\ET.png;nebula\ui\resources\flags\VN.png;nebula\ui\resources\flags\MC.png;nebula\ui\resources\flags\HM.png;nebula\ui\resources\flags\CW.png;nebula\ui\resources\flags\AZ.png;nebula\ui\resources\flags\UM.png;nebula\ui\resources\flags\PW.png;nebula\ui\resources\flags\LB.png;nebula\ui\resources\flags\GL.png;nebula\ui\resources\flags\BV.png;nebula\ui\resources\flags\NZ.png;nebula\ui\resources\flags\JE.png;nebula\ui\resources\flags\VI.png;nebula\ui\resources\flags\TL.png;nebula\ui\resources\flags\CR.png;nebula\ui\resources\flags\FK.png;nebula\ui\resources\flags\AU.png;nebula\ui\resources\flags\RO.png;nebula\ui\resources\flags\MY.png;nebula\ui\resources\flags\ID.png;nebula\ui\resources\flags\PR.png;nebula\ui\resources\flags\GG.png;nebula\ui\resources\flags\SK.png;nebula\ui\resources\flags\BQ.png;nebula\ui\resources\flags\NU.png;nebula\ui\resources\flags\CM.png;nebula\ui\resources\flags\TG.png;nebula\ui\resources\flags\MT.png;nebula\ui\resources\flags\PM.png;nebula\ui\resources\flags\KW.png;nebula\ui\resources\flags\GB.png;nebula\ui\resources\flags\BL.png;nebula\ui\resources\flags\NP.png;nebula\ui\resources\flags\EE.png;nebula\ui\resources\flags\LS.png;nebula\ui\resources\flags\CH.png;nebula\ui\resources\flags\RE.png;nebula\ui\resources\flags\MO.png;nebula\ui\resources\flags\PH.png;nebula\ui\resources\flags\KR.png;nebula\ui\resources\flags\BG.png;nebula\ui\resources\flags\SA.png;nebula\ui\resources\flags\UY.png;nebula\ui\resources\flags\CC.png;nebula\ui\resources\flags\VU.png;nebula\ui\resources\flags\AF.png;nebula\ui\resources\flags\HT.png;nebula\ui\resources\flags\KM.png;nebula\ui\resources\flags\BB.png;nebula\ui\resources\flags\NF.png;nebula\ui\resources\flags\DZ.png;nebula\ui\resources\flags\LI.png;nebula\ui\resources\flags\GS.png;nebula\ui\resources\flags\ME.png;nebula\ui\resources\flags\CY.png;nebula\ui\resources\flags\KH.png;nebula\ui\resources\flags\FR.png;nebula\ui\resources\flags\NA.png;nebula\ui\resources\flags\PY.png;nebula\ui\resources\flags\GN.png;nebula\ui\resources\flags\SR.png;nebula\ui\resources\flags\TN.png;nebula\ui\resources\flags\FM.png;nebula\ui\resources\flags\AW.png;nebula\ui\resources\flags\PT.png;nebula\ui\resources\flags\GI.png;nebula\ui\resources\flags\SM.png;nebula\ui\resources\flags\BS.png;nebula\ui\resources\flags\CO.png;nebula\ui\resources\flags\AR.png;nebula\ui\resources\flags\MV.png;nebula\ui\resources\flags\DK.png;nebula\ui\resources\flags\KY.png;nebula\ui\resources\flags\GD.png;nebula\ui\resources\flags\BN.png;nebula\ui\resources\flags\SH.png;nebula\ui\resources\flags\NR.png;nebula\ui\resources\flags\EG.png;nebula\ui\resources\flags\VA.png;nebula\ui\resources\flags\LU.png;nebula\ui\resources\flags\TD.png;nebula\ui\resources\flags\AM.png;nebula\ui\resources\flags\MQ.png;nebula\ui\resources\flags\BI.png;nebula\ui\resources\flags\SC.png;nebula\ui\resources\flags\ML.png;nebula\ui\resources\flags\TZ.png;nebula\ui\resources\flags\PE.png;nebula\ui\resources\flags\WS.png;nebula\ui\resources\flags\BD.png;nebula\ui\resources\flags\IR.png;nebula\ui\resources\flags\QA.png;nebula\ui\resources\flags\LK.png;nebula\ui\resources\flags\GU.png;nebula\ui\resources\flags\SY.png;nebula\ui\resources\flags\AC.png;nebula\ui\resources\flags\MG.png;nebula\ui\resources\flags\NC.png;nebula\ui\resources\flags\IM.png;nebula\ui\resources\flags\GP.png;nebula\ui\resources\flags\BZ.png;nebula\ui\resources\flags\ST.png;nebula\ui\resources\flags\ES.png;nebula\ui\resources\flags\CV.png;nebula\ui\resources\flags\KE.png;nebula\ui\resources\flags\FO.png;nebula\ui\resources\flags\RS.png;nebula\ui\resources\flags\LA.png;nebula\ui\resources\flags\SO.png;nebula\ui\resources\flags\TK.png;nebula\ui\resources\flags\FJ.png;nebula\ui\resources\flags\AT.png;nebula\ui\resources\flags\MX.png;nebula\ui\resources\flags\IC.png;nebula\ui\resources\flags\UG.png;nebula\ui\resources\flags\DM.png;nebula\ui\resources\flags\GF.png;nebula\ui\resources\flags\SJ.png;nebula\ui\resources\flags\VC.png;nebula\ui\resources\flags\CL.png;nebula\ui\resources\flags\TF.png;nebula\ui\resources\flags\AO.png;nebula\ui\resources\flags\MS.png;nebula\ui\resources\flags\PL.png;nebula\ui\resources\flags\GA.png;nebula\ui\resources\flags\SE.png;nebula\ui\resources\flags\NO.png;nebula\ui\resources\flags\LR.png;nebula\ui\resources\flags\CG.png;nebula\ui\resources\flags\TA.png;nebula\ui\resources\flags\MN.png;nebula\ui\resources\flags\PG.png;nebula\ui\resources\flags\BF.png;nebula\ui\resources\flags\IT.png;nebula\ui\resources\flags\GW.png;nebula\ui\resources\flags\JP.png;nebula\ui\resources\flags\AE.png;nebula\ui\resources\flags\TW.png;nebula\ui\resources\flags\BA.png;nebula\ui\resources\flags\NE.png;nebula\ui\resources\flags\IO.png;nebula\ui\resources\flags\US.png;nebula\ui\resources\flags\GR.png;nebula\ui\resources\flags\SV.png;nebula\ui\resources\flags\EU.png;nebula\ui\resources\flags\MD.png;nebula\ui\resources\flags\HN.png;nebula\ui\resources\flags\CX.png;nebula\ui\resources\flags\TR.png;nebula\ui\resources\flags\KG.png;nebula\ui\resources\flags\RU.png;nebula\ui\resources\flags\UN.png;nebula\ui\resources\flags\LC.png;nebula\ui\resources\flags\GM.png;nebula\ui\resources\flags\BW.png;nebula\ui\resources\flags\TM.png;nebula\ui\resources\flags\WF.png;nebula\ui\resources\flags\MZ.png;nebula\ui\resources\flags\IE.png;nebula\ui\resources\flags\DO.png;nebula\ui\resources\flags\PS.png;nebula\ui\resources\flags\GH.png;nebula\ui\resources\flags\BR.png;nebula\ui\resources\flags\SL.png;nebula\ui\resources\flags\VE.png;nebula\ui\resources\flags\LY.png;nebula\ui\resources\flags\TH.png;nebula\ui\resources\flags\CN.png;nebula\ui\resources\flags\AQ.png;nebula\ui\resources\flags\MU.png;nebula\ui\resources\flags\DJ.png;nebula\ui\resources\flags\PN.png;nebula\ui\resources\flags\SG.png;nebula\ui\resources\flags\BM.png;nebula\ui\resources\flags\LT.png;nebula\ui\resources\flags\CI.png;nebula\ui\resources\flags\TC.png;nebula\ui\resources\flags\OM.png;nebula\ui\resources\flags\AL.png;nebula\ui\resources\flags\MP.png;nebula\ui\resources\flags\YT.png;nebula\ui\resources\flags\DE.png;nebula\ui\resources\flags\BH.png;nebula\ui\resources\flags\SB.png;nebula\ui\resources\flags\NL.png;nebula\ui\resources\flags\UZ.png;nebula\ui\resources\flags\EA.png;nebula\ui\resources\flags\GY.png;nebula\ui\resources\flags\CD.png;nebula\ui\resources\flags\AG.png;nebula\ui\resources\flags\MK.png;nebula\ui\resources\flags\HU.png;nebula\ui\resources\flags\KN.png;nebula\ui\resources\flags\NG.png;nebula\ui\resources\flags\IQ.png;nebula\ui\resources\flags\GT.png;nebula\ui\resources\flags\SX.png;nebula\ui\resources\flags\JM.png;nebula\ui\resources\flags\MF.png;nebula\ui\resources\flags\CZ.png;nebula\ui\resources\flags\TT.png;nebula\ui\resources\flags\KI.png;nebula\ui\resources\flags\RW.png;nebula\ui\resources\flags\IL.png;nebula\ui\resources\flags\BY.png;nebula\ui\resources\flags\SS.png;nebula\ui\resources\flags\ER.png;nebula\ui\resources\flags\MA.png;nebula\ui\resources\flags\YE.png;nebula\ui\resources\flags\HK.png;nebula\ui\resources\flags\CU.png;nebula\ui\resources\flags\TO.png;nebula\ui\resources\flags\AX.png;nebula\ui\resources\flags\ZA.png;nebula\ui\resources\flags\BT.png;nebula\ui\resources\flags\SN.png;nebula\ui\resources\flags\VG.png;nebula\ui\resources\flags\TJ.png;nebula\ui\resources\flags\CP.png;nebula\ui\resources\flags\FI.png;nebula\ui\resources\flags\AS.png;nebula\ui\resources\flags\MW.png;nebula\ui\resources\flags\KZ.png;nebula\ui\resources\flags\GE.png;nebula\ui\resources\flags\SI.png;nebula\ui\resources\flags\BO.png;nebula\ui\resources\flags\ZW.png;nebula\ui\resources\flags\EH.png;nebula\ui\resources\flags\LV.png;nebula\ui\resources\flags\CK.png;nebula\ui\resources\flags\MR.png;nebula\ui\resources\flags\DG.png;nebula\ui\resources\flags\UA.png;nebula\ui\resources\flags\PK.png;nebula\ui\resources\flags\BJ.png;nebula\ui\resources\flags\SD.png;nebula\ui\resources\flags\EC.png;nebula\ui\resources\flags\CF.png;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name nebula_resources nebula\ui\nebula_resources.qrc -o release\qrc_nebula_resources.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">RCC nebula/ui/nebula_resources.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\qrc_nebula_resources.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="nebula\ui\resources\plus.svg" />
+    <None Include="nebula\ui\compat\qt5\qmldir" />
+    <None Include="nebula\ui\components\forms\qmldir" />
+    <None Include="nebula\ui\components\qmldir" />
+    <None Include="nebula\ui\themes\qmldir" />
+    <None Include="nebula\ui\resources\search.svg" />
+    <None Include="nebula\ui\resources\settings-white.svg" />
+    <None Include="nebula\ui\resources\settings.svg" />
+    <None Include="nebula\ui\resources\shield-off.svg" />
+    <None Include="nebula\ui\resources\shield-on.svg" />
+    <None Include="nebula\ui\resources\spinner.svg" />
+    <None Include="nebula\ui\resources\switching.svg" />
+    <None Include="nebula\ui\themes\themes.js" />
+    <CustomBuild Include="nebula\ui\themes.qrc">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">nebula\ui\themes.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;nebula\ui\themes\colors.js;nebula\ui\themes\themes.js;nebula\ui\themes\qmldir;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name themes nebula\ui\themes.qrc -o debug\qrc_themes.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">RCC nebula/ui/themes.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\qrc_themes.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">nebula\ui\themes.qrc;C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe;nebula\ui\themes\colors.js;nebula\ui\themes\themes.js;nebula\ui\themes\qmldir;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">C:\Qt\5.15.2\msvc2015_64\bin\rcc.exe -name themes nebula\ui\themes.qrc -o release\qrc_themes.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">RCC nebula/ui/themes.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\qrc_themes.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="nebula\ui\resources\update-lock.svg" />
+    <None Include="nebula\ui\resources\warning-dark-orange.svg" />
+    <None Include="nebula\ui\resources\warning-orange.svg" />
+    <None Include="nebula\ui\resources\warning-white.svg" />
+    <None Include="nebula\ui\resources\warning.svg" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

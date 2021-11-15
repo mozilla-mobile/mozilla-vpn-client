@@ -121,18 +121,55 @@ python scripts\generate_glean.py
 
 ECHO BUILD_BUILD = %DEBUG_BUILD%
 
+ECHO Compiling Glean...
+pushd glean
 IF %DEBUG_BUILD%==T (
-ECHO Generating Debug Build
-qmake -tp vc extension\app\app.pro CONFIG+=debug 
+  qmake -tp vc glean.pro CONFIG+=debug
 )
 IF %DEBUG_BUILD%==F (
-ECHO Generating Release Build
-qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+  qmake -tp vc glean.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
 )
 
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO qmake failed for the glean!
+  EXIT 1
+)
+
+MSBuild -t:Build -p:Configuration=%BUILD_CONF% glean.vcxproj
+popd
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Glean build failed!
+  EXIT 1
+)
+
+ECHO Compiling Nebula...
+pushd nebula
+IF %DEBUG_BUILD%==T (
+  qmake -tp vc nebula.pro CONFIG+=debug
+)
+IF %DEBUG_BUILD%==F (
+  qmake -tp vc nebula.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+)
 
 IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to configure the project
+  ECHO qmake failed for the nebula!
+  EXIT 1
+)
+
+MSBuild -t:Build -p:Configuration=%BUILD_CONF% nebula.vcxproj
+popd
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Nebula build failed!
+  EXIT 1
+)
+
+IF %DEBUG_BUILD%==F (
+ECHO Generating Release Build
+  qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+)
+
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO qmake failed for the extension!
   EXIT 1
 )
 
@@ -140,8 +177,6 @@ IF NOT EXIST mozillavpnnp.vcxproj (
   echo The VC project doesn't exist. Why?
   EXIT 1
 )
-
-
 
 IF NOT EXIST .\3rdparty\crashpad\win64\release\include\client\crashpad_client.h (
   ECHO Fetching crashpad...
