@@ -13,6 +13,12 @@ DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
 
 override_dh_auto_configure:
 	python3 scripts/importLanguages.py
+    cd glean
+    qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+    cd ..
+    cd nebula
+    qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+    cd ..
 	qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release QT+=svg BUILD_ID=$(DEB_VERSION) CONFIG+=webextension
 
 override_dh_installdocs:
