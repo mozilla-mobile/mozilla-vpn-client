@@ -43,9 +43,10 @@ void ReleaseMonitor::runInternal() {
           &ReleaseMonitor::updateRequiredOrRecommended);
   connect(updater, &Updater::updateRecommended, this,
           &ReleaseMonitor::updateRequiredOrRecommended);
-  connect(updater, &Updater::updateNotAvailable, this,
-          &ReleaseMonitor::updateNotAvailable);
-  connect(updater, &QObject::destroyed, [this]() {
+  connect(updater, &QObject::destroyed, [this, updater]() {
+    if (!updater->recommendedOrRequired()) {
+      emit updateNotAvailable();
+    }
     emit releaseChecked();
   });
   connect(updater, &QObject::destroyed, this, &ReleaseMonitor::schedule);

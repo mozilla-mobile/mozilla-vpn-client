@@ -300,8 +300,6 @@ bool Balrog::processData(const QByteArray& data) {
               // will be aborted, but the signal emitted.
               if (request->statusCode() == 200) {
                 emit updateRecommended();
-              } else {
-                emit updateNotAvailable();
               }
 
               logger.warning()

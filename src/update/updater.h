@@ -19,13 +19,17 @@ class Updater : public QObject {
 
   virtual void start() = 0;
 
+  bool recommendedOrRequired() const { return m_recommendedOrRequired; }
+
  signals:
   void updateRequired();
   void updateRecommended();
-  void updateNotAvailable();
 
  protected:
   static QString appVersion();
+
+ private:
+  bool m_recommendedOrRequired = false;
 };
 
 #endif  // UPDATER_H

@@ -194,13 +194,13 @@ Item {
                 id: updateButtonImageAnimation
                 running: false
                 PropertyAnimation {
-                               target: updateButtonImage
-                               property: "rotation"
-                               from: 0
-                               to: 360
-                               duration: 2000
-                               loops: Animation.Infinite
-                           }
+                    target: updateButtonImage
+                    property: "rotation"
+                    from: 0
+                    to: 360
+                    duration: 2000
+                    loops: Animation.Infinite
+                }
             }
         }
     }
