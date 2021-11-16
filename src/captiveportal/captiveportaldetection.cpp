@@ -137,6 +137,7 @@ void CaptivePortalDetection::captivePortalDetected() {
   if (!m_active) {
     return;
   }
+  emit captivePortalPresent();
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);

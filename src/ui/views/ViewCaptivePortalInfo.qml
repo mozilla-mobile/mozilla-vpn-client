@@ -13,7 +13,34 @@ VPNFlickable {
     id: vpnFlickable
 
     flickContentHeight: vpnPanel.height + alertWrapperBackground.height + footerContent.height + (Theme.windowMargin * 4)
-    state: "required"
+    state: (VPNController.state == VPNController.StateOff)? "pre-activation" : "post-activation"
+
+    states: [
+        State {
+            name: "pre-activation"
+            PropertyChanges { 
+                target: subTextBlock; 
+                text: VPNl18n.CaptivePortalAlertPreActivation
+            }
+            PropertyChanges{
+                target:openPortalButton
+                text: VPNl18n.CaptivePortalAlertButtonTextPreActivation
+            }
+        },
+        State {
+            name: "post-activation"
+            PropertyChanges { 
+                target: subTextBlock; 
+                text: VPNl18n.CaptivePortalAlertPostActivation
+            }
+            PropertyChanges{
+                target:openPortalButton
+                text: VPNl18n.CaptivePortalAlertButtonTextPostActivation
+            }
+        }
+    ]
+
+
 
     Item {
         id: spacer1
@@ -52,7 +79,7 @@ VPNFlickable {
         color: Theme.fontColor
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignHCenter
-        text: VPNl18n.CaptivePortalAlertAction
+        text: VPNl18n.CaptivePortalAlertPreActivation
     }
 
 
@@ -73,11 +100,20 @@ VPNFlickable {
         VPNButton {
             id: openPortalButton
             objectName: "openCaptivePortalButton"
-            text: VPNl18n.CaptivePortalAlertButtonText
+            text: VPNl18n.CaptivePortalAlertPreActivation
             radius: 4
             onClicked: {
-                VPN.openLink(VPN.LinkCaptivePortal);
-                stackview.pop();
+                if(state === "pre-activation"){
+                    VPN.openLink(VPN.LinkCaptivePortal);
+                    stackview.pop();
+                    return;
+                }
+                if(state === "post-activation"){
+                    VPN.deactivate();
+                    stackview.pop();
+                    return;
+                }
+                
             }
         }
 

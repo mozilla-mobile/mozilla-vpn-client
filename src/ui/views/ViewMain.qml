@@ -48,6 +48,14 @@ VPNFlickable {
         stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
        }
     }
+    Connections{
+        target: VPNCaptivePortal
+        onCaptivePortalPresent:{
+            if(VPNController.state == VPNController.StateOn){
+                stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
+            }
+        }
+    }
 
     MouseArea {
         anchors.fill: parent

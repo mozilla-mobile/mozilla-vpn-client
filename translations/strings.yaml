@@ -243,8 +243,11 @@ networkSettings:
 captivePortalAlert:
   title: Captive portal detected!
   header: A captive portal is when the guest Wi-Fi you are using requires you to log in to get internet access. 
-  action: You can turn on your VPN once you have gained internet access by logging in to the portal. 
-  buttonText: Okay
+  actionPreActivation: You can turn on your VPN once you have gained internet access by logging in to the portal. 
+  actionPostActivation: You must turn off your VPN in order to see the portal, and turn it back on once you have logged in. 
+  buttonTextPreActivation: Okay
+  buttonTextPostActivation: Turn off VPN
+  
 
 notifications:
   captivePortalBlockTitle: Guest Wi-Fi portal blocked
