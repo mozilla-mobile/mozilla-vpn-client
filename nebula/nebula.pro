@@ -29,9 +29,4 @@ versionAtLeast(QT_VERSION, 6.0.0) {
     RESOURCES += ui/compatQt5.qrc
 }
 
-# Default rules for deployment.
-unix {
-    target.path = $$[QT_INSTALL_PLUGINS]/generic
-}
-!isEmpty(target.path): INSTALLS += target
 
