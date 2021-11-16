@@ -26,7 +26,6 @@ class TestHelper final : public QObject {
     return &m_private->m_closeEventHandler;
   }
   WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
-  SettingsHolder* settingsHolder() { return &m_private->m_settings; }
 
   Q_INVOKABLE void triggerInitializeGlean();
   Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags);
@@ -35,7 +34,6 @@ class TestHelper final : public QObject {
   TestHelper();
   struct Private {
     CloseEventHandler m_closeEventHandler;
-    SettingsHolder m_settings;
     WhatsNewModel m_whatsNewModel;
   };
   Private* m_private = nullptr;

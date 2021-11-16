@@ -15,12 +15,14 @@
 class Setup : public QObject {
   Q_OBJECT
 
+ private:
+  SettingsHolder settingsHolder;
+
  public:
   Setup() {}
 
  public slots:
   void qmlEngineAvailable(QQmlEngine* engine) {
-    SettingsHolder settingsHolder;
     FeatureList::instance()->initialize();
 
     engine->addImportPath("qrc:///compat");
@@ -46,8 +48,8 @@ class Setup : public QObject {
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNSettings",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = TestHelper::instance()->settingsHolder();
+        [this](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = &this->settingsHolder;
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
