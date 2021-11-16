@@ -29,7 +29,7 @@ class TestHelper final : public QObject {
   SettingsHolder* settingsHolder() { return &m_private->m_settings; }
 
   Q_INVOKABLE void triggerInitializeGlean();
-  Q_INVOKABLE void setGleanSourceTags(const QStringList& tags);
+  Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags);
 
  private:
   TestHelper();

@@ -19,7 +19,8 @@ Item {
     }
 
     TestCase {
-        name: "BeforeInit"
+        name: "MainTests"
+        when: windowShown
 
         function initTestCase() {
             function mockGleanInitialize(applicationId, uploadEnabled, config) {
@@ -39,11 +40,6 @@ Item {
             }
             Glean.shutdown = mockGleanShutdown;
         }
-    }
-
-    TestCase {
-        name: "MainTests"
-        when: windowShown
 
         // Demo test for something simpler than the glean tests
         function test_isWasmApp() {

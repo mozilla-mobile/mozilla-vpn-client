@@ -12,6 +12,6 @@ void TestHelper::triggerInitializeGlean() {
   emit MozillaVPN::instance()->initializeGlean();
 }
 
-void TestHelper::setGleanSourceTags(const QStringList& tags) {
+void TestHelper::triggerSetGleanSourceTags(const QStringList& tags) {
   emit MozillaVPN::instance()->setGleanSourceTags(tags);
 }
