@@ -117,7 +117,7 @@ jobs:
             "MozillaVPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
-            macos "0" "1"
+            macos
 
       - name: Compiling
         shell: bash
@@ -235,7 +235,7 @@ jobs:
             "MozillaVPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
-            macos "0" "1"
+            macos
 
       - name: Compiling
         shell: bash
