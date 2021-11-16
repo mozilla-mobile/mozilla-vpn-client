@@ -31,7 +31,7 @@ Item {
     }
 
     function fxaBrowserLink() {
-        VPN.openLink(VPN.LinkContact);
+        VPN.openLink(VPN.LinkHelpSupport);
         contactUsRoot.tryAgain();
     }
 
@@ -68,7 +68,7 @@ Item {
                         primaryButtonObjectName: "errorTryAgainButton",
                         secondaryButtonIsSignOff: false,
                         secondaryButtonText: VPNl18n.InAppSupportWorkflowFxALinkText,
-                        secondaryButtonObjctName: "errorFxALinkButton",
+                        secondaryButtonObjectName: "errorFxALinkButton",
                         secondaryButtonOnClick: contactUsRoot.fxaBrowserLink
                         }
                     );

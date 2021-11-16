@@ -22,7 +22,7 @@ VPNFlickable {
     property var primaryButtonOnClick
 
     property var secondaryButtonText: ""
-    property var secondaryButtonObjctName
+    property var secondaryButtonObjectName
     property var secondaryButtonOnClick
     property var secondaryButtonIsSignOff: false
 
@@ -144,7 +144,7 @@ VPNFlickable {
             VPNFooterLink {
                 id: secondaryButton
 
-                objectName: secondaryButtonObjctName
+                objectName: secondaryButtonObjectName
                 labelText: secondaryButtonText
                 visible: secondaryButtonText != "" && !secondaryButtonIsSignOff
                 Layout.preferredHeight: Theme.rowHeight
