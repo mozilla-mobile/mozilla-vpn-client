@@ -67,6 +67,14 @@ class Setup : public QObject {
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
+
+    qmlRegisterSingletonType<TestHelper>(
+        "TestHelper", 1, 0, "TestHelper",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = TestHelper::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
   }
 };
 
