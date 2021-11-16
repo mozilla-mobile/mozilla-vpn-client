@@ -28,8 +28,8 @@ class TestHelper final : public QObject {
   WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
   SettingsHolder* settingsHolder() { return &m_private->m_settings; }
 
-  void triggerInitializeGlean();
-  void setGleanSourceTags(const QStringList& tags);
+  Q_INVOKABLE void triggerInitializeGlean();
+  Q_INVOKABLE void setGleanSourceTags(const QStringList& tags);
 
  private:
   TestHelper();

@@ -58,7 +58,8 @@ Item {
         }
 
         function test_onSetGleanSourceTagsPassesTagsToGlean() {
-            compare(true, false)
+            TestHelper.setGleanSourceTags("tag1,tag2")
+            compare(testItem.tags, "tag1")
         }
 
         function test_onSendGleanPingsSubmitsPings() {
@@ -70,7 +71,6 @@ Item {
         }
 
         function test_onAboutToQuitCallsGleanShutdown() {
-            VPN.trigger
             compare(true, false)
         }
 
