@@ -267,7 +267,8 @@ systray:
 
 settings:
   systemPreferences: System preferences
-  startAtBootDescription: Mozilla VPN will launch when you open the app
+  startAtBootTitle: Connect VPN on startup
+  startAtBootSubtitle: Mozilla VPN will launch and connect when you start up your device
 
 aboutUs:
   licenses: Licenses

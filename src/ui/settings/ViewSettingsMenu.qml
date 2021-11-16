@@ -104,8 +104,6 @@ VPNFlickable {
                                               })
         }
         VPNSettingsItem {
-            //% "Launch VPN app on startup"
-            property string startAtBootTitle: qsTrId("vpn.settings.runOnBoot2")
 
             id: preferencesSetting
             objectName: "settingsPreferences"
@@ -113,7 +111,7 @@ VPNFlickable {
             imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
             imageRightSrc: "qrc:/ui/resources/chevron.svg"
             onClicked: settingsStackView.push("qrc:/ui/settings/ViewPrivacySecurity.qml", {
-                                                _startAtBootTitle: Qt.binding(() => startAtBootTitle),
+                                                _startAtBootTitle: Qt.binding(() => VPNl18n.SettingsStartAtBootTitle),
                                                 _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
                                                 _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
                                                 _menuTitle: Qt.binding(() => preferencesSetting.settingTitle)
