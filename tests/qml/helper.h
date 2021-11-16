@@ -2,41 +2,33 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef HELPER_H
-#define HELPER_H
+#ifndef TESTHELPER_H
+#define TESTHELPER_H
 
 #include "../../src/closeeventhandler.h"
 #include "../../src/models/whatsnewmodel.h"
-#include "../../src/settingsholder.h"
 
 #include <QObject>
-#include <QVector>
-#include <QtTest/QtTest>
+#include <QQmlEngine>
+#include <QtQuickTest>
 
 class TestHelper final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(TestHelper)
 
  public:
-  ~TestHelper() = default;
-  static TestHelper* instance();
-
- public:
-  CloseEventHandler* closeEventHandler() {
-    return &m_private->m_closeEventHandler;
-  }
-  WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
-
+  TestHelper();
   Q_INVOKABLE void triggerInitializeGlean();
   Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags);
+  CloseEventHandler closeEventHandler;
+  WhatsNewModel* whatsNewModel() { return m_whatsNewModel; }
+
+ public slots:
+  // For info on the slots we can use
+  // https://doc.qt.io/qt-5/qtquicktest-index.html#executing-c-before-qml-tests
+  void qmlEngineAvailable(QQmlEngine* engine);
 
  private:
-  TestHelper();
-  struct Private {
-    CloseEventHandler m_closeEventHandler;
-    WhatsNewModel m_whatsNewModel;
-  };
-  Private* m_private = nullptr;
+  WhatsNewModel* m_whatsNewModel = nullptr;
 };
 
-#endif  // HELPER_H
+#endif  // TESTHELPER_H

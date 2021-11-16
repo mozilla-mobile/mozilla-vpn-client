@@ -27,7 +27,7 @@ RESOURCES += \
     $$PWD/../../src/ui/ui.qrc \
 
 INCLUDEPATH += \
-            . \   
+            . \
             ../../src \
             ../../translations/generated \
 
