@@ -152,7 +152,8 @@ class XCodeprojPatcher
       frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
 
       framework_ref = frameworks_group.new_file('AdServices.framework')
-      frameworks_build_phase.add_file_reference(framework_ref)
+      build_file = frameworks_build_phase.add_file_reference(framework_ref)
+      build_file.settings = { 'ATTRIBUTES' => ['Weak'] }
 
       framework_ref = frameworks_group.new_file('iAd.framework')
       frameworks_build_phase.add_file_reference(framework_ref)

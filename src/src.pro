@@ -93,8 +93,6 @@ SOURCES += \
         hawkauth.cpp \
         hkdf.cpp \
         iaphandler.cpp \
-        inspector/inspectorhttpconnection.cpp \
-        inspector/inspectorhttpserver.cpp \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
@@ -226,8 +224,6 @@ HEADERS += \
         hawkauth.h \
         hkdf.h \
         iaphandler.h \
-        inspector/inspectorhttpconnection.h \
-        inspector/inspectorhttpserver.h \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
@@ -318,7 +314,6 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += inspector/inspector.qrc
 RESOURCES += ui/components.qrc
 RESOURCES += ui/license.qrc
 RESOURCES += ui/resources.qrc
@@ -334,6 +329,11 @@ versionAtLeast(QT_VERSION, 6.0.0) {
 }
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
+    !wasm {
+        message(Include QSQlite plugin)
+        QTPLUGIN += qsqlite
+    }
+
     RESOURCES += $$PWD/../glean/glean.qrc
 } else {
     error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)

@@ -918,12 +918,15 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
   switch (error) {
     case ErrorHandler::VPNDependentConnectionError:
-      // This type of error might be caused by switching the VPN
-      // on, in which case it's okay to be ignored.
-      // In Case the vpn is not connected - handle this like a
-      // ConnectionFailureError
-      if (controller()->state() == Controller::StateOn) {
+      if (controller()->state() == Controller::State::StateOn ||
+          controller()->state() == Controller::State::StateConfirming) {
+        // connection likely isn't stable yet
         logger.error() << "Ignore network error probably caused by enabled VPN";
+        return;
+      } else if (controller()->state() == Controller::State::StateOff) {
+        // We are off, so this means a request failed, not the
+        // VPN. Change it to No Connection
+        alert = NoConnectionAlert;
         break;
       }
       [[fallthrough]];
@@ -1219,7 +1222,12 @@ bool MozillaVPN::viewLogs() {
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
   bool ok = true;
-  serializeLogs(out, [buffer, out, &ok]() {
+  serializeLogs(out, [buffer, out
+#  if defined(MVPN_ANDROID)
+                      ,
+                      &ok
+#  endif
+  ]() {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 

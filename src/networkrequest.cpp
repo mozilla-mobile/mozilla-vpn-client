@@ -57,6 +57,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
     // Global Privacy Control: https://globalprivacycontrol.github.io/gpc-spec/
     m_request.setRawHeader("Sec-GPC", "1");
   }
+  m_request.setOriginatingObject(parent);
 
   if (setAuthorizationHeader) {
     QByteArray authorizationHeader = "Bearer ";
@@ -316,7 +317,9 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
 
   r->m_request.setUrl(url);
   r->m_request.setRawHeader("Host", host);
-
+  // This enables the QNetworkReply::redirected for every type of redirect.
+  r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                            QNetworkRequest::UserVerifiedRedirectPolicy);
   r->getRequest();
   return r;
 }

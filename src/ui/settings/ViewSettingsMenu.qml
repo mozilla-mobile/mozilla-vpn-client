@@ -10,8 +10,8 @@ import Mozilla.VPN 1.0
 import components 0.1
 import themes 0.1
 
-import org.mozilla.Glean 0.23
-import telemetry 0.23
+import org.mozilla.Glean 0.24
+import telemetry 0.24
 
 VPNFlickable {
     id: vpnFlickable
@@ -109,7 +109,7 @@ VPNFlickable {
 
             id: preferencesSetting
             objectName: "settingsPreferences"
-            settingTitle: VPNl18n.SettingsPreferences
+            settingTitle: VPNl18n.SettingsSystemPreferences
             imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
             imageRightSrc: "qrc:/ui/resources/chevron.svg"
             onClicked: settingsStackView.push("qrc:/ui/settings/ViewPrivacySecurity.qml", {
