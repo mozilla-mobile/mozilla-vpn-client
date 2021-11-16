@@ -2,11 +2,18 @@
 
 * See the github workflow for steps to build, not much to it, just make sure you have the right qmake call.
 * You don't need to rerun `make` inbetween changes to `tst_*.qml` files.
-* It can be a struggle to get the thing you want to import imported. Don't struggle alone, ask for help. Hopefully it's
-  just figuring out the right combination of:
+* I needed to make a property alias at a top level object to reference more nested things in the
+ tests. There may be a better way where we're not cluttering up production code because of
+ testing needs.
+
+It can be a struggle to get the thing you want to import imported.
+Don't struggle alone, ask for help.
+Hopefully it's just figuring out the right combination of:
   * the .qrc files under `/src/ui`
   * the `qmldir`s
   * the RESOURCSE in `qml.pro`
   * the engine imports in `main.cpp`
-* I have made property aliases at top level of objects to reference more nested things in the tests. There may be a
-  better way where we're not cluttering up production code because of testing needs. If so, let me know / make a PR.
+
+Use `export QML_IMPORT_TRACE=1` before running your tests to get extra helpful informaiton.
+
+As an example, under `/src/ui` there is a `ui.qrc`. That file lists the prefix as `ui` and points to a qmldir file `src/ui/qmldir`. The qmldir file lists `Main` and points to `src/ui/main.qml`. In `qml.pro` I have `...src/ui.qrc` as a `RESOURCE`; in `main.cpp` I import `engine->addImportPath("qrc:///");` because that pulls in the qmldir `src/ui/qmldir`. Lastly I can then do `import ui 0.1` in my `test_mainWindow.qml` and I can make a `Main` window.
