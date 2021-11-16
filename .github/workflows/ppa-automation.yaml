@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - 'releases/**'
+    tags:
+      - 'v[0-9]+.[0-9a-z]+.[0-9a-z]+'
   schedule:
     - cron: '0 5 * * *'
 
@@ -26,6 +28,9 @@ jobs:
           if [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
             BUILDREV="~rc$(git rev-list --count --first-parent origin/main..HEAD)"
             VERSION=$(echo $GITREF | cut -d'/' -f4)
+          elif [[ "$GITREF" =~ ^refs/tags/v([0-9a-z.]+) ]]; then
+            BUILDREV=""
+            VERSION=${BASH_REMATCH[1]}
           else
             BUILDREV="~nightly$(date +%Y%m%d)-${{github.run_number}}"
             VERSION=$(grep ':VERSION' version.pri | cut -d= -f2 | tr -d '[:space:]')
@@ -67,7 +72,7 @@ jobs:
 
       - name: Push to Launchpad Testing PPA
         shell: bash
-        if: startsWith(github.ref, 'refs/heads/releases/')
+        if: ${{ startsWith(github.ref, 'refs/heads/releases/') || startsWith(github.ref, 'refs/tags/v') }}
         env:
           PPA_URL: ppa:okirby/mozilla-vpn-testing
           GNUPGHOME: ${{ runner.temp }}/gnupg-data
@@ -76,7 +81,7 @@ jobs:
             (cd $dist && ln -s ../mozillavpn_*.orig.tar.gz)
             dput $PPA_URL $dist/mozillavpn_*_source.changes
           done
-      
+
       - name: Push to Launchpad Nightly PPA
         shell: bash
         if: ${{ steps.gen-version.outputs.nightly-changes == 'true' }}
