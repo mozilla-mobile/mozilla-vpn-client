@@ -72,7 +72,10 @@ void MozillaVPN::changeServer(const QString&, const QString&, const QString&,
 
 void MozillaVPN::postAuthenticationCompleted() {}
 
-void MozillaVPN::mainWindowLoaded() {}
+void MozillaVPN::mainWindowLoaded() {
+  // TODO - Do we need to keep this?
+  emit initializeGlean();
+}
 
 void MozillaVPN::telemetryPolicyCompleted() {}
 

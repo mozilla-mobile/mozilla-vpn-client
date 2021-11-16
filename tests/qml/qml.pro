@@ -6,7 +6,9 @@ TARGET = qml_tests
 
 QT += quick
 
-CONFIG += warn_on qmltestcase
+CONFIG += warn_on qmltestcase 
+# See if we can make console ouptut appear for debugging
+CONFIG += declarative_debug qml_debug console
 
 # Allows us to be a supported platform
 DEFINES += UNIT_TEST
