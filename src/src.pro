@@ -383,7 +383,7 @@ else:linux:!android {
         LIBS += -L$$clean_path($$PWD/../glean/debug) -lglean
     }
     CONFIG(release, debug|release) {
-        LIBS += --L$$clean_path($$PWD/../nebula/release) -lnebula
+        LIBS += -L$$clean_path($$PWD/../nebula/release) -lnebula
         LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
 
     }
