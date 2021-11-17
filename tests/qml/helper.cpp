@@ -11,17 +11,6 @@ TestHelper::TestHelper() {
   m_whatsNewModel = new WhatsNewModel();
 }
 
-TestHelper* TestHelper::instance() {
-  static TestHelper* s_instance = new TestHelper();
-  return s_instance;
-}
-
-bool TestHelper::stagingMode() { return m_stagingMode; }
-
-void TestHelper::setStagingMode(bool stagingMode) {
-  m_stagingMode = stagingMode;
-}
-
 void TestHelper::triggerInitializeGlean() {
   emit MozillaVPN::instance()->initializeGlean();
 }
