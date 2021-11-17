@@ -353,7 +353,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   if (type == "connected") {
     QString pubkey = obj.value("pubkey").toString();
     logger.debug() << "Handshake completed with:" << pubkey;
-  
+
     if (m_activationQueue.isEmpty()) {
       return;
     }
@@ -367,8 +367,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
     m_activationQueue.removeFirst();
     if (m_activationQueue.isEmpty()) {
       emit connected();
-    }
-    else {
+    } else {
       activateNext();
     }
     return;
