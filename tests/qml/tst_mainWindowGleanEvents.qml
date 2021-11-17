@@ -3,11 +3,12 @@ import QtTest 1.0
 
 import TestHelper 1.0
 import org.mozilla.Glean 0.24
+import telemetry 0.24
 import ui 0.1
 
 Item {
     Main {
-        id: mainTestGlean
+        id: mainTest
     }
     
     TestCase {
@@ -44,21 +45,33 @@ Item {
                 `Timed out while waiting for promise to fulfill.`
             );
 
-            return {
-                resolved: promiseResolved,
-                data: promiseData
-            }
+            return promiseData;
         }
 
         function test_onRecordGleanEventRecordsAppropriateSample() {
-            TestHelper.triggerRecordGleanEvent("authenticationAborted")
-            const { data: authenticationAbortedData } = awaitOn(Sample.authenticationAborted.testGetValue());
-            compare(authenticationAbortedData, "some data")
+            awaitOn(Glean.testResetGlean("mozillavpn", true));
+            TestHelper.triggerRecordGleanEvent("authenticationAborted");
+            const authenticationAbortedData = awaitOn(Sample.authenticationAborted.testGetValue());
+            compare(authenticationAbortedData.length, 1);
+            compare(authenticationAbortedData[0]["category"], "sample");
+            compare(authenticationAbortedData[0]["name"], "authentication_aborted");
         }
-        /*
+
         function test_onSendGleanPingsSubmitsPings() {
-            compare(true, false)
+            awaitOn(Glean.testResetGlean("mozillavpn", true));
+            // First we have no events
+            let authenticationAbortedData = awaitOn(Sample.authenticationAborted.testGetValue());
+            compare(authenticationAbortedData, undefined);
+
+            // Then we have one event
+            TestHelper.triggerRecordGleanEvent("authenticationAborted");
+            authenticationAbortedData = awaitOn(Sample.authenticationAborted.testGetValue());
+            compare(authenticationAbortedData.length, 1);
+            
+            // Then we send the ping which should result in us having no events again
+            TestHelper.triggerSendGleanPings();
+            authenticationAbortedData = awaitOn(Sample.authenticationAborted.testGetValue());
+            compare(authenticationAbortedData, undefined);
         }
-        */
     }
 }

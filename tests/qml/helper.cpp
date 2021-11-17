@@ -35,6 +35,10 @@ void TestHelper::triggerRecordGleanEvent(const QString& event) {
   emit MozillaVPN::instance()->recordGleanEvent(event);
 }
 
+void TestHelper::triggerSendGleanPings() {
+  emit MozillaVPN::instance()->sendGleanPings();
+}
+
 void TestHelper::triggerSetGleanSourceTags(const QStringList& tags) {
   emit MozillaVPN::instance()->setGleanSourceTags(tags);
 }

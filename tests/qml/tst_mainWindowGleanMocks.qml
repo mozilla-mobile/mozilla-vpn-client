@@ -8,11 +8,11 @@ import ui 0.1
 
 Item {
     Main {
-        id: mainTestGlean
+        id: mainTest
     }
 
     TestCase {
-        name: "MainTestsGlean"
+        name: "MainTestsGleanMocks"
 
         property var spyApplicationId
         property var spyUploadEnabledInitialize
@@ -28,7 +28,6 @@ Item {
                 spyApplicationId = applicationId
                 spyUploadEnabledInitialize = uploadEnabled
                 spyConfig = config
-                console.log("FUDGE")
             }
             Glean.initialize = mockGleanInitialize;
             function mockGleanSetSourceTags(tags) {

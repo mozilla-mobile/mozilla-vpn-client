@@ -21,6 +21,7 @@ class TestHelper final : public QObject {
   Q_INVOKABLE void triggerAboutToQuit();
   Q_INVOKABLE void triggerInitializeGlean();
   Q_INVOKABLE void triggerRecordGleanEvent(const QString& event);
+  Q_INVOKABLE void triggerSendGleanPings();
   Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags);
   Q_INVOKABLE QString osVersion();
   Q_INVOKABLE QString architecture();
