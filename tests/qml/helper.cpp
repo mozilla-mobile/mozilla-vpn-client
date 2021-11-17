@@ -19,6 +19,20 @@ void TestHelper::triggerSetGleanSourceTags(const QStringList& tags) {
   emit MozillaVPN::instance()->setGleanSourceTags(tags);
 }
 
+void TestHelper::triggerAboutToQuit() {
+  emit MozillaVPN::instance()->aboutToQuit();
+}
+
+// The next two functions duplicate mozillavpn.h logic, but I'm not
+// sure how else to generate an "expected" value for tst_mainWindowGlean.qml
+// as it needs to be dynamic based on the platform people are running tests on.
+// At the least this should fail give someone pause for thought if they change
+// the mozillavpn.h logic.
+QString TestHelper::osVersion() { return QSysInfo::productVersion(); }
+QString TestHelper::architecture() {
+  return QSysInfo::currentCpuArchitecture();
+}
+
 void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
   engine->addImportPath("qrc:///compat");
   engine->addImportPath("qrc:///components");

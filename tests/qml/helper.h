@@ -17,8 +17,12 @@ class TestHelper final : public QObject {
 
  public:
   TestHelper();
+  Q_INVOKABLE void triggerAboutToQuit();
   Q_INVOKABLE void triggerInitializeGlean();
   Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags);
+  Q_INVOKABLE QString osVersion();
+  Q_INVOKABLE QString architecture();
+
   CloseEventHandler closeEventHandler;
   WhatsNewModel* whatsNewModel() { return m_whatsNewModel; }
 
