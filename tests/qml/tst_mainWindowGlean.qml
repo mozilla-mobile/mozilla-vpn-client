@@ -38,19 +38,21 @@ Item {
             }
             Glean.shutdown = mockGleanShutdown;
         }
-
+        /*
         function test_onCompletedCallsMainWindowLoaded() {
             // TODO: Need a companion test, that:
             // a) mainWindowLoaded calls initializeGlean
             // b) sets up a timer
             compare(true, false)
         }
+        */
 
         function test_onSetGleanSourceTagsPassesTagsToGlean() {
             TestHelper.triggerSetGleanSourceTags("tag1,tag2")
-            compare(spyTags, "tag1")
+            compare(spyTags.toString(), "tag1,tag2")
         }
 
+        /*
         function test_onSendGleanPingsSubmitsPings() {
             compare(true, false)
         }
@@ -67,17 +69,34 @@ Item {
             compare(true, false)
         }
 
-        function test_onInitializeGleanSetsChannelBasedOnStagingMode() {
-            compare(true, false)
-        }
-
-        function test_onInitializeGleanCallsInitializeWithCoreSettings() {
-            compare(spyApplicationId, "mzillavpn");
-        }
-
         function test_onGleanEnabledChangedCallsGleanSetUploadEnabledCorrectly() {
             compare(true, false)
         }
+        */
 
+        function test_onInitializeGleanSetsChannelBasedOnStagingMode() {
+            VPN.stagingMode = true;
+            TestHelper.triggerInitializeGlean()
+            compare(spyConfig.channel, "staging")
+
+            VPN.stagingMode = false;
+            TestHelper.triggerInitializeGlean()
+            compare(spyConfig.channel, "production")
+        }
+
+        function test_onInitializeGleanCallsUploadEnabledBasedOnVPNSettings() {
+            VPNSettings.gleanEnabled = false;
+            TestHelper.triggerInitializeGlean()
+            compare(spyUploadEnabled, false)
+
+            VPNSettings.gleanEnabled = true;
+            TestHelper.triggerInitializeGlean()
+            compare(spyUploadEnabled, true)
+        }
+
+        function test_onInitializeGleanCallsInitializeWithCoreSettings() {
+            TestHelper.triggerInitializeGlean()
+            compare(spyApplicationId, "mozillavpn")
+        }
     }
 }
