@@ -5,8 +5,8 @@
 #ifndef TESTHELPER_H
 #define TESTHELPER_H
 
-#include "../../src/closeeventhandler.h"
-#include "../../src/models/whatsnewmodel.h"
+#include "closeeventhandler.h"
+#include "models/whatsnewmodel.h"
 
 #include <QObject>
 #include <QQmlEngine>
