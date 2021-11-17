@@ -30,7 +30,12 @@ HEADERS += \
 
 QML_IMPORT_PATH+=$$PWD
 RESOURCES += glean.qrc
-
+CONFIG(debug, debug|release) {
+    DESTDIR=debug
+}
+CONFIG(release, debug|release) {
+    DESTDIR=release
+}
 android {
     CONFIG(debug, debug|release) {
         DESTDIR=$$ANDROID_TARGET_ARCH/debug
