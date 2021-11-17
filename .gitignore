@@ -54,7 +54,6 @@ tests/nativemessaging/tests
 tests/proxy/__pycache__/
 tests/qml/qml_tests
 tests/qml/target_wrapper.sh
-tests/qml/qrc_*.cpp
 build
 Debug/
 !android/src/debug/
