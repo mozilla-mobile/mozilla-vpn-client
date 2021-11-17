@@ -253,32 +253,17 @@ UI_DIR = .ui
 
 RESOURCES += ../../src/ui/license.qrc
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../glean/release/ -lglean
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../glean/debug/ -lglean
-else:unix:{
-  LIBS += -L$$PWD/../../glean/ -lglean
+CONFIG(debug, debug|release) {
+    LIBS += -L$$clean_path($$PWD/../nebula/debug) -lnebula
+    LIBS += -L$$clean_path($$PWD/../glean/debug) -lglean
+}
+CONFIG(release, debug|release) {
+    LIBS += --L$$clean_path($$PWD/../nebula/release) -lnebula
+    LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
 
-  CONFIG(debug, debug|release) {
-    DEPENDPATH += $$PWD/../../glean/debug
-  }
-  CONFIG(release, debug|release) {
-    DEPENDPATH += $$PWD/../../glean/release
-  }	
 }
 
 INCLUDEPATH += $$PWD/../../glean
-
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../nebula/release/ -lnebula
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../nebula/debug/ -lnebula
-else:unix:{
-  LIBS += -L$$PWD/../../nebula/ -lnebula
-  CONFIG(debug, debug|release) {
-    DEPENDPATH += $$PWD/../../nebula/debug
-  }
-  CONFIG(release, debug|release) {
-    DEPENDPATH += $$PWD/../../nebula/release
-  }
-}
 INCLUDEPATH += $$PWD/../../nebula
 
 coverage {

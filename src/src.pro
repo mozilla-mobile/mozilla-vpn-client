@@ -318,18 +318,6 @@ RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../glean/release/ -lglean
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../glean/debug/ -lglean
-else:unix:
-    LIBS += -L$$PWD/../glean/ -lglean
-    CONFIG(debug, debug|release) {
-    DEPENDPATH += $$PWD/../glean/debug
-}
-CONFIG(release, debug|release) {
-    DEPENDPATH += $$PWD/../glean/release
-}
-INCLUDEPATH += $$PWD/../glean
-
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
@@ -389,13 +377,17 @@ else:linux:!android {
     system(c++ -lgo 2>&1 | grep "__go_init_main" > /dev/null) {
         LIBS += -lgo
     }
-    CONFIG(release, debug|release){
-       LIBS += -L$$PWD/../nebula/release/ -lnebula
+
+    CONFIG(debug, debug|release) {
+        LIBS += -L$$clean_path($$PWD/../nebula/debug) -lnebula
+        LIBS += -L$$clean_path($$PWD/../glean/debug) -lglean
+    }
+    CONFIG(release, debug|release) {
+        LIBS += --L$$clean_path($$PWD/../nebula/release) -lnebula
+        LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
+
     }
 
-    CONFIG(debug, debug|release){
-       LIBS += -L$$PWD/../nebula/debug/ -lnebula
-    }
     CONFIG += c++14
 
     DEFINES += MVPN_LINUX
@@ -547,8 +539,6 @@ else:android {
                    adjust/adjustproxypackagehandler.h \
                    adjust/adjusttasksubmission.h
     }
-    INCLUDEPATH+=../nebula
-    INCLUDEPATH+=../glean
 
     versionAtLeast(QT_VERSION, 5.15.1) {
       QMAKE_CXXFLAGS *= -Werror
@@ -858,13 +848,15 @@ else:win* {
     }else{
         error("Crashpad could not be found.  Have you run windows_compile.bat?")
     }
-    CONFIG(release, debug|release){
-       LIBS += -L$$PWD/../nebula/release/ -lnebula
+    CONFIG(debug, debug|release) {
+        LIBS += -L$$PWD/../nebula/debug -lnebula
+        LIBS += -L$$PWD/../glean/debug -lglean
+    }
+    CONFIG(release, debug|release) {
+        LIBS += -L$$PWD/../nebula/release -lnebula
+        LIBS += -L$$PWD/../glean/release -lglean
     }
 
-    CONFIG(debug, debug|release){
-       LIBS += -L$$PWD/../nebula/debug/ -lnebula
-    }
     CONFIG(debug, debug|release) {
         QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
         QMAKE_LFLAGS_WINDOWS += /DEBUG
@@ -1036,5 +1028,5 @@ mvpn_debug {
 }
 
 
-INCLUDEPATH += $$PWD/../nebula
-DEPENDPATH += $$PWD/../nebula
+INCLUDEPATH+=../nebula
+INCLUDEPATH+=../glean
