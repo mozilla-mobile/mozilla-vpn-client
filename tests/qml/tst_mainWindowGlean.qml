@@ -15,34 +15,41 @@ Item {
         name: "MainTestsGlean"
 
         property var spyApplicationId
-        property var spyUploadEnabled
+        property var spyUploadEnabledInitialize
         property var spyConfig
         property var spyTags
         property var spyShutdownCalled: false
+        property var spyUploadEnabled
 
         function initTestCase() {
             // A series of mock functions that we monkeypatch onto Glean
             // that allow us to spy on the calls main.qml makes to Glean.
             function mockGleanInitialize(applicationId, uploadEnabled, config) {
-                spyApplicationId = applicationId;
-                spyUploadEnabled = uploadEnabled;
-                spyConfig = config;
+                spyApplicationId = applicationId
+                spyUploadEnabledInitialize = uploadEnabled
+                spyConfig = config
+                console.log("FUDGE")
             }
             Glean.initialize = mockGleanInitialize;
             function mockGleanSetSourceTags(tags) {
-                spyTags = tags;
+                spyTags = tags
             }
             Glean.setSourceTags = mockGleanSetSourceTags;
             function mockGleanShutdown() {
-                // Should be false first
-                compare(spyShutdownCalled, false);
-                spyShutdownCalled = true;
+                // Should be false before setting it to true in this function.
+                // Helps protect us from bad testing state.
+                compare(spyShutdownCalled, false)
+                spyShutdownCalled = true
             }
-            Glean.shutdown = mockGleanShutdown;
+            Glean.shutdown = mockGleanShutdown
+            function mockSetUploadEnabled(uploadEnabled) {
+                spyUploadEnabled = uploadEnabled
+            }
+            Glean.setUploadEnabled = mockSetUploadEnabled
         }
 
         function test_onCompletedCallsMainWindowLoaded() {
-            compare(TestHelper.mainWindowLoadedCalled, true);
+            compare(TestHelper.mainWindowLoadedCalled, true)
         }
 
         function test_onSetGleanSourceTagsPassesTagsToGlean() {
@@ -50,23 +57,14 @@ Item {
             compare(spyTags.toString(), "tag1,tag2")
         }
 
-        /*
-        function test_onSendGleanPingsSubmitsPings() {
-            compare(true, false)
-        }
-
-        function test_onRecordGleanEventRecordsAppropriateSample() {
-            compare(true, false)
-        }
-
-        function test_onInitializeGleanSetsDebugValuesInDebugMode() {
-            compare(true, false)
-        }
-
         function test_onGleanEnabledChangedCallsGleanSetUploadEnabledCorrectly() {
-            compare(true, false)
+            VPNSettings.gleanEnabled = false
+            compare(spyUploadEnabled, false)
+
+            VPNSettings.gleanEnabled = true
+            compare(spyUploadEnabled, true)
         }
-        */
+
         function test_onAboutToQuitCallsGleanShutdown() {
             TestHelper.triggerAboutToQuit()
             compare(spyShutdownCalled, true)
@@ -87,9 +85,21 @@ Item {
             compare(spyConfig.architecture, TestHelper.architecture())
         }
 
+        function test_onInitializeGleanCallsInitializeCorrectUploadEnabled() {
+            VPNSettings.gleanEnabled = false
+            TestHelper.triggerInitializeGlean()
+            compare(spyUploadEnabledInitialize, false)
+
+            VPNSettings.gleanEnabled = true
+            TestHelper.triggerInitializeGlean()
+            compare(spyUploadEnabledInitialize, true)
+        }
+
         /*
-         * TODO - The following are tests that I don't know how to write
+         * TODO - The following are qml tests that I don't know how to write
          * but I don't think they should hold up merging of this PR.
+         * I have added to the integration test cases to cover our bases 
+         * on these test cases.
 
         function test_onInitializeGleanSetsProductionChannel() {
             // I have not found a way to set stagingMode dynamically
@@ -98,7 +108,7 @@ Item {
 
             // Setup VPN.stagingMode as false;
             TestHelper.triggerInitializeGlean()
-            compare(spyConfig.channel, "productions")
+            compare(spyConfig.channel, "production")
         }
         function test_onInitializeGleanDoesNotSetDebugParams() {
             // Similar to stagingMode, I have not found a way to set debugMode dynamically in tests.
@@ -109,10 +119,11 @@ Item {
             compare(spyConfig.debug.debugViewTag, undefined)
         }
 
-        // TODO: Also need a companion unit test for the mozillavpn method 
-        // mainWindowLoaded that checks that:
+        // TODO: Ideally we would also have a companion unit test for the 
+        // mozillavpn method mainWindowLoaded that checks that:
         // a) mainWindowLoaded calls initializeGlean
         // b) sets up a timer
+        // But we don't have a way to test mozillavpn.cpp functions yet.
         */
     }
 }

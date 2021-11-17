@@ -16,7 +16,6 @@ DEFINES += APP_VERSION=\\\"QMLTest_AppVersion\\\"
 DEFINES += BUILD_ID=\\\"QMLTest_BuildID\\\"
 
 RESOURCES += \
-    $$PWD/../../glean/glean.qrc \
     $$PWD/../../src/ui/compatQt5.qrc \
     $$PWD/../../src/ui/compatQt6.qrc \
     $$PWD/../../src/ui/components.qrc \
@@ -27,6 +26,7 @@ RESOURCES += \
 INCLUDEPATH += \
             . \
             ../../src \
+            ../glean/telemetry \
             ../../translations/generated \
 
 SOURCES += \
@@ -74,6 +74,12 @@ exists($$PWD/../../translations/generated/l18nstrings.h) {
     HEADERS += $$PWD/../../translations/generated/l18nstrings.h
 } else {
     error("No l18nstrings.h. Have you generated the strings?")
+}
+
+exists($$PWD/../../glean/telemetry/gleansample.h) {
+    RESOURCES += $$PWD/../../glean/glean.qrc
+} else {
+    error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
 }
 
 OBJECTS_DIR = .obj
