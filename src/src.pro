@@ -363,6 +363,15 @@ DUMMY {
             platforms/dummy/dummycontroller.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
+    CONFIG(debug, debug|release) {
+        LIBS += -L$$clean_path($$PWD/../nebula/debug) -lnebula
+        LIBS += -L$$clean_path($$PWD/../glean/debug) -lglean
+    }
+    CONFIG(release, debug|release) {
+        LIBS += -L$$clean_path($$PWD/../nebula/release) -lnebula
+        LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
+
+    }
 }
 
 # Platform-specific: Linux
