@@ -74,12 +74,14 @@ Item {
         }
         */
 
-        function test_onInitializeGleanSetsChannelBasedOnStagingMode() {
-            VPN.stagingMode = true;
+        function test_onInitializeGleanSetsChannelBasedOnStagingModeTrue() {
+            TestHelper.stagingMode = true;
             TestHelper.triggerInitializeGlean()
             compare(spyConfig.channel, "staging")
+        }
 
-            VPN.stagingMode = false;
+        function test_onInitializeGleanSetsChannelBasedOnStagingModeFalse() {
+            TestHelper.stagingMode = false;
             TestHelper.triggerInitializeGlean()
             compare(spyConfig.channel, "production")
         }

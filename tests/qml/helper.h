@@ -17,18 +17,24 @@ class TestHelper final : public QObject {
 
  public:
   TestHelper();
-  Q_INVOKABLE void triggerInitializeGlean();
-  Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags);
+  static TestHelper* instance();
   CloseEventHandler closeEventHandler;
   WhatsNewModel* whatsNewModel() { return m_whatsNewModel; }
 
+  Q_INVOKABLE void triggerInitializeGlean();
+  Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags);
+  bool stagingMode();
+  void setStagingMode(bool stagingMode);
+
  public slots:
-  // For info on the slots we can use
+  // For info on the slots we can use for testing
   // https://doc.qt.io/qt-5/qtquicktest-index.html#executing-c-before-qml-tests
   void qmlEngineAvailable(QQmlEngine* engine);
 
  private:
   WhatsNewModel* m_whatsNewModel = nullptr;
+  bool m_stagingMode = true;
+  Q_PROPERTY(bool stagingMode READ stagingMode WRITE setStagingMode)
 };
 
 #endif  // TESTHELPER_H
