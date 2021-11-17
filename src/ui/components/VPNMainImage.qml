@@ -27,13 +27,14 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.green
+                color: Color.success.default
             }
             PropertyChanges {
                 target: insetIcon
                 source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
+
         },
         State {
             name: VPNController.StateConfirming
@@ -45,7 +46,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.green
+                color: Color.success.default
             }
             PropertyChanges {
                 target: insetIcon
@@ -64,7 +65,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.red
+                color: Color.error.default
             }
             PropertyChanges {
                 target: insetIcon
@@ -82,6 +83,10 @@ Rectangle {
                 showVPNOnIcon: true
             }
             PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
+            }
+            PropertyChanges {
                 target: switchingIcon
                 opacity: 1
             }
@@ -94,6 +99,10 @@ Rectangle {
         State {
             name: VPNController.StateOff
 
+            PropertyChanges {
+                target: insetCircle
+                color: Color.error.default
+            }
             PropertyChanges {
                 target: insetIcon
                 source: "qrc:/ui/resources/shield-off.svg"
@@ -110,7 +119,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.green
+                color: Color.success.default
             }
             PropertyChanges {
                 target: insetIcon
@@ -129,7 +138,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.red
+                color: Color.success.default
             }
             PropertyChanges {
                 target: insetIcon
@@ -157,6 +166,7 @@ Rectangle {
                 source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
+
         },
         State {
             name: "noSignalOn"
@@ -177,6 +187,7 @@ Rectangle {
                 source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
+
         }
     ]
     transitions: [
