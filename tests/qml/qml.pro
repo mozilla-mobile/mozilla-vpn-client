@@ -26,7 +26,6 @@ RESOURCES += \
 INCLUDEPATH += \
             . \
             ../../src \
-            ../glean/telemetry \
             ../../translations/generated \
 
 SOURCES += \
