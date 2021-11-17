@@ -34,8 +34,6 @@ extern "C" {
 #endif
 // End import wireguard
 
-constexpr uint16_t WG_KEEPALIVE_PERIOD = 60;
-
 /* Packets sent outside the VPN need to be marked for the routing policy
  * to direct them appropriately. The value of the mark and the table ID
  * aren't important, so long as they are unique.

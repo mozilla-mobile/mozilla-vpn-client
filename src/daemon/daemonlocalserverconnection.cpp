@@ -136,10 +136,10 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   logger.warning() << "Invalid command:" << type;
 }
 
-void DaemonLocalServerConnection::connected(int hopindex) {
+void DaemonLocalServerConnection::connected(const QString& pubkey) {
   QJsonObject obj;
   obj.insert("type", "connected");
-  obj.insert("hopindex", QJsonValue(hopindex));
+  obj.insert("pubkey", QJsonValue(pubkey));
   write(obj);
 }
 

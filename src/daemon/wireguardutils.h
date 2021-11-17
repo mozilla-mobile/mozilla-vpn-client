@@ -13,6 +13,8 @@
 
 constexpr const char* WG_INTERFACE = "moz0";
 
+constexpr uint16_t WG_KEEPALIVE_PERIOD = 60;
+
 class WireguardUtils : public QObject {
   Q_OBJECT
 
