@@ -322,14 +322,13 @@ win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../glean/release/ -lglean
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../glean/debug/ -lglean
 else:unix:
     LIBS += -L$$PWD/../glean/ -lglean
-    INCLUDEPATH += $$PWD/../glean
     CONFIG(debug, debug|release) {
     DEPENDPATH += $$PWD/../glean/debug
 }
 CONFIG(release, debug|release) {
     DEPENDPATH += $$PWD/../glean/release
 }
-
+INCLUDEPATH += $$PWD/../glean
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
@@ -542,6 +541,8 @@ else:android {
                    adjust/adjustproxypackagehandler.h \
                    adjust/adjusttasksubmission.h
     }
+    INCLUDEPATH+=../nebula
+    INCLUDEPATH+=../glean
 
     versionAtLeast(QT_VERSION, 5.15.1) {
       QMAKE_CXXFLAGS *= -Werror
@@ -558,6 +559,17 @@ else:android {
     QT += qml
     QT += xml
     LIBS += \-ljnigraphics\
+
+    CONFIG(debug, debug|release) {
+    LIBS += -L$$PWD/../nebula/$$ANDROID_TARGET_ARCH/debug -lnebula
+    LIBS += -L$$PWD/../glean/$$ANDROID_TARGET_ARCH/debug -lglean
+    }
+    CONFIG(release, debug|release) {
+    LIBS += -L$$PWD/../nebula/$$ANDROID_TARGET_ARCH/release -lnebula
+    LIBS += -L$$PWD/../glean/$$ANDROID_TARGET_ARCH/release -lglean
+    }
+
+
 
     !versionAtLeast(QT_VERSION, 6.0.0) {
         QT += androidextras
@@ -1015,5 +1027,5 @@ win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../nebula/release/ -lnebul
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../nebula/debug/ -lnebula
 else:unix: LIBS += -L$$PWD/../nebula/ -lnebula
 
-INCLUDEPATH += $$PWD/../nebula
+
 DEPENDPATH += $$PWD/../nebula

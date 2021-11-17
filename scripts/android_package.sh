@@ -164,7 +164,7 @@ if [[ "$RELEASE" ]]; then
     CONFIG-=debug_and_release \
     CONFIG+=release \
     glean.pro || die "Qmake failed for glean"
-    make -j $JOBS apk || die "Compile of Glean QT project failed"
+    make -j $JOBS make_first || die "Compile of Glean QT project failed"
     popd
     pushd ..//nebula
     $QTPATH/bin/qmake -spec android-clang \
@@ -172,7 +172,7 @@ if [[ "$RELEASE" ]]; then
     CONFIG-=debug_and_release \
     CONFIG+=release \
     nebula.pro || die "Qmake failed for nebula"
-    make -j $JOBS apk || die "Compile of Nebula QT project failed"
+    make -j $JOBS make_first || die "Compile of Nebula QT project failed"
     popd
     $QTPATH/bin/qmake -spec android-clang \
     VERSION=$SHORTVERSION \
@@ -194,7 +194,7 @@ else
     CONFIG-=debug_and_release \
     CONFIG-=release \
     glean.pro || die "Qmake failed for glean"
-    make -j $JOBS debug || die || "Compile of Glean failed."
+    make -j $JOBS make_first || die || "Compile of Glean failed."
   popd
   pushd ../nebula
   $QTPATH/bin/qmake -spec android-clang \
@@ -202,7 +202,7 @@ else
     CONFIG-=debug_and_release \
     CONFIG-=release \
     nebula.pro || die "Qmake failed for nebula"
-    make -j $JOBS debug || die "Compile failed for nebula."
+    make -j $JOBS make_first || die "Compile failed for nebula."
   popd
 
   $QTPATH/bin/qmake -spec android-clang \
