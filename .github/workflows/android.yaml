@@ -27,7 +27,7 @@ jobs:
         uses: jurplel/install-qt-action@v2
         with:
           host: 'linux'
-          version: '5.15.2'
+          version: '6.2.0'
           target: 'android'
           install-deps: 'true'
           modules: 'qtcharts qtnetworkauth'
@@ -58,7 +58,7 @@ jobs:
       - name: Compilation
         run: |
           export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
-          bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/5.15.2 -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
+          bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/6.2.0 -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
       - name: Sign Android
         if: ${{ matrix.config.sign }}
         env:
