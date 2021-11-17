@@ -40,14 +40,10 @@ Item {
             }
             Glean.shutdown = mockGleanShutdown;
         }
-        /*
+
         function test_onCompletedCallsMainWindowLoaded() {
-            // TODO: Need a companion test, that:
-            // a) mainWindowLoaded calls initializeGlean
-            // b) sets up a timer
-            compare(true, false)
+            compare(TestHelper.mainWindowLoadedCalled, true);
         }
-        */
 
         function test_onSetGleanSourceTagsPassesTagsToGlean() {
             TestHelper.triggerSetGleanSourceTags("tag1,tag2")
@@ -112,6 +108,11 @@ Item {
             compare(spyConfig.debug.logPings, undefined)
             compare(spyConfig.debug.debugViewTag, undefined)
         }
+
+        // TODO: Also need a companion unit test for the mozillavpn method 
+        // mainWindowLoaded that checks that:
+        // a) mainWindowLoaded calls initializeGlean
+        // b) sets up a timer
         */
     }
 }

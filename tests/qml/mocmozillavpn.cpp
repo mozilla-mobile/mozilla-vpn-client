@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/mozillavpn.h"
+#include "helper.h"
 
 // The singleton.
 static MozillaVPN* s_instance = nullptr;
@@ -72,7 +73,9 @@ void MozillaVPN::changeServer(const QString&, const QString&, const QString&,
 
 void MozillaVPN::postAuthenticationCompleted() {}
 
-void MozillaVPN::mainWindowLoaded() {}
+void MozillaVPN::mainWindowLoaded() {
+  TestHelper::instance()->setMainWindowLoadedCalled(true);
+}
 
 void MozillaVPN::telemetryPolicyCompleted() {}
 

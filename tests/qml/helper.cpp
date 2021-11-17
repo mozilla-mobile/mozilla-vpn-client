@@ -11,6 +11,22 @@ TestHelper::TestHelper() {
   m_whatsNewModel = new WhatsNewModel();
 }
 
+TestHelper* TestHelper::instance() {
+  static TestHelper* s_instance = new TestHelper();
+  return s_instance;
+}
+
+bool TestHelper::mainWindowLoadedCalled() {
+  // I don't understand why I need to call instance()
+  // here, would appreciate a c++ lesson and/or correction
+  // of my code.
+  return instance()->m_mainWindowLoadedCalled;
+}
+
+void TestHelper::setMainWindowLoadedCalled(bool val) {
+  m_mainWindowLoadedCalled = val;
+}
+
 void TestHelper::triggerInitializeGlean() {
   emit MozillaVPN::instance()->initializeGlean();
 }

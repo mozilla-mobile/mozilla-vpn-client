@@ -17,14 +17,18 @@ class TestHelper final : public QObject {
 
  public:
   TestHelper();
+  static TestHelper* instance();
   Q_INVOKABLE void triggerAboutToQuit();
   Q_INVOKABLE void triggerInitializeGlean();
   Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags);
   Q_INVOKABLE QString osVersion();
   Q_INVOKABLE QString architecture();
+  Q_PROPERTY(bool mainWindowLoadedCalled READ mainWindowLoadedCalled)
 
   CloseEventHandler closeEventHandler;
   WhatsNewModel* whatsNewModel() { return m_whatsNewModel; }
+  bool mainWindowLoadedCalled();
+  void setMainWindowLoadedCalled(bool val);
 
  public slots:
   // For info on the slots we can use
@@ -33,6 +37,7 @@ class TestHelper final : public QObject {
 
  private:
   WhatsNewModel* m_whatsNewModel = nullptr;
+  bool m_mainWindowLoadedCalled = false;
 };
 
 #endif  // TESTHELPER_H
