@@ -1,11 +1,7 @@
 QT -= gui
 QT += qml
 TEMPLATE = lib
-
-!android{
 CONFIG += staticlib
-}
-
 CONFIG += c++1z
 
 # You can make your code fail to compile if it uses deprecated APIs.
@@ -33,13 +29,10 @@ versionAtLeast(QT_VERSION, 6.0.0) {
 }
 
 android {
-QMAKE_LINK += -nostdlib++
-equals(ANDROID_TARGET_ARCH,arm64-v8a) {
-        LIBS += -L$$PWD/../Libs/android_arm64-v8a/ -lLibrary
-        ANDROID_EXTRA_LIBS += $$PWD/../Libs/android_arm64-v8a/nebula.so
-}
-equals(ANDROID_TARGET_ARCH,armeabi-v7a) {
-        LIBS += -L$$PWD/../Libs/android_armeabi-v7a/ -lLibrary
-        ANDROID_EXTRA_LIBS += $$PWD/../Libs/android_armeabi-v7a/nebula.so
-}
+    CONFIG(debug, debug|release) {
+        DESTDIR=$$ANDROID_TARGET_ARCH/debug
+    }
+    CONFIG(release, debug|release) {
+        DESTDIR=$$ANDROID_TARGET_ARCH/release
+    }
 }

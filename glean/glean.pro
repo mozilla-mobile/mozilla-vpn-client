@@ -1,9 +1,9 @@
 QT -= gui
 QT += qml
 TEMPLATE = lib
-!android{
+
 CONFIG += staticlib
-}
+
 CONFIG += c++1z
 
 # You can make your code fail to compile if it uses deprecated APIs.
@@ -32,13 +32,11 @@ QML_IMPORT_PATH+=$$PWD
 RESOURCES += glean.qrc
 
 android {
-QMAKE_LINK += -nostdlib++
-equals(ANDROID_TARGET_ARCH,arm64-v8a) {
-        LIBS += -L$$PWD/../Libs/android_arm64-v8a/ -lLibrary
-        ANDROID_EXTRA_LIBS += $$PWD/../Libs/android_arm64-v8a/glean.so
-}
-equals(ANDROID_TARGET_ARCH,armeabi-v7a) {
-        LIBS += -L$$PWD/../Libs/android_armeabi-v7a/ -lLibrary
-        ANDROID_EXTRA_LIBS += $$PWD/../Libs/android_armeabi-v7a/glean.so
-}
+    CONFIG(debug, debug|release) {
+        DESTDIR=$$ANDROID_TARGET_ARCH/debug
+    }
+    CONFIG(release, debug|release) {
+        DESTDIR=$$ANDROID_TARGET_ARCH/release
+    }
+    message(Output folder: $$DESTDIR)
 }
