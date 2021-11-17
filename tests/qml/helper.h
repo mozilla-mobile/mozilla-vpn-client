@@ -7,6 +7,7 @@
 
 #include "closeeventhandler.h"
 #include "models/whatsnewmodel.h"
+#include "settingsholder.h"
 
 #include <QObject>
 #include <QQmlEngine>
@@ -16,7 +17,6 @@ class TestHelper final : public QObject {
   Q_OBJECT
 
  public:
-  TestHelper();
   static TestHelper* instance();
   Q_INVOKABLE void triggerAboutToQuit();
   Q_INVOKABLE void triggerInitializeGlean();
@@ -28,8 +28,9 @@ class TestHelper final : public QObject {
   Q_PROPERTY(bool mainWindowLoadedCalled READ mainWindowLoadedCalled)
 
   CloseEventHandler closeEventHandler;
+  SettingsHolder settingsHolder;
   WhatsNewModel* whatsNewModel() { return m_whatsNewModel; }
-  bool mainWindowLoadedCalled();
+  bool mainWindowLoadedCalled() const;
   void setMainWindowLoadedCalled(bool val);
 
  public slots:
@@ -38,6 +39,8 @@ class TestHelper final : public QObject {
   void qmlEngineAvailable(QQmlEngine* engine);
 
  private:
+  TestHelper();
+  ~TestHelper() = default;
   WhatsNewModel* m_whatsNewModel = nullptr;
   bool m_mainWindowLoadedCalled = false;
 };

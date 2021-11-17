@@ -4,7 +4,6 @@
 
 #include "helper.h"
 
-#include "settingsholder.h"
 #include <QtQuickTest>
 
 int main(int argc, char* argv[]) {
@@ -15,8 +14,6 @@ int main(int argc, char* argv[]) {
   // Macro source code:
   // https://github.com/qt/qtdeclarative/blob/5.15.2/src/qmltest/quicktest.h#L69
   QTEST_SET_MAIN_SOURCE_PATH
-  SettingsHolder settingsHolder;
-  TestHelper testHelper;
   quick_test_main_with_setup(argc, argv, "qml_tests", QUICK_TEST_SOURCE_DIR,
-                             &testHelper);
+                             TestHelper::instance());
 }

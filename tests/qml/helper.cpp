@@ -18,11 +18,8 @@ TestHelper* TestHelper::instance() {
   return s_instance;
 }
 
-bool TestHelper::mainWindowLoadedCalled() {
-  // I don't understand why I need to call instance()
-  // here, would appreciate a c++ lesson and/or correction
-  // of my code.
-  return instance()->m_mainWindowLoadedCalled;
+bool TestHelper::mainWindowLoadedCalled() const {
+  return m_mainWindowLoadedCalled;
 }
 
 void TestHelper::setMainWindowLoadedCalled(bool val) {
@@ -82,8 +79,8 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
 
   qmlRegisterSingletonType<MozillaVPN>(
       "Mozilla.VPN", 1, 0, "VPNSettings",
-      [](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = SettingsHolder::instance();
+      [this](QQmlEngine*, QJSEngine*) -> QObject* {
+        QObject* obj = &settingsHolder;
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });
@@ -99,7 +96,7 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
   qmlRegisterSingletonType<MozillaVPN>(
       "Mozilla.VPN", 1, 0, "VPNCloseEventHandler",
       [this](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = &this->closeEventHandler;
+        QObject* obj = &closeEventHandler;
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });
