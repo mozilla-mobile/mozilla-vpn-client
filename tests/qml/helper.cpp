@@ -26,23 +26,23 @@ void TestHelper::setMainWindowLoadedCalled(bool val) {
   m_mainWindowLoadedCalled = val;
 }
 
-void TestHelper::triggerInitializeGlean() {
+void TestHelper::triggerInitializeGlean() const {
   emit MozillaVPN::instance()->initializeGlean();
 }
 
-void TestHelper::triggerRecordGleanEvent(const QString& event) {
+void TestHelper::triggerRecordGleanEvent(const QString& event) const {
   emit MozillaVPN::instance()->recordGleanEvent(event);
 }
 
-void TestHelper::triggerSendGleanPings() {
+void TestHelper::triggerSendGleanPings() const {
   emit MozillaVPN::instance()->sendGleanPings();
 }
 
-void TestHelper::triggerSetGleanSourceTags(const QStringList& tags) {
+void TestHelper::triggerSetGleanSourceTags(const QStringList& tags) const {
   emit MozillaVPN::instance()->setGleanSourceTags(tags);
 }
 
-void TestHelper::triggerAboutToQuit() {
+void TestHelper::triggerAboutToQuit() const {
   emit MozillaVPN::instance()->aboutToQuit();
 }
 
@@ -51,8 +51,8 @@ void TestHelper::triggerAboutToQuit() {
 // as it needs to be dynamic based on the platform people are running tests on.
 // At the least this should fail give someone pause for thought if they change
 // the mozillavpn.h logic.
-QString TestHelper::osVersion() { return QSysInfo::productVersion(); }
-QString TestHelper::architecture() {
+QString TestHelper::osVersion() const { return QSysInfo::productVersion(); }
+QString TestHelper::architecture() const {
   return QSysInfo::currentCpuArchitecture();
 }
 

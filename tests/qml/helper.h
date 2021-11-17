@@ -18,13 +18,13 @@ class TestHelper final : public QObject {
 
  public:
   static TestHelper* instance();
-  Q_INVOKABLE void triggerAboutToQuit();
-  Q_INVOKABLE void triggerInitializeGlean();
-  Q_INVOKABLE void triggerRecordGleanEvent(const QString& event);
-  Q_INVOKABLE void triggerSendGleanPings();
-  Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags);
-  Q_INVOKABLE QString osVersion();
-  Q_INVOKABLE QString architecture();
+  Q_INVOKABLE void triggerAboutToQuit() const;
+  Q_INVOKABLE void triggerInitializeGlean() const;
+  Q_INVOKABLE void triggerRecordGleanEvent(const QString& event) const;
+  Q_INVOKABLE void triggerSendGleanPings() const;
+  Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags) const;
+  Q_INVOKABLE QString osVersion() const;
+  Q_INVOKABLE QString architecture() const;
   Q_PROPERTY(bool mainWindowLoadedCalled READ mainWindowLoadedCalled)
 
   CloseEventHandler closeEventHandler;
