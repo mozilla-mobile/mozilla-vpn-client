@@ -254,12 +254,12 @@ UI_DIR = .ui
 RESOURCES += ../../src/ui/license.qrc
 
 CONFIG(debug, debug|release) {
-    LIBS += -L$$clean_path($$PWD/../nebula/debug) -lnebula
-    LIBS += -L$$clean_path($$PWD/../glean/debug) -lglean
+    LIBS += -L$$clean_path($$PWD/../../nebula/debug) -lnebula
+    LIBS += -L$$clean_path($$PWD/../../glean/debug) -lglean
 }
 CONFIG(release, debug|release) {
-    LIBS += --L$$clean_path($$PWD/../nebula/release) -lnebula
-    LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
+    LIBS += --L$$clean_path($$PWD/../../nebula/release) -lnebula
+    LIBS += -L$$clean_path($$PWD/../../glean/release) -lglean
 
 }
 
