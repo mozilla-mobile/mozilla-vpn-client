@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 import android.util.Log as nativeLog
 
 /*
- * Drop in replacement for android.util.Log 
+ * Drop in replacement for android.util.Log
  * Also stores a copy of all logs in tmp/mozilla_deamon_logs.txt
 */
 class Log {
@@ -45,6 +45,12 @@ class Log {
             instance?.write("[error] - ($tag) - $message")
             if (!BuildConfig.DEBUG) { return; }
             nativeLog.e(tag, message)
+        }
+        fun stack(tag: String, message: Array<StackTraceElement>) {
+            e(tag, "StackTrace:")
+            message.forEach {
+                e(tag, "\t $it")
+            }
         }
         // Only Prints && Loggs when in debug, noop in release.
         fun sensitive(tag: String, message: String?) {

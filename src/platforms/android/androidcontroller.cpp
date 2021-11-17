@@ -336,8 +336,13 @@ bool AndroidController::VPNBinder::onTransact(int code,
       }
       break;
     case EVENT_ACTIVATION_ERROR:
+      buffer = readUTF8Parcel(data);
+      if (!buffer.isEmpty()) {
+        logger.error() << "Service Error while activating the VPN: " << buffer;
+      }
       MozillaVPN::instance()->errorHandle(ErrorHandler::ConnectionFailureError);
       emit m_controller->disconnected();
+      break;
     default:
       logger.warning() << "Transact: Invalid!";
       break;
