@@ -6,7 +6,6 @@
 
 #include "l18nstrings.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
 
 TestHelper::TestHelper() {
   FeatureList::instance()->initialize();
@@ -80,7 +79,7 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
   qmlRegisterSingletonType<MozillaVPN>(
       "Mozilla.VPN", 1, 0, "VPNSettings",
       [this](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = &settingsHolder;
+        QObject* obj = &m_settingsHolder;
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });
@@ -96,7 +95,7 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
   qmlRegisterSingletonType<MozillaVPN>(
       "Mozilla.VPN", 1, 0, "VPNCloseEventHandler",
       [this](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = &closeEventHandler;
+        QObject* obj = &m_closeEventHandler;
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });
@@ -104,7 +103,7 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
   qmlRegisterSingletonType<MozillaVPN>(
       "Mozilla.VPN", 1, 0, "VPNWhatsNewModel",
       [this](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = this->whatsNewModel();
+        QObject* obj = m_whatsNewModel;
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });

@@ -27,9 +27,6 @@ class TestHelper final : public QObject {
   Q_INVOKABLE QString architecture() const;
   Q_PROPERTY(bool mainWindowLoadedCalled READ mainWindowLoadedCalled)
 
-  CloseEventHandler closeEventHandler;
-  SettingsHolder settingsHolder;
-  WhatsNewModel* whatsNewModel() { return m_whatsNewModel; }
   bool mainWindowLoadedCalled() const;
   void setMainWindowLoadedCalled(bool val);
 
@@ -41,8 +38,11 @@ class TestHelper final : public QObject {
  private:
   TestHelper();
   ~TestHelper() = default;
-  WhatsNewModel* m_whatsNewModel = nullptr;
+
+  CloseEventHandler m_closeEventHandler;
   bool m_mainWindowLoadedCalled = false;
+  SettingsHolder m_settingsHolder;
+  WhatsNewModel* m_whatsNewModel = nullptr;
 };
 
 #endif  // TESTHELPER_H
