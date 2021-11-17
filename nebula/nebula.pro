@@ -27,7 +27,12 @@ versionAtLeast(QT_VERSION, 6.0.0) {
 } else {
     RESOURCES += ui/compatQt5.qrc
 }
-
+CONFIG(debug, debug|release) {
+    DESTDIR=debug
+}
+CONFIG(release, debug|release) {
+    DESTDIR=release
+}
 android {
     CONFIG(debug, debug|release) {
         DESTDIR=$$ANDROID_TARGET_ARCH/debug
