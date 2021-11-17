@@ -389,7 +389,13 @@ else:linux:!android {
     system(c++ -lgo 2>&1 | grep "__go_init_main" > /dev/null) {
         LIBS += -lgo
     }
+    CONFIG(release, debug|release){
+       LIBS += -L$$PWD/../nebula/release/ -lnebula
+    }
 
+    CONFIG(debug, debug|release){
+       LIBS += -L$$PWD/../nebula/debug/ -lnebula
+    }
     CONFIG += c++14
 
     DEFINES += MVPN_LINUX
@@ -844,7 +850,13 @@ else:win* {
     }else{
         error("Crashpad could not be found.  Have you run windows_compile.bat?")
     }
+    CONFIG(release, debug|release){
+       LIBS += -L$$PWD/../nebula/release/ -lnebula
+    }
 
+    CONFIG(debug, debug|release){
+       LIBS += -L$$PWD/../nebula/debug/ -lnebula
+    }
     CONFIG(debug, debug|release) {
         QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
         QMAKE_LFLAGS_WINDOWS += /DEBUG
@@ -1013,9 +1025,6 @@ mvpn_debug {
     DEFINES += MVPN_DEBUG
 }
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../nebula/release/ -lnebula
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../nebula/debug/ -lnebula
-else:unix: LIBS += -L$$PWD/../nebula/ -lnebula
 
-
+INCLUDEPATH += $$PWD/../nebula
 DEPENDPATH += $$PWD/../nebula
