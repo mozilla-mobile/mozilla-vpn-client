@@ -13,8 +13,6 @@
 
 #include <mntent.h>
 
-constexpr const char* WG_QUICK = "wg-quick";
-
 namespace {
 
 Logger logger(LOG_LINUX, "LinuxDependencies");
@@ -25,23 +23,6 @@ void showAlert(const QString& message) {
   QMessageBox alert;
   alert.setText(message);
   alert.exec();
-}
-
-bool findInPath(const char* what) {
-  char* path = getenv("PATH");
-  Q_ASSERT(path);
-
-  QStringList parts = QString(path).split(":");
-  for (const QString& part : parts) {
-    QDir pathDir(part);
-    QFileInfo file(pathDir.filePath(what));
-    if (file.exists()) {
-      logger.debug() << what << "found" << file.filePath();
-      return true;
-    }
-  }
-
-  return false;
 }
 
 bool checkDaemonVersion() {
@@ -86,11 +67,6 @@ bool LinuxDependencies::checkDependencies() {
   char* path = getenv("PATH");
   if (!path) {
     showAlert("No PATH env found.");
-    return false;
-  }
-
-  if (!findInPath(WG_QUICK)) {
-    showAlert("Unable to locate wg-quick");
     return false;
   }
 
