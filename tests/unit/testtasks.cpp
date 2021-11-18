@@ -7,6 +7,7 @@
 #include "../../src/tasks/accountandservers/taskaccountandservers.h"
 #include "../../src/tasks/adddevice/taskadddevice.h"
 #include "../../src/tasks/function/taskfunction.h"
+#include "../../src/taskscheduler.h"
 
 void TestTasks::accountAndServers() {
   // Failure
@@ -21,7 +22,7 @@ void TestTasks::accountAndServers() {
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
 
-    MozillaVPN::instance()->scheduleTask(task);
+    TaskScheduler::scheduleTask(task);
     loop.exec();
   }
 
@@ -37,7 +38,7 @@ void TestTasks::accountAndServers() {
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
 
-    MozillaVPN::instance()->scheduleTask(task);
+    TaskScheduler::scheduleTask(task);
     loop.exec();
   }
 }
@@ -46,12 +47,12 @@ void TestTasks::addDevice_success() {
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Success, QByteArray()));
 
-  TaskAddDevice* task = new TaskAddDevice("foobar");
+  TaskAddDevice* task = new TaskAddDevice("foobar", "id");
 
   QEventLoop loop;
   connect(task, &Task::completed, [&]() { loop.exit(); });
 
-  MozillaVPN::instance()->scheduleTask(task);
+  TaskScheduler::scheduleTask(task);
   loop.exec();
 }
 
@@ -59,12 +60,12 @@ void TestTasks::addDevice_failure() {
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
 
-  TaskAddDevice* task = new TaskAddDevice("foobar");
+  TaskAddDevice* task = new TaskAddDevice("foobar", "id");
 
   QEventLoop loop;
   connect(task, &Task::completed, [&]() { loop.exit(); });
 
-  MozillaVPN::instance()->scheduleTask(task);
+  TaskScheduler::scheduleTask(task);
   loop.exec();
 }
 
@@ -74,12 +75,9 @@ void TestTasks::authenticate() {
 
 void TestTasks::function() {
   bool completed = false;
-  TaskFunction* task = new TaskFunction([&](MozillaVPN* vpn) {
-    completed = true;
-    QCOMPARE(vpn, MozillaVPN::instance());
-  });
+  TaskFunction* task = new TaskFunction([&]() { completed = true; });
 
-  MozillaVPN::instance()->scheduleTask(task);
+  TaskScheduler::scheduleTask(task);
   QVERIFY(completed);
 }
 

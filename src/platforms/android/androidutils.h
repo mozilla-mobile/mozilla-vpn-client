@@ -21,6 +21,9 @@ class AndroidUtils final : public QObject {
  public:
   static QString GetDeviceName();
 
+  // Creates a "share" intent to Open/Send Plaintext
+  static bool ShareText(const QString& plainText);
+
   static QByteArray DeviceId();
 
   static AndroidUtils* instance();
@@ -32,6 +35,8 @@ class AndroidUtils final : public QObject {
   Q_INVOKABLE void abortAuthentication();
 
   Q_INVOKABLE bool maybeCompleteAuthentication(const QString& url);
+
+  Q_INVOKABLE void openNotificationSettings();
 
   static void dispatchToMainThread(std::function<void()> callback);
 

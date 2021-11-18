@@ -31,12 +31,11 @@ jobs:
           python3 -m pip install aqtinstall
           python3 -m aqt install --outputdir /opt 5.15.0 linux desktop wasm_32 -m qtcharts
 
-      - name: Install glean depedencies
+      - name: Install python dependencies
         shell: bash
         run: |
-          pip3 install "glean_parser==3.5"
-          pip3 install pyyaml
-
+          pip install -r requirements.txt
+  
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v7
         with:
@@ -52,11 +51,32 @@ jobs:
         with:
             name: WebAssembly Build
             path: wasm
+  inspector:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Building
+        shell: bash
+        run: |
+          cd tools/inspector
+          npm install
+          npm run build
+
+      - name: Uploading
+        uses: actions/upload-artifact@v1
+        with:
+            name: Inspector Build
+            path: tools/inspector/dist
 
   ghPages:
     runs-on: ubuntu-20.04
-    needs: [wasm]
-    if: github.ref == 'refs/heads/main'  # Only do this on Main Branch Pushes and not PR's
+    needs: [wasm,inspector]
     name: Publish Wasm on Github Pages
     env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -67,8 +87,20 @@ jobs:
           name: WebAssembly Build
           # Destination path
           path: _site
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v2.0.8
+        with:
+          name: Inspector Build
+          path: _site/inspector
+      - name: Uploading site Build
+        uses: actions/upload-artifact@v1
+        with:
+            name: GH-Pages Build
+            path: _site
+      
       - name: GH Pages deploy
         uses: Cecilapp/GitHub-Pages-deploy@3.1.0
+        if: github.ref == 'refs/heads/main'  # Only publish on main branch.
         with:
           # A verified email.
           email: sstreich@mozilla.com

@@ -4,11 +4,12 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
-import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
 
-import org.mozilla.Glean 0.15
-import telemetry 0.15
+import Mozilla.VPN 1.0
+import themes 0.1
+
+import org.mozilla.Glean 0.24
+import telemetry 0.24
 
 Item {
     property var gridFlow: grid.flow
@@ -66,7 +67,7 @@ Item {
                 }
                 PropertyChanges {
                     target: warningIcon
-                    source: "../resources/warning-orange.svg"
+                    source: "qrc:/ui/resources/warning-orange.svg"
                 }
             },
             State {
@@ -78,7 +79,7 @@ Item {
                 }
                 PropertyChanges {
                     target: warningIcon
-                    source: "../resources/warning.svg"
+                    source: "qrc:/ui/resources/warning.svg"
                 }
                 PropertyChanges {
                     target: logoSubtitleOn

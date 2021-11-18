@@ -5,6 +5,8 @@
 #ifndef WINDOWSPINGSENDER_H
 #define WINDOWSPINGSENDER_H
 
+#pragma comment(lib, "Ws2_32")
+
 #include "pingsender.h"
 
 #include <QMap>

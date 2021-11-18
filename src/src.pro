@@ -22,8 +22,9 @@ QT += quick
 QT += widgets
 QT += charts
 QT += websockets
+QT += sql
 
-# for the inspector
+# For the inspector
 QT+= testlib
 QT.testlib.CONFIG -= console
 CONFIG += no_testcase_installs
@@ -61,6 +62,7 @@ SOURCES += \
         captiveportal/captiveportalrequest.cpp \
         captiveportal/captiveportalmultirequest.cpp \
         closeeventhandler.cpp \
+        collator.cpp \
         command.cpp \
         commandlineparser.cpp \
         commands/commandactivate.cpp \
@@ -91,8 +93,6 @@ SOURCES += \
         hawkauth.cpp \
         hkdf.cpp \
         iaphandler.cpp \
-        inspector/inspectorhttpconnection.cpp \
-        inspector/inspectorhttpserver.cpp \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
@@ -111,6 +111,7 @@ SOURCES += \
         models/feedbackcategorymodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
+        models/licensemodel.cpp \
         models/server.cpp \
         models/servercity.cpp \
         models/servercountry.cpp \
@@ -131,8 +132,10 @@ SOURCES += \
         platforms/dummy/dummyapplistprovider.cpp \
         platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
+        platforms/dummy/dummypingsender.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
+        rfc/rfc1112.cpp \
         rfc/rfc1918.cpp \
         rfc/rfc4193.cpp \
         rfc/rfc4291.cpp \
@@ -141,7 +144,6 @@ SOURCES += \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
-        systemtrayhandler.cpp \
         tasks/accountandservers/taskaccountandservers.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
@@ -155,6 +157,7 @@ SOURCES += \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
         tasks/surveydata/tasksurveydata.cpp \
+        taskscheduler.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -179,6 +182,7 @@ HEADERS += \
         captiveportal/captiveportalmultirequest.h \
         captiveportal/captiveportalresult.h \
         closeeventhandler.h \
+        collator.h \
         command.h \
         commandlineparser.h \
         commands/commandactivate.h \
@@ -204,24 +208,22 @@ HEADERS += \
         features/featureappreview.h \
         features/featurecaptiveportal.h \
         features/featurecustomdns.h \
-        features/featureglean.h \
-        features/featureinappaccountCreate.h \
+        features/featureinappaccountcreate.h \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
         features/featurelocalareaaccess.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
+        features/featuresharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
+        features/featureuniqueid.h \
         features/featureunsecurednetworknotification.h \
-        features/featureunauthsupport.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
         hkdf.h \
         iaphandler.h \
-        inspector/inspectorhttpconnection.h \
-        inspector/inspectorhttpserver.h \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
@@ -238,6 +240,7 @@ HEADERS += \
         models/feedbackcategorymodel.h \
         models/helpmodel.h \
         models/keys.h \
+        models/licensemodel.h \
         models/server.h \
         models/servercity.h \
         models/servercountry.h \
@@ -259,8 +262,10 @@ HEADERS += \
         platforms/dummy/dummyapplistprovider.h \
         platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
+        platforms/dummy/dummypingsender.h \
         qmlengineholder.h \
         releasemonitor.h \
+        rfc/rfc1112.h \
         rfc/rfc1918.h \
         rfc/rfc4193.h \
         rfc/rfc4291.h \
@@ -269,7 +274,6 @@ HEADERS += \
         settingsholder.h \
         simplenetworkmanager.h \
         statusicon.h \
-        systemtrayhandler.h \
         task.h \
         tasks/accountandservers/taskaccountandservers.h \
         tasks/adddevice/taskadddevice.h \
@@ -284,6 +288,7 @@ HEADERS += \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
         tasks/surveydata/tasksurveydata.h \
+        taskscheduler.h \
         timercontroller.h \
         timersingleshot.h \
         update/updater.h \
@@ -309,11 +314,26 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += qml.qrc
-RESOURCES += logo.qrc
-RESOURCES += inspector/inspector.qrc
+RESOURCES += ui/components.qrc
+RESOURCES += ui/license.qrc
+RESOURCES += ui/resources.qrc
+RESOURCES += ui/themes.qrc
+RESOURCES += ui/ui.qrc
+RESOURCES += resources/certs/certs.qrc
+
+versionAtLeast(QT_VERSION, 6.0.0) {
+    RESOURCES += ui/compatQt6.qrc
+    RESOURCES += ui/resourcesQt6.qrc
+} else {
+    RESOURCES += ui/compatQt5.qrc
+}
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
+    !wasm {
+        message(Include QSQlite plugin)
+        QTPLUGIN += qsqlite
+    }
+
     RESOURCES += $$PWD/../glean/glean.qrc
 } else {
     error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
@@ -357,13 +377,11 @@ DUMMY {
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/dummy/dummycryptosettings.cpp \
-            platforms/dummy/dummypingsender.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
     HEADERS += \
             platforms/dummy/dummycontroller.h \
-            platforms/dummy/dummypingsender.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 }
@@ -398,7 +416,7 @@ else:linux:!android {
             platforms/linux/linuxnetworkwatcher.cpp \
             platforms/linux/linuxnetworkwatcherworker.cpp \
             platforms/linux/linuxpingsender.cpp \
-            platforms/linux/linuxsystemtrayhandler.cpp \
+            platforms/linux/linuxsystemtraynotificationhandler.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
@@ -413,7 +431,7 @@ else:linux:!android {
             platforms/linux/linuxnetworkwatcher.h \
             platforms/linux/linuxnetworkwatcherworker.h \
             platforms/linux/linuxpingsender.h \
-            platforms/linux/linuxsystemtrayhandler.h \
+            platforms/linux/linuxsystemtraynotificationhandler.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 
@@ -518,13 +536,17 @@ else:android {
         message(Adjust SDK enabled)
         DEFINES += MVPN_ADJUST
 
-        SOURCES += adjusthandler.cpp \
-                   adjustproxy.cpp \
-                   adjustproxyconnection.cpp
+        SOURCES += adjust/adjustfiltering.cpp \
+                   adjust/adjusthandler.cpp \
+                   adjust/adjustproxy.cpp \
+                   adjust/adjustproxyconnection.cpp \
+                   adjust/adjustproxypackagehandler.cpp
 
-        HEADERS += adjusthandler.h \
-                   adjustproxy.h \
-                   adjustproxyconnection.h
+        HEADERS += adjust/adjustfiltering.h \
+                   adjust/adjusthandler.h \
+                   adjust/adjustproxy.h \
+                   adjust/adjustproxyconnection.h \
+                   adjust/adjustproxypackagehandler.h
     }
 
     versionAtLeast(QT_VERSION, 5.15.1) {
@@ -726,18 +748,21 @@ else:ios {
         message(Adjust SDK enabled)
         DEFINES += MVPN_ADJUST
 
-        OBJECTIVE_SOURCES += \
-            adjusthandler.cpp \
-            adjustproxy.cpp \
-            adjustproxyconnection.cpp \
-            platforms/ios/iosadjusthelper.mm \
+        SOURCES += adjust/adjustfiltering.cpp \
+                   adjust/adjusthandler.cpp \
+                   adjust/adjustproxy.cpp \
+                   adjust/adjustproxyconnection.cpp \
+                   adjust/adjustproxypackagehandler.cpp
 
-        OBJECTIVE_HEADERS += \
-            adjusthandler.h \
-            adjustproxy.h \
-            adjustproxyconnection.h \
-            platforms/ios/iosadjusthelper.h \
+        OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm
 
+        HEADERS += adjust/adjustfiltering.h \
+                   adjust/adjusthandler.h \
+                   adjust/adjustproxy.h \
+                   adjust/adjustproxyconnection.h \
+                   adjust/adjustproxypackagehandler.h
+
+        OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h
     }
 
     TARGET = MozillaVPN
@@ -800,6 +825,10 @@ else:win* {
 
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+    CONFIG(debug, debug|release) {
+        QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
+        QMAKE_LFLAGS_WINDOWS += /DEBUG
+    }
 
     QT += networkauth
     QT += svg
@@ -808,9 +837,6 @@ else:win* {
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
     DEFINES += WIN32_LEAN_AND_MEAN #Solves Redifinition Errors Of Winsock
-    LIBS += Fwpuclnt.lib #Windows Filtering Plattform
-    LIBS += Rpcrt4.lib
-    LIBS += Advapi32.lib
 
     RC_ICONS = ui/resources/logo.ico
 
@@ -886,6 +912,8 @@ else:wasm {
 
     TARGET = mozillavpn
     QT += svg
+    # sql not available for wasm.
+    QT -= sql
 
     CONFIG += c++1z
 
@@ -895,7 +923,6 @@ else:wasm {
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/dummy/dummycryptosettings.cpp \
-            platforms/dummy/dummypingsender.cpp \
             platforms/macos/macosmenubar.cpp \
             platforms/wasm/wasmauthenticationlistener.cpp \
             platforms/wasm/wasmnetworkrequest.cpp \
@@ -905,7 +932,6 @@ else:wasm {
 
     HEADERS += \
             platforms/dummy/dummycontroller.h \
-            platforms/dummy/dummypingsender.h \
             platforms/macos/macosmenubar.h \
             platforms/wasm/wasmauthenticationlistener.h \
             platforms/wasm/wasmnetworkwatcher.h \
@@ -949,13 +975,18 @@ QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
 
-debug {
-    SOURCES += gleantest.cpp
-    HEADERS += gleantest.h
-}
-
 coverage {
     message(Coverage enabled)
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
     QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
+}
+
+debug {
+    # If in debug mode, set mvpn_debug flag too.
+    CONFIG += mvpn_debug
+}
+
+mvpn_debug {
+    message(MVPN Debug enabled)
+    DEFINES += MVPN_DEBUG
 }

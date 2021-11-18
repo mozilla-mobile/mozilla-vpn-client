@@ -10,8 +10,10 @@
 #include "features/featurecaptiveportal.h"
 #include "features/featurelocalareaaccess.h"
 #include "features/featuremultihop.h"
+#include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
+#include "rfc/rfc4291.h"
 
 #include "ipaddress.h"
 #include "ipaddressrange.h"
@@ -42,6 +44,8 @@ constexpr const uint32_t TIMER_MSEC = 1000;
 // X connection retries.
 constexpr const int CONNECTION_MAX_RETRY = 9;
 
+constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
+
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
 // private address range.
@@ -68,12 +72,18 @@ ControllerImpl::Reason stateToReason(Controller::State state) {
 Controller::Controller() {
   MVPN_COUNT_CTOR(Controller);
 
+  m_connectingTimer.setSingleShot(true);
+
   connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
 
   connect(&m_connectionCheck, &ConnectionCheck::success, this,
           &Controller::connectionConfirmed);
   connect(&m_connectionCheck, &ConnectionCheck::failure, this,
           &Controller::connectionFailed);
+  connect(&m_connectingTimer, &QTimer::timeout, [this]() {
+    m_enableDisconnectInConfirming = true;
+    emit enableDisconnectInConfirmingChanged();
+  });
 }
 
 Controller::~Controller() { MVPN_COUNT_DTOR(Controller); }
@@ -114,6 +124,8 @@ void Controller::initialize() {
           &Controller::implInitialized);
   connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
           &Controller::statusUpdated);
+  connect(this, &Controller::stateChanged, this,
+          &Controller::maybeEnableDisconnectInConfirming);
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
@@ -405,7 +417,7 @@ void Controller::disconnected() {
 
     TaskHeartbeat* task = new TaskHeartbeat();
     connect(task, &Task::completed, this, &Controller::heartbeatCompleted);
-    task->run(MozillaVPN::instance());
+    task->run();
     return;
   }
 
@@ -573,6 +585,18 @@ bool Controller::processNextStep() {
   return false;
 }
 
+void Controller::maybeEnableDisconnectInConfirming() {
+  if (m_state == StateConfirming) {
+    m_enableDisconnectInConfirming = false;
+    emit enableDisconnectInConfirmingChanged();
+    m_connectingTimer.start(CONFIRMING_TIMOUT_SEC * 1000);
+  } else {
+    m_enableDisconnectInConfirming = false;
+    emit enableDisconnectInConfirmingChanged();
+    m_connectingTimer.stop();
+  }
+}
+
 void Controller::setState(State state) {
   logger.debug() << "Setting state:" << state;
 
@@ -650,8 +674,6 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     const QList<Server>& serverList) {
   logger.debug() << "Computing the allowed ip addresses";
 
-  bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
-
   QList<IPAddress> excludeIPv4s;
   QList<IPAddress> excludeIPv6s;
   // For multi-hop connections, the last entry in the server list is the
@@ -679,10 +701,12 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     logger.debug() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());
 
-    if (ipv6Enabled) {
-      logger.debug() << "Filtering out the local area networks (rfc 4193)";
-      excludeIPv6s.append(RFC4193::ipv6());
-    }
+    logger.debug() << "Filtering out the local area networks (rfc 4193)";
+    excludeIPv6s.append(RFC4193::ipv6());
+
+    logger.debug() << "Filtering out multicast addresses";
+    excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
+    excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
   }
   if (DNSHelper::shouldExcludeDNS()) {
     auto dns = DNSHelper::getDNS(server.ipv4Gateway());
@@ -693,44 +717,37 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
 
   QList<IPAddressRange> list;
 
+#ifdef MVPN_IOS
+  logger.debug() << "Catch all IPv4";
+  list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
+
+  logger.debug() << "Catch all IPv6";
+  list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
+#else
+  // filtering out the ingress server's public IPv4 and IPv6 addresses.
+  logger.debug() << "Exclude the ingress server:" << server.ipv4AddrIn();
+  excludeIPv4s.append(IPAddress::create(server.ipv4AddrIn()));
+  logger.debug() << "Allow the ingress server:" << server.ipv4Gateway();
+  list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
+
+  logger.debug() << "Exclude the ingress server:" << server.ipv6AddrIn();
+  excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
+  logger.debug() << "Allow the ingress server:" << server.ipv6Gateway();
+  list.append(IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
+
   // Ensure that the Mullvad proxy services are always allowed.
   list.append(IPAddressRange(MULLVAD_PROXY_RANGE, MULLVAD_PROXY_RANGE_LENGTH,
                              IPAddressRange::IPv4));
 
-  if (excludeIPv4s.isEmpty()) {
-    logger.debug() << "Catch all IPv4";
-    list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
-  } else {
-    QList<IPAddress> allowedIPv4s{IPAddress::create("0.0.0.0/0")};
+  // Allow access to everything not covered by an excluded address.
+  QList<IPAddress> allowedIPv4s{IPAddress::create("0.0.0.0/0")};
+  allowedIPv4s = IPAddress::excludeAddresses(allowedIPv4s, excludeIPv4s);
+  list.append(IPAddressRange::fromIPAddressList(allowedIPv4s));
 
-    logger.debug() << "Exclude the ingress server:" << server.ipv4AddrIn();
-    excludeIPv4s.append(IPAddress::create(server.ipv4AddrIn()));
-
-    allowedIPv4s = IPAddress::excludeAddresses(allowedIPv4s, excludeIPv4s);
-    list.append(IPAddressRange::fromIPAddressList(allowedIPv4s));
-
-    logger.debug() << "Allow the ingress server:" << server.ipv4Gateway();
-    list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
-  }
-
-  if (ipv6Enabled) {
-    if (excludeIPv6s.isEmpty()) {
-      logger.debug() << "Catch all IPv6";
-      list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
-    } else {
-      QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
-
-      logger.debug() << "Exclude the ingress server:" << server.ipv6AddrIn();
-      excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
-
-      allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
-      list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
-
-      logger.debug() << "Allow the ingress server:" << server.ipv6Gateway();
-      list.append(
-          IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
-    }
-  }
+  QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
+  allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
+  list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
+#endif
 
   return list;
 }

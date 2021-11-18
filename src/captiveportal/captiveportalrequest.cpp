@@ -26,11 +26,7 @@ void CaptivePortalRequest::run() {
   SettingsHolder* settings = SettingsHolder::instance();
 
   QStringList ipv4Addresses = settings->captivePortalIpv4Addresses();
-
-  QStringList ipv6Addresses;
-  if (settings->ipv6Enabled()) {
-    ipv6Addresses = settings->captivePortalIpv6Addresses();
-  }
+  QStringList ipv6Addresses = settings->captivePortalIpv6Addresses();
 
   // We do not have IPs to check.
   if (ipv4Addresses.isEmpty() && ipv6Addresses.isEmpty()) {
@@ -61,6 +57,14 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
   NetworkRequest* request = NetworkRequest::createForCaptivePortalDetection(
       this, url, CAPTIVEPORTAL_HOST);
 
+  connect(request, &NetworkRequest::requestRedirected,
+          [this](NetworkRequest* request, const QUrl& url) {
+            // In Case the Captive Portal request Redirects, we 100% have one.
+            logger.info() << "Portal Detected -> Redirect to "
+                          << url.toString();
+            request->abort();
+            onResult(PortalDetected);
+          });
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.warning() << "Captive portal request failed:" << error;

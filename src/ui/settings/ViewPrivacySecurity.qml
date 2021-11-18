@@ -4,11 +4,11 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../components"
-import "../themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 // TODO: This filename should be changed to 'ViewPreferences.qml' after the 2.5 release
 // The legacy name has been kept to prevent the creation of additional strings
@@ -46,7 +46,7 @@ Item {
                 objectName: "settingStartAtBoot"
 
                 labelText: _startAtBootTitle
-                subLabelText: ""
+                subLabelText: VPNl18n.SettingsStartAtBootDescription
                 isChecked: VPNSettings.startAtBoot
                 isEnabled: true
                 showDivider: false
@@ -70,8 +70,7 @@ Item {
 
                 //% "Data collection and use"
                 labelText: qsTrId("vpn.settings.dataCollection")
-                //% "Allow Mozilla VPN to send technical data to Mozilla"
-                subLabelText: qsTrId("vpn.settings.dataCollection.description")
+                subLabelText: VPNl18n.SettingsDataCollectionDescription
                 isChecked: VPNSettings.gleanEnabled
                 onClicked: {
                     VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
@@ -87,9 +86,15 @@ Item {
                     anchors.right: parent.right
 
                     settingTitle: _notificationsTitle
-                    imageLeftSrc: "../resources/settings/notifications.svg"
-                    imageRightSrc: "../resources/chevron.svg"
-                    onClicked: settingsStackView.push("../settings/ViewNotifications.qml")
+                    imageLeftSrc: "qrc:/ui/resources/settings/notifications.svg"
+                    imageRightSrc: "qrc:/ui/resources/chevron.svg"
+                    onClicked: {
+                        if(Qt.platform.os === "android"){
+                            VPNAndroidUtils.openNotificationSettings();
+                            return;
+                        }
+                        settingsStackView.push("qrc:/ui/settings/ViewNotifications.qml")
+                    }
                     visible: VPNFeatureList.get("captivePortal").isSupported || VPNFeatureList.get("unsecuredNetworkNotification").isSupported || VPNFeatureList.get("notificationControl").isSupported
                     width: parent.width - Theme.windowMargin
                 }
@@ -101,9 +106,9 @@ Item {
                     anchors.right: parent.right
 
                     settingTitle: _languageTitle
-                    imageLeftSrc: "../resources/settings/language.svg"
-                    imageRightSrc: "../resources/chevron.svg"
-                    onClicked: settingsStackView.push("../settings/ViewLanguage.qml")
+                    imageLeftSrc: "qrc:/ui/resources/settings/language.svg"
+                    imageRightSrc: "qrc:/ui/resources/chevron.svg"
+                    onClicked: settingsStackView.push("qrc:/ui/settings/ViewLanguage.qml")
                     visible: VPNLocalizer.hasLanguages
                     width: parent.width - Theme.windowMargin
                 }

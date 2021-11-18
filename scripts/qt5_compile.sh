@@ -97,7 +97,7 @@ print Y "Wait..."
   -nomake tests \
   -make libs \
   -no-sql-psql \
-  -no-sql-sqlite \
+  -sql-sqlite \
   -skip qt3d \
   -skip webengine \
   -skip qtmultimedia \

@@ -4,11 +4,12 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import Mozilla.VPN 1.0
-import "../components"
 
-import org.mozilla.Glean 0.15
-import telemetry 0.15
+import Mozilla.VPN 1.0
+import components 0.1
+
+import org.mozilla.Glean 0.24
+import telemetry 0.24
 
 
 VPNStackView {
@@ -19,7 +20,7 @@ VPNStackView {
     }
     Component.onCompleted: {
         stackview.push(
-            "../views/ViewErrorFullScreen.qml", {
+            "qrc:/ui/views/ViewErrorFullScreen.qml", {
                 //% "Something went wrong…"
                 headlineText: qsTrId("vpn.errors.somethingWentWrong"),
 

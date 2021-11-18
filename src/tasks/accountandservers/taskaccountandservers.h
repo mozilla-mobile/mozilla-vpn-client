@@ -8,7 +8,6 @@
 #include "task.h"
 
 #include <QObject>
-#include <QPointer>
 
 class TaskAccountAndServers final : public Task {
   Q_DISABLE_COPY_MOVE(TaskAccountAndServers)
@@ -17,7 +16,7 @@ class TaskAccountAndServers final : public Task {
   TaskAccountAndServers();
   ~TaskAccountAndServers();
 
-  void run(MozillaVPN* vpn) override;
+  void run() override;
 
  private:
   void maybeCompleted();

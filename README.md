@@ -24,7 +24,30 @@ After checking out the code:
 
 * Install the git pre-commit hook (`./scripts/git-pre-commit-format install`)
 * Build the source (See below)
-* Run the tests `./scripts/test_coverage.sh` or `./scripts/test_function.sh`
+* Run the unit tests with `./scripts/test_coverage.sh` or see below for running the functional tests.
+
+### Running the functional tests
+
+* Install node (if needed) and then `npm install` to install the testing dependencies
+* Install geckodriver and ensure it's on your path.
+  [Docs](https://www.selenium.dev/documentation/getting_started/installing_browser_drivers/)
+* Make a .env file with:
+ * `ACCOUNT_EMAIL` and `ACCOUNT_PASSWORD` (the account should have an active subscription on staging).
+ * `MVPN_API_BASE_URL` (where proxy runs, most likely http://localhost:5000)
+ * `MVPN_BIN` (location of compiled mvpn binary)
+ * `ARTIFACT_DIR` (directory to put screenshots from test failures)
+* (Optional) In one window run `./tests/proxy/wsgi.py --mock-devices`
+* To run, say, the authentication tests: `./scripts/test_function.sh tests/functional/testAuthentication.js`.
+
+Misc tips from core devs:
+* Make sure there are read/write permissions at every level of your build path
+* Suggest building with the flags used in CI `qmake CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug CONFIG+=inspector QT+=svg`
+* Using a headless browser locally may cause the tests to stall out.
+* See the [workflows file](/.github/workflows/functional_tests.yaml) which runs the functional tests in ci for pointers
+  if you're stuck.
+* If you're a conda user you can conda install node and geckodriver from conda-forge packages.
+* If you're trying to just iterate on one test change `it("....)` to `it.only("...)`. And only that one test will run.... don't forget to undo!
+* Check out our [Logviewer](https://mozilla-mobile.github.io/mozilla-vpn-client/logviewer/) and the [Inspector](https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/), they might come handy debugging issues!
 
 ## How to build from the source code
 
@@ -39,11 +62,9 @@ following dependencies:
 - wireguard-tools >=1.0.20200513
 - resolvconf >= 1.82
 - golang >= 1.13
+- python >= 3.6
 
-Python3 (pip) depedencies:
-
-- glean_parser==3.5
-- pyyaml
+For Python depedencies see requirements.txt
 
 #### QT5
 
@@ -66,7 +87,20 @@ bash scripts/qt5_compile.sh qt qt
 
 See https://wiki.qt.io/Building_Qt_5_from_Git#Linux.2FX11 if you get stuck or are on another distro.
 
-Finally, **add `$(pwd)/qt/qt/bin` to `PATH`.**
+If you are building Qt from sources, be sure to **add `$(pwd)/qt/qt/bin` to `PATH`.**
+
+For Ubuntu/21.04 and later, the `qt5-default` package has been deprecated, but Qt 5.15 is now
+available as a native package. For these distributions, you can install the necessary Qt
+dependencies as follows:
+```
+sudo apt-get install devscripts equivs
+sudo mk-build-deps --install linux/debian/control.$(lsb_release -sc)
+sudo apt-get install qml-module-qtcharts qml-module-qtgraphicaleffects \
+                     qml-module-qtquick-controls qml-module-qtquick-controls2 \
+                     qml-module-qtquick-extras qml-module-qtquick-layouts \
+                     qml-module-qtquick-window2 qml-module-qtquick2 \
+                     qml-module-qtqml-models2 qml-module-qtqml
+```
 
 #### Initialization
 
@@ -78,6 +112,8 @@ git submodule update
 ./scripts/generate_glean.py
 # translations
 ./scripts/importLanguages.py
+# Bake shaders
+sh ./scripts/bake_shaders.sh
 ```
 
 #### Build
@@ -152,8 +188,7 @@ This step needs to be updated each time XCode updates.
 ```
 4. Install python3 dependencies:
 ```
-  $ pip3 install 'glean_parser==3.5'
-  $ pip3 install pyyaml
+  $ pip3 install -r requirements.txt --user
 ```
 5. Copy `xcode.xconfig.template` to `xcode.xconfig`
 ```
@@ -212,8 +247,7 @@ Once Qt has been installed, the IOS procedure is similar to the macOS one:
 
 3. Install python3 dependencies:
 ```
-  $ pip3 install 'glean_parser==3.5'
-  $ pip3 install pyyaml
+  $ pip3 install -r requirements.txt --user
 ```
 
 4. Copy `xcode.xconfig.template` to `xcode.xconfig`
@@ -259,8 +293,7 @@ Add the Adjust SDK token with `-a | --adjust <adjust_token>`
 
 5. Install python3 dependencies:
 ```
-  $ pip3 install 'glean_parser==3.5'
-  $ pip3 install pyyaml
+  $ pip3 install -r requirements.txt --user
 ```
 
 6. Build the apk
@@ -286,7 +319,7 @@ The dependencies are:
 2. nasm: https://www.nasm.us/
 3. python3: https://www.python.org/downloads/windows/
 4. visual studio 2019: https://visualstudio.microsoft.com/vs/
-5. Install python3 dependencies (pip install "glean_parser==3.5" pyyaml)
+5. Install python3 dependencies (pip3 install -r requirements.txt --user)
 
 Openssl can be obtained from here: https://www.openssl.org/source/
 Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz
@@ -305,6 +338,19 @@ The inspector is enabled when the staging environment is activated.
 When running MozillaVPN, go to http://localhost:8766 to view the inspector.
 
 From the inspector, type `help` to see the list of available commands.
+
+## Glean
+
+When the client is built in debug mode, pings will have the applicationId `MozillaVPN-debug`. Additionally, ping contents will be logged to the client logs and will also be sent to the
+[glean debug viewer](https://debug-ping-preview.firebaseapp.com/pings/MozillaVPN) (login required) where they are retained for 3 weeks.
+
+More info on debug view in [glean docs](https://mozilla.github.io/glean/book/user/debugging/index.html).
+
+When the client is in staging mode, but not debug mode, pings will have the applicationId `MozillaVPN-staging` which allows for filtering between staging and production pings.
+
+#### A note on glean embedding
+
+Qt only accepts `major.minor` versions for importing. So if, for example, you're embedding glean v0.21.2 then it will still, for Qt's purpose, be v0.21.
 
 ## Bug report
 

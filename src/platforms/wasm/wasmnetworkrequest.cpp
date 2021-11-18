@@ -89,6 +89,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 // static
 NetworkRequest* NetworkRequest::createForDeviceCreation(QObject* parent,
                                                         const QString&,
+                                                        const QString&,
                                                         const QString&) {
   Q_ASSERT(parent);
 
@@ -355,3 +356,7 @@ void NetworkRequest::postRequest(const QByteArray&) {}
 void NetworkRequest::handleReply(QNetworkReply*) {}
 
 int NetworkRequest::statusCode() const { return 200; }
+
+void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
+  Q_UNUSED(errors);
+}

@@ -9,8 +9,10 @@
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
+#include "notificationhandler.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "l18nstrings.h"
 
 #include <QAndroidBinder>
 #include <QAndroidIntent>
@@ -99,6 +101,9 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
   QtAndroid::bindService(
       QAndroidIntent(appContext.object(), "org.mozilla.firefox.vpn.VPNService"),
       *this, QtAndroid::BindFlag::AutoCreate);
+
+  connect(this, &AndroidController::initialized, this,
+          &AndroidController::applyStrings, Qt::QueuedConnection);
 }
 
 /*
@@ -122,13 +127,17 @@ void AndroidController::setNotificationText(const QString& title,
  * switches into the Connected state without the app open
  * e.g via always-on vpn
  */
-void AndroidController::setFallbackConnectedNotification() {
-  QJsonObject args;
-  args["title"] = qtTrId("vpn.main.productName");
+void AndroidController::applyStrings() {
+  QJsonObject localisedMessages;
+  localisedMessages["productName"] = qtTrId("vpn.main.productName");
   //% "Ready for you to connect"
   //: Refers to the app - which is currently running the background and waiting
-  args["message"] = qtTrId("vpn.android.notification.isIDLE");
-  QJsonDocument doc(args);
+  localisedMessages["idleText"] = qtTrId("vpn.android.notification.isIDLE");
+  localisedMessages["notification_group_name"] = L18nStrings::instance()->t(
+      L18nStrings::AndroidNotificationsGeneralNotifications);
+
+#undef MESSAGE
+  QJsonDocument doc(localisedMessages);
   QAndroidParcel data;
   data.writeData(doc.toJson());
   m_serviceBinder.transact(ACTION_SET_NOTIFICATION_FALLBACK, data, nullptr);
@@ -148,7 +157,10 @@ void AndroidController::activate(
       PERMISSIONHELPER_CLASS, "startService", "(Landroid/content/Context;)V",
       appContext.object());
 
-  Server server = serverList[0];
+  bool isMultihop = serverList.length() > 1;
+  Server exitServer = serverList.first();
+  Server entryServer = serverList.last();
+
   m_device = *device;
 
   // Serialise arguments for the VPNService
@@ -163,12 +175,19 @@ void AndroidController::activate(
   jKeys["privateKey"] = keys->privateKey();
 
   QJsonObject jServer;
-  jServer["ipv4AddrIn"] = server.ipv4AddrIn();
-  jServer["ipv4Gateway"] = server.ipv4Gateway();
-  jServer["ipv6AddrIn"] = server.ipv6AddrIn();
-  jServer["ipv6Gateway"] = server.ipv6Gateway();
-  jServer["publicKey"] = server.publicKey();
-  jServer["port"] = (int)server.choosePort();
+  logger.info() << "Server[0]" << entryServer.hostname();
+  jServer["ipv4AddrIn"] = entryServer.ipv4AddrIn();
+  jServer["ipv4Gateway"] = entryServer.ipv4Gateway();
+  jServer["ipv6AddrIn"] = entryServer.ipv6AddrIn();
+  jServer["ipv6Gateway"] = entryServer.ipv6Gateway();
+
+  jServer["publicKey"] = exitServer.publicKey();
+  jServer["port"] =
+      (int)(isMultihop ? exitServer.multihopPort() : entryServer.choosePort());
+
+  if (serverList.length() != 1) {
+    jServer["port"] = (int)exitServer.multihopPort();
+  }
 
   QJsonArray allowedIPs;
   foreach (auto item, allowedIPAddressRanges) {
@@ -289,9 +308,6 @@ bool AndroidController::VPNBinder::onTransact(int code,
           true, doc.object()["connected"].toBool(),
           QDateTime::fromMSecsSinceEpoch(
               doc.object()["time"].toVariant().toLongLong()));
-      // Pass a localised version of the Fallback string for the Notification
-      m_controller->setFallbackConnectedNotification();
-
       break;
     case EVENT_CONNECTED:
       logger.debug() << "Transact: connected";
@@ -308,8 +324,8 @@ bool AndroidController::VPNBinder::onTransact(int code,
       doc = QJsonDocument::fromJson(data.readData());
       emit m_controller->statusUpdated(doc.object()["endpoint"].toString(),
                                        doc.object()["deviceIpv4"].toString(),
-                                       doc.object()["totalTX"].toInt(),
-                                       doc.object()["totalRX"].toInt());
+                                       doc.object()["tx_bytes"].toInt(),
+                                       doc.object()["rx_bytes"].toInt());
       break;
     case EVENT_BACKEND_LOGS:
       logger.debug() << "Transact: backend logs";
@@ -320,8 +336,13 @@ bool AndroidController::VPNBinder::onTransact(int code,
       }
       break;
     case EVENT_ACTIVATION_ERROR:
+      buffer = readUTF8Parcel(data);
+      if (!buffer.isEmpty()) {
+        logger.error() << "Service Error while activating the VPN: " << buffer;
+      }
       MozillaVPN::instance()->errorHandle(ErrorHandler::ConnectionFailureError);
       emit m_controller->disconnected();
+      break;
     default:
       logger.warning() << "Transact: Invalid!";
       break;

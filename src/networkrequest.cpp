@@ -5,6 +5,7 @@
 #include "networkrequest.h"
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
+#include "features/featureuniqueid.h"
 #include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -12,6 +13,7 @@
 #include "settingsholder.h"
 #include "mozillavpn.h"
 
+#include <QDirIterator>
 #include <QHostAddress>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -31,13 +33,13 @@ constexpr const char* IPINFO_URL_IPV6 = "https://[%1]/api/v1/vpn/ipinfo";
 
 namespace {
 Logger logger(LOG_NETWORKING, "NetworkRequest");
-}
+QList<QSslCertificate> s_intervention_certs;
+}  // namespace
 
 NetworkRequest::NetworkRequest(QObject* parent, int status,
                                bool setAuthorizationHeader)
     : QObject(parent), m_status(status) {
   MVPN_COUNT_CTOR(NetworkRequest);
-
   logger.debug() << "Network request created";
 
 #ifndef MVPN_WASM
@@ -55,6 +57,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
     // Global Privacy Control: https://globalprivacycontrol.github.io/gpc-spec/
     m_request.setRawHeader("Sec-GPC", "1");
   }
+  m_request.setOriginatingObject(parent);
 
   if (setAuthorizationHeader) {
     QByteArray authorizationHeader = "Bearer ";
@@ -69,6 +72,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
   connect(&m_timer, &QTimer::timeout, this, &QObject::deleteLater);
 
   NetworkManager::instance()->increaseNetworkRequestCount();
+  enableSSLIntervention();
 }
 
 NetworkRequest::~NetworkRequest() {
@@ -135,7 +139,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 
 // static
 NetworkRequest* NetworkRequest::createForAdjustProxy(
-    QObject* parent, const QString& method, const QString& route,
+    QObject* parent, const QString& method, const QString& path,
     const QList<QPair<QString, QString>>& headers,
     const QString& queryParameters, const QString& bodyParameters,
     const QList<QString>& unknownParameters) {
@@ -157,7 +161,7 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
 
   QJsonObject obj;
   obj.insert("method", method);
-  obj.insert("path", route);
+  obj.insert("path", path);
   obj.insert("headers", headersObj);
   obj.insert("queryParameters", queryParameters);
   obj.insert("bodyParameters", bodyParameters);
@@ -176,7 +180,8 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
 
 // static
 NetworkRequest* NetworkRequest::createForDeviceCreation(
-    QObject* parent, const QString& deviceName, const QString& pubKey) {
+    QObject* parent, const QString& deviceName, const QString& pubKey,
+    const QString& deviceId) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 201, true);
@@ -190,6 +195,10 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
 
   QJsonObject obj;
   obj.insert("name", deviceName);
+
+  if (!FeatureUniqueID::instance()->isSupported()) {
+    obj.insert("unique_id", deviceId);
+  }
   obj.insert("pubkey", pubKey);
 
   QJsonDocument json;
@@ -213,7 +222,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
   QUrl u(url);
   r->m_request.setUrl(QUrl(url));
 
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   logger.debug() << "Network starting" << r->m_request.url().toString();
 #endif
 
@@ -308,7 +317,9 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
 
   r->m_request.setUrl(url);
   r->m_request.setRawHeader("Host", host);
-
+  // This enables the QNetworkReply::redirected for every type of redirect.
+  r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                            QNetworkRequest::UserVerifiedRedirectPolicy);
   r->getRequest();
   return r;
 }
@@ -367,10 +378,19 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
 NetworkRequest* NetworkRequest::createForSupportTicket(
     QObject* parent, const QString& email, const QString& subject,
     const QString& issueText, const QString& logs, const QString& category) {
-  NetworkRequest* r = new NetworkRequest(parent, 201, true);
+  bool isAuthenticated =
+      MozillaVPN::instance()->userState() == MozillaVPN::UserAuthenticated;
+
+  NetworkRequest* r = new NetworkRequest(parent, 201, isAuthenticated);
 
   QUrl url(apiBaseUrl());
-  url.setPath("/api/v1/vpn/createSupportTicket");
+
+  if (isAuthenticated) {
+    url.setPath("/api/v1/vpn/createSupportTicket");
+  } else {
+    url.setPath("/api/v1/vpn/createGuestSupportTicket");
+  }
+
   r->m_request.setUrl(url);
 
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -775,8 +795,10 @@ void NetworkRequest::replyFinished() {
   QByteArray data = m_reply->readAll();
 
   if (m_reply->error() != QNetworkReply::NoError) {
+    QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
     logger.error() << "Network error:" << m_reply->errorString()
                    << "status code:" << status << "- body:" << data;
+    logger.error() << "Failed to access:" << m_request.url().toString(options);
     emit requestFailed(m_reply->error(), data);
     return;
   }
@@ -853,6 +875,7 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
 
   connect(m_reply, &QNetworkReply::finished, this,
           &NetworkRequest::replyFinished);
+  connect(m_reply, &QNetworkReply::sslErrors, this, &NetworkRequest::sslErrors);
   connect(m_reply, &QNetworkReply::metaDataChanged, this,
           &NetworkRequest::handleHeaderReceived);
   connect(m_reply, &QNetworkReply::redirected, this,
@@ -892,4 +915,45 @@ void NetworkRequest::abort() {
   }
 
   m_reply->abort();
+}
+
+void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
+  if (!m_reply) {
+    return;
+  }
+  logger.error() << "SSL Error on " << m_reply->url().host();
+  for (const auto& error : errors) {
+    logger.error() << error.errorString();
+    auto cert = error.certificate();
+    if (!cert.isNull()) {
+      logger.info() << "Related Cert:";
+      logger.info() << cert.toText();
+    }
+  }
+}
+
+void NetworkRequest::enableSSLIntervention() {
+  if (s_intervention_certs.isEmpty()) {
+    s_intervention_certs = QSslConfiguration::systemCaCertificates();
+    QDirIterator certFolder(":/certs");
+    while (certFolder.hasNext()) {
+      QFile f(certFolder.next());
+      if (!f.open(QIODevice::ReadOnly)) {
+        continue;
+      }
+      QSslCertificate cert(&f, QSsl::Pem);
+      if (!cert.isNull()) {
+        logger.info() << "Imported cert from: " << cert.issuerDisplayName();
+        s_intervention_certs.append(cert);
+      } else {
+        logger.error() << "Failed to import cert -" << f.fileName();
+      }
+    }
+  }
+  if (s_intervention_certs.isEmpty()) {
+    return;
+  }
+  auto conf = QSslConfiguration::defaultConfiguration();
+  conf.addCaCertificates(s_intervention_certs);
+  m_request.setSslConfiguration(conf);
 }

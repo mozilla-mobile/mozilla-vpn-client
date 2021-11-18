@@ -10,7 +10,6 @@
 #include <QAbstractListModel>
 #include <QByteArray>
 #include <QObject>
-#include <QPointer>
 
 class ServerData;
 

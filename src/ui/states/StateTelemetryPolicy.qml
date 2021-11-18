@@ -4,26 +4,27 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
-import "../components"
+import components 0.1
+import themes 0.1
 
 VPNFlickable {
     id: vpnFlickable
 
+    height: parent.height
+    flickContentHeight: column.height
+
     Component.onCompleted: {
-        flickContentHeight = column.childrenRect.height;
         fade.start();
     }
 
     ColumnLayout {
         id: column
-        width: vpnFlickable.width
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
+
         spacing: Theme.windowMargin * 1.25
+        width: vpnFlickable.width
 
         VPNVerticalSpacer {
             Layout.fillWidth: true
@@ -31,10 +32,9 @@ VPNFlickable {
         }
 
         VPNPanel {
-            logo: "../resources/updateRecommended.svg"
+            logo: "qrc:/ui/resources/updateRecommended.svg"
             logoTitle: qsTrId("vpn.settings.dataCollection")
-            //% "We strive to provide you with choices and collect only the technical data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional."
-            logoSubtitle: qsTrId("vpn.telemetryPolicy.updatedTelemetryDisclaimer")
+            logoSubtitle: VPNl18n.TelemetryPolicyViewDescription
             Layout.fillWidth: true
             anchors.horizontalCenter: undefined
             height: undefined
@@ -56,8 +56,7 @@ VPNFlickable {
                 Layout.rightMargin: Theme.windowMargin * 3
                 Layout.maximumWidth: Theme.maxHorizontalContentWidth
                 Layout.fillWidth: true
-                //% "Allow Mozilla VPN to send technical data to Mozilla?"
-                text: qsTrId("vpn.telemetryPolicy.allowMozillaToSendData")
+                text: VPNl18n.TelemetryPolicyViewQuestion
             }
 
             VPNButton {

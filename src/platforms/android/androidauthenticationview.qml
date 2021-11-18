@@ -7,8 +7,8 @@ import QtQuick.Controls 2.15
 import QtWebView 1.15
 
 import Mozilla.VPN 1.0
-import "../../ui/components"
-import "../../ui/themes/themes.js" as Theme
+import components 0.1
+import themes 0.1
 
 Item {
     Item {
@@ -47,7 +47,7 @@ Item {
             Image {
                 id: backImage
 
-                source: "../../ui/resources/close-dark.svg"
+                source: "qrc:/ui/resources/close-dark.svg"
                 sourceSize.width: Theme.iconSize
                 fillMode: Image.PreserveAspectFit
                 anchors.centerIn: iconButton

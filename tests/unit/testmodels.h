@@ -16,6 +16,7 @@ class TestModels final : public TestHelper {
   void deviceModelBasic();
   void deviceModelFromJson_data();
   void deviceModelFromJson();
+  void deviceModelRemoval();
 
   void feedbackCategoryBasic();
 

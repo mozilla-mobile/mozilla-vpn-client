@@ -11,7 +11,11 @@
 #include <QJsonValue>
 #include <QTextStream>
 
-#ifdef QT_DEBUG
+#ifdef MVPN_WINDOWS
+#  include <QSslSocket>
+#endif
+
+#ifdef MVPN_DEBUG
 #  include <QRandomGenerator>
 #endif
 
@@ -21,6 +25,8 @@
 #  include "platforms/macos/macosutils.h"
 #elif MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
+#elif MVPN_WINDOWS
+#  include "platforms/windows/windowscommons.h"
 #endif
 
 // static
@@ -37,6 +43,9 @@ QString Device::currentDeviceName() {
       AndroidUtils::GetDeviceName();
 #elif MVPN_WASM
       "WASM";
+#elif MVPN_WINDOWS
+      QSysInfo::machineHostName() + " " + QSysInfo::productType() + " " +
+      WindowsCommons::WindowsVersion();
 #else
       QSysInfo::machineHostName() + " " + QSysInfo::productType() + " " +
       QSysInfo::productVersion();
@@ -51,11 +60,21 @@ QString Device::currentDeviceReport() {
   QTextStream out(&buffer);
   out << "Name -> " << currentDeviceName() << Qt::endl;
   out << "ABI -> " << QSysInfo::buildAbi() << Qt::endl;
+  out << "Machine arch -> " << QSysInfo::currentCpuArchitecture() << Qt::endl;
   out << "OS -> " << QSysInfo::productType() << Qt::endl;
+#ifdef MVPN_WINDOWS
+  out << "OS Version -> " << WindowsCommons::WindowsVersion() << Qt::endl;
+#else
   out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
+#endif
   out << "APP Version -> " << APP_VERSION << Qt::endl;
   out << "Build ID -> " << BUILD_ID << Qt::endl;
-  out << "Device ID -> " << uniqueDeviceId();
+  out << "Device ID -> " << uniqueDeviceId() << Qt::endl;
+
+#ifdef MVPN_WINDOWS
+  out << "SSL Lib:" << QSslSocket::sslLibraryVersionString()
+      << QSslSocket::sslLibraryVersionNumber() << Qt::endl;
+#endif
 
   return buffer;
 }

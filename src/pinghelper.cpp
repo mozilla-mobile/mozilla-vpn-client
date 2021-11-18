@@ -6,6 +6,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "pingsender.h"
+#include "platforms/dummy/dummypingsender.h"
+#include "timersingleshot.h"
 
 #if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
 #  include "platforms/linux/linuxpingsender.h"
@@ -14,7 +16,6 @@
 #elif defined(MVPN_WINDOWS)
 #  include "platforms/windows/windowspingsender.h"
 #elif defined(MVPN_DUMMY) || defined(UNIT_TEST)
-#  include "platforms/dummy/dummypingsender.h"
 #else
 #  error "Unsupported platform"
 #endif
@@ -24,14 +25,15 @@
 #include <cmath>
 
 // Any X seconds, a new ping.
-constexpr uint32_t PING_TIMOUT_SEC = 1;
+constexpr uint32_t PING_TIMEOUT_SEC = 1;
 
 // Maximum window size for ping statistics.
 constexpr int PING_STATS_WINDOW = 32;
 
 namespace {
 Logger logger(LOG_NETWORKING, "PingHelper");
-}
+bool s_has_critical_ping_error = false;
+}  // namespace
 
 PingHelper::PingHelper() {
   MVPN_COUNT_CTOR(PingHelper);
@@ -50,17 +52,24 @@ void PingHelper::start(const QString& serverIpv4Gateway,
 
   m_gateway = serverIpv4Gateway;
   m_source = deviceIpv4Address.section('/', 0, 0);
-  m_pingSender =
+
+  if (s_has_critical_ping_error) {
+    m_pingSender = new DummyPingSender(m_source, this);
+  } else {
+    m_pingSender =
 #if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
-      new LinuxPingSender(m_source, this);
+        new LinuxPingSender(m_source, this);
 #elif defined(MVPN_MACOS) || defined(MVPN_IOS)
-      new MacOSPingSender(m_source, this);
+        new MacOSPingSender(m_source, this);
 #elif defined(MVPN_WINDOWS)
-      new WindowsPingSender(m_source, this);
+        new WindowsPingSender(m_source, this);
 #else
-      new DummyPingSender(m_source, this);
+        new DummyPingSender(m_source, this);
 #endif
+  }
   connect(m_pingSender, &PingSender::recvPing, this, &PingHelper::pingReceived);
+  connect(m_pingSender, &PingSender::criticalPingError, this,
+          &PingHelper::handlePingError);
 
   // Reset the ping statistics
   m_sequence = 0;
@@ -70,7 +79,7 @@ void PingHelper::start(const QString& serverIpv4Gateway,
     m_pingData[i].sequence = 0;
   }
 
-  m_pingTimer.start(PING_TIMOUT_SEC * 1000);
+  m_pingTimer.start(PING_TIMEOUT_SEC * 1000);
 }
 
 void PingHelper::stop() {
@@ -85,7 +94,7 @@ void PingHelper::stop() {
 }
 
 void PingHelper::nextPing() {
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   logger.debug() << "Sending ping seq:" << m_sequence;
 #endif
 
@@ -107,7 +116,7 @@ void PingHelper::pingReceived(quint16 sequence) {
     qint64 sendTime = m_pingData[index].timestamp;
     m_pingData[index].latency = QDateTime::currentMSecsSinceEpoch() - sendTime;
     emit pingSentAndReceived(m_pingData[index].latency);
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
     logger.debug() << "Ping answer received seq:" << sequence
                    << "avg:" << latency()
                    << "loss:" << QString("%1%").arg(loss() * 100.0)
@@ -176,7 +185,7 @@ double PingHelper::loss() const {
   int recvCount = 0;
   // Don't count pings that are possibly still in flight as losses.
   qint64 sendBefore =
-      QDateTime::currentMSecsSinceEpoch() - (PING_TIMOUT_SEC * 1000);
+      QDateTime::currentMSecsSinceEpoch() - (PING_TIMEOUT_SEC * 1000);
 
   for (const PingSendData& data : m_pingData) {
     if (data.latency >= 0) {
@@ -191,4 +200,28 @@ double PingHelper::loss() const {
     return 0.0;
   }
   return (double)(sendCount - recvCount) / sendCount;
+}
+
+void PingHelper::handlePingError() {
+  if (s_has_critical_ping_error) {
+    return;
+  }
+  logger.info() << "Encountered Unrecoverable ping error, switching to DUMMY "
+                   "Ping for next 10 Minutes";
+  // When the ping helper is unable to work, set the error flag
+  // and restart the pinghelper, to replace the impl with a dummy impl
+  // which we will use for the rest of the session
+  emit pingSentAndReceived(1);  // Fake a ping response with 1ms;
+  s_has_critical_ping_error = true;
+  stop();
+  start(m_gateway, m_source);
+
+  TimerSingleShot::create(this, 600000, [&] {  // 10 Minutes
+    logger.debug() << "Removing ping error state";
+    s_has_critical_ping_error = false;
+    if (m_pingSender) {
+      stop();
+      start(m_gateway, m_source);
+    }
+  });
 }

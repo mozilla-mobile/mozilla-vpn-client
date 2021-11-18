@@ -8,35 +8,36 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "mozillavpn.h"
+#include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
-#include "systemtrayhandler.h"
-
-#ifdef QT_DEBUG
-#  include "gleantest.h"
-#endif
+#include "networkmanager.h"
+#include "task.h"
 
 #include <functional>
 
 #include <QBuffer>
+#include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QHostAddress>
+#include <QNetworkAccessManager>
+#include <QMetaObject>
 #include <QPixmap>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
 #include <QStandardPaths>
-#include <QWebSocket>
 #include <QTest>
+#include <QWebSocket>
 
 namespace {
 Logger logger(LOG_INSPECTOR, "InspectorWebSocketConnection");
 
 bool s_stealUrls = false;
+bool s_forwardNetwork = false;
 QUrl s_lastUrl;
 QString s_updateVersion;
 
@@ -151,16 +152,6 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->startAtBoot() ? "true" : "false";
         }},
 
-    // ipv6
-    WebSocketSettingCommand{
-        "ipv6-enabled", WebSocketSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setIpv6Enabled(value == "true");
-        },
-        []() {
-          return SettingsHolder::instance()->ipv6Enabled() ? "true" : "false";
-        }},
-
     // local area network access
     WebSocketSettingCommand{
         "local-network-access", WebSocketSettingCommand::Boolean,
@@ -228,6 +219,17 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->gleanEnabled() ? "true" : "false";
         }},
 
+    // telemetry-policy-shown
+    WebSocketSettingCommand{
+        "telemetry-policy-shown", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setTelemetryPolicyShown(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->telemetryPolicyShown() ? "true"
+                                                                    : "false";
+        }},
+
 };
 
 struct WebSocketCommand {
@@ -272,6 +274,16 @@ static QList<WebSocketCommand> s_commands{
                        settingsHolder->setTelemetryPolicyShown(false);
 
                        return QJsonObject();
+                     }},
+    WebSocketCommand{"fetch_network", "Enables forwarding of networkRequests",
+                     0,
+                     [](const QList<QByteArray>&) {
+                       s_forwardNetwork = true;
+                       return QJsonObject();
+                     }},
+    WebSocketCommand{"view_tree", "Sends a view tree", 0,
+                     [](const QList<QByteArray>&) {
+                       return InspectorWebSocketConnection::getViewTree();
                      }},
 
     WebSocketCommand{"quit", "Quit the app", 0,
@@ -383,11 +395,13 @@ static QList<WebSocketCommand> s_commands{
 
                        QObject* qmlobj = findObject(arguments[1]);
                        if (!qmlobj) {
+                         logger.error() << "Did not find object to click on";
                          obj["error"] = "Object not found";
                          return obj;
                        }
                        QQuickItem* item = qobject_cast<QQuickItem*>(qmlobj);
                        if (!item) {
+                         logger.error() << "Object is not clickable";
                          obj["error"] = "Object is not clickable";
                          return obj;
                        }
@@ -398,13 +412,36 @@ static QList<WebSocketCommand> s_commands{
                        point.ry() += item->height() / 2;
                        QTest::mouseClick(item->window(), Qt::LeftButton,
                                          Qt::NoModifier, point);
+                       return obj;
+                     }},
+    WebSocketCommand{"pushViewTo", "Push a QML View to a StackView", 2,
+                     [](const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       QString stackViewName(arguments[1]);
+                       QUrl qrcPath(arguments[2]);
+                       if (!qrcPath.isValid()) {
+                         obj["error"] = " Not a valid URL!";
+                         logger.error() << "Not a valid URL!";
+                       }
 
+                       QObject* qmlobj = findObject(stackViewName);
+                       if (qmlobj == nullptr) {
+                         obj["error"] =
+                             "Cant find, stackview :" + stackViewName;
+                       }
+
+                       QVariant arg = QVariant::fromValue(qrcPath.toString());
+
+                       bool ok = QMetaObject::invokeMethod(
+                           qmlobj, "debugPush", QGenericReturnArgument(),
+                           Q_ARG(QVariant, arg));
+                       logger.info() << "WAS OK ->" << ok;
                        return obj;
                      }},
 
     WebSocketCommand{"click_notification", "Click on a notification", 0,
                      [](const QList<QByteArray>&) {
-                       SystemTrayHandler::instance()->messageClickHandle();
+                       NotificationHandler::instance()->messageClickHandle();
                        return QJsonObject();
                      }},
 
@@ -421,6 +458,14 @@ static QList<WebSocketCommand> s_commands{
                        QJsonObject obj;
                        obj["value"] = s_lastUrl.toString();
                        return obj;
+                     }},
+
+    WebSocketCommand{"set_glean_source_tags",
+                     "Set Glean Source Tags (supply a comma seperated list)", 1,
+                     [](const QList<QByteArray>& arguments) {
+                       QStringList tags = QString(arguments[1]).split(',');
+                       MozillaVPN::instance()->setGleanSourceTags(tags);
+                       return QJsonObject();
                      }},
 
     WebSocketCommand{"force_update_check", "Force a version update check", 1,
@@ -472,6 +517,12 @@ static QList<WebSocketCommand> s_commands{
                      [](const QList<QByteArray>&) {
                        MozillaVPN::instance()->heartbeatCompleted(
                            false /* success */);
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{"hard_reset", "Hard reset (wipe all settings).", 0,
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN::instance()->hardReset();
                        return QJsonObject();
                      }},
 
@@ -604,7 +655,7 @@ static QList<WebSocketCommand> s_commands{
                            return obj;
                          }
                        }
-
+                       obj["type"] = "screen";
                        obj["value"] =
                            QString(data.toBase64(QByteArray::Base64Encoding));
                        return obj;
@@ -655,23 +706,21 @@ static QList<WebSocketCommand> s_commands{
 
           return QJsonObject();
         }},
-
-#ifdef QT_DEBUG
-    WebSocketCommand{"last_glean_request", "Retrieve the last glean request", 0,
-                     [](const QList<QByteArray>&) {
-                       GleanTest* gt = GleanTest::instance();
-
-                       QJsonObject glean;
-                       glean["url"] = QString(gt->lastUrl());
-                       glean["data"] = QString(gt->lastData());
-
-                       gt->reset();
-
-                       QJsonObject obj;
-                       obj["value"] = glean;
-                       return obj;
-                     }},
-#endif
+    WebSocketCommand{
+        "dismiss_surveys", "Dismisses all surveys", 0,
+        [](const QList<QByteArray>&) {
+          SettingsHolder* settingsHolder = SettingsHolder::instance();
+          Q_ASSERT(settingsHolder);
+          auto surveys = MozillaVPN::instance()->surveyModel()->surveys();
+          QStringList consumedSurveys;
+          for (auto& survey : surveys) {
+            consumedSurveys.append(survey.id());
+          }
+          settingsHolder->setInstallationTime(QDateTime::currentDateTime());
+          settingsHolder->setConsumedSurveys(consumedSurveys);
+          MozillaVPN::instance()->surveyModel()->dismissCurrentSurvey();
+          return QJsonObject();
+        }},
 
     WebSocketCommand{"devices", "Retrieve the list of devices", 0,
                      [](const QList<QByteArray>&) {
@@ -748,8 +797,12 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
   connect(LogHandler::instance(), &LogHandler::logEntryAdded, this,
           &InspectorWebSocketConnection::logEntryAdded);
 
-  connect(SystemTrayHandler::instance(), &SystemTrayHandler::notificationShown,
-          this, &InspectorWebSocketConnection::notificationShown);
+  connect(NotificationHandler::instance(),
+          &NotificationHandler::notificationShown, this,
+          &InspectorWebSocketConnection::notificationShown);
+  connect(NetworkManager::instance()->networkAccessManager(),
+          &QNetworkAccessManager::finished, this,
+          &InspectorWebSocketConnection::networkRequestFinished);
 }
 
 InspectorWebSocketConnection::~InspectorWebSocketConnection() {
@@ -827,6 +880,64 @@ void InspectorWebSocketConnection::notificationShown(const QString& title,
       QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
+void InspectorWebSocketConnection::networkRequestFinished(
+    QNetworkReply* reply) {
+  if (!s_forwardNetwork) {
+    return;
+  }
+  logger.debug() << "Network Request finished";
+  QJsonObject obj;
+  obj["type"] = "network";
+  QJsonObject request;
+  QJsonObject response;
+
+  QVariant statusCode =
+      reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+  response["status"] = statusCode.isValid() ? statusCode.toInt() : -1;
+
+  // Serialize the Response
+  QJsonObject responseHeader;
+  for (auto headerPair : reply->rawHeaderPairs()) {
+    responseHeader[QString(headerPair.first)] = QString(headerPair.second);
+  }
+  response["headers"] = responseHeader;
+  response["errors"] = "";
+  if (reply->error() != QNetworkReply::NoError) {
+    response["errors"] = reply->errorString();
+  }
+  response["body"] = QString(reply->readAll());
+
+  auto qrequest = reply->request();
+  // Serialize the Request
+  QJsonArray requestHeaders;
+  for (auto header : qrequest.rawHeaderList()) {
+    requestHeaders.append(QString(header));
+  }
+  request["headers"] = requestHeaders;
+  request["url"] = qrequest.url().toString();
+  auto initator = qrequest.originatingObject();
+  Task* maybe_task = dynamic_cast<Task*>(initator);
+  if (maybe_task) {
+    request["initiator"] = maybe_task->name();
+  } else {
+    request["initiator"] = getObjectClass(initator);
+  }
+
+  obj["request"] = request;
+  obj["response"] = response;
+  m_connection->sendTextMessage(
+      QJsonDocument(obj).toJson(QJsonDocument::Compact));
+}
+
+// static
+QString InspectorWebSocketConnection::getObjectClass(const QObject* target) {
+  if (target == nullptr) {
+    return "unkown";
+  }
+  auto metaObject = target->metaObject();
+  return metaObject->className();
+}
+
 // static
 void InspectorWebSocketConnection::setLastUrl(const QUrl& url) {
   s_lastUrl = url;
@@ -842,4 +953,69 @@ QString InspectorWebSocketConnection::appVersionForUpdate() {
   }
 
   return s_updateVersion;
+}
+
+// static
+QJsonObject InspectorWebSocketConnection::getViewTree() {
+  QJsonObject out;
+  out["type"] = "qml_tree";
+
+  QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+  QJsonArray viewRoots;
+  for (auto& root : engine->rootObjects()) {
+    QQuickWindow* window = qobject_cast<QQuickWindow*>(root);
+    if (window == nullptr) {
+      continue;
+    }
+    QQuickItem* content = window->contentItem();
+    viewRoots.append(serialize(content));
+  }
+  out["tree"] = viewRoots;
+  return out;
+}
+
+// static
+QJsonObject InspectorWebSocketConnection::serialize(QQuickItem* item) {
+  QJsonObject out;
+  if (item == nullptr) {
+    return out;
+  }
+  out["__class__"] = getObjectClass(item);
+
+  // Todo: Check QObject subelements for the Layout Element
+  auto metaObject = item->metaObject();
+  int propertyCount = metaObject->propertyCount();
+  out["__propertyCount__"] = propertyCount;
+  QJsonArray props;
+  for (int i = 0; i < metaObject->propertyCount(); i++) {
+    auto property = metaObject->property(i);
+    if (!property.isValid()) {
+      continue;
+    }
+    QJsonObject prop;
+    auto name = property.name();
+    auto value = property.read(item);
+    if (value.canConvert<QJsonValue>()) {
+      out[name] = value.toJsonValue();
+    } else if (value.canConvert<QString>()) {
+      out[name] = value.toString();
+    } else if (value.canConvert<QStringList>()) {
+      auto list = value.toStringList();
+      QJsonArray somelist;
+      for (const QString& s : list) {
+        somelist.append(s);
+      }
+      out[name] = somelist;
+    } else {
+      out[name] = value.typeName();
+    }
+  }
+
+  QJsonArray subView;
+  auto children = item->childItems();
+  for (auto& c : children) {
+    subView.append(serialize(c));
+  }
+  out["subItems"] = subView;
+  return out;
 }

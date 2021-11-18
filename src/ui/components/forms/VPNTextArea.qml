@@ -5,9 +5,9 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
-import "../"
-import "../../themes/themes.js" as Theme
-import "../../themes/colors.js" as Color
+
+import components 0.1
+import themes 0.1
 
 Item {
     property alias placeholderText: formattedPlaceholderText.text
@@ -49,7 +49,6 @@ Item {
             textMargin: Theme.windowMargin * .75
             padding: 0
             Keys.onTabPressed: nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason)
-            onTextChanged: if (length > maxCharacterCount) remove(maxCharacterCount, length)
             selectByMouse: true
             selectionColor: Theme.input.highlight
             inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData

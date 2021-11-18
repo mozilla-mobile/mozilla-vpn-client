@@ -57,6 +57,7 @@ SettingsHolder::SettingsHolder()
   s_instance = this;
 
   if (!hasInstallationTime()) {
+    m_firstExecution = true;
     setInstallationTime(QDateTime::currentDateTime());
   }
 }
@@ -83,8 +84,11 @@ void SettingsHolder::clear() {
 
 #include "settingslist.h"
 #undef SETTING
+}
 
-  // We do not remove language, ipv6 and localnetwork settings.
+void SettingsHolder::hardReset() {
+  logger.debug() << "Hard reset";
+  m_settings.clear();
 }
 
 // Returns a Report which settings are set
@@ -98,8 +102,17 @@ QString SettingsHolder::getReport() {
       out << setting << " -> <Sensitive>" << Qt::endl;
       continue;
     }
-    out << setting << " -> " << m_settings.value(setting).toString()
-        << Qt::endl;
+    out << setting << " -> ";
+    QVariant value = m_settings.value(setting);
+    switch (value.type()) {
+      case QVariant::List:
+      case QVariant::StringList:
+        out << '[' << value.toStringList().join(",") << ']' << ' ';
+        break;
+      default:
+        out << value.toString();
+    }
+    out << Qt::endl;
   }
   return buff;
 }

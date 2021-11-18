@@ -19,25 +19,36 @@ TaskRemoveDevice::TaskRemoveDevice(const QString& publicKey)
   MVPN_COUNT_CTOR(TaskRemoveDevice);
 }
 
-TaskRemoveDevice::~TaskRemoveDevice() { MVPN_COUNT_DTOR(TaskRemoveDevice); }
+TaskRemoveDevice::~TaskRemoveDevice() {
+  MVPN_COUNT_DTOR(TaskRemoveDevice);
 
-void TaskRemoveDevice::run(MozillaVPN* vpn) {
+  // Nothing guarantees that when this task is deleted, the VPN object is still
+  // alive. We cannot use the QObject-parenting solution because it deletes the
+  // parent before the children.
+  MozillaVPN* vpn = MozillaVPN::maybeInstance();
+  if (vpn) {
+    vpn->deviceRemovalCompleted(m_publicKey);
+  }
+}
+
+void TaskRemoveDevice::run() {
   logger.debug() << "Removing the device with public key" << m_publicKey;
 
   NetworkRequest* request =
       NetworkRequest::createForDeviceRemoval(this, m_publicKey);
 
-  connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Failed to remove the device" << error;
-            vpn->errorHandle(ErrorHandler::toErrorType(error));
-            emit completed();
-          });
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this](QNetworkReply::NetworkError error, const QByteArray&) {
+        logger.error() << "Failed to remove the device" << error;
+        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        emit completed();
+      });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn](const QByteArray&) {
+          [this](const QByteArray&) {
             logger.debug() << "Device removed";
-            vpn->deviceRemoved(m_publicKey);
+            MozillaVPN::instance()->deviceRemoved(m_publicKey);
             emit completed();
           });
 }

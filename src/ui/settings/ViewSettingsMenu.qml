@@ -5,12 +5,13 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
-import Mozilla.VPN 1.0
-import "../components"
-import "../themes/themes.js" as Theme
 
-import org.mozilla.Glean 0.15
-import telemetry 0.15
+import Mozilla.VPN 1.0
+import components 0.1
+import themes 0.1
+
+import org.mozilla.Glean 0.24
+import telemetry 0.24
 
 VPNFlickable {
     id: vpnFlickable
@@ -31,7 +32,7 @@ VPNFlickable {
         Image {
             id: backImage
 
-            source: "../resources/close-dark.svg"
+            source: "qrc:/ui/resources/close-dark.svg"
             sourceSize.width: Theme.iconSize
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton
@@ -85,9 +86,9 @@ VPNFlickable {
         VPNSettingsItem {
             objectName: "settingsWhatsNew"
             settingTitle: VPNl18n.WhatsNewReleaseNotesTourPageHeader
-            imageLeftSrc: "../resources/gift-dark.svg"
-            imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push("../settings/ViewWhatsNew.qml")
+            imageLeftSrc: "qrc:/ui/resources/gift-dark.svg"
+            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            onClicked: settingsStackView.push("qrc:/ui/settings/ViewWhatsNew.qml")
             showIndicator: VPNWhatsNewModel.hasUnseenFeature
             visible: VPNWhatsNewModel.rowCount() > 0
         }
@@ -95,26 +96,23 @@ VPNFlickable {
         VPNSettingsItem {
             objectName: "settingsNetworking"
             settingTitle: qsTrId("vpn.settings.networking")
-            imageLeftSrc: "../resources/settings/networkSettings.svg"
-            imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push("../settings/ViewNetworkSettings.qml", {
+            imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
+            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            onClicked: settingsStackView.push("qrc:/ui/settings/ViewNetworkSettings.qml", {
                                                   //% "App permissions"
                                                   _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
                                               })
         }
         VPNSettingsItem {
-            property string prefs: qsTrId("systray.preferences")
-            property string notificationsTitle: qsTrId("vpn.settings.notifications")
-            property string languageTitle: qsTrId("vpn.settings.language")
             //% "Launch VPN app on startup"
             property string startAtBootTitle: qsTrId("vpn.settings.runOnBoot2")
 
             id: preferencesSetting
             objectName: "settingsPreferences"
-            settingTitle: prefs.replace("…", "").replace("...", "")
-            imageLeftSrc: "../resources/settings/preferences.svg"
-            imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push("../settings/ViewPrivacySecurity.qml", {
+            settingTitle: VPNl18n.SettingsSystemPreferences
+            imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
+            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            onClicked: settingsStackView.push("qrc:/ui/settings/ViewPrivacySecurity.qml", {
                                                 _startAtBootTitle: Qt.binding(() => startAtBootTitle),
                                                 _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
                                                 _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
@@ -127,21 +125,19 @@ VPNFlickable {
             property string giveFeedbackTitle: qsTrId("vpn.settings.giveFeedback")
             objectName: "settingsGetHelp"
             settingTitle: qsTrId("vpn.main.getHelp2")
-            imageLeftSrc: "../resources/settings/questionMark.svg"
-            imageRightSrc: "../resources/chevron.svg"
+            imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
+            imageRightSrc: "qrc:/ui/resources/chevron.svg"
             onClicked: {
                 Sample.getHelpClickedViewSettings.record();
-                settingsStackView.push("../views/ViewGetHelp.qml", {
-                                           isSettingsView: true
-                                       })
+                settingsStackView.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: true})
             }
         }
 
         VPNSettingsItem {
             objectName: "settingsAboutUs"
             settingTitle: qsTrId("vpn.settings.aboutUs")
-            imageLeftSrc: "../resources/settings/aboutUs.svg"
-            imageRightSrc: "../resources/chevron.svg"
+            imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
+            imageRightSrc: "qrc:/ui/resources/chevron.svg"
             onClicked: settingsStackView.push(aboutUsComponent)
         }
 

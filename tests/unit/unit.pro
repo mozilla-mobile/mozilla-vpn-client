@@ -27,9 +27,12 @@ INCLUDEPATH += \
             ../../translations/generated
 
 HEADERS += \
+    ../../src/adjust/adjustfiltering.h \
+    ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/bigint.h \
     ../../src/bigintipv6addr.h \
     ../../src/captiveportal/captiveportal.h \
+    ../../src/collator.h \
     ../../src/command.h \
     ../../src/commandlineparser.h \
     ../../src/connectioncheck.h \
@@ -43,7 +46,6 @@ HEADERS += \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
     ../../src/ipfinder.h \
-    ../../src/l18nstringsimpl.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
@@ -54,6 +56,7 @@ HEADERS += \
     ../../src/models/feedbackcategorymodel.h \
     ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
+    ../../src/models/licensemodel.h \
     ../../src/models/server.h \
     ../../src/models/servercity.h \
     ../../src/models/servercountry.h \
@@ -85,16 +88,17 @@ HEADERS += \
     ../../src/settingsholder.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
-    ../../src/systemtrayhandler.h \
     ../../src/task.h \
     ../../src/tasks/accountandservers/taskaccountandservers.h \
     ../../src/tasks/adddevice/taskadddevice.h \
     ../../src/tasks/function/taskfunction.h \
+    ../../src/taskscheduler.h \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
     helper.h \
+    testadjust.h \
     testandroidmigration.h \
     testbigint.h \
     testbigintipv6addr.h \
@@ -105,6 +109,7 @@ HEADERS += \
     testlogger.h \
     testipaddress.h \
     testipfinder.h \
+    testlicense.h \
     testmodels.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
@@ -113,7 +118,10 @@ HEADERS += \
     testtimersingleshot.h
 
 SOURCES += \
+    ../../src/adjust/adjustfiltering.cpp \
+    ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
+    ../../src/collator.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
     ../../src/connectioncheck.cpp \
@@ -140,6 +148,7 @@ SOURCES += \
     ../../src/models/feedbackcategorymodel.cpp \
     ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
+    ../../src/models/licensemodel.cpp \
     ../../src/models/server.cpp \
     ../../src/models/servercity.cpp \
     ../../src/models/servercountry.cpp \
@@ -167,10 +176,10 @@ SOURCES += \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \
-    ../../src/systemtrayhandler.cpp \
     ../../src/tasks/accountandservers/taskaccountandservers.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/function/taskfunction.cpp \
+    ../../src/taskscheduler.cpp \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
@@ -180,6 +189,7 @@ SOURCES += \
     mocinspectorwebsocketconnection.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
+    testadjust.cpp \
     testandroidmigration.cpp \
     testbigint.cpp \
     testbigintipv6addr.cpp \
@@ -190,6 +200,7 @@ SOURCES += \
     testlogger.cpp \
     testipaddress.cpp \
     testipfinder.cpp \
+    testlicense.cpp \
     testmodels.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \
@@ -239,6 +250,8 @@ OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
+
+RESOURCES += ../../src/ui/license.qrc
 
 coverage {
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping

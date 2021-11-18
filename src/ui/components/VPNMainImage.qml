@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtGraphicalEffects 1.12
+
 import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
+import compat 0.1
+import themes 0.1
 
 Rectangle {
     id: logo
@@ -25,8 +26,12 @@ Rectangle {
                 showVPNOnIcon: true
             }
             PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
+            }
+            PropertyChanges {
                 target: insetIcon
-                source: "../resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
 
@@ -40,8 +45,12 @@ Rectangle {
                 showVPNOnIcon: true
             }
             PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
+            }
+            PropertyChanges {
                 target: insetIcon
-                source: "../resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
 
@@ -55,8 +64,12 @@ Rectangle {
                 showVPNOnIcon: false
             }
             PropertyChanges {
+                target: insetCircle
+                color: Color.error.default
+            }
+            PropertyChanges {
                 target: insetIcon
-                source: "../resources/shield-off.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
 
@@ -68,6 +81,10 @@ Rectangle {
                 target: logo
                 opacity: 0.55
                 showVPNOnIcon: true
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
             }
             PropertyChanges {
                 target: switchingIcon
@@ -83,8 +100,12 @@ Rectangle {
             name: VPNController.StateOff
 
             PropertyChanges {
+                target: insetCircle
+                color: Color.error.default
+            }
+            PropertyChanges {
                 target: insetIcon
-                source: "../resources/shield-off.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
 
@@ -96,10 +117,13 @@ Rectangle {
                 target: logo
                 showVPNOnIcon: true
             }
-
+            PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
+            }
             PropertyChanges {
                 target: insetIcon
-                source: "../resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
 
@@ -112,10 +136,55 @@ Rectangle {
                 showVPNOnIcon: false
                 opacity: 0.55
             }
-
+            PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
+            }
             PropertyChanges {
                 target: insetIcon
-                source: "../resources/shield-off.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
+                opacity: 1
+            }
+
+        },
+        State {
+            name: "unstableOn"
+            when: VPNController.state === VPNController.StateOn &&
+                VPNConnectionHealth.stability === VPNConnectionHealth.Unstable
+
+            PropertyChanges {
+                target: logo
+                showVPNOnIcon: true
+                opacity: 1
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: Color.warning.default
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: "qrc:/ui/resources/shield-on.svg"
+                opacity: 1
+            }
+
+        },
+        State {
+            name: "noSignalOn"
+            when: VPNController.state === VPNController.StateOn &&
+                VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal
+
+            PropertyChanges {
+                target: logo
+                showVPNOnIcon: true
+                opacity: 1
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: Color.error.default
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
 
@@ -215,7 +284,7 @@ Rectangle {
             }
         },
         Transition {
-            to: VPNController.StateOn
+            to: "*"
             ParallelAnimation {
                 PropertyAnimation {
                     target: insetIcon
@@ -256,7 +325,6 @@ Rectangle {
         y: 5
         antialiasing: true
         smooth: true
-        color: showVPNOnIcon ? "#3FE1B0" : "#FF4F5E"
 
         Image {
             id: insetIcon
@@ -272,7 +340,7 @@ Rectangle {
             anchors.centerIn: insetCircle
             sourceSize.height: 32
             sourceSize.width: 32
-            source: "../resources/switching.svg"
+            source: "qrc:/ui/resources/switching.svg"
             opacity: 0
              PropertyAnimation {
                  id: spin
@@ -289,13 +357,13 @@ Rectangle {
 
     Image {
         id: globe
-        source: "../resources/globe.svg";
+        source: "qrc:/ui/resources/globe.svg";
         sourceSize.height: logo.height
         sourceSize.width: logo.width
         visible: false
     }
 
-    LinearGradient {
+    VPNLinearGradient {
         id: gradient
         anchors.fill: logo
         start: Qt.point(0, logo.width)
@@ -316,7 +384,7 @@ Rectangle {
         visible: false
     }
 
-    OpacityMask {
+    VPNOpacityMask {
        anchors.fill: globe
        source: gradient
        maskSource: globe

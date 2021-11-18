@@ -4,14 +4,14 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
-import Mozilla.VPN 1.0
-import "../components"
-import "../themes/themes.js" as Theme
 
-import org.mozilla.Glean 0.15
-import telemetry 0.15
+import Mozilla.VPN 1.0
+import components 0.1
+import themes 0.1
+
+import org.mozilla.Glean 0.24
+import telemetry 0.24
 
 
 Item {
@@ -27,7 +27,7 @@ Item {
     VPNFilterProxyModel {
         id: editableFeatureModel
         source: VPNFeatureList
-        filterCallback: feature => feature.devModeWriteable
+        filterCallback: entry => entry.feature.devModeWriteable
     }
 
     VPNFlickable {
@@ -56,13 +56,13 @@ Item {
                 model: editableFeatureModel
                 delegate: VPNCheckBoxRow {
                     showDivider: false
-                    labelText: name
-                    subLabelText: id
+                    labelText: feature.name
+                    subLabelText: feature.id
                     showAppImage: false
-                    onClicked: VPNFeatureList.devModeFlipFeatureFlag(id)
+                    onClicked: VPNFeatureList.devModeFlipFeatureFlag(feature.id)
                     // Only enable the list on features where devModeEnable has any impact
                     enabled: true
-                    isChecked: devModeEnabled
+                    isChecked: feature.isDevModeEnabled()
                     Layout.minimumHeight: Theme.rowHeight * 1.5
                 }
             }
@@ -76,11 +76,11 @@ Item {
                 model: VPNFeatureList
                 delegate: VPNCheckBoxRow {
                     showDivider: false
-                    labelText: name
-                    subLabelText: id
+                    labelText: feature.name
+                    subLabelText: feature.id
                     showAppImage: false
                     enabled: false
-                    isChecked: supported
+                    isChecked: feature.isSupported
                     Layout.minimumHeight: Theme.rowHeight * 1.5
                 }
             }

@@ -10,7 +10,6 @@
 #include "networkwatcherimpl.h"
 #include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
-#include "systemtrayhandler.h"
 
 #ifdef MVPN_WINDOWS
 #  include "platforms/windows/windowsnetworkwatcher.h"
@@ -58,32 +57,41 @@ void NetworkWatcher::initialize() {
 
   connect(m_impl, &NetworkWatcherImpl::unsecuredNetwork, this,
           &NetworkWatcher::unsecuredNetwork);
+  connect(m_impl, &NetworkWatcherImpl::networkChanged, this,
+          &NetworkWatcher::networkChange);
 
   m_impl->initialize();
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  m_active = settingsHolder->unsecuredNetworkAlert();
+  m_active = settingsHolder->unsecuredNetworkAlert() ||
+             settingsHolder->captivePortalAlert();
+  m_reportUnsecuredNetwork = settingsHolder->unsecuredNetworkAlert();
   if (m_active) {
     m_impl->start();
   }
 
   connect(settingsHolder, &SettingsHolder::unsecuredNetworkAlertChanged, this,
           &NetworkWatcher::settingsChanged);
+  connect(settingsHolder, &SettingsHolder::captivePortalAlertChanged, this,
+          &NetworkWatcher::settingsChanged);
 }
 
 void NetworkWatcher::settingsChanged(const bool& active) {
-  logger.debug() << "Settings changed:" << active;
-  if (m_active == active) {
-    return;
-  }
-
-  m_active = active;
+  Q_UNUSED(active);
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  m_active = settingsHolder->unsecuredNetworkAlert() ||
+             settingsHolder->captivePortalAlert();
+  m_reportUnsecuredNetwork = settingsHolder->unsecuredNetworkAlert();
 
   if (m_active) {
+    logger.debug()
+        << "Starting Network Watcher; Reporting of Unsecured Networks: "
+        << m_reportUnsecuredNetwork;
     m_impl->start();
   } else {
+    logger.debug() << "Stopping Network Watcher";
     m_impl->stop();
   }
 }
@@ -93,7 +101,7 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
   logger.debug() << "Unsecured network:" << networkName << "id:" << networkId;
 
 #ifndef UNIT_TEST
-  if (!m_active) {
+  if (!m_reportUnsecuredNetwork) {
     logger.debug() << "Disabled. Ignoring unsecured network";
     return;
   }
@@ -124,23 +132,23 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
   m_networks[networkId].start();
 
   // We don't connect the system tray handler in the CTOR because it can be too
-  // early. Maybe the SystemTrayHandler has not been created yet. We do it at
+  // early. Maybe the NotificationHandler has not been created yet. We do it at
   // the first detection of an unsecured network.
   if (m_firstNotification) {
-    connect(SystemTrayHandler::instance(),
-            &SystemTrayHandler::notificationClicked, this,
+    connect(NotificationHandler::instance(),
+            &NotificationHandler::notificationClicked, this,
             &NetworkWatcher::notificationClicked);
     m_firstNotification = false;
   }
 
-  SystemTrayHandler::instance()->unsecuredNetworkNotification(networkName);
+  NotificationHandler::instance()->unsecuredNetworkNotification(networkName);
 #endif
 }
 
-void NetworkWatcher::notificationClicked(SystemTrayHandler::Message message) {
+void NetworkWatcher::notificationClicked(NotificationHandler::Message message) {
   logger.debug() << "Notification clicked";
 
-  if (message == SystemTrayHandler::UnsecuredNetwork) {
+  if (message == NotificationHandler::UnsecuredNetwork) {
     MozillaVPN::instance()->activate();
   }
 }

@@ -132,7 +132,7 @@ public class IOSControllerImpl : NSObject {
         return true
     }
 
-    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, ipv6Enabled: Bool, reason: Int, failureCallback: @escaping () -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
@@ -150,7 +150,7 @@ public class IOSControllerImpl : NSObject {
         allowedIPAddressRanges.forEach {
             if (!$0.isIpv6) {
                 peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv4Address($0.address as String)!, networkPrefixLength: $0.networkPrefixLength))
-            } else if (ipv6Enabled) {
+            } else {
                 peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv6Address($0.address as String)!, networkPrefixLength: $0.networkPrefixLength))
             }
         }
@@ -162,16 +162,9 @@ public class IOSControllerImpl : NSObject {
 
         if let ipv4Address = IPAddressRange(from: deviceIpv4Address!),
            let ipv6Address = IPAddressRange(from: deviceIpv6Address!) {
-            interface.addresses = [ipv4Address]
-            if (ipv6Enabled) {
-                interface.addresses.append(ipv6Address)
-            }
+            interface.addresses = [ipv4Address, ipv6Address]
         }
-        interface.dns = [ DNSServer(address: dnsServerIP!)]
-
-        if (ipv6Enabled) {
-            interface.dns.append(DNSServer(address: ipv6GatewayIP!))
-        }
+        interface.dns = [DNSServer(address: dnsServerIP!), DNSServer(address: ipv6GatewayIP!)]
 
         let config = TunnelConfiguration(name: vpnName, interface: interface, peers: peerConfigurations)
 
@@ -209,14 +202,7 @@ public class IOSControllerImpl : NSObject {
                         let settings = config.asWgQuickConfig()
                         let settingsData = settings.data(using: .utf8)!
                         try (self.tunnel!.connection as? NETunnelProviderSession)?
-                                .sendProviderMessage(settingsData) { data in
-                            guard let data = data,
-                                let configString = String(data: data, encoding: .utf8)
-                            else {
-                                Logger.global?.log(message: "Failed to convert response to string")
-                                return
-                            }
-                        }
+                                .sendProviderMessage(settingsData)
                     } else {
                         try (self.tunnel!.connection as? NETunnelProviderSession)?.startTunnel()
                     }

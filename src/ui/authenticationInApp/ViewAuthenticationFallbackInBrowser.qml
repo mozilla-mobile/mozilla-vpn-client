@@ -4,8 +4,6 @@
 
 import QtQuick 2.5
 import Mozilla.VPN 1.0
-import "../components"
-import "../components/forms"
 
 Item {
   // TODO

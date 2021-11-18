@@ -8,3 +8,8 @@
 IPAddress RFC4291::ipv6LoopbackAddressBlock() {
   return IPAddress::create("::1/128");
 }
+
+// static
+IPAddress RFC4291::ipv6MulticastAddressBlock() {
+  return IPAddress::create("ff00::/8");
+}

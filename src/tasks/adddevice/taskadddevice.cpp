@@ -32,14 +32,14 @@ QByteArray generatePrivateKey() {
 
 }  // anonymous namespace
 
-TaskAddDevice::TaskAddDevice(const QString& deviceName)
-    : Task("TaskAddDevice"), m_deviceName(deviceName) {
+TaskAddDevice::TaskAddDevice(const QString& deviceName, const QString& deviceID)
+    : Task("TaskAddDevice"), m_deviceName(deviceName), m_deviceID(deviceID) {
   MVPN_COUNT_CTOR(TaskAddDevice);
 }
 
 TaskAddDevice::~TaskAddDevice() { MVPN_COUNT_DTOR(TaskAddDevice); }
 
-void TaskAddDevice::run(MozillaVPN* vpn) {
+void TaskAddDevice::run() {
   logger.debug() << "Adding the device" << logger.sensitive(m_deviceName);
 
   QByteArray privateKey = generatePrivateKey();
@@ -48,20 +48,22 @@ void TaskAddDevice::run(MozillaVPN* vpn) {
   logger.debug() << "Private key: " << logger.sensitive(privateKey);
   logger.debug() << "Public key: " << logger.sensitive(publicKey);
 
-  NetworkRequest* request =
-      NetworkRequest::createForDeviceCreation(this, m_deviceName, publicKey);
+  NetworkRequest* request = NetworkRequest::createForDeviceCreation(
+      this, m_deviceName, publicKey, m_deviceID);
 
-  connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Failed to add the device" << error;
-            vpn->errorHandle(ErrorHandler::toErrorType(error));
-            emit completed();
-          });
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this](QNetworkReply::NetworkError error, const QByteArray&) {
+        logger.error() << "Failed to add the device" << error;
+        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        emit completed();
+      });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn, publicKey, privateKey](const QByteArray&) {
+          [this, publicKey, privateKey](const QByteArray&) {
             logger.debug() << "Device added";
-            vpn->deviceAdded(m_deviceName, publicKey, privateKey);
+            MozillaVPN::instance()->deviceAdded(m_deviceName, publicKey,
+                                                privateKey);
             emit completed();
           });
 }

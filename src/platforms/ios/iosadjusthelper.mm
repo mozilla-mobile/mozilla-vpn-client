@@ -23,7 +23,7 @@ void IOSAdjustHelper::initialize(quint16 proxyPort) {
     ADJConfig *adjustConfig = [ADJConfig configWithAppToken:adjustToken
                                                 environment:environment];
     [adjustConfig setLogLevel:ADJLogLevelDebug];
-    NSString* proxyAddress = [NSString stringWithFormat:@"http://localhost:%d", proxyPort];
+    NSString* proxyAddress = [NSString stringWithFormat:@"http://127.0.0.1:%d", proxyPort];
     [ADJAdjustFactory setBaseUrl:proxyAddress];
     [ADJAdjustFactory setGdprUrl:proxyAddress];
     [Adjust appDidLaunch:adjustConfig];
@@ -36,5 +36,13 @@ void IOSAdjustHelper::trackEvent(const QString& eventToken) {
   if(adjustToken.length) {
     ADJEvent *event = [ADJEvent eventWithEventToken:eventToken.toNSString()];
     [Adjust trackEvent:event];
+  }
+}
+
+void IOSAdjustHelper::forget() {
+  NSString* adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
+
+  if (adjustToken.length) {
+    [Adjust gdprForgetMe];
   }
 }
