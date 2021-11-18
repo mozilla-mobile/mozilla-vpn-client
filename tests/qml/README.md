@@ -1,6 +1,14 @@
+## To build and run the tests
+
+* From a clean project at the root level
+* `./scripts/generate_glean.py`
+* `./scripts/importLanguages.py`
+* `qmake CONFIG+=QMLTEST`
+* `make -j XX` (number of procs you have)
+* `./tests/qml/qml_tests`
+
 ## General notes, tips, etc.
 
-See the github workflow for steps to build, not much to it, just make sure you have the right qmake call.
 
 You don't need to rerun `make` inbetween changes to `tst_*.qml` files.
 
