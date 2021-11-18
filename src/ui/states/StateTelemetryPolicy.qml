@@ -13,17 +13,18 @@ import themes 0.1
 VPNFlickable {
     id: vpnFlickable
 
+    height: parent.height
+    flickContentHeight: column.height
+
     Component.onCompleted: {
-        flickContentHeight = column.childrenRect.height;
         fade.start();
     }
 
     ColumnLayout {
         id: column
-        width: vpnFlickable.width
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
+
         spacing: Theme.windowMargin * 1.25
+        width: vpnFlickable.width
 
         VPNVerticalSpacer {
             Layout.fillWidth: true
