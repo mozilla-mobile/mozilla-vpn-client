@@ -43,7 +43,7 @@ jobs:
           python3 scripts/importLanguages.py
           python3 scripts/generate_glean.py
 
-          qmake CONFIG+=DUMMY QMAKE_CXX=clang++-10 QMAKE_LINK=clang++-10 CONFIG+=debug QT+=svg
+          qmake CONFIG+=QMLTEST CONFIG+=DUMMY QMAKE_CXX=clang++-10 QMAKE_LINK=clang++-10 QT+=svg
           make -j$(nproc)
 
       - name: Run the test script
