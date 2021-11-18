@@ -97,6 +97,7 @@ jobs:
           echo "APP_ID_MACOS = baku.mozilla.macos.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_MACOS = baku.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
           echo "LOGIN_ID_MACOS = baku.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
+          echo "NATIVEMESSAGING_ID_MACOS = baku.mozilla.macos.FirefoxVPN.native-messaging" >> xcode.xconfig
           echo "GROUP_ID_IOS = group.baku.mozilla.ios.Guardian" >> xcode.xconfig
           echo "APP_ID_IOS = baku.mozilla.ios.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_IOS = baku.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
@@ -117,7 +118,7 @@ jobs:
             "MozillaVPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
-            macos "0" "1"
+            macos
 
       - name: Compiling
         shell: bash
@@ -214,6 +215,7 @@ jobs:
           echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
           echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
+          echo "NATIVEMESSAGING_ID_MACOS = org.mozilla.macos.FirefoxVPN.native-messaging" >> xcode.xconfig
           echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
           echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig

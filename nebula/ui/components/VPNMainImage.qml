@@ -26,6 +26,10 @@ Rectangle {
                 showVPNOnIcon: true
             }
             PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
+            }
+            PropertyChanges {
                 target: insetIcon
                 source: "qrc:/nebula/resources/shield-on.svg"
                 opacity: 1
@@ -39,6 +43,10 @@ Rectangle {
                 target: logo
                 opacity: 0.6
                 showVPNOnIcon: true
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
             }
             PropertyChanges {
                 target: insetIcon
@@ -56,6 +64,10 @@ Rectangle {
                 showVPNOnIcon: false
             }
             PropertyChanges {
+                target: insetCircle
+                color: Color.error.default
+            }
+            PropertyChanges {
                 target: insetIcon
                 source: "qrc:/nebula/resources/shield-off.svg"
                 opacity: 1
@@ -71,6 +83,10 @@ Rectangle {
                 showVPNOnIcon: true
             }
             PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
+            }
+            PropertyChanges {
                 target: switchingIcon
                 opacity: 1
             }
@@ -83,6 +99,10 @@ Rectangle {
         State {
             name: VPNController.StateOff
 
+            PropertyChanges {
+                target: insetCircle
+                color: Color.error.default
+            }
             PropertyChanges {
                 target: insetIcon
                 source: "qrc:/nebula/resources/shield-off.svg"
@@ -97,7 +117,10 @@ Rectangle {
                 target: logo
                 showVPNOnIcon: true
             }
-
+            PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
+            }
             PropertyChanges {
                 target: insetIcon
                 source: "qrc:/nebula/resources/shield-on.svg"
@@ -113,7 +136,52 @@ Rectangle {
                 showVPNOnIcon: false
                 opacity: 0.55
             }
+            PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: "qrc:/ui/resources/shield-off.svg"
+                opacity: 1
+            }
 
+        },
+        State {
+            name: "unstableOn"
+            when: VPNController.state === VPNController.StateOn &&
+                VPNConnectionHealth.stability === VPNConnectionHealth.Unstable
+
+            PropertyChanges {
+                target: logo
+                showVPNOnIcon: true
+                opacity: 1
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: Color.warning.default
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: "qrc:/ui/resources/shield-on.svg"
+                opacity: 1
+            }
+
+        },
+        State {
+            name: "noSignalOn"
+            when: VPNController.state === VPNController.StateOn &&
+                VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal
+
+            PropertyChanges {
+                target: logo
+                showVPNOnIcon: true
+                opacity: 1
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: Color.error.default
+            }
             PropertyChanges {
                 target: insetIcon
                 source: "qrc:/nebula/resources/shield-off.svg"
@@ -216,7 +284,7 @@ Rectangle {
             }
         },
         Transition {
-            to: VPNController.StateOn
+            to: "*"
             ParallelAnimation {
                 PropertyAnimation {
                     target: insetIcon
@@ -257,7 +325,6 @@ Rectangle {
         y: 5
         antialiasing: true
         smooth: true
-        color: showVPNOnIcon ? "#3FE1B0" : "#FF4F5E"
 
         Image {
             id: insetIcon

@@ -41,6 +41,8 @@ void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
       QJsonObject cityObj;
       cityObj["name"] = city.name();
       cityObj["code"] = city.code();
+      cityObj["latitude"] = city.latitude();
+      cityObj["longitude"] = city.longitude();
 
       QJsonArray servers;
       for (const Server& server : city.servers()) {
