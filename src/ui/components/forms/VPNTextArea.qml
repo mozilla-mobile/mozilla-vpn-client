@@ -85,12 +85,12 @@ Item {
 
             function handleOnTextChanged(text) {
                 const updatedTextLength = text.length;
-                const textInputLength = updatedTextLength - textLength;
-                const exceedsCharLimit = textLength + textInputLength > textArea.maxCharacterCount;
+                const exceedsCharLimit = updatedTextLength > textArea.maxCharacterCount;
 
                 // Remove most recently added characters in case
                 // the text input exceeds the maximum length
                 if (exceedsCharLimit) {
+                    const textInputLength = updatedTextLength - textLength;
                     // Remember cursor position
                     const prevCursorPosition = textArea.cursorPosition - textInputLength;
                     // Strip overflowing chars
