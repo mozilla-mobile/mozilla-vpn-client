@@ -25,6 +25,14 @@ void TestHelper::setMainWindowLoadedCalled(bool val) {
   m_mainWindowLoadedCalled = val;
 }
 
+bool TestHelper::stagingMode() const { return m_stagingMode; }
+
+void TestHelper::setStagingMode(bool val) { m_stagingMode = val; }
+
+bool TestHelper::debugMode() const { return m_debugMode; }
+
+void TestHelper::setDebugMode(bool val) { m_debugMode = val; }
+
 void TestHelper::triggerInitializeGlean() const {
   emit MozillaVPN::instance()->initializeGlean();
 }

@@ -28,9 +28,15 @@ class TestHelper final : public QObject {
   Q_INVOKABLE QString osVersion() const;
   Q_INVOKABLE QString architecture() const;
   Q_PROPERTY(bool mainWindowLoadedCalled READ mainWindowLoadedCalled)
+  Q_PROPERTY(bool stagingMode READ stagingMode WRITE setStagingMode)
+  Q_PROPERTY(bool debugMode READ debugMode WRITE setDebugMode)
 
   bool mainWindowLoadedCalled() const;
   void setMainWindowLoadedCalled(bool val);
+  bool stagingMode() const;
+  void setStagingMode(bool val);
+  bool debugMode() const;
+  void setDebugMode(bool val);
 
  public slots:
   // For info on the slots we can use
@@ -43,6 +49,8 @@ class TestHelper final : public QObject {
 
   SettingsHolder m_settingsHolder;
   bool m_mainWindowLoadedCalled = false;
+  bool m_debugMode = true;
+  bool m_stagingMode = true;
 
   CloseEventHandler* m_closeEventHandler = nullptr;
   L18nStrings* m_l18nstrings = nullptr;
