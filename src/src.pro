@@ -207,7 +207,7 @@ HEADERS += \
         features/featureappreview.h \
         features/featurecaptiveportal.h \
         features/featurecustomdns.h \
-        features/featureinappaccountCreate.h \
+        features/featureinappaccountcreate.h \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
         features/featurelocalareaaccess.h \
@@ -394,7 +394,6 @@ else:linux:!android {
     CONFIG(release, debug|release) {
         LIBS += -L$$clean_path($$PWD/../nebula/release) -lnebula
         LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
-
     }
 
     CONFIG += c++14
@@ -975,6 +974,15 @@ else:wasm {
 
     SOURCES -= networkrequest.cpp
     RESOURCES += platforms/wasm/networkrequests.qrc
+
+    CONFIG(debug, debug|release) {
+        LIBS += -L$$clean_path($$PWD/../nebula/debug) -lnebula
+        LIBS += -L$$clean_path($$PWD/../glean/debug) -lglean
+    }
+    CONFIG(release, debug|release) {
+        LIBS += -L$$clean_path($$PWD/../nebula/release) -lnebula
+        LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
+    }
 }
 
 # Anything else
