@@ -4,12 +4,12 @@
 
 #include "helper.h"
 
-#include "l18nstrings.h"
-#include "mozillavpn.h"
-
 TestHelper::TestHelper() {
   FeatureList::instance()->initialize();
+  m_closeEventHandler = new CloseEventHandler();
   m_whatsNewModel = new WhatsNewModel();
+  m_l18nstrings = L18nStrings::instance();
+  m_mozillavpn = MozillaVPN::instance();
 }
 
 TestHelper* TestHelper::instance() {
@@ -62,28 +62,6 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
   engine->addImportPath("qrc:///themes");
   engine->addImportPath("qrc:///");
 
-  qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = MozillaVPN::instance();
-        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-        return obj;
-      });
-
-  qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "VPNl18n", [](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = L18nStrings::instance();
-        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-        return obj;
-      });
-
-  qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "VPNSettings",
-      [this](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = &m_settingsHolder;
-        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-        return obj;
-      });
-
   qmlRegisterSingletonType<TestHelper>(
       "TestHelper", 1, 0, "TestHelper",
       [this](QQmlEngine*, QJSEngine*) -> QObject* {
@@ -93,9 +71,32 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
       });
 
   qmlRegisterSingletonType<MozillaVPN>(
+      "Mozilla.VPN", 1, 0, "VPN", [this](QQmlEngine*, QJSEngine*) -> QObject* {
+        QObject* obj = m_mozillavpn;
+        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+        return obj;
+      });
+
+  qmlRegisterSingletonType<MozillaVPN>(
+      "Mozilla.VPN", 1, 0, "VPNl18n",
+      [this](QQmlEngine*, QJSEngine*) -> QObject* {
+        QObject* obj = m_l18nstrings;
+        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+        return obj;
+      });
+
+  qmlRegisterSingletonType<TestHelper>(
+      "Mozilla.VPN", 1, 0, "VPNSettings",
+      [this](QQmlEngine*, QJSEngine*) -> QObject* {
+        QObject* obj = &m_settingsHolder;
+        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+        return obj;
+      });
+
+  qmlRegisterSingletonType<MozillaVPN>(
       "Mozilla.VPN", 1, 0, "VPNCloseEventHandler",
       [this](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = &m_closeEventHandler;
+        QObject* obj = m_closeEventHandler;
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });

@@ -6,7 +6,9 @@
 #define TESTHELPER_H
 
 #include "closeeventhandler.h"
+#include "l18nstrings.h"
 #include "models/whatsnewmodel.h"
+#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QObject>
@@ -39,9 +41,12 @@ class TestHelper final : public QObject {
   TestHelper();
   ~TestHelper() = default;
 
-  CloseEventHandler m_closeEventHandler;
-  bool m_mainWindowLoadedCalled = false;
   SettingsHolder m_settingsHolder;
+  bool m_mainWindowLoadedCalled = false;
+
+  CloseEventHandler* m_closeEventHandler = nullptr;
+  L18nStrings* m_l18nstrings = nullptr;
+  MozillaVPN* m_mozillavpn = nullptr;
   WhatsNewModel* m_whatsNewModel = nullptr;
 };
 
