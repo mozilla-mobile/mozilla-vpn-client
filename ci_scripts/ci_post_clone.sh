@@ -13,16 +13,16 @@ git submodule init
 git submodule update
 
 # generate qt_ios
-git clone https://github.com/mbirghan/qt_ios_build
-cd qt_ios_build
-cat x* > qt_static.tar.gz
+git clone https://github.com/mozilla-mobile/qt_ios
+cd qt_ios
+cat qt5* > qt_static.tar.gz
 tar xf qt_static.tar.gz
 cd ..
 
-export QT_IOS_BIN=`pwd`/qt_ios_build/ios/bin
+export QT_IOS_BIN=`pwd`/qt_ios/ios/bin
 
 # add necessary directories to path
-export PATH=`pwd`/qt_ios_build/ios/bin:/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
+export PATH=`pwd`/qt_ios/ios/bin:/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
 
 # install xcodeproj which is needed by xcode_patcher.rb
 # use --user-install for permissions

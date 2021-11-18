@@ -127,4 +127,11 @@ android/src/com/adjust
 # ipmonitor
 tools/ipmonitor/ipmonitor
 tools/ipmonitor/ipmonitor.exe
+
+# inspector
+tools/inspector/.cache
+tools/inspector/.parcel-cache
+tools/inspector/dist
+tools/inspector/node_modules
+
 *.PDB

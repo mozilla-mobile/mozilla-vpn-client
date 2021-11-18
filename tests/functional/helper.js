@@ -39,6 +39,7 @@ module.exports = {
 
           // Ignoring logs.
           if (json.type === 'log') return;
+          if (json.type === 'network') return;
 
           // Store the last notification
           if (json.type === 'notification') {

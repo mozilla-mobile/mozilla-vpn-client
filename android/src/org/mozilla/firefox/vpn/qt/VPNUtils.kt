@@ -53,10 +53,13 @@ object VPNUtils {
             return false
         }
         try {
-            tx.writer(Charsets.UTF_8)?.write(text)
+            val writer = tx.writer(Charsets.UTF_8)
+            writer?.write(text)
+            writer?.flush()
         } catch (e: IOException) {
             return false
         }
+        tx.flush()
         tx.close()
         // Now update the Files meta data that the file exists
         fileMetaData.clear()
@@ -65,7 +68,7 @@ object VPNUtils {
 
         val sendIntent = Intent(Intent.ACTION_SEND)
         sendIntent.putExtra(Intent.EXTRA_STREAM, fileURI)
-        sendIntent.setType("text/plain")
+        sendIntent.setType("*/*")
 
         val chooseIntent = Intent.createChooser(sendIntent, "Share Logs")
         ctx.startActivity(chooseIntent)

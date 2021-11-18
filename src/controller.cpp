@@ -726,6 +726,13 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
 
   QList<IPAddressRange> list;
 
+#ifdef MVPN_IOS
+  logger.debug() << "Catch all IPv4";
+  list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
+
+  logger.debug() << "Catch all IPv6";
+  list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
+#else
   // filtering out the ingress server's public IPv4 and IPv6 addresses.
   logger.debug() << "Exclude the ingress server:" << server.ipv4AddrIn();
   excludeIPv4s.append(IPAddress::create(server.ipv4AddrIn()));
@@ -749,6 +756,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
   allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
   list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
+#endif
 
   return list;
 }

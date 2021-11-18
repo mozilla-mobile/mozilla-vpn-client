@@ -47,6 +47,7 @@ Misc tips from core devs:
   if you're stuck.
 * If you're a conda user you can conda install node and geckodriver from conda-forge packages.
 * If you're trying to just iterate on one test change `it("....)` to `it.only("...)`. And only that one test will run.... don't forget to undo!
+* Check out our [Logviewer](https://mozilla-mobile.github.io/mozilla-vpn-client/logviewer/) and the [Inspector](https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/), they might come handy debugging issues!
 
 ## How to build from the source code
 
