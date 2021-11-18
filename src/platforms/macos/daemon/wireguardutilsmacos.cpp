@@ -153,6 +153,7 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   out << config.m_serverPort << "\n";
 
   out << "replace_allowed_ips=true\n";
+  out << "persistent_keepalive_interval=" << WG_KEEPALIVE_PERIOD << "\n";
   for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
     out << "allowed_ip=" << ip.toString() << "\n";
   }
