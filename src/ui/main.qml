@@ -271,7 +271,7 @@ Window {
                     return;
                 };
             }
-            // If we cant show logs natively, open the viewer
+            // If we can't show logs natively, open the viewer
             mainStackView.push("views/ViewLogs.qml");
             
         }
