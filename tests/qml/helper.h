@@ -25,8 +25,6 @@ class TestHelper final : public QObject {
   Q_INVOKABLE void triggerRecordGleanEvent(const QString& event) const;
   Q_INVOKABLE void triggerSendGleanPings() const;
   Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags) const;
-  Q_INVOKABLE QString osVersion() const;
-  Q_INVOKABLE QString architecture() const;
   Q_PROPERTY(bool mainWindowLoadedCalled READ mainWindowLoadedCalled)
   Q_PROPERTY(bool stagingMode READ stagingMode WRITE setStagingMode)
   Q_PROPERTY(bool debugMode READ debugMode WRITE setDebugMode)
