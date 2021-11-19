@@ -39,6 +39,8 @@
 #  include "platforms/dummy/dummycontroller.h"
 #endif
 
+constexpr auto SETTLE_TIMEOUT = 3000;
+
 constexpr const uint32_t TIMER_MSEC = 1000;
 
 // X connection retries.
@@ -367,6 +369,9 @@ void Controller::connectionConfirmed() {
   }
 
   setState(StateOn);
+
+  startUnsettledPeriod();
+
   emit timeChanged();
 
   if (m_nextStep != None) {
@@ -403,6 +408,8 @@ void Controller::connectionFailed() {
   m_impl->deactivate(ControllerImpl::ReasonConfirming);
 }
 
+bool Controller::isUnsettled() { return !m_settled; }
+
 void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
 
@@ -420,6 +427,8 @@ void Controller::disconnected() {
     task->run();
     return;
   }
+
+  startUnsettledPeriod();
 
   m_timer.stop();
   resetConnectionCheck();
@@ -776,6 +785,16 @@ void Controller::heartbeatCompleted() {
 
 void Controller::resetConnectedTime() {
   m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
+}
+
+void Controller::startUnsettledPeriod() {
+  logger.debug() << "Starting unsettled period.";
+  m_settled = false;
+  m_settleTimer.stop();
+  m_settleTimer.singleShot(SETTLE_TIMEOUT, [this]() {
+    m_settled = true;
+    logger.debug() << "Unsettled period over.";
+  });
 }
 
 QString Controller::currentLocalizedCityName() const {
