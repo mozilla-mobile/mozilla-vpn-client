@@ -17,7 +17,7 @@ RoundButton {
     property var handleKeyClick: function() { clicked() }
 
     focusPolicy: Qt.StrongFocus
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (loaderVisible) {
             return;
         }
@@ -26,7 +26,7 @@ RoundButton {
             visualStateItem.state = uiState.statePressed;
 
     }
-    Keys.onReleased: {
+    Keys.onReleased: event => {
         if (loaderVisible) {
             return;
         }

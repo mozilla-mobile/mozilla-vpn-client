@@ -73,7 +73,7 @@ Window {
         anchors.fill: parent
         propagateComposedEvents: true
         z: 10
-        onPressed: {
+        onPressed: mouse => {
             if (window.activeFocusItem && window.activeFocusItem.forceBlurOnOutsidePress) {
                 window.activeFocusItem.focus = false;
             }
