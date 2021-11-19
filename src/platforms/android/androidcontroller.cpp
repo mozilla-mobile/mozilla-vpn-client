@@ -101,6 +101,9 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
   QtAndroid::bindService(
       QAndroidIntent(appContext.object(), "org.mozilla.firefox.vpn.VPNService"),
       *this, QtAndroid::BindFlag::AutoCreate);
+
+  connect(this, &AndroidController::initialized, this,
+          &AndroidController::applyStrings, Qt::QueuedConnection);
 }
 
 /*
@@ -305,9 +308,6 @@ bool AndroidController::VPNBinder::onTransact(int code,
           true, doc.object()["connected"].toBool(),
           QDateTime::fromMSecsSinceEpoch(
               doc.object()["time"].toVariant().toLongLong()));
-      // Pass a localised version of the Fallback string for the Notification
-      m_controller->applyStrings();
-
       break;
     case EVENT_CONNECTED:
       logger.debug() << "Transact: connected";
@@ -336,8 +336,13 @@ bool AndroidController::VPNBinder::onTransact(int code,
       }
       break;
     case EVENT_ACTIVATION_ERROR:
+      buffer = readUTF8Parcel(data);
+      if (!buffer.isEmpty()) {
+        logger.error() << "Service Error while activating the VPN: " << buffer;
+      }
       MozillaVPN::instance()->errorHandle(ErrorHandler::ConnectionFailureError);
       emit m_controller->disconnected();
+      break;
     default:
       logger.warning() << "Transact: Invalid!";
       break;

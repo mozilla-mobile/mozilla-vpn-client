@@ -58,13 +58,14 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     if (!mService.checkPermissions()) {
                         mResumeConfig = config
                         // The Permission prompt was already
-                        // send, in case it's accepted we will 
+                        // send, in case it's accepted we will
                         // receive ACTIONS.resumeActivate
                         return true
                     }
                     this.mService.turnOn(config)
                 } catch (e: Exception) {
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
+                    Log.stack(tag, e.stackTrace)
                     dispatchEvent(EVENTS.activationError, e.localizedMessage)
                 }
                 return true

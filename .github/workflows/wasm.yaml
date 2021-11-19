@@ -29,7 +29,59 @@ jobs:
         shell: bash
         run: |
           python3 -m pip install aqtinstall
-          python3 -m aqt install --outputdir /opt 5.15.0 linux desktop wasm_32 -m qtcharts
+          python3 -m aqt install --outputdir /opt 5.15.2 linux desktop wasm_32 -m qtcharts
+
+      - name: Install python dependencies
+        shell: bash
+        run: |
+          pip install -r requirements.txt
+
+      - name: Setup emsdk
+        uses: mymindstorm/setup-emsdk@v7
+        with:
+          version: 1.39.8
+
+      - name: Compiling
+        shell: bash
+        run: |
+          export PATH=/opt/5.15.2/wasm_32/bin:$PATH
+          ./scripts/wasm_compile.sh
+
+      - name: Uploading
+        uses: actions/upload-artifact@v1
+        with:
+            name: WebAssembly Build
+            path: wasm
+
+  wasmQt6:
+    name: Wasm Qt6
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          python3 -m pip install aqtinstall
+          # qt6.2.1 for wasm needs the desktop linux installation
+          python3 -m aqt install --outputdir /opt 6.2.1 linux desktop -m qtcharts qtwebsockets
+          python3 -m aqt install --outputdir /opt 6.2.1 linux desktop wasm_32 -m qtcharts qtwebsockets
+
+      - name: Patching Qt
+        shell: bash
+        run: |
+          # see: https://wiki.qt.io/Qt_6.2_Known_Issues#WebAssembly
+          sed '/sse/,+5 d' /opt/6.2.1/wasm_32/mkspecs/features/wasm/wasm.prf > /tmp/wasm.prf
+          mv /tmp/wasm.prf /opt/6.2.1/wasm_32/mkspecs/features/wasm/wasm.prf
 
       - name: Install python dependencies
         shell: bash
@@ -44,13 +96,9 @@ jobs:
       - name: Compiling
         shell: bash
         run: |
-          ./scripts/wasm_compile.sh /opt/5.15.0/wasm_32/bin
+          export PATH=/opt/6.2.1/wasm_32/bin:/opt/6.2.1/gcc_64/bin:$PATH
+          ./scripts/wasm_compile.sh
 
-      - name: Uploading
-        uses: actions/upload-artifact@v1
-        with:
-            name: WebAssembly Build
-            path: wasm
   inspector:
     runs-on: ubuntu-20.04
     steps:
@@ -76,7 +124,7 @@ jobs:
 
   ghPages:
     runs-on: ubuntu-20.04
-    needs: [wasm,inspector]
+    needs: [wasm, inspector]
     name: Publish Wasm on Github Pages
     env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -106,6 +154,3 @@ jobs:
           email: sstreich@mozilla.com
           # Where static files are.
           build_dir: _site
-          
-
-

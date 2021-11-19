@@ -13,13 +13,12 @@ fi
 RELEASE=1
 OS=
 NETWORKEXTENSION=
-WEBEXTENSION=
 ADJUST_SDK_TOKEN=
 ADJUST="CONFIG-=adjust"
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-n|--networkextension] [-w|--webextension] [-a|--adjusttoken <adjust_token>]"
+  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-n|--networkextension] [-a|--adjusttoken <adjust_token>]"
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N "Use -n or --networkextension to force the network-extension component for MacOS too."
@@ -52,10 +51,6 @@ while [[ $# -gt 0 ]]; do
     ;;
   -n | --networkextension)
     NETWORKEXTENSION=1
-    shift
-    ;;
-  -w | --webextension)
-    WEBEXTENSION=1
     shift
     ;;
   -h | --help)
@@ -112,8 +107,6 @@ fi
 if [[ "$OS" == "ios" ]]; then
   # Network-extension is the default for IOS
   NETWORKEXTENSION=1
-  # No web-extension for IOS
-  WEBEXTENSION=
 fi
 
 if ! [ -d "src" ] || ! [ -d "ios" ] || ! [ -d "macos" ]; then
@@ -207,11 +200,11 @@ fi
 
 printn Y "Web-Extension: "
 WEMODE=
-if [[ "$WEBEXTENSION" ]]; then
+if [ "$OS" = "macos" ]; then
   print G web-extension
   WEMODE="CONFIG+=webextension"
 else
-  print G daemon
+  print G none
 fi
 
 print Y "Creating the xcode project via qmake..."
@@ -227,7 +220,7 @@ $QMAKE \
   src/src.pro || die "Compilation failed"
 
 print Y "Patching the xcode project..."
-ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$WEBEXTENSION" "$ADJUST_SDK_TOKEN"|| die "Failed to merge xcode with wireguard"
+ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 print Y "Opening in XCode..."

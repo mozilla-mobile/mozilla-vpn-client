@@ -111,6 +111,7 @@ HEADERS += \
     testipfinder.h \
     testlicense.h \
     testmodels.h \
+    testmozillavpnh.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
     teststatusicon.h \
@@ -202,6 +203,7 @@ SOURCES += \
     testipfinder.cpp \
     testlicense.cpp \
     testmodels.cpp \
+    testmozillavpnh.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \
     teststatusicon.cpp \

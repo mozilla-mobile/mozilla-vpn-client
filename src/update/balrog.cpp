@@ -429,22 +429,43 @@ bool Balrog::install(const QString& filePath) {
   QStringList arguments;
   arguments << "/qb!-"
             << "REBOOT=ReallySuppress"
-            << "/i" << QDir::toNativeSeparators(filePath) << "/lv"
+            << "/i" << QDir::toNativeSeparators(filePath) << "/lv!"
             << QDir::toNativeSeparators(logFile);
 
   QProcess* process = new QProcess(this);
   process->start("msiexec.exe", arguments);
+
+  connect(process, &QProcess::readyReadStandardError, [process]() {
+    logger.info() << "[msiexec - stderr]" << Qt::endl
+                  << qUtf8Printable(process->readAllStandardError())
+                  << Qt::endl;
+  });
+
+  connect(process, &QProcess::readyReadStandardOutput, [process]() {
+    logger.info() << "[msiexec - stdout]" << Qt::endl
+                  << qUtf8Printable(process->readAllStandardOutput())
+                  << Qt::endl;
+  });
+
+  connect(process, &QProcess::errorOccurred,
+          [this](QProcess::ProcessError error) {
+            logger.error() << "Installation failed:" << error;
+            deleteLater();
+          });
+
   connect(process,
           QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
           [this, process, logFile](int exitCode, QProcess::ExitStatus) {
             logger.debug() << "Installation completed - exitCode:" << exitCode;
 
-            logger.debug() << "Stdout:" << Qt::endl
-                           << qUtf8Printable(process->readAllStandardOutput())
-                           << Qt::endl;
-            logger.debug() << "Stderr:" << Qt::endl
-                           << qUtf8Printable(process->readAllStandardError())
-                           << Qt::endl;
+            // In theory we should not be able to read anything more from
+            // stdout/stderr.
+            logger.info() << "[msiexec - stdout]" << Qt::endl
+                          << qUtf8Printable(process->readAllStandardOutput())
+                          << Qt::endl;
+            logger.info() << "[msiexec - stderr]" << Qt::endl
+                          << qUtf8Printable(process->readAllStandardError())
+                          << Qt::endl;
 
             QFile log(logFile);
             if (!log.open(QIODevice::ReadOnly | QIODevice::Text)) {

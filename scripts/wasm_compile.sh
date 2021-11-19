@@ -10,8 +10,6 @@ if [ -f .env ]; then
   . .env
 fi
 
-WASM_QT_PATH=
-
 helpFunction() {
   print G "Usage:"
   print N "\t$0 <qt/wasm/path>"
@@ -22,25 +20,6 @@ helpFunction() {
 print N "This script compiles MozillaVPN for WebAssembly"
 print N ""
 
-while [[ $# -gt 0 ]]; do
-  key="$1"
-
-  case $key in
-  *)
-    if [[ "$WASM_QT_PATH" ]]; then
-      helpFunction
-    fi
-
-    WASM_QT_PATH=$1
-    shift
-    ;;
-  esac
-done
-
-if ! [ -d "$WASM_QT_PATH" ]; then
-  helpFunction
-fi
-
 if ! [ -d "src" ] || ! [ -d "wasm" ]; then
   die "This script must be executed at the root of the repository."
 fi
@@ -50,19 +29,12 @@ SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr 
 FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
 print G "$SHORTVERSION - $FULLVERSION"
 
-QMAKE=$WASM_QT_PATH/qmake
-[ -f "$QMAKE" ] || die "Unable to find qmake at the path $QMAKE"
-
-printn Y "Setting PATH var... "
-export PATH=$PATH:$WASM_QT_PATH
-print G "done."
-
 printn Y "Checking emscripten... "
 em++ --version &>/dev/null || die "em++ not found. Have you forgotten to load emsdk_env.sh?"
 em++ --version 2>&1 | grep 1.39.8 &>/dev/null || die "em++ doesn't match the required version: 1.39.8"
 print G "done."
 
-$QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
+qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
 
 print Y "Importing translation files..."
 git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
@@ -72,7 +44,7 @@ print Y "Generating glean samples..."
 python3 scripts/generate_glean.py || die "Failed to generate glean samples"
 
 print Y "Configuring the project via qmake..."
-$QMAKE CONFIG-=debug  CONFIG-=debug_and_release CONFIG+=release BUILD_ID=$FULLVERSION || die "Compilation failed"
+qmake CONFIG-=debug  CONFIG-=debug_and_release CONFIG+=release BUILD_ID=$FULLVERSION || die "Compilation failed"
 
 print Y "Compiling..."
 make -j8 || die "Compilation failed"
