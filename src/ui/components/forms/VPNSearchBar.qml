@@ -31,7 +31,7 @@ VPNTextField {
         opacity: parent.focus ? 1 : 0.8
     }
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (focus && hasError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
             event.accepted = true;
         }
