@@ -77,7 +77,9 @@ serversView:
   searchNoResultsLabel: No results. Try a different search
 
 languageView:
-  searchPlaceholder: Search languages
+  searchPlaceholder:
+    value: Search languages
+    comment: Placeholder text for a search field that can be used to search through a list of languages
 
 feedbackForm:
   chooseCategory: Choose a category
