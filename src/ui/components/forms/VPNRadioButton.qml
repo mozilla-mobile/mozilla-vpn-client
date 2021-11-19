@@ -32,12 +32,12 @@ RadioDelegate {
             vpnFlickable.ensureVisible(radioControl);
     }
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
             mouseArea.changeState(uiState.stateDefault);
     }
 
-    Keys.onReleased: {
+    Keys.onReleased: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
             radioControl.clicked();
     }

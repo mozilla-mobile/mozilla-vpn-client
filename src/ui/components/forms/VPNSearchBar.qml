@@ -61,7 +61,7 @@ VPNTextField {
         }
     }
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (focus && hasError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
             event.accepted = true;
         }
