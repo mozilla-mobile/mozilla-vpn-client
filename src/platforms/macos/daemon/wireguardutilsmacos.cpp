@@ -165,8 +165,9 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   return (err == 0);
 }
 
-bool WireguardUtilsMacos::deletePeer(const QString& pubkey) {
-  QByteArray publicKey = QByteArray::fromBase64(qPrintable(pubkey));
+bool WireguardUtilsMacos::deletePeer(const InterfaceConfig& config) {
+  QByteArray publicKey =
+      QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
   QString message;
   QTextStream out(&message);

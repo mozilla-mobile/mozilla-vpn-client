@@ -242,7 +242,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   return true;
 }
 
-bool WireguardUtilsLinux::deletePeer(const QString& pubkey) {
+bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   wg_device* device = static_cast<wg_device*>(calloc(1, sizeof(*device)));
   if (!device) {
     logger.error() << "Allocation failure";
@@ -257,11 +257,11 @@ bool WireguardUtilsLinux::deletePeer(const QString& pubkey) {
   }
   device->first_peer = device->last_peer = peer;
 
-  logger.debug() << "Removing peer" << printableKey(pubkey);
+  logger.debug() << "Removing peer" << printableKey(config.m_serverPublicKey);
 
   // Public Key
   peer->flags = (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REMOVE_ME);
-  wg_key_from_base64(peer->public_key, qPrintable(pubkey));
+  wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
 
   // Set/update device
   strncpy(device->name, WG_INTERFACE, IFNAMSIZ);

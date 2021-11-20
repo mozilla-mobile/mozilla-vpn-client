@@ -26,7 +26,7 @@ Logger logger(LOG_WINDOWS, "WireguardUtilsWindows");
 };  // namespace
 
 WireguardUtilsWindows::WireguardUtilsWindows(QObject* parent)
-    : WireguardUtils(parent), m_tunnel(this) {
+    : WireguardUtils(parent), m_tunnel(this), m_routeMonitor(this) {
   MVPN_COUNT_CTOR(WireguardUtilsWindows);
   logger.debug() << "WireguardUtilsWindows created.";
 
@@ -112,6 +112,7 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     return false;
   }
   m_luid = luid.Value;
+  m_routeMonitor.setLuid(luid.Value);
 
   // Enable the windows firewall
   NET_IFINDEX ifindex;
@@ -132,8 +133,15 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
-  // Enable the windows firewall for this peer.
+  // Enable the windows firewall and routes for this peer.
   WindowsFirewall::instance()->enablePeerTraffic(config);
+  if (config.m_hopindex != 0) {
+    // HACK: This is an sloppy way to detect entry vs. exit server.
+    m_routeMonitor.addExclusionRoute(config.m_serverIpv4AddrIn);
+  }
+
+  logger.debug() << "Updating peer" << printableKey(config.m_serverPublicKey)
+                 << "via" <<  config.m_serverIpv4AddrIn;
 
   // Update/create the peer config
   QString message;
@@ -161,11 +169,16 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   return true;
 }
 
-bool WireguardUtilsWindows::deletePeer(const QString& pubkey) {
-  QByteArray publicKey = QByteArray::fromBase64(qPrintable(pubkey));
+bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
+  QByteArray publicKey =
+      QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
-  // Disable the windows firewall for this peer.
-  WindowsFirewall::instance()->disablePeerTraffic(pubkey);
+  // Disable the windows firewall and routes for this peer.
+  WindowsFirewall::instance()->disablePeerTraffic(config.m_serverPublicKey);
+  if (config.m_hopindex != 0) {
+    // HACK: This is an sloppy way to detect entry vs. exit server.
+    m_routeMonitor.deleteExclusionRoute(config.m_serverIpv4AddrIn);
+  }
 
   QString message;
   QTextStream out(&message);

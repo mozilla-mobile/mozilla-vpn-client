@@ -6,8 +6,11 @@
 #define WIREGUARDUTILSWINDOWS_H
 
 #include "daemon/wireguardutils.h"
+#include "windowsroutemonitor.h"
 #include "windowstunnelservice.h"
 
+#include <windows.h>
+#include <QHostAddress>
 #include <QObject>
 
 class WireguardUtilsWindows final : public WireguardUtils {
@@ -23,7 +26,7 @@ class WireguardUtilsWindows final : public WireguardUtils {
   bool deleteInterface() override;
 
   bool updatePeer(const InterfaceConfig& config) override;
-  bool deletePeer(const QString& pubkey) override;
+  bool deletePeer(const InterfaceConfig& config) override;
   QList<PeerStatus> getPeerStatus() override;
 
   bool updateRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
@@ -37,6 +40,7 @@ class WireguardUtilsWindows final : public WireguardUtils {
 
   quint64 m_luid = 0;
   WindowsTunnelService m_tunnel;
+  WindowsRouteMonitor m_routeMonitor;
 };
 
 #endif  // WIREGUARDUTILSWINDOWS_H

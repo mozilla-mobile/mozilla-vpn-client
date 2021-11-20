@@ -21,7 +21,7 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool deleteInterface() override;
 
   bool updatePeer(const InterfaceConfig& config) override;
-  bool deletePeer(const QString& pubkey) override;
+  bool deletePeer(const InterfaceConfig& config) override;
   QList<PeerStatus> getPeerStatus() override;
 
   bool updateRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
