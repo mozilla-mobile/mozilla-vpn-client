@@ -36,7 +36,7 @@ static void routeChangeCallback(PVOID context, PMIB_IPFORWARD_ROW2 row,
 }
 
 // Perform prefix matching comparison on IP addresses in host order.
-static int prefixcmp(const void *a, const void *b, size_t bits) {
+static int prefixcmp(const void* a, const void* b, size_t bits) {
   size_t bytes = bits / 8;
   if (bytes > 0) {
     int diff = memcmp(a, b, bytes);
@@ -69,20 +69,21 @@ WindowsRouteMonitor::~WindowsRouteMonitor() {
 }
 
 void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
-                                               void *ptable) {
+                                               void* ptable) {
   PMIB_IPFORWARD_TABLE2 table = (PMIB_IPFORWARD_TABLE2)ptable;
   SOCKADDR_INET nexthop;
   quint64 bestLuid = 0;
   int bestMatch = -1;
 
   for (ULONG i = 0; i < table->NumEntries; i++) {
-    MIB_IPFORWARD_ROW2 *row = &table->Table[i];
+    MIB_IPFORWARD_ROW2* row = &table->Table[i];
     // Ignore routes into the VPN interface.
     if (row->InterfaceLuid.Value == m_luid) {
       continue;
     }
     // Ignore host routes, and shorter potential matches.
-    if (row->DestinationPrefix.PrefixLength >= data->DestinationPrefix.PrefixLength) {
+    if (row->DestinationPrefix.PrefixLength >=
+        data->DestinationPrefix.PrefixLength) {
       continue;
     }
     if (row->DestinationPrefix.PrefixLength < bestMatch) {
@@ -139,7 +140,7 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
 
 bool WindowsRouteMonitor::addExclusionRoute(const QHostAddress& address) {
   logger.debug() << "Adding exclusion route for" << address.toString();
-  
+
   if (m_exclusionRoutes.contains(address)) {
     logger.warning() << "Exclusion route already exists";
     return false;

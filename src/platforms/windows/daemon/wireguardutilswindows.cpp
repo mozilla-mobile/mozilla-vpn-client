@@ -141,7 +141,7 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   }
 
   logger.debug() << "Updating peer" << printableKey(config.m_serverPublicKey)
-                 << "via" <<  config.m_serverIpv4AddrIn;
+                 << "via" << config.m_serverIpv4AddrIn;
 
   // Update/create the peer config
   QString message;

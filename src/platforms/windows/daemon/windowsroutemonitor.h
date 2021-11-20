@@ -22,7 +22,7 @@ class WindowsRouteMonitor final : public QObject {
   ~WindowsRouteMonitor();
 
   bool addExclusionRoute(const QHostAddress& address);
-  bool addExclusionRoute(const QString& address) { 
+  bool addExclusionRoute(const QString& address) {
     return addExclusionRoute(QHostAddress(address));
   }
 
