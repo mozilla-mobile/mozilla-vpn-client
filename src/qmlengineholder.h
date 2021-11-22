@@ -15,7 +15,7 @@ class QmlEngineHolder final : public NetworkManager {
   Q_DISABLE_COPY_MOVE(QmlEngineHolder)
 
  public:
-  ~QmlEngineHolder();
+  ~QmlEngineHolder() = default;
 
   static QmlEngineHolder* instance();
 
@@ -33,7 +33,7 @@ class QmlEngineHolder final : public NetworkManager {
   void clearCacheInternal() override;
 
  private:
-  QmlEngineHolder();
+  QmlEngineHolder() = default;
   QQmlApplicationEngine m_engine;
 };
 

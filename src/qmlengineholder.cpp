@@ -13,14 +13,6 @@ namespace {
 Logger logger(LOG_MAIN, "QmlEngineHolder");
 }  // namespace
 
-QmlEngineHolder::QmlEngineHolder() {
-  MVPN_COUNT_CTOR(QmlEngineHolder);
-}
-
-QmlEngineHolder::~QmlEngineHolder() {
-  MVPN_COUNT_DTOR(QmlEngineHolder);
-}
-
 // static
 QmlEngineHolder* QmlEngineHolder::instance() {
   static auto instance = new QmlEngineHolder();

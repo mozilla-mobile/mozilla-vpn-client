@@ -87,8 +87,6 @@ MozillaVPN* MozillaVPN::instance() {
 }
 
 MozillaVPN::MozillaVPN() : m_private(new Private()) {
-  MVPN_COUNT_CTOR(MozillaVPN);
-
   logger.debug() << "Creating MozillaVPN singleton";
 
 #ifdef MVPN_ADJUST
@@ -176,8 +174,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 }
 
 MozillaVPN::~MozillaVPN() {
-  MVPN_COUNT_DTOR(MozillaVPN);
-
   logger.debug() << "Deleting MozillaVPN singleton";
 
   delete m_private;

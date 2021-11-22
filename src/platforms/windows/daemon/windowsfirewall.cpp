@@ -53,8 +53,6 @@ WindowsFirewall* WindowsFirewall::instance() {
 }
 
 WindowsFirewall::WindowsFirewall() : QObject(nullptr) {
-  MVPN_COUNT_CTOR(WindowsFirewall);
-
   HANDLE engineHandle = NULL;
   DWORD result = ERROR_SUCCESS;
   // Use dynamic sessions for efficiency and safety:
@@ -78,7 +76,6 @@ WindowsFirewall::WindowsFirewall() : QObject(nullptr) {
 }
 
 WindowsFirewall::~WindowsFirewall() {
-  MVPN_COUNT_DTOR(WindowsFirewall);
   if (m_sessionHandle != INVALID_HANDLE_VALUE) {
     CloseHandle(m_sessionHandle);
   }

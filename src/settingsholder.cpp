@@ -49,8 +49,6 @@ SettingsHolder::SettingsHolder()
       m_settings("mozilla_testing", "vpn")
 #endif
 {
-  MVPN_COUNT_CTOR(SettingsHolder);
-
   if (!hasInstallationTime()) {
     m_firstExecution = true;
     setInstallationTime(QDateTime::currentDateTime());
@@ -58,7 +56,6 @@ SettingsHolder::SettingsHolder()
 }
 
 SettingsHolder::~SettingsHolder() {
-  MVPN_COUNT_DTOR(SettingsHolder);
 #ifdef UNIT_TEST
   m_settings.clear();
 #endif
