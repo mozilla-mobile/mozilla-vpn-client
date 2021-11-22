@@ -83,6 +83,7 @@
 				<File Source="../../mullvad-split-tunnel.inf" />
 				<File Source="../../mullvad-split-tunnel.sys" />
 				<File Source="../../WdfCoinstaller01011.dll" />
+				<File Source="../../mozillavpn.json" />
 				<File Source="../../mozillavpnnp.exe" />
 
 				<!-- Broker Service -->

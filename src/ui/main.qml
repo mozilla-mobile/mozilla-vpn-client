@@ -39,7 +39,7 @@ Window {
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
-    onClosing: {
+    onClosing: close => {
         console.log("Closing request handling");
 
         // No desktop, we go in background mode.
@@ -271,7 +271,7 @@ Window {
                     return;
                 };
             }
-            // If we cant show logs natively, open the viewer
+            // If we can't show logs natively, open the viewer
             mainStackView.push("views/ViewLogs.qml");
             
         }
