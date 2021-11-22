@@ -26,7 +26,7 @@ class QmlEngineHolder final : public NetworkManager {
   QWindow* window() const;
   void showWindow();
   void hideWindow();
-  
+
   void operator delete(void*){};
 
  protected:

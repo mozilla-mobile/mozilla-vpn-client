@@ -66,7 +66,8 @@ int CommandLogin::run(QStringList& tokens) {
     }
 
     if (!passwordOption.m_set) {
-      MozillaVPN::instance()->authenticateWithType(MozillaVPN::AuthenticationInBrowser);
+      MozillaVPN::instance()->authenticateWithType(
+          MozillaVPN::AuthenticationInBrowser);
     } else {
       MozillaVPN::instance()->MozillaVPN::instance()->authenticateWithType(
           MozillaVPN::AuthenticationInApp);

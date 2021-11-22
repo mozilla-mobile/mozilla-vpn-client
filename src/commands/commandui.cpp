@@ -393,8 +393,7 @@ int CommandUI::run(QStringList& tokens) {
                                       "VPNFilterProxyModel");
 
     QObject::connect(qApp, &QCoreApplication::aboutToQuit,
-                     MozillaVPN::instance(),
-                     &MozillaVPN::aboutToQuit);
+                     MozillaVPN::instance(), &MozillaVPN::aboutToQuit);
 
     QObject::connect(MozillaVPN::instance()->controller(),
                      &Controller::readyToQuit, MozillaVPN::instance(),
@@ -416,8 +415,7 @@ int CommandUI::run(QStringList& tokens) {
         NotificationHandler::create(QmlEngineHolder::instance());
 
     QObject::connect(MozillaVPN::instance()->controller(),
-                     &Controller::stateChanged,
-                     notificationHandler,
+                     &Controller::stateChanged, notificationHandler,
                      &NotificationHandler::showNotification);
 
 #ifdef MVPN_MACOS
@@ -453,8 +451,7 @@ int CommandUI::run(QStringList& tokens) {
       InspectorWebSocketServer* inspectWebSocketServer =
           new InspectorWebSocketServer(qApp);
       QObject::connect(MozillaVPN::instance()->controller(),
-                       &Controller::readyToQuit,
-                       inspectWebSocketServer,
+                       &Controller::readyToQuit, inspectWebSocketServer,
                        &InspectorWebSocketServer::close);
     }
 

@@ -56,8 +56,7 @@ int CommandSelect::run(QStringList& tokens) {
     }
 
     MozillaVPN::instance()->changeServer(exitCountryCode, exitCityName,
-                                         entryCountryCode,
-                     entryCityName);
+                                         entryCountryCode, entryCityName);
     return 0;
   });
 }

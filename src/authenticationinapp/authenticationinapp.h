@@ -59,13 +59,14 @@ class AuthenticationInApp final : public QObject {
   Q_ENUM(ErrorType);
 
   void operator delete(void*){};
+
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
 
  public:
   static AuthenticationInApp* instance();
 
-  ~AuthenticationInApp();
+  ~AuthenticationInApp() = default;
 
   State state() const { return m_state; }
 
@@ -128,7 +129,7 @@ class AuthenticationInApp final : public QObject {
 #endif
 
  private:
-  explicit AuthenticationInApp(QObject* parent);
+  explicit AuthenticationInApp() = default;
 
   void setState(State state);
 

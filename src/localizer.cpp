@@ -52,9 +52,7 @@ Localizer::Localizer() {
   initialize();
 }
 
-Localizer::~Localizer() {
-  MVPN_COUNT_DTOR(Localizer);
-}
+Localizer::~Localizer() { MVPN_COUNT_DTOR(Localizer); }
 
 void Localizer::initialize() {
   QString systemCode = QLocale::system().bcp47Name();
