@@ -54,7 +54,7 @@ MacosRouteMonitor::MacosRouteMonitor(const QString& ifname, QObject* parent)
   m_notifier = new QSocketNotifier(m_rtsock, QSocketNotifier::Read, this);
   connect(m_notifier, &QSocketNotifier::activated, this,
           &MacosRouteMonitor::rtsockReady);
-  
+
   // Grab the default routes at startup.
   rtmFetchRoutes(AF_INET);
   rtmFetchRoutes(AF_INET6);
@@ -85,13 +85,13 @@ void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
   char ifname[IF_NAMESIZE];
   if_indextoname(rtm->rtm_index, ifname);
   logger.debug() << "Route deleted via" << ifname
-                 << QString("addrs(%1):").arg(rtm->rtm_addrs, 0, 16) 
+                 << QString("addrs(%1):").arg(rtm->rtm_addrs, 0, 16)
                  << list.join(" ");
 }
 
 // Compare memory against zero.
-static int memcmpzero(const void *data, size_t len) {
-  const quint8 *ptr = (const quint8*)data;
+static int memcmpzero(const void* data, size_t len) {
+  const quint8* ptr = (const quint8*)data;
   while (len--) {
     if (*ptr++) return 1;
   }
@@ -123,8 +123,8 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
   }
   if_indextoname(rtm->rtm_index, ifname);
   logger.debug() << "Route update via" << ifname
-                << QString("addrs(%1):").arg(rtm->rtm_addrs, 0, 16)
-                << list.join(" ");
+                 << QString("addrs(%1):").arg(rtm->rtm_addrs, 0, 16)
+                 << list.join(" ");
 
   // Check for a default route, which should have a netmask of zero.
   const struct sockaddr* sa = (const struct sockaddr*)addrlist[2].constData();
@@ -306,7 +306,7 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const QHostAddress& prefix,
     sin.sin_addr.s_addr = htonl(dst);
     rtmAppendAddr(rtm, rtm_max_size, RTA_DST, &sin);
   }
-  
+
   // Append RTA_GATEWAY
   if (gateway != nullptr) {
     if (gateway->sa_family == AF_INET) {
@@ -357,8 +357,8 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const QHostAddress& prefix,
 }
 
 bool MacosRouteMonitor::rtmFetchRoutes(int family) {
-  constexpr size_t rtm_max_size = sizeof(struct rt_msghdr) +
-                                  sizeof(struct sockaddr_storage) * 2;
+  constexpr size_t rtm_max_size =
+      sizeof(struct rt_msghdr) + sizeof(struct sockaddr_storage) * 2;
   char buf[rtm_max_size];
   struct rt_msghdr* rtm = (struct rt_msghdr*)buf;
 
