@@ -136,7 +136,7 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   // Enable the windows firewall and routes for this peer.
   WindowsFirewall::instance()->enablePeerTraffic(config);
   if (config.m_hopindex != 0) {
-    // HACK: This is an sloppy way to detect entry vs. exit server.
+    // HACK: This is a sloppy way to detect entry vs. exit server.
     m_routeMonitor.addExclusionRoute(config.m_serverIpv4AddrIn);
   }
 
@@ -176,7 +176,7 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
   // Disable the windows firewall and routes for this peer.
   WindowsFirewall::instance()->disablePeerTraffic(config.m_serverPublicKey);
   if (config.m_hopindex != 0) {
-    // HACK: This is an sloppy way to detect entry vs. exit server.
+    // HACK: This is a sloppy way to detect entry vs. exit server.
     m_routeMonitor.deleteExclusionRoute(config.m_serverIpv4AddrIn);
   }
 

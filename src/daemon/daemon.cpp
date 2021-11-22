@@ -299,13 +299,14 @@ bool Daemon::deactivate(bool emitSignals) {
     return false;
   }
 
-  // Cleanup routing
+  // Cleanup peers and routing
   for (const ConnectionState& state : m_connections.values()) {
     const InterfaceConfig& config = state.m_config;
     logger.debug() << "Deleting routes for hop" << config.m_hopindex;
     for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
       wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
     }
+    wgutils()->deletePeer(config);
   }
 
   // Delete the interface

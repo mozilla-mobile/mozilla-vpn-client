@@ -137,7 +137,7 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
-  // HACK: This is an sloppy way to detect entry vs. exit server.
+  // HACK: This is a sloppy way to detect entry vs. exit server.
   if (config.m_hopindex != 0) {
     m_rtmonitor->addExclusionRoute(config.m_serverIpv4AddrIn);
   }
@@ -174,7 +174,7 @@ bool WireguardUtilsMacos::deletePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
-  // HACK: This is an sloppy way to detect entry vs. exit server.
+  // HACK: This is a sloppy way to detect entry vs. exit server.
   if (config.m_hopindex != 0) {
     m_rtmonitor->deleteExclusionRoute(config.m_serverIpv4AddrIn);
   }

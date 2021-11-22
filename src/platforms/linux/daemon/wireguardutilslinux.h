@@ -6,6 +6,7 @@
 #define WIREGUARDUTILSLINUX_H
 
 #include "daemon/wireguardutils.h"
+#include <QHostAddress>
 #include <QObject>
 #include <QSocketNotifier>
 #include <QStringList>
@@ -38,6 +39,7 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool rtmSendRule(int action, int flags, int addrfamily);
   bool rtmSendRoute(int action, int flags, const IPAddressRange& prefix,
                     int hopindex);
+  bool rtmSendExclude(int action, int flags, const QHostAddress& address);
   static bool setupCgroupClass(const QString& path, unsigned long classid);
   static bool buildAllowedIp(struct wg_allowedip*,
                              const IPAddressRange& prefix);

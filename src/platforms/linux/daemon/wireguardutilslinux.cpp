@@ -195,6 +195,14 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
 
   logger.debug() << "Adding peer" << printableKey(config.m_serverPublicKey);
 
+  // HACK: This is a sloppy way to detect entry vs. exit server.
+  if (config.m_hopindex != 0) {
+    logger.debug() << "Adding exclusion route for" << config.m_serverIpv4AddrIn;
+    rtmSendExclude(RTM_NEWRULE,
+                   NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK,
+                   QHostAddress(config.m_serverIpv4AddrIn));
+  }
+
   // Public Key
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
   // Endpoint
@@ -207,7 +215,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
 
   // HACK: We are running into a crash on Linux due to the address list being
   // *WAAAY* too long, which we aren't really using anways since the routing
-  // tables are doing all the work for us anyways.
+  // policy rules are doing all the work for us anyways.
   //
   // To work around the issue, just set default routes for hopindex zero.
   if (config.m_hopindex == 0) {
@@ -249,6 +257,14 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
     return false;
   }
   auto guard = qScopeGuard([&] { wg_free_device(device); });
+
+  // HACK: This is a sloppy way to detect entry vs. exit server.
+  if (config.m_hopindex != 0) {
+    logger.debug() << "Removing exclusion route for"
+                   << config.m_serverIpv4AddrIn;
+    rtmSendExclude(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK,
+                   QHostAddress(config.m_serverIpv4AddrIn));
+  }
 
   wg_peer* peer = static_cast<wg_peer*>(calloc(1, sizeof(*peer)));
   if (!peer) {
@@ -559,6 +575,55 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
   nlmsg_append_attr32(buf, sizeof(buf), FRA_SUPPRESS_PREFIXLEN, 0);
   result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0, (struct sockaddr*)&nladdr,
                   sizeof(nladdr));
+  if (result != nlmsg->nlmsg_len) {
+    return false;
+  }
+
+  return true;
+}
+
+bool WireguardUtilsLinux::rtmSendExclude(int action, int flags,
+                                         const QHostAddress& address) {
+  constexpr size_t fib_max_size =
+      sizeof(struct fib_rule_hdr) + RTA_SPACE(sizeof(struct in6_addr));
+
+  char buf[NLMSG_SPACE(fib_max_size)];
+  struct nlmsghdr* nlmsg = (struct nlmsghdr*)buf;
+  struct fib_rule_hdr* rule = (struct fib_rule_hdr*)NLMSG_DATA(nlmsg);
+  struct sockaddr_nl nladdr;
+  memset(&nladdr, 0, sizeof(nladdr));
+  nladdr.nl_family = AF_NETLINK;
+
+  /* Create a routing policy rule to select the main routing table for
+   * packets matching the destination address. This is equivalent to:
+   *     ip rule add to $ADDRESS table main
+   */
+  memset(buf, 0, sizeof(buf));
+  nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
+  nlmsg->nlmsg_type = action;
+  nlmsg->nlmsg_flags = flags;
+  nlmsg->nlmsg_pid = getpid();
+  nlmsg->nlmsg_seq = m_nlseq++;
+  rule->table = RT_TABLE_MAIN;
+  rule->action = FR_ACT_TO_TBL;
+  rule->flags = 0;
+
+  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+    Q_IPV6ADDR dst = address.toIPv6Address();
+    nlmsg_append_attr(buf, sizeof(buf), FRA_DST, &dst, sizeof(dst));
+    rule->family = AF_INET6;
+    rule->dst_len = 128;
+  } else if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+    quint32 dst = address.toIPv4Address();
+    nlmsg_append_attr32(buf, sizeof(buf), FRA_DST, htonl(dst));
+    rule->family = AF_INET;
+    rule->dst_len = 32;
+  } else {
+    return false;
+  }
+
+  ssize_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
+                          (struct sockaddr*)&nladdr, sizeof(nladdr));
   if (result != nlmsg->nlmsg_len) {
     return false;
   }
