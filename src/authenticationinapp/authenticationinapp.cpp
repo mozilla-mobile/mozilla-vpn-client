@@ -20,16 +20,8 @@ Logger logger(LOG_MAIN, "AuthenticationInApp");
 
 // static
 AuthenticationInApp* AuthenticationInApp::instance() {
-  static auto instance = new AuthenticationInApp(nullptr);
+  static auto instance = new AuthenticationInApp();
   return instance;
-}
-
-AuthenticationInApp::AuthenticationInApp(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(AuthenticationInApp);
-}
-
-AuthenticationInApp::~AuthenticationInApp() {
-  MVPN_COUNT_DTOR(AuthenticationInApp);
 }
 
 void AuthenticationInApp::setState(State state) {

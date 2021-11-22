@@ -15,7 +15,7 @@ class AppPermission final : public QAbstractListModel {
   Q_DISABLE_COPY_MOVE(AppPermission)
 
  public:
-  ~AppPermission();
+  ~AppPermission() = default;
 
   enum AppPermissionRoles {
     AppNameRole,

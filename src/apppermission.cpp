@@ -29,8 +29,6 @@ Logger logger(LOG_MAIN, "AppPermission");
 }  // namespace
 
 AppPermission::AppPermission() : QAbstractListModel(nullptr) {
-  MVPN_COUNT_CTOR(AppPermission);
-
   m_listprovider =
 #if defined(MVPN_ANDROID)
       new AndroidAppListProvider(this);
@@ -45,7 +43,6 @@ AppPermission::AppPermission() : QAbstractListModel(nullptr) {
   connect(m_listprovider, &AppListProvider::newAppList, this,
           &AppPermission::receiveAppList);
 }
-AppPermission::~AppPermission() { MVPN_COUNT_DTOR(AppPermission); }
 
 AppPermission* AppPermission::instance() {
   static auto instance = new AppPermission();
