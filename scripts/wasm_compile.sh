@@ -10,9 +10,25 @@ if [ -f .env ]; then
   . .env
 fi
 
+DEBUG=
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+  -d | --debug)
+    DEBUG=1
+    shift
+    ;;
+  -h | --help)
+    helpFunction
+    ;;
+  esac
+done
+
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <qt/wasm/path>"
+  print N "\t$0 [-d|--debug]"
   print N ""
   exit 0
 }
@@ -31,7 +47,6 @@ print G "$SHORTVERSION - $FULLVERSION"
 
 printn Y "Checking emscripten... "
 em++ --version &>/dev/null || die "em++ not found. Have you forgotten to load emsdk_env.sh?"
-em++ --version 2>&1 | grep 1.39.8 &>/dev/null || die "em++ doesn't match the required version: 1.39.8"
 print G "done."
 
 qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
@@ -43,8 +58,18 @@ python3 scripts/importLanguages.py || die "Failed to import languages"
 print Y "Generating glean samples..."
 python3 scripts/generate_glean.py || die "Failed to generate glean samples"
 
+printn Y "Mode: "
+MODE=
+if [ "$DEBUG" = 1 ]; then
+  print G debug
+  MODE="CONFIG+=debug CONFIG-=release"
+else
+  print G release
+  MODE="CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release"
+fi
+
 print Y "Configuring the project via qmake..."
-qmake CONFIG-=debug  CONFIG-=debug_and_release CONFIG+=release BUILD_ID=$FULLVERSION || die "Compilation failed"
+qmake $MODE BUILD_ID=$FULLVERSION || die "Compilation failed"
 
 print Y "Compiling..."
 make -j8 || die "Compilation failed"
