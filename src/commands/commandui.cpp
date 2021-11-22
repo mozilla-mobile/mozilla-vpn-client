@@ -422,10 +422,10 @@ int CommandUI::run(QStringList& tokens) {
     MacOSMenuBar menuBar;
     menuBar.initialize();
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, &menuBar,
+    QObject::connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
-    QObject::connect(vpn.controller(), &Controller::stateChanged, &menuBar,
+    QObject::connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
 #endif
@@ -461,7 +461,7 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_WEBEXTENSION
     ServerHandler serverHandler;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
+    QObject::connect(MozillaVPN::instance(), &Controller::readyToQuit, &serverHandler,
                      &ServerHandler::close);
 #endif
 
