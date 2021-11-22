@@ -273,6 +273,7 @@ HEADERS += \
         serveri18n.h \
         settingsholder.h \
         simplenetworkmanager.h \
+        singleton.h \
         statusicon.h \
         task.h \
         tasks/accountandservers/taskaccountandservers.h \

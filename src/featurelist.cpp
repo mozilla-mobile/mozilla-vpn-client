@@ -28,15 +28,12 @@
 #include <QProcessEnvironment>
 
 namespace {
-FeatureList* s_instance = nullptr;
 Logger logger(LOG_MODEL, "FeatureList");
 }  // namespace
 
 FeatureList* FeatureList::instance() {
-  if (!s_instance) {
-    s_instance = new FeatureList();
-  };
-  return s_instance;
+  static auto instance = new FeatureList();
+  return instance;
 }
 
 void FeatureList::initialize() {

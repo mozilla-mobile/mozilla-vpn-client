@@ -16,28 +16,20 @@ constexpr int PASSWORD_MIN_LENGTH = 8;
 
 namespace {
 Logger logger(LOG_MAIN, "AuthenticationInApp");
-AuthenticationInApp* s_instance = nullptr;
 }  // namespace
 
 // static
 AuthenticationInApp* AuthenticationInApp::instance() {
-  if (!s_instance) {
-    new AuthenticationInApp(qApp);
-  }
-  Q_ASSERT(s_instance);
-  return s_instance;
+  static auto instance = new AuthenticationInApp(nullptr);
+  return instance;
 }
 
 AuthenticationInApp::AuthenticationInApp(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(AuthenticationInApp);
-  Q_ASSERT(!s_instance);
-  s_instance = this;
 }
 
 AuthenticationInApp::~AuthenticationInApp() {
   MVPN_COUNT_DTOR(AuthenticationInApp);
-  Q_ASSERT(s_instance == this);
-  s_instance = nullptr;
 }
 
 void AuthenticationInApp::setState(State state) {

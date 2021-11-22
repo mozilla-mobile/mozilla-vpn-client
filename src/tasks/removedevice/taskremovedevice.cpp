@@ -22,13 +22,9 @@ TaskRemoveDevice::TaskRemoveDevice(const QString& publicKey)
 TaskRemoveDevice::~TaskRemoveDevice() {
   MVPN_COUNT_DTOR(TaskRemoveDevice);
 
-  // Nothing guarantees that when this task is deleted, the VPN object is still
-  // alive. We cannot use the QObject-parenting solution because it deletes the
-  // parent before the children.
-  MozillaVPN* vpn = MozillaVPN::maybeInstance();
-  if (vpn) {
-    vpn->deviceRemovalCompleted(m_publicKey);
-  }
+  // After converting to magic statics, the VPN
+  // will still be around
+  MozillaVPN::instance()->deviceRemovalCompleted(m_publicKey);
 }
 
 void TaskRemoveDevice::run() {

@@ -128,7 +128,6 @@ class MozillaVPN final : public QObject {
                  currentViewChanged)
 
  public:
-  MozillaVPN();
   ~MozillaVPN();
 
   static MozillaVPN* instance();
@@ -358,6 +357,8 @@ class MozillaVPN final : public QObject {
 
   void maybeRegenerateDeviceKey();
 
+  void operator delete(void*){};
+
  public slots:
   void requestSettings();
   void requestAbout();
@@ -395,6 +396,7 @@ class MozillaVPN final : public QObject {
   void ticketCreationAnswer(bool successful);
 
  private:
+  MozillaVPN();
   bool m_initialized = false;
 
   // Internal objects.

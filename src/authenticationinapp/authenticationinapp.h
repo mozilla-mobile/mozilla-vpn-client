@@ -58,6 +58,7 @@ class AuthenticationInApp final : public QObject {
   };
   Q_ENUM(ErrorType);
 
+  void operator delete(void*){};
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
 
@@ -131,7 +132,6 @@ class AuthenticationInApp final : public QObject {
 
   void setState(State state);
 
- private:
   State m_state = StateInitializing;
 
   AuthenticationInAppListener* m_listener = nullptr;

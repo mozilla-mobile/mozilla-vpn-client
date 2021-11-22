@@ -33,7 +33,6 @@ int CommandDevice::run(QStringList& tokens) {
       return 1;
     }
 
-    MozillaVPN vpn;
     if (!loadModels()) {
       return 1;
     }
@@ -46,7 +45,7 @@ int CommandDevice::run(QStringList& tokens) {
       return 1;
     }
 
-    DeviceModel* dm = vpn.deviceModel();
+    DeviceModel* dm = MozillaVPN::instance()->deviceModel();
     Q_ASSERT(dm);
 
     const QList<Device>& devices = dm->devices();
@@ -57,7 +56,7 @@ int CommandDevice::run(QStringList& tokens) {
     }
 
     const Device& device = devices.at(id - 1);
-    if (device.isCurrentDevice(vpn.keys())) {
+    if (device.isCurrentDevice(MozillaVPN::instance()->keys())) {
       QTextStream stream(stdout);
       stream
           << "Removing the current device is not allowed. Use 'logout' instead."

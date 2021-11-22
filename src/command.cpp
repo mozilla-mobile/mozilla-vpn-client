@@ -79,9 +79,7 @@ bool Command::loadModels() {
 int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
-  SettingsHolder settingsHolder;
-
-  if (settingsHolder.stagingServer()) {
+  if (SettingsHolder::instance()->stagingServer()) {
     Constants::setStaging();
     LogHandler::enableDebug();
   }
@@ -97,7 +95,7 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
-  Localizer localizer;
+  Localizer::instance();
   SimpleNetworkManager snm;
 
   return callback();
@@ -106,9 +104,7 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
 int Command::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
-  SettingsHolder settingsHolder;
-
-  if (settingsHolder.stagingServer()) {
+  if (SettingsHolder::instance()->stagingServer()) {
     Constants::setStaging();
     LogHandler::enableDebug();
   }
@@ -125,7 +121,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
-  Localizer localizer;
+  Localizer::instance();
   SimpleNetworkManager snm;
 
 #ifdef MVPN_MACOS
@@ -141,9 +137,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 int Command::runQmlApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
-  SettingsHolder settingsHolder;
-
-  if (settingsHolder.stagingServer()) {
+  if (SettingsHolder::instance()->stagingServer()) {
     Constants::setStaging();
     LogHandler::enableDebug();
   }
@@ -169,7 +163,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
-  Localizer localizer;
+  Localizer::instance();
 
 #ifdef MVPN_MACOS
   MacOSUtils::patchNSStatusBarSetImageForBigSur();

@@ -39,7 +39,6 @@ DEFINE_GUID(ST_FW_PROVIDER_KEY, 0xe2c114ee, 0xf32a, 0x4264, 0xa6, 0xcb, 0x3f,
 
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsFirewall");
-WindowsFirewall* s_instance = nullptr;
 
 // Note Filter Weight may be between 0-15!
 constexpr uint8_t LOW_WEIGHT = 0;
@@ -49,15 +48,12 @@ constexpr uint8_t MAX_WEIGHT = 15;
 }  // namespace
 
 WindowsFirewall* WindowsFirewall::instance() {
-  if (s_instance == nullptr) {
-    s_instance = new WindowsFirewall(qApp);
-  }
-  return s_instance;
+  static auto instance = new WindowsFirewall();
+  return instance;
 }
 
-WindowsFirewall::WindowsFirewall(QObject* parent) : QObject(parent) {
+WindowsFirewall::WindowsFirewall() : QObject(nullptr) {
   MVPN_COUNT_CTOR(WindowsFirewall);
-  Q_ASSERT(s_instance == nullptr);
 
   HANDLE engineHandle = NULL;
   DWORD result = ERROR_SUCCESS;

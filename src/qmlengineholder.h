@@ -15,12 +15,9 @@ class QmlEngineHolder final : public NetworkManager {
   Q_DISABLE_COPY_MOVE(QmlEngineHolder)
 
  public:
-  QmlEngineHolder();
   ~QmlEngineHolder();
 
   static QmlEngineHolder* instance();
-
-  static bool exists();
 
   QQmlApplicationEngine* engine() { return &m_engine; }
 
@@ -29,11 +26,14 @@ class QmlEngineHolder final : public NetworkManager {
   QWindow* window() const;
   void showWindow();
   void hideWindow();
+  
+  void operator delete(void*){};
 
  protected:
   void clearCacheInternal() override;
 
  private:
+  QmlEngineHolder();
   QQmlApplicationEngine m_engine;
 };
 

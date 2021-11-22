@@ -15,6 +15,8 @@ class Localizer final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Localizer)
 
+  void operator delete(void*){};
+
   Q_PROPERTY(QString code READ code WRITE setCode NOTIFY codeChanged)
   Q_PROPERTY(QString previousCode READ previousCode NOTIFY previousCodeChanged)
   Q_PROPERTY(bool hasLanguages READ hasLanguages CONSTANT)
@@ -34,7 +36,6 @@ class Localizer final : public QAbstractListModel {
 
   static Localizer* instance();
 
-  Localizer();
   ~Localizer();
 
   void initialize();
@@ -66,6 +67,7 @@ class Localizer final : public QAbstractListModel {
   void previousCodeChanged();
 
  private:
+  Localizer();
   static QString languageName(const QString& code);
   static QString localizedLanguageName(const QString& code);
   static bool languageSort(const Language& a, const Language& b,

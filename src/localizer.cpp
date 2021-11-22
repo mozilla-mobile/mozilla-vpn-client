@@ -17,7 +17,6 @@
 
 namespace {
 Logger logger(LOG_MAIN, "Localizer");
-Localizer* s_instance = nullptr;
 
 struct StaticLanguage {
   QString m_name;
@@ -40,15 +39,12 @@ QMap<QString, StaticLanguage> s_languageMap{
 
 // static
 Localizer* Localizer::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
+  static auto instance = new Localizer();
+  return instance;
 }
 
 Localizer::Localizer() {
   MVPN_COUNT_CTOR(Localizer);
-
-  Q_ASSERT(!s_instance);
-  s_instance = this;
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   m_code = settingsHolder->languageCode();
@@ -58,9 +54,6 @@ Localizer::Localizer() {
 
 Localizer::~Localizer() {
   MVPN_COUNT_DTOR(Localizer);
-
-  Q_ASSERT(s_instance = this);
-  s_instance = nullptr;
 }
 
 void Localizer::initialize() {

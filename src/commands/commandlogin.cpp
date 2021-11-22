@@ -65,12 +65,11 @@ int CommandLogin::run(QStringList& tokens) {
       return 1;
     }
 
-    MozillaVPN vpn;
-
     if (!passwordOption.m_set) {
-      vpn.authenticateWithType(MozillaVPN::AuthenticationInBrowser);
+      MozillaVPN::instance()->authenticateWithType(MozillaVPN::AuthenticationInBrowser);
     } else {
-      vpn.authenticateWithType(MozillaVPN::AuthenticationInApp);
+      MozillaVPN::instance()->MozillaVPN::instance()->authenticateWithType(
+          MozillaVPN::AuthenticationInApp);
     }
 
     QEventLoop loop;
@@ -169,25 +168,29 @@ int CommandLogin::run(QStringList& tokens) {
           });
     }
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, [&] {
-      if (vpn.state() == MozillaVPN::StatePostAuthentication ||
-          vpn.state() == MozillaVPN::StateTelemetryPolicy ||
-          vpn.state() == MozillaVPN::StateMain) {
+    QObject::connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, [&] {
+      if (MozillaVPN::instance()->state() ==
+              MozillaVPN::StatePostAuthentication ||
+          MozillaVPN::instance()->state() == MozillaVPN::StateTelemetryPolicy ||
+          MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
         loop.exit();
       }
-      if (vpn.alert() == MozillaVPN::AuthenticationFailedAlert) {
+      if (MozillaVPN::instance()->alert() ==
+          MozillaVPN::AuthenticationFailedAlert) {
         loop.exit();
       }
     });
 
     loop.exec();
 
-    if (vpn.alert() == MozillaVPN::AuthenticationFailedAlert) {
+    if (MozillaVPN::instance()->alert() ==
+        MozillaVPN::AuthenticationFailedAlert) {
       QTextStream stream(stdout);
       stream << "Authentication failed" << Qt::endl;
       return 1;
     }
-    if (!vpn.deviceModel()->hasCurrentDevice(vpn.keys())) {
+    if (!MozillaVPN::instance()->deviceModel()->hasCurrentDevice(
+            MozillaVPN::instance()->keys())) {
       QTextStream stream(stdout);
       stream << "Device limit reached" << Qt::endl;
       return 1;

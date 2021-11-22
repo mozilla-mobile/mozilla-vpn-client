@@ -48,8 +48,6 @@ int CommandStatus::run(QStringList& tokens) {
       return 0;
     }
 
-    MozillaVPN vpn;
-
     if (!userAuthenticated()) {
       return 0;
     }
@@ -70,7 +68,7 @@ int CommandStatus::run(QStringList& tokens) {
       loop.exec();
     }
 
-    User* user = vpn.user();
+    User* user = MozillaVPN::instance()->user();
     Q_ASSERT(user);
     stream << "User avatar: " << user->avatar() << Qt::endl;
     stream << "User displayName: " << user->displayName() << Qt::endl;
@@ -79,11 +77,11 @@ int CommandStatus::run(QStringList& tokens) {
     stream << "User subscription needed: "
            << (user->subscriptionNeeded() ? "true" : "false") << Qt::endl;
 
-    DeviceModel* dm = vpn.deviceModel();
+    DeviceModel* dm = MozillaVPN::instance()->deviceModel();
     Q_ASSERT(dm);
     stream << "Active devices: " << dm->activeDevices() << Qt::endl;
 
-    const Device* cd = dm->currentDevice(vpn.keys());
+    const Device* cd = dm->currentDevice(MozillaVPN::instance()->keys());
     if (cd) {
       stream << "Current devices:" << cd->name() << Qt::endl;
     }
@@ -100,8 +98,8 @@ int CommandStatus::run(QStringList& tokens) {
       stream << " - ipv6 address: " << device.ipv6Address() << Qt::endl;
     }
 
-    ServerCountryModel* model = vpn.serverCountryModel();
-    ServerData* sd = vpn.currentServer();
+    ServerCountryModel* model = MozillaVPN::instance()->serverCountryModel();
+    ServerData* sd = MozillaVPN::instance()->currentServer();
     if (sd) {
       stream << "Server country code: " << sd->exitCountryCode() << Qt::endl;
       stream << "Server country: " << model->countryName(sd->exitCountryCode())

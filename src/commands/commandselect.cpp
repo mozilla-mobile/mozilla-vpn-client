@@ -35,7 +35,6 @@ int CommandSelect::run(QStringList& tokens) {
       return 1;
     }
 
-    MozillaVPN vpn;
     if (!loadModels()) {
       return 1;
     }
@@ -56,7 +55,8 @@ int CommandSelect::run(QStringList& tokens) {
       return 1;
     }
 
-    vpn.changeServer(exitCountryCode, exitCityName, entryCountryCode,
+    MozillaVPN::instance()->changeServer(exitCountryCode, exitCityName,
+                                         entryCountryCode,
                      entryCityName);
     return 0;
   });

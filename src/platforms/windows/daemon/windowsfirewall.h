@@ -31,9 +31,11 @@ class WindowsFirewall final : public QObject {
   bool disablePeerTraffic(const QString& pubkey);
   bool disableKillSwitch();
 
+  void operator delete(void*){};
+
  private:
-  WindowsFirewall(QObject* parent);
-  HANDLE m_sessionHandle;
+  WindowsFirewall();
+  HANDLE m_sessionHandle = INVALID_HANDLE_VALUE;
   bool m_init = false;
   QList<uint64_t> m_activeRules;
   QMultiMap<QString, uint64_t> m_peerRules;

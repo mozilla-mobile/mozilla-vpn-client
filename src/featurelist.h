@@ -22,6 +22,8 @@ class FeatureList final : public QAbstractListModel {
     FeatureRole = Qt::UserRole + 1,
   };
 
+  void operator delete(void*) {};
+
   static FeatureList* instance();
 
   void initialize();

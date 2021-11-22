@@ -121,16 +121,13 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 
-    // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
-    QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
     engine->addImportPath("qrc:///components");
     engine->addImportPath("qrc:///glean");
     engine->addImportPath("qrc:///themes");
     engine->addImportPath("qrc:///compat");
 
-    MozillaVPN vpn;
-    vpn.setStartMinimized(minimizedOption.m_set);
+    MozillaVPN::instance()->setStartMinimized(minimizedOption.m_set);
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
     // If there is another instance, the execution terminates here.
@@ -152,7 +149,7 @@ int CommandUI::run(QStringList& tokens) {
     // Font loader
     FontLoader::loadFonts();
 
-    vpn.initialize();
+    MozillaVPN::instance()->initialize();
 
 #ifdef MVPN_MACOS
     MacOSStartAtBootWatcher startAtBootWatcher(
@@ -395,10 +392,12 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterType<FilterProxyModel>("Mozilla.VPN", 1, 0,
                                       "VPNFilterProxyModel");
 
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit,
+                     MozillaVPN::instance(),
                      &MozillaVPN::aboutToQuit);
 
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
+    QObject::connect(MozillaVPN::instance()->controller(),
+                     &Controller::readyToQuit, MozillaVPN::instance(),
                      &MozillaVPN::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
@@ -414,9 +413,10 @@ int CommandUI::run(QStringList& tokens) {
     engine->load(url);
 
     NotificationHandler* notificationHandler =
-        NotificationHandler::create(&engineHolder);
+        NotificationHandler::create(QmlEngineHolder::instance());
 
-    QObject::connect(vpn.controller(), &Controller::stateChanged,
+    QObject::connect(MozillaVPN::instance()->controller(),
+                     &Controller::stateChanged,
                      notificationHandler,
                      &NotificationHandler::showNotification);
 
@@ -452,7 +452,8 @@ int CommandUI::run(QStringList& tokens) {
     if (!Constants::inProduction()) {
       InspectorWebSocketServer* inspectWebSocketServer =
           new InspectorWebSocketServer(qApp);
-      QObject::connect(vpn.controller(), &Controller::readyToQuit,
+      QObject::connect(MozillaVPN::instance()->controller(),
+                       &Controller::readyToQuit,
                        inspectWebSocketServer,
                        &InspectorWebSocketServer::close);
     }

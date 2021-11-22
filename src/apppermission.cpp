@@ -26,13 +26,10 @@
 
 namespace {
 Logger logger(LOG_MAIN, "AppPermission");
-AppPermission* s_instance = nullptr;
 }  // namespace
 
-AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
+AppPermission::AppPermission() : QAbstractListModel(nullptr) {
   MVPN_COUNT_CTOR(AppPermission);
-  Q_ASSERT(!s_instance);
-  s_instance = this;
 
   m_listprovider =
 #if defined(MVPN_ANDROID)
@@ -48,18 +45,11 @@ AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
   connect(m_listprovider, &AppListProvider::newAppList, this,
           &AppPermission::receiveAppList);
 }
-AppPermission::~AppPermission() {
-  MVPN_COUNT_DTOR(AppPermission);
-  Q_ASSERT(s_instance = this);
-  s_instance = nullptr;
-}
+AppPermission::~AppPermission() { MVPN_COUNT_DTOR(AppPermission); }
 
 AppPermission* AppPermission::instance() {
-  if (s_instance == nullptr) {
-    new AppPermission(qApp);
-  }
-  Q_ASSERT(s_instance);
-  return s_instance;
+  static auto instance = new AppPermission();
+  return instance;
 }
 
 QHash<int, QByteArray> AppPermission::roleNames() const {

@@ -11,31 +11,21 @@
 
 namespace {
 Logger logger(LOG_MAIN, "QmlEngineHolder");
-QmlEngineHolder* s_instance = nullptr;
 }  // namespace
 
 QmlEngineHolder::QmlEngineHolder() {
   MVPN_COUNT_CTOR(QmlEngineHolder);
-
-  Q_ASSERT(!s_instance);
-  s_instance = this;
 }
 
 QmlEngineHolder::~QmlEngineHolder() {
   MVPN_COUNT_DTOR(QmlEngineHolder);
-
-  Q_ASSERT(s_instance == this);
-  s_instance = nullptr;
 }
 
 // static
 QmlEngineHolder* QmlEngineHolder::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
+  static auto instance = new QmlEngineHolder();
+  return instance;
 }
-
-// static
-bool QmlEngineHolder::exists() { return !!s_instance; }
 
 QNetworkAccessManager* QmlEngineHolder::networkAccessManager() {
   return m_engine.networkAccessManager();

@@ -78,25 +78,18 @@ constexpr const uint32_t HIDE_ALERT_SEC = 4;
 
 namespace {
 Logger logger(LOG_MAIN, "MozillaVPN");
-MozillaVPN* s_instance = nullptr;
 }  // namespace
 
 // static
 MozillaVPN* MozillaVPN::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
+  static auto instance = new MozillaVPN();
+  return instance;
 }
-
-// static
-MozillaVPN* MozillaVPN::maybeInstance() { return s_instance; }
 
 MozillaVPN::MozillaVPN() : m_private(new Private()) {
   MVPN_COUNT_CTOR(MozillaVPN);
 
   logger.debug() << "Creating MozillaVPN singleton";
-
-  Q_ASSERT(!s_instance);
-  s_instance = this;
 
 #ifdef MVPN_ADJUST
   AdjustHandler::initialize();
@@ -186,9 +179,6 @@ MozillaVPN::~MozillaVPN() {
   MVPN_COUNT_DTOR(MozillaVPN);
 
   logger.debug() << "Deleting MozillaVPN singleton";
-
-  Q_ASSERT(s_instance == this);
-  s_instance = nullptr;
 
   delete m_private;
 }
