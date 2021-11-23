@@ -7,7 +7,7 @@ TARGET = qml_tests
 QT += quick
 
 CONFIG += warn_on qmltestcase
-
+CONFIG += c++1z
 # Allows us to be a supported platform
 DEFINES += UNIT_TEST
 DEFINES += MVPN_DUMMY
@@ -16,11 +16,6 @@ DEFINES += APP_VERSION=\\\"QMLTest_AppVersion\\\"
 DEFINES += BUILD_ID=\\\"QMLTest_BuildID\\\"
 
 RESOURCES += \
-    $$PWD/../../src/ui/compatQt5.qrc \
-    $$PWD/../../src/ui/compatQt6.qrc \
-    $$PWD/../../src/ui/components.qrc \
-    $$PWD/../../src/ui/resources.qrc \
-    $$PWD/../../src/ui/themes.qrc \
     $$PWD/../../src/ui/ui.qrc \
 
 INCLUDEPATH += \
@@ -75,12 +70,23 @@ exists($$PWD/../../translations/generated/l18nstrings.h) {
     error("No l18nstrings.h. Have you generated the strings?")
 }
 
-exists($$PWD/../../glean/telemetry/gleansample.h) {
-    RESOURCES += $$PWD/../../glean/glean.qrc
-} else {
-    error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
+CONFIG(debug, debug|release) {
+    LIBS += -L$$clean_path($$PWD/../../nebula/debug) -lnebula
+    LIBS += -L$$clean_path($$PWD/../../glean/debug) -lglean
 }
+CONFIG(release, debug|release) {
+    LIBS += -L$$clean_path($$PWD/../../nebula/release) -lnebula
+    LIBS += -L$$clean_path($$PWD/../../glean/release) -lglean
+
+}
+
+INCLUDEPATH += $$PWD/../../glean
+INCLUDEPATH += $$PWD/../../nebula
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
+
+win*{
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+}
