@@ -464,7 +464,7 @@ class XCodeprojPatcher
     target_wireguardgo.build_working_directory = '3rdparty/wireguard-go'
     target_wireguardgo.build_tool_path = 'make'
     target_wireguardgo.pass_build_settings_in_environment = '1'
-    target_wireguardgo.build_arguments_string = '$(ACTION)'
+    target_wireguardgo.build_arguments_string = 'wireguard-go' # '$(ACTION)'
     target_wireguardgo.name = 'WireGuardGo'
     target_wireguardgo.product_name = 'WireGuardGo'
 
