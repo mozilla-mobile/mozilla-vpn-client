@@ -3,9 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "helper.h"
+#include "settingsholder.h"
 
 TestHelper::TestHelper() {
   FeatureList::instance()->initialize();
+  SettingsHolder::instance();
   m_closeEventHandler = new CloseEventHandler();
   m_whatsNewModel = new WhatsNewModel();
   m_l18nstrings = L18nStrings::instance();
@@ -85,8 +87,8 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
 
   qmlRegisterSingletonType<TestHelper>(
       "Mozilla.VPN", 1, 0, "VPNSettings",
-      [this](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = &m_settingsHolder;
+      [](QQmlEngine*, QJSEngine*) -> QObject* {
+        QObject* obj = SettingsHolder::instance();
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });

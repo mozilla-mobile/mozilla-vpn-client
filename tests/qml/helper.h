@@ -9,7 +9,6 @@
 #include "l18nstrings.h"
 #include "models/whatsnewmodel.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
 
 #include <QObject>
 #include <QQmlEngine>
@@ -45,7 +44,6 @@ class TestHelper final : public QObject {
   TestHelper();
   ~TestHelper() = default;
 
-  SettingsHolder m_settingsHolder;
   bool m_mainWindowLoadedCalled = false;
   bool m_debugMode = true;
   bool m_stagingMode = true;
