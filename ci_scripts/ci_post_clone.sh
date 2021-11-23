@@ -21,8 +21,8 @@ then
   cat x* > qt_static.tar.gz
   tar xf qt_static.tar.gz
   cd ..
-  export QT_MACOS_BIN=`pwd`/qt/bin
-  export PATH=`pwd`/qt/bin:$PATH
+  export QT_MACOS_BIN=`pwd`/qt_static_macos/qt/bin
+  export PATH=`pwd`/qt_static_macos/qt/bin:$PATH
 else
   # generate qt_ios
   git clone https://github.com/mozilla-mobile/qt_ios
