@@ -54,18 +54,6 @@ EOF
 
 ./scripts/apple_compile.sh ios
 
-# use New Build System instead of legacy build system
-cat > ./MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings << EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-  <dict>
-    <key>IDEWorkspaceSharedSettings_AutocreateContextsIfNeeded</key>
-    <false/>
-  </dict>
-</plist>
-EOF
-
 # build Qt resources
 # XCode Cloud has some problem with dependencies and timing therefore we have to
 # build Qt before we call xcodebuild
