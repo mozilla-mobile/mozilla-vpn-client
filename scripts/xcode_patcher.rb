@@ -393,7 +393,7 @@ class XCodeprojPatcher
     target_balrog.build_working_directory = 'balrog'
     target_balrog.build_tool_path = 'make'
     target_balrog.pass_build_settings_in_environment = '1'
-    target_balrog.build_arguments_string = '$(ACTION)'
+    target_balrog.build_arguments_string = 'build' # '$(ACTION)'
     target_balrog.name = 'WireGuardBalrog'
     target_balrog.product_name = 'WireGuardBalrog'
 
