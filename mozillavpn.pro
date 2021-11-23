@@ -22,6 +22,10 @@ AUTHTEST {
     SUBDIRS += tests/auth
 }
 
+QMLTEST {
+    SUBDIRS += tests/qml
+}
+
 webextension {
     SUBDIRS += extension/app
     SUBDIRS += tests/nativemessaging

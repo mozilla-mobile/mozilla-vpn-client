@@ -240,6 +240,12 @@ print Y "Patching the xcode project..."
 ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
 print G "done."
 
+
+if command -v "sed" &>/dev/null; then
+  sed -i '' '/<key>BuildSystemType<\/key>/d' MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+  sed -i '' '/<string>Original<\/string>/d' MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+fi
+
 print Y "Opening in XCode..."
 open MozillaVPN.xcodeproj
 print G "All done!"

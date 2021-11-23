@@ -33,7 +33,7 @@ Item {
         preventStealing: true
         propagateComposedEvents: false
         hoverEnabled: true
-        onClicked: menuBar.clicked(mouse)
+        onClicked: mouse => menuBar.clicked(mouse)
     }
 
     Rectangle {

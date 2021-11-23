@@ -14,6 +14,7 @@ Item {
     id: viewAboutUs
     property alias isSettingsView: menu.isSettingsView
     property alias isMainView: menu.isMainView
+    property alias releaseVersionText: releaseVersion.text
     //% "About us"
     property string _menuTitle: qsTrId("vpn.settings.aboutUs")
 
@@ -91,6 +92,7 @@ Item {
         }
 
         TextEdit {
+            id: releaseVersion
             anchors.top: releaseLabel.bottom
             anchors.topMargin: 8
             text: VPN.buildNumber === "" ? VPN.versionString : (VPN.versionString + " (" + VPN.buildNumber + ")")

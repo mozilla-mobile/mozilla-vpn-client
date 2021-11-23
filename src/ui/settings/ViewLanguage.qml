@@ -130,6 +130,7 @@ Item {
                     }
                     hasError: repeater.count === 0
                     enabled: !useSystemLanguageEnabled
+                    placeholderText: VPNl18n.LanguageViewSearchPlaceholder
                 }
 
                 VPNFilterProxyModel {
