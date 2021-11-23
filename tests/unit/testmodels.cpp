@@ -1628,7 +1628,6 @@ void TestModels::surveyModelFromJson() {
 
   // fromSettings
   {
-    SettingsHolder::instance();
     SettingsHolder::instance()->setSurveys(json);
 
     SurveyModel sm;
@@ -1653,9 +1652,9 @@ void TestModels::surveyModelFromJson() {
         QCOMPARE(sm.surveys()[0].isTriggerable(), surveyTriggerable);
 
         if (surveyTriggerable) {
-          QStringList list = settingsHolder.consumedSurveys();
+          QStringList list = SettingsHolder::instance()->consumedSurveys();
           list.append(surveyId);
-          settingsHolder.setConsumedSurveys(list);
+          SettingsHolder::instance()->setConsumedSurveys(list);
 
           QVERIFY(!sm.surveys()[0].isTriggerable());
         }

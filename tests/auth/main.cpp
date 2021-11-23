@@ -22,7 +22,6 @@ int main(int argc, char* argv[]) {
   Q_UNUSED(leakDetector);
 #endif
 
-  SettingsHolder::instance();
   Constants::setStaging();
 
   QCoreApplication a(argc, argv);
@@ -30,7 +29,8 @@ int main(int argc, char* argv[]) {
   SimpleNetworkManager snm;
   FeatureList::instance()->initialize();
 
-  settingsHolder.setDevModeFeatureFlags(QStringList{"inAppAccountCreate"});
+  SettingHolder::instance()->setDevModeFeatureFlags(
+      QStringList{"inAppAccountCreate"});
 
   int failures = 0;
   TestEmailValidation tev;
