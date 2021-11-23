@@ -110,6 +110,22 @@ class XCodeprojPatcher
       end
     end
 
+    # Subdirs integration
+    group = @project.main_group.new_group('Subdirs')
+
+    [
+      'glean/glean.cpp',
+      'glean/qrc_glean.cpp',
+      'nebula/qrc_compatQt5.cpp',
+      'nebula/qrc_components.cpp',
+      'nebula/qrc_nebula_resources.cpp',
+      'nebula/qrc_themes.cpp',
+      'nebula/nebula.cpp',
+    ].each { |filename|
+      file = group.new_file(filename)
+      @target_main.add_file_references([file])
+    }
+
     if networkExtension
       # WireGuard group
       group = @project.main_group.new_group('WireGuard')

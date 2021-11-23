@@ -207,6 +207,23 @@ else
   print G none
 fi
 
+pushd glean
+$QMAKE -spec macx-xcode \
+  $MODE \
+  $PLATFORM \
+  glean.pro || die "Qmake failed for glean"
+  make -j $JOBS -f glean.xcodeproj/qt_makeqmake.mak || die "Compile of Glean failed."
+  make -j $JOBS -f glean.xcodeproj/qt_preprocess.mak || die "Compile of Glean failed."
+popd
+pushd nebula
+$QMAKE -spec macx-xcode \
+  $MODE \
+  $PLATFORM \
+  nebula.pro || die "Qmake failed for nebula"
+  make -j $JOBS -f nebula.xcodeproj/qt_makeqmake.mak || die "Compile failed for nebula."
+  make -j $JOBS -f nebula.xcodeproj/qt_preprocess.mak || die "Compile failed for nebula."
+popd
+
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
   VERSION=$SHORTVERSION \

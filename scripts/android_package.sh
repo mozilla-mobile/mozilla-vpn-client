@@ -194,7 +194,7 @@ else
     CONFIG-=debug_and_release \
     CONFIG-=release \
     glean.pro || die "Qmake failed for glean"
-    make -j $JOBS make_first || die || "Compile of Glean failed."
+    make -j $JOBS make_first || die "Compile of Glean failed."
   popd
   pushd ../nebula
   $QTPATH/bin/qmake -spec android-clang \
