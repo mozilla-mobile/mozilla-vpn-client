@@ -71,10 +71,14 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
 void LinuxController::activate(
     const QList<Server>& serverList, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
-    Reason reason) {
+    const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
+    const QHostAddress& dnsServer, Reason reason) {
   Q_UNUSED(reason);
   Q_ASSERT(!serverList.isEmpty());
+
+  // The first hop should exclude the entry server.
+  const Server& entry = serverList.last();
+  bool first = true;
 
   // Clear out any connections that might have been lingering.
   m_activationQueue.clear();
@@ -90,6 +94,11 @@ void LinuxController::activate(
     hop.m_hopindex = hopindex;
     hop.m_allowedIPAddressRanges.append(IPAddressRange(next.ipv4AddrIn()));
     hop.m_allowedIPAddressRanges.append(IPAddressRange(next.ipv6AddrIn()));
+    if (first) {
+      hop.m_excludedAddresses.append(entry.ipv4AddrIn());
+      hop.m_excludedAddresses.append(entry.ipv6AddrIn());
+      first = false;
+    }
     m_activationQueue.append(hop);
   }
 
@@ -98,6 +107,12 @@ void LinuxController::activate(
   lastHop.m_server = serverList.first();
   lastHop.m_hopindex = 0;
   lastHop.m_allowedIPAddressRanges = allowedIPAddressRanges;
+  lastHop.m_excludedAddresses = excludedAddresses;
+  if (first) {
+    lastHop.m_excludedAddresses.append(entry.ipv4AddrIn());
+    lastHop.m_excludedAddresses.append(entry.ipv6AddrIn());
+    first = false;
+  }
   lastHop.m_vpnDisabledApps = vpnDisabledApps;
   lastHop.m_dnsServer = dnsServer;
   m_activationQueue.append(lastHop);
@@ -108,11 +123,12 @@ void LinuxController::activate(
 
 void LinuxController::activateNext() {
   const HopConnection& hop = m_activationQueue.first();
-  connect(m_dbus->activate(hop.m_server, m_device, m_keys, hop.m_hopindex,
-                           hop.m_allowedIPAddressRanges, hop.m_vpnDisabledApps,
-                           hop.m_dnsServer),
-          &QDBusPendingCallWatcher::finished, this,
-          &LinuxController::operationCompleted);
+  connect(
+      m_dbus->activate(hop.m_server, m_device, m_keys, hop.m_hopindex,
+                       hop.m_allowedIPAddressRanges, hop.m_excludedAddresses,
+                       hop.m_vpnDisabledApps, hop.m_dnsServer),
+      &QDBusPendingCallWatcher::finished, this,
+      &LinuxController::operationCompleted);
 }
 
 void LinuxController::deactivate(Reason reason) {

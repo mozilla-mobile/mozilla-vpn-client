@@ -49,7 +49,8 @@ QDBusPendingCallWatcher* DBusClient::version() {
 QDBusPendingCallWatcher* DBusClient::activate(
     const Server& server, const Device* device, const Keys* keys, int hopindex,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QStringList& vpnDisabledApps, const QHostAddress& dnsServer) {
+    const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
+    const QHostAddress& dnsServer) {
   QJsonObject json;
   json.insert("privateKey", QJsonValue(keys->privateKey()));
   json.insert("deviceIpv4Address", QJsonValue(device->ipv4Address()));
@@ -72,6 +73,12 @@ QDBusPendingCallWatcher* DBusClient::activate(
     allowedIPAddesses.append(range);
   };
   json.insert("allowedIPAddressRanges", allowedIPAddesses);
+
+  QJsonArray jsExcludedAddresses;
+  for (const QString& i : excludedAddresses) {
+    jsExcludedAddresses.append(QJsonValue(i));
+  }
+  json.insert("excludedAddresses", jsExcludedAddresses);
 
   QJsonArray disabledApps;
   for (const QString& i : vpnDisabledApps) {

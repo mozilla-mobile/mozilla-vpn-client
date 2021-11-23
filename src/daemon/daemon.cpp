@@ -145,6 +145,27 @@ bool Daemon::activate(const InterfaceConfig& config) {
 }
 
 // static
+bool Daemon::parseStringList(const QJsonObject& obj, const QString& name,
+                             QStringList& list) {
+  if (obj.contains(name)) {
+    QJsonValue value = obj.value(name);
+    if (!value.isArray()) {
+      logger.error() << name << "is not an array";
+      return false;
+    }
+    QJsonArray array = value.toArray();
+    for (QJsonValue i : array) {
+      if (!i.isString()) {
+        logger.error() << name << "must contain only strings";
+        return false;
+      }
+      list.append(i.toString());
+    }
+  }
+  return true;
+}
+
+// static
 bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 #define GETVALUE(name, where, jsontype)                           \
   if (!obj.contains(name)) {                                      \
@@ -257,20 +278,11 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
               });
   }
 
-  if (obj.contains("vpnDisabledApps")) {
-    QJsonValue value = obj.value("vpnDisabledApps");
-    if (!value.isArray()) {
-      logger.error() << "vpnDisabledApps is not an array";
-      return false;
-    }
-    QJsonArray array = value.toArray();
-    for (QJsonValue i : array) {
-      if (!i.isString()) {
-        logger.error() << "vpnDisabledApps must contain only strings";
-        return false;
-      }
-      config.m_vpnDisabledApps.append(i.toString());
-    }
+  if (!parseStringList(obj, "excludedAddresses", config.m_excludedAddresses)) {
+    return false;
+  }
+  if (!parseStringList(obj, "vpnDisabledApps", config.m_vpnDisabledApps)) {
+    return false;
   }
   return true;
 }

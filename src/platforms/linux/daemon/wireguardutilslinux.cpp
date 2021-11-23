@@ -196,12 +196,11 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
 
   logger.debug() << "Adding peer" << printableKey(config.m_serverPublicKey);
 
-  // HACK: This is a sloppy way to detect entry vs. exit server.
-  if (config.m_hopindex != 0) {
-    logger.debug() << "Adding exclusion route for" << config.m_serverIpv4AddrIn;
+  for (const QString& address : config.m_excludedAddresses) {
+    logger.debug() << "Adding exclusion route for" << address;
     rtmSendExclude(RTM_NEWRULE,
                    NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK,
-                   QHostAddress(config.m_serverIpv4AddrIn));
+                   QHostAddress(address));
   }
 
   // Public Key
@@ -259,12 +258,10 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   }
   auto guard = qScopeGuard([&] { wg_free_device(device); });
 
-  // HACK: This is a sloppy way to detect entry vs. exit server.
-  if (config.m_hopindex != 0) {
-    logger.debug() << "Removing exclusion route for"
-                   << config.m_serverIpv4AddrIn;
+  for (const QString& address : config.m_excludedAddresses) {
+    logger.debug() << "Removing exclusion route for" << address;
     rtmSendExclude(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK,
-                   QHostAddress(config.m_serverIpv4AddrIn));
+                   QHostAddress(address));
   }
 
   wg_peer* peer = static_cast<wg_peer*>(calloc(1, sizeof(*peer)));
