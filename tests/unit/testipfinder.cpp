@@ -17,30 +17,30 @@ void TestIpFinder::abort() {
 }
 
 void TestIpFinder::ipv4AndIpv6() {
-//  SettingsHolder::instance()->hardReset();
+  SettingsHolder::instance();
 
-//  IPFinder* ipFinder = new IPFinder(this);
+  IPFinder* ipFinder = new IPFinder(this);
 
-//  QEventLoop loop;
-//  connect(
-//      ipFinder, &IPFinder::completed,
-//      [&](const QString& ipv4, const QString& ipv6, const QString& country) {
-//        QVERIFY(ipv4 == "43" || ipv4 == "42");
-//        QVERIFY(ipv6 == "43" || ipv6 == "42");
-//        QVERIFY(ipv4 != ipv6);
-//        QCOMPARE(country, "123");
-//        loop.exit();
-//      });
+  QEventLoop loop;
+  connect(
+      ipFinder, &IPFinder::completed,
+      [&](const QString& ipv4, const QString& ipv6, const QString& country) {
+        QVERIFY(ipv4 == "43" || ipv4 == "42");
+        QVERIFY(ipv6 == "43" || ipv6 == "42");
+        QVERIFY(ipv4 != ipv6);
+        QCOMPARE(country, "123");
+        loop.exit();
+      });
 
-//  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-//      TestHelper::NetworkConfig::Success,
-//      QString("{\"ip\":\"42\", \"country\": \"123\"}").toUtf8()));
-//  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-//      TestHelper::NetworkConfig::Success,
-//      QString("{\"ip\":\"43\", \"country\": \"123\"}").toUtf8()));
+  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+      TestHelper::NetworkConfig::Success,
+      QString("{\"ip\":\"42\", \"country\": \"123\"}").toUtf8()));
+  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+      TestHelper::NetworkConfig::Success,
+      QString("{\"ip\":\"43\", \"country\": \"123\"}").toUtf8()));
 
-//  ipFinder->start();
-//  loop.exec();
+  ipFinder->start();
+  loop.exec();
 }
 
 static TestIpFinder s_testIpFinder;
