@@ -34,7 +34,10 @@ VPNClickableRow {
         scrollAnimation.start();
     }
 
-    Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
+    Keys.onReleased: event => {
+        if (event.key === Qt.Key_Space) handleKeyClick()
+    }
+
     handleMouseClick: openCityList
     handleKeyClick: openCityList
     clip: true

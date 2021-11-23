@@ -921,6 +921,9 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       break;
 
     case ErrorHandler::NoConnectionError:
+      if (controller()->isUnsettled()) {
+        return;
+      }
       alert = NoConnectionAlert;
       break;
 
