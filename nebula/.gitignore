@@ -73,5 +73,5 @@ Thumbs.db
 *.exe
 
 # iOS
-glean.xcodeproj
+nebula.xcodeproj
 
