@@ -209,7 +209,7 @@ void TestModels::deviceModelBasic() {
   QCOMPARE(dm.rowCount(QModelIndex()), 0);
   QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
 
-  SettingsHolder settingsHolder;
+  SettingsHolder::instance();
 
   QVERIFY(!dm.fromSettings(&keys));
 
@@ -342,7 +342,6 @@ void TestModels::deviceModelFromJson() {
 
   // fromSettings
   {
-    SettingsHolder settingsHolder;
     SettingsHolder::instance()->setDevices(json);
 
     Keys keys;
@@ -501,7 +500,7 @@ void TestModels::keysBasic() {
 
   // Private and public keys in the settings.
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance();
 
     QCOMPARE(k.fromSettings(), false);
 
@@ -514,7 +513,7 @@ void TestModels::keysBasic() {
 
   // No public keys, but we can retrieve it from the devices.
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance();
 
     QCOMPARE(k.fromSettings(), false);
 
@@ -909,7 +908,7 @@ void TestModels::serverCountryModelBasic() {
   ServerCountryModel dm;
   QVERIFY(!dm.initialized());
 
-  SettingsHolder settingsHolder;
+  SettingsHolder::instance();
 
   QVERIFY(!dm.fromSettings());
 
@@ -1005,7 +1004,7 @@ void TestModels::serverCountryModelFromJson() {
 
   // from json
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance();
 
     ServerCountryModel m;
     QCOMPARE(m.fromJson(json), result);
@@ -1044,7 +1043,7 @@ void TestModels::serverCountryModelFromJson() {
 
   // from settings
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance();
 
     SettingsHolder::instance()->setServers(json);
 
@@ -1146,7 +1145,7 @@ void TestModels::serverCountryModelPick() {
   }
 
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance();
     QStringList tuple = m.pickRandom();
     QCOMPARE(tuple.length(), 3);
     QCOMPARE(tuple.at(0), "serverCountryCode");
@@ -1209,7 +1208,7 @@ void TestModels::serverDataBasic() {
     QCOMPARE(sd.toString(), "serverCityName, serverCountryCode");
 
     {
-      SettingsHolder settingsHolder;
+      SettingsHolder::instance();
 
       sd.writeSettings();
 
@@ -1250,7 +1249,7 @@ void TestModels::serverDataBasic() {
   QCOMPARE(sd.toString(), "");
 
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance();
     QVERIFY(!sd.fromSettings());
     QCOMPARE(spy.count(), 2);
   }
@@ -1414,7 +1413,7 @@ void TestModels::userFromJson() {
   QCOMPARE(user.subscriptionNeeded(), subscriptionNeeded);
 
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance();
     user.writeSettings();
 
     // FromSettings
@@ -1445,7 +1444,7 @@ void TestModels::userFromJson() {
 }
 
 void TestModels::userFromSettings() {
-  SettingsHolder settingsHolder;
+  SettingsHolder::instance();
 
   User user;
   QSignalSpy spy(&user, &User::changed);
@@ -1629,7 +1628,7 @@ void TestModels::surveyModelFromJson() {
 
   // fromSettings
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance();
     SettingsHolder::instance()->setSurveys(json);
 
     SurveyModel sm;

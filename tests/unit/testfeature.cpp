@@ -10,7 +10,7 @@
 #include "helper.h"
 
 void TestFeature::enableByAPI() {
-  SettingsHolder settingsHolder;
+  SettingsHolder::instance();
 
   FeatureList::instance()->initialize();
 

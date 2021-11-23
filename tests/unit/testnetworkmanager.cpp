@@ -10,7 +10,7 @@
 
 void TestNetworkManager::basic() {
   SimpleNetworkManager snm;
-  SettingsHolder settingsHolder;
+  SettingsHolder::instance();
   FeatureList::instance()->initialize();
   QCOMPARE(&snm, NetworkManager::instance());
   QVERIFY(snm.userAgent().contains("MozillaVPN"));

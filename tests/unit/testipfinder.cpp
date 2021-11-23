@@ -8,7 +8,7 @@
 #include "helper.h"
 
 void TestIpFinder::abort() {
-  SettingsHolder settingsHolder;
+  SettingsHolder::instance();
 
   IPFinder* ipFinder = new IPFinder(this);
 
@@ -17,7 +17,7 @@ void TestIpFinder::abort() {
 }
 
 void TestIpFinder::ipv4AndIpv6() {
-  SettingsHolder settingsHolder;
+  SettingsHolder::instance();
 
   IPFinder* ipFinder = new IPFinder(this);
 
