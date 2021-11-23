@@ -209,7 +209,7 @@ void TestModels::deviceModelBasic() {
   QCOMPARE(dm.rowCount(QModelIndex()), 0);
   QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
 
-  SettingsHolder::instance();
+  SettingsHolder::instance()->hardReset();
 
   QVERIFY(!dm.fromSettings(&keys));
 
@@ -500,7 +500,7 @@ void TestModels::keysBasic() {
 
   // Private and public keys in the settings.
   {
-    SettingsHolder::instance();
+    SettingsHolder::instance()->hardReset();
 
     QCOMPARE(k.fromSettings(), false);
 
@@ -513,7 +513,7 @@ void TestModels::keysBasic() {
 
   // No public keys, but we can retrieve it from the devices.
   {
-    SettingsHolder::instance();
+    SettingsHolder::instance()->hardReset();
 
     QCOMPARE(k.fromSettings(), false);
 
@@ -1249,7 +1249,7 @@ void TestModels::serverDataBasic() {
   QCOMPARE(sd.toString(), "");
 
   {
-    SettingsHolder::instance();
+    SettingsHolder::instance()->hardReset();
     QVERIFY(!sd.fromSettings());
     QCOMPARE(spy.count(), 2);
   }
@@ -1444,7 +1444,7 @@ void TestModels::userFromJson() {
 }
 
 void TestModels::userFromSettings() {
-  SettingsHolder::instance();
+  SettingsHolder::instance()->hardReset();
 
   User user;
   QSignalSpy spy(&user, &User::changed);
@@ -1628,6 +1628,7 @@ void TestModels::surveyModelFromJson() {
 
   // fromSettings
   {
+    SettingsHolder::instance()->hardReset();
     SettingsHolder::instance()->setSurveys(json);
 
     SurveyModel sm;
