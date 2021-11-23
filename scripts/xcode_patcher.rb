@@ -426,7 +426,7 @@ class XCodeprojPatcher
     target_wireguardtools.build_working_directory = '3rdparty/wireguard-tools/src'
     target_wireguardtools.build_tool_path = 'make'
     target_wireguardtools.pass_build_settings_in_environment = '1'
-    target_wireguardtools.build_arguments_string = '$(ACTION)'
+    target_wireguardtools.build_arguments_string = 'wg' # '$(ACTION)'
     target_wireguardtools.name = 'WireGuardTools'
     target_wireguardtools.product_name = 'WireGuardTools'
 
