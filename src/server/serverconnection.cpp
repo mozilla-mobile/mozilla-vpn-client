@@ -116,11 +116,12 @@ static QList<RequestType> s_types{
 
     RequestType{"servers",
                 [](const QJsonObject&) {
-                  QJsonObject obj;
+                  QJsonObject servers;
                   serializeServerCountry(
-                      MozillaVPN::instance()->serverCountryModel(), obj);
+                      MozillaVPN::instance()->serverCountryModel(), servers);
 
-                  obj["servers"] = obj;
+                  QJsonObject obj;
+                  obj["servers"] = servers;
                   return obj;
                 }},
 
