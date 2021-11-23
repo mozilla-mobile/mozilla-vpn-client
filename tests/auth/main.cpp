@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
   SimpleNetworkManager snm;
   FeatureList::instance()->initialize();
 
-  SettingHolder::instance()->setDevModeFeatureFlags(
+  SettingsHolder::instance()->setDevModeFeatureFlags(
       QStringList{"inAppAccountCreate"});
 
   int failures = 0;
