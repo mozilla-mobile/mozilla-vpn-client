@@ -12,7 +12,7 @@ cd /Volumes/workspace/repository
 git submodule init
 git submodule update
 
-if [ CI_PRODUCT_PLATFORM = 'macOS' ]
+if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
   # generate qt_static_macos
   auth_header="$(git config --local --get http.https://github.com/.extraheader)"
@@ -66,7 +66,7 @@ APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 EOF
 
-if [ CI_PRODUCT_PLATFORM = 'macOS' ]
+if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
   ./scripts/apple_compile.sh macos
 else
