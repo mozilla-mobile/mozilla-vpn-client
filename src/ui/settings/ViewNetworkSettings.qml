@@ -50,7 +50,7 @@ Item {
             anchors.topMargin: Theme.windowMargin
             spacing: Theme.windowMargin
 
-            VPNInputMessages {
+            VPNContextualAlerts {
                 anchors.leftMargin: Theme.windowMargin
                 messages: [
                     {

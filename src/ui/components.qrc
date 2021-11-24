@@ -3,8 +3,8 @@
         <file>components/forms/qmldir</file>
         <file>components/forms/VPNComboBox.qml</file>
         <file>components/forms/VPNInputBackground.qml</file>
-        <file>components/forms/VPNInputMessage.qml</file>
-        <file>components/forms/VPNInputMessages.qml</file>
+        <file>components/forms/VPNContextualAlert.qml</file>
+        <file>components/forms/VPNContextualAlerts.qml</file>
         <file>components/forms/VPNInputStates.qml</file>
         <file>components/forms/VPNRadioButton.qml</file>
         <file>components/forms/VPNSearchBar.qml</file>

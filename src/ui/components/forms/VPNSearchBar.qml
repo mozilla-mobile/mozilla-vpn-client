@@ -31,7 +31,7 @@ VPNTextField {
         opacity: parent.focus ? 1 : 0.8
     }
 
-    VPNInputMessages {
+    VPNContextualAlerts {
         id: searchWarning
         anchors.top: searchBar.bottom
         anchors.topMargin: Theme.listSpacing

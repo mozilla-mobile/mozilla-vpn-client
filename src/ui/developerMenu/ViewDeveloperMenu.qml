@@ -177,7 +177,7 @@ VPNFlickable {
         }
     }
 
-    VPNInputMessages {
+    VPNContextualAlerts {
         id: restartMessage
 
         property bool isVisible: false

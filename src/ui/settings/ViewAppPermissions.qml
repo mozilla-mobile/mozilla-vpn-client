@@ -58,7 +58,7 @@ Item {
 
             height: (vpnOnAlert.visible ? vpnOnAlert.height : 0) + (toast.visible ? toast.height : 0)
 
-            VPNInputMessages {
+            VPNContextualAlerts {
                 id: vpnOnAlert
                 anchors.left: parent.left
                 anchors.leftMargin: Theme.windowMargin / 2

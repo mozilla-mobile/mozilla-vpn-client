@@ -61,12 +61,13 @@ RowLayout {
         sourceSize.height: Theme.iconSize - Theme.focusBorderWidth
         sourceSize.width: Theme.iconSize - Theme.focusBorderWidth
 
-        Layout.alignment: Qt.AlignVCenter
+        Layout.alignment: Qt.AlignTop
         Layout.leftMargin: Theme.listSpacing / 2
         Layout.maximumHeight: messageText.lineHeight
         Layout.preferredHeight: messageText.lineHeight
         Layout.preferredWidth: Theme.iconSize - Theme.focusBorderWidth
         Layout.rightMargin: Theme.listSpacing
+        Layout.topMargin: 1
     }
 
     VPNTextBlock {
