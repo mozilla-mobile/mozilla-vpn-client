@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverconnection.h"
+#include "settingsholder.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -122,6 +123,19 @@ static QList<RequestType> s_types{
 
                   QJsonObject obj;
                   obj["servers"] = servers;
+                  return obj;
+                }},
+
+    RequestType{"disabled_apps",
+                [](const QJsonObject&) {
+                  QJsonArray apps;
+                  for (const QString& app :
+                       SettingsHolder::instance()->vpnDisabledApps()) {
+                    apps.append(app);
+                  }
+
+                  QJsonObject obj;
+                  obj["disabled_apps"] = apps;
                   return obj;
                 }},
 
