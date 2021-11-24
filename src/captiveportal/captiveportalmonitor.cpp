@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportalmonitor.h"
-#include "captiveportalrequest.h"
+#include "captiveportalrequesttask.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "taskscheduler.h"
 
 constexpr uint32_t CAPTIVE_PORTAL_MONITOR_MSEC = 10000;
 
@@ -36,17 +37,20 @@ void CaptivePortalMonitor::stop() {
 void CaptivePortalMonitor::check() {
   logger.debug() << "Checking the internet connectivity";
 
-  CaptivePortalRequest* request = new CaptivePortalRequest(this);
-  connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
-    logger.debug() << "Captive portal detection:" << detected;
+  CaptivePortalRequestTask* task = new CaptivePortalRequestTask(false);
+  connect(task, &CaptivePortalRequestTask::operationCompleted,
+          [this](CaptivePortalRequest::CaptivePortalResult result) {
+            logger.debug() << "Captive portal detection:" << result;
 
-    if (detected || !m_timer.isActive()) {
-      return;
-    }
+            if (result != CaptivePortalRequest::CaptivePortalResult::NoPortal ||
+                !m_timer.isActive()) {
+              return;
+            }
 
-    // It seems that the captive-portal is gone. We can reactivate the VPN.
-    emit online();
-  });
+            // It seems that the captive-portal is gone. We can reactivate the
+            // VPN.
+            emit online();
+          });
 
-  request->run();
+  TaskScheduler::scheduleTask(task);
 }

@@ -40,10 +40,13 @@ DesktopAuthenticationListener::~DesktopAuthenticationListener() {
   MVPN_COUNT_DTOR(DesktopAuthenticationListener);
 }
 
-void DesktopAuthenticationListener::start(const QString& codeChallenge,
+void DesktopAuthenticationListener::start(Task* task,
+                                          const QString& codeChallenge,
                                           const QString& codeChallengeMethod,
                                           const QString& emailAddress) {
   logger.debug() << "DesktopAuthenticationListener initialize";
+
+  Q_UNUSED(task);
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser,
                                    codeChallenge, codeChallengeMethod,
