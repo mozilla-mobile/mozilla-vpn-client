@@ -388,27 +388,20 @@ Item {
     Component {
         id: appReviewView
         Item {
-            ColumnLayout {
-                id: col
-                anchors.top: parent.top
-                anchors.topMargin: window.height * .10
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
-                VPNPanel {
-                    id: panel
-                    logo: "qrc:/ui/resources/app-rating.svg"
-                    logoTitle: VPNl18n.FeedbackFormReviewHeader
-                    logoSubtitle: VPNl18n.FeedbackFormReviewBody
-                    anchors.horizontalCenter: undefined
-                    Layout.fillWidth: true
-                }
+            VPNPanel {
+                id: panel
+                logo: "qrc:/ui/resources/app-rating.svg"
+                logoTitle: VPNl18n.FeedbackFormReviewHeader
+                logoSubtitle: VPNl18n.FeedbackFormReviewBody
+                height: parent.height - (reviewButton.height + reviewButton.anchors.bottomMargin + skipLink.height + skipLink.anchors.bottomMargin)
             }
 
             VPNButton {
                 id: reviewButton
                 text: VPNl18n.FeedbackFormLeaveReviewButton
-                anchors.top: col.bottom
-                anchors.topMargin: Theme.vSpacing
+                anchors.bottom: skipLink.top
+                anchors.bottomMargin: 24
+                anchors.horizontalCenterOffset: 0
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     VPN.openAppStoreReviewLink();
@@ -416,10 +409,8 @@ Item {
                }
             }
 
-            VPNLinkButton {
-                anchors.top: reviewButton.bottom
-                anchors.topMargin: Theme.vSpacing
-                anchors.horizontalCenter: parent.horizontalCenter
+            VPNFooterLink {
+                id: skipLink
 
                 labelText: qsTrId("vpn.feedbackForm.skip")
                 onClicked: feedbackStackView.push(thankYouView);

@@ -5,6 +5,7 @@
 #include "networkrequest.h"
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
+#include "features/featureuniqueid.h"
 #include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -56,6 +57,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
     // Global Privacy Control: https://globalprivacycontrol.github.io/gpc-spec/
     m_request.setRawHeader("Sec-GPC", "1");
   }
+  m_request.setOriginatingObject(parent);
 
   if (setAuthorizationHeader) {
     QByteArray authorizationHeader = "Bearer ";
@@ -193,7 +195,10 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
 
   QJsonObject obj;
   obj.insert("name", deviceName);
-  obj.insert("unique_id", deviceId);
+
+  if (!FeatureUniqueID::instance()->isSupported()) {
+    obj.insert("unique_id", deviceId);
+  }
   obj.insert("pubkey", pubKey);
 
   QJsonDocument json;
@@ -234,15 +239,6 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   url.setPath("/api/v1/vpn/servers");
   r->m_request.setUrl(url);
 
-  r->getRequest();
-  return r;
-}
-
-NetworkRequest* NetworkRequest::createForServerExtra(QObject* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, true);
-  r->m_request.setUrl(QUrl(Constants::MULLVAD_EXTRA_SERVER_URL));
   r->getRequest();
   return r;
 }
@@ -321,7 +317,9 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
 
   r->m_request.setUrl(url);
   r->m_request.setRawHeader("Host", host);
-
+  // This enables the QNetworkReply::redirected for every type of redirect.
+  r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                            QNetworkRequest::UserVerifiedRedirectPolicy);
   r->getRequest();
   return r;
 }
@@ -380,7 +378,8 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
 NetworkRequest* NetworkRequest::createForSupportTicket(
     QObject* parent, const QString& email, const QString& subject,
     const QString& issueText, const QString& logs, const QString& category) {
-  bool isAuthenticated = MozillaVPN::instance()->userAuthenticated();
+  bool isAuthenticated =
+      MozillaVPN::instance()->userState() == MozillaVPN::UserAuthenticated;
 
   NetworkRequest* r = new NetworkRequest(parent, 201, isAuthenticated);
 

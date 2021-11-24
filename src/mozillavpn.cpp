@@ -34,6 +34,7 @@
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
+#include "taskscheduler.h"
 #include "update/versionapi.h"
 #include "urlopener.h"
 
@@ -103,19 +104,20 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
-  connect(&m_periodicOperationsTimer, &QTimer::timeout, [this]() {
-    scheduleTask(new TaskAccountAndServers());
-    scheduleTask(new TaskCaptivePortalLookup());
-    scheduleTask(new TaskHeartbeat());
-    scheduleTask(new TaskSurveyData());
-    scheduleTask(new TaskGetFeatureList());
+  connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
+    TaskScheduler::scheduleTask(new TaskAccountAndServers());
+    TaskScheduler::scheduleTask(new TaskCaptivePortalLookup());
+    TaskScheduler::scheduleTask(new TaskHeartbeat());
+    TaskScheduler::scheduleTask(new TaskSurveyData());
+    TaskScheduler::scheduleTask(new TaskGetFeatureList());
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
     if (m_state != StateMain) {
       // We don't call deactivate() because that is meant to be used for
       // UI interactions only and it deletes all the pending tasks.
-      scheduleTask(new TaskControllerAction(TaskControllerAction::eDeactivate));
+      TaskScheduler::scheduleTask(
+          new TaskControllerAction(TaskControllerAction::eDeactivate));
     }
   });
 
@@ -124,7 +126,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(&m_private->m_controller, &Controller::readyToBackendFailure,
           [this]() {
-            deleteTasks();
+            TaskScheduler::deleteTasks();
             setState(StateBackendFailure);
           });
 
@@ -214,7 +216,7 @@ void MozillaVPN::initialize() {
 
   m_private->m_releaseMonitor.runSoon();
 
-  scheduleTask(new TaskGetFeatureList());
+  TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -261,10 +263,11 @@ void MozillaVPN::initialize() {
   // successfull subscription.
   if (FeatureInAppPurchase::instance()->isSupported()) {
     if (m_private->m_user.subscriptionNeeded()) {
-      setUserAuthenticated(true);
+      setUserState(UserAuthenticated);
       setState(StateAuthenticating);
-      scheduleTask(new TaskProducts());
-      scheduleTask(new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
+      TaskScheduler::scheduleTask(new TaskProducts());
+      TaskScheduler::scheduleTask(
+          new TaskFunction([this]() { maybeStateMain(); }));
       return;
     }
   }
@@ -314,17 +317,15 @@ void MozillaVPN::initialize() {
     m_private->m_serverData.writeSettings();
   }
 
-  scheduleTask(new TaskAccountAndServers());
-
-  scheduleTask(new TaskCaptivePortalLookup());
-
-  scheduleTask(new TaskSurveyData());
+  TaskScheduler::scheduleTask(new TaskAccountAndServers());
+  TaskScheduler::scheduleTask(new TaskCaptivePortalLookup());
+  TaskScheduler::scheduleTask(new TaskSurveyData());
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
-    scheduleTask(new TaskProducts());
+    TaskScheduler::scheduleTask(new TaskProducts());
   }
 
-  setUserAuthenticated(true);
+  setUserState(UserAuthenticated);
   maybeStateMain();
 }
 
@@ -424,7 +425,11 @@ void MozillaVPN::authenticateWithType(
 
   hideAlert();
 
-  if (m_userAuthenticated) {
+  if (m_userState != UserNotAuthenticated) {
+    // If we try to start an authentication flow when already logged in, there
+    // is a bug elsewhere.
+    Q_ASSERT(m_userState == UserLoggingOut);
+
     LogoutObserver* lo = new LogoutObserver(this);
     // Let's use QueuedConnection to avoid nexted tasks executions.
     connect(
@@ -438,9 +443,8 @@ void MozillaVPN::authenticateWithType(
 
   emit recordGleanEvent(GleanSample::authenticationStarted);
 
-  scheduleTask(new TaskHeartbeat());
-
-  scheduleTask(new TaskAuthenticate(authenticationType));
+  TaskScheduler::scheduleTask(new TaskHeartbeat());
+  TaskScheduler::scheduleTask(new TaskAuthenticate(authenticationType));
 }
 
 void MozillaVPN::abortAuthentication() {
@@ -536,41 +540,6 @@ void MozillaVPN::openLinkUrl(const QString& linkUrl) {
   UrlOpener::open(linkUrl);
 }
 
-void MozillaVPN::scheduleTask(Task* task) {
-  Q_ASSERT(task);
-  logger.debug() << "Scheduling task: " << task->name();
-
-  m_tasks.append(task);
-  maybeRunTask();
-}
-
-void MozillaVPN::maybeRunTask() {
-  logger.debug() << "Tasks: " << m_tasks.size();
-
-  if (m_running_task || m_tasks.empty()) {
-    return;
-  }
-
-  m_running_task = m_tasks.takeFirst();
-  Q_ASSERT(m_running_task);
-
-  QObject::connect(m_running_task, &Task::completed, this,
-                   &MozillaVPN::taskCompleted);
-
-  m_running_task->run(this);
-}
-
-void MozillaVPN::taskCompleted() {
-  Q_ASSERT(m_running_task);
-
-  logger.debug() << "Task completed:" << m_running_task->name();
-  m_running_task->deleteLater();
-  m_running_task->disconnect();
-  m_running_task = nullptr;
-
-  maybeRunTask();
-}
-
 void MozillaVPN::setToken(const QString& token) {
   SettingsHolder::instance()->setToken(token);
 }
@@ -597,12 +566,13 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   m_private->m_deviceModel.writeSettings();
 
   setToken(token);
-  setUserAuthenticated(true);
+  setUserState(UserAuthenticated);
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
     if (m_private->m_user.subscriptionNeeded()) {
-      scheduleTask(new TaskProducts());
-      scheduleTask(new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
+      TaskScheduler::scheduleTask(new TaskProducts());
+      TaskScheduler::scheduleTask(
+          new TaskFunction([this]() { maybeStateMain(); }));
       return;
     }
   }
@@ -627,7 +597,7 @@ MozillaVPN::RemovalDeviceOption MozillaVPN::maybeRemoveCurrentDevice() {
   }
 
   logger.debug() << "Removal needed";
-  scheduleTask(new TaskRemoveDevice(currentDevice->publicKey()));
+  TaskScheduler::scheduleTask(new TaskRemoveDevice(currentDevice->publicKey()));
   return DeviceRemoved;
 }
 
@@ -651,20 +621,21 @@ void MozillaVPN::completeActivation() {
     addCurrentDeviceAndRefreshData();
   } else {
     // Let's fetch the account and the servers.
-    scheduleTask(new TaskAccountAndServers());
+    TaskScheduler::scheduleTask(new TaskAccountAndServers());
   }
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
-    scheduleTask(new TaskProducts());
+    TaskScheduler::scheduleTask(new TaskProducts());
   }
-  scheduleTask(new TaskSurveyData());
+
+  TaskScheduler::scheduleTask(new TaskSurveyData());
 
   // Finally we are able to activate the client.
-  scheduleTask(new TaskFunction([this](MozillaVPN*) {
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the authentication";
       errorHandle(ErrorHandler::RemoteServiceError);
-      setUserAuthenticated(false);
+      setUserState(UserNotAuthenticated);
       return;
     }
 
@@ -696,23 +667,20 @@ void MozillaVPN::deviceRemoved(const QString& publicKey) {
   m_private->m_deviceModel.removeDeviceFromPublicKey(publicKey);
 }
 
-bool MozillaVPN::setServerList(const QByteArray& serverData,
-                               const QByteArray& serverExtraData) {
-  if (!m_private->m_serverCountryModel.fromJson(serverData, serverExtraData)) {
+bool MozillaVPN::setServerList(const QByteArray& serverData) {
+  if (!m_private->m_serverCountryModel.fromJson(serverData)) {
     logger.error() << "Failed to store the server-countries";
     return false;
   }
 
   SettingsHolder::instance()->setServers(serverData);
-  SettingsHolder::instance()->setServerExtras(serverExtraData);
   return true;
 }
 
-void MozillaVPN::serversFetched(const QByteArray& serverData,
-                                const QByteArray& serverExtraData) {
+void MozillaVPN::serversFetched(const QByteArray& serverData) {
   logger.debug() << "Server fetched!";
 
-  if (!setServerList(serverData, serverExtraData)) {
+  if (!setServerList(serverData)) {
     // This is OK. The check is done elsewhere.
     return;
   }
@@ -739,7 +707,7 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   if (device) {
     // Let's inform the UI about what is going to happen.
     emit deviceRemoving(publicKey);
-    scheduleTask(new TaskRemoveDevice(publicKey));
+    TaskScheduler::scheduleTask(new TaskRemoveDevice(publicKey));
 
     if (m_state != StateDeviceLimit) {
       // To have a faster UI, we inform the device-model that this public key
@@ -759,7 +727,7 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   addCurrentDeviceAndRefreshData();
 
   // Finally we are able to activate the client.
-  scheduleTask(new TaskFunction([this](MozillaVPN*) {
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (m_state != StateDeviceLimit) {
       return;
     }
@@ -768,6 +736,7 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
       logger.warning() << "Models not initialized yet";
       errorHandle(ErrorHandler::RemoteServiceError);
       SettingsHolder::instance()->clear();
+      setUserState(UserNotAuthenticated);
       setState(StateInitialize);
       return;
     }
@@ -783,13 +752,14 @@ void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
 
-  serializeLogs(out, [this, out, buffer, feedbackText, rating, category] {
+  serializeLogs(out, [out, buffer, feedbackText, rating, category] {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
     // buffer is getting copied by TaskSendFeedback so we can delete it
     // afterwards
-    scheduleTask(new TaskSendFeedback(feedbackText, *buffer, rating, category));
+    TaskScheduler::scheduleTask(
+        new TaskSendFeedback(feedbackText, *buffer, rating, category));
 
     delete buffer;
     delete out;
@@ -805,14 +775,14 @@ void MozillaVPN::createSupportTicket(const QString& email,
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
 
-  serializeLogs(out, [this, out, buffer, email, subject, issueText, category] {
+  serializeLogs(out, [out, buffer, email, subject, issueText, category] {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
     // buffer is getting copied by TaskCreateSupportTicket so we can delete it
     // afterwards
-    scheduleTask(new TaskCreateSupportTicket(email, subject, issueText, *buffer,
-                                             category));
+    TaskScheduler::scheduleTask(new TaskCreateSupportTicket(
+        email, subject, issueText, *buffer, category));
 
     delete buffer;
     delete out;
@@ -884,10 +854,9 @@ void MozillaVPN::logout() {
   logger.debug() << "Logout";
 
   setAlert(LogoutAlert);
+  setUserState(UserLoggingOut);
 
-  setUserAuthenticated(false);
-
-  deleteTasks();
+  TaskScheduler::deleteTasks();
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
     IAPHandler* iap = IAPHandler::instance();
@@ -901,16 +870,16 @@ void MozillaVPN::logout() {
   }
 
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
-    scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
+    TaskScheduler::scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
   }
 
-  scheduleTask(new TaskFunction([](MozillaVPN* vpn) { vpn->reset(false); }));
+  TaskScheduler::scheduleTask(new TaskFunction([this]() { reset(false); }));
 }
 
 void MozillaVPN::reset(bool forceInitialState) {
   logger.debug() << "Cleaning up all";
 
-  deleteTasks();
+  TaskScheduler::deleteTasks();
 
   SettingsHolder::instance()->clear();
   m_private->m_keys.forgetKeys();
@@ -922,24 +891,10 @@ void MozillaVPN::reset(bool forceInitialState) {
     iap->stopProductsRegistration();
   }
 
-  setUserAuthenticated(false);
+  setUserState(UserNotAuthenticated);
 
   if (forceInitialState) {
     setState(StateInitialize);
-  }
-}
-
-void MozillaVPN::deleteTasks() {
-  for (Task* task : m_tasks) {
-    task->deleteLater();
-  }
-
-  m_tasks.clear();
-
-  if (m_running_task) {
-    m_running_task->deleteLater();
-    m_running_task->disconnect();
-    m_running_task = nullptr;
   }
 }
 
@@ -963,12 +918,15 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
   switch (error) {
     case ErrorHandler::VPNDependentConnectionError:
-      // This type of error might be caused by switching the VPN
-      // on, in which case it's okay to be ignored.
-      // In Case the vpn is not connected - handle this like a
-      // ConnectionFailureError
-      if (controller()->state() == Controller::StateOn) {
+      if (controller()->state() == Controller::State::StateOn ||
+          controller()->state() == Controller::State::StateConfirming) {
+        // connection likely isn't stable yet
         logger.error() << "Ignore network error probably caused by enabled VPN";
+        return;
+      } else if (controller()->state() == Controller::State::StateOff) {
+        // We are off, so this means a request failed, not the
+        // VPN. Change it to No Connection
+        alert = NoConnectionAlert;
         break;
       }
       [[fallthrough]];
@@ -977,6 +935,9 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       break;
 
     case ErrorHandler::NoConnectionError:
+      if (controller()->isUnsettled()) {
+        return;
+      }
       alert = NoConnectionAlert;
       break;
 
@@ -1116,7 +1077,7 @@ void MozillaVPN::telemetryPolicyCompleted() {
     return;
   }
 
-  if (!m_userAuthenticated) {
+  if (m_userState != UserAuthenticated) {
     authenticate();
     return;
   }
@@ -1129,11 +1090,11 @@ void MozillaVPN::setUpdateRecommended(bool value) {
   emit updateRecommendedChanged();
 }
 
-void MozillaVPN::setUserAuthenticated(bool state) {
+void MozillaVPN::setUserState(UserState state) {
   logger.debug() << "User authentication state:" << state;
-  if (m_userAuthenticated != state) {
-    m_userAuthenticated = state;
-    emit userAuthenticationChanged();
+  if (m_userState != state) {
+    m_userState = state;
+    emit userStateChanged();
   }
 }
 
@@ -1264,7 +1225,12 @@ bool MozillaVPN::viewLogs() {
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
   bool ok = true;
-  serializeLogs(out, [buffer, out, &ok]() {
+  serializeLogs(out, [buffer, out
+#  if defined(MVPN_ANDROID)
+                      ,
+                      &ok
+#  endif
+  ]() {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
@@ -1385,39 +1351,42 @@ void MozillaVPN::requestContactUs() {
 void MozillaVPN::activate() {
   logger.debug() << "VPN tunnel activation";
 
-  deleteTasks();
+  TaskScheduler::deleteTasks();
 
   // We are about to connect. If the device key needs to be regenerated, this
   // is the right time to do it.
   maybeRegenerateDeviceKey();
 
-  scheduleTask(new TaskControllerAction(TaskControllerAction::eActivate));
+  TaskScheduler::scheduleTask(
+      new TaskControllerAction(TaskControllerAction::eActivate));
 }
 
 void MozillaVPN::deactivate() {
   logger.debug() << "VPN tunnel deactivation";
 
-  deleteTasks();
-  scheduleTask(new TaskControllerAction(TaskControllerAction::eDeactivate));
+  TaskScheduler::deleteTasks();
+  TaskScheduler::scheduleTask(
+      new TaskControllerAction(TaskControllerAction::eDeactivate));
 }
 
 void MozillaVPN::silentSwitch() {
   logger.debug() << "VPN tunnel silent server switch";
 
-  scheduleTask(new TaskControllerAction(TaskControllerAction::eSilentSwitch));
+  TaskScheduler::scheduleTask(
+      new TaskControllerAction(TaskControllerAction::eSilentSwitch));
 }
 
 void MozillaVPN::refreshDevices() {
   logger.debug() << "Refresh devices";
 
   if (m_state == StateMain) {
-    scheduleTask(new TaskAccountAndServers());
+    TaskScheduler::scheduleTask(new TaskAccountAndServers());
   }
 }
 
 void MozillaVPN::quit() {
   logger.debug() << "quit";
-  deleteTasks();
+  TaskScheduler::deleteTasks();
   qApp->quit();
 }
 
@@ -1430,9 +1399,9 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
   // If IAP is not ready (race condition), register the products again.
   if (!iap->hasProductsRegistered()) {
-    scheduleTask(new TaskProducts());
-    scheduleTask(new TaskFunction([productIdentifier](MozillaVPN* vpn) {
-      vpn->subscriptionStarted(productIdentifier);
+    TaskScheduler::scheduleTask(new TaskProducts());
+    TaskScheduler::scheduleTask(new TaskFunction([this, productIdentifier]() {
+      subscriptionStarted(productIdentifier);
     }));
 
     return;
@@ -1504,8 +1473,8 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
     errorHandle(ErrorHandler::SubscriptionFailureError);
   }
 
-  scheduleTask(new TaskAccountAndServers());
-  scheduleTask(new TaskFunction([this](MozillaVPN*) {
+  TaskScheduler::scheduleTask(new TaskAccountAndServers());
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!m_private->m_user.subscriptionNeeded() &&
         m_state == StateSubscriptionNeeded) {
       maybeStateMain();
@@ -1587,7 +1556,7 @@ void MozillaVPN::heartbeatCompleted(bool success) {
     return;
   }
 
-  if (!modelsInitialized() || !m_userAuthenticated) {
+  if (!modelsInitialized() || m_userState != UserAuthenticated) {
     setState(StateInitialize);
     return;
   }
@@ -1595,12 +1564,14 @@ void MozillaVPN::heartbeatCompleted(bool success) {
   maybeStateMain();
 }
 
-void MozillaVPN::triggerHeartbeat() { scheduleTask(new TaskHeartbeat()); }
+void MozillaVPN::triggerHeartbeat() {
+  TaskScheduler::scheduleTask(new TaskHeartbeat());
+}
 
 void MozillaVPN::addCurrentDeviceAndRefreshData() {
-  scheduleTask(
+  TaskScheduler::scheduleTask(
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
-  scheduleTask(new TaskAccountAndServers());
+  TaskScheduler::scheduleTask(new TaskAccountAndServers());
 }
 
 void MozillaVPN::openAppStoreReviewLink() {

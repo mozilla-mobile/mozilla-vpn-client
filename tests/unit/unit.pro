@@ -62,7 +62,6 @@ HEADERS += \
     ../../src/models/servercountry.h \
     ../../src/models/servercountrymodel.h \
     ../../src/models/serverdata.h \
-    ../../src/models/serverextra.h \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
@@ -93,6 +92,7 @@ HEADERS += \
     ../../src/tasks/accountandservers/taskaccountandservers.h \
     ../../src/tasks/adddevice/taskadddevice.h \
     ../../src/tasks/function/taskfunction.h \
+    ../../src/taskscheduler.h \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
@@ -111,6 +111,7 @@ HEADERS += \
     testipfinder.h \
     testlicense.h \
     testmodels.h \
+    testmozillavpnh.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
     teststatusicon.h \
@@ -154,7 +155,6 @@ SOURCES += \
     ../../src/models/servercountry.cpp \
     ../../src/models/servercountrymodel.cpp \
     ../../src/models/serverdata.cpp \
-    ../../src/models/serverextra.cpp \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
@@ -180,6 +180,7 @@ SOURCES += \
     ../../src/tasks/accountandservers/taskaccountandservers.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/function/taskfunction.cpp \
+    ../../src/taskscheduler.cpp \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
@@ -202,6 +203,7 @@ SOURCES += \
     testipfinder.cpp \
     testlicense.cpp \
     testmodels.cpp \
+    testmozillavpnh.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \
     teststatusicon.cpp \

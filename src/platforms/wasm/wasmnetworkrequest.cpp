@@ -117,14 +117,6 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForServerExtra(QObject* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
 // static
 NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
   Q_ASSERT(parent);

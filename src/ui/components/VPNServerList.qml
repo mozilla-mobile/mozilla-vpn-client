@@ -108,20 +108,6 @@ FocusScope {
                 placeholderText: VPNl18n.ServersViewSearchPlaceholder
                 hasError: countriesRepeater.count === 0
                 Keys.onDownPressed: recentConnections.visible ? recentConnections.focusItemAt(0) : countriesRepeater.itemAt(0).forceActiveFocus()
-
-                VPNInputMessages {
-                    id: searchWarning
-                    anchors.top: serverSearchInput.bottom
-                    anchors.topMargin: Theme.listSpacing
-
-                    messages: [
-                        {
-                            type: "error",
-                            message: VPNl18n.ServersViewSearchNoResultsLabel,
-                            visible: serverSearchInput.hasError
-                        }
-                    ]
-                }
             }
 
             VPNFilterProxyModel {

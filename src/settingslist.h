@@ -271,14 +271,6 @@ SETTING_BYTEARRAY(servers,     // getter
                   true         // remove when reset
 )
 
-SETTING_BYTEARRAY(serverExtras,     // getter
-                  setServerExtras,  // setter
-                  hasServerExtras,  // has
-                  "serverExtras",   // key
-                  "",               // default value
-                  true              // remove when reset
-)
-
 SETTING_BOOL(serverSwitchNotification,     // getter
              setServerSwitchNotification,  // setter
              hasServerSwitchNotification,  // has
@@ -291,8 +283,8 @@ SETTING_STRING(stagingServerAddress,     // getter
                hasStagingServerAddress,  // has
                "stagingServerAddress",   // key
                envOrDefault("MVPN_API_BASE_URL",
-                            Constants::API_PRODUCTION_URL),  // default value
-               false  // remove when reset
+                            Constants::API_STAGING_URL),  // default value
+               false                                      // remove when reset
 )
 
 SETTING_BOOL(stagingServer,     // getter

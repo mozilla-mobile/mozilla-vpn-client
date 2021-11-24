@@ -18,8 +18,8 @@ class FeatureCustomDNS final : public Feature {
             L18nStrings::WhatsNewReleaseNotesDnsModalHeader,   // Display name
             L18nStrings::WhatsNewReleaseNotesDnsListItemBody,  // Description
             L18nStrings::WhatsNewReleaseNotesDnsModalBodyTextNew,  // LongDescr
-            "../resources/features/custom-dns-preview.png",        // ImagePath
-            "../resources/settings/networkSettings.svg",           // IconPath
+            "qrc:/ui/resources/features/custom-dns-preview.png",   // ImagePath
+            "qrc:/ui/resources/settings/networkSettings.svg",      // IconPath
             "2.5",                                                 // released
             true  // Can be enabled in devmode
         ) {}

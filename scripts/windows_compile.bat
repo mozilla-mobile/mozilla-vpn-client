@@ -53,9 +53,11 @@ if "%SHOW_HELP%" == "T" (
 )
 
 
-IF "%BUILDDIR%" NEQ "" (
-   ECHO Using Build Directory %BUILDDIR%
+IF "%BUILDDIR%" == "" (
+   SET BUILDDIR=C:\MozillaVPNBuild
 )
+   ECHO Using Build Directory %BUILDDIR%
+
 
 
 SET TEST_BUILD=F
@@ -99,6 +101,9 @@ CALL :CheckCommand nmake
 CALL :CheckCommand cl
 CALL :CheckCommand qmake
 
+git submodule init
+git submodule update --remote --depth 1 i18n
+
 ECHO Copying the installer dependencies...
 CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\bin\libcrypto-1_1-x64.dll
 CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\bin\libssl-1_1-x64.dll
@@ -108,9 +113,8 @@ CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "%VCToolsRedistDir%\\MergeModul
 CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
-git submodule init
-git submodule update --remote --depth 1 i18n
 python scripts\importLanguages.py
+python scripts\generate_strings.py
 
 ECHO Generating glean samples...
 python scripts\generate_glean.py
@@ -136,6 +140,28 @@ IF NOT EXIST mozillavpnnp.vcxproj (
   echo The VC project doesn't exist. Why?
   EXIT 1
 )
+
+
+
+IF NOT EXIST .\3rdparty\crashpad\win64\release\include\client\crashpad_client.h (
+  ECHO Fetching crashpad...
+  mkdir 3rdparty\crashpad
+  mkdir 3rdparty\crashpad\win64
+  powershell -Command "Invoke-WebRequest http://get.backtrace.io/crashpad/builds/crashpad-release-x86-64-stable.zip -OutFile .\3rdparty\crashpad\win64\crashpad_release.zip"
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO Failed to fetch crashpad
+    EXIT 1
+  )
+  powershell -Command "Expand-Archive .\3rdparty\crashpad\win64\crashpad_release.zip -DestinationPath .\3rdparty\crashpad\win64"
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO Failed to extract crashpad.
+    EXIT 1
+  )
+  del .\3rdparty\crashpad\win64\crashpad_release.zip
+  move .\3rdparty\crashpad\win64\crashpad* .\3rdparty\crashpad\win64\release
+)
+
+
 
 set CL=/MP
 

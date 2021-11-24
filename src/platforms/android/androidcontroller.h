@@ -36,7 +36,7 @@ class AndroidController final : public ControllerImpl,
 
   void setNotificationText(const QString& title, const QString& message,
                            int timerSec);
-  void setFallbackConnectedNotification();
+  void applyStrings();
 
   void getBackendLogs(std::function<void(const QString&)>&& callback) override;
 

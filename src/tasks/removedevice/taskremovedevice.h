@@ -16,7 +16,7 @@ class TaskRemoveDevice final : public Task {
   explicit TaskRemoveDevice(const QString& publickKey);
   ~TaskRemoveDevice();
 
-  void run(MozillaVPN* vpn) override;
+  void run() override;
 
  private:
   QString m_publicKey;

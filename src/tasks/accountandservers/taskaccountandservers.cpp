@@ -22,25 +22,26 @@ TaskAccountAndServers::~TaskAccountAndServers() {
   MVPN_COUNT_DTOR(TaskAccountAndServers);
 }
 
-void TaskAccountAndServers::run(MozillaVPN* vpn) {
+void TaskAccountAndServers::run() {
   // Account fetch and servers fetch run in parallel.
 
   // Account fetch
   {
     NetworkRequest* request = NetworkRequest::createForAccount(this);
 
-    connect(request, &NetworkRequest::requestFailed,
-            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-              logger.error() << "Account request failed" << error;
-              vpn->errorHandle(ErrorHandler::toErrorType(error));
-              m_accountCompleted = true;
-              maybeCompleted();
-            });
+    connect(
+        request, &NetworkRequest::requestFailed,
+        [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          logger.error() << "Account request failed" << error;
+          MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+          m_accountCompleted = true;
+          maybeCompleted();
+        });
 
     connect(request, &NetworkRequest::requestCompleted,
-            [this, vpn](const QByteArray& data) {
+            [this](const QByteArray& data) {
               logger.debug() << "Account request completed";
-              vpn->accountChecked(data);
+              MozillaVPN::instance()->accountChecked(data);
               m_accountCompleted = true;
               maybeCompleted();
             });
@@ -50,51 +51,27 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
   {
     NetworkRequest* request = NetworkRequest::createForServers(this);
 
-    connect(request, &NetworkRequest::requestFailed,
-            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-              logger.error() << "Failed to retrieve servers";
-              vpn->errorHandle(ErrorHandler::toErrorType(error));
-              m_serversCompleted = true;
-              maybeCompleted();
-            });
+    connect(
+        request, &NetworkRequest::requestFailed,
+        [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          logger.error() << "Failed to retrieve servers";
+          MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+          m_serversCompleted = true;
+          maybeCompleted();
+        });
 
     connect(request, &NetworkRequest::requestCompleted,
             [this](const QByteArray& data) {
               logger.debug() << "Servers obtained";
-              m_serverData = data;
+              MozillaVPN::instance()->serversFetched(data);
               m_serversCompleted = true;
-              maybeCompleted();
-            });
-  }
-
-  // Server extra fetch
-  {
-    NetworkRequest* request = NetworkRequest::createForServerExtra(this);
-
-    connect(request, &NetworkRequest::requestFailed,
-            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-              logger.error() << "Failed to retrieve extra servers data";
-              vpn->errorHandle(ErrorHandler::toErrorType(error));
-              m_serverExtraCompleted = true;
-              maybeCompleted();
-            });
-
-    connect(request, &NetworkRequest::requestCompleted,
-            [this](const QByteArray& data) {
-              logger.debug() << "Extra server data obtained";
-              m_serverExtraData = data;
-              m_serverExtraCompleted = true;
               maybeCompleted();
             });
   }
 }
 
 void TaskAccountAndServers::maybeCompleted() {
-  if (m_accountCompleted && m_serversCompleted && m_serverExtraCompleted) {
-    if (!m_serverData.isEmpty()) {
-      MozillaVPN::instance()->serversFetched(m_serverData, m_serverExtraData);
-    }
-
+  if (m_accountCompleted && m_serversCompleted) {
     emit completed();
   }
 }
