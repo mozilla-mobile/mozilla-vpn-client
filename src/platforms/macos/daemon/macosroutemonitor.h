@@ -29,15 +29,7 @@ class MacosRouteMonitor final : public QObject {
   int interfaceFlags() { return m_ifflags; }
 
   bool addExclusionRoute(const QHostAddress& address);
-  bool addExclusionRoute(const QString& address) {
-    return addExclusionRoute(QHostAddress(address));
-  }
-
   void deleteExclusionRoute(const QHostAddress& address);
-  void deleteExclusionRoute(const QString& address) {
-    deleteExclusionRoute(QHostAddress(address));
-  }
-
   void flushExclusionRoutes();
 
  private:
