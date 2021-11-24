@@ -8,6 +8,7 @@
 #include "controllerimpl.h"
 
 #include <QObject>
+#include <QHostAddress>
 
 class DBusClient;
 class QDBusPendingCallWatcher;
@@ -39,10 +40,25 @@ class LinuxController final : public ControllerImpl {
   void checkStatusCompleted(QDBusPendingCallWatcher* call);
   void initializeCompleted(QDBusPendingCallWatcher* call);
   void operationCompleted(QDBusPendingCallWatcher* call);
-  void hopConnected(int hopindex);
-  void hopDisconnected(int hopindex);
+  void peerConnected(const QString& pubkey);
 
  private:
+  void activateNext();
+
+ private:
+  class HopConnection {
+   public:
+    HopConnection() {}
+    Server m_server;
+    int m_hopindex = 0;
+    QList<IPAddressRange> m_allowedIPAddressRanges;
+    QList<QString> m_vpnDisabledApps;
+    QHostAddress m_dnsServer;
+  };
+  QList<HopConnection> m_activationQueue;
+  const Device* m_device = nullptr;
+  const Keys* m_keys = nullptr;
+
   DBusClient* m_dbus = nullptr;
 };
 
