@@ -31,8 +31,6 @@ class WindowsFirewall final : public QObject {
   bool disablePeerTraffic(const QString& pubkey);
   bool disableKillSwitch();
 
- // void operator delete(void*){};
-
  private:
   WindowsFirewall();
   HANDLE m_sessionHandle = INVALID_HANDLE_VALUE;

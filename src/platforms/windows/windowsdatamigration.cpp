@@ -73,7 +73,7 @@ void migrateWireguardFile(const QString& fileName) {
     QString privateKey = settings.value("Interface/PrivateKey").toString();
     if (!privateKey.isEmpty()) {
       vpn.deviceAdded(Device::currentDeviceName(), device->publicKey(),
-                       privateKey);
+                      privateKey);
     }
   }
 

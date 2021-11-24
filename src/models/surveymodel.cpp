@@ -107,8 +107,6 @@ void SurveyModel::maybeShowSurvey() {
 }
 
 void SurveyModel::showSurvey(const Survey& survey) {
-  auto& settingsHolder = SettingsHolder::instance();
-
   m_currentSurveyId = survey.id();
   emit hasSurveyChanged();
 }

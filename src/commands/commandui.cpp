@@ -154,7 +154,7 @@ int CommandUI::run(QStringList& tokens) {
 #ifdef MVPN_MACOS
     MacOSStartAtBootWatcher startAtBootWatcher(
         SettingsHolder::instance().startAtBoot());
-    QObject::connect(SettingsHolder::instance(),
+    QObject::connect(&SettingsHolder::instance(),
                      &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
                      &MacOSStartAtBootWatcher::startAtBootChanged);
 
@@ -422,7 +422,7 @@ int CommandUI::run(QStringList& tokens) {
     MacOSMenuBar menuBar;
     menuBar.initialize();
 
-    QObject::connect(MozillaVPN::instance(), &MozillaVPN::stateChanged,
+    QObject::connect(&MozillaVPN::instance(), &MozillaVPN::stateChanged,
                      &menuBar, &MacOSMenuBar::controllerStateChanged);
 
     QObject::connect(MozillaVPN::instance().controller(),
