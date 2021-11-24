@@ -18,7 +18,8 @@ Rectangle {
     state: parent.state
     states: [
         State {
-            name: VPNController.StateConnecting
+            name: "stateConnecting"
+            when: VPNController.state === VPNController.StateConnecting
 
             PropertyChanges {
                 target: logo
@@ -37,7 +38,8 @@ Rectangle {
 
         },
         State {
-            name: VPNController.StateConfirming
+            name: "stateConfirming"
+            when: VPNController.state === VPNController.StateConfirming
 
             PropertyChanges {
                 target: logo
@@ -56,7 +58,8 @@ Rectangle {
 
         },
         State {
-            name: VPNController.StateDisconnecting
+            name: "stateDisconnecting"
+            when: VPNController.state === VPNController.StateDisconnecting
 
             PropertyChanges {
                 target: logo
@@ -75,7 +78,8 @@ Rectangle {
 
         },
         State {
-            name: VPNController.StateSwitching
+            name: "stateSwitching"
+            when: VPNController.state === VPNController.StateSwitching
 
             PropertyChanges {
                 target: logo
@@ -97,7 +101,8 @@ Rectangle {
 
         },
         State {
-            name: VPNController.StateOff
+            name: "stateOff"
+            when: VPNController.state === VPNController.StateOff
 
             PropertyChanges {
                 target: insetCircle
@@ -111,7 +116,8 @@ Rectangle {
 
         },
         State {
-            name: VPNController.StateOn
+            name: "stateOn"
+            when: VPNController.state === VPNController.StateOn
 
             PropertyChanges {
                 target: logo
@@ -129,7 +135,8 @@ Rectangle {
 
         },
         State {
-            name: VPNController.StateInitializing
+            name: "stateInitializing"
+            when: VPNController.state === VPNController.StateInitializing
 
             PropertyChanges {
                 target: logo
