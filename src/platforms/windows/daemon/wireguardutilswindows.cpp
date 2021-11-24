@@ -135,12 +135,11 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
 
   // Enable the windows firewall and routes for this peer.
   WindowsFirewall::instance()->enablePeerTraffic(config);
-  if (config.m_hopindex != 0) {
-    // HACK: This is a sloppy way to detect entry vs. exit server.
-    m_routeMonitor.addExclusionRoute(config.m_serverIpv4AddrIn);
+  for (const QString& address : config.m_excludedAddresses) {
+    m_routeMonitor.addExclusionRoute(QHostAddress(address));
   }
 
-  logger.debug() << "Updating peer" << printableKey(config.m_serverPublicKey)
+  logger.debug() << "Configuring peer" << printableKey(config.m_serverPublicKey)
                  << "via" << config.m_serverIpv4AddrIn;
 
   // Update/create the peer config
@@ -175,9 +174,8 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
 
   // Disable the windows firewall and routes for this peer.
   WindowsFirewall::instance()->disablePeerTraffic(config.m_serverPublicKey);
-  if (config.m_hopindex != 0) {
-    // HACK: This is a sloppy way to detect entry vs. exit server.
-    m_routeMonitor.deleteExclusionRoute(config.m_serverIpv4AddrIn);
+  for (const QString& address : config.m_excludedAddresses) {
+    m_routeMonitor.deleteExclusionRoute(QHostAddress(address));
   }
 
   QString message;
