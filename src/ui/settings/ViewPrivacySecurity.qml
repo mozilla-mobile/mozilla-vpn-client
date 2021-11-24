@@ -46,7 +46,7 @@ Item {
                 objectName: "settingStartAtBoot"
 
                 labelText: _startAtBootTitle
-                subLabelText: ""
+                subLabelText: VPNl18n.SettingsStartAtBootDescription
                 isChecked: VPNSettings.startAtBoot
                 isEnabled: true
                 showDivider: false
@@ -70,8 +70,7 @@ Item {
 
                 //% "Data collection and use"
                 labelText: qsTrId("vpn.settings.dataCollection")
-                //% "Allow Mozilla VPN to send technical data to Mozilla"
-                subLabelText: qsTrId("vpn.settings.dataCollection.description")
+                subLabelText: VPNl18n.SettingsDataCollectionDescription
                 isChecked: VPNSettings.gleanEnabled
                 onClicked: {
                     VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
@@ -89,7 +88,13 @@ Item {
                     settingTitle: _notificationsTitle
                     imageLeftSrc: "qrc:/ui/resources/settings/notifications.svg"
                     imageRightSrc: "qrc:/ui/resources/chevron.svg"
-                    onClicked: settingsStackView.push("qrc:/ui/settings/ViewNotifications.qml")
+                    onClicked: {
+                        if(Qt.platform.os === "android"){
+                            VPNAndroidUtils.openNotificationSettings();
+                            return;
+                        }
+                        settingsStackView.push("qrc:/ui/settings/ViewNotifications.qml")
+                    }
                     visible: VPNFeatureList.get("captivePortal").isSupported || VPNFeatureList.get("unsecuredNetworkNotification").isSupported || VPNFeatureList.get("notificationControl").isSupported
                     width: parent.width - Theme.windowMargin
                 }

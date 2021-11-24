@@ -28,12 +28,15 @@ SET SHOW_HELP=F
 
 if "%1" NEQ "" (
   if "%1" == "-h" SET SHOW_HELP=T
-  if "%1" == "-help" SET SHOW_HELP=T
+  if "%1" == "--help" SET SHOW_HELP=T
+
   if "%1" NEQ "-t" (
     if "%1" NEQ "--test" (
       if "%1" NEQ "-w" (
         if "%1" NEQ "--webextension" (
-          SET SHOW_HELP=T
+          if "%1" NEQ "--debug" (
+             SET SHOW_HELP=T
+          )
         )
       )
     )
@@ -45,8 +48,17 @@ if "%SHOW_HELP%" == "T" (
   ECHO "  -h|--help            Help menu"
   ECHO "  -t|--test            Test mode"
   ECHO "  -w|--webextension    Enable the webExtension support"
+  ECHO "  --debug               Build a debug version"
   EXIT 0
 )
+
+
+IF "%BUILDDIR%" == "" (
+   SET BUILDDIR=C:\MozillaVPNBuild
+)
+   ECHO Using Build Directory %BUILDDIR%
+
+
 
 SET TEST_BUILD=F
 if "%1"== "-t" SET TEST_BUILD=T
@@ -55,6 +67,15 @@ if "%1"== "--test" SET TEST_BUILD=T
 SET WEBEXTENSION_BUILD=F
 if "%1"== "-w" SET WEBEXTENSION_BUILD=T
 if "%1"== "--webextension" SET WEBEXTENSION_BUILD=T
+
+SET DEBUG_BUILD=F
+if "%1"== "--debug" SET DEBUG_BUILD=T
+if "%2"== "--debug" SET DEBUG_BUILD=T
+
+SET BUILD_CONF=Release
+if %DEBUG_BUILD% ==T (
+  SET BUILD_CONF=Debug
+)
 
 ECHO Extract version...
 FOR /F "tokens=2* delims==" %%A IN ('FINDSTR /IC:":VERSION" version.pri') DO call :SetVersion %%A
@@ -74,27 +95,42 @@ if "%WEBEXTENSION_BUILD%" == "T" (
 )
 
 ECHO Checking required commands...
+CALL :CheckCommand git
 CALL :CheckCommand python
 CALL :CheckCommand nmake
 CALL :CheckCommand cl
 CALL :CheckCommand qmake
 
+git submodule init
+git submodule update --remote --depth 1 i18n
+
 ECHO Copying the installer dependencies...
-CALL :CopyDependency libcrypto-1_1-x64.dll c:\MozillaVPNBuild\bin\libcrypto-1_1-x64.dll
-CALL :CopyDependency libssl-1_1-x64.dll c:\MozillaVPNBuild\bin\libssl-1_1-x64.dll
-CALL :CopyDependency libEGL.dll c:\MozillaVPNBuild\bin\libEGL.dll
-CALL :CopyDependency libGLESv2.dll c:\MozillaVPNBuild\bin\libGLESv2.dll
+CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\bin\libcrypto-1_1-x64.dll
+CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\bin\libssl-1_1-x64.dll
+CALL :CopyDependency libEGL.dll %BUILDDIR%\bin\libEGL.dll
+CALL :CopyDependency libGLESv2.dll %BUILDDIR%\bin\libGLESv2.dll
 CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x86.msm"
 CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
-git submodule update --remote --depth 1 i18n
 python scripts\importLanguages.py
+python scripts\generate_strings.py
 
 ECHO Generating glean samples...
 python scripts\generate_glean.py
 
+ECHO BUILD_BUILD = %DEBUG_BUILD%
+
+IF %DEBUG_BUILD%==T (
+ECHO Generating Debug Build
+qmake -tp vc extension\app\app.pro CONFIG+=debug 
+)
+IF %DEBUG_BUILD%==F (
+ECHO Generating Release Build
 qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+)
+
+
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project
   EXIT 1
@@ -105,21 +141,55 @@ IF NOT EXIST mozillavpnnp.vcxproj (
   EXIT 1
 )
 
+
+
+IF NOT EXIST .\3rdparty\crashpad\win64\release\include\client\crashpad_client.h (
+  ECHO Fetching crashpad...
+  mkdir 3rdparty\crashpad
+  mkdir 3rdparty\crashpad\win64
+  powershell -Command "Invoke-WebRequest http://get.backtrace.io/crashpad/builds/crashpad-release-x86-64-stable.zip -OutFile .\3rdparty\crashpad\win64\crashpad_release.zip"
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO Failed to fetch crashpad
+    EXIT 1
+  )
+  powershell -Command "Expand-Archive .\3rdparty\crashpad\win64\crashpad_release.zip -DestinationPath .\3rdparty\crashpad\win64"
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO Failed to extract crashpad.
+    EXIT 1
+  )
+  del .\3rdparty\crashpad\win64\crashpad_release.zip
+  move .\3rdparty\crashpad\win64\crashpad* .\3rdparty\crashpad\win64\release
+)
+
+
+
+set CL=/MP
+
 ECHO Cleaning up the project...
-MSBuild -t:Clean -p:Configuration=Release mozillavpnnp.vcxproj
+MSBuild -t:Clean -p:Configuration=%BUILD_CONF% mozillavpnnp.vcxproj
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to clean up the project
   EXIT 1
 )
 
-MSBuild -t:Build -p:Configuration=Release mozillavpnnp.vcxproj
+MSBuild -t:Build -p:Configuration=%BUILD_CONF% mozillavpnnp.vcxproj
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to build the project
   EXIT 1
 )
 
 ECHO Creating the project with flags: %FLAGS%
-qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%
+
+if %DEBUG_BUILD% == T (
+  ECHO Generating Debug Project
+  qmake -tp vc src/src.pro CONFIG+=debug %FLAGS%
+  xcopy /y debug\ release\
+)
+if %DEBUG_BUILD% == F (
+  ECHO Generating Release Build
+  qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%
+)
+
 
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project
@@ -133,8 +203,9 @@ IF NOT EXIST MozillaVPN.vcxproj (
 
 ECHO Compiling the balrog.dll...
 CALL balrog\build.cmd
+
 IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to clean up the project
+  ECHO Failed to compile balrog.dll
   EXIT 1
 )
 CALL :CopyDependency balrog.dll balrog\x64\balrog.dll
@@ -142,34 +213,39 @@ CALL :CopyDependency balrog.dll balrog\x64\balrog.dll
 ECHO Compiling the tunnel.dll...
 CALL windows\tunnel\build.cmd
 IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to clean up the project
+  ECHO Failed to compile tunnel.dll.
   EXIT 1
 )
 
 ECHO Fetching Split-Tunnel Driver...
 CALL PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& './windows/split-tunnel/get.ps1'"
 IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to clean up the project
+  ECHO Failed to fetch the Split-Tunnel Driver
   EXIT 1
 )
 
 ECHO Cleaning up the project...
-MSBuild -t:Clean -p:Configuration=Release MozillaVPN.vcxproj
+MSBuild -t:Clean -p:Configuration=%BUILD_CONF% MozillaVPN.vcxproj
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to clean up the project
   EXIT 1
 )
 
-MSBuild -t:Build -p:Configuration=Release MozillaVPN.vcxproj
+MSBuild -t:Build -p:Configuration=%BUILD_CONF% MozillaVPN.vcxproj
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to build the project
   EXIT 1
 )
 
+if %DEBUG_BUILD% == T (
+  REM We need to move the exes in debug so the installer can find them
+  xcopy /y debug\*.exe .\
+)
+
 ECHO Creating the installer...
 CALL windows\installer\build.cmd
 IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to clean up the project
+  ECHO Failed to create the installer.
   EXIT 1
 )
 

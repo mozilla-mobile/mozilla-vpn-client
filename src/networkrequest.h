@@ -46,8 +46,6 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForServers(QObject* parent);
 
-  static NetworkRequest* createForServerExtra(QObject* parent);
-
   static NetworkRequest* createForAccount(QObject* parent);
 
   static NetworkRequest* createForVersions(QObject* parent);
@@ -164,6 +162,8 @@ class NetworkRequest final : public QObject {
  private:
   QNetworkRequest m_request;
   QTimer m_timer;
+
+  void enableSSLIntervention();
 
   QNetworkReply* m_reply = nullptr;
   int m_status = 0;

@@ -30,7 +30,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val requestCleanupLog = 6
         const val resumeActivate = 7
         const val setNotificationText = 8
-        const val setFallBackNotification = 9
+        const val setStrings = 9
     }
 
     /**
@@ -58,13 +58,14 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     if (!mService.checkPermissions()) {
                         mResumeConfig = config
                         // The Permission prompt was already
-                        // send, in case it's accepted we will 
+                        // send, in case it's accepted we will
                         // receive ACTIONS.resumeActivate
                         return true
                     }
                     this.mService.turnOn(config)
                 } catch (e: Exception) {
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
+                    Log.stack(tag, e.stackTrace)
                     dispatchEvent(EVENTS.activationError, e.localizedMessage)
                 }
                 return true
@@ -113,11 +114,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 return true
             }
             ACTIONS.setNotificationText -> {
-                NotificationUtil.update(data)
+                NotificationUtil.get(mService)?.update(data)
                 return true
             }
-            ACTIONS.setFallBackNotification -> {
-                NotificationUtil.saveFallBackMessage(data, mService)
+            ACTIONS.setStrings -> {
+                NotificationUtil.get(mService)?.updateStrings(data, mService)
                 return true
             }
             IBinder.LAST_CALL_TRANSACTION -> {

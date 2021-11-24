@@ -27,6 +27,9 @@ linux/netfilter/vendor/
 .tmp
 .env
 
+# Node (for functional tests)
+node_modules
+
 #Github Codespaces
 .venv 
 
@@ -49,6 +52,8 @@ tests/auth/tests
 tests/unit/tests
 tests/nativemessaging/tests
 tests/proxy/__pycache__/
+tests/qml/qml_tests
+tests/qml/target_wrapper.sh
 build
 Debug/
 !android/src/debug/
@@ -124,3 +129,11 @@ android/src/com/adjust
 # ipmonitor
 tools/ipmonitor/ipmonitor
 tools/ipmonitor/ipmonitor.exe
+
+# inspector
+tools/inspector/.cache
+tools/inspector/.parcel-cache
+tools/inspector/dist
+tools/inspector/node_modules
+
+*.PDB

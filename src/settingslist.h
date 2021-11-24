@@ -156,6 +156,9 @@ SETTING_BOOL(featuresTourShown,     // getter
              false                  // remove when reset
 )
 
+// TODO - This would be better named "telemetryEnabled", but as we already
+// shipped with it called gleanEnabled it's non-trivial to change
+// the name. https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2050
 SETTING_BOOL(gleanEnabled,     // getter
              setGleanEnabled,  // setter
              hasGleanEnabled,  // has
@@ -268,14 +271,6 @@ SETTING_BYTEARRAY(servers,     // getter
                   true         // remove when reset
 )
 
-SETTING_BYTEARRAY(serverExtras,     // getter
-                  setServerExtras,  // setter
-                  hasServerExtras,  // has
-                  "serverExtras",   // key
-                  "",               // default value
-                  true              // remove when reset
-)
-
 SETTING_BOOL(serverSwitchNotification,     // getter
              setServerSwitchNotification,  // setter
              hasServerSwitchNotification,  // has
@@ -283,14 +278,13 @@ SETTING_BOOL(serverSwitchNotification,     // getter
              true,                         // default value
              false                         // remove when reset
 )
-
 SETTING_STRING(stagingServerAddress,     // getter
                setStagingServerAddress,  // setter
                hasStagingServerAddress,  // has
                "stagingServerAddress",   // key
                envOrDefault("MVPN_API_BASE_URL",
-                            Constants::API_PRODUCTION_URL),  // default value
-               false  // remove when reset
+                            Constants::API_STAGING_URL),  // default value
+               false                                      // remove when reset
 )
 
 SETTING_BOOL(stagingServer,     // getter

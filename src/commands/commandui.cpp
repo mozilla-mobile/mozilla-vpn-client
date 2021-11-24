@@ -15,7 +15,6 @@
 #include "fontloader.h"
 #include "l18nstrings.h"
 #include "iaphandler.h"
-#include "inspector/inspectorhttpserver.h"
 #include "inspector/inspectorwebsocketserver.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -63,11 +62,6 @@
 #endif
 
 #include <QApplication>
-
-#ifdef QT_DEBUG
-#  include "gleantest.h"
-#  include <QLoggingCategory>
-#endif
 
 namespace {
 Logger logger(LOG_MAIN, "CommandUI");
@@ -137,11 +131,6 @@ int CommandUI::run(QStringList& tokens) {
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
-
-#ifdef QT_DEBUG
-    // This is a collector of glean HTTP requests to see if we leak something.
-    GleanTest gleanTest;
-#endif
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
     // If there is another instance, the execution terminates here.
@@ -249,6 +238,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNFeedbackCategoryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->feedbackCategoryModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNLicenseModel",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->licenseModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -379,16 +376,6 @@ int CommandUI::run(QStringList& tokens) {
           });
     }
 
-#ifdef QT_DEBUG
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNGleanTest",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = GleanTest::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-#endif
-
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNAuthInApp",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
@@ -463,10 +450,6 @@ int CommandUI::run(QStringList& tokens) {
     });
 
     if (!Constants::inProduction()) {
-      InspectorHttpServer* inspectHttpServer = new InspectorHttpServer(qApp);
-      QObject::connect(vpn.controller(), &Controller::readyToQuit,
-                       inspectHttpServer, &InspectorHttpServer::close);
-
       InspectorWebSocketServer* inspectWebSocketServer =
           new InspectorWebSocketServer(qApp);
       QObject::connect(vpn.controller(), &Controller::readyToQuit,

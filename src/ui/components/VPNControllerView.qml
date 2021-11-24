@@ -9,8 +9,8 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import themes 0.1
 
-import org.mozilla.Glean 0.15
-import telemetry 0.15
+import org.mozilla.Glean 0.24
+import telemetry 0.24
 
 Item {
     id: box
@@ -502,7 +502,7 @@ Item {
         }
     ]
 
-    VPNAnimatedRingsShader {
+    VPNAnimatedRings {
         id: animatedRings
         // Make sure we only do the render animation when
         // The element is visible &&

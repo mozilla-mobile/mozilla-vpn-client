@@ -31,6 +31,8 @@ Rectangle {
     property var duration: 0
     // Delete itself after closing
     property var destructive: false
+    // Fixes the Y on show() if the alert does not use Layout
+    property var setY: 0
 
     Layout.minimumHeight: style.alertHeight
     Layout.maximumHeight: style.alertHeight
@@ -335,12 +337,16 @@ Rectangle {
     function show() {
         if (!isLayout) {
             height = style.alertHeight;
-            width = window.width - Theme.windowMargin * 2;
-            y = fullscreenRequired() ? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
+            width = Math.min(window.width - Theme.windowMargin * 2, Theme.maxHorizontalContentWidth);
+            if (setY > 0) {
+                y = setY;
+            } else {
+                y = fullscreenRequired() ? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
+            }
             anchors.horizontalCenter = parent.horizontalCenter;
             anchors.margins = Theme.windowMargin / 2;
         }
-        if (alertBox.duration > 0) {
+        if(alertBox.duration > 0){
             console.log("Toastbox timer start")
             autoHideTimer.start()
         }

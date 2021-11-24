@@ -68,7 +68,7 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   QString wgNameFile = wgRuntimeDir.filePath(QString(WG_INTERFACE) + ".name");
   pe.insert("WG_TUN_NAME_FILE", wgNameFile);
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   pe.insert("LOG_LEVEL", "debug");
 #endif
   m_tunnel.setProcessEnvironment(pe);

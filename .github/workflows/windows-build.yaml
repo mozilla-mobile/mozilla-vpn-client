@@ -47,8 +47,7 @@ jobs:
       - name: Install glean depedencies
         shell: bash
         run: |
-          pip3 install "glean_parser==3.5"
-          pip3 install pyyaml
+          pip3 install -r requirements.txt
 
       - name: Adding msbuild to PATH
         uses: ilammy/msvc-dev-cmd@v1
@@ -75,6 +74,7 @@ jobs:
           cp windows/split-tunnel/mullvad-split-tunnel.inf unsigned
           cp windows/split-tunnel/mullvad-split-tunnel.sys unsigned
           cp windows/split-tunnel/WdfCoinstaller01011.dll unsigned
+          cp extension/app/manifests/windows/mozillavpn.json unsigned
           cp *.exe unsigned
 
       - name: Upload app

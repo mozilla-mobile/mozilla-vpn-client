@@ -11,10 +11,10 @@
 #include <QApplication>
 
 // In seconds, the timeout for unstable pings.
-constexpr uint32_t PING_TIME_UNSTABLE_SEC = 1;
+constexpr uint32_t PING_TIME_UNSTABLE_SEC = 2;
 
 // In seconds, the timeout to detect no-signal pings.
-constexpr uint32_t PING_TIME_NOSIGNAL_SEC = 3;
+constexpr uint32_t PING_TIME_NOSIGNAL_SEC = 4;
 
 // Packet loss threshold for a connection to be considered unstable.
 constexpr double PING_LOSS_UNSTABLE_THRESHOLD = 0.10;
@@ -76,10 +76,10 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
 
-    emit MozillaVPN::instance()->triggerGleanSample(
+    emit MozillaVPN::instance()->recordGleanEvent(
         GleanSample::connectionHealthUnstable);
   } else if (stability == NoSignal) {
-    emit MozillaVPN::instance()->triggerGleanSample(
+    emit MozillaVPN::instance()->recordGleanEvent(
         GleanSample::connectionHealthNoSignal);
   }
 
@@ -107,7 +107,7 @@ void ConnectionHealth::connectionStateChanged() {
 }
 
 void ConnectionHealth::pingSentAndReceived(qint64 msec) {
-#ifdef QT_DEBUG
+#ifdef MVPN_DEBUG
   logger.debug() << "Ping answer received in msec:" << msec;
 #else
   Q_UNUSED(msec);

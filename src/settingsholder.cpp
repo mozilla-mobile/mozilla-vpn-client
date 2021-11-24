@@ -23,11 +23,9 @@ namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 // Setting Keys That won't show up in a report;
 QVector<QString> SENSITIVE_SETTINGS({
-    "token",
-    "privateKey",
-    "servers",       // Those 3 are not sensitive but
-    "serverExtras",  // are more noise then info
-    "devices",
+    "token", "privateKey",
+    "servers",  // Those 2 are not sensitive but
+    "devices",  // are more noise then info
 });
 
 SettingsHolder* s_instance = nullptr;
@@ -104,8 +102,17 @@ QString SettingsHolder::getReport() {
       out << setting << " -> <Sensitive>" << Qt::endl;
       continue;
     }
-    out << setting << " -> " << m_settings.value(setting).toString()
-        << Qt::endl;
+    out << setting << " -> ";
+    QVariant value = m_settings.value(setting);
+    switch (value.type()) {
+      case QVariant::List:
+      case QVariant::StringList:
+        out << '[' << value.toStringList().join(",") << ']' << ' ';
+        break;
+      default:
+        out << value.toString();
+    }
+    out << Qt::endl;
   }
   return buff;
 }

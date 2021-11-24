@@ -21,6 +21,8 @@ ServerCity& ServerCity::operator=(const ServerCity& other) {
 
   m_name = other.m_name;
   m_code = other.m_code;
+  m_latitude = other.m_latitude;
+  m_longitude = other.m_longitude;
   m_servers = other.m_servers;
 
   return *this;
@@ -28,8 +30,7 @@ ServerCity& ServerCity::operator=(const ServerCity& other) {
 
 ServerCity::~ServerCity() { MVPN_COUNT_DTOR(ServerCity); }
 
-bool ServerCity::fromJson(const QJsonObject& obj,
-                          const QHash<QString, ServerExtra>& serverExtras) {
+bool ServerCity::fromJson(const QJsonObject& obj) {
   QJsonValue name = obj.value("name");
   if (!name.isString()) {
     return false;
@@ -37,6 +38,16 @@ bool ServerCity::fromJson(const QJsonObject& obj,
 
   QJsonValue code = obj.value("code");
   if (!code.isString()) {
+    return false;
+  }
+
+  QJsonValue latitude = obj.value("latitude");
+  if (!latitude.isDouble()) {
+    return false;
+  }
+
+  QJsonValue longitude = obj.value("longitude");
+  if (!longitude.isDouble()) {
     return false;
   }
 
@@ -55,7 +66,7 @@ bool ServerCity::fromJson(const QJsonObject& obj,
     QJsonObject serverObj = serverValue.toObject();
 
     Server server;
-    if (!server.fromJson(serverObj, serverExtras)) {
+    if (!server.fromJson(serverObj)) {
       return false;
     }
 
@@ -64,6 +75,8 @@ bool ServerCity::fromJson(const QJsonObject& obj,
 
   m_name = name.toString();
   m_code = code.toString();
+  m_latitude = latitude.toDouble();
+  m_longitude = longitude.toDouble();
   m_servers.swap(servers);
 
   return true;

@@ -214,3 +214,8 @@ QByteArray AndroidUtils::DeviceId() {
   env->ReleaseStringUTFChars(value, buffer);
   return res.toUtf8();
 }
+
+void AndroidUtils::openNotificationSettings() {
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/mozilla/firefox/vpn/qt/VPNUtils", "openNotificationSettings", "()V");
+}

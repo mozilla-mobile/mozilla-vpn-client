@@ -19,10 +19,10 @@ class TaskAuthenticate final : public Task {
   explicit TaskAuthenticate(MozillaVPN::AuthenticationType authenticationType);
   ~TaskAuthenticate();
 
-  void run(MozillaVPN* vpn) override;
+  void run() override;
 
  private:
-  void authenticationCompleted(MozillaVPN* vpn, const QByteArray& data);
+  void authenticationCompleted(const QByteArray& data);
 
  private:
   AuthenticationListener* m_authenticationListener = nullptr;

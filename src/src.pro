@@ -22,8 +22,9 @@ QT += quick
 QT += widgets
 QT += charts
 QT += websockets
+QT += sql
 
-# for the inspector
+# For the inspector
 QT+= testlib
 QT.testlib.CONFIG -= console
 CONFIG += no_testcase_installs
@@ -92,8 +93,6 @@ SOURCES += \
         hawkauth.cpp \
         hkdf.cpp \
         iaphandler.cpp \
-        inspector/inspectorhttpconnection.cpp \
-        inspector/inspectorhttpserver.cpp \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
@@ -112,12 +111,12 @@ SOURCES += \
         models/feedbackcategorymodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
+        models/licensemodel.cpp \
         models/server.cpp \
         models/servercity.cpp \
         models/servercountry.cpp \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
-        models/serverextra.cpp \
         models/supportcategorymodel.cpp \
         models/survey.cpp \
         models/surveymodel.cpp \
@@ -136,6 +135,7 @@ SOURCES += \
         platforms/dummy/dummypingsender.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
+        rfc/rfc1112.cpp \
         rfc/rfc1918.cpp \
         rfc/rfc4193.cpp \
         rfc/rfc4291.cpp \
@@ -157,6 +157,7 @@ SOURCES += \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
         tasks/surveydata/tasksurveydata.cpp \
+        taskscheduler.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -207,25 +208,22 @@ HEADERS += \
         features/featureappreview.h \
         features/featurecaptiveportal.h \
         features/featurecustomdns.h \
-        features/featureglean.h \
-        features/featureinappaccountCreate.h \
+        features/featureinappaccountcreate.h \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
         features/featurelocalareaaccess.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
-        features/featuressharelogs.h \
+        features/featuresharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
+        features/featureuniqueid.h \
         features/featureunsecurednetworknotification.h \
-        features/featureunauthsupport.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
         hkdf.h \
         iaphandler.h \
-        inspector/inspectorhttpconnection.h \
-        inspector/inspectorhttpserver.h \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
@@ -242,12 +240,12 @@ HEADERS += \
         models/feedbackcategorymodel.h \
         models/helpmodel.h \
         models/keys.h \
+        models/licensemodel.h \
         models/server.h \
         models/servercity.h \
         models/servercountry.h \
         models/servercountrymodel.h \
         models/serverdata.h \
-        models/serverextra.h \
         models/supportcategorymodel.h \
         models/survey.h \
         models/surveymodel.h \
@@ -267,6 +265,7 @@ HEADERS += \
         platforms/dummy/dummypingsender.h \
         qmlengineholder.h \
         releasemonitor.h \
+        rfc/rfc1112.h \
         rfc/rfc1918.h \
         rfc/rfc4193.h \
         rfc/rfc4291.h \
@@ -289,6 +288,7 @@ HEADERS += \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
         tasks/surveydata/tasksurveydata.h \
+        taskscheduler.h \
         timercontroller.h \
         timersingleshot.h \
         update/updater.h \
@@ -314,19 +314,26 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += inspector/inspector.qrc
 RESOURCES += ui/components.qrc
+RESOURCES += ui/license.qrc
 RESOURCES += ui/resources.qrc
 RESOURCES += ui/themes.qrc
 RESOURCES += ui/ui.qrc
+RESOURCES += resources/certs/certs.qrc
 
 versionAtLeast(QT_VERSION, 6.0.0) {
     RESOURCES += ui/compatQt6.qrc
+    RESOURCES += ui/resourcesQt6.qrc
 } else {
     RESOURCES += ui/compatQt5.qrc
 }
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
+    !wasm {
+        message(Include QSQlite plugin)
+        QTPLUGIN += qsqlite
+    }
+
     RESOURCES += $$PWD/../glean/glean.qrc
 } else {
     error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
@@ -818,6 +825,10 @@ else:win* {
 
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+    CONFIG(debug, debug|release) {
+        QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
+        QMAKE_LFLAGS_WINDOWS += /DEBUG
+    }
 
     QT += networkauth
     QT += svg
@@ -901,6 +912,8 @@ else:wasm {
 
     TARGET = mozillavpn
     QT += svg
+    # sql not available for wasm.
+    QT -= sql
 
     CONFIG += c++1z
 
@@ -962,13 +975,18 @@ QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
 
-debug {
-    SOURCES += gleantest.cpp
-    HEADERS += gleantest.h
-}
-
 coverage {
     message(Coverage enabled)
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
     QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
+}
+
+debug {
+    # If in debug mode, set mvpn_debug flag too.
+    CONFIG += mvpn_debug
+}
+
+mvpn_debug {
+    message(MVPN Debug enabled)
+    DEFINES += MVPN_DEBUG
 }
