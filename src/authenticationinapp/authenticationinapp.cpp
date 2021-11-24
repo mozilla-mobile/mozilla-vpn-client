@@ -19,8 +19,8 @@ Logger logger(LOG_MAIN, "AuthenticationInApp");
 }  // namespace
 
 // static
-AuthenticationInApp* AuthenticationInApp::instance() {
-  static auto instance = new AuthenticationInApp();
+AuthenticationInApp& AuthenticationInApp::instance() {
+  static AuthenticationInApp instance;
   return instance;
 }
 

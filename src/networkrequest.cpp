@@ -50,7 +50,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
                          QNetworkRequest::SameOriginRedirectPolicy);
 
   // Let's use "glean-enabled" as an indicator for DNT/GPC too.
-  if (!SettingsHolder::instance()->gleanEnabled()) {
+  if (!SettingsHolder::instance().gleanEnabled()) {
     // Do-Not-Track:
     // https://datatracker.ietf.org/doc/html/draft-mayer-do-not-track-00
     m_request.setRawHeader("DNT", "1");
@@ -62,7 +62,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
   if (setAuthorizationHeader) {
     QByteArray authorizationHeader = "Bearer ";
     authorizationHeader.append(
-        SettingsHolder::instance()->token().toLocal8Bit());
+        SettingsHolder::instance().token().toLocal8Bit());
     m_request.setRawHeader("Authorization", authorizationHeader);
   }
 
@@ -363,7 +363,7 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
   QJsonObject obj;
   obj.insert("feedbackText", feedbackText);
   obj.insert("logs", logs);
-  obj.insert("versionString", MozillaVPN::instance()->versionString());
+  obj.insert("versionString", MozillaVPN::instance().versionString());
   obj.insert("platformVersion", QString(NetworkManager::osVersion()));
   obj.insert("rating", rating);
   obj.insert("category", category);
@@ -379,7 +379,7 @@ NetworkRequest* NetworkRequest::createForSupportTicket(
     QObject* parent, const QString& email, const QString& subject,
     const QString& issueText, const QString& logs, const QString& category) {
   bool isAuthenticated =
-      MozillaVPN::instance()->userState() == MozillaVPN::UserAuthenticated;
+      MozillaVPN::instance().userState() == MozillaVPN::UserAuthenticated;
 
   NetworkRequest* r = new NetworkRequest(parent, 201, isAuthenticated);
 
@@ -399,7 +399,7 @@ NetworkRequest* NetworkRequest::createForSupportTicket(
   QJsonObject obj;
   obj.insert("email", email);
   obj.insert("logs", logs);
-  obj.insert("versionString", MozillaVPN::instance()->versionString());
+  obj.insert("versionString", MozillaVPN::instance().versionString());
   obj.insert("platformVersion", QString(NetworkManager::osVersion()));
   obj.insert("subject", subject);
   obj.insert("issueText", issueText);

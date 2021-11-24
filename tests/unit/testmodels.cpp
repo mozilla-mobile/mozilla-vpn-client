@@ -209,7 +209,7 @@ void TestModels::deviceModelBasic() {
   QCOMPARE(dm.rowCount(QModelIndex()), 0);
   QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
 
-  SettingsHolder::instance()->hardReset();
+  SettingsHolder::instance().hardReset();
 
   QVERIFY(!dm.fromSettings(&keys));
 
@@ -342,7 +342,7 @@ void TestModels::deviceModelFromJson() {
 
   // fromSettings
   {
-    SettingsHolder::instance()->setDevices(json);
+    SettingsHolder::instance().setDevices(json);
 
     Keys keys;
     keys.storeKeys("private", "currentDevicePubkey");
@@ -500,20 +500,20 @@ void TestModels::keysBasic() {
 
   // Private and public keys in the settings.
   {
-    SettingsHolder::instance()->hardReset();
+    SettingsHolder::instance().hardReset();
 
     QCOMPARE(k.fromSettings(), false);
 
-    SettingsHolder::instance()->setPrivateKey("WOW");
+    SettingsHolder::instance().setPrivateKey("WOW");
     QCOMPARE(k.fromSettings(), false);
 
-    SettingsHolder::instance()->setPublicKey("WOW2");
+    SettingsHolder::instance().setPublicKey("WOW2");
     QCOMPARE(k.fromSettings(), true);
   }
 
   // No public keys, but we can retrieve it from the devices.
   {
-    SettingsHolder::instance()->hardReset();
+    SettingsHolder::instance().hardReset();
 
     QCOMPARE(k.fromSettings(), false);
 
@@ -530,9 +530,9 @@ void TestModels::keysBasic() {
     QJsonObject obj;
     obj.insert("devices", devices);
 
-    SettingsHolder::instance()->setDevices(QJsonDocument(obj).toJson());
+    SettingsHolder::instance().setDevices(QJsonDocument(obj).toJson());
 
-    SettingsHolder::instance()->setPrivateKey("WOW");
+    SettingsHolder::instance().setPrivateKey("WOW");
     QCOMPARE(k.fromSettings(), true);
   }
 }
@@ -1045,7 +1045,7 @@ void TestModels::serverCountryModelFromJson() {
   {
     SettingsHolder::instance();
 
-    SettingsHolder::instance()->setServers(json);
+    SettingsHolder::instance().setServers(json);
 
     ServerCountryModel m;
     QCOMPARE(m.fromSettings(), result);
@@ -1249,7 +1249,7 @@ void TestModels::serverDataBasic() {
   QCOMPARE(sd.toString(), "");
 
   {
-    SettingsHolder::instance()->hardReset();
+    SettingsHolder::instance().hardReset();
     QVERIFY(!sd.fromSettings());
     QCOMPARE(spy.count(), 2);
   }
@@ -1444,7 +1444,7 @@ void TestModels::userFromJson() {
 }
 
 void TestModels::userFromSettings() {
-  SettingsHolder::instance()->hardReset();
+  SettingsHolder::instance().hardReset();
 
   User user;
   QSignalSpy spy(&user, &User::changed);
@@ -1453,27 +1453,27 @@ void TestModels::userFromSettings() {
   QVERIFY(!user.initialized());
   QCOMPARE(spy.count(), 0);
 
-  SettingsHolder::instance()->setUserAvatar("avatar");
+  SettingsHolder::instance().setUserAvatar("avatar");
   QVERIFY(!user.fromSettings());
   QVERIFY(!user.initialized());
   QCOMPARE(spy.count(), 0);
 
-  SettingsHolder::instance()->setUserDisplayName("displayName");
+  SettingsHolder::instance().setUserDisplayName("displayName");
   QVERIFY(!user.fromSettings());
   QVERIFY(!user.initialized());
   QCOMPARE(spy.count(), 0);
 
-  SettingsHolder::instance()->setUserEmail("email");
+  SettingsHolder::instance().setUserEmail("email");
   QVERIFY(!user.fromSettings());
   QVERIFY(!user.initialized());
   QCOMPARE(spy.count(), 0);
 
-  SettingsHolder::instance()->setUserMaxDevices(123);
+  SettingsHolder::instance().setUserMaxDevices(123);
   QVERIFY(!user.fromSettings());
   QVERIFY(!user.initialized());
   QCOMPARE(spy.count(), 0);
 
-  SettingsHolder::instance()->setUserSubscriptionNeeded(true);
+  SettingsHolder::instance().setUserSubscriptionNeeded(true);
   QVERIFY(user.fromSettings());
   QVERIFY(user.initialized());
   QCOMPARE(spy.count(), 0);
@@ -1628,8 +1628,8 @@ void TestModels::surveyModelFromJson() {
 
   // fromSettings
   {
-    SettingsHolder::instance()->hardReset();
-    SettingsHolder::instance()->setSurveys(json);
+    SettingsHolder::instance().hardReset();
+    SettingsHolder::instance().setSurveys(json);
 
     SurveyModel sm;
     QCOMPARE(sm.fromSettings(), result);
@@ -1653,9 +1653,9 @@ void TestModels::surveyModelFromJson() {
         QCOMPARE(sm.surveys()[0].isTriggerable(), surveyTriggerable);
 
         if (surveyTriggerable) {
-          QStringList list = SettingsHolder::instance()->consumedSurveys();
+          QStringList list = SettingsHolder::instance().consumedSurveys();
           list.append(surveyId);
-          SettingsHolder::instance()->setConsumedSurveys(list);
+          SettingsHolder::instance().setConsumedSurveys(list);
 
           QVERIFY(!sm.surveys()[0].isTriggerable());
         }

@@ -115,19 +115,19 @@ int CommandUI::run(QStringList& tokens) {
     if (startAtBootOption.m_set) {
       logger.debug() << "Maybe start at boot";
 
-      if (!SettingsHolder::instance()->startAtBoot()) {
+      if (!SettingsHolder::instance().startAtBoot()) {
         logger.debug() << "We don't need to start at boot.";
         return 0;
       }
     }
 
-    QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+    auto engine = QmlEngineHolder::instance().engine();
     engine->addImportPath("qrc:///components");
     engine->addImportPath("qrc:///glean");
     engine->addImportPath("qrc:///themes");
     engine->addImportPath("qrc:///compat");
 
-    MozillaVPN::instance()->setStartMinimized(minimizedOption.m_set);
+    MozillaVPN::instance().setStartMinimized(minimizedOption.m_set);
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
     // If there is another instance, the execution terminates here.
@@ -143,17 +143,17 @@ int CommandUI::run(QStringList& tokens) {
     // Signal handling for a proper shutdown.
     SignalHandler sh;
     QObject::connect(&sh, &SignalHandler::quitRequested,
-                     []() { MozillaVPN::instance()->controller()->quit(); });
+                     []() { MozillaVPN::instance().controller()->quit(); });
 #endif
 
     // Font loader
     FontLoader::loadFonts();
 
-    MozillaVPN::instance()->initialize();
+    MozillaVPN::instance().initialize();
 
 #ifdef MVPN_MACOS
     MacOSStartAtBootWatcher startAtBootWatcher(
-        SettingsHolder::instance()->startAtBoot());
+        SettingsHolder::instance().startAtBoot());
     QObject::connect(SettingsHolder::instance(),
                      &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
                      &MacOSStartAtBootWatcher::startAtBootChanged);
@@ -163,9 +163,9 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_WINDOWS
     WindowsStartAtBootWatcher startAtBootWatcher(
-        SettingsHolder::instance()->startAtBoot());
+        SettingsHolder::instance().startAtBoot());
 
-    QObject::connect(SettingsHolder::instance(),
+    QObject::connect(&SettingsHolder::instance(),
                      &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
                      &WindowsStartAtBootWatcher::startAtBootChanged);
 #endif
@@ -194,7 +194,7 @@ int CommandUI::run(QStringList& tokens) {
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance();
+          QObject* obj = &MozillaVPN::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -202,7 +202,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNFeatureList",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = FeatureList::instance();
+          QObject* obj = &FeatureList::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -210,7 +210,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNController",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->controller();
+          QObject* obj = MozillaVPN::instance().controller();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -218,7 +218,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNUser",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->user();
+          QObject* obj = MozillaVPN::instance().user();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -226,7 +226,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNDeviceModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->deviceModel();
+          QObject* obj = MozillaVPN::instance().deviceModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -234,7 +234,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNFeedbackCategoryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->feedbackCategoryModel();
+          QObject* obj = MozillaVPN::instance().feedbackCategoryModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -242,7 +242,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNLicenseModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->licenseModel();
+          QObject* obj = MozillaVPN::instance().licenseModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -250,7 +250,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNSupportCategoryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->supportCategoryModel();
+          QObject* obj = MozillaVPN::instance().supportCategoryModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -258,7 +258,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNHelpModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->helpModel();
+          QObject* obj = MozillaVPN::instance().helpModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -266,7 +266,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNServerCountryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->serverCountryModel();
+          QObject* obj = MozillaVPN::instance().serverCountryModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -274,7 +274,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNSurveyModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->surveyModel();
+          QObject* obj = MozillaVPN::instance().surveyModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -282,7 +282,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNWhatsNewModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->whatsNewModel();
+          QObject* obj = MozillaVPN::instance().whatsNewModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -290,7 +290,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNCurrentServer",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->currentServer();
+          QObject* obj = MozillaVPN::instance().currentServer();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -298,7 +298,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNConnectionHealth",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->connectionHealth();
+          QObject* obj = MozillaVPN::instance().connectionHealth();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -306,7 +306,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNLocalizer",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = Localizer::instance();
+          QObject* obj = &Localizer::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -314,7 +314,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNAppPermissions",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = AppPermission::instance();
+          QObject* obj = &AppPermission::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -322,7 +322,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNSettings",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = SettingsHolder::instance();
+          QObject* obj = &SettingsHolder::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -330,7 +330,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNConnectionData",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->connectionDataHolder();
+          QObject* obj = MozillaVPN::instance().connectionDataHolder();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -338,7 +338,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNStatusIcon",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->statusIcon();
+          QObject* obj = MozillaVPN::instance().statusIcon();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -346,7 +346,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNCloseEventHandler",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->closeEventHandler();
+          QObject* obj = MozillaVPN::instance().closeEventHandler();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -376,7 +376,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNAuthInApp",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = AuthenticationInApp::instance();
+          QObject* obj = &AuthenticationInApp::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -393,10 +393,10 @@ int CommandUI::run(QStringList& tokens) {
                                       "VPNFilterProxyModel");
 
     QObject::connect(qApp, &QCoreApplication::aboutToQuit,
-                     MozillaVPN::instance(), &MozillaVPN::aboutToQuit);
+                     &MozillaVPN::instance(), &MozillaVPN::aboutToQuit);
 
-    QObject::connect(MozillaVPN::instance()->controller(),
-                     &Controller::readyToQuit, MozillaVPN::instance(),
+    QObject::connect(MozillaVPN::instance().controller(),
+                     &Controller::readyToQuit, &MozillaVPN::instance(),
                      &MozillaVPN::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
@@ -412,9 +412,9 @@ int CommandUI::run(QStringList& tokens) {
     engine->load(url);
 
     NotificationHandler* notificationHandler =
-        NotificationHandler::create(QmlEngineHolder::instance());
+        NotificationHandler::create(&QmlEngineHolder::instance());
 
-    QObject::connect(MozillaVPN::instance()->controller(),
+    QObject::connect(MozillaVPN::instance().controller(),
                      &Controller::stateChanged, notificationHandler,
                      &NotificationHandler::showNotification);
 
@@ -425,15 +425,15 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(MozillaVPN::instance(), &MozillaVPN::stateChanged,
                      &menuBar, &MacOSMenuBar::controllerStateChanged);
 
-    QObject::connect(MozillaVPN::instance()->controller(),
+    QObject::connect(MozillaVPN::instance().controller(),
                      &Controller::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
 #endif
 
-    QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
+    QObject::connect(&Localizer::instance(), &Localizer::codeChanged, []() {
       logger.debug() << "Retranslating";
-      QmlEngineHolder::instance()->engine()->retranslate();
+      QmlEngineHolder::instance().engine()->retranslate();
       NotificationHandler::instance()->retranslate();
       L18nStrings::instance()->retranslate();
 
@@ -445,13 +445,13 @@ int CommandUI::run(QStringList& tokens) {
       WasmWindowController::instance()->retranslate();
 #endif
 
-      MozillaVPN::instance()->serverCountryModel()->retranslate();
+      MozillaVPN::instance().serverCountryModel()->retranslate();
     });
 
     if (!Constants::inProduction()) {
       InspectorWebSocketServer* inspectWebSocketServer =
           new InspectorWebSocketServer(qApp);
-      QObject::connect(MozillaVPN::instance()->controller(),
+      QObject::connect(MozillaVPN::instance().controller(),
                        &Controller::readyToQuit, inspectWebSocketServer,
                        &InspectorWebSocketServer::close);
     }
@@ -462,7 +462,7 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_WEBEXTENSION
     ServerHandler serverHandler;
-    QObject::connect(MozillaVPN::instance()->controller(),
+    QObject::connect(MozillaVPN::instance().controller(),
                      &Controller::readyToQuit, &serverHandler,
                      &ServerHandler::close);
 #endif

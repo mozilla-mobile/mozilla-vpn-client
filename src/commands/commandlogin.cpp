@@ -59,39 +59,39 @@ int CommandLogin::run(QStringList& tokens) {
   }
 
   return runCommandLineApp([&] {
-    if (SettingsHolder::instance()->hasToken()) {
+    if (SettingsHolder::instance().hasToken()) {
       QTextStream stream(stdout);
       stream << "User status: already authenticated" << Qt::endl;
       return 1;
     }
 
     if (!passwordOption.m_set) {
-      MozillaVPN::instance()->authenticateWithType(
+      MozillaVPN::instance().authenticateWithType(
           MozillaVPN::AuthenticationInBrowser);
     } else {
-      MozillaVPN::instance()->MozillaVPN::instance()->authenticateWithType(
+      MozillaVPN::instance().authenticateWithType(
           MozillaVPN::AuthenticationInApp);
     }
 
     QEventLoop loop;
 
     if (passwordOption.m_set) {
-      AuthenticationInApp* aip = AuthenticationInApp::instance();
+      auto& aip = AuthenticationInApp::instance();
 
-      QObject::connect(aip, &AuthenticationInApp::stateChanged, [&] {
-        switch (AuthenticationInApp::instance()->state()) {
+      QObject::connect(&aip, &AuthenticationInApp::stateChanged, [&] {
+        switch (AuthenticationInApp::instance().state()) {
           case AuthenticationInApp::StateInitializing:
             break;
 
           case AuthenticationInApp::StateStart: {
             QString email = getInput("Username:");
-            AuthenticationInApp::instance()->checkAccount(email);
+            AuthenticationInApp::instance().checkAccount(email);
           } break;
 
           case AuthenticationInApp::StateSignIn: {
             QString password = getPassword("Password:");
-            AuthenticationInApp::instance()->setPassword(password);
-            AuthenticationInApp::instance()->signIn();
+            AuthenticationInApp::instance().setPassword(password);
+            AuthenticationInApp::instance().signIn();
           } break;
 
           case AuthenticationInApp::StateSignUp: {
@@ -102,21 +102,21 @@ int CommandLogin::run(QStringList& tokens) {
 
           case AuthenticationInApp::StateUnblockCodeNeeded: {
             QString code = getInput("Check your email. Unblock code:");
-            AuthenticationInApp::instance()->setUnblockCodeAndContinue(code);
+            AuthenticationInApp::instance().setUnblockCodeAndContinue(code);
           } break;
 
           case AuthenticationInApp::StateVerificationSessionByEmailNeeded: {
             AuthenticationInApp::instance()
-                ->resendVerificationSessionCodeEmail();
+                .resendVerificationSessionCodeEmail();
             QString code =
                 getInput("Session verification by email needed. Code:");
-            AuthenticationInApp::instance()->verifySessionEmailCode(code);
+            AuthenticationInApp::instance().verifySessionEmailCode(code);
           } break;
 
           case AuthenticationInApp::StateVerificationSessionByTotpNeeded: {
             QString code =
                 getInput("Session verification by TOTP needed. Code:");
-            AuthenticationInApp::instance()->verifySessionTotpCode(code);
+            AuthenticationInApp::instance().verifySessionTotpCode(code);
           } break;
 
           case AuthenticationInApp::StateFallbackInBrowser: {
@@ -129,7 +129,7 @@ int CommandLogin::run(QStringList& tokens) {
       });
 
       QObject::connect(
-          aip, &AuthenticationInApp::errorOccurred,
+          &aip, &AuthenticationInApp::errorOccurred,
           [&](AuthenticationInApp::ErrorType error) {
             QTextStream stream(stdout);
             switch (error) {
@@ -169,14 +169,14 @@ int CommandLogin::run(QStringList& tokens) {
           });
     }
 
-    QObject::connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, [&] {
-      if (MozillaVPN::instance()->state() ==
+    QObject::connect(&MozillaVPN::instance(), &MozillaVPN::stateChanged, [&] {
+      if (MozillaVPN::instance().state() ==
               MozillaVPN::StatePostAuthentication ||
-          MozillaVPN::instance()->state() == MozillaVPN::StateTelemetryPolicy ||
-          MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
+          MozillaVPN::instance().state() == MozillaVPN::StateTelemetryPolicy ||
+          MozillaVPN::instance().state() == MozillaVPN::StateMain) {
         loop.exit();
       }
-      if (MozillaVPN::instance()->alert() ==
+      if (MozillaVPN::instance().alert() ==
           MozillaVPN::AuthenticationFailedAlert) {
         loop.exit();
       }
@@ -184,14 +184,14 @@ int CommandLogin::run(QStringList& tokens) {
 
     loop.exec();
 
-    if (MozillaVPN::instance()->alert() ==
+    if (MozillaVPN::instance().alert() ==
         MozillaVPN::AuthenticationFailedAlert) {
       QTextStream stream(stdout);
       stream << "Authentication failed" << Qt::endl;
       return 1;
     }
-    if (!MozillaVPN::instance()->deviceModel()->hasCurrentDevice(
-            MozillaVPN::instance()->keys())) {
+    if (!MozillaVPN::instance().deviceModel()->hasCurrentDevice(
+            MozillaVPN::instance().keys())) {
       QTextStream stream(stdout);
       stream << "Device limit reached" << Qt::endl;
       return 1;

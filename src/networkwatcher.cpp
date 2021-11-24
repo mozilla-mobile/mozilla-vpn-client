@@ -62,28 +62,27 @@ void NetworkWatcher::initialize() {
 
   m_impl->initialize();
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  auto& settingsHolder = SettingsHolder::instance();
 
-  m_active = settingsHolder->unsecuredNetworkAlert() ||
-             settingsHolder->captivePortalAlert();
-  m_reportUnsecuredNetwork = settingsHolder->unsecuredNetworkAlert();
+  m_active = settingsHolder.unsecuredNetworkAlert() ||
+             settingsHolder.captivePortalAlert();
+  m_reportUnsecuredNetwork = settingsHolder.unsecuredNetworkAlert();
   if (m_active) {
     m_impl->start();
   }
 
-  connect(settingsHolder, &SettingsHolder::unsecuredNetworkAlertChanged, this,
+  connect(&settingsHolder, &SettingsHolder::unsecuredNetworkAlertChanged, this,
           &NetworkWatcher::settingsChanged);
-  connect(settingsHolder, &SettingsHolder::captivePortalAlertChanged, this,
+  connect(&settingsHolder, &SettingsHolder::captivePortalAlertChanged, this,
           &NetworkWatcher::settingsChanged);
 }
 
 void NetworkWatcher::settingsChanged(const bool& active) {
   Q_UNUSED(active);
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  m_active = settingsHolder->unsecuredNetworkAlert() ||
-             settingsHolder->captivePortalAlert();
-  m_reportUnsecuredNetwork = settingsHolder->unsecuredNetworkAlert();
+  auto& settingsHolder = SettingsHolder::instance();
+  m_active = settingsHolder.unsecuredNetworkAlert() ||
+             settingsHolder.captivePortalAlert();
+  m_reportUnsecuredNetwork = settingsHolder.unsecuredNetworkAlert();
 
   if (m_active) {
     logger.debug()
@@ -106,15 +105,14 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
     return;
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
+  auto& vpn = MozillaVPN::instance();
 
-  if (vpn->state() != MozillaVPN::StateMain) {
+  if (vpn.state() != MozillaVPN::StateMain) {
     logger.debug() << "VPN not ready. Ignoring unsecured network";
     return;
   }
 
-  Controller::State state = vpn->controller()->state();
+  Controller::State state = vpn.controller()->state();
   if (state == Controller::StateOn || state == Controller::StateConnecting ||
       state == Controller::StateSwitching) {
     logger.debug() << "VPN on. Ignoring unsecured network";
@@ -149,6 +147,6 @@ void NetworkWatcher::notificationClicked(NotificationHandler::Message message) {
   logger.debug() << "Notification clicked";
 
   if (message == NotificationHandler::UnsecuredNetwork) {
-    MozillaVPN::instance()->activate();
+    MozillaVPN::instance().activate();
   }
 }

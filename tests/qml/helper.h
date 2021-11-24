@@ -50,7 +50,6 @@ class TestHelper final : public QObject {
 
   CloseEventHandler* m_closeEventHandler = nullptr;
   L18nStrings* m_l18nstrings = nullptr;
-  MozillaVPN* m_mozillavpn = nullptr;
   WhatsNewModel* m_whatsNewModel = nullptr;
 };
 

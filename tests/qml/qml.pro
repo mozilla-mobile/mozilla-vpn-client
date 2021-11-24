@@ -80,7 +80,9 @@ exists($$PWD/../../glean/telemetry/gleansample.h) {
 } else {
     error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
 }
-
+win*{
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+}
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc

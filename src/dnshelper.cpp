@@ -30,10 +30,9 @@ QString DNSHelper::getDNS(const QString& fallback) {
     return fallback;
   }
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  auto& settingsHolder = SettingsHolder::instance();
 
-  int dnsProvider = settingsHolder->dnsProvider();
+  int dnsProvider = settingsHolder.dnsProvider();
   switch (dnsProvider) {
     case SettingsHolder::Gateway:
       return fallback;
@@ -50,7 +49,7 @@ QString DNSHelper::getDNS(const QString& fallback) {
 
   Q_ASSERT(dnsProvider == SettingsHolder::Custom);
 
-  QString dns = settingsHolder->userDNS();
+  QString dns = settingsHolder.userDNS();
   // User wants to use a Custom DNS, let's check that this is valid.
   if (dns.isEmpty() || !validateUserDNS(dns)) {
     logger.debug()
@@ -90,17 +89,17 @@ bool DNSHelper::validateUserDNS(const QString& dns) {
 
 // static
 bool DNSHelper::shouldExcludeDNS() {
-  auto settings = SettingsHolder::instance();
+  auto& settingsHolder = SettingsHolder::instance();
   if (!FeatureCustomDNS::instance()->isSupported()) {
     return false;
   }
 
   // Only a Custom DNS might require to be routed outside of the VPN-Tunnel
-  if (settings->dnsProvider() != SettingsHolder::DnsProvider::Custom) {
+  if (settingsHolder.dnsProvider() != SettingsHolder::DnsProvider::Custom) {
     return false;
   }
 
-  auto dns = settings->userDNS();
+  auto dns = settingsHolder.userDNS();
   if (!validateUserDNS(dns)) {
     return false;
   }
@@ -126,7 +125,7 @@ bool DNSHelper::shouldExcludeDNS() {
     return false;
   }
 
-  if (isLocalDNS && settings->localNetworkAccess()) {
+  if (isLocalDNS && settingsHolder.localNetworkAccess()) {
     // DNS is lan, but we already excluded local-ip's, all good.
     return false;
   }

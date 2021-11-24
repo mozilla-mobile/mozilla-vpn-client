@@ -23,7 +23,7 @@ class WindowsFirewall final : public QObject {
  public:
   ~WindowsFirewall();
 
-  static WindowsFirewall* instance();
+  static WindowsFirewall& instance();
   bool init();
 
   bool enableKillSwitch(int vpnAdapterIndex);
@@ -31,7 +31,7 @@ class WindowsFirewall final : public QObject {
   bool disablePeerTraffic(const QString& pubkey);
   bool disableKillSwitch();
 
-  void operator delete(void*){};
+ // void operator delete(void*){};
 
  private:
   WindowsFirewall();

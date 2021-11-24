@@ -50,13 +50,13 @@ void ReleaseMonitor::schedule() {
 
 void ReleaseMonitor::updateRequired() {
   logger.warning() << "update required";
-  MozillaVPN::instance()->setUpdateRecommended(false);
-  MozillaVPN::instance()->controller()->updateRequired();
+  MozillaVPN::instance().setUpdateRecommended(false);
+  MozillaVPN::instance().controller()->updateRequired();
 }
 
 void ReleaseMonitor::updateRecommended() {
   logger.debug() << "Update recommended";
-  MozillaVPN::instance()->setUpdateRecommended(true);
+  MozillaVPN::instance().setUpdateRecommended(true);
 }
 
 void ReleaseMonitor::update() {
@@ -66,20 +66,18 @@ void ReleaseMonitor::update() {
   if (!updater) {
     logger.warning() << "No updater supported for this platform. Fallback";
 
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
+    auto& vpn = MozillaVPN::instance();
 
-    vpn->openLink(MozillaVPN::LinkUpdate);
-    vpn->setUpdating(false);
+    vpn.openLink(MozillaVPN::LinkUpdate);
+    vpn.setUpdating(false);
     return;
   }
 
   // The updater, in download mode, is not destroyed. So, if this happens,
   // probably something went wrong.
   connect(updater, &QObject::destroyed, [] {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
-    vpn->setUpdating(false);
+    auto& vpn = MozillaVPN::instance();
+    vpn.setUpdating(false);
   });
 
   updater->start();

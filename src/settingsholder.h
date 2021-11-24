@@ -26,9 +26,7 @@ class SettingsHolder final : public QObject {
 
   ~SettingsHolder();
 
-  void operator delete(void*){};
-
-  static SettingsHolder* instance();
+  static SettingsHolder& instance();
 
   bool firstExecution() const { return m_firstExecution; }
 

@@ -55,8 +55,8 @@ int CommandSelect::run(QStringList& tokens) {
       return 1;
     }
 
-    MozillaVPN::instance()->changeServer(exitCountryCode, exitCityName,
-                                         entryCountryCode, entryCityName);
+    MozillaVPN::instance().changeServer(exitCountryCode, exitCityName,
+                                        entryCountryCode, entryCityName);
     return 0;
   });
 }
@@ -64,7 +64,7 @@ int CommandSelect::run(QStringList& tokens) {
 bool CommandSelect::pickServer(const QString& hostname, QString& countryCode,
                                QString& cityName) {
   for (const ServerCountry& country :
-       MozillaVPN::instance()->serverCountryModel()->countries()) {
+       MozillaVPN::instance().serverCountryModel()->countries()) {
     for (const ServerCity& city : country.cities()) {
       for (const Server& server : city.servers()) {
         if (server.hostname() == hostname) {

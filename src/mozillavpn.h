@@ -130,7 +130,7 @@ class MozillaVPN final : public QObject {
  public:
   ~MozillaVPN();
 
-  static MozillaVPN* instance();
+  static MozillaVPN& instance();
 
   // This is exactly like the ::instance() method, but it doesn't crash if the
   // MozillaVPN is null. It should be used rarely.
@@ -356,8 +356,6 @@ class MozillaVPN final : public QObject {
   void controllerStateChanged();
 
   void maybeRegenerateDeviceKey();
-
-  void operator delete(void*){};
 
  public slots:
   void requestSettings();

@@ -53,7 +53,7 @@ void LocalSocketController::errorOccurred(
   }
 
   m_state = eDisconnected;
-  MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+  MozillaVPN::instance().errorHandle(ErrorHandler::ControllerError);
   emit disconnected();
 }
 
@@ -353,7 +353,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "backendFailure") {
-    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+    MozillaVPN::instance().errorHandle(ErrorHandler::ControllerError);
     return;
   }
 

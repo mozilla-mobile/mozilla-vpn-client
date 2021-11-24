@@ -44,7 +44,7 @@ class AppPermission final : public QAbstractListModel {
     bool operator==(const QString& appId) const { return id == appId; }
   };
 
-  static AppPermission* instance();
+  static AppPermission& instance();
 
   // Enables/Disabled the Given App ID for the vpn
   Q_INVOKABLE void flip(const QString& appID);
@@ -65,8 +65,6 @@ class AppPermission final : public QAbstractListModel {
   int rowCount(const QModelIndex&) const override;
 
   QVariant data(const QModelIndex& index, int role) const override;
-
-  void operator delete(void*){};
 
  signals:
   void readyChanged();

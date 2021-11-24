@@ -40,8 +40,8 @@ int CommandLogout::run(QStringList& tokens) {
     }
 
     const Device* currentDevice =
-        MozillaVPN::instance()->deviceModel()->currentDevice(
-            MozillaVPN::instance()->keys());
+        MozillaVPN::instance().deviceModel()->currentDevice(
+            MozillaVPN::instance().keys());
     if (currentDevice) {
       TaskRemoveDevice task(currentDevice->publicKey());
       task.run();
@@ -50,7 +50,7 @@ int CommandLogout::run(QStringList& tokens) {
       QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
       loop.exec();
     }
-    MozillaVPN::instance()->reset(false);
+    MozillaVPN::instance().reset(false);
 
     return 0;
   });

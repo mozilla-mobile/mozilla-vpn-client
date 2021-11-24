@@ -9,37 +9,35 @@
 
 void TestLocalizer::basic() {
   SettingsHolder::instance();
-  auto l = Localizer::instance();
-  QCOMPARE(Localizer::instance(), l);
+  auto& l = Localizer::instance();
+  l.initialize();
 
-  l->initialize();
-
-  QHash<int, QByteArray> rn = l->roleNames();
+  QHash<int, QByteArray> rn = l.roleNames();
   QCOMPARE(rn.count(), 3);
   QCOMPARE(rn[Localizer::LanguageRole], "language");
   QCOMPARE(rn[Localizer::LocalizedLanguageRole], "localizedLanguage");
   QCOMPARE(rn[Localizer::CodeRole], "code");
 
-  QCOMPARE(l->rowCount(QModelIndex()), 0);
-  QCOMPARE(l->data(QModelIndex(), Localizer::LanguageRole), QVariant());
+  QCOMPARE(l.rowCount(QModelIndex()), 0);
+  QCOMPARE(l.data(QModelIndex(), Localizer::LanguageRole), QVariant());
 }
 
 void TestLocalizer::systemLanguage() {
   SettingsHolder::instance();
-  auto l = Localizer::instance();
-  l->initialize();
+  auto& l = Localizer::instance();
+  l.initialize();
 
-  l->setCode("");
-  QCOMPARE(l->code(), "");
-  QCOMPARE(l->previousCode(), "en");
+  l.setCode("");
+  QCOMPARE(l.code(), "");
+  QCOMPARE(l.previousCode(), "en");
 
-  l->setCode("en");
-  QCOMPARE(l->code(), "en");
-  QCOMPARE(l->previousCode(), "en");
+  l.setCode("en");
+  QCOMPARE(l.code(), "en");
+  QCOMPARE(l.previousCode(), "en");
 
-  l->setCode("");
-  QCOMPARE(l->code(), "");
-  QCOMPARE(l->previousCode(), "en");
+  l.setCode("");
+  QCOMPARE(l.code(), "");
+  QCOMPARE(l.previousCode(), "en");
 }
 
 static TestLocalizer s_testLocalizer;

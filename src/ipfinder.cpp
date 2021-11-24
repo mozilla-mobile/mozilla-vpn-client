@@ -100,7 +100,7 @@ void IPFinder::createRequest(const QHostAddress& address, bool ipv6) {
             ErrorHandler::ErrorType errorType =
                 ErrorHandler::toErrorType(error);
             if (errorType == ErrorHandler::AuthenticationError) {
-              MozillaVPN::instance()->errorHandle(errorType);
+              MozillaVPN::instance().errorHandle(errorType);
             }
 
             m_requestCount = 0;

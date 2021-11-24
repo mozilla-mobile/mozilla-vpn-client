@@ -21,6 +21,6 @@ const QString& Constants::getStagingServerAddress() {
 
 void Constants::setStaging() {
   s_inProduction = false;
-  s_stagingServerAddress = SettingsHolder::instance()->stagingServerAddress();
+  s_stagingServerAddress = SettingsHolder::instance().stagingServerAddress();
   Q_ASSERT(!s_stagingServerAddress.isEmpty());
 }

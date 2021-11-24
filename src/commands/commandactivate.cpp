@@ -35,57 +35,57 @@ int CommandActivate::run(QStringList& tokens) {
     }
 
     QEventLoop loop;
-    QObject::connect(MozillaVPN::instance()->controller(),
+    QObject::connect(MozillaVPN::instance().controller(),
                      &Controller::stateChanged, [&] {
-                       if (MozillaVPN::instance()->controller()->state() ==
+                       if (MozillaVPN::instance().controller()->state() ==
                                Controller::StateOff ||
-                           MozillaVPN::instance()->controller()->state() ==
+                           MozillaVPN::instance().controller()->state() ==
                                Controller::StateOn) {
                          loop.exit();
                        }
                      });
 
-    MozillaVPN::instance()->controller()->initialize();
+    MozillaVPN::instance().controller()->initialize();
     loop.exec();
-    MozillaVPN::instance()->controller()->disconnect();
+    MozillaVPN::instance().controller()->disconnect();
 
     // If we are connecting right now, we want to wait untile the operation is
     // completed.
-    if (MozillaVPN::instance()->controller()->state() != Controller::StateOff &&
-        MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
-      QObject::connect(MozillaVPN::instance()->controller(),
+    if (MozillaVPN::instance().controller()->state() != Controller::StateOff &&
+        MozillaVPN::instance().controller()->state() != Controller::StateOn) {
+      QObject::connect(MozillaVPN::instance().controller(),
                        &Controller::stateChanged, [&] {
-                         if (MozillaVPN::instance()->controller()->state() ==
+                         if (MozillaVPN::instance().controller()->state() ==
                                  Controller::StateOff ||
-                             MozillaVPN::instance()->controller()->state() ==
+                             MozillaVPN::instance().controller()->state() ==
                                  Controller::StateOn) {
                            loop.exit();
                          }
                        });
       loop.exec();
-      MozillaVPN::instance()->controller()->disconnect();
+      MozillaVPN::instance().controller()->disconnect();
     }
 
-    if (MozillaVPN::instance()->controller()->state() != Controller::StateOff) {
+    if (MozillaVPN::instance().controller()->state() != Controller::StateOff) {
       QTextStream stream(stdout);
       stream << "The VPN tunnel is already active" << Qt::endl;
       return 0;
     }
 
-    QObject::connect(MozillaVPN::instance()->controller(),
+    QObject::connect(MozillaVPN::instance().controller(),
                      &Controller::stateChanged, [&] {
-                       if (MozillaVPN::instance()->controller()->state() ==
+                       if (MozillaVPN::instance().controller()->state() ==
                                Controller::StateOff ||
-                           MozillaVPN::instance()->controller()->state() ==
+                           MozillaVPN::instance().controller()->state() ==
                                Controller::StateOn) {
                          loop.exit();
                        }
                      });
-    MozillaVPN::instance()->controller()->activate();
+    MozillaVPN::instance().controller()->activate();
     loop.exec();
-    MozillaVPN::instance()->controller()->disconnect();
+    MozillaVPN::instance().controller()->disconnect();
 
-    if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
+    if (MozillaVPN::instance().controller()->state() == Controller::StateOn) {
       QTextStream stream(stdout);
       stream << "The VPN tunnel is now active" << Qt::endl;
       return 0;

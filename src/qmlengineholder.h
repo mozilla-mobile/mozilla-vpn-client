@@ -17,7 +17,7 @@ class QmlEngineHolder final : public NetworkManager {
  public:
   ~QmlEngineHolder() = default;
 
-  static QmlEngineHolder* instance();
+  static QmlEngineHolder& instance();
 
   QQmlApplicationEngine* engine() { return &m_engine; }
 
@@ -26,8 +26,6 @@ class QmlEngineHolder final : public NetworkManager {
   QWindow* window() const;
   void showWindow();
   void hideWindow();
-
-  void operator delete(void*){};
 
  protected:
   void clearCacheInternal() override;

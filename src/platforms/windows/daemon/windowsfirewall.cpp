@@ -47,8 +47,8 @@ constexpr uint8_t HIGH_WEIGHT = 13;
 constexpr uint8_t MAX_WEIGHT = 15;
 }  // namespace
 
-WindowsFirewall* WindowsFirewall::instance() {
-  static auto instance = new WindowsFirewall();
+WindowsFirewall& WindowsFirewall::instance() {
+  static WindowsFirewall instance;
   return instance;
 }
 

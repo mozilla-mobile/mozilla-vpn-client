@@ -23,10 +23,10 @@ CaptivePortalRequest::~CaptivePortalRequest() {
 }
 
 void CaptivePortalRequest::run() {
-  SettingsHolder* settings = SettingsHolder::instance();
+  auto& settings = SettingsHolder::instance();
 
-  QStringList ipv4Addresses = settings->captivePortalIpv4Addresses();
-  QStringList ipv6Addresses = settings->captivePortalIpv6Addresses();
+  QStringList ipv4Addresses = settings.captivePortalIpv4Addresses();
+  QStringList ipv6Addresses = settings.captivePortalIpv6Addresses();
 
   // We do not have IPs to check.
   if (ipv4Addresses.isEmpty() && ipv6Addresses.isEmpty()) {

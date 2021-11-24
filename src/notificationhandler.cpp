@@ -70,31 +70,31 @@ NotificationHandler::~NotificationHandler() {
 void NotificationHandler::showNotification() {
   logger.debug() << "Show notification";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() != MozillaVPN::StateMain &&
+  auto& vpn = MozillaVPN::instance();
+  if (vpn.state() != MozillaVPN::StateMain &&
       // The Disconnected notification should be triggerable
       // on StateInitialize, in case the user was connected during a log-out
       // Otherwise existing notifications showing "connected" would update
-      !(vpn->state() == MozillaVPN::StateInitialize &&
-        vpn->controller()->state() == Controller::StateOff)) {
+      !(vpn.state() == MozillaVPN::StateInitialize &&
+        vpn.controller()->state() == Controller::StateOff)) {
     return;
   }
 
   QString title;
   QString message;
-  QString countryCode = vpn->currentServer()->exitCountryCode();
-  QString localizedCityName = vpn->currentServer()->localizedCityName();
+  QString countryCode = vpn.currentServer()->exitCountryCode();
+  QString localizedCityName = vpn.currentServer()->localizedCityName();
   QString localizedCountryName =
-      vpn->serverCountryModel()->localizedCountryName(countryCode);
+      vpn.serverCountryModel()->localizedCountryName(countryCode);
 
-  switch (vpn->controller()->state()) {
+  switch (vpn.controller()->state()) {
     case Controller::StateOn:
       m_connected = true;
 
       if (m_switching) {
         m_switching = false;
 
-        if (!SettingsHolder::instance()->serverSwitchNotification()) {
+        if (!SettingsHolder::instance().serverSwitchNotification()) {
           // Dont show notification if it's turned off.
           return;
         }
@@ -116,7 +116,7 @@ void NotificationHandler::showNotification() {
                       .arg(localizedCountryName)
                       .arg(localizedCityName);
       } else {
-        if (!SettingsHolder::instance()->connectionChangeNotification()) {
+        if (!SettingsHolder::instance().connectionChangeNotification()) {
           // Notifications for ConnectionChange are disabled
           return;
         }
@@ -134,7 +134,7 @@ void NotificationHandler::showNotification() {
     case Controller::StateOff:
       if (m_connected) {
         m_connected = false;
-        if (!SettingsHolder::instance()->connectionChangeNotification()) {
+        if (!SettingsHolder::instance().connectionChangeNotification()) {
           // Notifications for ConnectionChange are disabled
           return;
         }

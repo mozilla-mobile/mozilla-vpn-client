@@ -6,12 +6,11 @@
 #include "settingsholder.h"
 
 TestHelper::TestHelper() {
-  FeatureList::instance()->initialize();
+  FeatureList::instance().initialize();
   SettingsHolder::instance();
   m_closeEventHandler = new CloseEventHandler();
   m_whatsNewModel = new WhatsNewModel();
   m_l18nstrings = L18nStrings::instance();
-  m_mozillavpn = MozillaVPN::instance();
 }
 
 TestHelper* TestHelper::instance() {
@@ -36,23 +35,23 @@ bool TestHelper::debugMode() const { return m_debugMode; }
 void TestHelper::setDebugMode(bool val) { m_debugMode = val; }
 
 void TestHelper::triggerInitializeGlean() const {
-  emit MozillaVPN::instance()->initializeGlean();
+  emit MozillaVPN::instance().initializeGlean();
 }
 
 void TestHelper::triggerRecordGleanEvent(const QString& event) const {
-  emit MozillaVPN::instance()->recordGleanEvent(event);
+  emit MozillaVPN::instance().recordGleanEvent(event);
 }
 
 void TestHelper::triggerSendGleanPings() const {
-  emit MozillaVPN::instance()->sendGleanPings();
+  emit MozillaVPN::instance().sendGleanPings();
 }
 
 void TestHelper::triggerSetGleanSourceTags(const QStringList& tags) const {
-  emit MozillaVPN::instance()->setGleanSourceTags(tags);
+  emit MozillaVPN::instance().setGleanSourceTags(tags);
 }
 
 void TestHelper::triggerAboutToQuit() const {
-  emit MozillaVPN::instance()->aboutToQuit();
+  emit MozillaVPN::instance().aboutToQuit();
 }
 
 void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
@@ -71,8 +70,8 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
       });
 
   qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "VPN", [this](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = m_mozillavpn;
+      "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
+        QObject* obj = &MozillaVPN::instance();
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });
@@ -88,7 +87,7 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
   qmlRegisterSingletonType<TestHelper>(
       "Mozilla.VPN", 1, 0, "VPNSettings",
       [](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = SettingsHolder::instance();
+        QObject* obj = &SettingsHolder::instance();
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });

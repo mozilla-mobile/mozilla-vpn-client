@@ -31,8 +31,8 @@ QVector<QString> SENSITIVE_SETTINGS({
 }  // namespace
 
 // static
-SettingsHolder* SettingsHolder::instance() {
-  static auto instance = new SettingsHolder();
+SettingsHolder& SettingsHolder::instance() {
+  static SettingsHolder instance;
   return instance;
 }
 

@@ -114,13 +114,13 @@ void maybeInitialize() {
 
 QString translateItem(const QString& countryCode, const QString& cityName,
                       const QString& fallback) {
-  if (!SettingsHolder::instance()->hasLanguageCode()) {
+  if (!SettingsHolder::instance().hasLanguageCode()) {
     return fallback;
   }
 
   maybeInitialize();
 
-  QString languageCode = SettingsHolder::instance()->languageCode();
+  QString languageCode = SettingsHolder::instance().languageCode();
   if (languageCode.isEmpty()) {
     languageCode = QLocale::system().bcp47Name();
   }

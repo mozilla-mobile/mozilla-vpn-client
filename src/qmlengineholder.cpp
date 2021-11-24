@@ -14,8 +14,8 @@ Logger logger(LOG_MAIN, "QmlEngineHolder");
 }  // namespace
 
 // static
-QmlEngineHolder* QmlEngineHolder::instance() {
-  static auto instance = new QmlEngineHolder();
+QmlEngineHolder& QmlEngineHolder::instance() {
+  static QmlEngineHolder instance;
   return instance;
 }
 

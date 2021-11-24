@@ -58,13 +58,11 @@ class AuthenticationInApp final : public QObject {
   };
   Q_ENUM(ErrorType);
 
-  void operator delete(void*){};
-
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
 
  public:
-  static AuthenticationInApp* instance();
+  static AuthenticationInApp& instance();
 
   ~AuthenticationInApp() = default;
 

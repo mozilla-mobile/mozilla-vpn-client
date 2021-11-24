@@ -12,7 +12,7 @@
 void TestFeature::enableByAPI() {
   SettingsHolder::instance();
 
-  FeatureList::instance()->initialize();
+  FeatureList::instance().initialize();
 
   const Feature* feature = Feature::get(FEATURE_CUSTOM_DNS);
   QVERIFY(feature->isSupported());
@@ -23,13 +23,13 @@ void TestFeature::enableByAPI() {
   QJsonObject json;
   json["features"] = obj;
 
-  FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
+  FeatureList::instance().updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(feature->isSupported());
 
   obj["customDNS"] = true;
   json["features"] = obj;
 
-  FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
+  FeatureList::instance().updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(feature->isSupported());
 }
 

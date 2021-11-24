@@ -26,7 +26,7 @@ void TaskProducts::run() {
       request, &NetworkRequest::requestFailed,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Products request to guardian failed" << error;
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        MozillaVPN::instance().errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
       });
 

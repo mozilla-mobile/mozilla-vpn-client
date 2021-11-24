@@ -66,7 +66,7 @@ void AndroidDataMigration::importDeviceInfo() {
     return;
   }
 
-  MozillaVPN::instance()->deviceAdded(name, pubKey, privateKey);
+  MozillaVPN::instance().deviceAdded(name, pubKey, privateKey);
   logger.debug() << "pref_current_device value was migrated";
 }
 
@@ -97,7 +97,7 @@ void AndroidDataMigration::importUserInfo() {
     return;
   }
 
-  MozillaVPN::instance()->accountChecked(json);
+  MozillaVPN::instance().accountChecked(json);
   logger.debug() << "user_info value was imported";
 }
 
@@ -129,7 +129,7 @@ void AndroidDataMigration::importLoginToken() {
     logger.error() << "Failed to read auth_token";
     return;
   }
-  MozillaVPN::instance()->setToken(loginToken.toString());
+  MozillaVPN::instance().setToken(loginToken.toString());
 
   logger.debug() << "auth_token value was imported";
 }
@@ -166,7 +166,7 @@ void AndroidDataMigration::importServerList() {
 
   logger.debug() << "Import JSON \n" << json;
 
-  bool ok = MozillaVPN::instance()->setServerList(json);
+  bool ok = MozillaVPN::instance().setServerList(json);
   if (!ok) {
     logger.error() << "pref_servers value was rejected";
     return;

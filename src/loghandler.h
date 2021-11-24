@@ -52,7 +52,7 @@ class LogHandler final : public QObject {
     bool m_fromQT = false;
   };
 
-  static LogHandler* instance();
+  static LogHandler& instance();
 
   static void messageQTHandler(QtMsgType type,
                                const QMessageLogContext& context,
@@ -75,7 +75,7 @@ class LogHandler final : public QObject {
   void logEntryAdded(const QByteArray& log);
 
  private:
-  LogHandler(LogLevel m_minLogLevel, const QStringList& modules);
+  LogHandler();
 
   static LogHandler* maybeCreate();
 
@@ -90,8 +90,8 @@ class LogHandler final : public QObject {
 
   static void cleanupLogFile();
 
-  const LogLevel m_minLogLevel;
-  const QStringList m_modules;
+  LogLevel m_minLogLevel;
+  QStringList m_modules;
   bool m_showDebug = false;
 
   QFile* m_logFile = nullptr;

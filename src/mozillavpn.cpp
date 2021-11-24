@@ -81,8 +81,8 @@ Logger logger(LOG_MAIN, "MozillaVPN");
 }  // namespace
 
 // static
-MozillaVPN* MozillaVPN::instance() {
-  static auto instance = new MozillaVPN();
+MozillaVPN& MozillaVPN::instance() {
+  static MozillaVPN instance;
   return instance;
 }
 
@@ -142,7 +142,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::stateChanged);
 
-  connect(SettingsHolder::instance(),
+  connect(&SettingsHolder::instance(),
           &SettingsHolder::captivePortalAlertChanged,
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::settingsChanged);
@@ -204,27 +204,26 @@ void MozillaVPN::initialize() {
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  auto& settingsHolder = SettingsHolder::instance();
 
 #ifdef MVPN_IOS
-  if (!settingsHolder->nativeIOSDataMigrated()) {
+  if (!settingsHolder.nativeIOSDataMigrated()) {
     IOSDataMigration::migrate();
-    settingsHolder->setNativeIOSDataMigrated(true);
+    settingsHolder.setNativeIOSDataMigrated(true);
   }
 #endif
 
 #ifdef MVPN_WINDOWS
-  if (!settingsHolder->nativeWindowsDataMigrated()) {
+  if (!settingsHolder.nativeWindowsDataMigrated()) {
     WindowsDataMigration::migrate();
-    settingsHolder->setNativeWindowsDataMigrated(true);
+    settingsHolder.setNativeWindowsDataMigrated(true);
   }
 #endif
 
 #ifdef MVPN_ANDROID
-  if (!settingsHolder->nativeAndroidDataMigrated()) {
+  if (!settingsHolder.nativeAndroidDataMigrated()) {
     AndroidDataMigration::migrate();
-    settingsHolder->setNativeAndroidDataMigrated(true);
+    settingsHolder.setNativeAndroidDataMigrated(true);
   }
   AndroidVPNActivity::init();
 #endif
@@ -232,7 +231,7 @@ void MozillaVPN::initialize() {
   m_private->m_captivePortalDetection.initialize();
   m_private->m_networkWatcher.initialize();
 
-  if (!settingsHolder->hasToken()) {
+  if (!settingsHolder.hasToken()) {
     return;
   }
 
@@ -260,25 +259,25 @@ void MozillaVPN::initialize() {
 
   if (!m_private->m_keys.fromSettings()) {
     logger.error() << "No keys found";
-    settingsHolder->clear();
+    settingsHolder.clear();
     return;
   }
 
   if (!m_private->m_serverCountryModel.fromSettings()) {
     logger.error() << "No server list found";
-    settingsHolder->clear();
+    settingsHolder.clear();
     return;
   }
 
   if (!m_private->m_deviceModel.fromSettings(keys())) {
     logger.error() << "No devices found";
-    settingsHolder->clear();
+    settingsHolder.clear();
     return;
   }
 
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
     logger.error() << "The current device has not been found";
-    settingsHolder->clear();
+    settingsHolder.clear();
     return;
   }
 
@@ -292,7 +291,7 @@ void MozillaVPN::initialize() {
 
   if (!modelsInitialized()) {
     logger.error() << "Models not initialized yet";
-    settingsHolder->clear();
+    settingsHolder.clear();
     return;
   }
 
@@ -346,16 +345,16 @@ void MozillaVPN::maybeStateMain() {
     }
   }
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  auto& settingsHolder = SettingsHolder::instance();
 
 #if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
-  if (!settingsHolder->postAuthenticationShown()) {
+  if (!settingsHolder.postAuthenticationShown()) {
     setState(StatePostAuthentication);
     return;
   }
 #endif
 
-  if (!settingsHolder->telemetryPolicyShown()) {
+  if (!settingsHolder.telemetryPolicyShown()) {
     setState(StateTelemetryPolicy);
     return;
   }
@@ -381,8 +380,8 @@ void MozillaVPN::maybeStateMain() {
   // (the subscription is done, and no extra events will be dispatched). We
   // cannot disable AdjustSDK at runtime, but we can disable it for the next
   // execution.
-  if (settingsHolder->hasAdjustActivatable()) {
-    settingsHolder->setAdjustActivatable(false);
+  if (settingsHolder.hasAdjustActivatable()) {
+    settingsHolder.setAdjustActivatable(false);
   }
 #endif
 }
@@ -527,7 +526,7 @@ void MozillaVPN::openLinkUrl(const QString& linkUrl) {
 }
 
 void MozillaVPN::setToken(const QString& token) {
-  SettingsHolder::instance()->setToken(token);
+  SettingsHolder::instance().setToken(token);
 }
 
 void MozillaVPN::authenticationCompleted(const QByteArray& json,
@@ -637,14 +636,13 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   Q_UNUSED(publicKey);
   logger.debug() << "Device added" << deviceName;
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  auto& settingsHolder = SettingsHolder::instance();
 
-  settingsHolder->setPrivateKey(privateKey);
-  settingsHolder->setPublicKey(publicKey);
+  settingsHolder.setPrivateKey(privateKey);
+  settingsHolder.setPublicKey(publicKey);
   m_private->m_keys.storeKeys(privateKey, publicKey);
 
-  settingsHolder->setDeviceKeyVersion(APP_VERSION);
+  settingsHolder.setDeviceKeyVersion(APP_VERSION);
 }
 
 void MozillaVPN::deviceRemoved(const QString& publicKey) {
@@ -659,7 +657,7 @@ bool MozillaVPN::setServerList(const QByteArray& serverData) {
     return false;
   }
 
-  SettingsHolder::instance()->setServers(serverData);
+  SettingsHolder::instance().setServers(serverData);
   return true;
 }
 
@@ -721,7 +719,7 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
     if (!modelsInitialized()) {
       logger.warning() << "Models not initialized yet";
       errorHandle(ErrorHandler::RemoteServiceError);
-      SettingsHolder::instance()->clear();
+      SettingsHolder::instance().clear();
       setUserState(UserNotAuthenticated);
       setState(StateInitialize);
       return;
@@ -867,7 +865,7 @@ void MozillaVPN::reset(bool forceInitialState) {
 
   TaskScheduler::deleteTasks();
 
-  SettingsHolder::instance()->clear();
+  SettingsHolder::instance().clear();
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
@@ -1003,7 +1001,7 @@ void MozillaVPN::changeServer(const QString& countryCode, const QString& city,
 
   // Update the list of recent connections.
   QString description = m_private->m_serverData.toString();
-  QStringList recent = SettingsHolder::instance()->recentConnections();
+  QStringList recent = SettingsHolder::instance().recentConnections();
   int index = recent.indexOf(description);
   if (index == 0) {
     // This is already the most-recent connection.
@@ -1018,14 +1016,13 @@ void MozillaVPN::changeServer(const QString& countryCode, const QString& city,
     }
   }
   recent.prepend(description);
-  SettingsHolder::instance()->setRecentConnections(recent);
+  SettingsHolder::instance().setRecentConnections(recent);
 }
 
 void MozillaVPN::postAuthenticationCompleted() {
   logger.debug() << "Post authentication completed";
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  settingsHolder->setPostAuthenticationShown(true);
+  SettingsHolder::instance().setPostAuthenticationShown(true);
 
   // Super racy, but it could happen that we are already in update-required
   // state.
@@ -1054,8 +1051,8 @@ void MozillaVPN::mainWindowLoaded() {
 void MozillaVPN::telemetryPolicyCompleted() {
   logger.debug() << "telemetry policy completed";
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  settingsHolder->setTelemetryPolicyShown(true);
+  auto& settingsHolder = SettingsHolder::instance();
+  settingsHolder.setTelemetryPolicyShown(true);
 
   // Super racy, but it could happen that we are already in update-required
   // state.
@@ -1172,7 +1169,7 @@ void MozillaVPN::serializeLogs(QTextStream* out,
 
   LogHandler::writeLogs(*out);
 
-  MozillaVPN::instance()->controller()->getBackendLogs(
+  MozillaVPN::instance().controller()->getBackendLogs(
       [out,
        finalizeCallback = std::move(finalizeCallback)](const QString& logs) {
         logger.debug() << "Logs from the backend service received";
@@ -1190,7 +1187,7 @@ void MozillaVPN::serializeLogs(QTextStream* out,
         }
         *out << Qt::endl;
         *out << "==== SETTINGS ====" << Qt::endl;
-        *out << SettingsHolder::instance()->getReport();
+        *out << SettingsHolder::instance().getReport();
         *out << "==== DEVICE ====" << Qt::endl;
         *out << Device::currentDeviceReport();
         *out << Qt::endl;
@@ -1272,8 +1269,8 @@ void MozillaVPN::storeInClipboard(const QString& text) {
 
 void MozillaVPN::cleanupLogs() {
   logger.debug() << "Cleanup logs";
-  LogHandler::instance()->cleanupLogs();
-  MozillaVPN::instance()->controller()->cleanupBackendLogs();
+  LogHandler::instance().cleanupLogs();
+  MozillaVPN::instance().controller()->cleanupBackendLogs();
 }
 
 bool MozillaVPN::modelsInitialized() const {
@@ -1309,28 +1306,28 @@ bool MozillaVPN::modelsInitialized() const {
 void MozillaVPN::requestSettings() {
   logger.debug() << "Settings required";
 
-  QmlEngineHolder::instance()->showWindow();
+  QmlEngineHolder::instance().showWindow();
   emit settingsNeeded();
 }
 
 void MozillaVPN::requestAbout() {
   logger.debug() << "About view requested";
 
-  QmlEngineHolder::instance()->showWindow();
+  QmlEngineHolder::instance().showWindow();
   emit aboutNeeded();
 }
 
 void MozillaVPN::requestViewLogs() {
   logger.debug() << "View log requested";
 
-  QmlEngineHolder::instance()->showWindow();
+  QmlEngineHolder::instance().showWindow();
   emit viewLogsNeeded();
 }
 
 void MozillaVPN::requestContactUs() {
   logger.debug() << "Contact us view requested";
 
-  QmlEngineHolder::instance()->showWindow();
+  QmlEngineHolder::instance().showWindow();
   emit contactUsNeeded();
 }
 
@@ -1512,7 +1509,7 @@ void MozillaVPN::controllerStateChanged() {
   if (!m_controllerInitialized) {
     m_controllerInitialized = true;
 
-    if (SettingsHolder::instance()->startAtBoot()) {
+    if (SettingsHolder::instance().startAtBoot()) {
       logger.debug() << "Start on boot";
       activate();
     }
@@ -1570,17 +1567,16 @@ bool MozillaVPN::validateUserDNS(const QString& dns) const {
 }
 
 void MozillaVPN::maybeRegenerateDeviceKey() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  auto& settingsHolder = SettingsHolder::instance();
 
-  if (settingsHolder->hasDeviceKeyVersion() &&
-      VersionApi::compareVersions(settingsHolder->deviceKeyVersion(),
+  if (settingsHolder.hasDeviceKeyVersion() &&
+      VersionApi::compareVersions(settingsHolder.deviceKeyVersion(),
                                   APP_VERSION) >= 0) {
     return;
   }
 
   // We need a new device key only if the user wants to use custom DNS servers.
-  if (settingsHolder->dnsProvider() == SettingsHolder::DnsProvider::Gateway) {
+  if (settingsHolder.dnsProvider() == SettingsHolder::DnsProvider::Gateway) {
     logger.debug() << "Removal needed but no custom DNS used.";
     return;
   }
@@ -1594,11 +1590,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   addCurrentDeviceAndRefreshData();
 }
 
-void MozillaVPN::hardReset() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-  settingsHolder->hardReset();
-}
+void MozillaVPN::hardReset() { SettingsHolder::instance().hardReset(); }
 
 void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
