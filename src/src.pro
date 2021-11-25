@@ -552,6 +552,12 @@ else:android {
     versionAtLeast(QT_VERSION, 5.15.1) {
       QMAKE_CXXFLAGS *= -Werror
     }
+    versionAtLeast(QT_VERSION, 6.0.0) {
+        # We need to include qtprivate api's
+        # As QAndroidBinder is not yet implemented with a public api
+        QT+=core-private
+    }
+
 
     # Android Deploy-to-Qt strips the info anyway
     # but we want to create an extra bundle with the info :)
