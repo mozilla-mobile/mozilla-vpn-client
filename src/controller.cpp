@@ -765,18 +765,6 @@ QStringList Controller::getExcludedAddresses(const QList<Server>& serverList) {
     list.append(dns);
   }
 
-  // It's not clear if this is really needed for the Android platform, but
-  // the Controller on the desktop platforms sorts this out using the server
-  // hop list, and iOS doesn't need to explicitly exclude the entry servers.
-#ifdef MVPN_ANDROID
-  const Server& entryServer = serverList.last();
-  // filtering out the ingress server's public IPv4 and IPv6 addresses.
-  logger.debug() << "Exclude the entry server:" << entryServer.ipv4AddrIn();
-  list.append(entryServer.ipv4AddrIn());
-  logger.debug() << "Exclude the entry server:" << entryServer.ipv6AddrIn();
-  list.append(entryServer.ipv6AddrIn());
-#endif
-
   return list;
 }
 
