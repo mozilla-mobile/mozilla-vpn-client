@@ -99,10 +99,12 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
 
 void IOSController::activate(const QList<Server>& serverList, const Device* device,
                              const Keys* keys, const QList<IPAddressRange>& allowedIPAddressRanges,
-                             const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
+                             const QStringList& excludedAddresses,
+                             const QStringList& vpnDisabledApps, const QHostAddress& dnsServer,
                              Reason reason) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
+  Q_UNUSED(excludedAddresses);
 
   bool isMultihop = serverList.length() > 1;
   Server exitServer = serverList.first();
