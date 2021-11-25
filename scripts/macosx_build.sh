@@ -39,7 +39,7 @@ ruby scripts/xcode_patcher.rb \
   "MozillaVPN.xcodeproj" \
   "$SHORTVERSION" \
   "$FULLVERSION" \
-  macos
+  macos \
   Qt5
 
 # Build
