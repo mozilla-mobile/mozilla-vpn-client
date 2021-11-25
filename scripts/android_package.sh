@@ -87,9 +87,6 @@ print Y "Checking Enviroment"
 if ! [ -d "src" ] || ! [ -d "linux" ]; then
   die "This script must be executed at the root of the repository."
 fi
-if [ -z "${JAVA_HOME}" ]; then
-  die "Could not find 'JAVA_HOME' in env"
-fi
 if [ -z "${ANDROID_NDK_ROOT}" ]; then
   die "Could not find 'ANDROID_NDK_ROOT' in env"
 fi

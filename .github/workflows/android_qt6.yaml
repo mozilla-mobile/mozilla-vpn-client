@@ -1,4 +1,4 @@
-name: Android
+name: Android (QT6)
 on:
   push:
     branches:
