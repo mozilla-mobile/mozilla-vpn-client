@@ -24,6 +24,8 @@ class AdjustTaskSubmission final : public Task {
 
   void run() override;
 
+  bool deletable() const override { return false; }
+
  signals:
   void operationCompleted(const QByteArray& data, int statusCode);
 

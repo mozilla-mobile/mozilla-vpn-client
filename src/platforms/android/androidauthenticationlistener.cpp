@@ -31,8 +31,6 @@ void AndroidAuthenticationListener::start(Task* task,
                                           const QString& codeChallenge,
                                           const QString& codeChallengeMethod,
                                           const QString& emailAddress) {
-  Q_UNUSED(task);
-
   logger.debug() << "Authenticationlistener initialize";
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser,

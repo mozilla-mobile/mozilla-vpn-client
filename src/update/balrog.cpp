@@ -89,8 +89,6 @@ QString Balrog::userAgent() {
 }
 
 void Balrog::start(Task* task) {
-  Q_UNUSED(task);
-
   QString url =
       QString(Constants::balrogUrl()).arg(appVersion()).arg(userAgent());
   logger.debug() << "URL:" << url;
