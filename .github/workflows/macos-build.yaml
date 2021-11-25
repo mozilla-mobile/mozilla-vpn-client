@@ -125,7 +125,7 @@ jobs:
             "MozillaVPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
-            macos
+            macos \
             ${{matrix.config.name}}
 
       - name: Compiling
