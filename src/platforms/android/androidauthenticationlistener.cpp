@@ -8,10 +8,21 @@
 #include "mozillavpn.h"
 #include "platforms/android/androidutils.h"
 #include "tasks/authenticate/desktopauthenticationlistener.h"
-
-#include <QAndroidJniObject>
-#include <QtAndroid>
 #include <jni.h>
+
+#if QT_VERSION >= 0x060000
+#  include <QJniObject>
+#  include <QJniEnvironment>
+
+#else
+#  include <QAndroidJniObject>
+#  include <QAndroidJniEnvironment>
+#endif
+
+#if QT_VERSION < 0x060000
+typedef QAndroidJniObject QJniObject;
+typedef QAndroidJniEnvironment QJniEnvironment;
+#endif
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidAuthenticationListener");
@@ -36,8 +47,8 @@ void AndroidAuthenticationListener::start(const QString& codeChallenge,
                                    codeChallenge, codeChallengeMethod,
                                    emailAddress));
 
-  QAndroidJniObject activity = QtAndroid::androidActivity();
-  jboolean supported = QAndroidJniObject::callStaticMethod<jboolean>(
+  QJniObject activity = AndroidUtils::getActivity();
+  jboolean supported = QJniObject::callStaticMethod<jboolean>(
       "org/mozilla/firefox/vpn/qt/PackageManagerHelper", "isWebViewSupported",
       "(Landroid/content/Context;)Z", activity.object());
   if (supported) {

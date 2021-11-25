@@ -3,17 +3,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidapplistprovider.h"
+#include "androidutils.h"
 #include "leakdetector.h"
 
-#include <QAndroidJniEnvironment>
-#include <QAndroidJniObject>
-#include <QtAndroid>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <jni.h>
 
 #include "logger.h"
 #include "leakdetector.h"
+
+#if QT_VERSION >= 0x060000
+#  include <QJniObject>
+#  include <QJniEnvironment>
+
+#else
+#  include <QAndroidJniObject>
+#endif
+
+#if QT_VERSION < 0x060000
+typedef QAndroidJniObject QJniObject;
+#endif
 
 namespace {
 Logger logger(LOG_CONTROLLER, "AndroidAppListProvider");
@@ -27,10 +37,10 @@ AndroidAppListProvider::AndroidAppListProvider(QObject* parent)
 void AndroidAppListProvider::getApplicationList() {
   logger.debug() << "Fetch Application list from Android";
 
-  QAndroidJniObject activity = QtAndroid::androidActivity();
+  QJniObject activity = AndroidUtils::getActivity();
   Q_ASSERT(activity.isValid());
 
-  QAndroidJniObject str = QAndroidJniObject::callStaticObjectMethod(
+  QJniObject str = QJniObject::callStaticObjectMethod(
       "org/mozilla/firefox/vpn/qt/PackageManagerHelper", "getAllAppNames",
       "(Landroid/content/Context;)Ljava/lang/String;", activity.object());
   QJsonDocument appList = QJsonDocument::fromJson(str.toString().toLocal8Bit());

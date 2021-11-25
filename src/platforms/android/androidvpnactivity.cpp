@@ -3,13 +3,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidvpnactivity.h"
-
+#include "androidutils.h"
 #include "mozillavpn.h"
 
 #include "jni.h"
-#include <QAndroidJniEnvironment>
-#include <QAndroidJniObject>
-#include <QtAndroid>
+
+#if QT_VERSION >= 0x060000
+#  include <QJniObject>
+#  include <QJniEnvironment>
+
+#else
+#  include <QAndroidJniObject>
+#  include <QAndroidJniEnvironment>
+#endif
+
+#if QT_VERSION < 0x060000
+typedef QAndroidJniObject QJniObject;
+typedef QAndroidJniEnvironment QJniEnvironment;
+#endif
 
 namespace {
 AndroidVPNActivity* instance = nullptr;
@@ -18,12 +29,12 @@ constexpr auto CLASSNAME = "org.mozilla.firefox.vpn.qt.VPNActivity";
 
 AndroidVPNActivity::AndroidVPNActivity() {
   instance = this;
-  QtAndroid::runOnAndroidThreadSync([]() {
+  AndroidUtils::runOnAndroidThreadSync([]() {
     // Hook in the native implementation for startActivityForResult into the JNI
     JNINativeMethod methods[]{
         {"handleBackButton", "()Z", reinterpret_cast<bool*>(handleBackButton)}};
-    QAndroidJniObject javaClass(CLASSNAME);
-    QAndroidJniEnvironment env;
+    QJniObject javaClass(CLASSNAME);
+    QJniEnvironment env;
     jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
     env->RegisterNatives(objectClass, methods,
                          sizeof(methods) / sizeof(methods[0]));

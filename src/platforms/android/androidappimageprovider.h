@@ -13,11 +13,11 @@
 #  include <QAndroidJniObject>
 #endif
 
-class AndroidAppImageProvider final : public AppImageProvider {
 #if QT_VERSION < 0x060000
-  typedef QAndroidJniObject QJniObject;
+typedef QAndroidJniObject QJniObject;
 #endif
 
+class AndroidAppImageProvider final : public AppImageProvider {
  public:
   AndroidAppImageProvider(QObject* parent);
   ~AndroidAppImageProvider();
