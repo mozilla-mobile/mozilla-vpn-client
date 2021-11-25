@@ -49,12 +49,10 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-
       - name: Setup Glean Dependency
         shell: bash
         run: |
           pip3 install -r requirements.txt
-
       - name: Compilation
         run: |
           export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
@@ -66,7 +64,6 @@ jobs:
         run: |
           bash ./scripts/android_sign.sh ${{ matrix.config.apk }}
           rm ${{ matrix.config.apk }}/*unsigned.apk
-
       - name: Upload APK${{ matrix.config.args }}
         uses: actions/upload-artifact@v1
         with:

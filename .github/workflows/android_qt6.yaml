@@ -1,0 +1,59 @@
+name: Android
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+  pull_request:
+    branches:
+      - main
+      - 'releases/**'
+
+
+jobs:
+  compile-android-qt6:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+            - { name: Release, args: "", apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
+            - { name: Debug, args: "--debug", apk: .tmp/src/android-build/mozillavpn.apk, sym: false, sign: false}
+        arch: ["android_armv7", "android_arm64_v8a", "android_x86", "android_x86_64"]
+        version: ["6.2.1"]
+    container:
+      image: ghcr.io/strseb/vpn-builder-android:android_${{matrix.arch}}_${{matrix.version}}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+      - name: Setup Glean Dependency
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
+      - name: Compilation
+        run: |
+          bash ./scripts/android_package.sh $QTPATH -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
+      - name: Sign Android
+        if: ${{ matrix.config.sign }}
+        env:
+          AUTOGRAPH_TOKEN: ${{ secrets.AUTOGRAPH_KEY }}
+        run: |
+          bash ./scripts/android_sign.sh ${{ matrix.config.apk }}
+          rm ${{ matrix.config.apk }}/*unsigned.apk
+      - name: Upload APK${{ matrix.config.args }}
+        uses: actions/upload-artifact@v1
+        with:
+            name: ${{ matrix.config.name }}-build
+            path: ${{ matrix.config.apk }}
+
+      - name: Upload Debug Symbols
+        if: ${{ matrix.config.sym }} 
+        uses: actions/upload-artifact@v1
+        with:
+            name: debug-sym(${{ matrix.arch }})${{ matrix.config.args }}
+            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/
