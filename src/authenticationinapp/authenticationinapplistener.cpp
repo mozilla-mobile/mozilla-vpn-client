@@ -371,11 +371,11 @@ void AuthenticationInAppListener::createTotpCodes() {
           [this](const QByteArray& data) {
             logger.debug() << "Totp code creation completed" << data;
 
-            AuthenticationInApp* aip = AuthenticationInApp::instance();
-            aip->requestState(
+            auto& aip = AuthenticationInApp::instance();
+            aip.requestState(
                 AuthenticationInApp::StateVerificationSessionByTotpNeeded,
                 this);
-            emit aip->unitTestTotpCodeCreated(data);
+            emit aip.unitTestTotpCodeCreated(data);
           });
 }
 #endif

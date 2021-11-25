@@ -31,22 +31,20 @@ void AdjustHandler::initialize() {
     return;
   }
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  auto& settingsHolder = SettingsHolder::instance();
 
-  if (settingsHolder->firstExecution() &&
-      !settingsHolder->hasAdjustActivatable()) {
+  if (settingsHolder.firstExecution() &&
+      !settingsHolder.hasAdjustActivatable()) {
     // We want to activate Adjust only for new users.
     logger.debug() << "First execution detected. Let's make adjust activatable";
-    settingsHolder->setAdjustActivatable(true);
+    settingsHolder.setAdjustActivatable(true);
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
+  auto& vpn = MozillaVPN::instance();
 
   // If the app has not started yet, let's wait.
-  if (vpn->state() == MozillaVPN::StateInitialize) {
-    QObject::connect(vpn, &MozillaVPN::stateChanged, AdjustHandler::initialize);
+  if (vpn.state() == MozillaVPN::StateInitialize) {
+    QObject::connect(&vpn, &MozillaVPN::stateChanged, AdjustHandler::initialize);
     return;
   }
 
@@ -64,7 +62,7 @@ void AdjustHandler::initialize() {
     return;
   }
 
-  QObject::connect(settingsHolder, &SettingsHolder::gleanEnabledChanged,
+  QObject::connect(&settingsHolder, &SettingsHolder::gleanEnabledChanged,
                    [](const bool& gleanEnabled) {
                      if (!gleanEnabled) {
                        forget();
@@ -74,8 +72,8 @@ void AdjustHandler::initialize() {
                      }
                    });
 
-  s_adjustProxy = new AdjustProxy(vpn);
-  QObject::connect(vpn->controller(), &Controller::readyToQuit, s_adjustProxy,
+  s_adjustProxy = new AdjustProxy(&vpn);
+  QObject::connect(vpn.controller(), &Controller::readyToQuit, s_adjustProxy,
                    &AdjustProxy::close);
   QObject::connect(s_adjustProxy, &AdjustProxy::acceptError,
                    [](QAbstractSocket::SocketError socketError) {
@@ -112,7 +110,7 @@ void AdjustHandler::trackEvent(const QString& event) {
     return;
   }
 
-  if (!SettingsHolder::instance()->adjustActivatable()) {
+  if (!SettingsHolder::instance().adjustActivatable()) {
     logger.debug() << "Adjust is not activatable. Bail out";
     return;
   }
