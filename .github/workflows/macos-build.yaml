@@ -15,6 +15,12 @@ jobs:
     name: MacOS packages
     runs-on: macos-latest
 
+    strategy:
+      matrix:
+        config:
+            - { name: "Qt5", pattern: x, folder: qt }
+            - { name: "Qt6", pattern: qt6, folder: qt6 }
+
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
@@ -26,14 +32,15 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Install Qt
+      - name: Install ${{matrix.config.name}}
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_macos
           cd qt_static_macos
-          cat x* > qt_static.tar.gz
+          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
           tar xf qt_static.tar.gz
+          sudo mv ${{matrix.config.folder}} /opt
           cd ..
 
       - name: Retrieving wireguard-go version
@@ -50,7 +57,7 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
+          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           git submodule update --remote --depth 1 i18n
           python3 scripts/importLanguages.py -m
 
@@ -88,7 +95,7 @@ jobs:
       - name: Configuring the build
         shell: bash
         run: |
-          export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
+          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           echo "$SHORTVERSION - $FULLVERSION"
@@ -97,6 +104,7 @@ jobs:
           echo "APP_ID_MACOS = baku.mozilla.macos.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_MACOS = baku.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
           echo "LOGIN_ID_MACOS = baku.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
+          echo "NATIVEMESSAGING_ID_MACOS = baku.mozilla.macos.FirefoxVPN.native-messaging" >> xcode.xconfig
           echo "GROUP_ID_IOS = group.baku.mozilla.ios.Guardian" >> xcode.xconfig
           echo "APP_ID_IOS = baku.mozilla.ios.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_IOS = baku.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
@@ -117,7 +125,7 @@ jobs:
             "MozillaVPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
-            macos "0" "1"
+            macos
 
       - name: Compiling
         shell: bash
@@ -156,12 +164,18 @@ jobs:
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
-            name: Build
+            name: ${{matrix.config.name}} Build
             path: STAGE3/MozillaVPN.pkg
 
   prod:
     name: MacOS package for release
     runs-on: macos-latest
+
+    strategy:
+      matrix:
+        config:
+            - { name: "Qt5", pattern: x, folder: qt }
+            - { name: "Qt6", pattern: qt6, folder: qt6 }
 
     steps:
       - name: Clone repository
@@ -174,14 +188,15 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Install Qt
+      - name: Install ${{matrix.config.name}}
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_macos
           cd qt_static_macos
-          cat x* > qt_static.tar.gz
+          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
           tar xf qt_static.tar.gz
+          sudo mv ${{matrix.config.folder}} /opt
           cd ..
 
       - name: Retrieving wireguard-go version
@@ -198,14 +213,14 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
+          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           git submodule update --remote --depth 1 i18n
           python3 scripts/importLanguages.py -m
 
       - name: Configuring the build
         shell: bash
         run: |
-          export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
+          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           echo "$SHORTVERSION - $FULLVERSION"
@@ -214,6 +229,7 @@ jobs:
           echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
           echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
+          echo "NATIVEMESSAGING_ID_MACOS = org.mozilla.macos.FirefoxVPN.native-messaging" >> xcode.xconfig
           echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
           echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
@@ -259,5 +275,5 @@ jobs:
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
-            name: Release tarball
+            name: ${{matrix.config.name}} Release tarball
             path: BUILD.zip

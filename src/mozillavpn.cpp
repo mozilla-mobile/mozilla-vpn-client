@@ -935,6 +935,9 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       break;
 
     case ErrorHandler::NoConnectionError:
+      if (controller()->isUnsettled()) {
+        return;
+      }
       alert = NoConnectionAlert;
       break;
 
@@ -1222,7 +1225,12 @@ bool MozillaVPN::viewLogs() {
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
   bool ok = true;
-  serializeLogs(out, [buffer, out, &ok]() {
+  serializeLogs(out, [buffer, out
+#  if defined(MVPN_ANDROID)
+                      ,
+                      &ok
+#  endif
+  ]() {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
