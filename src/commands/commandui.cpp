@@ -15,7 +15,6 @@
 #include "fontloader.h"
 #include "l18nstrings.h"
 #include "iaphandler.h"
-#include "inspector/inspectorhttpserver.h"
 #include "inspector/inspectorwebsocketserver.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -244,6 +243,14 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNLicenseModel",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->licenseModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNSupportCategoryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->supportCategoryModel();
@@ -443,10 +450,6 @@ int CommandUI::run(QStringList& tokens) {
     });
 
     if (!Constants::inProduction()) {
-      InspectorHttpServer* inspectHttpServer = new InspectorHttpServer(qApp);
-      QObject::connect(vpn.controller(), &Controller::readyToQuit,
-                       inspectHttpServer, &InspectorHttpServer::close);
-
       InspectorWebSocketServer* inspectWebSocketServer =
           new InspectorWebSocketServer(qApp);
       QObject::connect(vpn.controller(), &Controller::readyToQuit,

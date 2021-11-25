@@ -18,8 +18,8 @@
 #include "features/featurenotificationcontrol.h"
 #include "features/featuresplittunnel.h"
 #include "features/featuresharelogs.h"
+#include "features/featureuniqueid.h"
 #include "features/featurestartonboot.h"
-#include "features/featureunauthsupport.h"
 #include "features/featureunsecurednetworknotification.h"
 
 #include <QJsonDocument>
@@ -52,7 +52,7 @@ void FeatureList::initialize() {
   new FeatureShareLogs();
   new FeatureSplitTunnel();
   new FeatureStartOnBoot();
-  new FeatureUnauthSupport();
+  new FeatureUniqueID();
   new FeatureUnsecuredNetworkNotification();
 
   m_featurelist = Feature::getAll();
@@ -114,8 +114,15 @@ void FeatureList::updateFeatureList(const QByteArray& data) {
   QStringList devModeFeatureFlags = settingsHolder->devModeFeatureFlags();
 
   QJsonObject json = QJsonDocument::fromJson(data).object();
-  for (const QString& key : json.keys()) {
-    QJsonValue value = json.value(key);
+  QJsonValue featuresValue = json["features"];
+  if (!featuresValue.isObject()) {
+    logger.error() << "Error in the json format";
+    return;
+  }
+
+  QJsonObject featuresObj = featuresValue.toObject();
+  for (const QString& key : featuresObj.keys()) {
+    QJsonValue value = featuresObj.value(key);
     if (!value.isBool()) {
       logger.error() << "Error in parsing feature enabling:" << key;
       continue;

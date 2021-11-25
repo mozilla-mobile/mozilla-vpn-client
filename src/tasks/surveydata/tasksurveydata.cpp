@@ -19,7 +19,7 @@ TaskSurveyData::TaskSurveyData() : Task("TaskSurveyData") {
 
 TaskSurveyData::~TaskSurveyData() { MVPN_COUNT_DTOR(TaskSurveyData); }
 
-void TaskSurveyData::run(MozillaVPN* vpn) {
+void TaskSurveyData::run() {
   logger.debug() << "Fetch survey data";
 
   NetworkRequest* request = NetworkRequest::createForSurveyData(this);
@@ -31,9 +31,9 @@ void TaskSurveyData::run(MozillaVPN* vpn) {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn](const QByteArray& data) {
+          [this](const QByteArray& data) {
             logger.debug() << "Survey data fetched";
-            vpn->surveyChecked(data);
+            MozillaVPN::instance()->surveyChecked(data);
             emit completed();
           });
 }

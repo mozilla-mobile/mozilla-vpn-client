@@ -16,18 +16,14 @@ class TaskAccountAndServers final : public Task {
   TaskAccountAndServers();
   ~TaskAccountAndServers();
 
-  void run(MozillaVPN* vpn) override;
+  void run() override;
 
  private:
   void maybeCompleted();
 
  private:
-  QByteArray m_serverData;
-  QByteArray m_serverExtraData;
-
   bool m_accountCompleted = false;
   bool m_serversCompleted = false;
-  bool m_serverExtraCompleted = false;
 };
 
 #endif  // TASKACCOUNTANDSERVERS_H

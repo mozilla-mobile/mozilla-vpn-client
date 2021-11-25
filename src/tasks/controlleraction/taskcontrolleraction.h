@@ -9,6 +9,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include "controller.h"
 
 // The purpose of this task is to block any other task when
 // activating/deactivating the VPN. It doesn't relay on the Controller state,
@@ -26,15 +27,16 @@ class TaskControllerAction final : public Task {
   explicit TaskControllerAction(TaskAction action);
   ~TaskControllerAction();
 
-  void run(MozillaVPN* vpn) override;
+  void run() override;
 
  private slots:
   void stateChanged();
   void silentSwitchDone();
+  void checkStatus();
 
  private:
   const TaskAction m_action;
-
+  Controller::State m_lastState;
   QTimer m_timer;
 };
 

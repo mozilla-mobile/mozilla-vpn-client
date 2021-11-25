@@ -14,6 +14,7 @@ Item {
     id: viewAboutUs
     property alias isSettingsView: menu.isSettingsView
     property alias isMainView: menu.isMainView
+    property alias releaseVersionText: releaseVersion.text
     //% "About us"
     property string _menuTitle: qsTrId("vpn.settings.aboutUs")
 
@@ -35,14 +36,13 @@ Item {
             linkTitle: qsTrId("vpn.aboutUs.privacyNotice2")
             openUrl: VPN.LinkPrivacyNotice
         }
+
         ListElement {
             linkId: "license"
 
-            //% "License"
-            linkTitle: qsTrId("vpn.aboutUs.license")
-            openUrl: VPN.LinkLicense
+            linkTitleId: "AboutUsLicenses"
+            openView: "qrc:/ui/views/ViewLicenses.qml"
         }
-
     }
 
     VPNMenu {
@@ -91,6 +91,7 @@ Item {
         }
 
         TextEdit {
+            id: releaseVersion
             anchors.top: releaseLabel.bottom
             anchors.topMargin: 8
             text: VPN.buildNumber === "" ? VPN.versionString : (VPN.versionString + " (" + VPN.buildNumber + ")")
@@ -137,9 +138,23 @@ Item {
 
         delegate: VPNExternalLinkListItem {
             objectName: "aboutUsList-" + linkId
-            title: linkTitle
-            accessibleName: linkTitle
-            onClicked: VPN.openLink(openUrl)
+            title: linkTitleId ? VPNl18n[linkTitleId] : linkTitle
+            accessibleName: title
+            onClicked: {
+                if (openUrl) {
+                    VPN.openLink(openUrl)
+                }
+                if (openView) {
+                    if (isSettingsView) {
+                        settingsStackView.push(openView, { isSettingsView, isMainView })
+                    } else if (isMainView) {
+                        mainStackView.push(openView, { isSettingsView, isMainView })
+                    } else {
+                        stackview.push(openView, { isSettingsView, isMainView })
+                    }
+                }
+            }
+            iconSource: openUrl ? "qrc:/ui/resources/externalLink.svg" : "qrc:/ui/resources/chevron.svg"
         }
 
         ScrollBar.vertical: ScrollBar {

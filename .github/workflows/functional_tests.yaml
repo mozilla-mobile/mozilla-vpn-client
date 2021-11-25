@@ -99,7 +99,7 @@ jobs:
       - build_test_app
       - test_list
     runs-on: ubuntu-20.04
-    timeout-minutes: 60
+    timeout-minutes: 45
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
       matrix:
@@ -120,10 +120,7 @@ jobs:
           sudo dpkg -i build/archive/*.deb
           sudo apt install --no-upgrade firefox xvfb -y
           pip3 install -r requirements.txt
-          npm install dotenv
-          npm install selenium-webdriver
-          npm install mocha
-          npm install websocket
+          npm install
       
       - name: Check build
         shell: bash
@@ -138,18 +135,19 @@ jobs:
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
-          max_attempts: 5
+          max_attempts: 3
           command: |
             export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
             export HEADLESS=yes
             mkdir -p $ARTIFACT_DIR
-            xvfb-run -a ./scripts/test_function.sh ./build/mozillavpn ${{matrix.test.path}}
+            xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
           on_retry_command: npm run cleanup-flaky-script-output
         env:
-          MVPN_API_BASE_URL: http://localhost:5000
-          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
           ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
+          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
+          MVPN_API_BASE_URL: http://localhost:5000
+          MVPN_BIN: ./build/mozillavpn
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v1

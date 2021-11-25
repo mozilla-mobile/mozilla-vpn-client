@@ -14,6 +14,7 @@
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
+#include <sys/errno.h>
 #include <unistd.h>
 
 namespace {
@@ -86,6 +87,7 @@ void MacOSPingSender::sendPing(const QString& dest, quint16 sequence) {
   if (sendto(m_socket, (char*)&packet, sizeof(packet), 0,
              (struct sockaddr*)&addr, sizeof(addr)) != sizeof(packet)) {
     logger.error() << "ping sending failed:" << strerror(errno);
+    emit criticalPingError();
     return;
   }
 }

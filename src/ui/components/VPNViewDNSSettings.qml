@@ -11,8 +11,8 @@ import components 0.1
 import components.forms 0.1
 import themes 0.1
 
-import org.mozilla.Glean 0.23
-import telemetry 0.23
+import org.mozilla.Glean 0.24
+import telemetry 0.24
 
 
 VPNFlickable {
@@ -25,10 +25,19 @@ VPNFlickable {
     flickContentHeight: col.height + Theme.menuHeight*2
     interactive: flickContentHeight > height
 
+    VPNCheckBoxAlert {
+        id: alert
+        //% "VPN must be off to edit these settings"
+        //: Associated to a group of settings that require the VPN to be disconnected to change
+        errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
+        anchors.top: parent.top
+        anchors.topMargin: 18
+    }
+
     ColumnLayout {
         id: col
         width: parent.width
-        anchors.top: parent.top
+        anchors.top: alert.visible ? alert.bottom : parent.top
         anchors.topMargin: 18
         anchors.left: parent.left
         anchors.leftMargin: 18
@@ -51,6 +60,7 @@ VPNFlickable {
                     checked: VPNSettings.dnsProvider == settingValue
                     ButtonGroup.group: radioButtonGroup
                     accessibleName: settingTitle
+                    enabled: vpnIsOff
                     onClicked: VPNSettings.dnsProvider = settingValue
                 }
 
@@ -62,12 +72,14 @@ VPNFlickable {
                         text: settingTitle
                         wrapMode: Text.WordWrap
                         width: parent.width
+                        opacity: vpnIsOff ? 1 : .5
                         horizontalAlignment: Text.AlignLeft
                     }
 
                     VPNTextBlock {
-                       text: settingDescription
-                       width: parent.width
+                        text: settingDescription
+                        width: parent.width
+                        opacity: vpnIsOff ? 1 : .5
                     }
 
                     VPNVerticalSpacer {
@@ -82,7 +94,7 @@ VPNFlickable {
                         visible: showDNSInput
                         id: ipInput
 
-                        enabled: VPNSettings.dnsProvider === VPNSettings.Custom
+                        enabled: (VPNSettings.dnsProvider === VPNSettings.Custom) && vpnIsOff
                         placeholderText: VPNSettings.placeholderUserDNS
                         text: ""
                         width: parent.width

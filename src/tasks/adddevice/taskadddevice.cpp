@@ -39,7 +39,7 @@ TaskAddDevice::TaskAddDevice(const QString& deviceName, const QString& deviceID)
 
 TaskAddDevice::~TaskAddDevice() { MVPN_COUNT_DTOR(TaskAddDevice); }
 
-void TaskAddDevice::run(MozillaVPN* vpn) {
+void TaskAddDevice::run() {
   logger.debug() << "Adding the device" << logger.sensitive(m_deviceName);
 
   QByteArray privateKey = generatePrivateKey();
@@ -51,17 +51,19 @@ void TaskAddDevice::run(MozillaVPN* vpn) {
   NetworkRequest* request = NetworkRequest::createForDeviceCreation(
       this, m_deviceName, publicKey, m_deviceID);
 
-  connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Failed to add the device" << error;
-            vpn->errorHandle(ErrorHandler::toErrorType(error));
-            emit completed();
-          });
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this](QNetworkReply::NetworkError error, const QByteArray&) {
+        logger.error() << "Failed to add the device" << error;
+        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        emit completed();
+      });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn, publicKey, privateKey](const QByteArray&) {
+          [this, publicKey, privateKey](const QByteArray&) {
             logger.debug() << "Device added";
-            vpn->deviceAdded(m_deviceName, publicKey, privateKey);
+            MozillaVPN::instance()->deviceAdded(m_deviceName, publicKey,
+                                                privateKey);
             emit completed();
           });
 }

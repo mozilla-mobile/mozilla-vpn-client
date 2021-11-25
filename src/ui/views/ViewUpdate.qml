@@ -58,7 +58,7 @@ VPNFlickable {
 
             PropertyChanges {
                 target: signOff
-                visible: VPN.userAuthenticated
+                visible: VPN.userState === VPN.UserAuthenticated
             }
 
             PropertyChanges {

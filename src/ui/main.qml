@@ -11,8 +11,8 @@ import compat 0.1
 import components 0.1
 import themes 0.1
 
-import org.mozilla.Glean 0.23
-import telemetry 0.23
+import org.mozilla.Glean 0.24
+import telemetry 0.24
 
 Window {
     id: window
@@ -32,10 +32,14 @@ Window {
     width: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
     height: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
 
+    //These need to be bound before onComplete so that the window buttons, menus and title bar double click behave properly
+    maximumWidth: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
+    maximumHeight: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
+
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
-    onClosing: {
+    onClosing: close => {
         console.log("Closing request handling");
 
         // No desktop, we go in background mode.
@@ -58,10 +62,9 @@ Window {
             this.showMinimized();
         }
         if (!fullscreenRequired()) {
-            maximumHeight = Theme.desktopAppHeight;
-            minimumHeight = Theme.desktopAppHeight;
-            maximumWidth = Theme.desktopAppWidth;
-            minimumWidth = Theme.desktopAppWidth;
+            minimumHeight = Theme.desktopAppHeight
+            minimumWidth = Theme.desktopAppWidth
+
         }
         VPN.mainWindowLoaded()
     }
@@ -70,7 +73,7 @@ Window {
         anchors.fill: parent
         propagateComposedEvents: true
         z: 10
-        onPressed: {
+        onPressed: mouse => {
             if (window.activeFocusItem && window.activeFocusItem.forceBlurOnOutsidePress) {
                 window.activeFocusItem.focus = false;
             }
@@ -268,7 +271,7 @@ Window {
                     return;
                 };
             }
-            // If we cant show logs natively, open the viewer
+            // If we can't show logs natively, open the viewer
             mainStackView.push("views/ViewLogs.qml");
             
         }
@@ -304,6 +307,11 @@ Window {
                 osVersion: VPN.osVersion,
                 architecture: VPN.architecture,
             });
+        }
+
+        function onSetGleanSourceTags(tags) {
+            console.debug("Setting source tags to:", tags);
+            Glean.setSourceTags(tags);
         }
 
         function onSendGleanPings() {

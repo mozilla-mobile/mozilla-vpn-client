@@ -9,6 +9,7 @@ import components 0.1
 
 VPNStackView {
     id: stackview
+    objectName: "ViewMainStackView"
 
     initialItem: "qrc:/ui/views/ViewMain.qml"
 }

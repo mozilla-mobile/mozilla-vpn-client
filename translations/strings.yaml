@@ -76,6 +76,11 @@ serversView:
   searchPlaceholder: Search countries
   searchNoResultsLabel: No results. Try a different search
 
+languageView:
+  searchPlaceholder:
+    value: Search languages
+    comment: Placeholder text for a search field that can be used to search through a list of languages
+
 feedbackForm:
   chooseCategory: Choose a category
   excellentLabel:
@@ -266,4 +271,18 @@ systray:
   quit: Quit Mozilla VPN
 
 settings:
-  preferences: Preferences
+  systemPreferences: System preferences
+  startAtBootDescription: Mozilla VPN will launch when you open the app
+  dataCollectionDescription: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla
+
+aboutUs:
+  licenses: Licenses
+
+AndroidNotifications:
+  GeneralNotifications:
+    value: General Notifications
+    comment: A notification channel; so the user can subscribe to "General Notifications"
+
+telemetryPolicyView:
+  description: We strive to provide you with choices and collect only the data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional.
+  question: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla?

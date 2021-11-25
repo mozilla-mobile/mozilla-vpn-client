@@ -52,7 +52,7 @@ StackView {
             VPNControllerNav {
                 function handleClick() {
                     multiHopStackView.push(
-                        "qrc://components/components/VPNServerList.qml",
+                        "qrc:/components/components/VPNServerList.qml",
                         {
                             currentServer: entryLabel.serversList[0],
                             showRecentConnections: false

@@ -3,48 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const util = require('util');
 const vpn = require('./helper.js');
-
-const exec = util.promisify(require('child_process').exec);
 
 describe('User authentication', function() {
   this.timeout(60000);
 
-  before(async () => {
-    await vpn.connect();
-  });
+  it('returns to main view on canceling authentication', async () => {
+    await vpn.waitForMainView();
 
-  beforeEach(() => {});
-
-  afterEach(vpn.dumpFailure);
-
-  after(async () => {
-    vpn.disconnect();
-  });
-
-
-  it('reset the app', async () => await vpn.reset());
-
-  it('wait for the main view', async () => {
-    assert.strictEqual(await vpn.getLastUrl(), '');
-
-    await vpn.waitForElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-    assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
-  });
-
-  it('Start and abort the authentication (initial view)', async () => {
     await vpn.clickOnElement('getStarted');
 
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.includes('/api/v2/vpn/login');
     });
-
-    // This is to make humans happy.
-    await vpn.wait();
 
     await vpn.waitForElement('authenticatingView');
     await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
@@ -54,14 +26,13 @@ describe('User authentication', function() {
 
     await vpn.clickOnElement('cancelFooterLink');
 
-    // This is to make humans happy.
-    await vpn.wait();
-
     await vpn.waitForElement('getStarted');
     await vpn.waitForElementProperty('getStarted', 'visible', 'true');
   });
 
-  it('Start and abort the authentication (onboarding view)', async () => {
+  it('Starts authentication at end of onboarding view', async () => {
+    await vpn.waitForMainView();
+
     assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
     await vpn.clickOnElement('learnMoreLink');
 
@@ -81,7 +52,6 @@ describe('User authentication', function() {
           await vpn.getElementProperty('onboardingNext', 'visible') === 'true');
       if (await vpn.getElementProperty('onboardingNext', 'text') === 'Next') {
         await vpn.clickOnElement('onboardingNext');
-
         // This is needed just for humans. The UI is already in the other state
         // before completing the animation.
         await vpn.wait();
@@ -90,7 +60,6 @@ describe('User authentication', function() {
 
       break;
     }
-
     await vpn.clickOnElement('onboardingNext');
 
     await vpn.waitForCondition(async () => {
@@ -98,40 +67,25 @@ describe('User authentication', function() {
       return url.includes('/api/v2/vpn/login');
     });
 
-    // This is to make humans happy.
-    await vpn.wait();
-
     await vpn.waitForElement('authenticatingView');
     await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
-
-    await vpn.waitForElement('cancelFooterLink');
-    await vpn.waitForElementProperty('cancelFooterLink', 'visible', 'true');
-
-    await vpn.clickOnElement('cancelFooterLink');
-
-    // This is to make humans happy.
-    await vpn.wait();
-
-    await vpn.waitForElement('getStarted');
-    await vpn.waitForElementProperty('getStarted', 'visible', 'true');
   });
 
-  it('Start and complete the authentication', async () => {
-    await vpn.authenticate(false, false);
+  it('Completes authentication', async () => {
+    await vpn.authenticate(true, true);
   });
 
-  it('Post authentication view', async () => {
-    await vpn.waitForElement('postAuthenticationButton');
-    await vpn.clickOnElement('postAuthenticationButton');
+  it('Logout again', async () => {
+    await vpn.waitForElement('settingsButton');
+    await vpn.clickOnElement('settingsButton');
 
-    // This is to make humans happy.
-    await vpn.wait();
+    await vpn.waitForElement('settingsLogout');
+    await vpn.clickOnElement('settingsLogout');
+    await vpn.waitForMainView();
   });
 
-  it('Logout', async () => {
-    await vpn.logout();
-    await vpn.wait();
+  it('Login again', async () => {
+    await vpn.authenticate();
   });
 
-  it('quit the app', async () => await vpn.quit());
 });
