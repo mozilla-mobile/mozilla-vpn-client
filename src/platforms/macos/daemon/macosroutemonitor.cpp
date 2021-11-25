@@ -25,17 +25,6 @@
 
 namespace {
 Logger logger(LOG_MACOS, "MacosRouteMonitor");
-
-template <typename T>
-static T* sockaddr_cast(QByteArray& data) {
-  const struct sockaddr* sa = (const struct sockaddr*)data.constData();
-  Q_ASSERT(sa->sa_len <= data.length());
-  if (data.length() >= (int)sizeof(T)) {
-    return (T*)data.data();
-  }
-  return nullptr;
-}
-
 }  // namespace
 
 MacosRouteMonitor::MacosRouteMonitor(const QString& ifname, QObject* parent)
@@ -91,7 +80,7 @@ void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
 
 // Compare memory against zero.
 static int memcmpzero(const void* data, size_t len) {
-  const quint8* ptr = (const quint8*)data;
+  const quint8* ptr = static_cast<const quint8*>(data);
   while (len--) {
     if (*ptr++) return 1;
   }
@@ -127,7 +116,8 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
                  << list.join(" ");
 
   // Check for a default route, which should have a netmask of zero.
-  const struct sockaddr* sa = (const struct sockaddr*)addrlist[2].constData();
+  const struct sockaddr* sa =
+      reinterpret_cast<const struct sockaddr*>(addrlist[2].constData());
   if (sa->sa_family == AF_INET) {
     struct sockaddr_in sin;
     Q_ASSERT(sa->sa_len <= sizeof(sin));
@@ -150,7 +140,8 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
   }
 
   // Determine if this is the IPv4 or IPv6 default route.
-  const struct sockaddr* dst = (const struct sockaddr*)addrlist[0].constData();
+  const struct sockaddr* dst =
+      reinterpret_cast<const struct sockaddr*>(addrlist[0].constData());
   QAbstractSocket::NetworkLayerProtocol protocol;
   unsigned int plen;
   if (dst->sa_family == AF_INET) {
@@ -169,10 +160,10 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
 
   // Update the exclusion routes with the new default route.
   logger.debug() << "Updating default route via" << ifname;
-  const struct sockaddr* gw = (const struct sockaddr*)addrlist[1].constData();
   for (const QHostAddress& addr : m_exclusionRoutes) {
     if (addr.protocol() == protocol) {
-      rtmSendRoute(RTM_ADD, addr, plen, rtm->rtm_index, gw);
+      rtmSendRoute(RTM_ADD, addr, plen, rtm->rtm_index,
+                   addrlist[1].constData());
     }
   }
 }
@@ -208,8 +199,8 @@ void MacosRouteMonitor::rtsockReady() {
     (struct rt_msghdr*)((char*)(_rtm_) + (_rtm_)->rtm_msglen)
 #endif
 
-  struct rt_msghdr* rtm = (struct rt_msghdr*)buf;
-  struct rt_msghdr* end = (struct rt_msghdr*)(&buf[len]);
+  struct rt_msghdr* rtm = reinterpret_cast<struct rt_msghdr*>(buf);
+  struct rt_msghdr* end = reinterpret_cast<struct rt_msghdr*>(&buf[len]);
   while (rtm < end) {
     // Ensure the message fits within the buffer
     if (RTMSG_NEXT(rtm) > end) {
@@ -252,7 +243,7 @@ void MacosRouteMonitor::rtsockReady() {
 
 void MacosRouteMonitor::rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen,
                                       int rtaddr, const void* sa) {
-  size_t sa_len = ((struct sockaddr*)sa)->sa_len;
+  size_t sa_len = static_cast<const struct sockaddr*>(sa)->sa_len;
   Q_ASSERT((rtm->rtm_addrs & rtaddr) == 0);
   if ((rtm->rtm_msglen + sa_len) > maxlen) {
     return;
@@ -268,14 +259,13 @@ void MacosRouteMonitor::rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen,
 
 bool MacosRouteMonitor::rtmSendRoute(int action, const QHostAddress& prefix,
                                      unsigned int plen, unsigned int ifindex,
-                                     const struct sockaddr* gateway) {
+                                     const void* gateway) {
   constexpr size_t rtm_max_size = sizeof(struct rt_msghdr) +
                                   sizeof(struct sockaddr_in6) * 2 +
                                   sizeof(struct sockaddr_storage);
-  char buf[rtm_max_size];
-  struct rt_msghdr* rtm = (struct rt_msghdr*)buf;
+  char buf[rtm_max_size] = {0};
+  struct rt_msghdr* rtm = reinterpret_cast<struct rt_msghdr*>(buf);
 
-  memset(rtm, 0, rtm_max_size);
   rtm->rtm_msglen = sizeof(struct rt_msghdr);
   rtm->rtm_version = RTM_VERSION;
   rtm->rtm_type = action;
@@ -309,10 +299,8 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const QHostAddress& prefix,
 
   // Append RTA_GATEWAY
   if (gateway != nullptr) {
-    if (gateway->sa_family == AF_INET) {
-      rtm->rtm_flags |= RTF_GATEWAY;
-    }
-    if (gateway->sa_family == AF_INET6) {
+    int family = static_cast<const struct sockaddr*>(gateway)->sa_family;
+    if ((family == AF_INET) || (family == AF_INET6)) {
       rtm->rtm_flags |= RTF_GATEWAY;
     }
     rtmAppendAddr(rtm, rtm_max_size, RTA_GATEWAY, gateway);
@@ -359,10 +347,9 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const QHostAddress& prefix,
 bool MacosRouteMonitor::rtmFetchRoutes(int family) {
   constexpr size_t rtm_max_size =
       sizeof(struct rt_msghdr) + sizeof(struct sockaddr_storage) * 2;
-  char buf[rtm_max_size];
-  struct rt_msghdr* rtm = (struct rt_msghdr*)buf;
+  char buf[rtm_max_size] = {0};
+  struct rt_msghdr* rtm = reinterpret_cast<struct rt_msghdr*>(buf);
 
-  memset(rtm, 0, rtm_max_size);
   rtm->rtm_msglen = sizeof(struct rt_msghdr);
   rtm->rtm_version = RTM_VERSION;
   rtm->rtm_type = RTM_GET;
@@ -415,8 +402,7 @@ bool MacosRouteMonitor::insertRoute(const IPAddressRange& prefix) {
   memcpy(&datalink.sdl_data, qPrintable(m_ifname), datalink.sdl_nlen);
 
   QHostAddress addr(prefix.ipAddress());
-  return rtmSendRoute(RTM_ADD, addr, prefix.range(), m_ifindex,
-                      (const struct sockaddr*)&datalink);
+  return rtmSendRoute(RTM_ADD, addr, prefix.range(), m_ifindex, &datalink);
 }
 
 bool MacosRouteMonitor::deleteRoute(const IPAddressRange& prefix) {
@@ -436,15 +422,13 @@ bool MacosRouteMonitor::addExclusionRoute(const QHostAddress& address) {
   // If the default route is known, then updte the routing table immediately.
   if ((address.protocol() == QAbstractSocket::IPv4Protocol) &&
       (m_defaultIfindexIpv4 != 0) && !m_defaultGatewayIpv4.isEmpty()) {
-    const struct sockaddr* gw =
-        (const struct sockaddr*)m_defaultGatewayIpv4.constData();
-    return rtmSendRoute(RTM_ADD, address, 32, m_defaultIfindexIpv4, gw);
+    return rtmSendRoute(RTM_ADD, address, 32, m_defaultIfindexIpv4,
+                        m_defaultGatewayIpv4.constData());
   }
   if ((address.protocol() == QAbstractSocket::IPv6Protocol) &&
       (m_defaultIfindexIpv6 != 0) && !m_defaultGatewayIpv6.isEmpty()) {
-    const struct sockaddr* gw =
-        (const struct sockaddr*)m_defaultGatewayIpv6.constData();
-    return rtmSendRoute(RTM_ADD, address, 128, m_defaultIfindexIpv6, gw);
+    return rtmSendRoute(RTM_ADD, address, 128, m_defaultIfindexIpv6,
+                        m_defaultGatewayIpv6.constData());
   }
 
   // Otherwise, the default route isn't known yet. Do nothing.
