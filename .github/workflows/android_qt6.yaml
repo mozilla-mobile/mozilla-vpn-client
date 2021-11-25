@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: Release, args: "", apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
+            #- { name: Release, args: "", apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
             - { name: Debug, args: "--debug", apk: .tmp/src/android-build/mozillavpn.apk, sym: false, sign: false}
         arch: ["android_armv7", "android_arm64_v8a", "android_x86", "android_x86_64"]
         version: ["6.2.1"]
