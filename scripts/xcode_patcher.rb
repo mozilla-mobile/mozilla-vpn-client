@@ -9,7 +9,7 @@ class XCodeprojPatcher
   attr :target_main
   attr :target_extension
 
-  def run(file, shortVersion, fullVersion, platform, networkExtension, configHash, adjust_sdk_token)
+  def run(file, shortVersion, fullVersion, platform, networkExtension, configHash, qtVersion, adjust_sdk_token)
     open_project file
     open_target_main
 
@@ -18,7 +18,7 @@ class XCodeprojPatcher
     group = @project.main_group.new_group('Configuration')
     @configFile = group.new_file('xcode.xconfig')
 
-    setup_target_main shortVersion, fullVersion, platform, networkExtension, configHash, adjust_sdk_token
+    setup_target_main shortVersion, fullVersion, platform, networkExtension, configHash, qtVersion, adjust_sdk_token
 
     if platform == 'macos'
       setup_target_loginitem shortVersion, fullVersion, configHash
@@ -51,7 +51,7 @@ class XCodeprojPatcher
     die 'Unable to open MozillaVPN target'
   end
 
-  def setup_target_main(shortVersion, fullVersion, platform, networkExtension, configHash, adjust_sdk_token)
+  def setup_target_main(shortVersion, fullVersion, platform, networkExtension, configHash, qtVersion, adjust_sdk_token)
     @target_main.build_configurations.each do |config|
       config.base_configuration_reference = @configFile
 
@@ -116,7 +116,7 @@ class XCodeprojPatcher
     [
       'glean/glean.cpp',
       'glean/qrc_glean.cpp',
-      'nebula/qrc_compatQt5.cpp',
+      'nebula/qrc_compat' + qtVersion + '.cpp',
       'nebula/qrc_components.cpp',
       'nebula/qrc_nebula_resources.cpp',
       'nebula/qrc_themes.cpp',
@@ -672,9 +672,10 @@ configFile.each { |line|
 
 platform = "macos"
 platform = "ios" if ARGV[3] == "ios"
-networkExtension = true if ARGV[4] == "1"
-adjust_sdk_token = ARGV[5]
+qtVersion = ARGV[4]
+networkExtension = true if ARGV[5] == "1"
+adjust_sdk_token = ARGV[6]
 
 r = XCodeprojPatcher.new
-r.run ARGV[0], ARGV[1], ARGV[2], platform, networkExtension, config, adjust_sdk_token
+r.run ARGV[0], ARGV[1], ARGV[2], platform, networkExtension, config, qtVersion, adjust_sdk_token
 exit 0

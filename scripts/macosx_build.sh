@@ -40,6 +40,7 @@ ruby scripts/xcode_patcher.rb \
   "$SHORTVERSION" \
   "$FULLVERSION" \
   macos
+  Qt5
 
 # Build
 python3 scripts/generate_glean.py
