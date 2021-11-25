@@ -41,8 +41,8 @@ class DBusClient final : public QObject {
   QDBusPendingCallWatcher* cleanupLogs();
 
  signals:
-  void connected(int hopindex);
-  void disconnected(int hopindex);
+  void connected(const QString& pubkey);
+  void disconnected();
 
  private:
   OrgMozillaVpnDbusInterface* m_dbus;

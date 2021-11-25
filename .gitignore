@@ -53,6 +53,8 @@ tests/auth/tests
 tests/unit/tests
 tests/nativemessaging/tests
 tests/proxy/__pycache__/
+tests/qml/qml_tests
+tests/qml/target_wrapper.sh
 build
 Debug/
 !android/src/debug/
