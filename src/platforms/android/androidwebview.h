@@ -14,9 +14,9 @@
 #endif
 
 #include <QQuickItem>
+#include <QQuickWindow>
+#include <QWindow>
 #include <QUrl>
-
-class QWindow;
 
 class AndroidWebView : public QQuickItem {
   Q_OBJECT
