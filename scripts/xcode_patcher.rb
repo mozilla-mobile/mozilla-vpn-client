@@ -133,6 +133,7 @@ class XCodeprojPatcher
         file = group.new_file(filename)
         @target_main.add_file_references([file])
       }
+    end
 
     if networkExtension
       # WireGuard group
