@@ -126,6 +126,14 @@ class XCodeprojPatcher
       @target_main.add_file_references([file])
     }
 
+    if qtVersion == "Qt6"
+      [
+        'nebula/qrc_resourcesQt6.cpp',
+      ].each { |filename|
+        file = group.new_file(filename)
+        @target_main.add_file_references([file])
+      }
+
     if networkExtension
       # WireGuard group
       group = @project.main_group.new_group('WireGuard')
