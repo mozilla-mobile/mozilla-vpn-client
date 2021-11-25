@@ -21,7 +21,7 @@ jobs:
         arch: ["android_armv7", "android_arm64_v8a", "android_x86", "android_x86_64"]
         version: ["6.2.1"]
     container:
-      image: ghcr.io/strseb/vpn-builder-android:android_${{matrix.arch}}_${{matrix.version}}
+      image: ghcr.io/strseb/vpn-builder-android:${{matrix.arch}}_${{matrix.version}}
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
