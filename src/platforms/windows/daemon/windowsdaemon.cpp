@@ -70,28 +70,6 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
   return true;
 }
 
-QByteArray WindowsDaemon::getStatus() {
-  logger.debug() << "Status request";
-
-  bool connected = m_connections.contains(0);
-  QJsonObject obj;
-  obj.insert("type", "status");
-  obj.insert("connected", connected);
-
-  if (connected) {
-    const ConnectionState& state = m_connections.value(0).m_config;
-    WireguardUtilsWindows::peerStatus status =
-        m_wgutils->getPeerStatus(state.m_config.m_serverPublicKey);
-    obj.insert("serverIpv4Gateway", state.m_config.m_serverIpv4Gateway);
-    obj.insert("deviceIpv4Address", state.m_config.m_deviceIpv4Address);
-    obj.insert("date", state.m_date.toString());
-    obj.insert("txBytes", QJsonValue(status.txBytes));
-    obj.insert("rxBytes", QJsonValue(status.rxBytes));
-  }
-
-  return QJsonDocument(obj).toJson(QJsonDocument::Compact);
-}
-
 void WindowsDaemon::monitorBackendFailure() {
   logger.warning() << "Tunnel service is down";
 

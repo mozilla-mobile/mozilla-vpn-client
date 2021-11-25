@@ -15,6 +15,7 @@
 #include <QTimer>
 
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
+constexpr int HANDSHAKE_POLL_MSEC = 250;
 
 namespace {
 
@@ -31,6 +32,9 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
 
   Q_ASSERT(s_daemon == nullptr);
   s_daemon = this;
+
+  m_handshakeTimer.setSingleShot(true);
+  connect(&m_handshakeTimer, &QTimer::timeout, this, &Daemon::checkHandshake);
 }
 
 Daemon::~Daemon() {
@@ -70,8 +74,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
         return false;
       }
       m_connections[config.m_hopindex] = ConnectionState(config);
-
-      emit connected(config.m_hopindex);
+      m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
       return true;
     }
 
@@ -135,7 +138,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   logger.debug() << "Connection status:" << status;
   if (status) {
     m_connections[config.m_hopindex] = ConnectionState(config);
-    emit connected(config.m_hopindex);
+    m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
   }
 
   return status;
@@ -282,7 +285,7 @@ bool Daemon::deactivate(bool emitSignals) {
       return false;
     }
     if (emitSignals) {
-      emit disconnected(0);
+      emit disconnected();
     }
   }
 
@@ -296,13 +299,14 @@ bool Daemon::deactivate(bool emitSignals) {
     return false;
   }
 
-  // Cleanup routing
+  // Cleanup peers and routing
   for (const ConnectionState& state : m_connections.values()) {
     const InterfaceConfig& config = state.m_config;
     logger.debug() << "Deleting routes for hop" << config.m_hopindex;
     for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
       wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
     }
+    wgutils()->deletePeer(config);
   }
 
   // Delete the interface
@@ -371,11 +375,79 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
 
   // Remove the old peer if it is no longer necessary.
   if (config.m_serverPublicKey != lastConfig.m_serverPublicKey) {
-    if (!wgutils()->deletePeer(lastConfig.m_serverPublicKey)) {
+    if (!wgutils()->deletePeer(lastConfig)) {
       return false;
     }
   }
 
   m_connections[config.m_hopindex] = ConnectionState(config);
   return true;
+}
+
+QJsonObject Daemon::getStatus() {
+  Q_ASSERT(wgutils() != nullptr);
+  QJsonObject json;
+  logger.debug() << "Status request";
+
+  if (!m_connections.contains(0) || !wgutils()->interfaceExists()) {
+    json.insert("connected", QJsonValue(false));
+    return json;
+  }
+
+  const ConnectionState& connection = m_connections.value(0);
+  QList<WireguardUtils::PeerStatus> peers = wgutils()->getPeerStatus();
+  for (WireguardUtils::PeerStatus status : peers) {
+    if (status.m_pubkey != connection.m_config.m_serverPublicKey) {
+      continue;
+    }
+    json.insert("connected", QJsonValue(true));
+    json.insert("serverIpv4Gateway",
+                QJsonValue(connection.m_config.m_serverIpv4Gateway));
+    json.insert("deviceIpv4Address",
+                QJsonValue(connection.m_config.m_deviceIpv4Address));
+    json.insert("date", connection.m_date.toString());
+    json.insert("txBytes", QJsonValue(status.m_txBytes));
+    json.insert("rxBytes", QJsonValue(status.m_rxBytes));
+    return json;
+  }
+
+  json.insert("connected", QJsonValue(false));
+  return json;
+}
+
+void Daemon::checkHandshake() {
+  Q_ASSERT(wgutils() != nullptr);
+
+  logger.debug() << "Checking for handshake...";
+
+  int pendingHandshakes = 0;
+  QList<WireguardUtils::PeerStatus> peers = wgutils()->getPeerStatus();
+  for (ConnectionState& connection : m_connections) {
+    const InterfaceConfig& config = connection.m_config;
+    if (connection.m_date.isValid()) {
+      continue;
+    }
+    logger.debug() << "awaiting"
+                   << WireguardUtils::printableKey(config.m_serverPublicKey);
+
+    // Check if the handshake has completed.
+    for (const WireguardUtils::PeerStatus& status : peers) {
+      if (config.m_serverPublicKey != status.m_pubkey) {
+        continue;
+      }
+      if (status.m_handshake != 0) {
+        connection.m_date.setMSecsSinceEpoch(status.m_handshake);
+        emit connected(status.m_pubkey);
+      }
+    }
+
+    if (!connection.m_date.isValid()) {
+      pendingHandshakes++;
+    }
+  }
+
+  // Check again if there were connections that haven't completed a handshake.
+  if (pendingHandshakes > 0) {
+    m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
+  }
 }
