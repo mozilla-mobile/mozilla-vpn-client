@@ -126,6 +126,7 @@ jobs:
             "$SHORTVERSION" \
             "$FULLVERSION" \
             macos
+            ${{matrix.config.name}}
 
       - name: Compiling
         shell: bash
@@ -281,7 +282,8 @@ jobs:
             "MozillaVPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
-            macos
+            macos \
+            ${{matrix.config.name}}
 
       - name: Compiling
         shell: bash
