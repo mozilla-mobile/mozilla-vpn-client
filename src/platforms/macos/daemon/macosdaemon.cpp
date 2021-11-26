@@ -50,25 +50,3 @@ MacOSDaemon* MacOSDaemon::instance() {
   Q_ASSERT(s_daemon);
   return s_daemon;
 }
-
-QByteArray MacOSDaemon::getStatus() {
-  logger.debug() << "Status request";
-
-  bool connected = m_connections.contains(0);
-  QJsonObject obj;
-  obj.insert("type", "status");
-  obj.insert("connected", connected);
-
-  if (connected) {
-    const ConnectionState& state = m_connections.value(0).m_config;
-    WireguardUtils::peerStatus status =
-        m_wgutils->getPeerStatus(state.m_config.m_serverPublicKey);
-    obj.insert("serverIpv4Gateway", state.m_config.m_serverIpv4Gateway);
-    obj.insert("deviceIpv4Address", state.m_config.m_deviceIpv4Address);
-    obj.insert("date", state.m_date.toString());
-    obj.insert("txBytes", QJsonValue(status.txBytes));
-    obj.insert("rxBytes", QJsonValue(status.rxBytes));
-  }
-
-  return QJsonDocument(obj).toJson(QJsonDocument::Compact);
-}
