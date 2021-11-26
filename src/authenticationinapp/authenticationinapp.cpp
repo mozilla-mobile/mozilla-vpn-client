@@ -5,7 +5,6 @@
 #include "authenticationinapp.h"
 #include "authenticationinapplistener.h"
 #include "logger.h"
-#include "leakdetector.h"
 #include "incrementaldecoder.h"
 
 #include <QCoreApplication>

@@ -98,7 +98,7 @@ void MacOSMenuBar::retranslate() {
     m_helpMenu->removeAction(action);
   }
 
-  auto&* vpn = MozillaVPN::instance();
+  auto& vpn = MozillaVPN::instance();
   vpn.helpModel()->forEach([&](const char* nameId, int id) {
     m_helpMenu->addAction(qtTrId(nameId),
                           [help = vpn.helpModel(), id]() { help->open(id); });

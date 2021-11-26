@@ -13,7 +13,6 @@
 #include "features/featuresharelogs.h"
 #include "gleansample.h"
 #include "iaphandler.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "logoutobserver.h"

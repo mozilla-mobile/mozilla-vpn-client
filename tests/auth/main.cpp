@@ -27,9 +27,9 @@ int main(int argc, char* argv[]) {
   QCoreApplication a(argc, argv);
 
   SimpleNetworkManager snm;
-  FeatureList::instance()->initialize();
+  FeatureList::instance().initialize();
 
-  SettingsHolder::instance()->setDevModeFeatureFlags(
+  SettingsHolder::instance().setDevModeFeatureFlags(
       QStringList{"inAppAccountCreate"});
 
   int failures = 0;

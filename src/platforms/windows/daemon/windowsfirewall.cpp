@@ -4,7 +4,6 @@
 
 #include "windowsfirewall.h"
 #include "logger.h"
-#include "leakdetector.h"
 #include "../windowscommons.h"
 #include "../../daemon/interfaceconfig.h"
 #include "../../ipaddressrange.h"

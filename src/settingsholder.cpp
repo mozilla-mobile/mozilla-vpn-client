@@ -6,7 +6,6 @@
 #include "constants.h"
 #include "cryptosettings.h"
 #include "featurelist.h"
-#include "leakdetector.h"
 #include "logger.h"
 
 #include "features/featurecaptiveportal.h"
