@@ -133,11 +133,8 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
-  // Enable the windows firewall and routes for this peer.
+  // Enable the windows firewall for this peer.
   WindowsFirewall::instance()->enablePeerTraffic(config);
-  for (const QString& address : config.m_excludedAddresses) {
-    m_routeMonitor.addExclusionRoute(QHostAddress(address));
-  }
 
   logger.debug() << "Configuring peer" << printableKey(config.m_serverPublicKey)
                  << "via" << config.m_serverIpv4AddrIn;
@@ -172,11 +169,8 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
-  // Disable the windows firewall and routes for this peer.
+  // Disable the windows firewall for this peer.
   WindowsFirewall::instance()->disablePeerTraffic(config.m_serverPublicKey);
-  for (const QString& address : config.m_excludedAddresses) {
-    m_routeMonitor.deleteExclusionRoute(QHostAddress(address));
-  }
 
   QString message;
   QTextStream out(&message);
@@ -255,4 +249,12 @@ bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddressRange& prefix,
                    << "result:" << result;
   }
   return result == NO_ERROR;
+}
+
+bool WireguardUtilsWindows::addExclusionRoute(const QHostAddress& address) {
+  return m_routeMonitor.addExclusionRoute(address);
+}
+
+bool WireguardUtilsWindows::deleteExclusionRoute(const QHostAddress& address) {
+  return m_routeMonitor.deleteExclusionRoute(address);
 }
