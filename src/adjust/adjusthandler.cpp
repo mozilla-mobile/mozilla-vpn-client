@@ -44,19 +44,20 @@ void AdjustHandler::initialize() {
 
   // If the app has not started yet, let's wait.
   if (vpn.state() == MozillaVPN::StateInitialize) {
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, AdjustHandler::initialize);
+    QObject::connect(&vpn, &MozillaVPN::stateChanged,
+                     AdjustHandler::initialize);
     return;
   }
 
   s_initialized = true;
 
-  if (!settingsHolder->gleanEnabled()) {
+  if (!settingsHolder.gleanEnabled()) {
     // The user doesn't want to be tracked. Good!
     logger.debug() << "Telemetry policy disabled. Bail out";
     return;
   }
 
-  if (!settingsHolder->adjustActivatable()) {
+  if (!settingsHolder.adjustActivatable()) {
     // This is a pre-adjustSDK user. We don't want to activate the tracking.
     logger.debug() << "Adjust is not activatable. Bail out";
     return;

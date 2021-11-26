@@ -68,7 +68,7 @@ void MacOSMenuBar::initialize() {
   m_preferencesAction->setVisible(vpn.state() == MozillaVPN::StateMain);
 
   m_closeAction = fileMenu->addAction("close", []() {
-    QmlEngineHolder::instance()->hideWindow();
+    QmlEngineHolder::instance().hideWindow();
 #ifdef MVPN_MACOS
     MacOSUtils::hideDockIcon();
 #endif
@@ -98,7 +98,7 @@ void MacOSMenuBar::retranslate() {
     m_helpMenu->removeAction(action);
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
+  auto&* vpn = MozillaVPN::instance();
   vpn.helpModel()->forEach([&](const char* nameId, int id) {
     m_helpMenu->addAction(qtTrId(nameId),
                           [help = vpn.helpModel(), id]() { help->open(id); });

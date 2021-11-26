@@ -81,8 +81,8 @@ QJsonObject serializeStatus() {
   auto& vpn = MozillaVPN::instance();
   QJsonObject obj;
 
-  obj["authenticated"] = vpn->userState() == MozillaVPN::UserAuthenticated;
-  obj["location"] = vpn->currentServer()->toString();
+  obj["authenticated"] = vpn.userState() == MozillaVPN::UserAuthenticated;
+  obj["location"] = vpn.currentServer()->toString();
 
   {
     MozillaVPN::State state = vpn.state();
@@ -92,7 +92,7 @@ QJsonObject serializeStatus() {
   }
 
   {
-    Controller::State state = vpn->controller()->state();
+    Controller::State state = vpn.controller()->state();
     const QMetaObject* meta = qt_getEnumMetaObject(state);
     int index = meta->indexOfEnumerator(qt_getEnumName(state));
     obj["vpn"] = meta->enumerator(index).valueToKey(state);

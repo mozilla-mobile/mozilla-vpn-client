@@ -448,8 +448,8 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
         connect(request, &NetworkRequest::requestHeaderReceived,
                 [this](NetworkRequest* request) {
 #ifdef UNIT_TEST
-                  AuthenticationInApp* aip = AuthenticationInApp::instance();
-                  emit aip->unitTestFinalUrl(request->url());
+                  auto& aip = AuthenticationInApp::instance();
+                  emit aip.unitTestFinalUrl(request->url());
 #endif
                   // On a 200 response, we receive the OAuth code from the
                   // query string
