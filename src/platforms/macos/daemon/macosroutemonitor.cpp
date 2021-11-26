@@ -435,14 +435,17 @@ bool MacosRouteMonitor::addExclusionRoute(const QHostAddress& address) {
   return true;
 }
 
-void MacosRouteMonitor::deleteExclusionRoute(const QHostAddress& address) {
+bool MacosRouteMonitor::deleteExclusionRoute(const QHostAddress& address) {
   logger.debug() << "Deleting exclusion route for" << address.toString();
 
   m_exclusionRoutes.removeAll(address);
   if (address.protocol() == QAbstractSocket::IPv4Protocol) {
-    rtmSendRoute(RTM_DELETE, address, 32, m_defaultIfindexIpv4, nullptr);
+    return rtmSendRoute(RTM_DELETE, address, 32, m_defaultIfindexIpv4, nullptr);
   } else if (address.protocol() == QAbstractSocket::IPv6Protocol) {
-    rtmSendRoute(RTM_DELETE, address, 128, m_defaultIfindexIpv6, nullptr);
+    return rtmSendRoute(RTM_DELETE, address, 128, m_defaultIfindexIpv6,
+                        nullptr);
+  } else {
+    return false;
   }
 }
 

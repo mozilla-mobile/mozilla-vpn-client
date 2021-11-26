@@ -139,9 +139,6 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
 
   logger.debug() << "Configuring peer" << printableKey(config.m_serverPublicKey)
                  << "via" << config.m_serverIpv4AddrIn;
-  for (const QString& address : config.m_excludedAddresses) {
-    m_rtmonitor->addExclusionRoute(QHostAddress(address));
-  }
 
   // Update/create the peer config
   QString message;
@@ -174,10 +171,6 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
 bool WireguardUtilsMacos::deletePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
-
-  for (const QString& address : config.m_excludedAddresses) {
-    m_rtmonitor->deleteExclusionRoute(QHostAddress(address));
-  }
 
   QString message;
   QTextStream out(&message);
@@ -266,6 +259,20 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddressRange& prefix,
            m_rtmonitor->deleteRoute(IPAddressRange("8000::/1"));
   }
   return m_rtmonitor->deleteRoute(prefix);
+}
+
+bool WireguardUtilsMacos::addExclusionRoute(const QHostAddress& address) {
+  if (!m_rtmonitor) {
+    return false;
+  }
+  return m_rtmonitor->addExclusionRoute(address);
+}
+
+bool WireguardUtilsMacos::deleteExclusionRoute(const QHostAddress& address) {
+  if (!m_rtmonitor) {
+    return false;
+  }
+  return m_rtmonitor->deleteExclusionRoute(address);
 }
 
 QString WireguardUtilsMacos::uapiCommand(const QString& command) {
