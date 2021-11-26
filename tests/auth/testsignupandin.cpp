@@ -101,7 +101,7 @@ void TestSignUpAndIn::signUp() {
   aia.verifySessionEmailCode(code);
 
   QUrl finalUrl;
-  connect(aia, &AuthenticationInApp::unitTestFinalUrl,
+  connect(&aia, &AuthenticationInApp::unitTestFinalUrl,
           [&](const QUrl& url) { finalUrl = url; });
   connect(&task, &Task::completed, [&]() {
     qDebug() << "Task completed";
