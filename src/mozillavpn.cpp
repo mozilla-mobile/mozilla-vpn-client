@@ -509,7 +509,7 @@ void MozillaVPN::openLink(LinkType linkType) {
       break;
     case LinkInspector:
       Q_ASSERT(!Constants::inProduction());
-      url = "http://localhost:8766/";
+      url = "https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/";
       break;
 
     default:
