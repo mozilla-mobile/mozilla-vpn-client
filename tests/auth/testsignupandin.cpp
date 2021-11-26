@@ -44,8 +44,7 @@ TestSignUpAndIn::TestSignUpAndIn(const QString& pattern, bool totpCreation)
 
 void TestSignUpAndIn::signUp() {
   auto& aia = AuthenticationInApp::instance();
-  QVERIFY(!!aia);
-  disconnect(aia, nullptr, nullptr, nullptr);
+  disconnect(&aia, nullptr, nullptr, nullptr);
 
   QCOMPARE(aia.state(), AuthenticationInApp::StateInitializing);
 
@@ -54,7 +53,7 @@ void TestSignUpAndIn::signUp() {
   task.run();
 
   EventLoop loop;
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(&aia, &AuthenticationInApp::stateChanged, [&]() {
     if (aia.state() == AuthenticationInApp::StateStart) {
       loop.exit();
     }
@@ -67,7 +66,7 @@ void TestSignUpAndIn::signUp() {
 
   // Account
   aia.checkAccount(emailAddress);
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(&aia, &AuthenticationInApp::stateChanged, [&]() {
     QVERIFY(aia.state() != AuthenticationInApp::StateSignIn);
     if (aia.state() == AuthenticationInApp::StateSignUp) {
       loop.exit();
@@ -86,7 +85,7 @@ void TestSignUpAndIn::signUp() {
   // Sign-up
   aia.signUp();
 
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(&aia, &AuthenticationInApp::stateChanged, [&]() {
     if (aia.state() ==
         AuthenticationInApp::StateVerificationSessionByEmailNeeded) {
       loop.exit();
