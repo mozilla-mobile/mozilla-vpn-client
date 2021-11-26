@@ -72,6 +72,7 @@ class Daemon : public QObject {
     InterfaceConfig m_config;
   };
   QMap<int, ConnectionState> m_connections;
+  QHash<QHostAddress, int> m_excludedAddrSet;
   QTimer m_handshakeTimer;
 };
 

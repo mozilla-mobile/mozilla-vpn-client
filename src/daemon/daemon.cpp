@@ -96,6 +96,18 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return false;
     }
   }
+
+  // Configure routing for excluded addresses.
+  for (const QString& i : config.m_excludedAddresses) {
+    QHostAddress address(i);
+    if (m_excludedAddrSet.contains(address)) {
+      m_excludedAddrSet[address]++;
+      continue;
+    }
+    wgutils()->addExclusionRoute(address);
+    m_excludedAddrSet[address] = 1;
+  }
+
   // Add the peer to this interface.
   if (!wgutils()->updatePeer(config)) {
     logger.error() << "Peer creation failed.";
@@ -321,6 +333,12 @@ bool Daemon::deactivate(bool emitSignals) {
     wgutils()->deletePeer(config);
   }
 
+  // Cleanup routing for excluded addresses.
+  for (const QHostAddress& address : m_excludedAddrSet.keys()) {
+    wgutils()->deleteExclusionRoute(address);
+  }
+  m_excludedAddrSet.clear();
+
   // Delete the interface
   if (!wgutils()->deleteInterface()) {
     return false;
@@ -366,6 +384,17 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   const InterfaceConfig& lastConfig =
       m_connections.value(config.m_hopindex).m_config;
 
+  // Configure routing for new excluded addresses.
+  for (const QString& i : config.m_excludedAddresses) {
+    QHostAddress address(i);
+    if (m_excludedAddrSet.contains(address)) {
+      m_excludedAddrSet[address]++;
+      continue;
+    }
+    wgutils()->addExclusionRoute(address);
+    m_excludedAddrSet[address] = 1;
+  }
+
   // Activate the new peer and its routes.
   if (!wgutils()->updatePeer(config)) {
     logger.error() << "Server switch failed to update the wireguard interface";
@@ -379,6 +408,16 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   }
 
   // Remove routing entries for the old peer.
+  for (const QString& i : lastConfig.m_excludedAddresses) {
+    QHostAddress address(i);
+    Q_ASSERT(m_excludedAddrSet.contains(address));
+    if (m_excludedAddrSet[address] > 1) {
+      m_excludedAddrSet[address]--;
+      continue;
+    }
+    wgutils()->deleteExclusionRoute(address);
+    m_excludedAddrSet.remove(address);
+  }
   for (const IPAddressRange& ip : lastConfig.m_allowedIPAddressRanges) {
     if (!config.m_allowedIPAddressRanges.contains(ip)) {
       wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
