@@ -7,15 +7,6 @@
 #include "../../src/settingsholder.h"
 #include "helper.h"
 
-void TestIpFinder::abort() {
-  SettingsHolder::instance();
-
-  IPFinder* ipFinder = new IPFinder(this);
-
-  ipFinder->start();
-  delete ipFinder;
-}
-
 void TestIpFinder::ipv4AndIpv6() {
   SettingsHolder::instance();
 
