@@ -69,10 +69,12 @@ IOSAuthenticationListener::~IOSAuthenticationListener() {
   }
 }
 
-void IOSAuthenticationListener::start(const QString& codeChallenge,
+void IOSAuthenticationListener::start(Task* task, const QString& codeChallenge,
                                       const QString& codeChallengeMethod,
                                       const QString& emailAddress) {
   logger.debug() << "IOSAuthenticationListener initialize";
+
+  Q_UNUSED(task);
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser, codeChallenge,
                                    codeChallengeMethod, emailAddress));

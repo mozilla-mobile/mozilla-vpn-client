@@ -7,6 +7,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "tasks/release/taskrelease.h"
+#include "taskscheduler.h"
 #include "timersingleshot.h"
 #include "update/updater.h"
 
@@ -18,29 +20,31 @@ ReleaseMonitor::ReleaseMonitor() {
   MVPN_COUNT_CTOR(ReleaseMonitor);
 
   m_timer.setSingleShot(true);
-  connect(&m_timer, &QTimer::timeout, this, &ReleaseMonitor::runInternal);
+  connect(&m_timer, &QTimer::timeout, this, &ReleaseMonitor::runSoon);
 }
 
 ReleaseMonitor::~ReleaseMonitor() { MVPN_COUNT_DTOR(ReleaseMonitor); }
 
 void ReleaseMonitor::runSoon() {
-  logger.debug() << "ReleaseManager - Scheduling a quick timer";
-  TimerSingleShot::create(this, 0, [this] { runInternal(); });
-}
+  logger.debug() << "Scheduling a release-check task";
 
-void ReleaseMonitor::runInternal() {
-  logger.debug() << "ReleaseMonitor started";
+  TimerSingleShot::create(this, 0, [this] {
+    TaskRelease* task = new TaskRelease(TaskRelease::Check);
 
-  Updater* updater = Updater::create(this, false);
-  Q_ASSERT(updater);
+    connect(task, &TaskRelease::updaterFailure, []() {
+      // This cannot happen for release checks.
+      Q_ASSERT(false);
+    });
 
-  updater->start();
-  connect(updater, &Updater::updateRequired, this,
-          &ReleaseMonitor::updateRequired);
-  connect(updater, &Updater::updateRecommended, this,
-          &ReleaseMonitor::updateRecommended);
-  connect(updater, &QObject::destroyed, this, &ReleaseMonitor::releaseChecked);
-  connect(updater, &QObject::destroyed, this, &ReleaseMonitor::schedule);
+    connect(task, &TaskRelease::updateRequired, this,
+            &ReleaseMonitor::updateRequired);
+    connect(task, &TaskRelease::updateRecommended, this,
+            &ReleaseMonitor::updateRecommended);
+    connect(task, &Task::completed, this, &ReleaseMonitor::releaseChecked);
+    connect(task, &Task::completed, this, &ReleaseMonitor::schedule);
+
+    TaskScheduler::scheduleTask(task);
+  });
 }
 
 void ReleaseMonitor::schedule() {
@@ -59,26 +63,26 @@ void ReleaseMonitor::updateRecommended() {
   MozillaVPN::instance().setUpdateRecommended(true);
 }
 
-void ReleaseMonitor::update() {
-  logger.debug() << "Update";
+void ReleaseMonitor::updateSoon() {
+  logger.debug() << "Scheduling a release-update task";
 
-  Updater* updater = Updater::create(this, true);
-  if (!updater) {
-    logger.warning() << "No updater supported for this platform. Fallback";
+  TimerSingleShot::create(this, 0, [] {
+    TaskRelease* task = new TaskRelease(TaskRelease::Update);
+    connect(task, &TaskRelease::updaterFailure, []() {
+      logger.warning() << "No updater supported for this platform. Fallback";
 
-    auto& vpn = MozillaVPN::instance();
+      auto& vpn = MozillaVPN::instance();
+      vpn.openLink(MozillaVPN::LinkUpdate);
+      vpn.setUpdating(false);
+    });
 
-    vpn.openLink(MozillaVPN::LinkUpdate);
-    vpn.setUpdating(false);
-    return;
-  }
+    // The updater, in download mode, is not destroyed. So, if this happens,
+    // probably something went wrong.
+    connect(task, &Task::completed, [] {
+      auto& vpn = MozillaVPN::instance();
+      vpn.setUpdating(false);
+    });
 
-  // The updater, in download mode, is not destroyed. So, if this happens,
-  // probably something went wrong.
-  connect(updater, &QObject::destroyed, [] {
-    auto& vpn = MozillaVPN::instance();
-    vpn.setUpdating(false);
+    TaskScheduler::scheduleTask(task);
   });
-
-  updater->start();
 }

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "captiveportalmultirequest.h"
+#include "captiveportalrequesttask.h"
 #include "captiveportalrequest.h"
 
 #include "captiveportal.h"
@@ -14,34 +14,33 @@
 #include "networkmanager.h"
 
 namespace {
-Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalMultiRequest");
+Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalRequestTask");
 }
 
-CaptivePortalMultiRequest::CaptivePortalMultiRequest(QObject* parent)
-    : QObject(parent) {
-  MVPN_COUNT_CTOR(CaptivePortalMultiRequest);
+CaptivePortalRequestTask::CaptivePortalRequestTask(bool retryOnFailure)
+    : Task("CaptivePortalRequestTask"), m_retryOnFailure(retryOnFailure) {
+  MVPN_COUNT_CTOR(CaptivePortalRequestTask);
 }
 
-CaptivePortalMultiRequest::~CaptivePortalMultiRequest() {
-  MVPN_COUNT_DTOR(CaptivePortalMultiRequest);
+CaptivePortalRequestTask::~CaptivePortalRequestTask() {
+  MVPN_COUNT_DTOR(CaptivePortalRequestTask);
 }
 
-void CaptivePortalMultiRequest::run() {
-  m_completed = false;
+void CaptivePortalRequestTask::run() {
   // If we can't confirm in 30s that we are not behind
   // a captive-portal, handle this like no portal exists
   TimerSingleShot::create(this, 30 * 1000, [this]() {
     logger.error() << "CaptivePortal max timeout reached, exiting detection";
-    onResult(NoPortal);
+    onResult(CaptivePortalRequest::CaptivePortalResult::NoPortal);
   });
   createRequest();
 }
 
-void CaptivePortalMultiRequest::createRequest() {
+void CaptivePortalRequestTask::createRequest() {
   NetworkManager::instance()->clearCache();
   CaptivePortalRequest* request = new CaptivePortalRequest(this);
   connect(request, &CaptivePortalRequest::completed,
-          [this](CaptivePortalResult detected) {
+          [this](CaptivePortalRequest::CaptivePortalResult detected) {
             logger.debug() << "Captive portal detection:" << detected;
             onResult(detected);
           });
@@ -49,16 +48,19 @@ void CaptivePortalMultiRequest::createRequest() {
   request->run();
 }
 
-void CaptivePortalMultiRequest::onResult(CaptivePortalResult portalDetected) {
+void CaptivePortalRequestTask::onResult(
+    CaptivePortalRequest::CaptivePortalResult portalDetected) {
   if (m_completed) {
     return;
   }
-  if (portalDetected == CaptivePortalResult::Failure) {
+  if (portalDetected == CaptivePortalRequest::CaptivePortalResult::Failure &&
+      m_retryOnFailure) {
     logger.warning() << "Captive portal detect failed, retry!";
     TimerSingleShot::create(this, 500, [this]() { createRequest(); });
     return;
   }
   m_completed = true;
-  deleteLater();
-  emit completed(portalDetected);
+
+  emit operationCompleted(portalDetected);
+  emit completed();
 }

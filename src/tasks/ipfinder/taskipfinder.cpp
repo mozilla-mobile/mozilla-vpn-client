@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "ipfinder.h"
+#include "taskipfinder.h"
 #include "constants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -19,27 +19,31 @@
 #include <QUrl>
 
 namespace {
-Logger logger(LOG_NETWORKING, "IPFinder");
+Logger logger(LOG_NETWORKING, "TaskIPFinder");
 }
 
-IPFinder::IPFinder(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(IPFinder);
+TaskIPFinder::TaskIPFinder() : Task("TaskIPFinder") {
+  MVPN_COUNT_CTOR(TaskIPFinder);
+
+  // Queued to avoid this task to be deleted before the processing of the slots.
+  connect(this, &TaskIPFinder::operationCompleted, this, &Task::completed,
+          Qt::QueuedConnection);
 }
 
-IPFinder::~IPFinder() {
-  MVPN_COUNT_DTOR(IPFinder);
+TaskIPFinder::~TaskIPFinder() {
+  MVPN_COUNT_DTOR(TaskIPFinder);
   if (m_lookupId > -1) {
     QHostInfo::abortHostLookup(m_lookupId);
   }
 }
 
-void IPFinder::start() {
+void TaskIPFinder::run() {
   logger.debug() << "Starting the ip-lookup";
 
 #ifdef MVPN_WASM
   // QHostInfo uses dlopen() to run the DNS lookup. This does not work on WASM.
   // Let's fake the result.
-  emit completed("1.2.3.4", "a1f:ea75:ca75", "Mordor");
+  emit operationCompleted("1.2.3.4", "a1f:ea75:ca75", "Mordor");
   return;
 #endif
 
@@ -48,7 +52,7 @@ void IPFinder::start() {
                                      SLOT(dnsLookupCompleted(QHostInfo)));
 }
 
-void IPFinder::dnsLookupCompleted(const QHostInfo& hostInfo) {
+void TaskIPFinder::dnsLookupCompleted(const QHostInfo& hostInfo) {
   logger.debug() << "DNS lookup completed";
 
   m_lookupId = -1;
@@ -56,8 +60,7 @@ void IPFinder::dnsLookupCompleted(const QHostInfo& hostInfo) {
   if (hostInfo.error() != QHostInfo::NoError) {
     logger.error() << "Unable to perform a DNS Lookup:"
                    << hostInfo.errorString();
-    emit completed(QString(), QString(), QString());
-    deleteLater();
+    emit operationCompleted(QString(), QString(), QString());
     return;
   }
 
@@ -77,13 +80,12 @@ void IPFinder::dnsLookupCompleted(const QHostInfo& hostInfo) {
 
   if (m_requestCount == 0) {
     logger.debug() << "No requests created. Let's abort the lookup";
-    emit completed(QString(), QString(), QString());
-    deleteLater();
+    emit operationCompleted(QString(), QString(), QString());
     return;
   }
 }
 
-void IPFinder::createRequest(const QHostAddress& address, bool ipv6) {
+void TaskIPFinder::createRequest(const QHostAddress& address, bool ipv6) {
   NetworkRequest* request = NetworkRequest::createForIpInfo(this, address);
 
   ++m_requestCount;
@@ -104,7 +106,7 @@ void IPFinder::createRequest(const QHostAddress& address, bool ipv6) {
             }
 
             m_requestCount = 0;
-            emit completed(QString(), QString(), QString());
+            emit operationCompleted(QString(), QString(), QString());
           });
 
   connect(request, &NetworkRequest::requestCompleted,
@@ -134,7 +136,7 @@ void IPFinder::createRequest(const QHostAddress& address, bool ipv6) {
           });
 }
 
-void IPFinder::completeLookup() {
+void TaskIPFinder::completeLookup() {
   Q_ASSERT(m_requestCount == 0);
 
   logger.debug() << "Lookup completed!";
@@ -164,6 +166,5 @@ void IPFinder::completeLookup() {
     }
   }
 
-  emit completed(ipv4Address, ipv6Address, country);
-  deleteLater();
+  emit operationCompleted(ipv4Address, ipv6Address, country);
 }

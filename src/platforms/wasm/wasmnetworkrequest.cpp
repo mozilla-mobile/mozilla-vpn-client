@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "task.h"
 #include "timersingleshot.h"
 
 #include <QDir>
@@ -40,7 +41,7 @@ void createDummyRequest(NetworkRequest* r) { createDummyRequest(r, ""); }
 
 }  // namespace
 
-NetworkRequest::NetworkRequest(QObject* parent, int status,
+NetworkRequest::NetworkRequest(Task* parent, int status,
                                bool setAuthorizationHeader)
     : QObject(parent), m_status(status) {
   Q_UNUSED(setAuthorizationHeader);
@@ -64,7 +65,7 @@ QString NetworkRequest::apiBaseUrl() {
 }
 
 // static
-NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent,
+NetworkRequest* NetworkRequest::createForGetUrl(Task* parent,
                                                 const QString& url,
                                                 int status) {
   Q_ASSERT(parent);
@@ -77,7 +78,7 @@ NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent,
 
 // static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(
-    QObject* parent, const QString&, const QString&) {
+    Task* parent, const QString&, const QString&) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -87,7 +88,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForDeviceCreation(QObject* parent,
+NetworkRequest* NetworkRequest::createForDeviceCreation(Task* parent,
                                                         const QString&,
                                                         const QString&,
                                                         const QString&) {
@@ -99,7 +100,7 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(QObject* parent,
 }
 
 // static
-NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
+NetworkRequest* NetworkRequest::createForDeviceRemoval(Task* parent,
                                                        const QString&) {
   Q_ASSERT(parent);
 
@@ -109,7 +110,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
 }
 
 // static
-NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
+NetworkRequest* NetworkRequest::createForServers(Task* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -118,7 +119,7 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
 }
 
 // static
-NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
+NetworkRequest* NetworkRequest::createForVersions(Task* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -127,7 +128,7 @@ NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
 }
 
 // static
-NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
+NetworkRequest* NetworkRequest::createForAccount(Task* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -136,7 +137,7 @@ NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
 }
 
 // static
-NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
+NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
                                                 const QHostAddress&) {
   Q_ASSERT(parent);
 
@@ -147,7 +148,7 @@ NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
 
 // static
 NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
-    QObject* parent, const QUrl&, const QByteArray&) {
+    Task* parent, const QUrl&, const QByteArray&) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -156,14 +157,14 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
+NetworkRequest* NetworkRequest::createForCaptivePortalLookup(Task* parent) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);
   return r;
 }
 
 // static
-NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
+NetworkRequest* NetworkRequest::createForHeartbeat(Task* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -172,7 +173,7 @@ NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
 }
 
 // static
-NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
+NetworkRequest* NetworkRequest::createForSurveyData(Task* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -181,7 +182,7 @@ NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
 }
 
 // static
-NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
+NetworkRequest* NetworkRequest::createForFeedback(Task* parent,
                                                   const QString& feedbackText,
                                                   const QString& logs,
                                                   const qint8 rating,
@@ -198,9 +199,8 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
 
 // static
 NetworkRequest* NetworkRequest::createForSupportTicket(
-    QObject* parent, const QString& email, const QString& subject,
+    Task* parent, const QString& email, const QString& subject,
     const QString& issueText, const QString& logs, const QString& category) {
-  Q_UNUSED(parent);
   Q_UNUSED(email);
   Q_UNUSED(subject);
   Q_UNUSED(issueText);
@@ -213,7 +213,7 @@ NetworkRequest* NetworkRequest::createForSupportTicket(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
+NetworkRequest* NetworkRequest::createForGetFeatureList(Task* parent) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);
   return r;
@@ -221,7 +221,7 @@ NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
 
 // static
 NetworkRequest* NetworkRequest::createForFxaAccountStatus(
-    QObject* parent, const QString& emailAddress) {
+    Task* parent, const QString& emailAddress) {
   Q_ASSERT(parent);
   Q_UNUSED(emailAddress);
 
@@ -232,7 +232,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountStatus(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaAccountCreation(
-    QObject* parent, const QString& email, const QByteArray& authpw,
+    Task* parent, const QString& email, const QByteArray& authpw,
     const QUrlQuery& query) {
   Q_ASSERT(parent);
   Q_UNUSED(email);
@@ -245,7 +245,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForFxaLogin(QObject* parent,
+NetworkRequest* NetworkRequest::createForFxaLogin(Task* parent,
                                                   const QString& email,
                                                   const QByteArray& authpw,
                                                   const QString& unblockCode,
@@ -263,7 +263,7 @@ NetworkRequest* NetworkRequest::createForFxaLogin(QObject* parent,
 
 // static
 NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
-    QObject* parent, const QString& emailAddress) {
+    Task* parent, const QString& emailAddress) {
   Q_ASSERT(parent);
   Q_UNUSED(emailAddress);
 
@@ -274,7 +274,7 @@ NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
-    QObject* parent, const QByteArray& sessionToken, const QString& code,
+    Task* parent, const QByteArray& sessionToken, const QString& code,
     const QUrlQuery& query) {
   Q_ASSERT(parent);
   Q_UNUSED(sessionToken);
@@ -288,7 +288,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
-    QObject* parent, const QByteArray& sessionToken, const QString& code,
+    Task* parent, const QByteArray& sessionToken, const QString& code,
     const QUrlQuery& query) {
   Q_ASSERT(parent);
   Q_UNUSED(sessionToken);
@@ -302,7 +302,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
-    QObject* parent, const QByteArray& sessionToken) {
+    Task* parent, const QByteArray& sessionToken) {
   Q_ASSERT(parent);
   Q_UNUSED(sessionToken);
 
@@ -313,7 +313,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaAuthz(
-    QObject* parent, const QByteArray& sessionToken, const QUrlQuery& query) {
+    Task* parent, const QByteArray& sessionToken, const QUrlQuery& query) {
   Q_ASSERT(parent);
   Q_UNUSED(sessionToken);
   Q_UNUSED(query);
@@ -325,7 +325,7 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
-    QObject* parent, const QByteArray& sessionToken) {
+    Task* parent, const QByteArray& sessionToken) {
   Q_ASSERT(parent);
   Q_UNUSED(sessionToken);
 
@@ -335,7 +335,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
+NetworkRequest* NetworkRequest::createForProducts(Task* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
