@@ -15,7 +15,8 @@ class AndroidAuthenticationListener final : public AuthenticationListener {
   AndroidAuthenticationListener(QObject* parent);
   ~AndroidAuthenticationListener();
 
-  void start(const QString& codeChallenge, const QString& codeChallengeMethod,
+  void start(Task* task, const QString& codeChallenge,
+             const QString& codeChallengeMethod,
              const QString& emailAddress) override;
 };
 

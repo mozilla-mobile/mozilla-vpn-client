@@ -17,8 +17,7 @@ class ReleaseMonitor final : public QObject {
   ~ReleaseMonitor();
 
   void runSoon();
-
-  void update();
+  void updateSoon();
 
  signals:
   // for testing
@@ -26,7 +25,6 @@ class ReleaseMonitor final : public QObject {
 
  private:
   void schedule();
-  void runInternal();
 
   void updateRequired();
   void updateRecommended();

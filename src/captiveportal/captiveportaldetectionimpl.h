@@ -5,8 +5,9 @@
 #ifndef CAPTIVEPORTALDETECTIONIMPL_H
 #define CAPTIVEPORTALDETECTIONIMPL_H
 
+#include "captiveportalrequest.h"
+
 #include <QObject>
-#include "captiveportalresult.h"
 
 class CaptivePortalDetectionImpl : public QObject {
   Q_OBJECT
@@ -18,7 +19,8 @@ class CaptivePortalDetectionImpl : public QObject {
   virtual void start();
 
  signals:
-  void detectionCompleted(CaptivePortalResult captivePortalDetected);
+  void detectionCompleted(
+      CaptivePortalRequest::CaptivePortalResult captivePortalDetected);
 };
 
 #endif  // CAPTIVEPORTALDETECTIONIMPL_H

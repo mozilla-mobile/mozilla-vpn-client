@@ -29,18 +29,38 @@ AuthenticationInAppListener::AuthenticationInAppListener(QObject* parent)
 
 AuthenticationInAppListener::~AuthenticationInAppListener() {
   MVPN_COUNT_DTOR(AuthenticationInAppListener);
-
-  if (!m_sessionToken.isEmpty()) {
-    NetworkRequest::createForFxaSessionDestroy(AuthenticationInApp::instance(),
-                                               m_sessionToken);
-  }
 }
 
-void AuthenticationInAppListener::start(const QString& codeChallenge,
+void AuthenticationInAppListener::aboutToFinish() {
+  if (m_sessionToken.isEmpty()) {
+    emit readyToFinish();
+    return;
+  }
+
+  NetworkRequest* request =
+      NetworkRequest::createForFxaSessionDestroy(m_task, m_sessionToken);
+  Q_ASSERT(request);
+
+  connect(request, &NetworkRequest::requestFailed,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Failed to destroy the FxA session" << error;
+            emit readyToFinish();
+          });
+
+  connect(request, &NetworkRequest::requestCompleted,
+          [this](const QByteArray&) {
+            logger.error() << "FxA session destroyed";
+            emit readyToFinish();
+          });
+}
+
+void AuthenticationInAppListener::start(Task* task,
+                                        const QString& codeChallenge,
                                         const QString& codeChallengeMethod,
                                         const QString& emailAddress) {
   logger.debug() << "AuthenticationInAppListener initialized";
 
+  m_task = task;
   m_codeChallenge = codeChallenge;
   m_codeChallengeMethod = codeChallengeMethod;
 
@@ -54,7 +74,7 @@ void AuthenticationInAppListener::start(const QString& codeChallenge,
                                    emailAddress));
 
   NetworkRequest* request =
-      NetworkRequest::createForGetUrl(this, url.toString());
+      NetworkRequest::createForGetUrl(task, url.toString());
 
   connect(request, &NetworkRequest::requestRedirected,
           [this](NetworkRequest* request, const QUrl& url) {
@@ -94,7 +114,7 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
   m_emailAddress = emailAddress;
 
   NetworkRequest* request =
-      NetworkRequest::createForFxaAccountStatus(this, m_emailAddress);
+      NetworkRequest::createForFxaAccountStatus(m_task, m_emailAddress);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -133,7 +153,7 @@ void AuthenticationInAppListener::accountChecked(bool exists) {
 
   AuthenticationListener* fallbackListener =
       create(this, MozillaVPN::AuthenticationInBrowser);
-  fallbackListener->start(m_codeChallenge, m_codeChallengeMethod,
+  fallbackListener->start(m_task, m_codeChallenge, m_codeChallengeMethod,
                           m_emailAddress);
 
   connect(fallbackListener, &AuthenticationListener::completed, this,
@@ -173,7 +193,7 @@ void AuthenticationInAppListener::signIn(const QString& unblockCode) {
   logger.debug() << "Sign in";
 
   NetworkRequest* request = NetworkRequest::createForFxaLogin(
-      this, m_emailAddress, m_authPw, unblockCode, m_urlQuery);
+      m_task, m_emailAddress, m_authPw, unblockCode, m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -198,7 +218,7 @@ void AuthenticationInAppListener::signUp() {
   logger.debug() << "Sign up";
 
   NetworkRequest* request = NetworkRequest::createForFxaAccountCreation(
-      this, m_emailAddress, m_authPw, m_urlQuery);
+      m_task, m_emailAddress, m_authPw, m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -238,7 +258,7 @@ void AuthenticationInAppListener::sendUnblockCodeEmail() {
   Q_ASSERT(m_sessionToken.isEmpty());
 
   NetworkRequest* request =
-      NetworkRequest::createForFxaSendUnblockCode(this, m_emailAddress);
+      NetworkRequest::createForFxaSendUnblockCode(m_task, m_emailAddress);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -256,8 +276,8 @@ void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
   Q_ASSERT(!m_sessionToken.isEmpty());
 
   NetworkRequest* request =
-      NetworkRequest::createForFxaSessionVerifyByEmailCode(this, m_sessionToken,
-                                                           code, m_urlQuery);
+      NetworkRequest::createForFxaSessionVerifyByEmailCode(
+          m_task, m_sessionToken, code, m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -277,7 +297,7 @@ void AuthenticationInAppListener::resendVerificationSessionCodeEmail() {
   Q_ASSERT(!m_sessionToken.isEmpty());
 
   NetworkRequest* request =
-      NetworkRequest::createForFxaSessionResendCode(this, m_sessionToken);
+      NetworkRequest::createForFxaSessionResendCode(m_task, m_sessionToken);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -295,7 +315,7 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
   Q_ASSERT(!m_sessionToken.isEmpty());
 
   NetworkRequest* request = NetworkRequest::createForFxaSessionVerifyByTotpCode(
-      this, m_sessionToken, code, m_urlQuery);
+      m_task, m_sessionToken, code, m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -360,7 +380,7 @@ void AuthenticationInAppListener::signInOrUpCompleted(
 #ifdef UNIT_TEST
 void AuthenticationInAppListener::createTotpCodes() {
   NetworkRequest* request =
-      NetworkRequest::createForFxaTotpCreation(this, m_sessionToken);
+      NetworkRequest::createForFxaTotpCreation(m_task, m_sessionToken);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -396,7 +416,7 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
 #endif
 
   NetworkRequest* request =
-      NetworkRequest::createForFxaAuthz(this, m_sessionToken, m_urlQuery);
+      NetworkRequest::createForFxaAuthz(m_task, m_sessionToken, m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -440,7 +460,7 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
         }
 
         NetworkRequest* request =
-            NetworkRequest::createForGetUrl(this, redirect.toString(), 200);
+            NetworkRequest::createForGetUrl(m_task, redirect.toString(), 200);
 
         connect(
             request, &NetworkRequest::requestFailed,
@@ -502,6 +522,7 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
       aip->requestErrorPropagation(AuthenticationInApp::ErrorTooManyRequests,
                                    this);
       aip->requestState(AuthenticationInApp::StateStart, this);
+      break;
 
     case 125:  // The request was blocked for security reasons
       Q_ASSERT(false);
