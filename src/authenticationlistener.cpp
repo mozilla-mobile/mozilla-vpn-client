@@ -91,3 +91,5 @@ QUrl AuthenticationListener::createAuthenticationUrl(
   url.setQuery(query);
   return url;
 }
+
+void AuthenticationListener::aboutToFinish() { emit readyToFinish(); }

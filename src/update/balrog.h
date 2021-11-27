@@ -20,14 +20,16 @@ class Balrog final : public Updater {
   Balrog(QObject* parent, bool downloadAndInstall);
   ~Balrog();
 
-  void start() override;
+  void start(Task* task) override;
 
  private:
   static QString userAgent();
 
-  bool processData(const QByteArray& data);
-  bool fetchSignature(NetworkRequest* request, const QByteArray& data);
-  bool checkSignature(const QByteArray& x5uData, const QByteArray& updateData,
+  bool processData(Task* task, const QByteArray& data);
+  bool fetchSignature(Task* task, NetworkRequest* request,
+                      const QByteArray& data);
+  bool checkSignature(Task* task, const QByteArray& x5uData,
+                      const QByteArray& updateData,
                       const QByteArray& signatureBlob);
   bool validateSignature(const QByteArray& x5uData,
                          const QByteArray& updateData,

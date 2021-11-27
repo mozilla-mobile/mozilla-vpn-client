@@ -62,6 +62,7 @@ HEADERS += \
     ../../src/task.h \
     ../../src/tasks/authenticate/desktopauthenticationlistener.h \
     ../../src/tasks/authenticate/taskauthenticate.h \
+    ../../src/tasks/function/taskfunction.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
@@ -98,6 +99,7 @@ SOURCES += \
     ../../src/simplenetworkmanager.cpp \
     ../../src/tasks/authenticate/desktopauthenticationlistener.cpp \
     ../../src/tasks/authenticate/taskauthenticate.cpp \
+    ../../src/tasks/function/taskfunction.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \

@@ -1512,7 +1512,7 @@ void MozillaVPN::update() {
   }
 #endif
 
-  m_private->m_releaseMonitor.update();
+  m_private->m_releaseMonitor.updateSoon();
 }
 
 void MozillaVPN::setUpdating(bool updating) {
