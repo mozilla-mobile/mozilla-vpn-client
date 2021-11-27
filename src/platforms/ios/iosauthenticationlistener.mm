@@ -130,7 +130,7 @@ void IOSAuthenticationListener::start(const QString& codeChallenge,
       }];
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-  QObject* rootObject = QmlEngineHolder::instance()->engine()->rootObjects().first();
+  QObject* rootObject = QmlEngineHolder::instance().engine()->rootObjects().first();
   QWindow* window = qobject_cast<QWindow*>(rootObject);
   Q_ASSERT(window);
 
