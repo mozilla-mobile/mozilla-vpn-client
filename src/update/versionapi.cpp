@@ -26,8 +26,8 @@ VersionApi::~VersionApi() {
   logger.debug() << "VersionApi released";
 }
 
-void VersionApi::start() {
-  NetworkRequest* request = NetworkRequest::createForVersions(this);
+void VersionApi::start(Task* task) {
+  NetworkRequest* request = NetworkRequest::createForVersions(task);
 
   connect(request, &NetworkRequest::requestFailed,
           [](QNetworkReply::NetworkError error, const QByteArray&) {

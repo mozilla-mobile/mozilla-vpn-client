@@ -60,7 +60,7 @@ SOURCES += \
         captiveportal/captiveportalmonitor.cpp \
         captiveportal/captiveportalnotifier.cpp \
         captiveportal/captiveportalrequest.cpp \
-        captiveportal/captiveportalmultirequest.cpp \
+        captiveportal/captiveportalrequesttask.cpp \
         closeeventhandler.cpp \
         collator.cpp \
         command.cpp \
@@ -97,7 +97,6 @@ SOURCES += \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
         ipaddressrange.cpp \
-        ipfinder.cpp \
         l18nstringsimpl.cpp \
         leakdetector.cpp \
         localizer.cpp \
@@ -153,7 +152,9 @@ SOURCES += \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
+        tasks/ipfinder/taskipfinder.cpp \
         tasks/products/taskproducts.cpp \
+        tasks/release/taskrelease.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
         tasks/surveydata/tasksurveydata.cpp \
@@ -179,8 +180,7 @@ HEADERS += \
         captiveportal/captiveportalmonitor.h \
         captiveportal/captiveportalnotifier.h \
         captiveportal/captiveportalrequest.h \
-        captiveportal/captiveportalmultirequest.h \
-        captiveportal/captiveportalresult.h \
+        captiveportal/captiveportalrequesttask.h \
         closeeventhandler.h \
         collator.h \
         command.h \
@@ -228,7 +228,6 @@ HEADERS += \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
         ipaddressrange.h \
-        ipfinder.h \
         leakdetector.h \
         localizer.h \
         logger.h \
@@ -284,7 +283,9 @@ HEADERS += \
         tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
+        tasks/ipfinder/taskipfinder.h \
         tasks/products/taskproducts.h \
+        tasks/release/taskrelease.h \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
         tasks/surveydata/tasksurveydata.h \
@@ -540,13 +541,15 @@ else:android {
                    adjust/adjusthandler.cpp \
                    adjust/adjustproxy.cpp \
                    adjust/adjustproxyconnection.cpp \
-                   adjust/adjustproxypackagehandler.cpp
+                   adjust/adjustproxypackagehandler.cpp \
+                   adjust/adjusttasksubmission.cpp
 
         HEADERS += adjust/adjustfiltering.h \
                    adjust/adjusthandler.h \
                    adjust/adjustproxy.h \
                    adjust/adjustproxyconnection.h \
-                   adjust/adjustproxypackagehandler.h
+                   adjust/adjustproxypackagehandler.h \
+                   adjust/adjusttasksubmission.h
     }
 
     versionAtLeast(QT_VERSION, 5.15.1) {
@@ -586,7 +589,8 @@ else:android {
                 platforms/android/androidappimageprovider.cpp \
                 platforms/android/androidapplistprovider.cpp \
                 platforms/android/androidsharedprefs.cpp \
-                tasks/authenticate/desktopauthenticationlistener.cpp
+                tasks/authenticate/desktopauthenticationlistener.cpp \
+                tasks/purchase/taskpurchase.cpp
 
     HEADERS +=  platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
@@ -599,7 +603,8 @@ else:android {
                 platforms/android/androidappimageprovider.h \
                 platforms/android/androidapplistprovider.h \
                 platforms/android/androidsharedprefs.h \
-                tasks/authenticate/desktopauthenticationlistener.h
+                tasks/authenticate/desktopauthenticationlistener.h \
+                tasks/purchase/taskpurchase.h
 
     # Usable Linux Imports
     SOURCES += platforms/linux/linuxpingsender.cpp \
@@ -752,7 +757,8 @@ else:ios {
                    adjust/adjusthandler.cpp \
                    adjust/adjustproxy.cpp \
                    adjust/adjustproxyconnection.cpp \
-                   adjust/adjustproxypackagehandler.cpp
+                   adjust/adjustproxypackagehandler.cpp \
+                   adjust/adjusttasksubmission.cpp
 
         OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm
 
@@ -760,7 +766,8 @@ else:ios {
                    adjust/adjusthandler.h \
                    adjust/adjustproxy.h \
                    adjust/adjustproxyconnection.h \
-                   adjust/adjustproxypackagehandler.h
+                   adjust/adjustproxypackagehandler.h \
+                   adjust/adjusttasksubmission.h
 
         OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h
     }
@@ -784,7 +791,8 @@ else:ios {
     DEFINES += MVPN_IOS
 
     SOURCES += \
-            platforms/macos/macospingsender.cpp
+            platforms/macos/macospingsender.cpp \
+            tasks/purchase/taskpurchase.cpp
 
     OBJECTIVE_SOURCES += \
             platforms/ios/iosiaphandler.mm \
@@ -797,7 +805,8 @@ else:ios {
             platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
-            platforms/macos/macospingsender.h
+            platforms/macos/macospingsender.h \
+            tasks/purchase/taskpurchase.h
 
     OBJECTIVE_HEADERS += \
             platforms/ios/iosiaphandler.h \
