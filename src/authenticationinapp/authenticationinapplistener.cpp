@@ -41,13 +41,13 @@ void AuthenticationInAppListener::aboutToFinish() {
       NetworkRequest::createForFxaSessionDestroy(m_task, m_sessionToken);
   Q_ASSERT(request);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to destroy the FxA session" << error;
             emit readyToFinish();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray&) {
             logger.error() << "FxA session destroyed";
             emit readyToFinish();
@@ -76,7 +76,7 @@ void AuthenticationInAppListener::start(Task* task,
   NetworkRequest* request =
       NetworkRequest::createForGetUrl(task, url.toString());
 
-  connect(request, &NetworkRequest::requestRedirected,
+  connect(request, &NetworkRequest::requestRedirected, this,
           [this](NetworkRequest* request, const QUrl& url) {
             logger.debug() << "Redirect received";
             m_urlQuery = QUrlQuery(url.query());
@@ -98,7 +98,7 @@ void AuthenticationInAppListener::start(Task* task,
             request->abort();
           });
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to fetch the initial request" << error;
             if (error != QNetworkReply::OperationCanceledError) {
@@ -116,13 +116,13 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
   NetworkRequest* request =
       NetworkRequest::createForFxaAccountStatus(m_task, m_emailAddress);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to check the account status" << error;
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Account status checked" << data;
 
@@ -195,13 +195,13 @@ void AuthenticationInAppListener::signIn(const QString& unblockCode) {
   NetworkRequest* request = NetworkRequest::createForFxaLogin(
       m_task, m_emailAddress, m_authPw, unblockCode, m_urlQuery);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to sign in" << error;
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Sign in completed" << data;
 
@@ -220,13 +220,13 @@ void AuthenticationInAppListener::signUp() {
   NetworkRequest* request = NetworkRequest::createForFxaAccountCreation(
       m_task, m_emailAddress, m_authPw, m_urlQuery);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to sign up" << error;
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Sign up completed" << data;
 
@@ -260,7 +260,7 @@ void AuthenticationInAppListener::sendUnblockCodeEmail() {
   NetworkRequest* request =
       NetworkRequest::createForFxaSendUnblockCode(m_task, m_emailAddress);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to resend the unblock code" << error;
             processRequestFailure(error, data);
@@ -279,13 +279,13 @@ void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
       NetworkRequest::createForFxaSessionVerifyByEmailCode(
           m_task, m_sessionToken, code, m_urlQuery);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to verify the session code" << error;
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Verification completed" << data;
             finalizeSignInOrUp();
@@ -299,7 +299,7 @@ void AuthenticationInAppListener::resendVerificationSessionCodeEmail() {
   NetworkRequest* request =
       NetworkRequest::createForFxaSessionResendCode(m_task, m_sessionToken);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to resend the session code" << error;
             processRequestFailure(error, data);
@@ -317,13 +317,13 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
   NetworkRequest* request = NetworkRequest::createForFxaSessionVerifyByTotpCode(
       m_task, m_sessionToken, code, m_urlQuery);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to verify the session code" << error;
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Verification completed" << data;
 
@@ -382,13 +382,13 @@ void AuthenticationInAppListener::createTotpCodes() {
   NetworkRequest* request =
       NetworkRequest::createForFxaTotpCreation(m_task, m_sessionToken);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to create totp codes" << error;
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Totp code creation completed" << data;
 
@@ -418,14 +418,14 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
   NetworkRequest* request =
       NetworkRequest::createForFxaAuthz(m_task, m_sessionToken, m_urlQuery);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to create oauth code" << error;
             processRequestFailure(error, data);
           });
 
   connect(
-      request, &NetworkRequest::requestCompleted,
+      request, &NetworkRequest::requestCompleted, this,
       [this](const QByteArray& data) {
         logger.debug() << "Oauth code creation completed" << data;
 
@@ -463,14 +463,14 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
             NetworkRequest::createForGetUrl(m_task, redirect.toString(), 200);
 
         connect(
-            request, &NetworkRequest::requestFailed,
+            request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray& data) {
               logger.error()
                   << "Failed to fetch the final redirect data" << error;
               processRequestFailure(error, data);
             });
 
-        connect(request, &NetworkRequest::requestHeaderReceived,
+        connect(request, &NetworkRequest::requestHeaderReceived, this,
                 [this](NetworkRequest* request) {
 #ifdef UNIT_TEST
                   AuthenticationInApp* aip = AuthenticationInApp::instance();

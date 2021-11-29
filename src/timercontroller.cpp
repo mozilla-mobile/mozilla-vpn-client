@@ -18,9 +18,9 @@ TimerController::TimerController(ControllerImpl* impl) : m_impl(impl) {
 
   connect(m_impl, &ControllerImpl::initialized, this,
           &ControllerImpl::initialized);
-  connect(m_impl, &ControllerImpl::connected,
+  connect(m_impl, &ControllerImpl::connected, this,
           [this] { TimerController::maybeDone(true); });
-  connect(m_impl, &ControllerImpl::disconnected,
+  connect(m_impl, &ControllerImpl::disconnected, this,
           [this] { TimerController::maybeDone(false); });
   connect(m_impl, &ControllerImpl::statusUpdated, this,
           &ControllerImpl::statusUpdated);

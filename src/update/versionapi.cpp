@@ -34,7 +34,7 @@ void VersionApi::start(Task* task) {
             logger.error() << "Request failed" << error;
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Request completed";
 
