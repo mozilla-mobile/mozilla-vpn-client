@@ -18,10 +18,10 @@ jobs:
         config:
             #- { name: Release, args: "", apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
             - { name: Debug, args: "--debug", apk: .tmp/src/android-build/mozillavpn.apk, sym: false, sign: false}
-        arch: ["android_armv7", "android_arm64_v8a", "android_x86", "android_x86_64"]
+        arch: ["armv7", "arm64_v8a", "x86", "x86_64"]
         version: ["6.2.1"]
     container:
-      image: ghcr.io/strseb/vpn-builder-android:${{matrix.arch}}_${{matrix.version}}
+      image: ghcr.io/strseb/vpn-builder-android:android_${{matrix.arch}}_${{matrix.version}}
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
@@ -37,7 +37,7 @@ jobs:
           pip3 install -r requirements.txt
       - name: Compilation
         run: |
-          bash ./scripts/android_package.sh $QTPATH -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
+          bash ./scripts/android_package.sh $QTPATH -A ${{matrix.arch}} -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
       - name: Sign Android
         if: ${{ matrix.config.sign }}
         env:
