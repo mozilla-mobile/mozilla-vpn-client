@@ -90,4 +90,3 @@ void ReleaseMonitor::updateSoon() {
     TaskScheduler::scheduleTask(task);
   });
 }
-
