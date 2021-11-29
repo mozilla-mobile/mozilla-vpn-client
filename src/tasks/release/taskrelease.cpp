@@ -31,7 +31,16 @@ void TaskRelease::run() {
           &TaskRelease::updateRequired);
   connect(updater, &Updater::updateRecommended, this,
           &TaskRelease::updateRecommended);
-  connect(updater, &QObject::destroyed, this, &Task::completed);
+  connect(updater, &Updater::updateRequired, this,
+          &TaskRelease::updateRequiredOrRecommended);
+  connect(updater, &Updater::updateRecommended, this,
+          &TaskRelease::updateRequiredOrRecommended);
+  connect(updater, &QObject::destroyed, [this, updater]() {
+    if (!updater->recommendedOrRequired()) {
+      emit updateNotAvailable();
+    }
+    emit completed();
+  });
 
   updater->start(this);
 }
