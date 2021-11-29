@@ -73,8 +73,14 @@ QImage AndroidAppImageProvider::requestImage(const QString& id, QSize* size,
 QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
   QJniEnvironment env;
   AndroidBitmapInfo info;
-  if (AndroidBitmap_getInfo(env.jniEnv(), bitmap.object(), &info) !=
-      ANDROID_BITMAP_RESULT_SUCCESS)
+
+  #if QT_VERSION < 0x060000
+    auto res = AndroidBitmap_getInfo(env, bitmap.object(), &info)
+  #else 
+    auto res = AndroidBitmap_getInfo(env.jniEnv(), bitmap.object(), &info)
+  #endif
+
+  if (res != ANDROID_BITMAP_RESULT_SUCCESS)
     return QImage();
 
   QImage::Format format;
@@ -96,8 +102,14 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
   }
 
   void* pixels;
-  if (AndroidBitmap_lockPixels(env.jniEnv(), bitmap.object(), &pixels) !=
-      ANDROID_BITMAP_RESULT_SUCCESS)
+  #if QT_VERSION < 0x060000
+    auto res = AndroidBitmap_lockPixels(env, bitmap.object(), &pixels)
+  #else 
+    auto res = AndroidBitmap_lockPixels(env.jniEnv(), bitmap.object(), &pixels)
+  #endif
+
+
+  if (res != ANDROID_BITMAP_RESULT_SUCCESS)
     return QImage();
 
   QImage image(info.width, info.height, format);
@@ -112,8 +124,13 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
       memcpy((void*)image.constScanLine(y), bmpPtr, width);
   }
 
-  if (AndroidBitmap_unlockPixels(env.jniEnv(), bitmap.object()) !=
-      ANDROID_BITMAP_RESULT_SUCCESS)
+  #if QT_VERSION < 0x060000
+    res = AndroidBitmap_unlockPixels(env, bitmap.object())
+  #else 
+    res = AndroidBitmap_unlockPixels(env.jniEnv(), bitmap.object())
+  #endif
+
+  if (res != ANDROID_BITMAP_RESULT_SUCCESS)
     return QImage();
 
   return image;
