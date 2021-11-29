@@ -315,7 +315,7 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
   Q_ASSERT(purchaseTask);
 
   connect(
-      purchaseTask, &TaskPurchase::failed,
+      purchaseTask, &TaskPurchase::failed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Purchase validation request to guardian failed";
         MozillaVPN::instance().errorHandle(ErrorHandler::toErrorType(error));
@@ -323,7 +323,7 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
         emit subscriptionNotValidated();
       });
 
-  connect(purchaseTask, &TaskPurchase::succeeded,
+  connect(purchaseTask, &TaskPurchase::succeeded, this,
           [this, token](const QByteArray& data) {
             logger.debug() << "Products request to guardian completed" << data;
 

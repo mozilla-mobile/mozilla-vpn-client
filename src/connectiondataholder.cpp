@@ -28,9 +28,11 @@ ConnectionDataHolder::ConnectionDataHolder()
       m_ipv6Address(qtTrId("vpn.connectionInfo.loading")) {
   MVPN_COUNT_CTOR(ConnectionDataHolder);
 
-  connect(&m_ipAddressTimer, &QTimer::timeout, [this]() { updateIpAddress(); });
-  connect(&m_checkStatusTimer, &QTimer::timeout, [this]() {
+  connect(&m_ipAddressTimer, &QTimer::timeout, this,
+          [this]() { updateIpAddress(); });
+  connect(&m_checkStatusTimer, &QTimer::timeout, this, [this]() {
     MozillaVPN::instance().controller()->getStatus(
+
         [this](const QString& serverIpv4Gateway,
                const QString& deviceIpv4Address, uint64_t txBytes,
                uint64_t rxBytes) {
@@ -221,7 +223,7 @@ void ConnectionDataHolder::updateIpAddress() {
 
   TaskIPFinder* ipfinder = new TaskIPFinder();
   connect(
-      ipfinder, &TaskIPFinder::operationCompleted,
+      ipfinder, &TaskIPFinder::operationCompleted, this,
       [this](const QString& ipv4, const QString& ipv6, const QString& country) {
         if (ipv4.isEmpty() && ipv6.isEmpty()) {
           logger.error() << "IP address request failed";

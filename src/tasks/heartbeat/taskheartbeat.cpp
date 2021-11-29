@@ -24,7 +24,7 @@ TaskHeartbeat::~TaskHeartbeat() { MVPN_COUNT_DTOR(TaskHeartbeat); }
 void TaskHeartbeat::run() {
   NetworkRequest* request = NetworkRequest::createForHeartbeat(this);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this, request](QNetworkReply::NetworkError, const QByteArray&) {
             logger.error() << "Failed to talk with the server";
 
@@ -51,7 +51,7 @@ void TaskHeartbeat::run() {
             emit completed();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Heartbeat content received:" << data;
 

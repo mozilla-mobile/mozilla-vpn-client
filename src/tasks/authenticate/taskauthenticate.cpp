@@ -66,7 +66,7 @@ void TaskAuthenticate::run() {
   connect(m_authenticationListener, &AuthenticationListener::readyToFinish,
           this, &Task::completed);
 
-  connect(m_authenticationListener, &AuthenticationListener::completed,
+  connect(m_authenticationListener, &AuthenticationListener::completed, this,
           [this, pkceCodeVerifier](const QString& pkceCodeSucces) {
             logger.debug() << "Authentication completed with code:"
                            << pkceCodeSucces;
@@ -75,7 +75,7 @@ void TaskAuthenticate::run() {
                 NetworkRequest::createForAuthenticationVerification(
                     this, pkceCodeSucces, pkceCodeVerifier);
 
-            connect(request, &NetworkRequest::requestFailed,
+            connect(request, &NetworkRequest::requestFailed, this,
                     [](QNetworkReply::NetworkError error, const QByteArray&) {
                       logger.error()
                           << "Failed to complete the authentication" << error;
@@ -83,14 +83,14 @@ void TaskAuthenticate::run() {
                           ErrorHandler::toErrorType(error));
                     });
 
-            connect(request, &NetworkRequest::requestCompleted,
+            connect(request, &NetworkRequest::requestCompleted, this,
                     [this](const QByteArray& data) {
                       logger.debug() << "Authentication completed";
                       authenticationCompleted(data);
                     });
           });
 
-  connect(m_authenticationListener, &AuthenticationListener::failed,
+  connect(m_authenticationListener, &AuthenticationListener::failed, this,
           [this](const ErrorHandler::ErrorType error) {
             MozillaVPN::instance().errorHandle(error);
             m_authenticationListener->aboutToFinish();

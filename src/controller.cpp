@@ -82,7 +82,7 @@ Controller::Controller() {
           &Controller::connectionConfirmed);
   connect(&m_connectionCheck, &ConnectionCheck::failure, this,
           &Controller::connectionFailed);
-  connect(&m_connectingTimer, &QTimer::timeout, [this]() {
+  connect(&m_connectingTimer, &QTimer::timeout, this, [this]() {
     m_enableDisconnectInConfirming = true;
     emit enableDisconnectInConfirmingChanged();
   });

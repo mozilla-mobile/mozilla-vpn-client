@@ -304,7 +304,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
   TaskPurchase* purchase = TaskPurchase::createForIOS(receipt);
   Q_ASSERT(purchase);
 
-  connect(purchase, &TaskPurchase::failed,
+  connect(purchase, &TaskPurchase::failed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Purchase request failed" << error;
 
@@ -335,7 +335,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
             emit alreadySubscribed();
           });
 
-  connect(purchase, &TaskPurchase::succeeded, [this, ids](const QByteArray&) {
+  connect(purchase, &TaskPurchase::succeeded, this, [this, ids](const QByteArray&) {
     logger.debug() << "Purchase request completed";
     auto& settingsHolder = SettingsHolder::instance();
 

@@ -23,14 +23,14 @@ void TaskProducts::run() {
   NetworkRequest* request = NetworkRequest::createForProducts(this);
 
   connect(
-      request, &NetworkRequest::requestFailed,
+      request, &NetworkRequest::requestFailed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Products request to guardian failed" << error;
         MozillaVPN::instance().errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
       });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Products request to guardian completed" << data;
 

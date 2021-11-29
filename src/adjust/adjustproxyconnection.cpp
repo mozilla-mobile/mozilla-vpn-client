@@ -89,7 +89,7 @@ void AdjustProxyConnection::forwardRequest() {
                                bodyParameters, unknownParameters);
 
   connect(
-      task, &AdjustTaskSubmission::operationCompleted,
+      task, &AdjustTaskSubmission::operationCompleted, this,
       [this](const QByteArray& data, int statusCode) {
         m_connection->write(
             HTTP_RESPONSE.arg(QByteArray::number(statusCode), data).toUtf8());

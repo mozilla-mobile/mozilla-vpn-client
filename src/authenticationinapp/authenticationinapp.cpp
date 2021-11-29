@@ -34,7 +34,7 @@ void AuthenticationInApp::registerListener(
   Q_ASSERT(!m_listener);
 
   m_listener = listener;
-  connect(listener, &QObject::destroyed, [this]() {
+  connect(listener, &QObject::destroyed, this, [this]() {
     m_listener = nullptr;
     setState(StateInitializing);
   });

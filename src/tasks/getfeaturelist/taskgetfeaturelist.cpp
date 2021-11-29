@@ -27,13 +27,13 @@ TaskGetFeatureList::~TaskGetFeatureList() {
 void TaskGetFeatureList::run() {
   NetworkRequest* request = NetworkRequest::createForGetFeatureList(this);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Get feature list is failed" << error;
             emit completed();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Get feature list is completed" << data;
             FeatureList::instance().updateFeatureList(data);

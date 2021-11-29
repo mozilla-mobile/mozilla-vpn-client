@@ -30,7 +30,7 @@ void TaskAccountAndServers::run() {
     NetworkRequest* request = NetworkRequest::createForAccount(this);
 
     connect(
-        request, &NetworkRequest::requestFailed,
+        request, &NetworkRequest::requestFailed, this,
         [this](QNetworkReply::NetworkError error, const QByteArray&) {
           logger.error() << "Account request failed" << error;
           MozillaVPN::instance().errorHandle(ErrorHandler::toErrorType(error));
@@ -38,7 +38,7 @@ void TaskAccountAndServers::run() {
           maybeCompleted();
         });
 
-    connect(request, &NetworkRequest::requestCompleted,
+    connect(request, &NetworkRequest::requestCompleted, this,
             [this](const QByteArray& data) {
               logger.debug() << "Account request completed";
               MozillaVPN::instance().accountChecked(data);
@@ -52,7 +52,7 @@ void TaskAccountAndServers::run() {
     NetworkRequest* request = NetworkRequest::createForServers(this);
 
     connect(
-        request, &NetworkRequest::requestFailed,
+        request, &NetworkRequest::requestFailed, this,
         [this](QNetworkReply::NetworkError error, const QByteArray&) {
           logger.error() << "Failed to retrieve servers";
           MozillaVPN::instance().errorHandle(ErrorHandler::toErrorType(error));
@@ -60,7 +60,7 @@ void TaskAccountAndServers::run() {
           maybeCompleted();
         });
 
-    connect(request, &NetworkRequest::requestCompleted,
+    connect(request, &NetworkRequest::requestCompleted, this,
             [this](const QByteArray& data) {
               logger.debug() << "Servers obtained";
               MozillaVPN::instance().serversFetched(data);
