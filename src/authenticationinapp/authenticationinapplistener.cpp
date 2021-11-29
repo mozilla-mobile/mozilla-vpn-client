@@ -321,11 +321,11 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
             logger.error() << "Failed to verify the session code" << error;
             processRequestFailure(error, data);
           });
-  
-  connect(request, &NetworkRequest::requestCompleted, this,
-          [this](const QByteArray& data) {
-            logger.debug() << "Verification completed" << data;
 
+  connect(
+      request, &NetworkRequest::requestCompleted, this,
+      [this](const QByteArray& data) {
+        logger.debug() << "Verification completed" << data;
 
         QJsonDocument json = QJsonDocument::fromJson(data);
         if (json.isNull()) {
