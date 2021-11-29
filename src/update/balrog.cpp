@@ -95,13 +95,13 @@ void Balrog::start(Task* task) {
 
   NetworkRequest* request = NetworkRequest::createForGetUrl(task, url, 200);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Request failed" << error;
             deleteLater();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this, task, request](const QByteArray& data) {
             logger.debug() << "Request completed";
 
@@ -150,13 +150,13 @@ bool Balrog::fetchSignature(Task* task, NetworkRequest* initialRequest,
 
   NetworkRequest* x5uRequest = NetworkRequest::createForGetUrl(task, x5u, 200);
 
-  connect(x5uRequest, &NetworkRequest::requestFailed,
+  connect(x5uRequest, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.warning() << "Request failed" << error;
             deleteLater();
           });
 
-  connect(x5uRequest, &NetworkRequest::requestCompleted,
+  connect(x5uRequest, &NetworkRequest::requestCompleted, this,
           [this, task, signatureBlob, updateData](const QByteArray& x5uData) {
             logger.debug() << "Request completed";
             if (!checkSignature(task, x5uData, updateData, signatureBlob)) {
@@ -285,13 +285,13 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
 
     NetworkRequest* request = NetworkRequest::createForGetUrl(task, url);
 
-    connect(request, &NetworkRequest::requestFailed,
+    connect(request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Request failed" << error;
               deleteLater();
             });
 
-    connect(request, &NetworkRequest::requestHeaderReceived,
+    connect(request, &NetworkRequest::requestHeaderReceived, this,
             [this](NetworkRequest* request) {
               Q_ASSERT(request);
               logger.debug() << "Request header received";
@@ -307,7 +307,7 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
               request->abort();
             });
 
-    connect(request, &NetworkRequest::requestCompleted,
+    connect(request, &NetworkRequest::requestCompleted, this,
             [this](const QByteArray&) {
               logger.debug() << "Request completed";
               deleteLater();
@@ -340,14 +340,14 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
   request->disableTimeout();
 
   connect(
-      request, &NetworkRequest::requestFailed,
+      request, &NetworkRequest::requestFailed, this,
       [this, request](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Request failed" << error;
         propagateError(request, error);
         deleteLater();
       });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this, hashValue, hashFunction, url](const QByteArray& data) {
             logger.debug() << "Request completed";
 
@@ -447,14 +447,14 @@ bool Balrog::install(const QString& filePath) {
                   << Qt::endl;
   });
 
-  connect(process, &QProcess::errorOccurred,
+  connect(process, &QProcess::errorOccurred, this,
           [this](QProcess::ProcessError error) {
             logger.error() << "Installation failed:" << error;
             deleteLater();
           });
 
   connect(process,
-          QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+          QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
           [this, process, logFile](int exitCode, QProcess::ExitStatus) {
             logger.debug() << "Installation completed - exitCode:" << exitCode;
 
@@ -494,7 +494,7 @@ bool Balrog::install(const QString& filePath) {
   QProcess* process = new QProcess(this);
   process->start("open", arguments);
   connect(process,
-          QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+          QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
           [this, process](int exitCode, QProcess::ExitStatus) {
             logger.debug() << "Installation completed - exitCode:" << exitCode;
 

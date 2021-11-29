@@ -102,7 +102,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   AdjustHandler::initialize();
 #endif
 
-  connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
+  connect(&m_alertTimer, &QTimer::timeout, this,
+          [this]() { setAlert(NoAlert); });
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskAccountAndServers());
@@ -121,10 +122,10 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     }
   });
 
-  connect(&m_private->m_controller, &Controller::readyToUpdate,
+  connect(&m_private->m_controller, &Controller::readyToUpdate, this,
           [this]() { setState(StateUpdateRequired); });
 
-  connect(&m_private->m_controller, &Controller::readyToBackendFailure,
+  connect(&m_private->m_controller, &Controller::readyToBackendFailure, this,
           [this]() {
             TaskScheduler::deleteTasks();
             setState(StateBackendFailure);
