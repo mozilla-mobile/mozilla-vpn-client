@@ -103,9 +103,9 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
 
   void* pixels;
   #if QT_VERSION < 0x060000
-    auto res = AndroidBitmap_lockPixels(env, bitmap.object(), &pixels);
+    res = AndroidBitmap_lockPixels(env, bitmap.object(), &pixels);
   #else 
-    auto res = AndroidBitmap_lockPixels(env.jniEnv(), bitmap.object(), &pixels);
+    res = AndroidBitmap_lockPixels(env.jniEnv(), bitmap.object(), &pixels);
   #endif
 
 
