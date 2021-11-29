@@ -4,8 +4,11 @@
 
 package org.mozilla.firefox.vpn.qt;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
+
+import org.qtproject.qt5.android.bindings.QtActivity;
 
 public class VPNActivity extends org.qtproject.qt5.android.bindings.QtActivity {
   @Override
@@ -37,6 +40,19 @@ public class VPNActivity extends org.qtproject.qt5.android.bindings.QtActivity {
       }
     } catch (Exception e) {
     }
+  }
+
+  @Override
+  public Object getSystemService (String name){
+
+    if(Build.VERSION.SDK_INT >= 29 && name.equals("clipboard")){
+      // QT will always attempt to read the clipboard if content is there.
+      // since we have no use of the clipboard in android 10+
+      // we _can_  return null 
+      // And we defnitly should since android 12 displays clipboard access.
+      return null;
+    }
+    return super.getSystemService(name);
   }
 
   // Returns true if MVPN has handled the back button

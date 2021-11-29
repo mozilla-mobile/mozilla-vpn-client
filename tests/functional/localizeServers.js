@@ -27,6 +27,7 @@ describe('Server list', function() {
   const countryIDs = new Map();
   countryIDs.set('Netherlands', 'http://www.wikidata.org/entity/Q55');
   countryIDs.set('Luxembourg', 'http://www.wikidata.org/entity/Q32');
+  countryIDs.set('Germany', 'http://www.wikidata.org/entity/Q183');
 
   const cityIDs = new Map();
   cityIDs.set('Frankfurt', 'http://www.wikidata.org/entity/Q1794');
@@ -46,6 +47,8 @@ describe('Server list', function() {
   cityIDs.set('Stockholm', 'http://www.wikidata.org/entity/Q1754');
   cityIDs.set('Luxembourg', 'http://www.wikidata.org/entity/Q1842');
   cityIDs.set('Paris', 'http://www.wikidata.org/entity/Q90');
+  cityIDs.set('Dusseldorf', 'http://www.wikidata.org/entity/Q1718');
+  cityIDs.set('Malmö', 'http://www.wikidata.org/entity/Q2211');
 
   this.timeout(1000000);
 

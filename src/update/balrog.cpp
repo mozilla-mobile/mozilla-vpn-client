@@ -88,12 +88,12 @@ QString Balrog::userAgent() {
 #endif
 }
 
-void Balrog::start() {
+void Balrog::start(Task* task) {
   QString url =
       QString(Constants::balrogUrl()).arg(appVersion()).arg(userAgent());
   logger.debug() << "URL:" << url;
 
-  NetworkRequest* request = NetworkRequest::createForGetUrl(this, url, 200);
+  NetworkRequest* request = NetworkRequest::createForGetUrl(task, url, 200);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -102,17 +102,17 @@ void Balrog::start() {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, request](const QByteArray& data) {
+          [this, task, request](const QByteArray& data) {
             logger.debug() << "Request completed";
 
-            if (!fetchSignature(request, data)) {
+            if (!fetchSignature(task, request, data)) {
               logger.warning() << "Ignore failure.";
               deleteLater();
             }
           });
 }
 
-bool Balrog::fetchSignature(NetworkRequest* initialRequest,
+bool Balrog::fetchSignature(Task* task, NetworkRequest* initialRequest,
                             const QByteArray& updateData) {
   Q_ASSERT(initialRequest);
 
@@ -148,7 +148,7 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
 
   logger.debug() << "Fetching x5u URL:" << x5u;
 
-  NetworkRequest* x5uRequest = NetworkRequest::createForGetUrl(this, x5u, 200);
+  NetworkRequest* x5uRequest = NetworkRequest::createForGetUrl(task, x5u, 200);
 
   connect(x5uRequest, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -157,9 +157,9 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
           });
 
   connect(x5uRequest, &NetworkRequest::requestCompleted,
-          [this, signatureBlob, updateData](const QByteArray& x5uData) {
+          [this, task, signatureBlob, updateData](const QByteArray& x5uData) {
             logger.debug() << "Request completed";
-            if (!checkSignature(x5uData, updateData, signatureBlob)) {
+            if (!checkSignature(task, x5uData, updateData, signatureBlob)) {
               deleteLater();
             }
           });
@@ -167,7 +167,7 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
   return true;
 }
 
-bool Balrog::checkSignature(const QByteArray& x5uData,
+bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
                             const QByteArray& updateData,
                             const QByteArray& signatureBlob) {
   logger.debug() << "Checking the signature";
@@ -178,7 +178,7 @@ bool Balrog::checkSignature(const QByteArray& x5uData,
   }
 
   logger.debug() << "Fetch resource";
-  if (!processData(updateData)) {
+  if (!processData(task, updateData)) {
     logger.error() << "Fetch has failed";
     return false;
   }
@@ -255,7 +255,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   return true;
 }
 
-bool Balrog::processData(const QByteArray& data) {
+bool Balrog::processData(Task* task, const QByteArray& data) {
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {
     logger.error() << "A valid JSON object expected";
@@ -283,7 +283,7 @@ bool Balrog::processData(const QByteArray& data) {
       return false;
     }
 
-    NetworkRequest* request = NetworkRequest::createForGetUrl(this, url);
+    NetworkRequest* request = NetworkRequest::createForGetUrl(task, url);
 
     connect(request, &NetworkRequest::requestFailed,
             [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -334,7 +334,7 @@ bool Balrog::processData(const QByteArray& data) {
     return false;
   }
 
-  NetworkRequest* request = NetworkRequest::createForGetUrl(this, url);
+  NetworkRequest* request = NetworkRequest::createForGetUrl(task, url);
 
   // No timeout for this request.
   request->disableTimeout();
@@ -429,22 +429,43 @@ bool Balrog::install(const QString& filePath) {
   QStringList arguments;
   arguments << "/qb!-"
             << "REBOOT=ReallySuppress"
-            << "/i" << QDir::toNativeSeparators(filePath) << "/lv"
+            << "/i" << QDir::toNativeSeparators(filePath) << "/lv!"
             << QDir::toNativeSeparators(logFile);
 
   QProcess* process = new QProcess(this);
   process->start("msiexec.exe", arguments);
+
+  connect(process, &QProcess::readyReadStandardError, [process]() {
+    logger.info() << "[msiexec - stderr]" << Qt::endl
+                  << qUtf8Printable(process->readAllStandardError())
+                  << Qt::endl;
+  });
+
+  connect(process, &QProcess::readyReadStandardOutput, [process]() {
+    logger.info() << "[msiexec - stdout]" << Qt::endl
+                  << qUtf8Printable(process->readAllStandardOutput())
+                  << Qt::endl;
+  });
+
+  connect(process, &QProcess::errorOccurred,
+          [this](QProcess::ProcessError error) {
+            logger.error() << "Installation failed:" << error;
+            deleteLater();
+          });
+
   connect(process,
           QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
           [this, process, logFile](int exitCode, QProcess::ExitStatus) {
             logger.debug() << "Installation completed - exitCode:" << exitCode;
 
-            logger.debug() << "Stdout:" << Qt::endl
-                           << qUtf8Printable(process->readAllStandardOutput())
-                           << Qt::endl;
-            logger.debug() << "Stderr:" << Qt::endl
-                           << qUtf8Printable(process->readAllStandardError())
-                           << Qt::endl;
+            // In theory we should not be able to read anything more from
+            // stdout/stderr.
+            logger.info() << "[msiexec - stdout]" << Qt::endl
+                          << qUtf8Printable(process->readAllStandardOutput())
+                          << Qt::endl;
+            logger.info() << "[msiexec - stderr]" << Qt::endl
+                          << qUtf8Printable(process->readAllStandardError())
+                          << Qt::endl;
 
             QFile log(logFile);
             if (!log.open(QIODevice::ReadOnly | QIODevice::Text)) {

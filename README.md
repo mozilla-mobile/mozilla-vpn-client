@@ -25,6 +25,7 @@ After checking out the code:
 * Install the git pre-commit hook (`./scripts/git-pre-commit-format install`)
 * Build the source (See below)
 * Run the unit tests with `./scripts/test_coverage.sh` or see below for running the functional tests.
+* Run the qml tests with `./tests/qml/qml_tests` add `-platform offscreen` to not see the qml app
 
 ### Running the functional tests
 
@@ -47,6 +48,7 @@ Misc tips from core devs:
   if you're stuck.
 * If you're a conda user you can conda install node and geckodriver from conda-forge packages.
 * If you're trying to just iterate on one test change `it("....)` to `it.only("...)`. And only that one test will run.... don't forget to undo!
+* Check out our [Logviewer](https://mozilla-mobile.github.io/mozilla-vpn-client/logviewer/) and the [Inspector](https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/), they might come handy debugging issues!
 
 ## How to build from the source code
 

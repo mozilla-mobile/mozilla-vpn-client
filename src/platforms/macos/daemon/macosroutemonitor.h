@@ -8,6 +8,7 @@
 #include "ipaddressrange.h"
 
 #include <QByteArray>
+#include <QHostAddress>
 #include <QList>
 #include <QObject>
 #include <QSocketNotifier>
@@ -27,12 +28,25 @@ class MacosRouteMonitor final : public QObject {
   bool deleteRoute(const IPAddressRange& prefix);
   int interfaceFlags() { return m_ifflags; }
 
+  bool addExclusionRoute(const QHostAddress& address);
+  bool addExclusionRoute(const QString& address) {
+    return addExclusionRoute(QHostAddress(address));
+  }
+
+  void deleteExclusionRoute(const QHostAddress& address);
+  void deleteExclusionRoute(const QString& address) {
+    deleteExclusionRoute(QHostAddress(address));
+  }
+
+  void flushExclusionRoutes();
+
  private:
-  void handleRtmAdd(const struct rt_msghdr* msg, const QByteArray& payload);
   void handleRtmDelete(const struct rt_msghdr* msg, const QByteArray& payload);
-  void handleRtmChange(const struct rt_msghdr* msg, const QByteArray& payload);
+  void handleRtmUpdate(const struct rt_msghdr* msg, const QByteArray& payload);
   void handleIfaceInfo(const struct if_msghdr* msg, const QByteArray& payload);
-  bool rtmSendRoute(int action, const IPAddressRange& prefix);
+  bool rtmSendRoute(int action, const QHostAddress& prefix, unsigned int plen,
+                    unsigned int ifindex, const struct sockaddr* gateway);
+  bool rtmFetchRoutes(int family);
   static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr,
                             const void* sa);
   static QList<QByteArray> parseAddrList(const QByteArray& data);
@@ -44,7 +58,14 @@ class MacosRouteMonitor final : public QObject {
   static QString addrToString(const struct sockaddr* sa);
   static QString addrToString(const QByteArray& data);
 
+  QList<QHostAddress> m_exclusionRoutes;
+  QByteArray m_defaultGatewayIpv4;
+  QByteArray m_defaultGatewayIpv6;
+  unsigned int m_defaultIfindexIpv4 = 0;
+  unsigned int m_defaultIfindexIpv6 = 0;
+
   QString m_ifname;
+  unsigned int m_ifindex = 0;
   int m_ifflags = 0;
   int m_rtsock = -1;
   int m_rtseq = 0;

@@ -4,10 +4,11 @@
 
 #include "connectiondataholder.h"
 #include "constants.h"
-#include "ipfinder.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "tasks/ipfinder/taskipfinder.h"
+#include "taskscheduler.h"
 #include "timersingleshot.h"
 
 #include <QJsonDocument>
@@ -218,9 +219,9 @@ void ConnectionDataHolder::updateIpAddress() {
   }
   m_updatingIpAddress = true;
 
-  IPFinder* ipfinder = new IPFinder(this);
+  TaskIPFinder* ipfinder = new TaskIPFinder();
   connect(
-      ipfinder, &IPFinder::completed,
+      ipfinder, &TaskIPFinder::operationCompleted,
       [this](const QString& ipv4, const QString& ipv6, const QString& country) {
         if (ipv4.isEmpty() && ipv6.isEmpty()) {
           logger.error() << "IP address request failed";
@@ -262,7 +263,7 @@ void ConnectionDataHolder::updateIpAddress() {
         emit ipAddressChecked();
       });
 
-  ipfinder->start();
+  TaskScheduler::scheduleTask(ipfinder);
 }
 
 quint64 ConnectionDataHolder::txBytes() const { return bytes(0); }

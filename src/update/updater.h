@@ -7,6 +7,8 @@
 
 #include <QObject>
 
+class Task;
+
 class Updater : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Updater)
@@ -17,7 +19,7 @@ class Updater : public QObject {
   Updater(QObject* parent);
   virtual ~Updater();
 
-  virtual void start() = 0;
+  virtual void start(Task* task) = 0;
 
   bool recommendedOrRequired() const { return m_recommendedOrRequired; }
 

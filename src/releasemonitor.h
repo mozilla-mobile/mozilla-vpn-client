@@ -18,7 +18,8 @@ class ReleaseMonitor final : public QObject {
 
   Q_INVOKABLE void runSoon();
 
-  void update();
+  void updateSoon();
+
 
  signals:
   // for testing
@@ -30,7 +31,6 @@ class ReleaseMonitor final : public QObject {
 
  private:
   void schedule();
-  void runInternal();
 
   void updateRequired();
   void updateRecommended();
