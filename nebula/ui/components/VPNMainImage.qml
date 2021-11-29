@@ -15,7 +15,6 @@ Rectangle {
 
     color: "transparent"
     opacity: 1
-    state: parent.state
     states: [
         State {
             name: "stateConnecting"
@@ -32,7 +31,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
 
@@ -52,7 +51,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
 
@@ -72,7 +71,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-off.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
 
@@ -110,26 +109,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-off.svg"
-                opacity: 1
-            }
-
-        },
-        State {
-            name: "stateOn"
-            when: VPNController.state === VPNController.StateOn
-
-            PropertyChanges {
-                target: logo
-                showVPNOnIcon: true
-            }
-            PropertyChanges {
-                target: insetCircle
-                color: Color.success.default
-            }
-            PropertyChanges {
-                target: insetIcon
-                source: "qrc:/nebula/resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
 
@@ -150,6 +130,26 @@ Rectangle {
             PropertyChanges {
                 target: insetIcon
                 source: "qrc:/ui/resources/shield-off.svg"
+                opacity: 1
+            }
+
+        },
+        State {
+            name: "stateOn"
+            when: VPNController.state === VPNController.StateOn &&
+                VPNConnectionHealth.stability === VPNConnectionHealth.Stable
+
+            PropertyChanges {
+                target: logo
+                showVPNOnIcon: true
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
 
@@ -191,7 +191,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-off.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
 
@@ -347,7 +347,7 @@ Rectangle {
             anchors.centerIn: insetCircle
             sourceSize.height: 32
             sourceSize.width: 32
-            source: "qrc:/nebula/resources/switching.svg"
+            source: "qrc:/ui/resources/switching.svg"
             opacity: 0
              PropertyAnimation {
                  id: spin
@@ -364,7 +364,7 @@ Rectangle {
 
     Image {
         id: globe
-        source: "qrc:/nebula/resources/globe.svg";
+        source: "qrc:/ui/resources/globe.svg";
         sourceSize.height: logo.height
         sourceSize.width: logo.width
         visible: false
