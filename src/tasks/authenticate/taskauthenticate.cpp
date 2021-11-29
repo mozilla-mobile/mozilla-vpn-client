@@ -63,6 +63,9 @@ void TaskAuthenticate::run() {
   m_authenticationListener =
       AuthenticationListener::create(this, m_authenticationType);
 
+  connect(m_authenticationListener, &AuthenticationListener::readyToFinish,
+          this, &Task::completed);
+
   connect(m_authenticationListener, &AuthenticationListener::completed,
           [this, pkceCodeVerifier](const QString& pkceCodeSucces) {
             logger.debug() << "Authentication completed with code:"
@@ -90,16 +93,17 @@ void TaskAuthenticate::run() {
   connect(m_authenticationListener, &AuthenticationListener::failed,
           [this](const ErrorHandler::ErrorType error) {
             MozillaVPN::instance()->errorHandle(error);
-            emit completed();
+            m_authenticationListener->aboutToFinish();
           });
 
   connect(m_authenticationListener, &AuthenticationListener::abortedByUser,
           [this]() {
             MozillaVPN::instance()->abortAuthentication();
-            emit completed();
+            m_authenticationListener->aboutToFinish();
           });
 
-  m_authenticationListener->start(pkceCodeChallenge, CODE_CHALLENGE_METHOD);
+  m_authenticationListener->start(this, pkceCodeChallenge,
+                                  CODE_CHALLENGE_METHOD);
 }
 
 void TaskAuthenticate::authenticationCompleted(const QByteArray& data) {
@@ -137,5 +141,5 @@ void TaskAuthenticate::authenticationCompleted(const QByteArray& data) {
   MozillaVPN::instance()->authenticationCompleted(
       userDoc.toJson(QJsonDocument::Compact), tokenValue.toString());
 
-  emit completed();
+  m_authenticationListener->aboutToFinish();
 }

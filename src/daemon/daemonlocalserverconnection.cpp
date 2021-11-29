@@ -112,7 +112,9 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   }
 
   if (type == "status") {
-    m_socket->write(Daemon::instance()->getStatus());
+    QJsonObject obj = Daemon::instance()->getStatus();
+    obj.insert("type", "status");
+    m_socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
     m_socket->write("\n");
     return;
   }
@@ -134,10 +136,10 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   logger.warning() << "Invalid command:" << type;
 }
 
-void DaemonLocalServerConnection::connected(int hopindex) {
+void DaemonLocalServerConnection::connected(const QString& pubkey) {
   QJsonObject obj;
   obj.insert("type", "connected");
-  obj.insert("hopindex", QJsonValue(hopindex));
+  obj.insert("pubkey", QJsonValue(pubkey));
   write(obj);
 }
 

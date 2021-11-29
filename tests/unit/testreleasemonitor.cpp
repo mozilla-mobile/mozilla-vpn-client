@@ -12,11 +12,12 @@
 #include <QJsonObject>
 
 void TestReleaseMonitor::failure() {
-  ReleaseMonitor rm;
-  rm.runSoon();
-
+  qDebug() << "SET";
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
+
+  ReleaseMonitor rm;
+  rm.runSoon();
 
   QEventLoop loop;
   connect(&rm, &ReleaseMonitor::releaseChecked, [&] { loop.exit(); });

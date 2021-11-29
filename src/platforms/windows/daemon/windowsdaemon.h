@@ -20,7 +20,6 @@ class WindowsDaemon final : public Daemon {
   WindowsDaemon();
   ~WindowsDaemon();
 
-  QByteArray getStatus() override;
   void prepareActivation(const InterfaceConfig& config) override;
 
  protected:
