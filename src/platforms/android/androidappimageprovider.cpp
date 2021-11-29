@@ -75,9 +75,9 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
   AndroidBitmapInfo info;
 
   #if QT_VERSION < 0x060000
-    auto res = AndroidBitmap_getInfo(env, bitmap.object(), &info)
+    auto res = AndroidBitmap_getInfo(env, bitmap.object(), &info);
   #else 
-    auto res = AndroidBitmap_getInfo(env.jniEnv(), bitmap.object(), &info)
+    auto res = AndroidBitmap_getInfo(env.jniEnv(), bitmap.object(), &info);
   #endif
 
   if (res != ANDROID_BITMAP_RESULT_SUCCESS)
@@ -103,9 +103,9 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
 
   void* pixels;
   #if QT_VERSION < 0x060000
-    auto res = AndroidBitmap_lockPixels(env, bitmap.object(), &pixels)
+    auto res = AndroidBitmap_lockPixels(env, bitmap.object(), &pixels);
   #else 
-    auto res = AndroidBitmap_lockPixels(env.jniEnv(), bitmap.object(), &pixels)
+    auto res = AndroidBitmap_lockPixels(env.jniEnv(), bitmap.object(), &pixels);
   #endif
 
 
@@ -125,9 +125,9 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
   }
 
   #if QT_VERSION < 0x060000
-    res = AndroidBitmap_unlockPixels(env, bitmap.object())
+    res = AndroidBitmap_unlockPixels(env, bitmap.object());
   #else 
-    res = AndroidBitmap_unlockPixels(env.jniEnv(), bitmap.object())
+    res = AndroidBitmap_unlockPixels(env.jniEnv(), bitmap.object());
   #endif
 
   if (res != ANDROID_BITMAP_RESULT_SUCCESS)
