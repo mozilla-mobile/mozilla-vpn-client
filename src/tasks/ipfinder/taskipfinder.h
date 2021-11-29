@@ -2,27 +2,29 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef IPFINDER_H
-#define IPFINDER_H
+#ifndef TASKIPFINDER_H
+#define TASKIPFINDER_H
+
+#include "task.h"
 
 #include <QObject>
 
 class QHostAddress;
 class QHostInfo;
 
-class IPFinder final : public QObject {
+class TaskIPFinder final : public Task {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(IPFinder)
+  Q_DISABLE_COPY_MOVE(TaskIPFinder)
 
  public:
-  explicit IPFinder(QObject* parent);
-  ~IPFinder();
+  TaskIPFinder();
+  ~TaskIPFinder();
 
-  void start();
+  void run() override;
 
  signals:
-  void completed(const QString& ipv4, const QString& ipv6,
-                 const QString& country);
+  void operationCompleted(const QString& ipv4, const QString& ipv6,
+                          const QString& country);
 
  private slots:
   void dnsLookupCompleted(const QHostInfo& hostInfo);
@@ -43,4 +45,4 @@ class IPFinder final : public QObject {
   int m_lookupId = -1;
 };
 
-#endif  // IPFINDER_H
+#endif  // TASKIPFINDER_H

@@ -21,7 +21,7 @@ DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
   MVPN_COUNT_CTOR(DesktopAuthenticationListener);
 
   m_server = new QOAuthHttpServerReplyHandler(QHostAddress::LocalHost, this);
-  connect(m_server, &QAbstractOAuthReplyHandler::callbackReceived,
+  connect(m_server, &QAbstractOAuthReplyHandler::callbackReceived, this,
           [this](const QVariantMap& values) {
             logger.debug() << "DesktopAuthenticationListener data received";
 
@@ -40,10 +40,13 @@ DesktopAuthenticationListener::~DesktopAuthenticationListener() {
   MVPN_COUNT_DTOR(DesktopAuthenticationListener);
 }
 
-void DesktopAuthenticationListener::start(const QString& codeChallenge,
+void DesktopAuthenticationListener::start(Task* task,
+                                          const QString& codeChallenge,
                                           const QString& codeChallengeMethod,
                                           const QString& emailAddress) {
   logger.debug() << "DesktopAuthenticationListener initialize";
+
+  Q_UNUSED(task);
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser,
                                    codeChallenge, codeChallengeMethod,

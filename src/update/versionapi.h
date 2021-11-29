@@ -14,7 +14,7 @@ class VersionApi final : public Updater {
   VersionApi(QObject* parent);
   ~VersionApi();
 
-  void start() override;
+  void start(Task* task) override;
 
   // compare 2 version strings and return:
   // - -1 if the first one is lower than the second one or if the second one is

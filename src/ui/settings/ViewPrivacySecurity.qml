@@ -46,7 +46,7 @@ Item {
                 objectName: "settingStartAtBoot"
 
                 labelText: _startAtBootTitle
-                subLabelText: ""
+                subLabelText: VPNl18n.SettingsStartAtBootDescription
                 isChecked: VPNSettings.startAtBoot
                 isEnabled: true
                 showDivider: false
@@ -70,8 +70,7 @@ Item {
 
                 //% "Data collection and use"
                 labelText: qsTrId("vpn.settings.dataCollection")
-                //% "Allow Mozilla VPN to send technical data to Mozilla"
-                subLabelText: qsTrId("vpn.settings.dataCollection.description")
+                subLabelText: VPNl18n.SettingsDataCollectionDescription
                 isChecked: VPNSettings.gleanEnabled
                 onClicked: {
                     VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled

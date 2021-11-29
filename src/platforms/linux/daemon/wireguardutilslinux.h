@@ -6,6 +6,7 @@
 #define WIREGUARDUTILSLINUX_H
 
 #include "daemon/wireguardutils.h"
+#include <QHostAddress>
 #include <QObject>
 #include <QSocketNotifier>
 #include <QStringList>
@@ -21,8 +22,8 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool deleteInterface() override;
 
   bool updatePeer(const InterfaceConfig& config) override;
-  bool deletePeer(const QString& pubkey) override;
-  peerStatus getPeerStatus(const QString& pubkey) override;
+  bool deletePeer(const InterfaceConfig& config) override;
+  QList<PeerStatus> getPeerStatus() override;
 
   bool updateRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
   bool deleteRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
@@ -38,11 +39,10 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool rtmSendRule(int action, int flags, int addrfamily);
   bool rtmSendRoute(int action, int flags, const IPAddressRange& prefix,
                     int hopindex);
+  bool rtmSendExclude(int action, int flags, const QHostAddress& address);
   static bool setupCgroupClass(const QString& path, unsigned long classid);
   static bool buildAllowedIp(struct wg_allowedip*,
                              const IPAddressRange& prefix);
-
-  static QString printablePubkey(const QString& pubkey);
 
   int m_nlsock = -1;
   int m_nlseq = 0;

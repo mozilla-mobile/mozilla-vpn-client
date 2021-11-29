@@ -144,13 +144,13 @@ CheckBox {
         vpnSettingsToggle.clicked()
     }
 
-    Keys.onReleased: {
+    Keys.onReleased: event => {
         if (event.key === Qt.Key_Return)
             handleKeyClick();
             uiPlaceholder.state = uiState.stateDefault;
     }
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
             uiPlaceholder.state = uiState.statePressed;
     }

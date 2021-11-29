@@ -760,6 +760,12 @@ void TestModels::serverCityFromJson_data() {
   obj.insert("servers", "servers");
   QTest::addRow("servers invalid 1") << obj << false;
 
+  obj.insert("latitude", 12.34);
+  QTest::addRow("servers invalid 2") << obj << false;
+
+  obj.insert("longitude", 23.45);
+  QTest::addRow("servers invalid 3") << obj << false;
+
   QJsonArray servers;
   obj.insert("servers", servers);
   QTest::addRow("servers empty") << obj << true << "name"
@@ -967,6 +973,8 @@ void TestModels::serverCountryModelFromJson_data() {
   QJsonObject city;
   city.insert("code", "serverCityCode");
   city.insert("name", "serverCityName");
+  city.insert("latitude", 12.34);
+  city.insert("longitude", 34.56);
   city.insert("servers", QJsonArray());
 
   cities.replace(0, city);
@@ -1095,6 +1103,8 @@ void TestModels::serverCountryModelPick() {
   QJsonObject city;
   city.insert("code", "serverCityCode");
   city.insert("name", "serverCityName");
+  city.insert("latitude", 12.34);
+  city.insert("longitude", 34.56);
   city.insert("servers", servers);
 
   QJsonArray cities;
@@ -1180,6 +1190,8 @@ void TestModels::serverDataBasic() {
     QJsonObject cityObj;
     cityObj.insert("code", "serverCityCode");
     cityObj.insert("name", "serverCityName");
+    cityObj.insert("latitude", 12.34);
+    cityObj.insert("longitude", 34.56);
     cityObj.insert("servers", QJsonArray());
 
     ServerCity city;

@@ -324,7 +324,10 @@
         <file>resources/logo-generic.png</file>
         <file>resources/developer.svg</file>
         <file>resources/updateRecommended.svg</file>
+        <file>resources/refresh.svg</file>
         <file>resources/updateRequired.svg</file>
+        <file>resources/updateStatusUpdateAvailable.svg</file>
+        <file>resources/updateStatusUpToDate.svg</file>
         <file>resources/buttonLoader.svg</file>
         <file>resources/quick-access.svg</file>
         <file>resources/copy.svg</file>

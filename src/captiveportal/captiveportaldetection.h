@@ -6,10 +6,11 @@
 #define CAPTIVEPORTALDETECTION_H
 
 #include <QObject>
-#include "captiveportalresult.h"
+#include "captiveportalrequest.h"
 
 class CaptivePortalMonitor;
 class CaptivePortalNotifier;
+class CaptivePortalDetectionImpl;
 
 class CaptivePortalDetection final : public QObject {
   Q_OBJECT
@@ -27,8 +28,9 @@ class CaptivePortalDetection final : public QObject {
 
  public slots:
   void stateChanged();
+  void networkChanged();
   void settingsChanged();
-  void detectionCompleted(CaptivePortalResult detected);
+  void detectionCompleted(CaptivePortalRequest::CaptivePortalResult detected);
   void captivePortalGone();
 
   void activationRequired();
@@ -51,6 +53,8 @@ class CaptivePortalDetection final : public QObject {
 
   // Don't use it directly. Use captivePortalNotifier().
   CaptivePortalNotifier* m_captivePortalNotifier = nullptr;
+
+  QScopedPointer<CaptivePortalDetectionImpl> m_impl;
 };
 
 #endif  // CAPTIVEPORTALDETECTION_H
