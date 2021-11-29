@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+def isQt6 = System.getenv().getOrDefault("USE_QT6","0") == "1"
+
+
 buildscript {
     ext{
         kotlin_version = "1.4.30-M1"
@@ -84,10 +87,17 @@ android {
 
     sourceSets {
         main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = [qtAndroidDir + '/src', 'src', 'java']
-            aidl.srcDirs = [qtAndroidDir + '/src', 'src', 'aidl']
-            res.srcDirs = [qtAndroidDir + '/res', 'res']
+            if(isQt6){
+                java.srcDirs = [qtAndroidDir + '/src', 'src', 'java', 'compat/qt6']
+                aidl.srcDirs = [qtAndroidDir + '/src', 'src', 'aidl']
+                res.srcDirs =  [qtAndroidDir + '/res', 'res']
+                manifest.srcFile 'AndroidManifestQt6.xml'
+            }else{
+                java.srcDirs = [qt5AndroidDir + '/src', 'src', 'java', 'compat/qt5']
+                aidl.srcDirs = [qt5AndroidDir + '/src', 'src', 'aidl']
+                res.srcDirs =  [qt5AndroidDir + '/res', 'res']
+                manifest.srcFile 'AndroidManifest.xml'
+            }
             resources.srcDirs = ['resources']
             renderscript.srcDirs = ['src']
             assets.srcDirs = ['assets']

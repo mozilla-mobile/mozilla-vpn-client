@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<!-- 
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+<manifest package="org.mozilla.firefox.vpn" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="-- %%INSERT_VERSION_NAME%% --" android:versionCode="-- %%INSERT_VERSION_CODE%% --" android:installLocation="auto">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+    <!-- The following comment will be replaced upon deployment with default features based on the dependencies of the application.
+         Remove the comment if you do not require these default features. -->
+    <!-- %%INSERT_FEATURES -->
+
+
+    <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true" />
+    <application
+        android:hardwareAccelerated="true"
+        android:allowBackup="false"
+        android:name="org.mozilla.firefox.vpn.qt.VPNApplication"
+        android:label="Mozilla VPN"
+        android:extractNativeLibs="true"
+        android:theme="@style/AppTheme"
+        android:icon="@mipmap/vpnicon"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
+            android:name="org.mozilla.firefox.vpn.qt.VPNActivity"
+            android:process=":QtOnlyProcess"
+            android:label="Mozilla VPN"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Splash"
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <category android:name="android.intent.category.BROWSABLE"></category>
+                <!-- Checks URL of this format "mozilla-vpn://*" -->
+                <data android:scheme="mozilla-vpn"></data>
+            </intent-filter>
+
+            <meta-data android:name="android.app.background_running" android:value="false" />
+            <meta-data android:name="android.app.auto_screen_scale_factor" android:value="false" />
+  
+            <meta-data
+                    android:name="android.app.lib_name"
+                    android:value="-- %%INSERT_APP_LIB_NAME%% --" />
+
+            <meta-data
+                    android:name="android.app.arguments"
+                    android:value="-- %%INSERT_APP_ARGUMENTS%% --" />
+
+            <meta-data
+                    android:name="android.app.extract_android_style"
+                    android:value="minimal" />
+
+        </activity>
+        <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices-->
+        <service android:name=".VPNService"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService"/>
+            </intent-filter>
+        </service>
+        <service android:name="org.mozilla.firefox.vpn.qt.VPNPermissionHelper"
+            android:process=":QtOnlyProcess"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+        </service>
+    </application>
+
+</manifest>
