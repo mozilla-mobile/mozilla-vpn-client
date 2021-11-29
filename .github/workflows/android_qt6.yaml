@@ -14,6 +14,7 @@ jobs:
   compile-android-qt6:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
       matrix:
         config:
             #- { name: Release, args: "", apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
