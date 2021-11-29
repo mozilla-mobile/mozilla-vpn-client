@@ -15,7 +15,6 @@ Rectangle {
 
     color: "transparent"
     opacity: 1
-    state: parent.state
     states: [
         State {
             name: "stateConnecting"
@@ -116,25 +115,6 @@ Rectangle {
 
         },
         State {
-            name: "stateOn"
-            when: VPNController.state === VPNController.StateOn
-
-            PropertyChanges {
-                target: logo
-                showVPNOnIcon: true
-            }
-            PropertyChanges {
-                target: insetCircle
-                color: Color.success.default
-            }
-            PropertyChanges {
-                target: insetIcon
-                source: "qrc:/ui/resources/shield-on.svg"
-                opacity: 1
-            }
-
-        },
-        State {
             name: "stateInitializing"
             when: VPNController.state === VPNController.StateInitializing
 
@@ -150,6 +130,26 @@ Rectangle {
             PropertyChanges {
                 target: insetIcon
                 source: "qrc:/ui/resources/shield-off.svg"
+                opacity: 1
+            }
+
+        },
+        State {
+            name: "stateOn"
+            when: VPNController.state === VPNController.StateOn &&
+                VPNConnectionHealth.stability === VPNConnectionHealth.Stable
+
+            PropertyChanges {
+                target: logo
+                showVPNOnIcon: true
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: Color.success.default
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
 
