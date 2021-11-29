@@ -17,7 +17,7 @@ Item {
     property alias releaseVersionText: releaseVersion.text
     //% "About us"
     property string _menuTitle: qsTrId("vpn.settings.aboutUs")
-    property var listenForUpdateEvents:false;
+    property bool listenForUpdateEvents:false
     ListModel {
         id: aboutUsListModel
 
@@ -209,7 +209,9 @@ Item {
     Connections {
         target: VPNReleaseMonitor
         function onUpdateRequiredOrRecommended() {
-            if(!listenForUpdateEvents){return;}
+            if(!listenForUpdateEvents){
+                return;
+            }
             updateButtonImageAnimation.stop();
             updateAvailablePopup.open()
             listenForUpdateEvents=false;

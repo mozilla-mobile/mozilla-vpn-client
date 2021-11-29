@@ -24,7 +24,7 @@ class ReleaseMonitor final : public QObject {
  signals:
   // for testing
   void releaseChecked();
-  // Is fired once balrog was checked
+  // Is fired once balrog/guardian was checked
   // Retuns if any update is available (both recommended/required)
   void updateRequiredOrRecommended();
   void updateNotAvailable();
