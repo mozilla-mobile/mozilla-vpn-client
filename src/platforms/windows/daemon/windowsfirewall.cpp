@@ -652,7 +652,7 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range,
                                      uint8_t weight, const QString& title,
                                      const QString& peer) {
   QString description("Block traffic %1 %2 ");
-  IPAddress addr = IPAddress::create(range.toString());
+  IPAddress addr = IPAddress(range.toString());
 
   auto lower = addr.address();
   auto upper = addr.broadcastAddress();

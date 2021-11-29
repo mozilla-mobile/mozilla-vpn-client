@@ -726,11 +726,11 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
                              IPAddressRange::IPv4));
 
   // Allow access to everything not covered by an excluded address.
-  QList<IPAddress> allowedIPv4s{IPAddress::create("0.0.0.0/0")};
+  QList<IPAddress> allowedIPv4s{IPAddress("0.0.0.0/0")};
   allowedIPv4s = IPAddress::excludeAddresses(allowedIPv4s, excludeIPv4s);
   list.append(IPAddressRange::fromIPAddressList(allowedIPv4s));
 
-  QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
+  QList<IPAddress> allowedIPv6s{IPAddress("::/0")};
   allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
   list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
 #endif

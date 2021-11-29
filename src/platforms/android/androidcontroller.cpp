@@ -194,10 +194,10 @@ void AndroidController::activate(
   QList<IPAddress> excludedIPs;
   QJsonArray fullAllowedIPs;
   foreach (auto item, allowedIPAddressRanges) {
-    allowedIPs.append(IPAddress::create(item.toString()));
+    allowedIPs.append(IPAddress(item.toString()));
   }
   foreach (auto addr, excludedAddresses) {
-    excludedIPs.append(IPAddress::create(addr));
+    excludedIPs.append(IPAddress(addr));
   }
   foreach (auto item, IPAddress::excludeAddresses(allowedIPs, excludedIPs)) {
     fullAllowedIPs.append(QJsonValue(item.toString()));

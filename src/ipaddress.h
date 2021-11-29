@@ -9,11 +9,11 @@
 
 class IPAddress final {
  public:
-  static IPAddress create(const QString& ip);
   static QList<IPAddress> excludeAddresses(const QList<IPAddress>& sourceList,
                                            const QList<IPAddress>& excludeList);
 
   IPAddress();
+  IPAddress(const QString& ip);
   IPAddress(const IPAddress& other);
   IPAddress& operator=(const IPAddress& other);
   ~IPAddress();
@@ -24,9 +24,9 @@ class IPAddress final {
 
   const QHostAddress& address() const { return m_address; }
   int prefixLength() const { return m_prefixLength; }
-  const QHostAddress& netmask() const { return m_netmask; }
-  const QHostAddress& hostmask() const { return m_hostmask; }
-  const QHostAddress& broadcastAddress() const { return m_broadcastAddress; }
+  QHostAddress netmask() const;
+  QHostAddress hostmask() const;
+  QHostAddress broadcastAddress() const;
 
   bool overlaps(const IPAddress& other) const;
 
@@ -50,10 +50,6 @@ class IPAddress final {
  private:
   QHostAddress m_address;
   int m_prefixLength;
-
-  QHostAddress m_netmask;
-  QHostAddress m_hostmask;
-  QHostAddress m_broadcastAddress;
 };
 
 #endif  // IPADDRESS_H
