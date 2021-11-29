@@ -304,6 +304,14 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNReleaseMonitor",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->releaseMonitor();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNLocalizer",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = &Localizer::instance();
