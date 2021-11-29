@@ -11,7 +11,7 @@ ListView {
     id: list
 
     property var listName
-
+    height:contentHeight
     Accessible.role: Accessible.List
     Accessible.name: listName
     activeFocusOnTab: true

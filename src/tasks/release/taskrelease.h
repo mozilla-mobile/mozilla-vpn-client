@@ -28,6 +28,8 @@ class TaskRelease final : public Task {
   void updaterFailure();
   void updateRequired();
   void updateRecommended();
+  void updateRequiredOrRecommended();
+  void updateNotAvailable();
 
  private:
   Op m_op;

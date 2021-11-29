@@ -21,12 +21,17 @@ class Updater : public QObject {
 
   virtual void start(Task* task) = 0;
 
+  bool recommendedOrRequired() const { return m_recommendedOrRequired; }
+
  signals:
   void updateRequired();
   void updateRecommended();
 
  protected:
   static QString appVersion();
+
+ private:
+  bool m_recommendedOrRequired = false;
 };
 
 #endif  // UPDATER_H

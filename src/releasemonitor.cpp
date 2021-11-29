@@ -40,6 +40,10 @@ void ReleaseMonitor::runSoon() {
             &ReleaseMonitor::updateRequired);
     connect(task, &TaskRelease::updateRecommended, this,
             &ReleaseMonitor::updateRecommended);
+    connect(task, &TaskRelease::updateRequiredOrRecommended, this,
+            &ReleaseMonitor::updateRequiredOrRecommended);
+    connect(task, &TaskRelease::updateNotAvailable, this,
+            &ReleaseMonitor::updateNotAvailable);
     connect(task, &Task::completed, this, &ReleaseMonitor::releaseChecked);
     connect(task, &Task::completed, this, &ReleaseMonitor::schedule);
 
