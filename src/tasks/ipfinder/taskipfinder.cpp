@@ -90,7 +90,7 @@ void TaskIPFinder::createRequest(const QHostAddress& address, bool ipv6) {
 
   ++m_requestCount;
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "IP address request failed" << error;
 
@@ -109,7 +109,7 @@ void TaskIPFinder::createRequest(const QHostAddress& address, bool ipv6) {
             emit operationCompleted(QString(), QString(), QString());
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this, ipv6](const QByteArray& data) {
             logger.debug() << "IP address request completed";
 

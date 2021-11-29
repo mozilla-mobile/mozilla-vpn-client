@@ -38,7 +38,7 @@ void CaptivePortalMonitor::check() {
   logger.debug() << "Checking the internet connectivity";
 
   CaptivePortalRequestTask* task = new CaptivePortalRequestTask(false);
-  connect(task, &CaptivePortalRequestTask::operationCompleted,
+  connect(task, &CaptivePortalRequestTask::operationCompleted, this,
           [this](CaptivePortalRequest::CaptivePortalResult result) {
             logger.debug() << "Captive portal detection:" << result;
 
