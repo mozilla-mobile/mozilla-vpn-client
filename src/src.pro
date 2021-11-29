@@ -577,7 +577,6 @@ else:android {
 
     DEFINES += MVPN_ANDROID
 
-    ANDROID_ABIS = arm64-v8a
 
     INCLUDEPATH += platforms/android
 
