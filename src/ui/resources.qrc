@@ -347,6 +347,8 @@
         <file>resources/avatar-default.png</file>
         <file>resources/features/custom-dns-preview.png</file>
         <file>resources/features/features-tour-hero.png</file>
+        <file>resources/features/multi-account-containers-icon.svg</file>
+        <file>resources/features/multi-account-containers-preview.png</file>
         <file>resources/features/multi-hop-preview.png</file>
         <file>resources/features/support-form-preview.png</file>
         <file>resources/settings/questionMark.svg</file>
