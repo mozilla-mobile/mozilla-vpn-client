@@ -17,7 +17,7 @@ Item {
     property alias releaseVersionText: releaseVersion.text
     //% "About us"
     property string _menuTitle: qsTrId("vpn.settings.aboutUs")
-
+    property bool listenForUpdateEvents:false
     ListModel {
         id: aboutUsListModel
 
@@ -130,7 +130,6 @@ Item {
         anchors.top: divider.bottom
         anchors.topMargin: 16
         anchors.bottomMargin: Theme.vSpacing
-        height: parent.height
         width: viewAboutUs.width
         spacing: Theme.listSpacing
         model: aboutUsListModel
@@ -162,5 +161,210 @@ Item {
         }
 
     }
+
+    VPNButton{
+        id:updateButton
+        anchors.top: settingList.bottom
+        anchors.topMargin: 16
+        anchors.bottomMargin: Theme.vSpacing
+        anchors.horizontalCenter : viewAboutUs.horizontalCenter
+
+        onClicked: {
+            listenForUpdateEvents=true;
+            updateButtonImageAnimation.start();
+            VPN.releaseMonitor.runSoon();
+        }
+        text: VPNl18n.UpdateButtonCheckForUpdateButtonText
+        Image {
+            id:updateButtonImage
+            anchors {
+                // TODO: The content item spans the whole Button
+                // If we wish to align to the text, maybe we can get
+                // the texts bounding box with "TextMetrics"?
+                left: updateButton.contentItem.left
+                leftMargin: Theme.windowMargin
+                verticalCenter: parent.verticalCenter
+            }
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/ui/resources/refresh.svg"
+            sourceSize.height: Theme.iconSize * 1.5
+            sourceSize.width: Theme.iconSize * 1.5
+            visible: true
+            z:6
+
+            SequentialAnimation {
+                id: updateButtonImageAnimation
+                running: false
+                PropertyAnimation {
+                    target: updateButtonImage
+                    property: "rotation"
+                    from: 0
+                    to: 360
+                    duration: 2000
+                    loops: Animation.Infinite
+                }
+            }
+        }
+    }
+    Connections {
+        target: VPNReleaseMonitor
+        function onUpdateRequiredOrRecommended() {
+            if(!listenForUpdateEvents){
+                return;
+            }
+            updateButtonImageAnimation.stop();
+            updateAvailablePopup.open()
+            listenForUpdateEvents=false;
+        }
+        function onUpdateNotAvailable() {
+            if(!listenForUpdateEvents){return;}
+            updateButtonImageAnimation.stop();
+            noUpdateAvailablePopup.open()
+            listenForUpdateEvents=false;
+        }
+    }
+    VPNPopup {
+        id: updateAvailablePopup
+        anchors.centerIn: parent
+        maxWidth: Theme.desktopAppWidth
+        contentItem: ColumnLayout {
+
+            Item {
+                // Main Image
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredHeight: 90
+                Layout.preferredWidth: 90
+                Layout.bottomMargin: Theme.listSpacing
+                Layout.topMargin: Theme.vSpacing*1.5
+                Image {
+                    anchors.fill: parent
+                    source:  "qrc:/ui/resources/updateStatusUpdateAvailable.svg"
+                    sourceSize.height: parent.height * QtQuick_Window.Screen.devicePixelRatio
+                    sourceSize.width: parent.width * QtQuick_Window.Screen.devicePixelRatio
+                    fillMode: Image.PreserveAspectFit
+
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: Theme.listSpacing * 0.5
+                }
+            }
+
+            VPNMetropolisLabel {
+                color: Theme.fontColorDark
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeLarge
+                text: VPNl18n.UpdateButtonTitleOnUpdate
+                Layout.bottomMargin: Theme.listSpacing
+                Layout.fillWidth: true
+            }
+
+            VPNTextBlock {
+                horizontalAlignment: Text.AlignHCenter
+                text: VPNl18n.UpdateButtonDescriptionOnUpdate
+                Layout.fillWidth: true
+                Layout.preferredWidth: parent.width
+            }
+
+            VPNButton {
+                radius: Theme.cornerRadius
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignBottom
+                Layout.topMargin: Theme.vSpacing
+                Layout.bottomMargin: Theme.vSpacing * 0.5
+                text: VPNl18n.UpdateButtonActionOnUpdate
+                onClicked: {
+                    updateAvailablePopup.close()
+                    stackview.push("qrc:/ui/views/ViewUpdate.qml");
+                }
+
+                Image {
+                    anchors {
+                        right: parent.contentItem.right
+                        rightMargin: Theme.windowMargin
+                        verticalCenter: parent.verticalCenter
+                    }
+                    fillMode: Image.PreserveAspectFit
+                    source: "qrc:/ui/resources/arrow-forward-white.svg"
+                    sourceSize.height: Theme.iconSize * 1.5
+                    sourceSize.width: Theme.iconSize * 1.5
+                    visible: false
+                }
+            }
+
+        }
+    }
+
+
+    VPNPopup {
+        id: noUpdateAvailablePopup
+        anchors.centerIn: parent
+        maxWidth: Theme.desktopAppWidth
+        contentItem: ColumnLayout {
+
+            Item {
+                // Main Image
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredHeight: 90
+                Layout.preferredWidth: 90
+                Layout.bottomMargin: Theme.listSpacing
+                Layout.topMargin: Theme.vSpacing*1.5
+                Image {
+                    anchors.fill: parent
+                    source: "qrc:/ui/resources/updateStatusUpToDate.svg"
+                    sourceSize.height: parent.height * QtQuick_Window.Screen.devicePixelRatio
+                    sourceSize.width: parent.width * QtQuick_Window.Screen.devicePixelRatio
+                    fillMode: Image.PreserveAspectFit
+
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: Theme.listSpacing * 0.5
+                }
+            }
+
+            VPNMetropolisLabel {
+                color: Theme.fontColorDark
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeLarge
+                text: VPNl18n.UpdateButtonTitleNoUpdate
+
+                Layout.bottomMargin: Theme.listSpacing
+                Layout.fillWidth: true
+            }
+
+            VPNTextBlock {
+                horizontalAlignment: Text.AlignHCenter
+                text: VPNl18n.UpdateButtonDescriptionNoUpdate
+                Layout.fillWidth: true
+                Layout.preferredWidth: parent.width
+            }
+
+            VPNButton {
+                radius: Theme.cornerRadius
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignBottom
+                Layout.topMargin: Theme.vSpacing
+                Layout.bottomMargin: Theme.vSpacing * 0.5
+                text: VPNl18n.UpdateButtonActionNoUpdate
+                onClicked: {
+                    noUpdateAvailablePopup.close();
+                }
+
+                Image {
+                    anchors {
+                        right: parent.contentItem.right
+                        rightMargin: Theme.windowMargin
+                        verticalCenter: parent.verticalCenter
+                    }
+                    fillMode: Image.PreserveAspectFit
+                    source: "qrc:/ui/resources/arrow-forward-white.svg"
+                    sourceSize.height: Theme.iconSize * 1.5
+                    sourceSize.width: Theme.iconSize * 1.5
+                    visible: false
+                }
+            }
+
+        }
+    }
+
 
 }
