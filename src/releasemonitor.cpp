@@ -49,7 +49,6 @@ void ReleaseMonitor::runSoon() {
 
     TaskScheduler::scheduleTask(task);
   });
-
 }
 
 void ReleaseMonitor::schedule() {
