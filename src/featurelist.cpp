@@ -14,6 +14,7 @@
 #include "features/featureinappauth.h"
 #include "features/featureinapppurchase.h"
 #include "features/featurelocalareaaccess.h"
+#include "features/featuremultiaccountcontainers.h"
 #include "features/featuremultihop.h"
 #include "features/featurenotificationcontrol.h"
 #include "features/featuresplittunnel.h"
@@ -47,6 +48,7 @@ void FeatureList::initialize() {
   new FeatureInAppAuth();
   new FeatureInAppPurchase();
   new FeatureLocalAreaAccess();
+  new FeatureMultiAccountContainers();
   new FeatureMultiHop();
   new FeatureNotificationControl();
   new FeatureShareLogs();
