@@ -129,6 +129,7 @@ class Controller final : public QObject {
 
   bool processNextStep();
   QList<IPAddressRange> getAllowedIPAddressRanges(const QList<Server>& servers);
+  QStringList getExcludedAddresses(const QList<Server>& serverList);
 
   void activateInternal();
 
