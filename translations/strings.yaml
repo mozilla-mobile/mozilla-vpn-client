@@ -221,7 +221,7 @@ whatsNewReleaseNotes:
   tourSystemNotifBody: Check out all the new features available in the latest version of Mozilla VPN!
   tourSystemNotifCTA: Take the tour
   # Multi-account containers
-  multiAccountContainersHeader: Multi-Account Containers
+  multiAccountContainersHeader: Firefox add-on integration
   multiAccountContainersShortDescription: Mozilla VPN is now integrated with the Multi-Account Containers add-on for more privacy and security.
   multiAccountContainersDescription: Mozilla VPN is now integrated with the Multi-Account Containers add-on in Firefox. You can now use different VPN locations with multiple containers simultaneously.
 

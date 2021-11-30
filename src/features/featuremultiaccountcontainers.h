@@ -13,17 +13,22 @@ constexpr const char* FEATURE_MULTI_ACCOUNT_CONTAINERS =
 class FeatureMultiAccountContainers final : public Feature {
  public:
   FeatureMultiAccountContainers()
-      : Feature(
-            FEATURE_MULTI_ACCOUNT_CONTAINERS, "Multi-Account Containers",
-            true,  // Is Major Feature
-            L18nStrings::WhatsNewReleaseNotesMultiAccountContainersHeader,  // Display name
-            L18nStrings::WhatsNewReleaseNotesMultiAccountContainersShortDescription,  // Description
-            L18nStrings::WhatsNewReleaseNotesMultiAccountContainersDescription,  // LongDescr
-            "qrc:/ui/resources/features/multi-account-containers-preview.png",  // ImagePath
-            "qrc:/ui/resources/features/multi-account-containers-icon.svg",  // IconPath
-            "https://addons.mozilla.org/firefox/addon/multi-account-containers",  // link URL
-            "2.7",
-            false  // Can be enabled in devmode
+      : Feature(FEATURE_MULTI_ACCOUNT_CONTAINERS, "Multi-Account Containers",
+                true,  // Is Major Feature
+                L18nStrings::
+                    WhatsNewReleaseNotesMultiAccountContainersHeader,  // Display
+                                                                       // name
+                L18nStrings::
+                    WhatsNewReleaseNotesMultiAccountContainersShortDescription,  // Description
+                L18nStrings::
+                    WhatsNewReleaseNotesMultiAccountContainersDescription,  // LongDescr
+                "qrc:/ui/resources/features/"
+                "multi-account-containers-preview.png",  // ImagePath
+                "qrc:/ui/resources/features/multi-account-containers-icon.svg",  // IconPath
+                "https://addons.mozilla.org/firefox/addon/"
+                "multi-account-containers",  // link URL
+                "2.7",
+                false  // Can be enabled in devmode
         ) {}
 
   bool checkSupportCallback() const override {
