@@ -11,6 +11,9 @@ class TestAdjust final : public TestHelper {
   void paramFiltering_data();
   void paramFiltering();
 
+  void addFields_data();
+  void addFields();
+
   void stateMachine_data();
   void stateMachine();
 };

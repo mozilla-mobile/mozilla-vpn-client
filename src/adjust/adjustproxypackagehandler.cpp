@@ -172,9 +172,9 @@ void AdjustProxyPackageHandler::filterParameters() {
   logger.debug() << "Filtering parameters";
 
   m_queryParameters =
-      AdjustFiltering::filterParameters(m_queryParameters, m_unknownParameters);
+      AdjustFiltering::instance()->filterParameters(m_queryParameters, m_unknownParameters);
   m_bodyParameters =
-      AdjustFiltering::filterParameters(m_bodyParameters, m_unknownParameters);
+      AdjustFiltering::instance()->filterParameters(m_bodyParameters, m_unknownParameters);
 
   m_state = ProcessingState::ProcessingDone;
 }
