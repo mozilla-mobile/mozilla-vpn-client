@@ -47,7 +47,7 @@ sample:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
     data_sensitivity:
-      - interaction
+      - technical
     notification_emails:
       - sstreich@mozilla.com
     expires: never
@@ -64,7 +64,7 @@ sample:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
     data_sensitivity:
-      - interaction
+      - technical
     notification_emails:
       - sstreich@mozilla.com
     expires: never
@@ -81,7 +81,7 @@ sample:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
     data_sensitivity:
-      - interaction
+      - technical
     notification_emails:
       - sstreich@mozilla.com
     expires: never
@@ -98,7 +98,7 @@ sample:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
     data_sensitivity:
-      - interaction
+      - technical
     notification_emails:
       - sstreich@mozilla.com
     expires: never
@@ -115,7 +115,7 @@ sample:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
     data_sensitivity:
-      - interaction
+      - technical
     notification_emails:
       - sstreich@mozilla.com
     expires: never
@@ -132,7 +132,7 @@ sample:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
     data_sensitivity:
-      - interaction
+      - technical
     notification_emails:
       - sstreich@mozilla.com
     expires: never
@@ -149,7 +149,7 @@ sample:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
     data_sensitivity:
-      - interaction
+      - technical
     notification_emails:
       - sstreich@mozilla.com
     expires: never
@@ -166,7 +166,7 @@ sample:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
     data_sensitivity:
-      - interaction
+      - technical
     notification_emails:
       - sstreich@mozilla.com
     expires: never
