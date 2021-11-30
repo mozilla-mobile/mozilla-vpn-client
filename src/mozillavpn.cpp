@@ -102,7 +102,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   AdjustHandler::initialize();
 #endif
 
-  connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
+  connect(&m_alertTimer, &QTimer::timeout, this,
+          [this]() { setAlert(NoAlert); });
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskAccountAndServers());
@@ -121,10 +122,10 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     }
   });
 
-  connect(&m_private->m_controller, &Controller::readyToUpdate,
+  connect(&m_private->m_controller, &Controller::readyToUpdate, this,
           [this]() { setState(StateUpdateRequired); });
 
-  connect(&m_private->m_controller, &Controller::readyToBackendFailure,
+  connect(&m_private->m_controller, &Controller::readyToBackendFailure, this,
           [this]() {
             TaskScheduler::deleteTasks();
             setState(StateBackendFailure);
@@ -524,7 +525,7 @@ void MozillaVPN::openLink(LinkType linkType) {
       break;
     case LinkInspector:
       Q_ASSERT(!Constants::inProduction());
-      url = "http://localhost:8766/";
+      url = "https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/";
       break;
     case LinkCaptivePortal:
       // TODO: get link
@@ -925,12 +926,15 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
   switch (error) {
     case ErrorHandler::VPNDependentConnectionError:
-      // This type of error might be caused by switching the VPN
-      // on, in which case it's okay to be ignored.
-      // In Case the vpn is not connected - handle this like a
-      // ConnectionFailureError
-      if (controller()->state() == Controller::StateOn) {
+      if (controller()->state() == Controller::State::StateOn ||
+          controller()->state() == Controller::State::StateConfirming) {
+        // connection likely isn't stable yet
         logger.error() << "Ignore network error probably caused by enabled VPN";
+        return;
+      } else if (controller()->state() == Controller::State::StateOff) {
+        // We are off, so this means a request failed, not the
+        // VPN. Change it to No Connection
+        alert = NoConnectionAlert;
         break;
       }
       [[fallthrough]];
@@ -939,6 +943,9 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       break;
 
     case ErrorHandler::NoConnectionError:
+      if (controller()->isUnsettled()) {
+        return;
+      }
       alert = NoConnectionAlert;
       break;
 
@@ -1226,7 +1233,12 @@ bool MozillaVPN::viewLogs() {
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
   bool ok = true;
-  serializeLogs(out, [buffer, out, &ok]() {
+  serializeLogs(out, [buffer, out
+#  if defined(MVPN_ANDROID)
+                      ,
+                      &ok
+#  endif
+  ]() {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
@@ -1508,7 +1520,7 @@ void MozillaVPN::update() {
   }
 #endif
 
-  m_private->m_releaseMonitor.update();
+  m_private->m_releaseMonitor.updateSoon();
 }
 
 void MozillaVPN::setUpdating(bool updating) {

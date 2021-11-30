@@ -202,14 +202,7 @@ public class IOSControllerImpl : NSObject {
                         let settings = config.asWgQuickConfig()
                         let settingsData = settings.data(using: .utf8)!
                         try (self.tunnel!.connection as? NETunnelProviderSession)?
-                                .sendProviderMessage(settingsData) { data in
-                            guard let data = data,
-                                let configString = String(data: data, encoding: .utf8)
-                            else {
-                                Logger.global?.log(message: "Failed to convert response to string")
-                                return
-                            }
-                        }
+                                .sendProviderMessage(settingsData)
                     } else {
                         try (self.tunnel!.connection as? NETunnelProviderSession)?.startTunnel()
                     }

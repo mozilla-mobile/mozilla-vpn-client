@@ -39,7 +39,7 @@ Window {
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
-    onClosing: {
+    onClosing: close => {
         console.log("Closing request handling");
 
         // No desktop, we go in background mode.
@@ -73,7 +73,7 @@ Window {
         anchors.fill: parent
         propagateComposedEvents: true
         z: 10
-        onPressed: {
+        onPressed: mouse => {
             if (window.activeFocusItem && window.activeFocusItem.forceBlurOnOutsidePress) {
                 window.activeFocusItem.focus = false;
             }
@@ -271,7 +271,7 @@ Window {
                     return;
                 };
             }
-            // If we cant show logs natively, open the viewer
+            // If we can't show logs natively, open the viewer
             mainStackView.push("views/ViewLogs.qml");
             
         }
@@ -307,10 +307,11 @@ Window {
                 osVersion: VPN.osVersion,
                 architecture: VPN.architecture,
             });
-            if (VPN.platform == "dummy") {
-                console.debug("Setting glean tags for automation");
-                Glean.setSourceTags(["automation"])
-            }
+        }
+
+        function onSetGleanSourceTags(tags) {
+            console.debug("Setting source tags to:", tags);
+            Glean.setSourceTags(tags);
         }
 
         function onSendGleanPings() {

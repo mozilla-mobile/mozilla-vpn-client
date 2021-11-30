@@ -91,6 +91,7 @@ class Controller final : public QObject {
 
   void captivePortalPresent();
   void captivePortalGone();
+  bool isUnsettled();
 
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
@@ -140,10 +141,15 @@ class Controller final : public QObject {
 
   void resetConnectedTime();
 
+  void startUnsettledPeriod();
+
  private:
   State m_state = StateInitializing;
 
   QTimer m_timer;
+  QTimer m_settleTimer;
+
+  bool m_settled = true;
 
   bool m_portalDetected = false;
 

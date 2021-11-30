@@ -197,4 +197,15 @@ describe('Captive portal', function() {
     });
     assert(true);
   });
+  it('Shows the prompt Before activation when a portal is detected', async () => {
+    await vpn.authenticate(true, true);
+    await vpn.setSetting('captive-portal-alert', 'true');
+
+    await vpn.activate();
+    await vpn.forceCaptivePortalDetection();
+    await vpn.waitForCondition(() => {
+      return vpn.hasElement("openCaptivePortalButton");
+    });
+    assert(true);
+  });
 });

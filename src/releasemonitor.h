@@ -16,17 +16,20 @@ class ReleaseMonitor final : public QObject {
   ReleaseMonitor();
   ~ReleaseMonitor();
 
-  void runSoon();
+  Q_INVOKABLE void runSoon();
 
-  void update();
+  void updateSoon();
 
  signals:
   // for testing
   void releaseChecked();
+  // Is fired once balrog/guardian was checked
+  // Retuns if any update is available (both recommended/required)
+  void updateRequiredOrRecommended();
+  void updateNotAvailable();
 
  private:
   void schedule();
-  void runInternal();
 
   void updateRequired();
   void updateRecommended();

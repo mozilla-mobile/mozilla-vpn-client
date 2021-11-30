@@ -39,6 +39,8 @@
 #  include "platforms/dummy/dummycontroller.h"
 #endif
 
+constexpr auto SETTLE_TIMEOUT = 3000;
+
 constexpr const uint32_t TIMER_MSEC = 1000;
 
 // X connection retries.
@@ -80,7 +82,7 @@ Controller::Controller() {
           &Controller::connectionConfirmed);
   connect(&m_connectionCheck, &ConnectionCheck::failure, this,
           &Controller::connectionFailed);
-  connect(&m_connectingTimer, &QTimer::timeout, [this]() {
+  connect(&m_connectingTimer, &QTimer::timeout, this, [this]() {
     m_enableDisconnectInConfirming = true;
     emit enableDisconnectInConfirmingChanged();
   });
@@ -372,6 +374,9 @@ void Controller::connectionConfirmed() {
   }
 
   setState(StateOn);
+
+  startUnsettledPeriod();
+
   emit timeChanged();
 
   if (m_nextStep != None) {
@@ -408,6 +413,8 @@ void Controller::connectionFailed() {
   m_impl->deactivate(ControllerImpl::ReasonConfirming);
 }
 
+bool Controller::isUnsettled() { return !m_settled; }
+
 void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
 
@@ -425,6 +432,8 @@ void Controller::disconnected() {
     task->run();
     return;
   }
+
+  startUnsettledPeriod();
 
   m_timer.stop();
   resetConnectionCheck();
@@ -722,42 +731,37 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
 
   QList<IPAddressRange> list;
 
+#ifdef MVPN_IOS
+  logger.debug() << "Catch all IPv4";
+  list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
+
+  logger.debug() << "Catch all IPv6";
+  list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
+#else
+  // filtering out the ingress server's public IPv4 and IPv6 addresses.
+  logger.debug() << "Exclude the ingress server:" << server.ipv4AddrIn();
+  excludeIPv4s.append(IPAddress::create(server.ipv4AddrIn()));
+  logger.debug() << "Allow the ingress server:" << server.ipv4Gateway();
+  list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
+
+  logger.debug() << "Exclude the ingress server:" << server.ipv6AddrIn();
+  excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
+  logger.debug() << "Allow the ingress server:" << server.ipv6Gateway();
+  list.append(IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
+
   // Ensure that the Mullvad proxy services are always allowed.
   list.append(IPAddressRange(MULLVAD_PROXY_RANGE, MULLVAD_PROXY_RANGE_LENGTH,
                              IPAddressRange::IPv4));
 
-  if (excludeIPv4s.isEmpty()) {
-    logger.debug() << "Catch all IPv4";
-    list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
-  } else {
-    QList<IPAddress> allowedIPv4s{IPAddress::create("0.0.0.0/0")};
+  // Allow access to everything not covered by an excluded address.
+  QList<IPAddress> allowedIPv4s{IPAddress::create("0.0.0.0/0")};
+  allowedIPv4s = IPAddress::excludeAddresses(allowedIPv4s, excludeIPv4s);
+  list.append(IPAddressRange::fromIPAddressList(allowedIPv4s));
 
-    logger.debug() << "Exclude the ingress server:" << server.ipv4AddrIn();
-    excludeIPv4s.append(IPAddress::create(server.ipv4AddrIn()));
-
-    allowedIPv4s = IPAddress::excludeAddresses(allowedIPv4s, excludeIPv4s);
-    list.append(IPAddressRange::fromIPAddressList(allowedIPv4s));
-
-    logger.debug() << "Allow the ingress server:" << server.ipv4Gateway();
-    list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
-  }
-
-  if (excludeIPv6s.isEmpty()) {
-    logger.debug() << "Catch all IPv6";
-    list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
-  } else {
-    QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
-
-    logger.debug() << "Exclude the ingress server:" << server.ipv6AddrIn();
-    excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
-
-    allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
-    list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
-
-    logger.debug() << "Allow the ingress server:" << server.ipv6Gateway();
-    list.append(
-        IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
-  }
+  QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
+  allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
+  list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
+#endif
 
   return list;
 }
@@ -786,6 +790,16 @@ void Controller::heartbeatCompleted() {
 
 void Controller::resetConnectedTime() {
   m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
+}
+
+void Controller::startUnsettledPeriod() {
+  logger.debug() << "Starting unsettled period.";
+  m_settled = false;
+  m_settleTimer.stop();
+  m_settleTimer.singleShot(SETTLE_TIMEOUT, [this]() {
+    m_settled = true;
+    logger.debug() << "Unsettled period over.";
+  });
 }
 
 QString Controller::currentLocalizedCityName() const {

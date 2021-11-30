@@ -8,10 +8,11 @@
 #include "networkrequest.h"
 #include "constants.h"
 #include "settingsholder.h"
+#include "task.h"
 
 namespace {};
 
-NetworkRequest::NetworkRequest(QObject* parent, int status,
+NetworkRequest::NetworkRequest(Task* parent, int status,
                                bool setAuthorizationHeader)
     : QObject(parent), m_status(status) {
   Q_UNUSED(setAuthorizationHeader);
@@ -43,19 +44,19 @@ QString NetworkRequest::apiBaseUrl() {
 }
 
 // static
-NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent, const QString&,
+NetworkRequest* NetworkRequest::createForGetUrl(Task* parent, const QString&,
                                                 int status) {
   return new NetworkRequest(parent, status, false);
 }
 
 // static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(
-    QObject* parent, const QString&, const QString&) {
+    Task* parent, const QString&, const QString&) {
   return new NetworkRequest(parent, 1234, false);
 }
 
 // static
-NetworkRequest* NetworkRequest::createForDeviceCreation(QObject* parent,
+NetworkRequest* NetworkRequest::createForDeviceCreation(Task* parent,
                                                         const QString&,
                                                         const QString&,
                                                         const QString&) {
@@ -63,53 +64,53 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(QObject* parent,
 }
 
 // static
-NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
+NetworkRequest* NetworkRequest::createForDeviceRemoval(Task* parent,
                                                        const QString&) {
   return new NetworkRequest(parent, 1234, false);
 }
 
-NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
+NetworkRequest* NetworkRequest::createForServers(Task* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
-NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
+NetworkRequest* NetworkRequest::createForVersions(Task* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
-NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
+NetworkRequest* NetworkRequest::createForAccount(Task* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
-NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
+NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
                                                 const QHostAddress&) {
   return new NetworkRequest(parent, 1234, false);
 }
 
 NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
-    QObject* parent, const QUrl&, const QByteArray&) {
+    Task* parent, const QUrl&, const QByteArray&) {
   return new NetworkRequest(parent, 1234, false);
 }
 
-NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
+NetworkRequest* NetworkRequest::createForCaptivePortalLookup(Task* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
-NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
+NetworkRequest* NetworkRequest::createForProducts(Task* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
 #ifdef MVPN_IOS
-NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
+NetworkRequest* NetworkRequest::createForIOSPurchase(Task* parent,
                                                      const QString&) {
   return new NetworkRequest(parent, 1234, false);
 }
 #endif
 
-NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
+NetworkRequest* NetworkRequest::createForSurveyData(Task* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
-NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
+NetworkRequest* NetworkRequest::createForFeedback(Task* parent,
                                                   const QString& feedbackText,
                                                   const QString& logs,
                                                   const qint8 rating,
@@ -123,9 +124,8 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
 }
 
 NetworkRequest* NetworkRequest::createForSupportTicket(
-    QObject* parent, const QString& email, const QString& subject,
+    Task* parent, const QString& email, const QString& subject,
     const QString& issueText, const QString& logs, const QString& category) {
-  Q_UNUSED(parent);
   Q_UNUSED(email);
   Q_UNUSED(subject);
   Q_UNUSED(issueText);
@@ -136,7 +136,7 @@ NetworkRequest* NetworkRequest::createForSupportTicket(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
+NetworkRequest* NetworkRequest::createForGetFeatureList(Task* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 

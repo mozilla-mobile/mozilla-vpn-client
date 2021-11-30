@@ -381,6 +381,7 @@ class MozillaVPN final : public QObject {
   void initializeGlean();
   void sendGleanPings();
   void recordGleanEvent(const QString& gleanSampleName);
+  void setGleanSourceTags(const QStringList& tags);
 
   void aboutToQuit();
 

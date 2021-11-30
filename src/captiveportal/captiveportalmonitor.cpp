@@ -4,9 +4,10 @@
 
 #include "captiveportalmonitor.h"
 #include "captiveportalrequest.h"
-#include "captiveportalresult.h"
+#include "captiveportalrequesttask.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "taskscheduler.h"
 
 constexpr uint32_t CAPTIVE_PORTAL_MONITOR_MSEC = 10000;
 
@@ -46,23 +47,26 @@ void CaptivePortalMonitor::maybeCheck() {
 void CaptivePortalMonitor::check() {
   logger.debug() << "Checking the internet connectivity";
 
-  CaptivePortalRequest* request = new CaptivePortalRequest(this);
-  connect(request, &CaptivePortalRequest::completed,
-          [this](CaptivePortalResult result) {
+  CaptivePortalRequestTask* task = new CaptivePortalRequestTask(false);
+  connect(task, &CaptivePortalRequestTask::operationCompleted, this,
+          [this](CaptivePortalRequest::CaptivePortalResult result) {
             logger.debug() << "Captive portal detection:" << result;
             if (!m_timer.isActive()) {
               return;
             }
-            if (result == CaptivePortalResult::Failure) {
+            if (result == CaptivePortalRequest::CaptivePortalResult::Failure) {
               return;
             }
-            if (result == CaptivePortalResult::PortalDetected) {
+            if (result ==
+                CaptivePortalRequest::CaptivePortalResult::PortalDetected) {
               emit offline();
               return;
             }
-            // It seems that the captive-portal is gone.
+
+            // It seems that the captive-portal is gone. We can reactivate the
+            // VPN.
             emit online();
           });
 
-  request->run();
+  TaskScheduler::scheduleTask(task);
 }

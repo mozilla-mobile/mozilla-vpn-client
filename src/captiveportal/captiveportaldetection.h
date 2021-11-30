@@ -6,8 +6,9 @@
 #define CAPTIVEPORTALDETECTION_H
 
 #include <QObject>
-#include "captiveportalresult.h"
+#include "captiveportalrequest.h"
 
+class CaptivePortalDetectionImpl;
 class CaptivePortalMonitor;
 class CaptivePortalNotifier;
 
@@ -30,8 +31,9 @@ signals:
 
  public slots:
   void stateChanged();
+  void networkChanged();
   void settingsChanged();
-  void detectionCompleted(CaptivePortalResult detected);
+  void detectionCompleted(CaptivePortalRequest::CaptivePortalResult detected);
   void captivePortalGone();
 
   void activationRequired();
@@ -54,6 +56,8 @@ signals:
 
   // Don't use it directly. Use captivePortalNotifier().
   CaptivePortalNotifier* m_captivePortalNotifier = nullptr;
+
+  QScopedPointer<CaptivePortalDetectionImpl> m_impl;
 };
 
 #endif  // CAPTIVEPORTALDETECTION_H
