@@ -20,7 +20,8 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
                  L18nStrings::String displayName_id,
                  L18nStrings::String shortDesc_id, L18nStrings::String desc_id,
                  const QString& imgPath, const QString& iconPath,
-                 const QString& aReleaseVersion, bool devModeWriteable)
+                 const QString& linkUrl, const QString& aReleaseVersion,
+                 bool devModeWriteable)
     : QObject(qApp),
       m_id(id),
       m_name(name),
@@ -30,6 +31,7 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
       m_description_id(desc_id),
       m_imagePath(imgPath),
       m_iconPath(iconPath),
+      m_linkUrl(linkUrl),
       m_devModeWriteable(devModeWriteable) {
   logger.debug() << "Initializing feature" << id;
 

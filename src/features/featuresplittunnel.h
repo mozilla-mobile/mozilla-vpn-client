@@ -24,6 +24,7 @@ class FeatureSplitTunnel final : public Feature {
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath
                 "",                  // IconPath
+                "",                  // link URL
                 "2.4",               // released
                 true                 // Can be enabled in devmode
         ){};
