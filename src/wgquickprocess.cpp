@@ -137,7 +137,7 @@ bool WgQuickProcess::createConfigFile(
   config.m_serverPort = serverPort;
 
   for (const QString& range : allowedIPAddressRanges.split(',')) {
-    config.m_allowedIPAddressRanges.append(IPAddressRange(range));
+    config.m_allowedIPAddressRanges.append(IPAddress(range));
   }
 
   return createConfigFile(outputFile, config);

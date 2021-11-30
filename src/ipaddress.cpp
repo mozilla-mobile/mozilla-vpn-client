@@ -14,6 +14,7 @@ Logger logger(LOG_NETWORKING, "IPAddress");
 }  // namespace
 
 IPAddress::IPAddress(const QString& ip) {
+  MVPN_COUNT_CTOR(IPAddress);
   if (ip.contains("/")) {
     QPair<QHostAddress, int> p = QHostAddress::parseSubnet(ip);
     m_address = p.first;

@@ -16,7 +16,6 @@
 #include "rfc/rfc4291.h"
 
 #include "ipaddress.h"
-#include "ipaddressrange.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
@@ -690,7 +689,6 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   // For multi-hop connections, the last entry in the server list is the
   // ingress node to the network of wireguard servers, and must not be
   // routed through the VPN.
-  const Server& server = serverList.last();
 
   // filtering out the RFC1918 local area network
   if (FeatureLocalAreaAccess::instance()->isSupported() &&
@@ -710,15 +708,16 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
 
 #ifdef MVPN_IOS
   logger.debug() << "Catch all IPv4";
-  list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
+  list.append(IPAddress("0.0.0.0/0"));
 
   logger.debug() << "Catch all IPv6";
-  list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
+  list.append(IPAddress("::0/0"));
 #else
+  const Server& server = serverList.first();
   // Allow access to the internal gateway addresses.
-  logger.debug() << "Allow the ingress server:" << server.ipv4Gateway();
+  logger.debug() << "Allow the IPv4 gateway:" << server.ipv4Gateway();
   list.append(IPAddress(QHostAddress(server.ipv4Gateway()), 32));
-  logger.debug() << "Allow the ingress server:" << server.ipv6Gateway();
+  logger.debug() << "Allow the IPv6 gateway:" << server.ipv6Gateway();
   list.append(IPAddress(QHostAddress(server.ipv6Gateway()), 128));
 
   // Ensure that the Mullvad proxy services are always allowed.
@@ -757,7 +756,7 @@ QStringList Controller::getExcludedAddresses(const QList<Server>& serverList) {
 
   // Filter out the Custom DNS Server, if the user has set one.
   if (DNSHelper::shouldExcludeDNS()) {
-    auto dns = DNSHelper::getDNS(serverList.last().ipv4Gateway());
+    auto dns = DNSHelper::getDNS(serverList.first().ipv4Gateway());
     logger.debug() << "Filtering out the DNS address:" << dns;
     list.append(dns);
   }

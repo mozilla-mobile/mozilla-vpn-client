@@ -389,7 +389,7 @@ bool MacosRouteMonitor::rtmFetchRoutes(int family) {
   return false;
 }
 
-bool MacosRouteMonitor::insertRoute(const IPAddressRange& prefix) {
+bool MacosRouteMonitor::insertRoute(const IPAddress& prefix) {
   struct sockaddr_dl datalink;
   memset(&datalink, 0, sizeof(datalink));
   datalink.sdl_family = AF_LINK;
@@ -401,13 +401,13 @@ bool MacosRouteMonitor::insertRoute(const IPAddressRange& prefix) {
   datalink.sdl_slen = 0;
   memcpy(&datalink.sdl_data, qPrintable(m_ifname), datalink.sdl_nlen);
 
-  QHostAddress addr(prefix.ipAddress());
-  return rtmSendRoute(RTM_ADD, addr, prefix.range(), m_ifindex, &datalink);
+  return rtmSendRoute(RTM_ADD, prefix.address(), prefix.prefixLength(),
+                      m_ifindex, &datalink);
 }
 
-bool MacosRouteMonitor::deleteRoute(const IPAddressRange& prefix) {
-  QHostAddress addr(prefix.ipAddress());
-  return rtmSendRoute(RTM_DELETE, addr, prefix.range(), m_ifindex, nullptr);
+bool MacosRouteMonitor::deleteRoute(const IPAddress& prefix) {
+  return rtmSendRoute(RTM_DELETE, prefix.address(), prefix.prefixLength(),
+                      m_ifindex, nullptr);
 }
 
 bool MacosRouteMonitor::addExclusionRoute(const QHostAddress& address) {
