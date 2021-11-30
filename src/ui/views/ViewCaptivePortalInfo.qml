@@ -20,7 +20,7 @@ VPNFlickable {
             name: "pre-activation"
             PropertyChanges { 
                 target: subTextBlock; 
-                text: VPNl18n.CaptivePortalAlertPreActivation
+                text: VPNl18n.CaptivePortalAlertActionPreActivation
             }
             PropertyChanges{
                 target:openPortalButton
@@ -31,7 +31,7 @@ VPNFlickable {
             name: "post-activation"
             PropertyChanges { 
                 target: subTextBlock; 
-                text: VPNl18n.CaptivePortalAlertPostActivation
+                text: VPNl18n.CaptivePortalAlertActionPostActivation
             }
             PropertyChanges{
                 target:openPortalButton
@@ -113,17 +113,14 @@ VPNFlickable {
             text: VPNl18n.CaptivePortalAlertPreActivation
             radius: 4
             onClicked: {
-                if(state === "pre-activation"){
+                if(vpnFlickable.state === "pre-activation"){
                     VPN.openLink(VPN.LinkCaptivePortal);
-                    stackview.pop();
-                    return;
                 }
-                if(state === "post-activation"){
+                if(vpnFlickable.state === "post-activation"){
                     VPN.deactivate();
-                    stackview.pop();
-                    return;
                 }
-                
+                stackview.pop();
+                return;
             }
         }
 

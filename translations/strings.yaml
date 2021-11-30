@@ -253,7 +253,6 @@ captivePortalAlert:
   buttonTextPreActivation: Okay
   buttonTextPostActivation: Turn off VPN
   
-
 notifications:
   captivePortalBlockTitle: Guest Wi-Fi portal blocked
   captivePortalBlockMessage: The guest Wi-Fi network you’re connected to requires action. Click here to turn off VPN to see the portal.

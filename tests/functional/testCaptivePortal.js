@@ -186,7 +186,7 @@ describe('Captive portal', function() {
     });
   });
 
-  it('Shows the prompt Before activation when a portal is detected', async () => {
+  it('Shows the prompt Before activation when a portal is detected before the activation', async () => {
     await vpn.authenticate(true, true);
     await vpn.setSetting('captive-portal-alert', 'true');
     await vpn.forceCaptivePortalDetection();
@@ -197,11 +197,14 @@ describe('Captive portal', function() {
     });
     assert(true);
   });
-  it('Shows the prompt Before activation when a portal is detected', async () => {
+  it.only('Shows the Captive Portal Info prompt when a portal is detected and the client is connected', async () => {
     await vpn.authenticate(true, true);
     await vpn.setSetting('captive-portal-alert', 'true');
 
     await vpn.activate();
+    await vpn.waitForCondition(() => {
+      return vpn.lastNotification().title === 'VPN Connected';
+    });
     await vpn.forceCaptivePortalDetection();
     await vpn.waitForCondition(() => {
       return vpn.hasElement("openCaptivePortalButton");
