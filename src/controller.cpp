@@ -743,8 +743,8 @@ QStringList Controller::getExcludedAddresses(const QList<Server>& serverList) {
 
   // filtering out the captive portal endpoint
   if (FeatureCaptivePortal::instance()->isSupported() &&
-      SettingsHolder::instance()->captivePortalAlert()) {
-    CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
+      SettingsHolder::instance().captivePortalAlert()) {
+    CaptivePortal* captivePortal = MozillaVPN::instance().captivePortal();
 
     for (const QString& address : captivePortal->ipv4Addresses()) {
       logger.debug() << "Filtering out the captive portal address:" << address;
