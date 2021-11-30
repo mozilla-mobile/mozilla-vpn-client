@@ -23,7 +23,8 @@ struct InterfaceConfig {
   QString m_dnsServer;
   int m_serverPort = 0;
   QList<IPAddressRange> m_allowedIPAddressRanges;
-  QList<QString> m_vpnDisabledApps;
+  QStringList m_excludedAddresses;
+  QStringList m_vpnDisabledApps;
 };
 
 #endif  // INTERFACECONFIG_H

@@ -7,6 +7,7 @@
 
 #include "interfaceconfig.h"
 
+#include <QHostAddress>
 #include <QObject>
 #include <QStringList>
 #include <QCoreApplication>
@@ -44,6 +45,9 @@ class WireguardUtils : public QObject {
                                  int hopindex) = 0;
   virtual bool deleteRoutePrefix(const IPAddressRange& prefix,
                                  int hopindex) = 0;
+
+  virtual bool addExclusionRoute(const QHostAddress& address) = 0;
+  virtual bool deleteExclusionRoute(const QHostAddress& address) = 0;
 
   // static
   static QString printableKey(const QString& pubkey) {

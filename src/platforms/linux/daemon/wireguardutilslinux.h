@@ -28,6 +28,9 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool updateRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
   bool deleteRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
 
+  bool addExclusionRoute(const QHostAddress& address) override;
+  bool deleteExclusionRoute(const QHostAddress& address) override;
+
   QString getDefaultCgroup() const { return m_cgroups; }
   QString getExcludeCgroup() const;
   QString getBlockCgroup() const;

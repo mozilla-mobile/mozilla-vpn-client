@@ -30,7 +30,8 @@ class DBusClient final : public QObject {
   QDBusPendingCallWatcher* activate(
       const Server& server, const Device* device, const Keys* keys,
       int hopindex, const QList<IPAddressRange>& allowedIPAddressRanges,
-      const QStringList& vpnDisabledApps, const QHostAddress& dnsServer);
+      const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
+      const QHostAddress& dnsServer);
 
   QDBusPendingCallWatcher* deactivate();
 
