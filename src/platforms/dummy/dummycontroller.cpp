@@ -34,11 +34,12 @@ DummyController::~DummyController() { MVPN_COUNT_DTOR(DummyController); }
 void DummyController::activate(
     const QList<Server>& serverList, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
-    Reason reason) {
+    const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
+    const QHostAddress& dnsServer, Reason reason) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
   Q_UNUSED(allowedIPAddressRanges);
+  Q_UNUSED(excludedAddresses);
   Q_UNUSED(reason);
   Q_UNUSED(vpnDisabledApps);
 
