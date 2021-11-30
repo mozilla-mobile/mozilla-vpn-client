@@ -239,12 +239,13 @@ bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix,
   if (prefix.type() == QAbstractSocket::IPv4Protocol) {
     return m_rtmonitor->insertRoute(IPAddress("0.0.0.0/1")) &&
            m_rtmonitor->insertRoute(IPAddress("128.0.0.0/1"));
-  } if (prefix.type() == QAbstractSocket::IPv6Protocol) {
+  }
+  if (prefix.type() == QAbstractSocket::IPv6Protocol) {
     return m_rtmonitor->insertRoute(IPAddress("::/1")) &&
            m_rtmonitor->insertRoute(IPAddress("8000::/1"));
-  } else {
-    return false;
   }
+
+  return false;
 }
 
 bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix,

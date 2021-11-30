@@ -12,6 +12,8 @@ namespace {
 Logger logger(LOG_NETWORKING, "IPAddress");
 }  // namespace
 
+IPAddress::IPAddress() { MVPN_COUNT_CTOR(IPAddress); }
+
 IPAddress::IPAddress(const QString& ip) {
   MVPN_COUNT_CTOR(IPAddress);
   if (ip.contains("/")) {
@@ -34,10 +36,6 @@ IPAddress::IPAddress(const QString& ip) {
   } else {
     Q_ASSERT(false);
   }
-}
-
-IPAddress::IPAddress() {
-  MVPN_COUNT_CTOR(IPAddress);
 }
 
 IPAddress::IPAddress(const IPAddress& other) {
