@@ -8,9 +8,9 @@
 #include <QObject>
 #include "captiveportalrequest.h"
 
+class CaptivePortalDetectionImpl;
 class CaptivePortalMonitor;
 class CaptivePortalNotifier;
-class CaptivePortalDetectionImpl;
 
 class CaptivePortalDetection final : public QObject {
   Q_OBJECT

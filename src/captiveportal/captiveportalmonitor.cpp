@@ -47,7 +47,6 @@ void CaptivePortalMonitor::maybeCheck() {
 void CaptivePortalMonitor::check() {
   logger.debug() << "Checking the internet connectivity";
 
-
   CaptivePortalRequestTask* task = new CaptivePortalRequestTask(false);
   connect(task, &CaptivePortalRequestTask::operationCompleted, this,
           [this](CaptivePortalRequest::CaptivePortalResult result) {

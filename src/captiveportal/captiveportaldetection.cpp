@@ -136,13 +136,14 @@ void CaptivePortalDetection::settingsChanged() {
   if (!m_active) {
     captivePortalMonitor()->stop();
     captivePortalBackgroundMonitor()->stop();
+    m_impl.reset();
   }
 }
 
 void CaptivePortalDetection::detectionCompleted(
     CaptivePortalRequest::CaptivePortalResult detected) {
   logger.debug() << "Detection completed:" << detected;
-
+  m_impl.reset();
   m_shouldRun = false;
   switch (detected) {
     case CaptivePortalRequest::CaptivePortalResult::NoPortal:
@@ -200,7 +201,8 @@ void CaptivePortalDetection::activationRequired() {
   MozillaVPN* vpn = MozillaVPN::instance();
   if (vpn->state() == MozillaVPN::StateMain &&
       vpn->controller()->state() == Controller::StateOff) {
-    MozillaVPN::instance()->activate();
+        vpn->controller()->captivePortalGone();
+        vpn->activate();
   }
 }
 
