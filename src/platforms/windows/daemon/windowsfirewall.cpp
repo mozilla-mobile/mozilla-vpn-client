@@ -648,11 +648,10 @@ bool WindowsFirewall::allowHyperVTraffic(uint8_t weight, const QString& title) {
   return true;
 }
 
-bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range,
-                                     uint8_t weight, const QString& title,
+bool WindowsFirewall::blockTrafficTo(const IPAddress& addr, uint8_t weight,
+                                     const QString& title,
                                      const QString& peer) {
   QString description("Block traffic %1 %2 ");
-  IPAddress addr = IPAddress(range.toString());
 
   auto lower = addr.address();
   auto upper = addr.broadcastAddress();
@@ -688,19 +687,19 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range,
   filter.filterCondition = cond;
 
   filter.layerKey = layerKeyOut;
-  if (!enableFilter(&filter, title, description.arg("to").arg(range.toString()),
+  if (!enableFilter(&filter, title, description.arg("to").arg(addr.toString()),
                     peer)) {
     return false;
   }
   filter.layerKey = layerKeyIn;
   if (!enableFilter(&filter, title,
-                    description.arg("from").arg(range.toString()), peer)) {
+                    description.arg("from").arg(addr.toString()), peer)) {
     return false;
   }
   return true;
 }
 
-bool WindowsFirewall::blockTrafficTo(const QList<IPAddressRange>& rangeList,
+bool WindowsFirewall::blockTrafficTo(const QList<IPAddress>& rangeList,
                                      uint8_t weight, const QString& title,
                                      const QString& peer) {
   for (auto range : rangeList) {
