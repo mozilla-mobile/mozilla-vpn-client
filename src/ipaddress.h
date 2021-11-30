@@ -14,6 +14,8 @@ class IPAddress final {
 
   IPAddress();
   IPAddress(const QString& ip);
+  IPAddress(const QHostAddress& address);
+  IPAddress(const QHostAddress& address, int prefixLength);
   IPAddress(const IPAddress& other);
   IPAddress& operator=(const IPAddress& other);
   ~IPAddress();
@@ -42,10 +44,6 @@ class IPAddress final {
   QList<IPAddress> excludeAddresses(const IPAddress& ip) const;
 
   QAbstractSocket::NetworkLayerProtocol type() const;
-
- private:
-  IPAddress(const QHostAddress& address);
-  IPAddress(const QHostAddress& address, int prefixLength);
 
  private:
   QHostAddress m_address;

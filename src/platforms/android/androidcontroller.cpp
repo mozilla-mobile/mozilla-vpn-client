@@ -4,7 +4,7 @@
 
 #include "androidcontroller.h"
 #include "ipaddress.h"
-#include "ipaddressrange.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
@@ -144,11 +144,12 @@ void AndroidController::applyStrings() {
   m_serviceBinder.transact(ACTION_SET_NOTIFICATION_FALLBACK, data, nullptr);
 }
 
-void AndroidController::activate(
-    const QList<Server>& serverList, const Device* device, const Keys* keys,
-    const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
-    const QHostAddress& dns, Reason reason) {
+void AndroidController::activate(const QList<Server>& serverList,
+                                 const Device* device, const Keys* keys,
+                                 const QList<IPAddress>& allowedIPAddressRanges,
+                                 const QStringList& excludedAddresses,
+                                 const QStringList& vpnDisabledApps,
+                                 const QHostAddress& dns, Reason reason) {
   logger.debug() << "Activation";
 
   logger.debug() << "Prompting for VPN permission";

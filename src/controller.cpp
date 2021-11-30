@@ -681,7 +681,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
   }
 }
 
-QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
+QList<IPAddress> Controller::getAllowedIPAddressRanges(
     const QList<Server>& serverList) {
   logger.debug() << "Computing the allowed IP addresses";
 
@@ -706,7 +706,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
   }
 
-  QList<IPAddressRange> list;
+  QList<IPAddress> list;
 
 #ifdef MVPN_IOS
   logger.debug() << "Catch all IPv4";
@@ -717,22 +717,19 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
 #else
   // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the ingress server:" << server.ipv4Gateway();
-  list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
+  list.append(IPAddress(QHostAddress(server.ipv4Gateway()), 32));
   logger.debug() << "Allow the ingress server:" << server.ipv6Gateway();
-  list.append(IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
+  list.append(IPAddress(QHostAddress(server.ipv6Gateway()), 128));
 
   // Ensure that the Mullvad proxy services are always allowed.
-  list.append(IPAddressRange(MULLVAD_PROXY_RANGE, MULLVAD_PROXY_RANGE_LENGTH,
-                             IPAddressRange::IPv4));
+  list.append(
+      IPAddress(QHostAddress(MULLVAD_PROXY_RANGE), MULLVAD_PROXY_RANGE_LENGTH));
 
   // Allow access to everything not covered by an excluded address.
-  QList<IPAddress> allowedIPv4s{IPAddress("0.0.0.0/0")};
-  allowedIPv4s = IPAddress::excludeAddresses(allowedIPv4s, excludeIPv4s);
-  list.append(IPAddressRange::fromIPAddressList(allowedIPv4s));
-
-  QList<IPAddress> allowedIPv6s{IPAddress("::/0")};
-  allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
-  list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
+  QList<IPAddress> allowedIPv4 = {IPAddress("0.0.0.0/0")};
+  list.append(IPAddress::excludeAddresses(allowedIPv4, excludeIPv4s));
+  QList<IPAddress> allowedIPv6 = {IPAddress("::/0")};
+  list.append(IPAddress::excludeAddresses(allowedIPv6, excludeIPv6s));
 #endif
 
   return list;

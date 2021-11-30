@@ -88,7 +88,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
       << config.m_serverPort << "\n";
   */
   QStringList ranges;
-  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     ranges.append(ip.toString());
   }
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
