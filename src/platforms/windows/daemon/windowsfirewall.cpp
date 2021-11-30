@@ -7,7 +7,6 @@
 #include "leakdetector.h"
 #include "../windowscommons.h"
 #include "../../daemon/interfaceconfig.h"
-#include "../../ipaddressrange.h"
 #include "../../ipaddress.h"
 
 #include <QApplication>

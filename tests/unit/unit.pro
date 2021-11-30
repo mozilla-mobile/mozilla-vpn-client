@@ -30,7 +30,6 @@ HEADERS += \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/bigint.h \
-    ../../src/bigintipv6addr.h \
     ../../src/captiveportal/captiveportal.h \
     ../../src/collator.h \
     ../../src/command.h \
@@ -44,7 +43,6 @@ HEADERS += \
     ../../src/featurelist.h \
     ../../src/inspector/inspectorwebsocketconnection.h \
     ../../src/ipaddress.h \
-    ../../src/ipaddressrange.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
@@ -102,7 +100,6 @@ HEADERS += \
     testadjust.h \
     testandroidmigration.h \
     testbigint.h \
-    testbigintipv6addr.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
     testfeature.h \
@@ -137,7 +134,6 @@ SOURCES += \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
     ../../src/hacl-star/Hacl_Poly1305_32.c \
     ../../src/ipaddress.cpp \
-    ../../src/ipaddressrange.cpp \
     ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
@@ -195,7 +191,6 @@ SOURCES += \
     testadjust.cpp \
     testandroidmigration.cpp \
     testbigint.cpp \
-    testbigintipv6addr.cpp \
     testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
     testfeature.cpp \

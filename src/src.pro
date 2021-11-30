@@ -172,7 +172,6 @@ HEADERS += \
         authenticationinapp/authenticationinapp.h \
         authenticationinapp/authenticationinapplistener.h \
         authenticationinapp/incrementaldecoder.h \
-        bigintipv6addr.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
         captiveportal/captiveportaldetectionimpl.h \
