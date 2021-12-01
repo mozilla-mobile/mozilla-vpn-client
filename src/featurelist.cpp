@@ -211,7 +211,7 @@ void FeatureList::updateFeatureList(const QByteArray& data) {
     return;
   }
 
-   QJsonObject mirrorParameterObject = mirrorParameterValue.toObject();
+  QJsonObject mirrorParameterObject = mirrorParameterValue.toObject();
   for (const QString& key : mirrorParameterObject.keys()) {
     QJsonValue values = mirrorParameterObject.value(key);
     if (!values.isArray()) {
@@ -242,7 +242,7 @@ void FeatureList::updateFeatureList(const QByteArray& data) {
     }
 
     AdjustFiltering::instance()->mirrorField(
-          key, {mirrorParamValue.toString(), defaultValue.toString()});
+        key, {mirrorParamValue.toString(), defaultValue.toString()});
   }
 #endif
 }
