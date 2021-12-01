@@ -152,7 +152,6 @@ SOURCES += \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
-        tasks/initializeadjust/taskinitializeadjust.cpp \
         tasks/ipfinder/taskipfinder.cpp \
         tasks/products/taskproducts.cpp \
         tasks/release/taskrelease.cpp \
@@ -284,7 +283,6 @@ HEADERS += \
         tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
-        tasks/initializeadjust/taskinitializeadjust.h \
         tasks/ipfinder/taskipfinder.h \
         tasks/products/taskproducts.h \
         tasks/release/taskrelease.h \
@@ -544,14 +542,16 @@ else:android {
                    adjust/adjustproxy.cpp \
                    adjust/adjustproxyconnection.cpp \
                    adjust/adjustproxypackagehandler.cpp \
-                   adjust/adjusttasksubmission.cpp
+                   adjust/adjusttasksubmission.cpp \
+                   tasks/initializeadjust/taskinitializeadjust.cpp
 
         HEADERS += adjust/adjustfiltering.h \
                    adjust/adjusthandler.h \
                    adjust/adjustproxy.h \
                    adjust/adjustproxyconnection.h \
                    adjust/adjustproxypackagehandler.h \
-                   adjust/adjusttasksubmission.h
+                   adjust/adjusttasksubmission.h \
+                   tasks/initializeadjust/taskinitializeadjust.h
     }
 
     versionAtLeast(QT_VERSION, 5.15.1) {
@@ -760,7 +760,8 @@ else:ios {
                    adjust/adjustproxy.cpp \
                    adjust/adjustproxyconnection.cpp \
                    adjust/adjustproxypackagehandler.cpp \
-                   adjust/adjusttasksubmission.cpp
+                   adjust/adjusttasksubmission.cpp \
+                   tasks/initializeadjust/taskinitializeadjust.cpp
 
         OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm
 
@@ -769,7 +770,8 @@ else:ios {
                    adjust/adjustproxy.h \
                    adjust/adjustproxyconnection.h \
                    adjust/adjustproxypackagehandler.h \
-                   adjust/adjusttasksubmission.h
+                   adjust/adjusttasksubmission.h \
+                   tasks/initializeadjust/taskinitializeadjust.h
 
         OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h
     }
