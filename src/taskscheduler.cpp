@@ -15,7 +15,7 @@ Logger logger(LOG_MAIN, "TaskScheduler");
 // static
 void TaskScheduler::scheduleTask(Task* task) {
   Q_ASSERT(task);
-  logger.debug() << "Scheduling task: " << task->name();
+  logger.debug() << "Scheduling task:" << task->name();
   maybeCreate()->scheduleTaskInternal(task);
 }
 
