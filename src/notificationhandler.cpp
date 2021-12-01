@@ -178,7 +178,7 @@ void NotificationHandler::captivePortalBlockNotificationRequired() {
   QString title =
       l18nStrings->t(L18nStrings::NotificationsCaptivePortalBlockTitle);
   QString message =
-      l18nStrings->t(L18nStrings::NotificationsCaptivePortalBlockMessage);
+      l18nStrings->t(L18nStrings::NotificationsCaptivePortalBlockMessage2);
 
   notifyInternal(CaptivePortalBlock, title, message,
                  Constants::CAPTIVE_PORTAL_ALERT_MSEC);

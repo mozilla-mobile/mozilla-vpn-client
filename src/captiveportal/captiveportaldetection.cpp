@@ -239,10 +239,6 @@ CaptivePortalNotifier* CaptivePortalDetection::captivePortalNotifier() {
 
     connect(m_captivePortalNotifier, &CaptivePortalNotifier::activationRequired,
             this, &CaptivePortalDetection::activationRequired);
-
-    connect(m_captivePortalNotifier,
-            &CaptivePortalNotifier::deactivationRequired, this,
-            &CaptivePortalDetection::deactivationRequired);
   }
 
   return m_captivePortalNotifier;

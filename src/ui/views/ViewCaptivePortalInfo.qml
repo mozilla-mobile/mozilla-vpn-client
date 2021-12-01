@@ -40,18 +40,6 @@ VPNFlickable {
         }
     ]
 
-
-    Connections{
-     target: VPNController
-     onStateChanged:{
-        // When the controller changes state, we should remove this view.
-        // This might happen if captive-portal block -> and the user chooses to click the disconnect
-        // notification instead op focusing the app. 
-        stackview.pop();
-       }
-    }
-
-
     Item {
         id: spacer1
         height: Math.max(Theme.windowMargin * 2, ( window.safeContentHeight - flickContentHeight ) / 2)
@@ -117,10 +105,9 @@ VPNFlickable {
                     VPN.openLink(VPN.LinkCaptivePortal);
                 }
                 if(vpnFlickable.state === "post-activation"){
-                    VPN.deactivate();
+                    VPNCaptivePortal.deactivationRequired();
                 }
                 stackview.pop();
-                return;
             }
         }
 

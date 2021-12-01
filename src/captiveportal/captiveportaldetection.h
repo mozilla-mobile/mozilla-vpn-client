@@ -37,7 +37,7 @@ signals:
   void captivePortalGone();
 
   void activationRequired();
-  void deactivationRequired();
+  Q_INVOKABLE void deactivationRequired();
 
  private:
   CaptivePortalMonitor* captivePortalMonitor();
