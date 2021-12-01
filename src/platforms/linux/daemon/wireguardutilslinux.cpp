@@ -50,10 +50,11 @@ constexpr const char* VPN_BLOCK_CGROUP = "/mozvpn.block";
 constexpr uint32_t VPN_EXCLUDE_CLASS_ID = 0x00110011;
 constexpr uint32_t VPN_BLOCK_CLASS_ID = 0x00220022;
 
-static void nlmsg_append_attr(char* buf, size_t maxlen, int attrtype,
-                              const void* attrdata, size_t attrlen);
-static void nlmsg_append_attr32(char* buf, size_t maxlen, int attrtype,
-                                uint32_t value);
+static void nlmsg_append_attr(struct nlmsghdr* nlmsg, size_t maxlen,
+                              int attrtype, const void* attrdata,
+                              size_t attrlen);
+static void nlmsg_append_attr32(struct nlmsghdr* nlmsg, size_t maxlen,
+                                int attrtype, uint32_t value);
 
 namespace {
 Logger logger(LOG_LINUX, "WireguardUtilsLinux");
@@ -193,7 +194,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   }
   device->first_peer = device->last_peer = peer;
 
-  logger.debug() << "Adding peer" << printablePubkey(config.m_serverPublicKey);
+  logger.debug() << "Adding peer" << printableKey(config.m_serverPublicKey);
 
   // Public Key
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
@@ -207,7 +208,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
 
   // HACK: We are running into a crash on Linux due to the address list being
   // *WAAAY* too long, which we aren't really using anways since the routing
-  // tables are doing all the work for us anyways.
+  // policy rules are doing all the work for us anyways.
   //
   // To work around the issue, just set default routes for hopindex zero.
   if (config.m_hopindex == 0) {
@@ -230,8 +231,10 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   // Set/update peer
   strncpy(device->name, WG_INTERFACE, IFNAMSIZ);
   device->flags = (wg_device_flags)0;
+  peer->persistent_keepalive_interval = WG_KEEPALIVE_PERIOD;
   peer->flags =
-      (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REPLACE_ALLOWEDIPS);
+      (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REPLACE_ALLOWEDIPS |
+                      WGPEER_HAS_PERSISTENT_KEEPALIVE_INTERVAL);
   if (wg_set_device(device) != 0) {
     logger.error() << "Failed to set the new peer hop" << config.m_hopindex;
     return false;
@@ -240,7 +243,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   return true;
 }
 
-bool WireguardUtilsLinux::deletePeer(const QString& pubkey) {
+bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   wg_device* device = static_cast<wg_device*>(calloc(1, sizeof(*device)));
   if (!device) {
     logger.error() << "Allocation failure";
@@ -255,11 +258,11 @@ bool WireguardUtilsLinux::deletePeer(const QString& pubkey) {
   }
   device->first_peer = device->last_peer = peer;
 
-  logger.debug() << "Removing peer" << printablePubkey(pubkey);
+  logger.debug() << "Removing peer" << printableKey(config.m_serverPublicKey);
 
   // Public Key
   peer->flags = (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REMOVE_ME);
-  wg_key_from_base64(peer->public_key, qPrintable(pubkey));
+  wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
 
   // Set/update device
   strncpy(device->name, WG_INTERFACE, IFNAMSIZ);
@@ -294,43 +297,56 @@ bool WireguardUtilsLinux::deleteInterface() {
   return true;
 }
 
-WireguardUtils::peerStatus WireguardUtilsLinux::getPeerStatus(
-    const QString& pubkey) {
+QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
   wg_device* device = nullptr;
   wg_peer* peer = nullptr;
-  peerStatus status = {0, 0};
+  QList<WireguardUtils::PeerStatus> peerList;
 
   if (wg_get_device(&device, WG_INTERFACE) != 0) {
     logger.warning() << "Unable to get stats for" << WG_INTERFACE;
-    return status;
+    return peerList;
   }
 
-  wg_key key;
-  wg_key_from_base64(key, qPrintable(pubkey));
   wg_for_each_peer(device, peer) {
-    if (memcmp(&key, &peer->public_key, sizeof(key)) != 0) {
-      continue;
-    }
-    status.txBytes = peer->tx_bytes;
-    status.rxBytes = peer->rx_bytes;
-    break;
+    PeerStatus status;
+    wg_key_b64_string keystring;
+    wg_key_to_base64(keystring, peer->public_key);
+    status.m_pubkey = QString(keystring);
+    status.m_handshake = peer->last_handshake_time.tv_sec * 1000;
+    status.m_handshake += peer->last_handshake_time.tv_nsec / 1000000;
+    status.m_txBytes = peer->tx_bytes;
+    status.m_rxBytes = peer->rx_bytes;
+    logger.debug() << "found" << printableKey(status.m_pubkey) << "handshake"
+                   << peer->last_handshake_time.tv_sec;
+    peerList.append(status);
   }
   wg_free_device(device);
-  return status;
+  return peerList;
 }
 
 bool WireguardUtilsLinux::updateRoutePrefix(const IPAddressRange& prefix,
                                             int hopindex) {
   logger.debug() << "Adding route to" << prefix.toString();
-  int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
+  const int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
   return rtmSendRoute(RTM_NEWROUTE, flags, prefix, hopindex);
 }
 
 bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddressRange& prefix,
                                             int hopindex) {
   logger.debug() << "Removing route to" << prefix.toString();
-  int flags = NLM_F_REQUEST | NLM_F_ACK;
+  const int flags = NLM_F_REQUEST | NLM_F_ACK;
   return rtmSendRoute(RTM_DELROUTE, flags, prefix, hopindex);
+}
+
+bool WireguardUtilsLinux::addExclusionRoute(const QHostAddress& address) {
+  logger.debug() << "Adding exclusion route for" << address.toString();
+  const int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
+  return rtmSendExclude(RTM_NEWRULE, flags, address);
+}
+
+bool WireguardUtilsLinux::deleteExclusionRoute(const QHostAddress& address) {
+  logger.debug() << "Removing exclusion route for" << address.toString();
+  return rtmSendExclude(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, address);
 }
 
 bool WireguardUtilsLinux::rtmSendRoute(int action, int flags,
@@ -352,8 +368,8 @@ bool WireguardUtilsLinux::rtmSendRoute(int action, int flags,
   }
 
   char buf[NLMSG_SPACE(rtm_max_size)];
-  struct nlmsghdr* nlmsg = (struct nlmsghdr*)buf;
-  struct rtmsg* rtm = (struct rtmsg*)NLMSG_DATA(nlmsg);
+  struct nlmsghdr* nlmsg = reinterpret_cast<struct nlmsghdr*>(buf);
+  struct rtmsg* rtm = static_cast<struct rtmsg*>(NLMSG_DATA(nlmsg));
 
   memset(buf, 0, sizeof(buf));
   nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
@@ -370,17 +386,17 @@ bool WireguardUtilsLinux::rtmSendRoute(int action, int flags,
   // Routes for the main hop should be placed into their own table.
   if (hopindex == 0) {
     rtm->rtm_table = RT_TABLE_UNSPEC;
-    nlmsg_append_attr32(buf, sizeof(buf), RTA_TABLE, WG_ROUTE_TABLE);
+    nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_TABLE, WG_ROUTE_TABLE);
   } else {
     rtm->rtm_table = RT_TABLE_MAIN;
   }
 
   if (rtm->rtm_family == AF_INET6) {
-    nlmsg_append_attr(buf, sizeof(buf), RTA_DST, &ip.ip6, sizeof(ip.ip6));
+    nlmsg_append_attr(nlmsg, sizeof(buf), RTA_DST, &ip.ip6, sizeof(ip.ip6));
   } else {
-    nlmsg_append_attr(buf, sizeof(buf), RTA_DST, &ip.ip4, sizeof(ip.ip4));
+    nlmsg_append_attr(nlmsg, sizeof(buf), RTA_DST, &ip.ip4, sizeof(ip.ip4));
   }
-  nlmsg_append_attr32(buf, sizeof(buf), RTA_OIF, index);
+  nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_OIF, index);
 
   struct sockaddr_nl nladdr;
   memset(&nladdr, 0, sizeof(nladdr));
@@ -487,12 +503,13 @@ bool WireguardUtilsLinux::addPeerPrefix(wg_peer* peer,
   return buildAllowedIp(allowedip, prefix);
 }
 
-static void nlmsg_append_attr(char* buf, size_t maxlen, int attrtype,
-                              const void* attrdata, size_t attrlen) {
-  struct nlmsghdr* nlmsg = (struct nlmsghdr*)buf;
+static void nlmsg_append_attr(struct nlmsghdr* nlmsg, size_t maxlen,
+                              int attrtype, const void* attrdata,
+                              size_t attrlen) {
   size_t newlen = NLMSG_ALIGN(nlmsg->nlmsg_len) + RTA_SPACE(attrlen);
   if (newlen <= maxlen) {
-    struct rtattr* attr = (struct rtattr*)(buf + NLMSG_ALIGN(nlmsg->nlmsg_len));
+    char* buf = reinterpret_cast<char*>(nlmsg) + NLMSG_ALIGN(nlmsg->nlmsg_len);
+    struct rtattr* attr = reinterpret_cast<struct rtattr*>(buf);
     attr->rta_type = attrtype;
     attr->rta_len = RTA_LENGTH(attrlen);
     memcpy(RTA_DATA(attr), attrdata, attrlen);
@@ -500,9 +517,9 @@ static void nlmsg_append_attr(char* buf, size_t maxlen, int attrtype,
   }
 }
 
-static void nlmsg_append_attr32(char* buf, size_t maxlen, int attrtype,
-                                uint32_t value) {
-  nlmsg_append_attr(buf, maxlen, attrtype, &value, sizeof(value));
+static void nlmsg_append_attr32(struct nlmsghdr* nlmsg, size_t maxlen,
+                                int attrtype, uint32_t value) {
+  nlmsg_append_attr(nlmsg, maxlen, attrtype, &value, sizeof(value));
 }
 
 bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
@@ -510,8 +527,9 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
       sizeof(struct fib_rule_hdr) + 2 * RTA_SPACE(sizeof(uint32_t));
 
   char buf[NLMSG_SPACE(fib_max_size)];
-  struct nlmsghdr* nlmsg = (struct nlmsghdr*)buf;
-  struct fib_rule_hdr* rule = (struct fib_rule_hdr*)NLMSG_DATA(nlmsg);
+  struct nlmsghdr* nlmsg = reinterpret_cast<struct nlmsghdr*>(buf);
+  struct fib_rule_hdr* rule =
+      static_cast<struct fib_rule_hdr*>(NLMSG_DATA(nlmsg));
   struct sockaddr_nl nladdr;
   memset(&nladdr, 0, sizeof(nladdr));
   nladdr.nl_family = AF_NETLINK;
@@ -530,8 +548,8 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
   rule->table = RT_TABLE_UNSPEC;
   rule->action = FR_ACT_TO_TBL;
   rule->flags = FIB_RULE_INVERT;
-  nlmsg_append_attr32(buf, sizeof(buf), FRA_FWMARK, WG_FIREWALL_MARK);
-  nlmsg_append_attr32(buf, sizeof(buf), FRA_TABLE, WG_ROUTE_TABLE);
+  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_FWMARK, WG_FIREWALL_MARK);
+  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_TABLE, WG_ROUTE_TABLE);
   ssize_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
                           (struct sockaddr*)&nladdr, sizeof(nladdr));
   if (result != nlmsg->nlmsg_len) {
@@ -552,9 +570,59 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
   rule->table = RT_TABLE_MAIN;
   rule->action = FR_ACT_TO_TBL;
   rule->flags = 0;
-  nlmsg_append_attr32(buf, sizeof(buf), FRA_SUPPRESS_PREFIXLEN, 0);
+  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_SUPPRESS_PREFIXLEN, 0);
   result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0, (struct sockaddr*)&nladdr,
                   sizeof(nladdr));
+  if (result != nlmsg->nlmsg_len) {
+    return false;
+  }
+
+  return true;
+}
+
+bool WireguardUtilsLinux::rtmSendExclude(int action, int flags,
+                                         const QHostAddress& address) {
+  constexpr size_t fib_max_size =
+      sizeof(struct fib_rule_hdr) + RTA_SPACE(sizeof(struct in6_addr));
+
+  char buf[NLMSG_SPACE(fib_max_size)];
+  struct nlmsghdr* nlmsg = reinterpret_cast<struct nlmsghdr*>(buf);
+  struct fib_rule_hdr* rule =
+      static_cast<struct fib_rule_hdr*>(NLMSG_DATA(nlmsg));
+  struct sockaddr_nl nladdr;
+  memset(&nladdr, 0, sizeof(nladdr));
+  nladdr.nl_family = AF_NETLINK;
+
+  /* Create a routing policy rule to select the main routing table for
+   * packets matching the destination address. This is equivalent to:
+   *     ip rule add to $ADDRESS table main
+   */
+  memset(buf, 0, sizeof(buf));
+  nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
+  nlmsg->nlmsg_type = action;
+  nlmsg->nlmsg_flags = flags;
+  nlmsg->nlmsg_pid = getpid();
+  nlmsg->nlmsg_seq = m_nlseq++;
+  rule->table = RT_TABLE_MAIN;
+  rule->action = FR_ACT_TO_TBL;
+  rule->flags = 0;
+
+  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+    Q_IPV6ADDR dst = address.toIPv6Address();
+    nlmsg_append_attr(nlmsg, sizeof(buf), FRA_DST, &dst, sizeof(dst));
+    rule->family = AF_INET6;
+    rule->dst_len = 128;
+  } else if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+    quint32 dst = address.toIPv4Address();
+    nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_DST, htonl(dst));
+    rule->family = AF_INET;
+    rule->dst_len = 32;
+  } else {
+    return false;
+  }
+
+  ssize_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
+                          (struct sockaddr*)&nladdr, sizeof(nladdr));
   if (result != nlmsg->nlmsg_len) {
     return false;
   }
@@ -578,7 +646,7 @@ void WireguardUtilsLinux::nlsockReady() {
       nlmsg = NLMSG_NEXT(nlmsg, len);
       continue;
     }
-    struct nlmsgerr* err = (struct nlmsgerr*)NLMSG_DATA(nlmsg);
+    struct nlmsgerr* err = static_cast<struct nlmsgerr*>(NLMSG_DATA(nlmsg));
     if (err->error != 0) {
       logger.debug() << "Netlink request failed:" << strerror(-err->error);
     }
@@ -636,13 +704,4 @@ bool WireguardUtilsLinux::buildAllowedIp(wg_allowedip* ip,
     return inet_pton(AF_INET6, qPrintable(prefix.ipAddress()), &ip->ip6) == 1;
   }
   return false;
-}
-
-// static
-QString WireguardUtilsLinux::printablePubkey(const QString& pubkey) {
-  if (pubkey.length() < 12) {
-    return pubkey;
-  } else {
-    return pubkey.left(6) + "..." + pubkey.right(6);
-  }
 }

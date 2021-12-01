@@ -81,7 +81,14 @@ class VPNService : android.net.VpnService() {
             }
             this.mConfig = JSONObject(lastConfString)
         }
-        turnOn(this.mConfig!!)
+        try {
+            turnOn(this.mConfig!!)
+        } catch (error: Exception) {
+            Log.e(tag, "Failed to start the VPN for always-on:")
+            Log.e(tag, error.toString())
+            Log.stack(tag, error.stackTrace)
+        }
+
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -114,14 +121,14 @@ class VPNService : android.net.VpnService() {
         get() {
             val deviceIpv4: String = ""
             return JSONObject().apply {
-                putOpt("rx_bytes", getConfigValue("rx_bytes"))
-                putOpt("tx_bytes", getConfigValue("tx_bytes"))
+                putOpt("rx_bytes", getConfigValue("rx_bytes")?.toInt())
+                putOpt("tx_bytes", getConfigValue("tx_bytes")?.toInt())
                 putOpt("endpoint", mConfig?.getJSONObject("server")?.getString("ipv4Gateway"))
                 putOpt("deviceIpv4", mConfig?.getJSONObject("device")?.getString("ipv4Address"))
             }
         }
       /*
-      * Checks if the VPN Permission is given. 
+      * Checks if the VPN Permission is given.
       * If the permission is given, returns true
       * Requests permission and returns false if not.
       */

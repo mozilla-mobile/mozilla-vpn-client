@@ -26,6 +26,9 @@ class NetworkWatcher final : public QObject {
   // public for the inspector.
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
 
+ signals:
+  void networkChange();
+
  private:
   void settingsChanged(const bool& value);
 
@@ -33,6 +36,7 @@ class NetworkWatcher final : public QObject {
 
  private:
   bool m_active = false;
+  bool m_reportUnsecuredNetwork = false;
 
   // Platform-specific implementation.
   NetworkWatcherImpl* m_impl = nullptr;

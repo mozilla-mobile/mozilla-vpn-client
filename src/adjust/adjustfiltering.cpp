@@ -109,7 +109,6 @@ QUrlQuery AdjustFiltering::filterParameters(QUrlQuery& parameters,
       continue;
     }
 
-    newParameters.addQueryItem(parameter.first, parameter.second);
     unknownParameters.append(parameter.first);
   }
 

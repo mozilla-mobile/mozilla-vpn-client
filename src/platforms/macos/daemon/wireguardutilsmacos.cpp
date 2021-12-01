@@ -137,6 +137,9 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
+  logger.debug() << "Configuring peer" << printableKey(config.m_serverPublicKey)
+                 << "via" << config.m_serverIpv4AddrIn;
+
   // Update/create the peer config
   QString message;
   QTextStream out(&message);
@@ -153,6 +156,7 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   out << config.m_serverPort << "\n";
 
   out << "replace_allowed_ips=true\n";
+  out << "persistent_keepalive_interval=" << WG_KEEPALIVE_PERIOD << "\n";
   for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
     out << "allowed_ip=" << ip.toString() << "\n";
   }
@@ -164,8 +168,9 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   return (err == 0);
 }
 
-bool WireguardUtilsMacos::deletePeer(const QString& pubkey) {
-  QByteArray publicKey = QByteArray::fromBase64(qPrintable(pubkey));
+bool WireguardUtilsMacos::deletePeer(const InterfaceConfig& config) {
+  QByteArray publicKey =
+      QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
   QString message;
   QTextStream out(&message);
@@ -180,13 +185,10 @@ bool WireguardUtilsMacos::deletePeer(const QString& pubkey) {
   return (err == 0);
 }
 
-WireguardUtils::peerStatus WireguardUtilsMacos::getPeerStatus(
-    const QString& pubkey) {
-  peerStatus status = {0, 0};
-  QString hexkey = QByteArray::fromBase64(pubkey.toUtf8()).toHex();
+QList<WireguardUtils::PeerStatus> WireguardUtilsMacos::getPeerStatus() {
   QString reply = uapiCommand("get=1");
-  bool match = false;
-
+  PeerStatus status;
+  QList<PeerStatus> peerList;
   for (const QString& line : reply.split('\n')) {
     int eq = line.indexOf('=');
     if (eq <= 0) {
@@ -196,21 +198,31 @@ WireguardUtils::peerStatus WireguardUtilsMacos::getPeerStatus(
     QString value = line.mid(eq + 1);
 
     if (name == "public_key") {
-      match = (value == hexkey);
-      continue;
-    } else if (!match) {
-      continue;
+      if (!status.m_pubkey.isEmpty()) {
+        peerList.append(status);
+      }
+      QByteArray pubkey = QByteArray::fromHex(value.toUtf8());
+      status = PeerStatus(pubkey.toBase64());
     }
 
     if (name == "tx_bytes") {
-      status.txBytes = value.toDouble();
+      status.m_txBytes = value.toDouble();
     }
     if (name == "rx_bytes") {
-      status.rxBytes = value.toDouble();
+      status.m_rxBytes = value.toDouble();
+    }
+    if (name == "last_handshake_time_sec") {
+      status.m_handshake += value.toLongLong() * 1000;
+    }
+    if (name == "last_handshake_time_nsec") {
+      status.m_handshake += value.toLongLong() / 1000000;
     }
   }
+  if (!status.m_pubkey.isEmpty()) {
+    peerList.append(status);
+  }
 
-  return status;
+  return peerList;
 }
 
 bool WireguardUtilsMacos::updateRoutePrefix(const IPAddressRange& prefix,
@@ -218,6 +230,15 @@ bool WireguardUtilsMacos::updateRoutePrefix(const IPAddressRange& prefix,
   Q_UNUSED(hopindex);
   if (!m_rtmonitor) {
     return false;
+  }
+  // Ensure that we do not replace the default route.
+  if ((prefix.range() == 0) && (prefix.type() == IPAddressRange::IPv4)) {
+    return m_rtmonitor->insertRoute(IPAddressRange("0.0.0.0/1")) &&
+           m_rtmonitor->insertRoute(IPAddressRange("128.0.0.0/1"));
+  }
+  if ((prefix.range() == 0) && (prefix.type() == IPAddressRange::IPv6)) {
+    return m_rtmonitor->insertRoute(IPAddressRange("::/1")) &&
+           m_rtmonitor->insertRoute(IPAddressRange("8000::/1"));
   }
   return m_rtmonitor->insertRoute(prefix);
 }
@@ -228,7 +249,30 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddressRange& prefix,
   if (!m_rtmonitor) {
     return false;
   }
+  // Ensure that we do not replace the default route.
+  if ((prefix.range() == 0) && (prefix.type() == IPAddressRange::IPv4)) {
+    return m_rtmonitor->deleteRoute(IPAddressRange("0.0.0.0/1")) &&
+           m_rtmonitor->deleteRoute(IPAddressRange("128.0.0.0/1"));
+  }
+  if ((prefix.range() == 0) && (prefix.type() == IPAddressRange::IPv6)) {
+    return m_rtmonitor->deleteRoute(IPAddressRange("::/1")) &&
+           m_rtmonitor->deleteRoute(IPAddressRange("8000::/1"));
+  }
   return m_rtmonitor->deleteRoute(prefix);
+}
+
+bool WireguardUtilsMacos::addExclusionRoute(const QHostAddress& address) {
+  if (!m_rtmonitor) {
+    return false;
+  }
+  return m_rtmonitor->addExclusionRoute(address);
+}
+
+bool WireguardUtilsMacos::deleteExclusionRoute(const QHostAddress& address) {
+  if (!m_rtmonitor) {
+    return false;
+  }
+  return m_rtmonitor->deleteExclusionRoute(address);
 }
 
 QString WireguardUtilsMacos::uapiCommand(const QString& command) {

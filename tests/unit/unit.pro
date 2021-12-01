@@ -46,7 +46,6 @@ HEADERS += \
     ../../src/inspector/inspectorwebsocketconnection.h \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
-    ../../src/ipfinder.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
@@ -92,7 +91,9 @@ HEADERS += \
     ../../src/task.h \
     ../../src/tasks/accountandservers/taskaccountandservers.h \
     ../../src/tasks/adddevice/taskadddevice.h \
+    ../../src/tasks/ipfinder/taskipfinder.h \
     ../../src/tasks/function/taskfunction.h \
+    ../../src/tasks/release/taskrelease.h \
     ../../src/taskscheduler.h \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
@@ -112,6 +113,7 @@ HEADERS += \
     testipfinder.h \
     testlicense.h \
     testmodels.h \
+    testmozillavpnh.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
     teststatusicon.h \
@@ -137,7 +139,6 @@ SOURCES += \
     ../../src/hacl-star/Hacl_Poly1305_32.c \
     ../../src/ipaddress.cpp \
     ../../src/ipaddressrange.cpp \
-    ../../src/ipfinder.cpp \
     ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
@@ -179,7 +180,9 @@ SOURCES += \
     ../../src/statusicon.cpp \
     ../../src/tasks/accountandservers/taskaccountandservers.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
+    ../../src/tasks/ipfinder/taskipfinder.cpp \
     ../../src/tasks/function/taskfunction.cpp \
+    ../../src/tasks/release/taskrelease.cpp \
     ../../src/taskscheduler.cpp \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
@@ -203,6 +206,7 @@ SOURCES += \
     testipfinder.cpp \
     testlicense.cpp \
     testmodels.cpp \
+    testmozillavpnh.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \
     teststatusicon.cpp \

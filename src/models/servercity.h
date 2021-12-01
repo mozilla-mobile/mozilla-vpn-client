@@ -25,11 +25,17 @@ class ServerCity final {
 
   const QString& code() const { return m_code; }
 
+  double latitude() const { return m_latitude; }
+
+  double longitude() const { return m_longitude; }
+
   const QList<Server> servers() const { return m_servers; }
 
  private:
   QString m_name;
   QString m_code;
+  double m_latitude;
+  double m_longitude;
 
   QList<Server> m_servers;
 };

@@ -89,6 +89,8 @@ class Controller final : public QObject {
 
   void backendFailure();
 
+  bool isUnsettled();
+
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
   // be emitted at the end of the operation.
@@ -127,6 +129,7 @@ class Controller final : public QObject {
 
   bool processNextStep();
   QList<IPAddressRange> getAllowedIPAddressRanges(const QList<Server>& servers);
+  QStringList getExcludedAddresses(const QList<Server>& serverList);
 
   void activateInternal();
 
@@ -136,10 +139,15 @@ class Controller final : public QObject {
 
   void resetConnectedTime();
 
+  void startUnsettledPeriod();
+
  private:
   State m_state = StateInitializing;
 
   QTimer m_timer;
+  QTimer m_settleTimer;
+
+  bool m_settled = true;
 
   QDateTime m_connectedTimeInUTC;
 

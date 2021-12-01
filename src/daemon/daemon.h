@@ -11,6 +11,7 @@
 #include "wireguardutils.h"
 
 #include <QDateTime>
+#include <QTimer>
 
 class Daemon : public QObject {
   Q_OBJECT
@@ -30,9 +31,7 @@ class Daemon : public QObject {
 
   virtual bool activate(const InterfaceConfig& config);
   virtual bool deactivate(bool emitSignals = true);
-
-  // Explose a JSON object with the daemon status.
-  virtual QByteArray getStatus() = 0;
+  virtual QJsonObject getStatus();
 
   // Callback before any Activating measure is done
   virtual void prepareActivation(const InterfaceConfig& config){
@@ -42,8 +41,8 @@ class Daemon : public QObject {
   void cleanLogs();
 
  signals:
-  void connected(int hopindex);
-  void disconnected(int hopindex);
+  void connected(const QString& pubkey);
+  void disconnected();
   void backendFailure();
 
  protected:
@@ -60,17 +59,21 @@ class Daemon : public QObject {
   virtual bool supportDnsUtils() const { return false; }
   virtual DnsUtils* dnsutils() { return nullptr; }
 
+  static bool parseStringList(const QJsonObject& obj, const QString& name,
+                              QStringList& list);
+
+  void checkHandshake();
+
   class ConnectionState {
    public:
     ConnectionState(){};
-    ConnectionState(const InterfaceConfig& config) {
-      m_config = config;
-      m_date = QDateTime::currentDateTime();
-    }
+    ConnectionState(const InterfaceConfig& config) { m_config = config; }
     QDateTime m_date;
     InterfaceConfig m_config;
   };
   QMap<int, ConnectionState> m_connections;
+  QHash<QHostAddress, int> m_excludedAddrSet;
+  QTimer m_handshakeTimer;
 };
 
 #endif  // DAEMON_H
