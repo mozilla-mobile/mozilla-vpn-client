@@ -36,14 +36,6 @@ Read more on https://vpn.mozilla.org
 
 %build
 %{_srcdir}/scripts/importLanguages.py
-cd glean
-%{qmake_qt5} glean.pro
-make %{?_smp_mflags}
-cd ..
-cd nebula 
-%{qmake_qt5} nebula.pro
-make %{?_smp_mflags}
-cd ..
 %{qmake_qt5} %{_srcdir}/mozillavpn.pro QT+=svg
 make %{?_smp_mflags}
 

@@ -1,10 +1,18 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 QT -= gui
 QT += qml
 TEMPLATE = lib
 
 CONFIG += staticlib
-
 CONFIG += c++1z
+
+OBJECTS_DIR = .obj
+MOC_DIR = .moc
+RCC_DIR = .rcc
+UI_DIR = .ui
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.

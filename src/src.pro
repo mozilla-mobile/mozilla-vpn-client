@@ -38,7 +38,9 @@ INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
-            ../translations/generated
+            ../translations/generated \
+            ../nebula \
+            ../glean
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -565,15 +567,13 @@ else:android {
     LIBS += \-ljnigraphics\
 
     CONFIG(debug, debug|release) {
-    LIBS += -L$$PWD/../nebula/$$ANDROID_TARGET_ARCH/debug -lnebula
-    LIBS += -L$$PWD/../glean/$$ANDROID_TARGET_ARCH/debug -lglean
+        LIBS += -L$$PWD/../nebula/$$ANDROID_TARGET_ARCH/debug -lnebula
+        LIBS += -L$$PWD/../glean/$$ANDROID_TARGET_ARCH/debug -lglean
     }
     CONFIG(release, debug|release) {
-    LIBS += -L$$PWD/../nebula/$$ANDROID_TARGET_ARCH/release -lnebula
-    LIBS += -L$$PWD/../glean/$$ANDROID_TARGET_ARCH/release -lglean
+        LIBS += -L$$PWD/../nebula/$$ANDROID_TARGET_ARCH/release -lnebula
+        LIBS += -L$$PWD/../glean/$$ANDROID_TARGET_ARCH/release -lglean
     }
-
-
 
     !versionAtLeast(QT_VERSION, 6.0.0) {
         QT += androidextras
@@ -878,8 +878,6 @@ else:win* {
     DEFINES += MVPN_WINDOWS
     DEFINES += WIN32_LEAN_AND_MEAN #Solves Redifinition Errors Of Winsock
 
-
-
     RC_ICONS = ui/resources/logo.ico
 
     SOURCES += \
@@ -1043,7 +1041,3 @@ mvpn_debug {
     message(MVPN Debug enabled)
     DEFINES += MVPN_DEBUG
 }
-
-
-INCLUDEPATH+=../nebula
-INCLUDEPATH+=../glean

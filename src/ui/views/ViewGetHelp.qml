@@ -64,7 +64,7 @@ Item {
             accessibleName: title
             title: qsTrId("vpn.settings.giveFeedback")
             onClicked: isSettingsView ? settingsStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml") : isMainView? mainStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml") : stackview.push("qrc:/ui/settings/ViewGiveFeedback.qml", {isMainView: true})
-            iconSource: "qrc:/ui/resources/chevron.svg"
+            iconSource: "qrc:/nebula/resources/chevron.svg"
             backgroundColor: Theme.iconButtonLightBackground
             width: parent.width - Theme.windowMargin
             visible: VPN.userState === VPN.UserAuthenticated
@@ -81,7 +81,7 @@ Item {
                 objectName: "getHelpBackList-" + id
                 title: name
                 accessibleName: name
-                iconSource: externalLink ? "qrc:/ui/resources/externalLink.svg" : "qrc:/ui/resources/chevron.svg"
+                iconSource: externalLink ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
                 backgroundColor: externalLink ? Theme.clickableRowBlue : Theme.iconButtonLightBackground
                 onClicked: {
                     VPNHelpModel.open(id)
@@ -100,7 +100,7 @@ Item {
             //% "Developer Options"
             settingTitle: qsTrId("vpn.settings.developer")
             imageLeftSrc: "qrc:/ui/resources/developer.svg"
-            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             visible: VPNSettings.developerUnlock
             onClicked: {
                 if (isSettingsView) {

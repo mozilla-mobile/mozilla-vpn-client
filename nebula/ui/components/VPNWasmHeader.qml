@@ -20,7 +20,7 @@ Button {
     width: parent.width
     z: 2
     clip: true
-    onClicked: mainStackView.replace("qrc:/components/components/VPNWasmMenu.qml", StackView.Immediate)
+    onClicked: mainStackView.replace("qrc:/nebula/components/VPNWasmMenu.qml", StackView.Immediate)
     background: Rectangle {
         color: Theme.bgColor
         anchors.fill: parent

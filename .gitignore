@@ -1,5 +1,6 @@
 .DS_Store
 Makefile
+Makefile.*
 *.o
 .obj
 .moc
@@ -137,4 +138,3 @@ tools/inspector/dist
 tools/inspector/node_modules
 
 *.PDB
-3rdparty/crashpad

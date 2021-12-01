@@ -129,7 +129,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/ui/resources/shield-off.svg"
+                source: "qrc:/nebula/resources/shield-off.svg"
                 opacity: 1
             }
 
@@ -170,7 +170,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/ui/resources/shield-on.svg"
+                source: "qrc:/nebula/resources/shield-on.svg"
                 opacity: 1
             }
 

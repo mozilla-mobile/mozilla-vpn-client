@@ -24,7 +24,7 @@ Item {
     }
 
     function createSupportTicket(email, subject, issueText, category) {
-        mainStackView.push("qrc:/components/components/VPNLoader.qml", {
+        mainStackView.push("qrc:/nebula/components/VPNLoader.qml", {
             footerLinkIsVisible: false
         });
         VPN.createSupportTicket(email, subject, issueText, category);

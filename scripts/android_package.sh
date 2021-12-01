@@ -158,23 +158,7 @@ if [[ "$RELEASE" ]]; then
   cp $QTPATH/lib/metatypes/qt5androidextras_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5androidextras_metatypes.json
   cp $QTPATH/lib/metatypes/qt5core_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5core_metatypes.json
   printn Y "Use release config"
-    pushd ..//glean
-    $QTPATH/bin/qmake -spec android-clang \
-    CONFIG-=debug \
-    CONFIG-=debug_and_release \
-    CONFIG+=release \
-    glean.pro || die "Qmake failed for glean"
-    make -j $JOBS make_first || die "Compile of Glean QT project failed"
-    popd
-    pushd ..//nebula
-    $QTPATH/bin/qmake -spec android-clang \
-    CONFIG-=debug \
-    CONFIG-=debug_and_release \
-    CONFIG+=release \
-    nebula.pro || die "Qmake failed for nebula"
-    make -j $JOBS make_first || die "Compile of Nebula QT project failed"
-    popd
-    $QTPATH/bin/qmake -spec android-clang \
+  $QTPATH/bin/qmake -spec android-clang \
     VERSION=$SHORTVERSION \
     BUILD_ID=$VERSIONCODE \
     CONFIG+=qtquickcompiler \
@@ -183,28 +167,8 @@ if [[ "$RELEASE" ]]; then
     CONFIG+=release \
     $ADJUST \
     ..//mozillavpn.pro  || die "Qmake failed"
-
 else
   printn Y "Use debug config \n"
-  pushd ..//glean
-  $QTPATH/bin/qmake -spec android-clang \
-    VERSION=$SHORTVERSION \
-    BUILD_ID=$VERSIONCODE \
-    CONFIG+=debug \
-    CONFIG-=debug_and_release \
-    CONFIG-=release \
-    glean.pro || die "Qmake failed for glean"
-    make -j $JOBS make_first || die "Compile of Glean failed."
-  popd
-  pushd ../nebula
-  $QTPATH/bin/qmake -spec android-clang \
-    CONFIG+=debug \
-    CONFIG-=debug_and_release \
-    CONFIG-=release \
-    nebula.pro || die "Qmake failed for nebula"
-    make -j $JOBS make_first || die "Compile failed for nebula."
-  popd
-
   $QTPATH/bin/qmake -spec android-clang \
     VERSION=$SHORTVERSION \
     BUILD_ID=$VERSIONCODE \
