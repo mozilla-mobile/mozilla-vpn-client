@@ -67,13 +67,85 @@ void TestAdjust::paramFiltering() {
   QUrlQuery params(input);
 
   QStringList unknown;
-  params = AdjustFiltering::filterParameters(params, unknown);
+  params = AdjustFiltering::instance()->filterParameters(params, unknown);
 
   QFETCH(QString, output);
   QCOMPARE(params.toString(), output);
 
   QFETCH(QStringList, unknownParams);
   QCOMPARE(unknown, unknownParams);
+}
+
+void TestAdjust::addFields_data() {
+  QTest::addColumn<QString>("input");
+  QTest::addColumn<QString>("output");
+  QTest::addColumn<QString>("allowField");
+  QTest::addColumn<QString>("denyField");
+  QTest::addColumn<QString>("denyValue");
+  QTest::addColumn<QString>("mirrorField");
+  QTest::addColumn<QString>("mirroringField");
+  QTest::addColumn<QString>("mirrorValue");
+
+  QTest::addRow("allow app_name, deny adid and mirror device_name to app_name")
+      << QUrlQuery{{"app_name", "test1"},
+                   {"adid", "test2"},
+                   {"device_name", "test3"},
+                   {"device_type", "test4"}}
+             .toString()
+      << QUrlQuery{{"app_name", "test1"},
+                   {"adid", "default"},
+                   {"device_name", "test1"},
+                   {"device_type", "test4"}}
+             .toString()
+      << "app_name"
+      << "adid"
+      << "default"
+      << "device_name"
+      << "app_name"
+      << "error";
+
+  QTest::addRow("allow adid again, change app_name value, ")
+      << QUrlQuery{{"app_name", "test1"},
+                   {"adid", "test2"},
+                   {"device_name", "test3"},
+                   {"device_type", "test4"}}
+             .toString()
+      << QUrlQuery{{"app_name", "default2"},
+                   {"adid", "test2"},
+                   {"device_name", "error"},
+                   {"device_type", "test2"}}
+             .toString()
+      << "adid"
+      << "app_name"
+      << "default2"
+      << "device_type"
+      << "adid"
+      << "error";
+}
+
+void TestAdjust::addFields() {
+  QFETCH(QString, input);
+  QUrlQuery params(input);
+
+  QFETCH(QString, output);
+
+  QFETCH(QString, allowField);
+  AdjustFiltering::instance()->allowField(allowField);
+
+  QFETCH(QString, denyField);
+  QFETCH(QString, denyValue);
+  AdjustFiltering::instance()->denyField(denyField, denyValue);
+
+  QFETCH(QString, mirrorField);
+  QFETCH(QString, mirroringField);
+  QFETCH(QString, mirrorValue);
+  AdjustFiltering::instance()->mirrorField(mirrorField,
+                                           {mirroringField, mirrorValue});
+
+  QStringList unknown;
+  params = AdjustFiltering::instance()->filterParameters(params, unknown);
+
+  QCOMPARE(params.toString(), output);
 }
 
 void TestAdjust::stateMachine_data() {
