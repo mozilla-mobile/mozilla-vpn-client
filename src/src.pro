@@ -542,16 +542,14 @@ else:android {
                    adjust/adjustproxy.cpp \
                    adjust/adjustproxyconnection.cpp \
                    adjust/adjustproxypackagehandler.cpp \
-                   adjust/adjusttasksubmission.cpp \
-                   tasks/initializeadjust/taskinitializeadjust.cpp
+                   adjust/adjusttasksubmission.cpp
 
         HEADERS += adjust/adjustfiltering.h \
                    adjust/adjusthandler.h \
                    adjust/adjustproxy.h \
                    adjust/adjustproxyconnection.h \
                    adjust/adjustproxypackagehandler.h \
-                   adjust/adjusttasksubmission.h \
-                   tasks/initializeadjust/taskinitializeadjust.h
+                   adjust/adjusttasksubmission.h
     }
 
     versionAtLeast(QT_VERSION, 5.15.1) {
@@ -760,8 +758,7 @@ else:ios {
                    adjust/adjustproxy.cpp \
                    adjust/adjustproxyconnection.cpp \
                    adjust/adjustproxypackagehandler.cpp \
-                   adjust/adjusttasksubmission.cpp \
-                   tasks/initializeadjust/taskinitializeadjust.cpp
+                   adjust/adjusttasksubmission.cpp
 
         OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm
 
@@ -770,8 +767,7 @@ else:ios {
                    adjust/adjustproxy.h \
                    adjust/adjustproxyconnection.h \
                    adjust/adjustproxypackagehandler.h \
-                   adjust/adjusttasksubmission.h \
-                   tasks/initializeadjust/taskinitializeadjust.h
+                   adjust/adjusttasksubmission.h
 
         OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h
     }

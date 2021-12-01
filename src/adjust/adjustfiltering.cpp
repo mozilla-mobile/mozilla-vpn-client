@@ -72,14 +72,16 @@ QUrlQuery AdjustFiltering::filterParameters(QUrlQuery& parameters,
     }
 
     if (mirrorList.contains(parameter.first)) {
-      const MirrorParam mirrorParam = mirrorList.value(parameter.first);
+      const MirrorParam& mirrorParam = mirrorList.value(parameter.first);
       bool found = false;
+
+      if (!allowList.contains(mirrorParam.m_mirrorParamName)) {
+        break;
+      }
+
       for (const QPair<QString, QString>& otherParameter :
            parameters.queryItems()) {
         if (mirrorParam.m_mirrorParamName == otherParameter.first) {
-          if (!allowList.contains(mirrorParam.m_mirrorParamName)) {
-            break;
-          }
           newParameters.addQueryItem(parameter.first, otherParameter.second);
           found = true;
           break;

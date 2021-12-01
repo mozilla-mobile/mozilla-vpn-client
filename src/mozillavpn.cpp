@@ -60,7 +60,6 @@
 
 #ifdef MVPN_ADJUST
 #  include "adjust/adjusthandler.h"
-#  include "tasks/initializeadjust/taskinitializeadjust.h"
 #endif
 
 #include <QApplication>
@@ -217,7 +216,7 @@ void MozillaVPN::initialize() {
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
 #ifdef MVPN_ADJUST
-  TaskScheduler::scheduleTask(new TaskInitializeAdjust());
+  TaskScheduler::scheduleTask(new TaskFunction([]{ AdjustHandler::initialize(); }));
 #endif
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
