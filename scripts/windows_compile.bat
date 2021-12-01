@@ -178,26 +178,24 @@ IF NOT EXIST mozillavpnnp.vcxproj (
   EXIT 1
 )
 
-IF NOT EXIST .\3rdparty\crashpad\win64\release\include\client\crashpad_client.h (
-  ECHO Fetching crashpad...
+ 
   mkdir 3rdparty\crashpad
-  mkdir 3rdparty\crashpad\win64
-  powershell -Command "Invoke-WebRequest http://get.backtrace.io/crashpad/builds/crashpad-release-x86-64-stable.zip -OutFile .\3rdparty\crashpad\win64\crashpad_release.zip"
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO Failed to fetch crashpad
-    EXIT 1
+  mkdir 3rdparty\crashpad
+  pushd 3rdparty\depot_tools
+  set PATH=%cd%;%PATH%
+  popd
+  pushd 3rdparty\crashpad
+  IF NOT EXIST .gclient (
+    ECHO Fetching crashpad...
+    fetch crashpad
   )
-  powershell -Command "Expand-Archive .\3rdparty\crashpad\win64\crashpad_release.zip -DestinationPath .\3rdparty\crashpad\win64"
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO Failed to extract crashpad.
-    EXIT 1
-  )
-  del .\3rdparty\crashpad\win64\crashpad_release.zip
-  move .\3rdparty\crashpad\win64\crashpad* .\3rdparty\crashpad\win64\release
-)
-
-
-
+  pushd crashpad
+  ECHO Building CrashPad...
+  gn gen out/Release
+  gn args out/Release is_debug = false;
+  ninja -C out/Release
+  Exit 0
+  
 set CL=/MP
 
 ECHO Cleaning up the project...

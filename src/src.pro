@@ -78,6 +78,8 @@ SOURCES += \
         connectionhealth.cpp \
         constants.cpp \
         controller.cpp \
+        crashpad.cpp \
+        crashpadfactory.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
         dnshelper.cpp \
@@ -199,6 +201,8 @@ HEADERS += \
         constants.h \
         controller.h \
         controllerimpl.h \
+        crashpad.h \
+        crashpadfactory.h \
         cryptosettings.h \
         curve25519.h \
         dnshelper.h \
@@ -844,16 +848,11 @@ else:win* {
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 
     #Crashpad support
-    exists($$PWD/../3rdparty/crashpad/win64/release/include) {
-        CONFIG(debug, debug|release) {
-            LIBS += -L"$$PWD/../3rdparty/crashpad/win64/release/lib_md"
-        }
-        CONFIG(release, debug|release) {
-            LIBS += -L"$$PWD/../3rdparty/crashpad/win64/release/lib_mt"
-        }
-        LIBS += -lutil
-        LIBS += -lclient
-        LIBS += -lbase
+    exists($$PWD/../3rdparty/crashpad/crashpad/package.h) {
+        LIBS += -L"$$PWD/../3rdparty/crashpad/crashpad/out/Release/obj/third_party/mini_chromium/mini_chromium/base" -lbase
+        LIBS += -L"$$PWD/../3rdparty/crashpad/crashpad/out/Release/obj/client" -lclient
+        LIBS += -L"$$PWD/../3rdparty/crashpad/crashpad/out/Release/obj/util" -lutil
+        INCLUDEPATH +="$$PWD/../3rdparty/crashpad/crashpad"
     }else{
         error("Crashpad could not be found.  Have you run windows_compile.bat?")
     }
@@ -889,6 +888,7 @@ else:win* {
         daemon/daemonlocalserverconnection.cpp \
         eventlistener.cpp \
         localsocketcontroller.cpp \
+    platforms/windows/wincrashpad.cpp \
         platforms/windows/windowsapplistprovider.cpp  \
         platforms/windows/windowsappimageprovider.cpp \
         platforms/windows/daemon/dnsutilswindows.cpp \
@@ -923,6 +923,7 @@ else:win* {
         daemon/wireguardutils.h \
         eventlistener.h \
         localsocketcontroller.h \
+    platforms/windows/wincrashpad.h \
         platforms/windows/windowsapplistprovider.h \
         platforms/windows/windowsappimageprovider.h \
         platforms/windows/daemon/dnsutilswindows.h \

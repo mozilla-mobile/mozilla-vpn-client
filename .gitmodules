@@ -25,3 +25,6 @@
 [submodule "3rdparty/adjust-android-sdk"]
 	path = 3rdparty/adjust-android-sdk
 	url = https://github.com/adjust/android_sdk
+[submodule "3rdparty/depot_tools"]
+	path = 3rdparty/depot_tools
+	url = https://chromium.googlesource.com/chromium/tools/depot_tools
