@@ -13,22 +13,22 @@ Row {
     property var markerDataBits: markerData * 8 // convert bytes to bits
 
     function computeRange() {
-        if (markerDataBits < 1024) {
+        if (markerDataBits < 1000) {
             // bit/s
             return VPNl18n.ConnectionInfoLabelBitps;
         }
 
-        if (markerDataBits < 1048576 /* 1024^2 */) {
+        if (markerDataBits < Math.pow(1000, 2)) {
             // kbit/s
             return VPNl18n.ConnectionInfoLabelKbitps;
         }
 
-        if (markerDataBits < 1073741824 /* 1024^3 */) {
+        if (markerDataBits < Math.pow(1000, 3)) {
             // Mbit/s
             return VPNl18n.ConnectionInfoLabelMbitps;
         }
 
-        if (markerDataBits < 1099511627776 /* 1024^4 */) {
+        if (markerDataBits < Math.pow(1000, 4)) {
             // Gbit/s
             return VPNl18n.ConnectionInfoLabelGbitps;
         }
@@ -42,19 +42,19 @@ Row {
     }
 
     function computeValue() {
-        if (markerDataBits < 1024)
+        if (markerDataBits < 1000)
             return roundValue(markerDataBits);
 
-        if (markerDataBits < 1048576 /* 1024^2 */)
-            return roundValue(markerDataBits / 1024);
+        if (markerDataBits < Math.pow(1000, 2))
+            return roundValue(markerDataBits / 1000);
 
-        if (markerDataBits < 1073741824 /* 1024^3 */)
-            return roundValue(markerDataBits / 1048576 /* 1024^2 */);
+        if (markerDataBits < Math.pow(1000, 3))
+            return roundValue(markerDataBits / Math.pow(1000, 2));
 
-        if (markerDataBits < 1099511627776 /* 1024^4 */)
-            return roundValue(markerDataBits / 1073741824 /* 1024^3 */);
+        if (markerDataBits < Math.pow(1000, 4))
+            return roundValue(markerDataBits / Math.pow(1000, 3));
 
-        return roundValue(markerDataBits / 1099511627776 /* 1024^4 */);
+        return roundValue(markerDataBits / Math.pow(1000, 4));
     }
 
     Accessible.focusable: true
