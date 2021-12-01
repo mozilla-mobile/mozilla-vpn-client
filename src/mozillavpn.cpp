@@ -217,7 +217,7 @@ void MozillaVPN::initialize() {
 
 #ifdef MVPN_ADJUST
   TaskScheduler::scheduleTask(
-      new TaskFunction([]{ AdjustHandler::initialize(); }));
+      new TaskFunction([] { AdjustHandler::initialize(); }));
 #endif
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
