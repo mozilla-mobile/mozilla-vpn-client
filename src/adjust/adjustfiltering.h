@@ -91,9 +91,9 @@ class AdjustFiltering final {
   };
 
   QMap<QString, MirrorParam> mirrorList{
-      {"device_name", "device_type", Constants::PLATFORM_NAME},
-      {"installed_at", "created_at", "0"},
-      {"updated_at", "created_at", "0"},
+      {"device_name", {"device_type", Constants::PLATFORM_NAME}},
+      {"installed_at", {"created_at", "0"}},
+      {"updated_at", {"created_at", "0"}},
   };
 
   static AdjustFiltering* instance();
