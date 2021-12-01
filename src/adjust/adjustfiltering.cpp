@@ -58,23 +58,6 @@ QUrlQuery AdjustFiltering::filterParameters(QUrlQuery& parameters,
                                             QStringList& unknownParameters) {
   QUrlQuery newParameters;
 
-#ifdef MVPN_DEBUG
-  // We use the binary-search algorithm. The arrays must be alphabetically
-  // sorted. Let's check this in debug builds.
-
-  for (int i = 1; i < allowList.length(); ++i)
-    Q_ASSERT(allowList[i] > allowList[i - 1]);
-
-  for (int i = 1; i < denyList.length(); ++i)
-    Q_ASSERT(denyList[i].m_paramName > denyList[i - 1].m_paramName);
-
-  for (int i = 1; i < mirrorList.length(); ++i) {
-    Q_ASSERT(mirrorList[i].m_paramName > mirrorList[i - 1].m_paramName);
-    // Only allowed params can be mirrored.
-    Q_ASSERT(allowList.contains(mirrorList[i].m_paramName));
-  }
-#endif
-
   for (const QPair<QString, QString>& parameter : parameters.queryItems()) {
     if (allowList.contains(parameter.first)) {
       newParameters.addQueryItem(parameter.first, parameter.second);
