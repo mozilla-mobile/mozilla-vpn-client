@@ -27,6 +27,7 @@
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
+#include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
@@ -106,11 +107,9 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           [this]() { setAlert(NoAlert); });
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
-    TaskScheduler::scheduleTask(new TaskAccountAndServers());
-    TaskScheduler::scheduleTask(new TaskCaptivePortalLookup());
-    TaskScheduler::scheduleTask(new TaskHeartbeat());
-    TaskScheduler::scheduleTask(new TaskSurveyData());
-    TaskScheduler::scheduleTask(new TaskGetFeatureList());
+    TaskScheduler::scheduleTask(new TaskGroup(
+        {new TaskAccountAndServers(), new TaskCaptivePortalLookup(),
+         new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -318,9 +317,9 @@ void MozillaVPN::initialize() {
     m_private->m_serverData.writeSettings();
   }
 
-  TaskScheduler::scheduleTask(new TaskAccountAndServers());
-  TaskScheduler::scheduleTask(new TaskCaptivePortalLookup());
-  TaskScheduler::scheduleTask(new TaskSurveyData());
+  TaskScheduler::scheduleTask(
+      new TaskGroup({new TaskAccountAndServers(), new TaskCaptivePortalLookup(),
+                     new TaskSurveyData()}));
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
     TaskScheduler::scheduleTask(new TaskProducts());

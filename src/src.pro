@@ -150,6 +150,7 @@ SOURCES += \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
+        tasks/group/taskgroup.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
         tasks/ipfinder/taskipfinder.cpp \
         tasks/products/taskproducts.cpp \
@@ -279,6 +280,7 @@ HEADERS += \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \
+        tasks/group/taskgroup.h \
         tasks/heartbeat/taskheartbeat.h \
         tasks/ipfinder/taskipfinder.h \
         tasks/products/taskproducts.h \
