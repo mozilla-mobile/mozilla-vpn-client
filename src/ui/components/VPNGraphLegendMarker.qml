@@ -10,35 +10,41 @@ Row {
     property var markerLabel
     property var rectColor
     property var markerData
+    property var markerDataBits: markerData * 8
 
     function computeRange() {
-        if (markerData < 1024) {
-            //% "B/s"
-            //: Bytes per second
-            return qsTrId("vpn.connectionInfo.Bps");
+        if (markerDataBits < 1024) {
+            //% "bit/s"
+            //: Bit per second
+            // return qsTrId("vpn.connectionInfo.Bps");
+            return "bit/s";
         }
 
-        if (markerData < 1048576 /* 1024^2 */) {
-            //% "kB/s"
-            //: Kilobytes per second
-            return qsTrId("vpn.connectionInfo.kBps");
+        if (markerDataBits < 1048576 /* 1024^2 */) {
+            //% "kbit/s"
+            //: Kilobit per second
+            // return qsTrId("vpn.connectionInfo.kBps");
+            return "kbit/s";
         }
 
-        if (markerData < 1073741824 /* 1024^3 */) {
-            //% "MB/s"
-            //: Megabytes per second
-            return qsTrId("vpn.connectioInfo.mBps");
+        if (markerDataBits < 1073741824 /* 1024^3 */) {
+            //% "Mbit/s"
+            //: Megabit per second
+            // return qsTrId("vpn.connectioInfo.mBps");
+            return "Mbit/s";
         }
 
-        if (markerData < 1099511627776 /* 1024^4 */) {
-            //% "GB/s"
-            //: Gigabytes per second
-            return qsTrId("vpn.connectioInfo.gBps");
+        if (markerDataBits < 1099511627776 /* 1024^4 */) {
+            //% "Gbit/s"
+            //: Gigabit per second
+            // return qsTrId("vpn.connectioInfo.gBps");
+            return "Gbit/s";
         }
 
-        //% "TB/s"
-        //: Terabytes per second
-        return qsTrId("vpn.connectionInfo.tBps");
+        //% "Tbit/s"
+        //: Terabit per second
+        // return qsTrId("vpn.connectionInfo.tBps");
+        return "Tbit/s";
     }
 
     function roundValue(value) {
@@ -46,20 +52,21 @@ Row {
     }
 
     function computeValue() {
-        if (markerData < 1024)
-            return roundValue(markerData);
+        if (markerDataBits < 1024)
+            return roundValue(markerDataBits);
 
-        if (markerData < 1048576 /* 1024^2 */)
-            return roundValue(markerData / 1024);
+        if (markerDataBits < 1048576 /* 1024^2 */)
+            return roundValue(markerDataBits / 1024);
 
-        if (markerData < 1073741824 /* 1024^3 */)
-            return roundValue(markerData / 1048576 /* 1024^2 */);
+        if (markerDataBits < 1073741824 /* 1024^3 */)
+            return roundValue(markerDataBits / 1048576 /* 1024^2 */);
 
-        if (markerData < 1099511627776 /* 1024^4 */)
-            return roundValue(markerData / 1073741824 /* 1024^3 */);
+        if (markerDataBits < 1099511627776 /* 1024^4 */)
+            return roundValue(markerDataBits / 1073741824 /* 1024^3 */);
 
-        return roundValue(markerData / 1099511627776 /* 1024^4 */);
+        return roundValue(markerDataBits / 1099511627776 /* 1024^4 */);
     }
+
     Accessible.focusable: true
     Accessible.role: Accessible.StaticText
     //% "%1: %2 %3"
