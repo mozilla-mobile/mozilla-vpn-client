@@ -10,41 +10,31 @@ Row {
     property var markerLabel
     property var rectColor
     property var markerData
-    property var markerDataBits: markerData * 8
+    property var markerDataBits: markerData * 8 // convert bytes to bits
 
     function computeRange() {
         if (markerDataBits < 1024) {
-            //% "bit/s"
-            //: Bit per second
-            // return qsTrId("vpn.connectionInfo.Bps");
-            return "bit/s";
+            // bit/s
+            return VPNl18n.ConnectionInfoLabelBitps;
         }
 
         if (markerDataBits < 1048576 /* 1024^2 */) {
-            //% "kbit/s"
-            //: Kilobit per second
-            // return qsTrId("vpn.connectionInfo.kBps");
-            return "kbit/s";
+            // kbit/s
+            return VPNl18n.ConnectionInfoLabelKbitps;
         }
 
         if (markerDataBits < 1073741824 /* 1024^3 */) {
-            //% "Mbit/s"
-            //: Megabit per second
-            // return qsTrId("vpn.connectioInfo.mBps");
-            return "Mbit/s";
+            // Mbit/s
+            return VPNl18n.ConnectionInfoLabelMbitps;
         }
 
         if (markerDataBits < 1099511627776 /* 1024^4 */) {
-            //% "Gbit/s"
-            //: Gigabit per second
-            // return qsTrId("vpn.connectioInfo.gBps");
-            return "Gbit/s";
+            // Gbit/s
+            return VPNl18n.ConnectionInfoLabelGbitps;
         }
 
-        //% "Tbit/s"
-        //: Terabit per second
-        // return qsTrId("vpn.connectionInfo.tBps");
-        return "Tbit/s";
+        // Tbit/s
+        return VPNl18n.ConnectionInfoLabelTbitps;
     }
 
     function roundValue(value) {
