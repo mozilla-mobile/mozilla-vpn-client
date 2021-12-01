@@ -96,7 +96,6 @@ SOURCES += \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
-        ipaddressrange.cpp \
         l18nstringsimpl.cpp \
         leakdetector.cpp \
         localizer.cpp \
@@ -173,7 +172,6 @@ HEADERS += \
         authenticationinapp/authenticationinapp.h \
         authenticationinapp/authenticationinapplistener.h \
         authenticationinapp/incrementaldecoder.h \
-        bigintipv6addr.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
         captiveportal/captiveportaldetectionimpl.h \
@@ -227,7 +225,6 @@ HEADERS += \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
-        ipaddressrange.h \
         leakdetector.h \
         localizer.h \
         logger.h \

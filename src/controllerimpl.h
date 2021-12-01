@@ -15,7 +15,7 @@ class Keys;
 class Device;
 class Server;
 class QDateTime;
-class IPAddressRange;
+class IPAddress;
 class QHostAddress;
 
 // This object is allocated when the VPN is about to be activated.
@@ -48,7 +48,7 @@ class ControllerImpl : public QObject {
   // received.
   virtual void activate(const QList<Server>& serverList, const Device* device,
                         const Keys* keys,
-                        const QList<IPAddressRange>& allowedIPAddressRanges,
+                        const QList<IPAddress>& allowedIPAddressRanges,
                         const QStringList& excludedAddresses,
                         const QStringList& vpnDisabledApps,
                         const QHostAddress& dnsServer, Reason Reason) = 0;

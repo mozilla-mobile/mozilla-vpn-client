@@ -29,8 +29,8 @@ class WireguardUtilsWindows final : public WireguardUtils {
   bool deletePeer(const InterfaceConfig& config) override;
   QList<PeerStatus> getPeerStatus() override;
 
-  bool updateRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
-  bool deleteRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
+  bool updateRoutePrefix(const IPAddress& prefix, int hopindex) override;
+  bool deleteRoutePrefix(const IPAddress& prefix, int hopindex) override;
 
   bool addExclusionRoute(const QHostAddress& address) override;
   bool deleteExclusionRoute(const QHostAddress& address) override;
@@ -39,7 +39,7 @@ class WireguardUtilsWindows final : public WireguardUtils {
   void backendFailure();
 
  private:
-  void buildMibForwardRow(const IPAddressRange& prefix, void* row);
+  void buildMibForwardRow(const IPAddress& prefix, void* row);
 
   quint64 m_luid = 0;
   WindowsTunnelService m_tunnel;

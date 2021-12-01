@@ -18,7 +18,7 @@
 
 class ControllerImpl;
 class MozillaVPN;
-class IPAddressRange;
+class IPAddress;
 
 class Controller final : public QObject {
   Q_OBJECT
@@ -128,7 +128,7 @@ class Controller final : public QObject {
   void maybeEnableDisconnectInConfirming();
 
   bool processNextStep();
-  QList<IPAddressRange> getAllowedIPAddressRanges(const QList<Server>& servers);
+  QList<IPAddress> getAllowedIPAddressRanges(const QList<Server>& servers);
   QStringList getExcludedAddresses(const QList<Server>& serverList);
 
   void activateInternal();

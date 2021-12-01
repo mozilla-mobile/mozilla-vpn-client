@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testmodels.h"
-#include "../../src/ipaddressrange.h"
 #include "../../src/models/device.h"
 #include "../../src/models/devicemodel.h"
 #include "../../src/models/keys.h"
@@ -1483,32 +1482,6 @@ void TestModels::userFromSettings() {
   QCOMPARE(user.email(), "email");
   QCOMPARE(user.maxDevices(), 123);
   QCOMPARE(user.subscriptionNeeded(), true);
-}
-
-// IPAddressRange
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-void TestModels::ipAddressRangeBasic() {
-  IPAddressRange a("ip", (uint32_t)123, IPAddressRange::IPv4);
-  QCOMPARE(a.ipAddress(), "ip");
-  QCOMPARE(a.range(), (uint32_t)123);
-  QCOMPARE(a.type(), IPAddressRange::IPv4);
-  QCOMPARE(a.toString(), "ip/123");
-
-  IPAddressRange b(a);
-  QCOMPARE(b.ipAddress(), a.ipAddress());
-  QCOMPARE(b.range(), a.range());
-  QCOMPARE(b.type(), a.type());
-  QCOMPARE(b.toString(), a.toString());
-
-  IPAddressRange c(a);
-  c = a;
-  QCOMPARE(c.ipAddress(), a.ipAddress());
-  QCOMPARE(c.range(), a.range());
-  QCOMPARE(c.type(), a.type());
-  QCOMPARE(c.toString(), a.toString());
-
-  a = a;
 }
 
 // SurveyModel

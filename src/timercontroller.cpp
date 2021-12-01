@@ -35,11 +35,12 @@ void TimerController::initialize(const Device* device, const Keys* keys) {
   m_impl->initialize(device, keys);
 }
 
-void TimerController::activate(
-    const QList<Server>& serverList, const Device* device, const Keys* keys,
-    const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
-    const QHostAddress& dns, Reason reason) {
+void TimerController::activate(const QList<Server>& serverList,
+                               const Device* device, const Keys* keys,
+                               const QList<IPAddress>& allowedIPAddressRanges,
+                               const QStringList& excludedAddresses,
+                               const QStringList& vpnDisabledApps,
+                               const QHostAddress& dns, Reason reason) {
   if (m_state != None) {
     return;
   }

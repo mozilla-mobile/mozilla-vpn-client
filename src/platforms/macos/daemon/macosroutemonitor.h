@@ -5,7 +5,7 @@
 #ifndef MACOSROUTEMONITOR_H
 #define MACOSROUTEMONITOR_H
 
-#include "ipaddressrange.h"
+#include "ipaddress.h"
 
 #include <QByteArray>
 #include <QHostAddress>
@@ -24,8 +24,8 @@ class MacosRouteMonitor final : public QObject {
   MacosRouteMonitor(const QString& ifname, QObject* parent = nullptr);
   ~MacosRouteMonitor();
 
-  bool insertRoute(const IPAddressRange& prefix);
-  bool deleteRoute(const IPAddressRange& prefix);
+  bool insertRoute(const IPAddress& prefix);
+  bool deleteRoute(const IPAddress& prefix);
   int interfaceFlags() { return m_ifflags; }
 
   bool addExclusionRoute(const QHostAddress& address);
