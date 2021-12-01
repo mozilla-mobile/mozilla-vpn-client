@@ -16,8 +16,8 @@ TaskInitializeAdjust::TaskInitializeAdjust() : Task("TaskInitializeAdjust") {
   MVPN_COUNT_CTOR(TaskInitializeAdjust);
 }
 
-TaskInitializeAdjust::~TaskInitializeAdjust() { MVPN_COUNT_DTOR(TaskInitializeAdjust); }
-
-void TaskInitializeAdjust::run() {
-  AdjustHandler::initialize();
+TaskInitializeAdjust::~TaskInitializeAdjust() {
+  MVPN_COUNT_DTOR(TaskInitializeAdjust);
 }
+
+void TaskInitializeAdjust::run() { AdjustHandler::initialize(); }

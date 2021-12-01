@@ -50,8 +50,12 @@ void TestFeature::enableByAPI() {
   QVERIFY(AdjustFiltering::instance()->denyList.contains("denyTest"));
   QVERIFY(AdjustFiltering::instance()->denyList.value("denyTest") == "test");
   QVERIFY(AdjustFiltering::instance()->mirrorList.contains("mirrorTest"));
-  QVERIFY(AdjustFiltering::instance()->mirrorList.value("mirrorTest").m_mirrorParamName == "test");
-  QVERIFY(AdjustFiltering::instance()->mirrorList.value("mirrorTest").m_defaultValue == "testValue");
+  QVERIFY(AdjustFiltering::instance()
+              ->mirrorList.value("mirrorTest")
+              .m_mirrorParamName == "test");
+  QVERIFY(AdjustFiltering::instance()
+              ->mirrorList.value("mirrorTest")
+              .m_defaultValue == "testValue");
 }
 
 static TestFeature s_testFeature;

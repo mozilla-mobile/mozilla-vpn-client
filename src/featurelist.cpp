@@ -163,20 +163,23 @@ void FeatureList::updateFeatureList(const QByteArray& data) {
   }
 
   if (!adjustFieldsValue.isObject()) {
-    logger.error() << "Error in the json format; adjust fields is not an object";
+    logger.error()
+        << "Error in the json format; adjust fields is not an object";
     return;
   }
 
   QJsonValue allowParameterValue = adjustFieldsValue["allowParameters"];
   if (!allowParameterValue.isArray()) {
-    logger.error() << "Error in the json format; allow parameters are not an array";
+    logger.error()
+        << "Error in the json format; allow parameters are not an array";
     return;
   }
 
   QJsonArray allowParametersArray = allowParameterValue.toArray();
   for (const QJsonValue& param : allowParametersArray) {
     if (!param.isString()) {
-      logger.error() << "Error in the json format; allowlist parameter is not a string";
+      logger.error()
+          << "Error in the json format; allowlist parameter is not a string";
       continue;
     }
     AdjustFiltering::instance()->allowField(param.toString());
@@ -184,7 +187,8 @@ void FeatureList::updateFeatureList(const QByteArray& data) {
 
   QJsonValue denyParameterValue = adjustFieldsValue["denyParameters"];
   if (!denyParameterValue.isObject()) {
-    logger.error() << "Error in the json format; deny parameters in not an object";
+    logger.error()
+        << "Error in the json format; deny parameters in not an object";
     return;
   }
 
@@ -192,7 +196,8 @@ void FeatureList::updateFeatureList(const QByteArray& data) {
   for (const QString& key : denyParameterObject.keys()) {
     QJsonValue value = denyParameterObject.value(key);
     if (!value.isString()) {
-      logger.error() << "Error in the json format; deny list parameter is not a string";
+      logger.error()
+          << "Error in the json format; deny list parameter is not a string";
       continue;
     }
 
@@ -201,7 +206,8 @@ void FeatureList::updateFeatureList(const QByteArray& data) {
 
   QJsonValue mirrorParameterValue = adjustFieldsValue["mirrorParameters"];
   if (!mirrorParameterValue.isObject()) {
-    logger.error() << "Error in the json format; mirror parameters are not an object";
+    logger.error()
+        << "Error in the json format; mirror parameters are not an object";
     return;
   }
 
@@ -209,29 +215,34 @@ void FeatureList::updateFeatureList(const QByteArray& data) {
   for (const QString& key : mirrorParameterObject.keys()) {
     QJsonValue values = mirrorParameterObject.value(key);
     if (!values.isArray()) {
-      logger.error() << "Error in the json format; mirror parameters value is not an array";
+      logger.error() << "Error in the json format; mirror parameters value is "
+                        "not an array";
       continue;
     }
 
     QJsonArray valuesArray = values.toArray();
     if (valuesArray.size() != 2) {
-      logger.error() << "Error in the json format; mirror value is not an array";
+      logger.error()
+          << "Error in the json format; mirror value is not an array";
       continue;
     }
 
     QJsonValue mirrorParamValue = valuesArray.first();
     if (!mirrorParamValue.isString()) {
-      logger.error() << "Error in the json format; mirroring field is not a string";
+      logger.error()
+          << "Error in the json format; mirroring field is not a string";
       continue;
     }
 
     QJsonValue defaultValue = valuesArray.last();
     if (!defaultValue.isString()) {
-      logger.error() << "Error in the json format; mirror default value is not a string";
+      logger.error()
+          << "Error in the json format; mirror default value is not a string";
       continue;
     }
 
-    AdjustFiltering::instance()->mirrorField(key, {mirrorParamValue.toString(), defaultValue.toString()});
+    AdjustFiltering::instance()->mirrorField(
+          key, {mirrorParamValue.toString(), defaultValue.toString()});
   }
 #endif
 }

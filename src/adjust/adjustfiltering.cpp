@@ -7,7 +7,7 @@
 #include <algorithm>
 
 namespace {
-  AdjustFiltering* s_instance = nullptr;
+AdjustFiltering* s_instance = nullptr;
 }
 
 // static
@@ -25,7 +25,7 @@ void AdjustFiltering::allowField(const QString& field) {
     denyList.remove(field);
   }
 
-  if(mirrorList.contains(field)) {
+  if (mirrorList.contains(field)) {
     mirrorList.remove(field);
   }
 }
@@ -37,19 +37,20 @@ void AdjustFiltering::denyField(const QString& field, const QString& param) {
     allowList.remove(field);
   }
 
-  if(mirrorList.contains(field)) {
+  if (mirrorList.contains(field)) {
     mirrorList.remove(field);
   }
 }
 
-void AdjustFiltering::mirrorField(const QString& field, const MirrorParam& param) {
+void AdjustFiltering::mirrorField(const QString& field,
+                                  const MirrorParam& param) {
   mirrorList.insert(field, param);
 
   if (allowList.contains(field)) {
     allowList.remove(field);
   }
 
-  if(denyList.contains(field)) {
+  if (denyList.contains(field)) {
     denyList.remove(field);
   }
 }
@@ -65,7 +66,8 @@ QUrlQuery AdjustFiltering::filterParameters(QUrlQuery& parameters,
     }
 
     if (denyList.contains(parameter.first)) {
-      newParameters.addQueryItem(parameter.first, denyList.value(parameter.first));
+      newParameters.addQueryItem(parameter.first,
+                                 denyList.value(parameter.first));
       continue;
     }
 
@@ -85,8 +87,7 @@ QUrlQuery AdjustFiltering::filterParameters(QUrlQuery& parameters,
       }
 
       if (!found) {
-        newParameters.addQueryItem(parameter.first,
-                                   mirrorParam.m_defaultValue);
+        newParameters.addQueryItem(parameter.first, mirrorParam.m_defaultValue);
       }
 
       continue;
