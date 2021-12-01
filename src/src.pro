@@ -152,6 +152,7 @@ SOURCES += \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
+        tasks/initializeadjust/taskinitializeadjust.cpp \
         tasks/ipfinder/taskipfinder.cpp \
         tasks/products/taskproducts.cpp \
         tasks/release/taskrelease.cpp \
@@ -283,6 +284,7 @@ HEADERS += \
         tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
+        tasks/initializeadjust/taskinitializeadjust.h \
         tasks/ipfinder/taskipfinder.h \
         tasks/products/taskproducts.h \
         tasks/release/taskrelease.h \

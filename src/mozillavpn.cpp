@@ -60,6 +60,7 @@
 
 #ifdef MVPN_ADJUST
 #  include "adjust/adjusthandler.h"
+#  include "tasks/initializeadjust/taskinitializeadjust.h"
 #endif
 
 #include <QApplication>
@@ -97,10 +98,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   Q_ASSERT(!s_instance);
   s_instance = this;
-
-#ifdef MVPN_ADJUST
-  AdjustHandler::initialize();
-#endif
 
   connect(&m_alertTimer, &QTimer::timeout, this,
           [this]() { setAlert(NoAlert); });
@@ -218,6 +215,7 @@ void MozillaVPN::initialize() {
   m_private->m_releaseMonitor.runSoon();
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
+  TaskScheduler::scheduleTask(new TaskInitializeAdjust());
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
