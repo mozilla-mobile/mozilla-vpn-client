@@ -22,6 +22,11 @@ INCLUDEPATH += \
             . \
             ../../src \
             ../../translations/generated \
+            ../../glean \
+            ../../nebula
+
+include($$PWD/../../glean/glean.pri)
+include($$PWD/../../nebula/nebula.pri)
 
 SOURCES += \
     helper.cpp \
@@ -69,19 +74,6 @@ exists($$PWD/../../translations/generated/l18nstrings.h) {
 } else {
     error("No l18nstrings.h. Have you generated the strings?")
 }
-
-CONFIG(debug, debug|release) {
-    LIBS += -L$$clean_path($$PWD/../../nebula/debug) -lnebula
-    LIBS += -L$$clean_path($$PWD/../../glean/debug) -lglean
-}
-CONFIG(release, debug|release) {
-    LIBS += -L$$clean_path($$PWD/../../nebula/release) -lnebula
-    LIBS += -L$$clean_path($$PWD/../../glean/release) -lglean
-
-}
-
-INCLUDEPATH += $$PWD/../../glean
-INCLUDEPATH += $$PWD/../../nebula
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc

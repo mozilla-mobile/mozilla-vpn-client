@@ -42,6 +42,9 @@ INCLUDEPATH += \
             ../nebula \
             ../glean
 
+include($$PWD/../glean/glean.pri)
+include($$PWD/../nebula/nebula.pri)
+
 DEPENDPATH  += $${INCLUDEPATH}
 
 OBJECTS_DIR = .obj
@@ -365,15 +368,6 @@ DUMMY {
             platforms/dummy/dummycontroller.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
-    CONFIG(debug, debug|release) {
-        LIBS += -L$$clean_path($$PWD/../nebula/debug) -lnebula
-        LIBS += -L$$clean_path($$PWD/../glean/debug) -lglean
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$$clean_path($$PWD/../nebula/release) -lnebula
-        LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
-
-    }
 }
 
 # Platform-specific: Linux
@@ -387,15 +381,6 @@ else:linux:!android {
 
     system(c++ -lgo 2>&1 | grep "__go_init_main" > /dev/null) {
         LIBS += -lgo
-    }
-
-    CONFIG(debug, debug|release) {
-        LIBS += -L$$clean_path($$PWD/../nebula/debug) -lnebula
-        LIBS += -L$$clean_path($$PWD/../glean/debug) -lglean
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$$clean_path($$PWD/../nebula/release) -lnebula
-        LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
     }
 
     CONFIG += c++14
@@ -565,15 +550,6 @@ else:android {
     QT += qml
     QT += xml
     LIBS += \-ljnigraphics\
-
-    CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../nebula/$$ANDROID_TARGET_ARCH/debug -lnebula
-        LIBS += -L$$PWD/../glean/$$ANDROID_TARGET_ARCH/debug -lglean
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$$PWD/../nebula/$$ANDROID_TARGET_ARCH/release -lnebula
-        LIBS += -L$$PWD/../glean/$$ANDROID_TARGET_ARCH/release -lglean
-    }
 
     !versionAtLeast(QT_VERSION, 6.0.0) {
         QT += androidextras
@@ -842,29 +818,6 @@ else:win* {
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 
-    #Crashpad support
-    exists($$PWD/../3rdparty/crashpad/win64/release/include) {
-        CONFIG(debug, debug|release) {
-            LIBS += -L"$$PWD/../3rdparty/crashpad/win64/release/lib_md"
-        }
-        CONFIG(release, debug|release) {
-            LIBS += -L"$$PWD/../3rdparty/crashpad/win64/release/lib_mt"
-        }
-        LIBS += -lutil
-        LIBS += -lclient
-        LIBS += -lbase
-    }else{
-        error("Crashpad could not be found.  Have you run windows_compile.bat?")
-    }
-    CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../nebula/debug -lnebula
-        LIBS += -L$$PWD/../glean/debug -lglean
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$$PWD/../nebula/release -lnebula
-        LIBS += -L$$PWD/../glean/release -lglean
-    }
-
     CONFIG(debug, debug|release) {
         QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
         QMAKE_LFLAGS_WINDOWS += /DEBUG
@@ -982,15 +935,6 @@ else:wasm {
 
     SOURCES -= networkrequest.cpp
     RESOURCES += platforms/wasm/networkrequests.qrc
-
-    CONFIG(debug, debug|release) {
-        LIBS += -L$$clean_path($$PWD/../nebula/debug) -lnebula
-        LIBS += -L$$clean_path($$PWD/../glean/debug) -lglean
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$$clean_path($$PWD/../nebula/release) -lnebula
-        LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
-    }
 }
 
 # Anything else

@@ -121,50 +121,13 @@ python scripts\generate_glean.py
 
 ECHO BUILD_BUILD = %DEBUG_BUILD%
 
-ECHO Compiling Glean...
-pushd glean
 IF %DEBUG_BUILD%==T (
-  qmake -tp vc glean.pro CONFIG+=debug
-)
-IF %DEBUG_BUILD%==F (
-  qmake -tp vc glean.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
-)
-
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO qmake failed for the glean!
-  EXIT 1
-)
-
-MSBuild -t:Build -p:Configuration=%BUILD_CONF% glean.vcxproj
-popd
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO Glean build failed!
-  EXIT 1
-)
-
-ECHO Compiling Nebula...
-pushd nebula
-IF %DEBUG_BUILD%==T (
-  qmake -tp vc nebula.pro CONFIG+=debug
-)
-IF %DEBUG_BUILD%==F (
-  qmake -tp vc nebula.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
-)
-
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO qmake failed for the nebula!
-  EXIT 1
-)
-
-MSBuild -t:Build -p:Configuration=%BUILD_CONF% nebula.vcxproj
-popd
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO Nebula build failed!
-  EXIT 1
+  ECHO Generating Debug Build for the extension bridge
+  qmake -tp vc extension\app\app.pro CONFIG+=debug
 )
 
 IF %DEBUG_BUILD%==F (
-ECHO Generating Release Build
+  ECHO Generating Release Build for the extension bridge
   qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
 )
 
@@ -177,26 +140,6 @@ IF NOT EXIST mozillavpnnp.vcxproj (
   echo The VC project doesn't exist. Why?
   EXIT 1
 )
-
-IF NOT EXIST .\3rdparty\crashpad\win64\release\include\client\crashpad_client.h (
-  ECHO Fetching crashpad...
-  mkdir 3rdparty\crashpad
-  mkdir 3rdparty\crashpad\win64
-  powershell -Command "Invoke-WebRequest http://get.backtrace.io/crashpad/builds/crashpad-release-x86-64-stable.zip -OutFile .\3rdparty\crashpad\win64\crashpad_release.zip"
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO Failed to fetch crashpad
-    EXIT 1
-  )
-  powershell -Command "Expand-Archive .\3rdparty\crashpad\win64\crashpad_release.zip -DestinationPath .\3rdparty\crashpad\win64"
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO Failed to extract crashpad.
-    EXIT 1
-  )
-  del .\3rdparty\crashpad\win64\crashpad_release.zip
-  move .\3rdparty\crashpad\win64\crashpad* .\3rdparty\crashpad\win64\release
-)
-
-
 
 set CL=/MP
 
@@ -224,7 +167,6 @@ if %DEBUG_BUILD% == F (
   ECHO Generating Release Build
   qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%
 )
-
 
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project

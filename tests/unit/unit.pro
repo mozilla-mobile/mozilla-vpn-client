@@ -25,7 +25,12 @@ INCLUDEPATH += \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
             ../../src/hacl-star/kremlin/minimal \
-            ../../translations/generated
+            ../../translations/generated \
+            ../../glean \
+            ../../nebula
+
+include($$PWD/../../glean/glean.pri)
+include($$PWD/../../nebula/nebula.pri)
 
 HEADERS += \
     ../../src/adjust/adjustfiltering.h \
@@ -252,19 +257,6 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 RESOURCES += ../../src/ui/license.qrc
-
-CONFIG(debug, debug|release) {
-    LIBS += -L$$clean_path($$PWD/../../nebula/debug) -lnebula
-    LIBS += -L$$clean_path($$PWD/../../glean/debug) -lglean
-}
-CONFIG(release, debug|release) {
-    LIBS += -L$$clean_path($$PWD/../../nebula/release) -lnebula
-    LIBS += -L$$clean_path($$PWD/../../glean/release) -lglean
-
-}
-
-INCLUDEPATH += $$PWD/../../glean
-INCLUDEPATH += $$PWD/../../nebula
 
 coverage {
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping

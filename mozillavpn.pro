@@ -12,8 +12,6 @@
 
 TEMPLATE = subdirs
 
-SUBDIRS += glean
-SUBDIRS += nebula
 SUBDIRS += src
 SUBDIRS += tests/unit
 

@@ -15,13 +15,12 @@ OS=
 NETWORKEXTENSION=
 ADJUST_SDK_TOKEN=
 ADJUST="CONFIG-=adjust"
-QTVERSION="Qt5"
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-n|--networkextension] [-v|--version <qt_main_version (Qt5 or Qt6)>] [-a|--adjusttoken <adjust_token>]"
+  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-n|--networkextension] [-a|--adjusttoken <adjust_token>]"
   print N ""
-  print N "By default, the project is compiled in release mode and using Qt5. Use -d or --debug for a debug build."
+  print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N "Use -n or --networkextension to force the network-extension component for MacOS too."
   print N ""
   print N "If MVPN_IOS_ADJUST_TOKEN env is found, this will be used at compilation time."
@@ -56,11 +55,6 @@ while [[ $# -gt 0 ]]; do
     ;;
   -h | --help)
     helpFunction
-    ;;
-  -v | --version)
-    QTVERSION="$2"
-    shift
-    shift
     ;;
   *)
     if [[ "$OS" ]]; then
@@ -213,23 +207,6 @@ else
   print G none
 fi
 
-pushd glean
-$QMAKE -spec macx-xcode \
-  $MODE \
-  $PLATFORM \
-  glean.pro || die "Qmake failed for glean"
-  make -j $JOBS -f glean.xcodeproj/qt_makeqmake.mak || die "Compile of Glean failed."
-  make -j $JOBS -f glean.xcodeproj/qt_preprocess.mak || die "Compile of Glean failed."
-popd
-pushd nebula
-$QMAKE -spec macx-xcode \
-  $MODE \
-  $PLATFORM \
-  nebula.pro || die "Qmake failed for nebula"
-  make -j $JOBS -f nebula.xcodeproj/qt_makeqmake.mak || die "Compile failed for nebula."
-  make -j $JOBS -f nebula.xcodeproj/qt_preprocess.mak || die "Compile failed for nebula."
-popd
-
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
   VERSION=$SHORTVERSION \
@@ -243,7 +220,7 @@ $QMAKE \
   src/src.pro || die "Compilation failed"
 
 print Y "Patching the xcode project..."
-ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$QTVERSION" "$NETWORKEXTENSION" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
+ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 
