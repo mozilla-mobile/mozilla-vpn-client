@@ -34,6 +34,6 @@ void WasmAuthenticationListener::start(Task* task, const QString& codeChallenge,
   Q_UNUSED(emailAddress);
 
   QTimer* timer = new QTimer(this);
-  connect(timer, &QTimer::timeout, [this]() { emit completed("WASM"); });
+  connect(timer, &QTimer::timeout, this, [this]() { emit completed("WASM"); });
   timer->start(2000);
 }

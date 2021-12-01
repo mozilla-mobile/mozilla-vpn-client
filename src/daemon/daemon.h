@@ -59,6 +59,9 @@ class Daemon : public QObject {
   virtual bool supportDnsUtils() const { return false; }
   virtual DnsUtils* dnsutils() { return nullptr; }
 
+  static bool parseStringList(const QJsonObject& obj, const QString& name,
+                              QStringList& list);
+
   void checkHandshake();
 
   class ConnectionState {
@@ -69,6 +72,7 @@ class Daemon : public QObject {
     InterfaceConfig m_config;
   };
   QMap<int, ConnectionState> m_connections;
+  QHash<QHostAddress, int> m_excludedAddrSet;
   QTimer m_handshakeTimer;
 };
 

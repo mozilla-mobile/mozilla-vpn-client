@@ -21,7 +21,7 @@ DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
   MVPN_COUNT_CTOR(DesktopAuthenticationListener);
 
   m_server = new QOAuthHttpServerReplyHandler(QHostAddress::LocalHost, this);
-  connect(m_server, &QAbstractOAuthReplyHandler::callbackReceived,
+  connect(m_server, &QAbstractOAuthReplyHandler::callbackReceived, this,
           [this](const QVariantMap& values) {
             logger.debug() << "DesktopAuthenticationListener data received";
 

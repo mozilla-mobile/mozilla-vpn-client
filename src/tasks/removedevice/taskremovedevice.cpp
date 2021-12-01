@@ -38,14 +38,14 @@ void TaskRemoveDevice::run() {
       NetworkRequest::createForDeviceRemoval(this, m_publicKey);
 
   connect(
-      request, &NetworkRequest::requestFailed,
+      request, &NetworkRequest::requestFailed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Failed to remove the device" << error;
         MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
       });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray&) {
             logger.debug() << "Device removed";
             MozillaVPN::instance()->deviceRemoved(m_publicKey);

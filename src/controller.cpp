@@ -82,7 +82,7 @@ Controller::Controller() {
           &Controller::connectionConfirmed);
   connect(&m_connectionCheck, &ConnectionCheck::failure, this,
           &Controller::connectionFailed);
-  connect(&m_connectingTimer, &QTimer::timeout, [this]() {
+  connect(&m_connectingTimer, &QTimer::timeout, this, [this]() {
     m_enableDisconnectInConfirming = true;
     emit enableDisconnectInConfirmingChanged();
   });
@@ -231,7 +231,8 @@ void Controller::activateInternal() {
 
   Q_ASSERT(m_impl);
   m_impl->activate(serverList, device, vpn->keys(),
-                   getAllowedIPAddressRanges(serverList), vpnDisabledApps, dns,
+                   getAllowedIPAddressRanges(serverList),
+                   getExcludedAddresses(serverList), vpnDisabledApps, dns,
                    stateToReason(m_state));
 }
 
@@ -295,7 +296,8 @@ bool Controller::silentSwitchServers() {
 
   Q_ASSERT(m_impl);
   m_impl->activate(serverList, device, vpn->keys(),
-                   getAllowedIPAddressRanges(serverList), vpnDisabledApps, dns,
+                   getAllowedIPAddressRanges(serverList),
+                   getExcludedAddresses(serverList), vpnDisabledApps, dns,
                    stateToReason(StateSwitching));
   return true;
 }
@@ -681,7 +683,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 
 QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     const QList<Server>& serverList) {
-  logger.debug() << "Computing the allowed ip addresses";
+  logger.debug() << "Computing the allowed IP addresses";
 
   QList<IPAddress> excludeIPv4s;
   QList<IPAddress> excludeIPv6s;
@@ -689,20 +691,6 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   // ingress node to the network of wireguard servers, and must not be
   // routed through the VPN.
   const Server& server = serverList.last();
-
-  // filtering out the captive portal endpoint
-  if (FeatureCaptivePortal::instance()->isSupported() &&
-      SettingsHolder::instance()->captivePortalAlert()) {
-    CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
-
-    const QStringList& captivePortalIpv4Addresses =
-        captivePortal->ipv4Addresses();
-
-    for (const QString& address : captivePortalIpv4Addresses) {
-      logger.debug() << "Filtering out the captive portal address" << address;
-      excludeIPv4s.append(IPAddress::create(address));
-    }
-  }
 
   // filtering out the RFC1918 local area network
   if (FeatureLocalAreaAccess::instance()->isSupported() &&
@@ -717,12 +705,6 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
     excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
   }
-  if (DNSHelper::shouldExcludeDNS()) {
-    auto dns = DNSHelper::getDNS(server.ipv4Gateway());
-    // Filter out the Custom DNS Server, if the user has set one.
-    logger.debug() << "Filtering out the DNS address" << dns;
-    excludeIPv4s.append(IPAddress::create(dns));
-  }
 
   QList<IPAddressRange> list;
 
@@ -733,14 +715,9 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   logger.debug() << "Catch all IPv6";
   list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
 #else
-  // filtering out the ingress server's public IPv4 and IPv6 addresses.
-  logger.debug() << "Exclude the ingress server:" << server.ipv4AddrIn();
-  excludeIPv4s.append(IPAddress::create(server.ipv4AddrIn()));
+  // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the ingress server:" << server.ipv4Gateway();
   list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
-
-  logger.debug() << "Exclude the ingress server:" << server.ipv6AddrIn();
-  excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
   logger.debug() << "Allow the ingress server:" << server.ipv6Gateway();
   list.append(IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
 
@@ -757,6 +734,36 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
   list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
 #endif
+
+  return list;
+}
+
+QStringList Controller::getExcludedAddresses(const QList<Server>& serverList) {
+  logger.debug() << "Computing the excluded IP addresses";
+
+  QStringList list;
+
+  // filtering out the captive portal endpoint
+  if (FeatureCaptivePortal::instance()->isSupported() &&
+      SettingsHolder::instance()->captivePortalAlert()) {
+    CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
+
+    for (const QString& address : captivePortal->ipv4Addresses()) {
+      logger.debug() << "Filtering out the captive portal address:" << address;
+      list.append(address);
+    }
+    for (const QString& address : captivePortal->ipv6Addresses()) {
+      logger.debug() << "Filtering out the captive portal address:" << address;
+      list.append(address);
+    }
+  }
+
+  // Filter out the Custom DNS Server, if the user has set one.
+  if (DNSHelper::shouldExcludeDNS()) {
+    auto dns = DNSHelper::getDNS(serverList.last().ipv4Gateway());
+    logger.debug() << "Filtering out the DNS address:" << dns;
+    list.append(dns);
+  }
 
   return list;
 }
