@@ -21,7 +21,7 @@
 #include "networkrequest.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "tasks/accountandservers/taskaccountandservers.h"
+#include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
@@ -31,6 +31,7 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
+#include "tasks/servers/taskservers.h"
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
@@ -108,7 +109,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
-        {new TaskAccountAndServers(), new TaskCaptivePortalLookup(),
+        {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
          new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));
   });
 
@@ -318,8 +319,8 @@ void MozillaVPN::initialize() {
   }
 
   TaskScheduler::scheduleTask(
-      new TaskGroup({new TaskAccountAndServers(), new TaskCaptivePortalLookup(),
-                     new TaskSurveyData()}));
+      new TaskGroup({new TaskAccount(), new TaskServers(),
+                     new TaskCaptivePortalLookup(), new TaskSurveyData()}));
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
     TaskScheduler::scheduleTask(new TaskProducts());
@@ -621,7 +622,8 @@ void MozillaVPN::completeActivation() {
     addCurrentDeviceAndRefreshData();
   } else {
     // Let's fetch the account and the servers.
-    TaskScheduler::scheduleTask(new TaskAccountAndServers());
+    TaskScheduler::scheduleTask(
+        new TaskGroup({new TaskAccount(), new TaskServers()}));
   }
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
@@ -1100,9 +1102,8 @@ void MozillaVPN::setUserState(UserState state) {
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
   logger.debug() << "Start scheduling account and servers"
-                 << Constants::scheduleAccountAndServersTimerMsec();
-  m_periodicOperationsTimer.start(
-      Constants::scheduleAccountAndServersTimerMsec());
+                 << Constants::schedulePeriodicTaskTimerMsec();
+  m_periodicOperationsTimer.start(Constants::schedulePeriodicTaskTimerMsec());
 }
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {
@@ -1380,7 +1381,8 @@ void MozillaVPN::refreshDevices() {
   logger.debug() << "Refresh devices";
 
   if (m_state == StateMain) {
-    TaskScheduler::scheduleTask(new TaskAccountAndServers());
+    TaskScheduler::scheduleTask(
+        new TaskGroup({new TaskAccount(), new TaskServers()}));
   }
 }
 
@@ -1473,7 +1475,8 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
     errorHandle(ErrorHandler::SubscriptionFailureError);
   }
 
-  TaskScheduler::scheduleTask(new TaskAccountAndServers());
+  TaskScheduler::scheduleTask(
+      new TaskGroup({new TaskAccount(), new TaskServers()}));
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!m_private->m_user.subscriptionNeeded() &&
         m_state == StateSubscriptionNeeded) {
@@ -1571,7 +1574,8 @@ void MozillaVPN::triggerHeartbeat() {
 void MozillaVPN::addCurrentDeviceAndRefreshData() {
   TaskScheduler::scheduleTask(
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
-  TaskScheduler::scheduleTask(new TaskAccountAndServers());
+  TaskScheduler::scheduleTask(
+      new TaskGroup({new TaskAccount(), new TaskServers()}));
 }
 
 void MozillaVPN::openAppStoreReviewLink() {
