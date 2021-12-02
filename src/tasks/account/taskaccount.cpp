@@ -26,14 +26,14 @@ void TaskAccount::run() {
       request, &NetworkRequest::requestFailed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Account request failed" << error;
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        MozillaVPN::instance().errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
       });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Account request completed";
-            MozillaVPN::instance()->accountChecked(data);
+            MozillaVPN::instance().accountChecked(data);
             emit completed();
           });
 }
