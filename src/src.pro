@@ -142,7 +142,7 @@ SOURCES += \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
-        tasks/accountandservers/taskaccountandservers.cpp \
+        tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
@@ -157,6 +157,7 @@ SOURCES += \
         tasks/release/taskrelease.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
+        tasks/servers/taskservers.cpp \
         tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
         timercontroller.cpp \
@@ -272,7 +273,7 @@ HEADERS += \
         simplenetworkmanager.h \
         statusicon.h \
         task.h \
-        tasks/accountandservers/taskaccountandservers.h \
+        tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
@@ -287,6 +288,7 @@ HEADERS += \
         tasks/release/taskrelease.h \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
+        tasks/servers/taskservers.h \
         tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
         timercontroller.h \

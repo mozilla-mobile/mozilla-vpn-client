@@ -8,7 +8,8 @@ class TestTasks final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void accountAndServers();
+  void account();
+  void servers();
 
   void addDevice_success();
   void addDevice_failure();

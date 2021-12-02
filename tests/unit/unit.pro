@@ -87,11 +87,12 @@ HEADERS += \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
     ../../src/task.h \
-    ../../src/tasks/accountandservers/taskaccountandservers.h \
+    ../../src/tasks/account/taskaccount.h \
     ../../src/tasks/adddevice/taskadddevice.h \
     ../../src/tasks/ipfinder/taskipfinder.h \
     ../../src/tasks/function/taskfunction.h \
     ../../src/tasks/release/taskrelease.h \
+    ../../src/tasks/servers/taskservers.h \
     ../../src/taskscheduler.h \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
@@ -174,11 +175,12 @@ SOURCES += \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \
-    ../../src/tasks/accountandservers/taskaccountandservers.cpp \
+    ../../src/tasks/account/taskaccount.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/ipfinder/taskipfinder.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/tasks/release/taskrelease.cpp \
+    ../../src/tasks/servers/taskservers.cpp \
     ../../src/taskscheduler.cpp \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
