@@ -89,8 +89,7 @@ android {
                 aidl.srcDirs = [qtAndroidDir + '/src', 'src', 'aidl']
                 res.srcDirs =  [qtAndroidDir + '/res', 'res']
                 manifest.srcFile 'AndroidManifestQt6.xml'
-            }
-            if(project.hasProperty('qt5AndroidDir')){
+            }else if(project.hasProperty('qt5AndroidDir')){
                 java.srcDirs = [qt5AndroidDir + '/src', 'src', 'java', 'qt5']
                 aidl.srcDirs = [qt5AndroidDir + '/src', 'src', 'aidl']
                 res.srcDirs =  [qt5AndroidDir + '/res', 'res']

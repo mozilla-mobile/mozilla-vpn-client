@@ -46,13 +46,11 @@ jobs:
         id: compile
         run: |
           bash ./scripts/android_package.sh $QTPATH -A ${{matrix.arch.qmake}} -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
-      - name: Upload Failure Build
-        uses: actions/upload-artifact@v1
-        with:
-            name: failure-build(${{ matrix.arch.name }})${{ matrix.config.args }}
-            path: .tmp/
-
-      
+      # - name: Upload Failure Build
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #       name: failure-build(${{ matrix.arch.name }})${{ matrix.config.args }}
+      #       path: .tmp/
       - name: Sign Android
         if: ${{ matrix.config.sign }}
         env:
