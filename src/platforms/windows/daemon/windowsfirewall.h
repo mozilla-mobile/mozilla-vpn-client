@@ -23,7 +23,7 @@ class WindowsFirewall final : public QObject {
  public:
   ~WindowsFirewall();
 
-  static WindowsFirewall* instance();
+  static WindowsFirewall& instance();
   bool init();
 
   bool enableKillSwitch(int vpnAdapterIndex);
@@ -32,17 +32,17 @@ class WindowsFirewall final : public QObject {
   bool disableKillSwitch();
 
  private:
-  WindowsFirewall(QObject* parent);
-  HANDLE m_sessionHandle;
+  WindowsFirewall();
+  HANDLE m_sessionHandle = INVALID_HANDLE_VALUE;
   bool m_init = false;
   QList<uint64_t> m_activeRules;
   QMultiMap<QString, uint64_t> m_peerRules;
 
   bool allowTrafficForAppOnAll(const QString& exePath, int weight,
                                const QString& title);
-  bool blockTrafficTo(const QList<IPAddressRange>& range, uint8_t weight,
+  bool blockTrafficTo(const QList<IPAddress>& range, uint8_t weight,
                       const QString& title, const QString& peer = QString());
-  bool blockTrafficTo(const IPAddressRange& range, uint8_t weight,
+  bool blockTrafficTo(const IPAddress& addr, uint8_t weight,
                       const QString& title, const QString& peer = QString());
   bool blockTrafficOnPort(uint port, uint8_t weight, const QString& title);
   bool allowTrafficTo(const QHostAddress& targetIP, uint port, int weight,

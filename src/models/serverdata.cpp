@@ -18,18 +18,17 @@ ServerData::ServerData() { MVPN_COUNT_CTOR(ServerData); }
 ServerData::~ServerData() { MVPN_COUNT_DTOR(ServerData); }
 
 bool ServerData::fromSettings() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  auto& settingsHolder = SettingsHolder::instance();
 
-  if (!settingsHolder->hasCurrentServerCountryCode() ||
-      !settingsHolder->hasCurrentServerCity()) {
+  if (!settingsHolder.hasCurrentServerCountryCode() ||
+      !settingsHolder.hasCurrentServerCity()) {
     return false;
   }
 
-  initializeInternal(settingsHolder->currentServerCountryCode(),
-                     settingsHolder->currentServerCity(),
-                     settingsHolder->entryServerCountryCode(),
-                     settingsHolder->entryServerCity());
+  initializeInternal(settingsHolder.currentServerCountryCode(),
+                     settingsHolder.currentServerCity(),
+                     settingsHolder.entryServerCountryCode(),
+                     settingsHolder.entryServerCity());
 
   logger.debug() << toString();
   return true;
@@ -65,17 +64,16 @@ bool ServerData::fromString(const QString& data) {
 }
 
 void ServerData::writeSettings() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  auto& settingsHolder = SettingsHolder::instance();
 
-  settingsHolder->setCurrentServerCountryCode(m_exitCountryCode);
-  settingsHolder->setCurrentServerCity(m_exitCityName);
+  settingsHolder.setCurrentServerCountryCode(m_exitCountryCode);
+  settingsHolder.setCurrentServerCity(m_exitCityName);
 
   if (multihop()) {
-    settingsHolder->setEntryServerCountryCode(m_entryCountryCode);
-    settingsHolder->setEntryServerCity(m_entryCityName);
+    settingsHolder.setEntryServerCountryCode(m_entryCountryCode);
+    settingsHolder.setEntryServerCity(m_entryCityName);
   } else {
-    settingsHolder->removeEntryServer();
+    settingsHolder.removeEntryServer();
   }
 }
 

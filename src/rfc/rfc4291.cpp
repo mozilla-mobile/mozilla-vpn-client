@@ -5,11 +5,7 @@
 #include "rfc4291.h"
 
 // static
-IPAddress RFC4291::ipv6LoopbackAddressBlock() {
-  return IPAddress::create("::1/128");
-}
+IPAddress RFC4291::ipv6LoopbackAddressBlock() { return IPAddress("::1/128"); }
 
 // static
-IPAddress RFC4291::ipv6MulticastAddressBlock() {
-  return IPAddress::create("ff00::/8");
-}
+IPAddress RFC4291::ipv6MulticastAddressBlock() { return IPAddress("ff00::/8"); }

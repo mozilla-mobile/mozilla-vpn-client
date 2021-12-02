@@ -7,14 +7,14 @@
 
 #include <QQmlEngine>
 
-class Glean final
-{
-private:
-    Glean() = default;
-public:
-static void Initialize(QQmlEngine * engine);
+class Glean final {
+ private:
+  Glean() = default;
+
+ public:
+  static void Initialize(QQmlEngine* engine);
 };
 
-#define INIT_GLEAN   Q_INIT_RESOURCE(glean);
+#define INIT_GLEAN Q_INIT_RESOURCE(glean);
 
-#endif // GLEAN_H
+#endif  // GLEAN_H

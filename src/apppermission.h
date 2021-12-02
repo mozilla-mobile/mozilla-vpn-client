@@ -15,7 +15,7 @@ class AppPermission final : public QAbstractListModel {
   Q_DISABLE_COPY_MOVE(AppPermission)
 
  public:
-  ~AppPermission();
+  ~AppPermission() = default;
 
   enum AppPermissionRoles {
     AppNameRole,
@@ -44,7 +44,7 @@ class AppPermission final : public QAbstractListModel {
     bool operator==(const QString& appId) const { return id == appId; }
   };
 
-  static AppPermission* instance();
+  static AppPermission& instance();
 
   // Enables/Disabled the Given App ID for the vpn
   Q_INVOKABLE void flip(const QString& appID);
@@ -65,6 +65,7 @@ class AppPermission final : public QAbstractListModel {
   int rowCount(const QModelIndex&) const override;
 
   QVariant data(const QModelIndex& index, int role) const override;
+
  signals:
   void readyChanged();
   void notification(const QString& type, const QString& message,
@@ -73,7 +74,7 @@ class AppPermission final : public QAbstractListModel {
   void receiveAppList(const QMap<QString, QString>& applist);
 
  private:
-  explicit AppPermission(QObject* parent);
+  explicit AppPermission();
 
   AppListProvider* m_listprovider = nullptr;
   QList<AppDescription> m_applist;

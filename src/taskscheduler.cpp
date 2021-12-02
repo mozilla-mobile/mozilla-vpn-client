@@ -15,7 +15,7 @@ Logger logger(LOG_MAIN, "TaskScheduler");
 // static
 void TaskScheduler::scheduleTask(Task* task) {
   Q_ASSERT(task);
-  logger.debug() << "Scheduling task: " << task->name();
+  logger.debug() << "Scheduling task:" << task->name();
   maybeCreate()->scheduleTaskInternal(task);
 }
 
@@ -26,7 +26,7 @@ void TaskScheduler::deleteTasks() { maybeCreate()->deleteTasksInternal(); }
 TaskScheduler* TaskScheduler::maybeCreate() {
   static TaskScheduler* s_taskScheduler = nullptr;
   if (!s_taskScheduler) {
-    s_taskScheduler = new TaskScheduler(MozillaVPN::instance());
+    s_taskScheduler = new TaskScheduler(&MozillaVPN::instance());
   }
   return s_taskScheduler;
 }

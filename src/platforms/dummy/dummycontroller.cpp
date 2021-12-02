@@ -31,11 +31,12 @@ DummyController::DummyController() : m_delayTimer(this) {
 
 DummyController::~DummyController() { MVPN_COUNT_DTOR(DummyController); }
 
-void DummyController::activate(
-    const QList<Server>& serverList, const Device* device, const Keys* keys,
-    const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
-    const QHostAddress& dnsServer, Reason reason) {
+void DummyController::activate(const QList<Server>& serverList,
+                               const Device* device, const Keys* keys,
+                               const QList<IPAddress>& allowedIPAddressRanges,
+                               const QStringList& excludedAddresses,
+                               const QStringList& vpnDisabledApps,
+                               const QHostAddress& dnsServer, Reason reason) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
   Q_UNUSED(allowedIPAddressRanges);

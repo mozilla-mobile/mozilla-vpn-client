@@ -22,6 +22,11 @@ INCLUDEPATH += \
             . \
             ../../src \
             ../../translations/generated \
+            ../../glean \
+            ../../nebula
+
+include($$PWD/../../glean/glean.pri)
+include($$PWD/../../nebula/nebula.pri)
 
 SOURCES += \
     helper.cpp \
@@ -70,23 +75,16 @@ exists($$PWD/../../translations/generated/l18nstrings.h) {
     error("No l18nstrings.h. Have you generated the strings?")
 }
 
-CONFIG(debug, debug|release) {
-    LIBS += -L$$clean_path($$PWD/../../nebula/debug) -lnebula
-    LIBS += -L$$clean_path($$PWD/../../glean/debug) -lglean
+exists($$PWD/../../glean/telemetry/gleansample.h) {
+    RESOURCES += $$PWD/../../glean/glean.qrc
+} else {
+    error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
 }
-CONFIG(release, debug|release) {
-    LIBS += -L$$clean_path($$PWD/../../nebula/release) -lnebula
-    LIBS += -L$$clean_path($$PWD/../../glean/release) -lglean
-
+win*{
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 }
-
-INCLUDEPATH += $$PWD/../../glean
-INCLUDEPATH += $$PWD/../../nebula
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 
-win*{
-    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
-}

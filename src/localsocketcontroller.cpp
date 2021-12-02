@@ -4,7 +4,7 @@
 
 #include "localsocketcontroller.h"
 #include "errorhandler.h"
-#include "ipaddressrange.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
@@ -53,7 +53,7 @@ void LocalSocketController::errorOccurred(
   }
 
   m_state = eDisconnected;
-  MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+  MozillaVPN::instance().errorHandle(ErrorHandler::ControllerError);
   emit disconnected();
 }
 
@@ -87,7 +87,7 @@ void LocalSocketController::daemonConnected() {
 
 void LocalSocketController::activate(
     const QList<Server>& serverList, const Device* device, const Keys* keys,
-    const QList<IPAddressRange>& allowedIPAddressRanges,
+    const QList<IPAddress>& allowedIPAddressRanges,
     const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
     const QHostAddress& dnsServer, Reason reason) {
   Q_UNUSED(reason);
@@ -113,8 +113,8 @@ void LocalSocketController::activate(
     HopConnection hop;
     hop.m_server = serverList[hopindex];
     hop.m_hopindex = hopindex;
-    hop.m_allowedIPAddressRanges.append(IPAddressRange(next.ipv4AddrIn()));
-    hop.m_allowedIPAddressRanges.append(IPAddressRange(next.ipv6AddrIn()));
+    hop.m_allowedIPAddressRanges.append(next.ipv4AddrIn());
+    hop.m_allowedIPAddressRanges.append(next.ipv6AddrIn());
     if (first) {
       hop.m_excludedAddresses.append(entry.ipv4AddrIn());
       hop.m_excludedAddresses.append(entry.ipv6AddrIn());
@@ -161,11 +161,12 @@ void LocalSocketController::activateNext() {
   }
 
   QJsonArray allowedIPAddesses;
-  for (const IPAddressRange& i : hop.m_allowedIPAddressRanges) {
+  for (const IPAddress& i : hop.m_allowedIPAddressRanges) {
     QJsonObject range;
-    range.insert("address", QJsonValue(i.ipAddress()));
-    range.insert("range", QJsonValue((double)i.range()));
-    range.insert("isIpv6", QJsonValue(i.type() == IPAddressRange::IPv6));
+    range.insert("address", QJsonValue(i.address().toString()));
+    range.insert("range", QJsonValue((double)i.prefixLength()));
+    range.insert("isIpv6",
+                 QJsonValue(i.type() == QAbstractSocket::IPv6Protocol));
     allowedIPAddesses.append(range);
   };
   json.insert("allowedIPAddressRanges", allowedIPAddesses);
@@ -396,7 +397,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "backendFailure") {
-    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+    MozillaVPN::instance().errorHandle(ErrorHandler::ControllerError);
     return;
   }
 

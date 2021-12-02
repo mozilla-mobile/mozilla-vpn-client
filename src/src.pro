@@ -38,7 +38,12 @@ INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
-            ../translations/generated
+            ../translations/generated \
+            ../nebula \
+            ../glean
+
+include($$PWD/../glean/glean.pri)
+include($$PWD/../nebula/nebula.pri)
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -78,8 +83,6 @@ SOURCES += \
         connectionhealth.cpp \
         constants.cpp \
         controller.cpp \
-        crashpad.cpp \
-        crashpadfactory.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
         dnshelper.cpp \
@@ -97,7 +100,6 @@ SOURCES += \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
-        ipaddressrange.cpp \
         l18nstringsimpl.cpp \
         leakdetector.cpp \
         localizer.cpp \
@@ -144,7 +146,7 @@ SOURCES += \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
-        tasks/accountandservers/taskaccountandservers.cpp \
+        tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
@@ -152,12 +154,14 @@ SOURCES += \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
+        tasks/group/taskgroup.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
         tasks/ipfinder/taskipfinder.cpp \
         tasks/products/taskproducts.cpp \
         tasks/release/taskrelease.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
+        tasks/servers/taskservers.cpp \
         tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
         timercontroller.cpp \
@@ -174,7 +178,6 @@ HEADERS += \
         authenticationinapp/authenticationinapp.h \
         authenticationinapp/authenticationinapplistener.h \
         authenticationinapp/incrementaldecoder.h \
-        bigintipv6addr.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
         captiveportal/captiveportaldetectionimpl.h \
@@ -201,8 +204,6 @@ HEADERS += \
         constants.h \
         controller.h \
         controllerimpl.h \
-        crashpad.h \
-        crashpadfactory.h \
         cryptosettings.h \
         curve25519.h \
         dnshelper.h \
@@ -230,7 +231,6 @@ HEADERS += \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
-        ipaddressrange.h \
         leakdetector.h \
         localizer.h \
         logger.h \
@@ -277,7 +277,7 @@ HEADERS += \
         simplenetworkmanager.h \
         statusicon.h \
         task.h \
-        tasks/accountandservers/taskaccountandservers.h \
+        tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
@@ -285,12 +285,14 @@ HEADERS += \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \
+        tasks/group/taskgroup.h \
         tasks/heartbeat/taskheartbeat.h \
         tasks/ipfinder/taskipfinder.h \
         tasks/products/taskproducts.h \
         tasks/release/taskrelease.h \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
+        tasks/servers/taskservers.h \
         tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
         timercontroller.h \
@@ -368,15 +370,6 @@ DUMMY {
             platforms/dummy/dummycontroller.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
-    CONFIG(debug, debug|release) {
-        LIBS += -L$$clean_path($$PWD/../nebula/debug) -lnebula
-        LIBS += -L$$clean_path($$PWD/../glean/debug) -lglean
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$$clean_path($$PWD/../nebula/release) -lnebula
-        LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
-
-    }
 }
 
 # Platform-specific: Linux
@@ -390,15 +383,6 @@ else:linux:!android {
 
     system(c++ -lgo 2>&1 | grep "__go_init_main" > /dev/null) {
         LIBS += -lgo
-    }
-
-    CONFIG(debug, debug|release) {
-        LIBS += -L$$clean_path($$PWD/../nebula/debug) -lnebula
-        LIBS += -L$$clean_path($$PWD/../glean/debug) -lglean
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$$clean_path($$PWD/../nebula/release) -lnebula
-        LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
     }
 
     CONFIG += c++14
@@ -568,17 +552,6 @@ else:android {
     QT += qml
     QT += xml
     LIBS += \-ljnigraphics\
-
-    CONFIG(debug, debug|release) {
-    LIBS += -L$$PWD/../nebula/$$ANDROID_TARGET_ARCH/debug -lnebula
-    LIBS += -L$$PWD/../glean/$$ANDROID_TARGET_ARCH/debug -lglean
-    }
-    CONFIG(release, debug|release) {
-    LIBS += -L$$PWD/../nebula/$$ANDROID_TARGET_ARCH/release -lnebula
-    LIBS += -L$$PWD/../glean/$$ANDROID_TARGET_ARCH/release -lglean
-    }
-
-
 
     !versionAtLeast(QT_VERSION, 6.0.0) {
         QT += androidextras
@@ -847,24 +820,6 @@ else:win* {
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 
-    #Crashpad support
-    exists($$PWD/../3rdparty/crashpad/crashpad/package.h) {
-        LIBS += -L"$$PWD/../3rdparty/crashpad/crashpad/out/Release/obj/third_party/mini_chromium/mini_chromium/base" -lbase
-        LIBS += -L"$$PWD/../3rdparty/crashpad/crashpad/out/Release/obj/client" -lclient
-        LIBS += -L"$$PWD/../3rdparty/crashpad/crashpad/out/Release/obj/util" -lutil
-        INCLUDEPATH +="$$PWD/../3rdparty/crashpad/crashpad"
-    }else{
-        error("Crashpad could not be found.  Have you run windows_compile.bat?")
-    }
-    CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../nebula/debug -lnebula
-        LIBS += -L$$PWD/../glean/debug -lglean
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$$PWD/../nebula/release -lnebula
-        LIBS += -L$$PWD/../glean/release -lglean
-    }
-
     CONFIG(debug, debug|release) {
         QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
         QMAKE_LFLAGS_WINDOWS += /DEBUG
@@ -878,8 +833,6 @@ else:win* {
     DEFINES += MVPN_WINDOWS
     DEFINES += WIN32_LEAN_AND_MEAN #Solves Redifinition Errors Of Winsock
 
-
-
     RC_ICONS = ui/resources/logo.ico
 
     SOURCES += \
@@ -888,7 +841,6 @@ else:win* {
         daemon/daemonlocalserverconnection.cpp \
         eventlistener.cpp \
         localsocketcontroller.cpp \
-    platforms/windows/wincrashpad.cpp \
         platforms/windows/windowsapplistprovider.cpp  \
         platforms/windows/windowsappimageprovider.cpp \
         platforms/windows/daemon/dnsutilswindows.cpp \
@@ -923,7 +875,6 @@ else:win* {
         daemon/wireguardutils.h \
         eventlistener.h \
         localsocketcontroller.h \
-    platforms/windows/wincrashpad.h \
         platforms/windows/windowsapplistprovider.h \
         platforms/windows/windowsappimageprovider.h \
         platforms/windows/daemon/dnsutilswindows.h \
@@ -986,15 +937,6 @@ else:wasm {
 
     SOURCES -= networkrequest.cpp
     RESOURCES += platforms/wasm/networkrequests.qrc
-
-    CONFIG(debug, debug|release) {
-        LIBS += -L$$clean_path($$PWD/../nebula/debug) -lnebula
-        LIBS += -L$$clean_path($$PWD/../glean/debug) -lglean
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$$clean_path($$PWD/../nebula/release) -lnebula
-        LIBS += -L$$clean_path($$PWD/../glean/release) -lglean
-    }
 }
 
 # Anything else
@@ -1045,7 +987,3 @@ mvpn_debug {
     message(MVPN Debug enabled)
     DEFINES += MVPN_DEBUG
 }
-
-
-INCLUDEPATH+=../nebula
-INCLUDEPATH+=../glean

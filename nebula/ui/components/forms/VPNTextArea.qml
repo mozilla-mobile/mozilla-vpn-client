@@ -34,7 +34,8 @@ Item {
         }
 
         TextArea.flickable: TextArea {
-            property var maxCharacterCount: 1000
+            property int maxCharacterCount: 1000
+            property int textLength: textArea.text.length
             property bool forceBlurOnOutsidePress: true
             property bool hasError: false
             property bool showInteractionStates: true
@@ -49,6 +50,7 @@ Item {
             textMargin: Theme.windowMargin * .75
             padding: 0
             Keys.onTabPressed: nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason)
+            onTextChanged: handleOnTextChanged(text)
             selectByMouse: true
             selectionColor: Theme.input.highlight
             inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
@@ -75,6 +77,28 @@ Item {
             VPNInputStates {
                 id: textAreaStates
                 itemToTarget: textArea
+            }
+
+            function removeCharsInRange(string, startIndex, endIndex) {
+                return string.slice(0, startIndex) + string.slice(endIndex);
+            }
+
+            function handleOnTextChanged(text) {
+                const updatedTextLength = text.length;
+                const exceedsCharLimit = updatedTextLength > textArea.maxCharacterCount;
+
+                // Remove most recently added characters in case
+                // the text input exceeds the maximum length
+                if (exceedsCharLimit) {
+                    const textInputLength = updatedTextLength - textLength;
+                    // Remember cursor position
+                    const prevCursorPosition = textArea.cursorPosition - textInputLength;
+                    // Strip overflowing chars
+                    const strippedString = removeCharsInRange(text, prevCursorPosition, prevCursorPosition + textInputLength);
+                    textArea.text = strippedString;
+                    // Restore previous cursor position
+                    textArea.cursorPosition = prevCursorPosition;
+                }
             }
         }
     }

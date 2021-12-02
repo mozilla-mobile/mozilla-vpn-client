@@ -139,7 +139,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   }
 
   // set routing
-  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
       logger.debug() << "Routing configuration failed for" << ip.toString();
       return false;
@@ -277,16 +277,15 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
         return false;
       }
 
-      config.m_allowedIPAddressRanges.append(IPAddressRange(
-          address.toString(), range.toInt(),
-          isIpv6.toBool() ? IPAddressRange::IPv6 : IPAddressRange::IPv4));
+      config.m_allowedIPAddressRanges.append(
+          IPAddress(QHostAddress(address.toString()), range.toInt()));
     }
 
     // Sort allowed IPs by decreasing prefix length.
     std::sort(config.m_allowedIPAddressRanges.begin(),
               config.m_allowedIPAddressRanges.end(),
-              [&](const IPAddressRange& a, const IPAddressRange& b) -> bool {
-                return a.range() > b.range();
+              [&](const IPAddress& a, const IPAddress& b) -> bool {
+                return a.prefixLength() > b.prefixLength();
               });
   }
 
@@ -327,7 +326,7 @@ bool Daemon::deactivate(bool emitSignals) {
   for (const ConnectionState& state : m_connections.values()) {
     const InterfaceConfig& config = state.m_config;
     logger.debug() << "Deleting routes for hop" << config.m_hopindex;
-    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
       wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
     }
     wgutils()->deletePeer(config);
@@ -359,7 +358,7 @@ QString Daemon::logs() {
   return output;
 }
 
-void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
+void Daemon::cleanLogs() { LogHandler::instance().cleanupLogs(); }
 
 bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
   if (!m_connections.contains(config.m_hopindex)) {
@@ -400,7 +399,7 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     logger.error() << "Server switch failed to update the wireguard interface";
     return false;
   }
-  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
       logger.error() << "Server switch failed to update the routing table";
       break;
@@ -418,7 +417,7 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     wgutils()->deleteExclusionRoute(address);
     m_excludedAddrSet.remove(address);
   }
-  for (const IPAddressRange& ip : lastConfig.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : lastConfig.m_allowedIPAddressRanges) {
     if (!config.m_allowedIPAddressRanges.contains(ip)) {
       wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
     }

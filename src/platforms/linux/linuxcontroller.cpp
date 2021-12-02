@@ -6,7 +6,7 @@
 #include "backendlogsobserver.h"
 #include "dbusclient.h"
 #include "errorhandler.h"
-#include "ipaddressrange.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
@@ -68,11 +68,12 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
   emit initialized(true, statusValue.toBool(), QDateTime::currentDateTime());
 }
 
-void LinuxController::activate(
-    const QList<Server>& serverList, const Device* device, const Keys* keys,
-    const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
-    const QHostAddress& dnsServer, Reason reason) {
+void LinuxController::activate(const QList<Server>& serverList,
+                               const Device* device, const Keys* keys,
+                               const QList<IPAddress>& allowedIPAddressRanges,
+                               const QStringList& excludedAddresses,
+                               const QStringList& vpnDisabledApps,
+                               const QHostAddress& dnsServer, Reason reason) {
   Q_UNUSED(reason);
   Q_ASSERT(!serverList.isEmpty());
 
@@ -92,8 +93,8 @@ void LinuxController::activate(
 
     hop.m_server = serverList[hopindex];
     hop.m_hopindex = hopindex;
-    hop.m_allowedIPAddressRanges.append(IPAddressRange(next.ipv4AddrIn()));
-    hop.m_allowedIPAddressRanges.append(IPAddressRange(next.ipv6AddrIn()));
+    hop.m_allowedIPAddressRanges.append(IPAddress(next.ipv4AddrIn()));
+    hop.m_allowedIPAddressRanges.append(IPAddress(next.ipv6AddrIn()));
     if (first) {
       hop.m_excludedAddresses.append(entry.ipv4AddrIn());
       hop.m_excludedAddresses.append(entry.ipv6AddrIn());
@@ -150,7 +151,7 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<bool> reply = *call;
   if (reply.isError()) {
     logger.error() << "Error received from the DBus service";
-    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+    MozillaVPN::instance().errorHandle(ErrorHandler::ControllerError);
     emit disconnected();
     return;
   }
@@ -163,7 +164,7 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   }
 
   logger.error() << "DBus service says: error.";
-  MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+  MozillaVPN::instance().errorHandle(ErrorHandler::ControllerError);
   emit disconnected();
 }
 

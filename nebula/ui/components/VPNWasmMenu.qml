@@ -134,7 +134,7 @@ VPNFlickable {
         VPNWasmMenuButton {
             Layout.fillWidth: true
             text: "Alerts"
-            onClicked: mainStackView.replace("qrc:/components/components/VPNWasmAlerts.qml", StackView.Immediate)
+            onClicked: mainStackView.replace("qrc:/nebula/components/VPNWasmAlerts.qml", StackView.Immediate)
         }
 
         VPNRemoveDevicePopup {

@@ -18,6 +18,8 @@ Item {
     //% "About us"
     property string _menuTitle: qsTrId("vpn.settings.aboutUs")
     property bool listenForUpdateEvents:false
+    property string licenseURL: ""
+
     ListModel {
         id: aboutUsListModel
 
@@ -27,6 +29,7 @@ Item {
             //% "Terms of service"
             linkTitle: qsTrId("vpn.aboutUs.tos2")
             openUrl: VPN.LinkTermsOfService
+            openView: ""
         }
 
         ListElement {
@@ -35,15 +38,16 @@ Item {
             //% "Privacy notice"
             linkTitle: qsTrId("vpn.aboutUs.privacyNotice2")
             openUrl: VPN.LinkPrivacyNotice
+            openView: ""
         }
+    }
 
-        ListElement {
-            linkId: "license"
-
-            linkTitleId: "AboutUsLicenses"
-            //TODO: Forward ref to UI
-            openView: "qrc:/ui/views/ViewLicenses.qml"
-        }
+    Component.onCompleted: {
+       aboutUsListModel.append({
+            linkId: "license",
+            linkTitle: VPNl18n.AboutUsLicenses,
+            openView: viewAboutUs.licenseURL
+       });
     }
 
     VPNMenu {
@@ -138,7 +142,7 @@ Item {
 
         delegate: VPNExternalLinkListItem {
             objectName: "aboutUsList-" + linkId
-            title: linkTitleId ? VPNl18n[linkTitleId] : linkTitle
+            title: linkTitle
             accessibleName: title
             onClicked: {
                 if (openUrl) {
@@ -187,7 +191,7 @@ Item {
                 verticalCenter: parent.verticalCenter
             }
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/ui/resources/refresh.svg"
+            source: "qrc:/nebula/resources/refresh.svg"
             sourceSize.height: Theme.iconSize * 1.5
             sourceSize.width: Theme.iconSize * 1.5
             visible: true
@@ -239,7 +243,7 @@ Item {
                 Layout.topMargin: Theme.vSpacing*1.5
                 Image {
                     anchors.fill: parent
-                    source:  "qrc:/ui/resources/updateStatusUpdateAvailable.svg"
+                    source:  "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
                     sourceSize.height: parent.height * QtQuick_Window.Screen.devicePixelRatio
                     sourceSize.width: parent.width * QtQuick_Window.Screen.devicePixelRatio
                     fillMode: Image.PreserveAspectFit
@@ -285,7 +289,7 @@ Item {
                         verticalCenter: parent.verticalCenter
                     }
                     fillMode: Image.PreserveAspectFit
-                    source: "qrc:/ui/resources/arrow-forward-white.svg"
+                    source: "qrc:/nebula/resources/arrow-forward-white.svg"
                     sourceSize.height: Theme.iconSize * 1.5
                     sourceSize.width: Theme.iconSize * 1.5
                     visible: false
@@ -311,7 +315,7 @@ Item {
                 Layout.topMargin: Theme.vSpacing*1.5
                 Image {
                     anchors.fill: parent
-                    source: "qrc:/ui/resources/updateStatusUpToDate.svg"
+                    source: "qrc:/nebula/resources/updateStatusUpToDate.svg"
                     sourceSize.height: parent.height * QtQuick_Window.Screen.devicePixelRatio
                     sourceSize.width: parent.width * QtQuick_Window.Screen.devicePixelRatio
                     fillMode: Image.PreserveAspectFit
@@ -357,7 +361,7 @@ Item {
                         verticalCenter: parent.verticalCenter
                     }
                     fillMode: Image.PreserveAspectFit
-                    source: "qrc:/ui/resources/arrow-forward-white.svg"
+                    source: "qrc:/nebula/resources/arrow-forward-white.svg"
                     sourceSize.height: Theme.iconSize * 1.5
                     sourceSize.width: Theme.iconSize * 1.5
                     visible: false

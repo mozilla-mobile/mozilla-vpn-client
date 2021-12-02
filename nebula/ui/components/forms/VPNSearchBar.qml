@@ -42,7 +42,7 @@ VPNTextField {
         VPNIcon {
             id: warningIcon
 
-            source: "qrc:/ui/resources/warning.svg"
+            source: "qrc:/nebula/resources/warning.svg"
             sourceSize.height: 14
             sourceSize.width: 14
             Layout.alignment: Qt.AlignTop

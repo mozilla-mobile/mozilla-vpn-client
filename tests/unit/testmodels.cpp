@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testmodels.h"
-#include "../../src/ipaddressrange.h"
 #include "../../src/models/device.h"
 #include "../../src/models/devicemodel.h"
 #include "../../src/models/keys.h"
@@ -209,7 +208,7 @@ void TestModels::deviceModelBasic() {
   QCOMPARE(dm.rowCount(QModelIndex()), 0);
   QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
 
-  SettingsHolder settingsHolder;
+  SettingsHolder::instance().hardReset();
 
   QVERIFY(!dm.fromSettings(&keys));
 
@@ -342,8 +341,7 @@ void TestModels::deviceModelFromJson() {
 
   // fromSettings
   {
-    SettingsHolder settingsHolder;
-    SettingsHolder::instance()->setDevices(json);
+    SettingsHolder::instance().setDevices(json);
 
     Keys keys;
     keys.storeKeys("private", "currentDevicePubkey");
@@ -501,20 +499,20 @@ void TestModels::keysBasic() {
 
   // Private and public keys in the settings.
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance().hardReset();
 
     QCOMPARE(k.fromSettings(), false);
 
-    SettingsHolder::instance()->setPrivateKey("WOW");
+    SettingsHolder::instance().setPrivateKey("WOW");
     QCOMPARE(k.fromSettings(), false);
 
-    SettingsHolder::instance()->setPublicKey("WOW2");
+    SettingsHolder::instance().setPublicKey("WOW2");
     QCOMPARE(k.fromSettings(), true);
   }
 
   // No public keys, but we can retrieve it from the devices.
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance().hardReset();
 
     QCOMPARE(k.fromSettings(), false);
 
@@ -531,9 +529,9 @@ void TestModels::keysBasic() {
     QJsonObject obj;
     obj.insert("devices", devices);
 
-    SettingsHolder::instance()->setDevices(QJsonDocument(obj).toJson());
+    SettingsHolder::instance().setDevices(QJsonDocument(obj).toJson());
 
-    SettingsHolder::instance()->setPrivateKey("WOW");
+    SettingsHolder::instance().setPrivateKey("WOW");
     QCOMPARE(k.fromSettings(), true);
   }
 }
@@ -909,7 +907,7 @@ void TestModels::serverCountryModelBasic() {
   ServerCountryModel dm;
   QVERIFY(!dm.initialized());
 
-  SettingsHolder settingsHolder;
+  SettingsHolder::instance();
 
   QVERIFY(!dm.fromSettings());
 
@@ -943,8 +941,9 @@ void TestModels::serverCountryModelFromJson_data() {
 
   QJsonArray countries;
   obj.insert("countries", countries);
-  QTest::addRow("good but empty") << QJsonDocument(obj).toJson() << true << 0
-                                  << QVariant() << QVariant() << QVariant();
+  QTest::addRow("good but empty")
+      << QJsonDocument(obj).toJson() << true << 0 << QVariant() << QVariant()
+      << QVariant(QList<QVariant>());
 
   countries.append(42);
   obj.insert("countries", countries);
@@ -960,7 +959,7 @@ void TestModels::serverCountryModelFromJson_data() {
   QTest::addRow("good but empty cities")
       << QJsonDocument(obj).toJson() << true << 1
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
-      << QVariant(QStringList{});
+      << QVariant(QList<QVariant>());
 
   QJsonArray cities;
   cities.append(42);
@@ -982,7 +981,7 @@ void TestModels::serverCountryModelFromJson_data() {
   d.insert("cities", cities);
   countries.replace(0, d);
   obj.insert("countries", countries);
-  QTest::addRow("good but empty cities")
+  QTest::addRow("good with one city")
       << QJsonDocument(obj).toJson() << true << 1
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
       << QVariant(
@@ -992,11 +991,11 @@ void TestModels::serverCountryModelFromJson_data() {
   d.insert("cities", cities);
   countries.append(d);
   obj.insert("countries", countries);
-  QTest::addRow("good") << QJsonDocument(obj).toJson() << true << 2
-                        << QVariant("serverCountryName")
-                        << QVariant("serverCountryCode")
-                        << QVariant(QList<QVariant>{QStringList{
-                               "serverCityName", "serverCityName"}});
+  QTest::addRow("good with two cities")
+      << QJsonDocument(obj).toJson() << true << 2
+      << QVariant("serverCountryName") << QVariant("serverCountryCode")
+      << QVariant(
+             QList<QVariant>{QStringList{"serverCityName", "serverCityName"}});
 }
 
 void TestModels::serverCountryModelFromJson() {
@@ -1005,7 +1004,7 @@ void TestModels::serverCountryModelFromJson() {
 
   // from json
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance();
 
     ServerCountryModel m;
     QCOMPARE(m.fromJson(json), result);
@@ -1024,19 +1023,27 @@ void TestModels::serverCountryModelFromJson() {
       QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CitiesRole),
                QVariant());
 
-      QModelIndex index = m.index(0, 0);
+      if (countries > 0) {
+        QModelIndex index = m.index(0, 0);
 
-      QFETCH(QVariant, name);
-      QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
+        QFETCH(QVariant, name);
+        QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
 
-      QFETCH(QVariant, code);
-      QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
+        QFETCH(QVariant, code);
+        QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
 
-      QFETCH(QVariant, cities);
-      QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+        QFETCH(QVariant, cities);
+        Q_ASSERT(cities.type() == QVariant::List);
+        QVariant cityData = m.data(index, ServerCountryModel::CitiesRole);
+        QCOMPARE(cityData.type(), QVariant::List);
+        QCOMPARE(cities.toList().length(), cityData.toList().length());
+        if (!cities.toList().isEmpty()) {
+          QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+        }
 
-      QCOMPARE(m.countryName(code.toString()), name.toString());
-      QCOMPARE(m.countryName("invalid"), QString());
+        QCOMPARE(m.countryName(code.toString()), name.toString());
+        QCOMPARE(m.countryName("invalid"), QString());
+      }
 
       QVERIFY(m.fromJson(json));
     }
@@ -1044,9 +1051,9 @@ void TestModels::serverCountryModelFromJson() {
 
   // from settings
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance();
 
-    SettingsHolder::instance()->setServers(json);
+    SettingsHolder::instance().setServers(json);
 
     ServerCountryModel m;
     QCOMPARE(m.fromSettings(), result);
@@ -1065,21 +1072,23 @@ void TestModels::serverCountryModelFromJson() {
       QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CitiesRole),
                QVariant());
 
-      QModelIndex index = m.index(0, 0);
+      if (countries > 0) {
+        QModelIndex index = m.index(0, 0);
 
-      QFETCH(QVariant, name);
-      QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
+        QFETCH(QVariant, name);
+        QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
 
-      QFETCH(QVariant, code);
-      QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
+        QFETCH(QVariant, code);
+        QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
 
-      QFETCH(QVariant, cities);
-      QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+        QFETCH(QVariant, cities);
+        QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
 
-      QCOMPARE(m.data(index, ServerCountryModel::CitiesRole + 1), QVariant());
+        QCOMPARE(m.data(index, ServerCountryModel::CitiesRole + 1), QVariant());
 
-      QCOMPARE(m.countryName(code.toString()), name.toString());
-      QCOMPARE(m.countryName("invalid"), QString());
+        QCOMPARE(m.countryName(code.toString()), name.toString());
+        QCOMPARE(m.countryName("invalid"), QString());
+      }
     }
   }
 }
@@ -1146,7 +1155,7 @@ void TestModels::serverCountryModelPick() {
   }
 
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance();
     QStringList tuple = m.pickRandom();
     QCOMPARE(tuple.length(), 3);
     QCOMPARE(tuple.at(0), "serverCountryCode");
@@ -1209,7 +1218,7 @@ void TestModels::serverDataBasic() {
     QCOMPARE(sd.toString(), "serverCityName, serverCountryCode");
 
     {
-      SettingsHolder settingsHolder;
+      SettingsHolder::instance();
 
       sd.writeSettings();
 
@@ -1250,7 +1259,7 @@ void TestModels::serverDataBasic() {
   QCOMPARE(sd.toString(), "");
 
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance().hardReset();
     QVERIFY(!sd.fromSettings());
     QCOMPARE(spy.count(), 2);
   }
@@ -1414,7 +1423,7 @@ void TestModels::userFromJson() {
   QCOMPARE(user.subscriptionNeeded(), subscriptionNeeded);
 
   {
-    SettingsHolder settingsHolder;
+    SettingsHolder::instance();
     user.writeSettings();
 
     // FromSettings
@@ -1445,7 +1454,7 @@ void TestModels::userFromJson() {
 }
 
 void TestModels::userFromSettings() {
-  SettingsHolder settingsHolder;
+  SettingsHolder::instance().hardReset();
 
   User user;
   QSignalSpy spy(&user, &User::changed);
@@ -1454,27 +1463,27 @@ void TestModels::userFromSettings() {
   QVERIFY(!user.initialized());
   QCOMPARE(spy.count(), 0);
 
-  SettingsHolder::instance()->setUserAvatar("avatar");
+  SettingsHolder::instance().setUserAvatar("avatar");
   QVERIFY(!user.fromSettings());
   QVERIFY(!user.initialized());
   QCOMPARE(spy.count(), 0);
 
-  SettingsHolder::instance()->setUserDisplayName("displayName");
+  SettingsHolder::instance().setUserDisplayName("displayName");
   QVERIFY(!user.fromSettings());
   QVERIFY(!user.initialized());
   QCOMPARE(spy.count(), 0);
 
-  SettingsHolder::instance()->setUserEmail("email");
+  SettingsHolder::instance().setUserEmail("email");
   QVERIFY(!user.fromSettings());
   QVERIFY(!user.initialized());
   QCOMPARE(spy.count(), 0);
 
-  SettingsHolder::instance()->setUserMaxDevices(123);
+  SettingsHolder::instance().setUserMaxDevices(123);
   QVERIFY(!user.fromSettings());
   QVERIFY(!user.initialized());
   QCOMPARE(spy.count(), 0);
 
-  SettingsHolder::instance()->setUserSubscriptionNeeded(true);
+  SettingsHolder::instance().setUserSubscriptionNeeded(true);
   QVERIFY(user.fromSettings());
   QVERIFY(user.initialized());
   QCOMPARE(spy.count(), 0);
@@ -1483,32 +1492,6 @@ void TestModels::userFromSettings() {
   QCOMPARE(user.email(), "email");
   QCOMPARE(user.maxDevices(), 123);
   QCOMPARE(user.subscriptionNeeded(), true);
-}
-
-// IPAddressRange
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-void TestModels::ipAddressRangeBasic() {
-  IPAddressRange a("ip", (uint32_t)123, IPAddressRange::IPv4);
-  QCOMPARE(a.ipAddress(), "ip");
-  QCOMPARE(a.range(), (uint32_t)123);
-  QCOMPARE(a.type(), IPAddressRange::IPv4);
-  QCOMPARE(a.toString(), "ip/123");
-
-  IPAddressRange b(a);
-  QCOMPARE(b.ipAddress(), a.ipAddress());
-  QCOMPARE(b.range(), a.range());
-  QCOMPARE(b.type(), a.type());
-  QCOMPARE(b.toString(), a.toString());
-
-  IPAddressRange c(a);
-  c = a;
-  QCOMPARE(c.ipAddress(), a.ipAddress());
-  QCOMPARE(c.range(), a.range());
-  QCOMPARE(c.type(), a.type());
-  QCOMPARE(c.toString(), a.toString());
-
-  a = a;
 }
 
 // SurveyModel
@@ -1629,8 +1612,8 @@ void TestModels::surveyModelFromJson() {
 
   // fromSettings
   {
-    SettingsHolder settingsHolder;
-    SettingsHolder::instance()->setSurveys(json);
+    SettingsHolder::instance().hardReset();
+    SettingsHolder::instance().setSurveys(json);
 
     SurveyModel sm;
     QCOMPARE(sm.fromSettings(), result);
@@ -1654,9 +1637,9 @@ void TestModels::surveyModelFromJson() {
         QCOMPARE(sm.surveys()[0].isTriggerable(), surveyTriggerable);
 
         if (surveyTriggerable) {
-          QStringList list = settingsHolder.consumedSurveys();
+          QStringList list = SettingsHolder::instance().consumedSurveys();
           list.append(surveyId);
-          settingsHolder.setConsumedSurveys(list);
+          SettingsHolder::instance().setConsumedSurveys(list);
 
           QVERIFY(!sm.surveys()[0].isTriggerable());
         }

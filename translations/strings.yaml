@@ -295,3 +295,20 @@ updateButton:
 telemetryPolicyView:
   description: We strive to provide you with choices and collect only the data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional.
   question: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla?
+
+connectionInfo:
+  labelBitps:
+    value: bit/s
+    comment: Bits per second
+  labelKbitps:
+    value: kbit/s
+    comment: Kilobits per second
+  labelMbitps:
+    value: Mbit/s
+    comment: Megabits per second
+  labelGbitps:
+    value: Gbit/s
+    comment: Gigabits per second
+  labelTbitps:
+    value: Tbit/s
+    comment: Terabits per second

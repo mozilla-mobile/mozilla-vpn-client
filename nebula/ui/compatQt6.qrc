@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/compat">
+    <qresource prefix="/nebula">
         <file alias="compat/qmldir">compat/qt6/qmldir</file>
         <file alias="compat/VPNAnimatedRingsShader.qml">compat/qt6/VPNAnimatedRingsShader.qml</file>
         <file alias="compat/VPNColorOverlay.qml">compat/qt6/VPNColorOverlay.qml</file>

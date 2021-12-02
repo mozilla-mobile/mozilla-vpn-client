@@ -38,12 +38,11 @@ bool DeviceModel::fromJson(const Keys* keys, const QByteArray& s) {
 }
 
 bool DeviceModel::fromSettings(const Keys* keys) {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  auto& settingsHolder = SettingsHolder::instance();
 
   logger.debug() << "Reading the device list from settings";
 
-  const QByteArray& json = settingsHolder->devices();
+  const QByteArray& json = settingsHolder.devices();
   if (json.isEmpty() || !fromJsonInternal(keys, json)) {
     return false;
   }
@@ -126,7 +125,7 @@ bool DeviceModel::fromJsonInternal(const Keys* keys, const QByteArray& json) {
 }
 
 void DeviceModel::writeSettings() {
-  SettingsHolder::instance()->setDevices(m_rawJson);
+  SettingsHolder::instance().setDevices(m_rawJson);
 }
 
 QHash<int, QByteArray> DeviceModel::roleNames() const {
@@ -156,7 +155,7 @@ QVariant DeviceModel::data(const QModelIndex& index, int role) const {
 
     case CurrentOneRole:
       return QVariant(m_devices.at(index.row())
-                          .isCurrentDevice(MozillaVPN::instance()->keys()));
+                          .isCurrentDevice(MozillaVPN::instance().keys()));
 
     case CreatedAtRole:
       return QVariant(m_devices.at(index.row()).createdAt());

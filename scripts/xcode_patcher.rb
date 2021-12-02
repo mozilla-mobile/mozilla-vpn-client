@@ -418,7 +418,7 @@ class XCodeprojPatcher
     target_balrog.build_working_directory = 'balrog'
     target_balrog.build_tool_path = 'make'
     target_balrog.pass_build_settings_in_environment = '1'
-    target_balrog.build_arguments_string = '$(ACTION)'
+    target_balrog.build_arguments_string = 'clean build'
     target_balrog.name = 'WireGuardBalrog'
     target_balrog.product_name = 'WireGuardBalrog'
 
@@ -451,7 +451,7 @@ class XCodeprojPatcher
     target_wireguardtools.build_working_directory = '3rdparty/wireguard-tools/src'
     target_wireguardtools.build_tool_path = 'make'
     target_wireguardtools.pass_build_settings_in_environment = '1'
-    target_wireguardtools.build_arguments_string = '$(ACTION)'
+    target_wireguardtools.build_arguments_string = 'clean wg'
     target_wireguardtools.name = 'WireGuardTools'
     target_wireguardtools.product_name = 'WireGuardTools'
 
@@ -489,7 +489,7 @@ class XCodeprojPatcher
     target_wireguardgo.build_working_directory = '3rdparty/wireguard-go'
     target_wireguardgo.build_tool_path = 'make'
     target_wireguardgo.pass_build_settings_in_environment = '1'
-    target_wireguardgo.build_arguments_string = '$(ACTION)'
+    target_wireguardgo.build_arguments_string = 'clean generate-version-and-build'
     target_wireguardgo.name = 'WireGuardGo'
     target_wireguardgo.product_name = 'WireGuardGo'
 

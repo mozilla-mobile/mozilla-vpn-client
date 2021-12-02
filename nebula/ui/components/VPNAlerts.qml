@@ -19,6 +19,7 @@ ColumnLayout {
     Layout.fillHeight: false
     visible: VPNSurveyModel.hasSurvey || VPN.updateRecommended || isWasmViewer
     property var stackviewMode: StackView.Immediate
+    property string updateURL: ""
 
     VPNAlert {
         id: updateAlert
@@ -31,7 +32,7 @@ ColumnLayout {
         alertActionText: qsTrId("vpn.updates.updateNow")
 
         onActionPressed: ()=>{
-            stackview.push("qrc:/nebula/views/ViewUpdate.qml", stackviewMode);
+            stackview.push(notifications.updateURL, stackviewMode);
         }
         onClosePressed: ()=>{
              VPN.hideUpdateRecommendedAlert();

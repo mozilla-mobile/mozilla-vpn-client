@@ -32,7 +32,7 @@ VPNFlickable {
         Image {
             id: backImage
 
-            source: "qrc:/ui/resources/close-dark.svg"
+            source: "qrc:/nebula/resources/close-dark.svg"
             sourceSize.width: Theme.iconSize
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton
@@ -72,6 +72,7 @@ VPNFlickable {
         VPNAboutUs {
             isSettingsView: true
             isMainView: false
+            licenseURL: "qrc:/ui/views/ViewLicenses.qml"
         }
     }
 
@@ -86,8 +87,8 @@ VPNFlickable {
         VPNSettingsItem {
             objectName: "settingsWhatsNew"
             settingTitle: VPNl18n.WhatsNewReleaseNotesTourPageHeader
-            imageLeftSrc: "qrc:/ui/resources/gift-dark.svg"
-            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            imageLeftSrc: "qrc:/nebula/resources/gift-dark.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             onClicked: settingsStackView.push("qrc:/ui/settings/ViewWhatsNew.qml")
             showIndicator: VPNWhatsNewModel.hasUnseenFeature
             visible: VPNWhatsNewModel.rowCount() > 0
@@ -97,7 +98,7 @@ VPNFlickable {
             objectName: "settingsNetworking"
             settingTitle: qsTrId("vpn.settings.networking")
             imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
-            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             onClicked: settingsStackView.push("qrc:/ui/settings/ViewNetworkSettings.qml", {
                                                   //% "App permissions"
                                                   _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
@@ -111,7 +112,7 @@ VPNFlickable {
             objectName: "settingsPreferences"
             settingTitle: VPNl18n.SettingsSystemPreferences
             imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
-            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             onClicked: settingsStackView.push("qrc:/ui/settings/ViewPrivacySecurity.qml", {
                                                 _startAtBootTitle: Qt.binding(() => startAtBootTitle),
                                                 _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
@@ -126,7 +127,7 @@ VPNFlickable {
             objectName: "settingsGetHelp"
             settingTitle: qsTrId("vpn.main.getHelp2")
             imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
-            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             onClicked: {
                 Sample.getHelpClickedViewSettings.record();
                 settingsStackView.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: true})
@@ -137,7 +138,7 @@ VPNFlickable {
             objectName: "settingsAboutUs"
             settingTitle: qsTrId("vpn.settings.aboutUs")
             imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
-            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             onClicked: settingsStackView.push(aboutUsComponent)
         }
 

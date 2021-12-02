@@ -29,8 +29,11 @@ class WireguardUtilsMacos final : public WireguardUtils {
   bool deletePeer(const InterfaceConfig& config) override;
   QList<PeerStatus> getPeerStatus() override;
 
-  bool updateRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
-  bool deleteRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
+  bool updateRoutePrefix(const IPAddress& prefix, int hopindex) override;
+  bool deleteRoutePrefix(const IPAddress& prefix, int hopindex) override;
+
+  bool addExclusionRoute(const QHostAddress& address) override;
+  bool deleteExclusionRoute(const QHostAddress& address) override;
 
   bool addExclusionRoute(const QHostAddress& address) override;
   bool deleteExclusionRoute(const QHostAddress& address) override;

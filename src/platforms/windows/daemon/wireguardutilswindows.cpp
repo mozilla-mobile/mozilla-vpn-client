@@ -87,7 +87,7 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   }
 
   QStringList addresses;
-  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     addresses.append(ip.toString());
   }
 
@@ -117,14 +117,14 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   // Enable the windows firewall
   NET_IFINDEX ifindex;
   ConvertInterfaceLuidToIndex(&luid, &ifindex);
-  WindowsFirewall::instance()->enableKillSwitch(ifindex);
+  WindowsFirewall::instance().enableKillSwitch(ifindex);
 
   logger.debug() << "Registration completed";
   return true;
 }
 
 bool WireguardUtilsWindows::deleteInterface() {
-  WindowsFirewall::instance()->disableKillSwitch();
+  WindowsFirewall::instance().disableKillSwitch();
   m_tunnel.stop();
   return true;
 }
@@ -134,7 +134,7 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
   // Enable the windows firewall for this peer.
-  WindowsFirewall::instance()->enablePeerTraffic(config);
+  WindowsFirewall::instance().enablePeerTraffic(config);
 
   logger.debug() << "Configuring peer" << printableKey(config.m_serverPublicKey)
                  << "via" << config.m_serverIpv4AddrIn;
@@ -156,7 +156,7 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
 
   out << "replace_allowed_ips=true\n";
   out << "persistent_keepalive_interval=" << WG_KEEPALIVE_PERIOD << "\n";
-  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     out << "allowed_ip=" << ip.toString() << "\n";
   }
 
@@ -170,7 +170,7 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
   // Disable the windows firewall for this peer.
-  WindowsFirewall::instance()->disablePeerTraffic(config.m_serverPublicKey);
+  WindowsFirewall::instance().disablePeerTraffic(config.m_serverPublicKey);
 
   QString message;
   QTextStream out(&message);
@@ -183,22 +183,22 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
   return true;
 }
 
-void WireguardUtilsWindows::buildMibForwardRow(const IPAddressRange& prefix,
+void WireguardUtilsWindows::buildMibForwardRow(const IPAddress& prefix,
                                                void* row) {
   MIB_IPFORWARD_ROW2* entry = (MIB_IPFORWARD_ROW2*)row;
   InitializeIpForwardEntry(entry);
 
   // Populate the next hop
-  if (prefix.type() == IPAddressRange::IPv6) {
-    InetPtonA(AF_INET6, qPrintable(prefix.ipAddress()),
+  if (prefix.type() == QAbstractSocket::IPv6Protocol) {
+    InetPtonA(AF_INET6, qPrintable(prefix.address().toString()),
               &entry->DestinationPrefix.Prefix.Ipv6.sin6_addr);
     entry->DestinationPrefix.Prefix.Ipv6.sin6_family = AF_INET6;
-    entry->DestinationPrefix.PrefixLength = prefix.range();
+    entry->DestinationPrefix.PrefixLength = prefix.prefixLength();
   } else {
-    InetPtonA(AF_INET, qPrintable(prefix.ipAddress()),
+    InetPtonA(AF_INET, qPrintable(prefix.address().toString()),
               &entry->DestinationPrefix.Prefix.Ipv4.sin_addr);
     entry->DestinationPrefix.Prefix.Ipv4.sin_family = AF_INET;
-    entry->DestinationPrefix.PrefixLength = prefix.range();
+    entry->DestinationPrefix.PrefixLength = prefix.prefixLength();
   }
   entry->InterfaceLuid.Value = m_luid;
   entry->NextHop.si_family = entry->DestinationPrefix.Prefix.si_family;
@@ -215,7 +215,7 @@ void WireguardUtilsWindows::buildMibForwardRow(const IPAddressRange& prefix,
   entry->Age = 0;
 }
 
-bool WireguardUtilsWindows::updateRoutePrefix(const IPAddressRange& prefix,
+bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix,
                                               int hopindex) {
   Q_UNUSED(hopindex);
   MIB_IPFORWARD_ROW2 entry;
@@ -233,7 +233,7 @@ bool WireguardUtilsWindows::updateRoutePrefix(const IPAddressRange& prefix,
   return result == NO_ERROR;
 }
 
-bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddressRange& prefix,
+bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix,
                                               int hopindex) {
   Q_UNUSED(hopindex);
   MIB_IPFORWARD_ROW2 entry;

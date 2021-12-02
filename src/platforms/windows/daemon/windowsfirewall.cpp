@@ -4,10 +4,8 @@
 
 #include "windowsfirewall.h"
 #include "logger.h"
-#include "leakdetector.h"
 #include "../windowscommons.h"
 #include "../../daemon/interfaceconfig.h"
-#include "../../ipaddressrange.h"
 #include "../../ipaddress.h"
 
 #include <QApplication>
@@ -39,7 +37,6 @@ DEFINE_GUID(ST_FW_PROVIDER_KEY, 0xe2c114ee, 0xf32a, 0x4264, 0xa6, 0xcb, 0x3f,
 
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsFirewall");
-WindowsFirewall* s_instance = nullptr;
 
 // Note Filter Weight may be between 0-15!
 constexpr uint8_t LOW_WEIGHT = 0;
@@ -48,17 +45,12 @@ constexpr uint8_t HIGH_WEIGHT = 13;
 constexpr uint8_t MAX_WEIGHT = 15;
 }  // namespace
 
-WindowsFirewall* WindowsFirewall::instance() {
-  if (s_instance == nullptr) {
-    s_instance = new WindowsFirewall(qApp);
-  }
-  return s_instance;
+WindowsFirewall& WindowsFirewall::instance() {
+  static WindowsFirewall instance;
+  return instance;
 }
 
-WindowsFirewall::WindowsFirewall(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(WindowsFirewall);
-  Q_ASSERT(s_instance == nullptr);
-
+WindowsFirewall::WindowsFirewall() : QObject(nullptr) {
   HANDLE engineHandle = NULL;
   DWORD result = ERROR_SUCCESS;
   // Use dynamic sessions for efficiency and safety:
@@ -82,7 +74,6 @@ WindowsFirewall::WindowsFirewall(QObject* parent) : QObject(parent) {
 }
 
 WindowsFirewall::~WindowsFirewall() {
-  MVPN_COUNT_DTOR(WindowsFirewall);
   if (m_sessionHandle != INVALID_HANDLE_VALUE) {
     CloseHandle(m_sessionHandle);
   }
@@ -648,11 +639,10 @@ bool WindowsFirewall::allowHyperVTraffic(uint8_t weight, const QString& title) {
   return true;
 }
 
-bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range,
-                                     uint8_t weight, const QString& title,
+bool WindowsFirewall::blockTrafficTo(const IPAddress& addr, uint8_t weight,
+                                     const QString& title,
                                      const QString& peer) {
   QString description("Block traffic %1 %2 ");
-  IPAddress addr = IPAddress::create(range.toString());
 
   auto lower = addr.address();
   auto upper = addr.broadcastAddress();
@@ -688,19 +678,19 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range,
   filter.filterCondition = cond;
 
   filter.layerKey = layerKeyOut;
-  if (!enableFilter(&filter, title, description.arg("to").arg(range.toString()),
+  if (!enableFilter(&filter, title, description.arg("to").arg(addr.toString()),
                     peer)) {
     return false;
   }
   filter.layerKey = layerKeyIn;
   if (!enableFilter(&filter, title,
-                    description.arg("from").arg(range.toString()), peer)) {
+                    description.arg("from").arg(addr.toString()), peer)) {
     return false;
   }
   return true;
 }
 
-bool WindowsFirewall::blockTrafficTo(const QList<IPAddressRange>& rangeList,
+bool WindowsFirewall::blockTrafficTo(const QList<IPAddress>& rangeList,
                                      uint8_t weight, const QString& title,
                                      const QString& peer) {
   for (auto range : rangeList) {

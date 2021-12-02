@@ -128,10 +128,9 @@ class MozillaVPN final : public QObject {
                  currentViewChanged)
 
  public:
-  MozillaVPN();
   ~MozillaVPN();
 
-  static MozillaVPN* instance();
+  static MozillaVPN& instance();
 
   // This is exactly like the ::instance() method, but it doesn't crash if the
   // MozillaVPN is null. It should be used rarely.
@@ -395,6 +394,7 @@ class MozillaVPN final : public QObject {
   void ticketCreationAnswer(bool successful);
 
  private:
+  MozillaVPN();
   bool m_initialized = false;
 
   // Internal objects.
