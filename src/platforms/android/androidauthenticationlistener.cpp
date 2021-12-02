@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidauthenticationlistener.h"
+#include "androidjnicompat.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -10,19 +11,6 @@
 #include "tasks/authenticate/desktopauthenticationlistener.h"
 #include <jni.h>
 
-#if QT_VERSION >= 0x060000
-#  include <QJniObject>
-#  include <QJniEnvironment>
-
-#else
-#  include <QAndroidJniObject>
-#  include <QAndroidJniEnvironment>
-#endif
-
-#if QT_VERSION < 0x060000
-typedef QAndroidJniObject QJniObject;
-typedef QAndroidJniEnvironment QJniEnvironment;
-#endif
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidAuthenticationListener");

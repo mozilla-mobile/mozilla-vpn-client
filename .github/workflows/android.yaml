@@ -12,7 +12,6 @@ on:
 jobs:
   compile-android:
     strategy:
-      fail-fast: false # Don't cancel other jobs
       matrix:
         config:
             - { name: Release, args: "", apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
@@ -50,21 +49,24 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
       - name: Setup Glean Dependency
         shell: bash
         run: |
           pip3 install -r requirements.txt
+
       - name: Compilation
         run: |
           export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
           bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/5.15.2 -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
       - name: Sign Android
-        if: ${{ matrix.config.sign }} 
+        if: ${{ matrix.config.sign }}
         env:
           AUTOGRAPH_TOKEN: ${{ secrets.AUTOGRAPH_KEY }}
         run: |
           bash ./scripts/android_sign.sh ${{ matrix.config.apk }}
           rm ${{ matrix.config.apk }}/*unsigned.apk
+
       - name: Upload APK${{ matrix.config.args }}
         uses: actions/upload-artifact@v1
         with:

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidiaphandler.h"
+#include "androidjnicompat.h"
 #include "androidutils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -14,19 +15,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#if QT_VERSION >= 0x060000
-#  include <QJniObject>
-#  include <QJniEnvironment>
-
-#else
-#  include <QAndroidJniObject>
-#  include <QAndroidJniEnvironment>
-#endif
-
-#if QT_VERSION < 0x060000
-typedef QAndroidJniObject QJniObject;
-typedef QAndroidJniEnvironment QJniEnvironment;
-#endif
 
 namespace {
 Logger logger(LOG_IAP, "AndroidIAPHandler");

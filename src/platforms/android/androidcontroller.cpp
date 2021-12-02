@@ -4,6 +4,7 @@
 
 #include "androidcontroller.h"
 #include "androidutils.h"
+#include "androidjnicompat.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -16,22 +17,13 @@
 #include "l18nstrings.h"
 
 #if QT_VERSION >= 0x060000
-#  include <QJniObject>
-#  include <QJniEnvironment>
 #  include <QtCore/private/qandroidextras_p.h>
 #else
 #  include <QAndroidBinder>
 #  include <QAndroidIntent>
-#  include <QAndroidJniEnvironment>
-#  include <QAndroidJniObject>
 #  include <QAndroidParcel>
 #  include <QAndroidServiceConnection>
 #  include <QtAndroid>
-
-#endif
-#if QT_VERSION < 0x060000
-typedef QAndroidJniObject QJniObject;
-typedef QAndroidJniEnvironment QJniEnvironment;
 #endif
 
 #include <QHostAddress>

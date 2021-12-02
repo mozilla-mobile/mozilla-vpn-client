@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidapplistprovider.h"
+#include "androidjnicompat.h"
 #include "androidutils.h"
 #include "leakdetector.h"
 
@@ -13,17 +14,7 @@
 #include "logger.h"
 #include "leakdetector.h"
 
-#if QT_VERSION >= 0x060000
-#  include <QJniObject>
-#  include <QJniEnvironment>
 
-#else
-#  include <QAndroidJniObject>
-#endif
-
-#if QT_VERSION < 0x060000
-typedef QAndroidJniObject QJniObject;
-#endif
 
 namespace {
 Logger logger(LOG_CONTROLLER, "AndroidAppListProvider");

@@ -604,6 +604,7 @@ else:android {
                 platforms/android/androidappimageprovider.h \
                 platforms/android/androidapplistprovider.h \
                 platforms/android/androidsharedprefs.h \
+                platforms/android/androidjnicompat.h \
                 tasks/authenticate/desktopauthenticationlistener.h
 
     # Usable Linux Imports

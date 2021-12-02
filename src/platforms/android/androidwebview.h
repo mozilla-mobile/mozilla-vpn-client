@@ -7,11 +7,7 @@
 
 #include "errorhandler.h"
 
-#if QT_VERSION >= 0x060000
-#  include <QJniObject>
-#else
-#  include <QAndroidJniObject>
-#endif
+#include "androidjnicompat.h"
 
 #include <QQuickItem>
 #include <QQuickWindow>

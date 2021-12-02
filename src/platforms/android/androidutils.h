@@ -10,14 +10,7 @@
 #include <QString>
 #include <QUrl>
 
-#if QT_VERSION >= 0x060000
-#  include <QJniObject>
-#  include <QJniEnvironment>
-
-#else
-#  include <QAndroidJniObject>
-#  include <QAndroidJniEnvironment>
-#endif
+#include "androidjnicompat.h"
 
 class AuthenticationListener;
 

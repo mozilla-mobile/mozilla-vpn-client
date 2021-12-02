@@ -15,19 +15,7 @@
 #include <QThread>
 #include <QWindow>
 
-#if QT_VERSION >= 0x060000
-#  include <QJniObject>
-#  include <QJniEnvironment>
-
-#else
-#  include <QAndroidJniObject>
-#  include <QAndroidJniEnvironment>
-
-#endif
-#if QT_VERSION < 0x060000
-typedef QAndroidJniObject QJniObject;
-typedef QAndroidJniEnvironment QJniEnvironment;
-#endif
+#include "androidjnicompat.h"
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidWebView");

@@ -65,7 +65,8 @@ android {
      * The following variables:
      * - androidBuildToolsVersion,
      * - androidCompileSdkVersion
-     * - qtAndroidDir - holds the path to qt android files
+     * - qtAndroidDir/qt5AndroidDir 
+     *                 - holds the path to qt android files
      *                   needed to build any Qt application
      *                   on Android.
      *

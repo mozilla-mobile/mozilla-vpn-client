@@ -4,6 +4,7 @@
 
 #include "androidutils.h"
 #include "androidauthenticationlistener.h"
+#include "androidjnicompat.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -18,20 +19,9 @@
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
 
-#if QT_VERSION >= 0x060000
-#  include <QJniObject>
-#  include <QJniEnvironment>
-
-#else
+#if QT_VERSION < 0x060000
 #  include <QtAndroid>
 #  include <QAndroidIntent>
-#  include <QAndroidJniObject>
-#  include <QAndroidJniEnvironment>
-
-#endif
-#if QT_VERSION < 0x060000
-typedef QAndroidJniObject QJniObject;
-typedef QAndroidJniEnvironment QJniEnvironment;
 #endif
 
 namespace {

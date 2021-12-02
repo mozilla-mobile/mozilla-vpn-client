@@ -5,24 +5,12 @@
 #include "androidappimageprovider.h"
 #include "logger.h"
 #include "leakdetector.h"
+#include "androidjnicompat.h"
 #include "androidutils.h"
 
 #include <jni.h>
 #include <android/bitmap.h>
 
-#if QT_VERSION >= 0x060000
-#  include <QJniObject>
-#  include <QJniEnvironment>
-
-#else
-#  include <QAndroidJniObject>
-#  include <QAndroidJniEnvironment>
-#endif
-
-#if QT_VERSION < 0x060000
-typedef QAndroidJniObject QJniObject;
-typedef QAndroidJniEnvironment QJniEnvironment;
-#endif
 
 namespace {
 Logger logger(LOG_CONTROLLER, "AndroidAppImageProvider");
