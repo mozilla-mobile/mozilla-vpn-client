@@ -50,20 +50,17 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
                 <data android:scheme="mozilla-vpn"></data>
             </intent-filter>
 
-            <meta-data android:name="android.app.background_running" android:value="false" />
-            <meta-data android:name="android.app.auto_screen_scale_factor" android:value="false" />
-  
             <meta-data
-                    android:name="android.app.lib_name"
-                    android:value="-- %%INSERT_APP_LIB_NAME%% --" />
+                android:name="android.app.lib_name"
+                android:value="mozillavpn" />
 
             <meta-data
-                    android:name="android.app.arguments"
-                    android:value="-- %%INSERT_APP_ARGUMENTS%% --" />
+                android:name="android.app.arguments"
+                android:value="" />
 
             <meta-data
-                    android:name="android.app.extract_android_style"
-                    android:value="minimal" />
+                android:name="android.app.extract_android_style"
+                android:value="minimal" />
 
         </activity>
         <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices-->

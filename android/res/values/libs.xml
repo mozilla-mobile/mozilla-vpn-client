@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-   <array name="qt_sources">
+    <array name="qt_sources">
     <!-- DO NOT EDIT THIS: This file is populated automatically by the deployment tool. -->
         <item>https://download.qt.io/ministro/android/qt5/qt-5.14</item>
     </array>
