@@ -15,6 +15,9 @@ TEMPLATE = subdirs
 SUBDIRS += src
 SUBDIRS += tests/unit
 
+# To compile the subdirs in the precise order.
+CONFIG += ordered
+
 # separate flag because an extra dependency is needed: liboath
 AUTHTEST {
     SUBDIRS += tests/auth

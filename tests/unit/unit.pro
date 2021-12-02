@@ -25,7 +25,12 @@ INCLUDEPATH += \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
             ../../src/hacl-star/kremlin/minimal \
-            ../../translations/generated
+            ../../translations/generated \
+            ../../glean \
+            ../../nebula
+
+include($$PWD/../../glean/glean.pri)
+include($$PWD/../../nebula/nebula.pri)
 
 HEADERS += \
     ../../src/adjust/adjustfiltering.h \

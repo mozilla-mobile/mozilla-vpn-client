@@ -38,8 +38,12 @@ INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
-            ../glean/telemetry \
-            ../translations/generated
+            ../translations/generated \
+            ../nebula \
+            ../glean
+
+include($$PWD/../glean/glean.pri)
+include($$PWD/../nebula/nebula.pri)
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -316,30 +320,10 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += ui/components.qrc
-RESOURCES += ui/license.qrc
 RESOURCES += ui/resources.qrc
-RESOURCES += ui/themes.qrc
+RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
-
-versionAtLeast(QT_VERSION, 6.0.0) {
-    RESOURCES += ui/compatQt6.qrc
-    RESOURCES += ui/resourcesQt6.qrc
-} else {
-    RESOURCES += ui/compatQt5.qrc
-}
-
-exists($$PWD/../glean/telemetry/gleansample.h) {
-    !wasm {
-        message(Include QSQlite plugin)
-        QTPLUGIN += qsqlite
-    }
-
-    RESOURCES += $$PWD/../glean/glean.qrc
-} else {
-    error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
-}
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
@@ -477,7 +461,7 @@ else:linux:!android {
     DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
     GO_MODULES = ../linux/netfilter/netfilter.go
-    
+
     target.path = $${USRPATH}/bin
     INSTALLS += target
 
@@ -835,6 +819,7 @@ else:win* {
 
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+
     CONFIG(debug, debug|release) {
         QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
         QMAKE_LFLAGS_WINDOWS += /DEBUG
@@ -891,7 +876,7 @@ else:win* {
         eventlistener.h \
         localsocketcontroller.h \
         platforms/windows/windowsapplistprovider.h \
-        platforms/windows/windowsappimageprovider.h \ 
+        platforms/windows/windowsappimageprovider.h \
         platforms/windows/daemon/dnsutilswindows.h \
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
