@@ -14,6 +14,7 @@
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
+#include <sys/errno.h>
 #include <unistd.h>
 
 namespace {

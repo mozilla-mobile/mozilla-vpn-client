@@ -27,7 +27,7 @@ void TaskCaptivePortalLookup::run() {
 
   NetworkRequest* request = NetworkRequest::createForCaptivePortalLookup(this);
   connect(
-      request, &NetworkRequest::requestFailed,
+      request, &NetworkRequest::requestFailed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         if (m_cancelled) {
           return;
@@ -37,7 +37,7 @@ void TaskCaptivePortalLookup::run() {
         emit completed();
       });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Lookup completed";
 

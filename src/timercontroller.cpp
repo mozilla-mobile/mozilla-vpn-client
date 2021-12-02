@@ -18,9 +18,9 @@ TimerController::TimerController(ControllerImpl* impl) : m_impl(impl) {
 
   connect(m_impl, &ControllerImpl::initialized, this,
           &ControllerImpl::initialized);
-  connect(m_impl, &ControllerImpl::connected,
+  connect(m_impl, &ControllerImpl::connected, this,
           [this] { TimerController::maybeDone(true); });
-  connect(m_impl, &ControllerImpl::disconnected,
+  connect(m_impl, &ControllerImpl::disconnected, this,
           [this] { TimerController::maybeDone(false); });
   connect(m_impl, &ControllerImpl::statusUpdated, this,
           &ControllerImpl::statusUpdated);
@@ -35,11 +35,12 @@ void TimerController::initialize(const Device* device, const Keys* keys) {
   m_impl->initialize(device, keys);
 }
 
-void TimerController::activate(
-    const QList<Server>& serverList, const Device* device, const Keys* keys,
-    const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, const QHostAddress& dns,
-    Reason reason) {
+void TimerController::activate(const QList<Server>& serverList,
+                               const Device* device, const Keys* keys,
+                               const QList<IPAddress>& allowedIPAddressRanges,
+                               const QStringList& excludedAddresses,
+                               const QStringList& vpnDisabledApps,
+                               const QHostAddress& dns, Reason reason) {
   if (m_state != None) {
     return;
   }
@@ -52,7 +53,7 @@ void TimerController::activate(
   }
 
   m_impl->activate(serverList, device, keys, allowedIPAddressRanges,
-                   vpnDisabledApps, dns, reason);
+                   excludedAddresses, vpnDisabledApps, dns, reason);
 }
 
 void TimerController::deactivate(Reason reason) {

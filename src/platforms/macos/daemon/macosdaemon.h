@@ -19,8 +19,6 @@ class MacOSDaemon final : public Daemon {
 
   static MacOSDaemon* instance();
 
-  QByteArray getStatus() override;
-
  protected:
   WireguardUtils* wgutils() const override { return m_wgutils; }
   bool supportDnsUtils() const override { return true; }

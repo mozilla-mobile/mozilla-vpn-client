@@ -9,12 +9,26 @@ const MAX_LOG_COUNT = 200
 
 class _LogsObserver extends GenericDispatcher {
   constructor () {
-    super()
-    this.LOG_ELEMENTS = []
-    this.LOG_MODULES = []
-    this.LOG_COMPONENT = []
+    super();
+    this.LOG_ELEMENTS = [];
+    this.LOG_MODULES = [];
+    this.LOG_COMPONENT = [];
 
-    Client.on('log', (message) => this.guessLogLine(message.value))
+    this.recording = false;
+    this.rowLogEntries = [];
+
+    Client.on('log', (message) => this.processLogLine(message.value))
+  }
+
+  startRecording() {
+    this.recording = true;
+  }
+
+  stopRecording() {
+    this.recording = false;
+    const entries = this.rowLogEntries;
+    this.rowLogEntries = [];
+    return entries;
   }
 
   parseDate (str) {
@@ -35,7 +49,11 @@ class _LogsObserver extends GenericDispatcher {
     return null
   }
 
-  guessLogLine (line) {
+  processLogLine(line) {
+    if (this.recording) {
+      this.rowLogEntries.push(line);
+    }
+
     if (line.length === 0 || line[0] !== '[') return
     const dateEndPos = line.indexOf(']')
     if (dateEndPos === -1) return

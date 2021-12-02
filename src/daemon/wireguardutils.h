@@ -7,19 +7,26 @@
 
 #include "interfaceconfig.h"
 
+#include <QHostAddress>
 #include <QObject>
 #include <QStringList>
 #include <QCoreApplication>
 
 constexpr const char* WG_INTERFACE = "moz0";
 
+constexpr uint16_t WG_KEEPALIVE_PERIOD = 60;
+
 class WireguardUtils : public QObject {
   Q_OBJECT
 
  public:
-  struct peerStatus {
-    qint64 rxBytes;
-    qint64 txBytes;
+  class PeerStatus {
+   public:
+    PeerStatus(const QString& pubkey = QString()) { m_pubkey = pubkey; }
+    QString m_pubkey;
+    qint64 m_handshake = 0;
+    qint64 m_rxBytes = 0;
+    qint64 m_txBytes = 0;
   };
 
   explicit WireguardUtils(QObject* parent) : QObject(parent){};
@@ -31,13 +38,23 @@ class WireguardUtils : public QObject {
   virtual bool deleteInterface() = 0;
 
   virtual bool updatePeer(const InterfaceConfig& config) = 0;
-  virtual bool deletePeer(const QString& pubkey) = 0;
-  virtual peerStatus getPeerStatus(const QString& pubkey) = 0;
+  virtual bool deletePeer(const InterfaceConfig& config) = 0;
+  virtual QList<PeerStatus> getPeerStatus() = 0;
 
-  virtual bool updateRoutePrefix(const IPAddressRange& prefix,
-                                 int hopindex) = 0;
-  virtual bool deleteRoutePrefix(const IPAddressRange& prefix,
-                                 int hopindex) = 0;
+  virtual bool updateRoutePrefix(const IPAddress& prefix, int hopindex) = 0;
+  virtual bool deleteRoutePrefix(const IPAddress& prefix, int hopindex) = 0;
+
+  virtual bool addExclusionRoute(const QHostAddress& address) = 0;
+  virtual bool deleteExclusionRoute(const QHostAddress& address) = 0;
+
+  // static
+  static QString printableKey(const QString& pubkey) {
+    if (pubkey.length() < 12) {
+      return pubkey;
+    } else {
+      return pubkey.left(6) + "..." + pubkey.right(6);
+    }
+  }
 };
 
 #endif  // WIREGUARDUTILS_H

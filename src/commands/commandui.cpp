@@ -307,6 +307,14 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNReleaseMonitor",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->releaseMonitor();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNLocalizer",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = Localizer::instance();
@@ -397,6 +405,16 @@ int CommandUI::run(QStringList& tokens) {
 
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::aboutToQuit);
+
+    QObject::connect(
+        qApp, &QGuiApplication::commitDataRequest, &vpn,
+        []() {
+#if QT_VERSION < 0x060000
+          qApp->setFallbackSessionManagementEnabled(false);
+#endif
+          MozillaVPN::instance()->deactivate();
+        },
+        Qt::DirectConnection);
 
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &MozillaVPN::quit, Qt::QueuedConnection);

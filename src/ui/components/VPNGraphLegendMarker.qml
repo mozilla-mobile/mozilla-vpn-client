@@ -10,35 +10,31 @@ Row {
     property var markerLabel
     property var rectColor
     property var markerData
+    property var markerDataBits: markerData * 8 // convert bytes to bits
 
     function computeRange() {
-        if (markerData < 1024) {
-            //% "B/s"
-            //: Bytes per second
-            return qsTrId("vpn.connectionInfo.Bps");
+        if (markerDataBits < 1000) {
+            // bit/s
+            return VPNl18n.ConnectionInfoLabelBitps;
         }
 
-        if (markerData < 1048576 /* 1024^2 */) {
-            //% "kB/s"
-            //: Kilobytes per second
-            return qsTrId("vpn.connectionInfo.kBps");
+        if (markerDataBits < Math.pow(1000, 2)) {
+            // kbit/s
+            return VPNl18n.ConnectionInfoLabelKbitps;
         }
 
-        if (markerData < 1073741824 /* 1024^3 */) {
-            //% "MB/s"
-            //: Megabytes per second
-            return qsTrId("vpn.connectioInfo.mBps");
+        if (markerDataBits < Math.pow(1000, 3)) {
+            // Mbit/s
+            return VPNl18n.ConnectionInfoLabelMbitps;
         }
 
-        if (markerData < 1099511627776 /* 1024^4 */) {
-            //% "GB/s"
-            //: Gigabytes per second
-            return qsTrId("vpn.connectioInfo.gBps");
+        if (markerDataBits < Math.pow(1000, 4)) {
+            // Gbit/s
+            return VPNl18n.ConnectionInfoLabelGbitps;
         }
 
-        //% "TB/s"
-        //: Terabytes per second
-        return qsTrId("vpn.connectionInfo.tBps");
+        // Tbit/s
+        return VPNl18n.ConnectionInfoLabelTbitps;
     }
 
     function roundValue(value) {
@@ -46,20 +42,21 @@ Row {
     }
 
     function computeValue() {
-        if (markerData < 1024)
-            return roundValue(markerData);
+        if (markerDataBits < 1000)
+            return roundValue(markerDataBits);
 
-        if (markerData < 1048576 /* 1024^2 */)
-            return roundValue(markerData / 1024);
+        if (markerDataBits < Math.pow(1000, 2))
+            return roundValue(markerDataBits / 1000);
 
-        if (markerData < 1073741824 /* 1024^3 */)
-            return roundValue(markerData / 1048576 /* 1024^2 */);
+        if (markerDataBits < Math.pow(1000, 3))
+            return roundValue(markerDataBits / Math.pow(1000, 2));
 
-        if (markerData < 1099511627776 /* 1024^4 */)
-            return roundValue(markerData / 1073741824 /* 1024^3 */);
+        if (markerDataBits < Math.pow(1000, 4))
+            return roundValue(markerDataBits / Math.pow(1000, 3));
 
-        return roundValue(markerData / 1099511627776 /* 1024^4 */);
+        return roundValue(markerDataBits / Math.pow(1000, 4));
     }
+
     Accessible.focusable: true
     Accessible.role: Accessible.StaticText
     //% "%1: %2 %3"

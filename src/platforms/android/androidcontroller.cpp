@@ -3,7 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidcontroller.h"
-#include "ipaddressrange.h"
+#include "ipaddress.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
@@ -143,11 +144,12 @@ void AndroidController::applyStrings() {
   m_serviceBinder.transact(ACTION_SET_NOTIFICATION_FALLBACK, data, nullptr);
 }
 
-void AndroidController::activate(
-    const QList<Server>& serverList, const Device* device, const Keys* keys,
-    const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, const QHostAddress& dns,
-    Reason reason) {
+void AndroidController::activate(const QList<Server>& serverList,
+                                 const Device* device, const Keys* keys,
+                                 const QList<IPAddress>& allowedIPAddressRanges,
+                                 const QStringList& excludedAddresses,
+                                 const QStringList& vpnDisabledApps,
+                                 const QHostAddress& dns, Reason reason) {
   logger.debug() << "Activation";
 
   logger.debug() << "Prompting for VPN permission";
@@ -189,11 +191,17 @@ void AndroidController::activate(
     jServer["port"] = (int)exitServer.multihopPort();
   }
 
-  QJsonArray allowedIPs;
+  QList<IPAddress> allowedIPs;
+  QList<IPAddress> excludedIPs;
+  QJsonArray fullAllowedIPs;
   foreach (auto item, allowedIPAddressRanges) {
-    QJsonValue val;
-    val = item.toString();
-    allowedIPs.append(val);
+    allowedIPs.append(IPAddress(item.toString()));
+  }
+  foreach (auto addr, excludedAddresses) {
+    excludedIPs.append(IPAddress(addr));
+  }
+  foreach (auto item, IPAddress::excludeAddresses(allowedIPs, excludedIPs)) {
+    fullAllowedIPs.append(QJsonValue(item.toString()));
   }
 
   QJsonArray excludedApps;
@@ -206,7 +214,7 @@ void AndroidController::activate(
   args["keys"] = jKeys;
   args["server"] = jServer;
   args["reason"] = (int)reason;
-  args["allowedIPs"] = allowedIPs;
+  args["allowedIPs"] = fullAllowedIPs;
   args["excludedApps"] = excludedApps;
   args["dns"] = dns.toString();
 

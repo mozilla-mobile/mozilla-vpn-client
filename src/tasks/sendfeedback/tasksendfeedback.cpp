@@ -36,13 +36,13 @@ void TaskSendFeedback::run() {
   NetworkRequest* request = NetworkRequest::createForFeedback(
       this, m_feedbackText, m_logs, m_rating, m_category);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to send feedback" << error;
             emit completed();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray&) {
             logger.debug() << "Feedback sent";
             emit completed();
