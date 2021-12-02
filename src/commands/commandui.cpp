@@ -409,7 +409,9 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(
         qApp, &QGuiApplication::commitDataRequest, &vpn,
         []() {
+#if QT_VERSION < 0x060000
           qApp->setFallbackSessionManagementEnabled(false);
+#endif
           MozillaVPN::instance()->deactivate();
         },
         Qt::DirectConnection);
