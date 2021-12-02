@@ -66,7 +66,7 @@ Item {
                 VPNExternalLinkListItem {
                     accessibleName: licenseTitle
                     title: licenseTitle
-                    iconSource: "qrc:/ui/resources/chevron.svg"
+                    iconSource: "qrc:/nebula/resources/chevron.svg"
 
                     onClicked: {
                         if (isSettingsView) {
