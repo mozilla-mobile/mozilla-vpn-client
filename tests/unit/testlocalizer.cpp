@@ -8,10 +8,8 @@
 #include "settingsholder.h"
 
 void TestLocalizer::basic() {
-  SettingsHolder settings;
-  Localizer l;
-  QCOMPARE(Localizer::instance(), &l);
-
+  SettingsHolder::instance();
+  auto& l = Localizer::instance();
   l.initialize();
 
   QHash<int, QByteArray> rn = l.roleNames();
@@ -25,8 +23,8 @@ void TestLocalizer::basic() {
 }
 
 void TestLocalizer::systemLanguage() {
-  SettingsHolder settings;
-  Localizer l;
+  SettingsHolder::instance();
+  auto& l = Localizer::instance();
   l.initialize();
 
   l.setCode("");

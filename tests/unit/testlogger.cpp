@@ -18,7 +18,7 @@ void TestLogger::logger() {
 }
 
 void TestLogger::logHandler() {
-  LogHandler* lh = LogHandler::instance();
+  auto& lh = LogHandler::instance();
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
   qDebug() << "WOW debug!";
@@ -29,15 +29,15 @@ void TestLogger::logHandler() {
   {
     QString buffer;
     QTextStream out(&buffer);
-    lh->writeLogs(out);
+    lh.writeLogs(out);
   }
 
-  lh->cleanupLogs();
+  lh.cleanupLogs();
 
   {
     QString buffer;
     QTextStream out(&buffer);
-    lh->writeLogs(out);
+    lh.writeLogs(out);
   }
 }
 

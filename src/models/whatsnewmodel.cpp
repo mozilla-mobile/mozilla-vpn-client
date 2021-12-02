@@ -65,11 +65,10 @@ void WhatsNewModel::initialize() {
 }
 
 bool WhatsNewModel::hasUnseenFeature() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  auto& settingsHolder = SettingsHolder::instance();
 
   logger.debug() << "Reading seen features from settings";
-  const QStringList& seenFeatureList = settingsHolder->seenFeatures();
+  const QStringList& seenFeatureList = settingsHolder.seenFeatures();
   if (seenFeatureList.isEmpty()) {
     return false;
   }
@@ -84,12 +83,11 @@ bool WhatsNewModel::hasUnseenFeature() {
 }
 
 void WhatsNewModel::markFeaturesAsSeen() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  auto& settingsHolder = SettingsHolder::instance();
 
   logger.debug() << "Add seen features to settings";
 
-  QStringList seenfeatureslist = settingsHolder->seenFeatures();
+  QStringList seenfeatureslist = settingsHolder.seenFeatures();
   for (Feature* feature : m_featurelist) {
     const QString& featureID = feature->id();
 
@@ -98,7 +96,7 @@ void WhatsNewModel::markFeaturesAsSeen() {
     }
   }
 
-  settingsHolder->setSeenFeatures(seenfeatureslist);
+  settingsHolder.setSeenFeatures(seenfeatureslist);
 
   emit hasUnseenFeatureChanged();
 }

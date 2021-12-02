@@ -30,7 +30,6 @@ int CommandDeactivate::run(QStringList& tokens) {
       return 1;
     }
 
-    MozillaVPN vpn;
     if (!loadModels()) {
       return 1;
     }

@@ -55,7 +55,7 @@ void ConnectionHealth::start(const QString& serverIpv4Gateway,
   logger.debug() << "ConnectionHealth activated";
 
   if (m_suspended || serverIpv4Gateway.isEmpty() ||
-      MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+      MozillaVPN::instance().controller()->state() != Controller::StateOn) {
     return;
   }
 
@@ -74,12 +74,12 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   logger.debug() << "Stability changed:" << stability;
 
   if (stability == Unstable) {
-    MozillaVPN::instance()->silentSwitch();
+    MozillaVPN::instance().silentSwitch();
 
-    emit MozillaVPN::instance()->recordGleanEvent(
+    emit MozillaVPN::instance().recordGleanEvent(
         GleanSample::connectionHealthUnstable);
   } else if (stability == NoSignal) {
-    emit MozillaVPN::instance()->recordGleanEvent(
+    emit MozillaVPN::instance().recordGleanEvent(
         GleanSample::connectionHealthNoSignal);
   }
 
@@ -90,12 +90,12 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
 void ConnectionHealth::connectionStateChanged() {
   logger.debug() << "Connection state changed";
 
-  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+  if (MozillaVPN::instance().controller()->state() != Controller::StateOn) {
     stop();
     return;
   }
 
-  MozillaVPN::instance()->controller()->getStatus(
+  MozillaVPN::instance().controller()->getStatus(
       [this](const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
              uint64_t txBytes, uint64_t rxBytes) {
         Q_UNUSED(txBytes);

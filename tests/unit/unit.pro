@@ -252,7 +252,10 @@ else:ios {
     OBJECTIVE_HEADERS += \
             ../../src/platforms/ios/iosutils.h
 }
-
+else:win* {
+    CONFIG += c++1z
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+}
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc

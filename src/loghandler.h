@@ -9,21 +9,15 @@
 
 #include <QDateTime>
 #include <QObject>
-#include <QMutexLocker>
 #include <QVector>
+#include <mutex>
 
 class QFile;
 class QTextStream;
 
 class LogHandler final : public QObject {
   Q_OBJECT
-
-#if QT_VERSION >= 0x060000
-  typedef QMutexLocker<QMutex> MutexLocker;
-#else
-  typedef QMutexLocker MutexLocker;
-#endif
-
+  Q_DISABLE_COPY_MOVE(LogHandler)
  public:
   struct Log {
     Log() = default;
@@ -58,7 +52,7 @@ class LogHandler final : public QObject {
     bool m_fromQT = false;
   };
 
-  static LogHandler* instance();
+  static LogHandler& instance();
 
   static void messageQTHandler(QtMsgType type,
                                const QMessageLogContext& context,
@@ -81,28 +75,29 @@ class LogHandler final : public QObject {
   void logEntryAdded(const QByteArray& log);
 
  private:
-  LogHandler(LogLevel m_minLogLevel, const QStringList& modules,
-             const MutexLocker& proofOfLock);
+  LogHandler();
 
-  static LogHandler* maybeCreate(const MutexLocker& proofOfLock);
+  static LogHandler* maybeCreate();
 
-  void addLog(const Log& log, const MutexLocker& proofOfLock);
+  void addLog(const Log& log);
 
-  bool matchLogLevel(const Log& log, const MutexLocker& proofOfLock) const;
-  bool matchModule(const Log& log, const MutexLocker& proofOfLock) const;
+  bool matchLogLevel(const Log& log) const;
+  bool matchModule(const Log& log) const;
 
-  void openLogFile(const MutexLocker& proofOfLock);
+  void openLogFile();
 
-  void closeLogFile(const MutexLocker& proofOfLock);
+  void closeLogFile();
 
-  static void cleanupLogFile(const MutexLocker& proofOfLock);
+  static void cleanupLogFile();
 
-  const LogLevel m_minLogLevel;
-  const QStringList m_modules;
+  LogLevel m_minLogLevel;
+  QStringList m_modules;
   bool m_showDebug = false;
 
   QFile* m_logFile = nullptr;
   QTextStream* m_output = nullptr;
+
+  std::recursive_mutex m_mutex;
 };
 
 #endif  // LOGHANDLER_H

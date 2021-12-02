@@ -6,7 +6,6 @@
 #include "constants.h"
 #include "cryptosettings.h"
 #include "featurelist.h"
-#include "leakdetector.h"
 #include "logger.h"
 
 #include "features/featurecaptiveportal.h"
@@ -28,14 +27,12 @@ QVector<QString> SENSITIVE_SETTINGS({
     "devices",  // are more noise then info
 });
 
-SettingsHolder* s_instance = nullptr;
-
 }  // namespace
 
 // static
-SettingsHolder* SettingsHolder::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
+SettingsHolder& SettingsHolder::instance() {
+  static SettingsHolder instance;
+  return instance;
 }
 
 #ifndef UNIT_TEST
@@ -51,11 +48,6 @@ SettingsHolder::SettingsHolder()
       m_settings("mozilla_testing", "vpn")
 #endif
 {
-  MVPN_COUNT_CTOR(SettingsHolder);
-
-  Q_ASSERT(!s_instance);
-  s_instance = this;
-
   if (!hasInstallationTime()) {
     m_firstExecution = true;
     setInstallationTime(QDateTime::currentDateTime());
@@ -63,11 +55,6 @@ SettingsHolder::SettingsHolder()
 }
 
 SettingsHolder::~SettingsHolder() {
-  MVPN_COUNT_DTOR(SettingsHolder);
-
-  Q_ASSERT(s_instance == this);
-  s_instance = nullptr;
-
 #ifdef UNIT_TEST
   m_settings.clear();
 #endif

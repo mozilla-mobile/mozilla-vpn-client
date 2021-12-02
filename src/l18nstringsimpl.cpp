@@ -7,17 +7,10 @@
 
 #include <QCoreApplication>
 
-namespace {
-L18nStrings* s_instance = nullptr;
-}
-
 // static
 L18nStrings* L18nStrings::instance() {
-  if (!s_instance) {
-    s_instance = new L18nStrings(qApp);
-  }
-
-  return s_instance;
+  auto static instance = new L18nStrings(qApp);
+  return instance;
 }
 
 L18nStrings::L18nStrings(QObject* parent) : QQmlPropertyMap(parent) {

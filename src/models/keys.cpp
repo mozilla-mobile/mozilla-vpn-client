@@ -17,16 +17,15 @@ Keys::Keys() { MVPN_COUNT_CTOR(Keys); }
 Keys::~Keys() { MVPN_COUNT_DTOR(Keys); }
 
 bool Keys::fromSettings() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+  auto& settingsHolder = SettingsHolder::instance();
 
-  if (settingsHolder->privateKey().isEmpty()) {
+  if (settingsHolder.privateKey().isEmpty()) {
     return false;
   }
 
   // Quick migration to retrieve the public key from the current device.
-  if (settingsHolder->publicKey().isEmpty()) {
-    const QByteArray& json = settingsHolder->devices();
+  if (settingsHolder.publicKey().isEmpty()) {
+    const QByteArray& json = settingsHolder.devices();
     if (json.isEmpty()) {
       return false;
     }
@@ -58,13 +57,13 @@ bool Keys::fromSettings() {
         continue;
       }
 
-      settingsHolder->setPublicKey(device.publicKey());
+      settingsHolder.setPublicKey(device.publicKey());
       break;
     }
   }
 
-  m_privateKey = settingsHolder->privateKey();
-  m_publicKey = settingsHolder->publicKey();
+  m_privateKey = settingsHolder.privateKey();
+  m_publicKey = settingsHolder.publicKey();
   return true;
 }
 

@@ -58,13 +58,13 @@ void ReleaseMonitor::schedule() {
 
 void ReleaseMonitor::updateRequired() {
   logger.warning() << "update required";
-  MozillaVPN::instance()->setUpdateRecommended(false);
-  MozillaVPN::instance()->controller()->updateRequired();
+  MozillaVPN::instance().setUpdateRecommended(false);
+  MozillaVPN::instance().controller()->updateRequired();
 }
 
 void ReleaseMonitor::updateRecommended() {
   logger.debug() << "Update recommended";
-  MozillaVPN::instance()->setUpdateRecommended(true);
+  MozillaVPN::instance().setUpdateRecommended(true);
 }
 
 void ReleaseMonitor::updateSoon() {
@@ -75,19 +75,16 @@ void ReleaseMonitor::updateSoon() {
     connect(task, &TaskRelease::updaterFailure, []() {
       logger.warning() << "No updater supported for this platform. Fallback";
 
-      MozillaVPN* vpn = MozillaVPN::instance();
-      Q_ASSERT(vpn);
-
-      vpn->openLink(MozillaVPN::LinkUpdate);
-      vpn->setUpdating(false);
+      auto& vpn = MozillaVPN::instance();
+      vpn.openLink(MozillaVPN::LinkUpdate);
+      vpn.setUpdating(false);
     });
 
     // The updater, in download mode, is not destroyed. So, if this happens,
     // probably something went wrong.
     connect(task, &Task::completed, [] {
-      MozillaVPN* vpn = MozillaVPN::instance();
-      Q_ASSERT(vpn);
-      vpn->setUpdating(false);
+      auto& vpn = MozillaVPN::instance();
+      vpn.setUpdating(false);
     });
 
     TaskScheduler::scheduleTask(task);

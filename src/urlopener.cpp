@@ -19,10 +19,10 @@ Logger logger(LOG_MAIN, "UrlOpener");
 // static
 void UrlOpener::open(QUrl url, bool addEmailAddress) {
   if (addEmailAddress) {
-    SettingsHolder* settingsHolder = SettingsHolder::instance();
-    if (settingsHolder->hasUserEmail()) {
+    auto& settingsHolder = SettingsHolder::instance();
+    if (settingsHolder.hasUserEmail()) {
       QUrlQuery query(url.query());
-      query.addQueryItem("email", settingsHolder->userEmail());
+      query.addQueryItem("email", settingsHolder.userEmail());
       url.setQuery(query);
     }
   }

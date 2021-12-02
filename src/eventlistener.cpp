@@ -61,8 +61,8 @@ EventListener::EventListener() {
       // So far, just the show window signal, but in the future, we could have
       // more.
       if (input == "show") {
-        QmlEngineHolder* engine = QmlEngineHolder::instance();
-        engine->showWindow();
+        auto& engine = QmlEngineHolder::instance();
+        engine.showWindow();
         return;
       }
     });
