@@ -24,11 +24,7 @@ class FeatureNotificationControl final : public Feature {
         ){};
 
   bool checkSupportCallback() const override {
-#if defined(MVPN_ANDROID)
     return true;
-#else
-    return true;
-#endif
   }
 
   static const FeatureNotificationControl* instance() {
