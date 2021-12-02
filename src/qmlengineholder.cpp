@@ -14,7 +14,7 @@ Logger logger(LOG_MAIN, "QmlEngineHolder");
 }  // namespace
 
 QmlEngineHolder::QmlEngineHolder() {
-  //The engine needs to be cleaned up by Qt.  Do not delete it.
+  // The engine needs to be cleaned up by Qt.  Do not delete it.
   m_engine = new QQmlApplicationEngine(QApplication::instance());
 }
 

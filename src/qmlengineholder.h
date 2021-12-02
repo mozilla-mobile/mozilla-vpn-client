@@ -32,7 +32,7 @@ class QmlEngineHolder final : public NetworkManager {
 
  private:
   QmlEngineHolder();
-  QQmlApplicationEngine *m_engine;
+  QQmlApplicationEngine* m_engine;
 };
 
 #endif  // QMLENGINEHOLDER_H
