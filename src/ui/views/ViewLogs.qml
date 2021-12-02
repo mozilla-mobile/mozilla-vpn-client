@@ -107,7 +107,7 @@ Item {
             VPNLogsButton {
                 //% "Clear"
                 buttonText: qsTrId("vpn.logs.clear")
-                iconSource: "qrc:/ui/resources/delete.svg"
+                iconSource: "qrc:/nebula/resources/delete.svg"
                 onClicked: {
                     VPN.cleanupLogs();
                     logText.text = "";

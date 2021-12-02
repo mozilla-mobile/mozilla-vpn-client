@@ -72,7 +72,7 @@ Item {
                 target: VPNAppPermissions
                 function onNotification(type,message,action) {
                     console.log("Got notification: "+type + "  message:"+message);
-                    var component = Qt.createComponent("qrc:/components/components/VPNAlert.qml");
+                    var component = Qt.createComponent("qrc:/nebula/components/VPNAlert.qml", { updateURL: "qrc:/ui/views/ViewUpdate.qml" });
                     if(component.status !== Component.Ready)
                         {
                             if( component.status == Component.Error )

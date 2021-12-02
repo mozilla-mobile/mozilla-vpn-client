@@ -36,7 +36,7 @@ Item {
             VPNSettingsItem {                
                 settingTitle: VPNl18n.WhatsNewReleaseNotesTourSubHeader
                 imageLeftSrc: hovered ? "qrc:/ui/resources/magic-purple.svg" : "qrc:/ui/resources/magic-dark.svg"
-                imageRightSrc: hovered ? "qrc:/ui/resources/chevron-purple.svg" : "qrc:/ui/resources/chevron.svg"
+                imageRightSrc: hovered ? "qrc:/ui/resources/chevron-purple.svg" : "qrc:/nebula/resources/chevron.svg"
                 backgroundColor: Theme.clickableRowPurple
                 fontColor: hovered ? Color.purple70 : Theme.fontColorDark
 
