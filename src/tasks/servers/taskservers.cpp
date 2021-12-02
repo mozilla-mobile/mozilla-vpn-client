@@ -26,14 +26,14 @@ void TaskServers::run() {
       request, &NetworkRequest::requestFailed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Failed to retrieve servers";
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        MozillaVPN::instance().errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
       });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Servers obtained";
-            MozillaVPN::instance()->serversFetched(data);
+            MozillaVPN::instance().serversFetched(data);
             emit completed();
           });
 }
