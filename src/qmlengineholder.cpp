@@ -7,10 +7,16 @@
 
 #include <QWindow>
 #include <QNetworkAccessManager>
+#include <QApplication>
 
 namespace {
 Logger logger(LOG_MAIN, "QmlEngineHolder");
 }  // namespace
+
+QmlEngineHolder::QmlEngineHolder() {
+  //The engine needs to be cleaned up by Qt.  Do not delete it.
+  m_engine = new QQmlApplicationEngine(QApplication::instance());
+}
 
 // static
 QmlEngineHolder& QmlEngineHolder::instance() {
@@ -19,7 +25,7 @@ QmlEngineHolder& QmlEngineHolder::instance() {
 }
 
 QNetworkAccessManager* QmlEngineHolder::networkAccessManager() {
-  return m_engine.networkAccessManager();
+  return m_engine->networkAccessManager();
 }
 
 void QmlEngineHolder::clearCacheInternal() {
@@ -31,7 +37,7 @@ void QmlEngineHolder::clearCacheInternal() {
 }
 
 QWindow* QmlEngineHolder::window() const {
-  QObject* rootObject = m_engine.rootObjects().first();
+  QObject* rootObject = m_engine->rootObjects().first();
   return qobject_cast<QWindow*>(rootObject);
 }
 

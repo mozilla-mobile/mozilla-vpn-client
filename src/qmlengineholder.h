@@ -19,7 +19,7 @@ class QmlEngineHolder final : public NetworkManager {
 
   static QmlEngineHolder& instance();
 
-  QQmlApplicationEngine* engine() { return &m_engine; }
+  QQmlApplicationEngine* engine() { return m_engine; }
 
   QNetworkAccessManager* networkAccessManager() override;
 
@@ -31,8 +31,8 @@ class QmlEngineHolder final : public NetworkManager {
   void clearCacheInternal() override;
 
  private:
-  QmlEngineHolder() = default;
-  QQmlApplicationEngine m_engine;
+  QmlEngineHolder();
+  QQmlApplicationEngine *m_engine;
 };
 
 #endif  // QMLENGINEHOLDER_H
