@@ -125,8 +125,7 @@ int CommandUI::run(QStringList& tokens) {
     }
 
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
-    QmlEngineHolder engineHolder;
-    QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+    QQmlApplicationEngine* engine = QmlEngineHolder::instance().engine();
 
     Glean::Initialize(engine);
     Nebula::Initialize(engine);
@@ -408,7 +407,7 @@ int CommandUI::run(QStringList& tokens) {
                      &MozillaVPN::instance(), &MozillaVPN::aboutToQuit);
 
     QObject::connect(
-        qApp, &QGuiApplication::commitDataRequest, &vpn,
+        qApp, &QGuiApplication::commitDataRequest, &MozillaVPN::instance(),
         []() {
 #if QT_VERSION < 0x060000
           qApp->setFallbackSessionManagementEnabled(false);
@@ -417,7 +416,8 @@ int CommandUI::run(QStringList& tokens) {
         },
         Qt::DirectConnection);
 
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
+    QObject::connect(MozillaVPN::instance().controller(),
+                     &Controller::readyToQuit, &MozillaVPN::instance(),
                      &MozillaVPN::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
