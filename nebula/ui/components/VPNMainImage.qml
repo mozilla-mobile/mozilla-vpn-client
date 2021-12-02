@@ -202,6 +202,12 @@ Rectangle {
             to: VPNController.StateConnecting
             ParallelAnimation {
                 PropertyAnimation {
+                    target: insetCircle
+                    property: "color"
+                    duration: 100
+                }
+
+                PropertyAnimation {
                     target: logo
                     property: "opacity"
                     duration: 200
@@ -231,6 +237,11 @@ Rectangle {
         Transition {
             to: VPNController.StateDisconnecting
             ParallelAnimation {
+                PropertyAnimation {
+                    target: insetCircle
+                    property: "color"
+                    duration: 100
+                }
                 PropertyAnimation {
                     target: logo
                     property: "opacity"
