@@ -27,6 +27,7 @@ void TaskGroup::run() {
   for (Task* task : m_tasks) {
     connect(task, &Task::completed, this, [this, task]() {
       m_tasks.removeOne(task);
+      task->deleteLater();
       maybeComplete();
     });
 
