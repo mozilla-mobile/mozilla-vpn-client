@@ -406,6 +406,14 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::aboutToQuit);
 
+    QObject::connect(
+        qApp, &QGuiApplication::commitDataRequest, &engineHolder,
+        [&]() {
+          qApp->setFallbackSessionManagementEnabled(false);
+          vpn.deactivate();
+        },
+        Qt::DirectConnection);
+
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &MozillaVPN::quit, Qt::QueuedConnection);
 
