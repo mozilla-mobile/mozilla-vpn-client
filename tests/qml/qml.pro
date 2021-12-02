@@ -7,7 +7,7 @@ TARGET = qml_tests
 QT += quick
 
 CONFIG += warn_on qmltestcase
-
+CONFIG += c++1z
 # Allows us to be a supported platform
 DEFINES += UNIT_TEST
 DEFINES += MVPN_DUMMY
@@ -16,17 +16,17 @@ DEFINES += APP_VERSION=\\\"QMLTest_AppVersion\\\"
 DEFINES += BUILD_ID=\\\"QMLTest_BuildID\\\"
 
 RESOURCES += \
-    $$PWD/../../src/ui/compatQt5.qrc \
-    $$PWD/../../src/ui/compatQt6.qrc \
-    $$PWD/../../src/ui/components.qrc \
-    $$PWD/../../src/ui/resources.qrc \
-    $$PWD/../../src/ui/themes.qrc \
     $$PWD/../../src/ui/ui.qrc \
 
 INCLUDEPATH += \
             . \
             ../../src \
             ../../translations/generated \
+            ../../glean \
+            ../../nebula
+
+include($$PWD/../../glean/glean.pri)
+include($$PWD/../../nebula/nebula.pri)
 
 SOURCES += \
     helper.cpp \
@@ -83,6 +83,8 @@ exists($$PWD/../../glean/telemetry/gleansample.h) {
 win*{
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 }
+
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
+

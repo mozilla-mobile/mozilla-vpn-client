@@ -5,6 +5,9 @@
 #include "helper.h"
 #include "settingsholder.h"
 
+#include <glean.h>
+#include <nebula.h>
+
 TestHelper::TestHelper() {
   FeatureList::instance().initialize();
   SettingsHolder::instance();
@@ -55,10 +58,8 @@ void TestHelper::triggerAboutToQuit() const {
 }
 
 void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
-  engine->addImportPath("qrc:///compat");
-  engine->addImportPath("qrc:///components");
-  engine->addImportPath("qrc:///glean");
-  engine->addImportPath("qrc:///themes");
+  Nebula::Initialize(engine);
+  Glean::Initialize(engine);
   engine->addImportPath("qrc:///");
 
   qmlRegisterSingletonType<TestHelper>(

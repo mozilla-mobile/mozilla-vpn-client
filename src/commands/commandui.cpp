@@ -25,6 +25,9 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 
+#include <glean.h>
+#include <nebula.h>
+
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
@@ -121,11 +124,12 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 
-    auto engine = QmlEngineHolder::instance().engine();
-    engine->addImportPath("qrc:///components");
-    engine->addImportPath("qrc:///glean");
-    engine->addImportPath("qrc:///themes");
-    engine->addImportPath("qrc:///compat");
+    // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
+    QmlEngineHolder engineHolder;
+    QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+
+    Glean::Initialize(engine);
+    Nebula::Initialize(engine);
 
     MozillaVPN::instance().setStartMinimized(minimizedOption.m_set);
 
@@ -403,8 +407,17 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(qApp, &QCoreApplication::aboutToQuit,
                      &MozillaVPN::instance(), &MozillaVPN::aboutToQuit);
 
-    QObject::connect(MozillaVPN::instance().controller(),
-                     &Controller::readyToQuit, &MozillaVPN::instance(),
+    QObject::connect(
+        qApp, &QGuiApplication::commitDataRequest, &vpn,
+        []() {
+#if QT_VERSION < 0x060000
+          qApp->setFallbackSessionManagementEnabled(false);
+#endif
+          MozillaVPN::instance().deactivate();
+        },
+        Qt::DirectConnection);
+
+    QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &MozillaVPN::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
@@ -413,6 +426,7 @@ int CommandUI::run(QStringList& tokens) {
         engine, &QQmlApplicationEngine::objectCreated, qApp,
         [url](QObject* obj, const QUrl& objUrl) {
           if (!obj && url == objUrl) {
+            logger.error() << "Failed to load " << objUrl.toString();
             QGuiApplication::exit(-1);
           }
         },

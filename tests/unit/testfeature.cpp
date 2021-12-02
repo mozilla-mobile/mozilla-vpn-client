@@ -7,6 +7,7 @@
 #include "../../src/features/featurecustomdns.h"
 #include "../../src/models/feature.h"
 #include "../../src/settingsholder.h"
+#include "../../src/adjust/adjustfiltering.h"
 #include "helper.h"
 
 void TestFeature::enableByAPI() {
@@ -31,6 +32,30 @@ void TestFeature::enableByAPI() {
 
   FeatureList::instance().updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(feature->isSupported());
+
+  obj["allowParameters"] = QJsonArray{"allowTest"};
+
+  QJsonObject deny;
+  deny["denyTest"] = "test";
+  obj["denyParameters"] = deny;
+
+  QJsonObject mirror;
+  mirror["mirrorTest"] = QJsonArray{"test", "testValue"};
+  obj["mirrorParameters"] = mirror;
+
+  json["adjustFields"] = obj;
+
+  FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
+  QVERIFY(AdjustFiltering::instance()->allowList.contains("allowTest"));
+  QVERIFY(AdjustFiltering::instance()->denyList.contains("denyTest"));
+  QVERIFY(AdjustFiltering::instance()->denyList.value("denyTest") == "test");
+  QVERIFY(AdjustFiltering::instance()->mirrorList.contains("mirrorTest"));
+  QVERIFY(AdjustFiltering::instance()
+              ->mirrorList.value("mirrorTest")
+              .m_mirrorParamName == "test");
+  QVERIFY(AdjustFiltering::instance()
+              ->mirrorList.value("mirrorTest")
+              .m_defaultValue == "testValue");
 }
 
 static TestFeature s_testFeature;

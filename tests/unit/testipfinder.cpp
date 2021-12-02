@@ -12,6 +12,8 @@ void TestIpFinder::ipv4AndIpv6() {
 
   TaskIPFinder* ipFinder = new TaskIPFinder();
 
+  TestHelper::networkConfig.clear();
+
   QEventLoop loop;
   connect(
       ipFinder, &TaskIPFinder::operationCompleted,

@@ -20,7 +20,7 @@ class IOSController final : public ControllerImpl {
 
   void activate(const QList<Server>& serverList, const Device* device,
                 const Keys* keys,
-                const QList<IPAddressRange>& allowedIPAddressRanges,
+                const QList<IPAddress>& allowedIPAddressRanges,
                 const QStringList& excludedAddresses,
                 const QStringList& vpnDisabledApps,
                 const QHostAddress& dnsServer, Reason reason) override;

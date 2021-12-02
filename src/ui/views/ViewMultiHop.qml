@@ -52,7 +52,7 @@ StackView {
             VPNControllerNav {
                 function handleClick() {
                     multiHopStackView.push(
-                        "qrc:/components/components/VPNServerList.qml",
+                        "qrc:/nebula/components/VPNServerList.qml",
                         {
                             currentServer: entryLabel.serversList[0],
                             showRecentConnections: false
@@ -85,7 +85,7 @@ StackView {
                 spacing: 8
                 VPNControllerNav {
                     function handleClick() {
-                        multiHopStackView.push("qrc:/components/components/VPNServerList.qml",
+                        multiHopStackView.push("qrc:/nebula/components/VPNServerList.qml",
                            {
                                 currentServer:  exitLabel.serversList[0],
                                 showRecentConnections: false

@@ -4,20 +4,19 @@
 
 #include "testtasks.h"
 #include "../../src/mozillavpn.h"
-#include "../../src/tasks/accountandservers/taskaccountandservers.h"
+#include "../../src/tasks/account/taskaccount.h"
 #include "../../src/tasks/adddevice/taskadddevice.h"
 #include "../../src/tasks/function/taskfunction.h"
+#include "../../src/tasks/servers/taskservers.h"
 #include "../../src/taskscheduler.h"
 
-void TestTasks::accountAndServers() {
+void TestTasks::account() {
   // Failure
   {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Failure, QByteArray()));
-    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-        TestHelper::NetworkConfig::Failure, QByteArray()));
 
-    TaskAccountAndServers* task = new TaskAccountAndServers();
+    TaskAccount* task = new TaskAccount();
 
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
@@ -30,10 +29,38 @@ void TestTasks::accountAndServers() {
   {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Success, QByteArray()));
+
+    TaskAccount* task = new TaskAccount();
+
+    QEventLoop loop;
+    connect(task, &Task::completed, [&]() { loop.exit(); });
+
+    TaskScheduler::scheduleTask(task);
+    loop.exec();
+  }
+}
+
+void TestTasks::servers() {
+  // Failure
+  {
+    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+        TestHelper::NetworkConfig::Failure, QByteArray()));
+
+    TaskServers* task = new TaskServers();
+
+    QEventLoop loop;
+    connect(task, &Task::completed, [&]() { loop.exit(); });
+
+    TaskScheduler::scheduleTask(task);
+    loop.exec();
+  }
+
+  // Success
+  {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Success, QByteArray()));
 
-    TaskAccountAndServers* task = new TaskAccountAndServers();
+    TaskServers* task = new TaskServers();
 
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
