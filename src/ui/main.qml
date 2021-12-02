@@ -272,12 +272,22 @@ Window {
                 };
             }
             // If we can't show logs natively, open the viewer
-            mainStackView.push("views/ViewLogs.qml");
+            mainStackView.push("qrc:/ui/views/ViewLogs.qml");
             
         }
 
         function onContactUsNeeded() {
-            mainStackView.push("views/ViewContactUs.qml");
+            // For the main view, the contact-us signal is handled in ViewMain
+            // because at that level we have access to the stackview.
+            if (VPN.state === VPN.StateMain) return;
+
+            if (mainStackView.currentItem.objectName === "contactUs") return;
+
+            while(mainStackView.depth > 1) {
+                mainStackView.pop(null, StackView.Immediate);
+            }
+
+            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", { isMainView: true });
         }
 
         function onLoadAndroidAuthenticationView() {
