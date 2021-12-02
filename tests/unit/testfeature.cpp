@@ -45,7 +45,7 @@ void TestFeature::enableByAPI() {
 
   json["adjustFields"] = obj;
 
-  FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
+  FeatureList::instance().updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(AdjustFiltering::instance()->allowList.contains("allowTest"));
   QVERIFY(AdjustFiltering::instance()->denyList.contains("denyTest"));
   QVERIFY(AdjustFiltering::instance()->denyList.value("denyTest") == "test");
