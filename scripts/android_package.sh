@@ -186,7 +186,7 @@ else
 fi
 
 print Y "Compiling apk_install_target in .tmp/"
-make -s -j $JOBS sub-src-apk_install_target 
+make -s -j $JOBS sub-src-apk_install_target  || die "Compile of QT project failed"
 
 
 # We need to run the debug bundle step in any case
