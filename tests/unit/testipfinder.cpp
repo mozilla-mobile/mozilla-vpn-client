@@ -8,7 +8,7 @@
 #include "helper.h"
 
 void TestIpFinder::ipv4AndIpv6() {
-  SettingsHolder settingsHolder;
+  SettingsHolder::instance();
 
   TaskIPFinder* ipFinder = new TaskIPFinder();
 

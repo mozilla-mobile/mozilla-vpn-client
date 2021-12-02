@@ -207,7 +207,7 @@ void AndroidWebView::geometryChange(const QRectF& newGeometry,
 #endif
 
 void AndroidWebView::propagateError(ErrorHandler::ErrorType error) {
-  MozillaVPN::instance()->errorHandle(error);
+  MozillaVPN::instance().errorHandle(error);
   emit failure();
 }
 

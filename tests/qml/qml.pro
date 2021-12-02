@@ -75,10 +75,16 @@ exists($$PWD/../../translations/generated/l18nstrings.h) {
     error("No l18nstrings.h. Have you generated the strings?")
 }
 
+exists($$PWD/../../glean/telemetry/gleansample.h) {
+    RESOURCES += $$PWD/../../glean/glean.qrc
+} else {
+    error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
+}
+win*{
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+}
+
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 
-win*{
-    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
-}

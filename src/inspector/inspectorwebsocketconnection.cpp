@@ -48,7 +48,7 @@ static QObject* findObject(const QString& name) {
   Q_ASSERT(!parts.isEmpty());
 
   QQuickItem* parent = nullptr;
-  QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+  QQmlApplicationEngine* engine = QmlEngineHolder::instance().engine();
   for (QObject* rootObject : engine->rootObjects()) {
     if (!rootObject) {
       continue;
@@ -124,53 +124,53 @@ static QList<WebSocketSettingCommand> s_settingCommands{
     WebSocketSettingCommand{
         "unsecured-network-alert", WebSocketSettingCommand::Boolean,
         [](const QByteArray& value) {
-          SettingsHolder::instance()->setUnsecuredNetworkAlert(value == "true");
+          SettingsHolder::instance().setUnsecuredNetworkAlert(value == "true");
         },
         []() {
-          return SettingsHolder::instance()->unsecuredNetworkAlert() ? "true"
-                                                                     : "false";
+          return SettingsHolder::instance().unsecuredNetworkAlert() ? "true"
+                                                                    : "false";
         }},
 
     // Captive portal
     WebSocketSettingCommand{
         "captive-portal-alert", WebSocketSettingCommand::Boolean,
         [](const QByteArray& value) {
-          SettingsHolder::instance()->setCaptivePortalAlert(value == "true");
+          SettingsHolder::instance().setCaptivePortalAlert(value == "true");
         },
         []() {
-          return SettingsHolder::instance()->captivePortalAlert() ? "true"
-                                                                  : "false";
+          return SettingsHolder::instance().captivePortalAlert() ? "true"
+                                                                 : "false";
         }},
 
     // start at boot
     WebSocketSettingCommand{
         "start-at-boot", WebSocketSettingCommand::Boolean,
         [](const QByteArray& value) {
-          SettingsHolder::instance()->setStartAtBoot(value == "true");
+          SettingsHolder::instance().setStartAtBoot(value == "true");
         },
         []() {
-          return SettingsHolder::instance()->startAtBoot() ? "true" : "false";
+          return SettingsHolder::instance().startAtBoot() ? "true" : "false";
         }},
 
     // local area network access
     WebSocketSettingCommand{
         "local-network-access", WebSocketSettingCommand::Boolean,
         [](const QByteArray& value) {
-          SettingsHolder::instance()->setLocalNetworkAccess(value == "true");
+          SettingsHolder::instance().setLocalNetworkAccess(value == "true");
         },
         []() {
-          return SettingsHolder::instance()->localNetworkAccess() ? "true"
-                                                                  : "false";
+          return SettingsHolder::instance().localNetworkAccess() ? "true"
+                                                                 : "false";
         }},
     // server-switch-notification
     WebSocketSettingCommand{
         "server-switch-notification", WebSocketSettingCommand::Boolean,
         [](const QByteArray& value) {
-          SettingsHolder::instance()->setServerSwitchNotification(value ==
-                                                                  "true");
+          SettingsHolder::instance().setServerSwitchNotification(value ==
+                                                                 "true");
         },
         []() {
-          return SettingsHolder::instance()->serverSwitchNotification()
+          return SettingsHolder::instance().serverSwitchNotification()
                      ? "true"
                      : "false";
         }},
@@ -178,11 +178,11 @@ static QList<WebSocketSettingCommand> s_settingCommands{
     WebSocketSettingCommand{
         "connection-change-notification", WebSocketSettingCommand::Boolean,
         [](const QByteArray& value) {
-          SettingsHolder::instance()->setConnectionChangeNotification(value ==
-                                                                      "true");
+          SettingsHolder::instance().setConnectionChangeNotification(value ==
+                                                                     "true");
         },
         []() {
-          return SettingsHolder::instance()->connectionChangeNotification()
+          return SettingsHolder::instance().connectionChangeNotification()
                      ? "true"
                      : "false";
         }},
@@ -191,43 +191,43 @@ static QList<WebSocketSettingCommand> s_settingCommands{
     WebSocketSettingCommand{
         "language-code", WebSocketSettingCommand::String,
         [](const QByteArray& value) {
-          Localizer::instance()->setCode(QString(value));
+          Localizer::instance().setCode(QString(value));
         },
-        []() { return SettingsHolder::instance()->languageCode(); }},
+        []() { return SettingsHolder::instance().languageCode(); }},
 
     // server country
     WebSocketSettingCommand{
         "current-server-country-code", WebSocketSettingCommand::String, nullptr,
         []() {
-          return MozillaVPN::instance()->currentServer()->exitCountryCode();
+          return MozillaVPN::instance().currentServer()->exitCountryCode();
         }},
 
     // server city
     WebSocketSettingCommand{
         "current-server-city", WebSocketSettingCommand::String, nullptr,
         []() {
-          return MozillaVPN::instance()->currentServer()->exitCityName();
+          return MozillaVPN::instance().currentServer()->exitCityName();
         }},
 
     // glean-enabled
     WebSocketSettingCommand{
         "glean-enabled", WebSocketSettingCommand::Boolean,
         [](const QByteArray& value) {
-          SettingsHolder::instance()->setGleanEnabled(value == "true");
+          SettingsHolder::instance().setGleanEnabled(value == "true");
         },
         []() {
-          return SettingsHolder::instance()->gleanEnabled() ? "true" : "false";
+          return SettingsHolder::instance().gleanEnabled() ? "true" : "false";
         }},
 
     // telemetry-policy-shown
     WebSocketSettingCommand{
         "telemetry-policy-shown", WebSocketSettingCommand::Boolean,
         [](const QByteArray& value) {
-          SettingsHolder::instance()->setTelemetryPolicyShown(value == "true");
+          SettingsHolder::instance().setTelemetryPolicyShown(value == "true");
         },
         []() {
-          return SettingsHolder::instance()->telemetryPolicyShown() ? "true"
-                                                                    : "false";
+          return SettingsHolder::instance().telemetryPolicyShown() ? "true"
+                                                                   : "false";
         }},
 
 };
@@ -260,18 +260,15 @@ static QList<WebSocketCommand> s_commands{
 
     WebSocketCommand{"reset", "Reset the app", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN* vpn = MozillaVPN::instance();
-                       Q_ASSERT(vpn);
+                       auto& vpn = MozillaVPN::instance();
 
-                       vpn->reset(true);
-                       vpn->hideAlert();
+                       vpn.reset(true);
+                       vpn.hideAlert();
 
-                       SettingsHolder* settingsHolder =
-                           SettingsHolder::instance();
-                       Q_ASSERT(settingsHolder);
+                       auto& settingsHolder = SettingsHolder::instance();
 
                        // Extra cleanup for testing
-                       settingsHolder->setTelemetryPolicyShown(false);
+                       settingsHolder.setTelemetryPolicyShown(false);
 
                        return QJsonObject();
                      }},
@@ -288,7 +285,7 @@ static QList<WebSocketCommand> s_commands{
 
     WebSocketCommand{"quit", "Quit the app", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()->controller()->quit();
+                       MozillaVPN::instance().controller()->quit();
                        return QJsonObject();
                      }},
 
@@ -464,14 +461,14 @@ static QList<WebSocketCommand> s_commands{
                      "Set Glean Source Tags (supply a comma seperated list)", 1,
                      [](const QList<QByteArray>& arguments) {
                        QStringList tags = QString(arguments[1]).split(',');
-                       MozillaVPN::instance()->setGleanSourceTags(tags);
+                       MozillaVPN::instance().setGleanSourceTags(tags);
                        return QJsonObject();
                      }},
 
     WebSocketCommand{"force_update_check", "Force a version update check", 1,
                      [](const QList<QByteArray>& arguments) {
                        s_updateVersion = arguments[1];
-                       MozillaVPN::instance()->releaseMonitor()->runSoon();
+                       MozillaVPN::instance().releaseMonitor()->runSoon();
                        return QJsonObject();
                      }},
 
@@ -479,7 +476,7 @@ static QList<WebSocketCommand> s_commands{
                      "Force a captive portal check", 0,
                      [](const QList<QByteArray>&) {
                        MozillaVPN::instance()
-                           ->captivePortalDetection()
+                           .captivePortalDetection()
                            ->detectCaptivePortal();
                        return QJsonObject();
                      }},
@@ -488,7 +485,7 @@ static QList<WebSocketCommand> s_commands{
                      "Simulate a captive portal detection", 0,
                      [](const QList<QByteArray>&) {
                        MozillaVPN::instance()
-                           ->captivePortalDetection()
+                           .captivePortalDetection()
                            ->captivePortalDetected();
                        return QJsonObject();
                      }},
@@ -496,39 +493,39 @@ static QList<WebSocketCommand> s_commands{
     WebSocketCommand{
         "force_unsecured_network", "Force an unsecured network detection", 0,
         [](const QList<QByteArray>&) {
-          MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
-                                                                     "Dummy");
+          MozillaVPN::instance().networkWatcher()->unsecuredNetwork("Dummy",
+                                                                    "Dummy");
           return QJsonObject();
         }},
 
     WebSocketCommand{"activate", "Activate the VPN", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()->activate();
+                       MozillaVPN::instance().activate();
                        return QJsonObject();
                      }},
 
     WebSocketCommand{"deactivate", "Deactivate the VPN", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()->deactivate();
+                       MozillaVPN::instance().deactivate();
                        return QJsonObject();
                      }},
 
     WebSocketCommand{"force_heartbeat_failure", "Force a heartbeat failure", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()->heartbeatCompleted(
+                       MozillaVPN::instance().heartbeatCompleted(
                            false /* success */);
                        return QJsonObject();
                      }},
 
     WebSocketCommand{"hard_reset", "Hard reset (wipe all settings).", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()->hardReset();
+                       MozillaVPN::instance().hardReset();
                        return QJsonObject();
                      }},
 
     WebSocketCommand{"logout", "Logout the user", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()->logout();
+                       MozillaVPN::instance().logout();
                        return QJsonObject();
                      }},
 
@@ -605,11 +602,10 @@ static QList<WebSocketCommand> s_commands{
                      [](const QList<QByteArray>&) {
                        QJsonObject obj;
 
-                       Localizer* localizer = Localizer::instance();
-                       Q_ASSERT(localizer);
+                       auto& localizer = Localizer::instance();
 
                        QJsonArray languages;
-                       for (const QString& language : localizer->languages()) {
+                       for (const QString& language : localizer.languages()) {
                          languages.append(language);
                        }
 
@@ -628,7 +624,7 @@ static QList<WebSocketCommand> s_commands{
                      [](const QList<QByteArray>&) {
                        QJsonObject obj;
 
-                       QWindow* window = QmlEngineHolder::instance()->window();
+                       QWindow* window = QmlEngineHolder::instance().window();
                        if (!window) {
                          obj["error"] = "Unable to identify the window";
                          return obj;
@@ -667,8 +663,7 @@ static QList<WebSocketCommand> s_commands{
           QJsonObject obj;
 
           QJsonArray countryArray;
-          ServerCountryModel* scm =
-              MozillaVPN::instance()->serverCountryModel();
+          ServerCountryModel* scm = MozillaVPN::instance().serverCountryModel();
           for (const ServerCountry& country : scm->countries()) {
             QJsonArray cityArray;
             for (const ServerCity& city : country.cities()) {
@@ -698,36 +693,33 @@ static QList<WebSocketCommand> s_commands{
         "reset_surveys",
         "Reset the list of triggered surveys and the installation time", 0,
         [](const QList<QByteArray>&) {
-          SettingsHolder* settingsHolder = SettingsHolder::instance();
-          Q_ASSERT(settingsHolder);
+          auto& settingsHolder = SettingsHolder::instance();
 
-          settingsHolder->setInstallationTime(QDateTime::currentDateTime());
-          settingsHolder->setConsumedSurveys(QStringList());
+          settingsHolder.setInstallationTime(QDateTime::currentDateTime());
+          settingsHolder.setConsumedSurveys(QStringList());
 
           return QJsonObject();
         }},
     WebSocketCommand{
         "dismiss_surveys", "Dismisses all surveys", 0,
         [](const QList<QByteArray>&) {
-          SettingsHolder* settingsHolder = SettingsHolder::instance();
-          Q_ASSERT(settingsHolder);
-          auto surveys = MozillaVPN::instance()->surveyModel()->surveys();
+          auto& settingsHolder = SettingsHolder::instance();
+          auto surveys = MozillaVPN::instance().surveyModel()->surveys();
           QStringList consumedSurveys;
           for (auto& survey : surveys) {
             consumedSurveys.append(survey.id());
           }
-          settingsHolder->setInstallationTime(QDateTime::currentDateTime());
-          settingsHolder->setConsumedSurveys(consumedSurveys);
-          MozillaVPN::instance()->surveyModel()->dismissCurrentSurvey();
+          settingsHolder.setInstallationTime(QDateTime::currentDateTime());
+          settingsHolder.setConsumedSurveys(consumedSurveys);
+          MozillaVPN::instance().surveyModel()->dismissCurrentSurvey();
           return QJsonObject();
         }},
 
     WebSocketCommand{"devices", "Retrieve the list of devices", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN* vpn = MozillaVPN::instance();
-                       Q_ASSERT(vpn);
+                       auto& vpn = MozillaVPN::instance();
 
-                       DeviceModel* dm = vpn->deviceModel();
+                       DeviceModel* dm = vpn.deviceModel();
                        Q_ASSERT(dm);
 
                        QJsonArray deviceArray;
@@ -736,7 +728,7 @@ static QList<WebSocketCommand> s_commands{
                          deviceObj["name"] = device.name();
                          deviceObj["publicKey"] = device.publicKey();
                          deviceObj["currentDevice"] =
-                             device.isCurrentDevice(vpn->keys());
+                             device.isCurrentDevice(vpn.keys());
                          deviceArray.append(deviceObj);
                        }
 
@@ -749,24 +741,23 @@ static QList<WebSocketCommand> s_commands{
         "reset_devices",
         "Remove all the existing devices and add the current one if needed", 0,
         [](const QList<QByteArray>&) {
-          MozillaVPN* vpn = MozillaVPN::instance();
-          Q_ASSERT(vpn);
+          auto& vpn = MozillaVPN::instance();
 
-          DeviceModel* dm = vpn->deviceModel();
+          DeviceModel* dm = vpn.deviceModel();
           Q_ASSERT(dm);
 
           bool hasCurrentOne = false;
           for (const Device& device : dm->devices()) {
-            if (device.isCurrentDevice(vpn->keys())) {
+            if (device.isCurrentDevice(vpn.keys())) {
               hasCurrentOne = true;
               continue;
             }
 
-            vpn->removeDeviceFromPublicKey(device.publicKey());
+            vpn.removeDeviceFromPublicKey(device.publicKey());
           }
 
           if (!hasCurrentOne) {
-            vpn->addCurrentDeviceAndRefreshData();
+            vpn.addCurrentDeviceAndRefreshData();
           }
 
           return QJsonObject();
@@ -794,7 +785,7 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
   connect(m_connection, &QWebSocket::binaryMessageReceived, this,
           &InspectorWebSocketConnection::binaryMessageReceived);
 
-  connect(LogHandler::instance(), &LogHandler::logEntryAdded, this,
+  connect(&LogHandler::instance(), &LogHandler::logEntryAdded, this,
           &InspectorWebSocketConnection::logEntryAdded);
 
   connect(NotificationHandler::instance(),
@@ -960,7 +951,7 @@ QJsonObject InspectorWebSocketConnection::getViewTree() {
   QJsonObject out;
   out["type"] = "qml_tree";
 
-  QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+  QQmlApplicationEngine* engine = QmlEngineHolder::instance().engine();
   QJsonArray viewRoots;
   for (auto& root : engine->rootObjects()) {
     QQuickWindow* window = qobject_cast<QQuickWindow*>(root);

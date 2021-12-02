@@ -524,15 +524,14 @@ void Balrog::propagateError(NetworkRequest* request,
                             QNetworkReply::NetworkError error) {
   Q_ASSERT(request);
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
+  auto& vpn = MozillaVPN::instance();
 
   // 451 Unavailable For Legal Reasons
   if (request->statusCode() == 451) {
     logger.debug() << "Geo IP restriction detected";
-    vpn->errorHandle(ErrorHandler::GeoIpRestrictionError);
+    vpn.errorHandle(ErrorHandler::GeoIpRestrictionError);
     return;
   }
 
-  vpn->errorHandle(ErrorHandler::toErrorType(error));
+  vpn.errorHandle(ErrorHandler::toErrorType(error));
 }
