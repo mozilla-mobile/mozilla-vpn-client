@@ -145,7 +145,7 @@ android {
     }
     externalNativeBuild {
         cmake {
-
+            path 'tunnel/CMakeLists.txt'
         }
     }
 

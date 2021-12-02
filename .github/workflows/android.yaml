@@ -12,6 +12,7 @@ on:
 jobs:
   compile-android:
     strategy:
+      fail-fast: false # Don't cancel other jobs
       matrix:
         config:
             - { name: Release, args: "", apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
@@ -58,7 +59,7 @@ jobs:
           export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
           bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/5.15.2 -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
       - name: Sign Android
-        if: ${{ matrix.config.sign }}
+        if: ${{ matrix.config.sign }} 
         env:
           AUTOGRAPH_TOKEN: ${{ secrets.AUTOGRAPH_KEY }}
         run: |
