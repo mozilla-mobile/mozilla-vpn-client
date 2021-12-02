@@ -23,9 +23,7 @@ class FeatureNotificationControl final : public Feature {
                 true                 // Can be enabled in devmode
         ){};
 
-  bool checkSupportCallback() const override {
-    return true;
-  }
+  bool checkSupportCallback() const override { return true; }
 
   static const FeatureNotificationControl* instance() {
     return static_cast<const FeatureNotificationControl*>(
