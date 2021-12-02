@@ -47,7 +47,6 @@ jobs:
         run: |
           bash ./scripts/android_package.sh $QTPATH -A ${{matrix.arch.qmake}} -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
       - name: Upload Failure Build
-        if: steps.compile.outcome != 'success' && steps.compile.conclusion != 'success'
         uses: actions/upload-artifact@v1
         with:
             name: failure-build(${{ matrix.arch.name }})${{ matrix.config.args }}
