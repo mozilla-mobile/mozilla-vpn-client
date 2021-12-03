@@ -121,6 +121,22 @@ bool Server::fromJson(const QJsonObject& obj) {
   return true;
 }
 
+bool Server::fromMultihop(const Server& exit, const Server& entry) {
+  m_hostname = exit.m_hostname;
+  m_ipv4Gateway = exit.m_ipv4Gateway;
+  m_ipv6Gateway = exit.m_ipv6Gateway;
+  m_publicKey = exit.m_publicKey;
+  m_socksName = exit.m_socksName;
+  m_multihopPort = exit.m_multihopPort;
+
+  m_portRanges.clear();
+  m_portRanges.append(
+      QPair<uint32_t, uint32_t>(m_multihopPort, m_multihopPort));
+  m_ipv4AddrIn = entry.m_ipv4AddrIn;
+  m_ipv6AddrIn = entry.m_ipv6AddrIn;
+  return true;
+}
+
 // static
 const Server& Server::weightChooser(const QList<Server>& servers) {
   static const Server emptyServer;

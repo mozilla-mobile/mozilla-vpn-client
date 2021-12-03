@@ -19,6 +19,7 @@ class Server final {
   ~Server();
 
   [[nodiscard]] bool fromJson(const QJsonObject& obj);
+  bool fromMultihop(const Server& exit, const Server& entry);
 
   static const Server& weightChooser(const QList<Server>& servers);
 

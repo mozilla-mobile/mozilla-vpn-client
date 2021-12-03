@@ -28,6 +28,9 @@ constexpr uint32_t SERVER_UNAVAILABLE_ALERT_MSEC = 4000;
 // Number of recent connections to retain.
 constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 
+// Cooldown period for unresponsive servers
+constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
+
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
                     testingValue)                                 \

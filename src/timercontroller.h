@@ -26,9 +26,8 @@ class TimerController final : public ControllerImpl {
 
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const QList<Server>& serverList, const Device* device,
-                const Keys* keys,
-                const QList<IPAddress>& allowedIPAddressRanges,
+  void activate(const Server& server, const Device* device, const Keys* keys,
+                int hopindex, const QList<IPAddress>& allowedIPAddressRanges,
                 const QStringList& excludedAddresses,
                 const QStringList& vpnDisabledApps, const QHostAddress& dns,
                 Reason reason) override;
@@ -41,8 +40,11 @@ class TimerController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
+  bool multihopSupported() override;
+
  private slots:
   void timeout();
+  void peerConnected(const QString& pubkey);
 
  private:
   void maybeDone(bool isConnected);
@@ -60,6 +62,7 @@ class TimerController final : public ControllerImpl {
   };
 
   State m_state = None;
+  QString m_pubkey;
 };
 
 #endif  // TIMERCONTROLLER_H

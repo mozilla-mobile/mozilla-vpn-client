@@ -1005,8 +1005,28 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
   }
 }
 
+void MozillaVPN::setServerCooldown(const QString& publicKey) {
+  qint64 timeout = QDateTime::currentSecsSinceEpoch() +
+                   Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC;
+  m_private->m_serverCooldown.insert(publicKey, timeout);
+}
+
+QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {
+  QList<Server> results;
+  qint64 now = QDateTime::currentSecsSinceEpoch();
+
+  for (const Server& server : servers) {
+    if (m_private->m_serverCooldown.value(server.publicKey(), now) <= now) {
+      results.append(server);
+    }
+  }
+
+  return results;
+}
+
 const QList<Server> MozillaVPN::exitServers() const {
-  return m_private->m_serverCountryModel.servers(m_private->m_serverData);
+  return filterServerList(
+      m_private->m_serverCountryModel.servers(m_private->m_serverData));
 }
 
 const QList<Server> MozillaVPN::entryServers() const {
@@ -1016,7 +1036,7 @@ const QList<Server> MozillaVPN::entryServers() const {
   ServerData sd;
   sd.update(m_private->m_serverData.entryCountryCode(),
             m_private->m_serverData.entryCityName());
-  return m_private->m_serverCountryModel.servers(sd);
+  return filterServerList(m_private->m_serverCountryModel.servers(sd));
 }
 
 void MozillaVPN::changeServer(const QString& countryCode, const QString& city,
