@@ -44,6 +44,7 @@ INCLUDEPATH += \
 
 include($$PWD/../glean/glean.pri)
 include($$PWD/../nebula/nebula.pri)
+include($$PWD/crashreporter/crashreporter.pri)
 
 DEPENDPATH  += $${INCLUDEPATH}
 

@@ -35,9 +35,6 @@ class WireguardUtilsWindows final : public WireguardUtils {
   bool addExclusionRoute(const QHostAddress& address) override;
   bool deleteExclusionRoute(const QHostAddress& address) override;
 
-  bool addExclusionRoute(const QHostAddress& address) override;
-  bool deleteExclusionRoute(const QHostAddress& address) override;
-
  signals:
   void backendFailure();
 

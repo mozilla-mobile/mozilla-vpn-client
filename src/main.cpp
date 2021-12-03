@@ -5,9 +5,11 @@
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include <iostream>
-
+#include <QTimer>
+#include <QCoreApplication>
 #include <nebula.h>
 #include <glean.h>
+#include <crashreporter/crashreporterfactory.h>
 
 #if defined MVPN_WINDOWS && defined MVPN_DEBUG
 #  include <windows.h>
@@ -30,8 +32,10 @@ int main(int argc, char* argv[]) {
 #  endif
 
 #endif
-  INIT_GLEAN;
+
   INIT_NEBULA;
+
+  INIT_GLEAN;
   CommandLineParser clp;
   return clp.parse(argc, argv);
 }

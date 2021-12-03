@@ -1,9 +1,7 @@
 <RCC>
     <qresource prefix="/ui">
-        <file>resources/app-rating.svg</file>
         <file>resources/chevron-purple.svg</file>
         <file>resources/connection-info-dark.svg</file>
-        <file>resources/copy.svg</file>
         <file>resources/developer.svg</file>
         <file>resources/encodedPassword.txt</file>
         <file>resources/faces/average.svg</file>
@@ -14,7 +12,6 @@
         <file>resources/features/custom-dns-preview.png</file>
         <file>resources/features/multi-hop-preview.png</file>
         <file>resources/features/support-form-preview.png</file>
-        <file>resources/heart-check.svg</file>
         <file>resources/logo-animated1.png</file>
         <file>resources/logo-animated1.svg</file>
         <file>resources/logo-animated2.png</file>
@@ -29,7 +26,6 @@
         <file>resources/logo-on.png</file>
         <file>resources/logo-on.svg</file>
         <file>resources/logo.svg</file>
-        <file>resources/magic-purple.svg</file>
         <file>resources/onboarding/onboarding1.svg</file>
         <file>resources/onboarding/onboarding2.svg</file>
         <file>resources/onboarding/onboarding3.svg</file>
@@ -50,6 +46,5 @@
         <file>resources/tip.svg</file>
         <file>resources/updateRecommended.svg</file>
         <file>resources/updateRequired.svg</file>
-        <file>resources/warning-white.svg</file>
     </qresource>
 </RCC>
