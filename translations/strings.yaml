@@ -312,3 +312,20 @@ connectionInfo:
   labelTbitps:
     value: Tbit/s
     comment: Terabits per second
+    
+crashreporter:
+  mainTitle:
+    value: Mozilla Crash Report
+    comment: Main window title
+  mainHeading:
+    value: Crash reporting
+    comment: Label over description text section.
+  description:
+    value: The Mozilla VPN app quit unexpectedly. Would you like to send a crash report to help fix the issue?
+    comment: Main text telling the user that we are asking for permission to send a crash report.
+  sendButtonLabel:
+    value: Send report
+    comment: User agrees to send report.
+  dontSendButton:
+    value: No thanks
+    comment: User does not agree.
