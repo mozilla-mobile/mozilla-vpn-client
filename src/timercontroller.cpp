@@ -19,7 +19,7 @@ TimerController::TimerController(ControllerImpl* impl) : m_impl(impl) {
   connect(m_impl, &ControllerImpl::initialized, this,
           &ControllerImpl::initialized);
   connect(m_impl, &ControllerImpl::connected, this,
-          [this] { TimerController::maybeDone(true); });
+          &TimerController::peerConnected);
   connect(m_impl, &ControllerImpl::disconnected, this,
           [this] { TimerController::maybeDone(false); });
   connect(m_impl, &ControllerImpl::statusUpdated, this,
@@ -35,8 +35,8 @@ void TimerController::initialize(const Device* device, const Keys* keys) {
   m_impl->initialize(device, keys);
 }
 
-void TimerController::activate(const QList<Server>& serverList,
-                               const Device* device, const Keys* keys,
+void TimerController::activate(const Server& server, const Device* device,
+                               const Keys* keys, int hopindex,
                                const QList<IPAddress>& allowedIPAddressRanges,
                                const QStringList& excludedAddresses,
                                const QStringList& vpnDisabledApps,
@@ -52,7 +52,8 @@ void TimerController::activate(const QList<Server>& serverList,
     m_timer.start(TIME_ACTIVATION);
   }
 
-  m_impl->activate(serverList, device, keys, allowedIPAddressRanges,
+  m_pubkey = server.publicKey();
+  m_impl->activate(server, device, keys, hopindex, allowedIPAddressRanges,
                    excludedAddresses, vpnDisabledApps, dns, reason);
 }
 
@@ -81,13 +82,13 @@ void TimerController::deactivate(Reason reason) {
 }
 
 void TimerController::timeout() {
-  logger.warning() << "TimerController - Timeout:" << m_state;
+  logger.warning() << "Timeout:" << m_state;
 
   Q_ASSERT(m_state != None);
 
   if (m_state == Connected) {
     m_state = None;
-    emit connected();
+    emit connected(m_pubkey);
     return;
   }
 
@@ -100,9 +101,15 @@ void TimerController::timeout() {
   // Any other state can be ignored.
 }
 
+void TimerController::peerConnected(const QString& pubkey) {
+  logger.debug() << "Peer connected:" << m_state << pubkey;
+  if (pubkey == m_pubkey) {
+    maybeDone(true);
+  }
+}
+
 void TimerController::maybeDone(bool isConnected) {
-  logger.debug() << "TimerController - Operation completed:" << m_state
-                 << isConnected;
+  logger.debug() << "Operation completed:" << m_state << isConnected;
 
   if (m_state == Connecting) {
     if (m_timer.isActive()) {
@@ -115,7 +122,7 @@ void TimerController::maybeDone(bool isConnected) {
     m_state = None;
 
     if (isConnected) {
-      emit connected();
+      emit connected(m_pubkey);
     } else {
       emit disconnected();
     }
@@ -141,7 +148,7 @@ void TimerController::maybeDone(bool isConnected) {
   Q_ASSERT(!m_timer.isActive());
 
   if (isConnected) {
-    emit connected();
+    emit connected(m_pubkey);
     return;
   }
 
@@ -157,3 +164,7 @@ void TimerController::getBackendLogs(
 }
 
 void TimerController::cleanupBackendLogs() { m_impl->cleanupBackendLogs(); }
+
+bool TimerController::multihopSupported() {
+  return m_impl->multihopSupported();
+}

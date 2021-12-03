@@ -46,8 +46,8 @@ class ControllerImpl : public QObject {
   // this method is called, the VPN client is in "connecting" state.  This
   // state terminates when the "connected" (or the "disconnected") signal is
   // received.
-  virtual void activate(const QList<Server>& serverList, const Device* device,
-                        const Keys* keys,
+  virtual void activate(const Server& server, const Device* device,
+                        const Keys* keys, int hopindex,
                         const QList<IPAddress>& allowedIPAddressRanges,
                         const QStringList& excludedAddresses,
                         const QStringList& vpnDisabledApps,
@@ -70,6 +70,9 @@ class ControllerImpl : public QObject {
   // Cleanup the backend logs.
   virtual void cleanupBackendLogs() = 0;
 
+  // Whether the controller supports multihop
+  virtual bool multihopSupported() { return false; }
+
  signals:
   // This signal is emitted when the controller is initialized. Note that the
   // VPN tunnel can be already active. In this case, "connected" should be set
@@ -80,7 +83,7 @@ class ControllerImpl : public QObject {
                    const QDateTime& connectionDate);
 
   // These 2 signals can be dispatched at any time.
-  void connected();
+  void connected(const QString& pubkey);
   void disconnected();
 
   // This method should be emitted after a checkStatus() call.

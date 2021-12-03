@@ -7,8 +7,10 @@
 
 #include "models/server.h"
 #include "connectioncheck.h"
+#include "ipaddress.h"
 
 #include <QElapsedTimer>
+#include <QHostAddress>
 #include <QList>
 #include <QObject>
 #include <QTimer>
@@ -18,7 +20,6 @@
 
 class ControllerImpl;
 class MozillaVPN;
-class IPAddress;
 
 class Controller final : public QObject {
   Q_OBJECT
@@ -102,7 +103,7 @@ class Controller final : public QObject {
   Q_INVOKABLE void quit();
 
  private slots:
-  void connected();
+  void connected(const QString& pubkey);
   void disconnected();
   void timerTimeout();
   void implInitialized(bool status, bool connected,
@@ -131,10 +132,11 @@ class Controller final : public QObject {
   void maybeEnableDisconnectInConfirming();
 
   bool processNextStep();
-  QList<IPAddress> getAllowedIPAddressRanges(const QList<Server>& servers);
-  QStringList getExcludedAddresses(const QList<Server>& serverList);
+  QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
+  QStringList getExcludedAddresses(const Server& server);
 
   void activateInternal();
+  void activateNext();
 
   void resetConnectionCheck();
 
@@ -189,6 +191,18 @@ class Controller final : public QObject {
   };
 
   ReconnectionStep m_reconnectionStep = NoReconnection;
+
+  class HopConnection {
+   public:
+    HopConnection() {}
+    Server m_server;
+    int m_hopindex = 0;
+    QList<IPAddress> m_allowedIPAddressRanges;
+    QStringList m_excludedAddresses;
+    QStringList m_vpnDisabledApps;
+    QHostAddress m_dnsServer;
+  };
+  QList<HopConnection> m_activationQueue;
 
   QList<std::function<void(const QString& serverIpv4Gateway,
                            const QString& deviceIpv4Address, uint64_t txBytes,

@@ -191,6 +191,7 @@ bool Controller::activate() {
 
 void Controller::activateInternal() {
   logger.debug() << "Activation internal";
+  Q_ASSERT(m_impl);
 
   resetConnectedTime();
 
@@ -206,37 +207,70 @@ void Controller::activateInternal() {
 
   vpn->setServerPublicKey(exitServer.publicKey());
 
-  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
-
-  QList<QString> vpnDisabledApps;
+  // Prepare the exit server's connection data.
+  HopConnection exitHop;
+  exitHop.m_server = exitServer;
+  exitHop.m_hopindex = 0;
+  exitHop.m_allowedIPAddressRanges = getAllowedIPAddressRanges(exitServer);
+  exitHop.m_excludedAddresses = getExcludedAddresses(exitServer);
+  exitHop.m_dnsServer =
+      QHostAddress(DNSHelper::getDNS(exitServer.ipv4Gateway()));
+  logger.debug() << "DNS Set" << exitHop.m_dnsServer.toString();
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   if (settingsHolder->protectSelectedApps()) {
-    vpnDisabledApps = settingsHolder->vpnDisabledApps();
+    exitHop.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
-  // Multihop connections provide a list of servers, starting with the exit
-  // node as the first element, and the entry node as the final entry.
-  QList<Server> serverList = {exitServer};
-  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
+  // For single-hop connections, exclude the entry server
+  if (!FeatureMultiHop::instance()->isSupported() || !vpn->multihop()) {
+    exitHop.m_excludedAddresses.append(exitHop.m_server.ipv4AddrIn());
+    exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
+  }
+  // For controllers that support multiple hops, create a queue of connections.
+  // The entry server should start first, followed by the exit server.
+  else if (m_impl->multihopSupported()) {
+    HopConnection hop;
+    hop.m_server = Server::weightChooser(vpn->entryServers());
+    if (!hop.m_server.initialized()) {
+      logger.error() << "Empty entry server list in state" << m_state;
+      backendFailure();
+      return;
+    }
+
+    hop.m_hopindex = 1;
+    hop.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv4AddrIn()));
+    hop.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv6AddrIn()));
+    hop.m_excludedAddresses.append(hop.m_server.ipv4AddrIn());
+    hop.m_excludedAddresses.append(hop.m_server.ipv6AddrIn());
+    m_activationQueue.append(hop);
+  }
+  // Otherwise, we can approximate multihop support by redirecting the
+  // connection to the exit server via the multihop port.
+  else {
     Server entryServer = Server::weightChooser(vpn->entryServers());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       backendFailure();
       return;
     }
-    serverList.append(entryServer);
+    exitHop.m_server.fromMultihop(exitHop.m_server, entryServer);
+    exitHop.m_excludedAddresses.append(entryServer.ipv4AddrIn());
+    exitHop.m_excludedAddresses.append(entryServer.ipv6AddrIn());
   }
 
-  // Use the Gateway as DNS Server
-  // If the user as entered a valid DN, use that instead
-  QHostAddress dns = QHostAddress(DNSHelper::getDNS(exitServer.ipv4Gateway()));
-  logger.debug() << "DNS Set" << dns.toString();
+  m_activationQueue.append(exitHop);
+  activateNext();
+}
 
-  Q_ASSERT(m_impl);
-  m_impl->activate(serverList, device, vpn->keys(),
-                   getAllowedIPAddressRanges(serverList),
-                   getExcludedAddresses(serverList), vpnDisabledApps, dns,
+void Controller::activateNext() {
+  MozillaVPN* vpn = MozillaVPN::instance();
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+  const HopConnection& hop = m_activationQueue.first();
+
+  m_impl->activate(hop.m_server, device, vpn->keys(), hop.m_hopindex,
+                   hop.m_allowedIPAddressRanges, hop.m_excludedAddresses,
+                   hop.m_vpnDisabledApps, hop.m_dnsServer,
                    stateToReason(m_state));
 }
 
@@ -251,6 +285,7 @@ bool Controller::silentSwitchServers() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
+  // Set a cooldown timer on the current server.
   QList<Server> servers = vpn->exitServers();
   Q_ASSERT(!servers.isEmpty());
 
@@ -259,50 +294,11 @@ bool Controller::silentSwitchServers() {
         << "Cannot silent switch servers because there is only one available";
     return false;
   }
+  vpn->setServerCooldown(vpn->serverPublicKey());
 
-  QList<Server>::iterator iterator = servers.begin();
-
-  while (iterator != servers.end()) {
-    if (iterator->publicKey() == vpn->serverPublicKey()) {
-      servers.erase(iterator);
-      break;
-    }
-    ++iterator;
-  }
-
-  Server server = Server::weightChooser(servers);
-  Q_ASSERT(server.initialized());
-
-#ifndef MVPN_WASM
-  // All the keys are the same in WASM builds.
-  Q_ASSERT(server.publicKey() != vpn->serverPublicKey());
-#endif
-
-  vpn->setServerPublicKey(server.publicKey());
-
-  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
-
-  QList<QString> vpnDisabledApps;
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (settingsHolder->protectSelectedApps()) {
-    vpnDisabledApps = settingsHolder->vpnDisabledApps();
-  }
-
-  QList<Server> serverList = {server};
-  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
-    Server hop = Server::weightChooser(vpn->entryServers());
-    Q_ASSERT(hop.initialized());
-    serverList.append(hop);
-  }
-
-  QHostAddress dns = QHostAddress(DNSHelper::getDNS(server.ipv4Gateway()));
-
-  Q_ASSERT(m_impl);
-  m_impl->activate(serverList, device, vpn->keys(),
-                   getAllowedIPAddressRanges(serverList),
-                   getExcludedAddresses(serverList), vpnDisabledApps, dns,
-                   stateToReason(StateSwitching));
+  // Activate the connection.
+  setState(StateSwitching);
+  activateInternal();
   return true;
 }
 
@@ -327,7 +323,22 @@ bool Controller::deactivate() {
   return true;
 }
 
-void Controller::connected() {
+void Controller::connected(const QString& pubkey) {
+  logger.debug() << "handshake completed with:" << pubkey;
+  if (m_activationQueue.isEmpty()) {
+    return;
+  }
+  if (m_activationQueue.first().m_server.publicKey() != pubkey) {
+    return;
+  }
+
+  // Start the next connection if there is more work to do.
+  m_activationQueue.removeFirst();
+  if (!m_activationQueue.isEmpty()) {
+    activateNext();
+    return;
+  }
+
   logger.debug() << "Connected from state:" << m_state;
 
   // We are currently silently switching servers
@@ -344,9 +355,9 @@ void Controller::connected() {
 
     resetConnectedTime();
 
-    TimerSingleShot::create(this, TIME_ACTIVATION, [this]() {
+    TimerSingleShot::create(this, TIME_ACTIVATION, [this, pubkey]() {
       if (m_state == StateConnecting) {
-        connected();
+        connected(pubkey);
       }
     });
     return;
@@ -686,7 +697,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 }
 
 QList<IPAddress> Controller::getAllowedIPAddressRanges(
-    const QList<Server>& serverList) {
+    const Server& exitServer) {
   logger.debug() << "Computing the allowed IP addresses";
 
   QList<IPAddress> excludeIPv4s;
@@ -718,12 +729,11 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   logger.debug() << "Catch all IPv6";
   list.append(IPAddress("::0/0"));
 #else
-  const Server& server = serverList.first();
   // Allow access to the internal gateway addresses.
-  logger.debug() << "Allow the IPv4 gateway:" << server.ipv4Gateway();
-  list.append(IPAddress(QHostAddress(server.ipv4Gateway()), 32));
-  logger.debug() << "Allow the IPv6 gateway:" << server.ipv6Gateway();
-  list.append(IPAddress(QHostAddress(server.ipv6Gateway()), 128));
+  logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
+  list.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
+  logger.debug() << "Allow the IPv6 gateway:" << exitServer.ipv6Gateway();
+  list.append(IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128));
 
   // Ensure that the Mullvad proxy services are always allowed.
   list.append(
@@ -739,7 +749,7 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   return list;
 }
 
-QStringList Controller::getExcludedAddresses(const QList<Server>& serverList) {
+QStringList Controller::getExcludedAddresses(const Server& exitServer) {
   logger.debug() << "Computing the excluded IP addresses";
 
   QStringList list;
@@ -761,7 +771,7 @@ QStringList Controller::getExcludedAddresses(const QList<Server>& serverList) {
 
   // Filter out the Custom DNS Server, if the user has set one.
   if (DNSHelper::shouldExcludeDNS()) {
-    auto dns = DNSHelper::getDNS(serverList.first().ipv4Gateway());
+    auto dns = DNSHelper::getDNS(exitServer.ipv4Gateway());
     logger.debug() << "Filtering out the DNS address:" << dns;
     list.append(dns);
   }
