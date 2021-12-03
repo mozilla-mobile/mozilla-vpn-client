@@ -9,7 +9,7 @@
 #include <QCoreApplication>
 #include <nebula.h>
 #include <glean.h>
-#include <crashreporter/crashreporterfactory.h>
+#include <crashreporter/crashreporterapp.h>
 
 #if defined MVPN_WINDOWS && defined MVPN_DEBUG
 #  include <windows.h>
@@ -34,7 +34,15 @@ int main(int argc, char* argv[]) {
 #endif
 
   INIT_NEBULA;
-
+#ifdef MVPN_WINDOWS
+  if(argc > 1){
+      for(int i = 1; i < argc; i++){
+          if(!strcmp("--crashreporter", argv[i])){
+              return CrashReporterApp::main(argc, argv);
+          }
+      }
+  }
+#endif
   INIT_GLEAN;
   CommandLineParser clp;
   return clp.parse(argc, argv);

@@ -14,12 +14,14 @@ CONFIG += c++1z
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    $$PWD/crashclient.cpp \
         $$PWD/crashdata.cpp \
         $$PWD/crashreporter.cpp \
         $$PWD/crashreporterapp.cpp \
         $$PWD/crashreporterfactory.cpp \
 
 HEADERS += \
+    $$PWD/crashclient.h \
     $$PWD/crashconstants.h \
     $$PWD/crashconstants.h \
     $$PWD/crashdata.h \
@@ -43,8 +45,10 @@ QMAKE_CXXFLAGS += -Zc:preprocessor
 exists($$PWD/../../3rdparty/crashpad/crashpad/package.h) {
     LIBS += -L"$$PWD/../../3rdparty/crashpad/crashpad/out/Release/obj/third_party/mini_chromium/mini_chromium/base" -lbase
     LIBS += -L"$$PWD/../../3rdparty/crashpad/crashpad/out/Release/obj/client" -lcommon
+    LIBS += -L"$$PWD/../../3rdparty/crashpad/crashpad/out/Release/obj/client" -lclient
     LIBS += -L"$$PWD/../../3rdparty/crashpad/crashpad/out/Release/obj/handler" -lhandler
     LIBS += -L"$$PWD/../../3rdparty/crashpad/crashpad/out/Release/obj/util" -lutil
+    INCLUDEPATH +="$$PWD/../../3rdparty/crashpad/crashpad/out/Release/gen"
     INCLUDEPATH +="$$PWD/../../3rdparty/crashpad/crashpad"
     INCLUDEPATH +="$$PWD/../../3rdparty/crashpad/crashpad/third_party/mini_chromium/mini_chromium"
     LIBS+=-ladvapi32

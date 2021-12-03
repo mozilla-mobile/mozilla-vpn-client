@@ -21,7 +21,7 @@ public:
     virtual bool shouldPromptUser();
 public slots:
     void crashReported(const CrashData &data);
-signals:
+
 
 };
 

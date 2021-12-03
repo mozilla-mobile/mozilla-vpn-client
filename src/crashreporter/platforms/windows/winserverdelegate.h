@@ -9,7 +9,7 @@
 #include <QObject>
 #include "../../crashdata.h"
 
-class WinServerDelegate : public crashpad::ExceptionHandlerServer::Delegate, public QObject
+class WinServerDelegate : public QObject, public crashpad::ExceptionHandlerServer::Delegate
 {
     Q_OBJECT
 public:
