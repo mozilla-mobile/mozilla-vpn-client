@@ -348,7 +348,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
       if (!buffer.isEmpty()) {
         logger.error() << "Service Error while activating the VPN: " << buffer;
       }
-      MozillaVPN::instance().errorHandle(ErrorHandler::ConnectionFailureError);
+      MozillaVPN::instance()->errorHandle(ErrorHandler::ConnectionFailureError);
       emit m_controller->disconnected();
       break;
     default:

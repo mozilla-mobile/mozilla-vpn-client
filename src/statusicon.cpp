@@ -59,15 +59,15 @@ void StatusIcon::stateChanged() {
 
   m_animatedIconTimer.stop();
 
-  auto& vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
 
   // If we are in a non-main state, we don't need to show special icons.
-  if (vpn.state() != MozillaVPN::StateMain) {
+  if (vpn->state() != MozillaVPN::StateMain) {
     setIcon(LOGO_GENERIC);
     return;
   }
 
-  switch (vpn.controller()->state()) {
+  switch (vpn->controller()->state()) {
     case Controller::StateOn:
       setIcon(LOGO_ON);
       break;

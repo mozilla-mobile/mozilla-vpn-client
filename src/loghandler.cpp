@@ -23,12 +23,11 @@
 constexpr qint64 LOG_MAX_FILE_SIZE = 204800;
 constexpr const char* LOG_FILENAME = "mozillavpn.txt";
 
-using namespace std;
-
 namespace {
-
+QMutex s_mutex;
 QString s_location =
     QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+LogHandler* s_instance = nullptr;
 
 LogLevel qtTypeToLogLevel(QtMsgType type) {
   switch (type) {
@@ -50,28 +49,56 @@ LogLevel qtTypeToLogLevel(QtMsgType type) {
 }  // namespace
 
 // static
-LogHandler& LogHandler::instance() {
-  static LogHandler instance;
-  return instance;
+LogHandler* LogHandler::instance() {
+  MutexLocker lock(&s_mutex);
+  return maybeCreate(lock);
 }
 
 // static
 void LogHandler::messageQTHandler(QtMsgType type,
                                   const QMessageLogContext& context,
                                   const QString& message) {
-  auto& handler = instance();
-  lock_guard<recursive_mutex> lock(handler.m_mutex);
-  handler.addLog(Log(qtTypeToLogLevel(type), context.file, context.function,
-                     context.line, message));
+  MutexLocker lock(&s_mutex);
+  maybeCreate(lock)->addLog(Log(qtTypeToLogLevel(type), context.file,
+                                context.function, context.line, message),
+                            lock);
 }
 
 // static
 void LogHandler::messageHandler(LogLevel logLevel, const QStringList& modules,
                                 const QString& className,
                                 const QString& message) {
-  auto& handler = instance();
-  lock_guard<recursive_mutex> lock(handler.m_mutex);
-  handler.addLog(Log(logLevel, modules, className, message));
+  MutexLocker lock(&s_mutex);
+  maybeCreate(lock)->addLog(Log(logLevel, modules, className, message), lock);
+}
+
+// static
+LogHandler* LogHandler::maybeCreate(const MutexLocker& proofOfLock) {
+  if (!s_instance) {
+    LogLevel minLogLevel = Debug;  // TODO: in prod, we should log >= warning
+    QStringList modules;
+    QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+    if (pe.contains("MOZVPN_LEVEL")) {
+      QString level = pe.value("MOZVPN_LEVEL");
+      if (level == "info")
+        minLogLevel = Info;
+      else if (level == "warning")
+        minLogLevel = Warning;
+      else if (level == "error")
+        minLogLevel = Error;
+    }
+
+    if (pe.contains("MOZVPN_LOG")) {
+      QStringList parts = pe.value("MOZVPN_LOG").split(",");
+      for (const QString& part : parts) {
+        modules.append(part.trimmed());
+      }
+    }
+
+    s_instance = new LogHandler(minLogLevel, modules, proofOfLock);
+  }
+
+  return s_instance;
 }
 
 // static
@@ -130,45 +157,31 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
 }
 
 // static
-void LogHandler::enableDebug() { instance().m_showDebug = true; }
+void LogHandler::enableDebug() {
+  MutexLocker lock(&s_mutex);
+  maybeCreate(lock)->m_showDebug = true;
+}
 
-LogHandler::LogHandler() {
-  lock_guard<recursive_mutex> lock(m_mutex);
-  m_minLogLevel = Debug;  // TODO: in prod, we should log >= warning
-  QStringList modules;
-  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  if (pe.contains("MOZVPN_LEVEL")) {
-    QString level = pe.value("MOZVPN_LEVEL");
-    if (level == "info")
-      m_minLogLevel = Info;
-    else if (level == "warning")
-      m_minLogLevel = Warning;
-    else if (level == "error")
-      m_minLogLevel = Error;
-  }
-
-  if (pe.contains("MOZVPN_LOG")) {
-    QStringList parts = pe.value("MOZVPN_LOG").split(",");
-    for (const QString& part : parts) {
-      m_modules.append(part.trimmed());
-    }
-  }
+LogHandler::LogHandler(LogLevel minLogLevel, const QStringList& modules,
+                       const MutexLocker& proofOfLock)
+    : m_minLogLevel(minLogLevel), m_modules(modules) {
+  Q_UNUSED(proofOfLock);
 
 #if defined(MVPN_DEBUG) || defined(MVPN_WASM)
   m_showDebug = true;
 #endif
 
   if (!s_location.isEmpty()) {
-    openLogFile();
+    openLogFile(proofOfLock);
   }
 }
 
-void LogHandler::addLog(const Log& log) {
-  if (!matchLogLevel(log)) {
+void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
+  if (!matchLogLevel(log, proofOfLock)) {
     return;
   }
 
-  if (!matchModule(log)) {
+  if (!matchModule(log, proofOfLock)) {
     return;
   }
 
@@ -197,7 +210,10 @@ void LogHandler::addLog(const Log& log) {
 #endif
 }
 
-bool LogHandler::matchModule(const Log& log) const {
+bool LogHandler::matchModule(const Log& log,
+                             const MutexLocker& proofOfLock) const {
+  Q_UNUSED(proofOfLock);
+
   // Let's include QT logs always.
   if (log.m_fromQT) {
     return true;
@@ -217,20 +233,22 @@ bool LogHandler::matchModule(const Log& log) const {
   return false;
 }
 
-bool LogHandler::matchLogLevel(const Log& log) const {
+bool LogHandler::matchLogLevel(const Log& log,
+                               const MutexLocker& proofOfLock) const {
+  Q_UNUSED(proofOfLock);
   return log.m_logLevel >= m_minLogLevel;
 }
 
 // static
 void LogHandler::writeLogs(QTextStream& out) {
-  auto& handler = instance();
-  lock_guard<recursive_mutex> lock(handler.m_mutex);
-  if (!handler.m_logFile) {
+  MutexLocker lock(&s_mutex);
+
+  if (!s_instance || !s_instance->m_logFile) {
     return;
   }
 
-  QString logFileName = handler.m_logFile->fileName();
-  handler.closeLogFile();
+  QString logFileName = s_instance->m_logFile->fileName();
+  s_instance->closeLogFile(lock);
 
   {
     QFile file(logFileName);
@@ -241,45 +259,47 @@ void LogHandler::writeLogs(QTextStream& out) {
     out << file.readAll();
   }
 
-  handler.openLogFile();
+  s_instance->openLogFile(lock);
 }
 
 // static
-void LogHandler::cleanupLogs() { cleanupLogFile(); }
+void LogHandler::cleanupLogs() {
+  MutexLocker lock(&s_mutex);
+  cleanupLogFile(lock);
+}
 
 // static
-void LogHandler::cleanupLogFile() {
-  auto& handler = instance();
-  if (!handler.m_logFile) {
+void LogHandler::cleanupLogFile(const MutexLocker& proofOfLock) {
+  if (!s_instance || !s_instance->m_logFile) {
     return;
   }
-  lock_guard<recursive_mutex> lock(handler.m_mutex);
-  QString logFileName = handler.m_logFile->fileName();
-  handler.closeLogFile();
+
+  QString logFileName = s_instance->m_logFile->fileName();
+  s_instance->closeLogFile(proofOfLock);
 
   {
     QFile file(logFileName);
     file.remove();
   }
 
-  handler.openLogFile();
+  s_instance->openLogFile(proofOfLock);
 }
 
 // static
 void LogHandler::setLocation(const QString& path) {
-  auto& handler = instance();
-  lock_guard<recursive_mutex> lock(handler.m_mutex);
+  MutexLocker lock(&s_mutex);
   s_location = path;
 
-  if (handler.m_logFile) {
-    cleanupLogFile();
+  if (s_instance && s_instance->m_logFile) {
+    cleanupLogFile(lock);
   }
 }
 
-void LogHandler::openLogFile() {
+void LogHandler::openLogFile(const MutexLocker& proofOfLock) {
+  Q_UNUSED(proofOfLock);
   Q_ASSERT(!m_logFile);
   Q_ASSERT(!m_output);
-  lock_guard<recursive_mutex> lock(m_mutex);
+
   QDir appDataLocation(s_location);
   if (!appDataLocation.exists()) {
     QDir tmp(s_location);
@@ -308,11 +328,13 @@ void LogHandler::openLogFile() {
   m_output = new QTextStream(m_logFile);
 
   addLog(Log(Debug, QStringList{LOG_MAIN}, "LogHandler",
-             QString("Log file: %1").arg(logFileName)));
+             QString("Log file: %1").arg(logFileName)),
+         proofOfLock);
 }
 
-void LogHandler::closeLogFile() {
-  lock_guard<recursive_mutex> lock(m_mutex);
+void LogHandler::closeLogFile(const MutexLocker& proofOfLock) {
+  Q_UNUSED(proofOfLock);
+
   if (m_logFile) {
     delete m_output;
     m_output = nullptr;

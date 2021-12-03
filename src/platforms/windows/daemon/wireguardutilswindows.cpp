@@ -117,14 +117,14 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   // Enable the windows firewall
   NET_IFINDEX ifindex;
   ConvertInterfaceLuidToIndex(&luid, &ifindex);
-  WindowsFirewall::instance().enableKillSwitch(ifindex);
+  WindowsFirewall::instance()->enableKillSwitch(ifindex);
 
   logger.debug() << "Registration completed";
   return true;
 }
 
 bool WireguardUtilsWindows::deleteInterface() {
-  WindowsFirewall::instance().disableKillSwitch();
+  WindowsFirewall::instance()->disableKillSwitch();
   m_tunnel.stop();
   return true;
 }
@@ -134,7 +134,7 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
   // Enable the windows firewall for this peer.
-  WindowsFirewall::instance().enablePeerTraffic(config);
+  WindowsFirewall::instance()->enablePeerTraffic(config);
 
   logger.debug() << "Configuring peer" << printableKey(config.m_serverPublicKey)
                  << "via" << config.m_serverIpv4AddrIn;
@@ -170,7 +170,7 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
   // Disable the windows firewall for this peer.
-  WindowsFirewall::instance().disablePeerTraffic(config.m_serverPublicKey);
+  WindowsFirewall::instance()->disablePeerTraffic(config.m_serverPublicKey);
 
   QString message;
   QTextStream out(&message);

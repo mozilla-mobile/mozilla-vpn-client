@@ -29,11 +29,12 @@ ServerCountryModel::~ServerCountryModel() {
 }
 
 bool ServerCountryModel::fromSettings() {
-  auto& settingsHolder = SettingsHolder::instance();
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
   logger.debug() << "Reading the server list from settings";
 
-  const QByteArray json = settingsHolder.servers();
+  const QByteArray json = settingsHolder->servers();
   if (json.isEmpty() || !fromJsonInternal(json)) {
     return false;
   }

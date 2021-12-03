@@ -358,7 +358,7 @@ QString Daemon::logs() {
   return output;
 }
 
-void Daemon::cleanLogs() { LogHandler::instance().cleanupLogs(); }
+void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
 bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
   if (!m_connections.contains(config.m_hopindex)) {

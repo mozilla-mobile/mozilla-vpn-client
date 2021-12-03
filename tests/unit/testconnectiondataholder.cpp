@@ -18,7 +18,7 @@ using namespace QtCharts;
 void TestConnectionDataHolder::checkIpAddressFailure() {
   ConnectionDataHolder cdh;
 
-  SettingsHolder::instance();
+  SettingsHolder settingsHolder;
 
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
@@ -59,7 +59,7 @@ void TestConnectionDataHolder::checkIpAddressSucceess() {
   ConnectionDataHolder cdh;
   QSignalSpy spy(&cdh, &ConnectionDataHolder::ipv4AddressChanged);
 
-  SettingsHolder::instance();
+  SettingsHolder settingsHolder;
 
   TestHelper::networkConfig.clear();
 
@@ -89,7 +89,7 @@ void TestConnectionDataHolder::chart() {
   ConnectionDataHolder cdh;
   QSignalSpy spy(&cdh, &ConnectionDataHolder::bytesChanged);
 
-  SettingsHolder::instance();
+  SettingsHolder settingsHolder;
 
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Success, QString("{'ip':'42'}").toUtf8()));

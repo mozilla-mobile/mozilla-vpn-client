@@ -41,5 +41,5 @@ void AndroidVPNActivity::init() {
 bool AndroidVPNActivity::handleBackButton(JNIEnv* env, jobject thiz) {
   Q_UNUSED(env);
   Q_UNUSED(thiz);
-  return MozillaVPN::instance().closeEventHandler()->eventHandled();
+  return MozillaVPN::instance()->closeEventHandler()->eventHandled();
 }

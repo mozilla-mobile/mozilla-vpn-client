@@ -26,7 +26,7 @@ void TaskScheduler::deleteTasks() { maybeCreate()->deleteTasksInternal(); }
 TaskScheduler* TaskScheduler::maybeCreate() {
   static TaskScheduler* s_taskScheduler = nullptr;
   if (!s_taskScheduler) {
-    s_taskScheduler = new TaskScheduler(&MozillaVPN::instance());
+    s_taskScheduler = new TaskScheduler(MozillaVPN::instance());
   }
   return s_taskScheduler;
 }

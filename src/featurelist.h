@@ -22,7 +22,7 @@ class FeatureList final : public QAbstractListModel {
     FeatureRole = Qt::UserRole + 1,
   };
 
-  static FeatureList& instance();
+  static FeatureList* instance();
 
   void initialize();
 

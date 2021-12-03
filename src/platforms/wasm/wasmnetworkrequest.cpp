@@ -31,9 +31,9 @@ void createDummyRequest(NetworkRequest* r, const QString& resource) {
       file.close();
     }
 
-    emit r->requestCompleted(
-        data.replace("%%PUBLICKEY%%",
-                     MozillaVPN::instance().keys()->publicKey().toLocal8Bit()));
+    emit r->requestCompleted(data.replace(
+        "%%PUBLICKEY%%",
+        MozillaVPN::instance()->keys()->publicKey().toLocal8Bit()));
   });
 }
 
