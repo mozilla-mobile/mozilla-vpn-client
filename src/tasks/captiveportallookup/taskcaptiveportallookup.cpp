@@ -33,7 +33,7 @@ void TaskCaptivePortalLookup::run() {
           return;
         }
         logger.error() << "Failed to obtain captive portal IPs" << error;
-        MozillaVPN::instance().errorHandle(ErrorHandler::toErrorType(error));
+        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
       });
 
@@ -41,9 +41,9 @@ void TaskCaptivePortalLookup::run() {
           [this](const QByteArray& data) {
             logger.debug() << "Lookup completed";
 
-            auto& vpn = MozillaVPN::instance();
-            if (vpn.captivePortal()->fromJson(data)) {
-              vpn.captivePortal()->writeSettings();
+            MozillaVPN* vpn = MozillaVPN::instance();
+            if (vpn->captivePortal()->fromJson(data)) {
+              vpn->captivePortal()->writeSettings();
             }
 
             emit completed();

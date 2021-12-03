@@ -4,10 +4,19 @@
 
 #include "../../src/mozillavpn.h"
 
+// The singleton.
+static MozillaVPN* s_instance = nullptr;
+
 // static
-MozillaVPN& MozillaVPN::instance() {
-  static MozillaVPN instance;
-  return instance;
+MozillaVPN* MozillaVPN::instance() { return maybeInstance(); }
+
+// static
+MozillaVPN* MozillaVPN::maybeInstance() {
+  if (!s_instance) {
+    s_instance = new MozillaVPN();
+  }
+
+  return s_instance;
 }
 
 MozillaVPN::MozillaVPN() {}

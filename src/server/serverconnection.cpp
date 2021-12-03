@@ -78,21 +78,22 @@ void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
 }
 
 QJsonObject serializeStatus() {
-  auto& vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
   QJsonObject obj;
 
-  obj["authenticated"] = vpn.userState() == MozillaVPN::UserAuthenticated;
-  obj["location"] = vpn.currentServer()->toString();
+  obj["authenticated"] = vpn->userState() == MozillaVPN::UserAuthenticated;
+  obj["location"] = vpn->currentServer()->toString();
 
   {
-    MozillaVPN::State state = vpn.state();
+    MozillaVPN::State state = vpn->state();
     const QMetaObject* meta = qt_getEnumMetaObject(state);
     int index = meta->indexOfEnumerator(qt_getEnumName(state));
     obj["app"] = meta->enumerator(index).valueToKey(state);
   }
 
   {
-    Controller::State state = vpn.controller()->state();
+    Controller::State state = vpn->controller()->state();
     const QMetaObject* meta = qt_getEnumMetaObject(state);
     int index = meta->indexOfEnumerator(qt_getEnumName(state));
     obj["vpn"] = meta->enumerator(index).valueToKey(state);
@@ -104,13 +105,13 @@ QJsonObject serializeStatus() {
 static QList<RequestType> s_types{
     RequestType{"activate",
                 [](const QJsonObject&) {
-                  MozillaVPN::instance().activate();
+                  MozillaVPN::instance()->activate();
                   return QJsonObject();
                 }},
 
     RequestType{"deactivate",
                 [](const QJsonObject&) {
-                  MozillaVPN::instance().deactivate();
+                  MozillaVPN::instance()->deactivate();
                   return QJsonObject();
                 }},
 
@@ -118,7 +119,7 @@ static QList<RequestType> s_types{
                 [](const QJsonObject&) {
                   QJsonObject servers;
                   serializeServerCountry(
-                      MozillaVPN::instance().serverCountryModel(), servers);
+                      MozillaVPN::instance()->serverCountryModel(), servers);
 
                   QJsonObject obj;
                   obj["servers"] = servers;
@@ -129,7 +130,7 @@ static QList<RequestType> s_types{
                 [](const QJsonObject&) {
                   QJsonArray apps;
                   for (const QString& app :
-                       SettingsHolder::instance().vpnDisabledApps()) {
+                       SettingsHolder::instance()->vpnDisabledApps()) {
                     apps.append(app);
                   }
 
@@ -166,10 +167,11 @@ ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
   connect(m_connection, &QTcpSocket::readyRead, this,
           &ServerConnection::readData);
 
-  auto& vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 
-  connect(&vpn, &MozillaVPN::stateChanged, this, &ServerConnection::writeState);
-  connect(vpn.controller(), &Controller::stateChanged, this,
+  connect(vpn, &MozillaVPN::stateChanged, this, &ServerConnection::writeState);
+  connect(vpn->controller(), &Controller::stateChanged, this,
           &ServerConnection::writeState);
 }
 

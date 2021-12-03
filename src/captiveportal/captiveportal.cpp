@@ -71,17 +71,19 @@ bool CaptivePortal::fromJson(const QByteArray& data) {
 }
 
 bool CaptivePortal::fromSettings() {
-  auto& settingsHolder = SettingsHolder::instance();
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
-  m_ipv4Addresses = settingsHolder.captivePortalIpv4Addresses();
-  m_ipv6Addresses = settingsHolder.captivePortalIpv6Addresses();
+  m_ipv4Addresses = settingsHolder->captivePortalIpv4Addresses();
+  m_ipv6Addresses = settingsHolder->captivePortalIpv6Addresses();
 
   return true;
 }
 
 void CaptivePortal::writeSettings() {
-  auto& settingsHolder = SettingsHolder::instance();
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
-  settingsHolder.setCaptivePortalIpv4Addresses(m_ipv4Addresses);
-  settingsHolder.setCaptivePortalIpv6Addresses(m_ipv6Addresses);
+  settingsHolder->setCaptivePortalIpv4Addresses(m_ipv4Addresses);
+  settingsHolder->setCaptivePortalIpv6Addresses(m_ipv6Addresses);
 }

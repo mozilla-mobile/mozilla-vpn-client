@@ -128,10 +128,11 @@ void Controller::initialize() {
   connect(this, &Controller::stateChanged, this,
           &Controller::maybeEnableDisconnectInConfirming);
 
-  auto& vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 
-  const Device* device = vpn.deviceModel()->currentDevice(vpn.keys());
-  m_impl->initialize(device, vpn.keys());
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+  m_impl->initialize(device, vpn->keys());
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
@@ -143,7 +144,7 @@ void Controller::implInitialized(bool status, bool a_connected,
   Q_ASSERT(m_state == StateInitializing);
 
   if (!status) {
-    MozillaVPN::instance().errorHandle(ErrorHandler::ControllerError);
+    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
     setState(StateOff);
     return;
   }
@@ -188,31 +189,32 @@ void Controller::activateInternal() {
 
   resetConnectedTime();
 
-  auto& vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 
-  Server exitServer = Server::weightChooser(vpn.exitServers());
+  Server exitServer = Server::weightChooser(vpn->exitServers());
   if (!exitServer.initialized()) {
     logger.error() << "Empty exit server list in state" << m_state;
     backendFailure();
     return;
   }
 
-  vpn.setServerPublicKey(exitServer.publicKey());
+  vpn->setServerPublicKey(exitServer.publicKey());
 
-  const Device* device = vpn.deviceModel()->currentDevice(vpn.keys());
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
 
   QList<QString> vpnDisabledApps;
 
-  auto& settingsHolder = SettingsHolder::instance();
-  if (settingsHolder.protectSelectedApps()) {
-    vpnDisabledApps = settingsHolder.vpnDisabledApps();
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (settingsHolder->protectSelectedApps()) {
+    vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
   // Multihop connections provide a list of servers, starting with the exit
   // node as the first element, and the entry node as the final entry.
   QList<Server> serverList = {exitServer};
-  if (FeatureMultiHop::instance()->isSupported() && vpn.multihop()) {
-    Server entryServer = Server::weightChooser(vpn.entryServers());
+  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
+    Server entryServer = Server::weightChooser(vpn->entryServers());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       backendFailure();
@@ -227,8 +229,7 @@ void Controller::activateInternal() {
   logger.debug() << "DNS Set" << dns.toString();
 
   Q_ASSERT(m_impl);
-
-  m_impl->activate(serverList, device, vpn.keys(),
+  m_impl->activate(serverList, device, vpn->keys(),
                    getAllowedIPAddressRanges(serverList),
                    getExcludedAddresses(serverList), vpnDisabledApps, dns,
                    stateToReason(m_state));
@@ -242,9 +243,10 @@ bool Controller::silentSwitchServers() {
     return false;
   }
 
-  auto& vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 
-  QList<Server> servers = vpn.exitServers();
+  QList<Server> servers = vpn->exitServers();
   Q_ASSERT(!servers.isEmpty());
 
   if (servers.length() <= 1) {
@@ -256,7 +258,7 @@ bool Controller::silentSwitchServers() {
   QList<Server>::iterator iterator = servers.begin();
 
   while (iterator != servers.end()) {
-    if (iterator->publicKey() == vpn.serverPublicKey()) {
+    if (iterator->publicKey() == vpn->serverPublicKey()) {
       servers.erase(iterator);
       break;
     }
@@ -268,23 +270,23 @@ bool Controller::silentSwitchServers() {
 
 #ifndef MVPN_WASM
   // All the keys are the same in WASM builds.
-  Q_ASSERT(server.publicKey() != vpn.serverPublicKey());
+  Q_ASSERT(server.publicKey() != vpn->serverPublicKey());
 #endif
 
-  vpn.setServerPublicKey(server.publicKey());
+  vpn->setServerPublicKey(server.publicKey());
 
-  const Device* device = vpn.deviceModel()->currentDevice(vpn.keys());
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
 
   QList<QString> vpnDisabledApps;
 
-  auto& settingsHolder = SettingsHolder::instance();
-  if (settingsHolder.protectSelectedApps()) {
-    vpnDisabledApps = settingsHolder.vpnDisabledApps();
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (settingsHolder->protectSelectedApps()) {
+    vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
   QList<Server> serverList = {server};
-  if (FeatureMultiHop::instance()->isSupported() && vpn.multihop()) {
-    Server hop = Server::weightChooser(vpn.entryServers());
+  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
+    Server hop = Server::weightChooser(vpn->entryServers());
     Q_ASSERT(hop.initialized());
     serverList.append(hop);
   }
@@ -292,8 +294,7 @@ bool Controller::silentSwitchServers() {
   QHostAddress dns = QHostAddress(DNSHelper::getDNS(server.ipv4Gateway()));
 
   Q_ASSERT(m_impl);
-
-  m_impl->activate(serverList, device, vpn.keys(),
+  m_impl->activate(serverList, device, vpn->keys(),
                    getAllowedIPAddressRanges(serverList),
                    getExcludedAddresses(serverList), vpnDisabledApps, dns,
                    stateToReason(StateSwitching));
@@ -453,9 +454,9 @@ void Controller::disconnected() {
   }
 
   if (nextStep == None && m_state == StateSwitching) {
-    auto& vpn = MozillaVPN::instance();
-    vpn.changeServer(m_switchingExitCountry, m_switchingExitCity,
-                     m_switchingEntryCountry, m_switchingEntryCity);
+    MozillaVPN* vpn = MozillaVPN::instance();
+    vpn->changeServer(m_switchingExitCountry, m_switchingExitCity,
+                      m_switchingEntryCountry, m_switchingEntryCity);
     activate();
     return;
   }
@@ -473,19 +474,20 @@ void Controller::changeServer(const QString& countryCode, const QString& city,
                               const QString& entryCity) {
   Q_ASSERT(m_state == StateOn || m_state == StateOff);
 
-  auto& vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 
-  if (vpn.currentServer()->exitCountryCode() == countryCode &&
-      vpn.currentServer()->exitCityName() == city &&
-      vpn.currentServer()->entryCountryCode() == entryCountryCode &&
-      vpn.currentServer()->entryCityName() == entryCity) {
+  if (vpn->currentServer()->exitCountryCode() == countryCode &&
+      vpn->currentServer()->exitCityName() == city &&
+      vpn->currentServer()->entryCountryCode() == entryCountryCode &&
+      vpn->currentServer()->entryCityName() == entryCity) {
     logger.debug() << "No server change needed";
     return;
   }
 
   if (m_state == StateOff) {
     logger.debug() << "Change server";
-    vpn.changeServer(countryCode, city, entryCountryCode, entryCity);
+    vpn->changeServer(countryCode, city, entryCountryCode, entryCity);
     return;
   }
 
@@ -494,8 +496,8 @@ void Controller::changeServer(const QString& countryCode, const QString& city,
 
   logger.debug() << "Switching to a different server";
 
-  m_currentCity = vpn.currentServer()->exitCityName();
-  m_currentCountryCode = vpn.currentServer()->exitCountryCode();
+  m_currentCity = vpn->currentServer()->exitCityName();
+  m_currentCountryCode = vpn->currentServer()->exitCountryCode();
   m_switchingExitCountry = countryCode;
   m_switchingExitCity = city;
   m_switchingEntryCountry = entryCountryCode;
@@ -557,7 +559,7 @@ void Controller::updateRequired() {
 void Controller::logout() {
   logger.debug() << "Logout";
 
-  MozillaVPN::instance().logout();
+  MozillaVPN::instance()->logout();
 
   if (m_state == StateOff) {
     return;
@@ -690,7 +692,7 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
 
   // filtering out the RFC1918 local area network
   if (FeatureLocalAreaAccess::instance()->isSupported() &&
-      SettingsHolder::instance().localNetworkAccess()) {
+      SettingsHolder::instance()->localNetworkAccess()) {
     logger.debug() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());
 
@@ -739,8 +741,8 @@ QStringList Controller::getExcludedAddresses(const QList<Server>& serverList) {
 
   // filtering out the captive portal endpoint
   if (FeatureCaptivePortal::instance()->isSupported() &&
-      SettingsHolder::instance().captivePortalAlert()) {
-    CaptivePortal* captivePortal = MozillaVPN::instance().captivePortal();
+      SettingsHolder::instance()->captivePortalAlert()) {
+    CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
 
     for (const QString& address : captivePortal->ipv4Addresses()) {
       logger.debug() << "Filtering out the captive portal address:" << address;
@@ -779,7 +781,7 @@ void Controller::heartbeatCompleted() {
   m_reconnectionStep = NoReconnection;
 
   // If we are still in the main state, we can try to reconnect.
-  if (MozillaVPN::instance().state() == MozillaVPN::StateMain) {
+  if (MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
     activateInternal();
   }
 }

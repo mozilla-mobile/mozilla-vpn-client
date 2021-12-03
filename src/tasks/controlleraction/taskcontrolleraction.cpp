@@ -33,7 +33,7 @@ TaskControllerAction::~TaskControllerAction() {
 void TaskControllerAction::run() {
   logger.debug() << "TaskControllerAction run";
 
-  Controller* controller = MozillaVPN::instance().controller();
+  Controller* controller = MozillaVPN::instance()->controller();
   Q_ASSERT(controller);
 
   if (m_action == eSilentSwitch) {
@@ -79,7 +79,7 @@ void TaskControllerAction::stateChanged() {
     return;
   }
 
-  Controller* controller = MozillaVPN::instance().controller();
+  Controller* controller = MozillaVPN::instance()->controller();
   Q_ASSERT(controller);
 
   Controller::State state = controller->state();
@@ -98,7 +98,7 @@ void TaskControllerAction::silentSwitchDone() {
 }
 
 void TaskControllerAction::checkStatus() {
-  Controller* controller = MozillaVPN::instance().controller();
+  Controller* controller = MozillaVPN::instance()->controller();
   Q_ASSERT(controller);
   if (controller->state() == m_lastState) {
     m_timer.stop();

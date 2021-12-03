@@ -25,18 +25,19 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
     : NotificationHandler(parent) {
   MVPN_COUNT_CTOR(SystemTrayNotificationHandler);
 
-  auto& vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 
-  connect(&vpn, &MozillaVPN::stateChanged, this,
+  connect(vpn, &MozillaVPN::stateChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
-  connect(vpn.currentServer(), &ServerData::changed, this,
+  connect(vpn->currentServer(), &ServerData::changed, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
-  connect(vpn.controller(), &Controller::stateChanged, this,
+  connect(vpn->controller(), &Controller::stateChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
-  connect(vpn.statusIcon(), &StatusIcon::iconChanged, this,
+  connect(vpn->statusIcon(), &StatusIcon::iconChanged, this,
           &SystemTrayNotificationHandler::updateIcon);
 
   m_systemTrayIcon.setToolTip(qtTrId("vpn.main.productName"));
@@ -46,11 +47,11 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   m_statusLabel->setEnabled(false);
 
   m_lastLocationLabel =
-      m_menu.addAction("", vpn.controller(), &Controller::activate);
+      m_menu.addAction("", vpn->controller(), &Controller::activate);
   m_lastLocationLabel->setEnabled(false);
 
   m_disconnectAction =
-      m_menu.addAction("", vpn.controller(), &Controller::deactivate);
+      m_menu.addAction("", vpn->controller(), &Controller::deactivate);
 
   m_separator = m_menu.addSeparator();
 
@@ -61,17 +62,16 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
 
   m_helpMenu = m_menu.addMenu("");
 
-  m_preferencesAction =
-      m_menu.addAction("", &vpn, &MozillaVPN::requestSettings);
+  m_preferencesAction = m_menu.addAction("", vpn, &MozillaVPN::requestSettings);
 
   m_menu.addSeparator();
 
-  m_quitAction = m_menu.addAction("", vpn.controller(), &Controller::quit);
+  m_quitAction = m_menu.addAction("", vpn->controller(), &Controller::quit);
   m_systemTrayIcon.setContextMenu(&m_menu);
 
-  updateIcon(vpn.statusIcon()->iconString());
+  updateIcon(vpn->statusIcon()->iconString());
 
-  connect(QmlEngineHolder::instance().window(), &QWindow::visibleChanged, this,
+  connect(QmlEngineHolder::instance()->window(), &QWindow::visibleChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
   connect(&m_systemTrayIcon, &QSystemTrayIcon::activated, this,
@@ -111,10 +111,10 @@ void SystemTrayNotificationHandler::retranslate() {
     m_helpMenu->removeAction(action);
   }
 
-  auto& vpn = MozillaVPN::instance();
-  vpn.helpModel()->forEach([&](const char* nameId, int id) {
+  MozillaVPN* vpn = MozillaVPN::instance();
+  vpn->helpModel()->forEach([&](const char* nameId, int id) {
     m_helpMenu->addAction(qtTrId(nameId),
-                          [help = vpn.helpModel(), id]() { help->open(id); });
+                          [help = vpn->helpModel(), id]() { help->open(id); });
   });
 
   m_preferencesAction->setText(l18nStrings->t(L18nStrings::SystrayPreferences));
@@ -135,12 +135,12 @@ void SystemTrayNotificationHandler::updateContextMenu() {
     return;
   }
 
-  auto& vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
 
-  bool isStateMain = vpn.state() == MozillaVPN::StateMain;
+  bool isStateMain = vpn->state() == MozillaVPN::StateMain;
   m_preferencesAction->setVisible(isStateMain);
 
-  m_disconnectAction->setVisible(isStateMain && vpn.controller()->state() ==
+  m_disconnectAction->setVisible(isStateMain && vpn->controller()->state() ==
                                                     Controller::StateOn);
 
   m_statusLabel->setVisible(isStateMain);
@@ -151,7 +151,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   L18nStrings* l18nStrings = L18nStrings::instance();
   Q_ASSERT(l18nStrings);
 
-  if (QmlEngineHolder::instance().window()->isVisible()) {
+  if (QmlEngineHolder::instance()->window()->isVisible()) {
     m_showHideLabel->setText(l18nStrings->t(L18nStrings::SystrayHide));
   } else {
     m_showHideLabel->setText(l18nStrings->t(L18nStrings::SystrayShow));
@@ -164,7 +164,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   QString statusLabel;
 
-  switch (vpn.controller()->state()) {
+  switch (vpn->controller()->state()) {
     case Controller::StateOn:
       statusLabel = l18nStrings->t(L18nStrings::SystrayStatusConnectedTo);
       break;
@@ -199,18 +199,18 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   m_lastLocationLabel->setVisible(true);
 
   QIcon flagIcon(QString(":/ui/resources/flags/%1.png")
-                     .arg(vpn.currentServer()->exitCountryCode().toUpper()));
+                     .arg(vpn->currentServer()->exitCountryCode().toUpper()));
 
-  QString countryCode = vpn.currentServer()->exitCountryCode();
-  QString localizedCityName = vpn.currentServer()->localizedCityName();
+  QString countryCode = vpn->currentServer()->exitCountryCode();
+  QString localizedCityName = vpn->currentServer()->localizedCityName();
   QString localizedCountryName =
-      vpn.serverCountryModel()->localizedCountryName(countryCode);
+      vpn->serverCountryModel()->localizedCountryName(countryCode);
 
   m_lastLocationLabel->setIcon(flagIcon);
   m_lastLocationLabel->setText(l18nStrings->t(L18nStrings::SystrayLocation2)
                                    .arg(localizedCountryName)
                                    .arg(localizedCityName));
-  m_lastLocationLabel->setEnabled(vpn.controller()->state() ==
+  m_lastLocationLabel->setEnabled(vpn->controller()->state() ==
                                   Controller::StateOff);
 }
 
@@ -221,14 +221,14 @@ void SystemTrayNotificationHandler::updateIcon(const QString& icon) {
 }
 
 void SystemTrayNotificationHandler::showHideWindow() {
-  auto& engine = QmlEngineHolder::instance();
-  if (engine.window()->isVisible()) {
-    engine.hideWindow();
+  QmlEngineHolder* engine = QmlEngineHolder::instance();
+  if (engine->window()->isVisible()) {
+    engine->hideWindow();
 #ifdef MVPN_MACOS
     MacOSUtils::hideDockIcon();
 #endif
   } else {
-    engine.showWindow();
+    engine->showWindow();
 #ifdef MVPN_MACOS
     MacOSUtils::showDockIcon();
 #endif
@@ -242,8 +242,8 @@ void SystemTrayNotificationHandler::maybeActivated(
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
   if (reason == QSystemTrayIcon::DoubleClick ||
       reason == QSystemTrayIcon::Trigger) {
-    auto& engine = QmlEngineHolder::instance();
-    engine.showWindow();
+    QmlEngineHolder* engine = QmlEngineHolder::instance();
+    engine->showWindow();
   }
 #else
   Q_UNUSED(reason);

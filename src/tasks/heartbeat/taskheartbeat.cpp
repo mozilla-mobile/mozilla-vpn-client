@@ -28,26 +28,27 @@ void TaskHeartbeat::run() {
           [this, request](QNetworkReply::NetworkError, const QByteArray&) {
             logger.error() << "Failed to talk with the server";
 
-            auto& vpn = MozillaVPN::instance();
+            MozillaVPN* vpn = MozillaVPN::instance();
+            Q_ASSERT(vpn);
 
             int statusCode = request->statusCode();
 
             // Internal server errors.
             if (statusCode >= 500 && statusCode <= 509) {
-              vpn.heartbeatCompleted(false);
+              vpn->heartbeatCompleted(false);
               return;
             }
 
             // Request failure ((?!?)
             if (statusCode >= 400 && statusCode <= 409) {
-              vpn.heartbeatCompleted(false);
+              vpn->heartbeatCompleted(false);
               return;
             }
 
             // We don't know if this happeneded because of a global network
             // failure or a local network issue. In general, let's ignore this
             // error.
-            vpn.heartbeatCompleted(true);
+            vpn->heartbeatCompleted(true);
             emit completed();
           });
 
@@ -55,18 +56,19 @@ void TaskHeartbeat::run() {
           [this](const QByteArray& data) {
             logger.debug() << "Heartbeat content received:" << data;
 
-            auto& vpn = MozillaVPN::instance();
+            MozillaVPN* vpn = MozillaVPN::instance();
+            Q_ASSERT(vpn);
 
             QJsonObject json = QJsonDocument::fromJson(data).object();
             QJsonValue mullvad = json.value("mullvadOK");
             QJsonValue db = json.value("dbOK");
             if ((mullvad.isBool() && db.isBool()) &&
                 (!mullvad.toBool() || !db.toBool())) {
-              vpn.heartbeatCompleted(false);
+              vpn->heartbeatCompleted(false);
               return;
             }
 
-            vpn.heartbeatCompleted(true);
+            vpn->heartbeatCompleted(true);
             emit completed();
           });
 }

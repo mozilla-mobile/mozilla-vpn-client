@@ -8,16 +8,19 @@
 
 LogoutObserver::LogoutObserver(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(LogoutObserver);
-  Q_ASSERT(MozillaVPN::instance().userState() == MozillaVPN::UserLoggingOut);
 
-  connect(&MozillaVPN::instance(), &MozillaVPN::userStateChanged, this,
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn->userState() == MozillaVPN::UserLoggingOut);
+
+  connect(vpn, &MozillaVPN::userStateChanged, this,
           &LogoutObserver::userStateChanged);
 }
 
 LogoutObserver::~LogoutObserver() { MVPN_COUNT_DTOR(LogoutObserver); }
 
 void LogoutObserver::userStateChanged() {
-  if (MozillaVPN::instance().userState() == MozillaVPN::UserNotAuthenticated) {
+  MozillaVPN* vpn = MozillaVPN::instance();
+  if (vpn->userState() == MozillaVPN::UserNotAuthenticated) {
     emit ready();
     deleteLater();
   }

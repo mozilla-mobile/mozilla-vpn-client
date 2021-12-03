@@ -51,11 +51,12 @@ bool SurveyModel::fromJson(const QByteArray& s) {
 }
 
 bool SurveyModel::fromSettings() {
-  auto& settingsHolder = SettingsHolder::instance();
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
   logger.debug() << "Reading the survey list from settings";
 
-  const QByteArray& json = settingsHolder.surveys();
+  const QByteArray& json = settingsHolder->surveys();
   if (json.isEmpty() || !fromJsonInternal(json)) {
     return false;
   }
@@ -65,7 +66,7 @@ bool SurveyModel::fromSettings() {
 }
 
 void SurveyModel::writeSettings() {
-  SettingsHolder::instance().setSurveys(m_rawJson);
+  SettingsHolder::instance()->setSurveys(m_rawJson);
 }
 
 bool SurveyModel::fromJsonInternal(const QByteArray& json) {
@@ -107,6 +108,9 @@ void SurveyModel::maybeShowSurvey() {
 }
 
 void SurveyModel::showSurvey(const Survey& survey) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
   m_currentSurveyId = survey.id();
   emit hasSurveyChanged();
 }
@@ -126,11 +130,12 @@ void SurveyModel::openCurrentSurvey() {
 }
 
 void SurveyModel::dismissCurrentSurvey() {
-  auto& settingsHolder = SettingsHolder::instance();
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
-  QStringList list = settingsHolder.consumedSurveys();
+  QStringList list = settingsHolder->consumedSurveys();
   list.append(m_currentSurveyId);
-  settingsHolder.setConsumedSurveys(list);
+  settingsHolder->setConsumedSurveys(list);
 
   m_currentSurveyId.clear();
   emit hasSurveyChanged();

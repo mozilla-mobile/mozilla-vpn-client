@@ -28,7 +28,7 @@ int Collator::compare(const QString& a, const QString& b) {
 #elif defined(MVPN_WASM)
   // For WASM, we have a similar issue (no ICU). Let's use the JS API to sort
   // strings.
-  QString languageCode = SettingsHolder::instance().languageCode();
+  QString languageCode = SettingsHolder::instance()->languageCode();
   if (languageCode.isEmpty()) {
     languageCode = QLocale::system().bcp47Name();
   }

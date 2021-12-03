@@ -115,7 +115,7 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
 
         completedTransactions = true;
 
-        if (SettingsHolder::instance().subscriptionTransactions().contains(identifier)) {
+        if (SettingsHolder::instance()->subscriptionTransactions().contains(identifier)) {
           logger.warning() << "This transaction has already been processed. Let's ignore it.";
         } else {
           completedTransactionIds.append(identifier);
@@ -153,7 +153,7 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
     logger.debug() << "Subscription completed - but all the transactions are known";
     QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
-  } else if (MozillaVPN::instance().userState() == MozillaVPN::UserAuthenticated) {
+  } else if (MozillaVPN::instance()->userState() == MozillaVPN::UserAuthenticated) {
     Q_ASSERT(completedTransactions);
     logger.debug() << "Subscription completed. Let's start the validation";
     QMetaObject::invokeMethod(m_handler, "processCompletedTransactions", Qt::QueuedConnection,
@@ -312,7 +312,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             if (!json.isObject()) {
-              MozillaVPN::instance().errorHandle(ErrorHandler::toErrorType(error));
+              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
               return;
             }
@@ -320,14 +320,14 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
             QJsonObject obj = json.object();
             QJsonValue errorValue = obj.value("errno");
             if (!errorValue.isDouble()) {
-              MozillaVPN::instance().errorHandle(ErrorHandler::toErrorType(error));
+              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
               return;
             }
 
             int errorNumber = errorValue.toInt();
             if (errorNumber != 145) {
-              MozillaVPN::instance().errorHandle(ErrorHandler::toErrorType(error));
+              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
               return;
             }
@@ -337,11 +337,12 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
 
   connect(purchase, &TaskPurchase::succeeded, this, [this, ids](const QByteArray&) {
     logger.debug() << "Purchase request completed";
-    auto& settingsHolder = SettingsHolder::instance();
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
 
-    QStringList transactions = settingsHolder.subscriptionTransactions();
+    QStringList transactions = settingsHolder->subscriptionTransactions();
     transactions.append(ids);
-    settingsHolder.setSubscriptionTransactions(transactions);
+    settingsHolder->setSubscriptionTransactions(transactions);
     
     stopSubscription();
     emit subscriptionCompleted();

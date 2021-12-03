@@ -20,7 +20,8 @@ namespace {
 Logger logger(LOG_IOS, "IOSDataMigration");
 
 void migrateUserDefaultData() {
-  auto& vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 
   NSUserDefaults* sud = [NSUserDefaults standardUserDefaults];
   if (!sud) {
@@ -32,7 +33,7 @@ void migrateUserDefaultData() {
     QByteArray json = QByteArray::fromNSData(userData);
     if (!json.isEmpty()) {
       logger.debug() << "User data to be migrated";
-      vpn.accountChecked(json);
+      vpn->accountChecked(json);
     }
   }
 
@@ -61,7 +62,7 @@ void migrateUserDefaultData() {
 
       QJsonDocument doc;
       doc.setObject(countriesObj);
-      if (!vpn.setServerList(doc.toJson())) {
+      if (!vpn->setServerList(doc.toJson())) {
         logger.error() << "Server list cannot be imported";
         return;
       }
@@ -94,7 +95,7 @@ void migrateUserDefaultData() {
     }
 
     ServerData serverData;
-    if (vpn.serverCountryModel()->pickIfExists(code.toString(), name.toString(), serverData)) {
+    if (vpn->serverCountryModel()->pickIfExists(code.toString(), name.toString(), serverData)) {
       logger.debug() << "ServerCity found";
       serverData.writeSettings();
     }
@@ -155,10 +156,10 @@ void migrateKeychainData() {
     return;
   }
 
-  MozillaVPN::instance().deviceAdded(Device::currentDeviceName(), publicKey.toString(),
+  MozillaVPN::instance()->deviceAdded(Device::currentDeviceName(), publicKey.toString(),
                                       privateKey.toString());
 
-  MozillaVPN::instance().setToken(token.toString());
+  MozillaVPN::instance()->setToken(token.toString());
 }
 }
 
