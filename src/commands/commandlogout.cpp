@@ -33,15 +33,15 @@ int CommandLogout::run(QStringList& tokens) {
       return 1;
     }
 
+    MozillaVPN vpn;
+
     if (!loadModels()) {
       QTextStream stream(stdout);
       stream << "No cache available" << Qt::endl;
       return 1;
     }
 
-    const Device* currentDevice =
-        MozillaVPN::instance().deviceModel()->currentDevice(
-            MozillaVPN::instance().keys());
+    const Device* currentDevice = vpn.deviceModel()->currentDevice(vpn.keys());
     if (currentDevice) {
       TaskRemoveDevice task(currentDevice->publicKey());
       task.run();
@@ -50,7 +50,7 @@ int CommandLogout::run(QStringList& tokens) {
       QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
       loop.exec();
     }
-    MozillaVPN::instance().reset(false);
+    vpn.reset(false);
 
     return 0;
   });

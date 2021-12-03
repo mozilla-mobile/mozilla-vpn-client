@@ -31,8 +31,7 @@ ConnectionDataHolder::ConnectionDataHolder()
   connect(&m_ipAddressTimer, &QTimer::timeout, this,
           [this]() { updateIpAddress(); });
   connect(&m_checkStatusTimer, &QTimer::timeout, this, [this]() {
-    MozillaVPN::instance().controller()->getStatus(
-
+    MozillaVPN::instance()->controller()->getStatus(
         [this](const QString& serverIpv4Gateway,
                const QString& deviceIpv4Address, uint64_t txBytes,
                uint64_t rxBytes) {
@@ -209,7 +208,7 @@ void ConnectionDataHolder::reset() {
 
 void ConnectionDataHolder::updateIpAddress() {
   logger.debug() << "Updating IP address";
-  auto state = MozillaVPN::instance().controller()->state();
+  auto state = MozillaVPN::instance()->controller()->state();
   // Only start the check if we're actually connected/connecting
   if (state != Controller::StateOn && state != Controller::StateConfirming) {
     logger.warning() << "Skip Updating IP address, not connected";
@@ -238,7 +237,7 @@ void ConnectionDataHolder::updateIpAddress() {
 #ifndef UNIT_TEST
         if (m_checkStatusTimer.isActive() &&
             country !=
-                MozillaVPN::instance().currentServer()->exitCountryCode()) {
+                MozillaVPN::instance()->currentServer()->exitCountryCode()) {
           // In case the country-we're reported in does not match the
           // connected server we may retry only once.
           logger.warning() << "Reported ip not in the right country, retry!";
@@ -284,9 +283,9 @@ quint64 ConnectionDataHolder::bytes(bool index) const {
 void ConnectionDataHolder::stateChanged() {
   logger.debug() << "state changed";
 
-  auto& vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
 
-  if (vpn.state() != MozillaVPN::StateMain) {
+  if (vpn->state() != MozillaVPN::StateMain) {
     disable();
     return;
   }
@@ -295,7 +294,7 @@ void ConnectionDataHolder::stateChanged() {
 
   reset();
 
-  if (m_txSeries && vpn.controller()->state() == Controller::StateOn) {
+  if (m_txSeries && vpn->controller()->state() == Controller::StateOn) {
     m_checkStatusTimer.start();
   }
 }

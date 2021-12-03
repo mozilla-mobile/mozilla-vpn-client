@@ -44,65 +44,66 @@ TestSignUpAndIn::TestSignUpAndIn(const QString& pattern, bool totpCreation)
 }
 
 void TestSignUpAndIn::signUp() {
-  auto& aia = AuthenticationInApp::instance();
-  disconnect(&aia, nullptr, nullptr, nullptr);
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QVERIFY(!!aia);
+  disconnect(aia, nullptr, nullptr, nullptr);
 
-  QCOMPARE(aia.state(), AuthenticationInApp::StateInitializing);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
 
   // Starting the authentication flow.
   TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
   task.run();
 
   EventLoop loop;
-  connect(&aia, &AuthenticationInApp::stateChanged, [&]() {
-    if (aia.state() == AuthenticationInApp::StateStart) {
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateStart) {
       loop.exit();
     }
   });
   loop.exec();
-  QCOMPARE(aia.state(), AuthenticationInApp::StateStart);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateStart);
 
   QString emailAddress(m_emailAccount);
   emailAddress.append("@restmail.net");
 
   // Account
-  aia.checkAccount(emailAddress);
-  connect(&aia, &AuthenticationInApp::stateChanged, [&]() {
-    QVERIFY(aia.state() != AuthenticationInApp::StateSignIn);
-    if (aia.state() == AuthenticationInApp::StateSignUp) {
+  aia->checkAccount(emailAddress);
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    QVERIFY(aia->state() != AuthenticationInApp::StateSignIn);
+    if (aia->state() == AuthenticationInApp::StateSignUp) {
       loop.exit();
     }
   });
   loop.exec();
-  QCOMPARE(aia.state(), AuthenticationInApp::StateSignUp);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSignUp);
 
   // Password
-  aia.setPassword(PASSWORD);
+  aia->setPassword(PASSWORD);
 
   if (m_totpCreation) {
-    aia.enableTotpCreation();
+    aia->enableTotpCreation();
   }
 
   // Sign-up
-  aia.signUp();
+  aia->signUp();
 
-  connect(&aia, &AuthenticationInApp::stateChanged, [&]() {
-    if (aia.state() ==
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() ==
         AuthenticationInApp::StateVerificationSessionByEmailNeeded) {
       loop.exit();
     }
   });
   loop.exec();
-  QCOMPARE(aia.state(),
+  QCOMPARE(aia->state(),
            AuthenticationInApp::StateVerificationSessionByEmailNeeded);
 
   // Email verification
   QString code = fetchSessionCode();
   QVERIFY(!code.isEmpty());
-  aia.verifySessionEmailCode(code);
+  aia->verifySessionEmailCode(code);
 
   QUrl finalUrl;
-  connect(&aia, &AuthenticationInApp::unitTestFinalUrl,
+  connect(aia, &AuthenticationInApp::unitTestFinalUrl,
           [&](const QUrl& url) { finalUrl = url; });
   connect(&task, &Task::completed, [&]() {
     qDebug() << "Task completed";
@@ -125,59 +126,60 @@ void TestSignUpAndIn::signUp() {
 }
 
 void TestSignUpAndIn::signIn() {
-  auto& aia = AuthenticationInApp::instance();
-  disconnect(&aia, nullptr, nullptr, nullptr);
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QVERIFY(!!aia);
+  disconnect(aia, nullptr, nullptr, nullptr);
 
-  QCOMPARE(aia.state(), AuthenticationInApp::StateInitializing);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
 
   // Starting the authentication flow.
   TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
   task.run();
 
   EventLoop loop;
-  connect(&aia, &AuthenticationInApp::stateChanged, [&]() {
-    if (aia.state() == AuthenticationInApp::StateUnblockCodeNeeded) {
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateUnblockCodeNeeded) {
       // We do not receive the email each time.
-      AuthenticationInApp::instance().resendUnblockCodeEmail();
+      AuthenticationInApp::instance()->resendUnblockCodeEmail();
 
       QString code = fetchUnblockCode();
       QVERIFY(!code.isEmpty());
-      aia.setUnblockCodeAndContinue(code);
+      aia->setUnblockCodeAndContinue(code);
       return;
     }
 
-    if (aia.state() == AuthenticationInApp::StateStart) {
+    if (aia->state() == AuthenticationInApp::StateStart) {
       loop.exit();
     }
   });
   loop.exec();
-  QCOMPARE(aia.state(), AuthenticationInApp::StateStart);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateStart);
 
   QString emailAddress(m_emailAccount);
   emailAddress.append("@restmail.net");
 
   // Account
-  aia.checkAccount(emailAddress);
-  connect(&aia, &AuthenticationInApp::stateChanged, [&]() {
-    if (aia.state() == AuthenticationInApp::StateSignIn) {
+  aia->checkAccount(emailAddress);
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateSignIn) {
       loop.exit();
     }
   });
   loop.exec();
-  QCOMPARE(aia.state(), AuthenticationInApp::StateSignIn);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSignIn);
 
   // Password
-  aia.setPassword(PASSWORD);
+  aia->setPassword(PASSWORD);
 
   // Sign-in
-  aia.signIn();
+  aia->signIn();
 
   if (m_totpCreation) {
     waitForTotpCodes();
   }
 
   QUrl finalUrl;
-  connect(&aia, &AuthenticationInApp::unitTestFinalUrl,
+  connect(aia, &AuthenticationInApp::unitTestFinalUrl,
           [&](const QUrl& url) { finalUrl = url; });
   connect(&task, &Task::completed, [&]() {
     qDebug() << "Task completed";
@@ -206,9 +208,9 @@ QString TestSignUpAndIn::fetchUnblockCode() {
 void TestSignUpAndIn::waitForTotpCodes() {
   qDebug() << "Adding the callback for the totp code creation";
 
-  auto& aia = AuthenticationInApp::instance();
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
 
-  connect(&aia, &AuthenticationInApp::errorOccurred,
+  connect(aia, &AuthenticationInApp::errorOccurred,
           [this](AuthenticationInApp::ErrorType error) {
             if (error == AuthenticationInApp::ErrorInvalidTotpCode) {
               qDebug() << "Invalid code. Let's send the right one";
@@ -223,12 +225,12 @@ void TestSignUpAndIn::waitForTotpCodes() {
                        OATH_OK);
 
               qDebug() << "Code:" << otp;
-              auto& aia = AuthenticationInApp::instance();
-              aia.verifySessionTotpCode(otp);
+              AuthenticationInApp* aia = AuthenticationInApp::instance();
+              aia->verifySessionTotpCode(otp);
             }
           });
 
-  connect(&aia, &AuthenticationInApp::unitTestTotpCodeCreated,
+  connect(aia, &AuthenticationInApp::unitTestTotpCodeCreated,
           [this](const QByteArray& data) {
             qDebug() << "Codes received";
             QJsonDocument json = QJsonDocument::fromJson(data);
@@ -245,12 +247,12 @@ void TestSignUpAndIn::waitForTotpCodes() {
             QVERIFY(!m_totpSecret.isEmpty());
           });
 
-  connect(&aia, &AuthenticationInApp::stateChanged, []() {
-    auto& aia = AuthenticationInApp::instance();
-    if (aia.state() ==
+  connect(aia, &AuthenticationInApp::stateChanged, []() {
+    AuthenticationInApp* aia = AuthenticationInApp::instance();
+    if (aia->state() ==
         AuthenticationInApp::StateVerificationSessionByTotpNeeded) {
       qDebug() << "Code required. Let's write a wrong code first.";
-      aia.verifySessionTotpCode("123456");
+      aia->verifySessionTotpCode("123456");
     }
   });
 }

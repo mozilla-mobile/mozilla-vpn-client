@@ -5,6 +5,7 @@
 #include "authenticationinapp.h"
 #include "authenticationinapplistener.h"
 #include "logger.h"
+#include "leakdetector.h"
 #include "incrementaldecoder.h"
 
 #include <QCoreApplication>
@@ -15,12 +16,28 @@ constexpr int PASSWORD_MIN_LENGTH = 8;
 
 namespace {
 Logger logger(LOG_MAIN, "AuthenticationInApp");
+AuthenticationInApp* s_instance = nullptr;
 }  // namespace
 
 // static
-AuthenticationInApp& AuthenticationInApp::instance() {
-  static AuthenticationInApp instance;
-  return instance;
+AuthenticationInApp* AuthenticationInApp::instance() {
+  if (!s_instance) {
+    new AuthenticationInApp(qApp);
+  }
+  Q_ASSERT(s_instance);
+  return s_instance;
+}
+
+AuthenticationInApp::AuthenticationInApp(QObject* parent) : QObject(parent) {
+  MVPN_COUNT_CTOR(AuthenticationInApp);
+  Q_ASSERT(!s_instance);
+  s_instance = this;
+}
+
+AuthenticationInApp::~AuthenticationInApp() {
+  MVPN_COUNT_DTOR(AuthenticationInApp);
+  Q_ASSERT(s_instance == this);
+  s_instance = nullptr;
 }
 
 void AuthenticationInApp::setState(State state) {

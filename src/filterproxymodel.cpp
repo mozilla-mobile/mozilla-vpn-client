@@ -58,7 +58,7 @@ bool FilterProxyModel::filterAcceptsRow(
     return false;
   }
 
-  QJSEngine* engine = QmlEngineHolder::instance().engine();
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
   Q_ASSERT(engine);
 
   QJSValue value = engine->newObject();

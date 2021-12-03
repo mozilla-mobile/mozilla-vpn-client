@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
   Q_UNUSED(leakDetector);
 #endif
   {
-    SettingsHolder::instance();
+    SettingsHolder settingsHolder;
     Constants::setStaging();
   }
 

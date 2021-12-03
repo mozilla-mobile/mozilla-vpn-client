@@ -46,7 +46,7 @@ bool dockClickHandler(id self, SEL cmd, ...) {
   Q_UNUSED(cmd);
 
   logger.debug() << "Dock icon clicked.";
-  QmlEngineHolder::instance().showWindow();
+  QmlEngineHolder::instance()->showWindow();
   return FALSE;
 }
 

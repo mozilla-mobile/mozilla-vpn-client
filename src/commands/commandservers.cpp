@@ -55,6 +55,8 @@ int CommandServers::run(QStringList& tokens) {
       return 1;
     }
 
+    MozillaVPN vpn;
+
     if (!cacheOption.m_set) {
       TaskServers task;
       task.run();
@@ -67,7 +69,7 @@ int CommandServers::run(QStringList& tokens) {
     }
 
     if (jsonOption.m_set) {
-      ServerCountryModel* scm = MozillaVPN::instance().serverCountryModel();
+      ServerCountryModel* scm = vpn.serverCountryModel();
       QJsonArray list;
       for (const ServerCountry& country : scm->countries()) {
         QJsonObject countryObj;
@@ -102,7 +104,7 @@ int CommandServers::run(QStringList& tokens) {
       QTextStream(stdout) << QJsonDocument(list).toJson() << Qt::endl;
     } else {
       QTextStream stream(stdout);
-      ServerCountryModel* scm = MozillaVPN::instance().serverCountryModel();
+      ServerCountryModel* scm = vpn.serverCountryModel();
       for (const ServerCountry& country : scm->countries()) {
         stream << "- Country: " << country.name()
                << " (code: " << country.code() << ")" << Qt::endl;

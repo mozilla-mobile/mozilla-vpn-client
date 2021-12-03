@@ -11,9 +11,9 @@
 #include "helper.h"
 
 void TestFeature::enableByAPI() {
-  SettingsHolder::instance();
+  SettingsHolder settingsHolder;
 
-  FeatureList::instance().initialize();
+  FeatureList::instance()->initialize();
 
   const Feature* feature = Feature::get(FEATURE_CUSTOM_DNS);
   QVERIFY(feature->isSupported());
@@ -24,13 +24,13 @@ void TestFeature::enableByAPI() {
   QJsonObject json;
   json["features"] = obj;
 
-  FeatureList::instance().updateFeatureList(QJsonDocument(json).toJson());
+  FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(feature->isSupported());
 
   obj["customDNS"] = true;
   json["features"] = obj;
 
-  FeatureList::instance().updateFeatureList(QJsonDocument(json).toJson());
+  FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(feature->isSupported());
 
   obj["allowParameters"] = QJsonArray{"allowTest"};
@@ -45,7 +45,7 @@ void TestFeature::enableByAPI() {
 
   json["adjustFields"] = obj;
 
-  FeatureList::instance().updateFeatureList(QJsonDocument(json).toJson());
+  FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(AdjustFiltering::instance()->allowList.contains("allowTest"));
   QVERIFY(AdjustFiltering::instance()->denyList.contains("denyTest"));
   QVERIFY(AdjustFiltering::instance()->denyList.value("denyTest") == "test");

@@ -32,8 +32,9 @@ class Localizer final : public QAbstractListModel {
     CodeRole,
   };
 
-  static Localizer& instance();
+  static Localizer* instance();
 
+  Localizer();
   ~Localizer();
 
   void initialize();
@@ -65,7 +66,6 @@ class Localizer final : public QAbstractListModel {
   void previousCodeChanged();
 
  private:
-  Localizer();
   static QString languageName(const QString& code);
   static QString localizedLanguageName(const QString& code);
   static bool languageSort(const Language& a, const Language& b,
