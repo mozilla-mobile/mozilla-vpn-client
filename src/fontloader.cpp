@@ -14,11 +14,12 @@ Logger logger(LOG_MAIN, "FontLoader");
 
 // static
 void FontLoader::loadFonts() {
-  QDir dir(":/ui/resources/fonts");
+  QDir dir(":/nebula/resources/fonts");
   QStringList files = dir.entryList();
   for (const QString& file : files) {
     logger.debug() << "Loading font:" << file;
-    int id = QFontDatabase::addApplicationFont(":/ui/resources/fonts/" + file);
+    int id =
+        QFontDatabase::addApplicationFont(":/nebula/resources/fonts/" + file);
     logger.debug() << "Result:" << id;
   }
 }
