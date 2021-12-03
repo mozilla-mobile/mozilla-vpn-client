@@ -63,7 +63,7 @@ void WindowsSplitTunnel::initDriver() {
   logger.debug() << "Connected to the Driver";
   // Reset Driver as it has wfp handles probably >:(
 
-  if (!WindowsFirewall::instance().init()) {
+  if (!WindowsFirewall::instance()->init()) {
     logger.error() << "Init WFP-Sublayer failed, driver won't be functional";
     return;
   }

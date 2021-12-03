@@ -62,9 +62,9 @@ class AuthenticationInApp final : public QObject {
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
 
  public:
-  static AuthenticationInApp& instance();
+  static AuthenticationInApp* instance();
 
-  ~AuthenticationInApp() = default;
+  ~AuthenticationInApp();
 
   State state() const { return m_state; }
 
@@ -127,10 +127,11 @@ class AuthenticationInApp final : public QObject {
 #endif
 
  private:
-  explicit AuthenticationInApp() = default;
+  explicit AuthenticationInApp(QObject* parent);
 
   void setState(State state);
 
+ private:
   State m_state = StateInitializing;
 
   AuthenticationInAppListener* m_listener = nullptr;

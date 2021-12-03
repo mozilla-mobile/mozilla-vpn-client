@@ -53,12 +53,13 @@ void WindowsAppListProvider::getApplicationList() {
 }
 
 void WindowsAppListProvider::addApplication(const QString& appPath) {
-  auto& settingsHolder = SettingsHolder::instance();
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
-  QStringList applist = settingsHolder.missingApps();
+  QStringList applist = settingsHolder->missingApps();
   if (!applist.contains(appPath)) {
     applist.append(appPath);
-    settingsHolder.setMissingApps(applist);
+    settingsHolder->setMissingApps(applist);
   }
 
   getApplicationList();

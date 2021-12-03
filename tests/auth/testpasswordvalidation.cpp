@@ -102,40 +102,41 @@ void TestPasswordValidation::passwordLength() {
 }
 
 void TestPasswordValidation::emailPassword() {
-  auto& aia = AuthenticationInApp::instance();
-  disconnect(&aia, nullptr, nullptr, nullptr);
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QVERIFY(!!aia);
+  disconnect(aia, nullptr, nullptr, nullptr);
 
-  QCOMPARE(aia.state(), AuthenticationInApp::StateInitializing);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
 
   // Starting the authentication flow.
   TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
   task.run();
 
   EventLoop loop;
-  connect(&aia, &AuthenticationInApp::stateChanged, [&]() {
-    if (aia.state() == AuthenticationInApp::StateStart) {
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateStart) {
       loop.exit();
     }
   });
   loop.exec();
-  QCOMPARE(aia.state(), AuthenticationInApp::StateStart);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateStart);
 
   QString emailAddress("vpn.test.auth.password.");
   emailAddress.append(QString::number(QDateTime::currentSecsSinceEpoch()));
   emailAddress.append("@restmail.net");
 
   // Account
-  aia.checkAccount(emailAddress);
-  connect(&aia, &AuthenticationInApp::stateChanged, [&]() {
-    QVERIFY(aia.state() != AuthenticationInApp::StateSignIn);
-    if (aia.state() == AuthenticationInApp::StateSignUp) {
+  aia->checkAccount(emailAddress);
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    QVERIFY(aia->state() != AuthenticationInApp::StateSignIn);
+    if (aia->state() == AuthenticationInApp::StateSignUp) {
       loop.exit();
     }
   });
   loop.exec();
-  QCOMPARE(aia.state(), AuthenticationInApp::StateSignUp);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSignUp);
 
   // Password checks
-  QCOMPARE(aia.validatePasswordEmail(emailAddress), false);
-  QCOMPARE(aia.validatePasswordEmail("hello world!"), true);
+  QCOMPARE(aia->validatePasswordEmail(emailAddress), false);
+  QCOMPARE(aia->validatePasswordEmail("hello world!"), true);
 }

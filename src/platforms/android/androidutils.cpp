@@ -81,7 +81,7 @@ void AndroidUtils::startAuthentication(AuthenticationListener* listener,
   m_url = url;
   emit urlChanged();
 
-  emit MozillaVPN::instance().loadAndroidAuthenticationView();
+  emit MozillaVPN::instance()->loadAndroidAuthenticationView();
 }
 
 bool AndroidUtils::maybeCompleteAuthentication(const QString& url) {

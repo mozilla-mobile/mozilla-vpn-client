@@ -24,9 +24,10 @@ class SettingsHolder final : public QObject {
 
   Q_PROPERTY(QString placeholderUserDNS READ placeholderUserDNS CONSTANT)
 
+  SettingsHolder();
   ~SettingsHolder();
 
-  static SettingsHolder& instance();
+  static SettingsHolder* instance();
 
   bool firstExecution() const { return m_firstExecution; }
 
@@ -60,7 +61,6 @@ class SettingsHolder final : public QObject {
   void hardReset();
 
  private:
-  SettingsHolder();
   explicit SettingsHolder(QObject* parent);
 
   QString placeholderUserDNS() const;

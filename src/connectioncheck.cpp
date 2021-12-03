@@ -27,7 +27,7 @@ ConnectionCheck::~ConnectionCheck() { MVPN_COUNT_DTOR(ConnectionCheck); }
 
 void ConnectionCheck::start() {
   logger.debug() << "Starting a connection check";
-  MozillaVPN::instance().controller()->getStatus(
+  MozillaVPN::instance()->controller()->getStatus(
       [this](const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
              uint64_t txBytes, uint64_t rxBytes) {
         Q_UNUSED(txBytes);

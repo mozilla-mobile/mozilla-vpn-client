@@ -41,7 +41,7 @@ Command::Command(QObject* parent, const QString& name,
 Command::~Command() { MVPN_COUNT_DTOR(Command); }
 
 bool Command::userAuthenticated() {
-  if (!SettingsHolder::instance().hasToken()) {
+  if (!SettingsHolder::instance()->hasToken()) {
     QTextStream stream(stdout);
     stream << "User status: not authenticated" << Qt::endl;
     return false;
@@ -51,25 +51,25 @@ bool Command::userAuthenticated() {
 }
 
 bool Command::loadModels() {
-  auto& vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
 
   // First the keys!
-  if (!vpn.keys()->fromSettings()) {
+  if (!vpn->keys()->fromSettings()) {
     QTextStream stream(stdout);
     stream << "No cache available" << Qt::endl;
     return false;
   }
 
-  if (!vpn.deviceModel()->fromSettings(vpn.keys()) ||
-      !vpn.serverCountryModel()->fromSettings() ||
-      !vpn.user()->fromSettings() || !vpn.currentServer()->fromSettings() ||
-      !vpn.modelsInitialized()) {
+  if (!vpn->deviceModel()->fromSettings(vpn->keys()) ||
+      !vpn->serverCountryModel()->fromSettings() ||
+      !vpn->user()->fromSettings() || !vpn->currentServer()->fromSettings() ||
+      !vpn->modelsInitialized()) {
     QTextStream stream(stdout);
     stream << "No cache available" << Qt::endl;
     return false;
   }
 
-  if (!vpn.captivePortal()->fromSettings()) {
+  if (!vpn->captivePortal()->fromSettings()) {
     // We do not care about these settings.
   }
 
@@ -79,12 +79,14 @@ bool Command::loadModels() {
 int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
-  if (SettingsHolder::instance().stagingServer()) {
+  SettingsHolder settingsHolder;
+
+  if (settingsHolder.stagingServer()) {
     Constants::setStaging();
     LogHandler::enableDebug();
   }
 
-  FeatureList::instance().initialize();
+  FeatureList::instance()->initialize();
 
   qInstallMessageHandler(LogHandler::messageQTHandler);
   logger.info() << "MozillaVPN" << APP_VERSION;
@@ -95,7 +97,7 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
-  Localizer::instance();
+  Localizer localizer;
   SimpleNetworkManager snm;
 
   return callback();
@@ -104,12 +106,14 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
 int Command::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
-  if (SettingsHolder::instance().stagingServer()) {
+  SettingsHolder settingsHolder;
+
+  if (settingsHolder.stagingServer()) {
     Constants::setStaging();
     LogHandler::enableDebug();
   }
 
-  FeatureList::instance().initialize();
+  FeatureList::instance()->initialize();
 
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
@@ -121,7 +125,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
-  Localizer::instance();
+  Localizer localizer;
   SimpleNetworkManager snm;
 
 #ifdef MVPN_MACOS
@@ -137,12 +141,14 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 int Command::runQmlApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
-  if (SettingsHolder::instance().stagingServer()) {
+  SettingsHolder settingsHolder;
+
+  if (settingsHolder.stagingServer()) {
     Constants::setStaging();
     LogHandler::enableDebug();
   }
 
-  FeatureList::instance().initialize();
+  FeatureList::instance()->initialize();
 
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
@@ -163,7 +169,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
-  Localizer::instance();
+  Localizer localizer;
 
 #ifdef MVPN_MACOS
   MacOSUtils::patchNSStatusBarSetImageForBigSur();

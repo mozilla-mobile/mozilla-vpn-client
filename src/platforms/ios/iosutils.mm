@@ -67,7 +67,7 @@ QString IOSUtils::IAPReceipt() {
 }
 
 void IOSUtils::shareLogs(const QString& logs) {
-  UIView *view = static_cast<UIView *>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", QmlEngineHolder::instance().window()));
+  UIView *view = static_cast<UIView *>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", QmlEngineHolder::instance()->window()));
   UIViewController *qtController = [[view window] rootViewController];
 
   NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:@"MozillaVPN-logs.txt"]];
@@ -83,7 +83,6 @@ void IOSUtils::shareLogs(const QString& logs) {
   [qtController presentViewController:activityViewController animated:YES completion:nil];
   [activityViewController release];
 }
-
 
 // static
 int IOSUtils::compareStrings(const QString& a, const QString& b) {

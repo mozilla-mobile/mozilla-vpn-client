@@ -33,7 +33,7 @@ void TaskSurveyData::run() {
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Survey data fetched";
-            MozillaVPN::instance().surveyChecked(data);
+            MozillaVPN::instance()->surveyChecked(data);
             emit completed();
           });
 }

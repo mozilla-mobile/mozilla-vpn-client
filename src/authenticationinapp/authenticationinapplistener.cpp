@@ -64,9 +64,10 @@ void AuthenticationInAppListener::start(Task* task,
   m_codeChallenge = codeChallenge;
   m_codeChallengeMethod = codeChallengeMethod;
 
-  auto& aip = AuthenticationInApp::instance();
+  AuthenticationInApp* aip = AuthenticationInApp::instance();
+  Q_ASSERT(aip);
 
-  aip.registerListener(this);
+  aip->registerListener(this);
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInApp,
                                    codeChallenge, codeChallengeMethod,
@@ -92,7 +93,7 @@ void AuthenticationInAppListener::start(Task* task,
               return;
             }
 
-            AuthenticationInApp::instance().requestState(
+            AuthenticationInApp::instance()->requestState(
                 AuthenticationInApp::StateStart, this);
             request->abort();
           });
@@ -136,18 +137,18 @@ void AuthenticationInAppListener::accountChecked(bool exists) {
   logger.debug() << "Account checked:" << exists;
 
   if (exists) {
-    AuthenticationInApp::instance().requestState(
+    AuthenticationInApp::instance()->requestState(
         AuthenticationInApp::StateSignIn, this);
     return;
   }
 
   if (FeatureInAppAccountCreate::instance()->isSupported()) {
-    AuthenticationInApp::instance().requestState(
+    AuthenticationInApp::instance()->requestState(
         AuthenticationInApp::StateSignUp, this);
     return;
   }
 
-  AuthenticationInApp::instance().requestState(
+  AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateFallbackInBrowser, this);
 
   AuthenticationListener* fallbackListener =
@@ -240,7 +241,7 @@ void AuthenticationInAppListener::signUp() {
 
 void AuthenticationInAppListener::unblockCodeNeeded() {
   logger.debug() << "Unblock code needed";
-  AuthenticationInApp::instance().requestState(
+  AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateUnblockCodeNeeded, this);
   sendUnblockCodeEmail();
 }
@@ -322,28 +323,28 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
             processRequestFailure(error, data);
           });
 
-  connect(
-      request, &NetworkRequest::requestCompleted, this,
-      [this](const QByteArray& data) {
-        logger.debug() << "Verification completed" << data;
+  connect(request, &NetworkRequest::requestCompleted, this,
+          [this](const QByteArray& data) {
+            logger.debug() << "Verification completed" << data;
 
-        QJsonDocument json = QJsonDocument::fromJson(data);
-        if (json.isNull()) {
-          MozillaVPN::instance().errorHandle(ErrorHandler::AuthenticationError);
-          return;
-        }
+            QJsonDocument json = QJsonDocument::fromJson(data);
+            if (json.isNull()) {
+              MozillaVPN::instance()->errorHandle(
+                  ErrorHandler::AuthenticationError);
+              return;
+            }
 
-        QJsonObject obj = json.object();
-        bool success = obj.value("success").toBool();
-        if (success) {
-          finalizeSignInOrUp();
-          return;
-        }
+            QJsonObject obj = json.object();
+            bool success = obj.value("success").toBool();
+            if (success) {
+              finalizeSignInOrUp();
+              return;
+            }
 
-        auto& aip = AuthenticationInApp::instance();
-        aip.requestErrorPropagation(AuthenticationInApp::ErrorInvalidTotpCode,
-                                    this);
-      });
+            AuthenticationInApp* aip = AuthenticationInApp::instance();
+            aip->requestErrorPropagation(
+                AuthenticationInApp::ErrorInvalidTotpCode, this);
+          });
 }
 
 void AuthenticationInAppListener::signInOrUpCompleted(
@@ -358,13 +359,13 @@ void AuthenticationInAppListener::signInOrUpCompleted(
 
   if (!accountVerified) {
     if (verificationMethod == "totp-2fa") {
-      AuthenticationInApp::instance().requestState(
+      AuthenticationInApp::instance()->requestState(
           AuthenticationInApp::StateVerificationSessionByTotpNeeded, this);
       return;
     }
 
     if (verificationMethod == "email-otp") {
-      AuthenticationInApp::instance().requestState(
+      AuthenticationInApp::instance()->requestState(
           AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
       return;
     }
@@ -391,11 +392,11 @@ void AuthenticationInAppListener::createTotpCodes() {
           [this](const QByteArray& data) {
             logger.debug() << "Totp code creation completed" << data;
 
-            auto& aip = AuthenticationInApp::instance();
-            aip.requestState(
+            AuthenticationInApp* aip = AuthenticationInApp::instance();
+            aip->requestState(
                 AuthenticationInApp::StateVerificationSessionByTotpNeeded,
                 this);
-            emit aip.unitTestTotpCodeCreated(data);
+            emit aip->unitTestTotpCodeCreated(data);
           });
 }
 #endif
@@ -430,7 +431,8 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
 
         QJsonDocument json = QJsonDocument::fromJson(data);
         if (json.isNull()) {
-          MozillaVPN::instance().errorHandle(ErrorHandler::AuthenticationError);
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
           return;
         }
 
@@ -438,19 +440,22 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
         QJsonValue code = obj.value("code");
         if (!code.isString()) {
           logger.error() << "FxA Authz: code not found";
-          MozillaVPN::instance().errorHandle(ErrorHandler::AuthenticationError);
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
           return;
         }
         QJsonValue state = obj.value("state");
         if (!state.isString()) {
           logger.error() << "FxA Authz: state not found";
-          MozillaVPN::instance().errorHandle(ErrorHandler::AuthenticationError);
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
           return;
         }
         QJsonValue redirect = obj.value("redirect");
         if (!redirect.isString()) {
           logger.error() << "FxA Authz: redirect not found";
-          MozillaVPN::instance().errorHandle(ErrorHandler::AuthenticationError);
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
           return;
         }
 
@@ -468,8 +473,8 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
         connect(request, &NetworkRequest::requestHeaderReceived, this,
                 [this](NetworkRequest* request) {
 #ifdef UNIT_TEST
-                  auto& aip = AuthenticationInApp::instance();
-                  emit aip.unitTestFinalUrl(request->url());
+                  AuthenticationInApp* aip = AuthenticationInApp::instance();
+                  emit aip->unitTestFinalUrl(request->url());
 #endif
                   // On a 200 response, we receive the OAuth code from the
                   // query string
@@ -477,7 +482,7 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
                       QUrlQuery(request->url()).queryItemValue("code");
                   if (code.isEmpty()) {
                     logger.error() << "Code not received!";
-                    MozillaVPN::instance().errorHandle(
+                    MozillaVPN::instance()->errorHandle(
                         ErrorHandler::AuthenticationError);
                     emit failed(ErrorHandler::AuthenticationError);
                     return;
@@ -489,72 +494,74 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
 }
 
 void AuthenticationInAppListener::processErrorCode(int errorCode) {
-  auto& aip = AuthenticationInApp::instance();
+  AuthenticationInApp* aip = AuthenticationInApp::instance();
+  Q_ASSERT(aip);
 
   // See
   // https://github.com/mozilla/fxa/blob/main/packages/fxa-auth-server/docs/api.md#defined-errors
   switch (errorCode) {
     case 101:  // Account already exists
-      aip.requestErrorPropagation(
+      aip->requestErrorPropagation(
           AuthenticationInApp::ErrorAccountAlreadyExists, this);
-      aip.requestState(AuthenticationInApp::StateStart, this);
+      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 102:  // Unknown account
-      aip.requestErrorPropagation(AuthenticationInApp::ErrorUnknownAccount,
-                                  this);
-      aip.requestState(AuthenticationInApp::StateStart, this);
+      aip->requestErrorPropagation(AuthenticationInApp::ErrorUnknownAccount,
+                                   this);
+      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 103:  // Incorrect password
-      aip.requestErrorPropagation(AuthenticationInApp::ErrorIncorrectPassword,
-                                  this);
-      aip.requestState(AuthenticationInApp::StateStart, this);
+      aip->requestErrorPropagation(AuthenticationInApp::ErrorIncorrectPassword,
+                                   this);
+      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 114:  // Client has sent too many requests
-      aip.requestErrorPropagation(AuthenticationInApp::ErrorTooManyRequests,
-                                  this);
-      aip.requestState(AuthenticationInApp::StateStart, this);
+      aip->requestErrorPropagation(AuthenticationInApp::ErrorTooManyRequests,
+                                   this);
+      aip->requestState(AuthenticationInApp::StateStart, this);
+      break;
 
     case 125:  // The request was blocked for security reasons
       Q_ASSERT(false);
       break;
 
     case 127:  // Invalid unblock code
-      aip.requestErrorPropagation(AuthenticationInApp::ErrorInvalidEmailCode,
-                                  this);
-      aip.requestState(AuthenticationInApp::StateStart, this);
+      aip->requestErrorPropagation(AuthenticationInApp::ErrorInvalidEmailCode,
+                                   this);
+      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 142:  // Sign in with this email type is not currently supported
-      aip.requestErrorPropagation(
+      aip->requestErrorPropagation(
           AuthenticationInApp::ErrorEmailTypeNotSupported, this);
-      aip.requestState(AuthenticationInApp::StateStart, this);
+      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 144:  // Email already exists
-      aip.requestErrorPropagation(AuthenticationInApp::ErrorEmailAlreadyExists,
-                                  this);
-      aip.requestState(AuthenticationInApp::StateStart, this);
+      aip->requestErrorPropagation(AuthenticationInApp::ErrorEmailAlreadyExists,
+                                   this);
+      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 149:  // This email can not currently be used to login
-      aip.requestErrorPropagation(
+      aip->requestErrorPropagation(
           AuthenticationInApp::ErrorEmailCanNotBeUsedToLogin, this);
-      aip.requestState(AuthenticationInApp::StateStart, this);
+      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 151:  // Failed to send email
-      aip.requestErrorPropagation(AuthenticationInApp::ErrorFailedToSendEmail,
-                                  this);
-      aip.requestState(AuthenticationInApp::StateStart, this);
+      aip->requestErrorPropagation(AuthenticationInApp::ErrorFailedToSendEmail,
+                                   this);
+      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 201:  // Service unavailable
-      aip.requestErrorPropagation(AuthenticationInApp::ErrorServerUnavailable,
-                                  this);
-      aip.requestState(AuthenticationInApp::StateStart, this);
+      aip->requestErrorPropagation(AuthenticationInApp::ErrorServerUnavailable,
+                                   this);
+      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 100:  // Incorrect Database Patch Level
@@ -710,6 +717,6 @@ void AuthenticationInAppListener::processRequestFailure(
     return;
   }
 
-  MozillaVPN::instance().errorHandle(ErrorHandler::toErrorType(error));
+  MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
   emit failed(ErrorHandler::toErrorType(error));
 }

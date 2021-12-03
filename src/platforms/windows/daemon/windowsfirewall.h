@@ -23,7 +23,7 @@ class WindowsFirewall final : public QObject {
  public:
   ~WindowsFirewall();
 
-  static WindowsFirewall& instance();
+  static WindowsFirewall* instance();
   bool init();
 
   bool enableKillSwitch(int vpnAdapterIndex);
@@ -32,8 +32,8 @@ class WindowsFirewall final : public QObject {
   bool disableKillSwitch();
 
  private:
-  WindowsFirewall();
-  HANDLE m_sessionHandle = INVALID_HANDLE_VALUE;
+  WindowsFirewall(QObject* parent);
+  HANDLE m_sessionHandle;
   bool m_init = false;
   QList<uint64_t> m_activeRules;
   QMultiMap<QString, uint64_t> m_peerRules;
