@@ -141,8 +141,11 @@ jobs:
           echo -n "$MACOS_EMBEDDED_PP_LOGIN" | base64 --decode --output /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Library/LoginItems/MozillaVPNLoginItem.app/Contents/embedded.provisionprofile
           echo -n "$MACOS_EMBEDDED_PP" | base64 --decode --output /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/embedded.provisionprofile
           /usr/libexec/PlistBuddy -x -c 'Print:Entitlements' aa.list > bb.list
-          /usr/bin/codesign --continue -f -s "Developer ID Application: Andrea Marchesini" --entitlements  bb.list  /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Library/LoginItems/MozillaVPNLoginItem.app
-          /usr/bin/codesign --continue -f -s "Developer ID Application: Andrea Marchesini" --entitlements  bb.list  /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app
+          /usr/bin/codesign --continue -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Library/LoginItems/MozillaVPNLoginItem.app
+          /usr/bin/codesign --continue -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Library/NativeMessaging/MozillaVPNNativeMessaging.app
+          /usr/bin/codesign --continue -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Resources/utils/wireguard-go
+          /usr/bin/codesign --continue -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Resources/utils/wg
+          /usr/bin/codesign --continue -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app
 
       - name: Packaging
         shell: bash
@@ -161,6 +164,20 @@ jobs:
           # Final signature
           mkdir STAGE3
           productsign --sign "Developer ID Installer: Andrea Marchesini" ./STAGE2/MozillaVPN.pkg ./STAGE3/MozillaVPN.pkg
+          # Notarize the package
+          output=$(xcrun altool --notarize-app -f ./STAGE3/MozillaVPN.pkg --primary-bundle-id baku.mozilla.macos.FirefoxVPN --username andrea.marchesini.baku.vpn@gmail.com --password "${{secrets.MACOS_NOTARIZE_PP }}")
+          uuid=$(echo $output | grep RequestUUID | cut -d= -f2 | tr -d ' ')
+          echo "Notarize ID: $uuid"
+          while sleep 10; do
+            echo "Checking..."
+            status=$(xcrun altool --notarization-info $uuid --username andrea.marchesini.baku.vpn@gmail.com --password "${{secrets.MACOS_NOTARIZE_PP }}" | grep Status: |cut -d: -f2 | tr -d ' ')
+            [ "$status" = "inprogress" ] && continue
+            [ "$status" = "success" ] && break
+            echo "Unexpected status"
+            xcrun altool --notarization-info $uuid --username andrea.marchesini.baku.vpn@gmail.com --password "${{secrets.MACOS_NOTARIZE_PP }}"
+            exit 1
+          done
+          xcrun stapler staple ./STAGE3/MozillaVPN.pkg
 
       - name: Upload app
         uses: actions/upload-artifact@v2
