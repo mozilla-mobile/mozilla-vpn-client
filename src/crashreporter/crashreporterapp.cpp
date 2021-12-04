@@ -6,14 +6,18 @@
 
 #include <QCoreApplication>
 #include <QTimer>
+#include <iostream>
 
 #include "crashreporterfactory.h"
 
 int CrashReporterApp::main(int argc, char *argv[]){
     QCoreApplication a(argc, argv);
-    QTimer::singleShot(0, &a, [](){
+  for (int i = 1; i < argc; i++) {
+      std::cout << argv[i] << std::endl;
+  }
+    QTimer::singleShot(0, &a, [argc, argv](){
         auto crashreporter = CrashReporterFactory::createCrashReporter();
-        crashreporter->start();
+        crashreporter->start(argc, argv);
     });
     return a.exec();
 }

@@ -6,19 +6,20 @@
 #define WINCRASHREPORTER_H
 
 #include "../../crashreporter.h"
+#include "util/win/initial_client_data.h"
 #include "winserverdelegate.h"
 
 #include <util/win/exception_handler_server.h>
 
-class WinCrashReporter : public CrashReporter
-{
-public:
-    explicit WinCrashReporter(QObject *parent = nullptr);
-    bool start() override;
+class WinCrashReporter : public CrashReporter {
+ public:
+  explicit WinCrashReporter(QObject* parent = nullptr);
+  bool start(int argc, char* argv[]) override;
 
-private:
-    std::unique_ptr<crashpad::ExceptionHandlerServer> m_server;
-    std::weak_ptr<WinServerDelegate> m_delegate;
+ private:
+  std::unique_ptr<crashpad::ExceptionHandlerServer> m_server;
+  std::weak_ptr<WinServerDelegate> m_delegate;
+  crashpad::InitialClientData m_initialData;
 };
 
-#endif // WINCRASHREPORTER_H
+#endif  // WINCRASHREPORTER_H

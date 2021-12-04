@@ -10,6 +10,7 @@
 #include <nebula.h>
 #include <glean.h>
 #include <crashreporter/crashreporterapp.h>
+#include <crashreporter/crashclient.h>
 
 #if defined MVPN_WINDOWS && defined MVPN_DEBUG
 #  include <windows.h>
@@ -42,6 +43,7 @@ int main(int argc, char* argv[]) {
           }
       }
   }
+  CrashClient::instance().start(argv[0]);
 #endif
   INIT_GLEAN;
   CommandLineParser clp;

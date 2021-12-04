@@ -11,18 +11,15 @@
 
 class CrashData;
 
-class CrashReporter : public QObject
-{
-    Q_OBJECT
-public:
-    explicit CrashReporter(QObject *parent = nullptr);
-    virtual bool start() = 0;
-    virtual void stop() {};
-    virtual bool shouldPromptUser();
-public slots:
-    void crashReported(const CrashData &data);
-
-
+class CrashReporter : public QObject {
+  Q_OBJECT
+ public:
+  explicit CrashReporter(QObject* parent = nullptr);
+  virtual bool start(int argc, char* argv[]) = 0;
+  virtual void stop(){};
+  virtual bool shouldPromptUser();
+ public slots:
+  void crashReported(const CrashData& data);
 };
 
-#endif // CRASHREPORTER_H
+#endif  // CRASHREPORTER_H

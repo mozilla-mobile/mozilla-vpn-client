@@ -4,14 +4,14 @@
 #include <client/crashpad_client.h>
 #include <memory>
 
-class CrashClient
-{
-public:
-    CrashClient();
-    bool start();
+class CrashClient {
+ public:
+  bool start(char * appPath);
+  static CrashClient& instance();
 
-private:
-    std::unique_ptr<crashpad::CrashpadClient> m_client;
+ private:
+  CrashClient();
+  std::unique_ptr<crashpad::CrashpadClient> m_client;
 };
 
-#endif // CRASHCLIENT_H
+#endif  // CRASHCLIENT_H
