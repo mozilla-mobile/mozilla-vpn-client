@@ -325,7 +325,7 @@ crashreporter:
     comment: Main text telling the user that we are asking for permission to send a crash report.
   sendButtonLabel:
     value: Send report
-    comment: User agrees to send report.
+    comment: User agrees to send a crash report.
   dontSendButton:
     value: No thanks
-    comment: User does not agree.
+    comment: User does not agree to send a crash report.
