@@ -6,9 +6,6 @@
 #include "leakdetector.h"
 #include <iostream>
 
-#include <nebula.h>
-#include <glean.h>
-
 #if defined MVPN_WINDOWS && defined MVPN_DEBUG
 #  include <windows.h>
 #endif
@@ -30,8 +27,6 @@ int main(int argc, char* argv[]) {
 #  endif
 
 #endif
-  INIT_GLEAN;
-  INIT_NEBULA;
   CommandLineParser clp;
   return clp.parse(argc, argv);
 }
