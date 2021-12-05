@@ -8,26 +8,25 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 VPNButtonBase {
     id: mainRow
 
     property var rowShouldBeDisabled: false
     property var accessibleName
-    property var backgroundColor: Theme.iconButtonLightBackground
+    property var backgroundColor: VPNTheme.theme.iconButtonLightBackground
 
     property var handleMouseClick: function() { mainRow.clicked(); }
     property var canGrowVertical: false
 
     visualStateItem: rowVisualStates
 
-    height: Theme.rowHeight
+    height: VPNTheme.theme.rowHeight
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.leftMargin: Theme.windowMargin / 2
-    anchors.rightMargin: Theme.windowMargin / 2
-    width: parent.width - (Theme.windowMargin * 2)
+    anchors.leftMargin: VPNTheme.theme.windowMargin / 2
+    anchors.rightMargin: VPNTheme.theme.windowMargin / 2
+    width: parent.width - (VPNTheme.theme.windowMargin * 2)
     opacity: rowShouldBeDisabled ? 0.7 : 1
     enabled: !rowShouldBeDisabled
 
@@ -47,10 +46,10 @@ VPNButtonBase {
         id: rowVisualStates
 
         width: mainRow.width
-        height: canGrowVertical? mainRow.height : Theme.rowHeight
+        height: canGrowVertical? mainRow.height : VPNTheme.theme.rowHeight
         anchors.top: mainRow.top
-        radius: Theme.cornerRadius
-        border.width: Theme.focusBorderWidth
+        radius: VPNTheme.theme.cornerRadius
+        border.width: VPNTheme.theme.focusBorderWidth
         border.color: "transparent"
         color: "transparent"
         Component.onCompleted: rowVisualStates.state = uiState.stateDefault

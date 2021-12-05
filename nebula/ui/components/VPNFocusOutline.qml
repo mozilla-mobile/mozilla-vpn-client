@@ -4,11 +4,11 @@
 
 import QtQuick 2.0
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 Rectangle {
     property variant focusedComponent
-    property var focusColorScheme: Theme.blueButton
+    property var focusColorScheme: VPNTheme.theme.blueButton
     property var setMargins: -3
 
     color: focusColorScheme.focusOutline

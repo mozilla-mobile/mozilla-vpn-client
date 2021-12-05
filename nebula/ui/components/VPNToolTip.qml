@@ -5,16 +5,16 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+import Mozilla.VPN 1.0
 import compat 0.1
-import themes 0.1
 
 ToolTip {
     id: toolTip
 
     visible: mouseArea.containsMouse || parent.activeFocus
     onVisibleChanged: if (visible) fadeDown.start()
-    leftMargin: Theme.windowMargin * 1.5
-    rightMargin: Theme.windowMargin * 1.5
+    leftMargin: VPNTheme.theme.windowMargin * 1.5
+    rightMargin: VPNTheme.theme.windowMargin * 1.5
     delay: 1500
     leftPadding: 6
     rightPadding: 6
@@ -48,7 +48,7 @@ ToolTip {
         id: toolTipText
 
         text: toolTip.text
-        color: Theme.fontColorDark
+        color: VPNTheme.theme.fontColorDark
         z: 1
         wrapMode: Text.WordWrap
     }
@@ -57,7 +57,7 @@ ToolTip {
         id: glowClippingPath
 
         radius: 4
-        color: Theme.bgColor
+        color: VPNTheme.theme.bgColor
         z: -1
 
         VPNRectangularGlow {

@@ -7,14 +7,13 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 Item {
     id: device
 
     anchors.left: parent.left
     anchors.right: parent.right
-    height: deviceRow.implicitHeight + Theme.windowMargin
+    height: deviceRow.implicitHeight + VPNTheme.theme.windowMargin
     //% "%1 %2"
     //: Example: "deviceName deviceDescription"
     Accessible.name: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceDesc.text)
@@ -24,7 +23,7 @@ Item {
     onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(device)
 
     Rectangle {
-        color: Theme.greyHovered
+        color: VPNTheme.theme.greyHovered
         opacity: device.focus || iconButton.focus ? 1 : 0
         anchors.fill: device
         anchors.topMargin: -8
@@ -45,9 +44,9 @@ Item {
         spacing: 0
         anchors.right: parent.right
         anchors.left: parent.left
-        anchors.rightMargin: Theme.windowMargin
+        anchors.rightMargin: VPNTheme.theme.windowMargin
         anchors.top: parent.top
-        anchors.topMargin: Theme.windowMargin
+        anchors.topMargin: VPNTheme.theme.windowMargin
 
         SequentialAnimation {
             id: deviceRemovalTransition
@@ -116,8 +115,8 @@ Item {
 
             source: "qrc:/nebula/resources/devices.svg"
             fillMode: Image.PreserveAspectFit
-            Layout.leftMargin: Theme.windowMargin
-            Layout.rightMargin: Theme.windowMargin
+            Layout.leftMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: VPNTheme.theme.windowMargin
             Layout.alignment: Qt.AlignTop | Qt.AlignLeft
         }
 
@@ -131,7 +130,7 @@ Item {
                 id: deviceName
 
                 text: name
-                color: Theme.fontColorDark
+                color: VPNTheme.theme.fontColorDark
                 elide: Text.ElideRight
                 anchors.left: parent.left
                 horizontalAlignment: Text.AlignLeft
@@ -181,12 +180,12 @@ Item {
             property real iconHeightWidth: 22
             property bool startRotation: false
 
-            buttonColorScheme: Theme.removeDeviceBtn
+            buttonColorScheme: VPNTheme.theme.removeDeviceBtn
             visible: !currentOne
             Layout.topMargin: -8
             Layout.alignment: Qt.AlignTop | Qt.AlignRight
-            Layout.preferredHeight: Theme.rowHeight
-            Layout.preferredWidth: Theme.rowHeight
+            Layout.preferredHeight: VPNTheme.theme.rowHeight
+            Layout.preferredWidth: VPNTheme.theme.rowHeight
             onClicked: removePopup.initializeAndOpen(name, publicKey)
             //: Label used for accessibility on the button to remove a device. %1 is the name of the device.
             //% "Remove %1"

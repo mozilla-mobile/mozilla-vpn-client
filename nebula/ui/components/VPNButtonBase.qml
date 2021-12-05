@@ -6,13 +6,13 @@ import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 RoundButton {
     id: root
 
     property var visualStateItem: root
-    property var uiState: Theme.uiState
+    property var uiState: VPNTheme.theme.uiState
     property var loaderVisible: false
     property var handleKeyClick: function() { clicked() }
 

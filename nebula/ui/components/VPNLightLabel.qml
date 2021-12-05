@@ -5,11 +5,11 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 // VPNLightLabel
 Label {
-    font.pixelSize: Theme.fontSize
-    font.family: Theme.fontFamily
-    color: Theme.fontColor
+    font.pixelSize: VPNTheme.theme.fontSize
+    font.family: VPNTheme.theme.fontFamily
+    color: VPNTheme.theme.fontColor
 }

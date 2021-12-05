@@ -6,11 +6,10 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 RowLayout {
-    property var leftMargin:  Theme.menuHeight
-    property var alertColor: Theme.checkBoxWarning
+    property var leftMargin:  VPNTheme.theme.menuHeight
+    property var alertColor: VPNTheme.theme.checkBoxWarning
     property var errorMessage
 
     id: turnVPNOffAlert
@@ -18,9 +17,9 @@ RowLayout {
     visible: (VPNController.state !== VPNController.StateOff)
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.rightMargin: Theme.windowMargin
+    anchors.rightMargin: VPNTheme.theme.windowMargin
     spacing: 0
-    anchors.leftMargin: Theme.windowMargin
+    anchors.leftMargin: VPNTheme.theme.windowMargin
 
     Rectangle {
         color: "transparent"
@@ -33,7 +32,7 @@ RowLayout {
         VPNIcon {
             id: warningIcon
 
-            source: alertColor === Theme.red ?  "qrc:/nebula/resources/warning.svg" : "qrc:/nebula/resources/warning-dark-orange.svg"
+            source: alertColor === VPNTheme.theme.red ?  "qrc:/nebula/resources/warning.svg" : "qrc:/nebula/resources/warning-dark-orange.svg"
             sourceSize.height: 14
             sourceSize.width: 14
             Layout.alignment: Qt.AlignVCenter

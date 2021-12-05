@@ -8,7 +8,6 @@ import QtWebView 1.15
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 Item {
     Item {
@@ -22,7 +21,7 @@ Item {
 
         Rectangle {
             id: menuBackground
-            color: Theme.bgColor
+            color: VPNTheme.theme.bgColor
             y: 0
             width: parent.width
             height: 55
@@ -39,8 +38,8 @@ Item {
 
             anchors.top: parent.top
             anchors.left: parent.left
-            anchors.topMargin: Theme.windowMargin / 2
-            anchors.leftMargin: Theme.windowMargin / 2
+            anchors.topMargin: VPNTheme.theme.windowMargin / 2
+            anchors.leftMargin: VPNTheme.theme.windowMargin / 2
 
             accessibleName: qsTrId("vpn.main.back")
 
@@ -48,7 +47,7 @@ Item {
                 id: backImage
 
                 source: "qrc:/nebula/resources/close-dark.svg"
-                sourceSize.width: Theme.iconSize
+                sourceSize.width: VPNTheme.theme.iconSize
                 fillMode: Image.PreserveAspectFit
                 anchors.centerIn: iconButton
             }
