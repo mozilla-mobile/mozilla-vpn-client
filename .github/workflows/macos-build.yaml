@@ -144,7 +144,6 @@ jobs:
           /usr/bin/codesign --continue -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Library/LoginItems/MozillaVPNLoginItem.app
           /usr/bin/codesign --continue -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Library/NativeMessaging/MozillaVPNNativeMessaging.app
           /usr/bin/codesign --continue -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Resources/utils/wireguard-go
-          /usr/bin/codesign --continue -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Resources/utils/wg
           /usr/bin/codesign --continue -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app
 
       - name: Packaging
