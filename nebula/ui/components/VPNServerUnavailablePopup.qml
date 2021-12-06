@@ -36,7 +36,7 @@ VPNPopup {
             color: Theme.fontColorDark
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Theme.fontSizeLarge
-            text: "Server unavailable"
+            text: VPNl18n.ServerUnavailableModalHeaderText
 
             Layout.bottomMargin: Theme.listSpacing
             Layout.fillWidth: true
@@ -44,7 +44,7 @@ VPNPopup {
 
         VPNTextBlock {
             horizontalAlignment: Text.AlignHCenter
-            text: "This server location is temporarily unavailable. Choose a new location."
+            text: VPNl18n.ServerUnavailableModalBodyText
 
             Layout.fillWidth: true
             Layout.preferredWidth: parent.width
@@ -52,7 +52,7 @@ VPNPopup {
 
         VPNButton {
             radius: Theme.cornerRadius
-            text: "Choose a new location"
+            text: VPNl18n.ServerUnavailableModalButtonLabel
 
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignBottom
