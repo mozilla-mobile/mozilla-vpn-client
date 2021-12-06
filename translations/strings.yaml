@@ -329,3 +329,8 @@ crashreporter:
   dontSendButton:
     value: No thanks
     comment: User does not agree to send a crash report.
+
+serverUnavailableModal:
+  headerText: Server unavailable
+  bodyText: This server location is temporarily unavailable. Choose a new location.
+  buttonLabel: Choose a new location
