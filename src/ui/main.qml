@@ -338,6 +338,82 @@ Window {
         }
     }
 
+    Connections {
+        target: VPNErrorHandler
+        function onSubscriptionGeneric() {
+            mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                // Problem confirming subscription...
+                headlineText: VPNl18n.ProblemConfirmingSubscription,
+
+                // An unexpected error has occured, please try again.
+                // Visit our help center below to learn more about how to troubleshoot our VPN.
+                errorMessage: VPNl18n.RestoreUnexpectedError,
+
+                // Try again
+                buttonText: VPNl18n.SubscriptionTryAgain,
+                buttonObjectName: "errorTryAgainButton",
+                buttonOnClick: mainStackView.pop,
+                signOffLinkVisible: false,
+                getHelpLinkVisible: true
+            });
+        }
+
+        function onNoSubscriptionFound() {
+            mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                // Problem confirming subscription...
+                headlineText: VPNl18n.ProblemConfirmingSubscription,
+
+                // Sorry we are unable to find your subscription, please try again.
+                // Visit our help center below to learn more about how to troubleshoot our VPN.
+                errorMessage: VPNl18n.NoSubscriptionFoundError,
+
+                // Try again
+                buttonText: VPNl18n.SubscriptionTryAgain,
+                buttonObjectName: "errorTryAgainButton",
+                buttonOnClick: mainStackView.pop,
+                signOffLinkVisible: true,
+                getHelpLinkVisible: true
+            });
+        }
+
+        function onSubscriptionExpired() {
+            mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                // Problem confirming subscription...
+                headlineText: VPNl18n.ProblemConfirmingSubscription,
+
+                // Sorry we are unable to connect your Firefox Account to a current subscription.
+                // Please try again or contact our support team for further assistance.
+                errorMessage: VPNl18n.SubscriptionExpiredError,
+
+                // Try again
+                buttonText: VPNl18n.SubscriptionTryAgain,
+                buttonObjectName: "errorTryAgainButton",
+                buttonOnClick: mainStackView.pop,
+                signOffLinkVisible: false,
+                getHelpLinkVisible: true
+            });
+        }
+
+        function onSubscriptionInUse() {
+            mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                // Error confirming subscription...
+                headlineText: VPNl18n.ProblemConfirmingSubscription,
+
+                // Another Firefox Account has already subscribed using this Apple ID.
+                // Visit our help center below to learn more about how to manage your subscriptions.
+                errorMessage: VPNl18n.SubscriptionExpiredError,
+
+                // Sign out
+                buttonText: VPNl18n.SubscriptionSignOut,
+                buttonObjectName: "errorSignOutButton",
+                buttonOnClick: mainStackView.pop,
+                signOffLinkVisible: false,
+                getHelpLinkVisible: true
+            });
+        }
+
+    }
+
     VPNSystemAlert {
     }
 

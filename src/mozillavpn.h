@@ -336,6 +336,9 @@ class MozillaVPN final : public QObject {
                      std::function<void()>&& finalizeCallback);
 
   void subscriptionStarted(const QString& productIdentifier);
+#ifdef MVPN_IOS
+  void restoreSubscriptionStarted();
+#endif
   void subscriptionCompleted();
   void subscriptionFailed();
   void subscriptionCanceled();

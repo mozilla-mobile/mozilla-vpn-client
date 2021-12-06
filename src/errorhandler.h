@@ -34,14 +34,9 @@ class ErrorHandler final : public QObject {
 
   static ErrorHandler* instance();
 
-#define ERROR(name) void name##Error();
-
-#include "errorlist.h"
-#undef ERROR
-
- signals:
-#define ERROR(name) void name();
-
+#define ERROR(name)   \
+  void name##Error(); \
+  Q_SIGNAL void name();
 #include "errorlist.h"
 #undef ERROR
 };
