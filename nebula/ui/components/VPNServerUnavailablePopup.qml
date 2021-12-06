@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import themes 0.1
@@ -12,10 +13,55 @@ VPNPopup {
 
     anchors.centerIn: parent
     maxWidth: Theme.desktopAppWidth
-    contentItem: Text {
+    contentItem: ColumnLayout {
         id: popupContentItem
 
-        text: "Server unavailable"
+        Item {
+            Layout.alignment: Qt.AlignHCenter
+            Layout.bottomMargin: Theme.listSpacing
+            Layout.preferredHeight: 80
+            Layout.preferredWidth: 80
+            Layout.topMargin: Theme.vSpacing * 1.5
+
+            Image {
+                anchors.fill: parent
+                source: "qrc:/nebula/resources/server-unavailable.svg"
+                sourceSize.height: parent.height
+                sourceSize.width: parent.width
+                fillMode: Image.PreserveAspectFit
+            }
+        }
+
+        VPNMetropolisLabel {
+            color: Theme.fontColorDark
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: Theme.fontSizeLarge
+            text: "Server unavailable"
+
+            Layout.bottomMargin: Theme.listSpacing
+            Layout.fillWidth: true
+        }
+
+        VPNTextBlock {
+            horizontalAlignment: Text.AlignHCenter
+            text: "This server location is temporarily unavailable. Choose a new location."
+
+            Layout.fillWidth: true
+            Layout.preferredWidth: parent.width
+        }
+
+        VPNButton {
+            radius: Theme.cornerRadius
+            text: "Choose a new location"
+
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignBottom
+            Layout.topMargin: Theme.vSpacing
+
+            onClicked: {
+                noUpdateAvailablePopup.close();
+            }
+        }
     }
 
     Component.onCompleted: {
