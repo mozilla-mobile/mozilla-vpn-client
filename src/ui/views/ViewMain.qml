@@ -84,6 +84,7 @@ VPNFlickable {
 
         VPNAlerts {
             id: notifications
+            updateURL: "qrc:/ui/views/ViewUpdate.qml"
         }
 
         VPNControllerView {
@@ -150,7 +151,7 @@ VPNFlickable {
             disableRowWhen: box.connectionInfoVisible
             contentChildren: [
                 VPNIcon {
-                    source: "qrc:/ui/resources/devices.svg"
+                    source: "qrc:/nebula/resources/devices.svg"
                     Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
                 },
 

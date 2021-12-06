@@ -3,7 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidcontroller.h"
-#include "ipaddressrange.h"
+#include "ipaddress.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
@@ -101,6 +102,9 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
   QtAndroid::bindService(
       QAndroidIntent(appContext.object(), "org.mozilla.firefox.vpn.VPNService"),
       *this, QtAndroid::BindFlag::AutoCreate);
+
+  connect(this, &AndroidController::initialized, this,
+          &AndroidController::applyStrings, Qt::QueuedConnection);
 }
 
 /*
@@ -140,11 +144,12 @@ void AndroidController::applyStrings() {
   m_serviceBinder.transact(ACTION_SET_NOTIFICATION_FALLBACK, data, nullptr);
 }
 
-void AndroidController::activate(
-    const QList<Server>& serverList, const Device* device, const Keys* keys,
-    const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, const QHostAddress& dns,
-    Reason reason) {
+void AndroidController::activate(const QList<Server>& serverList,
+                                 const Device* device, const Keys* keys,
+                                 const QList<IPAddress>& allowedIPAddressRanges,
+                                 const QStringList& excludedAddresses,
+                                 const QStringList& vpnDisabledApps,
+                                 const QHostAddress& dns, Reason reason) {
   logger.debug() << "Activation";
 
   logger.debug() << "Prompting for VPN permission";
@@ -186,11 +191,17 @@ void AndroidController::activate(
     jServer["port"] = (int)exitServer.multihopPort();
   }
 
-  QJsonArray allowedIPs;
+  QList<IPAddress> allowedIPs;
+  QList<IPAddress> excludedIPs;
+  QJsonArray fullAllowedIPs;
   foreach (auto item, allowedIPAddressRanges) {
-    QJsonValue val;
-    val = item.toString();
-    allowedIPs.append(val);
+    allowedIPs.append(IPAddress(item.toString()));
+  }
+  foreach (auto addr, excludedAddresses) {
+    excludedIPs.append(IPAddress(addr));
+  }
+  foreach (auto item, IPAddress::excludeAddresses(allowedIPs, excludedIPs)) {
+    fullAllowedIPs.append(QJsonValue(item.toString()));
   }
 
   QJsonArray excludedApps;
@@ -203,7 +214,7 @@ void AndroidController::activate(
   args["keys"] = jKeys;
   args["server"] = jServer;
   args["reason"] = (int)reason;
-  args["allowedIPs"] = allowedIPs;
+  args["allowedIPs"] = fullAllowedIPs;
   args["excludedApps"] = excludedApps;
   args["dns"] = dns.toString();
 
@@ -305,9 +316,6 @@ bool AndroidController::VPNBinder::onTransact(int code,
           true, doc.object()["connected"].toBool(),
           QDateTime::fromMSecsSinceEpoch(
               doc.object()["time"].toVariant().toLongLong()));
-      // Pass a localised version of the Fallback string for the Notification
-      m_controller->applyStrings();
-
       break;
     case EVENT_CONNECTED:
       logger.debug() << "Transact: connected";
@@ -324,8 +332,8 @@ bool AndroidController::VPNBinder::onTransact(int code,
       doc = QJsonDocument::fromJson(data.readData());
       emit m_controller->statusUpdated(doc.object()["endpoint"].toString(),
                                        doc.object()["deviceIpv4"].toString(),
-                                       doc.object()["totalTX"].toInt(),
-                                       doc.object()["totalRX"].toInt());
+                                       doc.object()["tx_bytes"].toInt(),
+                                       doc.object()["rx_bytes"].toInt());
       break;
     case EVENT_BACKEND_LOGS:
       logger.debug() << "Transact: backend logs";
@@ -336,8 +344,13 @@ bool AndroidController::VPNBinder::onTransact(int code,
       }
       break;
     case EVENT_ACTIVATION_ERROR:
+      buffer = readUTF8Parcel(data);
+      if (!buffer.isEmpty()) {
+        logger.error() << "Service Error while activating the VPN: " << buffer;
+      }
       MozillaVPN::instance()->errorHandle(ErrorHandler::ConnectionFailureError);
       emit m_controller->disconnected();
+      break;
     default:
       logger.warning() << "Transact: Invalid!";
       break;

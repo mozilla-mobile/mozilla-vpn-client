@@ -49,8 +49,9 @@ CONSTEXPR(int, chartsMaxPoints, 30, 30, 30);
 // Any 6 hours, a new check
 CONSTEXPR(uint32_t, releaseMonitorMsec, 21600000, 4000, 0)
 
-// in milliseconds, how often we should fetch the server list and the account.
-CONSTEXPR(uint32_t, scheduleAccountAndServersTimerMsec, 3600000, 4000, 0)
+// in milliseconds, how often we should fetch the server list, the account and
+// so on.
+CONSTEXPR(uint32_t, schedulePeriodicTaskTimerMsec, 3600000, 4000, 0)
 
 // how often we check the captive portal when the VPN is on.
 CONSTEXPR(uint32_t, captivePortalRequestTimeoutMsec, 10000, 4000, 0)
@@ -71,6 +72,8 @@ CONSTEXPR(uint32_t, surveyTimerMsec, 300000, 4000, 0)
   inline type functionName() { return inProduction() ? prod : beta; }
 
 constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
+constexpr const char* API_STAGING_URL =
+    "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
 constexpr const char* LOGO_URL = ":/ui/resources/logo-dock.png";
 

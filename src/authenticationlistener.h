@@ -11,6 +11,8 @@
 #include <QObject>
 #include <QUrl>
 
+class Task;
+
 class AuthenticationListener : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AuthenticationListener)
@@ -19,7 +21,7 @@ class AuthenticationListener : public QObject {
   static AuthenticationListener* create(
       QObject* parent, MozillaVPN::AuthenticationType authenticationType);
 
-  virtual void start(const QString& codeChallenge,
+  virtual void start(Task* task, const QString& codeChallenge,
                      const QString& codeChallengeMethod,
                      const QString& emailAddress = QString()) = 0;
 
@@ -28,12 +30,16 @@ class AuthenticationListener : public QObject {
       const QString& codeChallenge, const QString& codeChallengeMethod,
       const QString& emailAddress);
 
+  virtual void aboutToFinish();
+
  signals:
   void completed(const QString& code);
 
   void failed(ErrorHandler::ErrorType error);
 
   void abortedByUser();
+
+  void readyToFinish();
 
  protected:
   explicit AuthenticationListener(QObject* parent);

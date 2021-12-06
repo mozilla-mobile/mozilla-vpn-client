@@ -10,7 +10,6 @@ python3 -m virtualenv build
 build/scripts/pip install glean_parser==3.5 pyyaml
 
 # Build
-build/scripts/python scripts/generate_glean.py
 cmd.exe ./scripts/windows_compile.bat
 
 # Package

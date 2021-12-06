@@ -18,6 +18,11 @@ class Task : public QObject {
 
   virtual void run() = 0;
   virtual void cancel() { m_cancelled = true; }
+
+  // Overwrite this method if the task should not be deleted before being
+  // executed.
+  virtual bool deletable() const { return true; }
+
  signals:
   void completed();
 

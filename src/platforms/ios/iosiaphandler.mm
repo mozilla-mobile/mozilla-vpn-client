@@ -8,9 +8,10 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
 #include "settingsholder.h"
 #include "errorhandler.h"
+#include "tasks/purchase/taskpurchase.h"
+#include "taskscheduler.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -318,9 +319,10 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
     return;
   }
 
-  NetworkRequest* request = NetworkRequest::createForIOSPurchase(this, receipt);
+  TaskPurchase* purchase = TaskPurchase::createForIOS(receipt);
+  Q_ASSERT(purchase);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(purchase, &TaskPurchase::failed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Purchase request failed" << error;
 
@@ -361,7 +363,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
             emit alreadySubscribed();
           });
 
-  connect(request, &NetworkRequest::requestCompleted, [this, ids](const QByteArray&) {
+  connect(purchase, &TaskPurchase::succeeded, this, [this, ids](const QByteArray&) {
     logger.debug() << "Purchase request completed";
     SettingsHolder* settingsHolder = SettingsHolder::instance();
     Q_ASSERT(settingsHolder);
@@ -373,6 +375,8 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
     stopSubscription();
     emit subscriptionCompleted();
   });
+
+  TaskScheduler::scheduleTask(purchase);
 }
 
 void IOSIAPHandler::noSubscriptionFoundError() {

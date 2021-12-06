@@ -24,13 +24,13 @@ void TaskSurveyData::run() {
 
   NetworkRequest* request = NetworkRequest::createForSurveyData(this);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to fetch survey data" << error;
             emit completed();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Survey data fetched";
             MozillaVPN::instance()->surveyChecked(data);

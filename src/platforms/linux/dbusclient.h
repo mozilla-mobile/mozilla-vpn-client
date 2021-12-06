@@ -14,7 +14,7 @@
 class Server;
 class Device;
 class Keys;
-class IPAddressRange;
+class IPAddress;
 class QDBusPendingCallWatcher;
 
 class DBusClient final : public QObject {
@@ -29,8 +29,9 @@ class DBusClient final : public QObject {
 
   QDBusPendingCallWatcher* activate(
       const Server& server, const Device* device, const Keys* keys,
-      int hopindex, const QList<IPAddressRange>& allowedIPAddressRanges,
-      const QStringList& vpnDisabledApps, const QHostAddress& dnsServer);
+      int hopindex, const QList<IPAddress>& allowedIPAddressRanges,
+      const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
+      const QHostAddress& dnsServer);
 
   QDBusPendingCallWatcher* deactivate();
 
@@ -41,8 +42,8 @@ class DBusClient final : public QObject {
   QDBusPendingCallWatcher* cleanupLogs();
 
  signals:
-  void connected(int hopindex);
-  void disconnected(int hopindex);
+  void connected(const QString& pubkey);
+  void disconnected();
 
  private:
   OrgMozillaVpnDbusInterface* m_dbus;

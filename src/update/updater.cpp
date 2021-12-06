@@ -37,6 +37,10 @@ Updater* Updater::create(QObject* parent, bool downloadAndInstall) {
 
 Updater::Updater(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(Updater);
+  connect(this, &Updater::updateRecommended,
+          [this] { m_recommendedOrRequired = true; });
+  connect(this, &Updater::updateRequired,
+          [this] { m_recommendedOrRequired = true; });
   logger.debug() << "Updater created";
 }
 

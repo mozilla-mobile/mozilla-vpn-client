@@ -6,6 +6,7 @@
 #include "../../src/authenticationinapp/authenticationinapp.h"
 #include "../../src/networkrequest.h"
 #include "../../src/tasks/authenticate/taskauthenticate.h"
+#include "../../src/tasks/function/taskfunction.h"
 
 #include <QDateTime>
 #include <QDebug>
@@ -261,7 +262,11 @@ QString TestSignUpAndIn::fetchCode(const QString& code) {
     QString url = "http://restmail.net/mail/";
     url.append(m_emailAccount);
 
-    NetworkRequest* nr = NetworkRequest::createForGetUrl(this, url);
+    // In theory, network requests should be executed by tasks, but for this
+    // test we do an hack.
+    TaskFunction dummyTask([] {});
+
+    NetworkRequest* nr = NetworkRequest::createForGetUrl(&dummyTask, url);
 
     QByteArray jsonData;
     EventLoop loop;

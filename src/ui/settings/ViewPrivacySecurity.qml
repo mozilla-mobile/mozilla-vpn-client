@@ -70,8 +70,7 @@ Item {
 
                 //% "Data collection and use"
                 labelText: qsTrId("vpn.settings.dataCollection")
-                //% "Allow Mozilla VPN to send technical data to Mozilla"
-                subLabelText: qsTrId("vpn.settings.dataCollection.description")
+                subLabelText: VPNl18n.SettingsDataCollectionDescription
                 isChecked: VPNSettings.gleanEnabled
                 onClicked: {
                     VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
@@ -88,7 +87,7 @@ Item {
 
                     settingTitle: _notificationsTitle
                     imageLeftSrc: "qrc:/ui/resources/settings/notifications.svg"
-                    imageRightSrc: "qrc:/ui/resources/chevron.svg"
+                    imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                     onClicked: {
                         if(Qt.platform.os === "android"){
                             VPNAndroidUtils.openNotificationSettings();
@@ -108,7 +107,7 @@ Item {
 
                     settingTitle: _languageTitle
                     imageLeftSrc: "qrc:/ui/resources/settings/language.svg"
-                    imageRightSrc: "qrc:/ui/resources/chevron.svg"
+                    imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                     onClicked: settingsStackView.push("qrc:/ui/settings/ViewLanguage.qml")
                     visible: VPNLocalizer.hasLanguages
                     width: parent.width - Theme.windowMargin

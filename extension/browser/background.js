@@ -7,4 +7,5 @@ port.onMessage.addListener((response) => {
 setInterval(() => {
   port.postMessage({t: 'servers'});
   port.postMessage({t: 'status'});
+  port.postMessage({t: 'disabled_apps'});
 }, 1000);

@@ -85,7 +85,7 @@ void TestIpAddress::basic_data() {
 void TestIpAddress::basic() {
   QFETCH(QString, input);
 
-  IPAddress ipAddress = IPAddress::create(input);
+  IPAddress ipAddress = IPAddress(input);
 
   QFETCH(QString, address);
   QCOMPARE(ipAddress.address().toString(), address);
@@ -128,10 +128,10 @@ void TestIpAddress::overlaps_data() {
 
 void TestIpAddress::overlaps() {
   QFETCH(QString, a);
-  IPAddress ipAddressA = IPAddress::create(a);
+  IPAddress ipAddressA = IPAddress(a);
 
   QFETCH(QString, b);
-  IPAddress ipAddressB = IPAddress::create(b);
+  IPAddress ipAddressB = IPAddress(b);
 
   QFETCH(bool, result);
   QCOMPARE(ipAddressA.overlaps(ipAddressB), result);
@@ -166,7 +166,7 @@ void TestIpAddress::contains_data() {
 
 void TestIpAddress::contains() {
   QFETCH(QString, a);
-  IPAddress ipAddressA = IPAddress::create(a);
+  IPAddress ipAddressA = IPAddress(a);
 
   QFETCH(QString, b);
   QHostAddress ipAddressB(b);
@@ -196,10 +196,10 @@ void TestIpAddress::equal_data() {
 
 void TestIpAddress::equal() {
   QFETCH(QString, a);
-  IPAddress ipAddressA = IPAddress::create(a);
+  IPAddress ipAddressA = IPAddress(a);
 
   QFETCH(QString, b);
-  IPAddress ipAddressB = IPAddress::create(b);
+  IPAddress ipAddressB = IPAddress(b);
 
   QFETCH(bool, result);
   QCOMPARE(ipAddressA == ipAddressB, result);
@@ -259,10 +259,10 @@ void TestIpAddress::excludeAddresses_data() {
 
 void TestIpAddress::excludeAddresses() {
   QFETCH(QString, input);
-  IPAddress a = IPAddress::create(input);
+  IPAddress a = IPAddress(input);
 
   QFETCH(QString, excludeAddresses);
-  IPAddress b = IPAddress::create(excludeAddresses);
+  IPAddress b = IPAddress(excludeAddresses);
 
   QStringList list;
   for (const IPAddress& r : a.excludeAddresses(b)) {

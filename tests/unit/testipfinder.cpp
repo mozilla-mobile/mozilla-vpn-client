@@ -3,27 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testipfinder.h"
-#include "../../src/ipfinder.h"
+#include "../../src/tasks/ipfinder/taskipfinder.h"
 #include "../../src/settingsholder.h"
 #include "helper.h"
-
-void TestIpFinder::abort() {
-  SettingsHolder settingsHolder;
-
-  IPFinder* ipFinder = new IPFinder(this);
-
-  ipFinder->start();
-  delete ipFinder;
-}
 
 void TestIpFinder::ipv4AndIpv6() {
   SettingsHolder settingsHolder;
 
-  IPFinder* ipFinder = new IPFinder(this);
+  TaskIPFinder* ipFinder = new TaskIPFinder();
+
+  TestHelper::networkConfig.clear();
 
   QEventLoop loop;
   connect(
-      ipFinder, &IPFinder::completed,
+      ipFinder, &TaskIPFinder::operationCompleted,
       [&](const QString& ipv4, const QString& ipv6, const QString& country) {
         QVERIFY(ipv4 == "43" || ipv4 == "42");
         QVERIFY(ipv6 == "43" || ipv6 == "42");
@@ -39,7 +32,7 @@ void TestIpFinder::ipv4AndIpv6() {
       TestHelper::NetworkConfig::Success,
       QString("{\"ip\":\"43\", \"country\": \"123\"}").toUtf8()));
 
-  ipFinder->start();
+  ipFinder->run();
   loop.exec();
 }
 
