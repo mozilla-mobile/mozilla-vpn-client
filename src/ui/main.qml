@@ -342,6 +342,9 @@ Window {
     VPNSystemAlert {
     }
 
+    VPNServerUnavailablePopup {
+    }
+
     VPNFeatureTourPopup {
         id: featureTourPopup
 
