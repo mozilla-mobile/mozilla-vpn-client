@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dbusclient.h"
-#include "ipaddressrange.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
@@ -48,7 +48,7 @@ QDBusPendingCallWatcher* DBusClient::version() {
 
 QDBusPendingCallWatcher* DBusClient::activate(
     const Server& server, const Device* device, const Keys* keys, int hopindex,
-    const QList<IPAddressRange>& allowedIPAddressRanges,
+    const QList<IPAddress>& allowedIPAddressRanges,
     const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
     const QHostAddress& dnsServer) {
   QJsonObject json;
@@ -65,11 +65,12 @@ QDBusPendingCallWatcher* DBusClient::activate(
   json.insert("hopindex", QJsonValue((double)hopindex));
 
   QJsonArray allowedIPAddesses;
-  for (const IPAddressRange& i : allowedIPAddressRanges) {
+  for (const IPAddress& i : allowedIPAddressRanges) {
     QJsonObject range;
-    range.insert("address", QJsonValue(i.ipAddress()));
-    range.insert("range", QJsonValue((double)i.range()));
-    range.insert("isIpv6", QJsonValue(i.type() == IPAddressRange::IPv6));
+    range.insert("address", QJsonValue(i.address().toString()));
+    range.insert("range", QJsonValue((double)i.prefixLength()));
+    range.insert("isIpv6",
+                 QJsonValue(i.type() == QAbstractSocket::IPv6Protocol));
     allowedIPAddesses.append(range);
   };
   json.insert("allowedIPAddressRanges", allowedIPAddesses);

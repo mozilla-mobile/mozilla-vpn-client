@@ -5,7 +5,7 @@
 #include "ioscontroller.h"
 #include "Mozilla_VPN-Swift.h"
 #include "device.h"
-#include "ipaddressrange.h"
+#include "ipaddress.h"
 #include "keys.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -98,7 +98,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
 }
 
 void IOSController::activate(const QList<Server>& serverList, const Device* device,
-                             const Keys* keys, const QList<IPAddressRange>& allowedIPAddressRanges,
+                             const Keys* keys, const QList<IPAddress>& allowedIPAddressRanges,
                              const QStringList& excludedAddresses,
                              const QStringList& vpnDisabledApps, const QHostAddress& dnsServer,
                              Reason reason) {
@@ -123,11 +123,11 @@ void IOSController::activate(const QList<Server>& serverList, const Device* devi
 
   NSMutableArray<VPNIPAddressRange*>* allowedIPAddressRangesNS =
       [NSMutableArray<VPNIPAddressRange*> arrayWithCapacity:allowedIPAddressRanges.length()];
-  for (const IPAddressRange& i : allowedIPAddressRanges) {
+  for (const IPAddress& i : allowedIPAddressRanges) {
     VPNIPAddressRange* range =
-        [[VPNIPAddressRange alloc] initWithAddress:i.ipAddress().toNSString()
-                               networkPrefixLength:i.range()
-                                            isIpv6:i.type() == IPAddressRange::IPv6];
+        [[VPNIPAddressRange alloc] initWithAddress:i.address().toString().toNSString()
+                               networkPrefixLength:i.prefixLength()
+                                            isIpv6:i.type() == QAbstractSocket::IPv6Protocol];
     [allowedIPAddressRangesNS addObject:[range autorelease]];
   }
 

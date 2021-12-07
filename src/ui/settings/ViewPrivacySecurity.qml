@@ -46,7 +46,7 @@ Item {
                 objectName: "settingStartAtBoot"
 
                 labelText: _startAtBootTitle
-                subLabelText: VPNl18n.SettingsStartAtBootDescription
+                subLabelText: VPNl18n.SettingsStartAtBootSubtitle
                 isChecked: VPNSettings.startAtBoot
                 isEnabled: true
                 showDivider: false
@@ -87,7 +87,7 @@ Item {
 
                     settingTitle: _notificationsTitle
                     imageLeftSrc: "qrc:/ui/resources/settings/notifications.svg"
-                    imageRightSrc: "qrc:/ui/resources/chevron.svg"
+                    imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                     onClicked: {
                         if(Qt.platform.os === "android"){
                             VPNAndroidUtils.openNotificationSettings();
@@ -107,7 +107,7 @@ Item {
 
                     settingTitle: _languageTitle
                     imageLeftSrc: "qrc:/ui/resources/settings/language.svg"
-                    imageRightSrc: "qrc:/ui/resources/chevron.svg"
+                    imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                     onClicked: settingsStackView.push("qrc:/ui/settings/ViewLanguage.qml")
                     visible: VPNLocalizer.hasLanguages
                     width: parent.width - Theme.windowMargin

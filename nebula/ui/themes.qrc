@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/nebula">
+        <file>themes/qmldir</file>
+        <file>themes/themes.js</file>
+        <file>themes/colors.js</file>
+    </qresource>
+</RCC>

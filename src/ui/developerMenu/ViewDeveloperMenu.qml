@@ -133,7 +133,7 @@ VPNFlickable {
         // Do not translate this string!
         settingTitle: "Feature list"
         imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
-        imageRightSrc: "qrc:/ui/resources/chevron.svg"
+        imageRightSrc: "qrc:/nebula/resources/chevron.svg"
         onClicked: stackview.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
     }
 
@@ -149,7 +149,7 @@ VPNFlickable {
         objectName: "openInspector"
         title: "Open Inspector"
         accessibleName: "Open Inspector"
-        iconSource:  "qrc:/ui/resources/externalLink.svg"
+        iconSource:  "qrc:/nebula/resources/externalLink.svg"
         backgroundColor: Theme.clickableRowBlue
         onClicked: {
             VPN.openLink(VPN.LinkInspector)
