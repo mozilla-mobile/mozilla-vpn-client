@@ -46,6 +46,7 @@ constexpr const uint32_t TIMER_MSEC = 1000;
 constexpr const int CONNECTION_MAX_RETRY = 9;
 
 constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
+constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
@@ -74,6 +75,7 @@ Controller::Controller() {
   MVPN_COUNT_CTOR(Controller);
 
   m_connectingTimer.setSingleShot(true);
+  m_handshakeTimer.setSingleShot(true);
 
   connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
 
@@ -85,6 +87,8 @@ Controller::Controller() {
     m_enableDisconnectInConfirming = true;
     emit enableDisconnectInConfirmingChanged();
   });
+  connect(&m_handshakeTimer, &QTimer::timeout, this,
+          &Controller::handshakeTimeout);
 }
 
 Controller::~Controller() { MVPN_COUNT_DTOR(Controller); }
@@ -103,19 +107,17 @@ void Controller::initialize() {
     m_impl.reset(nullptr);
   }
 
-  m_impl.reset(new TimerController(
 #if defined(MVPN_LINUX)
-      new LinuxController()
+  m_impl.reset(new LinuxController());
 #elif defined(MVPN_MACOS_DAEMON) || defined(MVPN_WINDOWS)
-      new LocalSocketController()
+  m_impl.reset(new TimerController(new LocalSocketController()));
 #elif defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION)
-      new IOSController()
+  m_impl.reset(new TimerController(new IOSController());
 #elif defined(MVPN_ANDROID)
-      new AndroidController()
+  m_impl.reset(new TimerController(new AndroidController());
 #else
-      new DummyController()
+  m_impl.reset(new TimerController(new DummyController());
 #endif
-          ));
 
   connect(m_impl.get(), &ControllerImpl::connected, this,
           &Controller::connected);
@@ -194,6 +196,8 @@ void Controller::activateInternal() {
   Q_ASSERT(m_impl);
 
   resetConnectedTime();
+  m_handshakeTimer.stop();
+  m_activationQueue.clear();
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
@@ -268,6 +272,8 @@ void Controller::activateNext() {
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   const HopConnection& hop = m_activationQueue.first();
 
+  logger.debug() << "Activating peer" << hop.m_server.publicKey();
+  m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
   m_impl->activate(hop.m_server, device, vpn->keys(), hop.m_hopindex,
                    hop.m_allowedIPAddressRanges, hop.m_excludedAddresses,
                    hop.m_vpnDisabledApps, hop.m_dnsServer,
@@ -297,7 +303,6 @@ bool Controller::silentSwitchServers() {
   vpn->setServerCooldown(vpn->serverPublicKey());
 
   // Activate the connection.
-  setState(StateSwitching);
   activateInternal();
   return true;
 }
@@ -331,6 +336,7 @@ void Controller::connected(const QString& pubkey) {
   if (m_activationQueue.first().m_server.publicKey() != pubkey) {
     return;
   }
+  m_handshakeTimer.stop();
 
   // Start the next connection if there is more work to do.
   m_activationQueue.removeFirst();
@@ -423,6 +429,20 @@ void Controller::connectionFailed() {
 
   Q_ASSERT(m_impl);
   m_impl->deactivate(ControllerImpl::ReasonConfirming);
+}
+
+void Controller::handshakeTimeout() {
+  logger.debug() << "Timeout while waiting for handshake";
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  Q_ASSERT(!m_activationQueue.isEmpty());
+  HopConnection& hop = m_activationQueue.first();
+
+  // Block the offending server and try again.
+  // TODO: Add some kind of check to limit retries.
+  vpn->setServerCooldown(hop.m_server.publicKey());
+  activateInternal();
 }
 
 bool Controller::isUnsettled() { return !m_settled; }
