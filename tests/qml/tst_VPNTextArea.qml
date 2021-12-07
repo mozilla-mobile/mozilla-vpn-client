@@ -31,24 +31,10 @@ Item {
         }
 
         function fillTextInput() {
-            const maxCharLength = vpnTextAreaTest.textInput.maxCharacterCount;
-            const initialString = "a".repeat(maxCharLength);
-            vpnTextAreaTest.textInput.text = initialString;
+            vpnTextAreaTest.textInput.text = "a".repeat(vpnTextAreaTest.textInput.maxCharacterCount);
         }
 
-        // Insert single char within limit
-        function test_insertSingleChar() {
-            resetTextArea();
-
-            const expected = "a";
-            insertSingleChar(expected);
-
-            const actual = vpnTextAreaTest.textInput.text;
-            verify(expected === actual, `text was ${actual} not ${expected}.`);
-        }
-
-        // Insert multiple chars within limit
-        function test_insertMultipleChars() {
+        function test_insertingMultipleCharsSmallerThanLimitDoesNotCauseTruncationOfText() {
             resetTextArea();
 
             const expected = "abc";
@@ -58,30 +44,39 @@ Item {
             verify(expected === actual, `text was ${actual} not ${expected}.`);
         }
 
-        // Insert single char exceeding limit
-        function test_exceedsCharLimitSingle() {
+        function test_insertingSingleCharExceedingLimitIsRemovedFromText() {
             resetTextArea();
             fillTextInput();
 
             const expected = vpnTextAreaTest.textInput.text;
-            const inputString = "b";
-            insertSingleChar(inputString);
+            insertSingleChar("b");
 
             const actual = vpnTextAreaTest.textInput.text;
             verify(expected === actual, `text was ${actual} not ${expected}.`);
         }
 
-        // Insert multiple char exceeding limit
-        function test_exceedsCharLimitMultiple() {
+        function test_insertingCharsSmallerThanLimitUpdatesCursorPosition() {
+            resetTextArea();
+
+            const text = "abc";
+            insertMultipleChars(text);
+
+            const expected = text.length;
+            const actual = vpnTextAreaTest.textInput.cursorPosition;
+
+            verify(expected === actual, `Cursor position was ${actual} not ${expected}.`);
+        }
+
+        function test_resetToInitialCursorPositionAfterCharIsRemovedFromText() {
             resetTextArea();
             fillTextInput();
 
-            const expected = vpnTextAreaTest.textInput.text;
-            const inputString = "abc";
-            insertMultipleChars(inputString);
+            const expected = Math.floor(vpnTextAreaTest.textInput.maxCharacterCount / 2);
+            vpnTextAreaTest.textInput.cursorPosition = expected;
+            insertSingleChar("b");
+            const actual = vpnTextAreaTest.textInput.cursorPosition;
 
-            const actual = vpnTextAreaTest.textInput.text;
-            verify(expected === actual, `text was ${actual} not ${expected}.`);
+            verify(expected === actual, `Cursor position was ${actual} not ${expected}.`);
         }
 
     }
