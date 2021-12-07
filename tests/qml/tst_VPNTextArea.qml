@@ -48,7 +48,7 @@ Item {
             resetTextArea();
             fillTextInput();
 
-            const expected = vpnTextAreaTest.textInput.text;
+            const expected = "a".repeat(vpnTextAreaTest.textInput.maxCharacterCount);
             insertSingleChar("b");
 
             const actual = vpnTextAreaTest.textInput.text;
