@@ -116,7 +116,7 @@ void Controller::initialize() {
 #elif defined(MVPN_ANDROID)
   m_impl.reset(new TimerController(new AndroidController());
 #else
-  m_impl.reset(new TimerController(new DummyController());
+  m_impl.reset(new DummyController());
 #endif
 
   connect(m_impl.get(), &ControllerImpl::connected, this,
