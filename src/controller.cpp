@@ -114,7 +114,7 @@ void Controller::initialize() {
 #elif defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION)
   m_impl.reset(new TimerController(new IOSController());
 #elif defined(MVPN_ANDROID)
-  m_impl.reset(new TimerController(new AndroidController());
+  m_impl.reset(new AndroidController());
 #else
   m_impl.reset(new DummyController());
 #endif
