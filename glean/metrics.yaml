@@ -18,7 +18,7 @@
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 sample:
-  iap_no_sku_details:
+  iap_g_no_sku_details:
     type: event
     lifetime: ping
     send_in_pings:
@@ -35,7 +35,7 @@ sample:
       - sstreich@mozilla.com
     expires: never
 
-  iap_launch_billingflow_failed:
+  iap_g_launchbillingflow_failed:
     type: event
     lifetime: ping
     send_in_pings:
@@ -52,7 +52,7 @@ sample:
       - sstreich@mozilla.com
     expires: never
 
-  iap_unexpected_non_purchased:
+  iap_g_unexpected_purchasestate:
     type: event
     lifetime: ping
     send_in_pings:
@@ -69,7 +69,7 @@ sample:
       - sstreich@mozilla.com
     expires: never
 
-  iap_sku_without_month:
+  iap_g_sku_without_month:
     type: event
     lifetime: ping
     send_in_pings:
@@ -86,7 +86,7 @@ sample:
       - sstreich@mozilla.com
     expires: never
 
-  iap_query_purchases_failed:
+  iap_g_query_purchases_failed:
     type: event
     lifetime: ping
     send_in_pings:
@@ -103,7 +103,7 @@ sample:
       - sstreich@mozilla.com
     expires: never
 
-  iap_query_sku_details_failed:
+  iap_g_query_sku_details_failed:
     type: event
     lifetime: ping
     send_in_pings:
@@ -120,7 +120,7 @@ sample:
       - sstreich@mozilla.com
     expires: never
 
-  iap_billing_not_available:
+  iap_g_billing_not_available:
     type: event
     lifetime: ping
     send_in_pings:
@@ -137,7 +137,7 @@ sample:
       - sstreich@mozilla.com
     expires: never
 
-  iap_purchase_update_failed:
+  iap_g_purchases_updated_failed:
     type: event
     lifetime: ping
     send_in_pings:
@@ -154,7 +154,24 @@ sample:
       - sstreich@mozilla.com
     expires: never
 
-  iap_purchase_ack_failed:
+  iap_g_purchases_update_is_null:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Encountered an error while processing incoming purchase updates
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1620
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - sstreich@mozilla.com
+    expires: never
+
+  iap_g_purchase_ack_failed:
     type: event
     lifetime: ping
     send_in_pings:
