@@ -11,8 +11,8 @@ print N "This script bakes our custom shaders"
 print N ""
 
 repoDir="$(dirname "$parentDir")"
-shaderSourceDir="$repoDir/src/ui/resources/shaders/src"
-shaderDistDir="$repoDir/src/ui/resources/shaders/baked"
+shaderSourceDir="$repoDir/nebula/ui/resources/shaders/src"
+shaderDistDir="$repoDir/nebula/ui/resources/shaders/baked"
 
 rm -rf "$shaderDistDir"/* || die
 totalCount=$(find "$shaderSourceDir" -type f | wc -l | xargs)
