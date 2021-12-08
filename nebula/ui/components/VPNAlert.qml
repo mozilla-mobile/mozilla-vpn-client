@@ -337,7 +337,8 @@ Rectangle {
     function show() {
         if (!isLayout) {
             height = style.alertHeight;
-            width = Math.min(window.width - Theme.windowMargin * 2, Theme.maxHorizontalContentWidth);
+            width = window.width - Theme.windowMargin * 2;
+
             if (setY > 0) {
                 y = setY;
             } else {
