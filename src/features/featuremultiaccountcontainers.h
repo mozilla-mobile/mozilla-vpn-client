@@ -26,10 +26,10 @@ class FeatureMultiAccountContainers final : public Feature {
             "qrc:/ui/resources/features/"
             "multi-account-containers-preview.png",  // ImagePath
             "qrc:/ui/resources/features/multi-account-containers-icon.svg",  // IconPath
-            "https://addons.mozilla.org/firefox/addon/multi-account-containers/"
-            "?utm_source=mozilla.vpn.client&utm_medium=in-app-link&utm_"
-            "content=whats-new-panel&utm_campaign=vpn-better-together",  // link
-                                                                         // URL
+            "https://support.mozilla.org/kb/"
+            "protect-your-container-tabs-mozilla-vpn?utm_source=mozilla.vpn."
+            "client&utm_medium=in-app-link&utm_content=whats-new-panel&utm_"
+            "campaign=vpn-better-together",  // link URL
             "2.7",
             false  // Can be enabled in devmode
         ) {}
