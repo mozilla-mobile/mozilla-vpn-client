@@ -328,7 +328,12 @@ static QList<WebSocketCommand> s_commands{
                          QString name = mp.name() + QString(padding, ' ');
 
                          if (value.type() == QVariant::StringList) {
-                           for (const QString& x : value.value<QStringList>()) {
+                           QStringList list = value.value<QStringList>();
+                           if (list.isEmpty()) {
+                             result += name + " =\n";
+                             continue;
+                           }
+                           for (const QString& x : list) {
                              result += name + " = " + x + "\n";
                              name.fill(' ', longest);
                            }
