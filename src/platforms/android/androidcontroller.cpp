@@ -153,12 +153,13 @@ void AndroidController::applyStrings() {
   m_serviceBinder.transact(ACTION_SET_NOTIFICATION_FALLBACK, data, nullptr);
 }
 
-void AndroidController::activate(const QList<Server>& serverList,
-                                 const Device* device, const Keys* keys,
+void AndroidController::activate(const Server& server, const Device* device,
+                                 const Keys* keys, int hopindex,
                                  const QList<IPAddress>& allowedIPAddressRanges,
                                  const QStringList& excludedAddresses,
                                  const QStringList& vpnDisabledApps,
                                  const QHostAddress& dns, Reason reason) {
+  Q_ASSERT(hopindex == 0);
   logger.debug() << "Activation";
 
   logger.debug() << "Prompting for VPN permission";
@@ -168,11 +169,8 @@ void AndroidController::activate(const QList<Server>& serverList,
                                      "(Landroid/content/Context;)V",
                                      appContext.object());
 
-  bool isMultihop = serverList.length() > 1;
-  Server exitServer = serverList.first();
-  Server entryServer = serverList.last();
-
   m_device = *device;
+  m_serverPublicKey = server.publicKey();
 
   // Serialise arguments for the VPNService
   QJsonObject jDevice;
@@ -186,19 +184,14 @@ void AndroidController::activate(const QList<Server>& serverList,
   jKeys["privateKey"] = keys->privateKey();
 
   QJsonObject jServer;
-  logger.info() << "Server[0]" << entryServer.hostname();
-  jServer["ipv4AddrIn"] = entryServer.ipv4AddrIn();
-  jServer["ipv4Gateway"] = entryServer.ipv4Gateway();
-  jServer["ipv6AddrIn"] = entryServer.ipv6AddrIn();
-  jServer["ipv6Gateway"] = entryServer.ipv6Gateway();
+  logger.info() << "Server" << server.hostname();
+  jServer["ipv4AddrIn"] = server.ipv4AddrIn();
+  jServer["ipv4Gateway"] = server.ipv4Gateway();
+  jServer["ipv6AddrIn"] = server.ipv6AddrIn();
+  jServer["ipv6Gateway"] = server.ipv6Gateway();
 
-  jServer["publicKey"] = exitServer.publicKey();
-  jServer["port"] =
-      (int)(isMultihop ? exitServer.multihopPort() : entryServer.choosePort());
-
-  if (serverList.length() != 1) {
-    jServer["port"] = (int)exitServer.multihopPort();
-  }
+  jServer["publicKey"] = server.publicKey();
+  jServer["port"] = (double)server.choosePort();
 
   QList<IPAddress> allowedIPs;
   QList<IPAddress> excludedIPs;
@@ -328,7 +321,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
       break;
     case EVENT_CONNECTED:
       logger.debug() << "Transact: connected";
-      emit m_controller->connected();
+      emit m_controller->connected(m_controller->m_serverPublicKey);
       break;
     case EVENT_DISCONNECTED:
       logger.debug() << "Transact: disconnected";
