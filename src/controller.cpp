@@ -110,7 +110,7 @@ void Controller::initialize() {
 #if defined(MVPN_LINUX)
   m_impl.reset(new LinuxController());
 #elif defined(MVPN_MACOS_DAEMON) || defined(MVPN_WINDOWS)
-  m_impl.reset(new TimerController(new LocalSocketController()));
+  m_impl.reset(new LocalSocketController());
 #elif defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION)
   m_impl.reset(new TimerController(new IOSController());
 #elif defined(MVPN_ANDROID)
@@ -310,13 +310,14 @@ bool Controller::silentSwitchServers() {
 bool Controller::deactivate() {
   logger.debug() << "Deactivation" << m_state;
 
-  if (m_state != StateOn && m_state != StateSwitching &&
-      m_state != StateConfirming) {
+  if ((m_state != StateOn) && (m_state != StateSwitching) &&
+      (m_state != StateConfirming) && (m_state != StateConnecting)) {
     logger.warning() << "Already disconnected";
     return false;
   }
 
-  if (m_state == StateOn || m_state == StateConfirming) {
+  if ((m_state == StateOn) || (m_state == StateConfirming) ||
+      (m_state == StateConnecting)) {
     setState(StateDisconnecting);
   }
 
@@ -570,7 +571,8 @@ void Controller::backendFailure() {
 
   m_nextStep = BackendFailure;
 
-  if ((m_state == StateOn) || (m_state == StateSwitching)) {
+  if ((m_state == StateOn) || (m_state == StateSwitching) ||
+      (m_state == StateConnecting)) {
     deactivate();
     return;
   }

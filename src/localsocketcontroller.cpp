@@ -86,99 +86,47 @@ void LocalSocketController::daemonConnected() {
 }
 
 void LocalSocketController::activate(
-    const QList<Server>& serverList, const Device* device, const Keys* keys,
+    const Server& server, const Device* device, const Keys* keys, int hopindex,
     const QList<IPAddress>& allowedIPAddressRanges,
     const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
     const QHostAddress& dnsServer, Reason reason) {
   Q_UNUSED(reason);
-  Q_ASSERT(!serverList.isEmpty());
 
-  // The first hop should exclude the entry server.
-  const Server& entry = serverList.last();
-  bool first = true;
-
-  // Clear out any connections that might have been lingering.
-  m_activationQueue.clear();
-  m_device = device;
-  m_keys = keys;
-
-  if (m_state != eReady) {
-    emit disconnected();
-    return;
-  }
-
-  // Activate connections starting from the outermost tunnel
-  for (int hopindex = serverList.count() - 1; hopindex > 0; hopindex--) {
-    const Server& next = serverList[hopindex - 1];
-    HopConnection hop;
-    hop.m_server = serverList[hopindex];
-    hop.m_hopindex = hopindex;
-    hop.m_allowedIPAddressRanges.append(next.ipv4AddrIn());
-    hop.m_allowedIPAddressRanges.append(next.ipv6AddrIn());
-    if (first) {
-      hop.m_excludedAddresses.append(entry.ipv4AddrIn());
-      hop.m_excludedAddresses.append(entry.ipv6AddrIn());
-      first = false;
-    }
-    m_activationQueue.append(hop);
-  }
-
-  // The final hop should be activated last.
-  HopConnection lastHop;
-  lastHop.m_server = serverList.first();
-  lastHop.m_hopindex = 0;
-  lastHop.m_allowedIPAddressRanges = allowedIPAddressRanges;
-  lastHop.m_excludedAddresses = excludedAddresses;
-  if (first) {
-    lastHop.m_excludedAddresses.append(entry.ipv4AddrIn());
-    lastHop.m_excludedAddresses.append(entry.ipv6AddrIn());
-    first = false;
-  }
-  lastHop.m_vpnDisabledApps = vpnDisabledApps;
-  lastHop.m_dnsServer = dnsServer;
-  m_activationQueue.append(lastHop);
-
-  logger.debug() << "Activating";
-  activateNext();
-}
-
-void LocalSocketController::activateNext() {
-  const HopConnection& hop = m_activationQueue.first();
   QJsonObject json;
   json.insert("type", "activate");
-  json.insert("hopindex", QJsonValue((double)hop.m_hopindex));
-  json.insert("privateKey", QJsonValue(m_keys->privateKey()));
-  json.insert("deviceIpv4Address", QJsonValue(m_device->ipv4Address()));
-  json.insert("deviceIpv6Address", QJsonValue(m_device->ipv6Address()));
-  json.insert("serverPublicKey", QJsonValue(hop.m_server.publicKey()));
-  json.insert("serverIpv4AddrIn", QJsonValue(hop.m_server.ipv4AddrIn()));
-  json.insert("serverIpv6AddrIn", QJsonValue(hop.m_server.ipv6AddrIn()));
-  json.insert("serverPort", QJsonValue((double)hop.m_server.choosePort()));
-  if (hop.m_hopindex == 0) {
-    json.insert("serverIpv4Gateway", QJsonValue(hop.m_server.ipv4Gateway()));
-    json.insert("serverIpv6Gateway", QJsonValue(hop.m_server.ipv6Gateway()));
-    json.insert("dnsServer", QJsonValue(hop.m_dnsServer.toString()));
+  json.insert("hopindex", QJsonValue((double)hopindex));
+  json.insert("privateKey", QJsonValue(keys->privateKey()));
+  json.insert("deviceIpv4Address", QJsonValue(device->ipv4Address()));
+  json.insert("deviceIpv6Address", QJsonValue(device->ipv6Address()));
+  json.insert("serverPublicKey", QJsonValue(server.publicKey()));
+  json.insert("serverIpv4AddrIn", QJsonValue(server.ipv4AddrIn()));
+  json.insert("serverIpv6AddrIn", QJsonValue(server.ipv6AddrIn()));
+  json.insert("serverPort", QJsonValue((double)server.choosePort()));
+  if (hopindex == 0) {
+    json.insert("serverIpv4Gateway", QJsonValue(server.ipv4Gateway()));
+    json.insert("serverIpv6Gateway", QJsonValue(server.ipv6Gateway()));
+    json.insert("dnsServer", QJsonValue(dnsServer.toString()));
   }
 
-  QJsonArray allowedIPAddesses;
-  for (const IPAddress& i : hop.m_allowedIPAddressRanges) {
+  QJsonArray jsAllowedIPAddesses;
+  for (const IPAddress& i : allowedIPAddressRanges) {
     QJsonObject range;
     range.insert("address", QJsonValue(i.address().toString()));
     range.insert("range", QJsonValue((double)i.prefixLength()));
     range.insert("isIpv6",
                  QJsonValue(i.type() == QAbstractSocket::IPv6Protocol));
-    allowedIPAddesses.append(range);
+    jsAllowedIPAddesses.append(range);
   };
-  json.insert("allowedIPAddressRanges", allowedIPAddesses);
+  json.insert("allowedIPAddressRanges", jsAllowedIPAddesses);
 
-  QJsonArray excludedAddresses;
-  for (const auto& address : hop.m_excludedAddresses) {
-    excludedAddresses.append(QJsonValue(address));
+  QJsonArray jsExcludedAddresses;
+  for (const auto& address : excludedAddresses) {
+    jsExcludedAddresses.append(QJsonValue(address));
   }
-  json.insert("excludedAddresses", excludedAddresses);
+  json.insert("excludedAddresses", jsExcludedAddresses);
 
   QJsonArray splitTunnelApps;
-  for (const auto& uri : hop.m_vpnDisabledApps) {
+  for (const auto& uri : vpnDisabledApps) {
     splitTunnelApps.append(QJsonValue(uri));
   }
   json.insert("vpnDisabledApps", splitTunnelApps);
@@ -188,8 +136,6 @@ void LocalSocketController::activateNext() {
 
 void LocalSocketController::deactivate(Reason reason) {
   logger.debug() << "Deactivating";
-
-  m_activationQueue.clear();
 
   if (m_state != eReady) {
     emit disconnected();
@@ -374,25 +320,14 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "connected") {
-    QString pubkey = obj.value("pubkey").toString();
-    logger.debug() << "Handshake completed with:" << pubkey;
-
-    if (m_activationQueue.isEmpty()) {
+    QJsonValue pubkey = obj.value("pubkey");
+    if (!pubkey.isString()) {
+      logger.error() << "Unexpected pubkey value";
       return;
     }
-    const HopConnection& hop = m_activationQueue.first();
-    if (hop.m_server.publicKey() != pubkey) {
-      return;
-    }
-
-    // After a connection is completed, start the next handshake or signal
-    // success if all connections came up successfully.
-    m_activationQueue.removeFirst();
-    if (m_activationQueue.isEmpty()) {
-      emit connected();
-    } else {
-      activateNext();
-    }
+  
+    logger.debug() << "Handshake completed with:" << pubkey.toString();
+    emit connected(pubkey.toString());
     return;
   }
 
