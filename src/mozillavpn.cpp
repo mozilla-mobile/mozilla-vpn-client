@@ -109,6 +109,10 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
          new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));
   });
 
+  connect(&m_serverCooldownTimer, &QTimer::timeout, this,
+          [this]() { checkServerCooldownTimeouts(); });
+  m_serverCooldownTimer.start(5000);
+
   connect(this, &MozillaVPN::stateChanged, [this]() {
     if (m_state != StateMain) {
       // We don't call deactivate() because that is meant to be used for
@@ -1027,6 +1031,18 @@ QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {
 const QList<Server> MozillaVPN::exitServers() const {
   return filterServerList(
       m_private->m_serverCountryModel.servers(m_private->m_serverData));
+}
+
+void MozillaVPN::checkServerCooldownTimeouts() {
+  qint64 now = QDateTime::currentSecsSinceEpoch();
+  auto i = m_private->m_serverCooldown.begin();
+  while (i != m_private->m_serverCooldown.end()) {
+    if (i.value() <= now) {
+      i = m_private->m_serverCooldown.erase(i);
+    } else {
+      i++;
+    }
+  }
 }
 
 const QList<Server> MozillaVPN::entryServers() const {

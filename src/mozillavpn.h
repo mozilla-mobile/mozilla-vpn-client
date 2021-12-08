@@ -369,6 +369,7 @@ class MozillaVPN final : public QObject {
   void maybeRegenerateDeviceKey();
 
   QList<Server> filterServerList(const QList<Server>& servers) const;
+  void checkServerCooldownTimeouts();
 
  public slots:
   void requestSettings();
@@ -448,6 +449,7 @@ class MozillaVPN final : public QObject {
   QTimer m_alertTimer;
   QTimer m_periodicOperationsTimer;
   QTimer m_gleanTimer;
+  QTimer m_serverCooldownTimer;
 
   bool m_updateRecommended = false;
   bool m_startMinimized = false;
