@@ -113,7 +113,7 @@ git submodule update
 ./scripts/generate_glean.py
 # translations
 ./scripts/importLanguages.py
-# Bake shaders
+# Bake shaders (qt6 only)
 sh ./scripts/bake_shaders.sh
 ```
 
