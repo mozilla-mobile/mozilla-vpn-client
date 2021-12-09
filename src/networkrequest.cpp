@@ -22,7 +22,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QUrl>
 #include <QUrlQuery>
 
@@ -928,9 +928,10 @@ bool NetworkRequest::checkSubjectName(const QSslCertificate& cert) {
 
   // Check there is a match amongst the subject alternative names.
   QStringList altNames = cert.subjectAlternativeNames().values(QSsl::DnsEntry);
-  for (const QString& name : altNames) {
-    QRegExp re(name, Qt::CaseSensitive, QRegExp::Wildcard);
-    if (re.exactMatch(hostname)) {
+  for (const QString& pattern : altNames) {
+    QRegularExpression re(
+        QRegularExpression::wildcardToRegularExpression(pattern));
+    if (re.match(hostname).hasMatch()) {
       logger.debug() << "Found subjectAltName match for" << hostname;
       return true;
     }
