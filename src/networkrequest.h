@@ -12,6 +12,7 @@
 
 class QHostAddress;
 class QNetworkAccessManager;
+class QSslCertificate;
 class QurlQuery;
 class Task;
 
