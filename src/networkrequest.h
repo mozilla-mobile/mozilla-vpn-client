@@ -147,6 +147,7 @@ class NetworkRequest final : public QObject {
   void handleReply(QNetworkReply* reply);
   void handleHeaderReceived();
   void handleRedirect(const QUrl& url);
+  bool checkSubjectName(const QSslCertificate& cert);
 
  private slots:
   void replyFinished();

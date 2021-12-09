@@ -22,6 +22,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QRegExp>
 #include <QUrl>
 #include <QUrlQuery>
 
@@ -300,13 +301,6 @@ NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
   r->m_request.setRawHeader("Host", url.host().toLocal8Bit());
 
   r->getRequest();
-
-  // Only for this request, we ignore SSL errors, otherwise QT will try to
-  // validate the SSL certificate using the hostname and not the Host-header
-  // value.
-  Q_ASSERT(r->m_reply);
-  r->m_reply->ignoreSslErrors();
-
   return r;
 }
 
@@ -918,11 +912,48 @@ void NetworkRequest::abort() {
   m_reply->abort();
 }
 
+bool NetworkRequest::checkSubjectName(const QSslCertificate& cert) {
+  QString hostname = QString(m_request.rawHeader("Host"));
+  if (hostname.isEmpty()) {
+    Q_ASSERT(m_reply);
+    hostname = m_reply->url().host();
+  }
+
+  // Check if there is a match in the subject common name.
+  QStringList commonNames = cert.subjectInfo(QSslCertificate::CommonName);
+  if (commonNames.contains(hostname)) {
+    logger.debug() << "Found commonName match for" << hostname;
+    return true;
+  }
+
+  // Check there is a match amongst the subject alternative names.
+  QStringList altNames = cert.subjectAlternativeNames().values(QSsl::DnsEntry);
+  for (const QString& name : altNames) {
+    QRegExp re(name, Qt::CaseSensitive, QRegExp::Wildcard);
+    if (re.exactMatch(hostname)) {
+      logger.debug() << "Found subjectAltName match for" << hostname;
+      return true;
+    }
+  }
+
+  // If we get this far, then the certificate has no matching subject name.
+  return false;
+}
+
 void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
   if (!m_reply) {
     return;
   }
-  logger.error() << "SSL Error on " << m_reply->url().host();
+
+  // Manually check for a hostname match in case we set a raw Host header.
+  if ((errors.count() == 1) && m_request.hasRawHeader("Host") &&
+      (errors[0].error() == QSslError::HostNameMismatch) &&
+      checkSubjectName(errors[0].certificate())) {
+    m_reply->ignoreSslErrors(errors);
+    return;
+  }
+
+  logger.error() << "SSL Error on" << m_reply->url().host();
   for (const auto& error : errors) {
     logger.error() << error.errorString();
     auto cert = error.certificate();
