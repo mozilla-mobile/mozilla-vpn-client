@@ -29,6 +29,7 @@ class FeatureShareLogs : public Feature {
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath
                 "",                  // IconPath
+                "",                  // link URL
                 "2.6",               // released
                 false                // Can be enabled in devmode
         ) {}
