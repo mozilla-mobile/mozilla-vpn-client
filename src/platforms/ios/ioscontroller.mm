@@ -89,7 +89,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
       callback:^(BOOL a_connected) {
         logger.debug() << "State changed: " << a_connected;
         if (a_connected) {
-          emit connected();
+          emit connected(m_serverPublicKey);
           return;
         }
 
@@ -97,8 +97,9 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
       }];
 }
 
-void IOSController::activate(const QList<Server>& serverList, const Device* device,
-                             const Keys* keys, const QList<IPAddress>& allowedIPAddressRanges,
+void IOSController::activate(const Server& server, const Device* device,
+                             const Keys* keys, int hopindex,
+                             const QList<IPAddress>& allowedIPAddressRanges,
                              const QStringList& excludedAddresses,
                              const QStringList& vpnDisabledApps, const QHostAddress& dnsServer,
                              Reason reason) {
@@ -106,20 +107,19 @@ void IOSController::activate(const QList<Server>& serverList, const Device* devi
   Q_UNUSED(keys);
   Q_UNUSED(excludedAddresses);
 
-  bool isMultihop = serverList.length() > 1;
-  Server exitServer = serverList.first();
-  Server entryServer = serverList.last();
-
-  // This feature is not supported on macos/ios yet.
+  // These features are not supported on macos/ios yet.
+  Q_ASSERT(hopindex == 0);
   Q_ASSERT(vpnDisabledApps.isEmpty());
 
-  logger.debug() << "IOSController activating" << entryServer.hostname();
+  logger.debug() << "IOSController activating" << server.hostname();
 
   if (!impl) {
     logger.error() << "Controller not correctly initialized";
     emit disconnected();
     return;
   }
+
+  m_serverPublicKey = server.publicKey();
 
   NSMutableArray<VPNIPAddressRange*>* allowedIPAddressRangesNS =
       [NSMutableArray<VPNIPAddressRange*> arrayWithCapacity:allowedIPAddressRanges.length()];
@@ -132,10 +132,10 @@ void IOSController::activate(const QList<Server>& serverList, const Device* devi
   }
 
   [impl connectWithDnsServer:dnsServer.toString().toNSString()
-           serverIpv6Gateway:entryServer.ipv6Gateway().toNSString()
-             serverPublicKey:exitServer.publicKey().toNSString()
-            serverIpv4AddrIn:entryServer.ipv4AddrIn().toNSString()
-                  serverPort:isMultihop ? exitServer.multihopPort() : entryServer.choosePort()
+           serverIpv6Gateway:server.ipv6Gateway().toNSString()
+             serverPublicKey:server.publicKey().toNSString()
+            serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
+                  serverPort:server.choosePort()
       allowedIPAddressRanges:allowedIPAddressRangesNS
                       reason:reason
              failureCallback:^() {
