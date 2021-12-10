@@ -112,7 +112,7 @@ void Controller::initialize() {
 #elif defined(MVPN_MACOS_DAEMON) || defined(MVPN_WINDOWS)
   m_impl.reset(new LocalSocketController());
 #elif defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION)
-  m_impl.reset(new TimerController(new IOSController());
+  m_impl.reset(new IOSController());
 #elif defined(MVPN_ANDROID)
   m_impl.reset(new AndroidController());
 #else
@@ -316,8 +316,8 @@ bool Controller::deactivate() {
     return false;
   }
 
-  if ((m_state == StateOn) || (m_state == StateConfirming) ||
-      (m_state == StateConnecting)) {
+  if ((m_state == StateOn) || (m_state == StateSwitching) ||
+      (m_state == StateConfirming) || (m_state == StateConnecting)) {
     setState(StateDisconnecting);
   }
 
