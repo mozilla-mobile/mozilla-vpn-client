@@ -75,7 +75,7 @@ constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
-constexpr const char* LOGO_URL = ":/ui/resources/logo-dock.png";
+constexpr const char* LOGO_URL = ":/nebula/resources/logo-dock.png";
 
 PRODBETAEXPR(const char*, fxaUrl, "https://api.accounts.firefox.com",
              "https://api-accounts.stage.mozaws.net")
