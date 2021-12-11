@@ -174,7 +174,7 @@ ColumnLayout {
 
                     Connections {
                         target: swipeView
-                        onCurrentIndexChanged: {
+                        function onCurrentIndexChanged() {
                             if (!isCurrentSlide()) {
                                 return;
                             }
