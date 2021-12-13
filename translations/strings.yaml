@@ -220,6 +220,12 @@ whatsNewReleaseNotes:
   tourSystemNotifHeader: What’s new in VPN
   tourSystemNotifBody: Check out all the new features available in the latest version of Mozilla VPN!
   tourSystemNotifCTA: Take the tour
+  # Multi-account containers
+  multiAccountContainersHeader: Mozilla VPN in Firefox
+  multiAccountContainersShortDescription:
+    value: Mozilla VPN is now integrated with the Multi-Account Containers add-on for more privacy and security.
+    comment: “Multi-Account Containers” is the name of the add-on and should not be translated.
+  multiAccountContainersDescription: You can now use different Mozilla VPN locations in multiple tabs simultaneously.
 
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
