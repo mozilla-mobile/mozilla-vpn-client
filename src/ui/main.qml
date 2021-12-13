@@ -348,17 +348,21 @@ Window {
     }
 
     Button {
+        id: testTest
         anchors.right: parent.right
-        text: VPNl18n.ServerUnavailableModalButtonLabel
+        text: "ViewServers"
         z: 1
 
         onClicked: () => {
-            mainStackView.push("qrc:/ui/views/ViewServers.qml", {
-                isMainStackView: true,
-                onMenuBack: () => {
-                    mainStackView.pop();
-                }
-            })
+            mainStackView.push(
+                "qrc:/ui/views/ViewServers.qml", {
+                    isMainStackView: true,
+                    onMenuBack: () => {
+                        mainStackView.pop();
+                    }
+                },
+                StackView.Immediate
+            );
         }
     }
 

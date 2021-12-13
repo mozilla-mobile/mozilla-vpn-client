@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Controls 2.14
 
 import themes 0.1
 
@@ -18,6 +19,7 @@ Item {
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
+    property var currentStackView: ({})
     signal clicked(QtObject mouse)
 
     width: parent.width
@@ -25,6 +27,10 @@ Item {
     // Ensure that menu is on top of possible scrollable
     // content.
     z: 2
+
+    function handleGoBack() {
+        isMultiHopView ? handleMultiHopNav() : currentStackView.pop();
+    }
 
     MouseArea {
         // Prevent mouse events from passing through to
@@ -49,7 +55,7 @@ Item {
 
         skipEnsureVisible: true // prevents scrolling of lists when this is focused
 
-        onClicked: isMultiHopView? handleMultiHopNav() : isMainView ? mainStackView.pop() : (isSettingsView ? settingsStackView.pop() : stackview.pop())
+        onClicked: handleGoBack()
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
@@ -94,6 +100,40 @@ Item {
         y: 55
         width: parent.width
         height: 1
+    }
+
+    function setCurrentStackView() {
+        if (isMainView) {
+            currentStackView = mainStackView;
+        } else if (isSettingsView) {
+            currentStackView = settingsStackView;
+        } else if (stackview) {
+            currentStackView = stackview;
+        }
+    }
+
+    function resetViewStacks() {
+        currentStackView.pop(null);
+
+        if (stackview) {
+            stackview.pop(StackView.Immediate);
+        }
+    }
+
+    Component.onCompleted: () => {
+        setCurrentStackView();
+    }
+
+    Button {
+        id: testTest
+        anchors.right: parent.right
+        text: "Clear stack"
+        y: 50
+        z: 1
+
+        onClicked: () => {
+            resetViewStacks();
+        }
     }
 
 }
