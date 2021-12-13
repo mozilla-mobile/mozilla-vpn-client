@@ -170,18 +170,17 @@ VPNFlickable {
                 }
             }
 
-            VPNFooterLink {
+            VPNLinkButton {
                 id: restorePurchase
                 visible: Qt.platform.os == "ios"
 
                 // Already a subscriber?
                 labelText: qsTrId("vpn.updates.alreadyASubscriber")
-                anchors.top: grid.bottom
+                Layout.alignment: Qt.AlignHCenter
                 onClicked: VPNIAP.restore()
             }
 
             VPNSignOut {
-                anchors.top: restorePurchase.bottom
                 anchors.bottom: undefined
                 anchors.bottomMargin: undefined
                 anchors.horizontalCenter: undefined
