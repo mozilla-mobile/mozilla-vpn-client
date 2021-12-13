@@ -4,13 +4,9 @@
 
 #include "helper.h"
 
-#include <nebula.h>
-#include <glean.h>
 #include <QtQuickTest>
 
 int main(int argc, char* argv[]) {
-  INIT_NEBULA
-  INIT_GLEAN
   // In order to be able to call our TestHelper constructor how we want,
   // we do not follow the exact instructions here
   // https://doc.qt.io/qt-5/qtquicktest-index.html#executing-c-before-qml-tests
