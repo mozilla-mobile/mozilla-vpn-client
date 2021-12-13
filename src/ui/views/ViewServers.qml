@@ -15,6 +15,8 @@ import themes 0.1
 Item {
     id: root
 
+    property bool isMainStackView: false
+    property var onMenuBack: ({})
 
     VPNMenu {
         property string defaultMenuTitle: qsTrId("vpn.servers.selectLocation")
@@ -40,10 +42,16 @@ Item {
 
             if (serversTabs.currentTab.objectName === "tabSingleHop") {
                 // User clicked back button from the Single-hop tab view but didn't select a new server
-                VPNController.changeServer(VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName)
+                VPNController.changeServer(VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName);
             }
 
-            return stackview.pop()
+            if (isMainStackView && onMenuBack) {
+                isMainStackView = false;
+                onMenuBack();
+                return;
+            }
+
+            return stackview.pop();
         }
     }
 

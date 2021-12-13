@@ -343,6 +343,23 @@ Window {
     }
 
     VPNServerUnavailablePopup {
+        onClosed: () => {
+        }
+    }
+
+    Button {
+        anchors.right: parent.right
+        text: VPNl18n.ServerUnavailableModalButtonLabel
+        z: 1
+
+        onClicked: () => {
+            mainStackView.push("qrc:/ui/views/ViewServers.qml", {
+                isMainStackView: true,
+                onMenuBack: () => {
+                    mainStackView.pop();
+                }
+            })
+        }
     }
 
     VPNFeatureTourPopup {

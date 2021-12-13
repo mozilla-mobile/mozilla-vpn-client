@@ -18,10 +18,10 @@ VPNPopup {
 
         Item {
             Layout.alignment: Qt.AlignHCenter
-            Layout.bottomMargin: Theme.listSpacing
+            Layout.bottomMargin: Theme.listSpacing * 1.5
             Layout.preferredHeight: 80
             Layout.preferredWidth: 80
-            Layout.topMargin: Theme.vSpacing * 1.5
+            Layout.topMargin: Theme.vSpacing
 
             Image {
                 anchors.fill: parent
