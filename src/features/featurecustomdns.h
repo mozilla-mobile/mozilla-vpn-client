@@ -20,6 +20,7 @@ class FeatureCustomDNS final : public Feature {
             L18nStrings::WhatsNewReleaseNotesDnsModalBodyTextNew,  // LongDescr
             "qrc:/ui/resources/features/custom-dns-preview.png",   // ImagePath
             "qrc:/ui/resources/settings/networkSettings.svg",      // IconPath
+            "",                                                    // link URL
             "2.5",                                                 // released
             true  // Can be enabled in devmode
         ) {}

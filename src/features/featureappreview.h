@@ -19,6 +19,7 @@ class FeatureAppReview : public Feature {
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath
                 "",                  // IconPath
+                "",                  // link URL
                 "2.5",               // released
                 false                // Can be enabled in devmode
         ) {}

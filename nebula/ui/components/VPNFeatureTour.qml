@@ -17,7 +17,7 @@ ColumnLayout {
     signal close()
 
     property variant slidesModel: ({})
-
+    property string currentFeatureID: ""
 
     states: [
         State {
@@ -122,7 +122,7 @@ ColumnLayout {
                 ColumnLayout {
                     id: slideContent
 
-                    opacity: slideIndex === swipeView.currentIndex ? 1 : 0
+                    opacity: isCurrentSlide() ? 1 : 0
 
                     ColumnLayout {
                         spacing: Theme.listSpacing
@@ -167,6 +167,24 @@ ColumnLayout {
                             duration: 400
                         }
                     }
+
+                    function isCurrentSlide() {
+                        return slideIndex === swipeView.currentIndex;
+                    }
+
+                    Connections {
+                        target: swipeView
+                        function onCurrentIndexChanged() {
+                            if (!isCurrentSlide()) {
+                                return;
+                            }
+
+                            const featureIdChanged = tour.currentFeatureID !== featureID;
+                            if (featureIdChanged) {
+                                tour.currentFeatureID = featureID;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -174,6 +192,7 @@ ColumnLayout {
                 id: initialSlideLoader
 
                 property int slideIndex: 0
+                property string featureID: ""
                 property string featureName: VPNl18n.WhatsNewReleaseNotesTourModalHeader
                 property string featureDescription: VPNl18n.WhatsNewReleaseNotesTourModalBodyText
                 property string featureImagePath: "qrc:/nebula/resources/features/features-tour-hero.png"
@@ -192,6 +211,7 @@ ColumnLayout {
                     id: featureSlidesLoader
 
                     property int slideIndex: index + 1
+                    property string featureID: feature.id
                     property string featureName: feature.displayName
                     property string featureDescription: feature.description
                     property string featureImagePath: feature.imagePath
@@ -269,6 +289,30 @@ ColumnLayout {
                 sourceSize.height: Theme.iconSize * 1.5
                 sourceSize.width: Theme.iconSize * 1.5
                 visible: false
+            }
+        }
+
+        VPNLinkButton {
+            id: linkButton
+
+            labelText: VPNl18n.SplittunnelInfoLinkText
+            visible: hasFeatureLinkUrl()
+            Layout.fillWidth: true
+            Layout.topMargin: Theme.listSpacing * 0.5
+
+            onClicked: {
+                const featureLinkUrl = VPNFeatureList.get(currentFeatureID).linkUrl
+                VPN.openLinkUrl(featureLinkUrl);
+            }
+
+            function hasFeatureLinkUrl() {
+                const isFeature = tour.currentFeatureID && tour.currentFeatureID.length > 0;
+                if (!isFeature) {
+                    return false;
+                }
+
+                const currentFeature = VPNFeatureList.get(currentFeatureID);
+                return currentFeature && currentFeature.linkUrl;
             }
         }
     }

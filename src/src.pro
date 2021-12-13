@@ -216,6 +216,7 @@ HEADERS += \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
         features/featurelocalareaaccess.h \
+        features/featuremultiaccountcontainers.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
         features/featuresharelogs.h \
