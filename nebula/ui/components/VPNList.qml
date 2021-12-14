@@ -5,7 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.5
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 ListView {
     id: list

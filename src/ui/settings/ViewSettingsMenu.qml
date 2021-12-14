@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 import org.mozilla.Glean 0.24
 import telemetry 0.24
@@ -25,15 +24,15 @@ VPNFlickable {
         onClicked: stackview.pop(StackView.Immediate)
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.topMargin: Theme.windowMargin / 2
-        anchors.leftMargin: Theme.windowMargin / 2
+        anchors.topMargin: VPNTheme.theme.windowMargin / 2
+        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
         accessibleName: qsTrId("vpn.connectionInfo.close")
 
         Image {
             id: backImage
 
             source: "qrc:/nebula/resources/close-dark.svg"
-            sourceSize.width: Theme.iconSize
+            sourceSize.width: VPNTheme.theme.iconSize
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton
         }
@@ -48,7 +47,7 @@ VPNFlickable {
         logoTitle: VPNUser.displayName ? VPNUser.displayName : textVpnUser
         logoSubtitle: VPNUser.email
         anchors.top: parent.top
-        anchors.topMargin: (Math.max(window.safeContentHeight * .08, Theme.windowMargin * 2))
+        anchors.topMargin: (Math.max(window.safeContentHeight * .08, VPNTheme.theme.windowMargin * 2))
         maskImage: true
         isSettingsView: true
     }
@@ -58,7 +57,7 @@ VPNFlickable {
         objectName: "manageAccountButton"
         text: qsTrId("vpn.main.manageAccount")
         anchors.top: vpnPanel.bottom
-        anchors.topMargin: Theme.vSpacing
+        anchors.topMargin: VPNTheme.theme.vSpacing
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             Sample.manageAccountClicked.record();
@@ -79,9 +78,9 @@ VPNFlickable {
     ColumnLayout {
         id: settingsList
 
-        spacing: Theme.listSpacing
-        y: Theme.vSpacing + manageAccountButton.y + manageAccountButton.height
-        width: parent.width - Theme.windowMargin
+        spacing: VPNTheme.theme.listSpacing
+        y: VPNTheme.theme.vSpacing + manageAccountButton.y + manageAccountButton.height
+        width: parent.width - VPNTheme.theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
 
         VPNSettingsItem {
@@ -141,7 +140,7 @@ VPNFlickable {
         }
 
         Rectangle {
-            Layout.preferredHeight: fullscreenRequired? Theme.rowHeight * 1.5 : Theme.rowHeight
+            Layout.preferredHeight: fullscreenRequired? VPNTheme.theme.rowHeight * 1.5 : VPNTheme.theme.rowHeight
             Layout.fillWidth: true
             color: "transparent"
         }

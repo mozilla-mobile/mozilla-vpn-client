@@ -5,7 +5,6 @@
 import QtQuick 2.5
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 Row {
     property var markerLabel
@@ -89,7 +88,7 @@ Row {
             font.pixelSize: 10
             height: 16
             text: computeRange()
-            font.family: Theme.fontInterFamily
+            font.family: VPNTheme.theme.fontInterFamily
             color: "#FFFFFF"
         }
 
@@ -98,7 +97,7 @@ Row {
 
             font.pixelSize: 14
             text: markerLabel
-            font.family: Theme.fontBoldFamily
+            font.family: VPNTheme.theme.fontBoldFamily
             color: "#FFFFFF"
         }
 
@@ -107,7 +106,7 @@ Row {
 
             font.pixelSize: 16
             text: computeValue()
-            font.family: Theme.fontInterFamily
+            font.family: VPNTheme.theme.fontInterFamily
             color: "#FFFFFF"
         }
 

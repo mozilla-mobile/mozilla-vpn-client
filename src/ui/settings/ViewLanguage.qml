@@ -9,7 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
-import themes 0.1
 
 Item {
     property var useSystemLanguageEnabled: toggleCard.toggleChecked
@@ -22,7 +21,7 @@ Item {
 
         height: parent.height - menu.height
         anchors.top: parent.top
-        anchors.topMargin: Theme.menuHeight
+        anchors.topMargin: VPNTheme.theme.menuHeight
         anchors.left: parent.left
         anchors.right: parent.right
         width: parent.width
@@ -37,7 +36,7 @@ Item {
             id: vpnFlickable
 
             objectName: "settingsLanguagesView"
-            flickContentHeight: col.y + col.implicitHeight + (Theme.rowHeight * 2)
+            flickContentHeight: col.y + col.implicitHeight + (VPNTheme.theme.rowHeight * 2)
             anchors.fill: parent
 
             VPNToggleCard {
@@ -82,13 +81,13 @@ Item {
 
                 objectName: "languageList"
                 opacity: useSystemLanguageEnabled ? .5 : 1
-                spacing: Theme.vSpacing
+                spacing: VPNTheme.theme.vSpacing
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.leftMargin: Theme.vSpacing
-                anchors.rightMargin: Theme.vSpacing
+                anchors.leftMargin: VPNTheme.theme.vSpacing
+                anchors.rightMargin: VPNTheme.theme.vSpacing
                 anchors.top: toggleCard.bottom
-                anchors.topMargin: Theme.vSpacing *  1.5
+                anchors.topMargin: VPNTheme.theme.vSpacing *  1.5
                 Component.onCompleted: {
 
                     if (useSystemLanguageEnabled) {
@@ -107,7 +106,7 @@ Item {
                             continue;
                         }
 
-                        const selectedItemYPosition = repeaterItem.y + (Theme.rowHeight * 4) - yCenter;
+                        const selectedItemYPosition = repeaterItem.y + (VPNTheme.theme.rowHeight * 4) - yCenter;
                         const destinationY = (selectedItemYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : selectedItemYPosition;
 
                         // Prevent edge case negative scrolling
@@ -122,7 +121,7 @@ Item {
 
                 VPNSearchBar {
                     id: filterInput
-                    height: Theme.rowHeight
+                    height: VPNTheme.theme.rowHeight
                     anchors.left: parent.left
                     anchors.right: parent.right
                     onTextChanged: text => {

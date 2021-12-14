@@ -7,7 +7,6 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 RowLayout {
     id: checkBoxRow
@@ -22,7 +21,7 @@ RowLayout {
 
     signal clicked()
 
-    spacing: Theme.windowMargin
+    spacing: VPNTheme.theme.windowMargin
 
     VPNCheckBox {
         id: checkBox
@@ -39,15 +38,15 @@ RowLayout {
 
     Rectangle {
         visible: showAppImage
-        width: Theme.windowMargin * 2
-        height: Theme.windowMargin * 2
+        width: VPNTheme.theme.windowMargin * 2
+        height: VPNTheme.theme.windowMargin * 2
         color: "transparent"
         radius: 4
         Layout.alignment: Qt.AlignTop
 
         Image {
-            sourceSize.width: Theme.windowMargin * 2
-            sourceSize.height: Theme.windowMargin * 2
+            sourceSize.width: VPNTheme.theme.windowMargin * 2
+            sourceSize.height: VPNTheme.theme.windowMargin * 2
             anchors.centerIn: parent
             asynchronous: true
             fillMode:  Image.PreserveAspectFit
@@ -72,7 +71,7 @@ RowLayout {
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             Layout.fillWidth: true
             text: labelText
-            color: Theme.fontColorDark
+            color: VPNTheme.theme.fontColorDark
             horizontalAlignment: Text.AlignLeft
         }
 
@@ -88,7 +87,7 @@ RowLayout {
         Rectangle {
             id: divider
 
-            Layout.topMargin: Theme.windowMargin
+            Layout.topMargin: VPNTheme.theme.windowMargin
             Layout.preferredHeight: 1
             Layout.fillWidth: true
             color: "#E7E7E7"

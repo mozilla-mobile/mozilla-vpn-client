@@ -8,7 +8,6 @@ import QtQuick.Controls 2.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 Item {
     property string _menuTitle: VPNl18n.WhatsNewReleaseNotesTourPageHeader
@@ -18,7 +17,7 @@ Item {
     VPNFlickable {
         id: vpnFlickable
         anchors.top: parent.top
-        anchors.topMargin: Theme.menuHeight
+        anchors.topMargin: VPNTheme.theme.menuHeight
         anchors.left: root.left
         anchors.right: root.right
         height: root.height - menu.height
@@ -31,16 +30,16 @@ Item {
 
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 0
-            width: parent.width - Theme.windowMargin
+            width: parent.width - VPNTheme.theme.windowMargin
 
             VPNSettingsItem {                
                 settingTitle: VPNl18n.WhatsNewReleaseNotesTourSubHeader
                 imageLeftSrc: hovered ? "qrc:/ui/resources/magic-purple.svg" : "qrc:/nebula/resources/magic-dark.svg"
                 imageRightSrc: hovered ? "qrc:/ui/resources/chevron-purple.svg" : "qrc:/nebula/resources/chevron.svg"
-                backgroundColor: Theme.clickableRowPurple
-                fontColor: hovered ? Color.purple70 : Theme.fontColorDark
+                backgroundColor: VPNTheme.theme.clickableRowPurple
+                fontColor: hovered ? VPNTheme.colors.purple70 : VPNTheme.theme.fontColorDark
 
-                Layout.topMargin: Theme.vSpacingSmall
+                Layout.topMargin: VPNTheme.theme.vSpacingSmall
 
                 onClicked: {
                     featureTourPopup.startTour();
@@ -50,12 +49,12 @@ Item {
             Rectangle {
                 id: separatorLine
 
-                color: Color.grey10
+                color: VPNTheme.colors.grey10
                 height: 1
-                Layout.bottomMargin:Theme.vSpacingSmall
-                Layout.leftMargin: Theme.windowMargin * 2 + 14
-                Layout.rightMargin: Theme.windowMargin / 2
-                Layout.topMargin: Theme.vSpacingSmall
+                Layout.bottomMargin:VPNTheme.theme.vSpacingSmall
+                Layout.leftMargin: VPNTheme.theme.windowMargin * 2 + 14
+                Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+                Layout.topMargin: VPNTheme.theme.vSpacingSmall
                 Layout.fillWidth: true
             }
 
@@ -64,10 +63,10 @@ Item {
 
                 model: VPNWhatsNewModel
                 delegate: ColumnLayout {
-                    Layout.leftMargin: Theme.windowMargin / 2
-                    Layout.rightMargin: Theme.windowMargin
-                    Layout.bottomMargin: Theme.vSpacingSmall
-                    Layout.topMargin: Theme.vSpacingSmall
+                    Layout.leftMargin: VPNTheme.theme.windowMargin / 2
+                    Layout.rightMargin: VPNTheme.theme.windowMargin
+                    Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
+                    Layout.topMargin: VPNTheme.theme.vSpacingSmall
 
                     VPNIconAndLabel {
                         id: featureTitle
@@ -82,7 +81,7 @@ Item {
 
                         text: feature.shortDescription
                         Layout.fillWidth: true
-                        Layout.leftMargin: Theme.vSpacing + 14
+                        Layout.leftMargin: VPNTheme.theme.vSpacing + 14
                     }
                 }
             }

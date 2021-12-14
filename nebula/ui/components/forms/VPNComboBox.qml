@@ -9,7 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import compat 0.1
 import components 0.1
-import themes 0.1
 
 ComboBox {
     property var placeholderText: ""
@@ -18,7 +17,7 @@ ComboBox {
     valueRole: "value"
     id: combo
     Layout.preferredWidth: parent.width
-    Layout.preferredHeight: Theme.rowHeight
+    Layout.preferredHeight: VPNTheme.theme.rowHeight
     currentIndex: -1
     activeFocusOnTab: true
     background: VPNInputBackground {
@@ -28,7 +27,7 @@ ComboBox {
     indicator: VPNIcon {
         anchors.verticalCenter: combo.verticalCenter
         anchors.right: combo.right
-        anchors.rightMargin: Theme.windowMargin / 2
+        anchors.rightMargin: VPNTheme.theme.windowMargin / 2
         source: "qrc:/nebula/resources/chevron.svg"
         opacity: comboPopup.visible || combo.focus ? 1 : .7
         rotation: 90
@@ -45,22 +44,22 @@ ComboBox {
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignLeft
         anchors.left: parent.left
-        anchors.leftMargin: Theme.windowMargin
-        width: parent.width - Theme.windowMargin * 2
+        anchors.leftMargin: VPNTheme.theme.windowMargin
+        width: parent.width - VPNTheme.theme.windowMargin * 2
         elide: Text.ElideRight
     }
 
     delegate: ItemDelegate {
         id: comboDelegate
         width: parent.width
-        height: Math.max(Theme.rowHeight, textItem.implicitHeight)
+        height: Math.max(VPNTheme.theme.rowHeight, textItem.implicitHeight)
         padding: 0
         highlighted: combo.highlightedIndex === index
 
         contentItem: Rectangle {
             anchors.fill: parent
             height: comboDelegate.height
-            color: hovered || combo.highlightedIndex === index ? Theme.input.highlight : Theme.input.backgroundColor
+            color: hovered || combo.highlightedIndex === index ? VPNTheme.theme.input.highlight : VPNTheme.theme.input.backgroundColor
 
             Behavior on color {
                 ColorAnimation {
@@ -73,10 +72,10 @@ ComboBox {
                 text: name
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
-                anchors.leftMargin: Theme.windowMargin / 2
-                width:  parent.width - Theme.windowMargin * 2
+                anchors.leftMargin: VPNTheme.theme.windowMargin / 2
+                width:  parent.width - VPNTheme.theme.windowMargin * 2
                 verticalAlignment: Text.AlignVCenter
-                color: hovered || combo.highlightedIndex === index ? Theme.blue : Theme.fontColor
+                color: hovered || combo.highlightedIndex === index ? VPNTheme.theme.blue : VPNTheme.theme.fontColor
 
                 Behavior on color {
                     ColorAnimation {
@@ -106,7 +105,7 @@ ComboBox {
                 anchors.fill: bg
                 visible: false
                 color: "black"
-                radius: Theme.cornerRadius
+                radius: VPNTheme.theme.cornerRadius
             }
 
             VPNDropShadow {
@@ -145,12 +144,12 @@ ComboBox {
 
             PropertyChanges {
                 target: combo.contentItem
-                color: Color.input.focus.text
+                color: VPNTheme.colors.input.focus.text
             }
 
             PropertyChanges {
                 target: combo.background
-                border.color: Color.input.focus.border
+                border.color: VPNTheme.colors.input.focus.border
                 border.width: 2
             }
         },
@@ -162,12 +161,12 @@ ComboBox {
 
             PropertyChanges {
                 target: combo.contentItem
-                color: Color.input.default.placeholder
+                color: VPNTheme.colors.input.default.placeholder
             }
 
             PropertyChanges {
                 target: combo.background
-                border.color: Color.input.default.border
+                border.color: VPNTheme.colors.input.default.border
                 border.width: 1
             }
         },
@@ -179,12 +178,12 @@ ComboBox {
 
             PropertyChanges {
                 target: combo.contentItem
-                color: Color.input.hover.text
+                color: VPNTheme.colors.input.hover.text
             }
 
             PropertyChanges {
                 target: combo.background
-                border.color: Color.input.hover.border
+                border.color: VPNTheme.colors.input.hover.border
                 border.width: 1
             }
         },
@@ -194,12 +193,12 @@ ComboBox {
 
             PropertyChanges {
                 target: combo.contentItem
-                color: Color.input.default.text
+                color: VPNTheme.colors.input.default.text
             }
 
             PropertyChanges {
                 target: combo.background
-                border.color: Color.input.default.border
+                border.color: VPNTheme.colors.input.default.border
                 border.width: 1
             }
         }

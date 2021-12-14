@@ -7,7 +7,6 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 import org.mozilla.Glean 0.24
 import telemetry 0.24
@@ -46,7 +45,7 @@ Item {
     Rectangle {
         id: boxBackground
         anchors.fill: box
-        color: Theme.bgColor
+        color: VPNTheme.theme.bgColor
         radius: 8
         antialiasing: true
     }
@@ -72,14 +71,14 @@ Item {
                 target: logoTitle
                 //% "VPN is off"
                 text: qsTrId("vpn.controller.deactivated")
-                color: Theme.fontColorDark
+                color: VPNTheme.theme.fontColorDark
             }
 
             PropertyChanges {
                 target: logoSubtitle
                 //% "Turn on to protect your privacy"
                 text: qsTrId("vpn.controller.activationSloagan")
-                color: Theme.fontColor
+                color: VPNTheme.theme.fontColor
                 visible: true
             }
 
@@ -125,13 +124,13 @@ Item {
             PropertyChanges {
                 target: logoTitle
                 text: qsTrId("vpn.controller.deactivated")
-                color: Theme.fontColorDark
+                color: VPNTheme.theme.fontColorDark
             }
 
             PropertyChanges {
                 target: logoSubtitle
                 text: qsTrId("vpn.controller.activationSloagan")
-                color: Theme.fontColor
+                color: VPNTheme.theme.fontColor
                 opacity: 1
                 visible: true
             }
@@ -203,7 +202,7 @@ Item {
 
             PropertyChanges {
                 target: settingsButton
-                buttonColorScheme: Theme.iconButtonDarkBackground
+                buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
             }
 
             PropertyChanges {
@@ -264,7 +263,7 @@ Item {
 
             PropertyChanges {
                 target: settingsButton
-                buttonColorScheme: Theme.iconButtonDarkBackground
+                buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
             }
 
             PropertyChanges {
@@ -315,7 +314,7 @@ Item {
 
             PropertyChanges {
                 target: settingsButton
-                buttonColorScheme: Theme.iconButtonDarkBackground
+                buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
             }
 
             PropertyChanges {
@@ -348,14 +347,14 @@ Item {
                 target: logoTitle
                 //% "Disconnecting…"
                 text: qsTrId("vpn.controller.disconnecting")
-                color: Theme.fontColorDark
+                color: VPNTheme.theme.fontColorDark
             }
 
             PropertyChanges {
                 target: logoSubtitle
                 //% "Unmasking connection and location"
                 text: qsTrId("vpn.controller.deactivating")
-                color: Theme.fontColor
+                color: VPNTheme.theme.fontColor
                 opacity: 1
                 visible: true
             }
@@ -372,7 +371,7 @@ Item {
 
             PropertyChanges {
                 target: settingsButton
-                buttonColorScheme: Theme.iconButtonLightBackground
+                buttonColorScheme: VPNTheme.theme.iconButtonLightBackground
             }
 
             PropertyChanges {
@@ -433,7 +432,7 @@ Item {
 
             PropertyChanges {
                 target: settingsButton
-                buttonColorScheme: Theme.iconButtonDarkBackground
+                buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
             }
 
             PropertyChanges {
@@ -530,12 +529,12 @@ Item {
             connectionInfo.open()
         }
 
-        buttonColorScheme: Theme.iconButtonDarkBackground
+        buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
         opacity: connectionInfoButton.visible ? 1 : 0
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.topMargin: Theme.windowMargin / 2
-        anchors.leftMargin: Theme.windowMargin / 2
+        anchors.topMargin: VPNTheme.theme.windowMargin / 2
+        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
         //% "Connection Information"
         accessibleName: qsTrId("vpn.controller.info")
         Accessible.ignored: connectionInfoVisible
@@ -572,8 +571,8 @@ Item {
 
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.topMargin: Theme.windowMargin / 2
-        anchors.rightMargin: Theme.windowMargin / 2
+        anchors.topMargin: VPNTheme.theme.windowMargin / 2
+        anchors.rightMargin: VPNTheme.theme.windowMargin / 2
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
         Accessible.ignored: connectionInfoVisible
@@ -589,7 +588,7 @@ Item {
 
                 states: [
                     State {
-                        when: settingsButton.state === Theme.uiState.stateHovered
+                        when: settingsButton.state === VPNTheme.theme.uiState.stateHovered
 
                         PropertyChanges {
                             target: unseenFeaturesIndicator
@@ -597,7 +596,7 @@ Item {
                         }
                     },
                     State {
-                        when: settingsButton.state === Theme.uiState.statePressed
+                        when: settingsButton.state === VPNTheme.theme.uiState.statePressed
 
                         PropertyChanges {
                             target: unseenFeaturesIndicator
@@ -623,35 +622,11 @@ Item {
                     color: boxBackground.color
                     width: 1
                 }
-                color: Color.error.default
-                height: Theme.listSpacing + border.width * 2
+                color: VPNTheme.colors.error.default
+                height: VPNTheme.theme.listSpacing + border.width * 2
                 radius: width / 2
                 visible: VPNWhatsNewModel.hasUnseenFeature
-                width: Theme.listSpacing + border.width * 2
-            }
-        }
-
-        Component {
-            id: aboutUsComponent
-
-            VPNAboutUs {
-                isSettingsView: false
-            }
-
-        }
-        Connections {
-            target: VPN
-            function onSettingsNeeded() {
-                while(stackview.depth > 1) {
-                    stackview.pop(null, StackView.Immediate);
-                }
-                stackview.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
-            }
-            function onAboutNeeded() {
-                while(stackview.depth > 1) {
-                    stackview.pop(null, StackView.Immediate);
-                }
-                stackview.push(aboutUsComponent);
+                width: VPNTheme.theme.listSpacing + border.width * 2
             }
         }
     }
@@ -712,9 +687,9 @@ Item {
             id: logoSubtitle
             objectName: "controllerSubTitle"
 
-            lineHeight: Theme.controllerInterLineHeight
+            lineHeight: VPNTheme.theme.controllerInterLineHeight
             Accessible.ignored: true
-            width: parent.width - Theme.windowMargin
+            width: parent.width - VPNTheme.theme.windowMargin
             anchors.horizontalCenter: parent.horizontalCenter
             onPaintedHeightChanged: if (visible) col.handleMultilineText()
             onVisibleChanged: if (visible) col.handleMultilineText()
@@ -729,8 +704,8 @@ Item {
           VPNInterLabel {
             objectName: "secureAndPrivateSubtitle"
 
-            color: Theme.white
-            lineHeight: Theme.controllerInterLineHeight
+            color: VPNTheme.theme.white
+            lineHeight: VPNTheme.theme.controllerInterLineHeight
             Accessible.ignored: true
 
             //% "Secure and private"

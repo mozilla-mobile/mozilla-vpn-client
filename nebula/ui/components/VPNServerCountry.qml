@@ -8,14 +8,13 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 VPNClickableRow {
     id: serverCountry
     objectName: "serverCountry-" + code
 
     property bool cityListVisible: (code === focusScope.currentServer.countryCode)
-    property real multiHopMenuHeight: VPNFeatureList.get("multiHop").isSupported ? Theme.menuHeight : 0
+    property real multiHopMenuHeight: VPNFeatureList.get("multiHop").isSupported ? VPNTheme.theme.menuHeight : 0
     property real animationDuration: 200 + (citiesRepeater.count * 25)
     property string _countryCode: code
     property var currentCityIndex
@@ -29,7 +28,7 @@ VPNClickableRow {
         if (itemDistanceFromWindowTop + cityList.height < vpnFlickable.height || !cityListVisible) {
             return;
         }
-        scrollAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - Theme.rowHeight * 1.5 : listScrollPosition + cityList.height + Theme.rowHeight;
+        scrollAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - VPNTheme.theme.rowHeight * 1.5 : listScrollPosition + cityList.height + VPNTheme.theme.rowHeight;
         scrollAnimation.duration = animationDuration
         scrollAnimation.start();
     }
@@ -117,13 +116,13 @@ VPNClickableRow {
         id: serverCountryRow
 
         spacing: 0
-        height: Theme.rowHeight
+        height: VPNTheme.theme.rowHeight
         width: parent.width
 
         VPNServerListToggle {
             id: serverListToggle
 
-            Layout.leftMargin: Theme.windowMargin / 2
+            Layout.leftMargin: VPNTheme.theme.windowMargin / 2
         }
 
         Image {
@@ -131,16 +130,16 @@ VPNClickableRow {
 
             source: "qrc:/nebula/resources/flags/" + code.toUpperCase() + ".png"
             fillMode: Image.PreserveAspectFit
-            Layout.preferredWidth: Theme.iconSize
-            Layout.preferredHeight: Theme.iconSize
-            Layout.leftMargin: Theme.hSpacing
+            Layout.preferredWidth: VPNTheme.theme.iconSize
+            Layout.preferredHeight: VPNTheme.theme.iconSize
+            Layout.leftMargin: VPNTheme.theme.hSpacing
         }
 
         VPNBoldLabel {
             id: countryName
 
             text: localizedName
-            Layout.leftMargin: Theme.hSpacing
+            Layout.leftMargin: VPNTheme.theme.hSpacing
             Layout.fillWidth: true
         }
 
@@ -153,7 +152,7 @@ VPNClickableRow {
         anchors.top: serverCountryRow.bottom
         anchors.topMargin: 22
         anchors.left: serverCountry.left
-        anchors.leftMargin: Theme.hSpacing + Theme.vSpacing + 6
+        anchors.leftMargin: VPNTheme.theme.hSpacing + VPNTheme.theme.vSpacing + 6
         width: serverCountry.width - anchors.leftMargin
 
         Accessible.role: Accessible.List

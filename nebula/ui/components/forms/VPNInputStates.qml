@@ -5,7 +5,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 Item {
     property variant itemToTarget
@@ -21,13 +21,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: Color.input.default.text
-                placeholderTextColor: Color.input.default.placeholder
+                color: VPNTheme.colors.input.default.text
+                placeholderTextColor: VPNTheme.colors.input.default.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: Color.input.default.border
+                border.color: VPNTheme.colors.input.default.border
                 border.width: 1
             }
         },
@@ -40,13 +40,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: Color.input.hover.text
-                placeholderTextColor: Color.input.hover.placeholder
+                color: VPNTheme.colors.input.hover.text
+                placeholderTextColor: VPNTheme.colors.input.hover.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: Color.input.hover.border
+                border.color: VPNTheme.colors.input.hover.border
                 border.width: 1
             }
         },
@@ -56,13 +56,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: Color.input.focus.text
-                placeholderTextColor: Color.input.focus.placeholder
+                color: VPNTheme.colors.input.focus.text
+                placeholderTextColor: VPNTheme.colors.input.focus.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: Color.input.focus.border
+                border.color: VPNTheme.colors.input.focus.border
                 border.width: 2
             }
         },
@@ -72,13 +72,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: Color.input.default.text
-                placeholderTextColor: Color.input.default.placeholder
+                color: VPNTheme.colors.input.default.text
+                placeholderTextColor: VPNTheme.colors.input.default.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: Color.input.default.border
+                border.color: VPNTheme.colors.input.default.border
                 border.width: 1
             }
         },
@@ -88,13 +88,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: Color.input.error.text
-                placeholderTextColor: Color.input.error.placeholder
+                color: VPNTheme.colors.input.error.text
+                placeholderTextColor: VPNTheme.colors.input.error.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: Color.input.error.border
+                border.color: VPNTheme.colors.input.error.border
                 border.width: 2
             }
         },
@@ -104,13 +104,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: Color.input.error.text
-                placeholderTextColor: Color.input.error.placeholder
+                color: VPNTheme.colors.input.error.text
+                placeholderTextColor: VPNTheme.colors.input.error.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: Color.input.error.border
+                border.color: VPNTheme.colors.input.error.border
                 border.width: 1
             }
         },
@@ -120,13 +120,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: Color.input.disabled.text
-                placeholderTextColor: Color.input.disabled.placeholder
+                color: VPNTheme.colors.input.disabled.text
+                placeholderTextColor: VPNTheme.colors.input.disabled.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: Color.input.disabled.border
+                border.color: VPNTheme.colors.input.disabled.border
                 border.width: 1
             }
         }
