@@ -6,7 +6,6 @@ import QtQuick 2.5
 
 import Mozilla.VPN 1.0
 import compat 0.1
-import themes 0.1
 
 Rectangle {
     id: logo
@@ -27,7 +26,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.success.default
+                color: VPNTheme.colors.success.default
             }
             PropertyChanges {
                 target: insetIcon
@@ -47,7 +46,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.success.default
+                color: VPNTheme.colors.success.default
             }
             PropertyChanges {
                 target: insetIcon
@@ -67,7 +66,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.error.default
+                color: VPNTheme.colors.error.default
             }
             PropertyChanges {
                 target: insetIcon
@@ -87,7 +86,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.success.default
+                color: VPNTheme.colors.success.default
             }
             PropertyChanges {
                 target: switchingIcon
@@ -105,7 +104,7 @@ Rectangle {
 
             PropertyChanges {
                 target: insetCircle
-                color: Color.error.default
+                color: VPNTheme.colors.error.default
             }
             PropertyChanges {
                 target: insetIcon
@@ -125,7 +124,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.success.default
+                color: VPNTheme.colors.success.default
             }
             PropertyChanges {
                 target: insetIcon
@@ -145,7 +144,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.success.default
+                color: VPNTheme.colors.success.default
             }
             PropertyChanges {
                 target: insetIcon
@@ -166,7 +165,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.warning.default
+                color: VPNTheme.colors.warning.default
             }
             PropertyChanges {
                 target: insetIcon
@@ -187,7 +186,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: Color.error.default
+                color: VPNTheme.colors.error.default
             }
             PropertyChanges {
                 target: insetIcon

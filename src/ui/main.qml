@@ -9,7 +9,6 @@ import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import compat 0.1
 import components 0.1
-import themes 0.1
 
 import org.mozilla.Glean 0.24
 import telemetry 0.24
@@ -29,12 +28,12 @@ Window {
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
     visible: true
 
-    width: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
-    height: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
+    width: fullscreenRequired() ? Screen.width : VPNTheme.theme.desktopAppWidth;
+    height: fullscreenRequired() ? Screen.height : VPNTheme.theme.desktopAppHeight;
 
     //These need to be bound before onComplete so that the window buttons, menus and title bar double click behave properly
-    maximumWidth: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
-    maximumHeight: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
+    maximumWidth: fullscreenRequired() ? Screen.width : VPNTheme.theme.desktopAppWidth;
+    maximumHeight: fullscreenRequired() ? Screen.height : VPNTheme.theme.desktopAppHeight;
 
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
@@ -62,8 +61,8 @@ Window {
             this.showMinimized();
         }
         if (!fullscreenRequired()) {
-            minimumHeight = Theme.desktopAppHeight
-            minimumWidth = Theme.desktopAppWidth
+            minimumHeight = VPNTheme.theme.desktopAppHeight
+            minimumWidth = VPNTheme.theme.desktopAppWidth
 
         }
         VPN.mainWindowLoaded()
@@ -114,7 +113,7 @@ Window {
     VPNWasmHeader {
         id: wasmMenuHeader
         visible: isWasmApp
-        height: Theme.menuHeight
+        height: VPNTheme.theme.menuHeight
         anchors.top: parent.top
         anchors.topMargin: iosSafeAreaTopMargin.height
     }

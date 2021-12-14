@@ -6,20 +6,19 @@ import QtQuick 2.0
 import QtQuick.Controls 2.5
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 CheckBox {
     id: vpnSettingsToggle
 
-    property var toggleColor: Theme.vpnToggleConnected
-    property var uiState: Theme.uiState
+    property var toggleColor: VPNTheme.theme.vpnToggleConnected
+    property var uiState: VPNTheme.theme.uiState
     property alias forceFocus: vpnSettingsToggle.focus
     property var toolTipTitle
 
     onClicked: toolTip.hide()
     onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(vpnSettingsToggle)
 
-    height: Theme.vSpacing
+    height: VPNTheme.theme.vSpacing
     width: 45
     states: [
         State {
@@ -27,7 +26,7 @@ CheckBox {
 
             PropertyChanges {
                 target: vpnSettingsToggle
-                toggleColor: Theme.vpnToggleConnected
+                toggleColor: VPNTheme.theme.vpnToggleConnected
             }
 
             PropertyChanges {
@@ -42,7 +41,7 @@ CheckBox {
 
             PropertyChanges {
                 target: vpnSettingsToggle
-                toggleColor: Theme.vpnToggleDisconnected
+                toggleColor: VPNTheme.theme.vpnToggleDisconnected
 
             }
 
@@ -86,7 +85,7 @@ CheckBox {
         height: 18
         width: 18
         radius: 9
-        color: Theme.white
+        color: VPNTheme.theme.white
         z: 1
         anchors.verticalCenter: vpnSettingsToggle.verticalCenter
     }

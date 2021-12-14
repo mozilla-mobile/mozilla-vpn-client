@@ -4,7 +4,7 @@
 
 import QtQuick 2.5
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 Rectangle {
 
@@ -13,7 +13,7 @@ Rectangle {
     color: "transparent"
     anchors.fill: parent
     radius: parent.radius
-    border.width: Theme.focusBorderWidth
+    border.width: VPNTheme.theme.focusBorderWidth
     border.color: colorScheme.focusBorder
     opacity: itemToFocus.activeFocus ? 1 : 0
     antialiasing: true

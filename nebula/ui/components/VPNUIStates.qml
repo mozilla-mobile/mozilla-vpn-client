@@ -4,16 +4,16 @@
 
 import QtQuick 2.5
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 Rectangle {
     id: root
 
-    property var uiState:Theme.uiState
+    property var uiState:VPNTheme.theme.uiState
     property variant itemToFocus: parent
     property variant itemToAnchor: parent
-    property var borderWidth: Theme.focusBorderWidth
-    property var colorScheme: Theme.linkButton
+    property var borderWidth: VPNTheme.theme.focusBorderWidth
+    property var colorScheme: VPNTheme.theme.linkButton
     property var setMargins: -2
     property var showFocusRings: true
 
@@ -22,7 +22,7 @@ Rectangle {
     anchors.fill: itemToAnchor
     antialiasing: true
     color: "transparent"
-    radius: Theme.cornerRadius
+    radius: VPNTheme.theme.cornerRadius
     z: -1
     states: [
         State {

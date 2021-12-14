@@ -6,7 +6,6 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 ColumnLayout {
     id: controller
@@ -20,7 +19,7 @@ ColumnLayout {
 
     VPNBoldLabel {
         text: titleText
-        Layout.leftMargin: Theme.windowMargin
+        Layout.leftMargin: VPNTheme.theme.windowMargin
         opacity: disableRowWhen ?  .7 : 1
 
         Behavior on opacity {
@@ -39,12 +38,12 @@ ColumnLayout {
         anchors.right: undefined
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignVCenter
-        Layout.preferredHeight: Theme.rowHeight
+        Layout.preferredHeight: VPNTheme.theme.rowHeight
 
         onClicked: handleClick()
 
         RowLayout {
-            width: parent.width - (Theme.windowMargin * 2)
+            width: parent.width - (VPNTheme.theme.windowMargin * 2)
             anchors.centerIn: parent
             spacing: 0
 

@@ -6,7 +6,6 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 import org.mozilla.Glean 0.24
 import telemetry 0.24
@@ -19,7 +18,7 @@ Item {
         if (!visible) {
             return;
         }
-        grid.flow = grid.children[0].width > (window.width - Theme.windowMargin * 2) ? Grid.TopToBottom : Grid.LeftToRight;
+        grid.flow = grid.children[0].width > (window.width - VPNTheme.theme.windowMargin * 2) ? Grid.TopToBottom : Grid.LeftToRight;
         col.handleMultilineText();
     }
     GridLayout {
@@ -63,7 +62,7 @@ Item {
                 }
                 PropertyChanges {
                     target: stabilityLabel
-                    color: Theme.orange
+                    color: VPNTheme.theme.orange
                 }
                 PropertyChanges {
                     target: warningIcon
@@ -75,7 +74,7 @@ Item {
                 extend: VPNConnectionHealth.Unstable
                 PropertyChanges {
                     target: stabilityLabel
-                    color: Theme.red
+                    color: VPNTheme.theme.red
                 }
                 PropertyChanges {
                     target: warningIcon
@@ -116,7 +115,7 @@ Item {
                                                         "vpn.connectionStability.noSignal")
 
                 id: stabilityLabel
-                lineHeight: Theme.controllerInterLineHeight
+                lineHeight: VPNTheme.theme.controllerInterLineHeight
                 onPaintedWidthChanged: stability.setColumns()
                 text: VPNConnectionHealth.stability
                       === VPNConnectionHealth.Unstable ? textUnstable : textNoSignal
@@ -142,7 +141,7 @@ Item {
             opacity: 0.8
             Layout.alignment: Qt.AlignCenter
             onPaintedWidthChanged: stability.setColumns()
-            lineHeight: grid.flow === Grid.LeftToRight ? Theme.controllerInterLineHeight : 10
+            lineHeight: grid.flow === Grid.LeftToRight ? VPNTheme.theme.controllerInterLineHeight : 10
         }
     }
 

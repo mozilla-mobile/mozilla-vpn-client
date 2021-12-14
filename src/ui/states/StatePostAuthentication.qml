@@ -7,7 +7,6 @@ import QtQuick.Controls 2.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 Item {
     Component.onCompleted: fade.start()

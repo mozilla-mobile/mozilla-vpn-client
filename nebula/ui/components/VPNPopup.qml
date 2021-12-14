@@ -5,8 +5,8 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+import Mozilla.VPN 1.0
 import compat 0.1
-import themes 0.1
 
 Popup {
     id: popup
@@ -17,15 +17,15 @@ Popup {
     enabled: true
     focus: true
     modal: true
-    width: Math.min(window.width - Theme.vSpacing, maxWidth)
-    horizontalPadding: Theme.popupMargin
+    width: Math.min(window.width - VPNTheme.theme.vSpacing, maxWidth)
+    horizontalPadding: VPNTheme.theme.popupMargin
 
     background: Rectangle {
         id: popupBackground
 
         anchors.fill: contentItem
         anchors.margins: -24
-        color: Theme.bgColor
+        color: VPNTheme.theme.bgColor
         radius: 8
 
         Rectangle {
@@ -58,8 +58,8 @@ Popup {
             anchors {
                 right: popupBackground.right
                 top: popupBackground.top
-                rightMargin: Theme.windowMargin / 2
-                topMargin: Theme.windowMargin / 2
+                rightMargin: VPNTheme.theme.windowMargin / 2
+                topMargin: VPNTheme.theme.windowMargin / 2
             }
             onClicked: {
                 popup.close();
@@ -71,8 +71,8 @@ Popup {
                 anchors.centerIn: closeButton
                 fillMode: Image.PreserveAspectFit
                 source: "qrc:/nebula/resources/close-darker.svg"
-                sourceSize.height: Theme.iconSize
-                sourceSize.width: Theme.iconSize
+                sourceSize.height: VPNTheme.theme.iconSize
+                sourceSize.width: VPNTheme.theme.iconSize
             }
         }
     }

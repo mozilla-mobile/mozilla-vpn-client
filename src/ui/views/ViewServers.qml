@@ -10,7 +10,6 @@ import QtQml.Models 2.2
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
-import themes 0.1
 
 Item {
     id: root

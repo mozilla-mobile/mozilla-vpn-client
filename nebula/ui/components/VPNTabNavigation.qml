@@ -7,7 +7,6 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 Item {
     id: root
@@ -26,7 +25,7 @@ Item {
         anchors.bottom: bar.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        color: Color.grey10
+        color: VPNTheme.colors.grey10
         height: 1
         visible: stack.children.length > 1
     }
@@ -36,7 +35,7 @@ Item {
         objectName: "tabBar"
         width: parent.width
         visible: stack.children.length > 1
-        contentHeight: stack.children.length === 1 ? 0 : Theme.menuHeight
+        contentHeight: stack.children.length === 1 ? 0 : VPNTheme.theme.menuHeight
         background: Rectangle {
             color: "transparent"
         }
@@ -59,7 +58,7 @@ Item {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
-                        color: Color.purple70
+                        color: VPNTheme.colors.purple70
                         opacity: btn.activeFocus ? 1 : 0
                         Behavior on opacity {
                             PropertyAnimation {
@@ -73,7 +72,7 @@ Item {
                     text: VPNl18n[tabLabelStringId]
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    color: btn.checked || btn.activeFocus ? Color.purple70 : btn.hovered ? Color.grey50 : Color.grey40
+                    color: btn.checked || btn.activeFocus ? VPNTheme.colors.purple70 : btn.hovered ? VPNTheme.colors.grey50 : VPNTheme.colors.grey40
 
                     Behavior on color {
                         PropertyAnimation {
@@ -89,7 +88,7 @@ Item {
         objectName: "activeTabIndicator"
         width: bar.currentItem.width
         height: 2
-        color: Color.purple70
+        color: VPNTheme.colors.purple70
         anchors.bottom: bar.bottom
         x: bar.currentItem.x
         visible: stack.children.length > 1

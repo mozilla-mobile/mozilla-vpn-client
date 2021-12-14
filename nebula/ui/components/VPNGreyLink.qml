@@ -6,11 +6,10 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 VPNLinkButton  {
-    fontSize: Theme.fontSizeSmallest
+    fontSize: VPNTheme.theme.fontSizeSmallest
     Layout.preferredHeight: 18
-    linkColor: Theme.greyLink
-    buttonPadding: Theme.hSpacing / 2
+    linkColor: VPNTheme.theme.greyLink
+    buttonPadding: VPNTheme.theme.hSpacing / 2
 }
