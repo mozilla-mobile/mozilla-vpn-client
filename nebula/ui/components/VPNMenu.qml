@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtQuick.Controls 2.14
 
 import Mozilla.VPN 1.0
 
@@ -107,8 +106,6 @@ Item {
             currentStackView = mainStackView;
         } else if (isSettingsView) {
             currentStackView = settingsStackView;
-        } else if (stackview) {
-            currentStackView = stackview;
         }
     }
 
@@ -128,7 +125,6 @@ Item {
         target: VPN
 
         function onClearCurrentViewStack() {
-            console.log("onClearCurrentViewStack");
             menuBar.clearViewStack();
         }
     }

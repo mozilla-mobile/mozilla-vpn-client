@@ -57,8 +57,9 @@ VPNPopup {
             Layout.alignment: Qt.AlignBottom
             Layout.topMargin: VPNTheme.theme.vSpacing
 
-            onClicked: {
-                noUpdateAvailablePopup.close();
+            onClicked: () => {
+                root.close();
+                VPN.goToServersView();
             }
         }
     }

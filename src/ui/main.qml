@@ -342,20 +342,6 @@ Window {
     }
 
     VPNServerUnavailablePopup {
-        onClosed: () => {
-        }
-    }
-
-    Button {
-        id: testTest
-        anchors.right: parent.right
-        text: "goToServers"
-        z: 1
-
-        onClicked: () => {
-            console.log("goToServers");
-            VPN.goToServersView();
-        }
     }
 
     VPNFeatureTourPopup {

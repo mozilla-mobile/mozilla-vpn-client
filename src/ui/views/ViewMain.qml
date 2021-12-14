@@ -178,7 +178,6 @@ VPNFlickable {
             target: VPN
 
             function onShowServersView() {
-                console.log("onShowServersView");
                 stackview.push("ViewServers.qml", StackView.Immediate);
             }
         }
