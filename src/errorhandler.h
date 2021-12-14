@@ -12,6 +12,9 @@ class ErrorHandler final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ErrorHandler)
 
+ private:
+  ErrorHandler();
+
  public:
   enum ErrorType {
     NoError,
@@ -29,16 +32,15 @@ class ErrorHandler final : public QObject {
 
   static ErrorType toErrorType(QNetworkReply::NetworkError error);
 
-  ErrorHandler();
   ~ErrorHandler();
 
   static ErrorHandler* instance();
 
-#define ERROR(name)   \
-  void name##Error(); \
+#define ERRORSTATE(name) \
+  void name##Error();    \
   Q_SIGNAL void name();
 #include "errorlist.h"
-#undef ERROR
+#undef ERRORSTATE
 };
 
 #endif  // ERRORHANDLER_H

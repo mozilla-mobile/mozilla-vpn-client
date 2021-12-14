@@ -23,9 +23,12 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
+constexpr const uint32_t GUARDIAN_ERROR_RECEIPT_NOT_VALID = 142;
+constexpr const uint32_t GUARDIAN_ERROR_RECEIPT_IN_USE = 145;
+
 namespace {
 Logger logger(LOG_IAP, "IOSIAPHandler");
-bool transactionsProcessed = false;
+bool s_transactionsProcessed = false;
 }  // namespace
 
 @interface IOSIAPHandlerDelegate
@@ -79,7 +82,7 @@ bool transactionsProcessed = false;
     updatedTransactions:(nonnull NSArray<SKPaymentTransaction*>*)transactions {
   logger.debug() << "payment queue:" << [transactions count];
 
-  transactionsProcessed = true;
+  s_transactionsProcessed = true;
 
   QStringList completedTransactionIds;
   bool failedTransactions = false;
@@ -185,11 +188,11 @@ bool transactionsProcessed = false;
 }
 
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(nonnull SKPaymentQueue*)queue {
-  if (!transactionsProcessed) {
+  if (!s_transactionsProcessed) {
     logger.error() << "No transaction to restore";
     QMetaObject::invokeMethod(m_handler, "noSubscriptionFoundError", Qt::QueuedConnection);
   }
-  transactionsProcessed = false;
+  s_transactionsProcessed = false;
   logger.debug() << "restore request completed";
 }
 
@@ -237,7 +240,7 @@ void IOSIAPHandler::nativeStartSubscription(Product* product) {
 }
 
 void IOSIAPHandler::nativeRestoreSubscription() {
-  transactionsProcessed = false;
+  s_transactionsProcessed = false;
   [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
@@ -346,14 +349,14 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
             }
 
             int errorNumber = errorValue.toInt();
-            if (errorNumber != 142) {
+            if (errorNumber != GUARDIAN_ERROR_RECEIPT_NOT_VALID) {
               MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
               ErrorHandler::instance()->subscriptionExpiredError();
               return;
             }
 
-            if (errorNumber != 145) {
+            if (errorNumber != GUARDIAN_ERROR_RECEIPT_IN_USE) {
               MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
               ErrorHandler::instance()->subscriptionInUseError();

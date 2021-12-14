@@ -11,7 +11,7 @@
 #endif
 
 // Restore button
-ERROR(subscriptionGeneric)
-ERROR(noSubscriptionFound)
-ERROR(subscriptionExpired)
-ERROR(subscriptionInUse)
+ERRORSTATE(subscriptionGeneric)
+ERRORSTATE(noSubscriptionFound)
+ERRORSTATE(subscriptionExpired)
+ERRORSTATE(subscriptionInUse)

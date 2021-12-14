@@ -172,7 +172,7 @@ VPNFlickable {
 
             VPNLinkButton {
                 id: restorePurchase
-                visible: Qt.platform.os == "ios"
+                visible: Qt.platform.os === "ios"
 
                 // Already a subscriber?
                 labelText: qsTrId("vpn.updates.alreadyASubscriber")

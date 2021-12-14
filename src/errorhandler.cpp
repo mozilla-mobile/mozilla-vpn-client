@@ -23,14 +23,14 @@ ErrorHandler::ErrorHandler() { MVPN_COUNT_CTOR(ErrorHandler); }
 
 ErrorHandler::~ErrorHandler() { MVPN_COUNT_DTOR(ErrorHandler); }
 
-#define ERROR(name)                                \
+#define ERRORSTATE(name)                           \
   void ErrorHandler::name##Error() {               \
     logger.warning() << #name << " error handled"; \
     emit name();                                   \
   }
 
 #include "errorlist.h"
-#undef ERROR
+#undef ERRORSTATE
 
 // static
 ErrorHandler::ErrorType ErrorHandler::toErrorType(
