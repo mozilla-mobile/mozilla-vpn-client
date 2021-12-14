@@ -10,12 +10,11 @@ import QtQml.Models 2.2
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
-import themes 0.1
 
 FocusScope {
     id: focusScope
 
-    property real listOffset: (Theme.menuHeight * 2)
+    property real listOffset: (VPNTheme.theme.menuHeight * 2)
     property bool showRecentConnections: false
     property var currentServer
 
@@ -73,7 +72,7 @@ FocusScope {
         Rectangle {
             id: verticalSpacer
 
-            height: Theme.vSpacing
+            height: VPNTheme.theme.vSpacing
             width: parent.width
             color: "transparent"
         }
@@ -98,10 +97,10 @@ FocusScope {
 
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.leftMargin: Theme.vSpacing
-                anchors.rightMargin: Theme.vSpacing
+                anchors.leftMargin: VPNTheme.theme.vSpacing
+                anchors.rightMargin: VPNTheme.theme.vSpacing
                 enabled: true
-                height: Theme.rowHeight
+                height: VPNTheme.theme.rowHeight
                 onTextChanged: () => {
                     countriesModel.invalidate();
                 }
@@ -130,7 +129,7 @@ FocusScope {
                 id: recentConnections
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.rightMargin: Theme.windowMargin / 2
+                anchors.rightMargin: VPNTheme.theme.windowMargin / 2
                 anchors.leftMargin: anchors.rightMargin
                 visible: showRecentConnections && serverSearchInput.text.length === 0
                 showMultiHopRecentConnections: false

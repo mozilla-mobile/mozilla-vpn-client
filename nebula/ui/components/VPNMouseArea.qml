@@ -4,13 +4,13 @@
 
 import QtQuick 2.5
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 MouseArea {
     id: mouseArea
 
     property var targetEl: parent
-    property var uiState: Theme.uiState
+    property var uiState: VPNTheme.theme.uiState
     property var onMouseAreaClicked: function() { parent.clicked() }
 
     function changeState(stateName) {

@@ -9,7 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
-import themes 0.1
 
 RadioDelegate {
     id: radioDelegate
@@ -23,12 +22,12 @@ RadioDelegate {
 
     Layout.fillWidth: true
     Layout.minimumHeight: 68
-    Layout.preferredHeight: row.implicitHeight + Theme.windowMargin * 2
+    Layout.preferredHeight: row.implicitHeight + VPNTheme.theme.windowMargin * 2
 
     background: Rectangle {
         id: bg
-        color: Theme.white
-        radius: Theme.cornerRadius
+        color: VPNTheme.theme.white
+        radius: VPNTheme.theme.cornerRadius
 
         VPNRectangularGlow {
             anchors.fill: bg
@@ -41,7 +40,7 @@ RadioDelegate {
         Rectangle {
             id: rect
             anchors.fill: parent
-            color: Theme.white
+            color: VPNTheme.theme.white
             radius: parent.radius
             clip: true
         }
@@ -58,10 +57,10 @@ RadioDelegate {
                 left: parent.left
                 top: parent.top
             }
-            color: radioDelegate.checked ? Theme.purple60 : Theme.white
+            color: radioDelegate.checked ? VPNTheme.theme.purple60 : VPNTheme.theme.white
             opacity: radioDelegate.checked ? 1 : 0
-            radius: Theme.cornerRadius
-            width: Theme.windowMargin
+            radius: VPNTheme.theme.cornerRadius
+            width: VPNTheme.theme.windowMargin
 
             Rectangle {
                 anchors {
@@ -69,8 +68,8 @@ RadioDelegate {
                     right: parent.right
                     top: parent.top
                 }
-                color: Theme.white
-                width: Theme.listSpacing * 0.5
+                color: VPNTheme.theme.white
+                width: VPNTheme.theme.listSpacing * 0.5
             }
 
             Behavior on color {
@@ -83,9 +82,9 @@ RadioDelegate {
         // Purple border when product is selected or focused
         Rectangle {
             anchors.fill: parent
-            border.color: (radioDelegate.checked || radioDelegate.focus) ? Theme.purple60 : Theme.white
+            border.color: (radioDelegate.checked || radioDelegate.focus) ? VPNTheme.theme.purple60 : VPNTheme.theme.white
             color: "transparent"
-            radius: Theme.cornerRadius
+            radius: VPNTheme.theme.cornerRadius
 
             Behavior on border.color {
                 ColorAnimation {
@@ -110,11 +109,11 @@ RadioDelegate {
 
         anchors {
             fill: parent
-            leftMargin: Theme.windowMargin * 1.5
-            rightMargin: Theme.windowMargin
+            leftMargin: VPNTheme.theme.windowMargin * 1.5
+            rightMargin: VPNTheme.theme.windowMargin
             verticalCenter: parent.verticalCenter
         }
-        spacing: Theme.listSpacing
+        spacing: VPNTheme.theme.listSpacing
 
         ColumnLayout {
             id: col
@@ -133,11 +132,11 @@ RadioDelegate {
             //% "%1/month"
             property string monthlyPrice: qsTrId("vpn.subscription.price").arg(productMonthlyPrice)
 
-            spacing: Theme.listSpacing * 0.5
+            spacing: VPNTheme.theme.listSpacing * 0.5
 
             VPNBoldLabel {
-                font.pixelSize: Theme.fontSize * 1.1
-                lineHeight: Theme.labelLineHeight
+                font.pixelSize: VPNTheme.theme.fontSize * 1.1
+                lineHeight: VPNTheme.theme.labelLineHeight
                 lineHeightMode: Text.FixedHeight
                 text: col.subscriptionDuration > 1 ? col.productMultiMonth : col.monthlyPrice
                 verticalAlignment: Text.AlignTop
@@ -147,7 +146,7 @@ RadioDelegate {
             }
 
             VPNLightLabel {
-                font.pixelSize: Theme.fontSize
+                font.pixelSize: VPNTheme.theme.fontSize
                 text: col.subscriptionDuration !== -1 ? (col.subscriptionDuration > 1 ? col.monthlyPrice : col.productSingleMonth) : ""
                 wrapMode: Text.WordWrap
 
@@ -173,17 +172,17 @@ RadioDelegate {
 
             Layout.alignment: Qt.AlignTop
             Layout.fillWidth: true
-            Layout.topMargin: Theme.windowMargin
+            Layout.topMargin: VPNTheme.theme.windowMargin
 
             VPNInterLabel {
                 //: Appears on the in-app purchase view beside a subscription plan. "%1" is replaced by the percentage amount saved when selecting that plan.
                 //% "Save %1%"
                 text: qsTrId("vpn.subscription.savePercent").arg(productSavings)
 
-                color: Theme.purple60
-                font.family: Theme.fontBoldFamily
+                color: VPNTheme.theme.purple60
+                font.family: VPNTheme.theme.fontBoldFamily
                 horizontalAlignment: Qt.AlignRight
-                lineHeight: Theme.labelLineHeight * 0.9
+                lineHeight: VPNTheme.theme.labelLineHeight * 0.9
                 lineHeightMode: Text.FixedHeight
                 verticalAlignment: Text.AlignVCenter
                 visible: productSavings > 0

@@ -8,13 +8,12 @@ import QtQuick.Controls 2.15
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 ColumnLayout {
     property bool isWasmViewer: false
     id: notifications
-    spacing: Theme.windowMargin / 2
-    Layout.maximumWidth: parent.width - Theme.windowMargin
+    spacing: VPNTheme.theme.windowMargin / 2
+    Layout.maximumWidth: parent.width - VPNTheme.theme.windowMargin
     Layout.alignment: Qt.AlignHCenter
     Layout.fillHeight: false
     visible: VPNSurveyModel.hasSurvey || VPN.updateRecommended || isWasmViewer

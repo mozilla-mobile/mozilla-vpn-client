@@ -5,13 +5,12 @@
 import QtQuick 2.0
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 VPNPopup {
     id: root
 
     anchors.centerIn: parent
-    maxWidth: Theme.desktopAppWidth
+    maxWidth: VPNTheme.theme.desktopAppWidth
     contentItem: VPNFeatureTour {
         id: featureTour
 

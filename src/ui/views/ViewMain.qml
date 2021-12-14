@@ -8,13 +8,12 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 import compat 0.1
 
 VPNFlickable {
     id: vpnFlickable
 
-    flickContentHeight: col.height + Theme.windowMargin / 2
+    flickContentHeight: col.height + VPNTheme.theme.windowMargin / 2
     anchors.left: parent.left
     anchors.right: parent.right
 
@@ -53,16 +52,16 @@ VPNFlickable {
 
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.leftMargin: Theme.windowMargin / 2
-        anchors.rightMargin: Theme.windowMargin / 2
+        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
+        anchors.rightMargin: VPNTheme.theme.windowMargin / 2
         flow: GridLayout.TopToBottom
-        rowSpacing: Theme.windowMargin
+        rowSpacing: VPNTheme.theme.windowMargin
         anchors.top: parent.top
-        anchors.topMargin: Theme.windowMargin
+        anchors.topMargin: VPNTheme.theme.windowMargin
 
         RowLayout {
             id: mobileHeader
-            Layout.preferredHeight: Theme.rowHeight
+            Layout.preferredHeight: VPNTheme.theme.rowHeight
             Layout.alignment: Qt.AlignHCenter
             spacing: 6
 

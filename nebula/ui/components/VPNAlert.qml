@@ -6,8 +6,8 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.VPN 1.0
 import compat 0.1
-import themes 0.1
 
 Rectangle {
     id: alertBox
@@ -39,7 +39,7 @@ Rectangle {
     Layout.fillWidth: isLayout
     color: style.alertColor
     visible: false
-    radius: Theme.cornerRadius
+    radius: VPNTheme.theme.cornerRadius
     height : style.alertHeight;
     z: 3
 
@@ -60,7 +60,7 @@ Rectangle {
         property var fontSize: 13
         property var lineHeight: 21
         property var borderRadius: 4
-        property var alertHeight: Math.max(Theme.rowHeight, (label.paintedHeight + (Theme.windowMargin * 1.25)))
+        property var alertHeight: Math.max(VPNTheme.theme.rowHeight, (label.paintedHeight + (VPNTheme.theme.windowMargin * 1.25)))
         property var closeIcon : darkCloseIcon
         property var focusBorder: alertColor
     }
@@ -80,14 +80,14 @@ Rectangle {
             name: stateNames.info
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: Theme.blueButton
+                colorScheme: VPNTheme.theme.blueButton
             }
 
             PropertyChanges {
                 target: style;
-                alertColor: Theme.blue
-                alertHoverColor: Theme.blueHovered
-                alertClickColor: Theme.bluePressed
+                alertColor: VPNTheme.theme.blue
+                alertHoverColor: VPNTheme.theme.blueHovered
+                alertClickColor: VPNTheme.theme.bluePressed
                 fontColor: "#FFFFFF"
                 closeIcon: whiteCloseIcon
             }
@@ -96,15 +96,15 @@ Rectangle {
             name: stateNames.success
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: Theme.greenAlert
+                colorScheme: VPNTheme.theme.greenAlert
             }
 
             PropertyChanges {
                 target: style;
-                alertColor: Theme.greenAlert.defaultColor
-                alertHoverColor: Theme.greenAlert.buttonHovered
-                alertClickColor: Theme.greenAlert.buttonPressed
-                fontColor: Theme.fontColorDark
+                alertColor: VPNTheme.theme.greenAlert.defaultColor
+                alertHoverColor: VPNTheme.theme.greenAlert.buttonHovered
+                alertClickColor: VPNTheme.theme.greenAlert.buttonPressed
+                fontColor: VPNTheme.theme.fontColorDark
                 closeIcon: darkCloseIcon
             }
         },
@@ -113,14 +113,14 @@ Rectangle {
 
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: Theme.redButton
+                colorScheme: VPNTheme.theme.redButton
             }
 
             PropertyChanges {
                 target: style;
-                alertColor: Theme.red
-                alertHoverColor: Theme.redHovered
-                alertClickColor: Theme.redPressed
+                alertColor: VPNTheme.theme.red
+                alertHoverColor: VPNTheme.theme.redHovered
+                alertClickColor: VPNTheme.theme.redPressed
                 fontColor: "#FFFFFF"
                 closeIcon: whiteCloseIcon
             }
@@ -129,15 +129,15 @@ Rectangle {
             name: stateNames.warning
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: Theme.warningAlertfocusIndicators
+                colorScheme: VPNTheme.theme.warningAlertfocusIndicators
             }
 
             PropertyChanges {
                 target: style;
-                alertColor: Theme.orange
-                alertHoverColor: Theme.orangeHovered
-                alertClickColor: Theme.orangePressed
-                fontColor: Theme.fontColorDark
+                alertColor: VPNTheme.theme.orange
+                alertHoverColor: VPNTheme.theme.orangeHovered
+                alertClickColor: VPNTheme.theme.orangePressed
+                fontColor: VPNTheme.theme.fontColorDark
                 closeIcon: darkCloseIcon
             }
         }
@@ -169,7 +169,7 @@ Rectangle {
     VPNButtonBase {
         id: alertAction
         anchors.fill: alertBox
-        radius: Theme.cornerRadius
+        radius: VPNTheme.theme.cornerRadius
         enabled: alertActionText !== ""
         onClicked: {
             if (alertActionText !== ""){
@@ -182,10 +182,10 @@ Rectangle {
 
         Rectangle {
             id: labelWrapper
-            height: label.paintedHeight + Theme.windowMargin
+            height: label.paintedHeight + VPNTheme.theme.windowMargin
             color: "transparent"
             anchors.left: alertAction.left
-            width: alertAction.width - Theme.rowHeight
+            width: alertAction.width - VPNTheme.theme.rowHeight
             anchors.verticalCenter: parent.verticalCenter
 
             Label {
@@ -193,9 +193,9 @@ Rectangle {
                 anchors.centerIn: parent
                 text: alertBox.alertText + " " + "<b><u>" + alertBox.alertActionText + "</b></u>"
                 horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: Theme.fontSizeSmall
+                font.pixelSize: VPNTheme.theme.fontSizeSmall
                 color: style.fontColor
-                width: labelWrapper.width - Theme.windowMargin
+                width: labelWrapper.width - VPNTheme.theme.windowMargin
                 wrapMode: Label.WordWrap
             }
         }
@@ -204,24 +204,24 @@ Rectangle {
             anchors.leftMargin: closeButton.width
         }
 
-        state: Theme.uiState.stateDefault
+        state: VPNTheme.theme.uiState.stateDefault
         states: [
             State {
-                name: Theme.uiState.stateDefault
+                name: VPNTheme.theme.uiState.stateDefault
                 PropertyChanges {
                     target: alertBox
                     color: style.alertColor
                 }
             },
             State {
-                name: Theme.uiState.statePressed
+                name: VPNTheme.theme.uiState.statePressed
                 PropertyChanges {
                     target: alertBox
                     color: style.alertClickColor
                 }
             },
             State {
-                name: Theme.uiState.stateHovered
+                name: VPNTheme.theme.uiState.stateHovered
                 PropertyChanges {
                     target: alertBox
                     color: style.alertHoverColor
@@ -236,11 +236,11 @@ Rectangle {
 
         id: closeButton
         height: alertBox.height
-        width: Theme.rowHeight
+        width: VPNTheme.theme.rowHeight
         clip: true
         anchors.right: alertBox.right
         anchors.rightMargin: 0
-        radius: Theme.cornerRadius
+        radius: VPNTheme.theme.cornerRadius
         Accessible.name: "Close"
         onClicked: {
             closeAlert.start();
@@ -256,7 +256,7 @@ Rectangle {
             width: parent.width + 10
             anchors.left: closeButton.left
             anchors.leftMargin: -10
-            radius: Theme.cornerRadius
+            radius: VPNTheme.theme.cornerRadius
             color: style.alertColor
             clip: true
             state: parent.state
@@ -269,21 +269,21 @@ Rectangle {
             }
             states: [
                 State {
-                    name: Theme.uiState.stateDefault
+                    name: VPNTheme.theme.uiState.stateDefault
                     PropertyChanges {
                         target: backgroundRect
                         color: style.alertColor
                     }
                 },
                 State {
-                    name: Theme.uiState.statePressed
+                    name: VPNTheme.theme.uiState.statePressed
                     PropertyChanges {
                         target: backgroundRect
                         color: style.alertClickColor
                     }
                 },
                 State {
-                    name: Theme.uiState.stateHovered
+                    name: VPNTheme.theme.uiState.stateHovered
                     PropertyChanges {
                         target: backgroundRect
                         color: style.alertHoverColor
@@ -310,13 +310,13 @@ Rectangle {
         border.width: 3
         visible: closeButton.activeFocus || alertAction.activeFocus
         color: "transparent"
-        radius: Theme.cornerRadius + (anchors.margins * -1)
+        radius: VPNTheme.theme.cornerRadius + (anchors.margins * -1)
 
         Rectangle {
             color: "transparent"
             border.width: 2
             border.color: parent.colorScheme ? parent.colorScheme.focusBorder : "transparent"
-            radius: Theme.cornerRadius
+            radius: VPNTheme.theme.cornerRadius
             anchors.fill: parent
             anchors.margins: 3
         }
@@ -337,15 +337,14 @@ Rectangle {
     function show() {
         if (!isLayout) {
             height = style.alertHeight;
-            width = window.width - Theme.windowMargin * 2;
-
+            width = window.width - VPNTheme.theme.windowMargin * 2;
             if (setY > 0) {
                 y = setY;
             } else {
-                y = fullscreenRequired() ? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
+                y = fullscreenRequired() ? iosSafeAreaTopMargin.height + VPNTheme.theme.windowMargin : VPNTheme.theme.windowMargin;
             }
             anchors.horizontalCenter = parent.horizontalCenter;
-            anchors.margins = Theme.windowMargin / 2;
+            anchors.margins = VPNTheme.theme.windowMargin / 2;
         }
         if(alertBox.duration > 0){
             console.log("Toastbox timer start")

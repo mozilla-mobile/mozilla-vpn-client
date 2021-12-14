@@ -5,18 +5,17 @@
 import QtQuick 2.5
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 // VPNInterLabel
 Text {
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
-    font.pixelSize: Theme.fontSize
-    font.family: Theme.fontInterFamily
+    font.pixelSize: VPNTheme.theme.fontSize
+    font.family: VPNTheme.theme.fontInterFamily
     lineHeightMode: Text.FixedHeight
-    lineHeight: Theme.labelLineHeight
+    lineHeight: VPNTheme.theme.labelLineHeight
     wrapMode: Text.Wrap
-    color: Theme.fontColorDark
+    color: VPNTheme.theme.fontColorDark
 
     Accessible.role: Accessible.StaticText
     Accessible.name: text

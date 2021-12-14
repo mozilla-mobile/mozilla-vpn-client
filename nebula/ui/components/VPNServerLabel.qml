@@ -5,7 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 RowLayout {
     property var serversList
@@ -14,21 +14,21 @@ RowLayout {
     Flow {
         id: serverItems
 
-        spacing: Theme.listSpacing
+        spacing: VPNTheme.theme.listSpacing
         Layout.fillWidth: true
 
         Repeater {
             id: serverRepeater
             model: serversList
             delegate: RowLayout {
-                spacing: Theme.listSpacing
+                spacing: VPNTheme.theme.listSpacing
 
                 Image {
                     id: flag
                     fillMode: Image.PreserveAspectFit
 
-                    Layout.preferredWidth: Theme.windowMargin
-                    Layout.preferredHeight: Theme.windowMargin
+                    Layout.preferredWidth: VPNTheme.theme.windowMargin
+                    Layout.preferredHeight: VPNTheme.theme.windowMargin
                     Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
 
                     Component.onCompleted: {
@@ -64,10 +64,10 @@ RowLayout {
                     id: arrowIcon
 
                     source: "qrc:/nebula/resources/arrow-forward.svg"
-                    sourceSize.height: Theme.iconSize
-                    sourceSize.width: Theme.iconSize
-                    Layout.leftMargin: Theme.listSpacing
-                    Layout.rightMargin: Theme.listSpacing
+                    sourceSize.height: VPNTheme.theme.iconSize
+                    sourceSize.width: VPNTheme.theme.iconSize
+                    Layout.leftMargin: VPNTheme.theme.listSpacing
+                    Layout.rightMargin: VPNTheme.theme.listSpacing
                     visible: (index !== serverRepeater.count - 1)
                     Component.onCompleted: {
                         if (typeof(countryCode) !== "undefined") {

@@ -6,7 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 Flickable {
     id: vpnFlickable
@@ -22,7 +22,7 @@ Flickable {
         }
 
         const buffer = 20;
-        const itemHeight = Math.min(item.height, Theme.rowHeight) + buffer
+        const itemHeight = Math.min(item.height, VPNTheme.theme.rowHeight) + buffer
         let ext = item.height + yPosition;
         let destinationY;
 
