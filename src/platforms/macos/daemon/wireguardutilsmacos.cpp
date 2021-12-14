@@ -137,10 +137,8 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
-  // HACK: This is a sloppy way to detect entry vs. exit server.
-  if (config.m_hopindex != 0) {
-    m_rtmonitor->addExclusionRoute(config.m_serverIpv4AddrIn);
-  }
+  logger.debug() << "Configuring peer" << printableKey(config.m_serverPublicKey)
+                 << "via" << config.m_serverIpv4AddrIn;
 
   // Update/create the peer config
   QString message;
@@ -159,7 +157,7 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
 
   out << "replace_allowed_ips=true\n";
   out << "persistent_keepalive_interval=" << WG_KEEPALIVE_PERIOD << "\n";
-  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     out << "allowed_ip=" << ip.toString() << "\n";
   }
 
@@ -173,11 +171,6 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
 bool WireguardUtilsMacos::deletePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
-
-  // HACK: This is a sloppy way to detect entry vs. exit server.
-  if (config.m_hopindex != 0) {
-    m_rtmonitor->deleteExclusionRoute(config.m_serverIpv4AddrIn);
-  }
 
   QString message;
   QTextStream out(&message);
@@ -232,22 +225,63 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsMacos::getPeerStatus() {
   return peerList;
 }
 
-bool WireguardUtilsMacos::updateRoutePrefix(const IPAddressRange& prefix,
+bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix,
                                             int hopindex) {
   Q_UNUSED(hopindex);
   if (!m_rtmonitor) {
     return false;
   }
-  return m_rtmonitor->insertRoute(prefix);
+  if (prefix.prefixLength() > 0) {
+    return m_rtmonitor->insertRoute(prefix);
+  }
+
+  // Ensure that we do not replace the default route.
+  if (prefix.type() == QAbstractSocket::IPv4Protocol) {
+    return m_rtmonitor->insertRoute(IPAddress("0.0.0.0/1")) &&
+           m_rtmonitor->insertRoute(IPAddress("128.0.0.0/1"));
+  }
+  if (prefix.type() == QAbstractSocket::IPv6Protocol) {
+    return m_rtmonitor->insertRoute(IPAddress("::/1")) &&
+           m_rtmonitor->insertRoute(IPAddress("8000::/1"));
+  }
+
+  return false;
 }
 
-bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddressRange& prefix,
+bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix,
                                             int hopindex) {
   Q_UNUSED(hopindex);
   if (!m_rtmonitor) {
     return false;
   }
-  return m_rtmonitor->deleteRoute(prefix);
+  if (prefix.prefixLength() > 0) {
+    return m_rtmonitor->insertRoute(prefix);
+  }
+
+  // Ensure that we do not replace the default route.
+  if (prefix.type() == QAbstractSocket::IPv4Protocol) {
+    return m_rtmonitor->deleteRoute(IPAddress("0.0.0.0/1")) &&
+           m_rtmonitor->deleteRoute(IPAddress("128.0.0.0/1"));
+  } else if (prefix.type() == QAbstractSocket::IPv6Protocol) {
+    return m_rtmonitor->deleteRoute(IPAddress("::/1")) &&
+           m_rtmonitor->deleteRoute(IPAddress("8000::/1"));
+  } else {
+    return false;
+  }
+}
+
+bool WireguardUtilsMacos::addExclusionRoute(const QHostAddress& address) {
+  if (!m_rtmonitor) {
+    return false;
+  }
+  return m_rtmonitor->addExclusionRoute(address);
+}
+
+bool WireguardUtilsMacos::deleteExclusionRoute(const QHostAddress& address) {
+  if (!m_rtmonitor) {
+    return false;
+  }
+  return m_rtmonitor->deleteExclusionRoute(address);
 }
 
 QString WireguardUtilsMacos::uapiCommand(const QString& command) {

@@ -8,6 +8,7 @@ Currently these fields are sent:
 - app_token: What identifies one adjust app from another
 - att_status: determing apple ATT status
 - attribution_deeplink: attributing to deeplink-based engagements
+- attribution_token: attribution token of the Apple Search Ads
 - bundle_id: apple universal linking, some partner requests, general troubleshooting
 - created_at: the creation data of the adjustSDK database
 - device_type: to determine if it's request is a tablet or phone

@@ -12,7 +12,9 @@
 
 class QHostAddress;
 class QNetworkAccessManager;
+class QSslCertificate;
 class QurlQuery;
+class Task;
 
 class NetworkRequest final : public QObject {
   Q_OBJECT
@@ -23,105 +25,104 @@ class NetworkRequest final : public QObject {
 
   // This object deletes itself at the end of the operation.
 
-  static NetworkRequest* createForGetUrl(QObject* parent, const QString& url,
+  static NetworkRequest* createForGetUrl(Task* parent, const QString& url,
                                          int status = 0);
 
   static NetworkRequest* createForAuthenticationVerification(
-      QObject* parent, const QString& pkceCodeSuccess,
+      Task* parent, const QString& pkceCodeSuccess,
       const QString& pkceCodeVerifier);
 
   static NetworkRequest* createForAdjustProxy(
-      QObject* parent, const QString& method, const QString& path,
+      Task* parent, const QString& method, const QString& path,
       const QList<QPair<QString, QString>>& headers,
       const QString& queryParameters, const QString& bodyParameters,
       const QList<QString>& unknownParameters);
 
-  static NetworkRequest* createForDeviceCreation(QObject* parent,
+  static NetworkRequest* createForDeviceCreation(Task* parent,
                                                  const QString& deviceName,
                                                  const QString& pubKey,
                                                  const QString& deviceId);
 
-  static NetworkRequest* createForDeviceRemoval(QObject* parent,
+  static NetworkRequest* createForDeviceRemoval(Task* parent,
                                                 const QString& pubKey);
 
-  static NetworkRequest* createForServers(QObject* parent);
+  static NetworkRequest* createForServers(Task* parent);
 
-  static NetworkRequest* createForAccount(QObject* parent);
+  static NetworkRequest* createForAccount(Task* parent);
 
-  static NetworkRequest* createForVersions(QObject* parent);
+  static NetworkRequest* createForVersions(Task* parent);
 
-  static NetworkRequest* createForIpInfo(QObject* parent,
+  static NetworkRequest* createForIpInfo(Task* parent,
                                          const QHostAddress& address);
 
   static NetworkRequest* createForCaptivePortalDetection(
-      QObject* parent, const QUrl& url, const QByteArray& host);
+      Task* parent, const QUrl& url, const QByteArray& host);
 
-  static NetworkRequest* createForCaptivePortalLookup(QObject* parent);
+  static NetworkRequest* createForCaptivePortalLookup(Task* parent);
 
-  static NetworkRequest* createForHeartbeat(QObject* parent);
+  static NetworkRequest* createForHeartbeat(Task* parent);
 
-  static NetworkRequest* createForSurveyData(QObject* parent);
+  static NetworkRequest* createForSurveyData(Task* parent);
 
-  static NetworkRequest* createForFeedback(QObject* parent,
+  static NetworkRequest* createForFeedback(Task* parent,
                                            const QString& feedbackText,
                                            const QString& logs,
                                            const qint8 rating,
                                            const QString& category);
 
   static NetworkRequest* createForSupportTicket(
-      QObject* parent, const QString& email, const QString& subject,
+      Task* parent, const QString& email, const QString& subject,
       const QString& issueText, const QString& logs, const QString& category);
 
-  static NetworkRequest* createForGetFeatureList(QObject* parent);
+  static NetworkRequest* createForGetFeatureList(Task* parent);
 
-  static NetworkRequest* createForFxaAccountStatus(QObject* parent,
+  static NetworkRequest* createForFxaAccountStatus(Task* parent,
                                                    const QString& emailAddress);
 
-  static NetworkRequest* createForFxaAccountCreation(QObject* parent,
+  static NetworkRequest* createForFxaAccountCreation(Task* parent,
                                                      const QString& email,
                                                      const QByteArray& authpw,
                                                      const QUrlQuery& query);
 
-  static NetworkRequest* createForFxaLogin(QObject* parent,
-                                           const QString& email,
+  static NetworkRequest* createForFxaLogin(Task* parent, const QString& email,
                                            const QByteArray& authpw,
                                            const QString& unblockCode,
                                            const QUrlQuery& query);
 
   static NetworkRequest* createForFxaSendUnblockCode(
-      QObject* parent, const QString& emailAddress);
+      Task* parent, const QString& emailAddress);
 
   static NetworkRequest* createForFxaSessionVerifyByEmailCode(
-      QObject* parent, const QByteArray& sessionToken, const QString& code,
+      Task* parent, const QByteArray& sessionToken, const QString& code,
       const QUrlQuery& query);
 
   static NetworkRequest* createForFxaSessionVerifyByTotpCode(
-      QObject* parent, const QByteArray& sessionToken, const QString& code,
+      Task* parent, const QByteArray& sessionToken, const QString& code,
       const QUrlQuery& query);
 
   static NetworkRequest* createForFxaSessionResendCode(
-      QObject* parent, const QByteArray& sessionToken);
+      Task* parent, const QByteArray& sessionToken);
 
-  static NetworkRequest* createForFxaAuthz(QObject* parent,
+  static NetworkRequest* createForFxaAuthz(Task* parent,
                                            const QByteArray& sessionToken,
                                            const QUrlQuery& query);
 
 #ifdef UNIT_TEST
   static NetworkRequest* createForFxaTotpCreation(
-      QObject* parent, const QByteArray& sessionToken);
+      Task* parent, const QByteArray& sessionToken);
 #endif
 
   static NetworkRequest* createForFxaSessionDestroy(
-      QObject* parent, const QByteArray& sessionToken);
+      Task* parent, const QByteArray& sessionToken);
 
-  static NetworkRequest* createForProducts(QObject* parent);
+  static NetworkRequest* createForProducts(Task* parent);
 
 #ifdef MVPN_IOS
-  static NetworkRequest* createForIOSPurchase(QObject* parent,
+  static NetworkRequest* createForIOSPurchase(Task* parent,
                                               const QString& receipt);
 #endif
 #ifdef MVPN_ANDROID
-  static NetworkRequest* createForAndroidPurchase(QObject* parent,
+  static NetworkRequest* createForAndroidPurchase(Task* parent,
                                                   const QString& sku,
                                                   const QString& purchaseToken);
 #endif
@@ -138,7 +139,7 @@ class NetworkRequest final : public QObject {
   static QString apiBaseUrl();
 
  private:
-  NetworkRequest(QObject* parent, int status, bool setAuthorizationHeader);
+  NetworkRequest(Task* parent, int status, bool setAuthorizationHeader);
 
   void deleteRequest();
   void getRequest();
@@ -147,6 +148,7 @@ class NetworkRequest final : public QObject {
   void handleReply(QNetworkReply* reply);
   void handleHeaderReceived();
   void handleRedirect(const QUrl& url);
+  bool checkSubjectName(const QSslCertificate& cert);
 
  private slots:
   void replyFinished();

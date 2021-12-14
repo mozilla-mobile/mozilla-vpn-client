@@ -447,3 +447,13 @@ SETTING_STRINGLIST(subscriptionTransactions,     // getter
                    false                         // remove when reset
 )
 #endif
+
+#define DEFAULT_THEME "main"
+
+SETTING_STRING(theme,          // getter
+               setTheme,       // setter
+               hasTheme,       // has
+               "theme",        // key
+               DEFAULT_THEME,  // default value
+               true            // remove when reset
+)

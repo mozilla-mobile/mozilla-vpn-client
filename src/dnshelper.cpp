@@ -63,7 +63,7 @@ QString DNSHelper::getDNS(const QString& fallback) {
 
 // static
 bool DNSHelper::isMullvadDNS(const QString& address) {
-  IPAddress mullvadAddresses = IPAddress::create("100.64.0.0/24");
+  IPAddress mullvadAddresses = IPAddress("100.64.0.0/24");
   return mullvadAddresses.contains(QHostAddress(address));
 }
 

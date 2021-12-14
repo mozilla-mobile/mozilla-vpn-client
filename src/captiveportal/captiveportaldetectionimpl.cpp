@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportaldetectionimpl.h"
-#include "captiveportalmultirequest.h"
-#include "captiveportalresult.h"
+#include "captiveportalrequesttask.h"
+#include "taskscheduler.h"
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -24,12 +24,12 @@ CaptivePortalDetectionImpl::~CaptivePortalDetectionImpl() {
 void CaptivePortalDetectionImpl::start() {
   logger.debug() << "Captive portal detection started";
 
-  CaptivePortalMultiRequest* request = new CaptivePortalMultiRequest(this);
-  connect(request, &CaptivePortalMultiRequest::completed,
-          [this](CaptivePortalResult detected) {
+  CaptivePortalRequestTask* task = new CaptivePortalRequestTask();
+  connect(task, &CaptivePortalRequestTask::operationCompleted, this,
+          [this](CaptivePortalRequest::CaptivePortalResult detected) {
             logger.debug() << "Captive portal detection:" << detected;
             emit detectionCompleted(detected);
           });
 
-  request->run();
+  TaskScheduler::scheduleTask(task);
 }

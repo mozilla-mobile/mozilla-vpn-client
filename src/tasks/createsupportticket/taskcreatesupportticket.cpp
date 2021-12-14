@@ -44,14 +44,14 @@ void TaskCreateSupportTicket::run() {
   NetworkRequest* request = NetworkRequest::createForSupportTicket(
       this, m_email, m_subject, m_issueText, m_logs, m_category);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to create support ticket" << error;
             MozillaVPN::instance()->createTicketAnswerRecieved(false);
             emit completed();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray&) {
             logger.debug() << "Support ticket created";
             MozillaVPN::instance()->createTicketAnswerRecieved(true);

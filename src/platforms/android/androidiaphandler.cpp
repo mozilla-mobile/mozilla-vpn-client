@@ -9,6 +9,8 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "tasks/purchase/taskpurchase.h"
+#include "taskscheduler.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -309,20 +311,19 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
   QString token = purchase["purchaseToken"].toString();
   Q_ASSERT(!token.isEmpty());
 
-  NetworkRequest* request =
-      NetworkRequest::createForAndroidPurchase(this, sku, token);
+  TaskPurchase* purchaseTask = TaskPurchase::createForAndroid(sku, token);
+  Q_ASSERT(purchaseTask);
 
   connect(
-      request, &NetworkRequest::requestFailed,
+      purchaseTask, &TaskPurchase::failed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Purchase validation request to guardian failed";
         MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
         stopSubscription();
         emit subscriptionNotValidated();
-        return;
       });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(purchaseTask, &TaskPurchase::succeeded, this,
           [this, token](const QByteArray& data) {
             logger.debug() << "Products request to guardian completed" << data;
 
@@ -363,4 +364,6 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
                 "org/mozilla/firefox/vpn/InAppPurchase", "acknowledgePurchase",
                 "(Ljava/lang/String;)V", jniString.object());
           });
+
+  TaskScheduler::scheduleTask(purchaseTask);
 }

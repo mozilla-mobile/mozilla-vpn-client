@@ -9,9 +9,9 @@ QList<IPAddress> RFC1918::ipv4() {
   QList<IPAddress> list;
 
   // From RFC1918: https://tools.ietf.org/html/rfc1918
-  list.append(IPAddress::create("10.0.0.0/8"));
-  list.append(IPAddress::create("172.16.0.0/12"));
-  list.append(IPAddress::create("192.168.0.0/16"));
+  list.append(IPAddress("10.0.0.0/8"));
+  list.append(IPAddress("172.16.0.0/12"));
+  list.append(IPAddress("192.168.0.0/16"));
 
   return list;
 }

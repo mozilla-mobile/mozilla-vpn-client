@@ -26,7 +26,8 @@ AndroidAuthenticationListener::~AndroidAuthenticationListener() {
   MVPN_COUNT_DTOR(AndroidAuthenticationListener);
 }
 
-void AndroidAuthenticationListener::start(const QString& codeChallenge,
+void AndroidAuthenticationListener::start(Task* task,
+                                          const QString& codeChallenge,
                                           const QString& codeChallengeMethod,
                                           const QString& emailAddress) {
   logger.debug() << "Authenticationlistener initialize";
@@ -45,7 +46,7 @@ void AndroidAuthenticationListener::start(const QString& codeChallenge,
   }
   DesktopAuthenticationListener* legacyAuth;
   legacyAuth = new DesktopAuthenticationListener(this);
-  legacyAuth->start(codeChallenge, codeChallengeMethod, emailAddress);
+  legacyAuth->start(task, codeChallenge, codeChallengeMethod, emailAddress);
 
   connect(legacyAuth, &AuthenticationListener::completed, this,
           &AndroidAuthenticationListener::completed);

@@ -5,7 +5,7 @@
 #ifndef INTERFACECONFIG_H
 #define INTERFACECONFIG_H
 
-#include "ipaddressrange.h"
+#include "ipaddress.h"
 
 #include <QList>
 #include <QString>
@@ -22,8 +22,9 @@ struct InterfaceConfig {
   QString m_serverIpv6AddrIn;
   QString m_dnsServer;
   int m_serverPort = 0;
-  QList<IPAddressRange> m_allowedIPAddressRanges;
-  QList<QString> m_vpnDisabledApps;
+  QList<IPAddress> m_allowedIPAddressRanges;
+  QStringList m_excludedAddresses;
+  QStringList m_vpnDisabledApps;
 };
 
 #endif  // INTERFACECONFIG_H

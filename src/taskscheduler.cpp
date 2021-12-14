@@ -15,7 +15,7 @@ Logger logger(LOG_MAIN, "TaskScheduler");
 // static
 void TaskScheduler::scheduleTask(Task* task) {
   Q_ASSERT(task);
-  logger.debug() << "Scheduling task: " << task->name();
+  logger.debug() << "Scheduling task:" << task->name();
   maybeCreate()->scheduleTaskInternal(task);
 }
 
@@ -70,13 +70,16 @@ void TaskScheduler::taskCompleted() {
 }
 
 void TaskScheduler::deleteTasksInternal() {
-  for (Task* task : m_tasks) {
-    task->deleteLater();
+  QMutableListIterator<Task*> i(m_tasks);
+  while (i.hasNext()) {
+    Task* task = i.next();
+    if (task->deletable()) {
+      task->deleteLater();
+      i.remove();
+    }
   }
 
-  m_tasks.clear();
-
-  if (m_running_task) {
+  if (m_running_task && m_running_task->deletable()) {
     m_running_task->cancel();
     m_running_task->deleteLater();
     m_running_task->disconnect();

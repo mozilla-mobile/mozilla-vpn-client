@@ -19,6 +19,7 @@ class FeatureInAppPurchase final : public Feature {
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath
                 "",                  // IconPath
+                "",                  // link URL
                 "2.4",               // released
                 false                // Can be enabled in devmode
         ){};

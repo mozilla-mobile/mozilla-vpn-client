@@ -196,7 +196,7 @@ bool WindowsRouteMonitor::addExclusionRoute(const QHostAddress& address) {
   return true;
 }
 
-void WindowsRouteMonitor::deleteExclusionRoute(const QHostAddress& address) {
+bool WindowsRouteMonitor::deleteExclusionRoute(const QHostAddress& address) {
   logger.debug() << "Deleting exclusion route for" << address.toString();
 
   for (;;) {
@@ -212,6 +212,8 @@ void WindowsRouteMonitor::deleteExclusionRoute(const QHostAddress& address) {
     }
     delete data;
   }
+
+  return true;
 }
 
 void WindowsRouteMonitor::flushExclusionRoutes() {
