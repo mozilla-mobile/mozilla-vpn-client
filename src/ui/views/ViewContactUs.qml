@@ -12,11 +12,13 @@ import components.forms 0.1
 
 Item {
     property string _menuTitle: VPNl18n.InAppSupportWorkflowSupportNavLinkText
+    property alias isMainView: menu.isMainView
 
     // This property is used to cache the emailAddress between the sub-views.
     property string emailAddress: ""
 
     id: contactUsRoot
+    objectName: "contactUs"
 
     function tryAgain() {
         mainStackView.pop();
@@ -36,7 +38,6 @@ Item {
 
         // this view gets pushed to mainStackView from backend always
         // and so should be removed from mainStackView (even in settings flow) on back clicks
-        isMainView: true
     }
 
     StackView {
