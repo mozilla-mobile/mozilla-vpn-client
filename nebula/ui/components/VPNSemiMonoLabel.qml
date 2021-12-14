@@ -6,11 +6,10 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 RowLayout {
-    property real defaultWidth: Theme.fontSize * 0.25
-    property real narrowWidth: Theme.fontSize * 0.05
+    property real defaultWidth: VPNTheme.theme.fontSize * 0.25
+    property real narrowWidth: VPNTheme.theme.fontSize * 0.05
     property var narrowCharacters: [" ", "\t", "\n", ":"]
 
     Repeater {
@@ -19,15 +18,15 @@ RowLayout {
         Text {
             id: digit
 
-            color: Theme.white
+            color: VPNTheme.theme.white
             horizontalAlignment: Text.AlignHCenter
             font.letterSpacing: 0
-            font.pixelSize: Theme.fontSize
+            font.pixelSize: VPNTheme.theme.fontSize
             text: modelData
 
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Layout.preferredWidth: narrowCharacters.includes(modelData) ? narrowWidth : defaultWidth
-            Layout.preferredHeight: Theme.controllerInterLineHeight
+            Layout.preferredHeight: VPNTheme.theme.controllerInterLineHeight
         }
     }
 }

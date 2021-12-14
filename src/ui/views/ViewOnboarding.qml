@@ -7,7 +7,6 @@ import QtQuick.Controls 2.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 Item {
     id: onboardingPanel
@@ -117,7 +116,7 @@ Item {
         anchors.horizontalCenter: onboardingPanel.horizontalCenter
         anchors.bottom: progressIndicator.top
         anchors.bottomMargin: 28
-        radius: Theme.cornerRadius
+        radius: VPNTheme.theme.cornerRadius
         onClicked: swipeView.currentIndex < swipeView.count - 1 ? swipeView.currentIndex++ : VPN.getStarted()
     }
 
@@ -130,12 +129,12 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Math.min(window.height * 0.08, 60) - 4
         anchors.horizontalCenter: parent.horizontalCenter
-        spacing: Theme.windowMargin / 2
+        spacing: VPNTheme.theme.windowMargin / 2
 
         delegate: Rectangle {
             id: circle
 
-            color: index === swipeView.currentIndex ? Theme.blue : Theme.greyPressed
+            color: index === swipeView.currentIndex ? VPNTheme.theme.blue : VPNTheme.theme.greyPressed
             height: 6
             width: 6
             radius: 6

@@ -7,19 +7,18 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 // VPNExternalLinkListItem
 VPNClickableRow {
     property alias title: title.text
     property var iconSource:  "qrc:/nebula/resources/externalLink.svg"
 
-    backgroundColor: Theme.clickableRowBlue
+    backgroundColor: VPNTheme.theme.clickableRowBlue
 
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: Theme.windowMargin / 2
-        anchors.rightMargin: Theme.windowMargin / 2
+        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
+        anchors.rightMargin: VPNTheme.theme.windowMargin / 2
 
         VPNBoldLabel {
             id: title

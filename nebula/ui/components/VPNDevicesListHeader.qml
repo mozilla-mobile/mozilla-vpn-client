@@ -5,7 +5,6 @@
 import QtQuick 2.5
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 Item {
     id: listHeader
@@ -61,7 +60,7 @@ Item {
         id: spacer
 
         anchors.top: listHeader.top
-        height: Theme.windowMargin * 2
+        height: VPNTheme.theme.windowMargin * 2
         width: listHeader.width
         color: "transparent"
     }
@@ -83,7 +82,7 @@ Item {
         id: bottomSpacer
 
         anchors.top: vpnPanel.bottom
-        height: Theme.windowMargin * 2
+        height: VPNTheme.theme.windowMargin * 2
         width: listHeader.width
         color: "transparent"
     }

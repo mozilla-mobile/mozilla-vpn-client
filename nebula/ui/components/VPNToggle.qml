@@ -7,14 +7,13 @@ import QtQuick.Controls 2.5
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 VPNButtonBase {
     id: toggleButton
 
     property var connectionRetryOverX: VPNController.connectionRetry > 1
     property var enableDisconnectInConfirming: VPNController.enableDisconnectInConfirming
-    property var toggleColor: Theme.vpnToggleDisconnected
+    property var toggleColor: VPNTheme.theme.vpnToggleDisconnected
     property var toolTipTitle: ""
     Accessible.name: toolTipTitle
 
@@ -55,12 +54,12 @@ VPNButtonBase {
             PropertyChanges {
                 target: toggle
                 color: "#9E9E9E"
-                border.color: Theme.white
+                border.color: VPNTheme.theme.white
             }
 
             PropertyChanges {
                 target: toggleButton
-                toggleColor: Theme.vpnToggleDisconnected
+                toggleColor: VPNTheme.theme.vpnToggleDisconnected
             }
 
         },
@@ -75,7 +74,7 @@ VPNButtonBase {
             PropertyChanges {
                 target: toggle
                 color: "#9E9E9E"
-                border.color: Theme.white
+                border.color: VPNTheme.theme.white
             }
 
             PropertyChanges {
@@ -97,14 +96,14 @@ VPNButtonBase {
             PropertyChanges {
                 target: toggle
                 color: "#387E8A"
-                border.color: Theme.ink
+                border.color: VPNTheme.theme.ink
             }
 
             PropertyChanges {
                 target: toggleButton
                 //% "Turn VPN off"
                 toolTipTitle: qsTrId("vpn.toggle.off")
-                toggleColor: Theme.vpnToggleConnected
+                toggleColor: VPNTheme.theme.vpnToggleConnected
             }
 
         },
@@ -120,14 +119,14 @@ VPNButtonBase {
             PropertyChanges {
                 target: toggle
                 color: "#387E8A"
-                border.color: Theme.ink
+                border.color: VPNTheme.theme.ink
             }
 
             PropertyChanges {
                 target: toggleButton
                 //% "Turn VPN off"
                 toolTipTitle: qsTrId("vpn.toggle.off")
-                toggleColor: Theme.vpnToggleConnected
+                toggleColor: VPNTheme.theme.vpnToggleConnected
             }
 
         },
@@ -142,13 +141,13 @@ VPNButtonBase {
             PropertyChanges {
                 target: toggle
                 color: "#3FE1B0"
-                border.color: Theme.ink
+                border.color: VPNTheme.theme.ink
             }
 
             PropertyChanges {
                 target: toggleButton
                 toolTipTitle: qsTrId("vpn.toggle.off")
-                toggleColor: Theme.vpnToggleConnected
+                toggleColor: VPNTheme.theme.vpnToggleConnected
             }
 
         },
@@ -163,13 +162,13 @@ VPNButtonBase {
             PropertyChanges {
                 target: toggle
                 color: "#CECECE"
-                border.color: Theme.white
+                border.color: VPNTheme.theme.white
             }
 
             PropertyChanges {
                 target: toggleButton
                 toolTipTitle: qsTrId("vpn.toggle.on")
-                toggleColor: Theme.vpnToggleDisconnected
+                toggleColor: VPNTheme.theme.vpnToggleDisconnected
             }
 
         },
@@ -185,12 +184,12 @@ VPNButtonBase {
             PropertyChanges {
                 target: toggle
                 color: "#387E8A"
-                border.color: Theme.ink
+                border.color: VPNTheme.theme.ink
             }
 
             PropertyChanges {
                 target: toggleButton
-                toggleColor: Theme.vpnToggleConnected
+                toggleColor: VPNTheme.theme.vpnToggleConnected
             }
 
         }

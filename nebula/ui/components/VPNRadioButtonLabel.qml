@@ -5,22 +5,22 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 // VPNRadioButtonLabel
 Label {
     anchors.left: radioButton.right
-    anchors.leftMargin: Theme.hSpacing - 2
-    font.family: Theme.fontInterFamily
-    font.pixelSize: Theme.fontSize
-    color: Theme.fontColorDark
+    anchors.leftMargin: VPNTheme.theme.hSpacing - 2
+    font.family: VPNTheme.theme.fontInterFamily
+    font.pixelSize: VPNTheme.theme.fontSize
+    color: VPNTheme.theme.fontColorDark
 
     states: State {
         when: radioControl.checked
 
         PropertyChanges {
             target: radioButtonLabel
-            color: Theme.blue
+            color: VPNTheme.theme.blue
         }
 
     }

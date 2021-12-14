@@ -7,7 +7,6 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 ColumnLayout {
     id: tour
@@ -73,9 +72,9 @@ ColumnLayout {
         id: backButton
 
         Layout.alignment: Qt.AlignTop
-        Layout.preferredHeight: Theme.rowHeight
-        Layout.preferredWidth: Theme.rowHeight
-        Layout.margins: -Theme.windowMargin
+        Layout.preferredHeight: VPNTheme.theme.rowHeight
+        Layout.preferredWidth: VPNTheme.theme.rowHeight
+        Layout.margins: -VPNTheme.theme.windowMargin
         visible: true
         accessibleName: qsTrId("vpn.main.back")
         enabled: swipeView.currentIndex > 1
@@ -91,8 +90,8 @@ ColumnLayout {
             anchors.centerIn: backButton
             fillMode: Image.PreserveAspectFit
             source: "qrc:/nebula/resources/back-dark.svg"
-            sourceSize.height: Theme.iconSize * 1.5
-            sourceSize.width: Theme.iconSize * 1.5
+            sourceSize.height: VPNTheme.theme.iconSize * 1.5
+            sourceSize.width: VPNTheme.theme.iconSize * 1.5
         }
 
         Behavior on opacity {
@@ -104,7 +103,7 @@ ColumnLayout {
 
     ColumnLayout {
         id: content
-        spacing: Theme.listSpacing
+        spacing: VPNTheme.theme.listSpacing
 
         SwipeView {
             id: swipeView
@@ -125,7 +124,7 @@ ColumnLayout {
                     opacity: isCurrentSlide() ? 1 : 0
 
                     ColumnLayout {
-                        spacing: Theme.listSpacing
+                        spacing: VPNTheme.theme.listSpacing
                         Item {
                             Layout.alignment: Qt.AlignHCenter
                             Layout.preferredHeight: 120
@@ -138,19 +137,19 @@ ColumnLayout {
 
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.bottom: parent.bottom
-                                anchors.bottomMargin: tour.state === "tour-start" ? Theme.listSpacing * 0.5 : Theme.listSpacing * 0.25
+                                anchors.bottomMargin: tour.state === "tour-start" ? VPNTheme.theme.listSpacing * 0.5 : VPNTheme.theme.listSpacing * 0.25
                             }
                         }
 
                         VPNMetropolisLabel {
                             id: popupTitle
 
-                            color: Theme.fontColorDark
+                            color: VPNTheme.theme.fontColorDark
                             horizontalAlignment: Text.AlignHCenter
-                            font.pixelSize: Theme.fontSizeLarge
+                            font.pixelSize: VPNTheme.theme.fontSizeLarge
                             text: featureName
 
-                            Layout.bottomMargin: Theme.listSpacing
+                            Layout.bottomMargin: VPNTheme.theme.listSpacing
                             Layout.fillWidth: true
                         }
 
@@ -230,12 +229,12 @@ ColumnLayout {
             count: swipeView.count - 1
             currentIndex: swipeView.currentIndex - 1
             interactive: false
-            spacing: Theme.windowMargin / 2
+            spacing: VPNTheme.theme.windowMargin / 2
             visible: swipeView.currentIndex >= 1
             delegate: Rectangle {
                 id: circle
 
-                color: index === slideIndicator.currentIndex ? Theme.blue : Theme.greyPressed
+                color: index === slideIndicator.currentIndex ? VPNTheme.theme.blue : VPNTheme.theme.greyPressed
                 height: 6
                 width: 6
                 radius: 6
@@ -259,10 +258,10 @@ ColumnLayout {
         VPNButton {
             id: resumeButton
 
-            radius: Theme.cornerRadius
+            radius: VPNTheme.theme.cornerRadius
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignBottom
-            Layout.topMargin: slideIndicator.visible ? Theme.listSpacing : Theme.vSpacingSmall
+            Layout.topMargin: slideIndicator.visible ? VPNTheme.theme.listSpacing : VPNTheme.theme.vSpacingSmall
 
             onClicked: {
                 if (tour.state === "tour-start") {
@@ -281,13 +280,13 @@ ColumnLayout {
 
                 anchors {
                     right: resumeButton.contentItem.right
-                    rightMargin: Theme.windowMargin
+                    rightMargin: VPNTheme.theme.windowMargin
                     verticalCenter: resumeButton.verticalCenter
                 }
                 fillMode: Image.PreserveAspectFit
                 source: "qrc:/nebula/resources/arrow-forward-white.svg"
-                sourceSize.height: Theme.iconSize * 1.5
-                sourceSize.width: Theme.iconSize * 1.5
+                sourceSize.height: VPNTheme.theme.iconSize * 1.5
+                sourceSize.width: VPNTheme.theme.iconSize * 1.5
                 visible: false
             }
         }

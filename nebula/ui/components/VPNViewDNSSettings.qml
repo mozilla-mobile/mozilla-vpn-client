@@ -9,7 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
-import themes 0.1
 
 import org.mozilla.Glean 0.24
 import telemetry 0.24
@@ -22,7 +21,7 @@ VPNFlickable {
     property alias settingsListModel: repeater.model
 
 
-    flickContentHeight: col.height + Theme.menuHeight*2
+    flickContentHeight: col.height + VPNTheme.theme.menuHeight*2
     interactive: flickContentHeight > height
 
     VPNCheckBoxAlert {
@@ -42,20 +41,20 @@ VPNFlickable {
         anchors.left: parent.left
         anchors.leftMargin: 18
         anchors.right: parent.right
-        anchors.rightMargin: Theme.windowMargin
-        spacing: Theme.vSpacing
+        anchors.rightMargin: VPNTheme.theme.windowMargin
+        spacing: VPNTheme.theme.vSpacing
 
         Repeater {
             id: repeater
 
             delegate: RowLayout {
                 Layout.fillWidth: true
-                spacing: Theme.windowMargin
-                Layout.rightMargin: Theme.windowMargin
+                spacing: VPNTheme.theme.windowMargin
+                Layout.rightMargin: VPNTheme.theme.windowMargin
 
                 VPNRadioButton {
-                    Layout.preferredWidth: Theme.vSpacing
-                    Layout.preferredHeight: Theme.rowHeight
+                    Layout.preferredWidth: VPNTheme.theme.vSpacing
+                    Layout.preferredHeight: VPNTheme.theme.rowHeight
                     Layout.alignment: Qt.AlignTop
                     checked: VPNSettings.dnsProvider == settingValue
                     ButtonGroup.group: radioButtonGroup
@@ -84,7 +83,7 @@ VPNFlickable {
 
                     VPNVerticalSpacer {
                         visible: ipInput.visible
-                        height: Theme.windowMargin
+                        height: VPNTheme.theme.windowMargin
                     }
 
                     VPNTextField {
@@ -135,7 +134,7 @@ VPNFlickable {
                             anchors.top: undefined
                             anchors.topMargin: undefined
                             Layout.leftMargin: ipInput.Layout.leftMargin
-                            alertColor: Theme.red
+                            alertColor: VPNTheme.theme.red
                             width: ipInput.width - ipInput.Layout.leftMargin
 
                             states: [

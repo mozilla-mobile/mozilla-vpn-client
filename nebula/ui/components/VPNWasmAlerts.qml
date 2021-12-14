@@ -4,7 +4,7 @@
 
 import QtQuick 2.0
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 VPNFlickable {
     id: vpnFlickable
@@ -14,9 +14,9 @@ VPNFlickable {
     Column {
         id: wasmAlerts
         anchors.top: parent.top
-        anchors.topMargin: 56 + Theme.windowMargin
+        anchors.topMargin: 56 + VPNTheme.theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
-        spacing: Theme.windowMargin
+        spacing: VPNTheme.theme.windowMargin
         width: parent.width
 
         Repeater {
@@ -28,7 +28,7 @@ VPNFlickable {
         }
 
         VPNAlerts {
-            width: parent.width - Theme.windowMargin
+            width: parent.width - VPNTheme.theme.windowMargin
             anchors.horizontalCenter: parent.horizontalCenter
             isWasmViewer: true
         }
