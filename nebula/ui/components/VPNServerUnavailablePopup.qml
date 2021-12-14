@@ -6,22 +6,21 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 VPNPopup {
     id: root
 
     anchors.centerIn: parent
-    maxWidth: Theme.desktopAppWidth
+    maxWidth: VPNTheme.theme.desktopAppWidth
     contentItem: ColumnLayout {
         id: popupContentItem
 
         Item {
             Layout.alignment: Qt.AlignHCenter
-            Layout.bottomMargin: Theme.listSpacing * 1.5
+            Layout.bottomMargin: VPNTheme.theme.listSpacing * 1.5
             Layout.preferredHeight: 80
             Layout.preferredWidth: 80
-            Layout.topMargin: Theme.vSpacing
+            Layout.topMargin: VPNTheme.theme.vSpacing
 
             Image {
                 anchors.fill: parent
@@ -33,12 +32,12 @@ VPNPopup {
         }
 
         VPNMetropolisLabel {
-            color: Theme.fontColorDark
+            color: VPNTheme.theme.fontColorDark
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Theme.fontSizeLarge
+            font.pixelSize: VPNTheme.theme.fontSizeLarge
             text: VPNl18n.ServerUnavailableModalHeaderText
 
-            Layout.bottomMargin: Theme.listSpacing
+            Layout.bottomMargin: VPNTheme.theme.listSpacing
             Layout.fillWidth: true
         }
 
@@ -51,12 +50,12 @@ VPNPopup {
         }
 
         VPNButton {
-            radius: Theme.cornerRadius
+            radius: VPNTheme.theme.cornerRadius
             text: VPNl18n.ServerUnavailableModalButtonLabel
 
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignBottom
-            Layout.topMargin: Theme.vSpacing
+            Layout.topMargin: VPNTheme.theme.vSpacing
 
             onClicked: {
                 noUpdateAvailablePopup.close();
