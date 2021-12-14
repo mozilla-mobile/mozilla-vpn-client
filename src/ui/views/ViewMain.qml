@@ -174,4 +174,39 @@ VPNFlickable {
             Layout.preferredHeight: 1
         }
     }
+
+    Component {
+        id: aboutUsComponent
+
+        VPNAboutUs {
+            isSettingsView: false
+        }
+    }
+
+    Connections {
+        target: VPN
+        function onSettingsNeeded() {
+            while(stackview.depth > 1) {
+                stackview.pop(null, StackView.Immediate);
+            }
+            stackview.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
+        }
+
+        function onAboutNeeded() {
+            while(stackview.depth > 1) {
+                stackview.pop(null, StackView.Immediate);
+            }
+            stackview.push(aboutUsComponent);
+        }
+
+        function onContactUsNeeded() {
+            if (stackview.currentItem.objectName === "contactUs") return;
+
+            while(stackview.depth > 1) {
+                stackview.pop(null, StackView.Immediate);
+            }
+
+            stackview.push("qrc:/ui/views/ViewContactUs.qml", { isMainView: false });
+        }
+    }
 }
