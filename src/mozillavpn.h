@@ -171,6 +171,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void activate();
   Q_INVOKABLE void deactivate();
   Q_INVOKABLE void refreshDevices();
+  Q_INVOKABLE void goToServersView();
   Q_INVOKABLE void update();
   Q_INVOKABLE void backendServiceRestore();
   Q_INVOKABLE void triggerHeartbeat();
@@ -375,6 +376,8 @@ class MozillaVPN final : public QObject {
   void viewLogsNeeded();
   void contactUsNeeded();
   void updatingChanged();
+  void clearCurrentViewStack();
+  void showServersView();
 
   // For Glean
   void initializeGlean();

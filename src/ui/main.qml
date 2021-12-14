@@ -350,19 +350,12 @@ Window {
     Button {
         id: testTest
         anchors.right: parent.right
-        text: "ViewServers"
+        text: "goToServers"
         z: 1
 
         onClicked: () => {
-            mainStackView.push(
-                "qrc:/ui/views/ViewServers.qml", {
-                    isMainStackView: true,
-                    onMenuBack: () => {
-                        mainStackView.pop();
-                    }
-                },
-                StackView.Immediate
-            );
+            console.log("goToServers");
+            VPN.goToServersView();
         }
     }
 

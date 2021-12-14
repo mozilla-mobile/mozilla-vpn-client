@@ -174,5 +174,15 @@ VPNFlickable {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
         }
+
+        Connections {
+            target: VPN
+
+            function onShowServersView() {
+                console.log("onShowServersView");
+                stackview.push("ViewServers.qml", StackView.Immediate);
+            }
+        }
+
     }
 }

@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+import Mozilla.VPN 1.0
 import themes 0.1
 
 Item {
@@ -27,10 +28,6 @@ Item {
     // Ensure that menu is on top of possible scrollable
     // content.
     z: 2
-
-    function handleGoBack() {
-        isMultiHopView ? handleMultiHopNav() : currentStackView.pop();
-    }
 
     MouseArea {
         // Prevent mouse events from passing through to
@@ -102,6 +99,10 @@ Item {
         height: 1
     }
 
+    function handleGoBack() {
+        isMultiHopView ? handleMultiHopNav() : currentStackView.pop();
+    }
+
     function setCurrentStackView() {
         if (isMainView) {
             currentStackView = mainStackView;
@@ -112,8 +113,8 @@ Item {
         }
     }
 
-    function resetViewStacks() {
-        currentStackView.pop(null);
+    function clearViewStack() {
+        currentStackView.pop(null, StackView.Immediate);
 
         if (stackview) {
             stackview.pop(StackView.Immediate);
@@ -124,15 +125,12 @@ Item {
         setCurrentStackView();
     }
 
-    Button {
-        id: testTest
-        anchors.right: parent.right
-        text: "Clear stack"
-        y: 50
-        z: 1
+    Connections {
+        target: VPN
 
-        onClicked: () => {
-            resetViewStacks();
+        function onClearCurrentViewStack() {
+            console.log("onClearCurrentViewStack");
+            menuBar.clearViewStack();
         }
     }
 
