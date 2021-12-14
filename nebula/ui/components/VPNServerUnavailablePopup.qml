@@ -63,8 +63,4 @@ VPNPopup {
             }
         }
     }
-
-    Component.onCompleted: {
-        root.open();
-    }
 }
