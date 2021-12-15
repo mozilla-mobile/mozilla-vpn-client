@@ -21,6 +21,13 @@
         <file>resources/devices.svg</file>
         <file>resources/down.svg</file>
         <file>resources/externalLink.svg</file>
+        <file>resources/animations/clock_animation.json</file>
+        <file>resources/animations/globe_animation.json</file>
+        <file>resources/animations/lock_animation.json</file>
+        <file>resources/animations/speedometer_animation.json</file>
+        <file>resources/animations/star_animation.json</file>
+        <file>resources/animations/test_animation.json</file>
+        <file>resources/animations/vpnactive_animation.json</file>
         <file>resources/features/features-tour-hero.png</file>
         <file>resources/flags/AC.png</file>
         <file>resources/flags/AD.png</file>
