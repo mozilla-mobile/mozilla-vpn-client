@@ -5,11 +5,12 @@
 #include "androidappimageprovider.h"
 #include "logger.h"
 #include "leakdetector.h"
+#include "androidjnicompat.h"
+#include "androidutils.h"
 
-#include <QAndroidJniEnvironment>
-#include <QtAndroid>
 #include <jni.h>
 #include <android/bitmap.h>
+
 
 namespace {
 Logger logger(LOG_CONTROLLER, "AndroidAppImageProvider");
@@ -28,7 +29,7 @@ AndroidAppImageProvider::~AndroidAppImageProvider() {
 // from QQuickImageProvider
 QImage AndroidAppImageProvider::requestImage(const QString& id, QSize* size,
                                              const QSize& requestedSize) {
-  QJniObject activity = QtAndroid::androidActivity();
+  QJniObject activity = AndroidUtils::getActivity();
   Q_ASSERT(activity.isValid());
 
   auto jniString = QJniObject::fromString(id);
@@ -58,10 +59,16 @@ QImage AndroidAppImageProvider::requestImage(const QString& id, QSize* size,
 }
 
 QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
-  QAndroidJniEnvironment env;
+  QJniEnvironment env;
   AndroidBitmapInfo info;
-  if (AndroidBitmap_getInfo(env, bitmap.object(), &info) !=
-      ANDROID_BITMAP_RESULT_SUCCESS)
+
+  #if QT_VERSION < 0x060000
+    auto res = AndroidBitmap_getInfo(env, bitmap.object(), &info);
+  #else 
+    auto res = AndroidBitmap_getInfo(env.jniEnv(), bitmap.object(), &info);
+  #endif
+
+  if (res != ANDROID_BITMAP_RESULT_SUCCESS)
     return QImage();
 
   QImage::Format format;
@@ -83,8 +90,14 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
   }
 
   void* pixels;
-  if (AndroidBitmap_lockPixels(env, bitmap.object(), &pixels) !=
-      ANDROID_BITMAP_RESULT_SUCCESS)
+  #if QT_VERSION < 0x060000
+    res = AndroidBitmap_lockPixels(env, bitmap.object(), &pixels);
+  #else 
+    res = AndroidBitmap_lockPixels(env.jniEnv(), bitmap.object(), &pixels);
+  #endif
+
+
+  if (res != ANDROID_BITMAP_RESULT_SUCCESS)
     return QImage();
 
   QImage image(info.width, info.height, format);
@@ -99,15 +112,19 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
       memcpy((void*)image.constScanLine(y), bmpPtr, width);
   }
 
-  if (AndroidBitmap_unlockPixels(env, bitmap.object()) !=
-      ANDROID_BITMAP_RESULT_SUCCESS)
+  #if QT_VERSION < 0x060000
+    res = AndroidBitmap_unlockPixels(env, bitmap.object());
+  #else 
+    res = AndroidBitmap_unlockPixels(env.jniEnv(), bitmap.object());
+  #endif
+
+  if (res != ANDROID_BITMAP_RESULT_SUCCESS)
     return QImage();
 
   return image;
 }
 
-AndroidAppImageProvider::QJniObject AndroidAppImageProvider::createBitmap(
-    int width, int height) {
+QJniObject AndroidAppImageProvider::createBitmap(int width, int height) {
   QJniObject config = QJniObject::getStaticObjectField(
       "android/graphics/Bitmap$Config", "ARGB_8888",
       "Landroid/graphics/Bitmap$Config;");

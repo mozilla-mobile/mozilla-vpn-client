@@ -27,6 +27,7 @@ linux/netfilter/vendor/
 .qm
 .tmp
 .env
+.venv
 
 # Node (for functional tests)
 node_modules
@@ -42,7 +43,7 @@ android/.gradle/
 android/.idea/
 android/build
 android/local.properties
-android/*/.cxx/
+android/.cxx/
 !android/*/*/Makefile 
 xcode.xconfig
 .gradle/

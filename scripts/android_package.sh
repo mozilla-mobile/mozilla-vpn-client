@@ -14,14 +14,16 @@ QTPATH=
 RELEASE=1
 ADJUST_SDK_TOKEN=
 export SPLITAPK=0
+export ARCH ="x86 x86_64 armeabi-v7a arm64-v8a"
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>] [-a|--adjusttoken <adjust_token>]"
+  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>] [-a|--adjusttoken <adjust_token>]  [-A | --arch] architectures to build"
   print N ""
   print N "By default, the android build is compiled in release mode. Use -d or --debug for a debug build."
   print N ""
   print N "If MVPN_ANDROID_ADJUST_TOKEN env is found, this will be used at compilation time."
+  print N "Valid architecture values: x86 x86_64 armeabi-v7a arm64-v8a, by default it will use all"
   print N ""
   exit 0
 }
@@ -35,6 +37,11 @@ while [[ $# -gt 0 ]]; do
   case $key in
   -a | --adjusttoken)
     ADJUST_SDK_TOKEN="$2"
+    shift
+    shift
+    ;;
+  -A | --arch)
+    ARCH="$2"
     shift
     shift
     ;;
@@ -109,7 +116,6 @@ rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
 
 print Y "Importing translation files..."
-git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
 python3 scripts/importLanguages.py || die "Failed to import languages"
 
 print Y "Generating glean samples..."
@@ -162,6 +168,7 @@ if [[ "$RELEASE" ]]; then
     CONFIG-=debug \
     CONFIG-=debug_and_release \
     CONFIG+=release \
+    ANDROID_ABIS=$ARCH \
     $ADJUST \
     ..//mozillavpn.pro  || die "Qmake failed"
 else
@@ -173,12 +180,14 @@ else
     CONFIG-=debug_and_release \
     CONFIG-=release \
     CONFIG+=qml_debug \
+    ANDROID_ABIS=$ARCH \
     $ADJUST \
     ..//mozillavpn.pro || die "Qmake failed"
 fi
 
 print Y "Compiling apk_install_target in .tmp/"
-make -j $JOBS sub-src-apk_install_target || die "Compile of QT project failed"
+make -s -j $JOBS sub-src-apk_install_target  || die "Compile of QT project failed"
+
 
 # We need to run the debug bundle step in any case
 # as this is the only make target that generates the gradle 

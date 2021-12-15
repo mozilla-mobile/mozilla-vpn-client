@@ -13,8 +13,13 @@
 #  include "platforms/ios/iosadjusthelper.h"
 #endif
 #ifdef MVPN_ANDROID
-#  include <QtAndroid>
-#  include <QAndroidJniObject>
+# include "platforms/android/androidutils.h"
+#if QT_VERSION >= 0x060000
+#   include <QJniObject>
+#else
+#   include <QAndroidJniObject>
+    typedef QAndroidJniObject QJniObject;
+#endif
 #endif
 
 #include <QString>
@@ -96,7 +101,7 @@ void AdjustHandler::initialize() {
   }
 
 #ifdef MVPN_ANDROID
-  QAndroidJniObject::callStaticMethod<void>(
+  QJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/qt/VPNApplication", "onVpnInit", "(ZI)V",
       Constants::inProduction(), s_adjustProxy->serverPort());
 #endif
@@ -118,8 +123,8 @@ void AdjustHandler::trackEvent(const QString& event) {
   }
 
 #ifdef MVPN_ANDROID
-  QAndroidJniObject javaMessage = QAndroidJniObject::fromString(event);
-  QAndroidJniObject::callStaticMethod<void>(
+  QJniObject javaMessage = QJniObject::fromString(event);
+  QJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/qt/VPNApplication", "trackEvent",
       "(Ljava/lang/String;)V", javaMessage.object<jstring>());
 #endif
@@ -139,8 +144,8 @@ void AdjustHandler::forget() {
   }
 
 #ifdef MVPN_ANDROID
-  QAndroidJniObject activity = QtAndroid::androidActivity();
-  QAndroidJniObject::callStaticMethod<void>(
+  QJniObject activity = AndroidUtils::getActivity();
+  QJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/qt/VPNApplication", "forget",
       "(Landroid/app/Activity;)V", activity.object());
 #endif

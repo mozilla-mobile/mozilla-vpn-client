@@ -3,15 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidauthenticationlistener.h"
+#include "androidjnicompat.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "platforms/android/androidutils.h"
 #include "tasks/authenticate/desktopauthenticationlistener.h"
-
-#include <QAndroidJniObject>
-#include <QtAndroid>
 #include <jni.h>
+
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidAuthenticationListener");
@@ -37,8 +36,8 @@ void AndroidAuthenticationListener::start(Task* task,
                                    codeChallenge, codeChallengeMethod,
                                    emailAddress));
 
-  QAndroidJniObject activity = QtAndroid::androidActivity();
-  jboolean supported = QAndroidJniObject::callStaticMethod<jboolean>(
+  QJniObject activity = AndroidUtils::getActivity();
+  jboolean supported = QJniObject::callStaticMethod<jboolean>(
       "org/mozilla/firefox/vpn/qt/PackageManagerHelper", "isWebViewSupported",
       "(Landroid/content/Context;)Z", activity.object());
   if (supported) {

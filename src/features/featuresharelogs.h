@@ -8,7 +8,11 @@
 #include "models/feature.h"
 
 #ifdef MVPN_ANDROID
+#if QT_VERSION >= 0x060000
+  // TODO REPLACMENT
+#else
 #  include <QtAndroid>
+#endif
 #endif
 
 constexpr const char* FEATURE_SHARE_LOGS = "shareLogs";
@@ -39,8 +43,13 @@ class FeatureShareLogs : public Feature {
     defined(MVPN_IOS) || defined(MVPN_DUMMY)
     return true;
 #elif defined(MVPN_ANDROID)
-    return QtAndroid::androidSdkVersion() >=
-           29;  // Android Q (10) is required for this
+  #if QT_VERSION >= 0x060000
+    // TODO: Write replacement
+    return false;
+  #else
+      return QtAndroid::androidSdkVersion() >=
+            29;  // Android Q (10) is required for this
+  #endif
 #else
     return false;
 #endif
