@@ -99,6 +99,7 @@ HEADERS += \
     ../../src/tasks/release/taskrelease.h \
     ../../src/tasks/servers/taskservers.h \
     ../../src/taskscheduler.h \
+    ../../src/theme.h \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
@@ -121,6 +122,7 @@ HEADERS += \
     testreleasemonitor.h \
     teststatusicon.h \
     testtasks.h \
+    testthemes.h \
     testtimersingleshot.h
 
 SOURCES += \
@@ -187,6 +189,7 @@ SOURCES += \
     ../../src/tasks/release/taskrelease.cpp \
     ../../src/tasks/servers/taskservers.cpp \
     ../../src/taskscheduler.cpp \
+    ../../src/theme.cpp \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
@@ -213,6 +216,7 @@ SOURCES += \
     testreleasemonitor.cpp \
     teststatusicon.cpp \
     testtasks.cpp \
+    testthemes.cpp \
     testtimersingleshot.cpp
 
 exists($$PWD/../../translations/generated/l18nstrings.h) {
@@ -259,6 +263,7 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 RESOURCES += ../../src/ui/license.qrc
+RESOURCES += themes/themes.qrc
 
 coverage {
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
