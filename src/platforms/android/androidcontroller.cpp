@@ -5,7 +5,6 @@
 #include "androidcontroller.h"
 #include "androidutils.h"
 #include "androidjnicompat.h"
-#include "ipaddressrange.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
