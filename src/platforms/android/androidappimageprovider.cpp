@@ -11,7 +11,6 @@
 #include <jni.h>
 #include <android/bitmap.h>
 
-
 namespace {
 Logger logger(LOG_CONTROLLER, "AndroidAppImageProvider");
 }
@@ -62,14 +61,13 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
   QJniEnvironment env;
   AndroidBitmapInfo info;
 
-  #if QT_VERSION < 0x060000
-    auto res = AndroidBitmap_getInfo(env, bitmap.object(), &info);
-  #else 
-    auto res = AndroidBitmap_getInfo(env.jniEnv(), bitmap.object(), &info);
-  #endif
+#if QT_VERSION < 0x060000
+  auto res = AndroidBitmap_getInfo(env, bitmap.object(), &info);
+#else
+  auto res = AndroidBitmap_getInfo(env.jniEnv(), bitmap.object(), &info);
+#endif
 
-  if (res != ANDROID_BITMAP_RESULT_SUCCESS)
-    return QImage();
+  if (res != ANDROID_BITMAP_RESULT_SUCCESS) return QImage();
 
   QImage::Format format;
   switch (info.format) {
@@ -90,15 +88,13 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
   }
 
   void* pixels;
-  #if QT_VERSION < 0x060000
-    res = AndroidBitmap_lockPixels(env, bitmap.object(), &pixels);
-  #else 
-    res = AndroidBitmap_lockPixels(env.jniEnv(), bitmap.object(), &pixels);
-  #endif
+#if QT_VERSION < 0x060000
+  res = AndroidBitmap_lockPixels(env, bitmap.object(), &pixels);
+#else
+  res = AndroidBitmap_lockPixels(env.jniEnv(), bitmap.object(), &pixels);
+#endif
 
-
-  if (res != ANDROID_BITMAP_RESULT_SUCCESS)
-    return QImage();
+  if (res != ANDROID_BITMAP_RESULT_SUCCESS) return QImage();
 
   QImage image(info.width, info.height, format);
 
@@ -112,14 +108,13 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
       memcpy((void*)image.constScanLine(y), bmpPtr, width);
   }
 
-  #if QT_VERSION < 0x060000
-    res = AndroidBitmap_unlockPixels(env, bitmap.object());
-  #else 
-    res = AndroidBitmap_unlockPixels(env.jniEnv(), bitmap.object());
-  #endif
+#if QT_VERSION < 0x060000
+  res = AndroidBitmap_unlockPixels(env, bitmap.object());
+#else
+  res = AndroidBitmap_unlockPixels(env.jniEnv(), bitmap.object());
+#endif
 
-  if (res != ANDROID_BITMAP_RESULT_SUCCESS)
-    return QImage();
+  if (res != ANDROID_BITMAP_RESULT_SUCCESS) return QImage();
 
   return image;
 }

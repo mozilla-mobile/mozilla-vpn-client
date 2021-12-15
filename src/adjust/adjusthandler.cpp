@@ -13,13 +13,13 @@
 #  include "platforms/ios/iosadjusthelper.h"
 #endif
 #ifdef MVPN_ANDROID
-# include "platforms/android/androidutils.h"
-#if QT_VERSION >= 0x060000
-#   include <QJniObject>
-#else
-#   include <QAndroidJniObject>
-    typedef QAndroidJniObject QJniObject;
-#endif
+#  include "platforms/android/androidutils.h"
+#  if QT_VERSION >= 0x060000
+#    include <QJniObject>
+#  else
+#    include <QAndroidJniObject>
+typedef QAndroidJniObject QJniObject;
+#  endif
 #endif
 
 #include <QString>

@@ -11,7 +11,6 @@
 #include "tasks/authenticate/desktopauthenticationlistener.h"
 #include <jni.h>
 
-
 namespace {
 Logger logger(LOG_ANDROID, "AndroidAuthenticationListener");
 }

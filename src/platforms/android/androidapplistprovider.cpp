@@ -14,8 +14,6 @@
 #include "logger.h"
 #include "leakdetector.h"
 
-
-
 namespace {
 Logger logger(LOG_CONTROLLER, "AndroidAppListProvider");
 }
