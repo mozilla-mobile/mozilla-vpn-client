@@ -83,5 +83,16 @@ Item {
             verify(expected === actual, `Cursor position was ${actual} not ${expected}.`);
         }
 
+        function test_textLengthMatchesUnicodesLenghtInJsAndQml() {
+            resetTextArea();
+
+            const expected = "🙋🏾".repeat(vpnTextAreaTest.textInput.maxCharacterCount);
+            vpnTextAreaTest.textInput.text = expected;
+
+            const actual = vpnTextAreaTest.textInput.text;
+
+            verify(expected.length === actual.length, `text length was ${actual} not ${expected}.`);
+        }
+
     }
 }
