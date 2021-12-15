@@ -170,7 +170,8 @@ void IAPHandler::startRestoreSubscription() {
 #ifdef MVPN_IOS
   nativeRestoreSubscription();
 #else
-  logger.error() << "Restore not implemented!" emit subscriptionFailed();
+  logger.error() << "Restore not implemented!";
+  emit subscriptionFailed();
 #endif
 }
 

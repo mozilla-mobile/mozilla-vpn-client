@@ -6,6 +6,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 
+#include <QApplication>
+
 namespace {
 ErrorHandler* s_instance = nullptr;
 Logger logger(LOG_MAIN, "ErrorHandler");
@@ -14,12 +16,14 @@ Logger logger(LOG_MAIN, "ErrorHandler");
 // static
 ErrorHandler* ErrorHandler::instance() {
   if (!s_instance) {
-    s_instance = new ErrorHandler();
+    s_instance = new ErrorHandler(qApp);
   };
   return s_instance;
 }
 
-ErrorHandler::ErrorHandler() { MVPN_COUNT_CTOR(ErrorHandler); }
+ErrorHandler::ErrorHandler(QObject* parent) : QObject(parent) {
+  MVPN_COUNT_CTOR(ErrorHandler);
+}
 
 ErrorHandler::~ErrorHandler() { MVPN_COUNT_DTOR(ErrorHandler); }
 

@@ -13,7 +13,7 @@ class ErrorHandler final : public QObject {
   Q_DISABLE_COPY_MOVE(ErrorHandler)
 
  private:
-  ErrorHandler();
+  explicit ErrorHandler(QObject* parent);
 
  public:
   enum ErrorType {
