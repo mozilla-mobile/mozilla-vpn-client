@@ -192,6 +192,9 @@ VPNFlickable {
         }
     }
 
+    VPNLottieAnimation {
+    }
+
     Connections {
         target: VPN
         function onSettingsNeeded() {
