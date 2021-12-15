@@ -5,16 +5,16 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 //VPNHeadline
 Text {
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
     wrapMode: Text.WordWrap
-    width: Theme.maxTextWidth
-    color: Theme.fontColorDark
-    font.family: Theme.fontFamily
+    width: VPNTheme.theme.maxTextWidth
+    color: VPNTheme.theme.fontColorDark
+    font.family: VPNTheme.theme.fontFamily
     font.pixelSize: 22
     lineHeightMode: Text.FixedHeight
     lineHeight: 32
@@ -23,7 +23,7 @@ Text {
     Accessible.name: text
 
     Component.onCompleted: {
-        if (paintedWidth > Theme.maxTextWidth) {
+        if (paintedWidth > VPNTheme.theme.maxTextWidth) {
             fontSizeMode = Text.Fit
             minimumPixelSize = 16
         }

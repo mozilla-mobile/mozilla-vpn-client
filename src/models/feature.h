@@ -22,6 +22,7 @@ class Feature : public QObject {
   Q_PROPERTY(QString description READ description CONSTANT)
   Q_PROPERTY(QString imagePath READ imagePath CONSTANT)
   Q_PROPERTY(QString iconPath READ iconPath CONSTANT)
+  Q_PROPERTY(QString linkUrl READ linkUrl CONSTANT)
   Q_PROPERTY(bool isReleased MEMBER m_released CONSTANT)
   Q_PROPERTY(bool isNew READ isNew CONSTANT)
   Q_PROPERTY(bool devModeWriteable MEMBER m_devModeWriteable CONSTANT)
@@ -32,8 +33,8 @@ class Feature : public QObject {
   Feature(const QString& id, const QString& name, bool isMajor,
           L18nStrings::String displayName_id, L18nStrings::String shortDesc_id,
           L18nStrings::String desc_id, const QString& imgPath,
-          const QString& iconPath, const QString& releaseVersion,
-          bool devModeWriteable = false);
+          const QString& iconPath, const QString& linkUrl,
+          const QString& releaseVersion, bool devModeWriteable = false);
 
  public:
   virtual ~Feature() = default;
@@ -68,6 +69,7 @@ class Feature : public QObject {
   QString shortDescription() const;
   QString imagePath() const { return m_imagePath; }
   QString iconPath() const { return m_iconPath; }
+  QString linkUrl() const { return m_linkUrl; }
 
  signals:
   // Is send if the underlying factors for support changed
@@ -101,6 +103,8 @@ class Feature : public QObject {
   const QString m_imagePath;
   // Path to Icon for small list view thing
   const QString m_iconPath;
+  // Link URL to external information on the feature
+  const QString m_linkUrl;
 
   // If true, the feature can be enabled in the Dev-Settings
   const bool m_devModeWriteable;

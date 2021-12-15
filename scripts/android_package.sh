@@ -87,9 +87,6 @@ print Y "Checking Enviroment"
 if ! [ -d "src" ] || ! [ -d "linux" ]; then
   die "This script must be executed at the root of the repository."
 fi
-if [ -z "${JAVA_HOME}" ]; then
-  die "Could not find 'JAVA_HOME' in env"
-fi
 if [ -z "${ANDROID_NDK_ROOT}" ]; then
   die "Could not find 'ANDROID_NDK_ROOT' in env"
 fi
@@ -181,7 +178,7 @@ else
 fi
 
 print Y "Compiling apk_install_target in .tmp/"
-make -j $JOBS sub-src-apk_install_target_ordered || die "Compile of QT project failed"
+make -j $JOBS sub-src-apk_install_target || die "Compile of QT project failed"
 
 # We need to run the debug bundle step in any case
 # as this is the only make target that generates the gradle 

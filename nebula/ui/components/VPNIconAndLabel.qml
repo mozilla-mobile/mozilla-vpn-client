@@ -6,14 +6,14 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 // VPNIconAndLabel
 Item {
     id: iconAndLabel
     property alias icon: icon.source
     property alias title: title.text
-    property string fontColor: Theme.fontColorDark
+    property string fontColor: VPNTheme.theme.fontColorDark
     property bool showIndicator: false
 
     implicitHeight: title.implicitHeight
@@ -40,9 +40,9 @@ Item {
         wrapMode: Text.WordWrap
         leftPadding: icon.width + 14
         lineHeightMode: Text.FixedHeight
-        lineHeight: Theme.labelLineHeight
+        lineHeight: VPNTheme.theme.labelLineHeight
         rightPadding: icon.width + 14
-        topPadding: Theme.labelLineHeight - font.pixelSize
+        topPadding: VPNTheme.theme.labelLineHeight - font.pixelSize
         width: title.implicitWidth < parent.width ? undefined : parent.width
 
         Rectangle {
@@ -51,11 +51,11 @@ Item {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             anchors.rightMargin: icon.width
-            color: Color.error.default
-            height: Theme.iconSize / 2
+            color: VPNTheme.colors.error.default
+            height: VPNTheme.theme.iconSize / 2
             radius: width / 2
             visible: iconAndLabel.showIndicator
-            width: Theme.iconSize / 2
+            width: VPNTheme.theme.iconSize / 2
         }
     }
 }

@@ -8,14 +8,13 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 RadioDelegate {
     id: radioControl
 
     property bool isHoverable: true
     property var accessibleName: ""
-    property var uiState: Theme.uiState
+    property var uiState: VPNTheme.theme.uiState
 
     signal clicked()
 
@@ -52,13 +51,13 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? Theme.bluePressed : "#C2C2C2"
+                color: radioControl.checked ? VPNTheme.theme.bluePressed : "#C2C2C2"
                 scale: 0.55
             }
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked? Theme.bluePressed : "#3D3D3D"
+                border.color: radioControl.checked? VPNTheme.theme.bluePressed : "#3D3D3D"
             }
 
         },
@@ -67,13 +66,13 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? Theme.blue : Theme.bgColor
+                color: radioControl.checked ? VPNTheme.theme.blue : VPNTheme.theme.bgColor
                 scale: 0.6
             }
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked || radioControl.activeFocus ? Theme.blue : Theme.fontColor
+                border.color: radioControl.checked || radioControl.activeFocus ? VPNTheme.theme.blue : VPNTheme.theme.fontColor
             }
 
         },
@@ -82,13 +81,13 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? Theme.bluePressed : Theme.greyHovered
+                color: radioControl.checked ? VPNTheme.theme.bluePressed : VPNTheme.theme.greyHovered
                 scale: 0.6
             }
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked ? Theme.bluePressed : Theme.fontColor
+                border.color: radioControl.checked ? VPNTheme.theme.bluePressed : VPNTheme.theme.fontColor
             }
 
         }
@@ -109,8 +108,8 @@ RadioDelegate {
         implicitWidth: 20
         implicitHeight: 20
         radius: implicitWidth * 0.5
-        border.width: Theme.focusBorderWidth
-        color: Theme.bgColor
+        border.width: VPNTheme.theme.focusBorderWidth
+        color: VPNTheme.theme.bgColor
         antialiasing: true
         smooth: true
 

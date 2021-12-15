@@ -7,7 +7,6 @@ import QtCharts 2.0
 import QtQuick.Controls 2.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 Item {
     property var rBytes: VPNConnectionData.rxBytes
@@ -106,7 +105,7 @@ Item {
     Column {
         spacing: 12
         anchors.top: parent.top
-        anchors.topMargin: Theme.windowMargin * 2
+        anchors.topMargin: VPNTheme.theme.windowMargin * 2
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - ((backButton.anchors.leftMargin + backButton.width) * 2)
 
@@ -164,11 +163,11 @@ Item {
             connectionInfo.close();
         }
 
-        buttonColorScheme: Theme.iconButtonDarkBackground
+        buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.topMargin: Theme.windowMargin / 2
-        anchors.leftMargin: Theme.windowMargin / 2
+        anchors.topMargin: VPNTheme.theme.windowMargin / 2
+        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
         //% "Close"
         accessibleName: qsTrId("vpn.connectionInfo.close")
         enabled: connectionInfo.visible

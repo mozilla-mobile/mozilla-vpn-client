@@ -5,16 +5,15 @@
 import QtQuick 2.5
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 // VPNMetropolisLabel
 Text {
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
-    font.pixelSize: Theme.fontSize
-    font.family: Theme.fontFamily
+    font.pixelSize: VPNTheme.theme.fontSize
+    font.family: VPNTheme.theme.fontFamily
     lineHeightMode: Text.FixedHeight
-    lineHeight: Theme.labelLineHeight
+    lineHeight: VPNTheme.theme.labelLineHeight
     wrapMode: Text.Wrap
 
     Accessible.role: Accessible.StaticText

@@ -5,8 +5,8 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
+import Mozilla.VPN 1.0
 import compat 0.1
-import themes 0.1
 
 Item {
     property alias logo: logo.source
@@ -17,15 +17,15 @@ Item {
     property var isSettingsView: false
 
     anchors.horizontalCenter: parent.horizontalCenter
-    width: Math.min(parent.width, Theme.maxHorizontalContentWidth)
+    width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
     height: panel.implicitHeight
 
     ColumnLayout {
         id: panel
 
-        anchors.leftMargin: Theme.windowMargin * 1.5
-        anchors.rightMargin: Theme.windowMargin * 1.5
-        width: parent.width - Theme.windowMargin * 3
+        anchors.leftMargin: VPNTheme.theme.windowMargin * 1.5
+        anchors.rightMargin: VPNTheme.theme.windowMargin * 1.5
+        width: parent.width - VPNTheme.theme.windowMargin * 3
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 0
@@ -87,9 +87,9 @@ Item {
 
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 12
-            Layout.leftMargin: Theme.windowMargin / 2
-            Layout.rightMargin: Theme.windowMargin / 2
-            Layout.maximumWidth: Theme.maxHorizontalContentWidth
+            Layout.leftMargin: VPNTheme.theme.windowMargin / 2
+            Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+            Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
             Layout.fillWidth: true
         }
 

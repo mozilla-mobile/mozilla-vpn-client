@@ -7,7 +7,6 @@ import QtQuick.Controls 2.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 Item {
     id: root
@@ -25,7 +24,7 @@ Item {
         anchors.top: root.top
         anchors.topMargin: root.height * 0.08
         anchors.horizontalCenter: root.horizontalCenter
-        width: Math.min(Theme.maxTextWidth, root.width * .85)
+        width: Math.min(VPNTheme.theme.maxTextWidth, root.width * .85)
         text: headlineText
     }
 

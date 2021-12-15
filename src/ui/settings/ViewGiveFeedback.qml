@@ -1,15 +1,14 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-import QtQuick 2.5
 
+import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
-import themes 0.1
 
 Item {
     property string _menuTitle: qsTrId("vpn.settings.giveFeedback")
@@ -47,7 +46,7 @@ Item {
 
             anchors.bottom: parent.bottom
             anchors.top: parent.top
-            anchors.bottomMargin: window.fullscreenRequired() ? Theme.windowMargin * 4 + feebackContinueButton.height : 0
+            anchors.bottomMargin: window.fullscreenRequired() ? VPNTheme.theme.windowMargin * 4 + feebackContinueButton.height : 0
 
             ButtonGroup {
                 id: btnGroup
@@ -59,8 +58,8 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
 
-                spacing: window.fullscreenRequired() ? Theme.windowMargin : Theme.windowMargin * 2
-                anchors.margins: Theme.windowMargin * 2
+                spacing: window.fullscreenRequired() ? VPNTheme.theme.windowMargin : VPNTheme.theme.windowMargin * 2
+                anchors.margins: VPNTheme.theme.windowMargin * 2
 
                 Component.onCompleted: {
                     if (window.fullscreenRequired()) {
@@ -69,7 +68,7 @@ Item {
                     }
 
                     anchors.top = parent.top;
-                    anchors.topMargin = Theme.contentTopMarginDesktop;
+                    anchors.topMargin = VPNTheme.theme.contentTopMarginDesktop;
                 }
 
                 VPNBoldLabel {
@@ -87,7 +86,7 @@ Item {
 
                     RowLayout {
                         id: row
-                        Layout.preferredHeight: Theme.rowHeight
+                        Layout.preferredHeight: VPNTheme.theme.rowHeight
 
                         VPNFeedbackRadioDelegate {
                             //% "Very poor"
@@ -148,14 +147,14 @@ Item {
                             horizontalAlignment: Qt.AlignLeft
                             text: qsTrId("vpn.feedbackForm.veryPoor")
                             Layout.fillWidth: true
-                            color: Theme.fontColor
+                            color: VPNTheme.theme.fontColor
                         }
                         VPNInterLabel {
                             Layout.alignment: Qt.AlignRight
                             horizontalAlignment: Qt.AlignRight
                             text: VPNl18n.FeedbackFormExcellentLabel
                             Layout.fillWidth: true
-                            color: Theme.fontColor
+                            color: VPNTheme.theme.fontColor
                         }
                     }
                 }
@@ -197,7 +196,7 @@ Item {
                     }
 
                     anchors.top = col.bottom;
-                    anchors.topMargin = Theme.windowMargin * 2;
+                    anchors.topMargin = VPNTheme.theme.windowMargin * 2;
                 }
 
                 enabled: btnGroup.checkedButton !== null
@@ -223,7 +222,7 @@ Item {
 
             Rectangle {
                 anchors.fill: parent
-                color: Theme.bgColor
+                color: VPNTheme.theme.bgColor
             }
 
             ColumnLayout {
@@ -232,9 +231,9 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
-                spacing: Theme.windowMargin
-                anchors.margins: Theme.windowMargin * 2
-                anchors.topMargin: window.fullscreenRequired() ? Theme.contentTopMarginMobile : Theme.contentTopMarginDesktop
+                spacing: VPNTheme.theme.windowMargin
+                anchors.margins: VPNTheme.theme.windowMargin * 2
+                anchors.topMargin: window.fullscreenRequired() ? VPNTheme.theme.contentTopMarginMobile : VPNTheme.theme.contentTopMarginDesktop
 
 
                 ColumnLayout {
@@ -290,7 +289,7 @@ Item {
 
 
                         VPNTextBlock {
-                            font.pixelSize: Theme.fontSize
+                            font.pixelSize: VPNTheme.theme.fontSize
                             horizontalAlignment: Text.AlignHCenter
                             //% "When you submit feedback, Mozilla VPN will collect technical and interaction data, including your IP address, to help us improve. This data won’t be associated with your Firefox account."
                             text: qsTrId("vpn.feedback.privacyDisclaimer")
@@ -307,7 +306,7 @@ Item {
                     }
 
                     ColumnLayout {
-                        spacing: Theme.windowMargin
+                        spacing: VPNTheme.theme.windowMargin
 
                         VPNButton {
                              //% "Submit"
@@ -315,7 +314,7 @@ Item {
                             onClicked: feedbackRoot.sendFeedback(appRating, dropDown.currentValue, textArea.userEntry);
                             enabled: dropDown.currentValue != null
                             opacity: enabled ? 1 : .5
-                            Layout.preferredHeight: Theme.rowHeight
+                            Layout.preferredHeight: VPNTheme.theme.rowHeight
                             Layout.fillWidth: true
                             width: undefined
                             height: undefined
@@ -328,17 +327,17 @@ Item {
                         VPNLinkButton {
                             //% "Skip"
                             labelText: qsTrId("vpn.feedbackForm.skip")
-                            Layout.preferredHeight: Theme.rowHeight
+                            Layout.preferredHeight: VPNTheme.theme.rowHeight
                             Layout.alignment: Qt.AlignHCenter
                             onClicked: feedbackRoot.sendFeedback(appRating, 0, "");
-                            implicitHeight: Theme.rowHeight
+                            implicitHeight: VPNTheme.theme.rowHeight
 
                         }
                     }
                     VPNVerticalSpacer {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        Layout.minimumHeight: Theme.rowHeight * 2
+                        Layout.minimumHeight: VPNTheme.theme.rowHeight * 2
                         Layout.maximumHeight: Layout.minimumHeight
                     }
                 }
@@ -354,7 +353,7 @@ Item {
                 anchors.top: parent.top
                 anchors.topMargin: window.height * .10
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
+                width: Math.min(VPNTheme.theme.maxHorizontalContentWidth, parent.width - VPNTheme.theme.windowMargin * 4)
                 VPNPanel {
                     id: panel
                     logo: "qrc:/ui/resources/heart-check.svg"
@@ -370,7 +369,7 @@ Item {
                 //% "Done"
                 text: qsTrId("vpn.feedbackform.done")
                 anchors.top: col.bottom
-                anchors.topMargin: Theme.vSpacing
+                anchors.topMargin: VPNTheme.theme.vSpacing
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: stackview.pop(StackView.Immediate)
                 Component.onCompleted: {
@@ -378,7 +377,7 @@ Item {
                        anchors.top = undefined;
                        anchors.topMargin = undefined;
                        anchors.bottom= parent.bottom
-                       anchors.bottomMargin = Theme.windowMargin * 4
+                       anchors.bottomMargin = VPNTheme.theme.windowMargin * 4
                    }
                }
             }
@@ -414,7 +413,7 @@ Item {
 
                 labelText: qsTrId("vpn.feedbackForm.skip")
                 onClicked: feedbackStackView.push(thankYouView);
-                implicitHeight: Theme.rowHeight
+                implicitHeight: VPNTheme.theme.rowHeight
             }
         }
     }

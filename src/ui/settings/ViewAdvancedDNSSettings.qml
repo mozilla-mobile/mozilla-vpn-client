@@ -9,7 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
-import themes 0.1
 
 import org.mozilla.Glean 0.24
 import telemetry 0.24
@@ -44,7 +43,7 @@ Item {
         id: tabs
         width: root.width
         anchors.top: parent.top
-        anchors.topMargin: Theme.menuHeight
+        anchors.topMargin: VPNTheme.theme.menuHeight
         anchors.left: parent.left
         anchors.right: parent.right
         height: root.height - menu.height

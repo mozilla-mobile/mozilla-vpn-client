@@ -6,8 +6,8 @@ import QtQuick 2.0
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 Item {
     property alias placeholderText: formattedPlaceholderText.text
@@ -17,10 +17,10 @@ Item {
 
     id: root
 
-    Layout.preferredHeight: Theme.rowHeight * 3
+    Layout.preferredHeight: VPNTheme.theme.rowHeight * 3
     Layout.preferredWidth: parent.width
-    Layout.maximumHeight: Theme.rowHeight * 3
-    Layout.minimumHeight: Theme.rowHeight * 3
+    Layout.maximumHeight: VPNTheme.theme.rowHeight * 3
+    Layout.minimumHeight: VPNTheme.theme.rowHeight * 3
 
     Flickable {
         id: flickable
@@ -44,16 +44,16 @@ Item {
             id: textArea
             clip: true
             textFormat: Text.PlainText
-            font.pixelSize: Theme.fontSizeSmall
-            font.family: Theme.fontInterFamily
-            color: Color.input.default.text
+            font.pixelSize: VPNTheme.theme.fontSizeSmall
+            font.family: VPNTheme.theme.fontInterFamily
+            color: VPNTheme.colors.input.default.text
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            textMargin: Theme.windowMargin * .75
+            textMargin: VPNTheme.theme.windowMargin * .75
             padding: 0
             Keys.onTabPressed: nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason)
             onTextChanged: handleOnTextChanged(text)
             selectByMouse: true
-            selectionColor: Theme.input.highlight
+            selectionColor: VPNTheme.theme.input.highlight
             inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
             enabled: root.enabled
             background: VPNInputBackground {
@@ -64,10 +64,10 @@ Item {
             VPNTextBlock {
                 id: formattedPlaceholderText
                 anchors.fill: textArea
-                anchors.leftMargin: Theme.windowMargin
-                anchors.rightMargin: Theme.windowMargin
-                anchors.topMargin: Theme.windowMargin * .75
-                color: textAreaStates.state === "emptyHovered" ? Color.input.hover.placeholder : Color.input.default.placeholder
+                anchors.leftMargin: VPNTheme.theme.windowMargin
+                anchors.rightMargin: VPNTheme.theme.windowMargin
+                anchors.topMargin: VPNTheme.theme.windowMargin * .75
+                color: textAreaStates.state === "emptyHovered" ? VPNTheme.colors.input.hover.placeholder : VPNTheme.colors.input.default.placeholder
                 visible: textArea.text.length < 1
 
                 PropertyAnimation on opacity {
@@ -111,7 +111,7 @@ Item {
         font.pixelSize: 13
         anchors.rightMargin: 8
         anchors.right: parent.right
-        color: Theme.fontColor
+        color: VPNTheme.theme.fontColor
     }
 
 }

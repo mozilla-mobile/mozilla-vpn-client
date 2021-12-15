@@ -4,8 +4,6 @@
 
 import QtQuick 2.5
 
-import themes 0.1
-
 VPNTextBlock {
     width: parent.width
     anchors.left: parent.left

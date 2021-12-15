@@ -164,6 +164,7 @@ SOURCES += \
         tasks/servers/taskservers.cpp \
         tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
+        theme.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -216,6 +217,7 @@ HEADERS += \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
         features/featurelocalareaaccess.h \
+        features/featuremultiaccountcontainers.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
         features/featuresharelogs.h \
@@ -295,6 +297,7 @@ HEADERS += \
         tasks/servers/taskservers.h \
         tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
+        theme.h \
         timercontroller.h \
         timersingleshot.h \
         update/updater.h \

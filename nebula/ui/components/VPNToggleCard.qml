@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 import org.mozilla.Glean 0.24
 import telemetry 0.24
@@ -32,23 +31,23 @@ Item {
     Rectangle {
         id: rect
         anchors.fill: enableAppList
-        anchors.topMargin: -Theme.windowMargin
+        anchors.topMargin: -VPNTheme.theme.windowMargin
         anchors.bottomMargin: anchors.topMargin
-        anchors.leftMargin: -Theme.windowMargin
+        anchors.leftMargin: -VPNTheme.theme.windowMargin
         anchors.rightMargin: anchors.leftMargin
-        color: Theme.white
+        color: VPNTheme.theme.white
         radius: 4
     }
 
     RowLayout {
         id: enableAppList
         anchors.top: parent.top
-        anchors.topMargin: Theme.windowMargin + (rect.anchors.topMargin *-1)
+        anchors.topMargin: VPNTheme.theme.windowMargin + (rect.anchors.topMargin *-1)
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.leftMargin: Theme.windowMargin * 2
-        anchors.rightMargin: Theme.windowMargin * 2
-        spacing: Theme.windowMargin
+        anchors.leftMargin: VPNTheme.theme.windowMargin * 2
+        anchors.rightMargin: VPNTheme.theme.windowMargin * 2
+        spacing: VPNTheme.theme.windowMargin
 
         ColumnLayout {
             Layout.alignment: Qt.AlignVCenter
@@ -56,7 +55,7 @@ Item {
                 id: label
                 Layout.alignment: Qt.AlignLeft
                 Layout.fillWidth: true
-                color: Theme.fontColorDark
+                color: VPNTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
             }
 

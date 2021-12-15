@@ -6,7 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 VPNClickableRow {
     id: root
@@ -15,18 +15,18 @@ VPNClickableRow {
     property var imageLeftSrc
     property var imageRightSrc
     property bool showIndicator: false
-    property string fontColor: Theme.fontColorDark
+    property string fontColor: VPNTheme.theme.fontColorDark
     accessibleName: settingTitle
 
     anchors.left: undefined
     anchors.right: undefined
     Layout.fillWidth: true
-    Layout.preferredHeight: Theme.rowHeight
+    Layout.preferredHeight: VPNTheme.theme.rowHeight
 
     Item {
         anchors.fill: parent
-        anchors.leftMargin: Theme.listSpacing
-        anchors.rightMargin: Theme.listSpacing
+        anchors.leftMargin: VPNTheme.theme.listSpacing
+        anchors.rightMargin: VPNTheme.theme.listSpacing
 
         VPNIconAndLabel {
             icon: imageLeftSrc

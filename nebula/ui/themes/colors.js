@@ -2,120 +2,120 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-.pragma library
+const color = {};
 
 /**
  * Primary palette
  */
 // Purple
-const purple90 = '#321C64';
-const purple80 = '#45278D';
-const purple70 = '#592ACB';
-const purple60 = '#7542E5';
-const purple50 = '#9059FF';
-const purple40 = '#AB71FF';
-const purple30 = '#C689FF';
-const purple20 = '#CB9EFF';
-const purple10 = '#D9BFFF';
-const purple5 = '#E7DFFF';
+color.purple90 = '#321C64';
+color.purple80 = '#45278D';
+color.purple70 = '#592ACB';
+color.purple60 = '#7542E5';
+color.purple50 = '#9059FF';
+color.purple40 = '#AB71FF';
+color.purple30 = '#C689FF';
+color.purple20 = '#CB9EFF';
+color.purple10 = '#D9BFFF';
+color.purple5 = '#E7DFFF';
 
 // Green
-const green90 = '#00736C';
-const green80 = '#00A49A';
-const green70 = '#1CC4A0';
-const green60 = '#3AD4B3';
-const green50 = '#3FE1B0';
-const green40 = '#54FFBD';
-const green30 = '#88FFD1';
-const green20 = '#B3FFE3';
-const green10 = '#D1FFEE';
-const green5 = '#E3FFF3';
+color.green90 = '#00736C';
+color.green80 = '#00A49A';
+color.green70 = '#1CC4A0';
+color.green60 = '#3AD4B3';
+color.green50 = '#3FE1B0';
+color.green40 = '#54FFBD';
+color.green30 = '#88FFD1';
+color.green20 = '#B3FFE3';
+color.green10 = '#D1FFEE';
+color.green5 = '#E3FFF3';
 
 // Grey
-const black = '#000000';
-const grey60 = '#0C0C0D';
-const grey50 = '#3D3D3D';
-const grey40 = '#6D6D6E';
-const grey30 = '#9E9E9E';
-const grey20 = '#CECECF';
-const grey10 = '#E7E7E7';
-const grey5 = '#F9F9FA';
-const white = '#FFFFFF';
+color.black = '#000000';
+color.grey60 = '#0C0C0D';
+color.grey50 = '#3D3D3D';
+color.grey40 = '#6D6D6E';
+color.grey30 = '#9E9E9E';
+color.grey20 = '#CECECF';
+color.grey10 = '#E7E7E7';
+color.grey5 = '#F9F9FA';
+color.white = '#FFFFFF';
 
 /**
  * Secondary palette
  */
 // Violet
-const violet90 = '#2B1141';
-const violet80 = '#4E1A69';
-const violet70 = '#722291';
-const violet60 = '#952BB9';
-const violet50 = '#B833E1';
-const violet40 = '#D74CF0';
-const violet30 = '#F770FF';
-const violet20 = '#F68FFF';
-const violet10 = '#F6B8FF';
-const violet5 = '#F7E2FF';
+color.violet90 = '#2B1141';
+color.violet80 = '#4E1A69';
+color.violet70 = '#722291';
+color.violet60 = '#952BB9';
+color.violet50 = '#B833E1';
+color.violet40 = '#D74CF0';
+color.violet30 = '#F770FF';
+color.violet20 = '#F68FFF';
+color.violet10 = '#F6B8FF';
+color.violet5 = '#F7E2FF';
 
 // Blue
-const blue90 = '#09204D';
-const blue80 = '#073072';
-const blue70 = '#054096';
-const blue60 = '#0250BB';
-const blue50 = '#0060DF';
-const blue40 = '#0090ED';
-const blue30 = '#00B3F4';
-const blue20 = '#00DDFF';
-const blue10 = '#80EBFF';
-const blue5 = '#AAF2FF';
+color.blue90 = '#09204D';
+color.blue80 = '#073072';
+color.blue70 = '#054096';
+color.blue60 = '#0250BB';
+color.blue50 = '#0060DF';
+color.blue40 = '#0090ED';
+color.blue30 = '#00B3F4';
+color.blue20 = '#00DDFF';
+color.blue10 = '#80EBFF';
+color.blue5 = '#AAF2FF';
 
 // Orange
-const orange90 = '#7C1504';
-const orange80 = '#9E280B';
-const orange70 = '#CC3D00';
-const orange60 = '#E25920';
-const orange50 = '#FF7139';
-const orange40 = '#FF8A50';
-const orange30 = '#FFA266';
-const orange20 = '#FFB587';
-const orange10 = '#FFD5B2';
-const orange5 = '#FFF4DE';
+color.orange90 = '#7C1504';
+color.orange80 = '#9E280B';
+color.orange70 = '#CC3D00';
+color.orange60 = '#E25920';
+color.orange50 = '#FF7139';
+color.orange40 = '#FF8A50';
+color.orange30 = '#FFA266';
+color.orange20 = '#FFB587';
+color.orange10 = '#FFD5B2';
+color.orange5 = '#FFF4DE';
 
 // Yellow
-const yellow90 = '#960E18';
-const yellow80 = '#A7341F';
-const yellow70 = '#C45A27';
-const yellow60 = '#E27F2E';
-const yellow50 = '#FFA436';
-const yellow40 = '#FFBD4F';
-const yellow30 = '#FFD567';
-const yellow20 = '#FFEA80';
-const yellow10 = '#FFFF98';
-const yellow5 = '#FFFFCC';
+color.yellow90 = '#960E18';
+color.yellow80 = '#A7341F';
+color.yellow70 = '#C45A27';
+color.yellow60 = '#E27F2E';
+color.yellow50 = '#FFA436';
+color.yellow40 = '#FFBD4F';
+color.yellow30 = '#FFD567';
+color.yellow20 = '#FFEA80';
+color.yellow10 = '#FFFF98';
+color.yellow5 = '#FFFFCC';
 
 // Red
-const red90 = '#440306';
-const red80 = '#810220';
-const red70 = '#C50042';
-const red60 = '#E22850';
-const red50 = '#FF4F5E';
-const red40 = '#FF6A75';
-const red30 = '#FF848B';
-const red20 = '#FF9AA2';
-const red10 = '#FFBDC5';
-const red5 = '#FFDFE7';
+color.red90 = '#440306';
+color.red80 = '#810220';
+color.red70 = '#C50042';
+color.red60 = '#E22850';
+color.red50 = '#FF4F5E';
+color.red40 = '#FF6A75';
+color.red30 = '#FF848B';
+color.red20 = '#FF9AA2';
+color.red10 = '#FFBDC5';
+color.red5 = '#FFDFE7';
 
 // Pink
-const pink90 = '#50134B';
-const pink80 = '#7F145B';
-const pink70 = '#C60084';
-const pink60 = '#E31587';
-const pink50 = '#FF298A';
-const pink40 = '#FF4AA2';
-const pink30 = '#FF6BBA';
-const pink20 = '#FF8AC5';
-const pink10 = '#FFB4DB';
-const pink5 = '#FFDEF0';
+color.pink90 = '#50134B';
+color.pink80 = '#7F145B';
+color.pink70 = '#C60084';
+color.pink60 = '#E31587';
+color.pink50 = '#FF298A';
+color.pink40 = '#FF4AA2';
+color.pink30 = '#FF6BBA';
+color.pink20 = '#FF8AC5';
+color.pink10 = '#FFB4DB';
+color.pink5 = '#FFDEF0';
 
 /**
  * Helper functions
@@ -137,133 +137,133 @@ const addTransparency = (hexColor, percent) => {
 /**
  * Main palette
  */
-const primary = purple90;
-const secondary = green50;
-const dark = grey60;
-const light = grey5;
+color.primary = color.purple90;
+color.secondary = color.green50;
+color.dark = color.grey60;
+color.light = color.grey5;
 
 /**
  * Functional
  */
-const blue = blue50;
-const blueActive = blue70;
-const blueHover = blue60;
-const blueFocus = addTransparency(blue, 0.4);
+color.blue = color.blue50;
+color.blueActive = color.blue70;
+color.blueHover = color.blue60;
+color.blueFocus = addTransparency(color.blue, 0.4);
 
-const green = green50;
-const greenActive = green70;
-const greenHover = green60;
-const greenFocus = green20;
+color.green = color.green50;
+color.greenActive = color.green70;
+color.greenHover = color.green60;
+color.greenFocus = color.green20;
 
-const red = red50;
-const redActive = red70;
-const redHover = red60;
-const redFocus = red10;
+color.red = color.red50;
+color.redActive = color.red70;
+color.redHover = color.red60;
+color.redFocus = color.red10;
 
-const yellow = yellow50;
-const yellowActive = yellow70;
-const yellowHover = yellow60;
-const yellowFocus = orange10;
+color.yellow = color.yellow50;
+color.yellowActive = color.yellow70;
+color.yellowHover = color.yellow60;
+color.yellowFocus = color.orange10;
 
-const informational = {
-  default: blue,
-  active: blueActive,
-  hover: blueHover,
-  focus: blueFocus,
+color.informational = {
+  default: color.blue,
+  active: color.blueActive,
+  hover: color.blueHover,
+  focus: color.blueFocus,
 };
 
-const success = {
-  default: green,
-  active: greenActive,
-  hover: greenHover,
-  focus: greenFocus,
+color.success = {
+  default: color.green,
+  active: color.greenActive,
+  hover: color.greenHover,
+  focus: color.greenFocus,
 };
 
-const error = {
-  default: red,
-  active: redActive,
-  hover: redHover,
-  focus: redFocus,
+color.error = {
+  default: color.red,
+  active: color.redActive,
+  hover: color.redHover,
+  focus: color.redFocus,
 };
 
-const warning = {
-  default: yellow,
-  active: yellowActive,
-  hover: yellowHover,
-  focus: yellowFocus,
+color.warning = {
+  default: color.yellow,
+  active: color.yellowActive,
+  hover: color.yellowHover,
+  focus: color.yellowFocus,
 };
 
 /**
  * Gradients
  */
-const customGradientColorPurple = '#9D62FC';
-const customGradientColorPink = '#FD3296';
-const customGradientColorBlue = '#5B6DF8';
+color.customGradientColorPurple = '#9D62FC';
+color.customGradientColorPink = '#FD3296';
+color.customGradientColorBlue = '#5B6DF8';
 
 // Pink gradient
-const gradientPink = {
+color.gradientPink = {
   type: 'radial',
   stops: [
     {
       position: 0.0,
-      color: customGradientColorPurple,
+      color: color.customGradientColorPurple,
     },
     {
       position: 0.0,
-      color: customGradientColorPink,
+      color: color.customGradientColorPink,
     },
   ],
 };
 
 // Blue gradient
-const gradientBlue = {
+color.gradientBlue = {
   type: 'radial',
   stops: [
     {
       position: 0.0,
-      color: violet50,
+      color: color.violet50,
     },
     {
       position: 0.371,
-      color: purple50,
+      color: color.purple50,
     },
     {
       position: 0.614,
-      color: customGradientColorBlue,
+      color: color.customGradientColorBlue,
     },
     {
       position: 1.0,
-      color: blue40,
+      color: color.blue40,
     },
   ],
 };
 
 // Orange gradient
-const gradientOrange = {
+color.gradientOrange = {
   type: 'radial',
   stops: [
     {
       position: 0.0,
-      color: red60,
+      color: color.red60,
     },
     {
       position: 1.0,
-      color: yellow50,
+      color: color.yellow50,
     },
   ],
 };
 
 // Green gradient
-const gradientGreen = {
+color.gradientGreen = {
   type: 'radial',
   stops: [
     {
       position: 0.0,
-      color: blue50,
+      color: color.blue50,
     },
     {
       position: 1.0,
-      color: green50,
+      color: color.green50,
     },
   ],
 };
@@ -271,37 +271,39 @@ const gradientGreen = {
 /**
  * Inputs
  */
-const input = {
+color.input = {
   default: {
-    background: white,
-    border: grey30,
-    placeholder: grey40,
-    text: grey50,
+    background: color.white,
+    border: color.grey30,
+    placeholder: color.grey40,
+    text: color.grey50,
   },
   hover: {
-    background: white,
-    border: grey40,
-    placeholder: grey50,
-    text: grey50,
+    background: color.white,
+    border: color.grey40,
+    placeholder: color.grey50,
+    text: color.grey50,
   },
   focus: {
-    background: white,
-    border: informational.default,
-    highlight: informational.focus,
-    placeholder: grey40,
-    text: grey50,
+    background: color.white,
+    border: color.informational.default,
+    highlight: color.informational.focus,
+    placeholder: color.grey40,
+    text: color.grey50,
   },
   error: {
-    background: white,
-    border: error.default,
-    highlight: error.focus,
-    placeholder: grey40,
-    text: grey50,
+    background: color.white,
+    border: color.error.default,
+    highlight: color.error.focus,
+    placeholder: color.grey40,
+    text: color.grey50,
   },
   disabled: {
-    background: white,
-    border: grey20,
-    placeholder: grey20,
-    text: grey20,
+    background: color.white,
+    border: color.grey20,
+    placeholder: color.grey20,
+    text: color.grey20,
   },
 };
+
+color;

@@ -30,8 +30,9 @@ void VersionApi::start(Task* task) {
   NetworkRequest* request = NetworkRequest::createForVersions(task);
 
   connect(request, &NetworkRequest::requestFailed,
-          [](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Request failed" << error;
+            deleteLater();
           });
 
   connect(request, &NetworkRequest::requestCompleted, this,
@@ -41,9 +42,8 @@ void VersionApi::start(Task* task) {
             if (!processData(data)) {
               logger.debug() << "Ignore failure.";
             }
+            deleteLater();
           });
-
-  connect(request, &QObject::destroyed, this, &QObject::deleteLater);
 }
 
 bool VersionApi::processData(const QByteArray& data) {

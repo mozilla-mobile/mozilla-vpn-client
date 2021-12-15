@@ -11,6 +11,15 @@ transforms:
     - taskgraph.transforms.task:transforms
 
 jobs:
+#   <image_name>:   Defines the imagename we can use in kind.yml
+#                   Defines the dockerfile folder if not overwritten. i.e /docker/<imagename>/Dockerfile
+#      symbol: I(<sonename>)       This Defines the Symbol seen in treeherder. I is for image
+#      definition:<somefolder>     (optional) can override the the dockerfile to use i.e /docker/<somefolder>/Dockerfile
+#      args:
+#         <key>: <value>           (optional) can pass agruments to the docker runner, see dockerfile ARG command. 
+#      parent: <image>             (optional) sets $DOCKER_IMAGE_PARENT 
+#                                  should be "base" in 99% of cases. as the baseimage has the required
+#                                  taskcluster binary's to run shell tasks and etc fun stuff.
     base:
         symbol: I(base)
     build:
@@ -19,3 +28,6 @@ jobs:
     lint:
         parent: base
         symbol: I(lint)
+    android-build:
+        parent: base
+        symbol: I(android)

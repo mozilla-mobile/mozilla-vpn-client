@@ -8,16 +8,15 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 VPNButtonBase {
     id: iconButton
     property bool skipEnsureVisible: false
     property var accessibleName
-    property var buttonColorScheme: Theme.iconButtonLightBackground
+    property var buttonColorScheme: VPNTheme.theme.iconButtonLightBackground
 
-    height: Theme.rowHeight
-    width: Theme.rowHeight
+    height: VPNTheme.theme.rowHeight
+    width: VPNTheme.theme.rowHeight
 
     Accessible.name: accessibleName
     Component.onCompleted: state = uiState.stateDefault
