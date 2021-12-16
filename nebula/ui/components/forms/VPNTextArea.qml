@@ -11,6 +11,7 @@ import components 0.1
 
 Item {
     property alias placeholderText: formattedPlaceholderText.text
+    property alias textInput: textArea
     property var userEntry: textArea.text
     property bool enabled: true
 
