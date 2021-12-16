@@ -8,9 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
-import org.qtproject.qt5.android.bindings.QtActivity;
-
-public class VPNActivity extends org.qtproject.qt5.android.bindings.QtActivity {
+public class VPNActivity extends org.mozilla.firefox.vpn.compat.CompatVPNActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
