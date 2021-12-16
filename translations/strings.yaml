@@ -220,6 +220,12 @@ whatsNewReleaseNotes:
   tourSystemNotifHeader: What’s new in VPN
   tourSystemNotifBody: Check out all the new features available in the latest version of Mozilla VPN!
   tourSystemNotifCTA: Take the tour
+  # Multi-account containers
+  multiAccountContainersHeader: Mozilla VPN in Firefox
+  multiAccountContainersShortDescription:
+    value: Mozilla VPN is now integrated with the Multi-Account Containers add-on for more privacy and security.
+    comment: “Multi-Account Containers” is the name of the add-on and should not be translated.
+  multiAccountContainersDescription: You can now use different Mozilla VPN locations in multiple tabs simultaneously.
 
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
@@ -272,8 +278,11 @@ systray:
 
 settings:
   systemPreferences: System preferences
-  startAtBootDescription: Mozilla VPN will launch when you open the app
   dataCollectionDescription: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla
+  startAtBootTitle:
+    value: Connect VPN on startup
+    comment: Startup refers to a device's startup, not the VPN client's.
+  startAtBootSubtitle: Mozilla VPN will launch and connect when you start up your device
 
 aboutUs:
   licenses: Licenses
@@ -312,3 +321,25 @@ connectionInfo:
   labelTbitps:
     value: Tbit/s
     comment: Terabits per second
+    
+crashreporter:
+  mainTitle:
+    value: Mozilla Crash Report
+    comment: Main window title
+  mainHeading:
+    value: Crash reporting
+    comment: Label over description text section.
+  description:
+    value: The Mozilla VPN app quit unexpectedly. Would you like to send a crash report to help fix the issue?
+    comment: Main text telling the user that we are asking for permission to send a crash report.
+  sendButtonLabel:
+    value: Send report
+    comment: User agrees to send a crash report.
+  dontSendButton:
+    value: No thanks
+    comment: User does not agree to send a crash report.
+
+serverUnavailableModal:
+  headerText: Server unavailable
+  bodyText: This server location is temporarily unavailable. Choose a new location.
+  buttonLabel: Choose a new location

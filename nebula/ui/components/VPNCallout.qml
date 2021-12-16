@@ -7,15 +7,14 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 RowLayout {
     property alias calloutCopy: callout.text
     property alias calloutImage: img.source
 
-    spacing: Theme.windowMargin
+    spacing: VPNTheme.theme.windowMargin
     Layout.alignment: Qt.AlignHCenter
-    Layout.leftMargin: Math.min(window.width * .10, Theme.rowHeight)
+    Layout.leftMargin: Math.min(window.width * .10, VPNTheme.theme.rowHeight)
     Layout.rightMargin: Layout.leftMargin
 
     Rectangle {
@@ -25,8 +24,8 @@ RowLayout {
 
         VPNIcon {
             id: img
-            sourceSize.width: Theme.iconSize
-            sourceSize.height: Theme.iconSize
+            sourceSize.width: VPNTheme.theme.iconSize
+            sourceSize.height: VPNTheme.theme.iconSize
             antialiasing: true
             anchors.centerIn: parent
         }
@@ -34,9 +33,9 @@ RowLayout {
 
     VPNTextBlock {
         id: callout
-        color: Theme.fontColorDark
+        color: VPNTheme.theme.fontColorDark
         Layout.fillWidth: true
-        font.pixelSize: Theme.fontSize
+        font.pixelSize: VPNTheme.theme.fontSize
         verticalAlignment: Text.AlignVCenter
         width: undefined
     }

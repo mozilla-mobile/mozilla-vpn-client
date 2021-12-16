@@ -6,7 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 VPNButtonBase {
     id: button
@@ -14,13 +14,13 @@ VPNButtonBase {
     property alias buttonText: buttonText.text
     property alias buttonTextColor: buttonText.color
     property var colorScheme
-    property var uiState:Theme.uiState
+    property var uiState:VPNTheme.theme.uiState
     property var isCancelBtn
 
     enabled: popup.visible
     Layout.fillWidth: true
     Layout.fillHeight: true
-    Layout.preferredHeight: Theme.rowHeight
+    Layout.preferredHeight: VPNTheme.theme.rowHeight
     Accessible.name: buttonText.text
     state: "state-default"
 
@@ -38,7 +38,7 @@ VPNButtonBase {
     contentItem: VPNInterLabel {
         id: buttonText
 
-        font.family: isCancelBtn ? Theme.fontInterFamily : Theme.fontBoldFamily
+        font.family: isCancelBtn ? VPNTheme.theme.fontInterFamily : VPNTheme.theme.fontBoldFamily
         lineHeight: 15
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter

@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import compat 0.1
-import themes 0.1
 
 Popup {
     id: popup
@@ -20,10 +19,10 @@ Popup {
     anchors.centerIn: parent
     closePolicy: Popup.CloseOnEscape
     focus: true
-    leftInset: Theme.windowMargin
-    rightInset: Theme.windowMargin
+    leftInset: VPNTheme.theme.windowMargin
+    rightInset: VPNTheme.theme.windowMargin
     modal: true
-    verticalPadding: Theme.popupMargin
+    verticalPadding: VPNTheme.theme.popupMargin
 
     // TODO: We can not use Accessible type on Popup because it does not inherit
     // from an Item. The code below generates the following warning:
@@ -69,7 +68,7 @@ Popup {
         id: popupBackground
 
         anchors.margins: 0
-        color: Theme.bgColor
+        color: VPNTheme.theme.bgColor
         radius: 8
 
         VPNDropShadow {
@@ -96,7 +95,7 @@ Popup {
 
             anchors.centerIn: contentRoot
             spacing: 0
-            width: contentRoot.width - Theme.windowMargin / 2
+            width: contentRoot.width - VPNTheme.theme.windowMargin / 2
 
             Image {
                 fillMode: Image.PreserveAspectFit
@@ -110,16 +109,16 @@ Popup {
             VPNMetropolisLabel {
                 id: popupTitle
 
-                color: Theme.fontColorDark
-                font.pixelSize: Theme.fontSizeLarge
+                color: VPNTheme.theme.fontColorDark
+                font.pixelSize: VPNTheme.theme.fontSizeLarge
                 horizontalAlignment: Text.AlignHCenter
 
                 Layout.alignment: Qt.AlignHCenter
-                Layout.bottomMargin: Theme.vSpacingSmall
+                Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
                 Layout.fillWidth: true
-                Layout.leftMargin: Theme.popupMargin
+                Layout.leftMargin: VPNTheme.theme.popupMargin
                 Layout.minimumHeight: 36
-                Layout.rightMargin: Theme.popupMargin
+                Layout.rightMargin: VPNTheme.theme.popupMargin
                 Layout.topMargin: 4
 
                 //% "Remove device?"
@@ -132,13 +131,13 @@ Popup {
 
                 property string textString
 
-                color: Theme.fontColor
+                color: VPNTheme.theme.fontColor
                 font.pixelSize: 15
                 horizontalAlignment: Text.AlignHCenter
                 Layout.alignment: Qt.AlignHCenter
-                Layout.bottomMargin: Theme.vSpacing
-                Layout.leftMargin: Theme.popupMargin
-                Layout.rightMargin: Theme.popupMargin
+                Layout.bottomMargin: VPNTheme.theme.vSpacing
+                Layout.leftMargin: VPNTheme.theme.popupMargin
+                Layout.rightMargin: VPNTheme.theme.popupMargin
                 Layout.fillWidth: true
                 lineHeight: 22;
                 text: textString.arg(popup.deviceName)
@@ -162,8 +161,8 @@ Popup {
 
                 Layout.fillWidth: true
                 Layout.minimumHeight: 40
-                Layout.leftMargin: Theme.popupMargin
-                Layout.rightMargin: Theme.popupMargin
+                Layout.leftMargin: VPNTheme.theme.popupMargin
+                Layout.rightMargin: VPNTheme.theme.popupMargin
                 Layout.topMargin: gridSpacing / 2
 
                 VPNPopupButton {
@@ -172,8 +171,8 @@ Popup {
                     //: This is the “remove” device button.
                     //% "Remove"
                     buttonText: qsTrId("vpn.devices.removeDeviceButton")
-                    buttonTextColor: Theme.white
-                    colorScheme: Theme.redButton
+                    buttonTextColor: VPNTheme.theme.white
+                    colorScheme: VPNTheme.theme.redButton
                     onClicked: {
                         VPN.removeDeviceFromPublicKey(popup.devicePublicKey);
                         if (vpnFlickable.state === "deviceLimit") {
@@ -194,8 +193,8 @@ Popup {
 
                     //% "Cancel"
                     buttonText: qsTrId("vpn.devices.cancelDeviceRemoval");
-                    buttonTextColor: Theme.blue
-                    colorScheme: Theme.linkButton
+                    buttonTextColor: VPNTheme.theme.blue
+                    colorScheme: VPNTheme.theme.linkButton
                     focus: true
                     onClicked: {
                         popup.close();

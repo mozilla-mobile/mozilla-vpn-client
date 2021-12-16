@@ -6,18 +6,18 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 VPNButtonBase {
     id: root
 
     property var labelText
-    property variant fontName: Theme.fontInterFamily
-    property var baseColor: Theme.linkButton
-    property var linkColor: Theme.blueButton
-    property var fontSize: Theme.fontSize
+    property variant fontName: VPNTheme.theme.fontInterFamily
+    property var baseColor: VPNTheme.theme.linkButton
+    property var linkColor: VPNTheme.theme.blueButton
+    property var fontSize: VPNTheme.theme.fontSize
     property var textAlignment: Text.AlignHCenter
-    property var buttonPadding: Theme.hSpacing
+    property var buttonPadding: VPNTheme.theme.hSpacing
 
 
     radius: 4

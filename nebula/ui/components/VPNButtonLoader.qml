@@ -4,13 +4,13 @@
 
 import QtQuick 2.5
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 Rectangle {
     id: loader
     anchors.fill: parent
     anchors.margins: -1
-    radius: Theme.cornerRadius
+    radius: VPNTheme.theme.cornerRadius
     opacity: 0
     color: "#98bff2"
 

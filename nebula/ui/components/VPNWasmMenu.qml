@@ -7,7 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import QtQuick.Window 2.12
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 VPNFlickable {
     flickContentHeight: col.childrenRect.height
@@ -20,15 +20,15 @@ VPNFlickable {
         width: parent.width * .83
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: Theme.rowHeight / 2
+        anchors.topMargin: VPNTheme.theme.rowHeight / 2
 
        VPNBoldLabel {
             id: viewsLabel
 
             text: "Views"
-            font.pixelSize: Theme.windowMargin
+            font.pixelSize: VPNTheme.theme.windowMargin
             width: parent.width
-            height: Theme.rowHeight
+            height: VPNTheme.theme.rowHeight
             leftPadding: 6
             verticalAlignment: Text.AlignVCenter
 
@@ -42,7 +42,7 @@ VPNFlickable {
         }
 
        VPNVerticalSpacer {
-           height: Theme.windowMargin / 2
+           height: VPNTheme.theme.windowMargin / 2
         }
 
 
@@ -107,14 +107,14 @@ VPNFlickable {
         */
 
         VPNVerticalSpacer {
-            height: Theme.windowMargin
+            height: VPNTheme.theme.windowMargin
          }
 
         VPNBoldLabel {
              text: "Other"
              font.pixelSize: 16
              width: parent.width
-             height: Theme.rowHeight
+             height: VPNTheme.theme.rowHeight
              leftPadding: 6
              verticalAlignment: Text.AlignVCenter
 
@@ -128,7 +128,7 @@ VPNFlickable {
          }
 
         VPNVerticalSpacer {
-            height: Theme.windowMargin / 2
+            height: VPNTheme.theme.windowMargin / 2
          }
 
         VPNWasmMenuButton {

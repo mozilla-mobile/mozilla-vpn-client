@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import compat 0.1
-import themes 0.1
 
 CheckBox {
     // TODO
@@ -16,7 +15,7 @@ CheckBox {
 
     id: checkBox
 
-    property var uiState: Theme.uiState
+    property var uiState: VPNTheme.theme.uiState
 
     signal clicked()
 
@@ -56,13 +55,13 @@ CheckBox {
 
             PropertyChanges {
                 target: checkBoxIndicator
-                border.color: checkBox.checked || checkBox.activeFocus ? Theme.blue : Theme.fontColor
+                border.color: checkBox.checked || checkBox.activeFocus ? VPNTheme.theme.blue : VPNTheme.theme.fontColor
             }
 
             PropertyChanges {
                 target: checkmarkBg
 
-                color: !!checkBox.checked ? Theme.blue : Theme.bgColor
+                color: !!checkBox.checked ? VPNTheme.theme.blue : VPNTheme.theme.bgColor
             }
 
         },
@@ -71,13 +70,13 @@ CheckBox {
 
             PropertyChanges {
                 target: checkBoxIndicator
-                border.color: checkBox.checked ? Theme.bluePressed : Theme.fontColorDark
+                border.color: checkBox.checked ? VPNTheme.theme.bluePressed : VPNTheme.theme.fontColorDark
             }
 
             PropertyChanges {
                 target: checkmarkBg
 
-                color: checkBox.checked ? Theme.bluePressed : Theme.greyPressed
+                color: checkBox.checked ? VPNTheme.theme.bluePressed : VPNTheme.theme.greyPressed
             }
 
         },
@@ -86,13 +85,13 @@ CheckBox {
 
             PropertyChanges {
                 target: checkBoxIndicator
-                border.color: checkBox.checked || checkBox.activeFocus ? Theme.blueHovered : Theme.fontColorDark
+                border.color: checkBox.checked || checkBox.activeFocus ? VPNTheme.theme.blueHovered : VPNTheme.theme.fontColorDark
             }
 
             PropertyChanges {
                 target: checkmarkBg
 
-                color: checkBox.checked ? Theme.blueHovered : "#DBDBDB"
+                color: checkBox.checked ? VPNTheme.theme.blueHovered : "#DBDBDB"
             }
 
         }
@@ -108,7 +107,7 @@ CheckBox {
         Rectangle {
             id: checkmarkBg
 
-            color: checkBox.checked ? Theme.blue : Theme.bgColor
+            color: checkBox.checked ? VPNTheme.theme.blue : VPNTheme.theme.bgColor
             height: 20
             width: 20
             antialiasing: true
@@ -160,8 +159,8 @@ CheckBox {
 
         height: 20
         width: 20
-        color: Theme.bgColor
-        border.color: checkBox.checked ? Theme.blue : Theme.fontColor
+        color: VPNTheme.theme.bgColor
+        border.color: checkBox.checked ? VPNTheme.theme.blue : VPNTheme.theme.fontColor
         border.width: 2
         radius: 4
         antialiasing: true
@@ -171,7 +170,7 @@ CheckBox {
             visible: true
             anchors.margins: -3
             focusedComponent: checkBox
-            focusColorScheme: Theme.blueButton
+            focusColorScheme: VPNTheme.theme.blueButton
         }
 
         Behavior on border.color {

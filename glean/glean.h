@@ -15,6 +15,4 @@ class Glean final {
   static void Initialize(QQmlEngine* engine);
 };
 
-#define INIT_GLEAN Q_INIT_RESOURCE(glean);
-
 #endif  // GLEAN_H

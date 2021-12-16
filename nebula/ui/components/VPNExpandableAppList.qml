@@ -9,7 +9,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components.forms 0.1
-import themes 0.1
 
 ColumnLayout {
     id: appListContainer
@@ -19,9 +18,9 @@ ColumnLayout {
 
     anchors.left: parent.left
     anchors.right:parent.right
-    anchors.leftMargin: Theme.vSpacing
-    anchors.rightMargin: Theme.vSpacing
-    spacing: Theme.vSpacing
+    anchors.leftMargin: VPNTheme.theme.vSpacing
+    anchors.rightMargin: VPNTheme.theme.vSpacing
+    spacing: VPNTheme.theme.vSpacing
 
     // Ensure the inital presentation of the component is consistent with the
     // "hidden" state. This prevents the transition from firing on the
@@ -99,12 +98,12 @@ ColumnLayout {
         id: label
         text: header
         Accessible.role: Accessible.Heading
-        color: Theme.fontColorDark
+        color: VPNTheme.theme.fontColorDark
         horizontalAlignment: Text.AlignLeft
         Layout.alignment: Qt.AlignLeft
         Layout.topMargin: 4
         verticalAlignment: Text.AlignVCenter
-        lineHeight: Theme.vSpacing
+        lineHeight: VPNTheme.theme.vSpacing
         lineHeightMode: Text.FixedHeight
         wrapMode: Text.WordWrap
         Layout.preferredWidth: parent.width
@@ -113,7 +112,7 @@ ColumnLayout {
     VPNSearchBar {
         id: filterInput
         Layout.fillWidth: true
-        Layout.preferredHeight: Theme.rowHeight
+        Layout.preferredHeight: VPNTheme.theme.rowHeight
         onTextChanged: text => {
             model.invalidate();
         }
@@ -133,7 +132,7 @@ ColumnLayout {
     }
 
     ColumnLayout {
-        spacing: Theme.windowMargin / 2
+        spacing: VPNTheme.theme.windowMargin / 2
 
         VPNVerticalSpacer {
             Layout.preferredHeight: 1
@@ -150,7 +149,7 @@ ColumnLayout {
                 onClicked: VPNAppPermissions.flip(appID)
                 isChecked: !appIsEnabled
                 isEnabled: vpnFlickable.vpnIsOff && VPNSettings.protectSelectedApps
-                Layout.minimumHeight: Theme.rowHeight * 1.5
+                Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
             }
         }
         VPNButton {
@@ -168,8 +167,8 @@ ColumnLayout {
                 anchors.centerIn: parent
                 VPNIcon {
                     source: "qrc:/nebula/resources/plus.svg"
-                    sourceSize.height: Theme.windowMargin
-                    sourceSize.width: Theme.windowMargin
+                    sourceSize.height: VPNTheme.theme.windowMargin
+                    sourceSize.width: VPNTheme.theme.windowMargin
                 }
                 VPNBoldLabel {
                     text: addApplication

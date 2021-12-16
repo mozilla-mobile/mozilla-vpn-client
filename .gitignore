@@ -27,6 +27,7 @@ linux/netfilter/vendor/
 .qm
 .tmp
 .env
+.venv
 
 # Node (for functional tests)
 node_modules

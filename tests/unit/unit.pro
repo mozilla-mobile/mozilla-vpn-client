@@ -35,7 +35,6 @@ include($$PWD/../../nebula/nebula.pri)
 HEADERS += \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
-    ../../src/bigint.h \
     ../../src/captiveportal/captiveportal.h \
     ../../src/collator.h \
     ../../src/command.h \
@@ -106,7 +105,6 @@ HEADERS += \
     helper.h \
     testadjust.h \
     testandroidmigration.h \
-    testbigint.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
     testfeature.h \
@@ -198,7 +196,6 @@ SOURCES += \
     mocnetworkrequest.cpp \
     testadjust.cpp \
     testandroidmigration.cpp \
-    testbigint.cpp \
     testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
     testfeature.cpp \

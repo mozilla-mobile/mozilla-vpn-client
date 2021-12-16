@@ -10,17 +10,16 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 import compat 0.1
-import themes 0.1
 
 RadioDelegate {
     property var value
     property alias iconSource: img.source
     property var heightWidth: 30
-    property var uiState: Theme.uiState
+    property var uiState: VPNTheme.theme.uiState
     id: radio
     checked: false
-    implicitHeight: Theme.rowHeight
-    implicitWidth: Theme.rowHeight
+    implicitHeight: VPNTheme.theme.rowHeight
+    implicitWidth: VPNTheme.theme.rowHeight
     activeFocusOnTab: true
     Component.onCompleted: {
         state = uiState.stateDefault
@@ -38,7 +37,7 @@ RadioDelegate {
         id: colorOverlay
         anchors.fill: img
         source: img
-        color: radio.checked || radio.focus || radio.activeFocus ? Theme.blue : Theme.fontColor
+        color: radio.checked || radio.focus || radio.activeFocus ? VPNTheme.theme.blue : VPNTheme.theme.fontColor
         Behavior on color {
             PropertyAnimation {
                 duration: 100
@@ -61,7 +60,7 @@ RadioDelegate {
             opacity: radio.checked || radio.activeFocus ? 1 : 0
             color: "transparent"
             border.width: 4
-            border.color: Theme.blueFocusOutline
+            border.color: VPNTheme.theme.blueFocusOutline
             anchors.margins: 2
             radius: height
 
@@ -85,7 +84,7 @@ RadioDelegate {
             name: uiState.statePressed
             PropertyChanges {
                 target: colorOverlay
-                color: Theme.bluePressed
+                color: VPNTheme.theme.bluePressed
             }
         },
         State {
@@ -93,14 +92,14 @@ RadioDelegate {
 
             PropertyChanges {
                 target: colorOverlay
-                color: radio.checked || radio.focus || radio.activeFocus ? Theme.blue : Theme.fontColor
+                color: radio.checked || radio.focus || radio.activeFocus ? VPNTheme.theme.blue : VPNTheme.theme.fontColor
             }
         },
         State {
             name: uiState.stateHovered
             PropertyChanges {
                 target: colorOverlay
-                color: Theme.blue
+                color: VPNTheme.theme.blue
             }
         }
     ]

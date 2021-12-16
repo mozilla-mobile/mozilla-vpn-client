@@ -80,7 +80,8 @@ constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
 
 PRODBETAEXPR(const char *, crashURL, CRASH_PRODUCTION_URL, CRASH_STAGING_URL);
 
-constexpr const char* LOGO_URL = ":/ui/resources/logo-dock.png";
+constexpr const char* LOGO_URL = ":/nebula/resources/logo-dock.png";
+
 
 PRODBETAEXPR(const char*, fxaUrl, "https://api.accounts.firefox.com",
              "https://api-accounts.stage.mozaws.net")

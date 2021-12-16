@@ -3,7 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidcontroller.h"
-#include "ipaddress.h"
+#include "androidutils.h"
+#include "androidjnicompat.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -15,19 +16,21 @@
 #include "settingsholder.h"
 #include "l18nstrings.h"
 
-#include <QAndroidBinder>
-#include <QAndroidIntent>
-#include <QAndroidJniEnvironment>
-#include <QAndroidJniObject>
-#include <QAndroidParcel>
-#include <QAndroidServiceConnection>
+#if QT_VERSION >= 0x060000
+#  include <QtCore/private/qandroidextras_p.h>
+#else
+#  include <QAndroidBinder>
+#  include <QAndroidIntent>
+#  include <QAndroidParcel>
+#  include <QAndroidServiceConnection>
+#  include <QtAndroid>
+#endif
+
 #include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QRandomGenerator>
-#include <QTextCodec>
-#include <QtAndroid>
 
 // Binder Codes for VPNServiceBinder
 // See also - VPNServiceBinder.kt
@@ -84,24 +87,30 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
   JNINativeMethod methods[]{{"startActivityForResult",
                              "(Landroid/content/Intent;)V",
                              reinterpret_cast<void*>(startActivityForResult)}};
-  QAndroidJniObject javaClass(PERMISSIONHELPER_CLASS);
-  QAndroidJniEnvironment env;
+  QJniObject javaClass(PERMISSIONHELPER_CLASS);
+  QJniEnvironment env;
   jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
   env->RegisterNatives(objectClass, methods,
                        sizeof(methods) / sizeof(methods[0]));
   env->DeleteLocalRef(objectClass);
 
-  auto appContext = QtAndroid::androidActivity().callObjectMethod(
+  auto appContext = AndroidUtils::getActivity().callObjectMethod(
       "getApplicationContext", "()Landroid/content/Context;");
 
-  QAndroidJniObject::callStaticMethod<void>(
+  QJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/VPNService", "startService",
       "(Landroid/content/Context;)V", appContext.object());
 
   // Start the VPN Service (if not yet) and Bind to it
+#if QT_VERSION >= 0x060000
+  QtAndroidPrivate::bindService(
+      QAndroidIntent(appContext.object(), "org.mozilla.firefox.vpn.VPNService"),
+      *this, QtAndroidPrivate::BindFlag::AutoCreate);
+#else
   QtAndroid::bindService(
       QAndroidIntent(appContext.object(), "org.mozilla.firefox.vpn.VPNService"),
       *this, QtAndroid::BindFlag::AutoCreate);
+#endif
 
   connect(this, &AndroidController::initialized, this,
           &AndroidController::applyStrings, Qt::QueuedConnection);
@@ -153,11 +162,11 @@ void AndroidController::activate(const QList<Server>& serverList,
   logger.debug() << "Activation";
 
   logger.debug() << "Prompting for VPN permission";
-  auto appContext = QtAndroid::androidActivity().callObjectMethod(
+  auto appContext = AndroidUtils::getActivity().callObjectMethod(
       "getApplicationContext", "()Landroid/content/Context;");
-  QAndroidJniObject::callStaticMethod<void>(
-      PERMISSIONHELPER_CLASS, "startService", "(Landroid/content/Context;)V",
-      appContext.object());
+  QJniObject::callStaticMethod<void>(PERMISSIONHELPER_CLASS, "startService",
+                                     "(Landroid/content/Context;)V",
+                                     appContext.object());
 
   bool isMultihop = serverList.length() > 1;
   Server exitServer = serverList.first();
@@ -360,8 +369,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
 }
 
 QString AndroidController::VPNBinder::readUTF8Parcel(QAndroidParcel data) {
-  // 106 is the Code for UTF-8
-  return QTextCodec::codecForMib(106)->toUnicode(data.readData());
+  return QString::fromUtf8(data.readData());
 }
 
 const int ACTIVITY_RESULT_OK = 0xffffffff;
@@ -374,32 +382,37 @@ void AndroidController::startActivityForResult(JNIEnv* env, jobject /*thiz*/,
                                                jobject intent) {
   logger.debug() << "start activity";
   Q_UNUSED(env);
-  QtAndroid::startActivity(intent, 1337,
-                           [](int receiverRequestCode, int resultCode,
-                              const QAndroidJniObject& data) {
-                             // Currently this function just used in
-                             // VPNService.kt::checkPersmissions. So the result
-                             // we're getting is if the User gave us the
-                             // Vpn.bind permission. In case of NO we should
-                             // abort.
-                             Q_UNUSED(receiverRequestCode);
-                             Q_UNUSED(data);
 
-                             AndroidController* controller =
-                                 AndroidController::instance();
-                             if (!controller) {
-                               return;
-                             }
+  auto const callback = [](int receiverRequestCode, int resultCode,
+                           const QJniObject& data) {
+    // Currently this function just used in
+    // VPNService.kt::checkPersmissions. So the result
+    // we're getting is if the User gave us the
+    // Vpn.bind permission. In case of NO we should
+    // abort.
+    Q_UNUSED(receiverRequestCode);
+    Q_UNUSED(data);
 
-                             if (resultCode == ACTIVITY_RESULT_OK) {
-                               logger.debug() << "VPN PROMPT RESULT - Accepted";
-                               controller->resume_activate();
-                               return;
-                             }
-                             // If the request got rejected abort the current
-                             // connection.
-                             logger.warning() << "VPN PROMPT RESULT - Rejected";
-                             emit controller->disconnected();
-                           });
+    AndroidController* controller = AndroidController::instance();
+    if (!controller) {
+      return;
+    }
+
+    if (resultCode == ACTIVITY_RESULT_OK) {
+      logger.debug() << "VPN PROMPT RESULT - Accepted";
+      controller->resume_activate();
+      return;
+    }
+    // If the request got rejected abort the current
+    // connection.
+    logger.warning() << "VPN PROMPT RESULT - Rejected";
+    emit controller->disconnected();
+  };
+
+#if QT_VERSION >= 0x060000
+  QtAndroidPrivate::startActivity(intent, 1337, callback);
+#else
+  QtAndroid::startActivity(intent, 1337, callback);
+#endif
   return;
 }

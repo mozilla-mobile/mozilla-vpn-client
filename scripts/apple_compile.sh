@@ -119,16 +119,19 @@ if ! [ -d "src" ] || ! [ -d "ios" ] || ! [ -d "macos" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
-QMAKE=qmake
+QT_BIN=
 if [ "$OS" = "macos" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
-  QMAKE=$QT_MACOS_BIN/qmake
+  QT_BIN=$QT_MACOS_BIN
 elif [ "$OS" = "macostest" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
-  QMAKE=$QT_MACOS_BIN/qmake
+  QT_BIN=$QT_MACOS_BIN
 elif [ "$OS" = "ios" ] && ! [ "$QT_IOS_BIN" = "" ]; then
-  QMAKE=$QT_IOS_BIN/qmake
+  QT_BIN=$QT_IOS_BIN
 fi
 
+QMAKE="$QT_BIN/qmake"
 $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
+
+export PATH="$QT_BIN:$PATH"
 
 printn Y "Retrieve the wireguard-go version... "
 (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h

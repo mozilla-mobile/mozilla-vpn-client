@@ -6,7 +6,7 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 Rectangle {
     id: root
@@ -17,9 +17,9 @@ Rectangle {
     property string iconSrc: ""
     property alias contentItem: cardContent.data
 
-    color: Color.white
+    color: VPNTheme.colors.white
     implicitHeight: cardWrapper.height
-    radius: Theme.cornerRadius
+    radius: VPNTheme.theme.cornerRadius
     width: parent.width
 
     VPNDropShadowWithStates {
@@ -81,10 +81,10 @@ Rectangle {
         RowLayout {
             id: accordionHeader
 
-            spacing: Theme.listSpacing * 2
-            Layout.topMargin: Theme.listSpacing
-            Layout.leftMargin: Theme.listSpacing * 2
-            Layout.rightMargin: Theme.listSpacing * 2
+            spacing: VPNTheme.theme.listSpacing * 2
+            Layout.topMargin: VPNTheme.theme.listSpacing
+            Layout.leftMargin: VPNTheme.theme.listSpacing * 2
+            Layout.rightMargin: VPNTheme.theme.listSpacing * 2
             Layout.fillWidth: true
 
             VPNIcon {
@@ -100,10 +100,10 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredWidth: cardWrapper.width
 
-                color: Color.grey50
-                font.family: Theme.fontBoldFamily
-                font.pixelSize: Theme.fontSize
-                lineHeight: Theme.labelLineHeight
+                color: VPNTheme.colors.grey50
+                font.family: VPNTheme.theme.fontBoldFamily
+                font.pixelSize: VPNTheme.theme.fontSize
+                lineHeight: VPNTheme.theme.labelLineHeight
                 lineHeightMode: Text.FixedHeight
                 text: root.title
                 verticalAlignment: Text.AlignVCenter
@@ -116,9 +116,9 @@ Rectangle {
                 onClicked: {
                     handleToggleCard();
                 }
-                radius: Theme.cornerRadius - 1
-                Layout.preferredHeight: Theme.rowHeight
-                Layout.preferredWidth: Theme.rowHeight
+                radius: VPNTheme.theme.cornerRadius - 1
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                Layout.preferredWidth: VPNTheme.theme.rowHeight
 
                 // TODO - Use accesibleName string
                 accessibleName: ""
@@ -145,9 +145,9 @@ Rectangle {
 
             clip: true
             Layout.preferredWidth: accordionTitle.width
-            Layout.bottomMargin: Theme.listSpacing
-            Layout.leftMargin: icon.width + Theme.listSpacing * 4
-            Layout.rightMargin: Theme.listSpacing
+            Layout.bottomMargin: VPNTheme.theme.listSpacing
+            Layout.leftMargin: icon.width + VPNTheme.theme.listSpacing * 4
+            Layout.rightMargin: VPNTheme.theme.listSpacing
 
             ColumnLayout {
                 id: cardContent
