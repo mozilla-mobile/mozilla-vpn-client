@@ -182,7 +182,7 @@ class InAppPurchase private constructor(ctx: Context) :
             .build()
         val billingResult = billingClient.launchBillingFlow(activity, billingParams)
         if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-            VPNUtils.recordGleanEvent(GleanEvent.iapGLaunchBillingflowFailed)
+            VPNUtils.recordGleanEvent(GleanEvent.iapGLaunchbillingflowFailed)
             onSubscriptionFailed(billingResultToJson(billingResult, "initiatePurchase"))
         }
     }
