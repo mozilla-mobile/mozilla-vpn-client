@@ -1388,10 +1388,12 @@ void MozillaVPN::refreshDevices() {
 }
 
 void MozillaVPN::goToServersView() {
-  logger.debug() << "Go to main view";
+  logger.debug() << "Go to servers view";
 
-  emit clearCurrentViewStack();
-  emit showServersView();
+  if (m_state == StateMain) {
+    emit clearCurrentViewStack();
+    emit showServersView();
+  }
 }
 
 void MozillaVPN::quit() {

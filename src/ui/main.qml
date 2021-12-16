@@ -345,15 +345,6 @@ Window {
         id: serverUnavailablePopup
     }
 
-    Button {
-        anchors.horizontalCenter: parent.horizontalCenter
-        text: "Open popup"
-
-        onClicked: () => {
-            serverUnavailablePopup.open();
-        }
-    }
-
     VPNFeatureTourPopup {
         id: featureTourPopup
 

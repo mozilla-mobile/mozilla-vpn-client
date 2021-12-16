@@ -19,7 +19,6 @@ Item {
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
-    property var currentStackView: ({})
     signal clicked(QtObject mouse)
 
     width: parent.width
@@ -51,7 +50,7 @@ Item {
 
         skipEnsureVisible: true // prevents scrolling of lists when this is focused
 
-        onClicked: handleGoBack()
+        onClicked: handleMenuGoBack()
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: VPNTheme.theme.windowMargin / 2
@@ -98,28 +97,31 @@ Item {
         height: 1
     }
 
-    function handleGoBack() {
-        isMultiHopView ? handleMultiHopNav() : currentStackView.pop();
+    function handleMenuGoBack() {
+        isMultiHopView ? handleMultiHopNav() : goBack();
     }
 
-    function setCurrentStackView() {
+    function goBack() {
         if (isMainView) {
-            currentStackView = mainStackView;
+            mainStackView.pop();
         } else if (isSettingsView) {
-            currentStackView = settingsStackView;
+            settingsStackView.pop();
+        } else if (stackview) {
+            stackview.pop();
         }
     }
 
     function clearViewStack() {
-        currentStackView.pop(null, StackView.Immediate);
+        if (isMainView) {
+            mainStackView.pop();
+        } else if (isSettingsView) {
+            settingsStackView.pop();
+        }
 
         if (stackview) {
+            // Close settings
             stackview.pop(StackView.Immediate);
         }
-    }
-
-    Component.onCompleted: () => {
-        setCurrentStackView();
     }
 
     Connections {
