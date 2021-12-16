@@ -4,20 +4,32 @@
 
 #include "crashreporterapp.h"
 
-#include <QCoreApplication>
+#include <QApplication>
 #include <QTimer>
 #include <iostream>
 
 #include "crashreporterfactory.h"
 
-int CrashReporterApp::main(int argc, char *argv[]){
-    QCoreApplication a(argc, argv);
-  for (int i = 1; i < argc; i++) {
-      std::cout << argv[i] << std::endl;
+int CrashReporterApp::main(int argc, char* argv[]) {
+  QApplication a(argc, argv);
+
+#ifdef MVPN_WINDOWS
+  // Allocate a console to view log output in debug mode on windows
+  if (AllocConsole()) {
+    FILE* unusedFile;
+    freopen_s(&unusedFile, "CONOUT$", "w", stdout);
+    freopen_s(&unusedFile, "CONOUT$", "w", stderr);
+    std::cout.clear();
+    std::clog.clear();
+    std::cerr.clear();
   }
-    QTimer::singleShot(0, &a, [argc, argv](){
-        auto crashreporter = CrashReporterFactory::createCrashReporter();
-        crashreporter->start(argc, argv);
-    });
-    return a.exec();
+#endif
+
+  auto crashreporter = CrashReporterFactory::createCrashReporter();
+  QTimer::singleShot(0, &a, [crashreporter, argc, argv]() {
+    crashreporter->start(argc, argv);
+  });
+  int rc = a.exec();
+  std::cout << "Exiting handler";
+  return rc;
 }

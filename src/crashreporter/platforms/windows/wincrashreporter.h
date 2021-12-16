@@ -5,6 +5,7 @@
 #ifndef WINCRASHREPORTER_H
 #define WINCRASHREPORTER_H
 
+#include <thread>
 #include "../../crashreporter.h"
 #include "util/win/initial_client_data.h"
 #include "winserverdelegate.h"
@@ -16,10 +17,15 @@ class WinCrashReporter : public CrashReporter {
   explicit WinCrashReporter(QObject* parent = nullptr);
   bool start(int argc, char* argv[]) override;
 
+ protected:
+  std::shared_ptr<crashpad::ProcessSnapshot> createSnapshot(
+      std::shared_ptr<CrashData> data) override;
+
  private:
   std::unique_ptr<crashpad::ExceptionHandlerServer> m_server;
-  std::weak_ptr<WinServerDelegate> m_delegate;
+  std::shared_ptr<WinServerDelegate> m_delegate;
   crashpad::InitialClientData m_initialData;
+  std::thread m_thread;
 };
 
 #endif  // WINCRASHREPORTER_H

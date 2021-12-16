@@ -1,28 +1,25 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 #include "crashclient.h"
 
 #include <QCoreApplication>
 #include <QString>
-#include <vector>
-#include <codecvt>
+#include <util/win/registration_protocol_win.h>
+#include "crashconstants.h"
+#include "crashserverclientfactory.h"
 
 using namespace crashpad;
 using namespace std;
 
-CrashClient::CrashClient() { m_client = make_unique<CrashpadClient>(); }
+CrashClient::CrashClient() { m_client = CrashServerClientFactory::create(); }
 
 CrashClient& CrashClient::instance() {
   static CrashClient instance;
   return instance;
 }
 
-bool CrashClient::start(char * appPath) {
-  vector<string> args;
-  args.push_back("--crashreporter");
-  base::FilePath db;
-  std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-  base::FilePath handler(converter.from_bytes(appPath));
-  if (!m_client->StartHandler(handler, db, db, "", {}, args, true, true)) {
-    return false;
-  }
-  return true;
+bool CrashClient::start(int argc, char* argv[]) {
+  return m_client->start(argc, argv);
 }

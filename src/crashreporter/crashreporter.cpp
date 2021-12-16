@@ -3,8 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "crashreporter.h"
+#include <iostream>
+#include "crashui.h"
 
-CrashReporter::CrashReporter(QObject* parent) : QObject(parent) {}
+using namespace std;
+
+CrashReporter::CrashReporter(QObject* parent) : QObject(parent) {
+  m_ui = make_unique<CrashUI>();
+}
 
 bool CrashReporter::shouldPromptUser() {
   // eventually this will need to check settings for an opt-in.  For now we
@@ -12,4 +18,19 @@ bool CrashReporter::shouldPromptUser() {
   return true;
 }
 
-void CrashReporter::crashReported(const CrashData& data) {}
+void CrashReporter::crashReported(shared_ptr<CrashData> data) {
+  cout << "Crash Reported." << endl;
+  auto snapshot = createSnapshot(data);
+  if (snapshot) {
+    cout << "Snapshot received." << endl;
+  }
+  if (shouldPromptUser()) {
+    promptUser();
+  }
+}
+
+bool CrashReporter::promptUser() {
+  m_ui->initialize();
+  m_ui->showUI();
+  return true;
+}

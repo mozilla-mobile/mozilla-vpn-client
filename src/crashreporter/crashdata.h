@@ -6,18 +6,17 @@
 #define CRASHDATA_H
 
 #include <QObject>
+#include <memory>
 /**
  * @brief A base class for platform specific crash data sent to the handler.
  * Used to pass through non-platform specific code polymorphically.
  */
-class CrashData : public QObject
-{
-    Q_OBJECT
-public:
-    explicit CrashData(QObject *parent = nullptr);
-
-signals:
-
+class CrashData {
+ public:
+  CrashData() = default;
+  CrashData(const CrashData&) = default;
+  CrashData& operator=(const CrashData&) = default;
 };
+Q_DECLARE_METATYPE(std::shared_ptr<CrashData>);
 
-#endif // CRASHDATA_H
+#endif  // CRASHDATA_H

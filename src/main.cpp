@@ -2,6 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#ifdef MVPN_WINDOWS
+#  include <WinSock2.h>
+// clang-format off
+#  pragma include_alias(<sys/time.h>, <time.h>)
+// clang-format on
+#endif
+
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include <iostream>
@@ -9,8 +16,11 @@
 #include <QCoreApplication>
 #include <nebula.h>
 #include <glean.h>
+#include <thread>
 #include <crashreporter/crashreporterapp.h>
 #include <crashreporter/crashclient.h>
+#include <client/simulate_crash.h>
+#include <snapshot/win/process_reader_win.h>
 
 #if defined MVPN_WINDOWS && defined MVPN_DEBUG
 #  include <windows.h>
@@ -22,30 +32,39 @@ int main(int argc, char* argv[]) {
   Q_UNUSED(leakDetector);
 #  ifdef MVPN_WINDOWS
   // Allocate a console to view log output in debug mode on windows
-  if (AllocConsole()) {
+  /* if (AllocConsole()) {
     FILE* unusedFile;
     freopen_s(&unusedFile, "CONOUT$", "w", stdout);
     freopen_s(&unusedFile, "CONOUT$", "w", stderr);
     std::cout.clear();
     std::clog.clear();
     std::cerr.clear();
-  }
+
+}*/
 #  endif
 
 #endif
 
   INIT_NEBULA;
 #ifdef MVPN_WINDOWS
-  if(argc > 1){
-      for(int i = 1; i < argc; i++){
-          if(!strcmp("--crashreporter", argv[i])){
-              return CrashReporterApp::main(argc, argv);
-          }
+  if (argc > 1) {
+    for (int i = 1; i < argc; i++) {
+      if (!strcmp("--crashreporter", argv[i])) {
+        return CrashReporterApp::main(argc, argv);
       }
+    }
   }
-  CrashClient::instance().start(argv[0]);
+  std::cout << "Starting client.";
+  if (!CrashClient::instance().start(argc, argv)) {
+    std::cout << "CrashClient returned false." << std::endl;
+  }
+
 #endif
   INIT_GLEAN;
   CommandLineParser clp;
+  std::thread t([]() {
+    Sleep(2000);
+    abort();
+  });
   return clp.parse(argc, argv);
 }
