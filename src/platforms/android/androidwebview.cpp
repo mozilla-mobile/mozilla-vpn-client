@@ -10,12 +10,12 @@
 #include "mozillavpn.h"
 #include "networkmanager.h"
 
-#include <QAndroidJniEnvironment>
 #include <QQuickRenderControl>
 #include <QQuickWindow>
 #include <QThread>
 #include <QWindow>
-#include <QtAndroid>
+
+#include "androidjnicompat.h"
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidWebView");
@@ -68,7 +68,7 @@ AndroidWebView::AndroidWebView(QQuickItem* parent) : QQuickItem(parent) {
   if (!s_methodsInitialized) {
     s_methodsInitialized = true;
 
-    QAndroidJniEnvironment env;
+    QJniEnvironment env;
     jclass javaClass = env.findClass(WEBVIEW_CLASS);
     if (!javaClass) {
       propagateError(ErrorHandler::RemoteServiceError);
@@ -88,15 +88,15 @@ AndroidWebView::AndroidWebView(QQuickItem* parent) : QQuickItem(parent) {
   }
 
   QString userAgentStr = NetworkManager::userAgent();
-  QAndroidJniObject userAgent = QAndroidJniObject::fromString(userAgentStr);
+  QJniObject userAgent = QJniObject::fromString(userAgentStr);
   Q_ASSERT(userAgent.isValid());
 
-  QAndroidJniObject activity = QtAndroid::androidActivity();
+  QJniObject activity = AndroidUtils::getActivity();
   Q_ASSERT(activity.isValid());
 
-  m_object = QAndroidJniObject(
-      WEBVIEW_CLASS, "(Landroid/app/Activity;Ljava/lang/String;)V",
-      activity.object<jobject>(), userAgent.object<jstring>());
+  m_object =
+      QJniObject(WEBVIEW_CLASS, "(Landroid/app/Activity;Ljava/lang/String;)V",
+                 activity.object<jobject>(), userAgent.object<jstring>());
 
   if (!m_object.isValid()) {
     propagateError(ErrorHandler::UnrecoverableError);
@@ -155,7 +155,7 @@ void AndroidWebView::setUrl(const QUrl& url) {
     return;
   }
 
-  QAndroidJniObject urlString = QAndroidJniObject::fromString(url.toString());
+  QJniObject urlString = QJniObject::fromString(url.toString());
   m_object.callMethod<void>("setUrl", "(Ljava/lang/String;)V",
                             urlString.object<jstring>());
   emit urlChanged();
@@ -255,6 +255,6 @@ void AndroidWebView::invalidateSceneGraph() {
 }
 
 void AndroidWebView::clearStorage() {
-  QtAndroid::runOnAndroidThreadSync(
+  AndroidUtils::runOnAndroidThreadSync(
       [this]() { m_object.callMethod<void>("clearStorage", "()V"); });
 }
