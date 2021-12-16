@@ -89,10 +89,7 @@ class IAPHandler : public QAbstractListModel {
 
   virtual void nativeRegisterProducts() = 0;
   virtual void nativeStartSubscription(Product* product) = 0;
-
-#ifdef MVPN_IOS
   virtual void nativeRestoreSubscription() = 0;
-#endif
 
   enum {
     eNotRegistered,

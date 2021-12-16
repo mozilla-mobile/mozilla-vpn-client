@@ -119,6 +119,11 @@ void AndroidIAPHandler::nativeStartSubscription(Product* product) {
       appActivity.object());
 }
 
+void AndroidIAPHandler::nativeRestoreSubscription() {
+  // Not available on Android
+  logger.error() << "Restore not possible on Android!!!";
+}
+
 void AndroidIAPHandler::launchPlayStore() {
   maybeInit();
   Q_ASSERT(m_init);
