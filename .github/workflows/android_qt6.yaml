@@ -20,7 +20,7 @@ jobs:
             #- { name: Release, args: "", apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
             - { name: Debug, args: "--debug", apk: .tmp/src/android-build/mozillavpn.apk, sym: false, sign: false}
         arch: 
-          # Qt6 names their arch diffrent then what qmake expects ...
+          # Qt6 names their arch different then what qmake expects ...
           - {name: "armv7", qmake: "armeabi-v7a"}
           - {name: "arm64_v8a", qmake: "arm64-v8a"}
           - {name: "x86" , qmake: "x86"}
