@@ -13,26 +13,27 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@parcel/compressor-raw": "^2.0.0",
-    "lit": "^2.0.0",
-    "parcel": "^2.0.0",
-    "xterm": "^4.14.1",
+    "@parcel/compressor-raw": "^2.0.1",
+    "json-schema": ">=0.4.0",
+    "lit": "^2.0.2",
+    "parcel": "^2.0.1",
+    "xterm": "^4.15.0",
     "xterm-addon-fit": "^0.5.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.1.0",
-    "@typescript-eslint/parser": "^5.1.0",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-promise": "^5.2.0",
     "node-gyp-build": "^4.3.0"
   },
   "targets": {
     "dist": {
-      "context":"browser",
-      "sourceMap":true,
+      "context": "browser",
+      "sourceMap": true,
       "includeNodeModules": {
         "lit": true
       }
