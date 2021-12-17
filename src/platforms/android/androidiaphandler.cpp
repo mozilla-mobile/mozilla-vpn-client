@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidiaphandler.h"
+#include "androidjnicompat.h"
 #include "androidutils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -11,13 +12,10 @@
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
 
-#include <QAndroidJniEnvironment>
-#include <QAndroidJniObject>
 #include <QCoreApplication>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QtAndroid>
 
 namespace {
 Logger logger(LOG_IAP, "AndroidIAPHandler");
@@ -31,8 +29,8 @@ AndroidIAPHandler::AndroidIAPHandler(QObject* parent) : IAPHandler(parent) {
 
 AndroidIAPHandler::~AndroidIAPHandler() {
   MVPN_COUNT_DTOR(AndroidIAPHandler);
-  QAndroidJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/InAppPurchase", "deinit", "()V");
+  QJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/InAppPurchase",
+                                     "deinit", "()V");
 }
 
 void AndroidIAPHandler::maybeInit() {
@@ -40,7 +38,7 @@ void AndroidIAPHandler::maybeInit() {
     return;
   }
   // Init the billing client
-  auto appContext = QtAndroid::androidActivity().callObjectMethod(
+  auto appContext = AndroidUtils::getActivity().callObjectMethod(
       "getApplicationContext", "()Landroid/content/Context;");
   if (!appContext.isValid()) {
     // This is a race condition, we could be here while android has not finished
@@ -49,12 +47,12 @@ void AndroidIAPHandler::maybeInit() {
     return;
   }
   logger.debug() << "Android IAP handler init";
-  QAndroidJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/InAppPurchase", "init",
-      "(Landroid/content/Context;)V", appContext.object());
+  QJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/InAppPurchase",
+                                     "init", "(Landroid/content/Context;)V",
+                                     appContext.object());
 
   // Hook together implementations for functions called by native code
-  QtAndroid::runOnAndroidThreadSync([]() {
+  AndroidUtils::runOnAndroidThreadSync([]() {
     JNINativeMethod methods[]{
         // Failures
         {"onBillingNotAvailable", "(Ljava/lang/String;)V",
@@ -73,7 +71,7 @@ void AndroidIAPHandler::maybeInit() {
         {"onSkuDetailsReceived", "(Ljava/lang/String;)V",
          reinterpret_cast<void*>(onSkuDetailsReceived)},
     };
-    QAndroidJniEnvironment env;
+    QJniEnvironment env;
     jclass objectClass = env.findClass(CLASSNAME);
     if (objectClass == nullptr) {
       logger.error() << "Android-IAP Class is Null?!";
@@ -101,9 +99,9 @@ void AndroidIAPHandler::nativeRegisterProducts() {
   root.insert("products", jsonProducts);
   QJsonDocument productData = QJsonDocument(root);
   auto jniString =
-      QAndroidJniObject::fromString(productData.toJson(QJsonDocument::Compact));
+      QJniObject::fromString(productData.toJson(QJsonDocument::Compact));
 
-  QAndroidJniObject::callStaticMethod<void>(
+  QJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/InAppPurchase", "lookupProductsInPlayStore",
       "(Ljava/lang/String;)V", jniString.object());
 }
@@ -111,9 +109,9 @@ void AndroidIAPHandler::nativeRegisterProducts() {
 void AndroidIAPHandler::nativeStartSubscription(Product* product) {
   maybeInit();
   Q_ASSERT(m_init);
-  auto jniString = QAndroidJniObject::fromString(product->m_name);
-  auto appActivity = QtAndroid::androidActivity();
-  QAndroidJniObject::callStaticMethod<void>(
+  auto jniString = QJniObject::fromString(product->m_name);
+  auto appActivity = AndroidUtils::getActivity();
+  QJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/InAppPurchase", "purchaseProduct",
       "(Ljava/lang/String;Landroid/app/Activity;)V", jniString.object(),
       appActivity.object());
@@ -127,8 +125,8 @@ void AndroidIAPHandler::nativeRestoreSubscription() {
 void AndroidIAPHandler::launchPlayStore() {
   maybeInit();
   Q_ASSERT(m_init);
-  auto appActivity = QtAndroid::androidActivity();
-  QAndroidJniObject::callStaticMethod<void>(
+  auto appActivity = AndroidUtils::getActivity();
+  QJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/InAppPurchase", "launchPlayStore",
       "(Landroid/app/Activity;)V", appActivity.object());
 }
@@ -265,14 +263,15 @@ void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
 
   QStringList productsUpdated;
   for (auto product : returnedProducts) {
-    QString productIdentifier = product["sku"].toString();
+    QString productIdentifier = product[QString("sku")].toString();
     Product* productData = findProduct(productIdentifier);
     Q_ASSERT(productData);
 
-    productData->m_price = product["totalPriceString"].toString();
-    productData->m_monthlyPrice = product["monthlyPriceString"].toString();
+    productData->m_price = product[QString("totalPriceString")].toString();
+    productData->m_monthlyPrice =
+        product[QString("monthlyPriceString")].toString();
     productData->m_nonLocalizedMonthlyPrice =
-        product["monthlyPrice"].toDouble();
+        product[QString("monthlyPrice")].toDouble();
 
     productsUpdated.append(productIdentifier);
   }
@@ -364,8 +363,8 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
 
             // We can acknowledge the purchase.
             logger.info() << "tokenValid == true, acknowledging purchase.";
-            auto jniString = QAndroidJniObject::fromString(token);
-            QAndroidJniObject::callStaticMethod<void>(
+            auto jniString = QJniObject::fromString(token);
+            QJniObject::callStaticMethod<void>(
                 "org/mozilla/firefox/vpn/InAppPurchase", "acknowledgePurchase",
                 "(Ljava/lang/String;)V", jniString.object());
           });

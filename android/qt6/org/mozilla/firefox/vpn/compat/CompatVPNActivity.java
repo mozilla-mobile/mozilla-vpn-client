@@ -2,14 +2,5 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "helper.h"
-
-class TestBigInt final : public TestHelper {
-  Q_OBJECT
-
- private slots:
-  void ctor();
-  void mathOperators();
-  void comparisonOperators();
-  void bitShiftOperator();
-};
+package org.mozilla.firefox.vpn.compat;
+public class CompatVPNActivity extends org.qtproject.qt.android.bindings.QtActivity {}
