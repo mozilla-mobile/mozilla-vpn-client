@@ -174,7 +174,7 @@ VPNFlickable {
                 visible: Qt.platform.os === "ios"
 
                 // Already a subscriber?
-                labelText: qsTrId("vpn.updates.alreadyASubscriber")
+                labelText: VPNl18n.RestorePurchaseRestorePurchaseButton
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: VPNIAP.restore()
             }
