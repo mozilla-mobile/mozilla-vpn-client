@@ -353,14 +353,14 @@ Window {
         function onSubscriptionGeneric() {
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
                 // Problem confirming subscription...
-                headlineText: VPNl18n.ProblemConfirmingSubscription,
+                headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
-                // An unexpected error has occured, please try again.
-                // Visit our help center below to learn more about how to troubleshoot our VPN.
-                errorMessage: VPNl18n.RestoreUnexpectedError,
+                // An unexpected error has occurred, please try again.
+                // Visit our help center below to learn how to troubleshoot this issue or contact support.
+                errorMessage: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorText,
 
                 // Try again
-                buttonText: VPNl18n.SubscriptionTryAgain,
+                buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
                 buttonObjectName: "errorTryAgainButton",
                 buttonOnClick: mainStackView.pop,
                 signOffLinkVisible: false,
@@ -371,14 +371,14 @@ Window {
         function onNoSubscriptionFound() {
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
                 // Problem confirming subscription...
-                headlineText: VPNl18n.ProblemConfirmingSubscription,
+                headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
                 // Sorry we are unable to find your subscription, please try again.
                 // Visit our help center below to learn more about how to troubleshoot our VPN.
-                errorMessage: VPNl18n.NoSubscriptionFoundError,
+                errorMessage: VPNl18n.RestorePurchaseNotFoundErrorRestorePurchaseNotFoundErrorText,
 
                 // Try again
-                buttonText: VPNl18n.SubscriptionTryAgain,
+                buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
                 buttonObjectName: "errorTryAgainButton",
                 buttonOnClick: mainStackView.pop,
                 signOffLinkVisible: true,
@@ -389,14 +389,14 @@ Window {
         function onSubscriptionExpired() {
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
                 // Problem confirming subscription...
-                headlineText: VPNl18n.ProblemConfirmingSubscription,
+                headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
                 // Sorry we are unable to connect your Firefox Account to a current subscription.
                 // Please try again or contact our support team for further assistance.
-                errorMessage: VPNl18n.SubscriptionExpiredError,
+                errorMessage: VPNl18n.RestorePurchaseExpiredErrorRestorePurchaseExpiredErrorText,
 
                 // Try again
-                buttonText: VPNl18n.SubscriptionTryAgain,
+                buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
                 buttonObjectName: "errorTryAgainButton",
                 buttonOnClick: mainStackView.pop,
                 signOffLinkVisible: false,
@@ -407,14 +407,14 @@ Window {
         function onSubscriptionInUse() {
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
                 // Error confirming subscription...
-                headlineText: VPNl18n.ProblemConfirmingSubscription,
+                headlineText: VPNl18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorHeader,
 
                 // Another Firefox Account has already subscribed using this Apple ID.
                 // Visit our help center below to learn more about how to manage your subscriptions.
-                errorMessage: VPNl18n.SubscriptionExpiredError,
+                errorMessage: VPNl18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText,
 
                 // Sign out
-                buttonText: VPNl18n.SubscriptionSignOut,
+                buttonText: qsTrId("vpn.main.signOut2"),
                 buttonObjectName: "errorSignOutButton",
                 buttonOnClick: mainStackView.pop,
                 signOffLinkVisible: false,

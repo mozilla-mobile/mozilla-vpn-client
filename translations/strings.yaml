@@ -194,6 +194,16 @@ genericPurchaseError:
   genericPurchaseErrorText: An unexpected error has occurred, please try again. Visit our help center below to learn how to troubleshoot this issue or contact support.
   genericPurchaseErrorButton: Try Again
 
+# IAP iOS restore expired error
+restorePurchaseExpiredError:
+  restorePurchaseExpiredErrorText:  Sorry we are unable to connect your Firefox Account to a current subscription. Please try again or contact our support team for further assistance.
+
+# IAP iOS restore in use error
+restorePurchaseInUseError:
+  restorePurchaseInUseErrorHeader: Error confirming subscription
+  restorePurchaseInUseErrorText: Another Firefox Account has already subscribed using this Apple ID. Visit our help center below to learn more about how to manage your subscriptions.
+
+
 # v2.5 What’s New? Release notes
 whatsNewReleaseNotes:
   # tour modal alert on system update
