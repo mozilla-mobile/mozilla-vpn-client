@@ -23,10 +23,10 @@ export class RecordButton extends LitElement {
     }
     `
 
-      static properties = {
-        recording: {type: Boolean},
-        content: {type: String},
-      }
+  static properties = {
+    recording: {type: Boolean},
+    content: {type: String},
+  }
 
   constructor() {
     super();
@@ -35,10 +35,8 @@ export class RecordButton extends LitElement {
   }
 
   setContent() {
-    if (this.recording)
-      this.content = 'Stop recording';
-    else
-      this.content = 'Start recording';
+    if (this.recording) this.content = "Stop recording";
+    else this.content = "Start recording";
   }
 
   connectedCallback() {

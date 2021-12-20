@@ -135,12 +135,9 @@ export class ViewLogs extends LitElement {
     return html`
         <aside>
             <record-button></record-button>
-            <input placeholder="filter" value="${this.filter}" @change=${
-        (e) => this.filter = e.target.value}>
+            <input placeholder="filter" value="${this.filter}" @change=${(e) => this.filter = e.target.value}>
             <p>Components</p>
-            <ul @click=${() => {
-      this.requestUpdate('logs')
-    }}>
+            <ul @click=${() => { this.requestUpdate('logs') }}>
                 ${this.components.map(this.logComponentFilter)}
             </ul>
 
