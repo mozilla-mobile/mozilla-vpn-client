@@ -67,7 +67,7 @@ Item {
                         primaryButtonOnClick: contactUsRoot.tryAgain,
                         primaryButtonObjectName: "errorTryAgainButton",
                         secondaryButtonIsSignOff: false,
-                        secondaryButtonText: VPNl18n.InAppSupportWorkflowFxALinkText,
+                        secondaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorBrowserButton,
                         secondaryButtonObjectName: "errorFxALinkButton",
                         secondaryButtonOnClick: contactUsRoot.fxaBrowserLink
                         }
