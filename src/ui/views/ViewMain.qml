@@ -175,7 +175,7 @@ VPNFlickable {
         }
 
         Connections {
-            target: VPN
+            target: window
 
             function onShowServersView() {
                 stackview.push("ViewServers.qml", StackView.Immediate);

@@ -1387,15 +1387,6 @@ void MozillaVPN::refreshDevices() {
   }
 }
 
-void MozillaVPN::goToServersView() {
-  logger.debug() << "Go to servers view";
-
-  if (m_state == StateMain) {
-    emit clearCurrentViewStack();
-    emit showServersView();
-  }
-}
-
 void MozillaVPN::quit() {
   logger.debug() << "quit";
   TaskScheduler::deleteTasks();

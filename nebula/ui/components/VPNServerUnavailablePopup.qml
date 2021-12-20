@@ -59,7 +59,7 @@ VPNPopup {
 
             onClicked: () => {
                 root.close();
-                VPN.goToServersView();
+                window.goToServersView();
             }
         }
     }

@@ -125,7 +125,7 @@ Item {
     }
 
     Connections {
-        target: VPN
+        target: window
 
         function onClearCurrentViewStack() {
             menuBar.clearViewStack();
