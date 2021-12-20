@@ -142,6 +142,7 @@ SOURCES += \
         rfc/rfc4193.cpp \
         rfc/rfc4291.cpp \
         rfc/rfc5735.cpp \
+        resourceloaderutils.cpp \
         serveri18n.cpp \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
@@ -220,6 +221,7 @@ HEADERS += \
         features/featuremultiaccountcontainers.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
+        features/featureremoteresources.h \
         features/featuresharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
@@ -274,6 +276,7 @@ HEADERS += \
         rfc/rfc4193.h \
         rfc/rfc4291.h \
         rfc/rfc5735.h \
+        resourceloaderutils.h \
         serveri18n.h \
         settingsholder.h \
         simplenetworkmanager.h \
@@ -323,10 +326,18 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += ui/resources.qrc
-RESOURCES += ui/license.qrc
-RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
+
+REMOTERESOURCES {
+    include($$PWD/../externalrcc.pri)
+    RCC_BINARY_SOURCES += ui/ui.qrc
+    RCC_BINARY_SOURCES += ui/resources.qrc
+    RCC_BINARY_SOURCES += ui/license.qrc
+} else {
+    RESOURCES += ui/ui.qrc
+    RESOURCES += ui/resources.qrc
+    RESOURCES += ui/license.qrc
+}
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
@@ -406,6 +417,7 @@ else:linux:!android {
             platforms/linux/linuxnetworkwatcherworker.cpp \
             platforms/linux/linuxpingsender.cpp \
             platforms/linux/linuxsystemtraynotificationhandler.cpp \
+            resourceloader.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
@@ -421,6 +433,7 @@ else:linux:!android {
             platforms/linux/linuxnetworkwatcherworker.h \
             platforms/linux/linuxpingsender.h \
             platforms/linux/linuxsystemtraynotificationhandler.h \
+            resourceloader.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 
@@ -512,6 +525,13 @@ else:linux:!android {
     systemd_service.files = ../linux/mozillavpn.service
     systemd_service.path = $${USRPATH}/lib/systemd/system
     INSTALLS += systemd_service
+
+    REMOTERESOURCES {
+        DEFINES += MVPN_RESOURCE_PATH=\\\"$${USRPATH}/share/mozillavpn/qrb\\\"
+        qrb.path = $${USRPATH}/share/mozillavpn/qrb
+        qrb.files = .qrb/*.qrb
+        INSTALLS += qrb
+    }
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1

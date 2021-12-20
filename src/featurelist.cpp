@@ -21,6 +21,7 @@
 #include "features/featuremultiaccountcontainers.h"
 #include "features/featuremultihop.h"
 #include "features/featurenotificationcontrol.h"
+#include "features/featureremoteresources.h"
 #include "features/featuresplittunnel.h"
 #include "features/featuresharelogs.h"
 #include "features/featureuniqueid.h"
@@ -57,6 +58,7 @@ void FeatureList::initialize() {
   new FeatureMultiAccountContainers();
   new FeatureMultiHop();
   new FeatureNotificationControl();
+  new FeatureRemoteResources();
   new FeatureShareLogs();
   new FeatureSplitTunnel();
   new FeatureStartOnBoot();

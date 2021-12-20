@@ -10,6 +10,7 @@ QT += xml
 
 DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += BUILD_ID=\\\"1234\\\"
+DEFINES += MVPN_RESOURCE_PATH=\\\"/tmp\\\"
 
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
@@ -82,6 +83,8 @@ HEADERS += \
     ../../src/platforms/dummy/dummypingsender.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
+    ../../src/resourceloader.h \
+    ../../src/resourceloaderutils.h \
     ../../src/rfc/rfc1918.h \
     ../../src/rfc/rfc4193.h \
     ../../src/rfc/rfc4291.h \
@@ -117,6 +120,7 @@ HEADERS += \
     testmozillavpnh.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
+    testresourceloader.h \
     teststatusicon.h \
     testtasks.h \
     testtimersingleshot.h
@@ -170,6 +174,8 @@ SOURCES += \
     ../../src/platforms/dummy/dummypingsender.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \
+    ../../src/resourceloader.cpp \
+    ../../src/resourceloaderutils.cpp \
     ../../src/rfc/rfc1918.cpp \
     ../../src/rfc/rfc4193.cpp \
     ../../src/rfc/rfc4291.cpp \
@@ -208,6 +214,7 @@ SOURCES += \
     testmozillavpnh.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \
+    testresourceloader.cpp \
     teststatusicon.cpp \
     testtasks.cpp \
     testtimersingleshot.cpp

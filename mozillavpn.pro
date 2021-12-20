@@ -31,4 +31,5 @@ webextension {
 
 TOOLS {
     SUBDIRS += tools/ipmonitor
+    SUBDIRS += tools/rccmerge
 }

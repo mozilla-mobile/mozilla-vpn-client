@@ -147,3 +147,7 @@ void NetworkRequest::timeout() {}
 void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
   Q_UNUSED(errors);
 }
+
+NetworkRequest* NetworkRequest::createForRCCUpdates(Task* parent) {
+  return new NetworkRequest(parent, 1234, false);
+}

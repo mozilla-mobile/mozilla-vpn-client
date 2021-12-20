@@ -769,6 +769,21 @@ NetworkRequest* NetworkRequest::createForAndroidPurchase(
 }
 #endif
 
+// static
+NetworkRequest* NetworkRequest::createForRCCUpdates(Task* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QUrl url("http://localhost:8000/foo.mvpn");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
 void NetworkRequest::replyFinished() {
   Q_ASSERT(m_reply);
   Q_ASSERT(m_reply->isFinished());

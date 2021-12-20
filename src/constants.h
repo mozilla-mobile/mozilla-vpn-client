@@ -44,7 +44,7 @@ CONSTEXPR(uint32_t, ipAddressTimerMsec, 600000, 10000, 0)
 CONSTEXPR(uint32_t, checkStatusTimerMsec, 1000, 1000, 0)
 
 // Number of points for the charts.
-CONSTEXPR(int, chartsMaxPoints, 30, 30, 30);
+CONSTEXPR(int, chartsMaxPoints, 30, 30, 30)
 
 // Any 6 hours, a new check
 CONSTEXPR(uint32_t, releaseMonitorMsec, 21600000, 4000, 0)
@@ -66,6 +66,9 @@ CONSTEXPR(uint32_t, gleanTimeoutMsec, 1200000, 4000, 0)
 // for this check)
 CONSTEXPR(uint32_t, surveyTimerMsec, 300000, 4000, 0)
 
+// How often we check if there are new remote resources
+CONSTEXPR(uint32_t, resourceLoaderMsec, 21600000, 4000, 0)
+
 #undef CONSTEXPR
 
 #define PRODBETAEXPR(type, functionName, prod, beta) \
@@ -83,11 +86,10 @@ PRODBETAEXPR(
     const char*, balrogUrl,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",
     "https://stage.balrog.nonprod.cloudops.mozgcp.net/json/1/FirefoxVPN/%1/%2/"
-    "release-cdntest/update.json");
-PRODBETAEXPR(
-    const char*, balrogRootCertFingerprint,
-    "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
-    "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745");
+    "release-cdntest/update.json")
+PRODBETAEXPR(const char*, balrogRootCertFingerprint,
+             "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
+             "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745")
 
 #undef PRODBETAEXPR
 

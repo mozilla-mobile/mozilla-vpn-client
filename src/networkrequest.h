@@ -127,6 +127,8 @@ class NetworkRequest final : public QObject {
                                                   const QString& purchaseToken);
 #endif
 
+  static NetworkRequest* createForRCCUpdates(Task* parent);
+
   void disableTimeout();
 
   int statusCode() const;

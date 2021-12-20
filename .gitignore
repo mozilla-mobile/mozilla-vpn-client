@@ -17,6 +17,7 @@ mozillavpn_qmltyperegistrations.cpp
 balrog/balrog.a
 balrog/balrog.h
 qrc_qml.cpp
+*.qrb
 .qmake.stash
 dbus_adaptor.*
 dbus_interface.*

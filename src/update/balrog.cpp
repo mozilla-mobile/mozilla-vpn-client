@@ -17,7 +17,6 @@
 #include <QScopeGuard>
 #include <QSslCertificate>
 #include <QSslKey>
-#include <QTemporaryDir>
 
 typedef struct {
   const char* p;

@@ -25,4 +25,9 @@ HEADERS += \
 }
 
 QML_IMPORT_PATH += $$PWD
-RESOURCES += $$PWD/glean.qrc
+
+REMOTERESOURCES {
+    RCC_BINARY_SOURCES += $$PWD/glean.qrc
+} else {
+    RESOURCES += $$PWD/glean.qrc
+}

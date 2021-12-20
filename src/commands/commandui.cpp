@@ -26,6 +26,10 @@
 #include "settingsholder.h"
 #include "theme.h"
 
+#ifdef MVPN_RESOURCE_PATH
+#  include "resourceloader.h"
+#endif
+
 #include <glean.h>
 #include <nebula.h>
 
@@ -124,6 +128,11 @@ int CommandUI::run(QStringList& tokens) {
         return 0;
       }
     }
+
+#ifdef MVPN_RESOURCE_PATH
+    // Initializing the resource loader
+    ResourceLoader::instance();
+#endif
 
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;

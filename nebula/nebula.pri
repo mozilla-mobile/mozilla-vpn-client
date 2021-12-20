@@ -12,9 +12,15 @@ SOURCES += \
 HEADERS += \
     $$PWD/nebula.h
 
-RESOURCES += $$PWD/ui/components.qrc
-RESOURCES += $$PWD/ui/themes.qrc
-RESOURCES += $$PWD/ui/nebula_resources.qrc
+REMOTERESOURCES {
+    RCC_BINARY_SOURCES += $$PWD/ui/components.qrc
+    RCC_BINARY_SOURCES += $$PWD/ui/themes.qrc
+    RCC_BINARY_SOURCES += $$PWD/ui/nebula_resources.qrc
+} else {
+    RESOURCES += $$PWD/ui/components.qrc
+    RESOURCES += $$PWD/ui/themes.qrc
+    RESOURCES += $$PWD/ui/nebula_resources.qrc
+}
 
 QML_IMPORT_PATH += $$PWD/ui
 
