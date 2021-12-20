@@ -297,7 +297,7 @@ ColumnLayout {
             labelText: VPNl18n.SplittunnelInfoLinkText
             visible: hasFeatureLinkUrl()
             Layout.fillWidth: true
-            Layout.topMargin: Theme.listSpacing * 0.5
+            Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
 
             onClicked: {
                 const featureLinkUrl = VPNFeatureList.get(currentFeatureID).linkUrl
