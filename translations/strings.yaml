@@ -200,7 +200,7 @@ restorePurchase:
 
 # IAP iOS restore expired error
 restorePurchaseExpiredError:
-  restorePurchaseExpiredErrorText:  Sorry we are unable to connect your Firefox Account to a current subscription. Please try again or contact our support team for further assistance.
+  restorePurchaseExpiredErrorText: Sorry we are unable to connect your Firefox Account to a current subscription. Please try again or contact our support team for further assistance.
 
 # IAP iOS restore in use error
 restorePurchaseInUseError:
