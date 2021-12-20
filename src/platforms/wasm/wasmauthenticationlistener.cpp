@@ -23,15 +23,17 @@ WasmAuthenticationListener::~WasmAuthenticationListener() {
   MVPN_COUNT_DTOR(WasmAuthenticationListener);
 }
 
-void WasmAuthenticationListener::start(const QString& codeChallenge,
+void WasmAuthenticationListener::start(Task* task, const QString& codeChallenge,
                                        const QString& codeChallengeMethod,
                                        const QString& emailAddress) {
   logger.debug() << "WasmAuthenticationListener initialize";
+
+  Q_UNUSED(task);
   Q_UNUSED(codeChallenge);
   Q_UNUSED(codeChallengeMethod);
   Q_UNUSED(emailAddress);
 
   QTimer* timer = new QTimer(this);
-  connect(timer, &QTimer::timeout, [this]() { emit completed("WASM"); });
+  connect(timer, &QTimer::timeout, this, [this]() { emit completed("WASM"); });
   timer->start(2000);
 }

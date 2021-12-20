@@ -1,5 +1,6 @@
 .DS_Store
 Makefile
+Makefile.*
 *.o
 .obj
 .moc
@@ -26,6 +27,7 @@ linux/netfilter/vendor/
 .qm
 .tmp
 .env
+.venv
 
 # Node (for functional tests)
 node_modules
@@ -52,6 +54,8 @@ tests/auth/tests
 tests/unit/tests
 tests/nativemessaging/tests
 tests/proxy/__pycache__/
+tests/qml/qml_tests
+tests/qml/target_wrapper.sh
 build
 Debug/
 !android/src/debug/

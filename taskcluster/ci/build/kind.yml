@@ -30,6 +30,27 @@ jobs:
             cwd: '{checkout}'
             command: ./scripts/linux_build.sh
 
+
+    android/debug:
+        description: "Android Debug (universal)"
+        treeherder:
+            symbol: B
+            kind: build
+            tier: 1
+            platform: android/debug
+        worker-type: b-linux
+        worker:
+            docker-image: {in-tree: android-build}
+            max-run-time: 3600
+            artifacts:
+                - type: directory
+                  name: public/build
+                  path: /builds/worker/artifacts
+        run:
+            using: run-task
+            use-caches: true
+            cwd: '{checkout}'
+            command: ./taskcluster/scripts/android_build_debug.sh
 #    macosx/opt:
 #        description: "Mac Build"
 #        treeherder:

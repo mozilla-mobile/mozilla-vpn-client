@@ -124,16 +124,17 @@ void CaptivePortalDetection::settingsChanged() {
   }
 }
 
-void CaptivePortalDetection::detectionCompleted(CaptivePortalResult detected) {
+void CaptivePortalDetection::detectionCompleted(
+    CaptivePortalRequest::CaptivePortalResult detected) {
   logger.debug() << "Detection completed:" << detected;
 
   m_impl.reset();
   m_shouldRun = false;
   switch (detected) {
-    case CaptivePortalResult::NoPortal:
-    case CaptivePortalResult::Failure:
+    case CaptivePortalRequest::CaptivePortalResult::NoPortal:
+    case CaptivePortalRequest::CaptivePortalResult::Failure:
       return;
-    case CaptivePortalResult::PortalDetected:
+    case CaptivePortalRequest::CaptivePortalResult::PortalDetected:
       captivePortalDetected();
       return;
   }

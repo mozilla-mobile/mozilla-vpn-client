@@ -52,14 +52,14 @@ void TaskAddDevice::run() {
       this, m_deviceName, publicKey, m_deviceID);
 
   connect(
-      request, &NetworkRequest::requestFailed,
+      request, &NetworkRequest::requestFailed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Failed to add the device" << error;
         MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
       });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this, publicKey, privateKey](const QByteArray&) {
             logger.debug() << "Device added";
             MozillaVPN::instance()->deviceAdded(m_deviceName, publicKey,

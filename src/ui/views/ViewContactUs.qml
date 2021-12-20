@@ -9,22 +9,23 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
-import themes 0.1
 
 Item {
     property string _menuTitle: VPNl18n.InAppSupportWorkflowSupportNavLinkText
+    property alias isMainView: menu.isMainView
 
     // This property is used to cache the emailAddress between the sub-views.
     property string emailAddress: ""
 
     id: contactUsRoot
+    objectName: "contactUs"
 
     function tryAgain() {
         mainStackView.pop();
     }
 
     function createSupportTicket(email, subject, issueText, category) {
-        mainStackView.push("qrc:/components/components/VPNLoader.qml", {
+        mainStackView.push("qrc:/nebula/components/VPNLoader.qml", {
             footerLinkIsVisible: false
         });
         VPN.createSupportTicket(email, subject, issueText, category);
@@ -42,7 +43,6 @@ Item {
 
         // this view gets pushed to mainStackView from backend always
         // and so should be removed from mainStackView (even in settings flow) on back clicks
-        isMainView: true
     }
 
     StackView {
@@ -88,7 +88,7 @@ Item {
 
             Rectangle {
                 anchors.fill: parent
-                color: Theme.bgColor
+                color: VPNTheme.theme.bgColor
             }
 
             ColumnLayout {
@@ -97,9 +97,9 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
-                spacing: Theme.windowMargin
-                anchors.margins: Theme.windowMargin * 2
-                anchors.topMargin: window.fullscreenRequired() ? Theme.contentTopMarginMobile : Theme.contentTopMarginDesktop
+                spacing: VPNTheme.theme.windowMargin
+                anchors.margins: VPNTheme.theme.windowMargin * 2
+                anchors.topMargin: window.fullscreenRequired() ? VPNTheme.theme.contentTopMarginMobile : VPNTheme.theme.contentTopMarginDesktop
 
 
                 ColumnLayout {
@@ -120,7 +120,7 @@ Item {
                                 property string enterEmailAddress: VPNl18n.InAppSupportWorkflowSupportEmailFieldLabel
 
                                 text: enterEmailAddress
-                                lineHeight: Theme.labelLineHeight
+                                lineHeight: VPNTheme.theme.labelLineHeight
                                 lineHeightMode: Text.FixedHeight
                                 wrapMode: Text.WordWrap
                                 verticalAlignment: Text.AlignVCenter
@@ -201,7 +201,7 @@ Item {
                             property string enterEmailAddress: VPNl18n.InAppSupportWorkflowSupportFieldHeader
 
                             text: enterEmailAddress
-                            lineHeight: Theme.labelLineHeight
+                            lineHeight: VPNTheme.theme.labelLineHeight
                             lineHeightMode: Text.FixedHeight
                             wrapMode: Text.WordWrap
                             verticalAlignment: Text.AlignVCenter
@@ -248,7 +248,7 @@ Item {
 
 
                         VPNTextBlock {
-                            font.pixelSize: Theme.fontSize
+                            font.pixelSize: VPNTheme.theme.fontSize
                             horizontalAlignment: Text.AlignHCenter
                             text: VPNl18n.InAppSupportWorkflowDisclaimerText
                             width:parent.width
@@ -263,7 +263,7 @@ Item {
                     }
 
                     ColumnLayout {
-                        spacing: Theme.windowMargin
+                        spacing: VPNTheme.theme.windowMargin
 
                         VPNButton {
                             text: VPNl18n.InAppSupportWorkflowSupportPrimaryButtonText
@@ -276,7 +276,7 @@ Item {
                                         (VPNAuthInApp.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
                                      )
                             opacity: enabled ? 1 : .5
-                            Layout.preferredHeight: Theme.rowHeight
+                            Layout.preferredHeight: VPNTheme.theme.rowHeight
                             Layout.fillWidth: true
                             width: undefined
                             height: undefined
@@ -288,17 +288,17 @@ Item {
                         }
                         VPNLinkButton {
                             labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText
-                            Layout.preferredHeight: Theme.rowHeight
+                            Layout.preferredHeight: VPNTheme.theme.rowHeight
                             Layout.alignment: Qt.AlignHCenter
                             onClicked: mainStackView.pop()
-                            implicitHeight: Theme.rowHeight
+                            implicitHeight: VPNTheme.theme.rowHeight
 
                         }
                     }
                     VPNVerticalSpacer {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        Layout.minimumHeight: Theme.rowHeight * 2
+                        Layout.minimumHeight: VPNTheme.theme.rowHeight * 2
                         Layout.maximumHeight: Layout.minimumHeight
                     }
                 }
@@ -312,9 +312,9 @@ Item {
             ColumnLayout {
                 id: col
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.verticalCenterOffset: (Theme.rowHeight + Theme.vSpacing) * -1
+                anchors.verticalCenterOffset: (VPNTheme.theme.rowHeight + VPNTheme.theme.vSpacing) * -1
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
+                width: Math.min(VPNTheme.theme.maxHorizontalContentWidth, parent.width - VPNTheme.theme.windowMargin * 4)
                 VPNPanel {
                     id: panel
                     logo: "qrc:/ui/resources/heart-check.svg"
@@ -327,7 +327,7 @@ Item {
             VPNButton {
                text: VPNl18n.InAppSupportWorkflowSupportResponseButton
                anchors.top: col.bottom
-               anchors.topMargin: Theme.vSpacing
+               anchors.topMargin: VPNTheme.theme.vSpacing
                anchors.horizontalCenter: parent.horizontalCenter
                onClicked: {
                    mainStackView.pop();
@@ -338,7 +338,7 @@ Item {
                      anchors.top = undefined;
                      anchors.topMargin = undefined;
                      anchors.bottom= parent.bottom
-                     anchors.bottomMargin = Theme.windowMargin * 4
+                     anchors.bottomMargin = VPNTheme.theme.windowMargin * 4
                  }
                }
             }

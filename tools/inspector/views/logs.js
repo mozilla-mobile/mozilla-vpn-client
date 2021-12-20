@@ -4,6 +4,7 @@
 
 import { html, css, LitElement } from 'lit'
 import '../elements/pill-toggle.js'
+import '../elements/record-button.js';
 
 import { LogsObserver } from '../inspector/LogsObserver'
 
@@ -133,9 +134,13 @@ export class ViewLogs extends LitElement {
   render () {
     return html`
         <aside>
-            <input placeholder="filter" value="${this.filter}" @change=${(e) => this.filter = e.target.value}>
+            <record-button></record-button>
+            <input placeholder="filter" value="${this.filter}" @change=${
+        (e) => this.filter = e.target.value}>
             <p>Components</p>
-            <ul @click=${() => { this.requestUpdate('logs') }}>
+            <ul @click=${() => {
+      this.requestUpdate('logs')
+    }}>
                 ${this.components.map(this.logComponentFilter)}
             </ul>
 

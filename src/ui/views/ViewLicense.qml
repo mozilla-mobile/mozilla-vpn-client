@@ -9,7 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
-import themes 0.1
 
 Item {
     id: root
@@ -29,7 +28,7 @@ Item {
 
         anchors.top: menu.bottom
         height: root.height - menu.height
-        flickContentHeight: licenseText.height + Theme.windowMargin * 4
+        flickContentHeight: licenseText.height + VPNTheme.theme.windowMargin * 4
         width: parent.width
 
         VPNTextBlock {
@@ -37,8 +36,8 @@ Item {
 
             anchors.horizontalCenter: parent.horizontalCenter
             textFormat: Text.MarkdownText
-            y: Theme.listSpacing * 2
-            width: parent.width - Theme.windowMargin * 2
+            y: VPNTheme.theme.listSpacing * 2
+            width: parent.width - VPNTheme.theme.windowMargin * 2
 
             onLinkActivated: link => VPN.openLinkUrl(link)
         }

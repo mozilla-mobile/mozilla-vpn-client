@@ -10,7 +10,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 Item {
     id: logs
@@ -34,18 +33,18 @@ Item {
         width: logs.width
         anchors.top: menu.bottom
         anchors.horizontalCenter: logs.horizontalCenter
-        contentWidth: width - (Theme.windowMargin * 2)
+        contentWidth: width - (VPNTheme.theme.windowMargin * 2)
         clip: true
-        topInset: Theme.rowHeight
-        bottomInset: Theme.rowHeight * 2
-        leftPadding: Theme.windowMargin
-        rightPadding: Theme.windowMargin
+        topInset: VPNTheme.theme.rowHeight
+        bottomInset: VPNTheme.theme.rowHeight * 2
+        leftPadding: VPNTheme.theme.windowMargin
+        rightPadding: VPNTheme.theme.windowMargin
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
         VPNTextBlock {
             id: logText
-            y: Theme.windowMargin
+            y: VPNTheme.theme.windowMargin
             font.pixelSize: 11
             lineHeight: 16
             width: parent.width
@@ -68,7 +67,7 @@ Item {
 
         width: parent.width
         height: 1
-        color: Theme.divider
+        color: VPNTheme.theme.divider
         Layout.alignment: Qt.AlignRight
         anchors.bottom: copyClearWrapper.top
     }
@@ -76,8 +75,8 @@ Item {
     Rectangle {
         id: copyClearWrapper
 
-        color: Theme.bgColor
-        height: Theme.rowHeight * 1.5
+        color: VPNTheme.theme.bgColor
+        height: VPNTheme.theme.rowHeight * 1.5
         anchors.bottom: parent.bottom
         width: logs.width
 
@@ -100,14 +99,14 @@ Item {
             Rectangle {
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: 1
-                color: Theme.divider
+                color: VPNTheme.theme.divider
                 Layout.alignment: Qt.AlignRight
             }
 
             VPNLogsButton {
                 //% "Clear"
                 buttonText: qsTrId("vpn.logs.clear")
-                iconSource: "qrc:/ui/resources/delete.svg"
+                iconSource: "qrc:/nebula/resources/delete.svg"
                 onClicked: {
                     VPN.cleanupLogs();
                     logText.text = "";

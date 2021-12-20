@@ -113,8 +113,8 @@ CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "%VCToolsRedistDir%\\MergeModul
 CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
-
 python scripts\importLanguages.py
+python scripts\generate_strings.py
 
 ECHO Generating glean samples...
 python scripts\generate_glean.py
@@ -122,17 +122,17 @@ python scripts\generate_glean.py
 ECHO BUILD_BUILD = %DEBUG_BUILD%
 
 IF %DEBUG_BUILD%==T (
-ECHO Generating Debug Build
-qmake -tp vc extension\app\app.pro CONFIG+=debug 
-)
-IF %DEBUG_BUILD%==F (
-ECHO Generating Release Build
-qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+  ECHO Generating Debug Build for the extension bridge
+  qmake -tp vc extension\app\app.pro CONFIG+=debug
 )
 
+IF %DEBUG_BUILD%==F (
+  ECHO Generating Release Build for the extension bridge
+  qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+)
 
 IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to configure the project
+  ECHO qmake failed for the extension!
   EXIT 1
 )
 
@@ -140,28 +140,6 @@ IF NOT EXIST mozillavpnnp.vcxproj (
   echo The VC project doesn't exist. Why?
   EXIT 1
 )
-
-
-
-IF NOT EXIST .\3rdparty\crashpad\win64\release\include\client\crashpad_client.h (
-  ECHO Fetching crashpad...
-  mkdir 3rdparty\crashpad
-  mkdir 3rdparty\crashpad\win64
-  powershell -Command "Invoke-WebRequest http://get.backtrace.io/crashpad/builds/crashpad-release-x86-64-stable.zip -OutFile .\3rdparty\crashpad\win64\crashpad_release.zip"
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO Failed to fetch crashpad
-    EXIT 1
-  )
-  powershell -Command "Expand-Archive .\3rdparty\crashpad\win64\crashpad_release.zip -DestinationPath .\3rdparty\crashpad\win64"
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO Failed to extract crashpad.
-    EXIT 1
-  )
-  del .\3rdparty\crashpad\win64\crashpad_release.zip
-  move .\3rdparty\crashpad\win64\crashpad* .\3rdparty\crashpad\win64\release
-)
-
-
 
 set CL=/MP
 
@@ -189,7 +167,6 @@ if %DEBUG_BUILD% == F (
   ECHO Generating Release Build
   qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%
 )
-
 
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project

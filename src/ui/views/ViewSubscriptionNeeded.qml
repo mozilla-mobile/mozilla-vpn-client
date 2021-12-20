@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 VPNFlickable {
     id: vpnFlickable
@@ -19,7 +18,7 @@ VPNFlickable {
     anchors.fill: parent
 
     Rectangle {
-        color: Theme.bgColor
+        color: VPNTheme.theme.bgColor
         anchors.fill: parent
     }
 
@@ -46,7 +45,7 @@ VPNFlickable {
         id: headline
         text: qsTrId("vpn.main.productName")
         anchors.top: logo.bottom
-        anchors.topMargin: Theme.windowMargin
+        anchors.topMargin: VPNTheme.theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
@@ -59,8 +58,8 @@ VPNFlickable {
 
         ColumnLayout {
             id: featureList
-            spacing: Theme.windowMargin
-            Layout.maximumWidth: Theme.maxHorizontalContentWidth
+            spacing: VPNTheme.theme.windowMargin
+            Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
             Layout.topMargin: 24
             Layout.alignment: Qt.AlignHCenter
 
@@ -93,11 +92,11 @@ VPNFlickable {
         }
 
         ColumnLayout {
-            Layout.leftMargin: Theme.windowMargin
-            Layout.rightMargin: Theme.windowMargin
-            Layout.maximumWidth: Theme.maxHorizontalContentWidth
+            Layout.leftMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
             Layout.alignment: Qt.AlignHCenter
-            spacing: Theme.windowMargin
+            spacing: VPNTheme.theme.windowMargin
 
             ButtonGroup {
                 id: subscriptionOptions
@@ -112,7 +111,7 @@ VPNFlickable {
 
         ColumnLayout {
             id: footerInfo
-            spacing: Theme.windowMargin
+            spacing: VPNTheme.theme.windowMargin
 
             VPNButton {
                 id: subscribeNow
@@ -120,11 +119,11 @@ VPNFlickable {
                 //% "Subscribe now"
                 text: qsTrId("vpn.updates.subscribeNow")
 
-                Layout.topMargin: Theme.windowMargin
-                Layout.leftMargin: Theme.windowMargin
-                Layout.rightMargin: Theme.windowMargin
+                Layout.topMargin: VPNTheme.theme.windowMargin
+                Layout.leftMargin: VPNTheme.theme.windowMargin
+                Layout.rightMargin: VPNTheme.theme.windowMargin
                 Layout.fillWidth: true
-                Layout.maximumWidth: Theme.maxHorizontalContentWidth
+                Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
                 onClicked: VPNIAP.subscribe(subscriptionOptions.checkedButton.productId)
             }
             GridLayout {
@@ -154,7 +153,7 @@ VPNFlickable {
                     height: 4
                     radius: 2
                     Layout.alignment: Qt.AlignHCenter
-                    color: Theme.greyLink.defaultColor
+                    color: VPNTheme.theme.greyLink.defaultColor
                     visible: parent.flow != Grid.TopToBottom
                     opacity: .8
                 }
@@ -175,7 +174,7 @@ VPNFlickable {
                 anchors.bottomMargin: undefined
                 anchors.horizontalCenter: undefined
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredHeight: Theme.rowHeight
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
             }
 
             VPNVerticalSpacer {

@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 Item {
     id: root
@@ -90,7 +89,7 @@ Item {
             anchors.right: parent.right
             anchors.top: maxDevicesReached.bottom
             anchors.topMargin: 0
-            spacing: Theme.windowMargin / 2
+            spacing: VPNTheme.theme.windowMargin / 2
 
 
             Repeater {
@@ -111,8 +110,8 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 VPNVerticalSpacer {
-                    Layout.preferredHeight: Theme.windowMargin * 2
-                    Layout.preferredWidth: vpnFlickable.width - Theme.windowMargin * 2
+                    Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
+                    Layout.preferredWidth: vpnFlickable.width - VPNTheme.theme.windowMargin * 2
                     Layout.alignment: Qt.AlignHCenter
                     Layout.fillWidth: true
 
@@ -132,7 +131,7 @@ Item {
                     labelText: qsTrId("vpn.main.getHelp2")
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false})
-                    Layout.preferredHeight: Theme.rowHeight
+                    Layout.preferredHeight: VPNTheme.theme.rowHeight
                 }
 
                 VPNSignOut {
@@ -141,7 +140,7 @@ Item {
                     anchors.horizontalCenter: undefined
                     anchors.bottomMargin: undefined
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredHeight: Theme.rowHeight
+                    Layout.preferredHeight: VPNTheme.theme.rowHeight
                 }
             }
         }

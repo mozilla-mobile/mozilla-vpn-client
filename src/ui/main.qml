@@ -9,7 +9,6 @@ import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import compat 0.1
 import components 0.1
-import themes 0.1
 
 import org.mozilla.Glean 0.24
 import telemetry 0.24
@@ -29,17 +28,17 @@ Window {
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
     visible: true
 
-    width: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
-    height: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
+    width: fullscreenRequired() ? Screen.width : VPNTheme.theme.desktopAppWidth;
+    height: fullscreenRequired() ? Screen.height : VPNTheme.theme.desktopAppHeight;
 
     //These need to be bound before onComplete so that the window buttons, menus and title bar double click behave properly
-    maximumWidth: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
-    maximumHeight: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
+    maximumWidth: fullscreenRequired() ? Screen.width : VPNTheme.theme.desktopAppWidth;
+    maximumHeight: fullscreenRequired() ? Screen.height : VPNTheme.theme.desktopAppHeight;
 
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
-    onClosing: {
+    onClosing: close => {
         console.log("Closing request handling");
 
         // No desktop, we go in background mode.
@@ -62,8 +61,8 @@ Window {
             this.showMinimized();
         }
         if (!fullscreenRequired()) {
-            minimumHeight = Theme.desktopAppHeight
-            minimumWidth = Theme.desktopAppWidth
+            minimumHeight = VPNTheme.theme.desktopAppHeight
+            minimumWidth = VPNTheme.theme.desktopAppWidth
 
         }
         VPN.mainWindowLoaded()
@@ -73,7 +72,7 @@ Window {
         anchors.fill: parent
         propagateComposedEvents: true
         z: 10
-        onPressed: {
+        onPressed: mouse => {
             if (window.activeFocusItem && window.activeFocusItem.forceBlurOnOutsidePress) {
                 window.activeFocusItem.focus = false;
             }
@@ -114,7 +113,7 @@ Window {
     VPNWasmHeader {
         id: wasmMenuHeader
         visible: isWasmApp
-        height: Theme.menuHeight
+        height: VPNTheme.theme.menuHeight
         anchors.top: parent.top
         anchors.topMargin: iosSafeAreaTopMargin.height
     }
@@ -271,13 +270,23 @@ Window {
                     return;
                 };
             }
-            // If we cant show logs natively, open the viewer
-            mainStackView.push("views/ViewLogs.qml");
+            // If we can't show logs natively, open the viewer
+            mainStackView.push("qrc:/ui/views/ViewLogs.qml");
             
         }
 
         function onContactUsNeeded() {
-            mainStackView.push("views/ViewContactUs.qml");
+            // For the main view, the contact-us signal is handled in ViewMain
+            // because at that level we have access to the stackview.
+            if (VPN.state === VPN.StateMain) return;
+
+            if (mainStackView.currentItem.objectName === "contactUs") return;
+
+            while(mainStackView.depth > 1) {
+                mainStackView.pop(null, StackView.Immediate);
+            }
+
+            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", { isMainView: true });
         }
 
         function onLoadAndroidAuthenticationView() {

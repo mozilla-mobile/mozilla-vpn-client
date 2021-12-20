@@ -8,26 +8,26 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 VPNFlickable {
     id: vpnFlickable
 
+    height: parent.height
+    flickContentHeight: column.height
+
     Component.onCompleted: {
-        flickContentHeight = column.childrenRect.height;
         fade.start();
     }
 
     ColumnLayout {
         id: column
+
+        spacing: VPNTheme.theme.windowMargin * 1.25
         width: vpnFlickable.width
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        spacing: Theme.windowMargin * 1.25
 
         VPNVerticalSpacer {
             Layout.fillWidth: true
-            height: Theme.windowMargin
+            height: VPNTheme.theme.windowMargin
         }
 
         VPNPanel {
@@ -43,7 +43,7 @@ VPNFlickable {
         }
 
         ColumnLayout {
-            spacing: Theme.windowMargin * 1.25
+            spacing: VPNTheme.theme.windowMargin * 1.25
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
 
@@ -51,9 +51,9 @@ VPNFlickable {
                 id: logoSubtitle
 
                 Layout.alignment: Qt.AlignHCenter
-                Layout.leftMargin: Theme.windowMargin * 3
-                Layout.rightMargin: Theme.windowMargin * 3
-                Layout.maximumWidth: Theme.maxHorizontalContentWidth
+                Layout.leftMargin: VPNTheme.theme.windowMargin * 3
+                Layout.rightMargin: VPNTheme.theme.windowMargin * 3
+                Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
                 Layout.fillWidth: true
                 text: VPNl18n.TelemetryPolicyViewQuestion
             }
@@ -89,9 +89,9 @@ VPNFlickable {
             spacing: 0
             VPNSubtitle {
                 Layout.alignment: Qt.AlignHCenter
-                Layout.leftMargin: Theme.windowMargin * 3
-                Layout.rightMargin: Theme.windowMargin * 3
-                Layout.maximumWidth: Theme.maxHorizontalContentWidth
+                Layout.leftMargin: VPNTheme.theme.windowMargin * 3
+                Layout.rightMargin: VPNTheme.theme.windowMargin * 3
+                Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
                 Layout.fillWidth: true
                 //% "Learn more about what data Mozilla collects and how it’s used."
                 text: qsTrId("vpn.telemetryPolicy.learnMoreAboutData")
@@ -109,7 +109,7 @@ VPNFlickable {
 
         VPNVerticalSpacer {
             Layout.fillWidth: true
-            height: Theme.windowMargin * 2
+            height: VPNTheme.theme.windowMargin * 2
         }
     }
 
