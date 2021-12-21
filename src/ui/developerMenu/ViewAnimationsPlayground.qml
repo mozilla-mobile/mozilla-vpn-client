@@ -17,8 +17,6 @@ Item {
 
     property string selectedAnimationSource
 
-    anchors.fill: parent
-
     VPNMenu {
         id: menu
         // Do not translate this string!
@@ -59,33 +57,25 @@ Item {
             id: animationItems
 
             ListElement {
-                text: "Lock"
                 name: "Lock"
                 value: "qrc:/nebula/resources/animations/lock_animation.json"
-                source: "qrc:/nebula/resources/animations/lock_animation.json"
             }
             ListElement {
-                text: "Globe"
                 name: "Globe"
                 value: "qrc:/nebula/resources/animations/globe_animation.json"
-                source: "qrc:/nebula/resources/animations/globe_animation.json"
             }
             ListElement {
-                text: "VPN Active"
                 name: "VPN Active"
                 value: "qrc:/nebula/resources/animations/vpnactive_animation.json"
-                source: "qrc:/nebula/resources/animations/vpnactive_animation.json"
             }
             ListElement {
-                text: "Speedometer"
                 name: "Speedometer"
                 value: "qrc:/nebula/resources/animations/speedometer_animation.json"
-                source: "qrc:/nebula/resources/animations/speedometer_animation.json"
             }
         }
 
         function setCurrentAnimationSource() {
-            root.selectedAnimationSource = animationItems.get(currentIndex).source;
+            root.selectedAnimationSource = animationItems.get(currentIndex).value;
         }
 
         onCurrentIndexChanged: () => {
