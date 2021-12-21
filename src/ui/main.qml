@@ -19,6 +19,16 @@ Window {
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
     property var isWasmApp: Qt.platform.os === "wasm"
 
+    signal clearCurrentViewStack
+    signal showServersView
+
+    function goToServersView() {
+        if (VPN.state === VPN.StateMain) {
+            clearCurrentViewStack();
+            showServersView();
+        }
+    }
+
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
                 Qt.platform.os === "ios" ||
@@ -349,6 +359,10 @@ Window {
     }
 
     VPNSystemAlert {
+    }
+
+    VPNServerUnavailablePopup {
+        id: serverUnavailablePopup
     }
 
     VPNFeatureTourPopup {

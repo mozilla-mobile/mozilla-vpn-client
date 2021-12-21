@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Controls 2.15
 
 import Mozilla.VPN 1.0
 
@@ -49,7 +50,7 @@ Item {
 
         skipEnsureVisible: true // prevents scrolling of lists when this is focused
 
-        onClicked: isMultiHopView? handleMultiHopNav() : isMainView ? mainStackView.pop() : (isSettingsView ? settingsStackView.pop() : stackview.pop())
+        onClicked: handleMenuGoBack()
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: VPNTheme.theme.windowMargin / 2
@@ -94,6 +95,41 @@ Item {
         y: 55
         width: parent.width
         height: 1
+    }
+
+    function handleMenuGoBack() {
+        isMultiHopView ? handleMultiHopNav() : goBack();
+    }
+
+    function goBack() {
+        if (isMainView) {
+            mainStackView.pop();
+        } else if (isSettingsView) {
+            settingsStackView.pop();
+        } else if (stackview) {
+            stackview.pop();
+        }
+    }
+
+    function clearViewStack() {
+        if (isMainView) {
+            mainStackView.pop();
+        } else if (isSettingsView) {
+            settingsStackView.pop();
+        }
+
+        if (stackview) {
+            // Close settings
+            stackview.pop(StackView.Immediate);
+        }
+    }
+
+    Connections {
+        target: window
+
+        function onClearCurrentViewStack() {
+            menuBar.clearViewStack();
+        }
     }
 
 }
