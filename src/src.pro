@@ -648,7 +648,6 @@ else:macos {
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
     QT += networkauth
     QT += svg
-    QT += multimedia
 
     CONFIG += c++1z
 
