@@ -38,10 +38,23 @@ Item {
             id: lottieAnimationExample
             source: selectedAnimationSource
         }
+
+        VPNInterLabel {
+            // Do not translate this string!
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            color: VPNTheme.colors.white
+            text: "No animation selected"
+            visible: animationSelect.currentIndex < 0
+        }
     }
 
     VPNComboBox {
-        currentIndex: 0
+        id: animationSelect
+
+        currentIndex: -1
+        // Do not translate this string!
+        placeholderText: "Select an animation"
         model: ListModel {
             id: animationItems
 
