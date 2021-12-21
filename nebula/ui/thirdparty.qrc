@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/nebula">
-        <file alias="thirdparty/lottie/TestComponent.qml">3rdparty/lottie/TestComponent.qml</file>
         <file alias="thirdparty/lottie/qmldir">3rdparty/lottie/qmldir</file>
         <file alias="thirdparty/lottie/HtmlImg.qml">3rdparty/lottie/HtmlImg.qml</file>
         <file alias="thirdparty/lottie/LottieAnimation.qml">3rdparty/lottie/LottieAnimation.qml</file>
