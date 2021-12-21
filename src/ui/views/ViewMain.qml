@@ -193,11 +193,6 @@ VPNFlickable {
         }
     }
 
-    TestComponent {
-        height: 100
-        width: 100
-    }
-
     LottieAnimation {
         id: testLottie
 

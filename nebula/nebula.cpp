@@ -6,4 +6,7 @@
 
 constexpr auto QRC_ROOT = "qrc:///nebula/";
 
-void Nebula::Initialize(QQmlEngine* engine) { engine->addImportPath(QRC_ROOT); }
+void Nebula::Initialize(QQmlEngine* engine) {
+  qputenv("QML_XHR_ALLOW_FILE_READ", QByteArray("1"));
+  engine->addImportPath(QRC_ROOT);
+}
