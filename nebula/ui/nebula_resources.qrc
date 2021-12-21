@@ -21,15 +21,9 @@
         <file>resources/devices.svg</file>
         <file>resources/down.svg</file>
         <file>resources/externalLink.svg</file>
-        <file>resources/animations/globe_vid_Large.mp4</file>
-        <file>resources/animations/globe_gif_Large.gif</file>
-        <file>resources/animations/clock_animation.json</file>
         <file>resources/animations/globe_animation.json</file>
         <file>resources/animations/lock_animation.json</file>
         <file>resources/animations/speedometer_animation.json</file>
-        <file>resources/animations/star_animation.json</file>
-        <file>resources/animations/test_animation.json</file>
-        <file>resources/animations/vpnactive_animation.json</file>
         <file>resources/animations/vpnactive_animation.json</file>
         <file>resources/lottie/lottie.min.js</file>
         <file>resources/lottie/lottie_shim.js</file>
