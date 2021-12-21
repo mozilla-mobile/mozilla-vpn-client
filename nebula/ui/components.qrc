@@ -55,7 +55,6 @@
         <file>components/VPNList.qml</file>
         <file>components/VPNLoader.qml</file>
         <file>components/VPNLogsButton.qml</file>
-        <file>components/LottieAnimationTest.qml</file>
         <file>components/VPNMainImage.qml</file>
         <file>components/VPNMenu.qml</file>
         <file>components/VPNMetropolisLabel.qml</file>
