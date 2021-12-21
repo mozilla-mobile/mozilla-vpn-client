@@ -152,10 +152,27 @@ VPNFlickable {
         onClicked: stackview.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
     }
 
+    VPNSettingsItem {
+        id: animationsPlaygroundLink
+        objectName: "settingsAnimationsPlayground"
+
+        anchors.top: featureListLink.bottom
+        anchors.topMargin: VPNTheme.theme.windowMargin
+        anchors.left: stagingServerRow.left
+        anchors.leftMargin: VPNTheme.theme.windowMargin/2
+        width: parent.width - VPNTheme.theme.windowMargin
+
+        // Do not translate this string!
+        settingTitle: "Animations playground"
+        imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+        imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+        onClicked: stackview.push("qrc:/ui/developerMenu/ViewAnimationsPlayground.qml")
+    }
+
     VPNExternalLinkListItem {
         id:inspectorLink
         visible: stagingServerCheckBox.checked && !restartRequired.visible
-        anchors.top: featureListLink.bottom
+        anchors.top: animationsPlaygroundLink.bottom
         anchors.topMargin: VPNTheme.theme.windowMargin
         anchors.left: stagingServerRow.left
         anchors.leftMargin: VPNTheme.theme.windowMargin/2
