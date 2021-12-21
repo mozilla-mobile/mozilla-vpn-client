@@ -198,7 +198,7 @@ VPNFlickable {
         width: 100
     }
 
-    LottieAnimationTest {
+    LottieAnimation {
         id: testLottie
 
         fillMode: Image.PreserveAspectFit
