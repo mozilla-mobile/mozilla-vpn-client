@@ -44,7 +44,6 @@ VPNLinkButton 0.1 VPNLinkButton.qml
 VPNList 0.1 VPNList.qml
 VPNLoader 0.1 VPNLoader.qml
 VPNLogsButton 0.1 VPNLogsButton.qml
-VPNLottieAnimation 0.1 VPNLottieAnimation.qml
 LottieAnimationTest 0.1 LottieAnimationTest.qml
 HtmlImg 0.1 HtmlImg.qml
 VPNMainImage 0.1 VPNMainImage.qml

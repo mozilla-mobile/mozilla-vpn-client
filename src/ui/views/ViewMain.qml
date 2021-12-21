@@ -192,21 +192,15 @@ VPNFlickable {
         }
     }
 
-    // VPNLottieAnimation {
-    // }
-
     LottieAnimationTest {
         id: testLottie
-        height: parent.height
-        width: parent.width;
-    }
 
-    Button {
-        text: "Test"
+        fillMode: Image.PreserveAspectFit
+        loops: Animation.Infinite
+        running: true
+        source: "qrc:/nebula/resources/animations/speedometer_animation.json"
 
-        onClicked: {
-            testLottie.start();
-        }
+        anchors.fill: parent
     }
 
     Connections {
