@@ -9,7 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
-import thirdparty.lottie 0.1
 
 VPNFlickable {
     id: vpnFlickable
@@ -191,10 +190,6 @@ VPNFlickable {
         VPNAboutUs {
             isSettingsView: false
         }
-    }
-
-    VPNLottieAnimation {
-        source: "qrc:/nebula/resources/animations/speedometer_animation.json"
     }
 
     Connections {
