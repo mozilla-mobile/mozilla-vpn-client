@@ -193,15 +193,8 @@ VPNFlickable {
         }
     }
 
-    LottieAnimation {
-        id: testLottie
-
-        fillMode: Image.PreserveAspectFit
-        loops: Animation.Infinite
-        running: true
+    VPNLottieAnimation {
         source: "qrc:/nebula/resources/animations/speedometer_animation.json"
-
-        anchors.fill: parent
     }
 
     Connections {
