@@ -1374,6 +1374,10 @@ void MozillaVPN::deactivate() {
 void MozillaVPN::silentSwitch() {
   logger.debug() << "VPN tunnel silent server switch";
 
+  // Let's delete all the tasks before running the silent-switch op. If we are
+  // here, the connection does not work and we don't want to wait for timeouts
+  // to run the silenct-switch.
+  TaskScheduler::deleteTasks();
   TaskScheduler::scheduleTask(
       new TaskControllerAction(TaskControllerAction::eSilentSwitch));
 }
