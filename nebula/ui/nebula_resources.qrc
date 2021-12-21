@@ -30,7 +30,9 @@
         <file>resources/animations/star_animation.json</file>
         <file>resources/animations/test_animation.json</file>
         <file>resources/animations/vpnactive_animation.json</file>
-        <file>resources/features/features-tour-hero.png</file>
+        <file>resources/animations/vpnactive_animation.json</file>
+        <file>resources/lottie/lottie.min.js</file>
+        <file>resources/lottie/lottie_shim.js</file>
         <file>resources/flags/AC.png</file>
         <file>resources/flags/AD.png</file>
         <file>resources/flags/AE.png</file>

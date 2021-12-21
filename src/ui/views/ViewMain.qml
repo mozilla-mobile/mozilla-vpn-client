@@ -192,7 +192,21 @@ VPNFlickable {
         }
     }
 
-    VPNLottieAnimation {
+    // VPNLottieAnimation {
+    // }
+
+    LottieAnimationTest {
+        id: testLottie
+        height: parent.height
+        width: parent.width;
+    }
+
+    Button {
+        text: "Test"
+
+        onClicked: {
+            testLottie.start();
+        }
     }
 
     Connections {
