@@ -14,6 +14,8 @@ import components.forms 0.1
 Item {
     id: root
 
+    property int totalAnimationFrames: ({})
+    property int currentAnimationFrame: 0
     property string selectedAnimationSource
 
     VPNMenu {
@@ -34,6 +36,14 @@ Item {
         VPNLottieAnimation {
             id: lottieAnimationExample
             source: selectedAnimationSource
+            onEnteredFrame: (currentTime) => {
+                currentAnimationFrame = currentTime;
+            }
+            onStatusChanged: () => {
+                if (status === Image.Ready) {
+                    totalAnimationFrames = lottieAnimationExample.getDuration(true);
+                }
+            }
         }
 
         VPNInterLabel {
@@ -51,6 +61,13 @@ Item {
         anchors.top: animationContainer.bottom
         anchors.topMargin: VPNTheme.theme.windowMargin
         width: parent.width - VPNTheme.theme.windowMargin * 2
+
+        ProgressBar {
+            id: animationProgress
+
+            value: totalAnimationFrames ? currentAnimationFrame / totalAnimationFrames : 0
+            Layout.fillWidth: true
+        }
 
         VPNComboBox {
             id: animationSelect
@@ -92,7 +109,6 @@ Item {
             }
 
             Layout.fillWidth: true
-
         }
 
         VPNButton {
