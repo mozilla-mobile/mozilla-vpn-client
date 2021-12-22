@@ -54,20 +54,32 @@ Item {
             text: "No animation selected"
             visible: animationSelect.currentIndex < 0
         }
+
+        ProgressBar {
+            id: animationProgress
+
+            anchors.top: animationContainer.bottom
+            contentItem: Item {
+                implicitHeight: parent.height
+                implicitWidth: parent.width
+
+                Rectangle {
+                    color: VPNTheme.colors.informational.default
+                    height: parent.height
+                    width: animationProgress.visualPosition * parent.width
+                }
+            }
+            value: totalAnimationFrames ? currentAnimationFrame / totalAnimationFrames : 0
+            width: parent.width
+        }
     }
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: animationContainer.bottom
-        anchors.topMargin: VPNTheme.theme.windowMargin
+        anchors.topMargin: VPNTheme.theme.listSpacing * 3
+        spacing: VPNTheme.theme.listSpacing * 2
         width: parent.width - VPNTheme.theme.windowMargin * 2
-
-        ProgressBar {
-            id: animationProgress
-
-            value: totalAnimationFrames ? currentAnimationFrame / totalAnimationFrames : 0
-            Layout.fillWidth: true
-        }
 
         VPNComboBox {
             id: animationSelect
@@ -111,32 +123,36 @@ Item {
             Layout.fillWidth: true
         }
 
-        VPNButton {
-            // Do not translate this string!
-            text: lottieAnimationExample.running ? "pause" : "play"
-            enabled: animationSelect.currentIndex >= 0
-            opacity: enabled ? 1 : 0.5
-            onClicked: () => {
-                if (lottieAnimationExample.running) {
-                    lottieAnimationExample.pause();
-                } else {
-                    lottieAnimationExample.start();
+        RowLayout {
+            Layout.fillWidth: true
+
+            VPNButton {
+                // Do not translate this string!
+                text: lottieAnimationExample.running ? "pause" : "play"
+                enabled: animationSelect.currentIndex >= 0
+                opacity: enabled ? 1 : 0.5
+                onClicked: () => {
+                    if (lottieAnimationExample.running) {
+                        lottieAnimationExample.pause();
+                    } else {
+                        lottieAnimationExample.start();
+                    }
                 }
+
+                Layout.fillWidth: true
             }
 
-            Layout.fillWidth: true
-        }
+            VPNButton {
+                // Do not translate this string!
+                text: "reset"
+                enabled: animationSelect.currentIndex >= 0 && lottieAnimationExample.running
+                opacity: enabled ? 1 : 0.5
+                onClicked: () => {
+                    lottieAnimationExample.stop();
+                }
 
-        VPNButton {
-            // Do not translate this string!
-            text: "reset"
-            enabled: animationSelect.currentIndex >= 0 && lottieAnimationExample.running
-            opacity: enabled ? 1 : 0.5
-            onClicked: () => {
-                lottieAnimationExample.stop();
+                Layout.fillWidth: true
             }
-
-            Layout.fillWidth: true
         }
 
     }
