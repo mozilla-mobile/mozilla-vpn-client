@@ -10,7 +10,7 @@ import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 
 VPNFlickable {
-    flickContentHeight: col.childrenRect.height
+    flickContentHeight: col.childrenRect.height + 100
     anchors.fill: parent
 
     Column {
@@ -50,6 +50,12 @@ VPNFlickable {
             Layout.fillWidth: true
             text: "Main"
             onClicked: mainStackView.replace("qrc:/ui/states/StateMain.qml", StackView.Immediate)
+        }
+
+        VPNWasmMenuButton {
+            Layout.fillWidth: true
+            text: "Mobile Onboarding"
+            onClicked: mainStackView.replace("qrc:/ui/views/ViewMobileOnboarding.qml", StackView.Immediate)
         }
 
         VPNWasmMenuButton {
