@@ -135,6 +135,12 @@ Item {
     signal loopFinished(int currentLoop)
 
     /**
+     * Emitted when a frame of the animation is entered.
+     * @param currentTime The number of the frame that was just entered.
+     */
+    signal enteredFrame(int currentTime)
+
+    /**
      * Start the animation.
      *
      * This is the same as setting running to true.
@@ -184,6 +190,15 @@ Item {
             ctx.reset();
         }
         canvas.requestPaint();
+    }
+
+    /**
+     * Get animation duration in frames or seconds
+     */
+    function getDuration(inFrames) {
+        if (d.animationItem) {
+            return d.animationItem.getDuration(inFrames);
+        }
     }
 
     // Private API
@@ -327,6 +342,10 @@ Item {
             animationItem.addEventListener("loopComplete", function(e) {
                 // FIXME throws "lottieAnim is not defined" at times
                 //lottieAnim.loopFinished(e.currentLoop);
+            });
+
+            animationItem.addEventListener("enterFrame", function(e) {
+                lottieItem.enteredFrame(e.currentTime);
             });
 
             if (pendingRawFrame >= 0) {
