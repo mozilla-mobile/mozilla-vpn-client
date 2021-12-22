@@ -5,7 +5,7 @@
 * `./scripts/importLanguages.py`
 * `qmake CONFIG+=QMLTEST`
 * `make -j XX` (number of procs you have)
-* `./tests/qml/qml_tests`
+* `./tests/qml/qml_tests` (on Mac: `./tests/qml/qml_tests.app/Contents/MacOS/qml_tests`)
 
 ## General notes, tips, etc.
 
