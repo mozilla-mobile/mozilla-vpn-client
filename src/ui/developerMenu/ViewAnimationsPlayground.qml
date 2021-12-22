@@ -9,7 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
-import thirdparty.lottie 0.1
 
 
 Item {
@@ -28,7 +27,7 @@ Item {
         id: animationContainer
 
         anchors.top: menu.bottom
-        color: VPNTheme.colors.grey40
+        color: VPNTheme.colors.grey50
         height: parent.width * 0.6
         width: parent.width
 
@@ -47,49 +46,83 @@ Item {
         }
     }
 
-    VPNComboBox {
-        id: animationSelect
-
-        currentIndex: -1
-        // Do not translate this string!
-        placeholderText: "Select an animation"
-        model: ListModel {
-            id: animationItems
-
-            ListElement {
-                name: "Lock"
-                value: "qrc:/nebula/resources/animations/lock_animation.json"
-            }
-            ListElement {
-                name: "Globe"
-                value: "qrc:/nebula/resources/animations/globe_animation.json"
-            }
-            ListElement {
-                name: "VPN Active"
-                value: "qrc:/nebula/resources/animations/vpnactive_animation.json"
-            }
-            ListElement {
-                name: "Speedometer"
-                value: "qrc:/nebula/resources/animations/speedometer_animation.json"
-            }
-        }
-
-        function setCurrentAnimationSource() {
-            root.selectedAnimationSource = animationItems.get(currentIndex).value;
-        }
-
-        onCurrentIndexChanged: () => {
-            setCurrentAnimationSource()
-        }
-
-        Component.onCompleted: {
-            setCurrentAnimationSource()
-        }
-
+    ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: animationContainer.bottom
         anchors.topMargin: VPNTheme.theme.windowMargin
         width: parent.width - VPNTheme.theme.windowMargin * 2
+
+        VPNComboBox {
+            id: animationSelect
+
+            currentIndex: -1
+            // Do not translate this string!
+            placeholderText: "Select an animation"
+            model: ListModel {
+                id: animationItems
+
+                ListElement {
+                    name: "Lock"
+                    value: "qrc:/nebula/resources/animations/lock_animation.json"
+                }
+                ListElement {
+                    name: "Globe"
+                    value: "qrc:/nebula/resources/animations/globe_animation.json"
+                }
+                ListElement {
+                    name: "VPN Active"
+                    value: "qrc:/nebula/resources/animations/vpnactive_animation.json"
+                }
+                ListElement {
+                    name: "Speedometer"
+                    value: "qrc:/nebula/resources/animations/speedometer_animation.json"
+                }
+            }
+
+            function setCurrentAnimationSource() {
+                root.selectedAnimationSource = animationItems.get(currentIndex).value;
+            }
+
+            onCurrentIndexChanged: () => {
+                setCurrentAnimationSource()
+            }
+
+            Component.onCompleted: {
+                setCurrentAnimationSource()
+            }
+
+            Layout.fillWidth: true
+
+        }
+
+        VPNButton {
+            // Do not translate this string!
+            text: lottieAnimationExample.running ? "pause" : "play"
+            enabled: animationSelect.currentIndex >= 0
+            opacity: enabled ? 1 : 0.5
+            onClicked: () => {
+                if (lottieAnimationExample.running) {
+                    lottieAnimationExample.pause();
+                } else {
+                    lottieAnimationExample.start();
+                }
+            }
+
+            Layout.fillWidth: true
+        }
+
+        VPNButton {
+            // Do not translate this string!
+            text: "reset"
+            enabled: animationSelect.currentIndex >= 0 && lottieAnimationExample.running
+            opacity: enabled ? 1 : 0.5
+            onClicked: () => {
+                lottieAnimationExample.stop();
+            }
+
+            Layout.fillWidth: true
+        }
+
     }
 
 }
