@@ -164,7 +164,6 @@ if [[ "$RELEASE" ]]; then
   $QTPATH/bin/qmake -spec android-clang \
     VERSION=$SHORTVERSION \
     BUILD_ID=$VERSIONCODE \
-    CONFIG+=qtquickcompiler \
     CONFIG-=debug \
     CONFIG-=debug_and_release \
     CONFIG+=release \
