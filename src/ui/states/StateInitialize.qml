@@ -12,6 +12,10 @@ Item {
         id: stackview
 
         anchors.fill: parent
-        initialItem: "qrc:/ui/views/ViewInitialize.qml"
+        initialItem: {
+            if (Qt.platform.os === "android" || Qt.platform.os === "ios")
+                return "qrc:/ui/views/ViewMobileOnboarding.qml";
+            return "qrc:/ui/views/ViewInitialize.qml"
+        }
     }
 }
