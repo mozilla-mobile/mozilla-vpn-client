@@ -8,11 +8,10 @@ import Mozilla.VPN 1.0
 import thirdparty.lottie 0.1
 
 LottieAnimation {
-    id: testLottie
-
-    fillMode: Image.PreserveAspectFit
-    loops: Animation.Infinite
-    running: true
+    id: lottieAnimation
 
     anchors.fill: parent
+    fillMode: Image.PreserveAspectFit
+    loops: Animation.Infinite
+    running: false
 }
