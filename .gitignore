@@ -57,7 +57,6 @@ tests/proxy/__pycache__/
 tests/qml/qml_tests
 tests/qml/target_wrapper.sh
 build
-!taskcluster/ci/build
 Debug/
 !android/src/debug/
 Debug-iphone*

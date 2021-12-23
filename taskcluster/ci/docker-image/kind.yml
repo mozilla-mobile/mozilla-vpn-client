@@ -31,12 +31,3 @@ jobs:
     android-build:
         parent: base
         symbol: I(android)
-    android-build-qt6-armv8:
-        parent: base
-        symbol: I(android-arm64-v8a)
-        definition: android-qt6-build
-        args:
-            ANDROID_ARCH: android_arm64_v8a
-            QT_VERSION: 6.2.1
-    # Todo define for other arches: 
-    # ["android_armv7", "android_arm64_v8a", "android_x86", "android_x86_64"]   
