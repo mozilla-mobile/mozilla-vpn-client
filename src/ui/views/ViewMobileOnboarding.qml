@@ -45,6 +45,7 @@ VPNFlickable {
 
     SwipeView {
         id: swipeView
+        objectName: "swipeView"
         anchors.fill: parent
         currentIndex: 0
 
@@ -108,6 +109,7 @@ VPNFlickable {
                                 PropertyAnimation {
                                     targets: [panelTitle, panelDescription, panelImg]
                                     property: "opacity"
+                                    from: 0
                                     to: 1
                                     duration: 400
                                     easing.type: Easing.OutQuad
@@ -147,7 +149,8 @@ VPNFlickable {
         anchors.topMargin: -panelTitle.lineHeight
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Math.min(window.height * 0.08, 40)
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
+        anchors.right: parent.right
 
         Column {
             id: panelText
@@ -156,13 +159,13 @@ VPNFlickable {
 
             VPNHeadline {
                 id: panelTitle
-                objectName: "mobileOnboarding-title"
+                objectName: "panelTitle"
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
             VPNSubtitle {
                 id: panelDescription
-                objectName: "mobileOnboarding-description"
+                objectName: "panelDescription"
                 anchors.horizontalCenter: parent.horizontalCenter
             }
         }
@@ -205,7 +208,7 @@ VPNFlickable {
 
             VPNButton {
                 id: signUpButton
-                objectName: "mobileOnboarding-signUpButton"
+                objectName: "signUpButton"
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: VPNl18n.MobileOnboardingSignUp
 
@@ -214,8 +217,7 @@ VPNFlickable {
             }
 
             VPNLinkButton {
-                id: nextPanel
-                objectName: "mobileOnboarding-alreadyASubscriberLink"
+                objectName: "alreadyASubscriberLink"
                 labelText: VPNl18n.MobileOnboardingAlreadyASubscriber
                 anchors.horizontalCenter: parent.horizontalCenter
                 height: VPNTheme.theme.rowHeight
