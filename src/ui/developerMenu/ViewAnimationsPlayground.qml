@@ -14,8 +14,8 @@ import components.forms 0.1
 Item {
     id: root
 
-    property int totalAnimationFrames: ({})
-    property int currentAnimationFrame: 0
+    property int totalAnimationFrames: 0
+    property double currentAnimationFrame: 0
     property string selectedAnimationSource
 
     VPNMenu {
@@ -36,12 +36,11 @@ Item {
         VPNLottieAnimation {
             id: lottieAnimationExample
             source: selectedAnimationSource
-            onEnteredFrame: (currentTime) => {
-                currentAnimationFrame = currentTime;
-            }
-            onStatusChanged: () => {
-                if (status === Image.Ready) {
-                    totalAnimationFrames = lottieAnimationExample.getDuration(true);
+
+            onStatusChanged: (status, currentTime, totalTime, reverse) => {
+                if (status === "update") {
+                    totalAnimationFrames = totalTime;
+                    currentAnimationFrame = currentTime;
                 }
             }
         }
@@ -92,19 +91,19 @@ Item {
 
                 ListElement {
                     name: "Lock"
-                    value: "qrc:/nebula/resources/animations/lock_animation.json"
+                    value: ":/nebula/resources/animations/lock_animation.json"
                 }
                 ListElement {
                     name: "Globe"
-                    value: "qrc:/nebula/resources/animations/globe_animation.json"
+                    value: ":/nebula/resources/animations/globe_animation.json"
                 }
                 ListElement {
                     name: "VPN Active"
-                    value: "qrc:/nebula/resources/animations/vpnactive_animation.json"
+                    value: ":/nebula/resources/animations/vpnactive_animation.json"
                 }
                 ListElement {
                     name: "Speedometer"
-                    value: "qrc:/nebula/resources/animations/speedometer_animation.json"
+                    value: ":/nebula/resources/animations/speedometer_animation.json"
                 }
             }
 
@@ -128,14 +127,14 @@ Item {
 
             VPNButton {
                 // Do not translate this string!
-                text: lottieAnimationExample.running ? "pause" : "play"
+                text: lottieAnimationExample.playing ? "pause" : "play"
                 enabled: animationSelect.currentIndex >= 0
                 opacity: enabled ? 1 : 0.5
                 onClicked: () => {
-                    if (lottieAnimationExample.running) {
+                    if (lottieAnimationExample.playing) {
                         lottieAnimationExample.pause();
                     } else {
-                        lottieAnimationExample.start();
+                        lottieAnimationExample.play();
                     }
                 }
 
@@ -145,7 +144,7 @@ Item {
             VPNButton {
                 // Do not translate this string!
                 text: "reset"
-                enabled: animationSelect.currentIndex >= 0 && lottieAnimationExample.running
+                enabled: animationSelect.currentIndex >= 0 && lottieAnimationExample.playing
                 opacity: enabled ? 1 : 0.5
                 onClicked: () => {
                     lottieAnimationExample.stop();
