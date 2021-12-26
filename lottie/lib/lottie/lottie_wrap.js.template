@@ -1,0 +1,22 @@
+export function initialize(window, document, navigator) {
+  const setInterval = (callback, interval) =>
+      window.setInterval(callback, interval);
+  const clearInterval = id => window.clearInterval(id);
+  const setTimeout = (callback, interval) =>
+      window.setTimeout(callback, interval);
+  const clearTimeout = id => window.clearTimeout(id);
+
+  (function() {
+    try {
+      __LOTTIE__
+    } catch (e) {
+      console.log(e);
+    }
+  }());
+}
+
+export function addListeners(lottiePrivate, lottieInstance) {
+  lottieInstance.addEventListener("complete", lottiePrivate.eventPlayingCompleted);
+  lottieInstance.addEventListener("loopComplete", lottiePrivate.eventLoopCompleted);
+  lottieInstance.addEventListener("enterFrame", e => lottiePrivate.eventEnterFrame(e));
+}
