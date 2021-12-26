@@ -1,0 +1,5 @@
+<RCC>
+    <qresource>
+        <file>test.json</file>
+    </qresource>
+</RCC>
