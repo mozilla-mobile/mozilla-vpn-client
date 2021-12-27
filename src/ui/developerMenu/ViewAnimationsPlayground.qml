@@ -48,10 +48,10 @@ Item {
 
         VPNInterLabel {
             // Do not translate this string!
+            text: "No animation selected"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             color: VPNTheme.colors.white
-            text: "No animation selected"
             visible: animationSelect.currentIndex < 0
         }
 
@@ -109,7 +109,9 @@ Item {
             }
 
             function setCurrentAnimationSource() {
-                root.selectedAnimationSource = animationItems.get(currentIndex).value;
+                if (currentIndex >= 0) {
+                    root.selectedAnimationSource = animationItems.get(currentIndex).value;
+                }
             }
 
             onCurrentIndexChanged: () => {
@@ -128,11 +130,11 @@ Item {
 
             VPNButton {
                 // Do not translate this string!
-                text: lottieAnimationExample.playing ? "pause" : "play"
+                text: lottieAnimationExample.status.playing ? "pause" : "play"
                 enabled: animationSelect.currentIndex >= 0
                 opacity: enabled ? 1 : 0.5
                 onClicked: () => {
-                    if (lottieAnimationExample.playing) {
+                    if (lottieAnimationExample.status.playing) {
                         lottieAnimationExample.pause();
                     } else {
                         lottieAnimationExample.play();
@@ -145,7 +147,7 @@ Item {
             VPNButton {
                 // Do not translate this string!
                 text: "reset"
-                enabled: animationSelect.currentIndex >= 0 && lottieAnimationExample.playing
+                enabled: animationSelect.currentIndex >= 0 && lottieAnimationExample.status.playing
                 opacity: enabled ? 1 : 0.5
                 onClicked: () => {
                     lottieAnimationExample.stop();
