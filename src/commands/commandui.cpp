@@ -135,8 +135,6 @@ int CommandUI::run(QStringList& tokens) {
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
 
-    vpn.theme()->loadThemes();
-
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
     // If there is another instance, the execution terminates here.
     if (!EventListener::checkOtherInstances()) {
@@ -321,10 +319,11 @@ int CommandUI::run(QStringList& tokens) {
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNTheme",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->theme();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
+        [](QQmlEngine*, QJSEngine* engine) -> QObject* {
+          Theme* theme = MozillaVPN::instance()->theme();
+          theme->initialize(engine);
+          QQmlEngine::setObjectOwnership(theme, QQmlEngine::CppOwnership);
+          return theme;
         });
 
     qmlRegisterSingletonType<MozillaVPN>(

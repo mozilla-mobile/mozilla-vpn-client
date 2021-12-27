@@ -10,6 +10,7 @@
 #include "models/whatsnewmodel.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "theme.h"
 
 #include <QObject>
 #include <QQmlEngine>
@@ -54,6 +55,7 @@ class TestHelper final : public QObject {
   L18nStrings* m_l18nstrings = nullptr;
   MozillaVPN* m_mozillavpn = nullptr;
   WhatsNewModel* m_whatsNewModel = nullptr;
+  Theme* m_theme = nullptr;
 };
 
 #endif  // TESTHELPER_H
