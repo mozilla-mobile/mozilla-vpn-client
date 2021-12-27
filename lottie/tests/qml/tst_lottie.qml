@@ -247,6 +247,7 @@ LottieAnimation {
             lottie.loops = false;
             lottie.source = "";
         }
+
         function test_statusChanges() {
             lottie.source = ":/test.json";
 

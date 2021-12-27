@@ -164,7 +164,8 @@ void LottiePrivate::createAnimation() {
     QString errorMessage("Failed to initialize the lottie component: ");
     errorMessage.append(animation.toString());
     errorMessage.append(" - line: ");
-    errorMessage.append(animation.property("lineNumber").toInt());
+    errorMessage.append(
+        QString::number(animation.property("lineNumber").toInt()));
     m_status.error(errorMessage);
     return;
   }
