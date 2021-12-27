@@ -9,12 +9,26 @@ import lottie 0.1
 Window {
     visible: true
     width: 640
-    height: 360
-    title: qsTr("Hello World")
+    height: 480
+    title: "lottietest"
 
     LottieAnimation {
+        id: animation
         anchors.fill: parent
         source: INPUTFILE
-        playing: true
+        autoPlay: true
+        loops: LOOP
+        speed: SPEED
+        reverse: REVERSE
+        fillMode: FILLMODE
+    }
+
+    Connections {
+        target: animation.status
+        function onChanged() {
+            if (!animation.status.playing && QUITATEND) {
+                Qt.quit();
+            }
+        }
     }
 }

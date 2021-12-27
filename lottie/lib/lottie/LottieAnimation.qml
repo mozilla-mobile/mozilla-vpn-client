@@ -24,8 +24,12 @@ Item {
     // Reverse direction. Default: false
     property alias reverse: lottiePrivate.reverse
 
-    // Read-only animation status. Default: false
-    property alias playing: lottiePrivate.playing
+    // Read-only animation status. The status is an object containing the
+    // following properties:
+    // - playing: readonly boolean. Default: false
+    // - currentTime: readonly double. Default: 0
+    // - totalTime: readonly integer. Default: 0
+    property alias status: lottiePrivate.status
 
     // Enable/disable the auto-play. Default: false
     property alias autoPlay: lottiePrivate.autoPlay
@@ -42,7 +46,6 @@ Item {
     function stop() { lottiePrivate.stop(); }
 
     signal loopCompleted()
-    signal statusChanged(string status, double currentTime, int totalTime, bool reverse);
 
     Item {
         id: container
@@ -86,7 +89,6 @@ Item {
 
     Component.onCompleted: {
         lottiePrivate.loopCompleted.connect(loopCompleted);
-        lottiePrivate.statusChanged.connect(statusChanged);
 
         lottiePrivate.componentCompleted = true;
         lottiePrivate.setCanvasAndContainer(canvas, container);

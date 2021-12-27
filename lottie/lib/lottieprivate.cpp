@@ -6,6 +6,7 @@
 #include "lottieprivatedocument.h"
 #include "lottieprivatenavigator.h"
 #include "lottieprivatewindow.h"
+#include "lottiestatus.h"
 
 #include <QJSEngine>
 #include <QTemporaryDir>
@@ -14,10 +15,6 @@ constexpr const char* FILLMODE_STRETCH = "stretch";
 constexpr const char* FILLMODE_PAD = "pad";
 constexpr const char* FILLMODE_PRESERVEASPECTFIT = "preserveAspectFit";
 constexpr const char* FILLMODE_PRESERVEASPECTCROP = "preserveAspectCrop";
-
-constexpr const char* STATUS_PLAYING = "playing";
-constexpr const char* STATUS_NOTPLAYING = "notPlaying";
-constexpr const char* STATUS_UPDATE = "update";
 
 namespace {
 static QJSEngine* s_engine = nullptr;
@@ -65,8 +62,7 @@ void LottiePrivate::createAnimation() {
     {
       QFile js(":/lottie/lottie/lottie_wrap.js.template");
       if (!js.open(QFile::ReadOnly)) {
-        qDebug() << "Unable to open the template resource.";
-        setPlaying(false);
+        m_status.error("Unable to open the template resource.");
         return;
       }
       jsModule.append(js.readAll());
@@ -74,8 +70,7 @@ void LottiePrivate::createAnimation() {
     {
       QFile js(":/lottie/lottie/lottie.min.js");
       if (!js.open(QFile::ReadOnly)) {
-        qDebug() << "Unable to open the lottie resource.";
-        setPlaying(false);
+        m_status.error("Unable to open the lottie resource.");
         return;
       }
       jsModule.replace("__LOTTIE__", js.readAll());
@@ -83,15 +78,13 @@ void LottiePrivate::createAnimation() {
 
     QTemporaryDir tmpDir;
     if (!tmpDir.isValid()) {
-      qDebug() << "Failed to create a temporary folder";
-      setPlaying(false);
+      m_status.error("Failed to create a temporary folder.");
       return;
     }
 
     QFile modulePath(QDir(tmpDir.path()).filePath("lottie.js"));
     if (!modulePath.open(QFile::WriteOnly)) {
-      qDebug() << "Failed to load the generated lottie.js";
-      setPlaying(false);
+      m_status.error("Failed to load the generated lottie.js.");
       return;
     }
 
@@ -100,9 +93,9 @@ void LottiePrivate::createAnimation() {
     m_lottieModule =
         engine()->importModule(QFileInfo(modulePath).absoluteFilePath());
     if (m_lottieModule.isError()) {
-      qDebug() << "Exception processing the lottie js:"
-               << m_lottieModule.toString();
-      setPlaying(false);
+      QString errorMessage("Exception processing the lottie js: ");
+      errorMessage.append(m_lottieModule.toString());
+      m_status.error(errorMessage);
       return;
     }
 
@@ -117,8 +110,9 @@ void LottiePrivate::createAnimation() {
     QJSValue ret = initialize.callWithInstance(
         m_lottieModule, QList<QJSValue>{windowObj, documentObj, navigatorObj});
     if (ret.isError()) {
-      qDebug() << "Failed to initialize the lottie module:" << ret.toString();
-      setPlaying(false);
+      QString errorMessage("Failed to initialize the lottie module: ");
+      errorMessage.append(ret.toString());
+      m_status.error(errorMessage);
       return;
     }
   }
@@ -135,16 +129,18 @@ void LottiePrivate::createAnimation() {
 
   QFile file(m_source);
   if (!file.open(QFile::ReadOnly)) {
-    qDebug() << "Failed to open the source" << m_source;
-    setPlaying(false);
+    QString errorMessage("Failed to open the source URL ");
+    errorMessage.append(m_source);
+    m_status.error(errorMessage);
     return;
   }
 
   QJSValue jsonData =
       jsonParser.call(QList<QJSValue>{QJSValue(QString(file.readAll()))});
   if (jsonData.isError()) {
-    qDebug() << "Failed to parse the source as JSON:" << jsonData.toString();
-    setPlaying(false);
+    QString errorMessage("Failed to parse the source as JSON: ");
+    errorMessage.append(jsonData.toString());
+    m_status.error(errorMessage);
     return;
   }
 
@@ -165,9 +161,11 @@ void LottiePrivate::createAnimation() {
   QJSValue animation =
       loadAnimation.callWithInstance(m_lottieInstance, QList<QJSValue>{obj});
   if (animation.isError()) {
-    qDebug() << "ERROR:" << animation.property("lineNumber").toInt()
-             << animation.toString();
-    setPlaying(false);
+    QString errorMessage("Failed to initialize the lottie component: ");
+    errorMessage.append(animation.toString());
+    errorMessage.append(" - line: ");
+    errorMessage.append(animation.property("lineNumber").toInt());
+    m_status.error(errorMessage);
     return;
   }
 
@@ -210,20 +208,6 @@ void LottiePrivate::setAutoPlay(bool autoPlay) {
   m_autoPlay = autoPlay;
   emit autoPlayChanged();
   destroyAndRecreate();
-}
-
-void LottiePrivate::setPlaying(bool playing) {
-  if (m_playing != playing) {
-    m_playing = playing;
-
-    if (!m_playing) {
-      emit statusChanged(STATUS_NOTPLAYING, 0, 0, false);
-    } else {
-      emit statusChanged(STATUS_PLAYING, 0, 0, false);
-    }
-
-    emit playingChanged();
-  }
 }
 
 void LottiePrivate::setFillMode(const QString& fillMode) {
@@ -314,7 +298,7 @@ void LottiePrivate::resizeAnimation() {
 }
 
 void LottiePrivate::destroyAndRecreate() {
-  bool wasPlaying = m_playing;
+  bool wasPlaying = m_status.playing();
 
   destroyAnimation();
 
@@ -328,19 +312,19 @@ void LottiePrivate::destroyAndRecreate() {
 
 void LottiePrivate::play() {
   if (runAnimationFunction("play", QList<QJSValue>())) {
-    setPlaying(true);
+    m_status.update(true);
   }
 }
 
 void LottiePrivate::pause() {
   if (runAnimationFunction("pause", QList<QJSValue>())) {
-    setPlaying(false);
+    m_status.update(false);
   }
 }
 
 void LottiePrivate::stop() {
   if (runAnimationFunction("stop", QList<QJSValue>())) {
-    setPlaying(false);
+    m_status.update(false);
   }
 }
 
@@ -354,14 +338,13 @@ QString LottiePrivate::fillModeToAspectRatio() const {
   return "none";
 }
 
-void LottiePrivate::eventPlayingCompleted() { setPlaying(false); }
+void LottiePrivate::eventPlayingCompleted() { m_status.update(false); }
 
 void LottiePrivate::eventLoopCompleted() { emit loopCompleted(); }
 
 void LottiePrivate::eventEnterFrame(const QJSValue& value) {
-  setPlaying(true);
-
-  emit statusChanged(STATUS_UPDATE, value.property("currentTime").toNumber(),
-                     value.property("totalTime").toInt(),
-                     value.property("direction").toInt() == -1);
+  m_status.update(true, value.property("currentTime").toNumber(),
+                  value.property("totalTime").toInt());
 }
+
+QJSValue LottiePrivate::status() { return engine()->toScriptValue(&m_status); }

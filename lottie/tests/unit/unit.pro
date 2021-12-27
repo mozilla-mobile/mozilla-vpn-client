@@ -12,6 +12,7 @@ HEADERS += \
     ../../lib/lottieprivatedocument.h \
     ../../lib/lottieprivatenavigator.h \
     ../../lib/lottieprivatewindow.h \
+    ../../lib/lottiestatus.h \
     helper.h \
     testdocument.h \
     testnavigator.h \

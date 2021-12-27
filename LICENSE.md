@@ -42,7 +42,7 @@ Framework](https://www.adjust.com) under the terms of the MIT Public License
 here](https://opensource.org/license/MIT) and a copy is provided below.
 
 The project relies on [Lottie-web](https://github.com/airbnb/lottie-web), under
-the terms of he MIT Public License (*MIT*), a copy of which is available
+the terms of the MIT Public License (*MIT*), a copy of which is available
 [available here](https://opensource.org/license/MIT) and a copy is provided
 below.
 

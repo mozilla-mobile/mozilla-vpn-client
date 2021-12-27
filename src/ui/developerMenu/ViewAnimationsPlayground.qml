@@ -37,8 +37,9 @@ Item {
             id: lottieAnimationExample
             source: selectedAnimationSource
 
-            onStatusChanged: (status, currentTime, totalTime, reverse) => {
-                if (status === "update") {
+            Connections {
+                target: lottieAnimationExample.status
+                onChanged: (playing, currentTime, totalTime) => {
                     totalAnimationFrames = totalTime;
                     currentAnimationFrame = currentTime;
                 }

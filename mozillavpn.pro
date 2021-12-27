@@ -23,6 +23,7 @@ AUTHTEST {
 
 QMLTEST {
     SUBDIRS += tests/qml
+    SUBDIRS += lottie/tests/qml
 }
 
 webextension {

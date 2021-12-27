@@ -5,6 +5,8 @@
 #ifndef LOTTIEPRIVATE_H
 #define LOTTIEPRIVATE_H
 
+#include "lottiestatus.h"
+
 #include <QJSValue>
 #include <QtQuick/QQuickItem>
 
@@ -18,7 +20,7 @@ class LottiePrivate : public QQuickItem {
   Q_PROPERTY(qreal speed READ speed WRITE setSpeed NOTIFY speedChanged)
   Q_PROPERTY(QJSValue loops READ loops WRITE setLoops NOTIFY loopsChanged)
   Q_PROPERTY(bool reverse READ reverse WRITE setReverse NOTIFY reverseChanged)
-  Q_PROPERTY(bool playing READ playing NOTIFY playingChanged)
+  Q_PROPERTY(QJSValue status READ status CONSTANT)
   Q_PROPERTY(
       bool autoPlay READ autoPlay WRITE setAutoPlay NOTIFY autoPlayChanged)
   Q_PROPERTY(
@@ -63,7 +65,7 @@ class LottiePrivate : public QQuickItem {
   bool reverse() const { return m_reverse; }
   void setReverse(bool reverse);
 
-  bool playing() const { return m_playing; }
+  QJSValue status();
 
   bool autoPlay() const { return m_autoPlay; }
   void setAutoPlay(bool autoPlay);
@@ -82,12 +84,9 @@ class LottiePrivate : public QQuickItem {
   void speedChanged();
   void loopsChanged();
   void reverseChanged();
-  void playingChanged();
   void autoPlayChanged();
   void fillModeChanged();
   void loopCompleted();
-  void statusChanged(const QString& status, double currentTime, int totalTime,
-                     bool reverse);
 
  private:
   QJSValue createWindowObject();
@@ -110,15 +109,13 @@ class LottiePrivate : public QQuickItem {
   bool runAnimationFunction(const QString& functionName,
                             const QList<QJSValue>& params);
 
-  void setPlaying(bool playing);
-
  private:
   QString m_source;
   bool m_readyToPlay = false;
   qreal m_speed = 1.0;
   QJSValue m_loops;
   bool m_reverse = false;
-  bool m_playing = false;
+  LottieStatus m_status;
   bool m_autoPlay = false;
   QString m_fillMode = "stretch";
 

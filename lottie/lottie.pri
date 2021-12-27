@@ -12,7 +12,8 @@ HEADERS += $$PWD/lib/lottie.h \
            $$PWD/lib/lottieprivate.h \
            $$PWD/lib/lottieprivatedocument.h \
            $$PWD/lib/lottieprivatenavigator.h \
-           $$PWD/lib/lottieprivatewindow.h
+           $$PWD/lib/lottieprivatewindow.h \
+           $$PWD/lib/lottiestatus.h
 
 RESOURCES += $$PWD/lib/lottie.qrc
 

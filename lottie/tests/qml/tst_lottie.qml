@@ -18,8 +18,8 @@ LottieAnimation {
 
     SignalSpy {
         id: statusChangedSpy
-        target: lottie
-        signalName: "statusChanged"
+        target: lottie.status
+        signalName: "changed"
     }
 
     TestCase {
@@ -75,7 +75,7 @@ LottieAnimation {
             lottie.fillMode = "stretch";
             compare(lottie.fillMode, "stretch");
 
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
 
             verify(!!lottie.play);
             verify(!!lottie.pause);
@@ -85,10 +85,10 @@ LottieAnimation {
         function test_play() {
             lottie.source = ":/test.json";
 
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
             lottie.play();
-            verify(lottie.playing);
-            tryVerify(() => !lottie.playing);
+            verify(lottie.status.playing);
+            tryVerify(() => !lottie.status.playing);
 
             lottie.source = "";
         }
@@ -97,16 +97,16 @@ LottieAnimation {
             lottie.loops = 2;
             lottie.source = ":/test.json";
 
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
             lottie.play();
-            tryVerify(() => lottie.playing);
+            tryVerify(() => lottie.status.playing);
 
             loopCompletedSpy.clear();
             loopCompletedSpy.wait();
             compare(loopCompletedSpy.count, 1);
             loopCompletedSpy.wait();
             compare(loopCompletedSpy.count, 2);
-            tryVerify(() => !lottie.playing);
+            tryVerify(() => !lottie.status.playing);
 
             lottie.source = "";
             lottie.loops = false;
@@ -115,12 +115,12 @@ LottieAnimation {
         function test_playAndPause() {
             lottie.source = ":/test.json";
 
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
             lottie.play();
-            verify(lottie.playing);
+            verify(lottie.status.playing);
 
             lottie.pause();
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
 
             lottie.source = "";
         }
@@ -128,12 +128,12 @@ LottieAnimation {
         function test_playAndStop() {
             lottie.source = ":/test.json";
 
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
             lottie.play();
-            verify(lottie.playing);
+            verify(lottie.status.playing);
 
             lottie.stop();
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
 
             lottie.source = "";
         }
@@ -142,8 +142,8 @@ LottieAnimation {
             lottie.autoPlay = true;
             lottie.source = ":/test.json";
 
-            tryVerify(() => lottie.playing);
-            tryVerify(() => !lottie.playing);
+            tryVerify(() => lottie.status.playing);
+            tryVerify(() => !lottie.status.playing);
 
             lottie.autoPlay = false;
             lottie.source = "";
@@ -153,9 +153,9 @@ LottieAnimation {
             lottie.speed = 2;
             lottie.source = ":/test.json";
 
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
             lottie.play();
-            tryVerify(() => !lottie.playing);
+            tryVerify(() => !lottie.status.playing);
 
             lottie.speed = 1;
             lottie.source = "";
@@ -173,7 +173,7 @@ LottieAnimation {
             });
 
             lottie.stop();
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
 
             lottie.speed = 1;
             lottie.loops = false;
@@ -184,10 +184,10 @@ LottieAnimation {
             lottie.reverse = true;
             lottie.source = ":/test.json";
 
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
             lottie.play();
-            tryVerify(() => lottie.playing);
-            tryVerify(() => !lottie.playing);
+            tryVerify(() => lottie.status.playing);
+            tryVerify(() => !lottie.status.playing);
 
             lottie.reverse = false;
             lottie.source = "";
@@ -205,7 +205,7 @@ LottieAnimation {
             });
 
             lottie.stop();
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
 
             lottie.loops = false;
             lottie.source = "";
@@ -223,7 +223,7 @@ LottieAnimation {
             });
 
             lottie.stop();
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
 
             lottie.loops = false;
             lottie.fillMode = "stretch"
@@ -241,7 +241,7 @@ LottieAnimation {
             loopCompletedSpy.wait();
 
             lottie.stop();
-            verify(!lottie.playing);
+            verify(!lottie.status.playing);
 
             lottie.speed = 1;
             lottie.loops = false;
@@ -252,20 +252,17 @@ LottieAnimation {
 
             statusChangedSpy.clear();
             lottie.play();
-            tryVerify(() => !lottie.playing);
+            tryVerify(() => !lottie.status.playing);
 
             verify(statusChangedSpy.signalArguments.length > 3);
 
-            // We start with 'playing' and we stop with 'notPlaying'.
-            verify(statusChangedSpy.signalArguments[0][0] === "playing");
-            verify(statusChangedSpy.signalArguments[statusChangedSpy.signalArguments.length - 1][0] === "notPlaying");
+            // We start with 'playing' and we stop with 'not-playing'.
+            verify(statusChangedSpy.signalArguments[0][0] === true);
+            verify(statusChangedSpy.signalArguments[statusChangedSpy.signalArguments.length - 1][0] === false);
 
             // Checking the 'update' events. We must have them!
-            const statusEvents = statusChangedSpy.signalArguments.filter(arguments => arguments[0] === "update");
+            const statusEvents = statusChangedSpy.signalArguments.filter(arguments => arguments[0] === true);
             verify(statusEvents.length > 0);
-
-            // No reverse values.
-            statusEvents.forEach(event => compare(event[3], false));
 
             // Incremental currentTime values.
             let prevCurrentTime = -1;
@@ -274,11 +271,9 @@ LottieAnimation {
               prevCurrentTime = event[1];
             });
 
-            // Ignoring the last one, the currentTime is < than the totalTime.
+            // The currentTime is < than the totalTime.
             statusEvents.forEach((event, pos) => {
-              if (pos < statusEvents.length - 1) {
-                verify(event[1] < event[2]);
-              }
+              verify(event[1] <= event[2]);
             });
 
             lottie.source = "";
