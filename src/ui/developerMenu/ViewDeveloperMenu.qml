@@ -17,6 +17,8 @@ VPNFlickable {
         (VPNController.state === VPNController.StateInitializing)
 
     id: vpnFlickable
+    flickContentHeight: restartRequired.y + restartRequired.height
+
     VPNMenu {
         id: menu
         title: VPNl18n.SettingsDevTitle
