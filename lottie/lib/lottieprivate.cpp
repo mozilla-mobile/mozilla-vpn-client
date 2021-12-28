@@ -325,7 +325,7 @@ void LottiePrivate::pause() {
 
 void LottiePrivate::stop() {
   if (runAnimationFunction("stop", QList<QJSValue>())) {
-    m_status.update(false);
+    m_status.reset();
   }
 }
 
@@ -339,7 +339,7 @@ QString LottiePrivate::fillModeToAspectRatio() const {
   return "none";
 }
 
-void LottiePrivate::eventPlayingCompleted() { m_status.update(false); }
+void LottiePrivate::eventPlayingCompleted() { m_status.reset(); }
 
 void LottiePrivate::eventLoopCompleted() { emit loopCompleted(); }
 

@@ -83,7 +83,7 @@ LottieAnimation {
         }
 
         function test_play() {
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
 
             verify(!lottie.status.playing);
             lottie.play();
@@ -95,7 +95,7 @@ LottieAnimation {
 
         function test_playTwoLoops() {
             lottie.loops = 2;
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
 
             verify(!lottie.status.playing);
             lottie.play();
@@ -113,34 +113,56 @@ LottieAnimation {
         }
 
         function test_playAndPause() {
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
 
             verify(!lottie.status.playing);
             lottie.play();
             verify(lottie.status.playing);
+            tryVerify(() => lottie.status.currentTime > 0);
+            verify(lottie.status.totalTime > 0);
 
             lottie.pause();
             verify(!lottie.status.playing);
+            verify(lottie.status.currentTime > 0);
+            verify(lottie.status.totalTime > 0);
+
+            lottie.play();
+            verify(lottie.status.playing);
+            verify(lottie.status.currentTime > 0);
+            verify(lottie.status.totalTime > 0);
+
+            lottie.stop();
 
             lottie.source = "";
         }
 
         function test_playAndStop() {
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
 
             verify(!lottie.status.playing);
             lottie.play();
             verify(lottie.status.playing);
+            tryVerify(() => lottie.status.currentTime > 0);
+            verify(lottie.status.totalTime > 0);
 
             lottie.stop();
             verify(!lottie.status.playing);
+            compare(lottie.status.currentTime, 0);
+            compare(lottie.status.totalTime, 0);
+
+            lottie.play();
+            verify(lottie.status.playing);
+            compare(lottie.status.currentTime, 0);
+            compare(lottie.status.totalTime, 0);
+
+            lottie.stop();
 
             lottie.source = "";
         }
 
         function test_playWithAutoplay() {
             lottie.autoPlay = true;
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
 
             tryVerify(() => lottie.status.playing);
             tryVerify(() => !lottie.status.playing);
@@ -151,7 +173,7 @@ LottieAnimation {
 
         function test_playWithDoubleSpeed() {
             lottie.speed = 2;
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
 
             verify(!lottie.status.playing);
             lottie.play();
@@ -163,7 +185,7 @@ LottieAnimation {
 
         function test_playChangingSpeed() {
             lottie.loops = true;
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
 
             lottie.play();
 
@@ -182,7 +204,7 @@ LottieAnimation {
 
         function test_playReverse() {
             lottie.reverse = true;
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
 
             verify(!lottie.status.playing);
             lottie.play();
@@ -195,7 +217,7 @@ LottieAnimation {
 
         function test_playChangingDirection() {
             lottie.loops = true;
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
 
             lottie.play();
 
@@ -213,7 +235,7 @@ LottieAnimation {
 
         function test_playChangingFillMode() {
             lottie.loops = true;
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
 
             lottie.play();
 
@@ -232,12 +254,12 @@ LottieAnimation {
 
         function test_playChangingSource() {
             lottie.loops = true;
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
 
             lottie.play();
             loopCompletedSpy.wait();
 
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
             loopCompletedSpy.wait();
 
             lottie.stop();
@@ -249,7 +271,7 @@ LottieAnimation {
         }
 
         function test_statusChanges() {
-            lottie.source = ":/test.json";
+            lottie.source = ":/a.json";
 
             statusChangedSpy.clear();
             lottie.play();
