@@ -22,7 +22,7 @@ class LottieStatus final : public QObject {
 
   bool playing() const { return m_playing; }
 
-  void update(bool playing, double currentTime = 0, int totalTime = 0) {
+  void update(bool playing, double currentTime, int totalTime) {
     m_playing = playing;
     m_currentTime = currentTime;
     m_totalTime = totalTime;
@@ -30,6 +30,10 @@ class LottieStatus final : public QObject {
     m_errorString.clear();
     emit changed(m_playing, m_currentTime, m_totalTime, m_error, m_errorString);
   }
+
+  void update(bool playing) { update(playing, m_currentTime, m_totalTime); }
+
+  void reset() { update(false, 0, 0); }
 
   void error(const QString& errorString) {
     m_playing = false;
