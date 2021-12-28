@@ -299,6 +299,8 @@ void LottiePrivate::resizeAnimation() {
 }
 
 void LottiePrivate::destroyAndRecreate() {
+  if (!m_readyToPlay) return;
+
   bool wasPlaying = m_status.playing();
 
   destroyAnimation();
@@ -308,24 +310,30 @@ void LottiePrivate::destroyAndRecreate() {
 
   createAnimation();
 
-  if (wasPlaying) play();
+  m_status.reset();
+
+  if (wasPlaying) {
+    play();
+  } else {
+    m_status.resetAndNotify();
+  }
 }
 
 void LottiePrivate::play() {
   if (runAnimationFunction("play", QList<QJSValue>())) {
-    m_status.update(true);
+    m_status.updateAndNotify(true);
   }
 }
 
 void LottiePrivate::pause() {
   if (runAnimationFunction("pause", QList<QJSValue>())) {
-    m_status.update(false);
+    m_status.updateAndNotify(false);
   }
 }
 
 void LottiePrivate::stop() {
   if (runAnimationFunction("stop", QList<QJSValue>())) {
-    m_status.reset();
+    m_status.resetAndNotify();
   }
 }
 
@@ -339,13 +347,13 @@ QString LottiePrivate::fillModeToAspectRatio() const {
   return "none";
 }
 
-void LottiePrivate::eventPlayingCompleted() { m_status.reset(); }
+void LottiePrivate::eventPlayingCompleted() { m_status.resetAndNotify(); }
 
 void LottiePrivate::eventLoopCompleted() { emit loopCompleted(); }
 
 void LottiePrivate::eventEnterFrame(const QJSValue& value) {
-  m_status.update(true, value.property("currentTime").toNumber(),
-                  value.property("totalTime").toInt());
+  m_status.updateAndNotify(true, value.property("currentTime").toNumber(),
+                           value.property("totalTime").toInt());
 }
 
 QJSValue LottiePrivate::status() { return engine()->toScriptValue(&m_status); }

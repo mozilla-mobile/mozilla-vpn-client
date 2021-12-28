@@ -28,12 +28,20 @@ class LottieStatus final : public QObject {
     m_totalTime = totalTime;
     m_error = false;
     m_errorString.clear();
+  }
+
+  void reset() { update(false, 0, 0); }
+
+  void updateAndNotify(bool playing, double currentTime, int totalTime) {
+    update(playing, currentTime, totalTime);
     emit changed(m_playing, m_currentTime, m_totalTime, m_error, m_errorString);
   }
 
-  void update(bool playing) { update(playing, m_currentTime, m_totalTime); }
+  void updateAndNotify(bool playing) {
+    updateAndNotify(playing, m_currentTime, m_totalTime);
+  }
 
-  void reset() { update(false, 0, 0); }
+  void resetAndNotify() { updateAndNotify(false, 0, 0); }
 
   void error(const QString& errorString) {
     m_playing = false;

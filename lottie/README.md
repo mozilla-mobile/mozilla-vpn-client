@@ -8,11 +8,7 @@ If you want to test this component, you can run the `lottietest` app passing a
 lottie JSON file as the first argument:
 
 ```
-<<<<<<< HEAD
-# ./bin/lottietest tests/qml/test.json
-=======
 # ./bin/lottietest tests/qml/a.json
->>>>>>> 7467b70db5d4f58813ce00dc145c41c51acf74e7
 ```
 
 ### How to use it
@@ -27,8 +23,6 @@ This component is released with 2 types of tests:
 
 - unit-tests: `./tests/unit/tests`
 - qml-tests: `./tests/qml/tst_lottie`
-<<<<<<< HEAD
-=======
 
 ### Alternatives
 
@@ -36,4 +30,3 @@ This should be considered as a temporary solution. We hope to use
 [QtLottie](https://doc.qt.io/qt-6/qtlottieanimation-index.html) in Qt6 when
 ready, or replace this component with a wrapper built on top of
 [rlottie](https://github.com/Samsung/rlottie).
->>>>>>> 7467b70db5d4f58813ce00dc145c41c51acf74e7

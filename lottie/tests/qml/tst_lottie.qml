@@ -301,5 +301,13 @@ LottieAnimation {
 
             lottie.source = "";
         }
+
+        function test_replaceSource() {
+            lottie.source = ":/a.json";
+
+            statusChangedSpy.clear();
+            lottie.source = ":/b.json";
+            compare(statusChangedSpy.count, 1);
+        }
     }
 }
