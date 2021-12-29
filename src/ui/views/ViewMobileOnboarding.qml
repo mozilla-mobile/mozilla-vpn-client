@@ -11,7 +11,7 @@ import components 0.1
 VPNFlickable {
     id: onboardingPanel
     property real panelHeight: window.safeContentHeight
-    flickContentHeight: Math.max(panelHeight - 2, panelHeight / 2 + col.implicitHeight)
+    flickContentHeight: Math.max(window.safeContentHeight - 2, window.safeContentHeight / 2 + col.implicitHeight)
 
     ListModel {
         id: onboardingModel
@@ -36,11 +36,6 @@ VPNFlickable {
             headline: qsTrId("vpn.onboarding.headline.2")
             subtitle: qsTrId("vpn.onboarding.subtitle.2")
         }
-    }
-
-    Rectangle {
-        anchors.fill: parent
-        color: VPNTheme.theme.bgColor
     }
 
     SwipeView {
@@ -69,8 +64,8 @@ VPNFlickable {
                     Image {
                         id: panelImg
                         anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.bottom: parent.verticalCenter
-                        anchors.bottomMargin: VPNTheme.theme.windowMargin * 2
+                        anchors.top: parent.top
+                        anchors.topMargin: onboardingPanel.panelHeight / 2 - currentPanelValues._finalImageHeight
                         antialiasing: true
                         fillMode: Image.PreserveAspectFit
                         opacity: 0
@@ -145,28 +140,26 @@ VPNFlickable {
 
     ColumnLayout {
         id: col
-        anchors.top: parent.verticalCenter
-        anchors.topMargin: -panelTitle.lineHeight
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: Math.min(window.height * 0.08, 40)
-        anchors.left: parent.left
-        anchors.right: parent.right
+        anchors.fill: parent
+        anchors.topMargin: onboardingPanel.panelHeight / 2
+        anchors.rightMargin: VPNTheme.theme.windowMargin * 2
+        anchors.leftMargin: VPNTheme.theme.windowMargin * 2
 
         Column {
             id: panelText
-            Layout.fillWidth: true
+            Layout.preferredWidth: col.width
             spacing: VPNTheme.theme.windowMargin / 2
 
             VPNHeadline {
                 id: panelTitle
                 objectName: "panelTitle"
-                anchors.horizontalCenter: parent.horizontalCenter
+                width: parent.width
             }
 
             VPNSubtitle {
                 id: panelDescription
                 objectName: "panelDescription"
-                anchors.horizontalCenter: parent.horizontalCenter
+                width: parent.width
             }
         }
 
@@ -175,12 +168,11 @@ VPNFlickable {
             // the wrapping ColumnLayout
             Layout.fillHeight: true
             Layout.minimumHeight: VPNTheme.theme.windowMargin
-            Layout.fillWidth: true
         }
 
         Column {
             id: panelBottomContent
-            Layout.fillWidth: true
+            Layout.preferredWidth: parent.width
             spacing: VPNTheme.theme.windowMargin
 
             PageIndicator {
@@ -211,6 +203,7 @@ VPNFlickable {
                 objectName: "signUpButton"
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: VPNl18n.MobileOnboardingSignUp
+                width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
 
                 // TODO: Add Glean event
                 onClicked: VPN.getStarted()
@@ -225,7 +218,10 @@ VPNFlickable {
                 // TODO: Add Glean event
                 onClicked: VPN.getStarted()
             }
+        }
 
+        VPNVerticalSpacer {
+            Layout.preferredHeight: Math.min(window.height * 0.08, 40)
         }
     }
 }
