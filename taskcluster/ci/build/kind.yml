@@ -37,7 +37,7 @@ jobs:
             symbol: B
             kind: build
             tier: 1
-            platform: android/debug
+            platform: android/universal
         worker-type: b-linux
         worker:
             docker-image: {in-tree: android-build}
@@ -51,6 +51,26 @@ jobs:
             use-caches: true
             cwd: '{checkout}'
             command: ./taskcluster/scripts/android_build_debug.sh
+    androidQT6Arm64/debug:
+        description: "Android Debug (arm64-v8a)"
+        treeherder:
+            symbol: B
+            kind: build
+            tier: 1
+            platform: android/arm64-v8a
+        worker-type: b-linux
+        worker:
+            docker-image: {in-tree: android-build-qt6-armv8}
+            max-run-time: 3600
+            artifacts:
+                - type: directory
+                  name: public/build
+                  path: /builds/worker/artifacts
+        run:
+            using: run-task
+            use-caches: true
+            cwd: '{checkout}'
+            command: ./taskcluster/scripts/android_build__qt6_debug.sh arm64-v8a
 #    macosx/opt:
 #        description: "Mac Build"
 #        treeherder:

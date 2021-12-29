@@ -984,6 +984,7 @@ exists($$PWD/../translations/translations.pri) {
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
+CONFIG += qtquickcompiler
 
 coverage {
     message(Coverage enabled)

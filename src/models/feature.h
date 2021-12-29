@@ -76,7 +76,6 @@ class Feature : public QObject {
   // e.g Controller support level for features depending on this
   // or if the devmode enabled a feature
   void supportedChanged();
-  void newChanged();
 
  protected:
   // Implemented by each feature.

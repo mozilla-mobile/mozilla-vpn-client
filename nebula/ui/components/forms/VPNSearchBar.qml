@@ -50,7 +50,7 @@ VPNTextField {
 
         VPNInterLabel {
             id: warningLabel
-            color: Color.error.default
+            color: VPNTheme.colors.error.default
             text: VPNl18n.ServersViewSearchNoResultsLabel
             font.pixelSize: VPNTheme.theme.fontSizeSmall
             width: undefined
