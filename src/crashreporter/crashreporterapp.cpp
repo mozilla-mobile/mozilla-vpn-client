@@ -12,24 +12,9 @@
 
 int CrashReporterApp::main(int argc, char* argv[]) {
   QApplication a(argc, argv);
-
-#ifdef MVPN_WINDOWS
-  // Allocate a console to view log output in debug mode on windows
-  if (AllocConsole()) {
-    FILE* unusedFile;
-    freopen_s(&unusedFile, "CONOUT$", "w", stdout);
-    freopen_s(&unusedFile, "CONOUT$", "w", stderr);
-    std::cout.clear();
-    std::clog.clear();
-    std::cerr.clear();
-  }
-#endif
-
   auto crashreporter = CrashReporterFactory::createCrashReporter();
   QTimer::singleShot(0, &a, [crashreporter, argc, argv]() {
     crashreporter->start(argc, argv);
   });
-  int rc = a.exec();
-  std::cout << "Exiting handler";
-  return rc;
+  return a.exec();
 }

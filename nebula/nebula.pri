@@ -17,6 +17,7 @@ RESOURCES += $$PWD/ui/themes.qrc
 RESOURCES += $$PWD/ui/nebula_resources.qrc
 
 QML_IMPORT_PATH += $$PWD/ui
+QML_DESIGNER_IMPORT_PATH += $$PWD/ui
 
 versionAtLeast(QT_VERSION, 6.0.0) {
     RESOURCES += $$PWD/ui/compatQt6.qrc

@@ -6,8 +6,11 @@
 #include "fontloader.h"
 #include "imageproviderfactory.h"
 #include "nebula.h"
+#include "theme.h"
+
 #include <QCoreApplication>
 #include <QWindow>
+#include "l18nstrings.h"
 
 using namespace std;
 
@@ -24,6 +27,23 @@ void CrashUI::initialize() {
     if (provider) {
       m_engine->addImageProvider(APP, provider);
     }
+
+    qmlRegisterSingletonType<L18nStrings>(
+        "Mozilla.VPN", 1, 0, "VPNl18n",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = L18nStrings::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+    m_theme = make_shared<Theme>();
+    m_theme->loadThemes();
+    qmlRegisterSingletonType<Theme>(
+        "Mozilla.VPN", 1, 0, "VPNTheme",
+        [this](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = m_theme.get();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
     const QUrl url(QML_MAIN);
     m_engine->load(url);
     m_initialized = true;

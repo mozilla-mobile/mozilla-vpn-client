@@ -8,7 +8,6 @@ import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import compat 0.1
 import components 0.1
-import themes 0.1
 
 Window {
     id: window
@@ -24,15 +23,15 @@ Window {
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
     visible: true
 
-    width: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
-    height: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
+    width: fullscreenRequired() ? Screen.width : VPNTheme.theme.desktopAppWidth;
+    height: fullscreenRequired() ? Screen.height : VPNTheme.theme.desktopAppHeight;
 
     //These need to be bound before onComplete so that the window buttons, menus and title bar double click behave properly
-    maximumWidth: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
-    maximumHeight: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
+    maximumWidth: fullscreenRequired() ? Screen.width : VPNTheme.theme.desktopAppWidth;
+    maximumHeight: fullscreenRequired() ? Screen.height : VPNTheme.theme.desktopAppHeight;
 
     //% "Mozilla VPN"
-    title: qsTrId("vpn.main.productName")
+    title: VPNl18n.CrashreporterMainTitle
     color: "#F9F9FA"
 
     Rectangle {

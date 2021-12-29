@@ -7,6 +7,7 @@
 
 #include <QQmlApplicationEngine>
 #include <memory>
+#include "theme.h"
 
 class CrashUI {
  public:
@@ -16,6 +17,7 @@ class CrashUI {
 
  private:
   std::unique_ptr<QQmlApplicationEngine> m_engine;
+  std::shared_ptr<Theme> m_theme;
   bool m_initialized = false;
 };
 

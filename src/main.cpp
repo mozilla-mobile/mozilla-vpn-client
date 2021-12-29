@@ -19,8 +19,6 @@
 #include <thread>
 #include <crashreporter/crashreporterapp.h>
 #include <crashreporter/crashclient.h>
-#include <client/simulate_crash.h>
-#include <snapshot/win/process_reader_win.h>
 
 #if defined MVPN_WINDOWS && defined MVPN_DEBUG
 #  include <windows.h>
@@ -45,7 +43,6 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-  INIT_NEBULA;
 #ifdef MVPN_WINDOWS
   if (argc > 1) {
     for (int i = 1; i < argc; i++) {
@@ -54,17 +51,19 @@ int main(int argc, char* argv[]) {
       }
     }
   }
-  std::cout << "Starting client.";
   if (!CrashClient::instance().start(argc, argv)) {
     std::cout << "CrashClient returned false." << std::endl;
   }
 
 #endif
-  INIT_GLEAN;
   CommandLineParser clp;
   std::thread t([]() {
     Sleep(2000);
-    abort();
+    // abort();
+    // throw new std::exception();
+    void* p = malloc(64);
+    free(p);
+    free(p);
   });
   return clp.parse(argc, argv);
 }

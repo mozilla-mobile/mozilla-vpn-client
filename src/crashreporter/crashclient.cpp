@@ -6,11 +6,8 @@
 
 #include <QCoreApplication>
 #include <QString>
-#include <util/win/registration_protocol_win.h>
-#include "crashconstants.h"
 #include "crashserverclientfactory.h"
 
-using namespace crashpad;
 using namespace std;
 
 CrashClient::CrashClient() { m_client = CrashServerClientFactory::create(); }
