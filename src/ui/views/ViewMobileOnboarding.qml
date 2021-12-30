@@ -64,17 +64,17 @@ VPNFlickable {
                     Image {
                         id: panelImg
 
-                        property real imageScaleValue: 0.95
+                        property real imageScaleValue: 0.9
                         property real imageOpacityValue: 0.0
 
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: parent.top
-                        anchors.topMargin: onboardingPanel.panelHeight / 2 - currentPanelValues._finalImageHeight
+                        anchors.topMargin: onboardingPanel.panelHeight / 2 - currentPanelValues._imageHeight
                         antialiasing: true
                         fillMode: Image.PreserveAspectFit
                         opacity: panelImg.imageOpacityValue
                         source: imageSrc
-                        sourceSize.height: currentPanelValues._startingImageHeight
+                        sourceSize.height: currentPanelValues._imageHeight
                         transform: Scale {
                             origin.x: panelImg.width / 2
                             origin.y: panelImg.height / 2
@@ -97,7 +97,7 @@ VPNFlickable {
                                 duration: 100
                             }
                             PauseAnimation {
-                                duration: 100
+                                duration: 150
                             }
                             ScriptAction {
                                 script: updatePanel.updateStrings()
@@ -151,8 +151,7 @@ VPNFlickable {
         id: currentPanelValues
         property string _panelTitleText: ""
         property string _panelDescriptionText: ""
-        property real _finalImageHeight: Math.min(240, panelHeight * .35)
-        property real _startingImageHeight: _finalImageHeight * .9
+        property real _imageHeight: Math.min(240, panelHeight * .35)
     }
 
     ColumnLayout {
