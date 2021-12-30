@@ -1,8 +1,5 @@
 
-##heading level 2
-
-Mozilla VPN Crash Reporting - What is in a Crash Report?
------------------
+## Mozilla VPN Crash Reporting - What is in a Crash Report?
 
 In the event that Mozilla VPN exits unexpectedly or crashes, you may be prompted to upload a "Crash Report."  What does that mean, and what does it mean for your privacy?
 
@@ -14,16 +11,14 @@ A crash report contains detailed information about the state of a process at the
 
 **Registers** - Registers are much smaller bits of memory that are loaded as the program is executing code.  This also help us determine the state of the program.
 
-###heading level 3
-Can my personal information be in a crash report?
-------------------
+### Can my personal information be in a crash report?
+
 The VPN crash report could contain information about the topology of your network.  This would be things like the addresses of routers, DNS servers, or the VPN endpoint you are connected to.  It could also contain your Mozilla username and email address.  Your password is not stored in memory.  The rest of the memory contents could be anything the application has stored at the time of the crash.
 
 Because of how Mozilla VPN is written, no internet traffic or browsing history will be in the report.
 
-###heading level 3
-Where does this crash report go?  Who can see it?
-------------------
+### Where does this crash report go?  Who can see it?
+
 The crash report is uploaded to a Mozilla server.  Once it is uploaded, only people who have special access can see the crash reports.  This access is tightly controlled internally, and is not generally available to everyone at Mozilla.
 How long do you keep the report?
 
