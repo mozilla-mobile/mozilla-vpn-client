@@ -122,6 +122,13 @@ VPNFlickable {
                             }
                         }
                     }
+                    onClicked: {
+                        if (swipeView.currentIndex < onboardingModel.count - 1) {
+                            swipeView.currentIndex += 1;
+                        } else {
+                            swipeView.currentIndex = 0;
+                        }
+                    }
                     Component.onCompleted: {
                         currentPanelValues._panelTitleText = headline;
                         currentPanelValues._panelDescriptionText = subtitle;
