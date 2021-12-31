@@ -202,7 +202,7 @@ VPNFlickable {
 
                 delegate: Rectangle {
                     id: circle
-                    color: index=== swipeView.currentIndex ? VPNTheme.theme.blue : VPNTheme.theme.greyPressed
+                    color: index === swipeView.currentIndex ? VPNTheme.theme.blue : VPNTheme.theme.greyPressed
                     height: 6
                     width: 6
                     radius: 6
@@ -237,7 +237,7 @@ VPNFlickable {
         }
 
         VPNVerticalSpacer {
-            Layout.preferredHeight: Math.min(window.height * 0.08, 40)
+            Layout.preferredHeight: Math.min(window.height * 0.08, VPNTheme.theme.rowHeight)
         }
     }
 }
