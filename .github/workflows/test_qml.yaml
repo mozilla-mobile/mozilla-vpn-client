@@ -51,3 +51,4 @@ jobs:
         run: |
           export PATH=/opt/qt515/bin:$PATH
           xvfb-run -a ./tests/qml/qml_tests -platform offscreen
+          xvfb-run -a ./lottie/tests/qml/tst_lottie -platform offscreen

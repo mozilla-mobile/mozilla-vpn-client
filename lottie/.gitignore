@@ -1,0 +1,16 @@
+bin/lottietest
+bin/lottietest.qmltypes
+bin/lottietest_metatypes.json
+bin/lottietest_qmltyperegistrations.cpp
+
+tests/unit/tests
+
+tests/qml/tst_lottie
+tests/qml/tst_lottie.qmltypes
+tests/qml/tst_lottie_metatypes.json
+tests/qml/tst_lottie_qmltyperegistrations.cpp
+tests/qml/target_wrapper.sh
+
+# Editors
+*.swp
+*.swo
