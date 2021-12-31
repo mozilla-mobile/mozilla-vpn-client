@@ -63,14 +63,24 @@ VPNFlickable {
 
                     Image {
                         id: panelImg
+
+                        property real imageScaleValue: 0.9
+                        property real imageOpacityValue: 0.0
+
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: parent.top
-                        anchors.topMargin: onboardingPanel.panelHeight / 2 - currentPanelValues._finalImageHeight
+                        anchors.topMargin: onboardingPanel.panelHeight / 2 - currentPanelValues._imageHeight
                         antialiasing: true
                         fillMode: Image.PreserveAspectFit
-                        opacity: 0
+                        opacity: panelImg.imageOpacityValue
                         source: imageSrc
-                        sourceSize.height: currentPanelValues._startingImageHeight
+                        sourceSize.height: currentPanelValues._imageHeight
+                        transform: Scale {
+                            origin.x: panelImg.width / 2
+                            origin.y: panelImg.height / 2
+                            xScale: panelImg.imageScaleValue
+                            yScale: panelImg.imageScaleValue
+                        }
 
                         SequentialAnimation {
                             id: updatePanel
@@ -83,33 +93,40 @@ VPNFlickable {
                                 targets: [panelTitle, panelDescription]
                                 property: "opacity"
                                 from: 1
-                                to: 0
+                                to: panelImg.imageOpacityValue
                                 duration: 100
                             }
                             PauseAnimation {
-                                duration: 300
+                                duration: 150
                             }
                             ScriptAction {
                                 script: updatePanel.updateStrings()
                             }
                             ParallelAnimation {
-                                PropertyAnimation {
+                                NumberAnimation {
                                     target: panelImg
-                                    property: "sourceSize.height"
-                                    from: currentPanelValues._startingImageHeight
-                                    to: currentPanelValues._finalImageHeight
-                                    duration: 200
+                                    property: "imageScaleValue"
+                                    from: panelImg.imageScaleValue
+                                    to: 1
+                                    duration: 250
                                     easing.type: Easing.OutQuad
                                 }
                                 PropertyAnimation {
                                     targets: [panelTitle, panelDescription, panelImg]
                                     property: "opacity"
-                                    from: 0
+                                    from: panelImg.imageOpacityValue
                                     to: 1
-                                    duration: 400
+                                    duration: 250
                                     easing.type: Easing.OutQuad
                                 }
                             }
+                        }
+                    }
+                    onClicked: {
+                        if (swipeView.currentIndex < onboardingModel.count - 1) {
+                            swipeView.currentIndex += 1;
+                        } else {
+                            swipeView.currentIndex = 0;
                         }
                     }
                     Component.onCompleted: {
@@ -134,8 +151,7 @@ VPNFlickable {
         id: currentPanelValues
         property string _panelTitleText: ""
         property string _panelDescriptionText: ""
-        property real _finalImageHeight: Math.min(240, panelHeight * .35)
-        property real _startingImageHeight: _finalImageHeight * .9
+        property real _imageHeight: Math.min(240, panelHeight * .35)
     }
 
     ColumnLayout {
