@@ -11,7 +11,6 @@ import components 0.1
 VPNFlickable {
     id: vpnFlickable
 
-    flickContentHeight: vpnPanel.height + alertWrapperBackground.height + footerContent.height + (VPNTheme.theme.windowMargin * 4)
     state: "required"
 
     Item {
@@ -42,7 +41,7 @@ VPNFlickable {
 
     VPNSubtitle {
         id: subTextBlock
-        anchors.top: spacer2.bottom
+        anchors.top:  vpnPanel.bottom
         anchors.topMargin: VPNTheme.theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
         width: Math.min(vpnFlickable.width - (VPNTheme.theme.windowMargin * 4), VPNTheme.theme.maxHorizontalContentWidth)

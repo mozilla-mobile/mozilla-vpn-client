@@ -529,7 +529,6 @@ void MozillaVPN::openLink(LinkType linkType) {
       url = "https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/";
       break;
     case LinkCaptivePortal:
-      // TODO: get link
       url = QString("http://%1/success.txt")
                 .arg(SettingsHolder::instance()
                          ->captivePortalIpv4Addresses()

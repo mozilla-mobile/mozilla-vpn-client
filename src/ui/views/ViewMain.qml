@@ -41,11 +41,11 @@ VPNFlickable {
         }
     ]
 
-    Connections{
-     target: VPNController
-     onActivationBlockedForCaptivePortal:{
-        stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
-       }
+    Connections {
+        target: VPNController
+        onActivationBlockedForCaptivePortal: {
+            stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
+        }
     }
 
     MouseArea {
