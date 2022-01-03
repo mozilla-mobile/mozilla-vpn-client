@@ -34,8 +34,6 @@ Item {
         VPNCheckBoxRow {
             id: developerUnlock
 
-            anchors.top: flickableContent.bottom
-            anchors.topMargin: VPNTheme.theme.listSpacing
             width: parent.width - VPNTheme.theme.windowMargin
 
             labelText:  VPNl18n.SettingsDevShowOptionTitle
@@ -102,7 +100,6 @@ Item {
 
                     enabled: root.vpnIsOff && VPNSettings.stagingServer
                     placeholderText: "Staging server address"
-                    text: VPNSettings.stagingServerAddress
                     height: 40
 
                     PropertyAnimation on opacity {
@@ -113,6 +110,10 @@ Item {
                         if (root.vpnIsOff) {
                             VPNSettings.stagingServerAddress = serverAddressInput.text;
                         }
+                    }
+
+                    Component.onCompleted: {
+                        serverAddressInput.text = VPNSettings.stagingServerAddress;
                     }
                 }
 

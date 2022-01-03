@@ -39,7 +39,8 @@ Item {
 
             Connections {
                 target: lottieAnimationExample.status
-                onChanged: (playing, currentTime, totalTime) => {
+
+                function onChanged(playing, currentTime, totalTime) {
                     totalAnimationFrames = totalTime;
                     currentAnimationFrame = currentTime;
                 }
