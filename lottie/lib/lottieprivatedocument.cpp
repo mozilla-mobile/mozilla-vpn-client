@@ -17,6 +17,8 @@ QJSValue LottiePrivateDocument::createElement(const QString& type) {
     return m_private->engine()->toScriptValue(m_private->canvas());
   }
 
+  qDebug() << "Unable to create element" << type;
+
   return m_private->engine()->newErrorObject(QJSValue::TypeError,
                                              "Unsupported type");
 }

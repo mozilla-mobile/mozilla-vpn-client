@@ -176,6 +176,7 @@ inAppSupportWorkflow:
   supportErrorHeader: Error submitting your support request
   supportErrorText: An unexpected error has occurred, please try again.
   supportErrorButton: Try Again
+  supportErrorBrowserButton: Try opening in browser
 
 # IAP Android edge case 1
 notSignedInGoogle:
