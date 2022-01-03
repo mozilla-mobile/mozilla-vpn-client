@@ -208,7 +208,7 @@ restorePurchaseInUseError:
   restorePurchaseInUseErrorText: Another Firefox Account has already subscribed using this Apple ID. Visit our help center below to learn more about how to manage your subscriptions.
 
 # IAP iOS restore not found error
- restorePurchaseNotFoundError:
+restorePurchaseNotFoundError:
   restorePurchaseNotFoundErrorText: Sorry we are unable to find your subscription, please try again. Visit our help center below to learn more about how to troubleshoot our VPN.
 
 
