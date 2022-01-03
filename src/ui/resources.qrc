@@ -4,11 +4,6 @@
         <file>resources/chevron-purple.svg</file>
         <file>resources/connection-info-dark.svg</file>
         <file>resources/copy.svg</file>
-        <file>resources/settings/lock.svg</file>
-        <file>resources/globe.svg</file>
-        <file>resources/globe-warning.svg</file>
-        <file>resources/heart-check.svg</file>
-        <file>resources/app-rating.svg</file>
         <file>resources/developer.svg</file>
         <file>resources/encodedPassword.txt</file>
         <file>resources/faces/average.svg</file>
@@ -21,6 +16,7 @@
         <file>resources/features/multi-account-containers-preview.png</file>
         <file>resources/features/multi-hop-preview.png</file>
         <file>resources/features/support-form-preview.png</file>
+        <file>resources/globe-warning.svg</file>
         <file>resources/heart-check.svg</file>
         <file>resources/logo-animated1.png</file>
         <file>resources/logo-animated1.svg</file>
