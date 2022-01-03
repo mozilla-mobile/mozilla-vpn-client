@@ -24,8 +24,9 @@ class LocalSocketController final : public ControllerImpl {
 
   void activate(const QList<Server>& serverList, const Device* device,
                 const Keys* keys,
-                const QList<IPAddressRange>& allowedIPAddressRanges,
-                const QList<QString>& vpnDisabledApps,
+                const QList<IPAddress>& allowedIPAddressRanges,
+                const QStringList& excludedAddresses,
+                const QStringList& vpnDisabledApps,
                 const QHostAddress& dnsServer, Reason reason) override;
 
   void deactivate(Reason reason) override;
@@ -58,8 +59,9 @@ class LocalSocketController final : public ControllerImpl {
     HopConnection() {}
     Server m_server;
     int m_hopindex = 0;
-    QList<IPAddressRange> m_allowedIPAddressRanges;
-    QList<QString> m_vpnDisabledApps;
+    QList<IPAddress> m_allowedIPAddressRanges;
+    QStringList m_excludedAddresses;
+    QStringList m_vpnDisabledApps;
     QHostAddress m_dnsServer;
   };
   QList<HopConnection> m_activationQueue;

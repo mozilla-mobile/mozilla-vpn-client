@@ -26,7 +26,7 @@ class CaptivePortalDetection final : public QObject {
   void detectCaptivePortal();
   void captivePortalDetected();
 
-signals:
+ signals:
   void captivePortalPresent();
 
  public slots:

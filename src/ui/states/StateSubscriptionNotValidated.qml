@@ -7,7 +7,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 import org.mozilla.Glean 0.24
 import telemetry 0.24
@@ -28,10 +27,10 @@ VPNStackView {
             errorMessage: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorText,
 
             // "Try again"
-            buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
-            buttonObjectName: "errorGetHelpButton",
-            buttonOnClick: stackview.handleButtonClick,
-            signOffLinkVisible: false,
+            primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
+            primaryButtonObjectName: "errorGetHelpButton",
+            primaryButtonOnClick: stackview.handleButtonClick,
+            secondaryButtonIsSignOff: false,
             getHelpLinkVisible: true,
             }
         );

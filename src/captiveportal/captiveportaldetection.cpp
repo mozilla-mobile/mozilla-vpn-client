@@ -202,8 +202,8 @@ void CaptivePortalDetection::activationRequired() {
   MozillaVPN* vpn = MozillaVPN::instance();
   if (vpn->state() == MozillaVPN::StateMain &&
       vpn->controller()->state() == Controller::StateOff) {
-        vpn->controller()->captivePortalGone();
-        vpn->activate();
+    vpn->controller()->captivePortalGone();
+    vpn->activate();
   }
 }
 

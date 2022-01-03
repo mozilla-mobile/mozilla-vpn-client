@@ -5,7 +5,7 @@
 #ifndef MACOSROUTEMONITOR_H
 #define MACOSROUTEMONITOR_H
 
-#include "ipaddressrange.h"
+#include "ipaddress.h"
 
 #include <QByteArray>
 #include <QHostAddress>
@@ -24,20 +24,12 @@ class MacosRouteMonitor final : public QObject {
   MacosRouteMonitor(const QString& ifname, QObject* parent = nullptr);
   ~MacosRouteMonitor();
 
-  bool insertRoute(const IPAddressRange& prefix);
-  bool deleteRoute(const IPAddressRange& prefix);
+  bool insertRoute(const IPAddress& prefix);
+  bool deleteRoute(const IPAddress& prefix);
   int interfaceFlags() { return m_ifflags; }
 
   bool addExclusionRoute(const QHostAddress& address);
-  bool addExclusionRoute(const QString& address) {
-    return addExclusionRoute(QHostAddress(address));
-  }
-
-  void deleteExclusionRoute(const QHostAddress& address);
-  void deleteExclusionRoute(const QString& address) {
-    deleteExclusionRoute(QHostAddress(address));
-  }
-
+  bool deleteExclusionRoute(const QHostAddress& address);
   void flushExclusionRoutes();
 
  private:
@@ -45,7 +37,7 @@ class MacosRouteMonitor final : public QObject {
   void handleRtmUpdate(const struct rt_msghdr* msg, const QByteArray& payload);
   void handleIfaceInfo(const struct if_msghdr* msg, const QByteArray& payload);
   bool rtmSendRoute(int action, const QHostAddress& prefix, unsigned int plen,
-                    unsigned int ifindex, const struct sockaddr* gateway);
+                    unsigned int ifindex, const void* gateway);
   bool rtmFetchRoutes(int family);
   static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr,
                             const void* sa);

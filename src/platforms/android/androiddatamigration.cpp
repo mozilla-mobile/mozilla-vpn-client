@@ -7,7 +7,6 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#include "tasks/accountandservers/taskaccountandservers.h"
 
 #include "androidsharedprefs.h"
 

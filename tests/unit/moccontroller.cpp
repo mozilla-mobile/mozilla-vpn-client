@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/controllerimpl.h"
-#include "../../src/ipaddressrange.h"
+#include "../../src/ipaddress.h"
 #include "../../src/mozillavpn.h"
 #include "helper.h"
 
@@ -43,10 +43,10 @@ void Controller::getBackendLogs(std::function<void(const QString&)>&&) {}
 void Controller::statusUpdated(const QString&, const QString&, uint64_t,
                                uint64_t) {}
 
-QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
+QList<IPAddress> Controller::getAllowedIPAddressRanges(
     const QList<Server>& serverList) {
   Q_UNUSED(serverList);
-  return QList<IPAddressRange>();
+  return QList<IPAddress>();
 }
 
 Controller::State Controller::state() const {

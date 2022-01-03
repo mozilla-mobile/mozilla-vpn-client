@@ -196,14 +196,6 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
 
   logger.debug() << "Adding peer" << printableKey(config.m_serverPublicKey);
 
-  // HACK: This is a sloppy way to detect entry vs. exit server.
-  if (config.m_hopindex != 0) {
-    logger.debug() << "Adding exclusion route for" << config.m_serverIpv4AddrIn;
-    rtmSendExclude(RTM_NEWRULE,
-                   NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK,
-                   QHostAddress(config.m_serverIpv4AddrIn));
-  }
-
   // Public Key
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
   // Endpoint
@@ -221,16 +213,16 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   // To work around the issue, just set default routes for hopindex zero.
   if (config.m_hopindex == 0) {
     if (!config.m_deviceIpv4Address.isNull()) {
-      addPeerPrefix(peer, IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
+      addPeerPrefix(peer, IPAddress("0.0.0.0/0"));
     }
     if (!config.m_deviceIpv6Address.isNull()) {
-      addPeerPrefix(peer, IPAddressRange("::", 0, IPAddressRange::IPv6));
+      addPeerPrefix(peer, IPAddress("::/0"));
     }
   } else {
-    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
       bool ok = addPeerPrefix(peer, ip);
       if (!ok) {
-        logger.error() << "Invalid IP address:" << ip.ipAddress();
+        logger.error() << "Invalid IP address:" << ip.toString();
         return false;
       }
     }
@@ -258,14 +250,6 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
     return false;
   }
   auto guard = qScopeGuard([&] { wg_free_device(device); });
-
-  // HACK: This is a sloppy way to detect entry vs. exit server.
-  if (config.m_hopindex != 0) {
-    logger.debug() << "Removing exclusion route for"
-                   << config.m_serverIpv4AddrIn;
-    rtmSendExclude(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK,
-                   QHostAddress(config.m_serverIpv4AddrIn));
-  }
 
   wg_peer* peer = static_cast<wg_peer*>(calloc(1, sizeof(*peer)));
   if (!peer) {
@@ -340,23 +324,33 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
   return peerList;
 }
 
-bool WireguardUtilsLinux::updateRoutePrefix(const IPAddressRange& prefix,
+bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix,
                                             int hopindex) {
   logger.debug() << "Adding route to" << prefix.toString();
-  int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
+  const int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
   return rtmSendRoute(RTM_NEWROUTE, flags, prefix, hopindex);
 }
 
-bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddressRange& prefix,
+bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddress& prefix,
                                             int hopindex) {
   logger.debug() << "Removing route to" << prefix.toString();
-  int flags = NLM_F_REQUEST | NLM_F_ACK;
+  const int flags = NLM_F_REQUEST | NLM_F_ACK;
   return rtmSendRoute(RTM_DELROUTE, flags, prefix, hopindex);
 }
 
+bool WireguardUtilsLinux::addExclusionRoute(const QHostAddress& address) {
+  logger.debug() << "Adding exclusion route for" << address.toString();
+  const int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
+  return rtmSendExclude(RTM_NEWRULE, flags, address);
+}
+
+bool WireguardUtilsLinux::deleteExclusionRoute(const QHostAddress& address) {
+  logger.debug() << "Removing exclusion route for" << address.toString();
+  return rtmSendExclude(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, address);
+}
+
 bool WireguardUtilsLinux::rtmSendRoute(int action, int flags,
-                                       const IPAddressRange& prefix,
-                                       int hopindex) {
+                                       const IPAddress& prefix, int hopindex) {
   constexpr size_t rtm_max_size = sizeof(struct rtmsg) +
                                   2 * RTA_SPACE(sizeof(uint32_t)) +
                                   RTA_SPACE(sizeof(struct in6_addr));
@@ -488,7 +482,7 @@ bool WireguardUtilsLinux::setPeerEndpoint(struct sockaddr* sa,
 }
 
 bool WireguardUtilsLinux::addPeerPrefix(wg_peer* peer,
-                                        const IPAddressRange& prefix) {
+                                        const IPAddress& prefix) {
   Q_ASSERT(peer);
 
   wg_allowedip* allowedip =
@@ -697,16 +691,17 @@ QString WireguardUtilsLinux::getBlockCgroup() const {
 
 // static
 bool WireguardUtilsLinux::buildAllowedIp(wg_allowedip* ip,
-                                         const IPAddressRange& prefix) {
-  if (prefix.type() == IPAddressRange::IPv4) {
+                                         const IPAddress& prefix) {
+  const char* addrString = qPrintable(prefix.address().toString());
+  if (prefix.type() == QAbstractSocket::IPv4Protocol) {
     ip->family = AF_INET;
-    ip->cidr = prefix.range();
-    return inet_pton(AF_INET, qPrintable(prefix.ipAddress()), &ip->ip4) == 1;
+    ip->cidr = prefix.prefixLength();
+    return inet_pton(AF_INET, addrString, &ip->ip4) == 1;
   }
-  if (prefix.type() == IPAddressRange::IPv6) {
+  if (prefix.type() == QAbstractSocket::IPv6Protocol) {
     ip->family = AF_INET6;
-    ip->cidr = prefix.range();
-    return inet_pton(AF_INET6, qPrintable(prefix.ipAddress()), &ip->ip6) == 1;
+    ip->cidr = prefix.prefixLength();
+    return inet_pton(AF_INET6, addrString, &ip->ip6) == 1;
   }
   return false;
 }

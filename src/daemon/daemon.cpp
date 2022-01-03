@@ -96,6 +96,18 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return false;
     }
   }
+
+  // Configure routing for excluded addresses.
+  for (const QString& i : config.m_excludedAddresses) {
+    QHostAddress address(i);
+    if (m_excludedAddrSet.contains(address)) {
+      m_excludedAddrSet[address]++;
+      continue;
+    }
+    wgutils()->addExclusionRoute(address);
+    m_excludedAddrSet[address] = 1;
+  }
+
   // Add the peer to this interface.
   if (!wgutils()->updatePeer(config)) {
     logger.error() << "Peer creation failed.";
@@ -127,7 +139,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   }
 
   // set routing
-  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
       logger.debug() << "Routing configuration failed for" << ip.toString();
       return false;
@@ -142,6 +154,27 @@ bool Daemon::activate(const InterfaceConfig& config) {
   }
 
   return status;
+}
+
+// static
+bool Daemon::parseStringList(const QJsonObject& obj, const QString& name,
+                             QStringList& list) {
+  if (obj.contains(name)) {
+    QJsonValue value = obj.value(name);
+    if (!value.isArray()) {
+      logger.error() << name << "is not an array";
+      return false;
+    }
+    QJsonArray array = value.toArray();
+    for (QJsonValue i : array) {
+      if (!i.isString()) {
+        logger.error() << name << "must contain only strings";
+        return false;
+      }
+      list.append(i.toString());
+    }
+  }
+  return true;
 }
 
 // static
@@ -244,33 +277,23 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
         return false;
       }
 
-      config.m_allowedIPAddressRanges.append(IPAddressRange(
-          address.toString(), range.toInt(),
-          isIpv6.toBool() ? IPAddressRange::IPv6 : IPAddressRange::IPv4));
+      config.m_allowedIPAddressRanges.append(
+          IPAddress(QHostAddress(address.toString()), range.toInt()));
     }
 
     // Sort allowed IPs by decreasing prefix length.
     std::sort(config.m_allowedIPAddressRanges.begin(),
               config.m_allowedIPAddressRanges.end(),
-              [&](const IPAddressRange& a, const IPAddressRange& b) -> bool {
-                return a.range() > b.range();
+              [&](const IPAddress& a, const IPAddress& b) -> bool {
+                return a.prefixLength() > b.prefixLength();
               });
   }
 
-  if (obj.contains("vpnDisabledApps")) {
-    QJsonValue value = obj.value("vpnDisabledApps");
-    if (!value.isArray()) {
-      logger.error() << "vpnDisabledApps is not an array";
-      return false;
-    }
-    QJsonArray array = value.toArray();
-    for (QJsonValue i : array) {
-      if (!i.isString()) {
-        logger.error() << "vpnDisabledApps must contain only strings";
-        return false;
-      }
-      config.m_vpnDisabledApps.append(i.toString());
-    }
+  if (!parseStringList(obj, "excludedAddresses", config.m_excludedAddresses)) {
+    return false;
+  }
+  if (!parseStringList(obj, "vpnDisabledApps", config.m_vpnDisabledApps)) {
+    return false;
   }
   return true;
 }
@@ -303,11 +326,17 @@ bool Daemon::deactivate(bool emitSignals) {
   for (const ConnectionState& state : m_connections.values()) {
     const InterfaceConfig& config = state.m_config;
     logger.debug() << "Deleting routes for hop" << config.m_hopindex;
-    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
       wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
     }
     wgutils()->deletePeer(config);
   }
+
+  // Cleanup routing for excluded addresses.
+  for (const QHostAddress& address : m_excludedAddrSet.keys()) {
+    wgutils()->deleteExclusionRoute(address);
+  }
+  m_excludedAddrSet.clear();
 
   // Delete the interface
   if (!wgutils()->deleteInterface()) {
@@ -354,12 +383,23 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   const InterfaceConfig& lastConfig =
       m_connections.value(config.m_hopindex).m_config;
 
+  // Configure routing for new excluded addresses.
+  for (const QString& i : config.m_excludedAddresses) {
+    QHostAddress address(i);
+    if (m_excludedAddrSet.contains(address)) {
+      m_excludedAddrSet[address]++;
+      continue;
+    }
+    wgutils()->addExclusionRoute(address);
+    m_excludedAddrSet[address] = 1;
+  }
+
   // Activate the new peer and its routes.
   if (!wgutils()->updatePeer(config)) {
     logger.error() << "Server switch failed to update the wireguard interface";
     return false;
   }
-  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
       logger.error() << "Server switch failed to update the routing table";
       break;
@@ -367,7 +407,17 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   }
 
   // Remove routing entries for the old peer.
-  for (const IPAddressRange& ip : lastConfig.m_allowedIPAddressRanges) {
+  for (const QString& i : lastConfig.m_excludedAddresses) {
+    QHostAddress address(i);
+    Q_ASSERT(m_excludedAddrSet.contains(address));
+    if (m_excludedAddrSet[address] > 1) {
+      m_excludedAddrSet[address]--;
+      continue;
+    }
+    wgutils()->deleteExclusionRoute(address);
+    m_excludedAddrSet.remove(address);
+  }
+  for (const IPAddress& ip : lastConfig.m_allowedIPAddressRanges) {
     if (!config.m_allowedIPAddressRanges.contains(ip)) {
       wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
     }

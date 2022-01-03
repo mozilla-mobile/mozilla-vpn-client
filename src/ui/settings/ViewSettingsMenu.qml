@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 import org.mozilla.Glean 0.24
 import telemetry 0.24
@@ -25,15 +24,15 @@ VPNFlickable {
         onClicked: stackview.pop(StackView.Immediate)
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.topMargin: Theme.windowMargin / 2
-        anchors.leftMargin: Theme.windowMargin / 2
+        anchors.topMargin: VPNTheme.theme.windowMargin / 2
+        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
         accessibleName: qsTrId("vpn.connectionInfo.close")
 
         Image {
             id: backImage
 
-            source: "qrc:/ui/resources/close-dark.svg"
-            sourceSize.width: Theme.iconSize
+            source: "qrc:/nebula/resources/close-dark.svg"
+            sourceSize.width: VPNTheme.theme.iconSize
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton
         }
@@ -48,7 +47,7 @@ VPNFlickable {
         logoTitle: VPNUser.displayName ? VPNUser.displayName : textVpnUser
         logoSubtitle: VPNUser.email
         anchors.top: parent.top
-        anchors.topMargin: (Math.max(window.safeContentHeight * .08, Theme.windowMargin * 2))
+        anchors.topMargin: (Math.max(window.safeContentHeight * .08, VPNTheme.theme.windowMargin * 2))
         maskImage: true
         isSettingsView: true
     }
@@ -58,7 +57,7 @@ VPNFlickable {
         objectName: "manageAccountButton"
         text: qsTrId("vpn.main.manageAccount")
         anchors.top: vpnPanel.bottom
-        anchors.topMargin: Theme.vSpacing
+        anchors.topMargin: VPNTheme.theme.vSpacing
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             Sample.manageAccountClicked.record();
@@ -72,22 +71,23 @@ VPNFlickable {
         VPNAboutUs {
             isSettingsView: true
             isMainView: false
+            licenseURL: "qrc:/ui/views/ViewLicenses.qml"
         }
     }
 
     ColumnLayout {
         id: settingsList
 
-        spacing: Theme.listSpacing
-        y: Theme.vSpacing + manageAccountButton.y + manageAccountButton.height
-        width: parent.width - Theme.windowMargin
+        spacing: VPNTheme.theme.listSpacing
+        y: VPNTheme.theme.vSpacing + manageAccountButton.y + manageAccountButton.height
+        width: parent.width - VPNTheme.theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
 
         VPNSettingsItem {
             objectName: "settingsWhatsNew"
             settingTitle: VPNl18n.WhatsNewReleaseNotesTourPageHeader
-            imageLeftSrc: "qrc:/ui/resources/gift-dark.svg"
-            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            imageLeftSrc: "qrc:/nebula/resources/gift-dark.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             onClicked: settingsStackView.push("qrc:/ui/settings/ViewWhatsNew.qml")
             showIndicator: VPNWhatsNewModel.hasUnseenFeature
             visible: VPNWhatsNewModel.rowCount() > 0
@@ -97,23 +97,21 @@ VPNFlickable {
             objectName: "settingsNetworking"
             settingTitle: qsTrId("vpn.settings.networking")
             imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
-            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             onClicked: settingsStackView.push("qrc:/ui/settings/ViewNetworkSettings.qml", {
                                                   //% "App permissions"
                                                   _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
                                               })
         }
         VPNSettingsItem {
-            //% "Launch VPN app on startup"
-            property string startAtBootTitle: qsTrId("vpn.settings.runOnBoot2")
 
             id: preferencesSetting
             objectName: "settingsPreferences"
             settingTitle: VPNl18n.SettingsSystemPreferences
             imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
-            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             onClicked: settingsStackView.push("qrc:/ui/settings/ViewPrivacySecurity.qml", {
-                                                _startAtBootTitle: Qt.binding(() => startAtBootTitle),
+                                                _startAtBootTitle: Qt.binding(() => VPNl18n.SettingsStartAtBootTitle),
                                                 _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
                                                 _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
                                                 _menuTitle: Qt.binding(() => preferencesSetting.settingTitle)
@@ -126,7 +124,7 @@ VPNFlickable {
             objectName: "settingsGetHelp"
             settingTitle: qsTrId("vpn.main.getHelp2")
             imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
-            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             onClicked: {
                 Sample.getHelpClickedViewSettings.record();
                 settingsStackView.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: true})
@@ -137,12 +135,12 @@ VPNFlickable {
             objectName: "settingsAboutUs"
             settingTitle: qsTrId("vpn.settings.aboutUs")
             imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
-            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             onClicked: settingsStackView.push(aboutUsComponent)
         }
 
         Rectangle {
-            Layout.preferredHeight: fullscreenRequired? Theme.rowHeight * 1.5 : Theme.rowHeight
+            Layout.preferredHeight: fullscreenRequired? VPNTheme.theme.rowHeight * 1.5 : VPNTheme.theme.rowHeight
             Layout.fillWidth: true
             color: "transparent"
         }
@@ -152,6 +150,5 @@ VPNFlickable {
         id: signOutLink
 
         objectName: "settingsLogout"
-        onClicked: VPNController.logout()
     }
 }

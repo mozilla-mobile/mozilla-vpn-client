@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 Item {
     id: root
@@ -32,17 +31,17 @@ Item {
             top: menu.bottom
         }
         height: root.height - menu.height
-        flickContentHeight: body.height + Theme.windowMargin * 2
+        flickContentHeight: body.height + VPNTheme.theme.windowMargin * 2
         width: root.width
 
         Column {
             id: body
 
-            spacing: Theme.listSpacing
+            spacing: VPNTheme.theme.listSpacing
             width: licenses.width
 
             VPNVerticalSpacer {
-                height: Theme.listSpacing
+                height: VPNTheme.theme.listSpacing
             }
 
             VPNTextBlock {
@@ -51,13 +50,13 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: VPNLicenseModel.contentLicense
                 textFormat: Text.MarkdownText
-                width: parent.width - Theme.windowMargin * 2
+                width: parent.width - VPNTheme.theme.windowMargin * 2
 
                 onLinkActivated: link => VPN.openLinkUrl(link)
             }
 
             VPNVerticalSpacer {
-                height: Theme.listSpacing * 0.5
+                height: VPNTheme.theme.listSpacing * 0.5
             }
 
             Repeater {
@@ -66,7 +65,7 @@ Item {
                 VPNExternalLinkListItem {
                     accessibleName: licenseTitle
                     title: licenseTitle
-                    iconSource: "qrc:/ui/resources/chevron.svg"
+                    iconSource: "qrc:/nebula/resources/chevron.svg"
 
                     onClicked: {
                         if (isSettingsView) {

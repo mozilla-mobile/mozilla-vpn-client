@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/nebula/themes">
+        <file alias="main/theme.js">themes/themes.js</file>
+        <file alias="main/colors.js">themes/colors.js</file>
+    </qresource>
+</RCC>
