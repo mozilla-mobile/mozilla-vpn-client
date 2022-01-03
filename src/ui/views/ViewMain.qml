@@ -41,6 +41,13 @@ VPNFlickable {
         }
     ]
 
+    Connections {
+        target: VPNController
+        onActivationBlockedForCaptivePortal: {
+            stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
+        }
+    }
+
     MouseArea {
         anchors.fill: parent
         enabled: box.connectionInfoVisible

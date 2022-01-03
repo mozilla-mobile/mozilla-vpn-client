@@ -89,6 +89,8 @@ class Controller final : public QObject {
 
   void backendFailure();
 
+  void captivePortalPresent();
+  void captivePortalGone();
   bool isUnsettled();
 
  public slots:
@@ -121,6 +123,7 @@ class Controller final : public QObject {
   void connectionRetryChanged();
   void enableDisconnectInConfirmingChanged();
   void silentSwitchDone();
+  void activationBlockedForCaptivePortal();
 
  private:
   void setState(State state);
@@ -148,6 +151,8 @@ class Controller final : public QObject {
   QTimer m_settleTimer;
 
   bool m_settled = true;
+
+  bool m_portalDetected = false;
 
   QDateTime m_connectedTimeInUTC;
 

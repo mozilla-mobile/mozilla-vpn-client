@@ -7,7 +7,8 @@ const vpn = require('./helper.js');
 describe('Captive portal', function() {
   this.timeout(45000);
 
-  it('Enable captive-portal-alert feature', async () => {
+  beforeEach(async function() {
+    //Enable captive-portal-alert feature
     await vpn.setSetting('captive-portal-alert', 'false');
     assert(await vpn.getSetting('captive-portal-alert') === 'false');
 
@@ -183,5 +184,17 @@ describe('Captive portal', function() {
     await vpn.waitForCondition(() => {
       return vpn.lastNotification().title === 'VPN Connected';
     });
+  });
+
+  it('Shows the prompt Before activation when a portal is detected', async () => {
+    await vpn.authenticate(true, true);
+    await vpn.setSetting('captive-portal-alert', 'true');
+    await vpn.forceCaptivePortalDetection();
+
+    await vpn.activate();
+    await vpn.waitForCondition(() => {
+      return vpn.hasElement("openCaptivePortalButton");
+    });
+    assert(true);
   });
 });
