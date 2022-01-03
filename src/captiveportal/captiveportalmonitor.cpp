@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportalmonitor.h"
+#include "captiveportalrequest.h"
 #include "captiveportalrequesttask.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -30,8 +31,17 @@ void CaptivePortalMonitor::start() {
 }
 
 void CaptivePortalMonitor::stop() {
+  if (!m_timer.isActive()) {
+    return;
+  }
   logger.debug() << "Captive portal monitor stop";
   m_timer.stop();
+}
+
+void CaptivePortalMonitor::maybeCheck() {
+  if (m_timer.isActive()) {
+    check();
+  }
 }
 
 void CaptivePortalMonitor::check() {
@@ -41,9 +51,15 @@ void CaptivePortalMonitor::check() {
   connect(task, &CaptivePortalRequestTask::operationCompleted, this,
           [this](CaptivePortalRequest::CaptivePortalResult result) {
             logger.debug() << "Captive portal detection:" << result;
-
-            if (result != CaptivePortalRequest::CaptivePortalResult::NoPortal ||
-                !m_timer.isActive()) {
+            if (!m_timer.isActive()) {
+              return;
+            }
+            if (result == CaptivePortalRequest::CaptivePortalResult::Failure) {
+              return;
+            }
+            if (result ==
+                CaptivePortalRequest::CaptivePortalResult::PortalDetected) {
+              emit offline();
               return;
             }
 

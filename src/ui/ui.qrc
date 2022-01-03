@@ -38,6 +38,7 @@
         <file>states/StateSubscriptionNotValidated.qml</file>
         <file>states/StateTelemetryPolicy.qml</file>
         <file>states/StateUpdateRequired.qml</file>
+        <file>views/ViewCaptivePortalInfo.qml</file>
         <file>views/ViewContactUs.qml</file>
         <file>views/ViewDevices.qml</file>
         <file>views/ViewErrorFullScreen.qml</file>

@@ -228,6 +228,7 @@ whatsNewReleaseNotes:
     comment: “Multi-Account Containers” is the name of the add-on and should not be translated.
   multiAccountContainersDescription: You can now use different Mozilla VPN locations in multiple tabs simultaneously.
 
+
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
   dnsInfoAlert: VPN must be off to change these settings
@@ -306,6 +307,12 @@ telemetryPolicyView:
   description: We strive to provide you with choices and collect only the data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional.
   question: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla?
 
+captivePortalAlert:
+  title: Captive portal detected!
+  header: A captive portal is when the guest Wi-Fi you are using requires you to log in to get internet access. 
+  action: You can turn on your VPN once you have gained internet access by logging in to the portal. 
+  buttonText: Okay
+
 connectionInfo:
   labelBitps:
     value: bit/s
@@ -344,3 +351,4 @@ serverUnavailableModal:
   headerText: Server unavailable
   bodyText: This server location is temporarily unavailable. Choose a new location.
   buttonLabel: Choose a new location
+
