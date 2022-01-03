@@ -345,6 +345,6 @@ serverUnavailableModal:
   buttonLabel: Choose a new location
 
 mobileOnboarding:
-  signUp: Sign up
+  signUpBtn: Sign up
   alreadyASubscriber: Already a subscriber?
 

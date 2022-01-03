@@ -11,7 +11,7 @@ import components 0.1
 VPNFlickable {
     id: onboardingPanel
     property real panelHeight: window.safeContentHeight
-    flickContentHeight: Math.max(window.safeContentHeight - 2, window.safeContentHeight / 2 + col.implicitHeight)
+    flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight
 
     ListModel {
         id: onboardingModel
@@ -218,7 +218,7 @@ VPNFlickable {
                 id: signUpButton
                 objectName: "signUpButton"
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: VPNl18n.MobileOnboardingSignUp
+                text: VPNl18n.MobileOnboardingSignUpBtn
                 width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
 
                 // TODO: Add Glean event
