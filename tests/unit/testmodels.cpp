@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testmodels.h"
-#include "../../src/ipaddressrange.h"
 #include "../../src/models/device.h"
 #include "../../src/models/devicemodel.h"
 #include "../../src/models/keys.h"
@@ -943,8 +942,9 @@ void TestModels::serverCountryModelFromJson_data() {
 
   QJsonArray countries;
   obj.insert("countries", countries);
-  QTest::addRow("good but empty") << QJsonDocument(obj).toJson() << true << 0
-                                  << QVariant() << QVariant() << QVariant();
+  QTest::addRow("good but empty")
+      << QJsonDocument(obj).toJson() << true << 0 << QVariant() << QVariant()
+      << QVariant(QList<QVariant>());
 
   countries.append(42);
   obj.insert("countries", countries);
@@ -960,7 +960,7 @@ void TestModels::serverCountryModelFromJson_data() {
   QTest::addRow("good but empty cities")
       << QJsonDocument(obj).toJson() << true << 1
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
-      << QVariant(QStringList{});
+      << QVariant(QList<QVariant>());
 
   QJsonArray cities;
   cities.append(42);
@@ -982,7 +982,7 @@ void TestModels::serverCountryModelFromJson_data() {
   d.insert("cities", cities);
   countries.replace(0, d);
   obj.insert("countries", countries);
-  QTest::addRow("good but empty cities")
+  QTest::addRow("good with one city")
       << QJsonDocument(obj).toJson() << true << 1
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
       << QVariant(
@@ -992,11 +992,11 @@ void TestModels::serverCountryModelFromJson_data() {
   d.insert("cities", cities);
   countries.append(d);
   obj.insert("countries", countries);
-  QTest::addRow("good") << QJsonDocument(obj).toJson() << true << 2
-                        << QVariant("serverCountryName")
-                        << QVariant("serverCountryCode")
-                        << QVariant(QList<QVariant>{QStringList{
-                               "serverCityName", "serverCityName"}});
+  QTest::addRow("good with two cities")
+      << QJsonDocument(obj).toJson() << true << 2
+      << QVariant("serverCountryName") << QVariant("serverCountryCode")
+      << QVariant(
+             QList<QVariant>{QStringList{"serverCityName", "serverCityName"}});
 }
 
 void TestModels::serverCountryModelFromJson() {
@@ -1024,19 +1024,27 @@ void TestModels::serverCountryModelFromJson() {
       QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CitiesRole),
                QVariant());
 
-      QModelIndex index = m.index(0, 0);
+      if (countries > 0) {
+        QModelIndex index = m.index(0, 0);
 
-      QFETCH(QVariant, name);
-      QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
+        QFETCH(QVariant, name);
+        QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
 
-      QFETCH(QVariant, code);
-      QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
+        QFETCH(QVariant, code);
+        QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
 
-      QFETCH(QVariant, cities);
-      QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+        QFETCH(QVariant, cities);
+        Q_ASSERT(cities.type() == QVariant::List);
+        QVariant cityData = m.data(index, ServerCountryModel::CitiesRole);
+        QCOMPARE(cityData.type(), QVariant::List);
+        QCOMPARE(cities.toList().length(), cityData.toList().length());
+        if (!cities.toList().isEmpty()) {
+          QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+        }
 
-      QCOMPARE(m.countryName(code.toString()), name.toString());
-      QCOMPARE(m.countryName("invalid"), QString());
+        QCOMPARE(m.countryName(code.toString()), name.toString());
+        QCOMPARE(m.countryName("invalid"), QString());
+      }
 
       QVERIFY(m.fromJson(json));
     }
@@ -1065,21 +1073,23 @@ void TestModels::serverCountryModelFromJson() {
       QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CitiesRole),
                QVariant());
 
-      QModelIndex index = m.index(0, 0);
+      if (countries > 0) {
+        QModelIndex index = m.index(0, 0);
 
-      QFETCH(QVariant, name);
-      QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
+        QFETCH(QVariant, name);
+        QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
 
-      QFETCH(QVariant, code);
-      QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
+        QFETCH(QVariant, code);
+        QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
 
-      QFETCH(QVariant, cities);
-      QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+        QFETCH(QVariant, cities);
+        QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
 
-      QCOMPARE(m.data(index, ServerCountryModel::CitiesRole + 1), QVariant());
+        QCOMPARE(m.data(index, ServerCountryModel::CitiesRole + 1), QVariant());
 
-      QCOMPARE(m.countryName(code.toString()), name.toString());
-      QCOMPARE(m.countryName("invalid"), QString());
+        QCOMPARE(m.countryName(code.toString()), name.toString());
+        QCOMPARE(m.countryName("invalid"), QString());
+      }
     }
   }
 }
@@ -1483,32 +1493,6 @@ void TestModels::userFromSettings() {
   QCOMPARE(user.email(), "email");
   QCOMPARE(user.maxDevices(), 123);
   QCOMPARE(user.subscriptionNeeded(), true);
-}
-
-// IPAddressRange
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-void TestModels::ipAddressRangeBasic() {
-  IPAddressRange a("ip", (uint32_t)123, IPAddressRange::IPv4);
-  QCOMPARE(a.ipAddress(), "ip");
-  QCOMPARE(a.range(), (uint32_t)123);
-  QCOMPARE(a.type(), IPAddressRange::IPv4);
-  QCOMPARE(a.toString(), "ip/123");
-
-  IPAddressRange b(a);
-  QCOMPARE(b.ipAddress(), a.ipAddress());
-  QCOMPARE(b.range(), a.range());
-  QCOMPARE(b.type(), a.type());
-  QCOMPARE(b.toString(), a.toString());
-
-  IPAddressRange c(a);
-  c = a;
-  QCOMPARE(c.ipAddress(), a.ipAddress());
-  QCOMPARE(c.range(), a.range());
-  QCOMPARE(c.type(), a.type());
-  QCOMPARE(c.toString(), a.toString());
-
-  a = a;
 }
 
 // SurveyModel

@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 StackView {
     id: multiHopStackView
@@ -17,19 +16,19 @@ StackView {
 
         id: vpnFlickable
 
-        flickContentHeight: col.implicitHeight + col.y + Theme.windowMargin
+        flickContentHeight: col.implicitHeight + col.y + VPNTheme.theme.windowMargin
         windowHeightExceedsContentHeight: parent.height > flickContentHeight
         contentHeight: flickContentHeight
 
         ColumnLayout {
             id: col
             anchors.top: parent.top
-            anchors.topMargin: Theme.windowMargin
+            anchors.topMargin: VPNTheme.theme.windowMargin
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.leftMargin: Theme.windowMargin / 2
-            anchors.rightMargin: Theme.windowMargin / 2
-            spacing: Theme.vSpacing
+            anchors.leftMargin: VPNTheme.theme.windowMargin / 2
+            anchors.rightMargin: VPNTheme.theme.windowMargin / 2
+            spacing: VPNTheme.theme.vSpacing
 
             VPNCollapsibleCard {
                 title: VPNl18n.MultiHopFeatureMultiHopCardHeader
@@ -41,7 +40,7 @@ StackView {
                     Layout.fillWidth: true
                 }
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: parent.width - Theme.windowMargin
+                Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
             }
 
             VPNRecentConnections {
@@ -52,7 +51,7 @@ StackView {
             VPNControllerNav {
                 function handleClick() {
                     multiHopStackView.push(
-                        "qrc:/components/components/VPNServerList.qml",
+                        "qrc:/nebula/components/VPNServerList.qml",
                         {
                             currentServer: entryLabel.serversList[0],
                             showRecentConnections: false
@@ -85,7 +84,7 @@ StackView {
                 spacing: 8
                 VPNControllerNav {
                     function handleClick() {
-                        multiHopStackView.push("qrc:/components/components/VPNServerList.qml",
+                        multiHopStackView.push("qrc:/nebula/components/VPNServerList.qml",
                            {
                                 currentServer:  exitLabel.serversList[0],
                                 showRecentConnections: false
@@ -117,12 +116,12 @@ StackView {
                     id: turnVPNOffAlert
                     spacing: 4
                     Layout.fillWidth: true
-                    Layout.preferredHeight: Theme.rowHeight
+                    Layout.preferredHeight: VPNTheme.theme.rowHeight
 
                     Rectangle {
                         color: "transparent"
-                        Layout.preferredHeight: Theme.vSpacing
-                        Layout.preferredWidth: Theme.vSpacing
+                        Layout.preferredHeight: VPNTheme.theme.vSpacing
+                        Layout.preferredWidth: VPNTheme.theme.vSpacing
                         Layout.leftMargin: 12
                         Layout.alignment: Qt.AlignTop
 
@@ -138,7 +137,7 @@ StackView {
                     VPNTextBlock {
                         id: message
                         text: VPNl18n.MultiHopFeatureMultiHopInfoText
-                        color: Color.grey40
+                        color: VPNTheme.colors.grey40
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
                         Layout.topMargin: 4

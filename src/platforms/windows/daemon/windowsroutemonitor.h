@@ -22,15 +22,7 @@ class WindowsRouteMonitor final : public QObject {
   ~WindowsRouteMonitor();
 
   bool addExclusionRoute(const QHostAddress& address);
-  bool addExclusionRoute(const QString& address) {
-    return addExclusionRoute(QHostAddress(address));
-  }
-
-  void deleteExclusionRoute(const QHostAddress& address);
-  void deleteExclusionRoute(const QString& address) {
-    deleteExclusionRoute(QHostAddress(address));
-  }
-
+  bool deleteExclusionRoute(const QHostAddress& address);
   void flushExclusionRoutes();
 
   void setLuid(quint64 luid) { m_luid = luid; }

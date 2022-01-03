@@ -45,7 +45,6 @@ HEADERS += \
     ../../src/hkdf.h \
     ../../src/inspector/inspectorwebsocketconnection.h \
     ../../src/ipaddress.h \
-    ../../src/ipaddressrange.h \
     ../../src/leakdetector.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
@@ -83,7 +82,6 @@ SOURCES += \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
     ../../src/ipaddress.cpp \
-    ../../src/ipaddressrange.cpp \
     ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/logger.cpp \

@@ -22,6 +22,6 @@ def validateFile(file):
 
 for root,d_names,f_names in os.walk("."):
   for f in f_names:
-    if f.endswith(".qrc"):
+    if f.endswith(".qrc") and not ("tests" in root):
       path = os.path.join(root, f)
       validateFile(path)

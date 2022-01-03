@@ -8,7 +8,7 @@
 QList<IPAddress> RFC4193::ipv6() {
   QList<IPAddress> list;
 
-  list.append(IPAddress::create("fc00::/7"));
+  list.append(IPAddress("fc00::/7"));
 
   return list;
 }

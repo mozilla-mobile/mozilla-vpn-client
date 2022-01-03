@@ -6,7 +6,7 @@
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "mozillavpn.h"
-#include "tasks/accountandservers/taskaccountandservers.h"
+#include "tasks/servers/taskservers.h"
 
 #include <QEventLoop>
 #include <QJsonArray>
@@ -58,7 +58,7 @@ int CommandServers::run(QStringList& tokens) {
     MozillaVPN vpn;
 
     if (!cacheOption.m_set) {
-      TaskAccountAndServers task;
+      TaskServers task;
       task.run();
 
       QEventLoop loop;

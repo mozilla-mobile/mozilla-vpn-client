@@ -9,7 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
-import themes 0.1
 
 VPNFlickable {
     property string _menuTitle: VPNl18n.SettingsDevTitle
@@ -18,6 +17,8 @@ VPNFlickable {
         (VPNController.state === VPNController.StateInitializing)
 
     id: vpnFlickable
+    flickContentHeight: restartRequired.y + restartRequired.height
+
     VPNMenu {
         id: menu
         title: VPNl18n.SettingsDevTitle
@@ -28,8 +29,8 @@ VPNFlickable {
         id: developerUnlock
 
         anchors.top: menu.bottom
-        anchors.topMargin: Theme.windowMargin
-        width: parent.width - Theme.windowMargin
+        anchors.topMargin: VPNTheme.theme.windowMargin
+        width: parent.width - VPNTheme.theme.windowMargin
 
         labelText:  VPNl18n.SettingsDevShowOptionTitle
         subLabelText: VPNl18n.SettingsDevShowOptionSubtitle
@@ -40,10 +41,10 @@ VPNFlickable {
 
     RowLayout {
         id: stagingServerRow
-        spacing: Theme.windowMargin
+        spacing: VPNTheme.theme.windowMargin
         anchors.top: developerUnlock.bottom
-        anchors.topMargin: Theme.windowMargin
-        width: parent.width - Theme.windowMargin
+        anchors.topMargin: VPNTheme.theme.windowMargin
+        width: parent.width - VPNTheme.theme.windowMargin
 
         VPNCheckBox {
             id: stagingServerCheckBox
@@ -71,7 +72,7 @@ VPNFlickable {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                 Layout.fillWidth: true
                 text: VPNl18n.SettingsDevUseStagingTitle
-                color: Theme.fontColorDark
+                color: VPNTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
             }
 
@@ -83,12 +84,12 @@ VPNFlickable {
             }
 
             VPNVerticalSpacer {
-                height: Theme.windowMargin
+                height: VPNTheme.theme.windowMargin
             }
 
             VPNTextField {
                 Layout.fillWidth: true
-                Layout.rightMargin: Theme.windowMargin
+                Layout.rightMargin: VPNTheme.theme.windowMargin
 
                 id: serverAddressInput
 
@@ -111,7 +112,7 @@ VPNFlickable {
             Rectangle {
                 id: divider
 
-                Layout.topMargin: Theme.windowMargin
+                Layout.topMargin: VPNTheme.theme.windowMargin
                 Layout.preferredHeight: 1
                 Layout.fillWidth: true
                 color: "#E7E7E7"
@@ -121,19 +122,35 @@ VPNFlickable {
     }
 
     VPNSettingsItem {
+        id: themeListLink
+
+        anchors.top: stagingServerRow.bottom
+        anchors.topMargin: VPNTheme.theme.windowMargin
+        anchors.left: stagingServerRow.left
+        anchors.leftMargin: VPNTheme.theme.windowMargin/2
+        width: parent.width - VPNTheme.theme.windowMargin
+
+        // Do not translate this string!
+        settingTitle: "Theme list"
+        imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+        imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+        onClicked: stackview.push("qrc:/ui/developerMenu/ViewThemeList.qml")
+    }
+
+    VPNSettingsItem {
         id: featureListLink
         objectName: "settingsFeatureList"
 
-        anchors.top: stagingServerRow.bottom
-        anchors.topMargin: Theme.windowMargin
+        anchors.top: themeListLink.bottom
+        anchors.topMargin: VPNTheme.theme.windowMargin
         anchors.left: stagingServerRow.left
-        anchors.leftMargin: Theme.windowMargin/2
-        width: parent.width - Theme.windowMargin
+        anchors.leftMargin: VPNTheme.theme.windowMargin/2
+        width: parent.width - VPNTheme.theme.windowMargin
 
         // Do not translate this string!
         settingTitle: "Feature list"
         imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
-        imageRightSrc: "qrc:/ui/resources/chevron.svg"
+        imageRightSrc: "qrc:/nebula/resources/chevron.svg"
         onClicked: stackview.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
     }
 
@@ -141,16 +158,16 @@ VPNFlickable {
         id:inspectorLink
         visible: stagingServerCheckBox.checked && !restartRequired.visible
         anchors.top: featureListLink.bottom
-        anchors.topMargin: Theme.windowMargin
-        anchors.left: featureListLink.left
-        anchors.leftMargin: Theme.windowMargin/2
-        width: parent.width - Theme.windowMargin
+        anchors.topMargin: VPNTheme.theme.windowMargin
+        anchors.left: stagingServerRow.left
+        anchors.leftMargin: VPNTheme.theme.windowMargin/2
+        width: parent.width - VPNTheme.theme.windowMargin
 
         objectName: "openInspector"
         title: "Open Inspector"
         accessibleName: "Open Inspector"
-        iconSource:  "qrc:/ui/resources/externalLink.svg"
-        backgroundColor: Theme.clickableRowBlue
+        iconSource:  "qrc:/nebula/resources/externalLink.svg"
+        backgroundColor: VPNTheme.theme.clickableRowBlue
         onClicked: {
             VPN.openLink(VPN.LinkInspector)
         }
@@ -161,7 +178,7 @@ VPNFlickable {
         property int clickNeeded: 5
 
         anchors.top: stagingServerCheckBox.checked && !restartRequired.visible ? inspectorLink.bottom : featureListLink.bottom
-        anchors.topMargin: Theme.windowMargin
+        anchors.topMargin: VPNTheme.theme.windowMargin
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
 

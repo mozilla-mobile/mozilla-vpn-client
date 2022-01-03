@@ -12,6 +12,7 @@
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
         <file>developerMenu/ViewDeveloperMenu.qml</file>
         <file>developerMenu/ViewFeatureList.qml</file>
+        <file>developerMenu/ViewThemeList.qml</file>
         <file>main.qml</file>
         <file>qmldir</file>
         <file>settings/ViewAdvancedDNSSettings.qml</file>

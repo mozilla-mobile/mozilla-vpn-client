@@ -6,18 +6,9 @@
 #define ANDROIDAPPIMAGEPROVIDER_H
 
 #include "appimageprovider.h"
-
-#if QT_VERSION >= 0x060000
-#  include <QJniObject>
-#else
-#  include <QAndroidJniObject>
-#endif
+#include "androidjnicompat.h"
 
 class AndroidAppImageProvider final : public AppImageProvider {
-#if QT_VERSION < 0x060000
-  typedef QAndroidJniObject QJniObject;
-#endif
-
  public:
   AndroidAppImageProvider(QObject* parent);
   ~AndroidAppImageProvider();

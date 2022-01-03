@@ -8,8 +8,12 @@
 #include "controllerimpl.h"
 #include "models/device.h"
 
-#include <QAndroidBinder>
-#include <QAndroidServiceConnection>
+#if QT_VERSION >= 0x060000
+#  include <QtCore/private/qandroidextras_p.h>
+#else
+#  include <QAndroidBinder>
+#  include <QAndroidServiceConnection>
+#endif
 
 class AndroidController final : public ControllerImpl,
                                 public QAndroidServiceConnection {
@@ -25,8 +29,9 @@ class AndroidController final : public ControllerImpl,
 
   void activate(const QList<Server>& data, const Device* device,
                 const Keys* keys,
-                const QList<IPAddressRange>& allowedIPAddressRanges,
-                const QList<QString>& vpnDisabledApps, const QHostAddress& dns,
+                const QList<IPAddress>& allowedIPAddressRanges,
+                const QStringList& excludedAddresses,
+                const QStringList& vpnDisabledApps, const QHostAddress& dns,
                 Reason reason) override;
   void resume_activate();
 

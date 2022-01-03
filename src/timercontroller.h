@@ -28,8 +28,9 @@ class TimerController final : public ControllerImpl {
 
   void activate(const QList<Server>& serverList, const Device* device,
                 const Keys* keys,
-                const QList<IPAddressRange>& allowedIPAddressRanges,
-                const QList<QString>& vpnDisabledApps, const QHostAddress& dns,
+                const QList<IPAddress>& allowedIPAddressRanges,
+                const QStringList& excludedAddresses,
+                const QStringList& vpnDisabledApps, const QHostAddress& dns,
                 Reason reason) override;
 
   void deactivate(Reason reason) override;

@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 import org.mozilla.Glean 0.24
 import telemetry 0.24
@@ -46,8 +45,8 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.topMargin: Theme.windowMargin
-            spacing: Theme.windowMargin
+            anchors.topMargin: VPNTheme.theme.windowMargin
+            spacing: VPNTheme.theme.windowMargin
 
             VPNCheckBoxAlert {
                 id: alert
@@ -60,7 +59,7 @@ Item {
                 id: localNetwork
                 objectName: "settingLocalNetworkAccess"
                 visible: VPNFeatureList.get("lanAccess").isSupported
-                width: parent.width - Theme.windowMargin
+                width: parent.width - VPNTheme.theme.windowMargin
                 showDivider: true
 
                 //% "Local network access"
@@ -78,17 +77,17 @@ Item {
 
             Column {
                 width: parent.width
-                spacing: Theme.windowMargin  /2
+                spacing: VPNTheme.theme.windowMargin  /2
                 VPNSettingsItem {
                     objectName: "advancedDNSSettings"
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    width: parent.width - Theme.windowMargin
+                    width: parent.width - VPNTheme.theme.windowMargin
 
                     //% "Advanced DNS Settings"
                     settingTitle: qsTrId("vpn.settings.networking.advancedDNSSettings")
                     imageLeftSrc: "qrc:/ui/resources/settings-dark.svg"
-                    imageRightSrc: "qrc:/ui/resources/chevron.svg"
+                    imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                     onClicked: settingsStackView.push("qrc:/ui/settings/ViewAdvancedDNSSettings.qml")
                     visible: VPNFeatureList.get("customDNS").isSupported
                 }
@@ -97,10 +96,10 @@ Item {
                     objectName: "appPermissions"
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    width: parent.width - Theme.windowMargin
+                    width: parent.width - VPNTheme.theme.windowMargin
                     settingTitle: _appPermissionsTitle
                     imageLeftSrc: "qrc:/ui/resources/settings/apps.svg"
-                    imageRightSrc: "qrc:/ui/resources/chevron.svg"
+                    imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                     onClicked: settingsStackView.push("qrc:/ui/settings/ViewAppPermissions.qml")
                     visible: VPNFeatureList.get("splitTunnel").isSupported
                 }

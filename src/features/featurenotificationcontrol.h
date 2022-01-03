@@ -19,17 +19,12 @@ class FeatureNotificationControl final : public Feature {
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath
                 "",                  // IconPath
+                "",                  // link URL
                 "2.3",               // released
                 true                 // Can be enabled in devmode
         ){};
 
-  bool checkSupportCallback() const override {
-#if defined(MVPN_ANDROID)
-    return true;
-#else
-    return true;
-#endif
-  }
+  bool checkSupportCallback() const override { return true; }
 
   static const FeatureNotificationControl* instance() {
     return static_cast<const FeatureNotificationControl*>(
