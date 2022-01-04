@@ -25,7 +25,7 @@ RowLayout {
         color: "transparent"
         Layout.preferredHeight: message.lineHeight
         Layout.maximumHeight: message.lineHeight
-        Layout.preferredWidth: 14
+        Layout.preferredWidth: VPNTheme.theme.iconSizeSmall
         Layout.rightMargin: 8
         Layout.leftMargin: 4
         Layout.alignment: Qt.AlignTop
@@ -33,8 +33,8 @@ RowLayout {
             id: warningIcon
 
             source: alertColor === VPNTheme.theme.red ?  "qrc:/nebula/resources/warning.svg" : "qrc:/nebula/resources/warning-dark-orange.svg"
-            sourceSize.height: 14
-            sourceSize.width: 14
+            sourceSize.height: VPNTheme.theme.iconSizeSmall
+            sourceSize.width: VPNTheme.theme.iconSizeSmall
             Layout.alignment: Qt.AlignVCenter
         }
     }

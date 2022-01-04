@@ -203,6 +203,23 @@ VPNClickableRow {
                     }
                 }
 
+                VPNIcon {
+                    id: availabilityIndicator
+
+                    anchors {
+                        right: del.right
+                        rightMargin: VPNTheme.theme.hSpacing
+                        top: del.top
+                        topMargin: VPNTheme.theme.listSpacing / 4
+                    }
+                    source: "qrc:/nebula/resources/warning.svg"
+                    sourceSize {
+                        height: VPNTheme.theme.iconSizeSmall
+                        width: VPNTheme.theme.iconSizeSmall
+                    }
+                    visible: !del._isAvailable
+                }
+
             }
 
         }

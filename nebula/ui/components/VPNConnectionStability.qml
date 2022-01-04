@@ -93,14 +93,14 @@ Item {
 
             Rectangle {
                 height: 16
-                width: 14
+                width: VPNTheme.theme.iconSizeSmall
                 color: "transparent"
 
                 Image {
                     id: warningIcon
 
-                    sourceSize.height: 14
-                    sourceSize.width: 14
+                    sourceSize.height: VPNTheme.theme.iconSizeSmall
+                    sourceSize.width: VPNTheme.theme.iconSizeSmall
                     fillMode: Image.PreserveAspectFit
                 }
             }

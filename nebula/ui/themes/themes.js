@@ -48,6 +48,7 @@ theme.fontSizeSmall = 13;
 theme.fontSizeSmallest = 11;
 theme.fontWeightBold = 600;
 theme.iconSize = 16;
+theme.iconSizeSmall = 14;
 theme.labelLineHeight = 22;
 theme.cityListTopMargin = 18;
 theme.controllerInterLineHeight = 18;
