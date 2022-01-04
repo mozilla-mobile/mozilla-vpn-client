@@ -167,6 +167,8 @@ VPNClickableRow {
                 property string _cityName: modelData[0]
                 property string _localizedCityName: modelData[1]
                 property string _countryCode: code
+                property bool _isAvailable: false
+
                 id: del
                 objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
                 activeFocusOnTab: cityListVisible
@@ -178,18 +180,23 @@ VPNClickableRow {
                 radioButtonLabelText: modelData[1]
                 accessibleName: modelData[1]
                 onClicked: {
+                    if (!_isAvailable) {
+                        return;
+                    }
+
                     if (currentServer.whichHop === "singleHopServer") {
                         VPNController.changeServer(code, del._cityName);
                         return stackview.pop();
                     }
 
-                    serversTabs[currentServer.whichHop] = [del._countryCode,  del._cityName, del._localizedCityName] // [countryCode, cityName, localizedCityName]
-                    multiHopStackView.pop()
+                    serversTabs[currentServer.whichHop] = [del._countryCode,  del._cityName, del._localizedCityName]; // [countryCode, cityName, localizedCityName]
+                    multiHopStackView.pop();
                 }
                 height: 54
                 checked: del._countryCode === focusScope.currentServer.countryCode &&  del._cityName === focusScope.currentServer.cityName
                 isHoverable: cityListVisible
-                enabled: cityListVisible
+                enabled: del._isAvailable
+
                 Component.onCompleted: {
                     if (checked) {
                         currentCityIndex = index;

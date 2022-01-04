@@ -23,7 +23,7 @@ RadioDelegate {
     height: VPNTheme.theme.rowHeight
 
     Component.onCompleted: {
-        state = uiState.stateDefault
+        state = enabled ? uiState.stateDefault : uiState.stateDisabled
     }
 
     onFocusChanged: {
@@ -53,13 +53,13 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? VPNTheme.theme.bluePressed : "#C2C2C2"
+                color: radioControl.checked ? VPNTheme.theme.bluePressed : VPNTheme.theme.greyPressed
                 scale: 0.55
             }
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked? VPNTheme.theme.bluePressed : "#3D3D3D"
+                border.color: radioControl.checked ? VPNTheme.theme.bluePressed : VPNTheme.theme.fontColorDark
             }
 
         },
@@ -90,6 +90,21 @@ RadioDelegate {
             PropertyChanges {
                 target: radioButton
                 border.color: radioControl.checked ? VPNTheme.theme.bluePressed : VPNTheme.theme.fontColor
+            }
+
+        },
+        State {
+            name: uiState.stateDisabled
+
+            PropertyChanges {
+                target: radioButtonInsetCircle
+                color: VPNTheme.theme.bgColor
+                scale: 0.6
+            }
+
+            PropertyChanges {
+                target: radioButton
+                border.color: VPNTheme.theme.greyButton.defaultColor
             }
 
         }

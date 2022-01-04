@@ -51,13 +51,13 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? VPNTheme.theme.bluePressed : "#C2C2C2"
+                color: radioControl.checked ? VPNTheme.theme.bluePressed : VPNTheme.theme.greyPressed
                 scale: 0.55
             }
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked? VPNTheme.theme.bluePressed : "#3D3D3D"
+                border.color: radioControl.checked? VPNTheme.theme.bluePressed : VPNTheme.theme.fontColorDark
             }
 
         },

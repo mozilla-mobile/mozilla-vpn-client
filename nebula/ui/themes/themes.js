@@ -196,6 +196,7 @@ theme.uiState = {
   'statePressed': 'state-pressed',
   'stateFocused': 'state-focused',
   'stateLoading': 'state-loading',
+  'stateDisabled': 'state-disabled',
 };
 
 theme.greyLink = {
