@@ -928,6 +928,7 @@ else:wasm {
 
     # 32Mb
     QMAKE_WASM_TOTAL_MEMORY=33554432
+    QMAKE_LFLAGS+= "-s TOTAL_MEMORY=33554432"
 
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
