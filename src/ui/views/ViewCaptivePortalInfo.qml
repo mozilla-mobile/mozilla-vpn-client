@@ -8,14 +8,40 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 
+
 VPNFlickable {
     id: vpnFlickable
 
-    state: "required"
+    state: (VPNController.state == VPNController.StateOff)? "pre-activation" : "post-activation"
+
+    states: [
+        State {
+            name: "pre-activation"
+            PropertyChanges { 
+                target: subTextBlock; 
+                text: VPNl18n.CaptivePortalAlertActionPreActivation
+            }
+            PropertyChanges{
+                target:openPortalButton
+                text: VPNl18n.CaptivePortalAlertButtonTextPreActivation
+            }
+        },
+        State {
+            name: "post-activation"
+            PropertyChanges { 
+                target: subTextBlock; 
+                text: VPNl18n.CaptivePortalAlertActionPostActivation
+            }
+            PropertyChanges{
+                target:openPortalButton
+                text: VPNl18n.CaptivePortalAlertButtonTextPostActivation
+            }
+        }
+    ]
 
     Item {
         id: spacer1
-        height: Math.max(VPNTheme.theme.windowMargin * 2, ( window.safeContentHeight - flickContentHeight ) / 2)
+        height: Math.max(Theme.windowMargin * 2, ( window.safeContentHeight - flickContentHeight ) / 2)
         width: vpnFlickable.width
     }
 
@@ -50,7 +76,7 @@ VPNFlickable {
         color: VPNTheme.theme.fontColor
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignHCenter
-        text: VPNl18n.CaptivePortalAlertAction
+        text: VPNl18n.CaptivePortalAlertPreActivation
     }
 
 
@@ -70,11 +96,16 @@ VPNFlickable {
 
         VPNButton {
             id: openPortalButton
-            objectName: "openCaptivePortalButton"
-            text: VPNl18n.CaptivePortalAlertButtonText
+            objectName: "captivePortalAlertActionButton"
+            text: VPNl18n.CaptivePortalAlertPreActivation
             radius: 4
             onClicked: {
-                VPN.openLink(VPN.LinkCaptivePortal);
+                if(vpnFlickable.state === "pre-activation"){
+                    VPN.openLink(VPN.LinkCaptivePortal);
+                }
+                if(vpnFlickable.state === "post-activation"){
+                    VPNCaptivePortal.deactivationRequired();
+                }
                 stackview.pop();
             }
         }
