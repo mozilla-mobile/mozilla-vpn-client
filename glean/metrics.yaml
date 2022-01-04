@@ -160,7 +160,7 @@ sample:
     send_in_pings:
       - main
     description: |
-      Encountered an error while processing incoming purchase updates
+      Got a "null" response while fetching purchase updates
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1620
     data_reviews:
