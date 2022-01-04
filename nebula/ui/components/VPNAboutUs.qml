@@ -338,7 +338,7 @@ Item {
 
             VPNTextBlock {
                 horizontalAlignment: Text.AlignHCenter
-                text: VPNl18n.UpdateButtonDescriptionNoUpdate
+                text: VPNl18n.UpdateButtonDescriptionNoUpdate2
                 Layout.fillWidth: true
                 Layout.preferredWidth: parent.width
             }
