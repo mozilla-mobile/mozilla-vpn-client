@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "notificationhandler.h"
+#include "qmlengineholder.h"
 
 namespace {
 Logger logger(LOG_NETWORKING, "CaptivePortalNotifier");
@@ -39,17 +40,8 @@ void CaptivePortalNotifier::notificationClicked(
     NotificationHandler::Message message) {
   logger.debug() << "Notification clicked";
 
-  switch (message) {
-    case NotificationHandler::CaptivePortalBlock:
-      emit deactivationRequired();
-      break;
-
-    case NotificationHandler::CaptivePortalUnblock:
-      emit activationRequired();
-      break;
-
-    default:
-      logger.warning() << "Ignore message";
-      break;
+  if (message == NotificationHandler::CaptivePortalUnblock) {
+    emit activationRequired();
   }
+  QmlEngineHolder::instance()->showWindow();
 }

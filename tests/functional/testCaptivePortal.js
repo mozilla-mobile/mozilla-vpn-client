@@ -142,7 +142,7 @@ describe('Captive portal', function() {
     assert(vpn.lastNotification().title === 'Guest Wi-Fi portal blocked');
   });
 
-  it('Clicking the notification and wait for recovering', async () => {
+  it('Clicking the alert and wait for recovering', async () => {
     await vpn.authenticate(true, true);
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(
@@ -157,7 +157,13 @@ describe('Captive portal', function() {
 
     await vpn.forceCaptivePortalDetection();
     await vpn.wait();
-    await vpn.clickOnNotification();
+
+    await vpn.waitForCondition(() => {
+      return vpn.hasElement("captivePortalAlertActionButton");
+    });
+    // Clicking on the alert should disable the vpn
+    await vpn.clickOnElement("captivePortalAlertActionButton");
+    
     await vpn.waitForCondition(async () => {
       let connectingMsg =
           await vpn.getElementProperty('controllerTitle', 'text');
@@ -186,14 +192,31 @@ describe('Captive portal', function() {
     });
   });
 
-  it('Shows the prompt Before activation when a portal is detected', async () => {
+  it('Shows the prompt Before activation when a portal is detected before the activation', async () => {
+
     await vpn.authenticate(true, true);
     await vpn.setSetting('captive-portal-alert', 'true');
     await vpn.forceCaptivePortalDetection();
 
     await vpn.activate();
     await vpn.waitForCondition(() => {
-      return vpn.hasElement("openCaptivePortalButton");
+      return vpn.hasElement("captivePortalAlertActionButton");
+    });
+    assert(true);
+  });
+  it('Shows the Captive Portal Info prompt when a portal is detected and the client is connected', async () => {
+    await vpn.authenticate(true, true);
+    await vpn.setSetting('captive-portal-alert', 'true');
+
+    await vpn.activate();
+    await vpn.waitForCondition(() => {
+      return vpn.lastNotification().title === 'VPN Connected';
+    });
+    await vpn.wait();
+    await vpn.forceCaptivePortalDetection();
+    await vpn.wait();
+    await vpn.waitForCondition(() => {
+      return vpn.hasElement("captivePortalAlertActionButton");
     });
     assert(true);
   });
