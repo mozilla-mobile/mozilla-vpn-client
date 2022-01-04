@@ -7,7 +7,7 @@ export PATH="`pwd`/qt/bin:$PATH"
 # use --user-install for permissions
 gem install xcodeproj --user-install
 
-echo "`pwd`"
+export PATH="/Users/task_163336061065616/Library/Python/3.6/bin:$PATH"
 
 # install python packages
 # use --user for permissions
