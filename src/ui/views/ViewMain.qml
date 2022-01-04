@@ -41,10 +41,18 @@ VPNFlickable {
         }
     ]
 
-    Connections {
-        target: VPNController
-        onActivationBlockedForCaptivePortal: {
-            stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
+    Connections{
+     target: VPNController
+     onActivationBlockedForCaptivePortal:{
+        stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
+       }
+    }
+    Connections{
+        target: VPNCaptivePortal
+        onCaptivePortalPresent:{
+            if(VPNController.state != VPNController.StateOff){
+                stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
+            }
         }
     }
 
