@@ -307,7 +307,7 @@ AndroidNotifications:
 updateButton:
   checkForUpdateButtonText: Check for Updates
   titleNoUpdate: You are up to date
-  descriptionNoUpdate: There is no new update available at this time
+  descriptionNoUpdate2: You currently have the latest version of Mozilla VPN
   actionNoUpdate: Okay
   titleOnUpdate: Updates available
   descriptionOnUpdate: Click to update to the latest version of the application
