@@ -167,7 +167,7 @@ VPNClickableRow {
                 property string _cityName: modelData[0]
                 property string _localizedCityName: modelData[1]
                 property string _countryCode: code
-                property bool _isAvailable: false
+                property bool _isAvailable: true
 
                 id: del
                 objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
