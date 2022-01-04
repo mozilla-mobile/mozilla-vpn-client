@@ -1,0 +1,10 @@
+--- qiosurfacegraphicsbuffer_original.h	2020-09-02 12:15:07.000000000 +0200
++++ qiosurfacegraphicsbuffer.h	2022-01-04 11:04:55.000000000 +0100
+@@ -40,6 +40,7 @@
+ #ifndef QIOSURFACEGRAPHICSBUFFER_H
+ #define QIOSURFACEGRAPHICSBUFFER_H
+ 
++#include <CoreGraphics/CGColorSpace.h>
+ #include <qpa/qplatformgraphicsbuffer.h>
+ #include <private/qcore_mac_p.h>
+ 

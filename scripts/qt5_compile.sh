@@ -8,6 +8,7 @@
 
 POSITIONAL=()
 JOBS=8
+BASE_DIRECTORY="$(pwd)"
 
 helpFunction() {
   print G "Usage:"
@@ -79,6 +80,12 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   print N "Configure for darwin"
   PLATFORM=$MACOS
+
+  # remove or review this if we upgrade to a more recent QT version
+  print Y "Patching QT header to compile on recent MacOS systems..."
+  patch -u -b "qtbase/src/plugins/platforms/cocoa/qiosurfacegraphicsbuffer.h" \
+        -i "$BASE_DIRECTORY/macos/qt-for-mac.patch"
+  print G "Done"
 else
   die "Unsupported platform (yet?)"
 fi
