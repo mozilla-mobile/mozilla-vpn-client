@@ -3,8 +3,17 @@
 # Dependencies
 python3 scripts/tooltool.py --url http://taskcluster/tooltool.mozilla-releng.net fetch -m macos/qt-dependencies.tt.manifest
 export PATH="`pwd`/qt/bin:$PATH"
-# TODO: internal pypi mirror, if it doesn't get used by default?
-pip3 install glean_parser==3.5
+# install xcodeproj which is needed by xcode_patcher.rb
+# use --user-install for permissions
+gem install xcodeproj --user-install
+
+# install python packages
+# use --user for permissions
+pip3 install "glean_parser==3.5" --user
+pip3 install pyhumps --user
+pip3 install pyyaml --user
+python3 scripts/generate_glean.py
+python3 scripts/importLanguages.py -m
 
 cd macos/gobridge
 (go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
