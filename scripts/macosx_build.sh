@@ -7,7 +7,7 @@ export PATH="`pwd`/qt/bin:$PATH"
 pip3 install glean_parser==3.5
 
 cd macos/gobridge
-go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
+(go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
 cd ../..
 
 # Xcode config - maybe we should just maintain a full Xcode config somewhere instead of replacing things here?
