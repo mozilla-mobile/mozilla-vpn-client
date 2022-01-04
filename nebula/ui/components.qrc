@@ -45,6 +45,7 @@
         <file>components/VPNGreyLink.qml</file>
         <file>components/VPNHeaderLink.qml</file>
         <file>components/VPNHeadline.qml</file>
+        <file>components/VPNLottieAnimation.qml</file>
         <file>components/VPNIconAndLabel.qml</file>
         <file>components/VPNIconButton.qml</file>
         <file>components/VPNIcon.qml</file>
