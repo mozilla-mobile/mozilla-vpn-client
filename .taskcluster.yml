@@ -184,10 +184,12 @@ tasks:
                               then:
                                   # `https://` is 8 characters so, ${repoUrl[8:]} is the repository without the protocol.
                                   - 'assume:repo:${repoUrl[8:]}:branch:${short_head_branch}'
+                                  - 'secrets:get:project/mozillavpn/tokens'
                               else:
                                   $if: 'tasks_for == "github-pull-request"'
                                   then:
                                       - 'assume:repo:github.com/${event.pull_request.base.repo.full_name}:pull-request'
+                                      - 'secrets:get:project/mozillavpn/tokens'
                                   else:
                                       $if: 'tasks_for == "github-release"'
                                       then:
