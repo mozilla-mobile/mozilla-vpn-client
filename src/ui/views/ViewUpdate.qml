@@ -8,12 +8,11 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 VPNFlickable {
     id: vpnFlickable
 
-    flickContentHeight: vpnPanel.height + alertWrapperBackground.height + footerContent.height + (Theme.windowMargin * 4)
+    flickContentHeight: vpnPanel.height + alertWrapperBackground.height + footerContent.height + (VPNTheme.theme.windowMargin * 4)
     state: VPN.updateRecommended ? "recommended" : "required"
     states: [
         State {
@@ -39,7 +38,7 @@ VPNFlickable {
                     // Let's hide the alert.
                     VPN.hideUpdateRecommendedAlert();
 
-                    stackview.pop(StackView.Immediate);
+                    stackview.pop();
                 }
             }
 
@@ -74,7 +73,7 @@ VPNFlickable {
     Item {
         id: spacer1
 
-        height: Math.max(Theme.windowMargin * 2, ( window.safeContentHeight - flickContentHeight ) / 2)
+        height: Math.max(VPNTheme.theme.windowMargin * 2, ( window.safeContentHeight - flickContentHeight ) / 2)
         width: vpnFlickable.width
     }
 
@@ -84,7 +83,7 @@ VPNFlickable {
         property var childRectHeight: vpnPanel.childrenRect.height
 
         anchors.top: spacer1.bottom
-        width: Math.min(vpnFlickable.width - Theme.windowMargin * 4, Theme.maxHorizontalContentWidth)
+        width: Math.min(vpnFlickable.width - VPNTheme.theme.windowMargin * 4, VPNTheme.theme.maxHorizontalContentWidth)
         logoSize: 80
     }
 
@@ -92,7 +91,7 @@ VPNFlickable {
         id: spacer2
 
         anchors.top: vpnPanel.bottom
-        height: Math.max(Theme.windowMargin * 2, (window.safeContentHeight -flickContentHeight ) / 2)
+        height: Math.max(VPNTheme.theme.windowMargin * 2, (window.safeContentHeight -flickContentHeight ) / 2)
         width: vpnFlickable.width
     }
 
@@ -105,21 +104,21 @@ VPNFlickable {
         id: alertWrapperBackground
 
         anchors.fill: alertWrapper
-        color: Theme.white
+        color: VPNTheme.theme.white
         radius: 8
-        anchors.topMargin: -Theme.windowMargin
-        anchors.bottomMargin: -Theme.windowMargin
-        anchors.leftMargin: -Theme.windowMargin
-        anchors.rightMargin: -Theme.windowMargin
+        anchors.topMargin: -VPNTheme.theme.windowMargin
+        anchors.bottomMargin: -VPNTheme.theme.windowMargin
+        anchors.leftMargin: -VPNTheme.theme.windowMargin
+        anchors.rightMargin: -VPNTheme.theme.windowMargin
     }
 
     ColumnLayout {
         id: alertWrapper
 
         anchors.top: spacer2.bottom
-        anchors.topMargin: Theme.windowMargin
+        anchors.topMargin: VPNTheme.theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
-        width: Math.min(vpnFlickable.width - (Theme.windowMargin * 4), Theme.maxHorizontalContentWidth)
+        width: Math.min(vpnFlickable.width - (VPNTheme.theme.windowMargin * 4), VPNTheme.theme.maxHorizontalContentWidth)
 
         RowLayout {
             id: insecureConnectionAlert
@@ -139,9 +138,9 @@ VPNFlickable {
             VPNTextBlock {
                 id: alertUpdateRecommendedText
 
-                font.family: Theme.fontInterFamily
-                font.pixelSize: Theme.fontSizeSmall
-                color: Theme.fontColorDark
+                font.family: VPNTheme.theme.fontInterFamily
+                font.pixelSize: VPNTheme.theme.fontSizeSmall
+                color: VPNTheme.theme.fontColorDark
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
                 //% "Your connection will not be secure while you update."
@@ -157,12 +156,12 @@ VPNFlickable {
 
         anchors.top: alertWrapperBackground.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        width: Math.min(parent.width, Theme.maxHorizontalContentWidth)
-        spacing: Theme.windowMargin * 1.25
+        width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
+        spacing: VPNTheme.theme.windowMargin * 1.25
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: Theme.windowMargin / 2
+            Layout.preferredHeight: VPNTheme.theme.windowMargin / 2
             color: "transparent"
         }
 
@@ -194,14 +193,11 @@ VPNFlickable {
             anchors.bottomMargin: undefined
             anchors.horizontalCenter: undefined
             Layout.alignment: Qt.AlignHCenter
-            onClicked: {
-                VPNController.logout();
-            }
         }
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: Theme.windowMargin * 2
+            Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
             color: "transparent"
         }
 

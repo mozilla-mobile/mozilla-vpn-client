@@ -26,24 +26,24 @@ VersionApi::~VersionApi() {
   logger.debug() << "VersionApi released";
 }
 
-void VersionApi::start() {
-  NetworkRequest* request = NetworkRequest::createForVersions(this);
+void VersionApi::start(Task* task) {
+  NetworkRequest* request = NetworkRequest::createForVersions(task);
 
   connect(request, &NetworkRequest::requestFailed,
-          [](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Request failed" << error;
+            deleteLater();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Request completed";
 
             if (!processData(data)) {
               logger.debug() << "Ignore failure.";
             }
+            deleteLater();
           });
-
-  connect(request, &QObject::destroyed, this, &QObject::deleteLater);
 }
 
 bool VersionApi::processData(const QByteArray& data) {

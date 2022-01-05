@@ -9,11 +9,17 @@ module.exports = class FirefoxHelper {
     if (process.env.HEADLESS) {
       options.headless();
     }
-    const driver = await new webdriver.Builder()
-                       .forBrowser('firefox')
-                       .setFirefoxOptions(options)
-                       .build();
-    return driver;
+    try {
+      const driver = await new webdriver.Builder()
+                  .forBrowser('firefox')
+                  .setFirefoxOptions(options)
+                  .build();
+      return driver;
+    } catch (error) {
+      console.error("Failed to Create GeckoDriver:")
+      console.error(error);
+      process.exit(-1);
+    }
   }
 
   static async waitForURL(driver, url) {

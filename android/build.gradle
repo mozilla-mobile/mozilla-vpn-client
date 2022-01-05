@@ -65,7 +65,8 @@ android {
      * The following variables:
      * - androidBuildToolsVersion,
      * - androidCompileSdkVersion
-     * - qt5AndroidDir - holds the path to qt android files
+     * - qtAndroidDir/qt5AndroidDir 
+     *                 - holds the path to qt android files
      *                   needed to build any Qt application
      *                   on Android.
      *
@@ -84,10 +85,17 @@ android {
 
     sourceSets {
         main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = [qt5AndroidDir + '/src', 'src', 'java']
-            aidl.srcDirs = [qt5AndroidDir + '/src', 'src', 'aidl']
-            res.srcDirs = [qt5AndroidDir + '/res', 'res']
+            if(project.hasProperty('qtAndroidDir')){
+                java.srcDirs = [qtAndroidDir + '/src', 'src', 'java', 'qt6']
+                aidl.srcDirs = [qtAndroidDir + '/src', 'src', 'aidl']
+                res.srcDirs =  [qtAndroidDir + '/res', 'res']
+                manifest.srcFile 'AndroidManifestQt6.xml'
+            }else if(project.hasProperty('qt5AndroidDir')){
+                java.srcDirs = [qt5AndroidDir + '/src', 'src', 'java', 'qt5']
+                aidl.srcDirs = [qt5AndroidDir + '/src', 'src', 'aidl']
+                res.srcDirs =  [qt5AndroidDir + '/res', 'res']
+                manifest.srcFile 'AndroidManifest.xml'
+            }
             resources.srcDirs = ['resources']
             renderscript.srcDirs = ['src']
             assets.srcDirs = ['assets']
@@ -146,7 +154,7 @@ android {
         resConfig "en"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode  System.getenv("VERSIONCODE").toInteger()
+        versionCode  System.getenv("VERSIONCODE")?.toInteger()
         versionName  System.getenv("SHORTVERSION")
         buildConfigField "String", "ADJUST_SDK_TOKEN", '"' + System.getenv("ADJUST_SDK_TOKEN") + '"'
     }

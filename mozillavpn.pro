@@ -14,10 +14,16 @@ TEMPLATE = subdirs
 
 SUBDIRS += src
 SUBDIRS += tests/unit
+SUBDIRS += lottie/tests/unit
 
 # separate flag because an extra dependency is needed: liboath
 AUTHTEST {
     SUBDIRS += tests/auth
+}
+
+QMLTEST {
+    SUBDIRS += tests/qml
+    SUBDIRS += lottie/tests/qml
 }
 
 webextension {

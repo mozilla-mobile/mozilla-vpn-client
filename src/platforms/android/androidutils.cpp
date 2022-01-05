@@ -4,6 +4,7 @@
 
 #include "androidutils.h"
 #include "androidauthenticationlistener.h"
+#include "androidjnicompat.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -12,15 +13,16 @@
 #include "qmlengineholder.h"
 #include "jni.h"
 
-#include <QAndroidJniEnvironment>
-#include <QAndroidJniObject>
 #include <QApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
-#include <QtAndroid>
-#include <QAndroidIntent>
+
+#if QT_VERSION < 0x060000
+#  include <QtAndroid>
+#  include <QAndroidIntent>
+#endif
 
 namespace {
 AndroidUtils* s_instance = nullptr;
@@ -29,7 +31,7 @@ Logger logger(LOG_ANDROID, "AndroidUtils");
 
 // static
 QString AndroidUtils::GetDeviceName() {
-  QAndroidJniEnvironment env;
+  QJniEnvironment env;
   jclass BUILD = env->FindClass("android/os/Build");
   jfieldID model = env->GetStaticFieldID(BUILD, "MODEL", "Ljava/lang/String;");
   jstring value = (jstring)env->GetStaticObjectField(BUILD, model);
@@ -184,9 +186,9 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
 }
 
 bool AndroidUtils::ShareText(const QString& text) {
-  return (bool)QAndroidJniObject::callStaticMethod<jboolean>(
+  return (bool)QJniObject::callStaticMethod<jboolean>(
       "org/mozilla/firefox/vpn/qt/VPNUtils", "sharePlainText",
-      "(Ljava/lang/String;)Z", QAndroidJniObject::fromString(text).object());
+      "(Ljava/lang/String;)Z", QJniObject::fromString(text).object());
 }
 
 QByteArray AndroidUtils::DeviceId() {
@@ -198,9 +200,9 @@ QByteArray AndroidUtils::DeviceId() {
    * The value may change if a factory reset is performed on the device or if an
    * APK signing key changes.
    */
-  QAndroidJniEnvironment env;
-  QAndroidJniObject activity = QtAndroid::androidActivity();
-  QAndroidJniObject string = QAndroidJniObject::callStaticObjectMethod(
+  QJniEnvironment env;
+  QJniObject activity = getActivity();
+  QJniObject string = QJniObject::callStaticObjectMethod(
       "org/mozilla/firefox/vpn/qt/VPNUtils", "getDeviceID",
       "(Landroid/content/Context;)Ljava/lang/String;", activity.object());
   jstring value = (jstring)string.object();
@@ -216,8 +218,26 @@ QByteArray AndroidUtils::DeviceId() {
 }
 
 void AndroidUtils::openNotificationSettings() {
-  QAndroidJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/qt/VPNUtils", "openNotificationSettings", "()V");
+  QJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/qt/VPNUtils",
+                                     "openNotificationSettings", "()V");
+}
+
+QJniObject AndroidUtils::getActivity() {
+#if QT_VERSION >= 0x060000
+  return QNativeInterface::QAndroidApplication::context();
+#else
+  return QtAndroid::androidActivity();
+#endif
+}
+
+void AndroidUtils::runOnAndroidThreadSync(
+    const std::function<void()> runnable) {
+#if QT_VERSION >= 0x060000
+  QNativeInterface::QAndroidApplication::runOnAndroidMainThread(runnable)
+      .waitForFinished();
+#else
+  QtAndroid::runOnAndroidThreadSync(runnable);
+#endif
 }
 
 JNIEXPORT void JNICALL

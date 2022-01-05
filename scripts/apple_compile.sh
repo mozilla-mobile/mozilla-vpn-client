@@ -13,13 +13,12 @@ fi
 RELEASE=1
 OS=
 NETWORKEXTENSION=
-WEBEXTENSION=
 ADJUST_SDK_TOKEN=
 ADJUST="CONFIG-=adjust"
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-n|--networkextension] [-w|--webextension] [-a|--adjusttoken <adjust_token>]"
+  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-n|--networkextension] [-a|--adjusttoken <adjust_token>]"
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N "Use -n or --networkextension to force the network-extension component for MacOS too."
@@ -52,10 +51,6 @@ while [[ $# -gt 0 ]]; do
     ;;
   -n | --networkextension)
     NETWORKEXTENSION=1
-    shift
-    ;;
-  -w | --webextension)
-    WEBEXTENSION=1
     shift
     ;;
   -h | --help)
@@ -112,24 +107,25 @@ fi
 if [[ "$OS" == "ios" ]]; then
   # Network-extension is the default for IOS
   NETWORKEXTENSION=1
-  # No web-extension for IOS
-  WEBEXTENSION=
 fi
 
 if ! [ -d "src" ] || ! [ -d "ios" ] || ! [ -d "macos" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
-QMAKE=qmake
+QT_BIN=
 if [ "$OS" = "macos" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
-  QMAKE=$QT_MACOS_BIN/qmake
+  QT_BIN=$QT_MACOS_BIN
 elif [ "$OS" = "macostest" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
-  QMAKE=$QT_MACOS_BIN/qmake
+  QT_BIN=$QT_MACOS_BIN
 elif [ "$OS" = "ios" ] && ! [ "$QT_IOS_BIN" = "" ]; then
-  QMAKE=$QT_IOS_BIN/qmake
+  QT_BIN=$QT_IOS_BIN
 fi
 
+QMAKE="$QT_BIN/qmake"
 $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
+
+export PATH="$QT_BIN:$PATH"
 
 printn Y "Retrieve the wireguard-go version... "
 (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
@@ -207,11 +203,11 @@ fi
 
 printn Y "Web-Extension: "
 WEMODE=
-if [[ "$WEBEXTENSION" ]]; then
+if [ "$OS" = "macos" ]; then
   print G web-extension
   WEMODE="CONFIG+=webextension"
 else
-  print G daemon
+  print G none
 fi
 
 print Y "Creating the xcode project via qmake..."
@@ -227,8 +223,14 @@ $QMAKE \
   src/src.pro || die "Compilation failed"
 
 print Y "Patching the xcode project..."
-ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$WEBEXTENSION" "$ADJUST_SDK_TOKEN"|| die "Failed to merge xcode with wireguard"
+ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
 print G "done."
+
+
+if command -v "sed" &>/dev/null; then
+  sed -i '' '/<key>BuildSystemType<\/key>/d' MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+  sed -i '' '/<string>Original<\/string>/d' MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+fi
 
 print Y "Opening in XCode..."
 open MozillaVPN.xcodeproj

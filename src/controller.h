@@ -18,7 +18,7 @@
 
 class ControllerImpl;
 class MozillaVPN;
-class IPAddressRange;
+class IPAddress;
 
 class Controller final : public QObject {
   Q_OBJECT
@@ -89,6 +89,10 @@ class Controller final : public QObject {
 
   void backendFailure();
 
+  void captivePortalPresent();
+  void captivePortalGone();
+  bool isUnsettled();
+
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
   // be emitted at the end of the operation.
@@ -119,6 +123,7 @@ class Controller final : public QObject {
   void connectionRetryChanged();
   void enableDisconnectInConfirmingChanged();
   void silentSwitchDone();
+  void activationBlockedForCaptivePortal();
 
  private:
   void setState(State state);
@@ -126,7 +131,8 @@ class Controller final : public QObject {
   void maybeEnableDisconnectInConfirming();
 
   bool processNextStep();
-  QList<IPAddressRange> getAllowedIPAddressRanges(const QList<Server>& servers);
+  QList<IPAddress> getAllowedIPAddressRanges(const QList<Server>& servers);
+  QStringList getExcludedAddresses(const QList<Server>& serverList);
 
   void activateInternal();
 
@@ -136,10 +142,17 @@ class Controller final : public QObject {
 
   void resetConnectedTime();
 
+  void startUnsettledPeriod();
+
  private:
   State m_state = StateInitializing;
 
   QTimer m_timer;
+  QTimer m_settleTimer;
+
+  bool m_settled = true;
+
+  bool m_portalDetected = false;
 
   QDateTime m_connectedTimeInUTC;
 

@@ -48,8 +48,6 @@ class DBusService final : public Daemon {
   bool supportDnsUtils() const override { return true; }
   DnsUtils* dnsutils() override;
 
-  QByteArray getStatus() override;
-
  private:
   bool removeInterfaceIfExists();
   QString getAppStateCgroup(const QString& state);

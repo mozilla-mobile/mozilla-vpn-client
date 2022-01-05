@@ -9,9 +9,10 @@
 #include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
-#include "mozillavpn.h"
+#include "task.h"
 
 #include <QDirIterator>
 #include <QHostAddress>
@@ -21,6 +22,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QRegularExpression>
 #include <QUrl>
 #include <QUrlQuery>
 
@@ -36,11 +38,11 @@ Logger logger(LOG_NETWORKING, "NetworkRequest");
 QList<QSslCertificate> s_intervention_certs;
 }  // namespace
 
-NetworkRequest::NetworkRequest(QObject* parent, int status,
+NetworkRequest::NetworkRequest(Task* parent, int status,
                                bool setAuthorizationHeader)
     : QObject(parent), m_status(status) {
   MVPN_COUNT_CTOR(NetworkRequest);
-  logger.debug() << "Network request created";
+  logger.debug() << "Network request created by" << parent->name();
 
 #ifndef MVPN_WASM
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
@@ -57,6 +59,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
     // Global Privacy Control: https://globalprivacycontrol.github.io/gpc-spec/
     m_request.setRawHeader("Sec-GPC", "1");
   }
+  m_request.setOriginatingObject(parent);
 
   if (setAuthorizationHeader) {
     QByteArray authorizationHeader = "Bearer ";
@@ -94,7 +97,7 @@ QString NetworkRequest::apiBaseUrl() {
 }
 
 // static
-NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent,
+NetworkRequest* NetworkRequest::createForGetUrl(Task* parent,
                                                 const QString& url,
                                                 int status) {
   Q_ASSERT(parent);
@@ -113,7 +116,7 @@ NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent,
 
 // static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(
-    QObject* parent, const QString& pkceCodeSuccess,
+    Task* parent, const QString& pkceCodeSuccess,
     const QString& pkceCodeVerifier) {
   Q_ASSERT(parent);
 
@@ -138,7 +141,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
 
 // static
 NetworkRequest* NetworkRequest::createForAdjustProxy(
-    QObject* parent, const QString& method, const QString& path,
+    Task* parent, const QString& method, const QString& path,
     const QList<QPair<QString, QString>>& headers,
     const QString& queryParameters, const QString& bodyParameters,
     const QList<QString>& unknownParameters) {
@@ -179,7 +182,7 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
 
 // static
 NetworkRequest* NetworkRequest::createForDeviceCreation(
-    QObject* parent, const QString& deviceName, const QString& pubKey,
+    Task* parent, const QString& deviceName, const QString& pubKey,
     const QString& deviceId) {
   Q_ASSERT(parent);
 
@@ -208,7 +211,7 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
+NetworkRequest* NetworkRequest::createForDeviceRemoval(Task* parent,
                                                        const QString& pubKey) {
   Q_ASSERT(parent);
 
@@ -229,7 +232,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
+NetworkRequest* NetworkRequest::createForServers(Task* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
@@ -242,7 +245,7 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
+NetworkRequest* NetworkRequest::createForSurveyData(Task* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
@@ -255,7 +258,7 @@ NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
+NetworkRequest* NetworkRequest::createForVersions(Task* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -268,7 +271,7 @@ NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
+NetworkRequest* NetworkRequest::createForAccount(Task* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
@@ -281,7 +284,7 @@ NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
+NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
                                                 const QHostAddress& address) {
   Q_ASSERT(parent);
 
@@ -298,18 +301,11 @@ NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
   r->m_request.setRawHeader("Host", url.host().toLocal8Bit());
 
   r->getRequest();
-
-  // Only for this request, we ignore SSL errors, otherwise QT will try to
-  // validate the SSL certificate using the hostname and not the Host-header
-  // value.
-  Q_ASSERT(r->m_reply);
-  r->m_reply->ignoreSslErrors();
-
   return r;
 }
 
 NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
-    QObject* parent, const QUrl& url, const QByteArray& host) {
+    Task* parent, const QUrl& url, const QByteArray& host) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 0, false);
@@ -323,7 +319,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
+NetworkRequest* NetworkRequest::createForCaptivePortalLookup(Task* parent) {
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
   QUrl url(apiBaseUrl());
@@ -334,7 +330,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
+NetworkRequest* NetworkRequest::createForHeartbeat(Task* parent) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(apiBaseUrl());
@@ -345,7 +341,7 @@ NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
+NetworkRequest* NetworkRequest::createForFeedback(Task* parent,
                                                   const QString& feedbackText,
                                                   const QString& logs,
                                                   const qint8 rating,
@@ -375,7 +371,7 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
 }
 
 NetworkRequest* NetworkRequest::createForSupportTicket(
-    QObject* parent, const QString& email, const QString& subject,
+    Task* parent, const QString& email, const QString& subject,
     const QString& issueText, const QString& logs, const QString& category) {
   bool isAuthenticated =
       MozillaVPN::instance()->userState() == MozillaVPN::UserAuthenticated;
@@ -412,7 +408,7 @@ NetworkRequest* NetworkRequest::createForSupportTicket(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
+NetworkRequest* NetworkRequest::createForGetFeatureList(Task* parent) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(apiBaseUrl());
@@ -425,7 +421,7 @@ NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
 
 // static
 NetworkRequest* NetworkRequest::createForFxaAccountStatus(
-    QObject* parent, const QString& emailAddress) {
+    Task* parent, const QString& emailAddress) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -448,7 +444,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountStatus(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaAccountCreation(
-    QObject* parent, const QString& email, const QByteArray& authpw,
+    Task* parent, const QString& email, const QByteArray& authpw,
     const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
@@ -479,7 +475,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForFxaLogin(QObject* parent,
+NetworkRequest* NetworkRequest::createForFxaLogin(Task* parent,
                                                   const QString& email,
                                                   const QByteArray& authpw,
                                                   const QString& unblockCode,
@@ -520,7 +516,7 @@ NetworkRequest* NetworkRequest::createForFxaLogin(QObject* parent,
 
 // static
 NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
-    QObject* parent, const QString& emailAddress) {
+    Task* parent, const QString& emailAddress) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -543,7 +539,7 @@ NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
-    QObject* parent, const QByteArray& sessionToken, const QString& code,
+    Task* parent, const QByteArray& sessionToken, const QString& code,
     const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
@@ -582,7 +578,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
-    QObject* parent, const QByteArray& sessionToken) {
+    Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaUrl());
@@ -604,7 +600,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
-    QObject* parent, const QByteArray& sessionToken, const QString& code,
+    Task* parent, const QByteArray& sessionToken, const QString& code,
     const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
@@ -634,7 +630,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaAuthz(
-    QObject* parent, const QByteArray& sessionToken, const QUrlQuery& query) {
+    Task* parent, const QByteArray& sessionToken, const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaUrl());
@@ -665,7 +661,7 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
 #ifdef UNIT_TEST
 // static
 NetworkRequest* NetworkRequest::createForFxaTotpCreation(
-    QObject* parent, const QByteArray& sessionToken) {
+    Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaUrl());
@@ -687,7 +683,7 @@ NetworkRequest* NetworkRequest::createForFxaTotpCreation(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
-    QObject* parent, const QByteArray& sessionToken) {
+    Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaUrl());
@@ -707,7 +703,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
+NetworkRequest* NetworkRequest::createForProducts(Task* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
@@ -721,7 +717,7 @@ NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
 }
 
 #ifdef MVPN_IOS
-NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
+NetworkRequest* NetworkRequest::createForIOSPurchase(Task* parent,
                                                      const QString& receipt) {
   Q_ASSERT(parent);
 
@@ -747,7 +743,7 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
 
 #ifdef MVPN_ANDROID
 NetworkRequest* NetworkRequest::createForAndroidPurchase(
-    QObject* parent, const QString& sku, const QString& purchaseToken) {
+    Task* parent, const QString& sku, const QString& purchaseToken) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
@@ -916,11 +912,49 @@ void NetworkRequest::abort() {
   m_reply->abort();
 }
 
+bool NetworkRequest::checkSubjectName(const QSslCertificate& cert) {
+  QString hostname = QString(m_request.rawHeader("Host"));
+  if (hostname.isEmpty()) {
+    Q_ASSERT(m_reply);
+    hostname = m_reply->url().host();
+  }
+
+  // Check if there is a match in the subject common name.
+  QStringList commonNames = cert.subjectInfo(QSslCertificate::CommonName);
+  if (commonNames.contains(hostname)) {
+    logger.debug() << "Found commonName match for" << hostname;
+    return true;
+  }
+
+  // Check there is a match amongst the subject alternative names.
+  QStringList altNames = cert.subjectAlternativeNames().values(QSsl::DnsEntry);
+  for (const QString& pattern : altNames) {
+    QRegularExpression re(
+        QRegularExpression::wildcardToRegularExpression(pattern));
+    if (re.match(hostname).hasMatch()) {
+      logger.debug() << "Found subjectAltName match for" << hostname;
+      return true;
+    }
+  }
+
+  // If we get this far, then the certificate has no matching subject name.
+  return false;
+}
+
 void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
   if (!m_reply) {
     return;
   }
-  logger.error() << "SSL Error on " << m_reply->url().host();
+
+  // Manually check for a hostname match in case we set a raw Host header.
+  if ((errors.count() == 1) && m_request.hasRawHeader("Host") &&
+      (errors[0].error() == QSslError::HostNameMismatch) &&
+      checkSubjectName(errors[0].certificate())) {
+    m_reply->ignoreSslErrors(errors);
+    return;
+  }
+
+  logger.error() << "SSL Error on" << m_reply->url().host();
   for (const auto& error : errors) {
     logger.error() << error.errorString();
     auto cert = error.certificate();

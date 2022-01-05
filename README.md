@@ -25,6 +25,7 @@ After checking out the code:
 * Install the git pre-commit hook (`./scripts/git-pre-commit-format install`)
 * Build the source (See below)
 * Run the unit tests with `./scripts/test_coverage.sh` or see below for running the functional tests.
+* Run the qml tests with `./tests/qml/qml_tests` add `-platform offscreen` to not see the qml app
 
 ### Running the functional tests
 
@@ -41,12 +42,13 @@ After checking out the code:
 
 Misc tips from core devs:
 * Make sure there are read/write permissions at every level of your build path
-* Suggest building with the flags used in CI `qmake CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug CONFIG+=inspector QT+=svg`
+* Suggest building with the flags used in CI `qmake CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug QT+=svg`
 * Using a headless browser locally may cause the tests to stall out.
 * See the [workflows file](/.github/workflows/functional_tests.yaml) which runs the functional tests in ci for pointers
   if you're stuck.
 * If you're a conda user you can conda install node and geckodriver from conda-forge packages.
 * If you're trying to just iterate on one test change `it("....)` to `it.only("...)`. And only that one test will run.... don't forget to undo!
+* Check out our [Logviewer](https://mozilla-mobile.github.io/mozilla-vpn-client/logviewer/) and the [Inspector](https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/), they might come handy debugging issues!
 
 ## How to build from the source code
 
@@ -111,7 +113,7 @@ git submodule update
 ./scripts/generate_glean.py
 # translations
 ./scripts/importLanguages.py
-# Bake shaders
+# Bake shaders (qt6 only)
 sh ./scripts/bake_shaders.sh
 ```
 
@@ -213,8 +215,6 @@ NETEXT_ID_IOS = <>
 ```
   $ ./scripts/apple_compile.sh macos
 ```
-You may be interested in flags like -i for the inspector (see ./scripts/apple_compile.sh --help for more)
-
 8. Xcode should automatically open. You can then run/test/archive/ship the app
 
 To build a Release style build (ready for signing), use:
@@ -274,7 +274,6 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
   $ ./scripts/apple_compile.sh ios
 ```
-You may be interested in flags like -i for the inspector (see ./scripts/apple_compile.sh --help for more)
 Add the Adjust SDK token with `-a | --adjust <adjust_token>`
 
 7. Open Xcode and run/test/archive/ship the app
@@ -334,7 +333,8 @@ switch to the staging environment. A full restart of the VPN will be required fo
 ## Inspector
 
 The inspector is enabled when the staging environment is activated.
-When running MozillaVPN, go to http://localhost:8766 to view the inspector.
+When running MozillaVPN, go to https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/ to view the inspector.
+From this page, connect it to ws://localhost:8765
 
 From the inspector, type `help` to see the list of available commands.
 

@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 Item {
     property alias isSettingsView: menu.isSettingsView
@@ -51,10 +50,10 @@ Item {
 
     Column {
         objectName: "getHelpLinks"
-        spacing: Theme.windowMargin
+        spacing: VPNTheme.theme.windowMargin
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.topMargin: Theme.windowMargin
+        anchors.topMargin: VPNTheme.theme.windowMargin
 
         anchors.top: menu.bottom
 
@@ -64,9 +63,9 @@ Item {
             accessibleName: title
             title: qsTrId("vpn.settings.giveFeedback")
             onClicked: isSettingsView ? settingsStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml") : isMainView? mainStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml") : stackview.push("qrc:/ui/settings/ViewGiveFeedback.qml", {isMainView: true})
-            iconSource: "qrc:/ui/resources/chevron.svg"
-            backgroundColor: Theme.iconButtonLightBackground
-            width: parent.width - Theme.windowMargin
+            iconSource: "qrc:/nebula/resources/chevron.svg"
+            backgroundColor: VPNTheme.theme.iconButtonLightBackground
+            width: parent.width - VPNTheme.theme.windowMargin
             visible: VPN.userState === VPN.UserAuthenticated
         }
 
@@ -81,8 +80,8 @@ Item {
                 objectName: "getHelpBackList-" + id
                 title: name
                 accessibleName: name
-                iconSource: externalLink ? "qrc:/ui/resources/externalLink.svg" : "qrc:/ui/resources/chevron.svg"
-                backgroundColor: externalLink ? Theme.clickableRowBlue : Theme.iconButtonLightBackground
+                iconSource: externalLink ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
+                backgroundColor: externalLink ? VPNTheme.theme.clickableRowBlue : VPNTheme.theme.iconButtonLightBackground
                 onClicked: {
                     VPNHelpModel.open(id)
                 }
@@ -93,14 +92,14 @@ Item {
             id: developer
             objectName: "developer"
 
-            width: parent.width - Theme.windowMargin
-            spacing: Theme.listSpacing
+            width: parent.width - VPNTheme.theme.windowMargin
+            spacing: VPNTheme.theme.listSpacing
             anchors.horizontalCenter: parent.horizontalCenter
 
             //% "Developer Options"
             settingTitle: qsTrId("vpn.settings.developer")
             imageLeftSrc: "qrc:/ui/resources/developer.svg"
-            imageRightSrc: "qrc:/ui/resources/chevron.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             visible: VPNSettings.developerUnlock
             onClicked: {
                 if (isSettingsView) {

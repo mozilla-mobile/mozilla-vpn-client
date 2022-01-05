@@ -7,16 +7,12 @@
 
 #include "errorhandler.h"
 
-#if QT_VERSION >= 0x060000
-#  include <QJniObject>
-#else
-#  include <QAndroidJniObject>
-#endif
+#include "androidjnicompat.h"
 
 #include <QQuickItem>
+#include <QQuickWindow>
+#include <QWindow>
 #include <QUrl>
-
-class QWindow;
 
 class AndroidWebView : public QQuickItem {
   Q_OBJECT

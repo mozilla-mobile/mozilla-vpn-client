@@ -18,7 +18,8 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   explicit AuthenticationInAppListener(QObject* parent);
   ~AuthenticationInAppListener();
 
-  void start(const QString& codeChallenge, const QString& codeChallengeMethod,
+  void start(Task* task, const QString& codeChallenge,
+             const QString& codeChallengeMethod,
              const QString& emailAddress) override;
 
   void checkAccount(const QString& emailAddress);
@@ -36,6 +37,8 @@ class AuthenticationInAppListener final : public AuthenticationListener {
 #endif
 
   const QString& emailAddress() const { return m_emailAddress; }
+
+  void aboutToFinish() override;
 
  private:
   void processErrorCode(int errorCode);
@@ -55,6 +58,8 @@ class AuthenticationInAppListener final : public AuthenticationListener {
 #endif
 
  private:
+  Task* m_task = nullptr;
+
   QString m_codeChallenge;
   QString m_codeChallengeMethod;
 

@@ -8,7 +8,7 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
-#include "tasks/accountandservers/taskaccountandservers.h"
+#include "tasks/account/taskaccount.h"
 
 #include <QEventLoop>
 #include <QTextStream>
@@ -62,7 +62,7 @@ int CommandStatus::run(QStringList& tokens) {
     }
 
     if (!cacheOption.m_set) {
-      TaskAccountAndServers task;
+      TaskAccount task;
       task.run();
 
       QEventLoop loop;

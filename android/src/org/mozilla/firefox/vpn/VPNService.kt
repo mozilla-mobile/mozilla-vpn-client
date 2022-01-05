@@ -81,7 +81,14 @@ class VPNService : android.net.VpnService() {
             }
             this.mConfig = JSONObject(lastConfString)
         }
-        turnOn(this.mConfig!!)
+        try {
+            turnOn(this.mConfig!!)
+        } catch (error: Exception) {
+            Log.e(tag, "Failed to start the VPN for always-on:")
+            Log.e(tag, error.toString())
+            Log.stack(tag, error.stackTrace)
+        }
+
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -121,7 +128,7 @@ class VPNService : android.net.VpnService() {
             }
         }
       /*
-      * Checks if the VPN Permission is given. 
+      * Checks if the VPN Permission is given.
       * If the permission is given, returns true
       * Requests permission and returns false if not.
       */

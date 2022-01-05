@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/ui">
+        <file>../platforms/android/androidauthenticationview.qml</file>
         <file>authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
         <file>authenticationInApp/ViewAuthenticationInApp.qml</file>
         <file>authenticationInApp/ViewAuthenticationInitializing.qml</file>
@@ -9,10 +10,12 @@
         <file>authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
+        <file>developerMenu/ViewAnimationsPlayground.qml</file>
         <file>developerMenu/ViewDeveloperMenu.qml</file>
         <file>developerMenu/ViewFeatureList.qml</file>
+        <file>developerMenu/ViewThemeList.qml</file>
         <file>main.qml</file>
-        <file>../platforms/android/androidauthenticationview.qml</file>
+        <file>qmldir</file>
         <file>settings/ViewAdvancedDNSSettings.qml</file>
         <file>settings/ViewAppPermissions.qml</file>
         <file>settings/ViewGiveFeedback.qml</file>
@@ -36,6 +39,7 @@
         <file>states/StateSubscriptionNotValidated.qml</file>
         <file>states/StateTelemetryPolicy.qml</file>
         <file>states/StateUpdateRequired.qml</file>
+        <file>views/ViewCaptivePortalInfo.qml</file>
         <file>views/ViewContactUs.qml</file>
         <file>views/ViewDevices.qml</file>
         <file>views/ViewErrorFullScreen.qml</file>

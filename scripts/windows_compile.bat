@@ -53,9 +53,11 @@ if "%SHOW_HELP%" == "T" (
 )
 
 
-IF "%BUILDDIR%" NEQ "" (
-   ECHO Using Build Directory %BUILDDIR%
+IF "%BUILDDIR%" == "" (
+   SET BUILDDIR=C:\MozillaVPNBuild
 )
+   ECHO Using Build Directory %BUILDDIR%
+
 
 
 SET TEST_BUILD=F
@@ -99,6 +101,9 @@ CALL :CheckCommand nmake
 CALL :CheckCommand cl
 CALL :CheckCommand qmake
 
+git submodule init
+git submodule update --remote --depth 1 i18n
+
 ECHO Copying the installer dependencies...
 CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\bin\libcrypto-1_1-x64.dll
 CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\bin\libssl-1_1-x64.dll
@@ -108,9 +113,8 @@ CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "%VCToolsRedistDir%\\MergeModul
 CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
-git submodule init
-git submodule update --remote --depth 1 i18n
 python scripts\importLanguages.py
+python scripts\generate_strings.py
 
 ECHO Generating glean samples...
 python scripts\generate_glean.py
@@ -118,17 +122,17 @@ python scripts\generate_glean.py
 ECHO BUILD_BUILD = %DEBUG_BUILD%
 
 IF %DEBUG_BUILD%==T (
-ECHO Generating Debug Build
-qmake -tp vc extension\app\app.pro CONFIG+=debug 
-)
-IF %DEBUG_BUILD%==F (
-ECHO Generating Release Build
-qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+  ECHO Generating Debug Build for the extension bridge
+  qmake -tp vc extension\app\app.pro CONFIG+=debug
 )
 
+IF %DEBUG_BUILD%==F (
+  ECHO Generating Release Build for the extension bridge
+  qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+)
 
 IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to configure the project
+  ECHO qmake failed for the extension!
   EXIT 1
 )
 
@@ -163,7 +167,6 @@ if %DEBUG_BUILD% == F (
   ECHO Generating Release Build
   qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%
 )
-
 
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project

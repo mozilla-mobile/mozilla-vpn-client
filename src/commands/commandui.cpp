@@ -15,7 +15,6 @@
 #include "fontloader.h"
 #include "l18nstrings.h"
 #include "iaphandler.h"
-#include "inspector/inspectorhttpserver.h"
 #include "inspector/inspectorwebsocketserver.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -25,6 +24,11 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "theme.h"
+
+#include <glean.h>
+#include <lottie.h>
+#include <nebula.h>
 
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
@@ -125,13 +129,15 @@ int CommandUI::run(QStringList& tokens) {
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
-    engine->addImportPath("qrc:///components");
-    engine->addImportPath("qrc:///glean");
-    engine->addImportPath("qrc:///themes");
-    engine->addImportPath("qrc:///compat");
+
+    Glean::Initialize(engine);
+    Lottie::initialize(engine, QString(NetworkManager::userAgent()));
+    Nebula::Initialize(engine);
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
+
+    vpn.theme()->loadThemes();
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
     // If there is another instance, the execution terminates here.
@@ -207,6 +213,13 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNFeatureList",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = FeatureList::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->captivePortalDetection();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -308,6 +321,22 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNReleaseMonitor",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->releaseMonitor();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNTheme",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->theme();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNLocalizer",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = Localizer::instance();
@@ -399,6 +428,16 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::aboutToQuit);
 
+    QObject::connect(
+        qApp, &QGuiApplication::commitDataRequest, &vpn,
+        []() {
+#if QT_VERSION < 0x060000
+          qApp->setFallbackSessionManagementEnabled(false);
+#endif
+          MozillaVPN::instance()->deactivate();
+        },
+        Qt::DirectConnection);
+
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &MozillaVPN::quit, Qt::QueuedConnection);
 
@@ -408,6 +447,7 @@ int CommandUI::run(QStringList& tokens) {
         engine, &QQmlApplicationEngine::objectCreated, qApp,
         [url](QObject* obj, const QUrl& objUrl) {
           if (!obj && url == objUrl) {
+            logger.error() << "Failed to load " << objUrl.toString();
             QGuiApplication::exit(-1);
           }
         },
@@ -451,10 +491,6 @@ int CommandUI::run(QStringList& tokens) {
     });
 
     if (!Constants::inProduction()) {
-      InspectorHttpServer* inspectHttpServer = new InspectorHttpServer(qApp);
-      QObject::connect(vpn.controller(), &Controller::readyToQuit,
-                       inspectHttpServer, &InspectorHttpServer::close);
-
       InspectorWebSocketServer* inspectWebSocketServer =
           new InspectorWebSocketServer(qApp);
       QObject::connect(vpn.controller(), &Controller::readyToQuit,
