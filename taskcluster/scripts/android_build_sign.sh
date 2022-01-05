@@ -9,16 +9,16 @@ git submodule update
 # glean
 ./scripts/generate_glean.py
 # translations
+echo "Importing translations"
 ./scripts/importLanguages.py
 
 
 # Get Secrets for building
-
+echo "Fetching Tokens!"
 ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k adjust -f adjust_token
 
 cat adjust_token
-
-./scripts/android_package.sh -R $QTPATH --adjusttoken $(cat adjust_token.pri)
+./scripts/android_package.sh -R $QTPATH --adjusttoken $(cat adjust_token)
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
