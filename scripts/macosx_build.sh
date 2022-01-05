@@ -7,6 +7,16 @@ export PATH="`pwd`/qt/bin:$PATH"
 # use --user-install for permissions
 gem install xcodeproj --user-install
 
+# generate qt_static_macos
+auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+git clone https://github.com/mozilla-mobile/qt_static_macos
+cd qt_static_macos
+cat x* > qt_static.tar.gz
+tar xf qt_static.tar.gz
+cd ..
+export QT_MACOS_BIN=`pwd`/qt_static_macos/qt/bin
+export PATH=`pwd`/qt_static_macos/qt/bin:$PATH
+
 export PATH="/Users/task_163336061065616/Library/Python/3.6/bin:$PATH"
 
 # install python packages
