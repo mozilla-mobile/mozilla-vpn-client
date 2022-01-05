@@ -48,29 +48,7 @@ echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login" >> xcode.xconfig
 echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
 echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
 echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
-qmake \
-  VERSION=$SHORTVERSION \
-  BUILD_ID=$FULLVERSION \
-  -spec macx-xcode \
-  CONFIG-=debug \
-  CONFIG-=debug_and_release \
-  CONFIG+=release \
-  CONFIG+=production \
-  QTPLUGIN+=qsvg \
-  CONFIG-=static \
-  CONFIG+=balrog \
-  MVPN_MACOS=1 \
-  src/src.pro
-ruby scripts/xcode_patcher.rb \
-  "MozillaVPN.xcodeproj" \
-  "$SHORTVERSION" \
-  "$FULLVERSION" \
-  macos \
-  Qt5
-
-# Build
-python3 scripts/generate_glean.py
-python3 scripts/importLanguages.py -m
+./scripts/apple_compile.sh macos
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
 
 # Package
