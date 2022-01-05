@@ -23,9 +23,11 @@ INCLUDEPATH += \
             ../../src \
             ../../translations/generated \
             ../../glean \
+            ../../lottie/lib \
             ../../nebula
 
 include($$PWD/../../glean/glean.pri)
+include($$PWD/../../lottie/lottie.pri)
 include($$PWD/../../nebula/nebula.pri)
 
 SOURCES += \

@@ -45,6 +45,7 @@
         <file>components/VPNGreyLink.qml</file>
         <file>components/VPNHeaderLink.qml</file>
         <file>components/VPNHeadline.qml</file>
+        <file>components/VPNLottieAnimation.qml</file>
         <file>components/VPNIconAndLabel.qml</file>
         <file>components/VPNIconButton.qml</file>
         <file>components/VPNIcon.qml</file>
@@ -72,6 +73,7 @@
         <file>components/VPNServerLabel.qml</file>
         <file>components/VPNServerList.qml</file>
         <file>components/VPNServerListToggle.qml</file>
+        <file>components/VPNServerUnavailablePopup.qml</file>
         <file>components/VPNSettingsItem.qml</file>
         <file>components/VPNSettingsToggle.qml</file>
         <file>components/VPNSignOut.qml</file>

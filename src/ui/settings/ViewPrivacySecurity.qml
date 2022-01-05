@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 // TODO: This filename should be changed to 'ViewPreferences.qml' after the 2.5 release
 // The legacy name has been kept to prevent the creation of additional strings
@@ -25,7 +24,7 @@ Item {
         id: vpnFlickable
         objectName: "settingsPreferencesView"
         anchors.top: parent.top
-        anchors.topMargin: Theme.menuHeight
+        anchors.topMargin: VPNTheme.theme.menuHeight
         anchors.left: root.left
         anchors.right: root.right
         height: root.height - menu.height
@@ -35,25 +34,25 @@ Item {
         Column {
             id: col
             anchors.top: parent.top
-            anchors.topMargin: Theme.windowMargin
+            anchors.topMargin: VPNTheme.theme.windowMargin
             anchors.left: parent.left
             anchors.right: parent.right
-            spacing: Theme.windowMargin
-            width: parent.width - Theme.windowMargin
+            spacing: VPNTheme.theme.windowMargin
+            width: parent.width - VPNTheme.theme.windowMargin
 
             VPNCheckBoxRow {
                 id: startAtBootCheckBox
                 objectName: "settingStartAtBoot"
 
                 labelText: _startAtBootTitle
-                subLabelText: VPNl18n.SettingsStartAtBootDescription
+                subLabelText: VPNl18n.SettingsStartAtBootSubtitle
                 isChecked: VPNSettings.startAtBoot
                 isEnabled: true
                 showDivider: false
-                width: parent.width - Theme.windowMargin
+                width: parent.width - VPNTheme.theme.windowMargin
                 onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
                 visible: VPNFeatureList.get("startOnBoot").isSupported
-
+                anchors.rightMargin: VPNTheme.theme.windowMargin
             }
 
             VPNVerticalSpacer {
@@ -64,9 +63,10 @@ Item {
             VPNCheckBoxRow {
                 id: dataCollection
                 objectName: "dataCollection"
-                width: parent.width - Theme.windowMargin
+                width: parent.width - VPNTheme.theme.windowMargin
                 anchors.left: parent.left
                 anchors.right: parent.right
+                anchors.rightMargin: VPNTheme.theme.windowMargin
 
                 //% "Data collection and use"
                 labelText: qsTrId("vpn.settings.dataCollection")
@@ -78,7 +78,7 @@ Item {
             }
 
             Column {
-                spacing: Theme.windowMargin / 2
+                spacing: VPNTheme.theme.windowMargin / 2
                 width: parent.width
                 VPNSettingsItem {
                     objectName: "settingsNotifications"
@@ -96,7 +96,7 @@ Item {
                         settingsStackView.push("qrc:/ui/settings/ViewNotifications.qml")
                     }
                     visible: VPNFeatureList.get("captivePortal").isSupported || VPNFeatureList.get("unsecuredNetworkNotification").isSupported || VPNFeatureList.get("notificationControl").isSupported
-                    width: parent.width - Theme.windowMargin
+                    width: parent.width - VPNTheme.theme.windowMargin
                 }
 
                 VPNSettingsItem {
@@ -110,7 +110,7 @@ Item {
                     imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                     onClicked: settingsStackView.push("qrc:/ui/settings/ViewLanguage.qml")
                     visible: VPNLocalizer.hasLanguages
-                    width: parent.width - Theme.windowMargin
+                    width: parent.width - VPNTheme.theme.windowMargin
                 }
             }
 

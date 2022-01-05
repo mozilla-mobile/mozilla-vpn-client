@@ -27,6 +27,7 @@
 #include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
+#include "theme.h"
 
 #include <QList>
 #include <QNetworkReply>
@@ -105,7 +106,8 @@ class MozillaVPN final : public QObject {
     LinkUpdate,
     LinkInspector,
     LinkSubscriptionBlocked,
-    LinkSplitTunnelHelp
+    LinkSplitTunnelHelp,
+    LinkCaptivePortal
   };
   Q_ENUM(LinkType)
 
@@ -222,6 +224,7 @@ class MozillaVPN final : public QObject {
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
+  Theme* theme() { return &m_private->m_theme; }
   WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
   User* user() { return &m_private->m_user; }
 
@@ -417,6 +420,7 @@ class MozillaVPN final : public QObject {
     ServerData m_serverData;
     StatusIcon m_statusIcon;
     SurveyModel m_surveyModel;
+    Theme m_theme;
     WhatsNewModel m_whatsNewModel;
     User m_user;
   };

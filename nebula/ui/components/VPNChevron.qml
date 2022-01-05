@@ -5,8 +5,6 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
-import themes 0.1
-
 // VPNChevron
 Image {
     source: "qrc:/nebula/resources/chevron.svg"

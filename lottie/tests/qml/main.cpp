@@ -4,12 +4,6 @@
 
 #include "helper.h"
 
-class TestBigInt final : public TestHelper {
-  Q_OBJECT
+#include <QtQuickTest>
 
- private slots:
-  void ctor();
-  void mathOperators();
-  void comparisonOperators();
-  void bitShiftOperator();
-};
+QUICK_TEST_MAIN_WITH_SETUP(lottie, Setup)

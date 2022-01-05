@@ -3,8 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Controls 2.15
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 Item {
     id: menuBar
@@ -21,7 +22,7 @@ Item {
     signal clicked(QtObject mouse)
 
     width: parent.width
-    height: Theme.menuHeight
+    height: VPNTheme.theme.menuHeight
     // Ensure that menu is on top of possible scrollable
     // content.
     z: 2
@@ -38,7 +39,7 @@ Item {
 
     Rectangle {
         id: menuBackground
-        color: Theme.bgColor
+        color: VPNTheme.theme.bgColor
         y: 0
         width: parent.width
         height: 55
@@ -49,11 +50,11 @@ Item {
 
         skipEnsureVisible: true // prevents scrolling of lists when this is focused
 
-        onClicked: isMultiHopView? handleMultiHopNav() : isMainView ? mainStackView.pop() : (isSettingsView ? settingsStackView.pop() : stackview.pop())
+        onClicked: handleMenuGoBack()
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.topMargin: Theme.windowMargin / 2
-        anchors.leftMargin: Theme.windowMargin / 2
+        anchors.topMargin: VPNTheme.theme.windowMargin / 2
+        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
         //% "Back"
         //: Go back
         accessibleName: qsTrId("vpn.main.back")
@@ -65,7 +66,7 @@ Item {
             id: backImage
 
             source: "qrc:/nebula/resources/back.svg"
-            sourceSize.width: Theme.iconSize
+            sourceSize.width: VPNTheme.theme.iconSize
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton
         }
@@ -85,7 +86,7 @@ Item {
 
         anchors.verticalCenter: menuBar.verticalCenter
         anchors.right: menuBar.right
-        anchors.rightMargin: Theme.windowMargin
+        anchors.rightMargin: VPNTheme.theme.windowMargin
         Accessible.ignored: accessibleIgnored
     }
 
@@ -94,6 +95,41 @@ Item {
         y: 55
         width: parent.width
         height: 1
+    }
+
+    function handleMenuGoBack() {
+        isMultiHopView ? handleMultiHopNav() : goBack();
+    }
+
+    function goBack() {
+        if (isMainView) {
+            mainStackView.pop();
+        } else if (isSettingsView) {
+            settingsStackView.pop();
+        } else if (stackview) {
+            stackview.pop();
+        }
+    }
+
+    function clearViewStack() {
+        if (isMainView) {
+            mainStackView.pop();
+        } else if (isSettingsView) {
+            settingsStackView.pop();
+        }
+
+        if (stackview) {
+            // Close settings
+            stackview.pop(StackView.Immediate);
+        }
+    }
+
+    Connections {
+        target: window
+
+        function onClearCurrentViewStack() {
+            menuBar.clearViewStack();
+        }
     }
 
 }

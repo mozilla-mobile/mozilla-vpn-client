@@ -39,10 +39,12 @@ INCLUDEPATH += \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
             ../translations/generated \
-            ../nebula \
-            ../glean
+            ../glean \
+            ../lottie/lib \
+            ../nebula
 
 include($$PWD/../glean/glean.pri)
+include($$PWD/../lottie/lottie.pri)
 include($$PWD/../nebula/nebula.pri)
 
 DEPENDPATH  += $${INCLUDEPATH}
@@ -164,6 +166,7 @@ SOURCES += \
         tasks/servers/taskservers.cpp \
         tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
+        theme.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -216,6 +219,7 @@ HEADERS += \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
         features/featurelocalareaaccess.h \
+        features/featuremultiaccountcontainers.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
         features/featuresharelogs.h \
@@ -295,6 +299,7 @@ HEADERS += \
         tasks/servers/taskservers.h \
         tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
+        theme.h \
         timercontroller.h \
         timersingleshot.h \
         update/updater.h \
@@ -540,6 +545,12 @@ else:android {
     versionAtLeast(QT_VERSION, 5.15.1) {
       QMAKE_CXXFLAGS *= -Werror
     }
+    versionAtLeast(QT_VERSION, 6.0.0) {
+        # We need to include qtprivate api's
+        # As QAndroidBinder is not yet implemented with a public api
+        QT+=core-private
+    }
+
 
     # Android Deploy-to-Qt strips the info anyway
     # but we want to create an extra bundle with the info :)
@@ -559,7 +570,6 @@ else:android {
 
     DEFINES += MVPN_ANDROID
 
-    ANDROID_ABIS = x86 x86_64 armeabi-v7a arm64-v8a
 
     INCLUDEPATH += platforms/android
 
@@ -588,8 +598,10 @@ else:android {
                 platforms/android/androidappimageprovider.h \
                 platforms/android/androidapplistprovider.h \
                 platforms/android/androidsharedprefs.h \
+                platforms/android/androidjnicompat.h \
                 tasks/authenticate/desktopauthenticationlistener.h \
                 tasks/purchase/taskpurchase.h
+
 
     # Usable Linux Imports
     SOURCES += platforms/linux/linuxpingsender.cpp \
@@ -916,6 +928,7 @@ else:wasm {
 
     # 32Mb
     QMAKE_WASM_TOTAL_MEMORY=33554432
+    QMAKE_LFLAGS+= "-s TOTAL_MEMORY=33554432"
 
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
@@ -971,6 +984,7 @@ exists($$PWD/../translations/translations.pri) {
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
+CONFIG += qtquickcompiler
 
 coverage {
     message(Coverage enabled)

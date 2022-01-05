@@ -4,12 +4,10 @@
 
 #include "helper.h"
 
-class TestBigIntIPv6Addr final : public TestHelper {
+class TestWindow : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void assignOperator();
-  void comparisonOperators();
-  void mathOperators();
-  void bitShiftOperator();
+  void setInterval();
+  void setTimeout();
 };

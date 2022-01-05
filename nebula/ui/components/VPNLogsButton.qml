@@ -7,7 +7,7 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 VPNButtonBase {
     id: base
@@ -23,7 +23,7 @@ VPNButtonBase {
     Accessible.name: buttonText
 
     VPNUIStates {
-        colorScheme: Theme.iconButtonLightBackground
+        colorScheme: VPNTheme.theme.iconButtonLightBackground
         radius: 0
     }
 
@@ -48,12 +48,12 @@ VPNButtonBase {
 
             Text {
                 text: buttonText
-                color: Theme.fontColor
+                color: VPNTheme.theme.fontColor
                 font.pixelSize: 11
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 Layout.alignment: Qt.AlignHCenter
-                font.family: Theme.fontInterFamily
+                font.family: VPNTheme.theme.fontInterFamily
                 lineHeight: 18
                 lineHeightMode: Text.FixedHeight
             }

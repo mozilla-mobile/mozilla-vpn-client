@@ -35,7 +35,6 @@ include($$PWD/../../nebula/nebula.pri)
 HEADERS += \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
-    ../../src/bigint.h \
     ../../src/captiveportal/captiveportal.h \
     ../../src/collator.h \
     ../../src/command.h \
@@ -99,6 +98,7 @@ HEADERS += \
     ../../src/tasks/release/taskrelease.h \
     ../../src/tasks/servers/taskservers.h \
     ../../src/taskscheduler.h \
+    ../../src/theme.h \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
@@ -106,7 +106,6 @@ HEADERS += \
     helper.h \
     testadjust.h \
     testandroidmigration.h \
-    testbigint.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
     testfeature.h \
@@ -121,6 +120,7 @@ HEADERS += \
     testreleasemonitor.h \
     teststatusicon.h \
     testtasks.h \
+    testthemes.h \
     testtimersingleshot.h
 
 SOURCES += \
@@ -187,6 +187,7 @@ SOURCES += \
     ../../src/tasks/release/taskrelease.cpp \
     ../../src/tasks/servers/taskservers.cpp \
     ../../src/taskscheduler.cpp \
+    ../../src/theme.cpp \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
@@ -198,7 +199,6 @@ SOURCES += \
     mocnetworkrequest.cpp \
     testadjust.cpp \
     testandroidmigration.cpp \
-    testbigint.cpp \
     testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
     testfeature.cpp \
@@ -213,6 +213,7 @@ SOURCES += \
     testreleasemonitor.cpp \
     teststatusicon.cpp \
     testtasks.cpp \
+    testthemes.cpp \
     testtimersingleshot.cpp
 
 exists($$PWD/../../translations/generated/l18nstrings.h) {
@@ -259,6 +260,7 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 RESOURCES += ../../src/ui/license.qrc
+RESOURCES += themes/themes.qrc
 
 coverage {
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping

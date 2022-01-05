@@ -5,10 +5,10 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+import QtQuick.Window 2.1
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 Item {
     id: viewAboutUs
@@ -61,12 +61,12 @@ Item {
         id: aboutUsCopy
 
         anchors.top: menu.visible ? menu.bottom : parent.top
-        anchors.topMargin: menu.visible ? 0 : Theme.menuHeight + Theme.windowMargin
+        anchors.topMargin: menu.visible ? 0 : VPNTheme.theme.menuHeight + VPNTheme.theme.windowMargin
         anchors.left: viewAboutUs.left
-        anchors.leftMargin: Theme.windowMargin
-        anchors.rightMargin: Theme.windowMargin
+        anchors.leftMargin: VPNTheme.theme.windowMargin
+        anchors.rightMargin: VPNTheme.theme.windowMargin
         height: childrenRect.height
-        width: viewAboutUs.width - (Theme.windowMargin * 2)
+        width: viewAboutUs.width - (VPNTheme.theme.windowMargin * 2)
         color: "transparent"
 
         VPNBoldLabel {
@@ -104,10 +104,10 @@ Item {
             wrapMode: Text.WordWrap
             selectByMouse: true
 
-            color: Theme.fontColor
-            font.family: Theme.fontInterFamily
-            font.pixelSize: Theme.fontSizeSmall
-            width: Theme.maxTextWidth
+            color: VPNTheme.theme.fontColor
+            font.family: VPNTheme.theme.fontInterFamily
+            font.pixelSize: VPNTheme.theme.fontSizeSmall
+            width: VPNTheme.theme.maxTextWidth
 
             Accessible.role: Accessible.StaticText
             Accessible.name: text
@@ -123,8 +123,8 @@ Item {
         anchors.left: viewAboutUs.left
         anchors.right: viewAboutUs.right
         anchors.topMargin: 12
-        anchors.leftMargin: Theme.windowMargin
-        anchors.rightMargin: Theme.windowMargin
+        anchors.leftMargin: VPNTheme.theme.windowMargin
+        anchors.rightMargin: VPNTheme.theme.windowMargin
         color: "#0C0C0D0A"
     }
 
@@ -134,9 +134,9 @@ Item {
 
         anchors.top: divider.bottom
         anchors.topMargin: 16
-        anchors.bottomMargin: Theme.vSpacing
+        anchors.bottomMargin: VPNTheme.theme.vSpacing
         width: viewAboutUs.width
-        spacing: Theme.listSpacing
+        spacing: VPNTheme.theme.listSpacing
         model: aboutUsListModel
         listName: _menuTitle
 
@@ -171,13 +171,13 @@ Item {
         id:updateButton
         anchors.top: settingList.bottom
         anchors.topMargin: 16
-        anchors.bottomMargin: Theme.vSpacing
+        anchors.bottomMargin: VPNTheme.theme.vSpacing
         anchors.horizontalCenter : viewAboutUs.horizontalCenter
 
         onClicked: {
             listenForUpdateEvents=true;
             updateButtonImageAnimation.start();
-            VPN.releaseMonitor.runSoon();
+            VPNReleaseMonitor.runSoon();
         }
         text: VPNl18n.UpdateButtonCheckForUpdateButtonText
         Image {
@@ -187,13 +187,13 @@ Item {
                 // If we wish to align to the text, maybe we can get
                 // the texts bounding box with "TextMetrics"?
                 left: updateButton.contentItem.left
-                leftMargin: Theme.windowMargin
+                leftMargin: VPNTheme.theme.windowMargin
                 verticalCenter: parent.verticalCenter
             }
             fillMode: Image.PreserveAspectFit
             source: "qrc:/nebula/resources/refresh.svg"
-            sourceSize.height: Theme.iconSize * 1.5
-            sourceSize.width: Theme.iconSize * 1.5
+            sourceSize.height: VPNTheme.theme.iconSize * 1.5
+            sourceSize.width: VPNTheme.theme.iconSize * 1.5
             visible: true
             z:6
 
@@ -231,7 +231,7 @@ Item {
     VPNPopup {
         id: updateAvailablePopup
         anchors.centerIn: parent
-        maxWidth: Theme.desktopAppWidth
+        maxWidth: VPNTheme.theme.desktopAppWidth
         contentItem: ColumnLayout {
 
             Item {
@@ -239,27 +239,27 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredHeight: 90
                 Layout.preferredWidth: 90
-                Layout.bottomMargin: Theme.listSpacing
-                Layout.topMargin: Theme.vSpacing*1.5
+                Layout.bottomMargin: VPNTheme.theme.listSpacing
+                Layout.topMargin: VPNTheme.theme.vSpacing*1.5
                 Image {
                     anchors.fill: parent
                     source:  "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
-                    sourceSize.height: parent.height * QtQuick_Window.Screen.devicePixelRatio
-                    sourceSize.width: parent.width * QtQuick_Window.Screen.devicePixelRatio
+                    sourceSize.height: parent.height * Screen.devicePixelRatio
+                    sourceSize.width: parent.width * Screen.devicePixelRatio
                     fillMode: Image.PreserveAspectFit
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: Theme.listSpacing * 0.5
+                    anchors.bottomMargin: VPNTheme.theme.listSpacing * 0.5
                 }
             }
 
             VPNMetropolisLabel {
-                color: Theme.fontColorDark
+                color: VPNTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: Theme.fontSizeLarge
+                font.pixelSize: VPNTheme.theme.fontSizeLarge
                 text: VPNl18n.UpdateButtonTitleOnUpdate
-                Layout.bottomMargin: Theme.listSpacing
+                Layout.bottomMargin: VPNTheme.theme.listSpacing
                 Layout.fillWidth: true
             }
 
@@ -271,11 +271,11 @@ Item {
             }
 
             VPNButton {
-                radius: Theme.cornerRadius
+                radius: VPNTheme.theme.cornerRadius
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignBottom
-                Layout.topMargin: Theme.vSpacing
-                Layout.bottomMargin: Theme.vSpacing * 0.5
+                Layout.topMargin: VPNTheme.theme.vSpacing
+                Layout.bottomMargin: VPNTheme.theme.vSpacing * 0.5
                 text: VPNl18n.UpdateButtonActionOnUpdate
                 onClicked: {
                     updateAvailablePopup.close()
@@ -285,13 +285,13 @@ Item {
                 Image {
                     anchors {
                         right: parent.contentItem.right
-                        rightMargin: Theme.windowMargin
+                        rightMargin: VPNTheme.theme.windowMargin
                         verticalCenter: parent.verticalCenter
                     }
                     fillMode: Image.PreserveAspectFit
                     source: "qrc:/nebula/resources/arrow-forward-white.svg"
-                    sourceSize.height: Theme.iconSize * 1.5
-                    sourceSize.width: Theme.iconSize * 1.5
+                    sourceSize.height: VPNTheme.theme.iconSize * 1.5
+                    sourceSize.width: VPNTheme.theme.iconSize * 1.5
                     visible: false
                 }
             }
@@ -303,7 +303,7 @@ Item {
     VPNPopup {
         id: noUpdateAvailablePopup
         anchors.centerIn: parent
-        maxWidth: Theme.desktopAppWidth
+        maxWidth: VPNTheme.theme.desktopAppWidth
         contentItem: ColumnLayout {
 
             Item {
@@ -311,44 +311,44 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredHeight: 90
                 Layout.preferredWidth: 90
-                Layout.bottomMargin: Theme.listSpacing
-                Layout.topMargin: Theme.vSpacing*1.5
+                Layout.bottomMargin: VPNTheme.theme.listSpacing
+                Layout.topMargin: VPNTheme.theme.vSpacing*1.5
                 Image {
                     anchors.fill: parent
                     source: "qrc:/nebula/resources/updateStatusUpToDate.svg"
-                    sourceSize.height: parent.height * QtQuick_Window.Screen.devicePixelRatio
-                    sourceSize.width: parent.width * QtQuick_Window.Screen.devicePixelRatio
+                    sourceSize.height: parent.height * Screen.devicePixelRatio
+                    sourceSize.width: parent.width * Screen.devicePixelRatio
                     fillMode: Image.PreserveAspectFit
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: Theme.listSpacing * 0.5
+                    anchors.bottomMargin: VPNTheme.theme.listSpacing * 0.5
                 }
             }
 
             VPNMetropolisLabel {
-                color: Theme.fontColorDark
+                color: VPNTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: Theme.fontSizeLarge
+                font.pixelSize: VPNTheme.theme.fontSizeLarge
                 text: VPNl18n.UpdateButtonTitleNoUpdate
 
-                Layout.bottomMargin: Theme.listSpacing
+                Layout.bottomMargin: VPNTheme.theme.listSpacing
                 Layout.fillWidth: true
             }
 
             VPNTextBlock {
                 horizontalAlignment: Text.AlignHCenter
-                text: VPNl18n.UpdateButtonDescriptionNoUpdate
+                text: VPNl18n.UpdateButtonDescriptionNoUpdate2
                 Layout.fillWidth: true
                 Layout.preferredWidth: parent.width
             }
 
             VPNButton {
-                radius: Theme.cornerRadius
+                radius: VPNTheme.theme.cornerRadius
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignBottom
-                Layout.topMargin: Theme.vSpacing
-                Layout.bottomMargin: Theme.vSpacing * 0.5
+                Layout.topMargin: VPNTheme.theme.vSpacing
+                Layout.bottomMargin: VPNTheme.theme.vSpacing * 0.5
                 text: VPNl18n.UpdateButtonActionNoUpdate
                 onClicked: {
                     noUpdateAvailablePopup.close();
@@ -357,13 +357,13 @@ Item {
                 Image {
                     anchors {
                         right: parent.contentItem.right
-                        rightMargin: Theme.windowMargin
+                        rightMargin: VPNTheme.theme.windowMargin
                         verticalCenter: parent.verticalCenter
                     }
                     fillMode: Image.PreserveAspectFit
                     source: "qrc:/nebula/resources/arrow-forward-white.svg"
-                    sourceSize.height: Theme.iconSize * 1.5
-                    sourceSize.width: Theme.iconSize * 1.5
+                    sourceSize.height: VPNTheme.theme.iconSize * 1.5
+                    sourceSize.width: VPNTheme.theme.iconSize * 1.5
                     visible: false
                 }
             }

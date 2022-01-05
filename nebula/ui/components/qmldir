@@ -44,6 +44,7 @@ VPNLinkButton 0.1 VPNLinkButton.qml
 VPNList 0.1 VPNList.qml
 VPNLoader 0.1 VPNLoader.qml
 VPNLogsButton 0.1 VPNLogsButton.qml
+VPNLottieAnimation 0.1 VPNLottieAnimation.qml
 VPNMainImage 0.1 VPNMainImage.qml
 VPNMenu 0.1 VPNMenu.qml
 VPNMetropolisLabel 0.1 VPNMetropolisLabel.qml
@@ -61,6 +62,7 @@ VPNServerCountry 0.1 VPNServerCountry.qml
 VPNServerLabel 0.1 VPNServerLabel.qml
 VPNServerList 0.1 VPNServerList.qml
 VPNServerListToggle 0.1 VPNServerListToggle.qml
+VPNServerUnavailablePopup 0.1 VPNServerUnavailablePopup.qml
 VPNSettingsItem 0.1 VPNSettingsItem.qml
 VPNSettingsToggle 0.1 VPNSettingsToggle.qml
 VPNSignOut 0.1 VPNSignOut.qml

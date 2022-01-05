@@ -6,16 +6,16 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
-import themes 0.1
+import Mozilla.VPN 1.0
 
 // VPNTextBlock
 Text {
-    color: Theme.fontColor
-    font.family: Theme.fontInterFamily
-    font.pixelSize: Theme.fontSizeSmall
+    color: VPNTheme.theme.fontColor
+    font.family: VPNTheme.theme.fontInterFamily
+    font.pixelSize: VPNTheme.theme.fontSizeSmall
     lineHeightMode: Text.FixedHeight
     lineHeight: 21
-    width: Theme.maxTextWidth
+    width: VPNTheme.theme.maxTextWidth
     wrapMode: Text.Wrap
 
     Accessible.role: Accessible.StaticText

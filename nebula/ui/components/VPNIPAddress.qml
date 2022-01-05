@@ -6,10 +6,9 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 RowLayout {
-    property real maxPaintedTextWidth: box.width - ipVersion.paintedWidth - Theme.windowMargin
+    property real maxPaintedTextWidth: box.width - ipVersion.paintedWidth - VPNTheme.theme.windowMargin
     property alias ipVersionText: ipVersion.text
     property alias ipAddressText: ipAddress.text
 
@@ -18,16 +17,16 @@ RowLayout {
 
     VPNBoldLabel {
         id: ipVersion
-        color: Theme.white
+        color: VPNTheme.theme.white
         Accessible.name: text
         Accessible.role: Accessible.StaticText
     }
     VPNLightLabel {
         id: ipAddress
 
-        color: Theme.bgColor
+        color: VPNTheme.theme.bgColor
         opacity: .8
-        minimumPixelSize: Theme.fontSizeSmall / 2
+        minimumPixelSize: VPNTheme.theme.fontSizeSmall / 2
         Accessible.name: text
         Accessible.role: Accessible.StaticText
         verticalAlignment: Text.AlignVCenter

@@ -7,7 +7,6 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 ColumnLayout {
     id: tour
@@ -17,7 +16,7 @@ ColumnLayout {
     signal close()
 
     property variant slidesModel: ({})
-
+    property string currentFeatureID: ""
 
     states: [
         State {
@@ -73,9 +72,9 @@ ColumnLayout {
         id: backButton
 
         Layout.alignment: Qt.AlignTop
-        Layout.preferredHeight: Theme.rowHeight
-        Layout.preferredWidth: Theme.rowHeight
-        Layout.margins: -Theme.windowMargin
+        Layout.preferredHeight: VPNTheme.theme.rowHeight
+        Layout.preferredWidth: VPNTheme.theme.rowHeight
+        Layout.margins: -VPNTheme.theme.windowMargin
         visible: true
         accessibleName: qsTrId("vpn.main.back")
         enabled: swipeView.currentIndex > 1
@@ -91,8 +90,8 @@ ColumnLayout {
             anchors.centerIn: backButton
             fillMode: Image.PreserveAspectFit
             source: "qrc:/nebula/resources/back-dark.svg"
-            sourceSize.height: Theme.iconSize * 1.5
-            sourceSize.width: Theme.iconSize * 1.5
+            sourceSize.height: VPNTheme.theme.iconSize * 1.5
+            sourceSize.width: VPNTheme.theme.iconSize * 1.5
         }
 
         Behavior on opacity {
@@ -104,7 +103,7 @@ ColumnLayout {
 
     ColumnLayout {
         id: content
-        spacing: Theme.listSpacing
+        spacing: VPNTheme.theme.listSpacing
 
         SwipeView {
             id: swipeView
@@ -122,10 +121,10 @@ ColumnLayout {
                 ColumnLayout {
                     id: slideContent
 
-                    opacity: slideIndex === swipeView.currentIndex ? 1 : 0
+                    opacity: isCurrentSlide() ? 1 : 0
 
                     ColumnLayout {
-                        spacing: Theme.listSpacing
+                        spacing: VPNTheme.theme.listSpacing
                         Item {
                             Layout.alignment: Qt.AlignHCenter
                             Layout.preferredHeight: 120
@@ -138,19 +137,19 @@ ColumnLayout {
 
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.bottom: parent.bottom
-                                anchors.bottomMargin: tour.state === "tour-start" ? Theme.listSpacing * 0.5 : Theme.listSpacing * 0.25
+                                anchors.bottomMargin: tour.state === "tour-start" ? VPNTheme.theme.listSpacing * 0.5 : VPNTheme.theme.listSpacing * 0.25
                             }
                         }
 
                         VPNMetropolisLabel {
                             id: popupTitle
 
-                            color: Theme.fontColorDark
+                            color: VPNTheme.theme.fontColorDark
                             horizontalAlignment: Text.AlignHCenter
-                            font.pixelSize: Theme.fontSizeLarge
+                            font.pixelSize: VPNTheme.theme.fontSizeLarge
                             text: featureName
 
-                            Layout.bottomMargin: Theme.listSpacing
+                            Layout.bottomMargin: VPNTheme.theme.listSpacing
                             Layout.fillWidth: true
                         }
 
@@ -167,6 +166,24 @@ ColumnLayout {
                             duration: 400
                         }
                     }
+
+                    function isCurrentSlide() {
+                        return slideIndex === swipeView.currentIndex;
+                    }
+
+                    Connections {
+                        target: swipeView
+                        function onCurrentIndexChanged() {
+                            if (!isCurrentSlide()) {
+                                return;
+                            }
+
+                            const featureIdChanged = tour.currentFeatureID !== featureID;
+                            if (featureIdChanged) {
+                                tour.currentFeatureID = featureID;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -174,6 +191,7 @@ ColumnLayout {
                 id: initialSlideLoader
 
                 property int slideIndex: 0
+                property string featureID: ""
                 property string featureName: VPNl18n.WhatsNewReleaseNotesTourModalHeader
                 property string featureDescription: VPNl18n.WhatsNewReleaseNotesTourModalBodyText
                 property string featureImagePath: "qrc:/nebula/resources/features/features-tour-hero.png"
@@ -192,6 +210,7 @@ ColumnLayout {
                     id: featureSlidesLoader
 
                     property int slideIndex: index + 1
+                    property string featureID: feature.id
                     property string featureName: feature.displayName
                     property string featureDescription: feature.description
                     property string featureImagePath: feature.imagePath
@@ -210,12 +229,12 @@ ColumnLayout {
             count: swipeView.count - 1
             currentIndex: swipeView.currentIndex - 1
             interactive: false
-            spacing: Theme.windowMargin / 2
+            spacing: VPNTheme.theme.windowMargin / 2
             visible: swipeView.currentIndex >= 1
             delegate: Rectangle {
                 id: circle
 
-                color: index === slideIndicator.currentIndex ? Theme.blue : Theme.greyPressed
+                color: index === slideIndicator.currentIndex ? VPNTheme.theme.blue : VPNTheme.theme.greyPressed
                 height: 6
                 width: 6
                 radius: 6
@@ -239,10 +258,10 @@ ColumnLayout {
         VPNButton {
             id: resumeButton
 
-            radius: Theme.cornerRadius
+            radius: VPNTheme.theme.cornerRadius
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignBottom
-            Layout.topMargin: slideIndicator.visible ? Theme.listSpacing : Theme.vSpacingSmall
+            Layout.topMargin: slideIndicator.visible ? VPNTheme.theme.listSpacing : VPNTheme.theme.vSpacingSmall
 
             onClicked: {
                 if (tour.state === "tour-start") {
@@ -261,14 +280,38 @@ ColumnLayout {
 
                 anchors {
                     right: resumeButton.contentItem.right
-                    rightMargin: Theme.windowMargin
+                    rightMargin: VPNTheme.theme.windowMargin
                     verticalCenter: resumeButton.verticalCenter
                 }
                 fillMode: Image.PreserveAspectFit
                 source: "qrc:/nebula/resources/arrow-forward-white.svg"
-                sourceSize.height: Theme.iconSize * 1.5
-                sourceSize.width: Theme.iconSize * 1.5
+                sourceSize.height: VPNTheme.theme.iconSize * 1.5
+                sourceSize.width: VPNTheme.theme.iconSize * 1.5
                 visible: false
+            }
+        }
+
+        VPNLinkButton {
+            id: linkButton
+
+            labelText: VPNl18n.SplittunnelInfoLinkText
+            visible: hasFeatureLinkUrl()
+            Layout.fillWidth: true
+            Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
+
+            onClicked: {
+                const featureLinkUrl = VPNFeatureList.get(currentFeatureID).linkUrl
+                VPN.openLinkUrl(featureLinkUrl);
+            }
+
+            function hasFeatureLinkUrl() {
+                const isFeature = tour.currentFeatureID && tour.currentFeatureID.length > 0;
+                if (!isFeature) {
+                    return false;
+                }
+
+                const currentFeature = VPNFeatureList.get(currentFeatureID);
+                return currentFeature && currentFeature.linkUrl;
             }
         }
     }

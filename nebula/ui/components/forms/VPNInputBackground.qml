@@ -4,8 +4,8 @@
 
 import QtQuick 2.5
 
+import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 Rectangle {
     property variant itemToFocus: parent
@@ -14,8 +14,8 @@ Rectangle {
 
     anchors.fill: parent
     antialiasing: true
-    border.color: Color.input.default.border
-    radius: Theme.cornerRadius
+    border.color: VPNTheme.colors.input.default.border
+    radius: VPNTheme.theme.cornerRadius
 
     Behavior on border.color {
         ColorAnimation {
@@ -29,7 +29,7 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: border.width * -1
         antialiasing: true
-        border.color: itemToFocus && itemToFocus.hasError ? Color.input.error.highlight : Color.input.focus.highlight
+        border.color: itemToFocus && itemToFocus.hasError ? VPNTheme.colors.input.error.highlight : VPNTheme.colors.input.focus.highlight
         border.width: 4
         color: "transparent"
         opacity: itemToFocus && itemToFocus.activeFocus && itemToFocus.showInteractionStates ? 1 : 0

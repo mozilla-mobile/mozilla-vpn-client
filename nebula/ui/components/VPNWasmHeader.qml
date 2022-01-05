@@ -10,24 +10,23 @@ import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
-import themes 0.1
 
 
 Button {
     id: wasmHeader
 
-    height: Theme.menuHeight
+    height: VPNTheme.theme.menuHeight
     width: parent.width
     z: 2
     clip: true
     onClicked: mainStackView.replace("qrc:/nebula/components/VPNWasmMenu.qml", StackView.Immediate)
     background: Rectangle {
-        color: Theme.bgColor
+        color: VPNTheme.theme.bgColor
         anchors.fill: parent
     }
 
     VPNUIStates {
-        colorScheme: Theme.iconButtonLightBackground
+        colorScheme: VPNTheme.theme.iconButtonLightBackground
         z: 2
         radius: 0
     }
@@ -41,8 +40,8 @@ Button {
 
         font.pixelSize: 16
         text: "Viewer Menu"
-        font.family: Theme.fontBoldFamily
-        color: Theme.fontColorDark
+        font.family: VPNTheme.theme.fontBoldFamily
+        color: VPNTheme.theme.fontColorDark
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         z: 3

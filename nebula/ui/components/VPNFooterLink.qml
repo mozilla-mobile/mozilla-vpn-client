@@ -4,8 +4,6 @@
 
 import QtQuick 2.5
 
-import themes 0.1
-
 VPNLinkButton {
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom

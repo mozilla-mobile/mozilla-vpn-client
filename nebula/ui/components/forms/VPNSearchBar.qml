@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
 VPNTextField {
     // TODO Add strings for Accessible.description, Accessible.name
@@ -26,18 +25,18 @@ VPNTextField {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: 20
-        sourceSize.height: Theme.windowMargin
-        sourceSize.width: Theme.windowMargin
+        sourceSize.height: VPNTheme.theme.windowMargin
+        sourceSize.width: VPNTheme.theme.windowMargin
         opacity: parent.focus ? 1 : 0.8
     }
 
     RowLayout {
         id: searchWarning
         anchors.top: searchBar.bottom
-        anchors.topMargin: Theme.listSpacing
+        anchors.topMargin: VPNTheme.theme.listSpacing
         visible: searchBar.hasError
         width: parent.width
-        spacing: Theme.windowMargin / 2
+        spacing: VPNTheme.theme.windowMargin / 2
 
         VPNIcon {
             id: warningIcon
@@ -46,14 +45,14 @@ VPNTextField {
             sourceSize.height: 14
             sourceSize.width: 14
             Layout.alignment: Qt.AlignTop
-            Layout.topMargin: Theme.windowMargin / 4
+            Layout.topMargin: VPNTheme.theme.windowMargin / 4
         }
 
         VPNInterLabel {
             id: warningLabel
-            color: Color.error.default
+            color: VPNTheme.colors.error.default
             text: VPNl18n.ServersViewSearchNoResultsLabel
-            font.pixelSize: Theme.fontSizeSmall
+            font.pixelSize: VPNTheme.theme.fontSizeSmall
             width: undefined
             Layout.fillWidth: true
             wrapMode: Text.WordWrap

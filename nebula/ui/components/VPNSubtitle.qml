@@ -6,16 +6,15 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 // VPNSubtitle
 Text {
     horizontalAlignment: Text.AlignHCenter
-    font.pixelSize: Theme.fontSize
-    font.family: Theme.fontInterFamily
+    font.pixelSize: VPNTheme.theme.fontSize
+    font.family: VPNTheme.theme.fontInterFamily
     wrapMode: Text.Wrap
-    width: Theme.maxTextWidth
-    color: Theme.fontColor
+    width: VPNTheme.theme.maxTextWidth
+    color: VPNTheme.theme.fontColor
     lineHeightMode: Text.FixedHeight
-    lineHeight: Theme.labelLineHeight
+    lineHeight: VPNTheme.theme.labelLineHeight
 }

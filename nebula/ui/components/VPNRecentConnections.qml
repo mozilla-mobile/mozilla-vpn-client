@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 import QtQml.Models 2.2
 
 import Mozilla.VPN 1.0
-import themes 0.1
 
 ColumnLayout {
     property bool hasVisibleConnections: false
@@ -26,7 +25,7 @@ ColumnLayout {
 
     id: root
 
-    spacing: Theme.windowMargin / 2
+    spacing: VPNTheme.theme.windowMargin / 2
     visible: repeaterModel.count > 0
 
     function popStack() {
@@ -36,8 +35,8 @@ ColumnLayout {
     VPNBoldLabel {
         id: recentConnectionsHeader
         text: VPNl18n.MultiHopFeatureMultiHopConnectionsHeader
-        Layout.leftMargin: Theme.windowMargin
-        Layout.minimumHeight: Theme.vSpacing
+        Layout.leftMargin: VPNTheme.theme.windowMargin
+        Layout.minimumHeight: VPNTheme.theme.vSpacing
         verticalAlignment: Text.AlignVCenter
         visible: repeaterModel.count > 0
 
@@ -46,7 +45,7 @@ ColumnLayout {
     ColumnLayout {
         id: connectionsCol
 
-        spacing: Theme.windowMargin / 2
+        spacing: VPNTheme.theme.windowMargin / 2
         Layout.fillWidth: true
 
         ListModel {
@@ -104,7 +103,7 @@ ColumnLayout {
                 accessibleName: "TODO"
 
                 Layout.fillWidth: true
-                Layout.preferredHeight: Theme.rowHeight
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
                 anchors.left: undefined
                 anchors.right: undefined
                 anchors.leftMargin: undefined
@@ -129,7 +128,7 @@ ColumnLayout {
                     anchors.centerIn: parent
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    width: parent.width - Theme.windowMargin * 2
+                    width: parent.width - VPNTheme.theme.windowMargin * 2
                     height: parent.height
 
                     VPNServerLabel {
@@ -144,10 +143,10 @@ ColumnLayout {
     }
 
     Rectangle {
-        Layout.preferredWidth: parent.width - Theme.windowMargin * 2
+        Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin * 2
         Layout.preferredHeight: 1
         Layout.alignment: Qt.AlignHCenter
-        color: Color.grey10
+        color: VPNTheme.colors.grey10
         visible: repeaterModel.count > 0
     }
 

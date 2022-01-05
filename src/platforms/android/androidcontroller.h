@@ -8,8 +8,12 @@
 #include "controllerimpl.h"
 #include "models/device.h"
 
-#include <QAndroidBinder>
-#include <QAndroidServiceConnection>
+#if QT_VERSION >= 0x060000
+#  include <QtCore/private/qandroidextras_p.h>
+#else
+#  include <QAndroidBinder>
+#  include <QAndroidServiceConnection>
+#endif
 
 class AndroidController final : public ControllerImpl,
                                 public QAndroidServiceConnection {

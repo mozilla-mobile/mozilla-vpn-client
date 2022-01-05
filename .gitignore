@@ -27,6 +27,7 @@ linux/netfilter/vendor/
 .qm
 .tmp
 .env
+.venv
 
 # Node (for functional tests)
 node_modules
@@ -56,6 +57,7 @@ tests/proxy/__pycache__/
 tests/qml/qml_tests
 tests/qml/target_wrapper.sh
 build
+!taskcluster/ci/build
 Debug/
 !android/src/debug/
 Debug-iphone*
