@@ -39,11 +39,11 @@ here](https://opensource.org/licenses/MIT) and a copy is provided below.
 For Mobile releases (Android and iOS), the project relies on the [Adjust
 Framework](https://www.adjust.com) under the terms of the MIT Public License
 (*MIT*), a copy of which is available [available
-here](https://opensource.org/license/MIT) and a copy is provided below.
+here](https://opensource.org/licenses/MIT) and a copy is provided below.
 
 The project relies on [Lottie-web](https://github.com/airbnb/lottie-web), under
 the terms of the MIT Public License (*MIT*), a copy of which is available
-[available here](https://opensource.org/license/MIT) and a copy is provided
+[available here](https://opensource.org/licenses/MIT) and a copy is provided
 below.
 
 Finally, this project uses EC25519 and CHACHA-POLY implementations from
