@@ -107,7 +107,7 @@ Item {
                     }
 
                     onTextChanged: text => {
-                        if (root.vpnIsOff) {
+                        if (root.vpnIsOff && VPNSettings.stagingServerAddress !== serverAddressInput.text) {
                             VPNSettings.stagingServerAddress = serverAddressInput.text;
                         }
                     }
