@@ -14,6 +14,11 @@ export PATH="/Users/task_163336061065616/Library/Python/3.6/bin:$PATH"
 pip3 install "glean_parser==3.5" --user
 pip3 install pyhumps --user
 pip3 install pyyaml --user
+
+export LC_ALL=en_US.utf-8
+export LANG=en_US.utf-8
+export PYTHONIOENCODING="UTF-8"  
+
 python3 scripts/generate_glean.py
 python3 scripts/importLanguages.py -m
 
