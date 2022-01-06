@@ -16,6 +16,7 @@ SUBDIRS += glean
 SUBDIRS += nebula
 SUBDIRS += src
 SUBDIRS += tests/unit
+SUBDIRS += lottie/tests/unit
 
 # separate flag because an extra dependency is needed: liboath
 AUTHTEST {
@@ -24,6 +25,7 @@ AUTHTEST {
 
 QMLTEST {
     SUBDIRS += tests/qml
+    SUBDIRS += lottie/tests/qml
 }
 
 webextension {

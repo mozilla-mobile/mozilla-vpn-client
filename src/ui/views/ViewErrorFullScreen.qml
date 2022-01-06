@@ -15,10 +15,16 @@ VPNFlickable {
     property var headlineText
     property var errorMessage: ""
     property var errorMessage2: ""
-    property var buttonText
-    property var buttonObjectName
-    property var buttonOnClick
-    property var signOffLinkVisible: false
+
+    property var primaryButtonText
+    property var primaryButtonObjectName
+    property var primaryButtonOnClick
+
+    property var secondaryButtonText: ""
+    property var secondaryButtonObjectName
+    property var secondaryButtonOnClick
+    property var secondaryButtonIsSignOff: false
+
     property var getHelpLinkVisible: false
     property var statusLinkVisible: false
     id: vpnFlickable
@@ -125,28 +131,40 @@ VPNFlickable {
 
 
             VPNButton {
-                id: btn
+                id: primaryButton
 
-                objectName: buttonObjectName
-                text: buttonText
+                objectName: primaryButtonObjectName
+                text: primaryButtonText
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 loaderVisible: false
-                onClicked: buttonOnClick()
+                onClicked: primaryButtonOnClick()
             }
             
-            VPNSignOut {
-                id: signOff
+            VPNFooterLink {
+                id: secondaryButton
 
-                visible: signOffLinkVisible
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                objectName: secondaryButtonObjectName
+                labelText: secondaryButtonText
+                visible: secondaryButtonText != "" && !secondaryButtonIsSignOff
+                Layout.preferredHeight: Theme.rowHeight
                 Layout.alignment: Qt.AlignHCenter
                 anchors.horizontalCenter: undefined
                 anchors.bottom: undefined
                 anchors.bottomMargin: undefined
                 height: undefined
-                onClicked: {
-                    VPNController.logout();
-                }
+                onClicked: secondaryButtonOnClick()
+            }
+
+            VPNSignOut {
+                id: signOff
+
+                visible: secondaryButtonIsSignOff
+                Layout.preferredHeight: Theme.rowHeight
+                Layout.alignment: Qt.AlignHCenter
+                anchors.horizontalCenter: undefined
+                anchors.bottom: undefined
+                anchors.bottomMargin: undefined
+                height: undefined
             }
         }
 

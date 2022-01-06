@@ -4,6 +4,7 @@
 
 #include "captiveportalrequest.h"
 #include "captiveportal.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"

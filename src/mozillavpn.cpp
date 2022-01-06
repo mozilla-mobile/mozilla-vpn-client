@@ -528,6 +528,12 @@ void MozillaVPN::openLink(LinkType linkType) {
       Q_ASSERT(!Constants::inProduction());
       url = "https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/";
       break;
+    case LinkCaptivePortal:
+      url = QString("http://%1/success.txt")
+                .arg(SettingsHolder::instance()
+                         ->captivePortalIpv4Addresses()
+                         .first());
+      break;
 
     default:
       qFatal("Unsupported link type!");

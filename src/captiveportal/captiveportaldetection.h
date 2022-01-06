@@ -26,6 +26,9 @@ class CaptivePortalDetection final : public QObject {
   void detectCaptivePortal();
   void captivePortalDetected();
 
+ signals:
+  void captivePortalPresent();
+
  public slots:
   void stateChanged();
   void networkChanged();
@@ -34,10 +37,12 @@ class CaptivePortalDetection final : public QObject {
   void captivePortalGone();
 
   void activationRequired();
-  void deactivationRequired();
+  Q_INVOKABLE void deactivationRequired();
 
  private:
   CaptivePortalMonitor* captivePortalMonitor();
+  CaptivePortalMonitor* captivePortalBackgroundMonitor();
+
   CaptivePortalNotifier* captivePortalNotifier();
 
  private:
@@ -46,6 +51,8 @@ class CaptivePortalDetection final : public QObject {
 
   // Don't use it directly. Use captivePortalMonitor().
   CaptivePortalMonitor* m_captivePortalMonitor = nullptr;
+
+  CaptivePortalMonitor* m_captivePortalBackgroundMonitor = nullptr;
 
   // Don't use it directly. Use captivePortalNotifier().
   CaptivePortalNotifier* m_captivePortalNotifier = nullptr;

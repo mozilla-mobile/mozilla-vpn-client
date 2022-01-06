@@ -39,10 +39,12 @@ INCLUDEPATH += \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
             ../translations/generated \
-            ../nebula \
-            ../glean
+            ../glean \
+            ../lottie/lib \
+            ../nebula
 
 include($$PWD/../glean/glean.pri)
+include($$PWD/../lottie/lottie.pri)
 include($$PWD/../nebula/nebula.pri)
 include($$PWD/crashreporter/crashreporter.pri)
 
@@ -929,6 +931,7 @@ else:wasm {
 
     # 32Mb
     QMAKE_WASM_TOTAL_MEMORY=33554432
+    QMAKE_LFLAGS+= "-s TOTAL_MEMORY=33554432"
 
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \

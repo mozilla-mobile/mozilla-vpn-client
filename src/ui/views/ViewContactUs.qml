@@ -20,15 +20,25 @@ Item {
     id: contactUsRoot
     objectName: "contactUs"
 
+    function stackView() {
+      if (menu.isMainView) return mainStackView;
+      return stackview;
+    }
+
     function tryAgain() {
-        mainStackView.pop();
+        stackView().pop();
     }
 
     function createSupportTicket(email, subject, issueText, category) {
-        mainStackView.push("qrc:/nebula/components/VPNLoader.qml", {
+        stackView().push("qrc:/nebula/components/VPNLoader.qml", {
             footerLinkIsVisible: false
         });
         VPN.createSupportTicket(email, subject, issueText, category);
+    }
+
+    function fxaBrowserLink() {
+        VPN.openLink(VPN.LinkHelpSupport);
+        contactUsRoot.tryAgain();
     }
 
     VPNMenu {
@@ -36,8 +46,8 @@ Item {
         objectName: "supportTicketScreen"
         title: VPNl18n.InAppSupportWorkflowSupportNavLinkText
 
-        // this view gets pushed to mainStackView from backend always
-        // and so should be removed from mainStackView (even in settings flow) on back clicks
+        // this view gets pushed to stackView from backend always
+        // and so should be removed from stackView (even in settings flow) on back clicks
     }
 
     StackView {
@@ -53,14 +63,18 @@ Item {
             target: VPN
             function onTicketCreationAnswer(successful) {
                 if(successful) {
-                    mainStackView.replace(thankYouView);
+                    stackView().replace(thankYouView);
                 } else {
-                    mainStackView.replace("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                    stackView().replace("qrc:/ui/views/ViewErrorFullScreen.qml", {
                         headlineText: VPNl18n.InAppSupportWorkflowSupportErrorHeader,
                         errorMessage: VPNl18n.InAppSupportWorkflowSupportErrorText,
-                        buttonText: VPNl18n.InAppSupportWorkflowSupportErrorButton,
-                        buttonOnClick: contactUsRoot.tryAgain,
-                        buttonObjectName: "errorTryAgainButton"
+                        primaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorButton,
+                        primaryButtonOnClick: contactUsRoot.tryAgain,
+                        primaryButtonObjectName: "errorTryAgainButton",
+                        secondaryButtonIsSignOff: false,
+                        secondaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorBrowserButton,
+                        secondaryButtonObjectName: "errorFxALinkButton",
+                        secondaryButtonOnClick: contactUsRoot.fxaBrowserLink
                         }
                     );
                 }
@@ -281,7 +295,7 @@ Item {
                             labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText
                             Layout.preferredHeight: VPNTheme.theme.rowHeight
                             Layout.alignment: Qt.AlignHCenter
-                            onClicked: mainStackView.pop()
+                            onClicked: stackView().pop()
                             implicitHeight: VPNTheme.theme.rowHeight
 
                         }
@@ -321,8 +335,8 @@ Item {
                anchors.topMargin: VPNTheme.theme.vSpacing
                anchors.horizontalCenter: parent.horizontalCenter
                onClicked: {
-                   mainStackView.pop();
-                   mainStackView.pop();
+                   stackView().pop();
+                   stackView().pop();
                }
                Component.onCompleted: {
                  if (window.fullscreenRequired()) {

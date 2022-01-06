@@ -474,7 +474,6 @@ static QList<WebSocketCommand> s_commands{
                        MozillaVPN::instance()->releaseMonitor()->runSoon();
                        return QJsonObject();
                      }},
-
     WebSocketCommand{"force_captive_portal_check",
                      "Force a captive portal check", 0,
                      [](const QList<QByteArray>&) {
@@ -484,14 +483,16 @@ static QList<WebSocketCommand> s_commands{
                        return QJsonObject();
                      }},
 
-    WebSocketCommand{"force_captive_portal_detection",
-                     "Simulate a captive portal detection", 0,
-                     [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()
-                           ->captivePortalDetection()
-                           ->captivePortalDetected();
-                       return QJsonObject();
-                     }},
+    WebSocketCommand{
+        "force_captive_portal_detection", "Simulate a captive portal detection",
+        0,
+        [](const QList<QByteArray>&) {
+          MozillaVPN::instance()
+              ->captivePortalDetection()
+              ->captivePortalDetected();
+          MozillaVPN::instance()->controller()->captivePortalPresent();
+          return QJsonObject();
+        }},
 
     WebSocketCommand{
         "force_unsecured_network", "Force an unsecured network detection", 0,
