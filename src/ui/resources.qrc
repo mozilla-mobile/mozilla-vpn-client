@@ -54,5 +54,9 @@
         <file>resources/updateRecommended.svg</file>
         <file>resources/updateRequired.svg</file>
         <file>resources/warning-white.svg</file>
+        <file>resources/onboarding/mobile/vpn-globe-flags-lightMode.svg</file>
+        <file>resources/onboarding/mobile/vpn-off-lightMode.svg</file>
+        <file>resources/onboarding/mobile/vpn-on-lightMode.svg</file>
+        <file>resources/onboarding/mobile/vpn-security-lightMode.svg</file>
     </qresource>
 </RCC>

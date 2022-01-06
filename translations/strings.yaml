@@ -356,3 +356,9 @@ serverUnavailableModal:
   headerText: Server unavailable
   bodyText: This server location is temporarily unavailable. Choose a new location.
   buttonLabel: Choose a new location
+
+mobileOnboarding:
+  signUpBtn: Sign up
+  alreadyASubscriber: Already a subscriber?
+
+
