@@ -167,7 +167,7 @@ if [[ "$RELEASE" ]]; then
     CONFIG-=debug \
     CONFIG-=debug_and_release \
     CONFIG+=release \
-    ANDROID_ABIS=$ARCH \
+    ANDROID_ABIS="$ARCH" \
     $ADJUST \
     ..//mozillavpn.pro  || die "Qmake failed"
 else
@@ -179,7 +179,7 @@ else
     CONFIG-=debug_and_release \
     CONFIG-=release \
     CONFIG+=qml_debug \
-    ANDROID_ABIS=$ARCH \
+    ANDROID_ABIS="$ARCH" \
     $ADJUST \
     ..//mozillavpn.pro || die "Qmake failed"
 fi
