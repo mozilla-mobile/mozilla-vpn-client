@@ -57,7 +57,7 @@ jobs:
         treeherder:
             symbol: BS
             kind: build
-            tier: 1
+            tier: 1 # Todo: This needs to become level 3 when ready to land
             platform: qt5/android/universal
         worker-type: b-linux
         worker:
