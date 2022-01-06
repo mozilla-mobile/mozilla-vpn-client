@@ -194,6 +194,7 @@ tasks:
                                       $if: 'tasks_for == "github-release"'
                                       then:
                                           - 'assume:repo:${repoUrl[8:]}:release'
+                                          - 'secrets:get:project/mozillavpn/tokens'
                                       else:
                                           $if: 'tasks_for == "action"'
                                           then:
