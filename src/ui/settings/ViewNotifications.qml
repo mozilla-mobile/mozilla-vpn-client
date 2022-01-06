@@ -89,7 +89,7 @@ Item {
                     if (vpnFlickable.vpnIsOff) {
                         VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
                     }
-            }
+                }
             }
 
             VPNCheckBoxRow {
@@ -106,7 +106,7 @@ Item {
                 showDivider: false
                 onClicked: {
                     VPNSettings.serverSwitchNotification = !VPNSettings.serverSwitchNotification
-            }
+                }
             }
 
             VPNCheckBoxRow {
@@ -123,6 +123,21 @@ Item {
                 showDivider: false
                 onClicked: {
                     VPNSettings.connectionChangeNotification = !VPNSettings.connectionChangeNotification
+                }
+            }
+
+            VPNCheckBoxRow {
+                id: serverUnavailableNotification
+                objectName: "serverUnavailableNotification"
+                visible: VPNFeatureList.get("serverUnavailableNotification").isSupported
+                width: parent.width
+
+                labelText: "Server unavailable notification"
+                subLabelText: "serverUnavailableNotification"
+                isChecked: (VPNSettings.serverUnavailableNotification)
+                showDivider: false
+                onClicked: {
+                    VPNSettings.serverUnavailableNotification = !VPNSettings.serverUnavailableNotification
                 }
             }
         }
