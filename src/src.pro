@@ -39,10 +39,12 @@ INCLUDEPATH += \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
             ../translations/generated \
-            ../nebula \
-            ../glean
+            ../glean \
+            ../lottie/lib \
+            ../nebula
 
 include($$PWD/../glean/glean.pri)
+include($$PWD/../lottie/lottie.pri)
 include($$PWD/../nebula/nebula.pri)
 
 DEPENDPATH  += $${INCLUDEPATH}
@@ -926,6 +928,7 @@ else:wasm {
 
     # 32Mb
     QMAKE_WASM_TOTAL_MEMORY=33554432
+    QMAKE_LFLAGS+= "-s TOTAL_MEMORY=33554432"
 
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
@@ -981,6 +984,7 @@ exists($$PWD/../translations/translations.pri) {
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
+CONFIG += qtquickcompiler
 
 coverage {
     message(Coverage enabled)

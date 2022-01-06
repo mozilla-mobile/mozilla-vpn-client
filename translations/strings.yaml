@@ -176,6 +176,8 @@ inAppSupportWorkflow:
   supportErrorHeader: Error submitting your support request
   supportErrorText: An unexpected error has occurred, please try again.
   supportErrorButton: Try Again
+  supportErrorBrowserButton: Try opening in browser
+
 
 # IAP Android edge case 1
 notSignedInGoogle:
@@ -227,6 +229,7 @@ whatsNewReleaseNotes:
     comment: “Multi-Account Containers” is the name of the add-on and should not be translated.
   multiAccountContainersDescription: You can now use different Mozilla VPN locations in multiple tabs simultaneously.
 
+
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
   dnsInfoAlert: VPN must be off to change these settings
@@ -250,9 +253,17 @@ customDNSSettings:
 networkSettings:
   multihopTitle: Multi-hop tunnel
 
+captivePortalAlert:
+  title: Captive portal detected!
+  header: A captive portal is when the guest Wi-Fi you are using requires you to log in to get internet access. 
+  actionPreActivation: You can turn on your VPN once you have gained internet access by logging in to the portal. 
+  actionPostActivation: You must turn off your VPN in order to see the portal, and turn it back on once you have logged in. 
+  buttonTextPreActivation: Okay
+  buttonTextPostActivation: Turn off VPN
+  
 notifications:
   captivePortalBlockTitle: Guest Wi-Fi portal blocked
-  captivePortalBlockMessage: The guest Wi-Fi network you’re connected to requires action. Click here to turn off VPN to see the portal.
+  captivePortalBlockMessage2: The guest Wi-Fi network you’re connected to requires action. Click to turn off VPN to see the portal.
   captivePortalUnblockTitle: Guest Wi-Fi portal detected
   captivePortalUnblockMessage: The guest Wi-Fi network you’re connected to may not be secure. Click here to turn on VPN to secure your device.
   unsecuredNetworkTitle: Unsecured Wi-Fi network detected
@@ -284,6 +295,7 @@ settings:
     comment: Startup refers to a device's startup, not the VPN client's.
   startAtBootSubtitle: Mozilla VPN will launch and connect when you start up your device
 
+
 aboutUs:
   licenses: Licenses
 
@@ -295,7 +307,7 @@ AndroidNotifications:
 updateButton:
   checkForUpdateButtonText: Check for Updates
   titleNoUpdate: You are up to date
-  descriptionNoUpdate: There is no new update available at this time
+  descriptionNoUpdate2: You currently have the latest version of Mozilla VPN
   actionNoUpdate: Okay
   titleOnUpdate: Updates available
   descriptionOnUpdate: Click to update to the latest version of the application
@@ -304,6 +316,7 @@ updateButton:
 telemetryPolicyView:
   description: We strive to provide you with choices and collect only the data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional.
   question: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla?
+
 
 connectionInfo:
   labelBitps:

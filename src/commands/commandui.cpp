@@ -27,6 +27,7 @@
 #include "theme.h"
 
 #include <glean.h>
+#include <lottie.h>
 #include <nebula.h>
 
 #ifdef MVPN_LINUX
@@ -130,6 +131,7 @@ int CommandUI::run(QStringList& tokens) {
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
 
     Glean::Initialize(engine);
+    Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
 
     MozillaVPN vpn;
@@ -211,6 +213,13 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNFeatureList",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = FeatureList::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->captivePortalDetection();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

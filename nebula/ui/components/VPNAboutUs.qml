@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+import QtQuick.Window 2.1
 
 import Mozilla.VPN 1.0
 import components 0.1
@@ -176,7 +177,7 @@ Item {
         onClicked: {
             listenForUpdateEvents=true;
             updateButtonImageAnimation.start();
-            VPN.releaseMonitor.runSoon();
+            VPNReleaseMonitor.runSoon();
         }
         text: VPNl18n.UpdateButtonCheckForUpdateButtonText
         Image {
@@ -243,8 +244,8 @@ Item {
                 Image {
                     anchors.fill: parent
                     source:  "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
-                    sourceSize.height: parent.height * QtQuick_Window.Screen.devicePixelRatio
-                    sourceSize.width: parent.width * QtQuick_Window.Screen.devicePixelRatio
+                    sourceSize.height: parent.height * Screen.devicePixelRatio
+                    sourceSize.width: parent.width * Screen.devicePixelRatio
                     fillMode: Image.PreserveAspectFit
 
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -315,8 +316,8 @@ Item {
                 Image {
                     anchors.fill: parent
                     source: "qrc:/nebula/resources/updateStatusUpToDate.svg"
-                    sourceSize.height: parent.height * QtQuick_Window.Screen.devicePixelRatio
-                    sourceSize.width: parent.width * QtQuick_Window.Screen.devicePixelRatio
+                    sourceSize.height: parent.height * Screen.devicePixelRatio
+                    sourceSize.width: parent.width * Screen.devicePixelRatio
                     fillMode: Image.PreserveAspectFit
 
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -337,7 +338,7 @@ Item {
 
             VPNTextBlock {
                 horizontalAlignment: Text.AlignHCenter
-                text: VPNl18n.UpdateButtonDescriptionNoUpdate
+                text: VPNl18n.UpdateButtonDescriptionNoUpdate2
                 Layout.fillWidth: true
                 Layout.preferredWidth: parent.width
             }

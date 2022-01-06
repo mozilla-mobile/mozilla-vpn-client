@@ -175,9 +175,6 @@ VPNFlickable {
                 anchors.horizontalCenter: undefined
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
-                onClicked: {
-                    VPNController.logout()
-                }
             }
 
             VPNVerticalSpacer {

@@ -193,9 +193,6 @@ VPNFlickable {
             anchors.bottomMargin: undefined
             anchors.horizontalCenter: undefined
             Layout.alignment: Qt.AlignHCenter
-            onClicked: {
-                VPNController.logout();
-            }
         }
 
         Rectangle {

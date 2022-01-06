@@ -1,0 +1,2 @@
+const theme = {};
+theme;

@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/nebula/themes">
+        <file alias="main/theme.js">ok.js</file>
+        <file alias="main/colors.js">ok.js</file>
+
+        <file alias="foobar/theme.js">ok.js</file>
+        <file alias="foobar/colors.js">ok.js</file>
+
+        <file alias="invalid_theme/theme.js">invalid.js</file>
+        <file alias="invalid_theme/colors.js">ok.js</file>
+
+        <file alias="invalid_colors/theme.js">ok.js</file>
+        <file alias="invalid_colors/colors.js">invalid.js</file>
+
+        <file alias="error_theme/theme.js">error.js</file>
+        <file alias="error_theme/colors.js">ok.js</file>
+
+        <file alias="error_colors/theme.js">ok.js</file>
+        <file alias="error_colors/colors.js">error.js</file>
+    </qresource>
+</RCC>

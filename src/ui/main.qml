@@ -123,7 +123,7 @@ Window {
     VPNWasmHeader {
         id: wasmMenuHeader
         visible: isWasmApp
-        height: VPNTheme.theme.menuHeight
+        height: visible ? VPNTheme.theme.menuHeight : 0
         anchors.top: parent.top
         anchors.topMargin: iosSafeAreaTopMargin.height
     }
@@ -133,7 +133,7 @@ Window {
         initialItem: mainView
         width: parent.width
         anchors.top: parent.top
-        anchors.topMargin: iosSafeAreaTopMargin.height + isWasmApp ? wasmMenuHeader.height : 0
+        anchors.topMargin: iosSafeAreaTopMargin.height + wasmMenuHeader.height
         height: safeContentHeight
         clip: true
     }

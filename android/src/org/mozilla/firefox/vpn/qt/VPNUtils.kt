@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
+import org.mozilla.firefox.vpn.glean.GleanEvent
 import java.io.IOException
 
 // Companion for AndroidUtils.cpp
@@ -90,4 +91,14 @@ object VPNUtils {
         }
         context.startActivity(intent)
     }
+
+    fun recordGleanEvent(metricName: GleanEvent) {
+        // Explicit cast to string so the jni
+        // does not explode here :)
+        recordGleanEvent(metricName.toString())
+    }
+
+    @SuppressLint("Unused")
+    @JvmStatic
+    private external fun recordGleanEvent(metricName: String)
 }

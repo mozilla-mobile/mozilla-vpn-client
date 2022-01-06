@@ -52,7 +52,7 @@ Item {
                 width: parent.width - VPNTheme.theme.windowMargin
                 onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
                 visible: VPNFeatureList.get("startOnBoot").isSupported
-
+                anchors.rightMargin: VPNTheme.theme.windowMargin
             }
 
             VPNVerticalSpacer {
@@ -66,6 +66,7 @@ Item {
                 width: parent.width - VPNTheme.theme.windowMargin
                 anchors.left: parent.left
                 anchors.right: parent.right
+                anchors.rightMargin: VPNTheme.theme.windowMargin
 
                 //% "Data collection and use"
                 labelText: qsTrId("vpn.settings.dataCollection")

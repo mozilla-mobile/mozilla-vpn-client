@@ -57,6 +57,7 @@ tests/proxy/__pycache__/
 tests/qml/qml_tests
 tests/qml/target_wrapper.sh
 build
+!taskcluster/ci/build
 Debug/
 !android/src/debug/
 Debug-iphone*
@@ -68,6 +69,7 @@ macos/gobridge/wireguard-go-version.h
 *.swp
 .idea/
 .vscode/
+vscode-cpptools/*
 MozillaVPN.xcodeproj/
 MozillaVPN.vcxproj*
 *.autosave
@@ -109,6 +111,7 @@ mozillavpnnp.vcxproj*
 # glean
 /glean/telemetry/*
 !/glean/telemetry/.keepme
+android/src/org/mozilla/firefox/vpn/glean/GleanEvents.kt
 
 # For users compiling QT per the README
 /qt/
