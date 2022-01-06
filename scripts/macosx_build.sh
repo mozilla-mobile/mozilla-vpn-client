@@ -41,7 +41,7 @@ python3 scripts/importLanguages.py -m
 # (go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
 # cd ../..
 
-which go 
+echo `which go`
 
 # Xcode config - maybe we should just maintain a full Xcode config somewhere instead of replacing things here?
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
