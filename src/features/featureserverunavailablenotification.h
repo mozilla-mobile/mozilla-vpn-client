@@ -27,12 +27,7 @@ class FeatureServerUnavailableNotification final : public Feature {
         ){};
 
   bool checkSupportCallback() const override {
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
-    defined(MVPN_WASM) || defined(MVPN_DUMMY)
     return true;
-#else
-    return false;
-#endif
   }
 
   static const FeatureServerUnavailableNotification* instance() {
