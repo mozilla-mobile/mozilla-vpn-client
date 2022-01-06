@@ -22,4 +22,4 @@ cat adjust_token
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
-cp .tmp/src/android-build/mozillavpn.apk  /builds/worker/artifacts/
+cp .tmp/src/android-build/build/outputs/apk/release/*  /builds/worker/artifacts/
