@@ -19,7 +19,7 @@ group-by: build-type
 job-template:
     description: Sign VPN for Android
     worker: {}
-    signing-format: jar 
+    signing-format: autograph_apk 
     index:
         by-tasks-for:
             (action|cron|github-release|github-push):

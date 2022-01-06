@@ -60,6 +60,8 @@ jobs:
             tier: 1 # Todo: This needs to become level 3 when ready to land
             platform: qt5/android/universal
         worker-type: b-linux
+        attributes:
+            build-type: nightly 
         scopes:
             - 'secrets:get:project/mozillavpn/tokens'
         worker:
