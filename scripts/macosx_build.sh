@@ -7,6 +7,11 @@ export PATH="`pwd`/qt/bin:$PATH"
 # use --user-install for permissions
 gem install xcodeproj --user-install
 
+# make sure submodules are up to date
+# should already be done by XCode cloud cloning but just to make sure
+git submodule init
+git submodule update
+
 # generate qt_static_macos
 auth_header="$(git config --local --get http.https://github.com/.extraheader)"
 git clone https://github.com/mozilla-mobile/qt_static_macos
@@ -17,7 +22,7 @@ cd ..
 export QT_MACOS_BIN=`pwd`/qt_static_macos/qt/bin
 export PATH=`pwd`/qt_static_macos/qt/bin:$PATH
 
-export PATH="/Users/task_163336061065616/Library/Python/3.6/bin:$PATH"
+export PATH="/Users/task_163336061065616/Library/Python/3.6/bin:/Users/task_163336061065616/.gem/ruby/2.6.0/bin:$PATH"
 
 # install python packages
 # use --user for permissions
@@ -36,9 +41,7 @@ python3 scripts/importLanguages.py -m
 # (go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
 # cd ../..
 
-# install go and set GOROOT using brew
-# wget is currently not supported so we need to use brew
-brew install go
+which go 
 
 # Xcode config - maybe we should just maintain a full Xcode config somewhere instead of replacing things here?
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
