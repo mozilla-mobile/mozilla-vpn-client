@@ -216,6 +216,20 @@ void NotificationHandler::unsecuredNetworkNotification(
                  Constants::UNSECURED_NETWORK_ALERT_MSEC);
 }
 
+// TODO: Server unavailable notification
+void NotificationHandler::serverUnavailableNotification() {
+  logger.debug() << "Server unavailable notification shown";
+
+  L18nStrings* l18nStrings = L18nStrings::instance();
+  Q_ASSERT(l18nStrings);
+
+  QString title = l18nStrings->t(L18nStrings::ServerUnavailableModalHeaderText);
+  QString message = l18nStrings->t(L18nStrings::ServerUnavailableModalBodyText);
+
+  notifyInternal(ServerUnavailable, title, message,
+                 Constants::SERVER_UNAVAILABLE_ALERT_MSEC);
+}
+
 void NotificationHandler::notifyInternal(Message type, const QString& title,
                                          const QString& message,
                                          int timerMsec) {
