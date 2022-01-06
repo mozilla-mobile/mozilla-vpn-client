@@ -7,31 +7,40 @@
 #include "imageproviderfactory.h"
 #include "nebula.h"
 #include "theme.h"
-
+#include <iostream>
 #include <QCoreApplication>
 #include <QWindow>
 #include "l18nstrings.h"
+#include "mozillavpn.h"
+#include "qmlengineholder.h"
+#include "localizer.h"
 
 using namespace std;
 
 constexpr auto APP = "app";
 constexpr auto QML_MAIN = "qrc:/crashui/main.qml";
 
-CrashUI::CrashUI() { m_engine = make_unique<QQmlApplicationEngine>(); }
+CrashUI::CrashUI() {}
 
 void CrashUI::initialize() {
   if (!m_initialized) {
-    Nebula::Initialize(m_engine.get());
+    Nebula::Initialize(QmlEngineHolder::instance()->engine());
     FontLoader::loadFonts();
     auto provider = ImageProviderFactory::create(QCoreApplication::instance());
     if (provider) {
-      m_engine->addImageProvider(APP, provider);
+      QmlEngineHolder::instance()->engine()->addImageProvider(APP, provider);
     }
-
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNLocalizer",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          auto obj = Localizer::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
     qmlRegisterSingletonType<L18nStrings>(
         "Mozilla.VPN", 1, 0, "VPNl18n",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = L18nStrings::instance();
+          auto obj = L18nStrings::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -40,20 +49,50 @@ void CrashUI::initialize() {
     qmlRegisterSingletonType<Theme>(
         "Mozilla.VPN", 1, 0, "VPNTheme",
         [this](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = m_theme.get();
+          auto obj = m_theme.get();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
+
+    qmlRegisterSingletonType<CrashUI>(
+        "Mozilla.VPN", 1, 0, "CrashController",
+        [this](QQmlEngine*, QJSEngine*) -> QObject* {
+          QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
+          return this;
+        });
+
+    QObject::connect(QmlEngineHolder::instance()->engine(),
+                     &QQmlApplicationEngine::objectCreated,
+                     [](QObject* obj, const QUrl& path) {
+                       if (obj == nullptr) {
+                         std::cout << path.toString().toStdString()
+                                   << " Failed to load.";
+                       }
+                     });
     const QUrl url(QML_MAIN);
-    m_engine->load(url);
+    QmlEngineHolder::instance()->engine()->load(url);
     m_initialized = true;
   }
 }
 
 void CrashUI::showUI() {
-  auto root = m_engine->rootObjects().first();
-  QWindow* window = qobject_cast<QWindow*>(root);
+  auto window = QmlEngineHolder::instance()->window();
   window->show();
   window->raise();
   window->requestActivate();
+}
+
+Q_INVOKABLE void CrashUI::sendReport() {
+  auto window = QmlEngineHolder::instance()->window();
+  window->hide();
+  emit startUpload();
+
+  return Q_INVOKABLE void();
+}
+
+Q_INVOKABLE void CrashUI::userDecline() {
+  auto window = QmlEngineHolder::instance()->window();
+  window->hide();
+  emit cleanupDumps();
+  return Q_INVOKABLE void();
 }

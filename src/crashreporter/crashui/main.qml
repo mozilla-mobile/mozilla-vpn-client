@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
+
 import compat 0.1
 import components 0.1
 
@@ -19,7 +20,7 @@ Window {
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
     }
-
+    screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
     visible: true
 
@@ -30,8 +31,8 @@ Window {
     maximumWidth: fullscreenRequired() ? Screen.width : VPNTheme.theme.desktopAppWidth;
     maximumHeight: fullscreenRequired() ? Screen.height : VPNTheme.theme.desktopAppHeight;
 
-    //% "Mozilla VPN"
-    title: VPNl18n.CrashreporterMainTitle
+    //% "Mozilla Crash Reporter"
+    title: qsTrId("vpn.crashreporter.mainTitle")
     color: "#F9F9FA"
 
     Rectangle {
@@ -63,5 +64,51 @@ Window {
 
         }
     }
+    Column{
+        anchors.centerIn: parent
+        spacing: VPNTheme.theme.windowMargin
+        anchors.margins: VPNTheme.theme.windowMargin
+        Image {
+            id: mainIcon
+            source: "qrc:/crashresources/Warning.svg"
+            anchors.left: parent.left
+            anchors.right: parent.right
+            horizontalAlignment: Image.AlignHCenter
+            fillMode: Image.PreserveAspectFit
+        }
+          VPNSubtitle {
+              id: mainHeading
 
+              text: qsTrId("vpn.crashreporter.mainHeading")
+              horizontalAlignment: Text.AlignHCenter
+              //anchors.fill: parent
+          }
+          VPNTextBlock{
+              id: description
+              anchors.left: parent.left
+              anchors.right: parent.right
+              horizontalAlignment: Text.AlignHCenter
+              text: qsTrId("vpn.crashreporter.description")
+          }
+
+          VPNButton {
+            text: qsTrId("vpn.crashreporter.sendButtonLabel");
+            anchors.left: parent.left
+            anchors.right: parent.right
+            onClicked: CrashController.sendReport()
+          }
+          VPNButton {
+              text: qsTrId("vpn.crashreporter.dontSendButton");
+              anchors.left: parent.left
+              anchors.right: parent.right
+              onClicked: CrashController.userDecline()
+          }
+    }
+    Component.onCompleted: {
+        if (!fullscreenRequired()) {
+            minimumHeight = VPNTheme.theme.desktopAppHeight
+            minimumWidth = VPNTheme.theme.desktopAppWidth
+
+        }
+    }
 }

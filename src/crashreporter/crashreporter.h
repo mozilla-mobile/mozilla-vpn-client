@@ -11,6 +11,7 @@
 #include "crashui.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "localizer.h"
 
 class CrashData;
 
@@ -22,11 +23,15 @@ class CrashReporter : public QObject {
   virtual void stop(){};
   virtual bool shouldPromptUser();
   bool promptUser();
+ signals:
+  void startUpload();
+  void cleanup();
 
  private:
   std::unique_ptr<CrashUI> m_ui;
   QmlEngineHolder m_engineHolder;
   SettingsHolder settings;
+  Localizer localizer;
 };
 
 #endif  // CRASHREPORTER_H

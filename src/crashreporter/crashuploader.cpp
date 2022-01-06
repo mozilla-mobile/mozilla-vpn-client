@@ -11,11 +11,17 @@
 #include <QFile>
 #include <QByteArray>
 #include <QNetworkReply>
+#include "logger.h"
+#include "settingsholder.h"
 
 using namespace std;
 
-constexpr auto MAX_RETRIES = 1;
+constexpr auto MAX_RETRIES = 3;
 constexpr auto BOUNDARY = "--------------------XYsowmfWDDGdos";
+
+namespace {
+Logger logger(LOG_CRASHREPORTER, "CrashUploader");
+}
 
 CrashUploader::CrashUploader(QObject* parent) : QObject(parent) {
   m_network = QmlEngineHolder::instance()->networkAccessManager();
@@ -26,7 +32,6 @@ CrashUploader::CrashUploader(QObject* parent) : QObject(parent) {
 
 void CrashUploader::startUploads(QStringList files) {
   m_files = files;
-  m_attempted = m_files.size();
   nextUpload();
 }
 
@@ -37,16 +42,16 @@ void CrashUploader::nextUpload() {
     m_retries = 0;
     startRequest(m_currentFile);
   } else {
-    emit uploadsComplete(m_attempted, m_completed);
+    emit uploadsComplete();
   }
 }
 
 void CrashUploader::startRequest(const QString& file) {
-  cout << "Starting upload of " << file.toStdString() << endl;
+  logger.debug() << "Starting upload of " << file;
   QFile dump(file);
   if (!dump.open(QIODevice::ReadOnly)) {
     // fail and try the next one
-    cout << "Unable to open file: " << file.toStdString() << endl;
+    logger.error() << "Unable to open file: " << file;
     nextUpload();
     return;
   }
@@ -82,9 +87,16 @@ void CrashUploader::startRequest(const QString& file) {
   multipart->append(namePart);
   multipart->append(formPart);
   multipart->append(versionPart);
-  // multipart->append(json);
-  cout << "Uploading to : " << Constants::CRASH_STAGING_URL << endl;
-  QUrl url(Constants::CRASH_STAGING_URL);
+
+  QString urlStr = SettingsHolder::instance()->stagingServer()
+                       ? Constants::CRASH_STAGING_URL
+                       : Constants::CRASH_PRODUCTION_URL;
+#ifdef MVPN_DEBUG
+  urlStr = Constants::CRASH_STAGING_URL;
+#endif  // MVPN_DEBUG
+
+  logger.debug() << "Uploading to : " << urlStr;
+  QUrl url(Constants::CRASH_PRODUCTION_URL);
   QNetworkRequest request(url);
   request.setHeader(QNetworkRequest::UserAgentHeader, "mozillaVPN");
   // Qt changes the content type automatically to multipart/mixed.  Socorro
@@ -93,48 +105,44 @@ void CrashUploader::startRequest(const QString& file) {
   request.setHeader(QNetworkRequest::ContentTypeHeader,
                     QString("multipart/form-data; boundary=%1").arg(BOUNDARY));
   auto reply = m_network->post(request, multipart);
-  connect(reply, &QNetworkReply::errorOccurred, this,
-          &CrashUploader::requestFailed);
+
+  connect(reply, &QNetworkReply::sslErrors, [](QList<QSslError> errors) {
+    cout << "SSL Errors: " << endl;
+    for (auto err : errors) {
+      std::cout << err.errorString().toStdString() << std::endl;
+    }
+  });
   QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void CrashUploader::requestComplete(QNetworkReply* reply) {
-  std::cout << "Request Complete" << endl;
+#ifdef MVPN_DEBUG
+  dumpResponse(reply);
+#endif  // MVPN_DEBUG
+
   if (reply->error() != QNetworkReply::NoError) {
-    std::cout << "Upload failed for " << m_currentFile.toStdString() << endl;
-    std::cout << reply->errorString().toStdString() << std::endl;
-    auto response = reply->readAll();
-    auto headers = reply->rawHeaderList();
-    cout << "Reply headers" << endl;
-    for (auto header : headers) {
-      cout << "Header: " << QString::fromLocal8Bit(header).toStdString()
-           << " = "
-           << QString::fromLocal8Bit(reply->rawHeader(header)).toStdString()
-           << endl;
-    }
-    QString respBody(response);
-    std::cout << respBody.toStdString();
-    // maybe retry...
-    cout << "Request Headers" << endl;
-    headers = reply->request().rawHeaderList();
-    for (auto header : headers) {
-      cout << "Header: " << QString::fromLocal8Bit(header).toStdString()
-           << " = "
-           << QString::fromLocal8Bit(reply->request().rawHeader(header))
-                  .toStdString()
-           << endl;
-    }
+    logger.error() << "Upload failed for " << m_currentFile
+                   << " error: " << reply->errorString()
+                   << " code: " << reply->error();
     startRequest(m_currentFile);
   } else {
-    cout << "Completed upload of " << m_currentFile.toStdString();
+    logger.debug() << "Completed upload of " << m_currentFile;
     m_retries = 0;
-    m_completed++;
+
     nextUpload();
   }
   reply->deleteLater();
 }
 
-void CrashUploader::requestFailed(QNetworkReply::NetworkError error) {
-  std::cout << "Upload failed for " << m_currentFile.toStdString() << " Error "
-            << error << endl;
+void CrashUploader::dumpResponse(QNetworkReply* reply) {
+  logger.debug() << reply->errorString();
+  auto response = reply->readAll();
+  auto headers = reply->rawHeaderList();
+  logger.debug() << "Reply headers";
+  for (auto header : headers) {
+    logger.debug() << "Header: " << QString::fromLocal8Bit(header) << " = "
+                   << QString::fromLocal8Bit(reply->rawHeader(header));
+  }
+  QString respBody(response);
+  logger.debug() << "Response Body: " << respBody;
 }

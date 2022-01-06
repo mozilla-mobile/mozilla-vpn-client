@@ -15,19 +15,17 @@ class CrashUploader : public QObject {
   explicit CrashUploader(QObject* parent = nullptr);
   void startUploads(QStringList files);
  signals:
-  void uploadsComplete(uint16_t attempted, uint16_t completed);
+  void uploadsComplete();
 
  private:
   void nextUpload();
   void startRequest(const QString& file);
   void requestComplete(QNetworkReply* reply);
-  void requestFailed(QNetworkReply::NetworkError error);
+  void dumpResponse(QNetworkReply* reply);
   QNetworkAccessManager* m_network;
   QStringList m_files;
   QString m_currentFile;
   uint16_t m_retries = 0;
-  uint16_t m_attempted = 0;
-  uint16_t m_completed = 0;
 };
 
 #endif  // CRASHUPLOADER_H

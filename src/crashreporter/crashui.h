@@ -5,18 +5,23 @@
 #ifndef CRASHUI_H
 #define CRASHUI_H
 
-#include <QQmlApplicationEngine>
+#include <QObject>
 #include <memory>
 #include "theme.h"
 
-class CrashUI {
+class CrashUI : public QObject {
+  Q_OBJECT
  public:
-  CrashUI();
+  explicit CrashUI();
   void initialize();
   void showUI();
+  Q_INVOKABLE void sendReport();
+  Q_INVOKABLE void userDecline();
+ signals:
+  void startUpload();
+  void cleanupDumps();
 
  private:
-  std::unique_ptr<QQmlApplicationEngine> m_engine;
   std::shared_ptr<Theme> m_theme;
   bool m_initialized = false;
 };

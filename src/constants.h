@@ -75,13 +75,11 @@ constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
-constexpr auto CRASH_PRODUCTION_URL = "https://crash-report.mozilla.com/submit";
+constexpr auto CRASH_PRODUCTION_URL =
+    "https://crash-reports.mozilla.com/submit";
 constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
 
-PRODBETAEXPR(const char *, crashURL, CRASH_PRODUCTION_URL, CRASH_STAGING_URL);
-
 constexpr const char* LOGO_URL = ":/nebula/resources/logo-dock.png";
-
 
 PRODBETAEXPR(const char*, fxaUrl, "https://api.accounts.firefox.com",
              "https://api-accounts.stage.mozaws.net")

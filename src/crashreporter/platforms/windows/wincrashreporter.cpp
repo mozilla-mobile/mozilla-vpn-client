@@ -4,19 +4,27 @@
 
 #include "wincrashreporter.h"
 #include "crashreporter/crashuploader.h"
-
-#include <iostream>
+#include <QApplication>
 #include <QStandardPaths>
 #include <Windows.h>
 #include <QDir>
+#include <iostream>
+#include "logger.h"
 
 using namespace std;
+
+namespace {
+Logger logger(LOG_CRASHREPORTER, "WinCrashReporter");
+}
 
 WinCrashReporter::WinCrashReporter(QObject* parent) : CrashReporter(parent) {
   m_uploader = make_unique<CrashUploader>();
 }
 
 bool WinCrashReporter::start(int argc, char* argv[]) {
+  Q_UNUSED(argc);
+  Q_UNUSED(argv);
+#ifdef MVPN_DEBUG
   if (AllocConsole()) {
     FILE* unusedFile;
     freopen_s(&unusedFile, "CONOUT$", "w", stdout);
@@ -25,30 +33,40 @@ bool WinCrashReporter::start(int argc, char* argv[]) {
     std::clog.clear();
     std::cerr.clear();
   }
-  // On windows, all we do is check with the user and upload the crashdump if
-  // allowed
-  if (shouldPromptUser()) {
-    if (!promptUser()) {
-      return false;
+#endif  // MVPN_DEBUG
+
+  auto appDatas =
+      QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
+  auto appLocal = appDatas.first() + "\\dumps";
+  QDir dumpRoot(appLocal);
+  QStringList filters = {"*.dmp"};
+  dumpRoot.setNameFilters(filters);
+  auto dumpFiles = dumpRoot.entryList();
+  QStringList absDumpPaths;
+  for (auto file : dumpFiles) {
+    absDumpPaths << dumpRoot.absoluteFilePath(file);
+  }
+  if (!absDumpPaths.empty()) {
+    connect(this, &CrashReporter::startUpload, this,
+            [this, absDumpPaths]() { m_uploader->startUploads(absDumpPaths); });
+    connect(this, &CrashReporter::cleanup, this,
+            [this, absDumpPaths]() { cleanupDumps(absDumpPaths); });
+    connect(m_uploader.get(), &CrashUploader::uploadsComplete, this,
+            [this, absDumpPaths]() { cleanupDumps(absDumpPaths); });
+    if (shouldPromptUser()) {
+      if (!promptUser()) {
+        return false;
+      }
     }
   }
-
-  // QStringList appDatas =
-  //    QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
-  // QString appLocal = appDatas.first() + "\\dumps";
-  // QDir dumpRoot(appLocal);
-  // QStringList filters = {"*.dmp"};
-  // dumpRoot.setNameFilters(filters);
-  // QStringList dumpFiles = dumpRoot.entryList();
-  // QStringList absDumpPaths;
-  // for (auto file : dumpFiles) {
-  //  absDumpPaths << dumpRoot.absoluteFilePath(file);
-  //}
-
-  // for (auto s : absDumpPaths) {
-  //  cout << s.toStdString() << endl;
-  //}
-
-  // m_uploader->startUploads(absDumpPaths);
   return true;
+}
+
+void WinCrashReporter::cleanupDumps(QStringList files) {
+  for (auto file : files) {
+    if (!QFile::remove(file)) {
+      logger.error() << "Unable to delete dump file: " << file;
+    }
+  }
+  qApp->quit();
 }

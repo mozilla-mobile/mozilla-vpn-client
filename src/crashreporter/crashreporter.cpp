@@ -20,6 +20,10 @@ bool CrashReporter::shouldPromptUser() {
 
 bool CrashReporter::promptUser() {
   m_ui->initialize();
+  connect(m_ui.get(), &CrashUI::startUpload, this,
+          [this]() { emit startUpload(); });
+  connect(m_ui.get(), &CrashUI::cleanupDumps, this,
+          [this]() { emit cleanup(); });
   m_ui->showUI();
   return true;
 }

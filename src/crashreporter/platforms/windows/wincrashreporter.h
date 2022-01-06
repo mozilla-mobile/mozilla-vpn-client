@@ -16,6 +16,7 @@ class WinCrashReporter : public CrashReporter {
   bool start(int argc, char* argv[]) override;
 
  private:
+  void cleanupDumps(QStringList files);
   std::unique_ptr<CrashUploader> m_uploader;
 };
 
