@@ -55,5 +55,6 @@
         <file>views/ViewSettings.qml</file>
         <file>views/ViewSubscriptionNeeded.qml</file>
         <file>views/ViewUpdate.qml</file>
+        <file>views/ViewMobileOnboarding.qml</file>
     </qresource>
 </RCC>

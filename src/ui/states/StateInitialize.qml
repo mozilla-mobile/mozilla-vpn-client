@@ -7,11 +7,24 @@ import QtQuick.Controls 2.14
 
 import components 0.1
 
-Item {
-    VPNStackView {
-        id: stackview
-
-        anchors.fill: parent
-        initialItem: "qrc:/ui/views/ViewInitialize.qml"
+VPNStackView {
+    id: stackview
+    objectName: "initialStackView"
+    anchors.fill: parent
+    initialItem: {
+        if (Qt.platform.os === "android" || Qt.platform.os === "ios")
+            return "qrc:/ui/views/ViewMobileOnboarding.qml";
+        return "qrc:/ui/views/ViewInitialize.qml"
     }
+
+    states: [
+        State {
+            name: "testMobileOnboarding"
+            StateChangeScript {
+                script: {
+                    stackview.replace("qrc:/ui/views/ViewMobileOnboarding.qml", StackView.Immediate)
+                }
+            }
+        }
+    ]
 }
