@@ -44,7 +44,10 @@ python3 scripts/importLanguages.py -m
 git clone https://go.googlesource.com/go goroot
 cd goroot
 git checkout go1.17.1
-cd ..
+cd src
+./all.bash
+go install golang.org/x/tools/gopls@latest
+cd ../..
 
 export PATH="`pwd`/goroot/bin:$PATH"
 
