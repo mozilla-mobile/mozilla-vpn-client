@@ -1,0 +1,43 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: mozillavpn_taskgraph.loader.multi_dep:loader
+
+transforms:
+    - mozillavpn_taskgraph.transforms.multi_dep:transforms
+    - mozillavpn_taskgraph.transforms.signing:transforms
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - build
+
+primary-dependency: build
+
+group-by: build-type
+
+job-template:
+    description: Sign VPN for Android
+    worker: {}
+    signing-format: jar 
+    index:
+        by-tasks-for:
+            (action|cron|github-release|github-push):
+                by-build-type:
+                    (nightly|focus-release|klar-release|beta):
+                        type: signing
+                    default: signing
+            default: {}
+    run-on-tasks-for: [github-push]
+    treeherder:
+        job-symbol:
+            by-build-type:
+                focus-.*: Bfs
+                klar-.*: Bkls
+                default: Bs
+                android-test.+: Bats
+                beta-firebase: Bfs
+                nightly-firebase: Bfs
+        kind: build
+        platform: android-all/opt
+        tier: 1
