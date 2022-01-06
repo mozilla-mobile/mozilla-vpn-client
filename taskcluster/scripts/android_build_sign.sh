@@ -18,8 +18,8 @@ echo "Fetching Tokens!"
 ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k adjust -f adjust_token
 
 cat adjust_token
-./scripts/android_package.sh -R $QTPATH --adjusttoken $(cat adjust_token)
-
+./scripts/android_package.sh $QTPATH -a $(cat adjust_token)
+ 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
 cp .tmp/src/android-build/build/outputs/apk/release/*  /builds/worker/artifacts/
