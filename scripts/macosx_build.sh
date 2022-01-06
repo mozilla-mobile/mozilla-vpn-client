@@ -32,9 +32,13 @@ export PYTHONIOENCODING="UTF-8"
 python3 scripts/generate_glean.py
 python3 scripts/importLanguages.py -m
 
-cd macos/gobridge
-(go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
-cd ../..
+# cd macos/gobridge
+# (go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
+# cd ../..
+
+# install go and set GOROOT using brew
+# wget is currently not supported so we need to use brew
+brew install go
 
 # Xcode config - maybe we should just maintain a full Xcode config somewhere instead of replacing things here?
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
