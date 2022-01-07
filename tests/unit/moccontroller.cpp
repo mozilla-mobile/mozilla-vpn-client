@@ -82,3 +82,5 @@ void Controller::captivePortalGone() {}
 QString Controller::currentLocalizedCityName() const { return ""; }
 
 QString Controller::switchingLocalizedCityName() const { return ""; }
+
+void Controller::handshakeTimeout() {}

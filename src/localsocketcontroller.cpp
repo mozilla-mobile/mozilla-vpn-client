@@ -325,7 +325,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
       logger.error() << "Unexpected pubkey value";
       return;
     }
-  
+
     logger.debug() << "Handshake completed with:" << pubkey.toString();
     emit connected(pubkey.toString());
     return;
