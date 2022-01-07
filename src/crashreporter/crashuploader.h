@@ -9,7 +9,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-class CrashUploader : public QObject {
+class CrashUploader final : public QObject {
   Q_OBJECT
  public:
   explicit CrashUploader(QObject* parent = nullptr);

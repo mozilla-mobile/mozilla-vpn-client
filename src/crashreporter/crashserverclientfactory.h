@@ -8,11 +8,10 @@
 #include "crashserverclient.h"
 #include <memory>
 
-class CrashServerClientFactory
-{
-public:
-    CrashServerClientFactory();
-    static std::shared_ptr<CrashServerClient> create();
+class CrashServerClientFactory final {
+ public:
+  CrashServerClientFactory();
+  static std::shared_ptr<CrashServerClient> create();
 };
 
-#endif // CRASHSERVERCLIENTFACTORY_H
+#endif  // CRASHSERVERCLIENTFACTORY_H

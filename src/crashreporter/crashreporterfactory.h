@@ -8,11 +8,10 @@
 #include <memory>
 #include "crashreporter.h"
 
-class CrashReporterFactory
-{
-public:
-    CrashReporterFactory();
-    static std::shared_ptr<CrashReporter> createCrashReporter();
+class CrashReporterFactory final {
+ public:
+  CrashReporterFactory();
+  static std::shared_ptr<CrashReporter> createCrashReporter();
 };
 
-#endif // CRASHREPORTERFACTORY_H
+#endif  // CRASHREPORTERFACTORY_H

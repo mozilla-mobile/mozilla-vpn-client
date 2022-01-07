@@ -5,14 +5,13 @@
 #include "crashuploader.h"
 #include "constants.h"
 #include "qmlengineholder.h"
-#include <iostream>
 #include <QApplication>
 #include <QHttpMultiPart>
 #include <QFile>
+#include <QFileInfo>
 #include <QByteArray>
 #include <QNetworkReply>
 #include "logger.h"
-#include "settingsholder.h"
 
 using namespace std;
 
@@ -60,16 +59,16 @@ void CrashUploader::startRequest(const QString& file) {
     nextUpload();
     return;
   }
-  QString fileName = file.split("\\").last();
-  QByteArray dumpContent = dump.readAll();
+  auto fileName = QFileInfo(file).fileName();
+  auto dumpContent = dump.readAll();
 
-  QHttpMultiPart* multipart = new QHttpMultiPart(this);
+  auto multipart = new QHttpMultiPart(this);
   multipart->setBoundary(QString(BOUNDARY).toLocal8Bit());
   QHttpPart formPart;
-  QString contentDisp = QString(
-                            "form-data; name=\"upload_file_minidump\"; "
-                            "filename=\"%1\"")
-                            .arg(fileName);
+  auto contentDisp = QString(
+                         "form-data; name=\"upload_file_minidump\"; "
+                         "filename=\"%1\"")
+                         .arg(fileName);
   formPart.setHeader(QNetworkRequest::ContentDispositionHeader,
                      QVariant(contentDisp));
   formPart.setHeader(QNetworkRequest::ContentLengthHeader,
@@ -88,9 +87,8 @@ void CrashUploader::startRequest(const QString& file) {
   multipart->append(formPart);
   multipart->append(versionPart);
 
-  QString urlStr = SettingsHolder::instance()->stagingServer()
-                       ? Constants::CRASH_STAGING_URL
-                       : Constants::CRASH_PRODUCTION_URL;
+  auto urlStr = Constants::inProduction() ? Constants::CRASH_STAGING_URL
+                                          : Constants::CRASH_PRODUCTION_URL;
 #ifdef MVPN_DEBUG
   urlStr = Constants::CRASH_STAGING_URL;
 #endif  // MVPN_DEBUG
@@ -107,12 +105,11 @@ void CrashUploader::startRequest(const QString& file) {
   auto reply = m_network->post(request, multipart);
 
   connect(reply, &QNetworkReply::sslErrors, [](QList<QSslError> errors) {
-    cout << "SSL Errors: " << endl;
+    logger.error() << "SSL Errors: ";
     for (auto err : errors) {
-      std::cout << err.errorString().toStdString() << std::endl;
+      logger.error() << err.errorString();
     }
   });
-  QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void CrashUploader::requestComplete(QNetworkReply* reply) {

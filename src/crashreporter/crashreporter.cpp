@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "crashreporter.h"
-#include <iostream>
 #include "crashui.h"
 
 using namespace std;

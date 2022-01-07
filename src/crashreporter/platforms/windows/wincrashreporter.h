@@ -10,7 +10,7 @@
 
 #include <memory>
 
-class WinCrashReporter : public CrashReporter {
+class WinCrashReporter final : public CrashReporter {
  public:
   explicit WinCrashReporter(QObject* parent = nullptr);
   bool start(int argc, char* argv[]) override;

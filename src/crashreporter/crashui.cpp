@@ -7,7 +7,6 @@
 #include "imageproviderfactory.h"
 #include "nebula.h"
 #include "theme.h"
-#include <iostream>
 #include <QCoreApplication>
 #include <QWindow>
 #include "l18nstrings.h"
@@ -61,14 +60,6 @@ void CrashUI::initialize() {
           return this;
         });
 
-    QObject::connect(QmlEngineHolder::instance()->engine(),
-                     &QQmlApplicationEngine::objectCreated,
-                     [](QObject* obj, const QUrl& path) {
-                       if (obj == nullptr) {
-                         std::cout << path.toString().toStdString()
-                                   << " Failed to load.";
-                       }
-                     });
     const QUrl url(QML_MAIN);
     QmlEngineHolder::instance()->engine()->load(url);
     m_initialized = true;
@@ -86,13 +77,10 @@ Q_INVOKABLE void CrashUI::sendReport() {
   auto window = QmlEngineHolder::instance()->window();
   window->hide();
   emit startUpload();
-
-  return Q_INVOKABLE void();
 }
 
 Q_INVOKABLE void CrashUI::userDecline() {
   auto window = QmlEngineHolder::instance()->window();
   window->hide();
   emit cleanupDumps();
-  return Q_INVOKABLE void();
 }

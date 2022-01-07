@@ -9,7 +9,7 @@
 #include <memory>
 #include "theme.h"
 
-class CrashUI : public QObject {
+class CrashUI final : public QObject {
   Q_OBJECT
  public:
   explicit CrashUI();
