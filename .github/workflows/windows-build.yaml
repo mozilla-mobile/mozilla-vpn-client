@@ -82,9 +82,10 @@ jobs:
         with:
             name: build
             path: windows/installer/x64/MozillaVPN.msi
-
+            if-no-files-found: error 
       - name: Upload unsigned app
         uses: actions/upload-artifact@v2
         with:
             name: unsigned
             path: unsigned
+            if-no-files-found: error 
