@@ -122,18 +122,62 @@ VPNFlickable {
                             }
                         }
                     }
-                    onClicked: {
+
+                    Component.onCompleted: {
+                        currentPanelValues._panelTitleText = headline;
+                        currentPanelValues._panelDescriptionText = subtitle;
+                        updatePanel.start();
+                    }
+
+                    function goToNextSlide() {
                         if (swipeView.currentIndex < onboardingModel.count - 1) {
                             swipeView.currentIndex += 1;
                         } else {
                             swipeView.currentIndex = 0;
                         }
                     }
-                    Component.onCompleted: {
-                        currentPanelValues._panelTitleText = headline;
-                        currentPanelValues._panelDescriptionText = subtitle;
-                        updatePanel.start();
+                    function goToPreviousSlide() {
+                        if (swipeView.currentIndex > 0) {
+                            swipeView.currentIndex -= 1;
+                        } else {
+                            swipeView.currentIndex = onboardingModel.count - 1;
+                        }
                     }
+
+                    MouseArea {
+                        property int previousMouseX: 0
+                        property int swipeDirection: 0
+
+                        anchors.fill: parent
+
+                        onPressed: {
+                            previousMouseX = parseInt(mouseX);
+                            swipeDirection = 0;
+                        }
+
+                        onReleased: {
+                            if (swipeDirection < 0) {
+                                goToPreviousSlide();
+                            } else if (swipeDirection > 0) {
+                                goToNextSlide();
+                            } else {
+                                goToNextSlide();
+                            }
+                        }
+
+                        onPositionChanged: {
+                            const parsedMouseX = parseInt(mouseX);
+                            if (previousMouseX > parsedMouseX) {
+                                swipeDirection = 1;
+                            } else if (previousMouseX < parsedMouseX) {
+                                swipeDirection = -1;
+                            } else {
+                                swipeDirection = 0;
+                            }
+                            previousMouseX = parsedMouseX;
+                        }
+                    }
+
                 }
             }
         }
@@ -240,4 +284,5 @@ VPNFlickable {
             Layout.preferredHeight: Math.min(window.height * 0.08, VPNTheme.theme.rowHeight)
         }
     }
+
 }
