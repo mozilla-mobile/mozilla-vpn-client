@@ -7,7 +7,6 @@ QT += qml quick
 TEMPLATE = app
 TARGET = tst_lottie
 
-CONFIG += debug
 CONFIG += warn_on qmltestcase
 
 HEADERS += helper.h
