@@ -44,8 +44,18 @@ INCLUDEPATH += \
             ../nebula
 
 include($$PWD/../glean/glean.pri)
-include($$PWD/../lottie/lottie.pri)
+
 include($$PWD/../nebula/nebula.pri)
+
+!win32{
+    message("Adding Lottie")
+    # https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2509
+    # Something in the Lottie project causes qmake to generate a 
+    # broken vcxproj, making windows fail the build
+    include($$PWD/../lottie/lottie.pri)
+    INCLUDEPATH += ../lottie/lib 
+}
+
 
 DEPENDPATH  += $${INCLUDEPATH}
 
