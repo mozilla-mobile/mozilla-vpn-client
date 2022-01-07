@@ -365,6 +365,13 @@ Window {
         id: serverUnavailablePopup
     }
 
+    Connections {
+        target: VPNController
+        function onReadyToServerUnavailable() {
+            serverUnavailablePopup.open();
+        }
+    }
+
     VPNFeatureTourPopup {
         id: featureTourPopup
 
