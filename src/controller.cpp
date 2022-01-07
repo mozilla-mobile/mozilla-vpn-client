@@ -555,7 +555,8 @@ void Controller::quit() {
 
   m_nextStep = Quit;
 
-  if (m_state == StateOn) {
+  if ((m_state == StateOn) || (m_state == StateSwitching) ||
+      (m_state == StateConnecting)) {
     deactivate();
     return;
   }
