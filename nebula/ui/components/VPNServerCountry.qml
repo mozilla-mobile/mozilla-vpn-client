@@ -166,8 +166,9 @@ VPNClickableRow {
             delegate: VPNRadioDelegate {
                 property string _cityName: modelData[0]
                 property string _localizedCityName: modelData[1]
+                property string _activeServerCount: modelData[2]
                 property string _countryCode: code
-                property bool _isAvailable: true
+                property bool isAvailable: _activeServerCount > 0
 
                 id: del
                 objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
@@ -180,7 +181,7 @@ VPNClickableRow {
                 radioButtonLabelText: modelData[1]
                 accessibleName: modelData[1]
                 onClicked: {
-                    if (!_isAvailable) {
+                    if (!isAvailable) {
                         return;
                     }
 
@@ -195,7 +196,7 @@ VPNClickableRow {
                 height: 54
                 checked: del._countryCode === focusScope.currentServer.countryCode &&  del._cityName === focusScope.currentServer.cityName
                 isHoverable: cityListVisible
-                enabled: del._isAvailable
+                enabled: del.isAvailable
 
                 Component.onCompleted: {
                     if (checked) {
@@ -217,7 +218,7 @@ VPNClickableRow {
                         height: VPNTheme.theme.iconSizeSmall
                         width: VPNTheme.theme.iconSizeSmall
                     }
-                    visible: !del._isAvailable
+                    visible: !del.isAvailable
                 }
 
             }
