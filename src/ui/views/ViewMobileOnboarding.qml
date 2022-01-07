@@ -284,5 +284,4 @@ VPNFlickable {
             Layout.preferredHeight: Math.min(window.height * 0.08, VPNTheme.theme.rowHeight)
         }
     }
-
 }
