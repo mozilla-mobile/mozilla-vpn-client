@@ -29,7 +29,7 @@ class ServerCity final {
 
   double longitude() const { return m_longitude; }
 
-  const QList<Server> servers() const { return m_servers; }
+  const QList<QString> servers() const { return m_servers; }
 
  private:
   QString m_name;
@@ -37,7 +37,7 @@ class ServerCity final {
   double m_latitude;
   double m_longitude;
 
-  QList<Server> m_servers;
+  QList<QString> m_servers;
 };
 
 #endif  // SERVERCITY_H

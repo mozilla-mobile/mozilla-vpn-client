@@ -89,6 +89,7 @@ class Controller final : public QObject {
   }
 
   void backendFailure();
+  void serverUnavailable();
 
   void captivePortalPresent();
   void captivePortalGone();
@@ -122,6 +123,7 @@ class Controller final : public QObject {
   void readyToQuit();
   void readyToUpdate();
   void readyToBackendFailure();
+  void readyToServerUnavailable();
   void connectionRetryChanged();
   void enableDisconnectInConfirmingChanged();
   void silentSwitchDone();
@@ -179,6 +181,7 @@ class Controller final : public QObject {
     Update,
     Disconnect,
     BackendFailure,
+    ServerUnavailable,
   };
 
   NextStep m_nextStep = None;
