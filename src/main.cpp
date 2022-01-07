@@ -7,7 +7,6 @@
 #include <iostream>
 #include <crashreporter/crashreporterapp.h>
 #include <crashreporter/crashclient.h>
-#include <thread>
 
 #if defined MVPN_WINDOWS
 #  include <windows.h>
@@ -41,11 +40,5 @@ int main(int argc, char* argv[]) {
   CrashClient::instance().start(argc, argv);
 #endif
   CommandLineParser clp;
-  std::thread t([]() {
-    Sleep(2000);
-    auto foo = new char[200];
-    delete foo;
-    delete foo;
-  });
   return clp.parse(argc, argv);
 }
