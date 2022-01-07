@@ -39,6 +39,9 @@ class Server final {
 
   const QString& socksName() const { return m_socksName; }
 
+  qint64 cooldownTimeout() const { return m_cooldownTimeout; }
+  void setCooldownTimeout(qint64 timeout);
+
   uint32_t weight() const { return m_weight; }
 
   uint32_t choosePort() const;
@@ -60,6 +63,7 @@ class Server final {
   QString m_socksName;
   uint32_t m_weight = 0;
   uint32_t m_multihopPort = 0;
+  qint64 m_cooldownTimeout = 0;
 };
 
 #endif  // SERVER_H

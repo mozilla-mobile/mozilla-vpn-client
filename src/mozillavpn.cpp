@@ -109,10 +109,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
          new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));
   });
 
-  connect(&m_serverCooldownTimer, &QTimer::timeout, this,
-          [this]() { checkServerCooldownTimeouts(); });
-  m_serverCooldownTimer.start(5000);
-
   connect(this, &MozillaVPN::stateChanged, [this]() {
     if (m_state != StateMain) {
       // We don't call deactivate() because that is meant to be used for
@@ -130,6 +126,10 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
             TaskScheduler::deleteTasks();
             setState(StateBackendFailure);
           });
+
+  // TODO: This should trigger a server unavailable modal.
+  connect(&m_private->m_controller, &Controller::readyToServerUnavailable, this,
+          [this]() { setState(StateBackendFailure); });
 
   connect(&m_private->m_controller, &Controller::stateChanged, this,
           &MozillaVPN::controllerStateChanged);
@@ -1010,9 +1010,8 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 }
 
 void MozillaVPN::setServerCooldown(const QString& publicKey) {
-  qint64 timeout = QDateTime::currentSecsSinceEpoch() +
-                   Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC;
-  m_private->m_serverCooldown.insert(publicKey, timeout);
+  m_private->m_serverCountryModel.setServerCooldown(
+      publicKey, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
 }
 
 QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {
@@ -1020,7 +1019,7 @@ QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {
   qint64 now = QDateTime::currentSecsSinceEpoch();
 
   for (const Server& server : servers) {
-    if (m_private->m_serverCooldown.value(server.publicKey(), now) <= now) {
+    if (server.cooldownTimeout() <= now) {
       results.append(server);
     }
   }
@@ -1031,18 +1030,6 @@ QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {
 const QList<Server> MozillaVPN::exitServers() const {
   return filterServerList(
       m_private->m_serverCountryModel.servers(m_private->m_serverData));
-}
-
-void MozillaVPN::checkServerCooldownTimeouts() {
-  qint64 now = QDateTime::currentSecsSinceEpoch();
-  auto i = m_private->m_serverCooldown.begin();
-  while (i != m_private->m_serverCooldown.end()) {
-    if (i.value() <= now) {
-      i = m_private->m_serverCooldown.erase(i);
-    } else {
-      i++;
-    }
-  }
 }
 
 const QList<Server> MozillaVPN::entryServers() const {

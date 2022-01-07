@@ -205,7 +205,7 @@ void Controller::activateInternal() {
   Server exitServer = Server::weightChooser(vpn->exitServers());
   if (!exitServer.initialized()) {
     logger.error() << "Empty exit server list in state" << m_state;
-    backendFailure();
+    serverUnavailable();
     return;
   }
 
@@ -238,7 +238,7 @@ void Controller::activateInternal() {
     hop.m_server = Server::weightChooser(vpn->entryServers());
     if (!hop.m_server.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
-      backendFailure();
+      serverUnavailable();
       return;
     }
 
@@ -255,7 +255,7 @@ void Controller::activateInternal() {
     Server entryServer = Server::weightChooser(vpn->entryServers());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
-      backendFailure();
+      serverUnavailable();
       return;
     }
     exitHop.m_server.fromMultihop(exitHop.m_server, entryServer);
@@ -579,6 +579,18 @@ void Controller::backendFailure() {
   }
 }
 
+void Controller::serverUnavailable() {
+  logger.error() << "server unavailable";
+
+  m_nextStep = ServerUnavailable;
+
+  if ((m_state == StateOn) || (m_state == StateSwitching) ||
+      (m_state == StateConnecting)) {
+    deactivate();
+    return;
+  }
+}
+
 void Controller::updateRequired() {
   logger.warning() << "Update required";
 
@@ -628,6 +640,11 @@ bool Controller::processNextStep() {
 
   if (nextStep == BackendFailure) {
     emit readyToBackendFailure();
+    return true;
+  }
+
+  if (nextStep == ServerUnavailable) {
+    emit readyToServerUnavailable();
     return true;
   }
 
