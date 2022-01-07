@@ -46,6 +46,7 @@ INCLUDEPATH += \
 include($$PWD/../glean/glean.pri)
 include($$PWD/../lottie/lottie.pri)
 include($$PWD/../nebula/nebula.pri)
+include($$PWD/crashreporter/crashreporter.pri)
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -99,6 +100,7 @@ SOURCES += \
         hawkauth.cpp \
         hkdf.cpp \
         iaphandler.cpp \
+        imageproviderfactory.cpp \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
@@ -232,6 +234,7 @@ HEADERS += \
         hawkauth.h \
         hkdf.h \
         iaphandler.h \
+        imageproviderfactory.h \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \

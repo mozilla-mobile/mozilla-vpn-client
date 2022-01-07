@@ -24,6 +24,7 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "imageproviderfactory.h"
 #include "theme.h"
 
 #include <glean.h>
@@ -33,7 +34,6 @@
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
-#  include "platforms/linux/linuxappimageprovider.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -43,7 +43,6 @@
 #endif
 
 #ifdef MVPN_ANDROID
-#  include "platforms/android/androidappimageprovider.h"
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
 #endif
@@ -185,23 +184,11 @@ int CommandUI::run(QStringList& tokens) {
     if (!LinuxDependencies::checkDependencies()) {
       return 1;
     }
-
-    // Register an Image Provider that will resolve "image://app/{id}" for qml
-    QQuickImageProvider* provider = new LinuxAppImageProvider(qApp);
-    engine->addImageProvider(QString("app"), provider);
 #endif
-
-#ifdef MVPN_ANDROID
-    // Register an Image Provider that will resolve "image://app/{id}" for qml
-    QQuickImageProvider* provider = new AndroidAppImageProvider(qApp);
-    engine->addImageProvider(QString("app"), provider);
-#endif
-#ifdef MVPN_WINDOWS
-    // Register an Image Provider that will resolve "image://app/{id}" for qml
-    QQuickImageProvider* provider = new WindowsAppImageProvider(qApp);
-    engine->addImageProvider(QString("app"), provider);
-#endif
-
+    QQuickImageProvider* provider = ImageProviderFactory::create(qApp);
+    if (provider) {
+      engine->addImageProvider(QString("app"), provider);
+    }
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance();

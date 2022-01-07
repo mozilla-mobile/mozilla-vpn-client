@@ -5,6 +5,8 @@
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include <iostream>
+#include <crashreporter/crashreporterapp.h>
+#include <crashreporter/crashclient.h>
 
 #if defined MVPN_WINDOWS && defined MVPN_DEBUG
 #  include <windows.h>
@@ -26,6 +28,16 @@ int main(int argc, char* argv[]) {
   }
 #  endif
 
+#endif
+#ifdef MVPN_WINDOWS
+  if (argc > 1) {
+    for (int i = 1; i < argc; i++) {
+      if (!strcmp("--crashreporter", argv[i])) {
+        return CrashReporterApp::main(argc, argv);
+      }
+    }
+  }
+  CrashClient::instance().start(argc, argv);
 #endif
   CommandLineParser clp;
   return clp.parse(argc, argv);
