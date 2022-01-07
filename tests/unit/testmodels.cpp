@@ -958,7 +958,7 @@ void TestModels::serverCountryModelFromJson_data() {
   countries.replace(0, d);
   obj.insert("countries", countries);
   QTest::addRow("good but empty cities")
-      << QJsonDocument(obj).toJson() << true << 1
+      << QJsonDocument(obj).toJson() << true << 0
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
       << QVariant(QList<QVariant>());
 
@@ -976,6 +976,31 @@ void TestModels::serverCountryModelFromJson_data() {
   city.insert("latitude", 12.34);
   city.insert("longitude", 34.56);
   city.insert("servers", QJsonArray());
+
+  cities.replace(0, city);
+
+  d.insert("cities", cities);
+  countries.replace(0, d);
+  obj.insert("countries", countries);
+  QTest::addRow("good with one empty city")
+      << QJsonDocument(obj).toJson() << true << 0
+      << QVariant("serverCountryName") << QVariant("serverCountryCode")
+      << QVariant(
+             QList<QVariant>{QStringList{"serverCityName", "serverCityName"}});
+
+  QJsonObject server;
+  server.insert("hostname", "hostname");
+  server.insert("ipv4_addr_in", "ipv4AddrIn");
+  server.insert("ipv4_gateway", "ipv4Gateway");
+  server.insert("ipv6_addr_in", "ipv6AddrIn");
+  server.insert("ipv6_gateway", "ipv6Gateway");
+  server.insert("public_key", "publicKey");
+  server.insert("weight", 1234);
+  server.insert("port_ranges", QJsonArray());
+  server.insert("multihop_port", 1234);
+  server.insert("socks5_name", "socks5_name");
+
+  city.insert("servers", QJsonArray{server});
 
   cities.replace(0, city);
 
