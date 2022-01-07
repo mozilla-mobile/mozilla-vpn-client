@@ -90,6 +90,10 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
       return false;
     }
 
+    if (country.cities().isEmpty()) {
+      continue;
+    }
+
     m_countries.append(country);
   }
 

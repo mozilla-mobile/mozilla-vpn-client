@@ -28,7 +28,6 @@
 #include "theme.h"
 
 #include <glean.h>
-#include <lottie.h>
 #include <nebula.h>
 
 #ifdef MVPN_LINUX
@@ -49,6 +48,7 @@
 
 #ifndef Q_OS_WIN
 #  include "signalhandler.h"
+#  include <lottie.h>
 #endif
 
 #ifdef MVPN_WINDOWS
@@ -130,7 +130,11 @@ int CommandUI::run(QStringList& tokens) {
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
 
     Glean::Initialize(engine);
+
+#ifndef MVPN_WINDOWS
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
+#endif
+
     Nebula::Initialize(engine);
 
     MozillaVPN vpn;
