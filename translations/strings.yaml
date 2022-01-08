@@ -357,6 +357,9 @@ serverUnavailableModal:
   bodyText: This server location is temporarily unavailable. Choose a new location.
   buttonLabel: Choose a new location
 
+serverUnavailableNotification:
+  bodyText: This server location is temporarily unavailable. Please open the app to choose a new location.
+
 mobileOnboarding:
   signUpBtn: Sign up
   alreadyASubscriber: Already a subscriber?

@@ -228,7 +228,8 @@ void NotificationHandler::serverUnavailableNotification() {
   Q_ASSERT(l18nStrings);
 
   QString title = l18nStrings->t(L18nStrings::ServerUnavailableModalHeaderText);
-  QString message = l18nStrings->t(L18nStrings::ServerUnavailableModalBodyText);
+  QString message =
+      l18nStrings->t(L18nStrings::ServerUnavailableNotificationBodyText);
 
   notifyInternal(ServerUnavailable, title, message,
                  Constants::SERVER_UNAVAILABLE_ALERT_MSEC);
