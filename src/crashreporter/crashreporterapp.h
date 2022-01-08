@@ -5,12 +5,10 @@
 #ifndef CRASHREPORTERAPP_H
 #define CRASHREPORTERAPP_H
 
-
-class CrashReporterApp final
-{
-public:
-    CrashReporterApp() = default;
-    static int main(int argc, char *argv[]);
+class CrashReporterApp final {
+ public:
+  CrashReporterApp() = default;
+  static int main(int argc, char* argv[]);
 };
 
-#endif // CRASHREPORTERAPP_H
+#endif  // CRASHREPORTERAPP_H

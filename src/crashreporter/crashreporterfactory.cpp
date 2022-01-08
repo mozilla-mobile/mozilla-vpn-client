@@ -7,19 +7,16 @@
 #include <qsystemdetection.h>
 
 #ifdef Q_OS_WIN
-    #include "platforms/windows/wincrashreporter.h"
+#  include "platforms/windows/wincrashreporter.h"
 #endif
 
 using namespace std;
 
-CrashReporterFactory::CrashReporterFactory()
-{
+CrashReporterFactory::CrashReporterFactory() {}
 
-}
-
-shared_ptr<CrashReporter> CrashReporterFactory::createCrashReporter(){
+shared_ptr<CrashReporter> CrashReporterFactory::createCrashReporter() {
 #ifdef Q_OS_WIN
-    return make_shared<WinCrashReporter>();
+  return make_shared<WinCrashReporter>();
 #endif
-    return nullptr;
+  return nullptr;
 }

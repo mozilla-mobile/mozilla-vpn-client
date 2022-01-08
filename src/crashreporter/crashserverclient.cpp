@@ -4,7 +4,4 @@
 
 #include "crashserverclient.h"
 
-CrashServerClient::CrashServerClient()
-{
-
-}
+CrashServerClient::CrashServerClient() {}

@@ -7,11 +7,10 @@
 
 #include <QQuickImageProvider>
 
-class ImageProviderFactory final
-{
-public:
-    ImageProviderFactory() = delete;
-    static QQuickImageProvider * create(QObject *parent);
+class ImageProviderFactory final {
+ public:
+  ImageProviderFactory() = delete;
+  static QQuickImageProvider* create(QObject* parent);
 };
 
-#endif // IMAGEPROVIDERFACTORY_H
+#endif  // IMAGEPROVIDERFACTORY_H

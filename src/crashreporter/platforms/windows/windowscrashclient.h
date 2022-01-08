@@ -14,6 +14,7 @@ class WindowsCrashClient : public CrashServerClient {
   ~WindowsCrashClient();
   bool start(int args, char* argv[]) override;
   bool launchUploader();
+
  private:
   std::string m_launchPath;
 };

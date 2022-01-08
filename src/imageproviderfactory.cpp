@@ -16,16 +16,16 @@
 #  include "platforms/windows/windowsappimageprovider.h"
 #endif
 
-QQuickImageProvider * ImageProviderFactory::create(QObject *parent){
+QQuickImageProvider* ImageProviderFactory::create(QObject* parent) {
 #ifdef MVPN_LINUX
-    return new LinuxAppImageProvider(parent);
+  return new LinuxAppImageProvider(parent);
 #endif
 
 #ifdef MVPN_ANDROID
-    return new AndroidAppImageProvider(parent);
+  return new AndroidAppImageProvider(parent);
 #endif
 #ifdef MVPN_WINDOWS
-    return new WindowsAppImageProvider(parent);
+  return new WindowsAppImageProvider(parent);
 #endif
-    return nullptr;
+  return nullptr;
 }
