@@ -27,5 +27,6 @@ QQuickImageProvider* ImageProviderFactory::create(QObject* parent) {
 #ifdef MVPN_WINDOWS
   return new WindowsAppImageProvider(parent);
 #endif
+  Q_UNUSED(parent);
   return nullptr;
 }
