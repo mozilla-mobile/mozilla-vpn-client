@@ -355,9 +355,9 @@ Window {
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
-                // An unexpected error has occurred, please try again.
-                // Visit our help center below to learn how to troubleshoot this issue or contact support.
-                errorMessage: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorText,
+                // Sorry, we were unable to confirm your subscription.
+                // Please try again or contact our support team for help.
+                errorMessage: VPNl18n.RestorePurchaseGenericPurchaseErrorRestorePurchaseGenericPurchaseErrorText,
 
                 // Try again
                 buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
@@ -373,9 +373,9 @@ Window {
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
-                // Sorry we are unable to find your subscription, please try again.
-                // Visit our help center below to learn more about how to troubleshoot our VPN.
-                errorMessage: VPNl18n.RestorePurchaseNotFoundErrorRestorePurchaseNotFoundErrorText,
+                // Sorry, we were unable to confirm your subscription.
+                // Please try again or contact our support team for help.
+                errorMessage: VPNl18n.RestorePurchaseGenericPurchaseErrorRestorePurchaseGenericPurchaseErrorText,
 
                 // Try again
                 buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
@@ -406,8 +406,8 @@ Window {
 
         function onSubscriptionInUse() {
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                // Error confirming subscription...
-                headlineText: VPNl18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorHeader,
+                // Problem confirming subscription...
+                headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
                 // Another Firefox Account has already subscribed using this Apple ID.
                 // Visit our help center below to learn more about how to manage your subscriptions.
