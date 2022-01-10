@@ -132,8 +132,8 @@ Item {
                 visible: VPNFeatureList.get("serverUnavailableNotification").isSupported
                 width: parent.width
 
-                labelText: "Server unavailable notification"
-                subLabelText: "serverUnavailableNotification"
+                labelText: VPNl18n.ServerUnavailableNotificationPreferencesLabel
+                subLabelText: VPNl18n.ServerUnavailableNotificationPreferencesSubLabel
                 isChecked: (VPNSettings.serverUnavailableNotification)
                 showDivider: false
                 onClicked: {
@@ -143,4 +143,3 @@ Item {
         }
     }
 }
-

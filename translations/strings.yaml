@@ -359,6 +359,8 @@ serverUnavailableModal:
 
 serverUnavailableNotification:
   bodyText: This server location is temporarily unavailable. Please open the app to choose a new location.
+  preferencesLabel: Server unavailable notification
+  preferencesSubLabel: Get notified when connecting to a server location failed
 
 mobileOnboarding:
   signUpBtn: Sign up
