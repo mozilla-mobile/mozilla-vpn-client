@@ -85,22 +85,19 @@ Window {
           }
           VPNTextBlock{
               id: description
-              anchors.left: parent.left
-              anchors.right: parent.right
+              nchors.horizontalCenter: parent.horizontalCenter
               horizontalAlignment: Text.AlignHCenter
               text: qsTrId("vpn.crashreporter.description")
           }
 
           VPNButton {
             text: qsTrId("vpn.crashreporter.sendButtonLabel");
-            anchors.left: parent.left
-            anchors.right: parent.right
+            nchors.horizontalCenter: parent.horizontalCenter
             onClicked: CrashController.sendReport()
           }
-          VPNButton {
-              text: qsTrId("vpn.crashreporter.dontSendButton");
-              anchors.left: parent.left
-              anchors.right: parent.right
+          VPNLinkButton {
+              labelText: qsTrId("vpn.crashreporter.dontSendButton");
+              anchors.horizontalCenter: parent.horizontalCenter
               onClicked: CrashController.userDecline()
           }
     }
