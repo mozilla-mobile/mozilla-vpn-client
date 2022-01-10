@@ -265,7 +265,7 @@ notifications:
   captivePortalBlockTitle: Guest Wi-Fi portal blocked
   captivePortalBlockMessage2: The guest Wi-Fi network you’re connected to requires action. Click to turn off VPN to see the portal.
   captivePortalUnblockTitle: Guest Wi-Fi portal detected
-  captivePortalUnblockMessage: The guest Wi-Fi network you’re connected to may not be secure. Click here to turn on VPN to secure your device.
+  captivePortalUnblockMessage2: The guest Wi-Fi network you’re connected to may not be secure. Click to turn on VPN to secure your device.
   unsecuredNetworkTitle: Unsecured Wi-Fi network detected
   unsecuredNetworkMessage:
     value: "%1 is not secure. Click here to turn on VPN and secure your device."
