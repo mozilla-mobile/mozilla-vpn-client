@@ -216,6 +216,25 @@ void NotificationHandler::unsecuredNetworkNotification(
                  Constants::UNSECURED_NETWORK_ALERT_MSEC);
 }
 
+void NotificationHandler::serverUnavailableNotification() {
+  logger.debug() << "Server unavailable notification shown";
+
+  if (!SettingsHolder::instance()->serverUnavailableNotification()) {
+    // Dont show notification if it's turned off.
+    return;
+  }
+
+  L18nStrings* l18nStrings = L18nStrings::instance();
+  Q_ASSERT(l18nStrings);
+
+  QString title = l18nStrings->t(L18nStrings::ServerUnavailableModalHeaderText);
+  QString message =
+      l18nStrings->t(L18nStrings::ServerUnavailableNotificationBodyText);
+
+  notifyInternal(ServerUnavailable, title, message,
+                 Constants::SERVER_UNAVAILABLE_ALERT_MSEC);
+}
+
 void NotificationHandler::notifyInternal(Message type, const QString& title,
                                          const QString& message,
                                          int timerMsec) {
