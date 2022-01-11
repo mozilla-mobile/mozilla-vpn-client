@@ -23,7 +23,7 @@ RadioDelegate {
     height: VPNTheme.theme.rowHeight
 
     Component.onCompleted: {
-        state = enabled ? uiState.stateDefault : uiState.stateDisabled
+        state = Qt.binding(() => radioControl.enabled ? uiState.stateDefault : uiState.stateDisabled)
     }
 
     onFocusChanged: {
@@ -122,6 +122,8 @@ RadioDelegate {
 
     VPNMouseArea {
         id: mouseArea
+        hoverEnabled: false
+        enabled: false
     }
 
     indicator: Rectangle {

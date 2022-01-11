@@ -194,9 +194,9 @@ VPNClickableRow {
                     multiHopStackView.pop();
                 }
                 height: 54
-                checked: del._countryCode === focusScope.currentServer.countryCode &&  del._cityName === focusScope.currentServer.cityName
-                isHoverable: cityListVisible
-                enabled: del.isAvailable
+                checked: del._countryCode === focusScope.currentServer.countryCode && del._cityName === focusScope.currentServer.cityName
+                isHoverable: cityListVisible && del.isAvailable
+                enabled: cityListVisible && del.isAvailable
 
                 Component.onCompleted: {
                     if (checked) {
