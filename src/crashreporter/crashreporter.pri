@@ -5,7 +5,6 @@
 QT += network
 QT += quick
 QT += widgets
-QT += charts
 
 CONFIG += c++1z
 # include($$PWD/../../nebula/nebula.pri)

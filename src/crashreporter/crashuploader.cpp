@@ -99,7 +99,7 @@ void CrashUploader::startRequest(const QString& file) {
   request.setHeader(QNetworkRequest::UserAgentHeader, "mozillaVPN");
   // Qt changes the content type automatically to multipart/mixed.  Socorro
   // doesn't support that, so we have to set it ourselves and create a custom
-  // bounday.
+  // boundary.
   request.setHeader(QNetworkRequest::ContentTypeHeader,
                     QString("multipart/form-data; boundary=%1").arg(BOUNDARY));
   auto reply = m_network->post(request, multipart);

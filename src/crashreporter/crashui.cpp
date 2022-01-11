@@ -5,14 +5,15 @@
 #include "crashui.h"
 #include "fontloader.h"
 #include "imageproviderfactory.h"
+#include "l18nstrings.h"
+#include "localizer.h"
+#include "mozillavpn.h"
 #include "nebula.h"
+#include "qmlengineholder.h"
 #include "theme.h"
+
 #include <QCoreApplication>
 #include <QWindow>
-#include "l18nstrings.h"
-#include "mozillavpn.h"
-#include "qmlengineholder.h"
-#include "localizer.h"
 
 using namespace std;
 
