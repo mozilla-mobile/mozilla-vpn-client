@@ -164,6 +164,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     IAPHandler* iap = IAPHandler::createInstance();
     connect(iap, &IAPHandler::subscriptionStarted, this,
             &MozillaVPN::subscriptionStarted);
+    connect(iap, &IAPHandler::restoreSubscriptionStarted, this,
+            &MozillaVPN::restoreSubscriptionStarted);
     connect(iap, &IAPHandler::subscriptionFailed, this,
             &MozillaVPN::subscriptionFailed);
     connect(iap, &IAPHandler::subscriptionCanceled, this,
@@ -1421,6 +1423,14 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   }
 
   iap->startSubscription(productIdentifier);
+}
+
+void MozillaVPN::restoreSubscriptionStarted() {
+  logger.debug() << "Restore subscription started";
+
+  setState(StateSubscriptionInProgress);
+
+  IAPHandler::instance()->startRestoreSubscription();
 }
 
 void MozillaVPN::subscriptionCompleted() {
