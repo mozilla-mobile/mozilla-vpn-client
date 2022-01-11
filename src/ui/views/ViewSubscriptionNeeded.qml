@@ -86,7 +86,7 @@ VPNFlickable {
                 //: %1 is the number of devices.
                 //: Note: there is currently no support for proper plurals
                 calloutCopy: qsTrId("vpn.subscription.featureTitle4").arg(
-                                 VPNUser.maxDevices)
+                                VPNUser.maxDevices)
                 calloutImage: "qrc:/ui/resources/onboarding/onboarding3.svg"
             }
         }
@@ -169,6 +169,16 @@ VPNFlickable {
                 }
             }
 
+            VPNLinkButton {
+                id: restorePurchase
+                visible: Qt.platform.os === "ios"
+
+                // Already a subscriber?
+                labelText: VPNl18n.RestorePurchaseRestorePurchaseButton
+                Layout.alignment: Qt.AlignHCenter
+                onClicked: VPNIAP.restore()
+            }
+
             VPNSignOut {
                 anchors.bottom: undefined
                 anchors.bottomMargin: undefined
@@ -178,7 +188,7 @@ VPNFlickable {
             }
 
             VPNVerticalSpacer {
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: 10
                 Layout.fillWidth: true
             }
         }
