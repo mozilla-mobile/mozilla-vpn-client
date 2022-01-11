@@ -294,7 +294,7 @@ VPNFlickable {
     }
 
     function recordGleanEvtAndStartAuth(ctaObjectName) {
-        Sample.onboardingCtaClicks.record({
+        Sample.onboardingCtaClick.record({
                                               "panel_id": currentPanelValues._panelId,
                                               "panel_idx": swipeView.currentIndex.toString(),
                                               "panel_cta": ctaObjectName

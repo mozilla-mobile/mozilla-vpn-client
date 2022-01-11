@@ -514,7 +514,7 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  onboarding_cta_clicks:
+  onboarding_cta_click:
     type: event
     lifetime: ping
     send_in_pings:
