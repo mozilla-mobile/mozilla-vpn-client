@@ -47,7 +47,6 @@ include($$PWD/../glean/glean.pri)
 
 include($$PWD/../nebula/nebula.pri)
 
-
 !wasm{
     include($$PWD/crashreporter/crashreporter.pri)
 }
