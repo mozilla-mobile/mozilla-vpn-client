@@ -87,7 +87,7 @@ print("Generating the JS modules...")
 try:
   subprocess.call(["glean_parser", "translate", "glean/metrics.yaml", "glean/pings.yaml",
                    "-f", "javascript", "-o", "glean/telemetry", "--option", "platform=qt",
-                   "--option", "version=0.24"])
+                   "--option", "version=0.30"])
 except:
   print("glean_parser failed. Is it installed? Try with:\n\tpip3 install -r requirements.txt --user");
   exit(1)
