@@ -129,6 +129,11 @@
 				<RegistryKey Root="HKLM" Key="Software\Google\Chrome\NativeMessagingHosts\mozillavpn">
 					<RegistryValue Type="string" Value="[MozillaVPNFolder]\mozillavpn.json"/>
 				</RegistryKey>
+                <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\MozillaVPN.exe">
+                    <RegistryValue Type="string" Name="DumpFolder" Value="[LocalAppDataFolder]MozillaVPN\dumps" />
+                    <RegistryValue Type="integer" Name="DumpCount" Value="3" />
+                    <RegistryValue Type="integer" Name="DumpType" Value="1" />
+                </RegistryKey>
 			</Component>
 		</DirectoryRef>
 
