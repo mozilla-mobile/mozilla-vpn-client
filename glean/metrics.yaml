@@ -514,7 +514,7 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  mobile_auth_initiated:
+  onboarding_cta_clicks:
     type: event
     lifetime: ping
     send_in_pings:
@@ -522,9 +522,9 @@ sample:
     description: |
       User initiates authentication process from mobile onboarding
     bugs:
-      - TBD
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
     data_reviews:
-      - TBD
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
     data_sensitivity:
       - interaction
     expires: never

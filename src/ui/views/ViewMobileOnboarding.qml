@@ -231,8 +231,6 @@ VPNFlickable {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: VPNl18n.MobileOnboardingSignUpBtn
                 width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
-
-                // TODO: Add Glean event
                 onClicked: onboardingPanel.recordGleanEvtAndStartAuth(objectName)
             }
 
@@ -241,8 +239,6 @@ VPNFlickable {
                 labelText: VPNl18n.MobileOnboardingAlreadyASubscriber
                 anchors.horizontalCenter: parent.horizontalCenter
                 height: VPNTheme.theme.rowHeight
-
-                // TODO: Add Glean event
                 onClicked: onboardingPanel.recordGleanEvtAndStartAuth(objectName)
             }
         }
@@ -253,7 +249,7 @@ VPNFlickable {
     }
 
     function recordGleanEvtAndStartAuth(ctaObjectName) {
-        Sample.mobileAuthInitiated.record({
+        Sample.onboardingCtaClicks.record({
                                               "panel_id": currentPanelValues._panelId,
                                               "panel_idx": swipeView.currentIndex.toString(),
                                               "panel_cta": ctaObjectName
