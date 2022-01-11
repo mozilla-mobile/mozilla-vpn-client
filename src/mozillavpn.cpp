@@ -127,9 +127,11 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
             setState(StateBackendFailure);
           });
 
-  // TODO: This should trigger a server unavailable modal.
   connect(&m_private->m_controller, &Controller::readyToServerUnavailable, this,
-          [this]() { setState(StateBackendFailure); });
+          [this]() {
+            NotificationHandler::instance()->serverUnavailableNotification();
+            setState(StateBackendFailure);
+          });
 
   connect(&m_private->m_controller, &Controller::stateChanged, this,
           &MozillaVPN::controllerStateChanged);
