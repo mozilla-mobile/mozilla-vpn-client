@@ -20,6 +20,7 @@ class AndroidIAPHandler final : public IAPHandler {
  protected:
   void nativeRegisterProducts() override;
   void nativeStartSubscription(Product* product) override;
+  void nativeRestoreSubscription() override;
 
  private:
   void maybeInit();

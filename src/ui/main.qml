@@ -358,6 +358,82 @@ Window {
         }
     }
 
+    Connections {
+        target: VPNErrorHandler
+        function onSubscriptionGeneric() {
+            mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                // Problem confirming subscription...
+                headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
+
+                // Sorry, we were unable to confirm your subscription.
+                // Please try again or contact our support team for help.
+                errorMessage: VPNl18n.RestorePurchaseGenericPurchaseErrorRestorePurchaseGenericPurchaseErrorText,
+
+                // Try again
+                buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
+                buttonObjectName: "errorTryAgainButton",
+                buttonOnClick: mainStackView.pop,
+                signOffLinkVisible: false,
+                getHelpLinkVisible: true
+            });
+        }
+
+        function onNoSubscriptionFound() {
+            mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                // Problem confirming subscription...
+                headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
+
+                // Sorry, we were unable to confirm your subscription.
+                // Please try again or contact our support team for help.
+                errorMessage: VPNl18n.RestorePurchaseGenericPurchaseErrorRestorePurchaseGenericPurchaseErrorText,
+
+                // Try again
+                buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
+                buttonObjectName: "errorTryAgainButton",
+                buttonOnClick: mainStackView.pop,
+                signOffLinkVisible: true,
+                getHelpLinkVisible: true
+            });
+        }
+
+        function onSubscriptionExpired() {
+            mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                // Problem confirming subscription...
+                headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
+
+                // Sorry we are unable to connect your Firefox Account to a current subscription.
+                // Please try again or contact our support team for further assistance.
+                errorMessage: VPNl18n.RestorePurchaseExpiredErrorRestorePurchaseExpiredErrorText,
+
+                // Try again
+                buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
+                buttonObjectName: "errorTryAgainButton",
+                buttonOnClick: mainStackView.pop,
+                signOffLinkVisible: false,
+                getHelpLinkVisible: true
+            });
+        }
+
+        function onSubscriptionInUse() {
+            mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                // Problem confirming subscription...
+                headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
+
+                // Another Firefox Account has already subscribed using this Apple ID.
+                // Visit our help center below to learn more about how to manage your subscriptions.
+                errorMessage: VPNl18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText,
+
+                // Sign out
+                buttonText: qsTrId("vpn.main.signOut2"),
+                buttonObjectName: "errorSignOutButton",
+                buttonOnClick: mainStackView.pop,
+                signOffLinkVisible: false,
+                getHelpLinkVisible: true
+            });
+        }
+
+    }
+
     VPNSystemAlert {
     }
 

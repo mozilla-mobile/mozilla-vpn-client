@@ -193,7 +193,7 @@ void NotificationHandler::captivePortalUnblockNotificationRequired() {
   QString title =
       l18nStrings->t(L18nStrings::NotificationsCaptivePortalUnblockTitle);
   QString message =
-      l18nStrings->t(L18nStrings::NotificationsCaptivePortalUnblockMessage);
+      l18nStrings->t(L18nStrings::NotificationsCaptivePortalUnblockMessage2);
 
   notifyInternal(CaptivePortalUnblock, title, message,
                  Constants::CAPTIVE_PORTAL_ALERT_MSEC);
