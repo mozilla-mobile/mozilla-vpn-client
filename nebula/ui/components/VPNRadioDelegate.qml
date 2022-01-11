@@ -122,8 +122,8 @@ RadioDelegate {
 
     VPNMouseArea {
         id: mouseArea
-        hoverEnabled: false
-        enabled: false
+        hoverEnabled: radioControl.isHoverable
+        enabled: radioControl.enabled
     }
 
     indicator: Rectangle {
