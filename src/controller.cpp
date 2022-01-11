@@ -23,7 +23,6 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "tasks/heartbeat/taskheartbeat.h"
-#include "timercontroller.h"
 #include "timersingleshot.h"
 
 #if defined(MVPN_LINUX)
@@ -47,6 +46,9 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 
 constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
 constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
+
+constexpr const uint32_t TIME_ACTIVATION = 1000;
+constexpr const uint32_t TIME_DEACTIVATION = 1500;
 
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
