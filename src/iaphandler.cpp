@@ -164,6 +164,17 @@ void IAPHandler::startSubscription(const QString& productIdentifier) {
   nativeStartSubscription(product);
 }
 
+void IAPHandler::startRestoreSubscription() {
+  logger.debug() << "Starting the restore of the subscription";
+
+#ifdef MVPN_IOS
+  nativeRestoreSubscription();
+#else
+  logger.error() << "Restore not implemented!";
+  emit subscriptionFailed();
+#endif
+}
+
 void IAPHandler::stopSubscription() {
   logger.debug() << "Stop subscription";
   m_subscriptionState = eInactive;
@@ -206,6 +217,11 @@ void IAPHandler::stopProductsRegistration() {
 void IAPHandler::subscribe(const QString& productIdentifier) {
   logger.debug() << "Subscription required";
   emit subscriptionStarted(productIdentifier);
+}
+
+void IAPHandler::restore() {
+  logger.debug() << "Restore purchase";
+  emit restoreSubscriptionStarted();
 }
 
 QHash<int, QByteArray> IAPHandler::roleNames() const {

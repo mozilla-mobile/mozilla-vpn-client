@@ -18,10 +18,12 @@ class IOSIAPHandler final : public IAPHandler {
  public slots:
   void productRegistered(void* product);
   void processCompletedTransactions(const QStringList& ids);
+  void noSubscriptionFoundError();
 
  protected:
   void nativeRegisterProducts() override;
   void nativeStartSubscription(Product* product) override;
+  void nativeRestoreSubscription();
 
  private:
   void* m_delegate = nullptr;

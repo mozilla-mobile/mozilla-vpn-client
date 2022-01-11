@@ -5,9 +5,16 @@
 #ifndef ERRORHANDLER_H
 #define ERRORHANDLER_H
 
+#include <QObject>
 #include <QNetworkReply>
 
-class ErrorHandler final {
+class ErrorHandler final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(ErrorHandler)
+
+ private:
+  explicit ErrorHandler(QObject* parent);
+
  public:
   enum ErrorType {
     NoError,
@@ -24,6 +31,16 @@ class ErrorHandler final {
   };
 
   static ErrorType toErrorType(QNetworkReply::NetworkError error);
+
+  ~ErrorHandler();
+
+  static ErrorHandler* instance();
+
+#define ERRORSTATE(name) \
+  void name##Error();    \
+  Q_SIGNAL void name();
+#include "errorlist.h"
+#undef ERRORSTATE
 };
 
 #endif  // ERRORHANDLER_H

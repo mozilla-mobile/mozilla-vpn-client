@@ -37,8 +37,11 @@ class IAPHandler : public QAbstractListModel {
     return m_productsRegistrationState == eRegistered;
   }
   Q_INVOKABLE void subscribe(const QString& productIdentifier);
+  Q_INVOKABLE void restore();
+
   void registerProducts(const QByteArray& data);
   void startSubscription(const QString& productIdentifier);
+  void startRestoreSubscription();
 
   // QAbstractListModel methods
   QHash<int, QByteArray> roleNames() const override;
@@ -50,6 +53,7 @@ class IAPHandler : public QAbstractListModel {
   void productsRegistrationStopped();
 
   void subscriptionStarted(const QString& productIdentifier);
+  void restoreSubscriptionStarted();
   void subscriptionFailed();
   void subscriptionCanceled();
   void subscriptionCompleted();
@@ -85,6 +89,7 @@ class IAPHandler : public QAbstractListModel {
 
   virtual void nativeRegisterProducts() = 0;
   virtual void nativeStartSubscription(Product* product) = 0;
+  virtual void nativeRestoreSubscription() = 0;
 
   enum {
     eNotRegistered,
