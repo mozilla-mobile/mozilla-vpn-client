@@ -22,6 +22,9 @@ constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
 // Number of msecs for the unsecured network alert.
 constexpr uint32_t UNSECURED_NETWORK_ALERT_MSEC = 4000;
 
+// Number of msecs for the server unavailable alert.
+constexpr uint32_t SERVER_UNAVAILABLE_ALERT_MSEC = 4000;
+
 // Number of recent connections to retain.
 constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 

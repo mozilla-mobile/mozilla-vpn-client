@@ -278,6 +278,7 @@ SETTING_BOOL(serverSwitchNotification,     // getter
              true,                         // default value
              false                         // remove when reset
 )
+
 SETTING_STRING(stagingServerAddress,     // getter
                setStagingServerAddress,  // setter
                hasStagingServerAddress,  // has
@@ -340,6 +341,15 @@ SETTING_BOOL(unsecuredNetworkAlert,     // getter
              hasUnsecuredNetworkAlert,  // has
              "unsecuredNetworkAlert",   // key
              FeatureUnsecuredNetworkNotification::instance()
+                 ->isSupported(),  // default value
+             false                 // remove when reset
+)
+
+SETTING_BOOL(serverUnavailableNotification,     // getter
+             setServerUnavailableNotification,  // setter
+             hasServerUnavailableNotification,  // has
+             "serverUnavailableNotification",   // key
+             FeatureServerUnavailableNotification::instance()
                  ->isSupported(),  // default value
              false                 // remove when reset
 )
