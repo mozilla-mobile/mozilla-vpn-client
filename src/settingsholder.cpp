@@ -14,6 +14,7 @@
 #include "features/featuresplittunnel.h"
 #include "features/featurestartonboot.h"
 #include "features/featureunsecurednetworknotification.h"
+#include "features/featureserverunavailablenotification.h"
 
 #include <QSettings>
 #include <QProcessEnvironment>

@@ -47,6 +47,10 @@ include($$PWD/../glean/glean.pri)
 
 include($$PWD/../nebula/nebula.pri)
 
+!wasm{
+    include($$PWD/crashreporter/crashreporter.pri)
+}
+
 # https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2509
 # Something in the Lottie project causes qmake to generate a
 # broken vcxproj, and is causing build failures on Windows, iOS, and macOS.
@@ -56,7 +60,6 @@ include($$PWD/../nebula/nebula.pri)
     # include($$PWD/../lottie/lottie.pri)
     # INCLUDEPATH += ../lottie/lib
 # }
-
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -110,6 +113,7 @@ SOURCES += \
         hawkauth.cpp \
         hkdf.cpp \
         iaphandler.cpp \
+        imageproviderfactory.cpp \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
@@ -237,11 +241,13 @@ HEADERS += \
         features/featurestartonboot.h \
         features/featureuniqueid.h \
         features/featureunsecurednetworknotification.h \
+        features/featureserverunavailablenotification.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
         hkdf.h \
         iaphandler.h \
+        imageproviderfactory.h \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
