@@ -21,6 +21,7 @@ constexpr const char* LOG_MAIN = "main";
 constexpr const char* LOG_MODEL = "model";
 constexpr const char* LOG_NETWORKING = "networking";
 constexpr const char* LOG_SERVER = "server";
+constexpr const char* LOG_CRASHREPORTER = "crashreporter";
 
 #if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
 constexpr const char* LOG_LINUX = "linux";
