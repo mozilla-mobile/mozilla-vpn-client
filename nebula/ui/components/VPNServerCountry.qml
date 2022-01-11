@@ -168,8 +168,7 @@ VPNClickableRow {
                 property string _localizedCityName: modelData[1]
                 property string _activeServerCount: modelData[2]
                 property string _countryCode: code
-                // TODO: Use active server count to set this property: _activeServerCount > 0
-                property bool isAvailable: true
+                property bool isAvailable: _activeServerCount > 0
 
                 id: del
                 objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
