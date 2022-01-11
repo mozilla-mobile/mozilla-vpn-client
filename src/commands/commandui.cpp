@@ -24,6 +24,7 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "imageproviderfactory.h"
 #include "theme.h"
 
 #include <glean.h>
@@ -32,7 +33,6 @@
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
-#  include "platforms/linux/linuxappimageprovider.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -42,14 +42,20 @@
 #endif
 
 #ifdef MVPN_ANDROID
-#  include "platforms/android/androidappimageprovider.h"
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
 #endif
 
 #ifndef Q_OS_WIN
 #  include "signalhandler.h"
+
+/*
+L57 and L143-145 are commented out pending a fix for
+https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2509
+
 #  include <lottie.h>
+*/
+
 #endif
 
 #ifdef MVPN_WINDOWS
@@ -132,9 +138,11 @@ int CommandUI::run(QStringList& tokens) {
 
     Glean::Initialize(engine);
 
-#ifndef MVPN_WINDOWS
-    Lottie::initialize(engine, QString(NetworkManager::userAgent()));
-#endif
+    /*
+    #ifndef MVPN_WINDOWS
+        Lottie::initialize(engine, QString(NetworkManager::userAgent()));
+    #endif
+    */
 
     Nebula::Initialize(engine);
 
@@ -189,23 +197,11 @@ int CommandUI::run(QStringList& tokens) {
     if (!LinuxDependencies::checkDependencies()) {
       return 1;
     }
-
-    // Register an Image Provider that will resolve "image://app/{id}" for qml
-    QQuickImageProvider* provider = new LinuxAppImageProvider(qApp);
-    engine->addImageProvider(QString("app"), provider);
 #endif
-
-#ifdef MVPN_ANDROID
-    // Register an Image Provider that will resolve "image://app/{id}" for qml
-    QQuickImageProvider* provider = new AndroidAppImageProvider(qApp);
-    engine->addImageProvider(QString("app"), provider);
-#endif
-#ifdef MVPN_WINDOWS
-    // Register an Image Provider that will resolve "image://app/{id}" for qml
-    QQuickImageProvider* provider = new WindowsAppImageProvider(qApp);
-    engine->addImageProvider(QString("app"), provider);
-#endif
-
+    QQuickImageProvider* provider = ImageProviderFactory::create(qApp);
+    if (provider) {
+      engine->addImageProvider(QString("app"), provider);
+    }
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance();
@@ -422,6 +418,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNl18n",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = L18nStrings::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNErrorHandler",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = ErrorHandler::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
