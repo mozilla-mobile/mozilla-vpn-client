@@ -588,6 +588,7 @@ void Controller::serverUnavailable() {
 
   if ((m_state == StateOn) || (m_state == StateSwitching) ||
       (m_state == StateConnecting)) {
+    NotificationHandler::instance()->serverUnavailableNotification();
     deactivate();
     return;
   }
