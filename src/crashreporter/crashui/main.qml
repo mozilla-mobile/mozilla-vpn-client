@@ -100,6 +100,7 @@ Window {
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: CrashController.userDecline()
       }
+
     }
     Component.onCompleted: {
         if (!fullscreenRequired()) {

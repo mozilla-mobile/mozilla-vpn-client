@@ -16,7 +16,6 @@ int CrashReporterApp::main(int argc, char* argv[]) {
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
   QApplication a(argc, argv);
-
   auto crashreporter = CrashReporterFactory::createCrashReporter();
   qInstallMessageHandler(LogHandler::messageQTHandler);
   QTimer::singleShot(0, &a, [crashreporter, argc, argv]() {

@@ -51,15 +51,15 @@ include($$PWD/../nebula/nebula.pri)
     include($$PWD/crashreporter/crashreporter.pri)
 }
 
-!win32{
-    message("Adding Lottie")
-    # https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2509
-    # Something in the Lottie project causes qmake to generate a 
-    # broken vcxproj, making windows fail the build
-    include($$PWD/../lottie/lottie.pri)
-    INCLUDEPATH += ../lottie/lib 
-}
+# https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2509
+# Something in the Lottie project causes qmake to generate a
+# broken vcxproj, and is causing build failures on Windows, iOS, and macOS.
 
+# !win32{
+    # message("Adding Lottie")
+    # include($$PWD/../lottie/lottie.pri)
+    # INCLUDEPATH += ../lottie/lib
+# }
 
 DEPENDPATH  += $${INCLUDEPATH}
 
