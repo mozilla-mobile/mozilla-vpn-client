@@ -182,7 +182,6 @@ SOURCES += \
         tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
         theme.cpp \
-        timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
@@ -317,7 +316,6 @@ HEADERS += \
         tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
         theme.h \
-        timercontroller.h \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
