@@ -65,41 +65,41 @@ Window {
         }
     }
     Column{
-        anchors.centerIn: parent
-        spacing: VPNTheme.theme.windowMargin
-        anchors.margins: VPNTheme.theme.windowMargin
-        Image {
-            id: mainIcon
-            source: "qrc:/crashresources/Warning.svg"
-            anchors.left: parent.left
-            anchors.right: parent.right
-            horizontalAlignment: Image.AlignHCenter
-            fillMode: Image.PreserveAspectFit
-        }
-          VPNSubtitle {
-              id: mainHeading
+      anchors.centerIn: parent
+      spacing: VPNTheme.theme.windowMargin
+      anchors.margins: VPNTheme.theme.windowMargin
+      Image {
+          id: mainIcon
+          source: "qrc:/crashresources/Warning.svg"
+          anchors.left: parent.left
+          anchors.right: parent.right
+          horizontalAlignment: Image.AlignHCenter
+          fillMode: Image.PreserveAspectFit
+      }
 
-              text: qsTrId("vpn.crashreporter.mainHeading")
-              horizontalAlignment: Text.AlignHCenter
-              //anchors.fill: parent
-          }
-          VPNTextBlock{
-              id: description
-              nchors.horizontalCenter: parent.horizontalCenter
-              horizontalAlignment: Text.AlignHCenter
-              text: qsTrId("vpn.crashreporter.description")
-          }
+      VPNSubtitle {
+          id: mainHeading
+          text: qsTrId("vpn.crashreporter.mainHeading")
+          horizontalAlignment: Text.AlignHCenter
+      }
 
-          VPNButton {
-            text: qsTrId("vpn.crashreporter.sendButtonLabel");
-            nchors.horizontalCenter: parent.horizontalCenter
-            onClicked: CrashController.sendReport()
-          }
-          VPNLinkButton {
-              labelText: qsTrId("vpn.crashreporter.dontSendButton");
-              anchors.horizontalCenter: parent.horizontalCenter
-              onClicked: CrashController.userDecline()
-          }
+      VPNTextBlock{
+          id: description
+          anchors.horizontalCenter: parent.horizontalCenter
+          horizontalAlignment: Text.AlignHCenter
+          text: qsTrId("vpn.crashreporter.description")
+      }
+
+      VPNButton {
+        text: qsTrId("vpn.crashreporter.sendButtonLabel");
+        anchors.horizontalCenter: parent.horizontalCenter
+        onClicked: CrashController.sendReport()
+      }
+      VPNLinkButton {
+        labelText: qsTrId("vpn.crashreporter.dontSendButton");
+        anchors.horizontalCenter: parent.horizontalCenter
+        onClicked: CrashController.userDecline()
+      }
     }
     Component.onCompleted: {
         if (!fullscreenRequired()) {

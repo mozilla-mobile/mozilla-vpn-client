@@ -11,11 +11,12 @@
 #include "crashreporterfactory.h"
 
 int CrashReporterApp::main(int argc, char* argv[]) {
-  QApplication a(argc, argv);
 #if QT_VERSION < 0x060000
   // This flag is set by default in qt6.
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
+  QApplication a(argc, argv);
+
   auto crashreporter = CrashReporterFactory::createCrashReporter();
   qInstallMessageHandler(LogHandler::messageQTHandler);
   QTimer::singleShot(0, &a, [crashreporter, argc, argv]() {
