@@ -37,6 +37,13 @@ void CaptivePortalDetection::networkChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
+  // The captive portal background monitor is looking
+  // wheter a portal on the current network is gone.
+  // So it should be deactivated when the network changes.
+  // Otherwise we might show the "unblock" notification
+  // on networks that never had a portal.
+  captivePortalBackgroundMonitor()->stop();
+
   if (vpn->controller()->state() != Controller::StateOn &&
       vpn->controller()->state() != Controller::StateConfirming) {
     // Network Changed but we're not connected, no need to test for captive
