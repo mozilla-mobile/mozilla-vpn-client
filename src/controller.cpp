@@ -315,8 +315,8 @@ bool Controller::deactivate() {
     return false;
   }
 
-  if ((m_state == StateOn) || (m_state == StateSwitching) ||
-      (m_state == StateConfirming) || (m_state == StateConnecting)) {
+  if ((m_state == StateOn) || (m_state == StateConfirming) ||
+      (m_state == StateConnecting)) {
     setState(StateDisconnecting);
   }
 
