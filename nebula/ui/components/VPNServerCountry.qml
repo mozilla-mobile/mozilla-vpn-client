@@ -166,7 +166,6 @@ VPNClickableRow {
             delegate: VPNRadioDelegate {
                 property string _cityName: modelData[0]
                 property string _localizedCityName: modelData[1]
-                property string _activeServerCount: modelData[2]
                 property string _countryCode: code
                 id: del
                 objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
@@ -176,7 +175,7 @@ VPNClickableRow {
 
                 onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(del)
 
-                radioButtonLabelText: modelData[1] + " (" + _activeServerCount + ")"
+                radioButtonLabelText: modelData[1]
                 accessibleName: modelData[1]
                 onClicked: {
                     if (currentServer.whichHop === "singleHopServer") {
