@@ -33,7 +33,8 @@ void TestThemes::loadTheme() {
   QmlEngineHolder qml;
 
   Theme t;
-  t.loadThemes();
+  t.initialize(qml.engine());
+
   QCOMPARE(t.currentTheme(), expected);
   QVERIFY(t.readTheme().isObject());
   QVERIFY(t.readColors().isObject());
@@ -49,7 +50,7 @@ void TestThemes::model() {
   QmlEngineHolder qml;
 
   Theme t;
-  t.loadThemes();
+  t.initialize(qml.engine());
 
   QHash<int, QByteArray> rn = t.roleNames();
   QCOMPARE(rn.count(), 1);
