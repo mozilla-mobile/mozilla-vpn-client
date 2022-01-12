@@ -9,6 +9,8 @@
 #include <QHash>
 #include <QJSValue>
 
+class QJSEngine;
+
 class Theme final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Theme)
@@ -32,7 +34,7 @@ class Theme final : public QAbstractListModel {
   const QString& currentTheme() const { return m_currentTheme; }
   void setCurrentTheme(const QString& themeName);
 
-  void loadThemes();
+  void initialize(QJSEngine* engine);
 
   // QAbstractListModel methods
 
@@ -43,7 +45,7 @@ class Theme final : public QAbstractListModel {
   QVariant data(const QModelIndex& index, int role) const override;
 
  private:
-  void parseTheme(const QString& themeName);
+  void parseTheme(QJSEngine* engine, const QString& themeName);
   bool loadTheme(const QString& themeName);
 
  signals:
