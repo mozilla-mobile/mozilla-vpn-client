@@ -328,11 +328,8 @@ void ServerCountryModel::setCooldownForAllServersInACity(
                  << cityCode;
 
   for (const ServerCountry& country : m_countries) {
-    logger.debug() << "countryCode: " << country.code();
-
     if (country.code() == countryCode) {
       for (const ServerCity& city : country.cities()) {
-        logger.debug() << "cityCode: " << city.code();
         if (city.code() == cityCode) {
           for (const QString& pubkey : city.servers()) {
             setServerCooldown(pubkey, duration);

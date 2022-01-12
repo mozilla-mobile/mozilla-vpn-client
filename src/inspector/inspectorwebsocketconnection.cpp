@@ -520,9 +520,22 @@ static QList<WebSocketCommand> s_commands{
         }},
 
     WebSocketCommand{
-        "force_server_unavailable", "Force server unavailable", 0,
-        [](const QList<QByteArray>&) {
-          MozillaVPN::instance()->controller()->serverUnavailable();
+        "force_server_unavailable",
+        "Force server unavailable with force_server_unavailable {countryCode} "
+        "{cityCode}",
+        2,
+        [](const QList<QByteArray>& arguments) {
+          QJsonObject obj;
+          if (QString(arguments[1]) != "" && QString(arguments[2]) != "") {
+            MozillaVPN::instance()
+                ->controller()
+                ->setCooldownForAllServersInACity(QString(arguments[1]),
+                                                  QString(arguments[2]));
+          } else {
+            obj["error"] =
+                QString("Please provide country and city codes as arguments");
+          }
+
           return QJsonObject();
         }},
 
