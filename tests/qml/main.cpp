@@ -14,6 +14,6 @@ int main(int argc, char* argv[]) {
   // Macro source code:
   // https://github.com/qt/qtdeclarative/blob/5.15.2/src/qmltest/quicktest.h#L69
   QTEST_SET_MAIN_SOURCE_PATH
-  quick_test_main_with_setup(argc, argv, "qml_tests", QUICK_TEST_SOURCE_DIR,
-                             TestHelper::instance());
+  return quick_test_main_with_setup(
+      argc, argv, "qml_tests", QUICK_TEST_SOURCE_DIR, TestHelper::instance());
 }
