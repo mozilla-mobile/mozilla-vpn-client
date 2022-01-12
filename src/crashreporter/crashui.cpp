@@ -45,7 +45,7 @@ void CrashUI::initialize() {
           return obj;
         });
     m_theme = make_shared<Theme>();
-    m_theme->loadThemes();
+    m_theme->initialize(QmlEngineHolder::instance()->engine());
     qmlRegisterSingletonType<Theme>(
         "Mozilla.VPN", 1, 0, "VPNTheme",
         [this](QQmlEngine*, QJSEngine*) -> QObject* {
