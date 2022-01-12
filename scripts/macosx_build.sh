@@ -47,7 +47,7 @@ git checkout go1.17.1
 cd src
 ./all.bash
 export PATH="`pwd`/goroot/bin:$PATH"
-go install golang.org/x/tools/gopls@latest
+aecho $PATH
 cd ../..
 
 
