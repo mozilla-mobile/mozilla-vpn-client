@@ -48,6 +48,7 @@ cd src
 ./all.bash
 export PATH="`pwd`/goroot/bin:$PATH"
 echo `go version`
+echo `ls -ls ./goroot/bin`
 echo $PATH
 cd ../..
 
