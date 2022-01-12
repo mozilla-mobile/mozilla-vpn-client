@@ -153,12 +153,8 @@ void AndroidController::applyStrings() {
   m_serviceBinder.transact(ACTION_SET_NOTIFICATION_FALLBACK, data, nullptr);
 }
 
-void AndroidController::activate(const Server& server, const Device* device,
-                                 const Keys* keys, int hopindex,
-                                 const QList<IPAddress>& allowedIPAddressRanges,
-                                 const QStringList& excludedAddresses,
-                                 const QStringList& vpnDisabledApps,
-                                 const QHostAddress& dns, Reason reason) {
+void AndroidController::activate(const HopConnection& hop, const Device* device,
+                                 const Keys* keys, Reason reason) {
   Q_ASSERT(hopindex == 0);
   logger.debug() << "Activation";
 
@@ -170,7 +166,7 @@ void AndroidController::activate(const Server& server, const Device* device,
                                      appContext.object());
 
   m_device = *device;
-  m_serverPublicKey = server.publicKey();
+  m_serverPublicKey = hop.m_server.publicKey();
 
   // Serialise arguments for the VPNService
   QJsonObject jDevice;
@@ -184,22 +180,22 @@ void AndroidController::activate(const Server& server, const Device* device,
   jKeys["privateKey"] = keys->privateKey();
 
   QJsonObject jServer;
-  logger.info() << "Server" << server.hostname();
-  jServer["ipv4AddrIn"] = server.ipv4AddrIn();
-  jServer["ipv4Gateway"] = server.ipv4Gateway();
-  jServer["ipv6AddrIn"] = server.ipv6AddrIn();
-  jServer["ipv6Gateway"] = server.ipv6Gateway();
+  logger.info() << "Server" << hop.m_server.hostname();
+  jServer["ipv4AddrIn"] = hop.m_server.ipv4AddrIn();
+  jServer["ipv4Gateway"] = hop.m_server.ipv4Gateway();
+  jServer["ipv6AddrIn"] = hop.m_server.ipv6AddrIn();
+  jServer["ipv6Gateway"] = hop.m_server.ipv6Gateway();
 
-  jServer["publicKey"] = server.publicKey();
-  jServer["port"] = (double)server.choosePort();
+  jServer["publicKey"] = hop.m_server.publicKey();
+  jServer["port"] = (double)hop.m_server.choosePort();
 
   QList<IPAddress> allowedIPs;
   QList<IPAddress> excludedIPs;
   QJsonArray fullAllowedIPs;
-  foreach (auto item, allowedIPAddressRanges) {
+  foreach (auto item, hop.m_allowedIPAddressRanges) {
     allowedIPs.append(IPAddress(item.toString()));
   }
-  foreach (auto addr, excludedAddresses) {
+  foreach (auto addr, hop.m_excludedAddresses) {
     excludedIPs.append(IPAddress(addr));
   }
   foreach (auto item, IPAddress::excludeAddresses(allowedIPs, excludedIPs)) {
@@ -207,7 +203,7 @@ void AndroidController::activate(const Server& server, const Device* device,
   }
 
   QJsonArray excludedApps;
-  foreach (auto appID, vpnDisabledApps) {
+  foreach (auto appID, hop.m_vpnDisabledApps) {
     excludedApps.append(QJsonValue(appID));
   }
 

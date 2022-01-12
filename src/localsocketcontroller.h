@@ -22,11 +22,8 @@ class LocalSocketController final : public ControllerImpl {
 
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const Server& server, const Device* device, const Keys* keys,
-                int hopindex, const QList<IPAddress>& allowedIPAddressRanges,
-                const QStringList& excludedAddresses,
-                const QStringList& vpnDisabledApps,
-                const QHostAddress& dnsServer, Reason reason) override;
+  void activate(const HopConnection& hop, const Device* device,
+                const Keys* keys, Reason Reason) override;
 
   void deactivate(Reason reason) override;
 

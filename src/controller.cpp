@@ -276,10 +276,7 @@ void Controller::activateNext() {
 
   logger.debug() << "Activating peer" << hop.m_server.publicKey();
   m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
-  m_impl->activate(hop.m_server, device, vpn->keys(), hop.m_hopindex,
-                   hop.m_allowedIPAddressRanges, hop.m_excludedAddresses,
-                   hop.m_vpnDisabledApps, hop.m_dnsServer,
-                   stateToReason(m_state));
+  m_impl->activate(hop, device, vpn->keys(), stateToReason(m_state));
 }
 
 bool Controller::silentSwitchServers() {

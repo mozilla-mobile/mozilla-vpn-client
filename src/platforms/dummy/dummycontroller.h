@@ -24,11 +24,8 @@ class DummyController final : public ControllerImpl {
     emit initialized(true, false, QDateTime());
   }
 
-  void activate(const Server& server, const Device* device, const Keys* keys,
-                int hopindex, const QList<IPAddress>& allowedIPAddressRanges,
-                const QStringList& excludedAddresses,
-                const QStringList& vpnDisabledApps,
-                const QHostAddress& dnsServer, Reason reason) override;
+  void activate(const HopConnection& hop, const Device* device,
+                const Keys* keys, Reason reason) override;
 
   void deactivate(Reason reason) override;
 
