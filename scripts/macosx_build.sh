@@ -47,12 +47,12 @@ git checkout go1.17.1
 cd src
 ./all.bash
 export PATH="`pwd`/goroot/bin:$PATH"
-aecho $PATH
+echo $PATH
 cd ../..
 
 
 echo Y "Printing go path"
-which go | echo
+echo `which go`
 
 # Xcode config - maybe we should just maintain a full Xcode config somewhere instead of replacing things here?
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
