@@ -155,7 +155,7 @@ void AndroidController::applyStrings() {
 
 void AndroidController::activate(const HopConnection& hop, const Device* device,
                                  const Keys* keys, Reason reason) {
-  Q_ASSERT(hopindex == 0);
+  Q_ASSERT(hop.m_hopindex == 0);
   logger.debug() << "Activation";
 
   logger.debug() << "Prompting for VPN permission";
@@ -214,7 +214,7 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   args["reason"] = (int)reason;
   args["allowedIPs"] = fullAllowedIPs;
   args["excludedApps"] = excludedApps;
-  args["dns"] = dns.toString();
+  args["dns"] = hop.m_dnsServer.toString();
 
   QJsonDocument doc(args);
   QAndroidParcel sendData;
