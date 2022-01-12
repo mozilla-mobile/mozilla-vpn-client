@@ -527,6 +527,13 @@ static QList<WebSocketCommand> s_commands{
           return QJsonObject();
         }},
 
+    WebSocketCommand{
+        "force_server_unavailable", "Force server unavailable", 0,
+        [](const QList<QByteArray>&) {
+          MozillaVPN::instance()->controller()->readyToServerUnavailable();
+          return QJsonObject();
+        }},
+
     WebSocketCommand{"activate", "Activate the VPN", 0,
                      [](const QList<QByteArray>&) {
                        MozillaVPN::instance()->activate();

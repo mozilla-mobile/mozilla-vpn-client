@@ -112,6 +112,13 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
+  async forceServerUnavailable() {
+    const json = await this._writeCommand('force_server_unavailable');
+    assert(
+        json.type === 'force_server_unavailable' && !('error' in json),
+        `Command failed: ${json.error}`);
+  },
+
   async forceCaptivePortalDetection() {
     const json = await this._writeCommand('force_captive_portal_detection');
     assert(
