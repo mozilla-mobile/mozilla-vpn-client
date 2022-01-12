@@ -186,6 +186,18 @@ static QList<WebSocketSettingCommand> s_settingCommands{
                      ? "true"
                      : "false";
         }},
+    // server-unavailable-notification
+    WebSocketSettingCommand{
+        "server-unavailable-notification", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setServerUnavailableNotification(value ==
+                                                                       "true");
+        },
+        []() {
+          return SettingsHolder::instance()->serverUnavailableNotification()
+                     ? "true"
+                     : "false";
+        }},
 
     // language
     WebSocketSettingCommand{
@@ -504,6 +516,14 @@ static QList<WebSocketCommand> s_commands{
         [](const QList<QByteArray>&) {
           MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
                                                                      "Dummy");
+          return QJsonObject();
+        }},
+
+    WebSocketCommand{
+        "force_server_unavailable_notification",
+        "Force a server unavailable system notification", 0,
+        [](const QList<QByteArray>&) {
+          NotificationHandler::instance()->serverUnavailableNotification();
           return QJsonObject();
         }},
 
