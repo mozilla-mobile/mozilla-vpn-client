@@ -334,6 +334,7 @@ void ServerCountryModel::setCooldownForAllServersInACity(
           for (const QString& pubkey : city.servers()) {
             setServerCooldown(pubkey, duration);
           }
+          break;
         }
       }
       break;

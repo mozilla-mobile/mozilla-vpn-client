@@ -521,7 +521,8 @@ static QList<WebSocketCommand> s_commands{
 
     WebSocketCommand{
         "force_server_unavailable",
-        "Force server unavailable with force_server_unavailable {countryCode} "
+        "Timeout all servers in a city using force_server_unavailable "
+        "{countryCode} "
         "{cityCode}",
         2,
         [](const QList<QByteArray>& arguments) {
