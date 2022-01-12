@@ -47,6 +47,7 @@ git checkout go1.17.1
 cd src
 ./all.bash
 export PATH="`pwd`/goroot/bin:$PATH"
+echo `go version`
 echo $PATH
 cd ../..
 
