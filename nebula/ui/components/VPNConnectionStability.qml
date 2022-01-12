@@ -7,8 +7,8 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 Item {
     property var gridFlow: grid.flow
