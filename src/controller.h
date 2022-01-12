@@ -116,6 +116,8 @@ class Controller final : public QObject {
   void connectionConfirmed();
   void connectionFailed();
   void handshakeTimeout();
+  void setCooldownForAllServersInACity(const QString& countryCode,
+                                       const QString& cityCode);
 
  signals:
   void stateChanged();

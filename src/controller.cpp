@@ -448,6 +448,16 @@ void Controller::handshakeTimeout() {
   activateInternal();
 }
 
+void Controller::setCooldownForAllServersInACity(const QString& countryCode,
+                                                 const QString& cityCode) {
+  logger.debug() << "Set cooldown for all servers in a city";
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+
+  vpn->setCooldownForAllServersInACity(countryCode, cityCode);
+}
+
 bool Controller::isUnsettled() { return !m_settled; }
 
 void Controller::disconnected() {

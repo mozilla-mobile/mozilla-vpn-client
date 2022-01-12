@@ -303,6 +303,8 @@ class MozillaVPN final : public QObject {
 
   void setServerPublicKey(const QString& publicKey);
   void setServerCooldown(const QString& publicKey);
+  void setCooldownForAllServersInACity(const QString& countryCode,
+                                       const QString& cityCode);
 
   void addCurrentDeviceAndRefreshData();
 

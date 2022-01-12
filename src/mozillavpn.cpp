@@ -1016,6 +1016,12 @@ void MozillaVPN::setServerCooldown(const QString& publicKey) {
       publicKey, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
 }
 
+void MozillaVPN::setCooldownForAllServersInACity(const QString& countryCode,
+                                                 const QString& cityCode) {
+  m_private->m_serverCountryModel.setCooldownForAllServersInACity(
+      countryCode, cityCode, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+}
+
 QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {
   QList<Server> results;
   qint64 now = QDateTime::currentSecsSinceEpoch();
