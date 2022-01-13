@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 !android {
+    # Don't want any other taskcluster task to run for now
     error(NOT ANDROID)
 }
 
