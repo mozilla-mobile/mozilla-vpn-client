@@ -22,12 +22,8 @@ class LinuxController final : public ControllerImpl {
 
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const QList<Server>& serverList, const Device* device,
-                const Keys* keys,
-                const QList<IPAddress>& allowedIPAddressRanges,
-                const QStringList& excludedAddresses,
-                const QStringList& vpnDisabledApps,
-                const QHostAddress& dnsServer, Reason reason) override;
+  void activate(const HopConnection& hop, const Device* device,
+                const Keys* keys, Reason reason) override;
 
   void deactivate(Reason reason) override;
 
@@ -37,30 +33,14 @@ class LinuxController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
+  bool multihopSupported() override { return true; }
+
  private slots:
   void checkStatusCompleted(QDBusPendingCallWatcher* call);
   void initializeCompleted(QDBusPendingCallWatcher* call);
   void operationCompleted(QDBusPendingCallWatcher* call);
-  void peerConnected(const QString& pubkey);
 
  private:
-  void activateNext();
-
- private:
-  class HopConnection {
-   public:
-    HopConnection() {}
-    Server m_server;
-    int m_hopindex = 0;
-    QList<IPAddress> m_allowedIPAddressRanges;
-    QStringList m_excludedAddresses;
-    QStringList m_vpnDisabledApps;
-    QHostAddress m_dnsServer;
-  };
-  QList<HopConnection> m_activationQueue;
-  const Device* m_device = nullptr;
-  const Keys* m_keys = nullptr;
-
   DBusClient* m_dbus = nullptr;
 };
 

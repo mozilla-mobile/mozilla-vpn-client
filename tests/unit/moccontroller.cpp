@@ -21,7 +21,7 @@ void Controller::activateInternal() {}
 
 bool Controller::deactivate() { return false; }
 
-void Controller::connected() {}
+void Controller::connected(const QString& pubkey) { Q_UNUSED(pubkey); }
 
 void Controller::disconnected() {}
 
@@ -43,9 +43,8 @@ void Controller::getBackendLogs(std::function<void(const QString&)>&&) {}
 void Controller::statusUpdated(const QString&, const QString&, uint64_t,
                                uint64_t) {}
 
-QList<IPAddress> Controller::getAllowedIPAddressRanges(
-    const QList<Server>& serverList) {
-  Q_UNUSED(serverList);
+QList<IPAddress> Controller::getAllowedIPAddressRanges(const Server& server) {
+  Q_UNUSED(server);
   return QList<IPAddress>();
 }
 
@@ -83,3 +82,5 @@ void Controller::captivePortalGone() {}
 QString Controller::currentLocalizedCityName() const { return ""; }
 
 QString Controller::switchingLocalizedCityName() const { return ""; }
+
+void Controller::handshakeTimeout() {}
