@@ -321,6 +321,27 @@ void ServerCountryModel::setServerCooldown(const QString& publicKey,
   }
 }
 
+void ServerCountryModel::setCooldownForAllServersInACity(
+    const QString& countryCode, const QString& cityCode,
+    unsigned int duration) {
+  logger.debug() << "Set cooldown for all servers for: " << countryCode << " - "
+                 << cityCode;
+
+  for (const ServerCountry& country : m_countries) {
+    if (country.code() == countryCode) {
+      for (const ServerCity& city : country.cities()) {
+        if (city.code() == cityCode) {
+          for (const QString& pubkey : city.servers()) {
+            setServerCooldown(pubkey, duration);
+          }
+          break;
+        }
+      }
+      break;
+    }
+  }
+}
+
 namespace {
 
 bool sortCountryCallback(const ServerCountry& a, const ServerCountry& b,
