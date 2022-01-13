@@ -51,7 +51,6 @@ def set_worker_type(config, tasks):
         if (
             str(config.params["level"]) == "3"
             and task["attributes"]["build-type"] in PRODUCTION_SIGNING_BUILD_TYPES
-            and config.params["tasks_for"] in ("cron", "github-release", "action")
         ):
             worker_type = "signing"
         task["worker-type"] = worker_type
