@@ -24,7 +24,17 @@ print("Waiting for debugger attach")
 print('break on this line')
 
 
-
+# Add build-type info to the Task. Defaults to taskname
+@transforms.add
+def checkRequiredLevel(config, tasks):
+    for task in tasks:
+        if("requiresLevel" in task):
+            requiredLevel = int(task.pop("requiresLevel"))
+            currentLevel = int(config.params["level"]) 
+            if requiredLevel <= currentLevel:
+                yield task
+        else:
+            yield task
 
 # Add build-type info to the Task. Defaults to taskname
 @transforms.add

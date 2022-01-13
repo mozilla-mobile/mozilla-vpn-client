@@ -21,6 +21,17 @@ SIGNING_BUILD_TYPES = PRODUCTION_SIGNING_BUILD_TYPES + [
     "android-debug",
 ]
 
+
+@transforms.add
+def checkRequiredLevel(config, tasks):
+    # Drop Sign tasks if' we are not at the required level (3)
+    for task in tasks:
+        requiredLevel = 3
+        currentLevel = int(config.params["level"]) 
+        if requiredLevel <= currentLevel:
+            yield task
+
+
 @transforms.add
 def filter_signable(config, tasks):
     for task in tasks:

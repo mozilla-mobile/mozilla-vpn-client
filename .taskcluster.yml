@@ -189,7 +189,6 @@ tasks:
                                   $if: 'tasks_for == "github-pull-request"'
                                   then:
                                       - 'assume:repo:github.com/${event.pull_request.base.repo.full_name}:pull-request'
-                                      - 'secrets:get:project/mozillavpn/tokens'
                                   else:
                                       $if: 'tasks_for == "github-release"'
                                       then:

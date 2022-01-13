@@ -57,9 +57,10 @@ jobs:
         treeherder:
             symbol: BS
             kind: build
-            tier: 1 # Todo: This needs to become level 3 when ready to land
+            tier: 3 # Todo: This needs to become level 3 when ready to land
             platform: qt5/android/universal
         worker-type: b-linux
+        requiresLevel: 3
         scopes:
             - 'secrets:get:project/mozillavpn/tokens'
         worker:
