@@ -45,7 +45,7 @@ git clone https://go.googlesource.com/go goroot
 cd goroot
 git checkout go1.17.1
 cd src
-./all.bash
+echo `./all.bash`
 export PATH="`pwd`/goroot/bin:$PATH"
 echo `go version`
 echo `ls -ls ./goroot/bin`
