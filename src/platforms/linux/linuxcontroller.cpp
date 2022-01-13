@@ -67,17 +67,14 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
   emit initialized(true, statusValue.toBool(), QDateTime::currentDateTime());
 }
 
-void LinuxController::activate(const Server& server, const Device* device,
-                               const Keys* keys, int hopindex,
-                               const QList<IPAddress>& allowedIPAddressRanges,
-                               const QStringList& excludedAddresses,
-                               const QStringList& vpnDisabledApps,
-                               const QHostAddress& dnsServer, Reason reason) {
+void LinuxController::activate(const HopConnection& hop, const Device* device,
+                               const Keys* keys, Reason reason) {
   Q_UNUSED(reason);
 
   connect(
-      m_dbus->activate(server, device, keys, hopindex, allowedIPAddressRanges,
-                       excludedAddresses, vpnDisabledApps, dnsServer),
+      m_dbus->activate(hop.m_server, device, keys, hop.m_hopindex,
+                       hop.m_allowedIPAddressRanges, hop.m_excludedAddresses,
+                       hop.m_vpnDisabledApps, hop.m_dnsServer),
       &QDBusPendingCallWatcher::finished, this,
       &LinuxController::operationCompleted);
 
@@ -86,8 +83,6 @@ void LinuxController::activate(const Server& server, const Device* device,
 
 void LinuxController::deactivate(Reason reason) {
   logger.debug() << "LinuxController deactivated";
-
-  m_activationQueue.clear();
 
   if (reason == ReasonSwitching) {
     logger.debug() << "No disconnect for quick server switching";
@@ -119,29 +114,6 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
   emit disconnected();
 }
-
-#if 0
-// When the daemon reports that a peer connected, activate the next
-// connection in the queue, or emit a connected() signal when we are done.
-void LinuxController::peerConnected(const QString& pubkey) {
-  logger.debug() << "handshake completed with:" << pubkey;
-  if (m_activationQueue.isEmpty()) {
-    return;
-  }
-
-  const HopConnection& hop = m_activationQueue.first();
-  if (hop.m_server.publicKey() != pubkey) {
-    return;
-  }
-
-  m_activationQueue.removeFirst();
-  if (m_activationQueue.isEmpty()) {
-    emit connected();
-  } else {
-    activateNext();
-  }
-}
-#endif
 
 void LinuxController::checkStatus() {
   logger.debug() << "Check status";

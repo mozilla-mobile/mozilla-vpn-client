@@ -2,8 +2,8 @@ import QtQuick 2.3
 import QtTest 1.0
 
 import TestHelper 1.0
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 import ui 0.1
 
 Item {

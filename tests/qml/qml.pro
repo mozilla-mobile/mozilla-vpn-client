@@ -48,6 +48,7 @@ SOURCES += \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
     ../../src/settingsholder.cpp \
+    ../../src/theme.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
 
@@ -67,6 +68,7 @@ HEADERS += \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
     ../../src/settingsholder.h \
+    ../../src/theme.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
 

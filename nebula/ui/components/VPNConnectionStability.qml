@@ -7,8 +7,8 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 Item {
     property var gridFlow: grid.flow
@@ -93,14 +93,14 @@ Item {
 
             Rectangle {
                 height: 16
-                width: 14
+                width: VPNTheme.theme.iconSizeSmall
                 color: "transparent"
 
                 Image {
                     id: warningIcon
 
-                    sourceSize.height: 14
-                    sourceSize.width: 14
+                    sourceSize.height: VPNTheme.theme.iconSizeSmall
+                    sourceSize.width: VPNTheme.theme.iconSizeSmall
                     fillMode: Image.PreserveAspectFit
                 }
             }

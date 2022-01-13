@@ -21,6 +21,18 @@
 class ControllerImpl;
 class MozillaVPN;
 
+class HopConnection {
+ public:
+  HopConnection() {}
+
+  Server m_server;
+  int m_hopindex = 0;
+  QList<IPAddress> m_allowedIPAddressRanges;
+  QStringList m_excludedAddresses;
+  QStringList m_vpnDisabledApps;
+  QHostAddress m_dnsServer;
+};
+
 class Controller final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Controller)
@@ -199,16 +211,6 @@ class Controller final : public QObject {
 
   ReconnectionStep m_reconnectionStep = NoReconnection;
 
-  class HopConnection {
-   public:
-    HopConnection() {}
-    Server m_server;
-    int m_hopindex = 0;
-    QList<IPAddress> m_allowedIPAddressRanges;
-    QStringList m_excludedAddresses;
-    QStringList m_vpnDisabledApps;
-    QHostAddress m_dnsServer;
-  };
   QList<HopConnection> m_activationQueue;
 
   QList<std::function<void(const QString& serverIpv4Gateway,
