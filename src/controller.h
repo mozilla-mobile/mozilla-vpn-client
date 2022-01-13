@@ -102,6 +102,8 @@ class Controller final : public QObject {
 
   void backendFailure();
   void serverUnavailable();
+  void setCooldownForAllServersInACity(const QString& countryCode,
+                                       const QString& cityCode);
 
   void captivePortalPresent();
   void captivePortalGone();
