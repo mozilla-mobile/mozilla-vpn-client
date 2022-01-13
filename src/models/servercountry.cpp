@@ -62,6 +62,10 @@ bool ServerCountry::fromJson(const QJsonObject& countryObj) {
       return false;
     }
 
+    if (serverCity.servers().isEmpty()) {
+      continue;
+    }
+
     scList.append(serverCity);
   }
 

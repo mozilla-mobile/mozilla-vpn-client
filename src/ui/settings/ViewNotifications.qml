@@ -9,8 +9,8 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 Item {
     id: root
@@ -89,7 +89,7 @@ Item {
                     if (vpnFlickable.vpnIsOff) {
                         VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
                     }
-            }
+                }
             }
 
             VPNCheckBoxRow {
@@ -106,7 +106,7 @@ Item {
                 showDivider: false
                 onClicked: {
                     VPNSettings.serverSwitchNotification = !VPNSettings.serverSwitchNotification
-            }
+                }
             }
 
             VPNCheckBoxRow {
@@ -125,7 +125,21 @@ Item {
                     VPNSettings.connectionChangeNotification = !VPNSettings.connectionChangeNotification
                 }
             }
+
+            VPNCheckBoxRow {
+                id: serverUnavailableNotification
+                objectName: "serverUnavailableNotification"
+                visible: VPNFeatureList.get("serverUnavailableNotification").isSupported
+                width: parent.width
+
+                labelText: VPNl18n.ServerUnavailableNotificationPreferencesLabel
+                subLabelText: VPNl18n.ServerUnavailableNotificationPreferencesSubLabel
+                isChecked: (VPNSettings.serverUnavailableNotification)
+                showDivider: false
+                onClicked: {
+                    VPNSettings.serverUnavailableNotification = !VPNSettings.serverUnavailableNotification
+                }
+            }
         }
     }
 }
-

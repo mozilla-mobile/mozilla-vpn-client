@@ -19,6 +19,7 @@ class NotificationHandler : public QObject {
     UnsecuredNetwork,
     CaptivePortalBlock,
     CaptivePortalUnblock,
+    ServerUnavailable,
   };
 
   static NotificationHandler* create(QObject* parent);
@@ -31,6 +32,8 @@ class NotificationHandler : public QObject {
   void captivePortalUnblockNotificationRequired();
 
   void unsecuredNetworkNotification(const QString& networkName);
+
+  void serverUnavailableNotification();
 
   void showNotification();
 

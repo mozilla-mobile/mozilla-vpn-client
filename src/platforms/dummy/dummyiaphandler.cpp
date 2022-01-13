@@ -23,3 +23,5 @@ void DummyIAPHandler::nativeRegisterProducts() {}
 void DummyIAPHandler::nativeStartSubscription(Product* product) {
   Q_UNUSED(product)
 }
+
+void DummyIAPHandler::nativeRestoreSubscription() {}

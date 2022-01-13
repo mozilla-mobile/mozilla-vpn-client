@@ -196,6 +196,22 @@ genericPurchaseError:
   genericPurchaseErrorText: An unexpected error has occurred, please try again. Visit our help center below to learn how to troubleshoot this issue or contact support.
   genericPurchaseErrorButton: Try Again
 
+# IAP iOS restore purchase button
+restorePurchase:
+  restorePurchaseButton: Already a subscriber?
+
+# IAP iOS restore generic error
+restorePurchaseGenericPurchaseError:
+  restorePurchaseGenericPurchaseErrorText: Sorry, we were unable to confirm your subscription. Please try again or contact our support team for help.
+
+# IAP iOS restore expired error
+restorePurchaseExpiredError:
+  restorePurchaseExpiredErrorText: Sorry, we are unable to connect your Firefox Account to a current subscription. Please try again or contact our support team for further assistance.
+
+# IAP iOS restore in use error
+restorePurchaseInUseError:
+  restorePurchaseInUseErrorText: Another Firefox Account has already subscribed using this Apple ID. Please sign out and try again or contact our support team for help.
+
 # v2.5 What’s New? Release notes
 whatsNewReleaseNotes:
   # tour modal alert on system update
@@ -265,7 +281,7 @@ notifications:
   captivePortalBlockTitle: Guest Wi-Fi portal blocked
   captivePortalBlockMessage2: The guest Wi-Fi network you’re connected to requires action. Click to turn off VPN to see the portal.
   captivePortalUnblockTitle: Guest Wi-Fi portal detected
-  captivePortalUnblockMessage: The guest Wi-Fi network you’re connected to may not be secure. Click here to turn on VPN to secure your device.
+  captivePortalUnblockMessage2: The guest Wi-Fi network you’re connected to may not be secure. Click to turn on VPN to secure your device.
   unsecuredNetworkTitle: Unsecured Wi-Fi network detected
   unsecuredNetworkMessage:
     value: "%1 is not secure. Click here to turn on VPN and secure your device."
@@ -356,3 +372,14 @@ serverUnavailableModal:
   headerText: Server unavailable
   bodyText: This server location is temporarily unavailable. Choose a new location.
   buttonLabel: Choose a new location
+
+serverUnavailableNotification:
+  bodyText: This server location is temporarily unavailable. Please open the app to choose a new location.
+  preferencesLabel: Server unavailable notification
+  preferencesSubLabel: Get notified when connecting to a server location failed
+
+mobileOnboarding:
+  signUpBtn: Sign up
+  alreadyASubscriber: Already a subscriber?
+
+

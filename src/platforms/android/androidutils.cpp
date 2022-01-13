@@ -239,3 +239,21 @@ void AndroidUtils::runOnAndroidThreadSync(
   QtAndroid::runOnAndroidThreadSync(runnable);
 #endif
 }
+
+JNIEXPORT void JNICALL
+Java_org_mozilla_firefox_vpn_qt_VPNUtils_recordGleanEvent(JNIEnv* env,
+                                                          jobject VPNUtils,
+                                                          jstring event) {
+  Q_UNUSED(VPNUtils);
+  const char* buffer = env->GetStringUTFChars(event, nullptr);
+  if (!buffer) {
+    return;
+  }
+  if (!MozillaVPN::instance()) {
+    return;
+  }
+  QString eventString(buffer);
+  logger.info() << "Glean Event via JNI:" << eventString;
+  emit MozillaVPN::instance()->recordGleanEvent(eventString);
+  env->ReleaseStringUTFChars(event, buffer);
+}
