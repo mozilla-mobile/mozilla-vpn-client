@@ -60,17 +60,18 @@ jobs:
             tier: 1 # Todo: This needs to become level 3 when ready to land
             platform: qt5/android/universal
         worker-type: b-linux
-        attributes:
-            build-type: nightly 
         scopes:
             - 'secrets:get:project/mozillavpn/tokens'
         worker:
             docker-image: {in-tree: android-build}
             max-run-time: 3600
-            artifacts:
-                - type: directory
-                  name: public/build
-                  path: /builds/worker/artifacts
+        apk-artifacts:
+            # APK Artifacts expects file to be in /builds/worker/artifacts/
+            - android-build-arm64-v8a-release-unsigned.apk
+            - android-build-armeabi-v7a-release-unsigned.apk
+            - android-build-universal-release-unsigned.apk
+            - android-build-x86-release-unsigned.apk
+            - android-build-x86_64-release-unsigned.apk
         run:
             using: run-task
             use-caches: true
@@ -97,6 +98,8 @@ jobs:
             use-caches: true
             cwd: '{checkout}'
             command: ./taskcluster/scripts/android_build__qt6_debug.sh arm64-v8a
+
+
 #    macosx/opt:
 #        description: "Mac Build"
 #        treeherder:
@@ -121,28 +124,28 @@ jobs:
 #            cwd: '{checkout}'
 #            command: ./scripts/macosx_build.sh
 #
-    windows/opt:
-        description: "Windows Build"
-        treeherder:
-            symbol: B
-            kind: build
-            tier: 1
-            platform: windows/opt
-        worker-type: b-win2012
-        scopes:
-            - project:releng:services/tooltool/api/download/public
-            - project:releng:services/tooltool/api/download/internal
-        worker:
-            taskcluster-proxy: true
-            chain-of-trust: true
-            max-run-time: 3600
-            artifacts:
-                - type: directory
-                  name: public/build
-                  path: build/src/artifacts
-        run:
-            using: run-task
-            cwd: '{checkout}'
-            command: ./scripts/windows_ci_build.sh
+#    windows/opt:
+#        description: "Windows Build"
+#        treeherder:
+#            symbol: B
+#            kind: build
+#            tier: 1
+#            platform: windows/opt
+#        worker-type: b-win2012
+#        scopes:
+#            - project:releng:services/tooltool/api/download/public
+#            - project:releng:services/tooltool/api/download/internal
+#        worker:
+#            taskcluster-proxy: true
+#            chain-of-trust: true
+#           max-run-time: 3600
+#           artifacts:
+#               - type: directory
+#                  name: public/build
+#                  path: build/src/artifacts
+#        run:
+#            using: run-task
+#            cwd: '{checkout}'
+#            command: ./scripts/windows_ci_build.sh
 
             
