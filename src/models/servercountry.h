@@ -28,7 +28,7 @@ class ServerCountry final {
 
   const QList<ServerCity>& cities() const { return m_cities; }
 
-  const QList<Server> servers(const ServerData& data) const;
+  const QList<QString> servers(const ServerData& data) const;
 
   void sortCities();
 

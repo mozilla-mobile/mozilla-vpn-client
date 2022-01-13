@@ -64,10 +64,11 @@ int CommandSelect::run(QStringList& tokens) {
 
 bool CommandSelect::pickServer(const QString& hostname, QString& countryCode,
                                QString& cityName) {
-  for (const ServerCountry& country :
-       MozillaVPN::instance()->serverCountryModel()->countries()) {
+  ServerCountryModel* model = MozillaVPN::instance()->serverCountryModel();
+  for (const ServerCountry& country : model->countries()) {
     for (const ServerCity& city : country.cities()) {
-      for (const Server& server : city.servers()) {
+      for (const QString& pubkey : city.servers()) {
+        const Server& server = model->server(pubkey);
         if (server.hostname() == hostname) {
           countryCode = country.code();
           cityName = city.name();

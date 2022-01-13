@@ -302,6 +302,7 @@ class MozillaVPN final : public QObject {
   void heartbeatCompleted(bool success);
 
   void setServerPublicKey(const QString& publicKey);
+  void setServerCooldown(const QString& publicKey);
 
   void addCurrentDeviceAndRefreshData();
 
@@ -361,6 +362,8 @@ class MozillaVPN final : public QObject {
   void controllerStateChanged();
 
   void maybeRegenerateDeviceKey();
+
+  QList<Server> filterServerList(const QList<Server>& servers) const;
 
  public slots:
   void requestSettings();

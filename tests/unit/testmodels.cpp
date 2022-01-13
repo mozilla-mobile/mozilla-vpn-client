@@ -985,8 +985,8 @@ void TestModels::serverCountryModelFromJson_data() {
   QTest::addRow("good with one empty city")
       << QJsonDocument(obj).toJson() << true << 0
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
-      << QVariant(
-             QList<QVariant>{QStringList{"serverCityName", "serverCityName"}});
+      << QVariant(QList<QVariant>{
+             QStringList{"serverCityName", "serverCityName", "0"}});
 
   QJsonObject server;
   server.insert("hostname", "hostname");
@@ -1010,8 +1010,8 @@ void TestModels::serverCountryModelFromJson_data() {
   QTest::addRow("good with one city")
       << QJsonDocument(obj).toJson() << true << 1
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
-      << QVariant(
-             QList<QVariant>{QStringList{"serverCityName", "serverCityName"}});
+      << QVariant(QList<QVariant>{
+             QStringList{"serverCityName", "serverCityName", "1"}});
 
   cities.append(city);
   d.insert("cities", cities);
@@ -1020,8 +1020,8 @@ void TestModels::serverCountryModelFromJson_data() {
   QTest::addRow("good with two cities")
       << QJsonDocument(obj).toJson() << true << 2
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
-      << QVariant(
-             QList<QVariant>{QStringList{"serverCityName", "serverCityName"}});
+      << QVariant(QList<QVariant>{
+             QStringList{"serverCityName", "serverCityName", "1"}});
 }
 
 void TestModels::serverCountryModelFromJson() {

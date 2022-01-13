@@ -18,12 +18,8 @@ class IOSController final : public ControllerImpl {
 
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const QList<Server>& serverList, const Device* device,
-                const Keys* keys,
-                const QList<IPAddress>& allowedIPAddressRanges,
-                const QStringList& excludedAddresses,
-                const QStringList& vpnDisabledApps,
-                const QHostAddress& dnsServer, Reason reason) override;
+  void activate(const HopConnection& hop, const Device* device,
+                const Keys* keys, Reason reason) override;
 
   void deactivate(Reason reason) override;
 
@@ -35,6 +31,7 @@ class IOSController final : public ControllerImpl {
 
  private:
   bool m_checkingStatus = false;
+  QString m_serverPublicKey;
 };
 
 #endif  // IOSCONTROLLER_H
