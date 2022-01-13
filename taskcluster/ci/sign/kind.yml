@@ -17,27 +17,28 @@ primary-dependency: build
 group-by: build-type
 
 job-template:
-    description: Sign VPN for Android
+    description: Sign MozillaVPN for Android
     worker: {}
-    signing-format: autograph_apk 
+    signing-format: autograph_apk
     index:
         by-tasks-for:
-            (action|cron|github-release|github-push):
+            (action|cron|github-release):
                 by-build-type:
-                    (nightly|focus-release|klar-release|beta):
-                        type: signing
-                    default: signing
+                    (android-nightly|android-release):
+                        type: {}
+                    default: {}
             default: {}
-    run-on-tasks-for: [github-push]
+    run-on-tasks-for: 
+        by-build-type:
+            (android-debug|android-release): [github-push]
+            default: []
     treeherder:
         job-symbol:
             by-build-type:
-                focus-.*: Bfs
-                klar-.*: Bkls
+                android-release: Bs
                 default: Bs
-                android-test.+: Bats
-                beta-firebase: Bfs
-                nightly-firebase: Bfs
+                android-debug: Bfs
+                android-nightly: Bfs
         kind: build
         platform: android-all/opt
         tier: 1

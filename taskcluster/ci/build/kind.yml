@@ -5,6 +5,7 @@
 loader: taskgraph.loader.transform:loader
 
 transforms:
+    - mozillavpn_taskgraph.transforms.build:transforms
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
 
@@ -31,7 +32,7 @@ jobs:
             command: ./scripts/linux_build.sh
 
 
-    android/debug:
+    android-debug:
         description: "Android Debug (universal)"
         treeherder:
             symbol: B
@@ -42,17 +43,16 @@ jobs:
         worker:
             docker-image: {in-tree: android-build}
             max-run-time: 3600
-            artifacts:
-                - type: directory
-                  name: public/build
-                  path: /builds/worker/artifacts
+        apk-artifacts:
+            # APK Artifacts expects file to be in /builds/worker/artifacts/
+            - mozillavpn.apk
         run:
             using: run-task
             use-caches: true
             cwd: '{checkout}'
             command: ./taskcluster/scripts/android_build_debug.sh
     
-    android/sign:
+    android-release:
         description: "Android Build Sign (universal)"
         treeherder:
             symbol: BS

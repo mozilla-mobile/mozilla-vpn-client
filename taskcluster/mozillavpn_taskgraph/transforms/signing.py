@@ -13,19 +13,19 @@ from taskgraph.util.schema import resolve_keyed_by
 transforms = TransformSequence()
 
 PRODUCTION_SIGNING_BUILD_TYPES = [
-    "nightly",
-    "beta",
-    "focus-release",
-    "klar-release",
-    "android-test-nightly",
-    "android-test-beta"
+    "android-nightly",
+    "android-release"
 ]
 
 SIGNING_BUILD_TYPES = PRODUCTION_SIGNING_BUILD_TYPES + [
-    "focus-debug",
-    "klar-debug",
+    "android-debug",
 ]
 
+@transforms.add
+def filter_signable(config, tasks):
+    for task in tasks:
+        if (task["attributes"]["build-type"] in SIGNING_BUILD_TYPES):
+            yield task
 
 @transforms.add
 def resolve_keys(config, tasks):

@@ -43,3 +43,18 @@ workers:
             implementation: docker-worker
             os: linux
             worker-type: 'images'
+        dep-signing:
+            provisioner: scriptworker-k8s
+            implementation: scriptworker-signing
+            os: scriptworker
+            worker-type: mobile-t-signing
+        signing:
+            provisioner: scriptworker-k8s
+            implementation: scriptworker-signing
+            os: scriptworker
+            worker-type:
+                by-level:
+                    "3": mobile-3-signing
+                    default: mobile-t-signing
+scriptworker:
+    scope-prefix: project:mozilla-vpn-client
