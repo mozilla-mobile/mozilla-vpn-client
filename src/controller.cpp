@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "constants.h"
 #include "controller.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
@@ -448,6 +449,7 @@ void Controller::handshakeTimeout() {
 void Controller::setCooldownForAllServersInACity(const QString& countryCode,
                                                  const QString& cityCode) {
   logger.debug() << "Set cooldown for all servers in a city";
+  Q_ASSERT(!Constants::inProduction());
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
