@@ -79,7 +79,7 @@ ColumnLayout {
         accessibleName: qsTrId("vpn.main.back")
         enabled: swipeView.currentIndex > 1
         onClicked: {
-            swipeView.currentIndex -= 1;
+            swipeView.decrementCurrentIndex();
         }
         opacity: swipeView.currentIndex > 1 ? 1 : 0
         z: 1
@@ -272,7 +272,7 @@ ColumnLayout {
                 }
 
                 swipeView.contentItem.highlightMoveDuration = 250;
-                swipeView.currentIndex += 1;
+                swipeView.incrementCurrentIndex();
             }
 
             Image {
@@ -318,13 +318,13 @@ ColumnLayout {
 
     function skipStart() {
         swipeView.contentItem.highlightMoveDuration = 0;
-        swipeView.currentIndex = 1;
+        swipeView.setCurrentIndex(1);
 
         tour.started();
     }
 
     function resetTour() {
         swipeView.contentItem.highlightMoveDuration = 0;
-        swipeView.currentIndex = 0;
+        swipeView.setCurrentIndex(0);
     }
 }
