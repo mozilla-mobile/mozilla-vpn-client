@@ -128,9 +128,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           });
 
   connect(&m_private->m_controller, &Controller::readyToServerUnavailable, this,
-          [this]() {
+          []() {
             NotificationHandler::instance()->serverUnavailableNotification();
-            setState(StateBackendFailure);
           });
 
   connect(&m_private->m_controller, &Controller::stateChanged, this,
