@@ -230,7 +230,7 @@ ColumnLayout {
             currentIndex: swipeView.currentIndex - 1
             interactive: false
             spacing: VPNTheme.theme.windowMargin / 2
-            visible: swipeView.currentIndex >= 1
+            visible: swipeView.currentIndex >= 1 && count > 1
             delegate: Rectangle {
                 id: circle
 
