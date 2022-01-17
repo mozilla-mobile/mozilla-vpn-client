@@ -41,6 +41,10 @@ python3 scripts/importLanguages.py -m
 # (go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
 # cd ../..
 
+echo "Go versio:"
+echo `go version`
+
+
 git clone https://go.googlesource.com/go goroot
 cd goroot
 git checkout go1.17.1
