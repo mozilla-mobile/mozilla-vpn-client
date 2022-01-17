@@ -47,6 +47,7 @@ git checkout go1.17.1
 cd src
 touch compile.txt
 ./all.bash > compile.txt
+echo $GOROOT_BOOTSTRAP
 echo `cat compile.txt`
 export PATH="`pwd`/goroot/bin:$PATH"
 echo `go version`
