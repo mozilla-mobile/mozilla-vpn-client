@@ -14,7 +14,7 @@ VPNFlickable {
 
     flickContentHeight: content.height
 
-    state: (VPNController.state == VPNController.StateOff)? "pre-activation" : "post-activation"
+    state: (VPNController.state == VPNController.StateOff) ? "pre-activation" : "post-activation"
     states: [
         State {
             name: "pre-activation"
