@@ -63,26 +63,11 @@ def set_signing_type(config, tasks):
         signing_type = "dep-signing"
         if (
             str(config.params["level"]) == "3"
-            and config.params["tasks_for"] in ("cron", "github-release", "action")
         ):
             if task["attributes"]["build-type"] in PRODUCTION_SIGNING_BUILD_TYPES:
                 signing_type = "production-signing"
         task.setdefault("worker", {})["signing-type"] = signing_type
         yield task
-
-
-@transforms.add
-def set_index(config, tasks):
-    for task in tasks:
-        index = {}
-        if (
-            config.params["tasks_for"] in ("cron", "github-release", "action")
-            and task["attributes"]["build-type"] in SIGNING_BUILD_TYPES
-        ):
-            index["type"] = "signing"
-        task["index"] = index
-        yield task
-
 
 @transforms.add
 def set_signing_attributes(config, tasks):

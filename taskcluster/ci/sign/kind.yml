@@ -20,14 +20,6 @@ job-template:
     description: Sign MozillaVPN for Android
     worker: {} # Will be configured by signing:transforms
     signing-format: autograph_apk
-    index:
-        by-tasks-for:
-            (action|cron|github-release):
-                by-build-type:
-                    (android-nightly):
-                        type: signing
-                    default: {}
-            default: {}
     run-on-tasks-for: 
         by-build-type:
             (android-debug|android-release): [github-push]

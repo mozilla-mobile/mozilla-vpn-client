@@ -53,11 +53,11 @@ jobs:
             command: ./taskcluster/scripts/android_build_debug.sh
     
     android-release:
-        description: "Android Build Sign (universal)"
+        description: "Android Build Release (universal)"
         treeherder:
             symbol: BS
             kind: build
-            tier: 3 # Todo: This needs to become level 3 when ready to land
+            tier: 3
             platform: qt5/android/universal
         worker-type: b-linux
         requiresLevel: 3
