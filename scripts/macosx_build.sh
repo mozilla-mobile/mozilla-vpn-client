@@ -41,34 +41,9 @@ python3 scripts/importLanguages.py -m
 # (go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
 # cd ../..
 
-echo "Go version:"
-echo `go version`
-
-
-# git clone https://go.googlesource.com/go goroot
-# cd goroot
-# git checkout go1.17.1
-# cd src
-# export GOROOT_BOOTSTRAP=
-# touch compile.txt
-# ./all.bash > compile.txt
-# echo $GOROOT_BOOTSTRAP
-# echo `cat compile.txt`
-# export PATH="`pwd`/goroot/bin:$PATH"
-# echo `go version`
-# echo `ls -ls ./goroot/bin`
-# echo $PATH
-# cd ../..
-
 curl -O https://dl.google.com/go/go1.17.6.darwin-amd64.tar.gz
 tar -xzf go1.17.6.darwin-amd64.tar.gz
 export PATH="`pwd`/go/bin:$PATH"
-
-echo "Go version:"
-echo `go version`
-
-echo Y "Printing go path"
-echo `which go`
 
 # Xcode config - maybe we should just maintain a full Xcode config somewhere instead of replacing things here?
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
@@ -83,6 +58,8 @@ echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
 echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
 echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
 ./scripts/apple_compile.sh macos
+make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
+make -f MozillaVPN.xcodeproj/qt_preprocess.mak
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
 
 # Package
