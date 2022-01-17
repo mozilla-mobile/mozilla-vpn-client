@@ -45,6 +45,7 @@ git clone https://go.googlesource.com/go goroot
 cd goroot
 git checkout go1.17.1
 cd src
+export GOROOT_BOOTSTRAP=
 touch compile.txt
 ./all.bash > compile.txt
 echo $GOROOT_BOOTSTRAP
