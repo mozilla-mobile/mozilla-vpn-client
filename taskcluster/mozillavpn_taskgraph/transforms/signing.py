@@ -65,7 +65,7 @@ def set_signing_type(config, tasks):
             str(config.params["level"]) == "3"
         ):
             if task["attributes"]["build-type"] in PRODUCTION_SIGNING_BUILD_TYPES:
-                signing_type = "production-signing"
+                signing_type = "release-signing"
         task.setdefault("worker", {})["signing-type"] = signing_type
         yield task
 
