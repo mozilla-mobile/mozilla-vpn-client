@@ -45,11 +45,11 @@ def build_scriptworker_signing_payload(config, task, task_def):
 
     scope_prefix = config.graph_config["scriptworker"]["scope-prefix"]
     task_def["scopes"].append(
-        "{}:signing:cert:{}".format(scope_prefix, worker["signing-type"])
+        "{}:releng:signing:cert:{}".format(scope_prefix, worker["signing-type"])
     )
     task_def["scopes"].extend(
         [
-            f"{scope_prefix}:signing:format:{format}"
+            f"{scope_prefix}:releng:signing:format:{format}"
             for format in sorted(formats)
         ]
     )
