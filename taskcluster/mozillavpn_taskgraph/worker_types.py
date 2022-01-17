@@ -43,7 +43,7 @@ def build_scriptworker_signing_payload(config, task, task_def):
     for artifacts in worker["upstream-artifacts"]:
         formats.update(artifacts["formats"])
 
-    scope_prefix = config.graph_config["scriptworker"]["scope-prefix"]
+    scope_prefix = "project:mozillavpn"
     task_def["scopes"].append(
         "{}:releng:signing:cert:{}".format(scope_prefix, worker["signing-type"])
     )
