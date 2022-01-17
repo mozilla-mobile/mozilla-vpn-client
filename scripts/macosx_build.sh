@@ -60,7 +60,7 @@ echo `go version`
 # echo $PATH
 # cd ../..
 
-wget https://go.dev/dl/go1.17.6.darwin-amd64.tar.gz
+curl -O https://go.dev/dl/go1.17.6.darwin-amd64.tar.gz
 tar -xzf go1.17.6.linux-amd64.tar.gz
 export PATH="`pwd`/go/bin:$PATH"
 
