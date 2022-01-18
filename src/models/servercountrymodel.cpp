@@ -64,6 +64,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
 
   m_rawJson = "";
   m_countries.clear();
+  m_servers.clear();
 
   QJsonDocument doc = QJsonDocument::fromJson(s);
   if (!doc.isObject()) {
@@ -95,6 +96,28 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
     }
 
     m_countries.append(country);
+
+    QJsonValue cities = countryObj.value("cities");
+    if (!cities.isArray()) {
+      return false;
+    }
+    for (QJsonValue cityValue : cities.toArray()) {
+      if (!cityValue.isObject()) {
+        return false;
+      }
+      QJsonObject cityObj = cityValue.toObject();
+      QJsonValue servers = cityObj.value("servers");
+      if (!servers.isArray()) {
+        return false;
+      }
+      for (QJsonValue serverValue : servers.toArray()) {
+        Server server;
+        if (!server.fromJson(serverValue.toObject())) {
+          return false;
+        }
+        m_servers[server.publicKey()] = server;
+      }
+    }
   }
 
   sortCountries();
@@ -133,12 +156,22 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
 
     case CitiesRole: {
       const ServerCountry& country = m_countries.at(index.row());
+      qint64 now = QDateTime::currentSecsSinceEpoch();
 
       QList<QVariant> list;
       const QList<ServerCity>& cities = country.cities();
       for (const ServerCity& city : cities) {
-        QStringList names{city.name(), ServerI18N::translateCityName(
-                                           country.code(), city.name())};
+        int activeServerCount = 0;
+        for (QString pubkey : city.servers()) {
+          if (m_servers.value(pubkey).cooldownTimeout() <= now) {
+            activeServerCount++;
+          }
+        }
+
+        QStringList names{
+            city.name(),
+            ServerI18N::translateCityName(country.code(), city.name()),
+            QString::number(activeServerCount)};
         list.append(QVariant(names));
       }
 
@@ -210,7 +243,8 @@ bool ServerCountryModel::pickByIPv4Address(const QString& ipv4Address,
 
   for (const ServerCountry& country : m_countries) {
     for (const ServerCity& city : country.cities()) {
-      for (const Server& server : city.servers()) {
+      for (const QString& pubkey : city.servers()) {
+        const Server server = m_servers.value(pubkey);
         if (server.ipv4AddrIn() == ipv4Address) {
           data.update(country.code(), city.name());
           return true;
@@ -242,13 +276,19 @@ bool ServerCountryModel::exists(ServerData& data) const {
 }
 
 const QList<Server> ServerCountryModel::servers(const ServerData& data) const {
+  QList<Server> results;
+
   for (const ServerCountry& country : m_countries) {
     if (country.code() == data.exitCountryCode()) {
-      return country.servers(data);
+      for (const QString& pubkey : country.servers(data)) {
+        if (m_servers.contains(pubkey)) {
+          results.append(m_servers.value(pubkey));
+        }
+      }
     }
   }
 
-  return QList<Server>();
+  return results;
 }
 
 const QString ServerCountryModel::countryName(
@@ -272,6 +312,34 @@ void ServerCountryModel::retranslate() {
   beginResetModel();
   sortCountries();
   endResetModel();
+}
+
+void ServerCountryModel::setServerCooldown(const QString& publicKey,
+                                           unsigned int duration) {
+  if (m_servers.contains(publicKey)) {
+    m_servers[publicKey].setCooldownTimeout(duration);
+  }
+}
+
+void ServerCountryModel::setCooldownForAllServersInACity(
+    const QString& countryCode, const QString& cityCode,
+    unsigned int duration) {
+  logger.debug() << "Set cooldown for all servers for: " << countryCode << " - "
+                 << cityCode;
+
+  for (const ServerCountry& country : m_countries) {
+    if (country.code() == countryCode) {
+      for (const ServerCity& city : country.cities()) {
+        if (city.code() == cityCode) {
+          for (const QString& pubkey : city.servers()) {
+            setServerCooldown(pubkey, duration);
+          }
+          break;
+        }
+      }
+      break;
+    }
+  }
 }
 
 namespace {

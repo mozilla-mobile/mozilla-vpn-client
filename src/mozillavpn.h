@@ -302,6 +302,9 @@ class MozillaVPN final : public QObject {
   void heartbeatCompleted(bool success);
 
   void setServerPublicKey(const QString& publicKey);
+  void setServerCooldown(const QString& publicKey);
+  void setCooldownForAllServersInACity(const QString& countryCode,
+                                       const QString& cityCode);
 
   void addCurrentDeviceAndRefreshData();
 
@@ -339,6 +342,7 @@ class MozillaVPN final : public QObject {
                      std::function<void()>&& finalizeCallback);
 
   void subscriptionStarted(const QString& productIdentifier);
+  void restoreSubscriptionStarted();
   void subscriptionCompleted();
   void subscriptionFailed();
   void subscriptionCanceled();
@@ -360,6 +364,8 @@ class MozillaVPN final : public QObject {
   void controllerStateChanged();
 
   void maybeRegenerateDeviceKey();
+
+  QList<Server> filterServerList(const QList<Server>& servers) const;
 
  public slots:
   void requestSettings();

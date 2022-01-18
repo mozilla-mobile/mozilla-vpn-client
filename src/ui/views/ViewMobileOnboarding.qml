@@ -1,3 +1,4 @@
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,6 +8,9 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
+
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 VPNFlickable {
     id: onboardingPanel
@@ -18,23 +22,27 @@ VPNFlickable {
 
         ListElement {
             imageSrc: "qrc:/ui/resources/onboarding/mobile/vpn-off-lightMode.svg"
-            headline:qsTrId("vpn.main.productName")
+            headline: qsTrId("vpn.main.productName")
             subtitle: qsTrId("vpn.main.productDescription")
+            panelId: "mozilla-vpn"
         }
         ListElement {
             imageSrc: "qrc:/ui/resources/onboarding/mobile/vpn-security-lightMode.svg"
             headline: qsTrId("vpn.onboarding.headline.1")
             subtitle: qsTrId("vpn.onboarding.subtitle.1")
+            panelId: "device-level-encryption"
         }
         ListElement {
             imageSrc: "qrc:/ui/resources/onboarding/mobile/vpn-on-lightMode.svg"
             headline: qsTrId("vpn.onboarding.headline.3")
             subtitle: qsTrId("vpn.onboarding.subtitle.3")
+            panelId: "no-bandwidth-restrictions"
         }
         ListElement {
             imageSrc: "qrc:/ui/resources/onboarding/mobile/vpn-globe-flags-lightMode.svg"
             headline: qsTrId("vpn.onboarding.headline.2")
             subtitle: qsTrId("vpn.onboarding.subtitle.2")
+            panelId: "servers-in-30+-countries"
         }
     }
 
@@ -44,7 +52,7 @@ VPNFlickable {
         anchors.fill: parent
         currentIndex: 0
 
-        Component.onCompleted:{
+        Component.onCompleted: {
             contentItem.maximumFlickVelocity = 5 * VPNTheme.theme.maxContentWidth;
             contentItem.snapMode = ListView.SnapOneItem;
         }
@@ -122,18 +130,64 @@ VPNFlickable {
                             }
                         }
                     }
-                    onClicked: {
+
+                    Component.onCompleted: {
+                        currentPanelValues._panelId = panelId;
+                        currentPanelValues._panelTitleText = headline;
+                        currentPanelValues._panelDescriptionText = subtitle;
+                        updatePanel.start();
+                    }
+
+                    function goToNextSlide() {
                         if (swipeView.currentIndex < onboardingModel.count - 1) {
                             swipeView.currentIndex += 1;
                         } else {
                             swipeView.currentIndex = 0;
                         }
                     }
-                    Component.onCompleted: {
-                        currentPanelValues._panelTitleText = headline;
-                        currentPanelValues._panelDescriptionText = subtitle;
-                        updatePanel.start();
+
+                    function goToPreviousSlide() {
+                        if (swipeView.currentIndex > 0) {
+                            swipeView.currentIndex -= 1;
+                        } else {
+                            swipeView.currentIndex = onboardingModel.count - 1;
+                        }
                     }
+
+                    MouseArea {
+                        property int previousMouseX: 0
+                        property int swipeDirection: 0
+
+                        anchors.fill: parent
+
+                        onPressed: {
+                            previousMouseX = parseInt(mouseX);
+                            swipeDirection = 0;
+                        }
+
+                        onReleased: {
+                            if (swipeDirection < 0) {
+                                goToPreviousSlide();
+                            } else if (swipeDirection > 0) {
+                                goToNextSlide();
+                            } else {
+                                goToNextSlide();
+                            }
+                        }
+
+                        onPositionChanged: {
+                            const parsedMouseX = parseInt(mouseX);
+                            if (previousMouseX > parsedMouseX) {
+                                swipeDirection = 1;
+                            } else if (previousMouseX < parsedMouseX) {
+                                swipeDirection = -1;
+                            } else {
+                                swipeDirection = 0;
+                            }
+                            previousMouseX = parsedMouseX;
+                        }
+                    }
+
                 }
             }
         }
@@ -143,12 +197,14 @@ VPNFlickable {
         id: headerLink
         objectName: "getHelpLink"
         labelText: qsTrId("vpn.main.getHelp2")
-        onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml", StackView.Immediate)
+        onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml",
+                                  StackView.Immediate)
     }
 
     QtObject {
         // Stores strings for later injection in updatePanel()
         id: currentPanelValues
+        property string _panelId: ""
         property string _panelTitleText: ""
         property string _panelDescriptionText: ""
         property real _imageHeight: Math.min(240, panelHeight * .35)
@@ -179,7 +235,7 @@ VPNFlickable {
             }
         }
 
-        VPNVerticalSpacer  {
+        VPNVerticalSpacer {
             // Pushes panelText and PanelBottomContent to top and bottom of
             // the wrapping ColumnLayout
             Layout.fillHeight: true
@@ -220,9 +276,7 @@ VPNFlickable {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: VPNl18n.MobileOnboardingSignUpBtn
                 width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
-
-                // TODO: Add Glean event
-                onClicked: VPN.getStarted()
+                onClicked: onboardingPanel.recordGleanEvtAndStartAuth(objectName)
             }
 
             VPNLinkButton {
@@ -230,14 +284,21 @@ VPNFlickable {
                 labelText: VPNl18n.MobileOnboardingAlreadyASubscriber
                 anchors.horizontalCenter: parent.horizontalCenter
                 height: VPNTheme.theme.rowHeight
-
-                // TODO: Add Glean event
-                onClicked: VPN.getStarted()
+                onClicked: onboardingPanel.recordGleanEvtAndStartAuth(objectName)
             }
         }
 
         VPNVerticalSpacer {
             Layout.preferredHeight: Math.min(window.height * 0.08, VPNTheme.theme.rowHeight)
         }
+    }
+
+    function recordGleanEvtAndStartAuth(ctaObjectName) {
+        Sample.onboardingCtaClick.record({
+                                              "panel_id": currentPanelValues._panelId,
+                                              "panel_idx": swipeView.currentIndex.toString(),
+                                              "panel_cta": ctaObjectName
+                                          });
+        VPN.getStarted();
     }
 }

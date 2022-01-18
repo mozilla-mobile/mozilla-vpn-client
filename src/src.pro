@@ -47,15 +47,19 @@ include($$PWD/../glean/glean.pri)
 
 include($$PWD/../nebula/nebula.pri)
 
-!win32{
-    message("Adding Lottie")
-    # https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2509
-    # Something in the Lottie project causes qmake to generate a 
-    # broken vcxproj, making windows fail the build
-    include($$PWD/../lottie/lottie.pri)
-    INCLUDEPATH += ../lottie/lib 
+!wasm{
+    include($$PWD/crashreporter/crashreporter.pri)
 }
 
+# https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2509
+# Something in the Lottie project causes qmake to generate a
+# broken vcxproj, and is causing build failures on Windows, iOS, and macOS.
+
+# !win32{
+    # message("Adding Lottie")
+    # include($$PWD/../lottie/lottie.pri)
+    # INCLUDEPATH += ../lottie/lib
+# }
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -109,6 +113,7 @@ SOURCES += \
         hawkauth.cpp \
         hkdf.cpp \
         iaphandler.cpp \
+        imageproviderfactory.cpp \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
@@ -177,7 +182,6 @@ SOURCES += \
         tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
         theme.cpp \
-        timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
@@ -237,11 +241,13 @@ HEADERS += \
         features/featurestartonboot.h \
         features/featureuniqueid.h \
         features/featureunsecurednetworknotification.h \
+        features/featureserverunavailablenotification.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
         hkdf.h \
         iaphandler.h \
+        imageproviderfactory.h \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
@@ -310,7 +316,6 @@ HEADERS += \
         tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
         theme.h \
-        timercontroller.h \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
@@ -994,7 +999,6 @@ exists($$PWD/../translations/translations.pri) {
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
-CONFIG += qtquickcompiler
 
 coverage {
     message(Coverage enabled)

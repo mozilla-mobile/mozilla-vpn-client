@@ -202,6 +202,11 @@ void TestReleaseMonitor::compareVersions_data() {
                             << "0.1.2" << 1;
   QTest::addRow("b wins 10") << "0.1.3"
                              << "0.1.2" << 1;
+
+  QTest::addRow("a extra") << "1.2.3~4.5.6"
+                           << "1.2.3" << 0;
+  QTest::addRow("b extra") << "1.2.3"
+                           << "1.2.3~4.5.6" << 0;
 }
 
 void TestReleaseMonitor::compareVersions() {
@@ -226,6 +231,8 @@ void TestReleaseMonitor::stripMinor_data() {
                           << "1.2.0";
   QTest::addRow("big") << "1.2.3.4"
                        << "1.2.0";
+  QTest::addRow("extra") << "1.2.3~alpha"
+                         << "1.2.0";
 }
 
 void TestReleaseMonitor::stripMinor() {

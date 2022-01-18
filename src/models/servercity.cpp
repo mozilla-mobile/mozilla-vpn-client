@@ -57,7 +57,7 @@ bool ServerCity::fromJson(const QJsonObject& obj) {
     return false;
   }
 
-  QList<Server> servers;
+  QList<QString> servers;
   if (!Constants::inProduction() || !name.toString().contains("BETA")) {
     QJsonArray serversArray = serversValue.toArray();
     for (QJsonValue serverValue : serversArray) {
@@ -66,13 +66,12 @@ bool ServerCity::fromJson(const QJsonObject& obj) {
       }
 
       QJsonObject serverObj = serverValue.toObject();
-
-      Server server;
-      if (!server.fromJson(serverObj)) {
+      QJsonValue pubkeyValue = serverObj.value("public_key");
+      if (!pubkeyValue.isString()) {
         return false;
       }
 
-      servers.append(server);
+      servers.append(pubkeyValue.toString());
     }
   }
 

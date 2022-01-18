@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "constants.h"
 #include "controller.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
@@ -23,7 +24,6 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "tasks/heartbeat/taskheartbeat.h"
-#include "timercontroller.h"
 #include "timersingleshot.h"
 
 #if defined(MVPN_LINUX)
@@ -46,6 +46,10 @@ constexpr const uint32_t TIMER_MSEC = 1000;
 constexpr const int CONNECTION_MAX_RETRY = 9;
 
 constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
+constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
+
+constexpr const uint32_t TIME_ACTIVATION = 1000;
+constexpr const uint32_t TIME_DEACTIVATION = 1500;
 
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
@@ -74,6 +78,7 @@ Controller::Controller() {
   MVPN_COUNT_CTOR(Controller);
 
   m_connectingTimer.setSingleShot(true);
+  m_handshakeTimer.setSingleShot(true);
 
   connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
 
@@ -85,6 +90,8 @@ Controller::Controller() {
     m_enableDisconnectInConfirming = true;
     emit enableDisconnectInConfirmingChanged();
   });
+  connect(&m_handshakeTimer, &QTimer::timeout, this,
+          &Controller::handshakeTimeout);
 }
 
 Controller::~Controller() { MVPN_COUNT_DTOR(Controller); }
@@ -103,19 +110,17 @@ void Controller::initialize() {
     m_impl.reset(nullptr);
   }
 
-  m_impl.reset(new TimerController(
 #if defined(MVPN_LINUX)
-      new LinuxController()
+  m_impl.reset(new LinuxController());
 #elif defined(MVPN_MACOS_DAEMON) || defined(MVPN_WINDOWS)
-      new LocalSocketController()
+  m_impl.reset(new LocalSocketController());
 #elif defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION)
-      new IOSController()
+  m_impl.reset(new IOSController());
 #elif defined(MVPN_ANDROID)
-      new AndroidController()
+  m_impl.reset(new AndroidController());
 #else
-      new DummyController()
+  m_impl.reset(new DummyController());
 #endif
-          ));
 
   connect(m_impl.get(), &ControllerImpl::connected, this,
           &Controller::connected);
@@ -191,8 +196,11 @@ bool Controller::activate() {
 
 void Controller::activateInternal() {
   logger.debug() << "Activation internal";
+  Q_ASSERT(m_impl);
 
   resetConnectedTime();
+  m_handshakeTimer.stop();
+  m_activationQueue.clear();
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
@@ -200,44 +208,76 @@ void Controller::activateInternal() {
   Server exitServer = Server::weightChooser(vpn->exitServers());
   if (!exitServer.initialized()) {
     logger.error() << "Empty exit server list in state" << m_state;
-    backendFailure();
+    serverUnavailable();
     return;
   }
 
   vpn->setServerPublicKey(exitServer.publicKey());
 
-  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
-
-  QList<QString> vpnDisabledApps;
+  // Prepare the exit server's connection data.
+  HopConnection exitHop;
+  exitHop.m_server = exitServer;
+  exitHop.m_hopindex = 0;
+  exitHop.m_allowedIPAddressRanges = getAllowedIPAddressRanges(exitServer);
+  exitHop.m_excludedAddresses = getExcludedAddresses(exitServer);
+  exitHop.m_dnsServer =
+      QHostAddress(DNSHelper::getDNS(exitServer.ipv4Gateway()));
+  logger.debug() << "DNS Set" << exitHop.m_dnsServer.toString();
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   if (settingsHolder->protectSelectedApps()) {
-    vpnDisabledApps = settingsHolder->vpnDisabledApps();
+    exitHop.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
-  // Multihop connections provide a list of servers, starting with the exit
-  // node as the first element, and the entry node as the final entry.
-  QList<Server> serverList = {exitServer};
-  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
+  // For single-hop connections, exclude the entry server
+  if (!FeatureMultiHop::instance()->isSupported() || !vpn->multihop()) {
+    exitHop.m_excludedAddresses.append(exitHop.m_server.ipv4AddrIn());
+    exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
+  }
+  // For controllers that support multiple hops, create a queue of connections.
+  // The entry server should start first, followed by the exit server.
+  else if (m_impl->multihopSupported()) {
+    HopConnection hop;
+    hop.m_server = Server::weightChooser(vpn->entryServers());
+    if (!hop.m_server.initialized()) {
+      logger.error() << "Empty entry server list in state" << m_state;
+      serverUnavailable();
+      return;
+    }
+
+    hop.m_hopindex = 1;
+    hop.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv4AddrIn()));
+    hop.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv6AddrIn()));
+    hop.m_excludedAddresses.append(hop.m_server.ipv4AddrIn());
+    hop.m_excludedAddresses.append(hop.m_server.ipv6AddrIn());
+    m_activationQueue.append(hop);
+  }
+  // Otherwise, we can approximate multihop support by redirecting the
+  // connection to the exit server via the multihop port.
+  else {
     Server entryServer = Server::weightChooser(vpn->entryServers());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
-      backendFailure();
+      serverUnavailable();
       return;
     }
-    serverList.append(entryServer);
+    exitHop.m_server.fromMultihop(exitHop.m_server, entryServer);
+    exitHop.m_excludedAddresses.append(entryServer.ipv4AddrIn());
+    exitHop.m_excludedAddresses.append(entryServer.ipv6AddrIn());
   }
 
-  // Use the Gateway as DNS Server
-  // If the user as entered a valid DN, use that instead
-  QHostAddress dns = QHostAddress(DNSHelper::getDNS(exitServer.ipv4Gateway()));
-  logger.debug() << "DNS Set" << dns.toString();
+  m_activationQueue.append(exitHop);
+  activateNext();
+}
 
-  Q_ASSERT(m_impl);
-  m_impl->activate(serverList, device, vpn->keys(),
-                   getAllowedIPAddressRanges(serverList),
-                   getExcludedAddresses(serverList), vpnDisabledApps, dns,
-                   stateToReason(m_state));
+void Controller::activateNext() {
+  MozillaVPN* vpn = MozillaVPN::instance();
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+  const HopConnection& hop = m_activationQueue.first();
+
+  logger.debug() << "Activating peer" << hop.m_server.publicKey();
+  m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
+  m_impl->activate(hop, device, vpn->keys(), stateToReason(m_state));
 }
 
 bool Controller::silentSwitchServers() {
@@ -251,6 +291,7 @@ bool Controller::silentSwitchServers() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
+  // Set a cooldown timer on the current server.
   QList<Server> servers = vpn->exitServers();
   Q_ASSERT(!servers.isEmpty());
 
@@ -259,63 +300,24 @@ bool Controller::silentSwitchServers() {
         << "Cannot silent switch servers because there is only one available";
     return false;
   }
+  vpn->setServerCooldown(vpn->serverPublicKey());
 
-  QList<Server>::iterator iterator = servers.begin();
-
-  while (iterator != servers.end()) {
-    if (iterator->publicKey() == vpn->serverPublicKey()) {
-      servers.erase(iterator);
-      break;
-    }
-    ++iterator;
-  }
-
-  Server server = Server::weightChooser(servers);
-  Q_ASSERT(server.initialized());
-
-#ifndef MVPN_WASM
-  // All the keys are the same in WASM builds.
-  Q_ASSERT(server.publicKey() != vpn->serverPublicKey());
-#endif
-
-  vpn->setServerPublicKey(server.publicKey());
-
-  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
-
-  QList<QString> vpnDisabledApps;
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (settingsHolder->protectSelectedApps()) {
-    vpnDisabledApps = settingsHolder->vpnDisabledApps();
-  }
-
-  QList<Server> serverList = {server};
-  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
-    Server hop = Server::weightChooser(vpn->entryServers());
-    Q_ASSERT(hop.initialized());
-    serverList.append(hop);
-  }
-
-  QHostAddress dns = QHostAddress(DNSHelper::getDNS(server.ipv4Gateway()));
-
-  Q_ASSERT(m_impl);
-  m_impl->activate(serverList, device, vpn->keys(),
-                   getAllowedIPAddressRanges(serverList),
-                   getExcludedAddresses(serverList), vpnDisabledApps, dns,
-                   stateToReason(StateSwitching));
+  // Activate the connection.
+  activateInternal();
   return true;
 }
 
 bool Controller::deactivate() {
   logger.debug() << "Deactivation" << m_state;
 
-  if (m_state != StateOn && m_state != StateSwitching &&
-      m_state != StateConfirming) {
+  if ((m_state != StateOn) && (m_state != StateSwitching) &&
+      (m_state != StateConfirming) && (m_state != StateConnecting)) {
     logger.warning() << "Already disconnected";
     return false;
   }
 
-  if (m_state == StateOn || m_state == StateConfirming) {
+  if ((m_state == StateOn) || (m_state == StateConfirming) ||
+      (m_state == StateConnecting)) {
     setState(StateDisconnecting);
   }
 
@@ -327,7 +329,23 @@ bool Controller::deactivate() {
   return true;
 }
 
-void Controller::connected() {
+void Controller::connected(const QString& pubkey) {
+  logger.debug() << "handshake completed with:" << pubkey;
+  if (m_activationQueue.isEmpty()) {
+    return;
+  }
+  if (m_activationQueue.first().m_server.publicKey() != pubkey) {
+    return;
+  }
+  m_handshakeTimer.stop();
+
+  // Start the next connection if there is more work to do.
+  m_activationQueue.removeFirst();
+  if (!m_activationQueue.isEmpty()) {
+    activateNext();
+    return;
+  }
+
   logger.debug() << "Connected from state:" << m_state;
 
   // We are currently silently switching servers
@@ -344,9 +362,9 @@ void Controller::connected() {
 
     resetConnectedTime();
 
-    TimerSingleShot::create(this, TIME_ACTIVATION, [this]() {
+    TimerSingleShot::create(this, TIME_ACTIVATION, [this, pubkey]() {
       if (m_state == StateConnecting) {
-        connected();
+        connected(pubkey);
       }
     });
     return;
@@ -412,6 +430,31 @@ void Controller::connectionFailed() {
 
   Q_ASSERT(m_impl);
   m_impl->deactivate(ControllerImpl::ReasonConfirming);
+}
+
+void Controller::handshakeTimeout() {
+  logger.debug() << "Timeout while waiting for handshake";
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  Q_ASSERT(!m_activationQueue.isEmpty());
+  HopConnection& hop = m_activationQueue.first();
+
+  // Block the offending server and try again.
+  // TODO: Add some kind of check to limit retries.
+  vpn->setServerCooldown(hop.m_server.publicKey());
+  activateInternal();
+}
+
+void Controller::setCooldownForAllServersInACity(const QString& countryCode,
+                                                 const QString& cityCode) {
+  logger.debug() << "Set cooldown for all servers in a city";
+  Q_ASSERT(!Constants::inProduction());
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+
+  vpn->setCooldownForAllServersInACity(countryCode, cityCode);
 }
 
 bool Controller::isUnsettled() { return !m_settled; }
@@ -523,7 +566,8 @@ void Controller::quit() {
 
   m_nextStep = Quit;
 
-  if (m_state == StateOn) {
+  if ((m_state == StateOn) || (m_state == StateSwitching) ||
+      (m_state == StateConnecting)) {
     deactivate();
     return;
   }
@@ -539,7 +583,20 @@ void Controller::backendFailure() {
 
   m_nextStep = BackendFailure;
 
-  if ((m_state == StateOn) || (m_state == StateSwitching)) {
+  if ((m_state == StateOn) || (m_state == StateSwitching) ||
+      (m_state == StateConnecting)) {
+    deactivate();
+    return;
+  }
+}
+
+void Controller::serverUnavailable() {
+  logger.error() << "server unavailable";
+
+  m_nextStep = ServerUnavailable;
+
+  if ((m_state == StateOn) || (m_state == StateSwitching) ||
+      (m_state == StateConnecting)) {
     deactivate();
     return;
   }
@@ -594,6 +651,11 @@ bool Controller::processNextStep() {
 
   if (nextStep == BackendFailure) {
     emit readyToBackendFailure();
+    return true;
+  }
+
+  if (nextStep == ServerUnavailable) {
+    emit readyToServerUnavailable();
     return true;
   }
 
@@ -686,7 +748,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 }
 
 QList<IPAddress> Controller::getAllowedIPAddressRanges(
-    const QList<Server>& serverList) {
+    const Server& exitServer) {
   logger.debug() << "Computing the allowed IP addresses";
 
   QList<IPAddress> excludeIPv4s;
@@ -718,12 +780,11 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   logger.debug() << "Catch all IPv6";
   list.append(IPAddress("::0/0"));
 #else
-  const Server& server = serverList.first();
   // Allow access to the internal gateway addresses.
-  logger.debug() << "Allow the IPv4 gateway:" << server.ipv4Gateway();
-  list.append(IPAddress(QHostAddress(server.ipv4Gateway()), 32));
-  logger.debug() << "Allow the IPv6 gateway:" << server.ipv6Gateway();
-  list.append(IPAddress(QHostAddress(server.ipv6Gateway()), 128));
+  logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
+  list.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
+  logger.debug() << "Allow the IPv6 gateway:" << exitServer.ipv6Gateway();
+  list.append(IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128));
 
   // Ensure that the Mullvad proxy services are always allowed.
   list.append(
@@ -739,7 +800,7 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   return list;
 }
 
-QStringList Controller::getExcludedAddresses(const QList<Server>& serverList) {
+QStringList Controller::getExcludedAddresses(const Server& exitServer) {
   logger.debug() << "Computing the excluded IP addresses";
 
   QStringList list;
@@ -761,7 +822,7 @@ QStringList Controller::getExcludedAddresses(const QList<Server>& serverList) {
 
   // Filter out the Custom DNS Server, if the user has set one.
   if (DNSHelper::shouldExcludeDNS()) {
-    auto dns = DNSHelper::getDNS(serverList.first().ipv4Gateway());
+    auto dns = DNSHelper::getDNS(exitServer.ipv4Gateway());
     logger.debug() << "Filtering out the DNS address:" << dns;
     list.append(dns);
   }

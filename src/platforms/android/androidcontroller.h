@@ -27,12 +27,9 @@ class AndroidController final : public ControllerImpl,
   // from ControllerImpl
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const QList<Server>& data, const Device* device,
-                const Keys* keys,
-                const QList<IPAddress>& allowedIPAddressRanges,
-                const QStringList& excludedAddresses,
-                const QStringList& vpnDisabledApps, const QHostAddress& dns,
-                Reason reason) override;
+  void activate(const HopConnection& hop, const Device* device,
+                const Keys* keys, Reason Reason) override;
+
   void resume_activate();
 
   void deactivate(Reason reason) override;
@@ -53,7 +50,7 @@ class AndroidController final : public ControllerImpl,
   void onServiceDisconnected(const QString& name) override;
 
  private:
-  Server m_server;
+  QString m_serverPublicKey;
   Device m_device;
   bool m_serviceConnected = false;
   std::function<void(const QString&)> m_logCallback;

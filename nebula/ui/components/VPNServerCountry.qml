@@ -166,7 +166,10 @@ VPNClickableRow {
             delegate: VPNRadioDelegate {
                 property string _cityName: modelData[0]
                 property string _localizedCityName: modelData[1]
+                property string _activeServerCount: modelData[2]
                 property string _countryCode: code
+                property bool isAvailable: _activeServerCount > 0
+
                 id: del
                 objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
                 activeFocusOnTab: cityListVisible
@@ -178,22 +181,44 @@ VPNClickableRow {
                 radioButtonLabelText: modelData[1]
                 accessibleName: modelData[1]
                 onClicked: {
+                    if (!isAvailable) {
+                        return;
+                    }
+
                     if (currentServer.whichHop === "singleHopServer") {
                         VPNController.changeServer(code, del._cityName);
                         return stackview.pop();
                     }
 
-                    serversTabs[currentServer.whichHop] = [del._countryCode,  del._cityName, del._localizedCityName] // [countryCode, cityName, localizedCityName]
-                    multiHopStackView.pop()
+                    serversTabs[currentServer.whichHop] = [del._countryCode,  del._cityName, del._localizedCityName]; // [countryCode, cityName, localizedCityName]
+                    multiHopStackView.pop();
                 }
                 height: 54
-                checked: del._countryCode === focusScope.currentServer.countryCode &&  del._cityName === focusScope.currentServer.cityName
-                isHoverable: cityListVisible
-                enabled: cityListVisible
+                checked: del._countryCode === focusScope.currentServer.countryCode && del._cityName === focusScope.currentServer.cityName
+                isHoverable: cityListVisible && del.isAvailable
+                enabled: cityListVisible && del.isAvailable
+
                 Component.onCompleted: {
                     if (checked) {
                         currentCityIndex = index;
                     }
+                }
+
+                VPNIcon {
+                    id: availabilityIndicator
+
+                    anchors {
+                        right: del.right
+                        rightMargin: VPNTheme.theme.hSpacing
+                        top: del.top
+                        topMargin: VPNTheme.theme.listSpacing / 4
+                    }
+                    source: "qrc:/nebula/resources/warning.svg"
+                    sourceSize {
+                        height: VPNTheme.theme.iconSizeSmall
+                        width: VPNTheme.theme.iconSizeSmall
+                    }
+                    visible: !del.isAvailable
                 }
 
             }

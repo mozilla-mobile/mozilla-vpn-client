@@ -22,12 +22,8 @@ class LocalSocketController final : public ControllerImpl {
 
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const QList<Server>& serverList, const Device* device,
-                const Keys* keys,
-                const QList<IPAddress>& allowedIPAddressRanges,
-                const QStringList& excludedAddresses,
-                const QStringList& vpnDisabledApps,
-                const QHostAddress& dnsServer, Reason reason) override;
+  void activate(const HopConnection& hop, const Device* device,
+                const Keys* keys, Reason Reason) override;
 
   void deactivate(Reason reason) override;
 
@@ -38,7 +34,6 @@ class LocalSocketController final : public ControllerImpl {
   void cleanupBackendLogs() override;
 
  private:
-  void activateNext();
   void daemonConnected();
   void errorOccurred(QLocalSocket::LocalSocketError socketError);
   void readData();
@@ -53,20 +48,6 @@ class LocalSocketController final : public ControllerImpl {
     eReady,
     eDisconnected,
   } m_state = eUnknown;
-
-  class HopConnection {
-   public:
-    HopConnection() {}
-    Server m_server;
-    int m_hopindex = 0;
-    QList<IPAddress> m_allowedIPAddressRanges;
-    QStringList m_excludedAddresses;
-    QStringList m_vpnDisabledApps;
-    QHostAddress m_dnsServer;
-  };
-  QList<HopConnection> m_activationQueue;
-  const Device* m_device = nullptr;
-  const Keys* m_keys = nullptr;
 
   QLocalSocket* m_socket = nullptr;
 
