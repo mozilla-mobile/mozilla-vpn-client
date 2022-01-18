@@ -329,6 +329,13 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Purchase request failed" << error;
 
+            if (m_subscriptionState != eActive) {
+              logger.warning()
+                  << "Transaction failed out of subscription process! Don't need to show error.";
+              emit subscriptionFailed();
+              return;
+            }
+
             stopSubscription();
 
             QJsonDocument json = QJsonDocument::fromJson(data);
