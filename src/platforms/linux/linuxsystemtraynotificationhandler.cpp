@@ -56,6 +56,7 @@ void LinuxSystemTrayNotificationHandler::notify(Message type,
   QString actionMessage;
   switch (type) {
     case None:
+    case ServerUnavailable:
       return SystemTrayNotificationHandler::notify(type, title, message,
                                                    timerMsec);
 
