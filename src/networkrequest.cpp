@@ -299,6 +299,7 @@ NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
 
   QUrl url(apiBaseUrl());
   r->m_request.setRawHeader("Host", url.host().toLocal8Bit());
+  r->m_request.setPeerVerifyName(url.host());
 
   r->getRequest();
   return r;
@@ -312,6 +313,8 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
 
   r->m_request.setUrl(url);
   r->m_request.setRawHeader("Host", host);
+  r->m_request.setPeerVerifyName(host);
+
   // This enables the QNetworkReply::redirected for every type of redirect.
   r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
                             QNetworkRequest::UserVerifiedRedirectPolicy);
@@ -976,7 +979,7 @@ void NetworkRequest::enableSSLIntervention() {
       }
       QSslCertificate cert(&f, QSsl::Pem);
       if (!cert.isNull()) {
-        logger.info() << "Imported cert from: " << cert.issuerDisplayName();
+        logger.info() << "Imported cert from:" << cert.issuerDisplayName();
         s_intervention_certs.append(cert);
       } else {
         logger.error() << "Failed to import cert -" << f.fileName();
