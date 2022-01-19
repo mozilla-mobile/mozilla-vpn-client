@@ -469,9 +469,18 @@ bool Controller::hasCooldownForAllServers() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  return vpn->hasCooldownForAllServersInACity(
+  bool hasCooldownForAllExitServers = vpn->hasCooldownForAllServersInACity(
       vpn->currentServer()->exitCountryCode(),
       vpn->currentServer()->exitCityName());
+
+  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
+    bool hasCooldownForAllEntryServers = vpn->hasCooldownForAllServersInACity(
+        vpn->currentServer()->entryCountryCode(),
+        vpn->currentServer()->entryCityName());
+    return hasCooldownForAllEntryServers || hasCooldownForAllExitServers;
+  }
+
+  return hasCooldownForAllExitServers;
 }
 
 bool Controller::isUnsettled() { return !m_settled; }
