@@ -361,7 +361,13 @@ Window {
     Connections {
         target: VPNErrorHandler
         function onSubscriptionGeneric() {
+            if(VPN.state !== VPN.StateSubscriptionNeeded && VPN.state !== VPN.StateSubscriptionInProgress) {
+                return;
+            }
+
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                isMainView: true,
+
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -370,16 +376,22 @@ Window {
                 errorMessage: VPNl18n.RestorePurchaseGenericPurchaseErrorRestorePurchaseGenericPurchaseErrorText,
 
                 // Try again
-                buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
-                buttonObjectName: "errorTryAgainButton",
-                buttonOnClick: mainStackView.pop,
-                signOffLinkVisible: false,
+                primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
+                primaryButtonObjectName: "errorTryAgainButton",
+                primaryButtonOnClick: mainStackView.pop,
+                secondaryButtonIsSignOff: false,
                 getHelpLinkVisible: true
             });
         }
 
         function onNoSubscriptionFound() {
+            if(VPN.state !== VPN.StateSubscriptionNeeded && VPN.state !== VPN.StateSubscriptionInProgress) {
+                return;
+            }
+
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                isMainView: true,
+
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -388,16 +400,22 @@ Window {
                 errorMessage: VPNl18n.RestorePurchaseGenericPurchaseErrorRestorePurchaseGenericPurchaseErrorText,
 
                 // Try again
-                buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
-                buttonObjectName: "errorTryAgainButton",
-                buttonOnClick: mainStackView.pop,
-                signOffLinkVisible: true,
+                primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
+                primaryButtonObjectName: "errorTryAgainButton",
+                primaryButtonOnClick: mainStackView.pop,
+                secondaryButtonIsSignOff: true,
                 getHelpLinkVisible: true
             });
         }
 
         function onSubscriptionExpired() {
+            if(VPN.state !== VPN.StateSubscriptionNeeded && VPN.state !== VPN.StateSubscriptionInProgress) {
+                return;
+            }
+
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                isMainView: true,
+                
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -406,16 +424,22 @@ Window {
                 errorMessage: VPNl18n.RestorePurchaseExpiredErrorRestorePurchaseExpiredErrorText,
 
                 // Try again
-                buttonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
-                buttonObjectName: "errorTryAgainButton",
-                buttonOnClick: mainStackView.pop,
-                signOffLinkVisible: false,
+                primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
+                primaryButtonObjectName: "errorTryAgainButton",
+                primaryButtonOnClick: mainStackView.pop,
+                secondaryButtonIsSignOff: false,
                 getHelpLinkVisible: true
             });
         }
 
         function onSubscriptionInUse() {
+            if(VPN.state !== VPN.StateSubscriptionNeeded && VPN.state !== VPN.StateSubscriptionInProgress) {
+                return;
+            }
+
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                isMainView: true,
+                
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -424,10 +448,10 @@ Window {
                 errorMessage: VPNl18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText,
 
                 // Sign out
-                buttonText: qsTrId("vpn.main.signOut2"),
-                buttonObjectName: "errorSignOutButton",
-                buttonOnClick: mainStackView.pop,
-                signOffLinkVisible: false,
+                primaryButtonText: qsTrId("vpn.main.signOut2"),
+                primaryButtonObjectName: "errorSignOutButton",
+                primaryButtonOnClick: mainStackView.pop,
+                secondaryButtonIsSignOff: false,
                 getHelpLinkVisible: true
             });
         }

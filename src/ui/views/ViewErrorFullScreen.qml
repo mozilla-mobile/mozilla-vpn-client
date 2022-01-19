@@ -12,6 +12,8 @@ import org.mozilla.Glean 0.30
 import telemetry 0.30
 
 VPNFlickable {
+    property var isMainView: false
+
     property var headlineText
     property var errorMessage: ""
     property var errorMessage2: ""
@@ -39,7 +41,7 @@ VPNFlickable {
         visible: getHelpLinkVisible
 
         labelText: qsTrId("vpn.main.getHelp2")
-        onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false})
+        onClicked: isMainView ? mainStackView.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false, isMainView: true}) : stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false})
     }
 
     ColumnLayout {
