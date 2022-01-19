@@ -321,6 +321,19 @@ void ServerCountryModel::setServerCooldown(const QString& publicKey,
   }
 }
 
+bool ServerCountryModel::hasServerCooldown(const QString& publicKey) const {
+  if (m_servers.contains(publicKey)) {
+    qint64 now = QDateTime::currentSecsSinceEpoch();
+    if (m_servers.value(publicKey).cooldownTimeout() <= now) {
+      return false;
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
 void ServerCountryModel::setCooldownForAllServersInACity(
     const QString& countryCode, const QString& cityCode,
     unsigned int duration) {
@@ -340,6 +353,28 @@ void ServerCountryModel::setCooldownForAllServersInACity(
       break;
     }
   }
+}
+
+bool ServerCountryModel::hasCooldownForAllServersInACity(
+    const QString& countryCode, const QString& cityName) const {
+  logger.debug()
+      << "Checking if all servers in a city have a cooldown period set";
+
+  for (const ServerCountry& country : m_countries) {
+    if (country.code() == countryCode) {
+      for (const ServerCity& city : country.cities()) {
+        if (city.name() == cityName) {
+          for (const QString& pubkey : city.servers()) {
+            return hasServerCooldown(pubkey);
+          }
+          break;
+        }
+      }
+      break;
+    }
+  }
+
+  return false;
 }
 
 namespace {
