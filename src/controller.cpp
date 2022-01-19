@@ -179,11 +179,19 @@ bool Controller::activate() {
   }
 
   if (m_state == StateOff) {
+    logger.debug() << "Test - try to turn on" << m_state;
+
     if (m_portalDetected) {
       emit activationBlockedForCaptivePortal();
       m_portalDetected = false;
       return true;
     }
+
+    if (hasCooldownForAllServersInACity()) {
+      logger.debug() << "Test - hasCooldownForAllServersInACity" << m_state;
+      return true;
+    }
+
     setState(StateConnecting);
   }
 
@@ -455,6 +463,12 @@ void Controller::setCooldownForAllServersInACity(const QString& countryCode,
   Q_ASSERT(vpn);
 
   vpn->setCooldownForAllServersInACity(countryCode, cityCode);
+}
+
+bool Controller::hasCooldownForAllServersInACity() {
+  logger.debug() << "Has cooldown for all servers in a city";
+
+  return true;
 }
 
 bool Controller::isUnsettled() { return !m_settled; }

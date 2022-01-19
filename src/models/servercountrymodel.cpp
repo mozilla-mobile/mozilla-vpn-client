@@ -321,6 +321,12 @@ void ServerCountryModel::setServerCooldown(const QString& publicKey,
   }
 }
 
+// bool ServerCountryModel::hasServerCooldown(const QString& publicKey) {
+//   if (m_servers.contains(publicKey)) {
+//     return true;
+//   }
+// }
+
 void ServerCountryModel::setCooldownForAllServersInACity(
     const QString& countryCode, const QString& cityCode,
     unsigned int duration) {
@@ -340,6 +346,26 @@ void ServerCountryModel::setCooldownForAllServersInACity(
       break;
     }
   }
+}
+
+bool ServerCountryModel::hasCooldownForAllServersInACity(
+    const QString& countryCode, const QString& cityCode) const {
+  logger.debug()
+      << "Checking if all servers in a city have a cooldown period set"
+      << countryCode << cityCode;
+
+  for (const ServerCountry& country : m_countries) {
+    if (country.code() == countryCode) {
+      for (const ServerCity& city : country.cities()) {
+        if (city.code() == cityCode) {
+          return true;
+        }
+      }
+      break;
+    }
+  }
+
+  return false;
 }
 
 namespace {

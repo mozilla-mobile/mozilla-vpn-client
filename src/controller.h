@@ -104,6 +104,7 @@ class Controller final : public QObject {
   void serverUnavailable();
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode);
+  bool hasCooldownForAllServersInACity();
 
   void captivePortalPresent();
   void captivePortalGone();
