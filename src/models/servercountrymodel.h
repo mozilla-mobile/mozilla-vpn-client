@@ -58,12 +58,12 @@ class ServerCountryModel final : public QAbstractListModel {
 
   void retranslate();
   void setServerCooldown(const QString& publicKey, unsigned int duration);
-  // bool hasServerCooldown(const QString& publicKey);
+  bool hasServerCooldown(const QString& publicKey) const;
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode,
                                        unsigned int duration);
   bool hasCooldownForAllServersInACity(const QString& countryCode,
-                                       const QString& cityCode) const;
+                                       const QString& cityName) const;
 
   // QAbstractListModel methods
 
