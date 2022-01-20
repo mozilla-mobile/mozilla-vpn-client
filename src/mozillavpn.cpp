@@ -250,6 +250,7 @@ void MozillaVPN::initialize() {
     settingsHolder->setNativeAndroidDataMigrated(true);
   }
   AndroidVPNActivity::init();
+  AndroidUtils::instance();
 #endif
 
   m_private->m_captivePortalDetection.initialize();
