@@ -55,7 +55,7 @@ class AndroidUtils final : public QObject {
 
   static QJniObject getActivity();
 
-  static void recordGleanEvent(JNIEnv* env,jobject VPNUtils,jstring event);
+  static void recordGleanEvent(JNIEnv* env, jobject VPNUtils, jstring event);
 
   static void runOnAndroidThreadSync(const std::function<void()> runnable);
 
@@ -72,6 +72,5 @@ class AndroidUtils final : public QObject {
   QUrl m_url;
   AuthenticationListener* m_listener = nullptr;
 };
-
 
 #endif  // ANDROIDUTILS_H

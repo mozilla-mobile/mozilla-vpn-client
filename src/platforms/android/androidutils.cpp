@@ -28,7 +28,6 @@ namespace {
 AndroidUtils* s_instance = nullptr;
 Logger logger(LOG_ANDROID, "AndroidUtils");
 
-
 constexpr auto UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
 }  // namespace
 
@@ -70,13 +69,12 @@ AndroidUtils::AndroidUtils(QObject* parent) : QObject(parent) {
   jclass javaClass = env.findClass(UTILS_CLASS);
 
   JNINativeMethod methods[]{
-        {"recordGleanEvent",
-         "(Ljava/lang/String;)V",
-         reinterpret_cast<void*>(recordGleanEvent)},
-    };
+      {"recordGleanEvent", "(Ljava/lang/String;)V",
+       reinterpret_cast<void*>(recordGleanEvent)},
+  };
 
-    env->RegisterNatives(javaClass, methods,
-                         sizeof(methods) / sizeof(methods[0]));
+  env->RegisterNatives(javaClass, methods,
+                       sizeof(methods) / sizeof(methods[0]));
 }
 
 AndroidUtils::~AndroidUtils() {
@@ -255,7 +253,8 @@ void AndroidUtils::runOnAndroidThreadSync(
 #endif
 }
 
-void AndroidUtils::recordGleanEvent(JNIEnv* env,jobject VPNUtils,jstring event) {
+void AndroidUtils::recordGleanEvent(JNIEnv* env, jobject VPNUtils,
+                                    jstring event) {
   Q_UNUSED(VPNUtils);
   const char* buffer = env->GetStringUTFChars(event, nullptr);
   if (!buffer) {
