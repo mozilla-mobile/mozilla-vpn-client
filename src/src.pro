@@ -239,7 +239,6 @@ HEADERS += \
         features/featuresharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
-        features/featureuniqueid.h \
         features/featureunsecurednetworknotification.h \
         features/featureserverunavailablenotification.h \
         filterproxymodel.h \

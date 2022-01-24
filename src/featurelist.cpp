@@ -23,7 +23,6 @@
 #include "features/featurenotificationcontrol.h"
 #include "features/featuresplittunnel.h"
 #include "features/featuresharelogs.h"
-#include "features/featureuniqueid.h"
 #include "features/featurestartonboot.h"
 #include "features/featureunsecurednetworknotification.h"
 #include "features/featureserverunavailablenotification.h"
@@ -61,7 +60,6 @@ void FeatureList::initialize() {
   new FeatureShareLogs();
   new FeatureSplitTunnel();
   new FeatureStartOnBoot();
-  new FeatureUniqueID();
   new FeatureUnsecuredNetworkNotification();
   new FeatureServerUnavailableNotification();
 
