@@ -15,6 +15,7 @@ Item {
     id: box
 
     readonly property alias connectionInfoVisible: connectionInfo.visible
+    property bool connectionInfoScreenVisible: false
 
     function formatSingle(value) {
         if (value === 0)
@@ -42,12 +43,30 @@ Item {
     Layout.rightMargin: 8
     Layout.alignment: Qt.AlignHCenter
 
+    Behavior on Layout.preferredWidth  {
+        NumberAnimation {
+            duration: 1000
+            easing.type: Easing.InOutQuad
+        }
+    }
+
     Rectangle {
         id: boxBackground
-        anchors.fill: box
         color: VPNTheme.theme.bgColor
-        radius: 8
+        radius: VPNTheme.theme.cornerRadius * 2
         antialiasing: true
+
+        height: connectionInfoScreenVisible
+            ? window.safeContentHeight - VPNTheme.theme.windowMargin * 2
+            : box.height
+        width: box.width
+
+        Behavior on height {
+            NumberAnimation {
+                duration: 1000
+                easing.type: Easing.InOutQuad
+            }
+        }
     }
 
     VPNDropShadowWithStates {
@@ -171,7 +190,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "#321C64"
+                color: VPNTheme.colors.primary
             }
 
             PropertyChanges {
@@ -231,7 +250,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "#321C64"
+                color: VPNTheme.colors.primary
             }
 
             PropertyChanges {
@@ -292,7 +311,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "#321C64"
+                color: VPNTheme.colors.primary
             }
 
             PropertyChanges {
@@ -400,7 +419,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "#321C64"
+                color: VPNTheme.colors.primary
             }
 
             PropertyChanges {
@@ -752,7 +771,14 @@ Item {
             }
 
         }
+    }
 
+    VPNConnectionInfoScreen {
+        id: connectionInfoScreen
+        isVisible: connectionInfoScreenVisible
+
+        height: boxBackground.height
+        radius: VPNTheme.theme.cornerRadius * 2
     }
 
 }

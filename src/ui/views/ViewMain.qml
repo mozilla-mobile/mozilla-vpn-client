@@ -102,7 +102,21 @@ VPNFlickable {
         }
 
         VPNControllerView {
+            property bool testTestVisible: false
+
             id: box
+            connectionInfoScreenVisible: testTestVisible
+            z: 1
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+
+                text: box.testTestVisible ? "Hide info" : "Show info"
+                onClicked: {
+                    box.testTestVisible = !box.testTestVisible;
+                }
+            }
         }
 
         VPNControllerNav {
