@@ -274,7 +274,7 @@ VPNFlickable {
                 id: signUpButton
                 objectName: "signUpButton"
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: VPNl18n.MobileOnboardingSignUpBtn
+                text: VPNl18n.MobileOnboardingSignUpBtn + " " + qsTrId("vpn.aboutUs.privacyNotice2")
                 width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
                 onClicked: onboardingPanel.recordGleanEvtAndStartAuth(objectName)
             }
@@ -291,6 +291,10 @@ VPNFlickable {
         VPNVerticalSpacer {
             Layout.preferredHeight: Math.min(window.height * 0.08, VPNTheme.theme.rowHeight)
         }
+    }
+
+    Component.onCompleted: {
+        console.log(VPNl18n.MobileOnboardingAlreadyASubscriber);
     }
 
     function recordGleanEvtAndStartAuth(ctaObjectName) {
