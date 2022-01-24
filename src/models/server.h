@@ -48,6 +48,8 @@ class Server final {
 
   uint32_t multihopPort() const { return m_multihopPort; }
 
+  bool forcePort(uint32_t port);
+
   bool operator==(const Server& other) const {
     return m_publicKey == other.m_publicKey;
   }

@@ -336,6 +336,14 @@ SETTING_STRING(token,     // getter
                true       // remove when reset
 )
 
+SETTING_BOOL(tunnelPort53,     // getter
+             setTunnelPort53,  // setter
+             hasTunnelPort53,  // has
+             "tunnelPort53",   // key
+             false,            // default value
+             true              // remove when reset
+)
+
 SETTING_BOOL(unsecuredNetworkAlert,     // getter
              setUnsecuredNetworkAlert,  // setter
              hasUnsecuredNetworkAlert,  // has
