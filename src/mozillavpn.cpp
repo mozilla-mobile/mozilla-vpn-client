@@ -1025,7 +1025,6 @@ void MozillaVPN::setCooldownForAllServersInACity(const QString& countryCode,
                                                  const QString& cityCode) {
   m_private->m_serverCountryModel.setCooldownForAllServersInACity(
       countryCode, cityCode, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-  MozillaVPN::instance()->controller()->serverUnavailable();
 }
 
 QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {

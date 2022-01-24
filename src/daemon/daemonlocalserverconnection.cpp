@@ -75,7 +75,6 @@ void DaemonLocalServerConnection::readData() {
 }
 
 void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
-  logger.debug() << "Command received:" << data.left(20);
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {
@@ -91,6 +90,8 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   }
 
   QString type = typeValue.toString();
+  logger.debug() << type << "received:" << data.left(20);
+
   if (type == "activate") {
     InterfaceConfig config;
     if (!Daemon::parseConfig(obj, config)) {
