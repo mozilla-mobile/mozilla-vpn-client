@@ -116,6 +116,7 @@ rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
 
 print Y "Importing translation files..."
+git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
 python3 scripts/importLanguages.py || die "Failed to import languages"
 
 print Y "Generating glean samples..."
