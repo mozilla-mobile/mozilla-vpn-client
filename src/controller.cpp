@@ -184,12 +184,6 @@ bool Controller::activate() {
       m_portalDetected = false;
       return true;
     }
-
-    if (hasCooldownForAllServers()) {
-      emit readyToServerUnavailable();
-      return true;
-    }
-
     setState(StateConnecting);
   }
 
@@ -480,26 +474,6 @@ void Controller::setCooldownForAllServersInACity(const QString& countryCode,
   Q_ASSERT(vpn);
 
   vpn->setCooldownForAllServersInACity(countryCode, cityCode);
-}
-
-bool Controller::hasCooldownForAllServers() {
-  logger.debug() << "Has cooldown for all servers in a city";
-
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-
-  bool hasCooldownForAllExitServers = vpn->hasCooldownForAllServersInACity(
-      vpn->currentServer()->exitCountryCode(),
-      vpn->currentServer()->exitCityName());
-
-  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
-    bool hasCooldownForAllEntryServers = vpn->hasCooldownForAllServersInACity(
-        vpn->currentServer()->entryCountryCode(),
-        vpn->currentServer()->entryCityName());
-    return hasCooldownForAllEntryServers || hasCooldownForAllExitServers;
-  }
-
-  return hasCooldownForAllExitServers;
 }
 
 bool Controller::isUnsettled() { return !m_settled; }
