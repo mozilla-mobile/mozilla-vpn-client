@@ -32,8 +32,7 @@ Window {
     maximumHeight: fullscreenRequired() ? Screen.height : VPNTheme.theme.desktopAppHeight;
 
     //% "Mozilla Crash Reporter"
-    // title: qsTrId("vpn.crashreporter.mainTitle")
-    title: "vpn.crashreporter.mainTitle"
+    title: qsTrId("vpn.crashreporter.mainTitle")
     color: "#F9F9FA"
 
     Rectangle {

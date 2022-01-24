@@ -105,10 +105,6 @@ VPNFlickable {
             id: box
         }
 
-        Button {
-            text: VPNl18n.MobileOnboardingAlreadyASubscriber
-        }
-
         VPNControllerNav {
             function handleClick() {
                 if (disableRowWhen) {

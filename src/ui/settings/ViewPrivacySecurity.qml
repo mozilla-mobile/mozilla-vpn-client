@@ -69,8 +69,8 @@ Item {
                 anchors.rightMargin: VPNTheme.theme.windowMargin
 
                 //% "Data collection and use"
-                labelText: qsTrId("vpn.settings.dataCollection") + VPNl18n.MobileOnboardingSignUpBtn + " " + VPNl18n.SettingsDataCollectionDescription
-                subLabelText: VPNl18n.SettingsDataCollectionDescription + " Test " + _languageTitle
+                labelText: qsTrId("vpn.settings.dataCollection")
+                subLabelText: VPNl18n.SettingsDataCollectionDescription
                 isChecked: VPNSettings.gleanEnabled
                 onClicked: {
                     VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
@@ -105,7 +105,7 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
 
-                    settingTitle: _languageTitle + VPNl18n.SettingsDataCollectionDescription + " " + VPNl18n.MobileOnboardingSignUpBtn
+                    settingTitle: _languageTitle
                     imageLeftSrc: "qrc:/ui/resources/settings/language.svg"
                     imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                     onClicked: settingsStackView.push("qrc:/ui/settings/ViewLanguage.qml")
