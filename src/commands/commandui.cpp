@@ -137,9 +137,8 @@ int CommandUI::run(QStringList& tokens) {
     }
 
 #ifdef MVPN_DEBUG
-    // To enable the qml debugger:
-    // drop CONFIG+=qml_debug into src.pro or your qmake call
-    // Then go to QtCreator: Debug->Start Debugging-> Attach to QML port
+    // This enables the qt-creator qml debugger on debug builds.:
+    // Go to QtCreator: Debug->Start Debugging-> Attach to QML port
     // Port is 1234.
     // Note: Qt creator only will use localhost:port so tunnel any external
     // device to there i.e on android $adb forward tcp:1234 tcp:1234

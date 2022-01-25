@@ -11,5 +11,7 @@ VPNStackView {
     id: stackview
     objectName: "ViewMainStackView"
 
-    initialItem: "qrc:/ui/views/ViewMain.qml"
+    Component.onCompleted: function(){
+        stackview.push("qrc:/ui/views/ViewMain.qml")
+    }
 }

@@ -7,5 +7,7 @@ import QtQuick 2.5
 Loader {
     id: loader
 
-    source: "qrc:/ui/views/ViewUpdate.qml"
+    Component.onCompleted: function(){
+        loader.source="qrc:/ui/views/ViewUpdate.qml"
+    }
 }
