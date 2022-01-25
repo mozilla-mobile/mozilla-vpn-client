@@ -109,7 +109,7 @@ VPNFlickable {
             z: 1
 
             Button {
-                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.left: parent.left
                 anchors.top: parent.top
 
                 text: box.testTestVisible ? "Hide info" : "Show info"

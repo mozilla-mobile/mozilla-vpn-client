@@ -6,10 +6,13 @@ import Mozilla.VPN 1.0
 Rectangle {
     property bool isVisible: false
     property bool isAnimating: false
-    property int transitionDuration: 1000
+    property int transitionDuration: 750
 
     id: root
 
+    color: VPNTheme.colors.primary
+    clip: true
+    opacity: 0.2
     state: "hidden"
     states: [
         State {
@@ -18,7 +21,7 @@ Rectangle {
 
             PropertyChanges {
                 target: root
-                opacity: 0
+                opacity: 0.5
             }
         },
         State {
@@ -36,7 +39,7 @@ Rectangle {
 
             PropertyChanges {
                 target: root
-                opacity: 1
+                opacity: 0.5
             }
         },
         State {
@@ -49,19 +52,8 @@ Rectangle {
             }
         }
     ]
-
-    Behavior on opacity {
-        NumberAnimation {
-            target: root
-            property: "opacity"
-            duration: root.transitionDuration
-            easing.type: Easing.InOutQuad
-        }
-    }
-
-    color: VPNTheme.colors.primary
-    opacity: 0.2
     width: parent.width
+
     onIsVisibleChanged: () => {
         console.log("visible changing - start: ", isVisible);
         isAnimating = true;
@@ -72,9 +64,18 @@ Rectangle {
         }, transitionDuration);
     }
 
+    Behavior on opacity {
+        NumberAnimation {
+            target: root
+            property: "opacity"
+            duration: root.transitionDuration
+            easing.type: Easing.InOutQuad
+        }
+    }
+
     ColumnLayout {
-        x: 0
-        y: 0
+        anchors.right: parent.right
+        anchors.top: parent.top
 
         Text {
             text: "isVisible: " + root.isVisible
@@ -90,15 +91,23 @@ Rectangle {
     Timer {
         id: timer
 
-        function setTimeout(cb, delayTime) {
-            timer.interval = delayTime;
+        function setTimeout(callback, timeoutDuration) {
+            timer.interval = timeoutDuration;
             timer.repeat = false;
-            timer.triggered.connect(cb);
+            timer.triggered.connect(callback);
             timer.triggered.connect(function release() {
-                timer.triggered.disconnect(cb);
+                timer.triggered.disconnect(callback);
                 timer.triggered.disconnect(release);
             });
             timer.start();
         }
+    }
+
+    // Header
+    // - [] Closing button
+    // - [] Restart button
+
+    // Content
+    VPNConnectionInfoContent {
     }
 }
