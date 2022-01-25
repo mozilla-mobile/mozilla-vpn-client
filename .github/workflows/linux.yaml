@@ -127,7 +127,6 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: "Hirsute", dist: hirsute }
             - { name: "Impish", dist: impish }
 
     runs-on: ubuntu-latest
