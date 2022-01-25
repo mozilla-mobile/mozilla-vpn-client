@@ -30,6 +30,10 @@
 #include <glean.h>
 #include <nebula.h>
 
+#ifdef MVPN_DEBUG
+#  include <QQmlDebuggingEnabler>
+#endif
+
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
@@ -132,6 +136,24 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 
+#ifdef MVPN_DEBUG
+    // To enable the qml debugger:
+    // drop CONFIG+=qml_debug into src.pro or your qmake call
+    // Then go to QtCreator: Debug->Start Debugging-> Attach to QML port
+    // Port is 1234.
+    // Note: Qt creator only will use localhost:port so tunnel any external
+    // device to there i.e on android $adb forward tcp:1234 tcp:1234
+
+    // We need to create the qmldebug server before the engine is created.
+    QQmlDebuggingEnabler enabler;
+    bool ok = enabler.startTcpDebugServer(
+        1234, QQmlDebuggingEnabler::StartMode::DoNotWaitForClient, "0.0.0.0");
+    if (ok) {
+      logger.debug() << "Started QML Debugging server on 0.0.0.0:1234";
+    } else {
+      logger.error() << "Failed to start QML Debugging";
+    }
+#endif
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
