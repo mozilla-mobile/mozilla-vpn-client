@@ -5,7 +5,8 @@ import Mozilla.VPN 1.0
 
 Rectangle {
     property bool isVisible: false
-    property bool loading: true
+    property bool isAnimating: false
+    property int transitionDuration: 1000
 
     id: root
 
@@ -13,29 +14,38 @@ Rectangle {
     states: [
         State {
             name: "hidden"
-            when: !isVisible
+            when: !isVisible && !isAnimating
 
             PropertyChanges {
                 target: root
-                opacity: 0.2
+                opacity: 0
             }
         },
         State {
-            name: "loading"
-            when: isVisible && loading
+            name: "opening"
+            when: isVisible && isAnimating
 
             PropertyChanges {
                 target: root
-                opacity: 0.9
+                opacity: 1
+            }
+        },
+        State {
+            name: "closing"
+            when: !isVisible && isAnimating
+
+            PropertyChanges {
+                target: root
+                opacity: 1
             }
         },
         State {
             name: "visible"
-            when: isVisible && !loading
+            when: isVisible && !isAnimating
 
             PropertyChanges {
                 target: root
-                opacity: 0.9
+                opacity: 1
             }
         }
     ]
@@ -44,26 +54,51 @@ Rectangle {
         NumberAnimation {
             target: root
             property: "opacity"
-            duration: 1000
+            duration: root.transitionDuration
+            easing.type: Easing.InOutQuad
         }
     }
 
     color: VPNTheme.colors.primary
     opacity: 0.2
     width: parent.width
+    onIsVisibleChanged: () => {
+        console.log("visible changing - start: ", isVisible);
+        isAnimating = true;
+
+        timer.setTimeout(function() {
+            console.log("visible changing - end: ", isVisible);
+            isAnimating = false;
+        }, transitionDuration);
+    }
 
     ColumnLayout {
         x: 0
         y: 0
 
         Text {
-            text: "Visble: " + (isVisible ? "true" : "false")
+            text: "isVisible: " + root.isVisible
         }
         Text {
-            text: "Loading: " + (loading ? "true" : "false")
+            text: "isAnimating: " + root.isAnimating
         }
         Text {
-            text: "State: " + state
+            text: "State: " + root.state
+        }
+    }
+
+    Timer {
+        id: timer
+
+        function setTimeout(cb, delayTime) {
+            timer.interval = delayTime;
+            timer.repeat = false;
+            timer.triggered.connect(cb);
+            timer.triggered.connect(function release() {
+                timer.triggered.disconnect(cb);
+                timer.triggered.disconnect(release);
+            });
+            timer.start();
         }
     }
 }

@@ -63,7 +63,7 @@ Item {
 
         Behavior on height {
             NumberAnimation {
-                duration: 1000
+                duration: connectionInfoScreen.transitionDuration
                 easing.type: Easing.InOutQuad
             }
         }
