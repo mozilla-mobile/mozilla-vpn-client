@@ -35,6 +35,8 @@ TextField {
     VPNIconButton {
         id: iconButton
 
+        // TODO: Add accesibleName string
+        accessibleName: ""
         anchors {
             right: parent.right
             rightMargin: VPNTheme.theme.listSpacing / 2
