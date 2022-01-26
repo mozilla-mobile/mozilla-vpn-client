@@ -6,13 +6,13 @@ import Mozilla.VPN 1.0
 Rectangle {
     property bool isVisible: false
     property bool isAnimating: false
-    property int transitionDuration: 750
+    property int transitionDuration: 750 // TODO: Experiment with duration
 
     id: root
 
-    color: VPNTheme.colors.primary
+    color: "pink"
     clip: true
-    opacity: 0.2
+    opacity: 0.5 // TODO: Set to `0`
     state: "hidden"
     states: [
         State {
@@ -21,7 +21,8 @@ Rectangle {
 
             PropertyChanges {
                 target: root
-                opacity: 0.5
+                opacity: 0.5 // TODO: Set to `0`
+                visible: true // TODO: Set to `false`
             }
         },
         State {
@@ -31,6 +32,7 @@ Rectangle {
             PropertyChanges {
                 target: root
                 opacity: 1
+                visible: true
             }
         },
         State {
@@ -39,7 +41,8 @@ Rectangle {
 
             PropertyChanges {
                 target: root
-                opacity: 0.5
+                opacity: 0.5 // TODO: Set to `0`
+                visible: true
             }
         },
         State {
@@ -49,6 +52,7 @@ Rectangle {
             PropertyChanges {
                 target: root
                 opacity: 1
+                visible: true
             }
         }
     ]

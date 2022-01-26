@@ -28,6 +28,7 @@
         <file>components/VPNConnectionInfo.qml</file>
         <file>components/VPNConnectionInfoScreen.qml</file>
         <file>components/VPNConnectionInfoContent.qml</file>
+        <file>components/VPNConnectionInfoItem.qml</file>
         <file>components/VPNConnectionStability.qml</file>
         <file>components/VPNControllerNav.qml</file>
         <file>components/VPNControllerView.qml</file>

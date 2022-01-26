@@ -35,7 +35,7 @@ Flickable {
 
         Rectangle {
             color: "black"
-            height: 2
+            height: 1
             Layout.fillWidth: true
         }
 
@@ -52,7 +52,7 @@ Flickable {
 
         Rectangle {
             color: "black"
-            height: 2
+            height: 1
             Layout.fillWidth: true
         }
 
@@ -90,40 +90,44 @@ Flickable {
         }
 
         Rectangle {
+            // color: VPNTheme.colors.grey20
             color: "black"
-            height: 2
+            height: 1
             Layout.fillWidth: true
         }
 
         // Detailed info section
-        RowLayout {
-            width: parent.width
-
-            Text {
-                color: "white"
-                text: "Detailed info section"
-            }
-        }
-
         GridLayout {
             width: parent.width
             columns: 2
 
-            Text {
-                color: "white"
-                text: "One"
+            VPNConnectionInfoItem {
+                Layout.fillWidth: true
+
+                title: VPNServerCountryModel.getLocalizedCountryName(VPNCurrentServer.exitCountryCode)
+                subtitle: VPNCurrentServer.localizedCityName
+                iconPath: "qrc:/nebula/resources/flags/" + VPNCurrentServer.exitCountryCode.toUpperCase() + ".png"
             }
-            Text {
-                color: "white"
-                text: "Two"
+            VPNConnectionInfoItem {
+                Layout.fillWidth: true
+
+                title: "Ping"
+                subtitle: "15 ms"
+                iconPath: "qrc:/nebula/resources/connection.svg"
             }
-            Text {
-                color: "white"
-                text: "Three"
+            VPNConnectionInfoItem {
+                Layout.fillWidth: true
+
+                title: "Download"
+                subtitle: "300.06 Mbps"
+                iconPath: "qrc:/nebula/resources/download.svg"
             }
-            Text {
-                color: "white"
-                text: "Four"
+            VPNConnectionInfoItem {
+                Layout.fillWidth: true
+
+                title: "Upload"
+                subtitle: "21.60 Mbps"
+                iconPath: "qrc:/nebula/resources/upload.svg"
             }
         }
 

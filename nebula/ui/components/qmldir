@@ -17,6 +17,7 @@ VPNCollapsibleCard 0.1 VPNCollapsibleCard.qml
 VPNConnectionInfo 0.1 VPNConnectionInfo.qml
 VPNConnectionInfoScreen 0.1 VPNConnectionInfoScreen.qml
 VPNConnectionInfoContent 0.1 VPNConnectionInfoContent.qml
+VPNConnectionInfoItem 0.1 VPNConnectionInfoItem.qml
 VPNConnectionStability 0.1 VPNConnectionStability.qml
 VPNControllerNav 0.1 VPNControllerNav.qml
 VPNControllerView 0.1 VPNControllerView.qml

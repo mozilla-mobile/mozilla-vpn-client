@@ -15,6 +15,7 @@
         <file>resources/close-white.svg</file>
         <file>resources/connection-info.svg</file>
         <file>resources/connection.svg</file>
+        <file>resources/download.svg</file>
         <file>resources/delete.svg</file>
         <file>resources/devicesLimit.svg</file>
         <file>resources/devicesRemove.svg</file>
@@ -309,6 +310,7 @@
         <file>resources/update-lock.svg</file>
         <file>resources/updateStatusUpdateAvailable.svg</file>
         <file>resources/updateStatusUpToDate.svg</file>
+        <file>resources/upload.svg</file>
         <file>resources/warning-dark-orange.svg</file>
         <file>resources/warning-orange.svg</file>
         <file>resources/warning.svg</file>
