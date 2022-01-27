@@ -49,7 +49,7 @@ Item {
             spacing: VPNTheme.theme.windowMargin
 
             VPNContextualAlerts {
-                anchors.leftMargin: Theme.windowMargin
+                anchors.leftMargin: VPNTheme.theme.windowMargin
                 messages: [
                     {
                         type: "warning",

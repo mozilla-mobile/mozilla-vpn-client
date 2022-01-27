@@ -59,7 +59,7 @@ Item {
             VPNContextualAlerts {
                 id: vpnOnAlert
                 anchors.left: parent.left
-                anchors.leftMargin: Theme.windowMargin / 2
+                anchors.leftMargin: VPNTheme.theme.windowMargin / 2
 
                 messages: [
                     {

@@ -58,15 +58,15 @@ RowLayout {
         id: warningIcon
 
         source: iconSrc
-        sourceSize.height: Theme.iconSize - Theme.focusBorderWidth
-        sourceSize.width: Theme.iconSize - Theme.focusBorderWidth
+        sourceSize.height: VPNTheme.theme.iconSize - VPNTheme.theme.focusBorderWidth
+        sourceSize.width: VPNTheme.theme.iconSize - VPNTheme.theme.focusBorderWidth
 
         Layout.alignment: Qt.AlignTop
-        Layout.leftMargin: Theme.listSpacing / 2
+        Layout.leftMargin: VPNTheme.theme.listSpacing / 2
         Layout.maximumHeight: messageText.lineHeight
         Layout.preferredHeight: messageText.lineHeight
-        Layout.preferredWidth: Theme.iconSize - Theme.focusBorderWidth
-        Layout.rightMargin: Theme.listSpacing
+        Layout.preferredWidth: VPNTheme.theme.iconSize - VPNTheme.theme.focusBorderWidth
+        Layout.rightMargin: VPNTheme.theme.listSpacing
         Layout.topMargin: 1
     }
 
@@ -78,6 +78,6 @@ RowLayout {
         wrapMode: Text.WordWrap
 
         Layout.fillWidth: true
-        Layout.topMargin: Theme.listSpacing / 2
+        Layout.topMargin: VPNTheme.theme.listSpacing / 2
     }
 }

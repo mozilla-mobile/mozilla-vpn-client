@@ -14,8 +14,8 @@ ColumnLayout {
 
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.topMargin: Theme.listSpacing
-    spacing: Theme.listSpacing / 4
+    anchors.topMargin: VPNTheme.theme.listSpacing
+    spacing: VPNTheme.theme.listSpacing / 4
 
     DelegateChooser {
         id: messagesChooser
