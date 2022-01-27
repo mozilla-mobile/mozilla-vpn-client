@@ -404,7 +404,8 @@ Window {
                 primaryButtonObjectName: "errorTryAgainButton",
                 primaryButtonOnClick: mainStackView.pop,
                 secondaryButtonIsSignOff: true,
-                getHelpLinkVisible: true
+                getHelpLinkVisible: true,
+                popWhenSignOff: true
             });
         }
 
@@ -450,7 +451,10 @@ Window {
                 // Sign out
                 primaryButtonText: qsTrId("vpn.main.signOut2"),
                 primaryButtonObjectName: "errorSignOutButton",
-                primaryButtonOnClick: mainStackView.pop,
+                primaryButtonOnClick: () => {
+                    VPNController.logout();
+                    mainStackView.pop();
+                },
                 secondaryButtonIsSignOff: false,
                 getHelpLinkVisible: true
             });

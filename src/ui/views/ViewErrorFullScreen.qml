@@ -26,6 +26,7 @@ VPNFlickable {
     property var secondaryButtonObjectName
     property var secondaryButtonOnClick
     property var secondaryButtonIsSignOff: false
+    property var popWhenSignOff: false
 
     property var getHelpLinkVisible: false
     property var statusLinkVisible: false
@@ -167,6 +168,7 @@ VPNFlickable {
                 anchors.bottom: undefined
                 anchors.bottomMargin: undefined
                 height: undefined
+                popMainView: popWhenSignOff
             }
         }
 

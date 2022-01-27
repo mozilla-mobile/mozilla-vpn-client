@@ -7,9 +7,14 @@ import QtQuick 2.0
 import Mozilla.VPN 1.0
 
 VPNFooterLink {
+    property var popMainView: false
+
     //% "Sign out"
     labelText: qsTrId("vpn.main.signOut2")
     fontName: VPNTheme.theme.fontBoldFamily
     linkColor: VPNTheme.theme.redButton
-    onClicked: VPNController.logout()
+    onClicked: () => {
+                    VPNController.logout();
+                    if(popMainView) mainStackView.pop();
+               }
 }
