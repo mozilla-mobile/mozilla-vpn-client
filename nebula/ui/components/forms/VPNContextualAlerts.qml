@@ -6,7 +6,8 @@ import QtQuick 2.6
 import QtQuick.Layouts 1.14
 import Qt.labs.qmlmodels 1.0
 
-import themes 0.1
+import Mozilla.VPN 1.0
+import components.forms 0.1
 
 ColumnLayout {
     id: messagesContainer
@@ -24,15 +25,15 @@ ColumnLayout {
         DelegateChoice {
             roleValue: "warning"
             delegate: VPNContextualAlert {
-                fontColor: Color.warning.active
-                iconSrc: "qrc:/ui/resources/warning-dark-orange.svg"
+                fontColor: VPNTheme.colors.warning.active
+                iconSrc: "qrc:/nebula/resources/warning-dark-orange.svg"
             }
         }
         DelegateChoice {
             roleValue: "error"
             delegate: VPNContextualAlert {
-                fontColor: Color.error.default
-                iconSrc: "qrc:/ui/resources/warning.svg"
+                fontColor: VPNTheme.colors.error.default
+                iconSrc: "qrc:/nebula/resources/warning.svg"
             }
         }
     }

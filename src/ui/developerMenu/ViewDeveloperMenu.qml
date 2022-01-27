@@ -220,7 +220,7 @@ Item {
         }
 
         VPNContextualAlerts {
-            id: restartMessage
+            id: restartRequired
 
             property bool isVisible: false
 
@@ -237,10 +237,10 @@ Item {
             Connections {
                 target: VPNSettings
                 function onStagingServerAddressChanged() {
-                    restartMessage.isVisible = true;
+                    restartRequired.isVisible = true;
                 }
                 function onStagingServerChanged() {
-                    restartMessage.isVisible = true;
+                    restartRequired.isVisible = true;
                 }
             }
         }
