@@ -29,10 +29,10 @@ ColumnLayout {
         Layout.leftMargin: VPNTheme.theme.vSpacing + 14
     }
 
-    Rectangle {
-        anchors.fill: parent
-        border.color: "black"
-        color: "orange"
-        z: -1
-    }
+    // Rectangle {
+    //     anchors.fill: parent
+    //     border.color: "black"
+    //     color: "orange"
+    //     z: -1
+    // }
 }

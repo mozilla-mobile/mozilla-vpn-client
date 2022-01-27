@@ -23,11 +23,11 @@ Flickable {
 
             ColumnLayout {
                 Text {
-                    color: "white"
+                    color: VPNTheme.colors.grey20
                     text: "IP: 103.231.88.10"
                 }
                 Text {
-                    color: "white"
+                    color: VPNTheme.colors.grey20
                     text: "IPv6: 2001:ac8:40:b9::a09e"
                 }
             }
@@ -51,7 +51,7 @@ Flickable {
         }
 
         Rectangle {
-            color: "black"
+            color: VPNTheme.colors.grey20
             height: 1
             Layout.fillWidth: true
         }
@@ -63,26 +63,25 @@ Flickable {
                 Text {
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
-
-                    color: "white"
+                    color: VPNTheme.colors.white
                     text: "At your current speed, here's what your device is optimized for:"
                 }
                 Text {
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
-                    color: "white"
+                    color: VPNTheme.colors.grey20
                     text: "Streaming in 4K"
                 }
                 Text {
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
-                    color: "white"
+                    color: VPNTheme.colors.grey20
                     text: "High-speed downloads"
                 }
                 Text {
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
-                    color: "white"
+                    color: VPNTheme.colors.grey20
                     text: "Online gaming"
                 }
             }
@@ -90,8 +89,7 @@ Flickable {
         }
 
         Rectangle {
-            // color: VPNTheme.colors.grey20
-            color: "black"
+            color: VPNTheme.colors.grey20
             height: 1
             Layout.fillWidth: true
         }
@@ -131,14 +129,14 @@ Flickable {
             }
         }
 
-        Rectangle {
-            color: "gray"
+        // Rectangle {
+        //     color: "gray"
 
-            anchors.fill: parent
-            border.color: "red"
-            border.width: 2
-            z: -1
-        }
+        //     anchors.fill: parent
+        //     border.color: "red"
+        //     border.width: 2
+        //     z: -1
+        // }
 
     }
 
