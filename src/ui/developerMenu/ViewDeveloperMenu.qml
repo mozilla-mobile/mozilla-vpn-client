@@ -145,21 +145,56 @@ Item {
             onClicked: stackview.push("qrc:/ui/developerMenu/ViewThemeList.qml")
         }
 
-    VPNButton {
-        id: resetAndQuit
-        property int clickNeeded: 5
+        VPNSettingsItem {
+            id: featureListLink
+            objectName: "settingsFeatureList"
 
-        anchors.top: stagingServerCheckBox.checked && !restartRequired.visible ? inspectorLink.bottom : featureListLink.bottom
-        anchors.topMargin: Theme.windowMargin
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: themeListLink.bottom
+            anchors.topMargin: VPNTheme.theme.listSpacing
+            anchors.left: stagingServerRow.left
+            anchors.leftMargin: VPNTheme.theme.windowMargin/2
+            width: parent.width - VPNTheme.theme.windowMargin
 
-        text: "Reset and Quit"
-        onClicked: {
-            if (clickNeeded) {
-             text = "Reset and Quit (" + clickNeeded + ")";
-              --clickNeeded;
-             return;
+            // Do not translate this string!
+            settingTitle: "Feature list"
+            imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+            onClicked: stackview.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
+        }
+
+        VPNSettingsItem {
+            id: animationsPlaygroundLink
+            objectName: "settingsAnimationsPlayground"
+
+            anchors.top: featureListLink.bottom
+            anchors.topMargin: VPNTheme.theme.listSpacing
+            anchors.left: stagingServerRow.left
+            anchors.leftMargin: VPNTheme.theme.windowMargin/2
+            width: parent.width - VPNTheme.theme.windowMargin
+
+            // Do not translate this string!
+            settingTitle: "Animations playground"
+            imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+            onClicked: stackview.push("qrc:/ui/developerMenu/ViewAnimationsPlayground.qml")
+        }
+
+        VPNExternalLinkListItem {
+            id: inspectorLink
+            visible: stagingServerCheckBox.checked && !restartRequired.visible
+            anchors.top: animationsPlaygroundLink.bottom
+            anchors.topMargin: VPNTheme.theme.listSpacing
+            anchors.left: stagingServerRow.left
+            anchors.leftMargin: VPNTheme.theme.windowMargin/2
+            width: parent.width - VPNTheme.theme.windowMargin
+
+            objectName: "openInspector"
+            title: "Open Inspector"
+            accessibleName: "Open Inspector"
+            iconSource:  "qrc:/nebula/resources/externalLink.svg"
+            backgroundColor: VPNTheme.theme.clickableRowBlue
+            onClicked: {
+                VPN.openLink(VPN.LinkInspector)
             }
         }
 
@@ -184,29 +219,35 @@ Item {
             }
         }
 
-    VPNContextualAlerts {
-        id: restartMessage
+        VPNContextualAlerts {
+            id: restartMessage
 
-        property bool isVisible: false
+            property bool isVisible: false
 
-        anchors.left: inspectorLink.left
-        anchors.top: inspectorLink.bottom
-        messages: [
-            {
-                type: "warning",
-                message: VPNl18n.SettingsDevRestartRequired,
-                visible: isVisible
-            }
-        ]
+            anchors.left: inspectorLink.left
+            anchors.top: inspectorLink.bottom
+            messages: [
+                {
+                    type: "warning",
+                    message: VPNl18n.SettingsDevRestartRequired,
+                    visible: isVisible
+                }
+            ]
 
-        Connections {
-            target: VPNSettings
-            function onStagingServerAddressChanged() {
-                restartMessage.isVisible = true;
-            }
-            function onStagingServerChanged() {
-                restartMessage.isVisible = true;
+            Connections {
+                target: VPNSettings
+                function onStagingServerAddressChanged() {
+                    restartMessage.isVisible = true;
+                }
+                function onStagingServerChanged() {
+                    restartMessage.isVisible = true;
+                }
             }
         }
+    }
+
+    Component.onCompleted: {
+        const contentHeight = developerUnlock.height + stagingServerRow.height + themeListLink.height + featureListLink.height + animationsPlaygroundLink.height + inspectorLink.height + resetAndQuit.height + VPNTheme.theme.listSpacing * 10;
+        flickableContent.flickContentHeight = contentHeight;
     }
 }
