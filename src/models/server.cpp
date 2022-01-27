@@ -5,6 +5,7 @@
 #include "server.h"
 #include "leakdetector.h"
 
+#include <QDateTime>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -30,6 +31,7 @@ Server& Server::operator=(const Server& other) {
   m_weight = other.m_weight;
   m_socksName = other.m_socksName;
   m_multihopPort = other.m_multihopPort;
+  m_cooldownTimeout = other.m_cooldownTimeout;
 
   return *this;
 }
@@ -117,8 +119,37 @@ bool Server::fromJson(const QJsonObject& obj) {
   m_weight = weight.toInt();
   m_socksName = socks5_name.toString();
   m_multihopPort = multihop_port.toInt();
+  m_cooldownTimeout = 0;
 
   return true;
+}
+
+bool Server::fromMultihop(const Server& exit, const Server& entry) {
+  m_hostname = exit.m_hostname;
+  m_ipv4Gateway = exit.m_ipv4Gateway;
+  m_ipv6Gateway = exit.m_ipv6Gateway;
+  m_publicKey = exit.m_publicKey;
+  m_socksName = exit.m_socksName;
+  m_multihopPort = exit.m_multihopPort;
+  m_cooldownTimeout = exit.m_cooldownTimeout;
+
+  m_ipv4AddrIn = entry.m_ipv4AddrIn;
+  m_ipv6AddrIn = entry.m_ipv6AddrIn;
+  return forcePort(exit.m_multihopPort);
+}
+
+bool Server::forcePort(uint32_t port) {
+  m_portRanges.clear();
+  m_portRanges.append(QPair<uint32_t, uint32_t>(port, port));
+  return true;
+}
+
+void Server::setCooldownTimeout(qint64 timeout) {
+  if (timeout <= 0) {
+    m_cooldownTimeout = 0;
+  } else {
+    m_cooldownTimeout = QDateTime::currentSecsSinceEpoch() + timeout;
+  }
 }
 
 // static
@@ -163,27 +194,17 @@ uint32_t Server::choosePort() const {
   }
   Q_ASSERT(length < 65536);
 
-  while (true) {
-    // Pick a port at random.
-    quint32 r = QRandomGenerator::global()->generate() % length;
-    quint32 port = 0;
+  // Pick a port at random.
+  quint32 r = QRandomGenerator::global()->generate() % length;
+  quint32 port = 0;
 
-    for (const QPair<uint32_t, uint32_t>& range : m_portRanges) {
-      if (r <= (range.second - range.first)) {
-        port = r + range.first;
-        break;
-      }
-      r -= (range.second - range.first + 1);
+  for (const QPair<uint32_t, uint32_t>& range : m_portRanges) {
+    if (r <= (range.second - range.first)) {
+      port = r + range.first;
+      break;
     }
-    Q_ASSERT(port != 0);
-
-    // Avoid using port 53/DNS for multihop, since Mullvad blocks DNS traffic.
-    if (port != 53) {
-      return port;
-    }
+    r -= (range.second - range.first + 1);
   }
-
-  // We should not get here.
-  Q_ASSERT(false);
-  return 0;
+  Q_ASSERT(port != 0);
+  return port;
 }

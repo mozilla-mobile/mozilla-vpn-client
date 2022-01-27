@@ -7,10 +7,9 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 VPNStackView {
     id: stackview
@@ -28,10 +27,10 @@ VPNStackView {
             errorMessage: VPNl18n.NotSignedInGoogleGoogleModalBodyText,
 
             // Go to Play Store
-            buttonText: VPNl18n.NotSignedInGoogleGoogleModalLinkText,
-            buttonObjectName: "errorGetHelpButton",
-            buttonOnClick: stackview.handleButtonClick,
-            signOffLinkVisible: true,
+            primaryButtonText: VPNl18n.NotSignedInGoogleGoogleModalLinkText,
+            primaryButtonObjectName: "errorGetHelpButton",
+            primaryButtonOnClick: stackview.handleButtonClick,
+            secondaryButtonIsSignOff: true,
             getHelpLinkVisible: true
             }
         );

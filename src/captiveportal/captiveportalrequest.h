@@ -5,17 +5,20 @@
 #ifndef CAPTIVEPORTALREQUEST_H
 #define CAPTIVEPORTALREQUEST_H
 
-#include "captiveportalresult.h"
-
 #include <QObject>
 #include <QUrl>
+
+class Task;
 
 class CaptivePortalRequest final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(CaptivePortalRequest)
 
  public:
-  explicit CaptivePortalRequest(QObject* parent);
+  enum CaptivePortalResult { NoPortal, PortalDetected, Failure };
+  Q_ENUM(CaptivePortalResult);
+
+  explicit CaptivePortalRequest(Task* parent);
   ~CaptivePortalRequest();
 
   void run();

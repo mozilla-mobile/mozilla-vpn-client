@@ -22,8 +22,14 @@ constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
 // Number of msecs for the unsecured network alert.
 constexpr uint32_t UNSECURED_NETWORK_ALERT_MSEC = 4000;
 
+// Number of msecs for the server unavailable alert.
+constexpr uint32_t SERVER_UNAVAILABLE_ALERT_MSEC = 4000;
+
 // Number of recent connections to retain.
 constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
+
+// Cooldown period for unresponsive servers
+constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
 
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
@@ -49,8 +55,9 @@ CONSTEXPR(int, chartsMaxPoints, 30, 30, 30);
 // Any 6 hours, a new check
 CONSTEXPR(uint32_t, releaseMonitorMsec, 21600000, 4000, 0)
 
-// in milliseconds, how often we should fetch the server list and the account.
-CONSTEXPR(uint32_t, scheduleAccountAndServersTimerMsec, 3600000, 4000, 0)
+// in milliseconds, how often we should fetch the server list, the account and
+// so on.
+CONSTEXPR(uint32_t, schedulePeriodicTaskTimerMsec, 3600000, 4000, 0)
 
 // how often we check the captive portal when the VPN is on.
 CONSTEXPR(uint32_t, captivePortalRequestTimeoutMsec, 10000, 4000, 0)
@@ -74,7 +81,11 @@ constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
-constexpr const char* LOGO_URL = ":/ui/resources/logo-dock.png";
+constexpr auto CRASH_PRODUCTION_URL =
+    "https://crash-reports.mozilla.com/submit";
+constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
+
+constexpr const char* LOGO_URL = ":/nebula/resources/logo-dock.png";
 
 PRODBETAEXPR(const char*, fxaUrl, "https://api.accounts.firefox.com",
              "https://api-accounts.stage.mozaws.net")

@@ -8,8 +8,8 @@ import QtQuick.Controls 2.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 
 VPNStackView {
@@ -28,11 +28,11 @@ VPNStackView {
                 errorMessage: qsTrId("vpn.errors.unableToEstablishConnection"),
 
                 //% "Try Again"
-                buttonText: qsTrId("vpn.errors.tryAgain"),
+                primaryButtonText: qsTrId("vpn.errors.tryAgain"),
 
-                buttonObjectName: "heartbeatTryButton",
-                buttonOnClick: stackview.handleButtonClick,
-                signOffLinkVisible: false,
+                primaryButtonObjectName: "heartbeatTryButton",
+                primaryButtonOnClick: stackview.handleButtonClick,
+                secondaryButtonIsSignOff: false,
                 getHelpLinkVisible: true,
                 statusLinkVisible: true
             }

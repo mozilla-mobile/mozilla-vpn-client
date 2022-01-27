@@ -186,6 +186,18 @@ static QList<WebSocketSettingCommand> s_settingCommands{
                      ? "true"
                      : "false";
         }},
+    // server-unavailable-notification
+    WebSocketSettingCommand{
+        "server-unavailable-notification", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setServerUnavailableNotification(value ==
+                                                                       "true");
+        },
+        []() {
+          return SettingsHolder::instance()->serverUnavailableNotification()
+                     ? "true"
+                     : "false";
+        }},
 
     // language
     WebSocketSettingCommand{
@@ -328,7 +340,12 @@ static QList<WebSocketCommand> s_commands{
                          QString name = mp.name() + QString(padding, ' ');
 
                          if (value.type() == QVariant::StringList) {
-                           for (const QString& x : value.value<QStringList>()) {
+                           QStringList list = value.value<QStringList>();
+                           if (list.isEmpty()) {
+                             result += name + " =\n";
+                             continue;
+                           }
+                           for (const QString& x : list) {
                              result += name + " = " + x + "\n";
                              name.fill(' ', longest);
                            }
@@ -474,7 +491,6 @@ static QList<WebSocketCommand> s_commands{
                        MozillaVPN::instance()->releaseMonitor()->runSoon();
                        return QJsonObject();
                      }},
-
     WebSocketCommand{"force_captive_portal_check",
                      "Force a captive portal check", 0,
                      [](const QList<QByteArray>&) {
@@ -484,20 +500,43 @@ static QList<WebSocketCommand> s_commands{
                        return QJsonObject();
                      }},
 
-    WebSocketCommand{"force_captive_portal_detection",
-                     "Simulate a captive portal detection", 0,
-                     [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()
-                           ->captivePortalDetection()
-                           ->captivePortalDetected();
-                       return QJsonObject();
-                     }},
+    WebSocketCommand{
+        "force_captive_portal_detection", "Simulate a captive portal detection",
+        0,
+        [](const QList<QByteArray>&) {
+          MozillaVPN::instance()
+              ->captivePortalDetection()
+              ->captivePortalDetected();
+          MozillaVPN::instance()->controller()->captivePortalPresent();
+          return QJsonObject();
+        }},
 
     WebSocketCommand{
         "force_unsecured_network", "Force an unsecured network detection", 0,
         [](const QList<QByteArray>&) {
           MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
                                                                      "Dummy");
+          return QJsonObject();
+        }},
+
+    WebSocketCommand{
+        "force_server_unavailable",
+        "Timeout all servers in a city using force_server_unavailable "
+        "{countryCode} "
+        "{cityCode}",
+        2,
+        [](const QList<QByteArray>& arguments) {
+          QJsonObject obj;
+          if (QString(arguments[1]) != "" && QString(arguments[2]) != "") {
+            MozillaVPN::instance()
+                ->controller()
+                ->setCooldownForAllServersInACity(QString(arguments[1]),
+                                                  QString(arguments[2]));
+          } else {
+            obj["error"] =
+                QString("Please provide country and city codes as arguments");
+          }
+
           return QJsonObject();
         }},
 

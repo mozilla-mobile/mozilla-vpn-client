@@ -38,8 +38,28 @@ INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
-            ../glean/telemetry \
-            ../translations/generated
+            ../translations/generated \
+            ../glean \
+            ../lottie/lib \
+            ../nebula
+
+include($$PWD/../glean/glean.pri)
+
+include($$PWD/../nebula/nebula.pri)
+
+!wasm{
+    include($$PWD/crashreporter/crashreporter.pri)
+}
+
+# https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2509
+# Something in the Lottie project causes qmake to generate a
+# broken vcxproj, and is causing build failures on Windows, iOS, and macOS.
+
+# !win32{
+    # message("Adding Lottie")
+    # include($$PWD/../lottie/lottie.pri)
+    # INCLUDEPATH += ../lottie/lib
+# }
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -60,7 +80,7 @@ SOURCES += \
         captiveportal/captiveportalmonitor.cpp \
         captiveportal/captiveportalnotifier.cpp \
         captiveportal/captiveportalrequest.cpp \
-        captiveportal/captiveportalmultirequest.cpp \
+        captiveportal/captiveportalrequesttask.cpp \
         closeeventhandler.cpp \
         collator.cpp \
         command.cpp \
@@ -93,11 +113,10 @@ SOURCES += \
         hawkauth.cpp \
         hkdf.cpp \
         iaphandler.cpp \
+        imageproviderfactory.cpp \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
-        ipaddressrange.cpp \
-        ipfinder.cpp \
         l18nstringsimpl.cpp \
         leakdetector.cpp \
         localizer.cpp \
@@ -144,7 +163,7 @@ SOURCES += \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
-        tasks/accountandservers/taskaccountandservers.cpp \
+        tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
@@ -152,13 +171,17 @@ SOURCES += \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
+        tasks/group/taskgroup.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
+        tasks/ipfinder/taskipfinder.cpp \
         tasks/products/taskproducts.cpp \
+        tasks/release/taskrelease.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
+        tasks/servers/taskservers.cpp \
         tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
-        timercontroller.cpp \
+        theme.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
@@ -172,15 +195,13 @@ HEADERS += \
         authenticationinapp/authenticationinapp.h \
         authenticationinapp/authenticationinapplistener.h \
         authenticationinapp/incrementaldecoder.h \
-        bigintipv6addr.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
         captiveportal/captiveportaldetectionimpl.h \
         captiveportal/captiveportalmonitor.h \
         captiveportal/captiveportalnotifier.h \
         captiveportal/captiveportalrequest.h \
-        captiveportal/captiveportalmultirequest.h \
-        captiveportal/captiveportalresult.h \
+        captiveportal/captiveportalrequesttask.h \
         closeeventhandler.h \
         collator.h \
         command.h \
@@ -212,6 +233,7 @@ HEADERS += \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
         features/featurelocalareaaccess.h \
+        features/featuremultiaccountcontainers.h \
         features/featuremultihop.h \
         features/featurenotificationcontrol.h \
         features/featuresharelogs.h \
@@ -219,16 +241,16 @@ HEADERS += \
         features/featurestartonboot.h \
         features/featureuniqueid.h \
         features/featureunsecurednetworknotification.h \
+        features/featureserverunavailablenotification.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
         hkdf.h \
         iaphandler.h \
+        imageproviderfactory.h \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
-        ipaddressrange.h \
-        ipfinder.h \
         leakdetector.h \
         localizer.h \
         logger.h \
@@ -275,7 +297,7 @@ HEADERS += \
         simplenetworkmanager.h \
         statusicon.h \
         task.h \
-        tasks/accountandservers/taskaccountandservers.h \
+        tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
@@ -283,13 +305,17 @@ HEADERS += \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \
+        tasks/group/taskgroup.h \
         tasks/heartbeat/taskheartbeat.h \
+        tasks/ipfinder/taskipfinder.h \
         tasks/products/taskproducts.h \
+        tasks/release/taskrelease.h \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
+        tasks/servers/taskservers.h \
         tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
-        timercontroller.h \
+        theme.h \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
@@ -314,30 +340,10 @@ unix {
     HEADERS += signalhandler.h
 }
 
-RESOURCES += ui/components.qrc
-RESOURCES += ui/license.qrc
 RESOURCES += ui/resources.qrc
-RESOURCES += ui/themes.qrc
+RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
-
-versionAtLeast(QT_VERSION, 6.0.0) {
-    RESOURCES += ui/compatQt6.qrc
-    RESOURCES += ui/resourcesQt6.qrc
-} else {
-    RESOURCES += ui/compatQt5.qrc
-}
-
-exists($$PWD/../glean/telemetry/gleansample.h) {
-    !wasm {
-        message(Include QSQlite plugin)
-        QTPLUGIN += qsqlite
-    }
-
-    RESOURCES += $$PWD/../glean/glean.qrc
-} else {
-    error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
-}
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
@@ -475,7 +481,7 @@ else:linux:!android {
     DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
     GO_MODULES = ../linux/netfilter/netfilter.go
-    
+
     target.path = $${USRPATH}/bin
     INSTALLS += target
 
@@ -540,18 +546,26 @@ else:android {
                    adjust/adjusthandler.cpp \
                    adjust/adjustproxy.cpp \
                    adjust/adjustproxyconnection.cpp \
-                   adjust/adjustproxypackagehandler.cpp
+                   adjust/adjustproxypackagehandler.cpp \
+                   adjust/adjusttasksubmission.cpp
 
         HEADERS += adjust/adjustfiltering.h \
                    adjust/adjusthandler.h \
                    adjust/adjustproxy.h \
                    adjust/adjustproxyconnection.h \
-                   adjust/adjustproxypackagehandler.h
+                   adjust/adjustproxypackagehandler.h \
+                   adjust/adjusttasksubmission.h
     }
 
     versionAtLeast(QT_VERSION, 5.15.1) {
       QMAKE_CXXFLAGS *= -Werror
     }
+    versionAtLeast(QT_VERSION, 6.0.0) {
+        # We need to include qtprivate api's
+        # As QAndroidBinder is not yet implemented with a public api
+        QT+=core-private
+    }
+
 
     # Android Deploy-to-Qt strips the info anyway
     # but we want to create an extra bundle with the info :)
@@ -571,7 +585,6 @@ else:android {
 
     DEFINES += MVPN_ANDROID
 
-    ANDROID_ABIS = x86 x86_64 armeabi-v7a arm64-v8a
 
     INCLUDEPATH += platforms/android
 
@@ -586,7 +599,8 @@ else:android {
                 platforms/android/androidappimageprovider.cpp \
                 platforms/android/androidapplistprovider.cpp \
                 platforms/android/androidsharedprefs.cpp \
-                tasks/authenticate/desktopauthenticationlistener.cpp
+                tasks/authenticate/desktopauthenticationlistener.cpp \
+                tasks/purchase/taskpurchase.cpp
 
     HEADERS +=  platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
@@ -599,7 +613,10 @@ else:android {
                 platforms/android/androidappimageprovider.h \
                 platforms/android/androidapplistprovider.h \
                 platforms/android/androidsharedprefs.h \
-                tasks/authenticate/desktopauthenticationlistener.h
+                platforms/android/androidjnicompat.h \
+                tasks/authenticate/desktopauthenticationlistener.h \
+                tasks/purchase/taskpurchase.h
+
 
     # Usable Linux Imports
     SOURCES += platforms/linux/linuxpingsender.cpp \
@@ -752,7 +769,8 @@ else:ios {
                    adjust/adjusthandler.cpp \
                    adjust/adjustproxy.cpp \
                    adjust/adjustproxyconnection.cpp \
-                   adjust/adjustproxypackagehandler.cpp
+                   adjust/adjustproxypackagehandler.cpp \
+                   adjust/adjusttasksubmission.cpp
 
         OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm
 
@@ -760,7 +778,8 @@ else:ios {
                    adjust/adjusthandler.h \
                    adjust/adjustproxy.h \
                    adjust/adjustproxyconnection.h \
-                   adjust/adjustproxypackagehandler.h
+                   adjust/adjustproxypackagehandler.h \
+                   adjust/adjusttasksubmission.h
 
         OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h
     }
@@ -784,7 +803,8 @@ else:ios {
     DEFINES += MVPN_IOS
 
     SOURCES += \
-            platforms/macos/macospingsender.cpp
+            platforms/macos/macospingsender.cpp \
+            tasks/purchase/taskpurchase.cpp
 
     OBJECTIVE_SOURCES += \
             platforms/ios/iosiaphandler.mm \
@@ -797,7 +817,8 @@ else:ios {
             platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
-            platforms/macos/macospingsender.h
+            platforms/macos/macospingsender.h \
+            tasks/purchase/taskpurchase.h
 
     OBJECTIVE_HEADERS += \
             platforms/ios/iosiaphandler.h \
@@ -825,6 +846,7 @@ else:win* {
 
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+
     CONFIG(debug, debug|release) {
         QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
         QMAKE_LFLAGS_WINDOWS += /DEBUG
@@ -852,6 +874,7 @@ else:win* {
         platforms/windows/daemon/windowsdaemon.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
+        platforms/windows/daemon/windowsroutemonitor.cpp \
         platforms/windows/daemon/windowstunnellogger.cpp \
         platforms/windows/daemon/windowstunnelservice.cpp \
         platforms/windows/daemon/wireguardutilswindows.cpp \
@@ -880,11 +903,12 @@ else:win* {
         eventlistener.h \
         localsocketcontroller.h \
         platforms/windows/windowsapplistprovider.h \
-        platforms/windows/windowsappimageprovider.h \ 
+        platforms/windows/windowsappimageprovider.h \
         platforms/windows/daemon/dnsutilswindows.h \
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
+        platforms/windows/daemon/windowsroutemonitor.h \
         platforms/windows/daemon/windowstunnellogger.h \
         platforms/windows/daemon/windowstunnelservice.h \
         platforms/windows/daemon/wireguardutilswindows.h \
@@ -919,6 +943,7 @@ else:wasm {
 
     # 32Mb
     QMAKE_WASM_TOTAL_MEMORY=33554432
+    QMAKE_LFLAGS+= "-s TOTAL_MEMORY=33554432"
 
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \

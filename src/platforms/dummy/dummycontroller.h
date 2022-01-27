@@ -24,11 +24,8 @@ class DummyController final : public ControllerImpl {
     emit initialized(true, false, QDateTime());
   }
 
-  void activate(const QList<Server>& serverList, const Device* device,
-                const Keys* keys,
-                const QList<IPAddressRange>& allowedIPAddressRanges,
-                const QList<QString>& vpnDisabledApps,
-                const QHostAddress& dnsServer, Reason reason) override;
+  void activate(const HopConnection& hop, const Device* device,
+                const Keys* keys, Reason reason) override;
 
   void deactivate(Reason reason) override;
 
@@ -42,6 +39,7 @@ class DummyController final : public ControllerImpl {
   int64_t m_txBytes = 0;
   int64_t m_rxBytes = 0;
   bool m_connected = false;
+  QString m_publicKey;
   QTimer m_delayTimer;
 };
 

@@ -45,7 +45,6 @@ HEADERS += \
     ../../src/hkdf.h \
     ../../src/inspector/inspectorwebsocketconnection.h \
     ../../src/ipaddress.h \
-    ../../src/ipaddressrange.h \
     ../../src/leakdetector.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
@@ -62,6 +61,7 @@ HEADERS += \
     ../../src/task.h \
     ../../src/tasks/authenticate/desktopauthenticationlistener.h \
     ../../src/tasks/authenticate/taskauthenticate.h \
+    ../../src/tasks/function/taskfunction.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
@@ -82,7 +82,6 @@ SOURCES += \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
     ../../src/ipaddress.cpp \
-    ../../src/ipaddressrange.cpp \
     ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/logger.cpp \
@@ -98,6 +97,7 @@ SOURCES += \
     ../../src/simplenetworkmanager.cpp \
     ../../src/tasks/authenticate/desktopauthenticationlistener.cpp \
     ../../src/tasks/authenticate/taskauthenticate.cpp \
+    ../../src/tasks/function/taskfunction.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \

@@ -21,7 +21,6 @@ class CaptivePortalNotifier final : public QObject {
 
  signals:
   void activationRequired();
-  void deactivationRequired();
 
  private:
   void notificationClicked(NotificationHandler::Message message);

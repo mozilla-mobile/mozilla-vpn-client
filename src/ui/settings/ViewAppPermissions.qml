@@ -8,11 +8,9 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import components.forms 0.1
-import themes 0.1
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 
 Item {
@@ -33,7 +31,7 @@ Item {
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
         flickContentHeight:  (VPNSettings.protectSelectedApps ? enabledList.y + enabledList.implicitHeight + 100 : vpnFlickable.y + toggleCard.height )+ helpInfoText.height + helpLink.height
         anchors.top: parent.top
-        anchors.topMargin: Theme.menuHeight
+        anchors.topMargin: VPNTheme.theme.menuHeight
         height: root.height - menu.height
         anchors.left: parent.left
         anchors.right: parent.right
@@ -51,7 +49,7 @@ Item {
             id: messageBox
             visible: true
             anchors.top: parent.top
-            anchors.topMargin: Theme.windowMargin
+            anchors.topMargin: VPNTheme.theme.windowMargin
             anchors.left: parent.left
             anchors.leftMargin: 8
             width: toggleCard.width-16
@@ -78,7 +76,7 @@ Item {
                 target: VPNAppPermissions
                 function onNotification(type,message,action) {
                     console.log("Got notification: "+type + "  message:"+message);
-                    var component = Qt.createComponent("qrc:/components/components/VPNAlert.qml");
+                    var component = Qt.createComponent("qrc:/nebula/components/VPNAlert.qml", { updateURL: "qrc:/ui/views/ViewUpdate.qml" });
                     if(component.status !== Component.Ready)
                         {
                             if( component.status == Component.Error )
@@ -94,7 +92,7 @@ Item {
                                                duration:type === "warning"? 0: 2000,
                                                destructive:true,
                                                // Pin y hight to be below the alert bar as we can't render above it
-                                               setY: vpnFlickable.y+Theme.windowMargin, 
+                                               setY: vpnFlickable.y+VPNTheme.theme.windowMargin, 
                                                onActionPressed: ()=>{VPNAppPermissions.openFilePicker();},
                                            });
 
@@ -146,7 +144,7 @@ Item {
 
         VPNTextBlock {
             id: helpInfoText
-            width: vpnFlickable.width - Theme.windowMargin*3
+            width: vpnFlickable.width - VPNTheme.theme.windowMargin*3
             anchors.topMargin: 30
             anchors.top: enabledList.visible? enabledList.bottom : toggleCard.bottom
             anchors.horizontalCenter:  enabledList.visible? enabledList.horizontalCenter : toggleCard.horizontalCenter

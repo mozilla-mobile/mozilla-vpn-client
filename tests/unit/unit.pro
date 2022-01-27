@@ -14,6 +14,7 @@ DEFINES += BUILD_ID=\\\"1234\\\"
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 DEFINES += UNIT_TEST
+DEFINES += MVPN_ADJUST
 
 TEMPLATE = app
 TARGET = tests
@@ -24,13 +25,16 @@ INCLUDEPATH += \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
             ../../src/hacl-star/kremlin/minimal \
-            ../../translations/generated
+            ../../translations/generated \
+            ../../glean \
+            ../../nebula
+
+include($$PWD/../../glean/glean.pri)
+include($$PWD/../../nebula/nebula.pri)
 
 HEADERS += \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
-    ../../src/bigint.h \
-    ../../src/bigintipv6addr.h \
     ../../src/captiveportal/captiveportal.h \
     ../../src/collator.h \
     ../../src/command.h \
@@ -44,8 +48,6 @@ HEADERS += \
     ../../src/featurelist.h \
     ../../src/inspector/inspectorwebsocketconnection.h \
     ../../src/ipaddress.h \
-    ../../src/ipaddressrange.h \
-    ../../src/ipfinder.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
@@ -89,10 +91,14 @@ HEADERS += \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
     ../../src/task.h \
-    ../../src/tasks/accountandservers/taskaccountandservers.h \
+    ../../src/tasks/account/taskaccount.h \
     ../../src/tasks/adddevice/taskadddevice.h \
+    ../../src/tasks/ipfinder/taskipfinder.h \
     ../../src/tasks/function/taskfunction.h \
+    ../../src/tasks/release/taskrelease.h \
+    ../../src/tasks/servers/taskservers.h \
     ../../src/taskscheduler.h \
+    ../../src/theme.h \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
@@ -100,8 +106,6 @@ HEADERS += \
     helper.h \
     testadjust.h \
     testandroidmigration.h \
-    testbigint.h \
-    testbigintipv6addr.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
     testfeature.h \
@@ -116,6 +120,7 @@ HEADERS += \
     testreleasemonitor.h \
     teststatusicon.h \
     testtasks.h \
+    testthemes.h \
     testtimersingleshot.h
 
 SOURCES += \
@@ -136,8 +141,6 @@ SOURCES += \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
     ../../src/hacl-star/Hacl_Poly1305_32.c \
     ../../src/ipaddress.cpp \
-    ../../src/ipaddressrange.cpp \
-    ../../src/ipfinder.cpp \
     ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
@@ -177,10 +180,14 @@ SOURCES += \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \
-    ../../src/tasks/accountandservers/taskaccountandservers.cpp \
+    ../../src/tasks/account/taskaccount.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
+    ../../src/tasks/ipfinder/taskipfinder.cpp \
     ../../src/tasks/function/taskfunction.cpp \
+    ../../src/tasks/release/taskrelease.cpp \
+    ../../src/tasks/servers/taskservers.cpp \
     ../../src/taskscheduler.cpp \
+    ../../src/theme.cpp \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
@@ -192,8 +199,6 @@ SOURCES += \
     mocnetworkrequest.cpp \
     testadjust.cpp \
     testandroidmigration.cpp \
-    testbigint.cpp \
-    testbigintipv6addr.cpp \
     testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
     testfeature.cpp \
@@ -208,6 +213,7 @@ SOURCES += \
     testreleasemonitor.cpp \
     teststatusicon.cpp \
     testtasks.cpp \
+    testthemes.cpp \
     testtimersingleshot.cpp
 
 exists($$PWD/../../translations/generated/l18nstrings.h) {
@@ -254,6 +260,7 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 RESOURCES += ../../src/ui/license.qrc
+RESOURCES += themes/themes.qrc
 
 coverage {
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping

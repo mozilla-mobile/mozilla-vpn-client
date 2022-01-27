@@ -3,12 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "helper.h"
+#include <glean.h>
+#include <nebula.h>
 
 TestHelper::TestHelper() {
   FeatureList::instance()->initialize();
   m_closeEventHandler = new CloseEventHandler();
   m_whatsNewModel = new WhatsNewModel();
   m_l18nstrings = L18nStrings::instance();
+  m_theme = new Theme();
   m_mozillavpn = MozillaVPN::instance();
 }
 
@@ -54,10 +57,8 @@ void TestHelper::triggerAboutToQuit() const {
 }
 
 void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
-  engine->addImportPath("qrc:///compat");
-  engine->addImportPath("qrc:///components");
-  engine->addImportPath("qrc:///glean");
-  engine->addImportPath("qrc:///themes");
+  Nebula::Initialize(engine);
+  Glean::Initialize(engine);
   engine->addImportPath("qrc:///");
 
   qmlRegisterSingletonType<TestHelper>(
@@ -103,6 +104,14 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
       "Mozilla.VPN", 1, 0, "VPNWhatsNewModel",
       [this](QQmlEngine*, QJSEngine*) -> QObject* {
         QObject* obj = m_whatsNewModel;
+        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+        return obj;
+      });
+  qmlRegisterSingletonType<MozillaVPN>(
+      "Mozilla.VPN", 1, 0, "VPNTheme",
+      [this](QQmlEngine*, QJSEngine* engine) -> QObject* {
+        m_theme->initialize(engine);
+        QObject* obj = m_theme;
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });

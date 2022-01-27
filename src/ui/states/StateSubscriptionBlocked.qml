@@ -7,10 +7,9 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 VPNStackView {
     id: stackview
@@ -30,11 +29,11 @@ VPNStackView {
             //% "Visit our help center to learn more about managing your subscriptions."
             errorMessage2: qsTrId("vpn.subscriptionBlocked.visitHelpCenter"),
 
-            //% "Get help"
-            buttonText: qsTrId("vpn.subscriptionBlocked.getHelp"),
-            buttonObjectName: "errorGetHelpButton",
-            buttonOnClick: stackview.handleButtonClick,
-            signOffLinkVisible: true,
+            //% "Get Help"
+            primaryButtonText: qsTrId("vpn.subscriptionBlocked.getHelp"),
+            primaryButtonObjectName: "errorGetHelpButton",
+            primaryButtonOnClick: stackview.handleButtonClick,
+            secondaryButtonIsSignOff: true,
             getHelpLinkVisible: false
             }
         );

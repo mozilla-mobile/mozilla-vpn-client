@@ -19,6 +19,7 @@ class Server final {
   ~Server();
 
   [[nodiscard]] bool fromJson(const QJsonObject& obj);
+  bool fromMultihop(const Server& exit, const Server& entry);
 
   static const Server& weightChooser(const QList<Server>& servers);
 
@@ -38,11 +39,16 @@ class Server final {
 
   const QString& socksName() const { return m_socksName; }
 
+  qint64 cooldownTimeout() const { return m_cooldownTimeout; }
+  void setCooldownTimeout(qint64 timeout);
+
   uint32_t weight() const { return m_weight; }
 
   uint32_t choosePort() const;
 
   uint32_t multihopPort() const { return m_multihopPort; }
+
+  bool forcePort(uint32_t port);
 
   bool operator==(const Server& other) const {
     return m_publicKey == other.m_publicKey;
@@ -59,6 +65,7 @@ class Server final {
   QString m_socksName;
   uint32_t m_weight = 0;
   uint32_t m_multihopPort = 0;
+  qint64 m_cooldownTimeout = 0;
 };
 
 #endif  // SERVER_H

@@ -46,8 +46,14 @@ jobs:
           qmake CONFIG+=QMLTEST
           make -j$(nproc)
 
-      - name: Run the test script
+      - name: Run the QML tests
         shell: bash
         run: |
           export PATH=/opt/qt515/bin:$PATH
           xvfb-run -a ./tests/qml/qml_tests -platform offscreen
+
+      - name: Run the Lottie tests
+        shell: bash
+        run: |
+          export PATH=/opt/qt515/bin:$PATH
+          xvfb-run -a ./lottie/tests/qml/tst_lottie -platform offscreen

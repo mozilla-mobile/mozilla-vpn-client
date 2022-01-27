@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>crashui/main.qml</file>
+    </qresource>
+</RCC>

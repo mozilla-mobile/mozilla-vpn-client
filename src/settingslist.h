@@ -278,6 +278,7 @@ SETTING_BOOL(serverSwitchNotification,     // getter
              true,                         // default value
              false                         // remove when reset
 )
+
 SETTING_STRING(stagingServerAddress,     // getter
                setStagingServerAddress,  // setter
                hasStagingServerAddress,  // has
@@ -335,11 +336,28 @@ SETTING_STRING(token,     // getter
                true       // remove when reset
 )
 
+SETTING_BOOL(tunnelPort53,     // getter
+             setTunnelPort53,  // setter
+             hasTunnelPort53,  // has
+             "tunnelPort53",   // key
+             false,            // default value
+             true              // remove when reset
+)
+
 SETTING_BOOL(unsecuredNetworkAlert,     // getter
              setUnsecuredNetworkAlert,  // setter
              hasUnsecuredNetworkAlert,  // has
              "unsecuredNetworkAlert",   // key
              FeatureUnsecuredNetworkNotification::instance()
+                 ->isSupported(),  // default value
+             false                 // remove when reset
+)
+
+SETTING_BOOL(serverUnavailableNotification,     // getter
+             setServerUnavailableNotification,  // setter
+             hasServerUnavailableNotification,  // has
+             "serverUnavailableNotification",   // key
+             FeatureServerUnavailableNotification::instance()
                  ->isSupported(),  // default value
              false                 // remove when reset
 )
@@ -447,3 +465,13 @@ SETTING_STRINGLIST(subscriptionTransactions,     // getter
                    false                         // remove when reset
 )
 #endif
+
+#define DEFAULT_THEME "main"
+
+SETTING_STRING(theme,          // getter
+               setTheme,       // setter
+               hasTheme,       // has
+               "theme",        // key
+               DEFAULT_THEME,  // default value
+               true            // remove when reset
+)

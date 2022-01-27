@@ -67,12 +67,12 @@ void HelpModel::open(int id) {
 
   const HelpEntry& entry = s_helpEntries.at(id);
   if (entry.m_viewLog) {
-    emit MozillaVPN::instance()->requestViewLogs();
+    MozillaVPN::instance()->requestViewLogs();
     return;
   }
 
   if (!entry.m_externalLink && entry.m_linkType == MozillaVPN::LinkContact) {
-    emit MozillaVPN::instance()->requestContactUs();
+    MozillaVPN::instance()->requestContactUs();
     return;
   }
 

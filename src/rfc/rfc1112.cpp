@@ -6,5 +6,5 @@
 
 // static
 IPAddress RFC1112::ipv4MulticastAddressBlock() {
-  return IPAddress::create("224.0.0.0/4");
+  return IPAddress("224.0.0.0/4");
 }

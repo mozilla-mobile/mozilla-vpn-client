@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "servercity.h"
+#include "constants.h"
 #include "leakdetector.h"
 
 #include <QJsonArray>
@@ -56,21 +57,22 @@ bool ServerCity::fromJson(const QJsonObject& obj) {
     return false;
   }
 
-  QList<Server> servers;
-  QJsonArray serversArray = serversValue.toArray();
-  for (QJsonValue serverValue : serversArray) {
-    if (!serverValue.isObject()) {
-      return false;
+  QList<QString> servers;
+  if (!Constants::inProduction() || !name.toString().contains("BETA")) {
+    QJsonArray serversArray = serversValue.toArray();
+    for (QJsonValue serverValue : serversArray) {
+      if (!serverValue.isObject()) {
+        return false;
+      }
+
+      QJsonObject serverObj = serverValue.toObject();
+      QJsonValue pubkeyValue = serverObj.value("public_key");
+      if (!pubkeyValue.isString()) {
+        return false;
+      }
+
+      servers.append(pubkeyValue.toString());
     }
-
-    QJsonObject serverObj = serverValue.toObject();
-
-    Server server;
-    if (!server.fromJson(serverObj)) {
-      return false;
-    }
-
-    servers.append(server);
   }
 
   m_name = name.toString();

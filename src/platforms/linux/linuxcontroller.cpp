@@ -6,7 +6,7 @@
 #include "backendlogsobserver.h"
 #include "dbusclient.h"
 #include "errorhandler.h"
-#include "ipaddressrange.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
@@ -29,9 +29,9 @@ LinuxController::LinuxController() {
   MVPN_COUNT_CTOR(LinuxController);
 
   m_dbus = new DBusClient(this);
-  connect(m_dbus, &DBusClient::connected, this, &LinuxController::hopConnected);
+  connect(m_dbus, &DBusClient::connected, this, &LinuxController::connected);
   connect(m_dbus, &DBusClient::disconnected, this,
-          &LinuxController::hopDisconnected);
+          &LinuxController::disconnected);
 }
 
 LinuxController::~LinuxController() { MVPN_COUNT_DTOR(LinuxController); }
@@ -60,41 +60,25 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
   Q_ASSERT(json.isObject());
 
   QJsonObject obj = json.object();
-  Q_ASSERT(obj.contains("status"));
-  QJsonValue statusValue = obj.value("status");
+  Q_ASSERT(obj.contains("connected"));
+  QJsonValue statusValue = obj.value("connected");
   Q_ASSERT(statusValue.isBool());
 
   emit initialized(true, statusValue.toBool(), QDateTime::currentDateTime());
 }
 
-void LinuxController::activate(
-    const QList<Server>& serverList, const Device* device, const Keys* keys,
-    const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
-    Reason reason) {
+void LinuxController::activate(const HopConnection& hop, const Device* device,
+                               const Keys* keys, Reason reason) {
   Q_UNUSED(reason);
-  Q_UNUSED(vpnDisabledApps);
 
-  // Activate connections starting from the outermost tunnel
-  for (int hopindex = serverList.count() - 1; hopindex > 0; hopindex--) {
-    const Server& hop = serverList[hopindex];
-    const Server& next = serverList[hopindex - 1];
-    QList<IPAddressRange> hopAddressRanges = {
-        IPAddressRange(next.ipv4AddrIn()), IPAddressRange(next.ipv6AddrIn())};
-    logger.debug() << "LinuxController hopindex" << hopindex << "activated";
-    connect(m_dbus->activate(hop, device, keys, hopindex, hopAddressRanges,
-                             QStringList(), QHostAddress(hop.ipv4Gateway())),
-            &QDBusPendingCallWatcher::finished, this,
-            &LinuxController::operationCompleted);
-  }
+  connect(
+      m_dbus->activate(hop.m_server, device, keys, hop.m_hopindex,
+                       hop.m_allowedIPAddressRanges, hop.m_excludedAddresses,
+                       hop.m_vpnDisabledApps, hop.m_dnsServer),
+      &QDBusPendingCallWatcher::finished, this,
+      &LinuxController::operationCompleted);
 
-  // Activate the final hop last
   logger.debug() << "LinuxController activated";
-  const Server& server = serverList[0];
-  connect(m_dbus->activate(server, device, keys, 0, allowedIPAddressRanges,
-                           vpnDisabledApps, dnsServer),
-          &QDBusPendingCallWatcher::finished, this,
-          &LinuxController::operationCompleted);
 }
 
 void LinuxController::deactivate(Reason reason) {
@@ -131,24 +115,6 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   emit disconnected();
 }
 
-void LinuxController::hopConnected(int hopindex) {
-  if (hopindex == 0) {
-    logger.debug() << "LinuxController connected";
-    emit connected();
-  } else {
-    logger.debug() << "LinuxController hopindex" << hopindex << "connected";
-  }
-}
-
-void LinuxController::hopDisconnected(int hopindex) {
-  if (hopindex == 0) {
-    logger.debug() << "LinuxController disconnected";
-    emit disconnected();
-  } else {
-    logger.debug() << "LinuxController hopindex" << hopindex << "disconnected";
-  }
-}
-
 void LinuxController::checkStatus() {
   logger.debug() << "Check status";
 
@@ -171,8 +137,8 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
   Q_ASSERT(json.isObject());
 
   QJsonObject obj = json.object();
-  Q_ASSERT(obj.contains("status"));
-  QJsonValue statusValue = obj.value("status");
+  Q_ASSERT(obj.contains("connected"));
+  QJsonValue statusValue = obj.value("connected");
   Q_ASSERT(statusValue.isBool());
 
   if (!statusValue.toBool()) {

@@ -8,11 +8,9 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import components.forms 0.1
-import themes 0.1
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 Item {
     id: root
@@ -26,9 +24,9 @@ Item {
         anchors.left: root.left
         anchors.right: root.right
         anchors.top: root.top
-        anchors.topMargin: Theme.menuHeight
+        anchors.topMargin: VPNTheme.theme.menuHeight
         height: root.height - menu.height
-        flickContentHeight: col.y + col.childrenRect.height + ( Theme.rowHeight * 2 )
+        flickContentHeight: col.y + col.childrenRect.height + ( VPNTheme.theme.rowHeight * 2 )
         interactive: flickContentHeight > height
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
@@ -43,10 +41,10 @@ Item {
             id: col
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.rightMargin: Theme.windowMargin
+            anchors.rightMargin: VPNTheme.theme.windowMargin
             anchors.top: parent.top
-            anchors.topMargin: Theme.windowMargin
-            spacing: Theme.windowMargin
+            anchors.topMargin: VPNTheme.theme.windowMargin
+            spacing: VPNTheme.theme.windowMargin
 
             VPNContextualAlerts {
                 anchors.leftMargin: Theme.windowMargin
@@ -97,7 +95,7 @@ Item {
                     if (vpnFlickable.vpnIsOff) {
                         VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
                     }
-            }
+                }
             }
 
             VPNCheckBoxRow {
@@ -114,7 +112,7 @@ Item {
                 showDivider: false
                 onClicked: {
                     VPNSettings.serverSwitchNotification = !VPNSettings.serverSwitchNotification
-            }
+                }
             }
 
             VPNCheckBoxRow {
@@ -133,7 +131,21 @@ Item {
                     VPNSettings.connectionChangeNotification = !VPNSettings.connectionChangeNotification
                 }
             }
+
+            VPNCheckBoxRow {
+                id: serverUnavailableNotification
+                objectName: "serverUnavailableNotification"
+                visible: VPNFeatureList.get("serverUnavailableNotification").isSupported
+                width: parent.width
+
+                labelText: VPNl18n.ServerUnavailableNotificationPreferencesLabel
+                subLabelText: VPNl18n.ServerUnavailableNotificationPreferencesSubLabel
+                isChecked: (VPNSettings.serverUnavailableNotification)
+                showDivider: false
+                onClicked: {
+                    VPNSettings.serverUnavailableNotification = !VPNSettings.serverUnavailableNotification
+                }
+            }
         }
     }
 }
-

@@ -8,7 +8,7 @@
 #include "models/feature.h"
 
 #ifdef MVPN_ANDROID
-#  include <QtAndroid>
+#  include "androidutils.h"
 #endif
 
 constexpr const char* FEATURE_SHARE_LOGS = "shareLogs";
@@ -29,6 +29,7 @@ class FeatureShareLogs : public Feature {
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath
                 "",                  // IconPath
+                "",                  // link URL
                 "2.6",               // released
                 false                // Can be enabled in devmode
         ) {}
@@ -38,7 +39,7 @@ class FeatureShareLogs : public Feature {
     defined(MVPN_IOS) || defined(MVPN_DUMMY)
     return true;
 #elif defined(MVPN_ANDROID)
-    return QtAndroid::androidSdkVersion() >=
+    return AndroidUtils::GetSDKVersion() >=
            29;  // Android Q (10) is required for this
 #else
     return false;

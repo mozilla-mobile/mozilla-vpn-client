@@ -11,7 +11,7 @@
 #include "features/featureinappauth.h"
 #include "features/featureinappaccountcreate.h"
 #include "features/featuresharelogs.h"
-#include "gleansample.h"
+#include <telemetry/gleansample.h>
 #include "iaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -21,15 +21,17 @@
 #include "networkrequest.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "tasks/accountandservers/taskaccountandservers.h"
+#include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
+#include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
+#include "tasks/servers/taskservers.h"
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
@@ -98,18 +100,13 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   Q_ASSERT(!s_instance);
   s_instance = this;
 
-#ifdef MVPN_ADJUST
-  AdjustHandler::initialize();
-#endif
-
-  connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
+  connect(&m_alertTimer, &QTimer::timeout, this,
+          [this]() { setAlert(NoAlert); });
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
-    TaskScheduler::scheduleTask(new TaskAccountAndServers());
-    TaskScheduler::scheduleTask(new TaskCaptivePortalLookup());
-    TaskScheduler::scheduleTask(new TaskHeartbeat());
-    TaskScheduler::scheduleTask(new TaskSurveyData());
-    TaskScheduler::scheduleTask(new TaskGetFeatureList());
+    TaskScheduler::scheduleTask(new TaskGroup(
+        {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
+         new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -121,13 +118,18 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     }
   });
 
-  connect(&m_private->m_controller, &Controller::readyToUpdate,
+  connect(&m_private->m_controller, &Controller::readyToUpdate, this,
           [this]() { setState(StateUpdateRequired); });
 
-  connect(&m_private->m_controller, &Controller::readyToBackendFailure,
+  connect(&m_private->m_controller, &Controller::readyToBackendFailure, this,
           [this]() {
             TaskScheduler::deleteTasks();
             setState(StateBackendFailure);
+          });
+
+  connect(&m_private->m_controller, &Controller::readyToServerUnavailable, this,
+          []() {
+            NotificationHandler::instance()->serverUnavailableNotification();
           });
 
   connect(&m_private->m_controller, &Controller::stateChanged, this,
@@ -167,6 +169,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     IAPHandler* iap = IAPHandler::createInstance();
     connect(iap, &IAPHandler::subscriptionStarted, this,
             &MozillaVPN::subscriptionStarted);
+    connect(iap, &IAPHandler::restoreSubscriptionStarted, this,
+            &MozillaVPN::restoreSubscriptionStarted);
     connect(iap, &IAPHandler::subscriptionFailed, this,
             &MozillaVPN::subscriptionFailed);
     connect(iap, &IAPHandler::subscriptionCanceled, this,
@@ -218,6 +222,11 @@ void MozillaVPN::initialize() {
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
+#ifdef MVPN_ADJUST
+  TaskScheduler::scheduleTask(
+      new TaskFunction([] { AdjustHandler::initialize(); }));
+#endif
+
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
@@ -241,6 +250,7 @@ void MozillaVPN::initialize() {
     settingsHolder->setNativeAndroidDataMigrated(true);
   }
   AndroidVPNActivity::init();
+  AndroidUtils::instance();
 #endif
 
   m_private->m_captivePortalDetection.initialize();
@@ -317,9 +327,9 @@ void MozillaVPN::initialize() {
     m_private->m_serverData.writeSettings();
   }
 
-  TaskScheduler::scheduleTask(new TaskAccountAndServers());
-  TaskScheduler::scheduleTask(new TaskCaptivePortalLookup());
-  TaskScheduler::scheduleTask(new TaskSurveyData());
+  TaskScheduler::scheduleTask(
+      new TaskGroup({new TaskAccount(), new TaskServers(),
+                     new TaskCaptivePortalLookup(), new TaskSurveyData()}));
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
     TaskScheduler::scheduleTask(new TaskProducts());
@@ -524,7 +534,13 @@ void MozillaVPN::openLink(LinkType linkType) {
       break;
     case LinkInspector:
       Q_ASSERT(!Constants::inProduction());
-      url = "http://localhost:8766/";
+      url = "https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/";
+      break;
+    case LinkCaptivePortal:
+      url = QString("http://%1/success.txt")
+                .arg(SettingsHolder::instance()
+                         ->captivePortalIpv4Addresses()
+                         .first());
       break;
 
     default:
@@ -621,7 +637,8 @@ void MozillaVPN::completeActivation() {
     addCurrentDeviceAndRefreshData();
   } else {
     // Let's fetch the account and the servers.
-    TaskScheduler::scheduleTask(new TaskAccountAndServers());
+    TaskScheduler::scheduleTask(
+        new TaskGroup({new TaskAccount(), new TaskServers()}));
   }
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
@@ -994,8 +1011,40 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
   }
 }
 
+void MozillaVPN::setServerCooldown(const QString& publicKey) {
+  m_private->m_serverCountryModel.setServerCooldown(
+      publicKey, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+}
+
+void MozillaVPN::setCooldownForAllServersInACity(const QString& countryCode,
+                                                 const QString& cityCode) {
+  m_private->m_serverCountryModel.setCooldownForAllServersInACity(
+      countryCode, cityCode, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+  MozillaVPN::instance()->controller()->serverUnavailable();
+}
+
+bool MozillaVPN::hasCooldownForAllServersInACity(const QString& countryCode,
+                                                 const QString& cityName) {
+  return m_private->m_serverCountryModel.hasCooldownForAllServersInACity(
+      countryCode, cityName);
+}
+
+QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {
+  QList<Server> results;
+  qint64 now = QDateTime::currentSecsSinceEpoch();
+
+  for (const Server& server : servers) {
+    if (server.cooldownTimeout() <= now) {
+      results.append(server);
+    }
+  }
+
+  return results;
+}
+
 const QList<Server> MozillaVPN::exitServers() const {
-  return m_private->m_serverCountryModel.servers(m_private->m_serverData);
+  return filterServerList(
+      m_private->m_serverCountryModel.servers(m_private->m_serverData));
 }
 
 const QList<Server> MozillaVPN::entryServers() const {
@@ -1005,7 +1054,7 @@ const QList<Server> MozillaVPN::entryServers() const {
   ServerData sd;
   sd.update(m_private->m_serverData.entryCountryCode(),
             m_private->m_serverData.entryCityName());
-  return m_private->m_serverCountryModel.servers(sd);
+  return filterServerList(m_private->m_serverCountryModel.servers(sd));
 }
 
 void MozillaVPN::changeServer(const QString& countryCode, const QString& city,
@@ -1100,9 +1149,8 @@ void MozillaVPN::setUserState(UserState state) {
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
   logger.debug() << "Start scheduling account and servers"
-                 << Constants::scheduleAccountAndServersTimerMsec();
-  m_periodicOperationsTimer.start(
-      Constants::scheduleAccountAndServersTimerMsec());
+                 << Constants::schedulePeriodicTaskTimerMsec();
+  m_periodicOperationsTimer.start(Constants::schedulePeriodicTaskTimerMsec());
 }
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {
@@ -1372,6 +1420,10 @@ void MozillaVPN::deactivate() {
 void MozillaVPN::silentSwitch() {
   logger.debug() << "VPN tunnel silent server switch";
 
+  // Let's delete all the tasks before running the silent-switch op. If we are
+  // here, the connection does not work and we don't want to wait for timeouts
+  // to run the silenct-switch.
+  TaskScheduler::deleteTasks();
   TaskScheduler::scheduleTask(
       new TaskControllerAction(TaskControllerAction::eSilentSwitch));
 }
@@ -1380,7 +1432,8 @@ void MozillaVPN::refreshDevices() {
   logger.debug() << "Refresh devices";
 
   if (m_state == StateMain) {
-    TaskScheduler::scheduleTask(new TaskAccountAndServers());
+    TaskScheduler::scheduleTask(
+        new TaskGroup({new TaskAccount(), new TaskServers()}));
   }
 }
 
@@ -1408,6 +1461,14 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   }
 
   iap->startSubscription(productIdentifier);
+}
+
+void MozillaVPN::restoreSubscriptionStarted() {
+  logger.debug() << "Restore subscription started";
+
+  setState(StateSubscriptionInProgress);
+
+  IAPHandler::instance()->startRestoreSubscription();
 }
 
 void MozillaVPN::subscriptionCompleted() {
@@ -1473,7 +1534,8 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
     errorHandle(ErrorHandler::SubscriptionFailureError);
   }
 
-  TaskScheduler::scheduleTask(new TaskAccountAndServers());
+  TaskScheduler::scheduleTask(
+      new TaskGroup({new TaskAccount(), new TaskServers()}));
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!m_private->m_user.subscriptionNeeded() &&
         m_state == StateSubscriptionNeeded) {
@@ -1512,7 +1574,7 @@ void MozillaVPN::update() {
   }
 #endif
 
-  m_private->m_releaseMonitor.update();
+  m_private->m_releaseMonitor.updateSoon();
 }
 
 void MozillaVPN::setUpdating(bool updating) {
@@ -1571,7 +1633,8 @@ void MozillaVPN::triggerHeartbeat() {
 void MozillaVPN::addCurrentDeviceAndRefreshData() {
   TaskScheduler::scheduleTask(
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
-  TaskScheduler::scheduleTask(new TaskAccountAndServers());
+  TaskScheduler::scheduleTask(
+      new TaskGroup({new TaskAccount(), new TaskServers()}));
 }
 
 void MozillaVPN::openAppStoreReviewLink() {

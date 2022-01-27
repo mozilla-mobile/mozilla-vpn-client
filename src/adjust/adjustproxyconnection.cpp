@@ -7,12 +7,13 @@
 
 #include "adjustproxyconnection.h"
 #include "adjustfiltering.h"
+#include "adjusttasksubmission.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
-#include "networkrequest.h"
+#include "taskscheduler.h"
 
 #include <QUrl>
 #include <QUrlQuery>
@@ -83,29 +84,17 @@ void AdjustProxyConnection::forwardRequest() {
                  << ", " << logger.sensitive(bodyParameters) << ", "
                  << unknownParameters;
 
-  NetworkRequest* request = NetworkRequest::createForAdjustProxy(
-      this, method, path, headers, queryParameters, bodyParameters,
-      unknownParameters);
+  AdjustTaskSubmission* task =
+      new AdjustTaskSubmission(method, path, headers, queryParameters,
+                               bodyParameters, unknownParameters);
 
   connect(
-      request, &NetworkRequest::requestFailed,
-      [this, request](QNetworkReply::NetworkError, const QByteArray& data) {
-        logger.debug() << "Adjust Proxy request completed with: "
-                       << request->statusCode() << ", " << data;
+      task, &AdjustTaskSubmission::operationCompleted, this,
+      [this](const QByteArray& data, int statusCode) {
         m_connection->write(
-            HTTP_RESPONSE.arg(QByteArray::number(request->statusCode()), data)
-                .toUtf8());
+            HTTP_RESPONSE.arg(QByteArray::number(statusCode), data).toUtf8());
         m_connection->close();
       });
 
-  connect(
-      request, &NetworkRequest::requestCompleted,
-      [this, request](const QByteArray& data) {
-        logger.debug() << "Adjust Proxy request completed with: "
-                       << request->statusCode() << ", " << data;
-        m_connection->write(
-            HTTP_RESPONSE.arg(QByteArray::number(request->statusCode()), data)
-                .toUtf8());
-        m_connection->close();
-      });
+  TaskScheduler::scheduleTask(task);
 }

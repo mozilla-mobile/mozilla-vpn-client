@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverconnection.h"
+#include "settingsholder.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -45,7 +46,12 @@ void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
       cityObj["longitude"] = city.longitude();
 
       QJsonArray servers;
-      for (const Server& server : city.servers()) {
+      for (const QString& pubkey : city.servers()) {
+        const Server server = model->server(pubkey);
+        if (!server.initialized()) {
+          continue;
+        }
+
         QJsonObject serverObj;
         serverObj["hostname"] = server.hostname();
         serverObj["ipv4_gateway"] = server.ipv4Gateway();
@@ -116,11 +122,25 @@ static QList<RequestType> s_types{
 
     RequestType{"servers",
                 [](const QJsonObject&) {
-                  QJsonObject obj;
+                  QJsonObject servers;
                   serializeServerCountry(
-                      MozillaVPN::instance()->serverCountryModel(), obj);
+                      MozillaVPN::instance()->serverCountryModel(), servers);
 
-                  obj["servers"] = obj;
+                  QJsonObject obj;
+                  obj["servers"] = servers;
+                  return obj;
+                }},
+
+    RequestType{"disabled_apps",
+                [](const QJsonObject&) {
+                  QJsonArray apps;
+                  for (const QString& app :
+                       SettingsHolder::instance()->vpnDisabledApps()) {
+                    apps.append(app);
+                  }
+
+                  QJsonObject obj;
+                  obj["disabled_apps"] = apps;
                   return obj;
                 }},
 

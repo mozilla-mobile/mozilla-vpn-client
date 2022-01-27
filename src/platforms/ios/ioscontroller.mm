@@ -5,7 +5,7 @@
 #include "ioscontroller.h"
 #include "Mozilla_VPN-Swift.h"
 #include "device.h"
-#include "ipaddressrange.h"
+#include "ipaddress.h"
 #include "keys.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -89,7 +89,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
       callback:^(BOOL a_connected) {
         logger.debug() << "State changed: " << a_connected;
         if (a_connected) {
-          emit connected();
+          emit connected(m_serverPublicKey);
           return;
         }
 
@@ -97,21 +97,16 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
       }];
 }
 
-void IOSController::activate(const QList<Server>& serverList, const Device* device,
-                             const Keys* keys, const QList<IPAddressRange>& allowedIPAddressRanges,
-                             const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
+void IOSController::activate(const HopConnection& hop, const Device* device, const Keys* keys,
                              Reason reason) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
 
-  bool isMultihop = serverList.length() > 1;
-  Server exitServer = serverList.first();
-  Server entryServer = serverList.last();
+  // These features are not supported on macos/ios yet.
+  Q_ASSERT(hop.m_hopindex == 0);
+  Q_ASSERT(hop.m_vpnDisabledApps.isEmpty());
 
-  // This feature is not supported on macos/ios yet.
-  Q_ASSERT(vpnDisabledApps.isEmpty());
-
-  logger.debug() << "IOSController activating" << entryServer.hostname();
+  logger.debug() << "IOSController activating" << hop.m_server.hostname();
 
   if (!impl) {
     logger.error() << "Controller not correctly initialized";
@@ -119,21 +114,23 @@ void IOSController::activate(const QList<Server>& serverList, const Device* devi
     return;
   }
 
+  m_serverPublicKey = hop.m_server.publicKey();
+
   NSMutableArray<VPNIPAddressRange*>* allowedIPAddressRangesNS =
-      [NSMutableArray<VPNIPAddressRange*> arrayWithCapacity:allowedIPAddressRanges.length()];
-  for (const IPAddressRange& i : allowedIPAddressRanges) {
+      [NSMutableArray<VPNIPAddressRange*> arrayWithCapacity:hop.m_allowedIPAddressRanges.length()];
+  for (const IPAddress& i : hop.m_allowedIPAddressRanges) {
     VPNIPAddressRange* range =
-        [[VPNIPAddressRange alloc] initWithAddress:i.ipAddress().toNSString()
-                               networkPrefixLength:i.range()
-                                            isIpv6:i.type() == IPAddressRange::IPv6];
+        [[VPNIPAddressRange alloc] initWithAddress:i.address().toString().toNSString()
+                               networkPrefixLength:i.prefixLength()
+                                            isIpv6:i.type() == QAbstractSocket::IPv6Protocol];
     [allowedIPAddressRangesNS addObject:[range autorelease]];
   }
 
-  [impl connectWithDnsServer:dnsServer.toString().toNSString()
-           serverIpv6Gateway:entryServer.ipv6Gateway().toNSString()
-             serverPublicKey:exitServer.publicKey().toNSString()
-            serverIpv4AddrIn:entryServer.ipv4AddrIn().toNSString()
-                  serverPort:isMultihop ? exitServer.multihopPort() : entryServer.choosePort()
+  [impl connectWithDnsServer:hop.m_dnsServer.toString().toNSString()
+           serverIpv6Gateway:hop.m_server.ipv6Gateway().toNSString()
+             serverPublicKey:hop.m_server.publicKey().toNSString()
+            serverIpv4AddrIn:hop.m_server.ipv4AddrIn().toNSString()
+                  serverPort:hop.m_server.choosePort()
       allowedIPAddressRanges:allowedIPAddressRangesNS
                       reason:reason
              failureCallback:^() {

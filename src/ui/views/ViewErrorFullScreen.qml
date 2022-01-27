@@ -7,19 +7,26 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 VPNFlickable {
+    property var isMainView: false
+
     property var headlineText
     property var errorMessage: ""
     property var errorMessage2: ""
-    property var buttonText
-    property var buttonObjectName
-    property var buttonOnClick
-    property var signOffLinkVisible: false
+
+    property var primaryButtonText
+    property var primaryButtonObjectName
+    property var primaryButtonOnClick
+
+    property var secondaryButtonText: ""
+    property var secondaryButtonObjectName
+    property var secondaryButtonOnClick
+    property var secondaryButtonIsSignOff: false
+
     property var getHelpLinkVisible: false
     property var statusLinkVisible: false
     id: vpnFlickable
@@ -34,12 +41,12 @@ VPNFlickable {
         visible: getHelpLinkVisible
 
         labelText: qsTrId("vpn.main.getHelp2")
-        onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false})
+        onClicked: isMainView ? mainStackView.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false, isMainView: true}) : stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false})
     }
 
     ColumnLayout {
         id: col
-        width: Math.min(Theme.maxHorizontalContentWidth, vpnFlickable.width)
+        width: Math.min(VPNTheme.theme.maxHorizontalContentWidth, vpnFlickable.width)
         anchors.top: parent.top
         anchors.topMargin: headerLink.height + vpnFlickable.height * 0.08
         anchors.bottom: parent.bottom
@@ -55,7 +62,7 @@ VPNFlickable {
 
             text: headlineText
             Layout.preferredHeight: paintedHeight
-            Layout.preferredWidth: col.width - (Theme.windowMargin * 2)
+            Layout.preferredWidth: col.width - (VPNTheme.theme.windowMargin * 2)
             Layout.maximumWidth: 500
         }
 
@@ -69,7 +76,7 @@ VPNFlickable {
                 Layout.preferredHeight: 48
                 Layout.preferredWidth: 48
                 Layout.alignment: Qt.AlignHCenter;
-                color: Theme.red
+                color: VPNTheme.theme.red
                 radius: height / 2
 
                 Image {
@@ -82,15 +89,15 @@ VPNFlickable {
             }
 
             ColumnLayout {
-                spacing: Theme.windowMargin
+                spacing: VPNTheme.theme.windowMargin
                 Layout.alignment: Qt.AlignHCenter
                 VPNTextBlock {
                     id: copyBlock1
-                    Layout.preferredWidth: col.width - (Theme.windowMargin * 3)
+                    Layout.preferredWidth: col.width - (VPNTheme.theme.windowMargin * 3)
                     Layout.preferredHeight: paintedHeight
                     Layout.alignment: Qt.AlignHCenter
                     horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: Theme.fontSize
+                    font.pixelSize: VPNTheme.theme.fontSize
                     lineHeight: 22
                     text: errorMessage
                 }
@@ -98,11 +105,11 @@ VPNFlickable {
                 VPNTextBlock {
                     id: copyBlock2
 
-                    Layout.preferredWidth: col.width - (Theme.windowMargin * 3)
+                    Layout.preferredWidth: col.width - (VPNTheme.theme.windowMargin * 3)
                     horizontalAlignment: Text.AlignHCenter
                     Layout.preferredHeight: paintedHeight
                     Layout.alignment: Qt.AlignHCenter
-                    font.pixelSize: Theme.fontSize
+                    font.pixelSize: VPNTheme.theme.fontSize
                     lineHeight: 22
                     text: errorMessage2
                 }
@@ -110,7 +117,7 @@ VPNFlickable {
                 VPNLinkButton {
                     //% "Check outage updates"
                     labelText: qsTrId("vpn.errors.checkOutageUpdates")
-                    Layout.preferredWidth: col.width - (Theme.windowMargin * 3)
+                    Layout.preferredWidth: col.width - (VPNTheme.theme.windowMargin * 3)
                     onClicked: VPN.openLink("https://status.vpn.mozilla.org")
                     Layout.alignment: Qt.AlignHCenter
                     visible: statusLinkVisible
@@ -119,41 +126,53 @@ VPNFlickable {
         }
 
         ColumnLayout {
-            spacing: Theme.windowMargin
+            spacing: VPNTheme.theme.windowMargin
             Layout.fillWidth: true
             Layout.preferredWidth: parent.width
             Layout.alignment: Qt.AlignHCenter
 
 
             VPNButton {
-                id: btn
+                id: primaryButton
 
-                objectName: buttonObjectName
-                text: buttonText
-                Layout.preferredHeight: Theme.rowHeight
+                objectName: primaryButtonObjectName
+                text: primaryButtonText
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
                 loaderVisible: false
-                onClicked: buttonOnClick()
+                onClicked: primaryButtonOnClick()
             }
             
-            VPNSignOut {
-                id: signOff
+            VPNFooterLink {
+                id: secondaryButton
 
-                visible: signOffLinkVisible
+                objectName: secondaryButtonObjectName
+                labelText: secondaryButtonText
+                visible: secondaryButtonText != "" && !secondaryButtonIsSignOff
                 Layout.preferredHeight: Theme.rowHeight
                 Layout.alignment: Qt.AlignHCenter
                 anchors.horizontalCenter: undefined
                 anchors.bottom: undefined
                 anchors.bottomMargin: undefined
                 height: undefined
-                onClicked: {
-                    VPNController.logout();
-                }
+                onClicked: secondaryButtonOnClick()
+            }
+
+            VPNSignOut {
+                id: signOff
+
+                visible: secondaryButtonIsSignOff
+                Layout.preferredHeight: Theme.rowHeight
+                Layout.alignment: Qt.AlignHCenter
+                anchors.horizontalCenter: undefined
+                anchors.bottom: undefined
+                anchors.bottomMargin: undefined
+                height: undefined
             }
         }
 
 
         VPNVerticalSpacer {
-            Layout.preferredHeight: fullscreenRequired() ? Theme.windowMargin : 1
+            Layout.preferredHeight: fullscreenRequired() ? VPNTheme.theme.windowMargin : 1
         }
     }
 }

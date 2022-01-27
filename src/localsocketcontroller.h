@@ -9,6 +9,7 @@
 
 #include <functional>
 #include <QLocalSocket>
+#include <QHostAddress>
 
 class QJsonObject;
 
@@ -21,11 +22,8 @@ class LocalSocketController final : public ControllerImpl {
 
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const QList<Server>& serverList, const Device* device,
-                const Keys* keys,
-                const QList<IPAddressRange>& allowedIPAddressRanges,
-                const QList<QString>& vpnDisabledApps,
-                const QHostAddress& dnsServer, Reason reason) override;
+  void activate(const HopConnection& hop, const Device* device,
+                const Keys* keys, Reason Reason) override;
 
   void deactivate(Reason reason) override;
 

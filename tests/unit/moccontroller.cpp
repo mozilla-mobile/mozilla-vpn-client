@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/controllerimpl.h"
-#include "../../src/ipaddressrange.h"
+#include "../../src/ipaddress.h"
 #include "../../src/mozillavpn.h"
 #include "helper.h"
 
@@ -21,7 +21,7 @@ void Controller::activateInternal() {}
 
 bool Controller::deactivate() { return false; }
 
-void Controller::connected() {}
+void Controller::connected(const QString& pubkey) { Q_UNUSED(pubkey); }
 
 void Controller::disconnected() {}
 
@@ -43,10 +43,9 @@ void Controller::getBackendLogs(std::function<void(const QString&)>&&) {}
 void Controller::statusUpdated(const QString&, const QString&, uint64_t,
                                uint64_t) {}
 
-QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
-    const QList<Server>& serverList) {
-  Q_UNUSED(serverList);
-  return QList<IPAddressRange>();
+QList<IPAddress> Controller::getAllowedIPAddressRanges(const Server& server) {
+  Q_UNUSED(server);
+  return QList<IPAddress>();
 }
 
 Controller::State Controller::state() const {
@@ -76,6 +75,15 @@ void Controller::heartbeatCompleted() {}
 
 void Controller::backendFailure() {}
 
+void Controller::captivePortalPresent() {}
+
+void Controller::captivePortalGone() {}
+
 QString Controller::currentLocalizedCityName() const { return ""; }
 
 QString Controller::switchingLocalizedCityName() const { return ""; }
+
+void Controller::handshakeTimeout() {}
+
+void Controller::setCooldownForAllServersInACity(const QString& countryCode,
+                                                 const QString& cityCode) {}

@@ -27,6 +27,7 @@
 #include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
+#include "theme.h"
 
 #include <QList>
 #include <QNetworkReply>
@@ -105,7 +106,8 @@ class MozillaVPN final : public QObject {
     LinkUpdate,
     LinkInspector,
     LinkSubscriptionBlocked,
-    LinkSplitTunnelHelp
+    LinkSplitTunnelHelp,
+    LinkCaptivePortal
   };
   Q_ENUM(LinkType)
 
@@ -222,6 +224,7 @@ class MozillaVPN final : public QObject {
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
+  Theme* theme() { return &m_private->m_theme; }
   WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
   User* user() { return &m_private->m_user; }
 
@@ -299,6 +302,11 @@ class MozillaVPN final : public QObject {
   void heartbeatCompleted(bool success);
 
   void setServerPublicKey(const QString& publicKey);
+  void setServerCooldown(const QString& publicKey);
+  void setCooldownForAllServersInACity(const QString& countryCode,
+                                       const QString& cityCode);
+  bool hasCooldownForAllServersInACity(const QString& countryCode,
+                                       const QString& cityName);
 
   void addCurrentDeviceAndRefreshData();
 
@@ -336,6 +344,7 @@ class MozillaVPN final : public QObject {
                      std::function<void()>&& finalizeCallback);
 
   void subscriptionStarted(const QString& productIdentifier);
+  void restoreSubscriptionStarted();
   void subscriptionCompleted();
   void subscriptionFailed();
   void subscriptionCanceled();
@@ -357,6 +366,8 @@ class MozillaVPN final : public QObject {
   void controllerStateChanged();
 
   void maybeRegenerateDeviceKey();
+
+  QList<Server> filterServerList(const QList<Server>& servers) const;
 
  public slots:
   void requestSettings();
@@ -417,6 +428,7 @@ class MozillaVPN final : public QObject {
     ServerData m_serverData;
     StatusIcon m_statusIcon;
     SurveyModel m_surveyModel;
+    Theme m_theme;
     WhatsNewModel m_whatsNewModel;
     User m_user;
   };

@@ -1,0 +1,6 @@
+<RCC>
+    <qresource>
+        <file>a.json</file>
+        <file>b.json</file>
+    </qresource>
+</RCC>

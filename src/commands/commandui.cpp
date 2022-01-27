@@ -24,11 +24,15 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "imageproviderfactory.h"
+#include "theme.h"
+
+#include <glean.h>
+#include <nebula.h>
 
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
-#  include "platforms/linux/linuxappimageprovider.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -38,13 +42,20 @@
 #endif
 
 #ifdef MVPN_ANDROID
-#  include "platforms/android/androidappimageprovider.h"
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
 #endif
 
 #ifndef Q_OS_WIN
 #  include "signalhandler.h"
+
+/*
+L57 and L143-145 are commented out pending a fix for
+https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2509
+
+#  include <lottie.h>
+*/
+
 #endif
 
 #ifdef MVPN_WINDOWS
@@ -124,10 +135,16 @@ int CommandUI::run(QStringList& tokens) {
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
-    engine->addImportPath("qrc:///components");
-    engine->addImportPath("qrc:///glean");
-    engine->addImportPath("qrc:///themes");
-    engine->addImportPath("qrc:///compat");
+
+    Glean::Initialize(engine);
+
+    /*
+    #ifndef MVPN_WINDOWS
+        Lottie::initialize(engine, QString(NetworkManager::userAgent()));
+    #endif
+    */
+
+    Nebula::Initialize(engine);
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
@@ -178,23 +195,11 @@ int CommandUI::run(QStringList& tokens) {
     if (!LinuxDependencies::checkDependencies()) {
       return 1;
     }
-
-    // Register an Image Provider that will resolve "image://app/{id}" for qml
-    QQuickImageProvider* provider = new LinuxAppImageProvider(qApp);
-    engine->addImageProvider(QString("app"), provider);
 #endif
-
-#ifdef MVPN_ANDROID
-    // Register an Image Provider that will resolve "image://app/{id}" for qml
-    QQuickImageProvider* provider = new AndroidAppImageProvider(qApp);
-    engine->addImageProvider(QString("app"), provider);
-#endif
-#ifdef MVPN_WINDOWS
-    // Register an Image Provider that will resolve "image://app/{id}" for qml
-    QQuickImageProvider* provider = new WindowsAppImageProvider(qApp);
-    engine->addImageProvider(QString("app"), provider);
-#endif
-
+    QQuickImageProvider* provider = ImageProviderFactory::create(qApp);
+    if (provider) {
+      engine->addImageProvider(QString("app"), provider);
+    }
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance();
@@ -206,6 +211,13 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNFeatureList",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = FeatureList::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->captivePortalDetection();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -307,6 +319,23 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNReleaseMonitor",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->releaseMonitor();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNTheme",
+        [](QQmlEngine*, QJSEngine* engine) -> QObject* {
+          Theme* theme = MozillaVPN::instance()->theme();
+          theme->initialize(engine);
+          QQmlEngine::setObjectOwnership(theme, QQmlEngine::CppOwnership);
+          return theme;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNLocalizer",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = Localizer::instance();
@@ -392,11 +421,29 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNErrorHandler",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = ErrorHandler::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
     qmlRegisterType<FilterProxyModel>("Mozilla.VPN", 1, 0,
                                       "VPNFilterProxyModel");
 
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::aboutToQuit);
+
+    QObject::connect(
+        qApp, &QGuiApplication::commitDataRequest, &vpn,
+        []() {
+#if QT_VERSION < 0x060000
+          qApp->setFallbackSessionManagementEnabled(false);
+#endif
+          MozillaVPN::instance()->deactivate();
+        },
+        Qt::DirectConnection);
 
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &MozillaVPN::quit, Qt::QueuedConnection);
@@ -407,6 +454,7 @@ int CommandUI::run(QStringList& tokens) {
         engine, &QQmlApplicationEngine::objectCreated, qApp,
         [url](QObject* obj, const QUrl& objUrl) {
           if (!obj && url == objUrl) {
+            logger.error() << "Failed to load " << objUrl.toString();
             QGuiApplication::exit(-1);
           }
         },

@@ -11,6 +11,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QRegularExpression>
 
 namespace {
 Logger logger(LOG_NETWORKING, "VersionApi");
@@ -26,24 +27,24 @@ VersionApi::~VersionApi() {
   logger.debug() << "VersionApi released";
 }
 
-void VersionApi::start() {
-  NetworkRequest* request = NetworkRequest::createForVersions(this);
+void VersionApi::start(Task* task) {
+  NetworkRequest* request = NetworkRequest::createForVersions(task);
 
   connect(request, &NetworkRequest::requestFailed,
-          [](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Request failed" << error;
+            deleteLater();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Request completed";
 
             if (!processData(data)) {
               logger.debug() << "Ignore failure.";
             }
+            deleteLater();
           });
-
-  connect(request, &QObject::destroyed, this, &QObject::deleteLater);
 }
 
 bool VersionApi::processData(const QByteArray& data) {
@@ -133,20 +134,26 @@ int VersionApi::compareVersions(const QString& a, const QString& b) {
     return -1;
   }
 
-  QList<uint32_t> aParts;
-  for (const QString& part : a.split(".")) aParts.append(part.toInt());
+  QRegularExpression re("[^0-9a-z.]");
 
-  while (aParts.length() < 3) aParts.append(0);
+  QStringList aParts;
+  int aMatchLength = a.indexOf(re);
+  aParts = (aMatchLength < 0) ? a.split(".") : a.left(aMatchLength).split(".");
 
-  QList<uint32_t> bParts;
-  for (const QString& part : b.split(".")) bParts.append(part.toInt());
+  QStringList bParts;
+  int bMatchLength = b.indexOf(re);
+  bParts = (bMatchLength < 0) ? b.split(".") : b.left(bMatchLength).split(".");
 
-  while (bParts.length() < 3) bParts.append(0);
+  // Normalize by appending zeros as necessary.
+  while (aParts.length() < 3) aParts.append("0");
+  while (bParts.length() < 3) bParts.append("0");
 
   // Major version number.
   for (uint32_t i = 0; i < 3; ++i) {
-    if (aParts[i] != bParts[i]) {
-      return aParts[i] < bParts[i] ? -1 : 1;
+    int aDigit = aParts[i].toInt();
+    int bDigit = bParts[i].toInt();
+    if (aDigit != bDigit) {
+      return aDigit < bDigit ? -1 : 1;
     }
   }
 
@@ -158,7 +165,9 @@ QString VersionApi::stripMinor(const QString& a) {
   QStringList aParts;
 
   if (!a.isEmpty()) {
-    for (const QString& part : a.split(".")) aParts.append(part);
+    QRegularExpression re("[^0-9a-z.]");
+    int matchLength = a.indexOf(re);
+    aParts = (matchLength < 0) ? a.split(".") : a.left(matchLength).split(".");
   }
 
   while (aParts.length() < 3) aParts.append("0");

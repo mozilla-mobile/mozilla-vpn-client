@@ -8,10 +8,9 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 
 Item {
@@ -42,9 +41,9 @@ Item {
         ColumnLayout {
             anchors.top:  parent.top
             anchors.left:  parent.left
-            anchors.leftMargin: Theme.windowMargin
+            anchors.leftMargin: VPNTheme.theme.windowMargin
 
-            spacing: Theme.windowMargin
+            spacing: VPNTheme.theme.windowMargin
             id: featureListHolder
 
             VPNBoldLabel{
@@ -63,7 +62,7 @@ Item {
                     // Only enable the list on features where devModeEnable has any impact
                     enabled: true
                     isChecked: feature.isDevModeEnabled()
-                    Layout.minimumHeight: Theme.rowHeight * 1.5
+                    Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
                 }
             }
 
@@ -81,7 +80,7 @@ Item {
                     showAppImage: false
                     enabled: false
                     isChecked: feature.isSupported
-                    Layout.minimumHeight: Theme.rowHeight * 1.5
+                    Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
                 }
             }
         }

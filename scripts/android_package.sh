@@ -14,14 +14,16 @@ QTPATH=
 RELEASE=1
 ADJUST_SDK_TOKEN=
 export SPLITAPK=0
+export ARCH ="x86 x86_64 armeabi-v7a arm64-v8a"
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>] [-a|--adjusttoken <adjust_token>]"
+  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>] [-a|--adjusttoken <adjust_token>]  [-A | --arch] architectures to build"
   print N ""
   print N "By default, the android build is compiled in release mode. Use -d or --debug for a debug build."
   print N ""
   print N "If MVPN_ANDROID_ADJUST_TOKEN env is found, this will be used at compilation time."
+  print N "Valid architecture values: x86 x86_64 armeabi-v7a arm64-v8a, by default it will use all"
   print N ""
   exit 0
 }
@@ -35,6 +37,11 @@ while [[ $# -gt 0 ]]; do
   case $key in
   -a | --adjusttoken)
     ADJUST_SDK_TOKEN="$2"
+    shift
+    shift
+    ;;
+  -A | --arch)
+    ARCH="$2"
     shift
     shift
     ;;
@@ -86,9 +93,6 @@ fi
 print Y "Checking Enviroment"
 if ! [ -d "src" ] || ! [ -d "linux" ]; then
   die "This script must be executed at the root of the repository."
-fi
-if [ -z "${JAVA_HOME}" ]; then
-  die "Could not find 'JAVA_HOME' in env"
 fi
 if [ -z "${ANDROID_NDK_ROOT}" ]; then
   die "Could not find 'ANDROID_NDK_ROOT' in env"
@@ -165,6 +169,7 @@ if [[ "$RELEASE" ]]; then
     CONFIG-=debug \
     CONFIG-=debug_and_release \
     CONFIG+=release \
+    ANDROID_ABIS=$ARCH \
     $ADJUST \
     ..//mozillavpn.pro  || die "Qmake failed"
 else
@@ -176,6 +181,7 @@ else
     CONFIG-=debug_and_release \
     CONFIG-=release \
     CONFIG+=qml_debug \
+    ANDROID_ABIS=$ARCH \
     $ADJUST \
     ..//mozillavpn.pro || die "Qmake failed"
 fi

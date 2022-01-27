@@ -6,10 +6,9 @@ import QtQuick 2.5
 
 import Mozilla.VPN 1.0
 import components 0.1
-import themes 0.1
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 
 Item {

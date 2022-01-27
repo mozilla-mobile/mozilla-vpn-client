@@ -8,6 +8,5 @@ class TestIpFinder final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void abort();
   void ipv4AndIpv6();
 };

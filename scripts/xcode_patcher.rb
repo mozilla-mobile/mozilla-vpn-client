@@ -31,7 +31,6 @@ class XCodeprojPatcher
       setup_target_gobridge
     else
       setup_target_wireguardgo
-      setup_target_wireguardtools
     end
 
     setup_target_balrog if platform == 'macos'
@@ -393,7 +392,7 @@ class XCodeprojPatcher
     target_balrog.build_working_directory = 'balrog'
     target_balrog.build_tool_path = 'make'
     target_balrog.pass_build_settings_in_environment = '1'
-    target_balrog.build_arguments_string = '$(ACTION)'
+    target_balrog.build_arguments_string = 'clean build'
     target_balrog.name = 'WireGuardBalrog'
     target_balrog.product_name = 'WireGuardBalrog'
 
@@ -420,51 +419,13 @@ class XCodeprojPatcher
     @target_main.dependencies << dependency
   end
 
-  def setup_target_wireguardtools
-    target_wireguardtools = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
-
-    target_wireguardtools.build_working_directory = '3rdparty/wireguard-tools/src'
-    target_wireguardtools.build_tool_path = 'make'
-    target_wireguardtools.pass_build_settings_in_environment = '1'
-    target_wireguardtools.build_arguments_string = '$(ACTION)'
-    target_wireguardtools.name = 'WireGuardTools'
-    target_wireguardtools.product_name = 'WireGuardTools'
-
-    @project.targets << target_wireguardtools
-
-    # This fails: @target_main.add_dependency target_wireguardtools
-    container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
-    container_proxy.container_portal = @project.root_object.uuid
-    container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
-    container_proxy.remote_global_id_string = target_wireguardtools.uuid
-    container_proxy.remote_info = target_wireguardtools.name
-
-    dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
-    dependency.name = target_wireguardtools.name
-    dependency.target = @target_main
-    dependency.target_proxy = container_proxy
-
-    @target_main.dependencies << dependency
-
-    copy_wireguardTools = @target_main.new_copy_files_build_phase
-    copy_wireguardTools.name = 'Copy wireguard-tools'
-    copy_wireguardTools.symbol_dst_subfolder_spec = :wrapper
-    copy_wireguardTools.dst_path = 'Contents/Resources/utils'
-
-    group = @project.main_group.new_group('WireGuardTools')
-    file = group.new_file '3rdparty/wireguard-tools/src/wg'
-
-    wireguardTools_file = copy_wireguardTools.add_file_reference file
-    wireguardTools_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
-  end
-
   def setup_target_wireguardgo
     target_wireguardgo = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
 
     target_wireguardgo.build_working_directory = '3rdparty/wireguard-go'
     target_wireguardgo.build_tool_path = 'make'
     target_wireguardgo.pass_build_settings_in_environment = '1'
-    target_wireguardgo.build_arguments_string = '$(ACTION)'
+    target_wireguardgo.build_arguments_string = 'clean generate-version-and-build'
     target_wireguardgo.name = 'WireGuardGo'
     target_wireguardgo.product_name = 'WireGuardGo'
 

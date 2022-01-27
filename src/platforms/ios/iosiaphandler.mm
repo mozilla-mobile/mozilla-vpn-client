@@ -8,8 +8,10 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
 #include "settingsholder.h"
+#include "errorhandler.h"
+#include "tasks/purchase/taskpurchase.h"
+#include "taskscheduler.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -21,8 +23,12 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
+constexpr const uint32_t GUARDIAN_ERROR_RECEIPT_NOT_VALID = 142;
+constexpr const uint32_t GUARDIAN_ERROR_RECEIPT_IN_USE = 145;
+
 namespace {
 Logger logger(LOG_IAP, "IOSIAPHandler");
+bool s_transactionsProcessed = false;
 }  // namespace
 
 @interface IOSIAPHandlerDelegate
@@ -75,6 +81,8 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
 - (void)paymentQueue:(nonnull SKPaymentQueue*)queue
     updatedTransactions:(nonnull NSArray<SKPaymentTransaction*>*)transactions {
   logger.debug() << "payment queue:" << [transactions count];
+
+  s_transactionsProcessed = true;
 
   QStringList completedTransactionIds;
   bool failedTransactions = false;
@@ -179,6 +187,15 @@ Logger logger(LOG_IAP, "IOSIAPHandler");
   }
 }
 
+- (void)paymentQueueRestoreCompletedTransactionsFinished:(nonnull SKPaymentQueue*)queue {
+  if (!s_transactionsProcessed) {
+    logger.error() << "No transaction to restore";
+    QMetaObject::invokeMethod(m_handler, "noSubscriptionFoundError", Qt::QueuedConnection);
+  }
+  s_transactionsProcessed = false;
+  logger.debug() << "restore request completed";
+}
+
 @end
 
 IOSIAPHandler::IOSIAPHandler(QObject* parent) : IAPHandler(parent) {
@@ -220,6 +237,11 @@ void IOSIAPHandler::nativeStartSubscription(Product* product) {
   SKProduct* skProduct = static_cast<SKProduct*>(product->m_extra);
   SKPayment* payment = [SKPayment paymentWithProduct:skProduct];
   [[SKPaymentQueue defaultQueue] addPayment:payment];
+}
+
+void IOSIAPHandler::nativeRestoreSubscription() {
+  s_transactionsProcessed = false;
+  [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
 void IOSIAPHandler::productRegistered(void* a_product) {
@@ -300,9 +322,10 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
     return;
   }
 
-  NetworkRequest* request = NetworkRequest::createForIOSPurchase(this, receipt);
+  TaskPurchase* purchase = TaskPurchase::createForIOS(receipt);
+  Q_ASSERT(purchase);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(purchase, &TaskPurchase::failed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Purchase request failed" << error;
 
@@ -312,6 +335,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
             if (!json.isObject()) {
               MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
+              ErrorHandler::instance()->subscriptionGenericError();
               return;
             }
 
@@ -320,20 +344,29 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
             if (!errorValue.isDouble()) {
               MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
+              ErrorHandler::instance()->subscriptionGenericError();
               return;
             }
 
             int errorNumber = errorValue.toInt();
-            if (errorNumber != 145) {
+            if (errorNumber == GUARDIAN_ERROR_RECEIPT_NOT_VALID) {
               MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
+              ErrorHandler::instance()->subscriptionExpiredError();
+              return;
+            }
+
+            if (errorNumber == GUARDIAN_ERROR_RECEIPT_IN_USE) {
+              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+              emit subscriptionFailed();
+              ErrorHandler::instance()->subscriptionInUseError();
               return;
             }
 
             emit alreadySubscribed();
           });
 
-  connect(request, &NetworkRequest::requestCompleted, [this, ids](const QByteArray&) {
+  connect(purchase, &TaskPurchase::succeeded, this, [this, ids](const QByteArray&) {
     logger.debug() << "Purchase request completed";
     SettingsHolder* settingsHolder = SettingsHolder::instance();
     Q_ASSERT(settingsHolder);
@@ -345,4 +378,11 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
     stopSubscription();
     emit subscriptionCompleted();
   });
+
+  TaskScheduler::scheduleTask(purchase);
+}
+
+void IOSIAPHandler::noSubscriptionFoundError() {
+  emit subscriptionCanceled();
+  ErrorHandler::instance()->noSubscriptionFoundError();
 }

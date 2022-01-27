@@ -7,8 +7,10 @@
 
 #include "models/server.h"
 #include "connectioncheck.h"
+#include "ipaddress.h"
 
 #include <QElapsedTimer>
+#include <QHostAddress>
 #include <QList>
 #include <QObject>
 #include <QTimer>
@@ -18,7 +20,18 @@
 
 class ControllerImpl;
 class MozillaVPN;
-class IPAddressRange;
+
+class HopConnection {
+ public:
+  HopConnection() {}
+
+  Server m_server;
+  int m_hopindex = 0;
+  QList<IPAddress> m_allowedIPAddressRanges;
+  QStringList m_excludedAddresses;
+  QStringList m_vpnDisabledApps;
+  QHostAddress m_dnsServer;
+};
 
 class Controller final : public QObject {
   Q_OBJECT
@@ -88,7 +101,13 @@ class Controller final : public QObject {
   }
 
   void backendFailure();
+  void serverUnavailable();
+  void setCooldownForAllServersInACity(const QString& countryCode,
+                                       const QString& cityCode);
+  bool hasCooldownForAllServers();
 
+  void captivePortalPresent();
+  void captivePortalGone();
   bool isUnsettled();
 
  public slots:
@@ -100,7 +119,7 @@ class Controller final : public QObject {
   Q_INVOKABLE void quit();
 
  private slots:
-  void connected();
+  void connected(const QString& pubkey);
   void disconnected();
   void timerTimeout();
   void implInitialized(bool status, bool connected,
@@ -111,6 +130,7 @@ class Controller final : public QObject {
 
   void connectionConfirmed();
   void connectionFailed();
+  void handshakeTimeout();
 
  signals:
   void stateChanged();
@@ -118,9 +138,11 @@ class Controller final : public QObject {
   void readyToQuit();
   void readyToUpdate();
   void readyToBackendFailure();
+  void readyToServerUnavailable();
   void connectionRetryChanged();
   void enableDisconnectInConfirmingChanged();
   void silentSwitchDone();
+  void activationBlockedForCaptivePortal();
 
  private:
   void setState(State state);
@@ -128,9 +150,11 @@ class Controller final : public QObject {
   void maybeEnableDisconnectInConfirming();
 
   bool processNextStep();
-  QList<IPAddressRange> getAllowedIPAddressRanges(const QList<Server>& servers);
+  QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
+  QStringList getExcludedAddresses(const Server& server);
 
   void activateInternal();
+  void activateNext();
 
   void resetConnectionCheck();
 
@@ -148,6 +172,8 @@ class Controller final : public QObject {
 
   bool m_settled = true;
 
+  bool m_portalDetected = false;
+
   QDateTime m_connectedTimeInUTC;
 
   QScopedPointer<ControllerImpl> m_impl;
@@ -161,6 +187,7 @@ class Controller final : public QObject {
   QString m_switchingEntryCity;
 
   QTimer m_connectingTimer;
+  QTimer m_handshakeTimer;
   bool m_enableDisconnectInConfirming = false;
 
   enum NextStep {
@@ -169,6 +196,7 @@ class Controller final : public QObject {
     Update,
     Disconnect,
     BackendFailure,
+    ServerUnavailable,
   };
 
   NextStep m_nextStep = None;
@@ -183,6 +211,8 @@ class Controller final : public QObject {
   };
 
   ReconnectionStep m_reconnectionStep = NoReconnection;
+
+  QList<HopConnection> m_activationQueue;
 
   QList<std::function<void(const QString& serverIpv4Gateway,
                            const QString& deviceIpv4Address, uint64_t txBytes,

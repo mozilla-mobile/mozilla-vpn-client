@@ -4,7 +4,7 @@
 
 #include "localsocketcontroller.h"
 #include "errorhandler.h"
-#include "ipaddressrange.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
@@ -85,70 +85,46 @@ void LocalSocketController::daemonConnected() {
   checkStatus();
 }
 
-void LocalSocketController::activate(
-    const QList<Server>& serverList, const Device* device, const Keys* keys,
-    const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
-    Reason reason) {
-  Q_UNUSED(vpnDisabledApps);
+void LocalSocketController::activate(const HopConnection& hop,
+                                     const Device* device, const Keys* keys,
+                                     Reason reason) {
   Q_UNUSED(reason);
-
-  if (m_state != eReady) {
-    emit disconnected();
-    return;
-  }
-  const Server& server = serverList.first();
-
-  // Activate connections starting from the outermost tunnel
-  for (int hopindex = serverList.count() - 1; hopindex > 0; hopindex--) {
-    const Server& hop = serverList[hopindex];
-    const Server& next = serverList[hopindex - 1];
-    QJsonObject hopJson;
-    hopJson.insert("type", "activate");
-    hopJson.insert("hopindex", QJsonValue((double)hopindex));
-    hopJson.insert("privateKey", QJsonValue(keys->privateKey()));
-    hopJson.insert("deviceIpv4Address", QJsonValue(device->ipv4Address()));
-    hopJson.insert("deviceIpv6Address", QJsonValue(device->ipv6Address()));
-    hopJson.insert("serverPublicKey", QJsonValue(hop.publicKey()));
-    hopJson.insert("serverIpv4AddrIn", QJsonValue(hop.ipv4AddrIn()));
-    hopJson.insert("serverIpv6AddrIn", QJsonValue(hop.ipv6AddrIn()));
-    hopJson.insert("serverPort", QJsonValue((double)hop.choosePort()));
-
-    QJsonArray hopAddressRanges;
-    hopAddressRanges.append(QJsonObject(
-        {{"address", next.ipv4AddrIn()}, {"range", 32}, {"isIpv6", false}}));
-    hopAddressRanges.append(QJsonObject(
-        {{"address", next.ipv6AddrIn()}, {"range", 128}, {"isIpv6", true}}));
-    hopJson.insert("allowedIPAddressRanges", hopAddressRanges);
-
-    write(hopJson);
-  }
 
   QJsonObject json;
   json.insert("type", "activate");
-  json.insert("hopindex", QJsonValue((double)0));
+  json.insert("hopindex", QJsonValue((double)hop.m_hopindex));
   json.insert("privateKey", QJsonValue(keys->privateKey()));
   json.insert("deviceIpv4Address", QJsonValue(device->ipv4Address()));
   json.insert("deviceIpv6Address", QJsonValue(device->ipv6Address()));
-  json.insert("serverIpv4Gateway", QJsonValue(server.ipv4Gateway()));
-  json.insert("serverIpv6Gateway", QJsonValue(server.ipv6Gateway()));
-  json.insert("serverPublicKey", QJsonValue(server.publicKey()));
-  json.insert("serverIpv4AddrIn", QJsonValue(server.ipv4AddrIn()));
-  json.insert("serverIpv6AddrIn", QJsonValue(server.ipv6AddrIn()));
-  json.insert("serverPort", QJsonValue((double)server.choosePort()));
-  json.insert("dnsServer", QJsonValue(dnsServer.toString()));
+  json.insert("serverPublicKey", QJsonValue(hop.m_server.publicKey()));
+  json.insert("serverIpv4AddrIn", QJsonValue(hop.m_server.ipv4AddrIn()));
+  json.insert("serverIpv6AddrIn", QJsonValue(hop.m_server.ipv6AddrIn()));
+  json.insert("serverPort", QJsonValue((double)hop.m_server.choosePort()));
+  if (hop.m_hopindex == 0) {
+    json.insert("serverIpv4Gateway", QJsonValue(hop.m_server.ipv4Gateway()));
+    json.insert("serverIpv6Gateway", QJsonValue(hop.m_server.ipv6Gateway()));
+    json.insert("dnsServer", QJsonValue(hop.m_dnsServer.toString()));
+  }
 
-  QJsonArray allowedIPAddesses;
-  for (const IPAddressRange& i : allowedIPAddressRanges) {
+  QJsonArray jsAllowedIPAddesses;
+  for (const IPAddress& i : hop.m_allowedIPAddressRanges) {
     QJsonObject range;
-    range.insert("address", QJsonValue(i.ipAddress()));
-    range.insert("range", QJsonValue((double)i.range()));
-    range.insert("isIpv6", QJsonValue(i.type() == IPAddressRange::IPv6));
-    allowedIPAddesses.append(range);
+    range.insert("address", QJsonValue(i.address().toString()));
+    range.insert("range", QJsonValue((double)i.prefixLength()));
+    range.insert("isIpv6",
+                 QJsonValue(i.type() == QAbstractSocket::IPv6Protocol));
+    jsAllowedIPAddesses.append(range);
   };
-  json.insert("allowedIPAddressRanges", allowedIPAddesses);
+  json.insert("allowedIPAddressRanges", jsAllowedIPAddesses);
+
+  QJsonArray jsExcludedAddresses;
+  for (const auto& address : hop.m_excludedAddresses) {
+    jsExcludedAddresses.append(QJsonValue(address));
+  }
+  json.insert("excludedAddresses", jsExcludedAddresses);
+
   QJsonArray splitTunnelApps;
-  for (const auto& uri : vpnDisabledApps) {
+  for (const auto& uri : hop.m_vpnDisabledApps) {
     splitTunnelApps.append(QJsonValue(uri));
   }
   json.insert("vpnDisabledApps", splitTunnelApps);
@@ -342,13 +318,14 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "connected") {
-    int hopindex = obj.value("hopindex").toInt(0);
-    if (hopindex != 0) {
-      logger.debug() << "hopindex" << hopindex << "connected";
+    QJsonValue pubkey = obj.value("pubkey");
+    if (!pubkey.isString()) {
+      logger.error() << "Unexpected pubkey value";
       return;
-    } else {
-      emit connected();
     }
+
+    logger.debug() << "Handshake completed with:" << pubkey.toString();
+    emit connected(pubkey.toString());
     return;
   }
 

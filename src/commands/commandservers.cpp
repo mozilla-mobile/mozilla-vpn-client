@@ -6,7 +6,7 @@
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "mozillavpn.h"
-#include "tasks/accountandservers/taskaccountandservers.h"
+#include "tasks/servers/taskservers.h"
 
 #include <QEventLoop>
 #include <QJsonArray>
@@ -58,7 +58,7 @@ int CommandServers::run(QStringList& tokens) {
     MozillaVPN vpn;
 
     if (!cacheOption.m_set) {
-      TaskAccountAndServers task;
+      TaskServers task;
       task.run();
 
       QEventLoop loop;
@@ -83,7 +83,12 @@ int CommandServers::run(QStringList& tokens) {
           cityObj["code"] = city.code();
 
           QJsonArray serverArray;
-          for (const Server& server : city.servers()) {
+          for (const QString& pubkey : city.servers()) {
+            const Server server = vpn.serverCountryModel()->server(pubkey);
+            if (!server.initialized()) {
+              continue;
+            }
+
             QJsonObject serverObj;
             serverObj["hostname"] = server.hostname();
             serverObj["ipv4-addr-in"] = server.ipv4AddrIn();
@@ -111,7 +116,11 @@ int CommandServers::run(QStringList& tokens) {
         for (const ServerCity& city : country.cities()) {
           stream << "  - City: " << city.name() << " (" << city.code() << ")"
                  << Qt::endl;
-          for (const Server& server : city.servers()) {
+          for (const QString& pubkey : city.servers()) {
+            const Server server = vpn.serverCountryModel()->server(pubkey);
+            if (!server.initialized()) {
+              continue;
+            }
             stream << "    - Server: " << server.hostname() << Qt::endl;
 
             if (verboseOption.m_set) {

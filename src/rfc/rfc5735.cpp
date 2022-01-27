@@ -7,5 +7,5 @@
 // static
 IPAddress RFC5735::ipv4LoopbackAddressBlock() {
   // https://datatracker.ietf.org/doc/html/rfc5735#section-3
-  return IPAddress::create("127.0.0.0/8");
+  return IPAddress("127.0.0.0/8");
 }

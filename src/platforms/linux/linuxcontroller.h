@@ -8,6 +8,7 @@
 #include "controllerimpl.h"
 
 #include <QObject>
+#include <QHostAddress>
 
 class DBusClient;
 class QDBusPendingCallWatcher;
@@ -21,11 +22,8 @@ class LinuxController final : public ControllerImpl {
 
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const QList<Server>& serverList, const Device* device,
-                const Keys* keys,
-                const QList<IPAddressRange>& allowedIPAddressRanges,
-                const QList<QString>& vpnDisabledApps,
-                const QHostAddress& dnsServer, Reason reason) override;
+  void activate(const HopConnection& hop, const Device* device,
+                const Keys* keys, Reason reason) override;
 
   void deactivate(Reason reason) override;
 
@@ -35,12 +33,12 @@ class LinuxController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
+  bool multihopSupported() override { return true; }
+
  private slots:
   void checkStatusCompleted(QDBusPendingCallWatcher* call);
   void initializeCompleted(QDBusPendingCallWatcher* call);
   void operationCompleted(QDBusPendingCallWatcher* call);
-  void hopConnected(int hopindex);
-  void hopDisconnected(int hopindex);
 
  private:
   DBusClient* m_dbus = nullptr;
