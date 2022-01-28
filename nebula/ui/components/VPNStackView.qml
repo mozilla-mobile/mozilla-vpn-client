@@ -10,11 +10,19 @@ import Mozilla.VPN 1.0
 
 StackView {
     id: stackView
-    Component.onCompleted: VPNCloseEventHandler.addStackView(stackView)
 
     onCurrentItemChanged: {
         var objString = currentItem.toString().split("(")[0];
         VPN.currentView = objString.split("_QML")[0];
+    }
+
+    Component.onCompleted: function(){
+        VPNCloseEventHandler.addStackView(stackView)
+
+        if(!currentItem && typeof initialItem === "number" ){
+            console.error("Failed to parse initialItem, try Component.OnComplete:push(someURI)");
+        }
+
     }
 
     anchors.fill: parent
