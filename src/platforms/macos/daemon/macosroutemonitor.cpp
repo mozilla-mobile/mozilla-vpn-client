@@ -58,6 +58,15 @@ MacosRouteMonitor::~MacosRouteMonitor() {
   logger.debug() << "MacosRouteMonitor destroyed.";
 }
 
+// Compare memory against zero.
+static int memcmpzero(const void* data, size_t len) {
+  const quint8* ptr = static_cast<const quint8*>(data);
+  while (len--) {
+    if (*ptr++) return 1;
+  }
+  return 0;
+}
+
 void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
                                         const QByteArray& payload) {
   QList<QByteArray> addrlist = parseAddrList(payload);
@@ -71,49 +80,19 @@ void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
   for (auto addr : addrlist) {
     list.append(addrToString(addr));
   }
-  char ifname[IF_NAMESIZE];
-  if_indextoname(rtm->rtm_index, ifname);
+  char ifname[IF_NAMESIZE] = "null";
+  if (rtm->rtm_index != 0) {
+    if_indextoname(rtm->rtm_index, ifname);
+  }
   logger.debug() << "Route deleted via" << ifname
                  << QString("addrs(%1):").arg(rtm->rtm_addrs, 0, 16)
                  << list.join(" ");
-}
-
-// Compare memory against zero.
-static int memcmpzero(const void* data, size_t len) {
-  const quint8* ptr = static_cast<const quint8*>(data);
-  while (len--) {
-    if (*ptr++) return 1;
-  }
-  return 0;
-}
-
-void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
-                                        const QByteArray& payload) {
-  QList<QByteArray> addrlist = parseAddrList(payload);
-  char ifname[IF_NAMESIZE];
 
   // We expect all useful routes to contain a destination, netmask and gateway.
   if (!(rtm->rtm_addrs & RTA_DST) || !(rtm->rtm_addrs & RTA_GATEWAY) ||
       !(rtm->rtm_addrs & RTA_NETMASK) || (addrlist.count() < 3)) {
     return;
   }
-  // Ignore route changes that we caused, or routes on the tunnel interface.
-  if (rtm->rtm_index == m_ifindex) {
-    return;
-  }
-  if ((rtm->rtm_pid == getpid()) && (rtm->rtm_type != RTM_GET)) {
-    return;
-  }
-
-  // Log relevant updates to the routing table.
-  QStringList list;
-  for (auto addr : addrlist) {
-    list.append(addrToString(addr));
-  }
-  if_indextoname(rtm->rtm_index, ifname);
-  logger.debug() << "Route update via" << ifname
-                 << QString("addrs(%1):").arg(rtm->rtm_addrs, 0, 16)
-                 << list.join(" ");
 
   // Check for a default route, which should have a netmask of zero.
   const struct sockaddr* sa =
@@ -139,19 +118,126 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
     return;
   }
 
-  // Determine if this is the IPv4 or IPv6 default route.
+  // Clear the default gateway
   const struct sockaddr* dst =
       reinterpret_cast<const struct sockaddr*>(addrlist[0].constData());
   QAbstractSocket::NetworkLayerProtocol protocol;
   unsigned int plen;
   if (dst->sa_family == AF_INET) {
-    m_defaultGatewayIpv4 = addrlist[1];
-    m_defaultIfindexIpv4 = rtm->rtm_index;
+    m_defaultGatewayIpv4.clear();
+    m_defaultIfindexIpv4 = 0;
     protocol = QAbstractSocket::IPv4Protocol;
     plen = 32;
   } else if (dst->sa_family == AF_INET6) {
+    m_defaultGatewayIpv6.clear();
+    m_defaultIfindexIpv6 = 0;
+    protocol = QAbstractSocket::IPv6Protocol;
+    plen = 128;
+  }
+
+  logger.debug() << "Lost default route via" << ifname
+                 << addrToString(addrlist[1]);
+  for (const QHostAddress& addr : m_exclusionRoutes) {
+    if (addr.protocol() == protocol) {
+      logger.debug() << "Removing exclusion route to" << addr.toString();
+      rtmSendRoute(RTM_DELETE, addr, plen, rtm->rtm_index, nullptr);
+    }
+  }
+}
+
+void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
+                                        const QByteArray& payload) {
+  QList<QByteArray> addrlist = parseAddrList(payload);
+  int ifindex = rtm->rtm_index;
+  char ifname[IF_NAMESIZE] = "null";
+
+  // We expect all useful routes to contain a destination, netmask and gateway.
+  if (!(rtm->rtm_addrs & RTA_DST) || !(rtm->rtm_addrs & RTA_GATEWAY) ||
+      !(rtm->rtm_addrs & RTA_NETMASK) || (addrlist.count() < 3)) {
+    return;
+  }
+  // Ignore route changes that we caused, or routes on the tunnel interface.
+  if (rtm->rtm_index == m_ifindex) {
+    return;
+  }
+  if ((rtm->rtm_pid == getpid()) && (rtm->rtm_type != RTM_GET)) {
+    return;
+  }
+
+  // Special case: If RTA_IFP is set, then we should get the interface index
+  // from the address list instead of rtm_index.
+  if (rtm->rtm_addrs & RTA_IFP) {
+    int addridx = 0;
+    for (int mask = 1; mask < RTA_IFP; mask <<= 1) {
+      if (rtm->rtm_addrs & mask) {
+        addridx++;
+      }
+    }
+    if (addridx >= addrlist.count()) {
+      return;
+    }
+    const char* sdl_data = addrlist[addridx].constData();
+    const struct sockaddr_dl* sdl =
+      reinterpret_cast<const struct sockaddr_dl*>(sdl_data);
+    if (sdl->sdl_family == AF_LINK) {
+      ifindex = sdl->sdl_index;
+    }
+  }
+
+  // Log relevant updates to the routing table.
+  QStringList list;
+  for (auto addr : addrlist) {
+    list.append(addrToString(addr));
+  }
+  if_indextoname(ifindex, ifname);
+  logger.debug() << "Route update via" << ifname
+                 << QString("addrs(%1):").arg(rtm->rtm_addrs, 0, 16)
+                 << list.join(" ");
+
+  // Check for a default route, which should have a netmask of zero.
+  const struct sockaddr* sa =
+      reinterpret_cast<const struct sockaddr*>(addrlist[2].constData());
+  if (sa->sa_family == AF_INET) {
+    struct sockaddr_in sin;
+    Q_ASSERT(sa->sa_len <= sizeof(sin));
+    memset(&sin, 0, sizeof(sin));
+    memcpy(&sin, sa, sa->sa_len);
+    if (memcmpzero(&sin.sin_addr, sizeof(sin.sin_addr)) != 0) {
+      return;
+    }
+  } else if (sa->sa_family == AF_INET6) {
+    struct sockaddr_in6 sin6;
+    Q_ASSERT(sa->sa_len <= sizeof(sin6));
+    memset(&sin6, 0, sizeof(sin6));
+    memcpy(&sin6, sa, sa->sa_len);
+    if (memcmpzero(&sin6.sin6_addr, sizeof(sin6.sin6_addr)) != 0) {
+      return;
+    }
+  } else if (sa->sa_family != AF_UNSPEC) {
+    // The default route sometimes sets a netmask of AF_UNSPEC.
+    return;
+  }
+
+  // Determine if this is the IPv4 or IPv6 default route.
+  const struct sockaddr* dst =
+      reinterpret_cast<const struct sockaddr*>(addrlist[0].constData());
+  QAbstractSocket::NetworkLayerProtocol protocol;
+  unsigned int plen;
+  int rtm_type = RTM_ADD;
+  if (dst->sa_family == AF_INET) {
+    if (m_defaultIfindexIpv4 != 0) {
+      rtm_type = RTM_CHANGE;
+    }
+    m_defaultGatewayIpv4 = addrlist[1];
+    m_defaultIfindexIpv4 = ifindex;
+    protocol = QAbstractSocket::IPv4Protocol;
+    plen = 32;
+  } else if (dst->sa_family == AF_INET6) {
+    if (m_defaultIfindexIpv6 != 0) {
+      rtm_type = RTM_CHANGE;
+    }
     m_defaultGatewayIpv6 = addrlist[1];
-    m_defaultIfindexIpv6 = rtm->rtm_index;
+    m_defaultIfindexIpv6 = ifindex;
     protocol = QAbstractSocket::IPv6Protocol;
     plen = 128;
   } else {
@@ -159,10 +245,12 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
   }
 
   // Update the exclusion routes with the new default route.
-  logger.debug() << "Updating default route via" << ifname;
+  logger.debug() << "Updating default route via" << ifname
+                 << addrToString(addrlist[1]);
   for (const QHostAddress& addr : m_exclusionRoutes) {
     if (addr.protocol() == protocol) {
-      rtmSendRoute(RTM_ADD, addr, plen, rtm->rtm_index,
+      logger.debug() << "Updating exclusion route to" << addr.toString();
+      rtmSendRoute(rtm_type, addr, plen, ifindex,
                    addrlist[1].constData());
     }
   }
@@ -233,7 +321,6 @@ void MacosRouteMonitor::rtsockReady() {
         handleIfaceInfo((struct if_msghdr*)rtm, message);
         break;
       default:
-        logger.debug() << "Unknown routing message:" << rtm->rtm_type;
         break;
     }
 
@@ -494,7 +581,7 @@ QString MacosRouteMonitor::addrToString(const struct sockaddr* sa) {
   }
   if (sa->sa_family == AF_LINK) {
     const struct sockaddr_dl* sdl = (const struct sockaddr_dl*)sa;
-    return QString(link_ntoa(sdl));
+    return QString("link#%1:").arg(sdl->sdl_index) + QString(link_ntoa(sdl));
   }
   if (sa->sa_family == AF_UNSPEC) {
     return QString("unspec");
