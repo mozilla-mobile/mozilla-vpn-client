@@ -111,11 +111,11 @@ Item {
                     Layout.alignment: Qt.AlignTop
                     Layout.preferredWidth: parent.width
 
-                    spacing: 24
+                    spacing: 240
 
                     ColumnLayout {
                         Layout.fillHeight: true
-                        spacing: 24
+                        spacing: 240
                         visible: VPN.userState !== VPN.UserAuthenticated
                         Layout.fillWidth: true
 
@@ -239,7 +239,7 @@ Item {
 
                 ColumnLayout {
                     Layout.fillHeight: true
-                    spacing: 24
+                    spacing: 240
 
                     VPNVerticalSpacer {
                         Layout.fillWidth: true

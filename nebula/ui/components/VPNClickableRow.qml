@@ -55,6 +55,10 @@ VPNButtonBase {
         Component.onCompleted: rowVisualStates.state = uiState.stateDefault
     }
 
+    Text {
+        anchors.top: rowVisualStates.bottom
+    }
+
     VPNUIStates {
         id: vpnFocus
 
