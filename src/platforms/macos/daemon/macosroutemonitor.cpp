@@ -178,7 +178,7 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
     }
     const char* sdl_data = addrlist[addridx].constData();
     const struct sockaddr_dl* sdl =
-      reinterpret_cast<const struct sockaddr_dl*>(sdl_data);
+        reinterpret_cast<const struct sockaddr_dl*>(sdl_data);
     if (sdl->sdl_family == AF_LINK) {
       ifindex = sdl->sdl_index;
     }
@@ -250,8 +250,7 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
   for (const QHostAddress& addr : m_exclusionRoutes) {
     if (addr.protocol() == protocol) {
       logger.debug() << "Updating exclusion route to" << addr.toString();
-      rtmSendRoute(rtm_type, addr, plen, ifindex,
-                   addrlist[1].constData());
+      rtmSendRoute(rtm_type, addr, plen, ifindex, addrlist[1].constData());
     }
   }
 }
