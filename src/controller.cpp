@@ -340,6 +340,8 @@ bool Controller::deactivate() {
   }
 
   m_timer.stop();
+  m_handshakeTimer.stop();
+  m_activationQueue.clear();
   resetConnectionCheck();
 
   Q_ASSERT(m_impl);
