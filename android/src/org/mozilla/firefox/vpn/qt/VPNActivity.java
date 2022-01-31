@@ -4,9 +4,22 @@
 
 package org.mozilla.firefox.vpn.qt;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.DeadObjectException;
+import android.os.IBinder;
+import android.os.Parcel;
+import android.os.RemoteException;
 import android.view.KeyEvent;
+
+import org.mozilla.firefox.vpn.VPNClientBinder;
+import org.mozilla.firefox.vpn.VPNService;
+
+import java.nio.charset.StandardCharsets;
 
 public class VPNActivity extends org.mozilla.firefox.vpn.compat.CompatVPNActivity {
   @Override
@@ -55,4 +68,71 @@ public class VPNActivity extends org.mozilla.firefox.vpn.compat.CompatVPNActivit
 
   // Returns true if MVPN has handled the back button
   native boolean handleBackButton();
+
+  public native void onServiceMessage(int actionCode, String body);
+  public native void qtOnServiceConnected();
+  public native void qtOnServiceDisconnected();
+  
+  public static void connectService(){
+    VPNActivity.getInstance().initServiceConnection();
+  }
+  
+  public void sendToService(int actionCode, String body) {
+    if(!bound){
+      return;
+    }
+    Parcel out = Parcel.obtain();
+    out.writeByteArray(body.getBytes(StandardCharsets.UTF_8));
+    try {
+      vpnService.transact(actionCode,out,Parcel.obtain(),0);
+    } catch (DeadObjectException e) {
+      bound = false;
+      vpnService= null;
+    } catch (RemoteException e) {
+      e.printStackTrace();
+    }
+  }
+
+  IBinder vpnService;
+  boolean bound=false;
+  private ServiceConnection mConnection = new ServiceConnection() {
+      public void onServiceConnected(ComponentName className, IBinder service) {
+          // This is called when the connection with the service has been
+          // established, giving us the object we can use to
+          // interact with the service.  We are communicating with the
+          // service using a Messenger, so here we get a client-side
+          // representation of that from the raw IBinder object.
+          vpnService = service;
+          bound = true;
+
+
+        VPNClientBinder binder = new VPNClientBinder();
+        Parcel out = Parcel.obtain();
+        out.writeStrongBinder(binder);
+        try {
+          vpnService.transact(3,out,Parcel.obtain(),0);
+        } catch (DeadObjectException e) {
+          bound = false;
+          vpnService= null;
+        } catch (RemoteException e) {
+          e.printStackTrace();
+        }
+        qtOnServiceConnected();
+      }
+
+      public void onServiceDisconnected(ComponentName className) {
+        // This is called when the connection with the service has been
+        // unexpectedly disconnected -- that is, its process crashed.
+        vpnService = null;
+        bound = false;
+        qtOnServiceDisconnected();
+    }
+  };
+
+  private void initServiceConnection(){
+    bindService(new Intent(this, VPNService.class), mConnection,
+            Context.BIND_AUTO_CREATE);
+  }
+
+
 }
