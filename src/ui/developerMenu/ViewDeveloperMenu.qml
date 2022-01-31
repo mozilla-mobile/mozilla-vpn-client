@@ -219,17 +219,30 @@ Item {
             }
         }
 
-        VPNCheckBoxAlert {
+        VPNContextualAlerts {
             id: restartRequired
-            anchors.top: resetAndQuit.bottom
-            visible: false
+
+            property bool isVisible: false
+
+            anchors.left: inspectorLink.left
+            anchors.top: inspectorLink.bottom
+            messages: [
+                {
+                    type: "warning",
+                    message: VPNl18n.SettingsDevRestartRequired,
+                    visible: isVisible
+                }
+            ]
+
             Connections {
                 target: VPNSettings
-                function onStagingServerAddressChanged() { restartRequired.visible = true; }
-                function onStagingServerChanged() { restartRequired.visible = true; }
+                function onStagingServerAddressChanged() {
+                    restartRequired.isVisible = true;
+                }
+                function onStagingServerChanged() {
+                    restartRequired.isVisible = true;
+                }
             }
-
-            errorMessage: VPNl18n.SettingsDevRestartRequired
         }
     }
 
