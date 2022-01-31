@@ -310,6 +310,10 @@ settings:
     value: Connect VPN on startup
     comment: Startup refers to a device's startup, not the VPN client's.
   startAtBootSubtitle: Mozilla VPN will launch and connect when you start up your device
+  tunnelPort53:
+    value: Tunnel VPN through port 53/DNS
+    comment: Tunnel is used as a verb, as in to direct traffic through
+  tunnelPort53Description: Use port 53/DNS for Wireguard traffic, which may help evade firewalls
 
 
 aboutUs:

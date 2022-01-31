@@ -4,6 +4,7 @@
 
 #include "androidvpnactivity.h"
 #include "androidutils.h"
+#include "constants.h"
 #include "logger.h"
 #include "mozillavpn.h"
 
@@ -70,7 +71,9 @@ AndroidVPNActivity* AndroidVPNActivity::instance() {
 void AndroidVPNActivity::sendToService(ServiceAction type,
                                        const QString& data) {
   int messageType = (int)type;
-  logger.debug() << "sendToService: " << messageType << " " << data;
+  if(!Constants::inProduction()){
+    logger.debug() << "sendToService: " << messageType << " " << data;
+  }
   AndroidUtils::runOnAndroidThreadSync([messageType, &data]() {
     QJniEnvironment env;
     QJniObject::callStaticMethod<void>(

@@ -48,7 +48,6 @@
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
-#  include <QQuickStyle>
 #endif
 
 #ifndef Q_OS_WIN
@@ -157,9 +156,6 @@ int CommandUI::run(QStringList& tokens) {
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
-#ifdef MVPN_ANDROID
-    QQuickStyle::setStyle("Universal");
-#endif 
 
     Glean::Initialize(engine);
 

@@ -571,7 +571,6 @@ else:android {
     # but we want to create an extra bundle with the info :)
     CONFIG += force_debug_info
     CONFIG += c++14
-    QT += quickcontrols2
 
     TARGET = mozillavpn
     QT += networkauth

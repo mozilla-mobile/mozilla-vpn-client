@@ -26,6 +26,7 @@ VPNFlickable {
     property var secondaryButtonObjectName
     property var secondaryButtonOnClick
     property var secondaryButtonIsSignOff: false
+    property var popWhenSignOff: false
 
     property var getHelpLinkVisible: false
     property var statusLinkVisible: false
@@ -148,7 +149,7 @@ VPNFlickable {
                 objectName: secondaryButtonObjectName
                 labelText: secondaryButtonText
                 visible: secondaryButtonText != "" && !secondaryButtonIsSignOff
-                Layout.preferredHeight: Theme.rowHeight
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignHCenter
                 anchors.horizontalCenter: undefined
                 anchors.bottom: undefined
@@ -161,12 +162,13 @@ VPNFlickable {
                 id: signOff
 
                 visible: secondaryButtonIsSignOff
-                Layout.preferredHeight: Theme.rowHeight
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignHCenter
                 anchors.horizontalCenter: undefined
                 anchors.bottom: undefined
                 anchors.bottomMargin: undefined
                 height: undefined
+                popMainView: popWhenSignOff
             }
         }
 
