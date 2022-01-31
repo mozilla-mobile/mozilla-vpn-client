@@ -18,10 +18,6 @@ Item {
         asynchronous: true
         height: logoRoot.height
         fillMode: Image.PreserveAspectFit
-        layer.enabled: true
-        layer.effect: VPNOpacityMask {
-            maskSource: avatarMask
-        }
         smooth: true
         source: isDefaultAvatar() ? "" : avatarUrl
     }
@@ -43,10 +39,19 @@ Item {
     Rectangle {
         id: avatarMask
 
+        anchors.centerIn: avatar
         height: avatar.height
-        radius: avatar.width / 2
+        radius: height / 2
         visible: false
-        width: avatar.height
+        width: height
+    }
+
+    VPNOpacityMask {
+        anchors.centerIn: avatar
+        height: avatar.height
+        width: height
+        source: avatar
+        maskSource: avatarMask
     }
 
     /**

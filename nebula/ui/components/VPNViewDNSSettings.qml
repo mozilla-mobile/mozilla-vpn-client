@@ -124,76 +124,20 @@ VPNFlickable {
                         }
                     }
 
-                    VPNCheckBoxAlert {
-                            id: errorAlert
-                            errorMessage: ipInput.error
-                            anchors.left: undefined
-                            anchors.right: undefined
-                            anchors.leftMargin: undefined
-                            anchors.rightMargin: undefined
-                            anchors.top: undefined
-                            anchors.topMargin: undefined
-                            Layout.leftMargin: ipInput.Layout.leftMargin
-                            alertColor: VPNTheme.theme.red
-                            width: ipInput.width - ipInput.Layout.leftMargin
+                    VPNContextualAlerts {
+                        id: errorAlert
+                        anchors.top: serverSearchInput.bottom
+                        anchors.topMargin: VPNTheme.theme.listSpacing
 
-                            states: [
-                                State {
-                                    name: "visible"
-                                    when: ipInput.valueInvalid && ipInput.visible
-                                    PropertyChanges {
-                                        target: errorAlert
-                                        visible: true
-                                        opacity: 1
-                                    }
-                                },
-                                State {
-                                    name: "hidden"
-                                    when: !ipInput.valueInvalid || !ipInput.visible
-                                    PropertyChanges {
-                                        target: errorAlert
-                                        visible: false
-                                        opacity: 0
-                                    }
-                                }
-                            ]
+                        messages: [
+                            {
+                                type: "error",
+                                message: ipInput.error,
+                                visible: ipInput.valueInvalid && ipInput.visible
+                            }
+                        ]
+                    }
 
-                            transitions: [
-                                Transition {
-                                    to: "hidden"
-                                    SequentialAnimation {
-                                        PropertyAnimation {
-                                            target: errorAlert
-                                            property: "opacity"
-                                            to: 0
-                                            duration: 100
-                                        }
-                                        PropertyAction {
-                                            target: errorAlert
-                                            property: "visible"
-                                            value: false
-                                        }
-                                    }
-                                },
-                                Transition {
-                                    to: "visible"
-                                    SequentialAnimation {
-                                        PropertyAction {
-                                            target: errorAlert
-                                            property: "visible"
-                                            value: true
-                                        }
-                                        PropertyAnimation {
-                                            target: errorAlert
-                                            property: "opacity"
-                                            from: 0
-                                            to: 1
-                                            duration: 100
-                                        }
-                                    }
-                                }
-                            ]
-                        }
                 }
             }
         }

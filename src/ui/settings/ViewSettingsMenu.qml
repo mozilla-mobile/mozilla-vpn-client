@@ -48,7 +48,6 @@ VPNFlickable {
         logoSubtitle: VPNUser.email
         anchors.top: parent.top
         anchors.topMargin: (Math.max(window.safeContentHeight * .08, VPNTheme.theme.windowMargin * 2))
-        maskImage: true
         isSettingsView: true
     }
 
