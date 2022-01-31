@@ -18,7 +18,6 @@ Logger logger(LOG_ANDROID, "AndroidVPNActivity");
 }  // namespace
 
 AndroidVPNActivity::AndroidVPNActivity() {
-
   AndroidUtils::runOnAndroidThreadSync([]() {
     // Hook in the native implementation for startActivityForResult into the JNI
     JNINativeMethod methods[]{
@@ -54,15 +53,13 @@ bool AndroidVPNActivity::handleBackButton(JNIEnv* env, jobject thiz) {
   return MozillaVPN::instance()->closeEventHandler()->eventHandled();
 }
 
-
-void AndroidVPNActivity::connectService(){
-    QJniObject::callStaticMethod<void>(CLASSNAME,
-                                        "connectService", "()V");
-    logger.debug() << "attempt to connect service";
+void AndroidVPNActivity::connectService() {
+  QJniObject::callStaticMethod<void>(CLASSNAME, "connectService", "()V");
+  logger.debug() << "attempt to connect service";
 }
 
 // static
-AndroidVPNActivity* AndroidVPNActivity::instance(){
+AndroidVPNActivity* AndroidVPNActivity::instance() {
   if (s_instance == nullptr) {
     AndroidVPNActivity::maybeInit();
   }
@@ -70,20 +67,22 @@ AndroidVPNActivity* AndroidVPNActivity::instance(){
 }
 
 // static
-void AndroidVPNActivity::sendToService(ServiceAction type, const QString& data){
-    int messageType = (int)type;
-    logger.debug() << "sendToService: " << messageType << " " << data;
-    AndroidUtils::runOnAndroidThreadSync([messageType,&data]() {
-      QJniEnvironment env;
-      QJniObject::callStaticMethod<void>(CLASSNAME,
-                                        "sendToService", "(ILjava/lang/String;)V",
-                                        static_cast<int>(messageType),
-                                        QJniObject::fromString(data).object<jstring>());
-    });
+void AndroidVPNActivity::sendToService(ServiceAction type,
+                                       const QString& data) {
+  int messageType = (int)type;
+  logger.debug() << "sendToService: " << messageType << " " << data;
+  AndroidUtils::runOnAndroidThreadSync([messageType, &data]() {
+    QJniEnvironment env;
+    QJniObject::callStaticMethod<void>(
+        CLASSNAME, "sendToService", "(ILjava/lang/String;)V",
+        static_cast<int>(messageType),
+        QJniObject::fromString(data).object<jstring>());
+  });
 }
 
-//static
-void AndroidVPNActivity::onServiceMessage(JNIEnv* env, jobject thiz, jint messageType, jstring body){
+// static
+void AndroidVPNActivity::onServiceMessage(JNIEnv* env, jobject thiz,
+                                          jint messageType, jstring body) {
   Q_UNUSED(thiz);
   const char* buffer = env->GetStringUTFChars(body, nullptr);
   if (!buffer) {
@@ -97,41 +96,41 @@ void AndroidVPNActivity::onServiceMessage(JNIEnv* env, jobject thiz, jint messag
   });
 }
 
-void AndroidVPNActivity::handleServiceMessage(int code, const QString& data){
+void AndroidVPNActivity::handleServiceMessage(int code, const QString& data) {
   logger.debug() << "handleServiceMessage" << code << data;
-  auto mode = (ServiceEvents) code;
-  switch(mode){
-  case ServiceEvents::EVENT_INIT:
-    emit eventInitialized(data);
-    break;
-  case ServiceEvents::EVENT_CONNECTED:
-    emit eventConnected(data);
-    break;
-  case ServiceEvents::EVENT_DISCONNECTED:
-    emit eventDisconnected(data);
-    break;
-  case ServiceEvents::EVENT_STATISTIC_UPDATE:
-    emit eventStatisticUpdate(data);
-    break;
-  case ServiceEvents::EVENT_BACKEND_LOGS:
-    emit eventBackendLogs(data);
-    break;
-  case ServiceEvents::EVENT_ACTIVATION_ERROR:
-    emit eventActivationError(data);
-    break;
-  default: 
-    Q_ASSERT(false);
+  auto mode = (ServiceEvents)code;
+  switch (mode) {
+    case ServiceEvents::EVENT_INIT:
+      emit eventInitialized(data);
+      break;
+    case ServiceEvents::EVENT_CONNECTED:
+      emit eventConnected(data);
+      break;
+    case ServiceEvents::EVENT_DISCONNECTED:
+      emit eventDisconnected(data);
+      break;
+    case ServiceEvents::EVENT_STATISTIC_UPDATE:
+      emit eventStatisticUpdate(data);
+      break;
+    case ServiceEvents::EVENT_BACKEND_LOGS:
+      emit eventBackendLogs(data);
+      break;
+    case ServiceEvents::EVENT_ACTIVATION_ERROR:
+      emit eventActivationError(data);
+      break;
+    default:
+      Q_ASSERT(false);
   }
 }
 
-void AndroidVPNActivity::onServiceConnected(JNIEnv* env, jobject thiz){
+void AndroidVPNActivity::onServiceConnected(JNIEnv* env, jobject thiz) {
   Q_UNUSED(env);
   Q_UNUSED(thiz);
   logger.debug() << "service connected";
   emit AndroidVPNActivity::instance()->serviceConnected();
 }
 
-void AndroidVPNActivity::onServiceDisconnected(JNIEnv* env, jobject thiz){
+void AndroidVPNActivity::onServiceDisconnected(JNIEnv* env, jobject thiz) {
   Q_UNUSED(env);
   Q_UNUSED(thiz);
   logger.debug() << "service disconnected";

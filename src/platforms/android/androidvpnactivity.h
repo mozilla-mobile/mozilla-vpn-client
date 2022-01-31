@@ -12,9 +12,9 @@
 #include <QObject>
 #include "jni.h"
 
-  // Binder Codes for VPNServiceBinder
-  // See also - VPNServiceBinder.kt
- // Actions that are Requestable
+// Binder Codes for VPNServiceBinder
+// See also - VPNServiceBinder.kt
+// Actions that are Requestable
 enum ServiceAction {
   // Activate the vpn. Body requires a json wg-conf
   ACTION_ACTIVATE = 1,
@@ -58,10 +58,8 @@ enum ServiceEvents {
 };
 typedef enum ServiceEvents ServiceEvents;
 
-
 class AndroidVPNActivity : public QObject {
   Q_OBJECT
-
 
  public:
   static void maybeInit();
@@ -70,26 +68,24 @@ class AndroidVPNActivity : public QObject {
   static void sendToService(ServiceAction type, const QString& data);
   static void connectService();
 
+ signals:
+  void serviceConnected();
+  void serviceDisconnected();
+  void eventInitialized(const QString& data);
+  void eventConnected(const QString& data);
+  void eventDisconnected(const QString& data);
+  void eventStatisticUpdate(const QString& data);
+  void eventBackendLogs(const QString& data);
+  void eventActivationError(const QString& data);
 
-  signals:
-    void serviceConnected();
-    void serviceDisconnected();
-    void eventInitialized(const QString& data);
-    void eventConnected(const QString& data);
-    void eventDisconnected(const QString& data);
-    void eventStatisticUpdate(const QString& data);
-    void eventBackendLogs(const QString& data);
-    void eventActivationError(const QString& data);
+ private:
+  AndroidVPNActivity();
 
-   private:
-    AndroidVPNActivity();
-
-    static void onServiceMessage(JNIEnv* env, jobject thiz, jint messageType,
-                                 jstring body);
-    static void onServiceConnected(JNIEnv* env, jobject thiz);
-    static void onServiceDisconnected(JNIEnv* env, jobject thiz);
-    void handleServiceMessage(int code, const QString& data);
-
+  static void onServiceMessage(JNIEnv* env, jobject thiz, jint messageType,
+                               jstring body);
+  static void onServiceConnected(JNIEnv* env, jobject thiz);
+  static void onServiceDisconnected(JNIEnv* env, jobject thiz);
+  void handleServiceMessage(int code, const QString& data);
 };
 
 #endif  // ANDROIDVPNACTIVITY_H

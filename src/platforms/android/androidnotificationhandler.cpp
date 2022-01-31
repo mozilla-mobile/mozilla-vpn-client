@@ -30,7 +30,6 @@ AndroidNotificationHandler::~AndroidNotificationHandler() {
 void AndroidNotificationHandler::notify(NotificationHandler::Message type,
                                         const QString& title,
                                         const QString& message, int timerMsec) {
-  
   logger.debug() << "Send notification - " << message;
   QJsonObject args;
   args["title"] = title;

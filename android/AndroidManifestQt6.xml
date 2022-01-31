@@ -60,7 +60,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
             <meta-data
                 android:name="android.app.extract_android_style"
-                android:value="none" />
+                android:value="minimal" />
 
         </activity>
         <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices-->

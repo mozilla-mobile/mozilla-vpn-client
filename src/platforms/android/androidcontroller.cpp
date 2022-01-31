@@ -34,7 +34,6 @@
 #include <QJsonObject>
 #include <QRandomGenerator>
 
-
 namespace {
 Logger logger(LOG_ANDROID, "AndroidController");
 AndroidController* s_instance = nullptr;
@@ -46,7 +45,7 @@ constexpr auto PERMISSIONHELPER_CLASS =
 
 AndroidController::AndroidController() {
   MVPN_COUNT_CTOR(AndroidController);
-  s_instance=this;
+  s_instance = this;
 
   auto activity = AndroidVPNActivity::instance();
 
@@ -106,10 +105,7 @@ AndroidController::AndroidController() {
       },
       Qt::QueuedConnection);
 }
-AndroidController::~AndroidController() {
-  MVPN_COUNT_DTOR(AndroidController);
-}
-
+AndroidController::~AndroidController() { MVPN_COUNT_DTOR(AndroidController); }
 
 void AndroidController::initialize(const Device* device, const Keys* keys) {
   logger.debug() << "Initializing";
@@ -197,12 +193,14 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   QJsonDocument doc(args);
   QAndroidParcel sendData;
   sendData.writeData(doc.toJson());
-  AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE, doc.toJson());
+  AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE,
+                                    doc.toJson());
 }
 // Activates the tunnel that is currently set
 // in the VPN Service
 void AndroidController::resume_activate() {
-  AndroidVPNActivity::sendToService(ServiceAction::ACTION_RESUME_ACTIVATE, QString());
+  AndroidVPNActivity::sendToService(ServiceAction::ACTION_RESUME_ACTIVATE,
+                                    QString());
 }
 
 void AndroidController::deactivate(Reason reason) {
@@ -216,14 +214,16 @@ void AndroidController::deactivate(Reason reason) {
     logger.warning() << "deactivation skipped for Switching";
     return;
   }
-  AndroidVPNActivity::sendToService(ServiceAction::ACTION_DEACTIVATE, QString());
+  AndroidVPNActivity::sendToService(ServiceAction::ACTION_DEACTIVATE,
+                                    QString());
 }
 
 void AndroidController::checkStatus() {
   logger.debug() << "check status";
 
   QAndroidParcel nullParcel;
-  AndroidVPNActivity::sendToService(ServiceAction::ACTION_REQUEST_STATISTIC, QString());
+  AndroidVPNActivity::sendToService(ServiceAction::ACTION_REQUEST_STATISTIC,
+                                    QString());
 }
 
 void AndroidController::getBackendLogs(
@@ -231,16 +231,15 @@ void AndroidController::getBackendLogs(
   logger.debug() << "get logs";
 
   m_logCallback = std::move(a_callback);
-  AndroidVPNActivity::sendToService(ServiceAction::ACTION_REQUEST_GET_LOG, QString());
+  AndroidVPNActivity::sendToService(ServiceAction::ACTION_REQUEST_GET_LOG,
+                                    QString());
 }
 
 void AndroidController::cleanupBackendLogs() {
   logger.debug() << "cleanup logs";
-  AndroidVPNActivity::sendToService(ServiceAction::ACTION_REQUEST_CLEANUP_LOG, QString());
+  AndroidVPNActivity::sendToService(ServiceAction::ACTION_REQUEST_CLEANUP_LOG,
+                                    QString());
 }
-
-
-
 
 const int ACTIVITY_RESULT_OK = 0xffffffff;
 /**

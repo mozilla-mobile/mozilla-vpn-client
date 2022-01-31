@@ -39,7 +39,6 @@ class AndroidController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
-
  private:
   QString m_serverPublicKey;
   Device m_device;
