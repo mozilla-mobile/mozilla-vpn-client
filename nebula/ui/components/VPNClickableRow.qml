@@ -46,17 +46,19 @@ VPNButtonBase {
         id: rowVisualStates
 
         width: mainRow.width
-        height: canGrowVertical? mainRow.height : VPNTheme.theme.rowHeight
+        height: canGrowVertical ? mainRow.height : VPNTheme.theme.rowHeight
         anchors.top: mainRow.top
         radius: VPNTheme.theme.cornerRadius
         border.width: VPNTheme.theme.focusBorderWidth
         border.color: "transparent"
         color: "transparent"
-        Component.onCompleted: rowVisualStates.state = uiState.stateDefault
-    }
+        opacity: rowVisualStates.state === VPNTheme.theme.uiState.stateFocused
+            ? 1
+            : 0
 
-    Text {
-        anchors.top: rowVisualStates.bottom
+        Component.onCompleted: {
+            rowVisualStates.state = VPNTheme.theme.uiState.stateDefault
+        }
     }
 
     VPNUIStates {

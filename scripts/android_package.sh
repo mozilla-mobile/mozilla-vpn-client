@@ -14,7 +14,7 @@ QTPATH=
 RELEASE=1
 ADJUST_SDK_TOKEN=
 export SPLITAPK=0
-export ARCH="x86_64"
+export ARCH ="x86 x86_64 armeabi-v7a arm64-v8a"
 
 helpFunction() {
   print G "Usage:"
@@ -116,6 +116,7 @@ rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
 
 print Y "Importing translation files..."
+git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
 python3 scripts/importLanguages.py || die "Failed to import languages"
 
 print Y "Generating glean samples..."
@@ -168,7 +169,7 @@ if [[ "$RELEASE" ]]; then
     CONFIG-=debug \
     CONFIG-=debug_and_release \
     CONFIG+=release \
-    ANDROID_ABIS="$ARCH" \
+    ANDROID_ABIS=$ARCH \
     $ADJUST \
     ..//mozillavpn.pro  || die "Qmake failed"
 else
@@ -180,7 +181,7 @@ else
     CONFIG-=debug_and_release \
     CONFIG-=release \
     CONFIG+=qml_debug \
-    ANDROID_ABIS="$ARCH" \
+    ANDROID_ABIS=$ARCH \
     $ADJUST \
     ..//mozillavpn.pro || die "Qmake failed"
 fi
@@ -193,7 +194,7 @@ make -j $JOBS sub-src-apk_install_target || die "Compile of QT project failed"
 # project, that we can then use to generate a "real" release build
 print Y "Bundleing (debug) APK"
 cd src/
-make -d apk || die "Compile of QT project failed"
+make apk || die "Compile of QT project failed"
 print G "All done!"
 print N "Your debug .APK is Located in .tmp/src/android-build/mozillavpn.apk"
 
