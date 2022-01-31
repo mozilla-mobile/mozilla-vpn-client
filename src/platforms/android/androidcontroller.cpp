@@ -6,6 +6,7 @@
 #include "androidvpnactivity.h"
 #include "androidutils.h"
 #include "androidjnicompat.h"
+#include "errorhandler.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -49,51 +50,61 @@ AndroidController::AndroidController() {
 
   auto activity = AndroidVPNActivity::instance();
 
-  connect(activity,&AndroidVPNActivity::serviceInitialized, this,
-          [this](const QString& parcelBody){
-            auto doc = QJsonDocument::fromJson(parcelBody.toUtf8());
-            emit initialized(
-                true, 
-                doc.object()["connected"].toBool(),
-                QDateTime::fromMSecsSinceEpoch(
-                    doc.object()["time"].toVariant().toLongLong())
-              );
-          }, Qt::QueuedConnection);
+  connect(
+      activity, &AndroidVPNActivity::eventInitialized, this,
+      [this](const QString& parcelBody) {
+        auto doc = QJsonDocument::fromJson(parcelBody.toUtf8());
+        emit initialized(true, doc.object()["connected"].toBool(),
+                         QDateTime::fromMSecsSinceEpoch(
+                             doc.object()["time"].toVariant().toLongLong()));
+      },
+      Qt::QueuedConnection);
 
-  connect(activity,&AndroidVPNActivity::serviceVPNConnected, this,
-          [this](const QString& parcelBody){
-            Q_UNUSED(parcelBody);
-            emit connected(m_serverPublicKey);
-          }, Qt::QueuedConnection);
-
-  connect(activity,&AndroidVPNActivity::serviceVPNDisconnected, this,
+  connect(
+      activity, &AndroidVPNActivity::eventConnected, this,
+      [this](const QString& parcelBody) {
+        Q_UNUSED(parcelBody);
+        emit connected(m_serverPublicKey);
+      },
+      Qt::QueuedConnection);
+  connect(activity, &AndroidVPNActivity::eventDisconnected, this,
           &AndroidController::disconnected, Qt::QueuedConnection);
-
-  connect(activity,&AndroidVPNActivity::serviceBackendLogs, this,
-          [this](const QString& parcelBody){
-            if(m_logCallback){
-              m_logCallback(parcelBody);
-            }
-          }, Qt::QueuedConnection);
-
-  connect(activity,&AndroidVPNActivity::serviceStatisticReport, this,
-          [this](const QString& parcelBody){    
-            auto doc = QJsonDocument::fromJson(parcelBody.toUtf8());
-            emit statusUpdated(doc.object()["endpoint"].toString(),
-                              doc.object()["deviceIpv4"].toString(),
-                              doc.object()["tx_bytes"].toInt(),
-                              doc.object()["rx_bytes"].toInt());
-          }, Qt::QueuedConnection);
-  connect(activity,&AndroidVPNActivity::serviceVPNActivationError, this,
-          [this](const QString& parcelBody){    
-            if (!parcelBody.isEmpty()) {
-              logger.error() << "Service Error while activating the VPN: " << parcelBody;
-            }
-            MozillaVPN::instance()->errorHandle(ErrorHandler::ConnectionFailureError);
-            emit disconnected();
-          }, Qt::QueuedConnection);
-
-        
+  connect(
+      activity, &AndroidVPNActivity::eventBackendLogs, this,
+      [this](const QString& parcelBody) {
+        if (m_logCallback) {
+          m_logCallback(parcelBody);
+        }
+      },
+      Qt::QueuedConnection);
+  connect(
+      activity, &AndroidVPNActivity::eventStatisticUpdate, this,
+      [this](const QString& parcelBody) {
+        auto doc = QJsonDocument::fromJson(parcelBody.toUtf8());
+        emit statusUpdated(doc.object()["endpoint"].toString(),
+                           doc.object()["deviceIpv4"].toString(),
+                           doc.object()["tx_bytes"].toInt(),
+                           doc.object()["rx_bytes"].toInt());
+      },
+      Qt::QueuedConnection);
+  connect(
+      activity, &AndroidVPNActivity::eventActivationError, this,
+      [this](const QString& parcelBody) {
+        if (!parcelBody.isEmpty()) {
+          logger.error() << "Service Error while activating the VPN: "
+                         << parcelBody;
+        }
+        MozillaVPN::instance()->errorHandle(
+            ErrorHandler::ConnectionFailureError);
+        emit disconnected();
+      },
+      Qt::QueuedConnection);
+  connect(
+      activity, &AndroidVPNActivity::serviceDisconnected, this,
+      []() {
+        MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+      },
+      Qt::QueuedConnection);
 }
 AndroidController::~AndroidController() {
   MVPN_COUNT_DTOR(AndroidController);
@@ -117,8 +128,7 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
                        sizeof(methods) / sizeof(methods[0]));
   env->DeleteLocalRef(objectClass);
 
-
-
+  AndroidVPNActivity::instance()->connectService();
 }
 
 void AndroidController::activate(const HopConnection& hop, const Device* device,
@@ -259,13 +269,16 @@ void AndroidController::startActivityForResult(JNIEnv* env, jobject /*thiz*/,
 
     if (resultCode == ACTIVITY_RESULT_OK) {
       logger.debug() << "VPN PROMPT RESULT - Accepted";
-      s_instance->resume_activate();
+      AndroidUtils::dispatchToMainThread(
+          [&] { s_instance->resume_activate(); });
+
       return;
     }
     // If the request got rejected abort the current
     // connection.
     logger.warning() << "VPN PROMPT RESULT - Rejected";
-    emit s_instance->disconnected();
+    AndroidUtils::dispatchToMainThread(
+        [&] { emit s_instance->disconnected(); });
   };
 
 #if QT_VERSION >= 0x060000

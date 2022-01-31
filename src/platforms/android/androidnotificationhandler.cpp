@@ -5,7 +5,11 @@
 #include "platforms/android/androidnotificationhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "androidcontroller.h"
+#include "androidvpnactivity.h"
+#include "l18nstrings.h"
+
+#include <QJsonObject>
+#include <QJsonDocument>
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidNotificationHandler");
@@ -15,9 +19,9 @@ AndroidNotificationHandler::AndroidNotificationHandler(QObject* parent)
     : NotificationHandler(parent) {
   MVPN_COUNT_CTOR(AndroidNotificationHandler);
 
-  // TODO:
-  //  connect(this, &AndroidController::initialized, this,
-  //        &AndroidController::applyStrings, Qt::QueuedConnection);
+  connect(AndroidVPNActivity::instance(), &AndroidVPNActivity::serviceConnected,
+          this, &AndroidNotificationHandler::applyStrings,
+          Qt::QueuedConnection);
 }
 AndroidNotificationHandler::~AndroidNotificationHandler() {
   MVPN_COUNT_DTOR(AndroidNotificationHandler);
@@ -26,38 +30,19 @@ AndroidNotificationHandler::~AndroidNotificationHandler() {
 void AndroidNotificationHandler::notify(NotificationHandler::Message type,
                                         const QString& title,
                                         const QString& message, int timerMsec) {
-  Q_UNUSED(title);
-  Q_UNUSED(type);
-  Q_UNUSED(timerMsec);
   
   logger.debug() << "Send notification - " << message;
-  //AndroidController::instance()->setNotificationText(title, message,
-  //                                                   timerMsec / 1000);
-}
-
-
-
-/**
-void AndroidController::setNotificationText(const QString& title,
-                                            const QString& message,
-                                            int timerSec) {
   QJsonObject args;
   args["title"] = title;
   args["message"] = message;
-  args["sec"] = timerSec;
+  args["sec"] = timerMsec;
+  args["type"] = type;
   QJsonDocument doc(args);
-  QAndroidParcel data;
-  data.writeData(doc.toJson());
-  m_serviceBinder.transact(ACTION_SET_NOTIFICATION_TEXT, data, nullptr);
+  AndroidVPNActivity::sendToService(ServiceAction::ACTION_SET_NOTIFICATION_TEXT,
+                                    doc.toJson());
 }
 
-
-
- * Sets fallback Notification text that should be shown in case the VPN
- * switches into the Connected state without the app open
- * e.g via always-on vpn
- 
-void AndroidController::applyStrings() {
+void AndroidNotificationHandler::applyStrings() {
   QJsonObject localisedMessages;
   localisedMessages["productName"] = qtTrId("vpn.main.productName");
   //% "Ready for you to connect"
@@ -66,10 +51,7 @@ void AndroidController::applyStrings() {
   localisedMessages["notification_group_name"] = L18nStrings::instance()->t(
       L18nStrings::AndroidNotificationsGeneralNotifications);
 
-#undef MESSAGE
   QJsonDocument doc(localisedMessages);
-  QAndroidParcel data;
-  data.writeData(doc.toJson());
-  m_serviceBinder.transact(ACTION_SET_NOTIFICATION_FALLBACK, data, nullptr);
+  AndroidVPNActivity::sendToService(
+      ServiceAction::ACTION_SET_NOTIFICATION_FALLBACK, doc.toJson());
 }
-*/

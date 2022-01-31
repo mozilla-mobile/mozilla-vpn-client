@@ -76,8 +76,12 @@ public class VPNActivity extends org.mozilla.firefox.vpn.compat.CompatVPNActivit
   public static void connectService(){
     VPNActivity.getInstance().initServiceConnection();
   }
-  
-  public void sendToService(int actionCode, String body) {
+
+  public static void sendToService(int actionCode, String body) {
+    VPNActivity.getInstance().dispatchParcel(actionCode, body);
+  }
+
+  private void dispatchParcel(int actionCode, String body) {
     if(!bound){
       return;
     }
@@ -88,6 +92,7 @@ public class VPNActivity extends org.mozilla.firefox.vpn.compat.CompatVPNActivit
     } catch (DeadObjectException e) {
       bound = false;
       vpnService= null;
+      qtOnServiceDisconnected();
     } catch (RemoteException e) {
       e.printStackTrace();
     }
@@ -110,6 +115,7 @@ public class VPNActivity extends org.mozilla.firefox.vpn.compat.CompatVPNActivit
         Parcel out = Parcel.obtain();
         out.writeStrongBinder(binder);
         try {
+          // Register our IBinder Listener
           vpnService.transact(3,out,Parcel.obtain(),0);
         } catch (DeadObjectException e) {
           bound = false;
