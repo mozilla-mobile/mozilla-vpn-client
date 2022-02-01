@@ -86,4 +86,7 @@ QString Controller::switchingLocalizedCityName() const { return ""; }
 void Controller::handshakeTimeout() {}
 
 void Controller::setCooldownForAllServersInACity(const QString& countryCode,
-                                                 const QString& cityCode) {}
+                                                 const QString& cityCode) {
+  Q_UNUSED(countryCode);
+  Q_UNUSED(cityCode);
+}
