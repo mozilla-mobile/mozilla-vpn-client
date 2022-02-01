@@ -249,7 +249,7 @@ void MozillaVPN::initialize() {
     AndroidDataMigration::migrate();
     settingsHolder->setNativeAndroidDataMigrated(true);
   }
-  AndroidVPNActivity::init();
+  AndroidVPNActivity::maybeInit();
   AndroidUtils::instance();
 #endif
 

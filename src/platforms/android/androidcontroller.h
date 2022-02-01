@@ -15,8 +15,7 @@
 #  include <QAndroidServiceConnection>
 #endif
 
-class AndroidController final : public ControllerImpl,
-                                public QAndroidServiceConnection {
+class AndroidController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(AndroidController)
 
  public:
@@ -36,41 +35,14 @@ class AndroidController final : public ControllerImpl,
 
   void checkStatus() override;
 
-  void setNotificationText(const QString& title, const QString& message,
-                           int timerSec);
-  void applyStrings();
-
   void getBackendLogs(std::function<void(const QString&)>&& callback) override;
 
   void cleanupBackendLogs() override;
 
-  // from QAndroidServiceConnection
-  void onServiceConnected(const QString& name,
-                          const QAndroidBinder& serviceBinder) override;
-  void onServiceDisconnected(const QString& name) override;
-
  private:
   QString m_serverPublicKey;
   Device m_device;
-  bool m_serviceConnected = false;
   std::function<void(const QString&)> m_logCallback;
-
-  QAndroidBinder m_serviceBinder;
-  class VPNBinder : public QAndroidBinder {
-   public:
-    VPNBinder(AndroidController* controller) : m_controller(controller) {}
-
-    bool onTransact(int code, const QAndroidParcel& data,
-                    const QAndroidParcel& reply,
-                    QAndroidBinder::CallType flags) override;
-
-    QString readUTF8Parcel(QAndroidParcel data);
-
-   private:
-    AndroidController* m_controller = nullptr;
-  };
-
-  VPNBinder m_binder;
 
   static void startActivityForResult(JNIEnv* env, jobject /*thiz*/,
                                      jobject intent);
