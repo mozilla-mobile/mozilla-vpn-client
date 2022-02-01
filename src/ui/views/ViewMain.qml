@@ -50,7 +50,7 @@ VPNFlickable {
     Connections{
         target: VPNCaptivePortal
         function onCaptivePortalPresent() {
-            if(VPNController.state != VPNController.StateOff){
+            if (VPNController.state != VPNController.StateOff){
                 stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
             }
         }
