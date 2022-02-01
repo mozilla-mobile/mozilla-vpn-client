@@ -3,36 +3,42 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 
-ColumnLayout {
+Row {
     id: infoStatusItem
 
     property string title: ""
     property string subtitle: ""
     property string iconPath: ""
 
+    height: 40
     spacing: 0
+
+    Layout.fillWidth: true
 
     VPNIconAndLabel {
         id: itemTitle
 
-        height: parent.height
+        fontColor: "white"
         icon: infoStatusItem.iconPath
         title: infoStatusItem.title
-        Layout.fillWidth: true
+
+        anchors.verticalCenter: infoStatusItem.verticalCenter
     }
 
-    VPNTextBlock {
-        id: itemSubtitle
+    VPNInterLabel {
+        id: itemValue
 
+        color: "white"
         text: infoStatusItem.subtitle
-        Layout.fillWidth: true
-        Layout.leftMargin: VPNTheme.theme.vSpacing + 14
+
+        anchors.right: infoStatusItem.right
+        anchors.verticalCenter: infoStatusItem.verticalCenter
     }
 
-    // Rectangle {
-    //     anchors.fill: parent
-    //     border.color: "black"
-    //     color: "orange"
-    //     z: -1
-    // }
+    Rectangle {
+        anchors.fill: parent
+        border.color: "black"
+        color: "orange"
+        z: -1
+    }
 }

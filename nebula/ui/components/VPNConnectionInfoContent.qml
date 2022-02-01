@@ -14,34 +14,28 @@ Flickable {
     ColumnLayout {
         id: content
 
-        spacing: VPNTheme.theme.vSpacingSmall
+        spacing: 0
         width: parent.width
 
+
         // IP Adresses
-        RowLayout {
-            width: parent.width
+        VPNInterLabel {
+            color: VPNTheme.colors.grey20
+            text: "IP: 103.231.88.10"
 
-            ColumnLayout {
-                Text {
-                    color: VPNTheme.colors.grey20
-                    text: "IP: 103.231.88.10"
-                }
-                Text {
-                    color: VPNTheme.colors.grey20
-                    text: "IPv6: 2001:ac8:40:b9::a09e"
-                }
-            }
+            anchors.horizontalCenter: content.horizontalCenter
         }
+        VPNInterLabel {
+            color: VPNTheme.colors.grey20
+            text: "IPv6: 2001:ac8:40:b9::a09e"
 
-        Rectangle {
-            color: "black"
-            height: 1
-            Layout.fillWidth: true
+            anchors.horizontalCenter: content.horizontalCenter
         }
 
         // Lottie animation
         Rectangle {
             color: "black"
+            radius: 50
 
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: 100
@@ -57,35 +51,29 @@ Flickable {
         }
 
         // Bullet list
-        RowLayout {
-
-            ColumnLayout {
-                Text {
-                    Layout.fillWidth: true
-                    wrapMode: Text.WordWrap
-                    color: VPNTheme.colors.white
-                    text: "At your current speed, here's what your device is optimized for:"
-                }
-                Text {
-                    Layout.fillWidth: true
-                    wrapMode: Text.WordWrap
-                    color: VPNTheme.colors.grey20
-                    text: "Streaming in 4K"
-                }
-                Text {
-                    Layout.fillWidth: true
-                    wrapMode: Text.WordWrap
-                    color: VPNTheme.colors.grey20
-                    text: "High-speed downloads"
-                }
-                Text {
-                    Layout.fillWidth: true
-                    wrapMode: Text.WordWrap
-                    color: VPNTheme.colors.grey20
-                    text: "Online gaming"
-                }
-            }
-
+        VPNTextBlock {
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
+            color: VPNTheme.colors.white
+            text: "At your current speed, here's what your device is optimized for:"
+        }
+        VPNTextBlock {
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
+            color: VPNTheme.colors.grey20
+            text: "Streaming in 4K"
+        }
+        VPNTextBlock {
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
+            color: VPNTheme.colors.grey20
+            text: "High-speed downloads"
+        }
+        VPNTextBlock {
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
+            color: VPNTheme.colors.grey20
+            text: "Online gaming"
         }
 
         Rectangle {
@@ -95,48 +83,50 @@ Flickable {
         }
 
         // Detailed info section
-        GridLayout {
-            width: parent.width
-            columns: 2
-
-            VPNConnectionInfoItem {
-                Layout.fillWidth: true
-
-                title: VPNServerCountryModel.getLocalizedCountryName(VPNCurrentServer.exitCountryCode)
-                subtitle: VPNCurrentServer.localizedCityName
-                iconPath: "qrc:/nebula/resources/flags/" + VPNCurrentServer.exitCountryCode.toUpperCase() + ".png"
-            }
-            VPNConnectionInfoItem {
-                Layout.fillWidth: true
-
-                title: "Ping"
-                subtitle: "15 ms"
-                iconPath: "qrc:/nebula/resources/connection.svg"
-            }
-            VPNConnectionInfoItem {
-                Layout.fillWidth: true
-
-                title: "Download"
-                subtitle: "300.06 Mbps"
-                iconPath: "qrc:/nebula/resources/download.svg"
-            }
-            VPNConnectionInfoItem {
-                Layout.fillWidth: true
-
-                title: "Upload"
-                subtitle: "21.60 Mbps"
-                iconPath: "qrc:/nebula/resources/upload.svg"
-            }
+        VPNConnectionInfoItem {
+            title: VPNServerCountryModel.getLocalizedCountryName(VPNCurrentServer.exitCountryCode)
+            subtitle: VPNCurrentServer.localizedCityName
+            iconPath: "qrc:/nebula/resources/flags/" + VPNCurrentServer.exitCountryCode.toUpperCase() + ".png"
+        }
+        Rectangle {
+            color: VPNTheme.colors.grey20
+            height: 1
+            Layout.fillWidth: true
+        }
+        VPNConnectionInfoItem {
+            title: "Ping"
+            subtitle: "15 ms"
+            iconPath: "qrc:/nebula/resources/connection.svg"
+        }
+        Rectangle {
+            color: VPNTheme.colors.grey20
+            height: 1
+            Layout.fillWidth: true
+        }
+        VPNConnectionInfoItem {
+            title: "Download"
+            subtitle: "300.06 Mbps"
+            iconPath: "qrc:/nebula/resources/download.svg"
+        }
+        Rectangle {
+            color: VPNTheme.colors.grey20
+            height: 1
+            Layout.fillWidth: true
+        }
+        VPNConnectionInfoItem {
+            title: "Upload"
+            subtitle: "21.60 Mbps"
+            iconPath: "qrc:/nebula/resources/upload.svg"
         }
 
-        // Rectangle {
-        //     color: "gray"
+        Rectangle {
+            color: "gray"
 
-        //     anchors.fill: parent
-        //     border.color: "red"
-        //     border.width: 2
-        //     z: -1
-        // }
+            anchors.fill: parent
+            border.color: "red"
+            border.width: 2
+            z: -1
+        }
 
     }
 
