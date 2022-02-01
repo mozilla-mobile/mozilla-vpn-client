@@ -48,8 +48,11 @@ RoundButton {
     Accessible.focusable: true
 
     onActiveFocusChanged: {
-        if (!activeFocus)
+        if (!activeFocus) {
             return visualStateItem.state = uiState.stateDefault;
+        } else {
+            return visualStateItem.state = uiState.stateFocused;
+        }
 
         if (typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible)
             return vpnFlickable.ensureVisible(visualStateItem);
