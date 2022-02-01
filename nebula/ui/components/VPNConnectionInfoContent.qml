@@ -53,27 +53,60 @@ Flickable {
         // Bullet list
         VPNTextBlock {
             Layout.fillWidth: true
-            wrapMode: Text.WordWrap
             color: VPNTheme.colors.white
             text: "At your current speed, here's what your device is optimized for:"
-        }
-        VPNTextBlock {
-            Layout.fillWidth: true
             wrapMode: Text.WordWrap
-            color: VPNTheme.colors.grey20
-            text: "Streaming in 4K"
         }
-        VPNTextBlock {
+
+        Row {
             Layout.fillWidth: true
-            wrapMode: Text.WordWrap
-            color: VPNTheme.colors.grey20
-            text: "High-speed downloads"
+
+            VPNCheckmark {
+                color: VPNTheme.colors.secondary
+                height: 24
+                width: 24
+            }
+            VPNTextBlock {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.verticalCenterOffset: 2
+                color: VPNTheme.colors.grey20
+                text: "Streaming in 4K"
+                wrapMode: Text.WordWrap
+            }
         }
-        VPNTextBlock {
+
+        Row {
             Layout.fillWidth: true
-            wrapMode: Text.WordWrap
-            color: VPNTheme.colors.grey20
-            text: "Online gaming"
+
+            VPNCheckmark {
+                color: VPNTheme.colors.secondary
+                height: 24
+                width: 24
+            }
+            VPNTextBlock {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.verticalCenterOffset: 2
+                color: VPNTheme.colors.grey20
+                text: "High-speed downloads"
+                wrapMode: Text.WordWrap
+            }
+        }
+
+        Row {
+            Layout.fillWidth: true
+
+            VPNCheckmark {
+                color: VPNTheme.colors.secondary
+                height: 24
+                width: 24
+            }
+            VPNTextBlock {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.verticalCenterOffset: 2
+                color: VPNTheme.colors.grey20
+                text: "Online gaming"
+                wrapMode: Text.WordWrap
+            }
         }
 
         Rectangle {
