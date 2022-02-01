@@ -11,6 +11,7 @@ VPNCallout 0.1 VPNCallout.qml
 VPNCheckBox 0.1 VPNCheckBox.qml
 VPNCheckBoxAlert 0.1 VPNCheckBoxAlert.qml
 VPNCheckBoxRow 0.1 VPNCheckBoxRow.qml
+VPNCheckmark 0.1 VPNCheckmark.qml
 VPNChevron 0.1 VPNChevron.qml
 VPNClickableRow 0.1 VPNClickableRow.qml
 VPNCollapsibleCard 0.1 VPNCollapsibleCard.qml
