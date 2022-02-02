@@ -28,6 +28,7 @@
 #include "theme.h"
 
 #include <glean.h>
+#include <lottie.h>
 #include <nebula.h>
 
 #ifdef MVPN_DEBUG
@@ -52,14 +53,6 @@
 
 #ifndef Q_OS_WIN
 #  include "signalhandler.h"
-
-/*
-L57 and L143-145 are commented out pending a fix for
-https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2509
-
-#  include <lottie.h>
-*/
-
 #endif
 
 #ifdef MVPN_WINDOWS
@@ -159,11 +152,7 @@ int CommandUI::run(QStringList& tokens) {
 
     Glean::Initialize(engine);
 
-    /*
-    #ifndef MVPN_WINDOWS
-        Lottie::initialize(engine, QString(NetworkManager::userAgent()));
-    #endif
-    */
+    Lottie::initialize(engine, QString(NetworkManager::userAgent()));
 
     Nebula::Initialize(engine);
 

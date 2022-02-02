@@ -34,6 +34,7 @@ qmake \
   CONFIG-=static \
   CONFIG+=balrog \
   MVPN_MACOS=1 \
+  lottie/lottie.pro \
   src/src.pro
 ruby scripts/xcode_patcher.rb \
   "MozillaVPN.xcodeproj" \

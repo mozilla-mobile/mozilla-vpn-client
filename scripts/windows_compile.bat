@@ -123,12 +123,12 @@ ECHO BUILD_BUILD = %DEBUG_BUILD%
 
 IF %DEBUG_BUILD%==T (
   ECHO Generating Debug Build for the extension bridge
-  qmake -tp vc extension\app\app.pro CONFIG+=debug
+  qmake -tp vc -r extension\app\app.pro CONFIG+=debug
 )
 
 IF %DEBUG_BUILD%==F (
   ECHO Generating Release Build for the extension bridge
-  qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+  qmake -tp vc -r extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
 )
 
 IF %ERRORLEVEL% NEQ 0 (
@@ -160,12 +160,12 @@ ECHO Creating the project with flags: %FLAGS%
 
 if %DEBUG_BUILD% == T (
   ECHO Generating Debug Project
-  qmake -tp vc src/src.pro CONFIG+=debug %FLAGS%
+  qmake -tp vc -r src/src.pro CONFIG+=debug %FLAGS%
   xcopy /y debug\ release\
 )
 if %DEBUG_BUILD% == F (
   ECHO Generating Release Build
-  qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%
+  qmake -tp vc -r src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%
 )
 
 IF %ERRORLEVEL% NEQ 0 (

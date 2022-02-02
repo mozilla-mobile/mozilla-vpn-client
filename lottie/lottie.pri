@@ -15,9 +15,9 @@ HEADERS += $$PWD/lib/lottie.h \
            $$PWD/lib/lottieprivatewindow.h \
            $$PWD/lib/lottiestatus.h
 
-RESOURCES += $$PWD/lib/lottie.qrc
-
 CONFIG += qmltypes
 
 QML_IMPORT_NAME = vpn.mozilla.lottie
 QML_IMPORT_MAJOR_VERSION = 1
+
+RESOURCES += $$PWD/lib/lottie.qrc
