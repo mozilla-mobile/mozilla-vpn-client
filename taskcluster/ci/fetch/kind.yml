@@ -19,7 +19,7 @@ jobs:
             type: static-url
             url: https://s3.nl-ams.scw.cloud/basti.data/vsstudio.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=SCW71D8GJXY19DG32Q1Y%2F20220202%2Fnl-ams%2Fs3%2Faws4_request&X-Amz-Date=20220202T182650Z&X-Amz-Expires=521996&X-Amz-Signature=32a384e55fa3a980dee6bbc00d3a6f382dcd44f9c3c58b890e0f436bce77d8c9&X-Amz-SignedHeaders=host
             artifact-name: vsstudio.zip
-            sha256: A64814151AD67153F796AA0B7987B82F3E1AD98076F04B59740A597B62A7FB80
+            sha256: a64814151ad67153f796aa0b7987b82f3e1ad98076f04b59740a597b62a7fb80
             size: 1117343875
         #artifact-prefix: vpn/win-dev-env
         fetch-alias: win-dev-env
@@ -29,7 +29,7 @@ jobs:
             type: static-url
             url: https://strawberryperl.com/download/5.32.1.1/strawberry-perl-5.32.1.1-64bit.zip
             artifact-name: strawberry-perl.zip
-            sha256: AEB973DA474F14210D3E1A1F942DCF779E2AE7E71E4C535E6C53EBABE632CC98
+            sha256: aeb973da474f14210d3e1a1f942dcf779e2ae7e71e4c535e6c53ebabe632cc98
             size: 158837368
         #artifact-prefix: vpn/win-perl
         fetch-alias: win-perl
@@ -39,7 +39,7 @@ jobs:
             type: static-url
             url: https://download.qt.io/archive/qt/6.2/6.2.3/single/qt-everywhere-src-6.2.3.zip
             artifact-name: qt_src.zip
-            sha256: DD68B5FD5812E3DD25BF9ED67F3051835503192C168CDC8D86ADDC08848D7BDA
+            sha256: dd68b5fd5812e3dd25bf9ed67f3051835503192c168cdc8d86addc08848d7bda
             size: 1101112955
         fetch-alias: qt-6.2.3-source
 
