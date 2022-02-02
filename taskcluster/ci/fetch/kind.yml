@@ -17,10 +17,10 @@ jobs:
         description: Windows Dev-Enviroment
         fetch:
             type: static-url
-            url: https://s3.nl-ams.scw.cloud/basti.data/vsstudio.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=SCW1682NEXFJ390MAY0J%2F20220202%2Fnl-ams%2Fs3%2Faws4_request&X-Amz-Date=20220202T135101Z&X-Amz-Expires=547784&X-Amz-Signature=e11d3442125515864ae6a92ba4b593f7ff643c920dacbeaa34a6877b45e29a96&X-Amz-SignedHeaders=host
+            url: https://s3.nl-ams.scw.cloud/basti.data/vsstudio.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=SCW71D8GJXY19DG32Q1Y%2F20220202%2Fnl-ams%2Fs3%2Faws4_request&X-Amz-Date=20220202T182650Z&X-Amz-Expires=521996&X-Amz-Signature=32a384e55fa3a980dee6bbc00d3a6f382dcd44f9c3c58b890e0f436bce77d8c9&X-Amz-SignedHeaders=host
             artifact-name: vsstudio.zip
-            sha256: 9AE80970EE18D003A500FBCBCE89B37C8B643C56B9BCEE61AC57C19D24473C6E
-            size: 1117343868
+            sha256: A64814151AD67153F796AA0B7987B82F3E1AD98076F04B59740A597B62A7FB80
+            size: 1117343875
         #artifact-prefix: vpn/win-dev-env
         fetch-alias: win-dev-env
     win-perl:
