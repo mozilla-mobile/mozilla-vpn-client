@@ -1,0 +1,47 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - taskgraph.transforms.fetch:transforms
+    - taskgraph.transforms.job:transforms
+    - taskgraph.transforms.task:transforms
+
+job-defaults:
+    docker-image: {in-tree: base}
+
+jobs:
+    win-dev-env:
+        description: Windows Dev-Enviroment
+        fetch:
+            type: static-url
+            url: https://s3.nl-ams.scw.cloud/basti.data/vsstudio.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=SCW1682NEXFJ390MAY0J%2F20220202%2Fnl-ams%2Fs3%2Faws4_request&X-Amz-Date=20220202T135101Z&X-Amz-Expires=547784&X-Amz-Signature=e11d3442125515864ae6a92ba4b593f7ff643c920dacbeaa34a6877b45e29a96&X-Amz-SignedHeaders=host
+            artifact-name: vsstudio.zip
+            sha256: 9AE80970EE18D003A500FBCBCE89B37C8B643C56B9BCEE61AC57C19D24473C6E
+            size: 1117343868
+        #artifact-prefix: vpn/win-dev-env
+        fetch-alias: win-dev-env
+    win-perl:
+        description: Strawberry Perl
+        fetch:
+            type: static-url
+            url: https://strawberryperl.com/download/5.32.1.1/strawberry-perl-5.32.1.1-64bit.zip
+            artifact-name: strawberry-perl.zip
+            sha256: AEB973DA474F14210D3E1A1F942DCF779E2AE7E71E4C535E6C53EBABE632CC98
+            size: 158837368
+        #artifact-prefix: vpn/win-perl
+        fetch-alias: win-perl
+    qt-6.2.3:
+        description: QT souce 
+        fetch:
+            type: static-url
+            url: https://download.qt.io/archive/qt/6.2/6.2.3/single/qt-everywhere-src-6.2.3.zip
+            artifact-name: qt_src.zip
+            sha256: DD68B5FD5812E3DD25BF9ED67F3051835503192C168CDC8D86ADDC08848D7BDA
+            size: 1101112955
+        fetch-alias: qt-6.2.3-source
+
+
+    

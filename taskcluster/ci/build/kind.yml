@@ -8,6 +8,10 @@ transforms:
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
 
+kind-dependencies:
+    - fetch
+    - toolchain
+
 jobs:
     linux/opt:
         description: "Linux Build"
@@ -95,26 +99,30 @@ jobs:
 #            cwd: '{checkout}'
 #            command: ./scripts/macosx_build.sh
 #
-#    windows/opt:
-#        description: "Windows Build"
-#        treeherder:
-#            symbol: B
-#            kind: build
-#            tier: 1
-#            platform: windows/opt
-#        worker-type: b-win2012
-#        scopes:
-#            - project:releng:services/tooltool/api/download/public
-#            - project:releng:services/tooltool/api/download/internal
-#        worker:
-#            taskcluster-proxy: true
-#            chain-of-trust: true
-#            max-run-time: 3600
-#            artifacts:
-#                - type: directory
-#                  name: public/build
-#                  path: build/src/artifacts
-#        run:
-#            using: run-task
-#            cwd: '{checkout}'
-#            command: ./scripts/windows_build.sh
+    windows/debug:
+        description: "Windows Build"
+        treeherder:
+            symbol: B
+            kind: build
+            tier: 1
+            platform: windows/debug
+        worker-type: b-win2012
+        fetches:
+            fetch:
+                - win-perl
+                - win-dev-env
+            toolchain:
+                - windows-qt-compile
+
+        worker:
+            taskcluster-proxy: true
+            chain-of-trust: true
+            max-run-time: 3600
+            artifacts:
+                - type: directory
+                  name: public/build
+                  path: build/src/artifacts
+        run:
+            using: run-task
+            cwd: '{checkout}'
+            command: ./scripts/windows_build.sh

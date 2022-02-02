@@ -1,0 +1,38 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+job-defaults:
+    treeherder:
+        kind: build
+        platform: toolchains/opt
+        tier: 1
+
+windows-qt-compile:
+    description: "Windows QT compile Task"
+    fetches:
+        fetch:
+            - win-perl
+            - win-dev-env
+            - qt-6.2.3-source
+    run:
+        using: run-task
+        cwd: '{checkout}'
+        command: ps -ExecutionPolicy Bypass taskcluster/scripts/toolchain/compile_qt_6.ps1
+    treeherder:
+        symbol: TL(QT)
+        platform: toolchains/win
+    env:
+        PERL_PATH: fetches/perl/perl/bin
+        VSSTUDIO_PATH: fetches/VisualStudio
+        QT_PATH: fetches/qt-everywhere-src-6.2.3
+    attributes:
+      toolchain-alias: toolchain-windows-qt-compile
+      toolchain-artifact: public/qt6_win
+    worker:
+        max-run-time: 14400
+        artifacts:
+            - type: directory
+              name: qt6_win
+              path: QTBIN
+    worker-type: b-win2012

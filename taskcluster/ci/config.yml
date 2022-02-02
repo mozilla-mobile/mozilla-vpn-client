@@ -4,6 +4,8 @@ treeherder:
     group-names:
         'I': 'Docker images'
         'lint': 'Linting tasks'
+        'Fetch': 'Fetching Tasks'
+        'TL': 'Toolchain Tasks'
 
 task-priority:
     by-project:
