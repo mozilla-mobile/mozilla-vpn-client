@@ -14,7 +14,7 @@ QTPATH=
 RELEASE=1
 ADJUST_SDK_TOKEN=
 export SPLITAPK=0
-export ARCH="arm64-v8a"
+export ARCH ="x86 x86_64 armeabi-v7a arm64-v8a"
 
 helpFunction() {
   print G "Usage:"
