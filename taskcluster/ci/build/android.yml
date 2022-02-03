@@ -69,7 +69,7 @@ android-x64/debug:
 
 android-arm64/release:
         description: "Android Release (arm64-v8a)"
-        requiresLevel: 1 # TODO: THIS IS FOR TESTING
+        requiresLevel: 3
         treeherder:
             symbol: B
             platform: android/arm64-v8a
