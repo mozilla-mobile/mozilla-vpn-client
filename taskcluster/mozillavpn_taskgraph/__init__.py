@@ -16,6 +16,7 @@ def register(graph_config):
         "job",
         "parameters",
         "target_tasks",
+        "worker_types",
     ])
 
 
