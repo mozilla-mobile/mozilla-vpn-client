@@ -11,11 +11,11 @@ VPNAnimatedRingsShader {
 
     property bool isCurrentyVisible: false
     property bool startAnimation: false
-    property real animationProgress
+    property real animationProgress: 0.15
     property real animationOpacity
 
     anchors.horizontalCenter: parent.horizontalCenter
-    animationProgress: 0.0
+    // animationProgress: 0.0
     animationOpacity: ringAnimationTimer.running ? 1.0 : 0.5
     blending: true
     height: parent.height
@@ -26,16 +26,17 @@ VPNAnimatedRingsShader {
 
         interval: 25
         repeat: true
-        running: ringAnimation.visible && isCurrentyVisible
+        // running: ringAnimation.visible && isCurrentyVisible
+        running: true
 
-        onTriggered: {
-            const animationSpeed = 0.001;
-            if (ringAnimation.animationProgress < 1.0) {
-                ringAnimation.animationProgress += animationSpeed
-            } else {
-                ringAnimation.animationProgress = 0.0;
-            }
-        }
+        // onTriggered: {
+        //     const animationSpeed = 0.001;
+        //     if (ringAnimation.animationProgress < 1.0) {
+        //         ringAnimation.animationProgress += animationSpeed
+        //     } else {
+        //         ringAnimation.animationProgress = 0.0;
+        //     }
+        // }
     }
 
     onIsCurrentyVisibleChanged: {
@@ -54,6 +55,6 @@ VPNAnimatedRingsShader {
     }
 
     function resetAnimation() {
-        animationProgress = 0.0;
+        // animationProgress = 0.0;
     }
 }

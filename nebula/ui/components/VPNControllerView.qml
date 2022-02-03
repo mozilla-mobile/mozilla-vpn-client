@@ -109,7 +109,7 @@ Item {
 
             PropertyChanges {
                 target: animatedRings
-                visible: false
+                visible: true
             }
 
         },
@@ -162,7 +162,7 @@ Item {
 
             PropertyChanges {
                 target: animatedRings
-                visible: false
+                visible: true
             }
 
         },
@@ -222,7 +222,7 @@ Item {
 
             PropertyChanges {
                 target: animatedRings
-                visible: false
+                visible: true
             }
 
         },
@@ -283,7 +283,7 @@ Item {
 
             PropertyChanges {
                 target: animatedRings
-                visible: false
+                visible: true
             }
 
         },
@@ -391,7 +391,7 @@ Item {
 
             PropertyChanges {
                 target: animatedRings
-                visible: false
+                visible: true
             }
 
         },
@@ -447,7 +447,7 @@ Item {
 
             PropertyChanges {
                 target: animatedRings
-                visible: false
+                visible: true
                 opacity: 1
                 startAnimation: false
             }

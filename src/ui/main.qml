@@ -138,6 +138,49 @@ Window {
         clip: true
     }
 
+    Grid {
+        columns: 2
+        spacing: 2
+        y: 100
+
+        Text {
+            text: "API"
+        }
+        Text {
+            text: GraphicsInfo.api
+        }
+        Text {
+            text: "Version"
+        }
+        Text {
+            text: GraphicsInfo.majorVersion + "." + GraphicsInfo.minorVersion
+        }
+        Text {
+            text: "Shader type"
+        }
+        Text {
+            text: GraphicsInfo.shaderType
+        }
+        Text {
+            text: "Source type"
+        }
+        Text {
+            text: GraphicsInfo.shaderSourceType
+        }
+        Text {
+            text: "Renderable type"
+        }
+        Text {
+            text: GraphicsInfo.renderableType
+        }
+        Text {
+            text: "Profile"
+        }
+        Text {
+            text: GraphicsInfo.profile
+        }
+    }
+
     Component {
         id: mainView
 
