@@ -188,7 +188,6 @@ SOURCES += \
         tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
         theme.cpp \
-        timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
@@ -246,7 +245,6 @@ HEADERS += \
         features/featuresharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
-        features/featureuniqueid.h \
         features/featureunsecurednetworknotification.h \
         features/featureserverunavailablenotification.h \
         filterproxymodel.h \
@@ -323,7 +321,6 @@ HEADERS += \
         tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
         theme.h \
-        timercontroller.h \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
@@ -1022,4 +1019,8 @@ debug {
 mvpn_debug {
     message(MVPN Debug enabled)
     DEFINES += MVPN_DEBUG
+
+    # This Flag will enable a qmljsdebugger on 0.0.0.0:1234
+    CONFIG+=qml_debug
+
 }

@@ -42,7 +42,7 @@ void CaptivePortalDetection::networkChanged() {
   // So it should be deactivated when the network changes.
   // Otherwise we might show the "unblock" notification
   // on networks that never had a portal.
-  captivePortalBackgroundMonitor()->stop();
+  captivePortalMonitor()->stop();
 
   if (vpn->controller()->state() != Controller::StateOn &&
       vpn->controller()->state() != Controller::StateConfirming) {

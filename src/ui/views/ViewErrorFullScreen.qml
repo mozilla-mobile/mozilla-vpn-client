@@ -12,6 +12,8 @@ import org.mozilla.Glean 0.30
 import telemetry 0.30
 
 VPNFlickable {
+    property var isMainView: false
+
     property var headlineText
     property var errorMessage: ""
     property var errorMessage2: ""
@@ -24,6 +26,7 @@ VPNFlickable {
     property var secondaryButtonObjectName
     property var secondaryButtonOnClick
     property var secondaryButtonIsSignOff: false
+    property var popWhenSignOff: false
 
     property var getHelpLinkVisible: false
     property var statusLinkVisible: false
@@ -39,7 +42,7 @@ VPNFlickable {
         visible: getHelpLinkVisible
 
         labelText: qsTrId("vpn.main.getHelp2")
-        onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false})
+        onClicked: isMainView ? mainStackView.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false, isMainView: true}) : stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false})
     }
 
     ColumnLayout {
@@ -146,7 +149,7 @@ VPNFlickable {
                 objectName: secondaryButtonObjectName
                 labelText: secondaryButtonText
                 visible: secondaryButtonText != "" && !secondaryButtonIsSignOff
-                Layout.preferredHeight: Theme.rowHeight
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignHCenter
                 anchors.horizontalCenter: undefined
                 anchors.bottom: undefined
@@ -159,12 +162,13 @@ VPNFlickable {
                 id: signOff
 
                 visible: secondaryButtonIsSignOff
-                Layout.preferredHeight: Theme.rowHeight
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignHCenter
                 anchors.horizontalCenter: undefined
                 anchors.bottom: undefined
                 anchors.bottomMargin: undefined
                 height: undefined
+                popMainView: popWhenSignOff
             }
         }
 

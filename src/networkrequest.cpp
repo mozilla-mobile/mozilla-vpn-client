@@ -5,7 +5,6 @@
 #include "networkrequest.h"
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
-#include "features/featureuniqueid.h"
 #include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -197,10 +196,7 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
 
   QJsonObject obj;
   obj.insert("name", deviceName);
-
-  if (!FeatureUniqueID::instance()->isSupported()) {
-    obj.insert("unique_id", deviceId);
-  }
+  obj.insert("unique_id", deviceId);
   obj.insert("pubkey", pubKey);
 
   QJsonDocument json;
@@ -299,6 +295,7 @@ NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
 
   QUrl url(apiBaseUrl());
   r->m_request.setRawHeader("Host", url.host().toLocal8Bit());
+  r->m_request.setPeerVerifyName(url.host());
 
   r->getRequest();
   return r;
@@ -312,6 +309,8 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
 
   r->m_request.setUrl(url);
   r->m_request.setRawHeader("Host", host);
+  r->m_request.setPeerVerifyName(host);
+
   // This enables the QNetworkReply::redirected for every type of redirect.
   r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
                             QNetworkRequest::UserVerifiedRedirectPolicy);
@@ -976,7 +975,7 @@ void NetworkRequest::enableSSLIntervention() {
       }
       QSslCertificate cert(&f, QSsl::Pem);
       if (!cert.isNull()) {
-        logger.info() << "Imported cert from: " << cert.issuerDisplayName();
+        logger.info() << "Imported cert from:" << cert.issuerDisplayName();
         s_intervention_certs.append(cert);
       } else {
         logger.error() << "Failed to import cert -" << f.fileName();

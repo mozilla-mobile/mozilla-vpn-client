@@ -371,7 +371,7 @@ Item {
                 anchors.top: col.bottom
                 anchors.topMargin: VPNTheme.theme.vSpacing
                 anchors.horizontalCenter: parent.horizontalCenter
-                onClicked: stackview.pop(StackView.Immediate)
+                onClicked: stackview.pop()
                 Component.onCompleted: {
                    if (window.fullscreenRequired()) {
                        anchors.top = undefined;

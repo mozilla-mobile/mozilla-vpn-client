@@ -22,7 +22,7 @@ DummyController::DummyController() : m_delayTimer(this) {
   m_delayTimer.setSingleShot(true);
   connect(&m_delayTimer, &QTimer::timeout, this, [&] {
     if (m_connected) {
-      emit connected();
+      emit connected(m_publicKey);
     } else {
       emit disconnected();
     }
@@ -31,23 +31,17 @@ DummyController::DummyController() : m_delayTimer(this) {
 
 DummyController::~DummyController() { MVPN_COUNT_DTOR(DummyController); }
 
-void DummyController::activate(const QList<Server>& serverList,
-                               const Device* device, const Keys* keys,
-                               const QList<IPAddress>& allowedIPAddressRanges,
-                               const QStringList& excludedAddresses,
-                               const QStringList& vpnDisabledApps,
-                               const QHostAddress& dnsServer, Reason reason) {
+void DummyController::activate(const HopConnection& hop, const Device* device,
+                               const Keys* keys, Reason reason) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
-  Q_UNUSED(allowedIPAddressRanges);
-  Q_UNUSED(excludedAddresses);
   Q_UNUSED(reason);
-  Q_UNUSED(vpnDisabledApps);
 
-  logger.debug() << "DummyController activated" << serverList[0].hostname();
-  logger.debug() << "DummyController DNS" << dnsServer.toString();
+  logger.debug() << "DummyController activated" << hop.m_server.hostname();
+  logger.debug() << "DummyController DNS" << hop.m_dnsServer.toString();
 
   m_connected = true;
+  m_publicKey = hop.m_server.publicKey();
   m_delayTimer.start(DUMMY_CONNECTION_DELAY_MSEC);
 }
 
@@ -57,6 +51,7 @@ void DummyController::deactivate(Reason reason) {
   logger.debug() << "DummyController deactivated";
 
   m_connected = false;
+  m_publicKey.clear();
   m_delayTimer.start(DUMMY_CONNECTION_DELAY_MSEC);
 }
 

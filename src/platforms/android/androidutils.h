@@ -28,6 +28,8 @@ class AndroidUtils final : public QObject {
  public:
   static QString GetDeviceName();
 
+  static int GetSDKVersion();
+
   // Creates a "share" intent to Open/Send Plaintext
   static bool ShareText(const QString& plainText);
 
@@ -55,6 +57,8 @@ class AndroidUtils final : public QObject {
 
   static QJniObject getActivity();
 
+  static void recordGleanEvent(JNIEnv* env, jobject VPNUtils, jstring event);
+
   static void runOnAndroidThreadSync(const std::function<void()> runnable);
 
  signals:
@@ -70,11 +74,5 @@ class AndroidUtils final : public QObject {
   QUrl m_url;
   AuthenticationListener* m_listener = nullptr;
 };
-
-extern "C" {
-// Callbacks from VPNUtils.kt
-JNIEXPORT void JNICALL Java_org_mozilla_firefox_vpn_qt_VPNUtils_sendGleanEvent(
-    JNIEnv*, jobject VPNUtils, jstring event);
-}
 
 #endif  // ANDROIDUTILS_H

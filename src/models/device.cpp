@@ -67,6 +67,10 @@ QString Device::currentDeviceReport() {
 #else
   out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
 #endif
+#ifdef MVPN_ANDROID
+  out << "SDK Version -> " << AndroidUtils::GetSDKVersion() << Qt::endl;
+#endif
+
   out << "APP Version -> " << APP_VERSION << Qt::endl;
   out << "Build ID -> " << BUILD_ID << Qt::endl;
   out << "Device ID -> " << uniqueDeviceId() << Qt::endl;

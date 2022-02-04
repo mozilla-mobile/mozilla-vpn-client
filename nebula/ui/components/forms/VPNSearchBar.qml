@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
+import components.forms 0.1
 
 VPNTextField {
     // TODO Add strings for Accessible.description, Accessible.name
@@ -30,34 +31,19 @@ VPNTextField {
         opacity: parent.focus ? 1 : 0.8
     }
 
-    RowLayout {
+    VPNContextualAlerts {
         id: searchWarning
         anchors.top: searchBar.bottom
         anchors.topMargin: VPNTheme.theme.listSpacing
-        visible: searchBar.hasError
         width: parent.width
-        spacing: VPNTheme.theme.windowMargin / 2
 
-        VPNIcon {
-            id: warningIcon
-
-            source: "qrc:/nebula/resources/warning.svg"
-            sourceSize.height: VPNTheme.theme.iconSizeSmall
-            sourceSize.width: VPNTheme.theme.iconSizeSmall
-            Layout.alignment: Qt.AlignTop
-            Layout.topMargin: VPNTheme.theme.windowMargin / 4
-        }
-
-        VPNInterLabel {
-            id: warningLabel
-            color: VPNTheme.colors.error.default
-            text: VPNl18n.ServersViewSearchNoResultsLabel
-            font.pixelSize: VPNTheme.theme.fontSizeSmall
-            width: undefined
-            Layout.fillWidth: true
-            wrapMode: Text.WordWrap
-            horizontalAlignment: Text.AlignLeft
-        }
+        messages: [
+            {
+                type: "error",
+                message: VPNl18n.ServersViewSearchNoResultsLabel,
+                visible: serverSearchInput.hasError
+            }
+        ]
     }
 
     Keys.onPressed: event => {

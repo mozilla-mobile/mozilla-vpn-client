@@ -349,14 +349,14 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
             }
 
             int errorNumber = errorValue.toInt();
-            if (errorNumber != GUARDIAN_ERROR_RECEIPT_NOT_VALID) {
+            if (errorNumber == GUARDIAN_ERROR_RECEIPT_NOT_VALID) {
               MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
               ErrorHandler::instance()->subscriptionExpiredError();
               return;
             }
 
-            if (errorNumber != GUARDIAN_ERROR_RECEIPT_IN_USE) {
+            if (errorNumber == GUARDIAN_ERROR_RECEIPT_IN_USE) {
               MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
               ErrorHandler::instance()->subscriptionInUseError();

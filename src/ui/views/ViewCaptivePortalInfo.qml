@@ -12,8 +12,9 @@ import components 0.1
 VPNFlickable {
     id: vpnFlickable
 
-    state: (VPNController.state == VPNController.StateOff)? "pre-activation" : "post-activation"
+    flickContentHeight: content.height
 
+    state: (VPNController.state == VPNController.StateOff) ? "pre-activation" : "post-activation"
     states: [
         State {
             name: "pre-activation"
@@ -39,63 +40,49 @@ VPNFlickable {
         }
     ]
 
-    Item {
-        id: spacer1
-        height: Math.max(Theme.windowMargin * 2, ( window.safeContentHeight - flickContentHeight ) / 2)
-        width: vpnFlickable.width
-    }
-
-    VPNPanel {
-        id: vpnPanel
-        property var childRectHeight: vpnPanel.childrenRect.height
-
-        anchors.top: spacer1.bottom
-        anchors.topMargin: 80
-        width: Math.min(vpnFlickable.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.maxHorizontalContentWidth)
-        logoSize: 80
-        logoTitle: VPNl18n.CaptivePortalAlertTitle
-        logoSubtitle: VPNl18n.CaptivePortalAlertHeader
-        logo: "qrc:/ui/resources/globe-warning.svg"
-    }
-
-    Item {
-        id: spacer2
-        anchors.top: vpnPanel.bottom
-        height: Math.max(VPNTheme.theme.windowMargin * 2, (window.safeContentHeight - flickContentHeight ) / 2)
-        width: vpnFlickable.width
-    }
-
-    VPNSubtitle {
-        id: subTextBlock
-        anchors.top:  vpnPanel.bottom
-        anchors.topMargin: VPNTheme.theme.windowMargin
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: Math.min(vpnFlickable.width - (VPNTheme.theme.windowMargin * 4), VPNTheme.theme.maxHorizontalContentWidth)
-        font.family: VPNTheme.theme.fontBoldFamily
-        font.pixelSize: VPNTheme.theme.fontSizeSmall
-        color: VPNTheme.theme.fontColor
-        Layout.fillWidth: true
-        Layout.alignment: Qt.AlignHCenter
-        text: VPNl18n.CaptivePortalAlertPreActivation
-    }
-
-
 
     ColumnLayout {
-        id: footerContent
+        id: content
 
-        anchors.top: subTextBlock.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
-        spacing: VPNTheme.theme.windowMargin * 1.25
+        anchors.verticalCenter: parent.verticalCenter
+        width: Math.min(vpnFlickable.width, VPNTheme.theme.maxHorizontalContentWidth)
 
-        Item {
+        VPNPanel {
+            id: vpnPanel
+            property var childRectHeight: vpnPanel.childrenRect.height
+
+            logo: "qrc:/ui/resources/globe-warning.svg"
+            logoSize: 80
+            logoSubtitle: VPNl18n.CaptivePortalAlertHeader
+            logoTitle: VPNl18n.CaptivePortalAlertTitle
+            width: parent.width
+
+            anchors.horizontalCenter: undefined
+            Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
-            Layout.preferredHeight: VPNTheme.theme.windowMargin / 2
+        }
+
+        VPNSubtitle {
+            id: subTextBlock
+
+            color: VPNTheme.theme.fontColor
+            font.pixelSize: VPNTheme.theme.fontSizeSmall
+            font.family: VPNTheme.theme.fontBoldFamily
+            text: VPNl18n.CaptivePortalAlertPreActivation
+            width: openPortalButton.width
+
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
+            Layout.topMargin: VPNTheme.theme.vSpacingSmall
+            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
+            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
         }
 
         VPNButton {
             id: openPortalButton
+
             objectName: "captivePortalAlertActionButton"
             text: VPNl18n.CaptivePortalAlertPreActivation
             radius: 4
@@ -108,11 +95,11 @@ VPNFlickable {
                 }
                 stackview.pop();
             }
+
+            Layout.fillWidth: true
+            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
+            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
         }
 
-        Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
-        }
     }
 }
