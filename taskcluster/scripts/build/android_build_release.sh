@@ -32,5 +32,12 @@ mkdir -p /builds/worker/artifacts/
 mkdir -p /builds/worker/artifacts/
 cp .tmp/src/android-build/build/outputs/apk/release/*  /builds/worker/artifacts/
 
+# The Sign task will not rename them, so marking them as unsigned is a bit off. :) 
+mv /builds/worker/artifacts/android-build-x86_64-release-unsigned.apk /builds/worker/artifacts/mozillavpn-x86_64-release.apk
+mv /builds/worker/artifacts/android-build-arm64-v8a-release-unsigned.apk /builds/worker/artifacts/mozillavpn-arm64-v8a-release.apk
+mv /builds/worker/artifacts/android-build-armeabi-v7a-release-unsigned.apk /builds/worker/artifacts/mozillavpn-armeabi-v7a-release.apk
+mv /builds/worker/artifacts/android-build-x86-release-unsigned.apk /builds/worker/artifacts//mozillavpn-x86-release.apk
+
+
 ccache -s
 

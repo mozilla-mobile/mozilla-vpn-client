@@ -81,7 +81,7 @@ android-arm64/release:
             command: ./taskcluster/scripts/build/android_build_release.sh arm64-v8a
         apk-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - android-build-arm64-v8a-release-unsigned.apk
+            - mozillavpn-arm64-v8a-release.apk
 
 android-armv7/release:
         description: "Android Release (android-armv7)"
@@ -97,7 +97,7 @@ android-armv7/release:
             command: ./taskcluster/scripts/build/android_build_release.sh armeabi-v7a
         apk-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - android-build-armeabi-v7a-release-unsigned.apk
+            - mozillavpn-armeabi-v7a-release.apk
 
 
 android-x86/release:
@@ -114,7 +114,7 @@ android-x86/release:
             command: ./taskcluster/scripts/build/android_build_release.sh x86
         apk-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - android-build-x86-release-unsigned.apk
+            - mozillavpn-x86-release.apk
 
 android-x64/release:
         description: "Android Release (x86_64)"
@@ -130,6 +130,6 @@ android-x64/release:
             command: ./taskcluster/scripts/build/android_build_release.sh x86_64
         apk-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - android-build-x86_64-release-unsigned.apk
+            - mozillavpn-x86_64-release.apk
 
 
