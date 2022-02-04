@@ -8,13 +8,13 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-Item {
-  // TODO
-  // This view should inform the user that "something is happening".
-  // In the background, we are starting the authentication flow.
-  // The next states are:
-  // - StateStart: happy path.
-  // - Authentication failed, network down, etc.
-
-  Component.onCompleted: console.log("INITIALIZE")
+VPNLoader {
+    // In the background, we are starting the authentication flow.
+    // The next states are:
+    // - StateStart: happy path.
+    // - Authentication failed, network down, etc.
+    Component.onCompleted: console.log("INITIALIZE")
+    objectName: "authenticatingLoadingView"
+    headlineText: ""
 }
+
