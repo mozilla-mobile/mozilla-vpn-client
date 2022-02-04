@@ -14,9 +14,9 @@ transforms = TransformSequence()
 
 PRODUCTION_SIGNING_BUILD_TYPES = [
     "android-x64/release",
-#    "android-x86/release",
-#    "android-arm64/release",
-#    "android-armv7/release"
+    "android-x86/release",
+    "android-arm64/release",
+    "android-armv7/release"
 ]
 
 SIGNING_BUILD_TYPES = PRODUCTION_SIGNING_BUILD_TYPES + [

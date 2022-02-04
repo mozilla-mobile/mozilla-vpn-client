@@ -32,3 +32,5 @@ mkdir -p /builds/worker/artifacts/
 mkdir -p /builds/worker/artifacts/
 cp .tmp/src/android-build/build/outputs/apk/release/*  /builds/worker/artifacts/
 
+ccache -s
+
