@@ -54,7 +54,7 @@ Misc tips from core devs:
 
 ### Linux
 
-On linux, the compilation of MozillaVPN is relative easy. You need the
+On linux, the compilation of MozillaVPN is relatively easy. You need the
 following dependencies:
 
 - Qt5 >= 5.15.0
