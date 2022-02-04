@@ -1,0 +1,22 @@
+base_repository: https://github.com/mozilla-mobile/mozilla-vpn-client
+build_date: 1642091045
+do_not_optimize: []
+existing_tasks: {}
+filters:
+- target_tasks_method
+head_ref: fix-take-tour-button
+head_repository: https://github.com/mozilla-mobile/mozilla-vpn-client
+head_rev: 8a3c3f46799e09248d39e22c3ec4f013196bf44b
+head_tag: ''
+level: '1'
+moz_build_date: '20220113162405'
+optimize_target_tasks: true
+owner: flozia@users.noreply.github.com
+project: mozilla-vpn-client
+pull_request_number: 2575
+pushdate: 0
+pushlog_id: '0'
+repository_type: git
+target_tasks_method: default
+tasks_for: github-pull-request
+version: ''
