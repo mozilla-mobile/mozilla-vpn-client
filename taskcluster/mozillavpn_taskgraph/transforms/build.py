@@ -14,7 +14,7 @@ from taskgraph.transforms.base import TransformSequence
 transforms = TransformSequence()
 
 
-# Add build-type info to the Task. Defaults to taskname
+
 @transforms.add
 def checkRequiredLevel(config, tasks):
     for task in tasks:

@@ -101,7 +101,7 @@ android-x86/release:
         requiresLevel: 3
         treeherder:
             symbol: B
-            platform: android/android-x86
+            platform: android/x86
         worker:
             docker-image: {in-tree: android-build-x86}
         run:
