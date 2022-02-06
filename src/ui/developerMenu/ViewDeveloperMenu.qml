@@ -99,7 +99,7 @@ Item {
                     id: serverAddressInput
 
                     enabled: root.vpnIsOff && VPNSettings.stagingServer
-                    placeholderText: "Staging server address"
+                    _placeholderText: "Staging server address"
                     height: 40
 
                     PropertyAnimation on opacity {

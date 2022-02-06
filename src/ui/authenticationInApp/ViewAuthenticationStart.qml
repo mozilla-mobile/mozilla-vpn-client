@@ -24,7 +24,7 @@ Item {
         width: parent.width
         hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
 
-        placeholderText: "a@b.c" // TODO
+        _placeholderText: "a@b.c" // TODO
     }
 
     VPNButton {

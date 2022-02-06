@@ -31,7 +31,7 @@ Item {
 
         echoMode: TextInput.Password
 
-        placeholderText: "secure password" // TODO
+        _placeholderText: "secure password" // TODO
     }
 
     VPNButton {
