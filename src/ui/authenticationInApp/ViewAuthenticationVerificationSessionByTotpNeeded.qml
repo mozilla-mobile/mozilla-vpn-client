@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-
+import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import components.inAppAuth
 
-Item {
+VPNInAppAuthenticationBase {
     // TODO
     // we are here if the user is completing the session activation flow.
     // The TOTP code is required.
@@ -25,28 +26,38 @@ Item {
 
     Component.onCompleted: console.log("SESSION VERIFICATION BY TOTP")
 
-    Text {
-        id: msg
-        text: "TOTP verification needed. Code:"
-        anchors.top: parent.top
+    _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
+    _menuButtonOnClick: () => { VPNAuthInApp.reset() }
+    _menuButtonAccessibleName: "TODO: Lorum Ipsum - Back"
+    _headlineText: "Enter 2-factor auth code"
+    _subtitleText: "Enter your 2-factor auth code"
+    _imgSource: "qrc:/ui/resources/logo.svg"
+    _inputLabel: "Enter code"
+
+    _inputs: ColumnLayout {
+        spacing: VPNTheme.theme.vSpacing * 2
+        VPNTextField {
+            id: codeInput
+            Layout.fillWidth: true
+        }
+
+        VPNButton {
+            text: "Verify"
+            Layout.fillWidth: true
+            onClicked: {
+              VPNAuthInApp.verifySessionTotpCode(codeInput.text);
+            }
+        }
     }
 
-    VPNTextField {
-        id: codeInput
-
-        anchors.top: msg.bottom
-        anchors.bottomMargin: 24
-        width: parent.width
-    }
-
-    VPNButton {
-        id: codeButton
-        anchors.top: codeInput.bottom
-        anchors.bottomMargin: 24
-        text: "Verify" // TODO
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: 5
-        onClicked: VPNAuthInApp.verifySessionTotpCode(codeInput.text);
+    _footerContent: Column {
+        Layout.alignment: Qt.AlignHCenter
+        VPNLinkButton {
+            labelText: "Cancel"
+            fontName: VPNTheme.theme.fontBoldFamily
+            anchors.horizontalCenter: parent.horizontalCenter
+            linkColor: VPNTheme.theme.redButton
+            onClicked: VPNAuthInApp.reset()
+        }
     }
 }
