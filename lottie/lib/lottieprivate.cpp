@@ -26,6 +26,9 @@ void LottiePrivate::initialize(QJSEngine* engine, const QString& userAgent) {
   Q_ASSERT(engine);
   s_engine = engine;
 
+  qmlRegisterTypesAndRevisions<LottiePrivate>("vpn.mozilla.lottie", 1);
+  qmlRegisterModule("vpn.mozilla.lottie", 1, 0);
+
   Q_ASSERT(!userAgent.isEmpty());
   s_userAgent = userAgent;
 }
