@@ -22,7 +22,7 @@ job-template:
     signing-format: autograph_apk
     run-on-tasks-for: [github-push]
     treeherder:
-        job-symbol: BS
+        job-symbol: Bs
         kind: build
         platform:
             by-build-type:
