@@ -57,13 +57,16 @@ tests/proxy/__pycache__/
 tests/qml/qml_tests
 tests/qml/target_wrapper.sh
 build
-!taskcluster/ci/build
 Debug/
 !android/src/debug/
 Debug-iphone*
 Release/
 Release-iphone*
 macos/gobridge/wireguard-go-version.h
+
+# Taskcluster/ Taskgraph
+!taskcluster/ci/build
+*.pyc
 
 # Editors
 *.swp
