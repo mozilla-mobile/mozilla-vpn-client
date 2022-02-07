@@ -22,7 +22,7 @@ job-template:
     signing-format: autograph_apk
     run-on-tasks-for: [github-push]
     treeherder:
-        job-symbol: S
+        job-symbol: BS
         kind: build
         platform:
             by-build-type:
@@ -32,4 +32,4 @@ job-template:
                 android-armv7/release: android/armv7
                 default: android/all
                 
-        tier: 3
+        tier: 1
