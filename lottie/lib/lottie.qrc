@@ -1,8 +1,7 @@
 <RCC>
     <qresource prefix="/lottie">
         <file>lottie/qmldir</file>
-        <file>lottie/lottie.min.js</file>
-        <file>lottie/lottie_wrap.js.template</file>
+        <file>lottie/lottie.js</file>
         <file>lottie/LottieAnimation.qml</file>
     </qresource>
 </RCC>
