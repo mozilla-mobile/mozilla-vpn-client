@@ -17,6 +17,12 @@ IF "%selfWrapped%" == "" (
   GOTO :EOF
 )
 
+net file 1>NUL 2>NUL
+if not '%errorlevel%' == '0' (
+    ECHO This script requires administrator privileges.
+    exit /b
+)
+
 IF "%~1"=="" (
   CALL :Usage
   EXIT /B 1
@@ -38,7 +44,7 @@ ECHO Compiling openssl...
 
 pushd %1
 
-perl Configure VC-WIN64A --release --prefix=%BUILDDIR% --openssldir=%BUILDDIR%\SSL no-tests
+perl Configure VC-WIN64A --release --prefix="C:\Program Files\Common\SSL" --openssldir="C:\Program Files\Common\SSL" no-tests
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure OpenSSL.
   EXIT /B 1
@@ -57,6 +63,9 @@ IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to install OpenSSL.
   EXIT /B 1
 )
+
+mkdir %BUILDDIR%
+xcopy /E /I "C:\Program Files\Common\SSL\" C:\MozillaVPNBuild\
 
 popd
 
