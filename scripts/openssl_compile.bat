@@ -19,8 +19,8 @@ IF "%selfWrapped%" == "" (
 
 net file 1>NUL 2>NUL
 if not '%errorlevel%' == '0' (
-    ECHO This script requires administrator privileges.
-    exit /b
+  ECHO This script requires administrator privileges.
+  exit /b
 )
 
 IF "%~1"=="" (
