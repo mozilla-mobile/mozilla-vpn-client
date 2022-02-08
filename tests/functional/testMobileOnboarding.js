@@ -83,7 +83,7 @@ describe('Mobile Onboarding', function() {
            'Protect your privacy');
        const descriptionText =
            await vpn.getElementProperty('panelDescription', 'text');
-       assert(descriptionText.includes('ISP throttling'));
+       assert(descriptionText.includes('Route your activity and location'));
      });
 
   it('Sign up button opens auth flow', async () => {

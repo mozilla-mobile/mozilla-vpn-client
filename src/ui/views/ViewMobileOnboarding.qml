@@ -26,29 +26,29 @@ VPNFlickable {
         ListElement {
             animationSrc: ":/nebula/resources/animations/vpnlogo-drop_animation.json"
             loopAnimation: false
-            headline: VPNl18n.MobileOnboardingPanelOneTitle
-            subtitle: VPNl18n.MobileOnboardingPanelOneSubtitle
+            titleStringId: "MobileOnboardingPanelOneTitle"
+            subtitleStringId: "MobileOnboardingPanelOneSubtitle"
             panelId: "mozilla-vpn"
         }
         ListElement {
             animationSrc: ":/nebula/resources/animations/lock_animation.json"
             loopAnimation: true
-            headline: VPNl18n.MobileOnboardingPanelTwoTitle
-            subtitle: VPNl18n.MobileOnboardingPanelTwoSubtitle
+            titleStringId: "MobileOnboardingPanelTwoTitle"
+            subtitleStringId: "MobileOnboardingPanelTwoSubtitle"
             panelId: "encrypt-your-activity"
         }
         ListElement {
             animationSrc: ":/nebula/resources/animations/globe_animation.json"
             loopAnimation: true
-            headline: VPNl18n.MobileOnboardingPanelThreeTitle
-            subtitle: VPNl18n.MobileOnboardingPanelThreeSubtitle
+            titleStringId: "MobileOnboardingPanelThreeTitle"
+            subtitleStringId: "MobileOnboardingPanelThreeSubtitle"
             panelId: "protect-your-privacy"
         }
         ListElement {
             animationSrc: ":/nebula/resources/animations/vpnactive_animation.json"
             loopAnimation: true
-            headline: VPNl18n.MobileOnboardingPanelFourTitle
-            subtitle: VPNl18n.MobileOnboardingPanelFourSubtitle
+            titleStringId: "MobileOnboardingPanelFourTitle"
+            subtitleStringId: "MobileOnboardingPanelFourSubtitle"
             panelId: "more-security"
         }
     }
@@ -145,8 +145,8 @@ VPNFlickable {
 
                     Component.onCompleted: {
                         currentPanelValues._panelId = panelId;
-                        currentPanelValues._panelTitleText = headline;
-                        currentPanelValues._panelDescriptionText = subtitle;
+                        currentPanelValues._panelTitleText = VPNl18n[titleStringId];
+                        currentPanelValues._panelDescriptionText = VPNl18n[subtitleStringId];
                         updatePanel.start();
                     }
 
