@@ -58,6 +58,7 @@ tests/qml/qml_tests
 tests/qml/target_wrapper.sh
 build
 !taskcluster/ci/build
+!taskcluster/scripts/build
 Debug/
 !android/src/debug/
 Debug-iphone*
