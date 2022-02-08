@@ -394,4 +394,5 @@ mobileOnboarding:
   signUpBtn: Sign up
   alreadyASubscriber: Already a subscriber?
 
-
+inAppAuth:
+  changeEmail: Change email
