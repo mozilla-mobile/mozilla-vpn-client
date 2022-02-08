@@ -15,7 +15,9 @@ import telemetry 0.30
 VPNFlickable {
     id: onboardingPanel
     property real panelHeight: window.safeContentHeight
-    flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight
+    flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight - spacerBottom.height
+    height: parent.height
+    interactive: flickContentHeight > height
 
     ListModel {
         id: onboardingModel
@@ -293,6 +295,7 @@ VPNFlickable {
         }
 
         VPNVerticalSpacer {
+            id: spacerBottom
             Layout.preferredHeight: Math.min(window.height * 0.08, VPNTheme.theme.rowHeight)
         }
     }
