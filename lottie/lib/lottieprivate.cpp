@@ -68,7 +68,7 @@ void LottiePrivate::createAnimation() {
   if (!m_readyToPlay || !m_canvas || m_source.isEmpty()) return;
 
   if (!m_lottieModule.isObject()) {
-    m_lottieModule = engine()->importModule(":/lottie/lottie/lottie.mjs");
+    m_lottieModule = engine()->importModule(":/lottie/lottie/lottie.js");
     if (m_lottieModule.isError()) {
       QString errorMessage("Exception processing the lottie js: ");
       errorMessage.append(m_lottieModule.toString());

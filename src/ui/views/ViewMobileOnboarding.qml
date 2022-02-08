@@ -23,6 +23,7 @@ VPNFlickable {
     ListModel {
         id: onboardingModel
 
+        // TODO: Replace with localized strings and update values for panelId
         ListElement {
             animationSrc: ":/nebula/resources/animations/vpnlogo-drop_animation.json"
             loopAnimation: false
@@ -81,7 +82,7 @@ VPNFlickable {
                         property real imageOpacityValue: 0.0
                         property int _topMargin: onboardingPanel.panelHeight / 2 - currentPanelValues._animationHeight
                         property bool _isFirstSlide: swipeView.currentIndex === 0
-                
+
                         anchors.fill: undefined
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: parent.top
