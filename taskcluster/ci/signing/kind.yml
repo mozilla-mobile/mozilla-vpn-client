@@ -1,0 +1,35 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: mozillavpn_taskgraph.loader.multi_dep:loader
+
+transforms:
+    - mozillavpn_taskgraph.transforms.multi_dep:transforms
+    - mozillavpn_taskgraph.transforms.signing:transforms
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - build
+
+primary-dependency: build
+
+group-by: build-type
+
+job-template:
+    description: Sign MozillaVPN for Android
+    worker: {} # Will be configured by signing:transforms
+    signing-format: autograph_apk
+    run-on-tasks-for: [github-push]
+    treeherder:
+        job-symbol: Bs
+        kind: build
+        platform:
+            by-build-type:
+                android-x64/release: android/x86_64
+                android-x86/release: android/x86
+                android-arm64/release: android/arm64-v8a
+                android-armv7/release: android/armv7
+                default: android/all
+                
+        tier: 1
