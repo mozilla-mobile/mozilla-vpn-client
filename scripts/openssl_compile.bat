@@ -65,7 +65,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 mkdir %BUILDDIR%
-xcopy /E /I "C:\Program Files\Common\SSL\" C:\MozillaVPNBuild\
+xcopy /E /I "C:\Program Files\Common\SSL\" %BUILDDIR%
 
 popd
 
