@@ -80,7 +80,7 @@ describe('Mobile Onboarding', function() {
        await vpn.wait();
        assert(
            await vpn.getElementProperty('panelTitle', 'text') ===
-           'No bandwidth restrictions');
+           'Protect your privacy');
        const descriptionText =
            await vpn.getElementProperty('panelDescription', 'text');
        assert(descriptionText.includes('ISP throttling'));
