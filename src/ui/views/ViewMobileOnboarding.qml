@@ -21,28 +21,32 @@ VPNFlickable {
         id: onboardingModel
 
         ListElement {
-            imageSrc: "qrc:/ui/resources/onboarding/mobile/vpn-off-lightMode.svg"
-            headline: qsTrId("vpn.main.productName")
-            subtitle: qsTrId("vpn.main.productDescription")
+            animationSrc: "qrc:/nebula/resources/animations/vpnlogo-drop_animation.json"
+            loopAnimation: false
+            headline: "1) Mozilla VPN"
+            subtitle: "A safe, reliable and fast VPN. Built by the makers of Firefox."
             panelId: "mozilla-vpn"
         }
         ListElement {
-            imageSrc: "qrc:/ui/resources/onboarding/mobile/vpn-security-lightMode.svg"
-            headline: qsTrId("vpn.onboarding.headline.1")
-            subtitle: qsTrId("vpn.onboarding.subtitle.1")
-            panelId: "device-level-encryption"
+            animationSrc: "qrc:/nebula/resources/animations/vpnlogo-drop_animation.json"
+            loopAnimation: true
+            headline: "2) Encrypt your activity"
+            subtitle: "Mozilla VPN keeps your location and browsing safe from eavesdroppers."
+            panelId: "encrypt-your-activity"
         }
         ListElement {
-            imageSrc: "qrc:/ui/resources/onboarding/mobile/vpn-on-lightMode.svg"
-            headline: qsTrId("vpn.onboarding.headline.3")
-            subtitle: qsTrId("vpn.onboarding.subtitle.3")
-            panelId: "no-bandwidth-restrictions"
+            animationSrc: "qrc:/nebula/resources/animations/vpnlogo-drop_animation.json"
+            loopAnimation: true
+            headline: "3) Protect your privacy"
+            subtitle: "Route your activity and location through servers in more than 30 countries."
+            panelId: "protect-your-privacy"
         }
         ListElement {
-            imageSrc: "qrc:/ui/resources/onboarding/mobile/vpn-globe-flags-lightMode.svg"
-            headline: qsTrId("vpn.onboarding.headline.2")
-            subtitle: qsTrId("vpn.onboarding.subtitle.2")
-            panelId: "servers-in-30+-countries"
+            animationSrc: "qrc:/nebula/resources/animations/vpnlogo-drop_animation.json"
+            loopAnimation: true
+            headline: "4) More security with one tap"
+            subtitle: "Stream, download and game without limits, monthly caps or ISP throttling."
+            panelId: "more-security"
         }
     }
 
@@ -81,7 +85,7 @@ VPNFlickable {
                         antialiasing: true
                         fillMode: Image.PreserveAspectFit
                         opacity: panelImg.imageOpacityValue
-                        source: imageSrc
+                        source: ""
                         sourceSize.height: currentPanelValues._imageHeight
                         transform: Scale {
                             origin.x: panelImg.width / 2

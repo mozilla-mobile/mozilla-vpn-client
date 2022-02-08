@@ -15,9 +15,11 @@ LottieAnimation {
     fillMode: "preserveAspectFit"
 
     Connections {
-        target: lottieAnimation.error
-        function onChanged() {
-            console.error("Lottie failure: " + lottieAnimation.errorString);
+        target: lottieAnimation.status
+        function onErrorChanged() {
+            if (lottieAnimation.status.error) {
+                console.error("Lottie failure: " + lottieAnimation.status.errorString);
+            }
         }
     }
 }
