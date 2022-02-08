@@ -12,7 +12,7 @@ VPNStackView {
     objectName: "initialStackView"
     anchors.fill: parent
     initialItem: {
-        if (Qt.platform.os === "android" || Qt.platform.os === "ios")
+        // if (Qt.platform.os === "android" || Qt.platform.os === "ios")
             return "qrc:/ui/views/ViewMobileOnboarding.qml";
         return "qrc:/ui/views/ViewInitialize.qml"
     }

@@ -23,30 +23,30 @@ VPNFlickable {
         id: onboardingModel
 
         ListElement {
-            animationSrc: "qrc:/nebula/resources/animations/vpnlogo-drop_animation.json"
+            animationSrc: ":/nebula/resources/animations/vpnlogo-drop_animation.json"
             loopAnimation: false
-            headline: "1) Mozilla VPN"
+            headline: "Mozilla VPN"
             subtitle: "A safe, reliable and fast VPN. Built by the makers of Firefox."
             panelId: "mozilla-vpn"
         }
         ListElement {
-            animationSrc: "qrc:/nebula/resources/animations/vpnlogo-drop_animation.json"
+            animationSrc: ":/nebula/resources/animations/lock_animation.json"
             loopAnimation: true
-            headline: "2) Encrypt your activity"
+            headline: "Encrypt your activity"
             subtitle: "Mozilla VPN keeps your location and browsing safe from eavesdroppers."
             panelId: "encrypt-your-activity"
         }
         ListElement {
-            animationSrc: "qrc:/nebula/resources/animations/vpnlogo-drop_animation.json"
+            animationSrc: ":/nebula/resources/animations/globe_animation.json"
             loopAnimation: true
-            headline: "3) Protect your privacy"
+            headline: "Protect your privacy"
             subtitle: "Route your activity and location through servers in more than 30 countries."
             panelId: "protect-your-privacy"
         }
         ListElement {
-            animationSrc: "qrc:/nebula/resources/animations/vpnlogo-drop_animation.json"
+            animationSrc: ":/nebula/resources/animations/vpnactive_animation.json"
             loopAnimation: true
-            headline: "4) More security with one tap"
+            headline: "More security with one tap"
             subtitle: "Stream, download and game without limits, monthly caps or ISP throttling."
             panelId: "more-security"
         }
@@ -71,30 +71,29 @@ VPNFlickable {
                 id: loader
                 active: SwipeView.isCurrentItem
                 sourceComponent: SwipeDelegate {
-                    background: Rectangle {
-                        color: "transparent"
-                    }
+                    background: Item {}
 
-                    Image {
-                        id: panelImg
+                    VPNLottieAnimation {
+                        id: panelAnimation
 
                         property real imageScaleValue: 0.9
                         property real imageOpacityValue: 0.0
-
+                
+                        anchors.fill: undefined
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: parent.top
-                        anchors.topMargin: onboardingPanel.panelHeight / 2 - currentPanelValues._imageHeight
-                        antialiasing: true
-                        fillMode: Image.PreserveAspectFit
-                        opacity: panelImg.imageOpacityValue
-                        source: ""
-                        sourceSize.height: currentPanelValues._imageHeight
+                        anchors.topMargin: onboardingPanel.panelHeight / 2 - currentPanelValues._animationHeight
+                        height: currentPanelValues._animationHeight
+                        loop: loopAnimation
+                        opacity: panelAnimation.imageOpacityValue
+                        source: animationSrc
                         transform: Scale {
-                            origin.x: panelImg.width / 2
-                            origin.y: panelImg.height / 2
-                            xScale: panelImg.imageScaleValue
-                            yScale: panelImg.imageScaleValue
+                            origin.x: panelAnimation.width / 2
+                            origin.y: panelAnimation.height / 2
+                            xScale: panelAnimation.imageScaleValue
+                            yScale: panelAnimation.imageScaleValue
                         }
+                        width: parent.width
 
                         SequentialAnimation {
                             id: updatePanel
@@ -107,33 +106,42 @@ VPNFlickable {
                                 targets: [panelTitle, panelDescription]
                                 property: "opacity"
                                 from: 1
-                                to: panelImg.imageOpacityValue
+                                to: panelAnimation.imageOpacityValue
                                 duration: 100
                             }
                             PauseAnimation {
                                 duration: 150
                             }
                             ScriptAction {
-                                script: updatePanel.updateStrings()
+                                script: {
+                                    updatePanel.updateStrings();
+                                    panelAnimation.play();
+                                }
                             }
                             ParallelAnimation {
                                 NumberAnimation {
-                                    target: panelImg
+                                    target: panelAnimation
                                     property: "imageScaleValue"
-                                    from: panelImg.imageScaleValue
+                                    from: panelAnimation.imageScaleValue
                                     to: 1
                                     duration: 250
                                     easing.type: Easing.OutQuad
                                 }
                                 PropertyAnimation {
-                                    targets: [panelTitle, panelDescription, panelImg]
+                                    targets: [panelTitle, panelDescription, panelAnimation]
                                     property: "opacity"
-                                    from: panelImg.imageOpacityValue
+                                    from: panelAnimation.imageOpacityValue
                                     to: 1
                                     duration: 250
                                     easing.type: Easing.OutQuad
                                 }
                             }
+                        }
+
+                        Rectangle {
+                            anchors.fill: parent
+                            color: VPNTheme.colors.purple70
+                            z: -1
                         }
                     }
 
@@ -213,7 +221,7 @@ VPNFlickable {
         property string _panelId: ""
         property string _panelTitleText: ""
         property string _panelDescriptionText: ""
-        property real _imageHeight: Math.min(240, panelHeight * .35)
+        property real _animationHeight: Math.min(240, panelHeight * .35)
     }
 
     ColumnLayout {
@@ -298,6 +306,12 @@ VPNFlickable {
             id: spacerBottom
             Layout.preferredHeight: Math.min(window.height * 0.08, VPNTheme.theme.rowHeight)
         }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: VPNTheme.colors.primary
+        z: -1
     }
 
     function recordGleanEvtAndStartAuth(ctaObjectName) {
