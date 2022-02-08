@@ -515,7 +515,7 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
     case 103:  // Incorrect password
       aip->requestErrorPropagation(AuthenticationInApp::ErrorIncorrectPassword,
                                    this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
+      aip->requestState(AuthenticationInApp::StateSignIn, this);
       break;
 
     case 114:  // Client has sent too many requests
