@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
+import compat 0.1
 
 import org.mozilla.Glean 0.30
 import telemetry 0.30
@@ -205,6 +206,7 @@ VPNFlickable {
         id: headerLink
         objectName: "getHelpLink"
         labelText: qsTrId("vpn.main.getHelp2")
+        isLightTheme: false
         onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml",
                                   StackView.Immediate)
     }
@@ -305,9 +307,22 @@ VPNFlickable {
         }
     }
 
-    Rectangle {
+    VPNRadialGradient {
         anchors.fill: parent
-        color: "#1D0942"
+        gradient: Gradient {
+            GradientStop {
+                color: "#472C87"
+                position: 0.0
+            }
+            GradientStop {
+                color: "#301962"
+                position: 0.2
+            }
+            GradientStop {
+                color: "#1D0942"
+                position: 0.5
+            }
+        }
         z: -1
     }
 
