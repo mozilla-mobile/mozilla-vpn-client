@@ -137,12 +137,6 @@ VPNFlickable {
                                 }
                             }
                         }
-
-                        Rectangle {
-                            anchors.fill: parent
-                            color: VPNTheme.colors.purple70
-                            z: -1
-                        }
                     }
 
                     Component.onCompleted: {
@@ -239,12 +233,14 @@ VPNFlickable {
             VPNHeadline {
                 id: panelTitle
                 objectName: "panelTitle"
+                color: VPNTheme.colors.white
                 width: parent.width
             }
 
             VPNSubtitle {
                 id: panelDescription
                 objectName: "panelDescription"
+                color: VPNTheme.colors.grey20
                 width: parent.width
             }
         }
@@ -298,6 +294,7 @@ VPNFlickable {
                 labelText: VPNl18n.MobileOnboardingAlreadyASubscriber
                 anchors.horizontalCenter: parent.horizontalCenter
                 height: VPNTheme.theme.rowHeight
+                linkColor: VPNTheme.theme.whiteButton
                 onClicked: onboardingPanel.recordGleanEvtAndStartAuth(objectName)
             }
         }
@@ -310,7 +307,7 @@ VPNFlickable {
 
     Rectangle {
         anchors.fill: parent
-        color: VPNTheme.colors.primary
+        color: "#1D0942"
         z: -1
     }
 
