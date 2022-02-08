@@ -79,12 +79,14 @@ VPNFlickable {
 
                         property real imageScaleValue: 0.9
                         property real imageOpacityValue: 0.0
+                        property int _topMargin: onboardingPanel.panelHeight / 2 - currentPanelValues._animationHeight
+                        property bool _isFirstSlide: swipeView.currentIndex === 0
                 
                         anchors.fill: undefined
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: parent.top
-                        anchors.topMargin: onboardingPanel.panelHeight / 2 - currentPanelValues._animationHeight
-                        height: currentPanelValues._animationHeight
+                        anchors.topMargin: panelAnimation._isFirstSlide ? 0 : panelAnimation._topMargin
+                        height: currentPanelValues._animationHeight + (panelAnimation._isFirstSlide ? panelAnimation._topMargin : 0)
                         loop: loopAnimation
                         opacity: panelAnimation.imageOpacityValue
                         source: animationSrc
@@ -138,6 +140,7 @@ VPNFlickable {
                                 }
                             }
                         }
+
                     }
 
                     Component.onCompleted: {
