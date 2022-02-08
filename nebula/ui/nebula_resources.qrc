@@ -316,5 +316,6 @@
         <file>resources/warning-dark-orange.svg</file>
         <file>resources/warning-orange.svg</file>
         <file>resources/warning.svg</file>
+        <file>resources/avatar.svg</file>
     </qresource>
 </RCC>
