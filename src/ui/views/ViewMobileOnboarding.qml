@@ -23,33 +23,32 @@ VPNFlickable {
     ListModel {
         id: onboardingModel
 
-        // TODO: Replace with localized strings and update values for panelId
         ListElement {
             animationSrc: ":/nebula/resources/animations/vpnlogo-drop_animation.json"
             loopAnimation: false
-            headline: "Mozilla VPN"
-            subtitle: "A safe, reliable and fast VPN. Built by the makers of Firefox."
+            headline: VPNl18n.MobileOnboardingPanelOneTitle
+            subtitle: VPNl18n.MobileOnboardingPanelOneSubtitle
             panelId: "mozilla-vpn"
         }
         ListElement {
             animationSrc: ":/nebula/resources/animations/lock_animation.json"
             loopAnimation: true
-            headline: "Encrypt your activity"
-            subtitle: "Mozilla VPN keeps your location and browsing safe from eavesdroppers."
+            headline: VPNl18n.MobileOnboardingPanelTwoTitle
+            subtitle: VPNl18n.MobileOnboardingPanelTwoSubtitle
             panelId: "encrypt-your-activity"
         }
         ListElement {
             animationSrc: ":/nebula/resources/animations/globe_animation.json"
             loopAnimation: true
-            headline: "Protect your privacy"
-            subtitle: "Route your activity and location through servers in more than 30 countries."
+            headline: VPNl18n.MobileOnboardingPanelThreeTitle
+            subtitle: VPNl18n.MobileOnboardingPanelThreeSubtitle
             panelId: "protect-your-privacy"
         }
         ListElement {
             animationSrc: ":/nebula/resources/animations/vpnactive_animation.json"
             loopAnimation: true
-            headline: "More security with one tap"
-            subtitle: "Stream, download and game without limits, monthly caps or ISP throttling."
+            headline: VPNl18n.MobileOnboardingPanelFourTitle
+            subtitle: VPNl18n.MobileOnboardingPanelFourSubtitle
             panelId: "more-security"
         }
     }
