@@ -91,7 +91,6 @@ void AuthenticationInApp::signIn() {
 }
 
 QString AuthenticationInApp::emailAddress() {
-  Q_ASSERT(m_state == StateSignIn);
   Q_ASSERT(m_listener);
 
   return m_listener->emailAddress();
