@@ -111,7 +111,6 @@ VPNFlickable {
             VPNIconButton {
                 id: connectionInfoToggleButton
 
-                buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.topMargin: VPNTheme.theme.windowMargin / 2
@@ -121,7 +120,9 @@ VPNFlickable {
                     ? qsTrId("vpn.connectionInfo.close")
                     //% "Close"
                     : qsTrId("vpn.controller.info")
+                buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
                 enabled: connectionInfo.visible
+                visible: VPNFeatureList.get("connectionInfo").isSupported
 
                 onClicked: {
                     box.testTestVisible = !box.testTestVisible;
