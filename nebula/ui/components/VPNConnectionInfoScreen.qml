@@ -83,7 +83,7 @@ Rectangle {
         timerTwo.setTimeout(function() {
             // Finish fake loading
             isLoading = false;
-        }, transitionDuration * 2);
+        }, transitionDuration * 10);
     }
 
     Behavior on opacity {
@@ -171,18 +171,16 @@ Rectangle {
         visible: root.state === "open-ready"
     }
 
-    // Loader
-    Text {
-        text: "Loading …"
-        visible: root.state === "open-loading"
-    }
-
+    // Loading indicator
     Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        height: parent.width / 2
+        anchors.verticalCenterOffset: -1 * VPNTheme.theme.rowHeight
+
+        height: VPNTheme.theme.desktopAppWidth * 0.33
         visible: root.state === "open-loading"
         width: height
+
         onVisibleChanged: {
             if (visible) {
                 loadingAnimation.play();
@@ -193,8 +191,18 @@ Rectangle {
 
         VPNLottieAnimation {
             id: loadingAnimation
-            source: ":/nebula/resources/animations/lock_animation.json"
+            source: ":/nebula/resources/animations/vpnlogo-kinetic_animation.json"
         }
+
+        VPNMetropolisLabel {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.bottom
+
+            color: VPNTheme.colors.white
+            font.pixelSize: VPNTheme.theme.fontSizeLarge
+            text: "Testing speed …"
+        }
+
     }
 
 }
