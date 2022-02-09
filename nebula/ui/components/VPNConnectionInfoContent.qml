@@ -10,6 +10,13 @@ Flickable {
     height: parent.height
     contentHeight: Math.max(content.height, height)
     width: parent.width
+    onVisibleChanged: {
+        if (visible) {
+            speedometerAnimation.play();
+        } else {
+            speedometerAnimation.stop();
+        }
+    }
 
     ColumnLayout {
         id: content
@@ -29,28 +36,31 @@ Flickable {
         }
         VPNInterLabel {
             Layout.alignment: Qt.AlignHCenter
-            Layout.bottomMargin: VPNTheme.theme.listSpacing
+            Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
 
             color: VPNTheme.colors.grey20
             text: "IPv6: 2001:ac8:40:b9::a09e"
         }
 
         // Lottie animation
-        Rectangle {
-            color: "black"
-            radius: 50
-
+        Item {
             Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            Layout.minimumHeight: 75
             Layout.preferredHeight: 100
-            Layout.preferredWidth: 100
-            Layout.minimumHeight: 50
-            Layout.minimumWidth: 50
+
+            VPNLottieAnimation {
+                id: speedometerAnimation
+                source: ":/nebula/resources/animations/speedometer_animation.json"
+            }
         }
 
         // Bullet list
         VPNTextBlock {
-            Layout.topMargin: VPNTheme.theme.listSpacing
             Layout.fillWidth: true
+            Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
+            Layout.bottomMargin: VPNTheme.theme.listSpacing
+
             color: VPNTheme.colors.white
             text: "At your current speed, here's what your device is optimized for:"
             wrapMode: Text.WordWrap

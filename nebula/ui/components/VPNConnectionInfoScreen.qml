@@ -173,10 +173,28 @@ Rectangle {
 
     // Loader
     Text {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
         text: "Loading …"
         visible: root.state === "open-loading"
+    }
+
+    Item {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        height: parent.width / 2
+        visible: root.state === "open-loading"
+        width: height
+        onVisibleChanged: {
+            if (visible) {
+                loadingAnimation.play();
+            } else {
+                loadingAnimation.stop();
+            }
+        }
+
+        VPNLottieAnimation {
+            id: loadingAnimation
+            source: ":/nebula/resources/animations/lock_animation.json"
+        }
     }
 
 }
