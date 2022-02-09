@@ -1,0 +1,22 @@
+base_repository: https://github.com/mozilla-mobile/mozilla-vpn-client
+build_date: 1641494741
+do_not_optimize: []
+existing_tasks: {}
+filters:
+- target_tasks_method
+head_ref: refs/heads/releases/test
+head_repository: https://github.com/mozilla-mobile/mozilla-vpn-client
+head_rev: 5d9e12a6b60a28218aa8094a45111777d73f7c1d
+head_tag: ''
+level: '3'
+moz_build_date: '20220106184541'
+optimize_target_tasks: true
+owner: strseb@users.noreply.github.com
+project: mozilla-vpn-client
+pull_request_number: null
+pushdate: 0
+pushlog_id: '0'
+repository_type: git
+target_tasks_method: default
+tasks_for: github-push
+version: ''

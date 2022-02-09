@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
+import components.forms 0.1
 
 import org.mozilla.Glean 0.30
 import telemetry 0.30
@@ -48,11 +49,17 @@ Item {
             anchors.topMargin: VPNTheme.theme.windowMargin
             spacing: VPNTheme.theme.windowMargin
 
-            VPNCheckBoxAlert {
-                id: alert
-                //% "VPN must be off to edit these settings"
-                //: Associated to a group of settings that require the VPN to be disconnected to change
-                errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
+            VPNContextualAlerts {
+                anchors.leftMargin: VPNTheme.theme.windowMargin
+                messages: [
+                    {
+                        type: "warning",
+                        //% "VPN must be off to edit these settings"
+                        //: Associated to a group of settings that require the VPN to be disconnected to change
+                        message: qsTrId("vpn.settings.vpnMustBeOff"),
+                        visible: VPNController.state !== VPNController.StateOff
+                    }
+                ]
             }
 
             VPNCheckBoxRow {
@@ -71,6 +78,23 @@ Item {
                 onClicked: {
                     if (vpnFlickable.vpnIsOff) {
                         VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
+                    }
+                }
+            }
+
+            VPNCheckBoxRow {
+                id: tunnelPort53
+                objectName: "settingTunnelPort53"
+                width: parent.width - VPNTheme.theme.windowMargin
+                showDivider: true
+
+                labelText: VPNl18n.SettingsTunnelPort53
+                subLabelText: VPNl18n.SettingsTunnelPort53Description
+                isChecked: (VPNSettings.tunnelPort53)
+                isEnabled: vpnFlickable.vpnIsOff
+                onClicked: {
+                    if (vpnFlickable.vpnIsOff) {
+                        VPNSettings.tunnelPort53 = !VPNSettings.tunnelPort53
                     }
                 }
             }

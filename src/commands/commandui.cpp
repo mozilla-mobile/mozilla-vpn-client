@@ -28,7 +28,12 @@
 #include "theme.h"
 
 #include <glean.h>
+#include <lottie.h>
 #include <nebula.h>
+
+#ifdef MVPN_DEBUG
+#  include <QQmlDebuggingEnabler>
+#endif
 
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
@@ -48,14 +53,6 @@
 
 #ifndef Q_OS_WIN
 #  include "signalhandler.h"
-
-/*
-L57 and L143-145 are commented out pending a fix for
-https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2509
-
-#  include <lottie.h>
-*/
-
 #endif
 
 #ifdef MVPN_WINDOWS
@@ -132,18 +129,29 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 
+#ifdef MVPN_DEBUG
+    // This enables the qt-creator qml debugger on debug builds.:
+    // Go to QtCreator: Debug->Start Debugging-> Attach to QML port
+    // Port is 1234.
+    // Note: Qt creator only will use localhost:port so tunnel any external
+    // device to there i.e on android $adb forward tcp:1234 tcp:1234
+
+    // We need to create the qmldebug server before the engine is created.
+    QQmlDebuggingEnabler enabler;
+    bool ok = enabler.startTcpDebugServer(
+        1234, QQmlDebuggingEnabler::StartMode::DoNotWaitForClient, "0.0.0.0");
+    if (ok) {
+      logger.debug() << "Started QML Debugging server on 0.0.0.0:1234";
+    } else {
+      logger.error() << "Failed to start QML Debugging";
+    }
+#endif
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
 
     Glean::Initialize(engine);
-
-    /*
-    #ifndef MVPN_WINDOWS
-        Lottie::initialize(engine, QString(NetworkManager::userAgent()));
-    #endif
-    */
-
+    Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
 
     MozillaVPN vpn;

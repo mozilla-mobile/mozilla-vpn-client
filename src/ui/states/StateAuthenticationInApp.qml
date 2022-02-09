@@ -10,5 +10,7 @@ import components 0.1
 VPNStackView {
     id: stackview
 
-    initialItem: "qrc:/ui/authenticationInApp/ViewAuthenticationInApp.qml"
+    Component.onCompleted: function(){
+        stackview.push("qrc:/ui/authenticationInApp/ViewAuthenticationInApp.qml")
+    }
 }

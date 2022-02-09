@@ -23,6 +23,8 @@
         <file>resources/devices.svg</file>
         <file>resources/down.svg</file>
         <file>resources/externalLink.svg</file>
+        <file>resources/eye-hidden.svg</file>
+        <file>resources/eye-visible.svg</file>
         <file>resources/features/features-tour-hero.png</file>
         <file>resources/animations/globe_animation.json</file>
         <file>resources/animations/lock_animation.json</file>

@@ -136,6 +136,7 @@ void LocalSocketController::deactivate(Reason reason) {
   logger.debug() << "Deactivating";
 
   if (m_state != eReady) {
+    logger.debug() << "No disconnect, controller is not ready";
     emit disconnected();
     return;
   }
@@ -354,4 +355,5 @@ void LocalSocketController::write(const QJsonObject& json) {
   Q_ASSERT(m_socket);
   m_socket->write(QJsonDocument(json).toJson(QJsonDocument::Compact));
   m_socket->write("\n");
+  m_socket->flush();
 }

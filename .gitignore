@@ -58,6 +58,7 @@ tests/qml/qml_tests
 tests/qml/target_wrapper.sh
 build
 !taskcluster/ci/build
+!taskcluster/scripts/build
 Debug/
 !android/src/debug/
 Debug-iphone*
@@ -142,3 +143,9 @@ tools/inspector/dist
 tools/inspector/node_modules
 
 *.PDB
+
+
+# taskcluster
+taskcluster/mozillavpn_taskgraph/__pycache__
+taskcluster/mozillavpn_taskgraph/*/__pycache__
+

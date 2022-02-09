@@ -51,15 +51,9 @@ include($$PWD/../nebula/nebula.pri)
     include($$PWD/crashreporter/crashreporter.pri)
 }
 
-# https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2509
-# Something in the Lottie project causes qmake to generate a
-# broken vcxproj, and is causing build failures on Windows, iOS, and macOS.
-
-# !win32{
-    # message("Adding Lottie")
-    # include($$PWD/../lottie/lottie.pri)
-    # INCLUDEPATH += ../lottie/lib
-# }
+message("Adding Lottie")
+include($$PWD/../lottie/lottie.pri)
+INCLUDEPATH += ../lottie/lib
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -239,7 +233,6 @@ HEADERS += \
         features/featuresharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
-        features/featureuniqueid.h \
         features/featureunsecurednetworknotification.h \
         features/featureserverunavailablenotification.h \
         filterproxymodel.h \
@@ -1014,4 +1007,8 @@ debug {
 mvpn_debug {
     message(MVPN Debug enabled)
     DEFINES += MVPN_DEBUG
+
+    # This Flag will enable a qmljsdebugger on 0.0.0.0:1234
+    CONFIG+=qml_debug
+
 }

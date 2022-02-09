@@ -10,5 +10,7 @@ import components 0.1
 VPNStackView {
     id: stackview
 
-    initialItem: "qrc:/ui/views/ViewDevices.qml"
+    Component.onCompleted: function(){
+        stackview.push("qrc:/ui/views/ViewDevices.qml")
+    }
 }

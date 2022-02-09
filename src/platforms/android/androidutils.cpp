@@ -243,6 +243,14 @@ QJniObject AndroidUtils::getActivity() {
 #endif
 }
 
+int AndroidUtils::GetSDKVersion() {
+  QJniEnvironment env;
+  jclass versionClass = env->FindClass("android/os/Build$VERSION");
+  jfieldID sdkIntFieldID = env->GetStaticFieldID(versionClass, "SDK_INT", "I");
+  int sdk = env->GetStaticIntField(versionClass, sdkIntFieldID);
+  return sdk;
+}
+
 void AndroidUtils::runOnAndroidThreadSync(
     const std::function<void()> runnable) {
 #if QT_VERSION >= 0x060000

@@ -239,6 +239,11 @@ void Controller::activateInternal() {
   if (!FeatureMultiHop::instance()->isSupported() || !vpn->multihop()) {
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv4AddrIn());
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
+
+    // If requested, force the use of port 53/DNS.
+    if (settingsHolder->tunnelPort53()) {
+      exitHop.m_server.forcePort(53);
+    }
   }
   // For controllers that support multiple hops, create a queue of connections.
   // The entry server should start first, followed by the exit server.
@@ -249,6 +254,10 @@ void Controller::activateInternal() {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
       return;
+    }
+    // If requested, force the use of port 53/DNS.
+    if (settingsHolder->tunnelPort53()) {
+      hop.m_server.forcePort(53);
     }
 
     hop.m_hopindex = 1;
@@ -267,6 +276,9 @@ void Controller::activateInternal() {
       serverUnavailable();
       return;
     }
+    // NOTE: For platforms without multihop support, we cannot emulate multihop
+    // and use port 53 at the same time. If the user has selected both options
+    // then let's choose multihop.
     exitHop.m_server.fromMultihop(exitHop.m_server, entryServer);
     exitHop.m_excludedAddresses.append(entryServer.ipv4AddrIn());
     exitHop.m_excludedAddresses.append(entryServer.ipv6AddrIn());
@@ -328,6 +340,8 @@ bool Controller::deactivate() {
   }
 
   m_timer.stop();
+  m_handshakeTimer.stop();
+  m_activationQueue.clear();
   resetConnectionCheck();
 
   Q_ASSERT(m_impl);
