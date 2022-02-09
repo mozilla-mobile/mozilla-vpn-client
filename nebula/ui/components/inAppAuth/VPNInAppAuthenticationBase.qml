@@ -105,7 +105,7 @@ VPNFlickable {
 
                 VPNLinkButton {
                     Layout.alignment: Qt.AlignHCenter
-                    labelText: "Change email"
+                    labelText: VPNl18n.InAppAuthChangeEmailLink
                     visible: _changeEmailLinkVisible
                     onClicked: VPNAuthInApp.reset()
                 }

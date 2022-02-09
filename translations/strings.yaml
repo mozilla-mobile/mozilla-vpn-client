@@ -395,4 +395,4 @@ mobileOnboarding:
   alreadyASubscriber: Already a subscriber?
 
 inAppAuth:
-  changeEmail: Change email
+  changeEmailLink: Change email
