@@ -8,10 +8,11 @@ import Mozilla.VPN 1.0
 import lottie 0.1
 
 LottieAnimation {
+    property bool loop: true
     id: lottieAnimation
 
     anchors.fill: parent
-    loops: true
+    loops: loop
     fillMode: "preserveAspectFit"
 
     Connections {
