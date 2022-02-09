@@ -133,6 +133,14 @@ theme.linkButton = {
   'focusBorder': theme.bgColorTransparent,
 };
 
+theme.whiteButton = {
+  'defaultColor': theme.white,
+  'buttonHovered': theme.greyHovered,
+  'buttonPressed': theme.greyPressed,
+  'focusOutline': theme.greyHovered,
+  'focusBorder': theme.greyPressed,
+};
+
 theme.greyButton = {
   'defaultColor': '#CECECF',
   'buttonHovered': theme.greyHovered,

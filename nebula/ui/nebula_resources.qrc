@@ -30,6 +30,8 @@
         <file>resources/animations/lock_animation.json</file>
         <file>resources/animations/speedometer_animation.json</file>
         <file>resources/animations/vpnactive_animation.json</file>
+        <file>resources/animations/vpnlogo-drop_animation.json</file>
+        <file>resources/animations/vpnlogo-kinetic_animation.json</file>
         <file>resources/flags/AC.png</file>
         <file>resources/flags/AD.png</file>
         <file>resources/flags/AE.png</file>
