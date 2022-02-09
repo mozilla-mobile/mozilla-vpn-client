@@ -16,6 +16,7 @@ IF "%selfWrapped%" == "" (
   %ComSpec% /s /c ""%~0" %*"
   GOTO :EOF
 )
+ECHO Administrator privileges are required to run this script.
 
 IF "%~1"=="" (
   CALL :Usage
@@ -29,9 +30,8 @@ IF "%~2"=="clean" (
 
 CALL :CheckRequirements
 
-
 IF "%BUILDDIR%" == "" (
-  SET BUILDDIR=C:\MozillaVPNBuild
+  SET BUILDDIR=C:\MozillaVPNBuild\
 )
 
 ECHO Using Build Directory %BUILDDIR%
@@ -40,7 +40,7 @@ ECHO Compiling openssl...
 
 pushd %1
 
-perl Configure VC-WIN64A --release --prefix=%BUILDDIR% --openssldir=%BUILDDIR% no-tests -DOPENSSL_NO_ENGINE
+perl Configure VC-WIN64A --release --prefix="C:\\Program Files\\Common\openssl\\" --openssldir="C:\\Program Files\\Common\openssl\\" no-tests no-engine -DOPENSSL_NO_ENGINE
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure OpenSSL.
   EXIT /B 1
@@ -59,6 +59,9 @@ IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to install OpenSSL.
   EXIT /B 1
 )
+
+mkdir %BUILDDIR%
+xcopy "C:\Program Files\Common\openssl\" %BUILDDIR% /E /I
 
 popd
 
