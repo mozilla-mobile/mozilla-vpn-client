@@ -26,7 +26,7 @@ jobs:
         if: steps.changes.outputs.docs == 'true'
         shell: bash
         run: |
-          git clone https://${{secrets.TOKEN}}:@github.com/strseb/mozilla-vpn-client.wiki.git wiki
+          git clone https://${{secrets.WIKI_TOKEN}}:@github.com/mozilla-mobile/mozilla-vpn-client.wiki.git wiki
       - name: Update Contents
         if: steps.changes.outputs.docs == 'true'
         shell: bash
@@ -39,8 +39,8 @@ jobs:
         run: |
           cd wiki 
           git config user.name github-actions
-          git config user.email ${{ secrets.TOKEN_USER }}
-          git config user.password ${{secrets.TOKEN}}
+          git config user.email ${{ secrets.WIKI_TOKEN_USER }}
+          git config user.password ${{secrets.WIKI_TOKEN}}
           git add .
           git commit -m "Push ${{ github.sha }} docs changes"
           git push
