@@ -383,6 +383,14 @@ serverUnavailableNotification:
   preferencesSubLabel: Get notified when connecting to a server location failed
 
 mobileOnboarding:
+  panelOneTitle: Mozilla VPN
+  panelOneSubtitle: A safe, reliable and fast VPN. Built by the makers of Firefox.
+  panelTwoTitle: Encrypt your activity
+  panelTwoSubtitle: Mozilla VPN keeps your location and browsing safe from eavesdroppers.
+  panelThreeTitle: Protect your privacy
+  panelThreeSubtitle: Route your activity and location through servers in more than 30 countries.
+  panelFourTitle: More security with one tap
+  panelFourSubtitle: Stream, download and game without limits, monthly caps or ISP throttling.
   signUpBtn: Sign up
   alreadyASubscriber: Already a subscriber?
 
