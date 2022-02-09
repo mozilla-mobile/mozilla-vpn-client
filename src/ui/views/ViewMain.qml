@@ -108,15 +108,35 @@ VPNFlickable {
             connectionInfoScreenVisible: testTestVisible
             z: 1
 
-            Button {
-                anchors.left: parent.left
-                anchors.top: parent.top
+            VPNIconButton {
+                id: connectionInfoToggleButton
 
-                text: box.testTestVisible ? "Hide info" : "Show info"
+                buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.topMargin: VPNTheme.theme.windowMargin / 2
+                anchors.leftMargin: VPNTheme.theme.windowMargin / 2
+                accessibleName: box.testTestVisible
+                    //% "Connection Information"
+                    ? qsTrId("vpn.connectionInfo.close")
+                    //% "Close"
+                    : qsTrId("vpn.controller.info")
+                enabled: connectionInfo.visible
+
                 onClicked: {
                     box.testTestVisible = !box.testTestVisible;
                 }
+
+                Image {
+                    anchors.centerIn: connectionInfoToggleButton
+                    source: box.testTestVisible
+                        ? "qrc:/nebula/resources/close-white.svg"
+                        : "qrc:/nebula/resources/connection-info.svg"
+                    sourceSize.height: VPNTheme.theme.iconSize
+                    sourceSize.width: VPNTheme.theme.iconSize
+                }
             }
+
         }
 
         VPNControllerNav {

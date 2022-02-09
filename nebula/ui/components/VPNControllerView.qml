@@ -539,44 +539,44 @@ Item {
         width: 80
     }
 
-    VPNIconButton {
-        id: connectionInfoButton
-        objectName: "connectionInfoButton"
+    // VPNIconButton {
+    //     id: connectionInfoButton
+    //     objectName: "connectionInfoButton"
 
-        onClicked: {
-            Sample.connectionInfoOpened.record();
-            connectionInfo.open()
-        }
+    //     onClicked: {
+    //         Sample.connectionInfoOpened.record();
+    //         connectionInfo.open()
+    //     }
 
-        buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        opacity: connectionInfoButton.visible ? 1 : 0
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.topMargin: VPNTheme.theme.windowMargin / 2
-        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
-        //% "Connection Information"
-        accessibleName: qsTrId("vpn.controller.info")
-        Accessible.ignored: connectionInfoVisible
-        enabled: !connectionInfoVisible
+    //     buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
+    //     opacity: connectionInfoButton.visible ? 1 : 0
+    //     anchors.top: parent.top
+    //     anchors.left: parent.left
+    //     anchors.topMargin: VPNTheme.theme.windowMargin / 2
+    //     anchors.leftMargin: VPNTheme.theme.windowMargin / 2
+    //     //% "Connection Information"
+    //     accessibleName: qsTrId("vpn.controller.info")
+    //     Accessible.ignored: connectionInfoVisible
+    //     enabled: !connectionInfoVisible
 
-        VPNIcon {
-            id: connectionInfoImage
+    //     VPNIcon {
+    //         id: connectionInfoImage
 
-            source: "qrc:/nebula/resources/connection-info.svg"
-            anchors.centerIn: connectionInfoButton
-            sourceSize.height: 20
-            sourceSize.width: 20
-            visible: connectionInfoButton.visible
-        }
+    //         source: "qrc:/nebula/resources/connection-info.svg"
+    //         anchors.centerIn: connectionInfoButton
+    //         sourceSize.height: 20
+    //         sourceSize.width: 20
+    //         visible: connectionInfoButton.visible
+    //     }
 
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 300
-            }
+    //     Behavior on opacity {
+    //         NumberAnimation {
+    //             duration: 300
+    //         }
 
-        }
+    //     }
 
-    }
+    // }
 
     VPNIconButton {
         id: settingsButton
@@ -775,7 +775,7 @@ Item {
 
     VPNConnectionInfoScreen {
         id: connectionInfoScreen
-        isVisible: connectionInfoScreenVisible
+        isOpen: connectionInfoScreenVisible
 
         height: boxBackground.height
         radius: VPNTheme.theme.cornerRadius * 2

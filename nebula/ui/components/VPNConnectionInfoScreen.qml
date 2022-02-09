@@ -4,8 +4,9 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 
 Rectangle {
-    property bool isVisible: false
+    property bool isOpen: false
     property bool isAnimating: false
+    property bool isLoading: false
     property int transitionDuration: 750
 
     id: root
@@ -13,11 +14,11 @@ Rectangle {
     color: VPNTheme.colors.primary
     clip: true
     opacity: 0
-    state: "hidden"
+    state: "closed"
     states: [
         State {
-            name: "hidden"
-            when: !isVisible && !isAnimating
+            name: "closed"
+            when: !isOpen && !isAnimating
 
             PropertyChanges {
                 target: root
@@ -27,17 +28,17 @@ Rectangle {
         },
         State {
             name: "opening"
-            when: isVisible && isAnimating
+            when: isOpen && isAnimating
 
             PropertyChanges {
                 target: root
-                opacity: 0
+                opacity: 1
                 visible: true
             }
         },
         State {
             name: "closing"
-            when: !isVisible && isAnimating
+            when: !isOpen && isAnimating
 
             PropertyChanges {
                 target: root
@@ -46,8 +47,18 @@ Rectangle {
             }
         },
         State {
-            name: "visible"
-            when: isVisible && !isAnimating
+            name: "open-loading"
+             when: isOpen && !isAnimating && isLoading
+
+            PropertyChanges {
+                target: root
+                opacity: 1
+                visible: true
+            }
+        },
+        State {
+            name: "open-ready"
+            when: isOpen && !isAnimating && !isLoading
 
             PropertyChanges {
                 target: root
@@ -58,23 +69,21 @@ Rectangle {
     ]
     width: parent.width
 
-    onIsVisibleChanged: () => {
-        console.log("visible changing - start: ", isVisible);
+    onIsOpenChanged: () => {
+        // Starts opening or closing
         isAnimating = true;
 
-        timer.setTimeout(function() {
-            console.log("visible changing - end: ", isVisible);
+        timerOne.setTimeout(function() {
+            // Finished opening or closing
             isAnimating = false;
+            // Set fake loading
+            isLoading = true;
         }, transitionDuration);
-    }
 
-    Behavior on opacity {
-        NumberAnimation {
-            target: root
-            property: "opacity"
-            duration: root.transitionDuration * 0.5
-            easing.type: Easing.InOutQuad
-        }
+        timerTwo.setTimeout(function() {
+            // Finish fake loading
+            isLoading = false;
+        }, transitionDuration * 2);
     }
 
     Behavior on opacity {
@@ -86,41 +95,88 @@ Rectangle {
         }
     }
 
-    ColumnLayout {
-        anchors.right: parent.right
-        anchors.top: parent.top
+    // TODO: Remove debugging helpers
+    // ColumnLayout {
+    //     anchors.horizontalCenter: parent.horizontalCenter
+    //     anchors.top: parent.top
 
-        Text {
-            text: "isVisible: " + root.isVisible
-        }
-        Text {
-            text: "isAnimating: " + root.isAnimating
-        }
-        Text {
-            text: "State: " + root.state
-        }
-    }
+    //     Text {
+    //         text: "isOpen: " + root.isOpen
+    //     }
+    //     Text {
+    //         text: "isAnimating: " + root.isAnimating
+    //     }
+    //     Text {
+    //         text: "State: " + root.state
+    //     }
 
+    //     z: 2
+    // }
+
+    // TODO: Move timer to a utils component
     Timer {
-        id: timer
+        id: timerOne
 
         function setTimeout(callback, timeoutDuration) {
-            timer.interval = timeoutDuration;
-            timer.repeat = false;
-            timer.triggered.connect(callback);
-            timer.triggered.connect(function release() {
-                timer.triggered.disconnect(callback);
-                timer.triggered.disconnect(release);
+            timerOne.interval = timeoutDuration;
+            timerOne.repeat = false;
+            timerOne.triggered.connect(callback);
+            timerOne.triggered.connect(function release() {
+                timerOne.triggered.disconnect(callback);
+                timerOne.triggered.disconnect(release);
             });
-            timer.start();
+            timerOne.start();
+        }
+    }
+    // TODO: Remove timer for used for fake loading
+    Timer {
+        id: timerTwo
+
+        function setTimeout(callback, timeoutDuration) {
+            timerTwo.interval = timeoutDuration;
+            timerTwo.repeat = false;
+            timerTwo.triggered.connect(callback);
+            timerTwo.triggered.connect(function release() {
+                timerTwo.triggered.disconnect(callback);
+                timerTwo.triggered.disconnect(release);
+            });
+            timerTwo.start();
         }
     }
 
-    // Header
-    // - [] Closing button
-    // - [] Restart button
+    // Restart button
+    VPNIconButton {
+        id: connectionInfoRestartButton
+
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.topMargin: VPNTheme.theme.windowMargin / 2
+        anchors.rightMargin: VPNTheme.theme.windowMargin / 2
+
+        accessibleName: "Restart speed test"
+        buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
+        enabled: root.state === "open-loading"
+        z: 1
+
+        Image {
+            anchors.centerIn: connectionInfoRestartButton
+            source: "qrc:/nebula/resources/refresh.svg"
+            sourceSize.height: VPNTheme.theme.iconSize
+            sourceSize.width: VPNTheme.theme.iconSize
+        }
+    }
 
     // Content
     VPNConnectionInfoContent {
+        visible: root.state === "open-ready"
     }
+
+    // Loader
+    Text {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        text: "Loading …"
+        visible: root.state === "open-loading"
+    }
+
 }

@@ -14,22 +14,25 @@ Flickable {
     ColumnLayout {
         id: content
 
+        anchors.horizontalCenter: parent.horizontalCenter
         spacing: 0
-        width: parent.width
-
+        width: parent.width - VPNTheme.theme.windowMargin * 2
 
         // IP Adresses
         VPNInterLabel {
+            Layout.alignment: Qt.AlignHCenter
+            Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
+            Layout.topMargin: VPNTheme.theme.windowMargin * 1.5
+
             color: VPNTheme.colors.grey20
             text: "IP: 103.231.88.10"
-
-            anchors.horizontalCenter: content.horizontalCenter
         }
         VPNInterLabel {
+            Layout.alignment: Qt.AlignHCenter
+            Layout.bottomMargin: VPNTheme.theme.listSpacing
+
             color: VPNTheme.colors.grey20
             text: "IPv6: 2001:ac8:40:b9::a09e"
-
-            anchors.horizontalCenter: content.horizontalCenter
         }
 
         // Lottie animation
@@ -44,14 +47,9 @@ Flickable {
             Layout.minimumWidth: 50
         }
 
-        Rectangle {
-            color: VPNTheme.colors.grey20
-            height: 1
-            Layout.fillWidth: true
-        }
-
         // Bullet list
         VPNTextBlock {
+            Layout.topMargin: VPNTheme.theme.listSpacing
             Layout.fillWidth: true
             color: VPNTheme.colors.white
             text: "At your current speed, here's what your device is optimized for:"
@@ -93,6 +91,7 @@ Flickable {
         }
 
         Row {
+            Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
             Layout.fillWidth: true
 
             VPNCheckmark {
@@ -109,32 +108,31 @@ Flickable {
             }
         }
 
-        Rectangle {
-            color: VPNTheme.colors.grey20
-            height: 1
-            Layout.fillWidth: true
-        }
-
         // Detailed info section
         VPNConnectionInfoItem {
             title: VPNServerCountryModel.getLocalizedCountryName(VPNCurrentServer.exitCountryCode)
             subtitle: VPNCurrentServer.localizedCityName
             iconPath: "qrc:/nebula/resources/flags/" + VPNCurrentServer.exitCountryCode.toUpperCase() + ".png"
+            isFlagIcon: true
         }
         Rectangle {
-            color: VPNTheme.colors.grey20
-            height: 1
             Layout.fillWidth: true
+
+            color: VPNTheme.colors.white
+            height: 1
+            opacity: 0.2
         }
         VPNConnectionInfoItem {
             title: "Ping"
             subtitle: "15 ms"
-            iconPath: "qrc:/nebula/resources/connection.svg"
+            iconPath: "qrc:/nebula/resources/connection-green.svg"
         }
         Rectangle {
-            color: VPNTheme.colors.grey20
-            height: 1
             Layout.fillWidth: true
+
+            color: VPNTheme.colors.white
+            height: 1
+            opacity: 0.2
         }
         VPNConnectionInfoItem {
             title: "Download"
@@ -142,9 +140,11 @@ Flickable {
             iconPath: "qrc:/nebula/resources/download.svg"
         }
         Rectangle {
-            color: VPNTheme.colors.grey20
-            height: 1
             Layout.fillWidth: true
+
+            color: VPNTheme.colors.white
+            height: 1
+            opacity: 0.2
         }
         VPNConnectionInfoItem {
             title: "Upload"
@@ -152,14 +152,14 @@ Flickable {
             iconPath: "qrc:/nebula/resources/upload.svg"
         }
 
-        Rectangle {
-            color: "gray"
+        // Rectangle {
+        //     color: "gray"
 
-            anchors.fill: parent
-            border.color: "red"
-            border.width: 2
-            z: -1
-        }
+        //     anchors.fill: parent
+        //     border.color: "red"
+        //     border.width: 2
+        //     z: -1
+        // }
 
     }
 
