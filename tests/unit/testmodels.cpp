@@ -1059,9 +1059,9 @@ void TestModels::serverCountryModelFromJson() {
         QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
 
         QFETCH(QVariant, cities);
-        Q_ASSERT(cities.type() == QVariant::List);
+        Q_ASSERT(cities.typeId() == QVariant::List);
         QVariant cityData = m.data(index, ServerCountryModel::CitiesRole);
-        QCOMPARE(cityData.type(), QVariant::List);
+        QCOMPARE(cityData.typeId(), QVariant::List);
         QCOMPARE(cities.toList().length(), cityData.toList().length());
         if (!cities.toList().isEmpty()) {
           QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
