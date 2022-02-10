@@ -13,7 +13,6 @@ RowLayout {
     property alias ipAddressText: ipAddress.text
 
     spacing: 4
-    anchors.horizontalCenter: parent.horizontalCenter
 
     VPNBoldLabel {
         id: ipVersion

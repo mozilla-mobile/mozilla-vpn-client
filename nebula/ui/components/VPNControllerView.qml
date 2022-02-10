@@ -601,14 +601,16 @@ Item {
         }
 
         Image {
+            property int iconSize: box.connectionInfoScreenVisible
+                ? VPNTheme.theme.iconSize
+                : VPNTheme.theme.iconSize * 1.5
+
             anchors.centerIn: connectionInfoToggleButton
             source: box.connectionInfoScreenVisible
                 ? "qrc:/nebula/resources/close-white.svg"
                 : "qrc:/nebula/resources/bandwidth.svg"
-            sourceSize.height: box.connectionInfoScreenVisible
-                ? VPNTheme.theme.iconSize
-                : VPNTheme.theme.iconSize * 1.5
-            sourceSize.width: sourceSize.height
+            sourceSize.height: iconSize
+            sourceSize.width: iconSize
         }
 
         Behavior on opacity {
@@ -646,7 +648,7 @@ Item {
             source: "qrc:/nebula/resources/connection-info.svg"
             anchors.centerIn: connectionInfoButton
             sourceSize.height: VPNTheme.theme.iconSize * 1.25
-            sourceSize.width: sourceSize.height
+            sourceSize.width: VPNTheme.theme.iconSize * 1.25
             visible: connectionInfoButton.visible
         }
 

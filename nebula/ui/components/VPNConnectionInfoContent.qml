@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
@@ -7,17 +11,67 @@ import Mozilla.VPN 1.0
 Flickable {
     id: root
 
-    property var rBytes: VPNConnectionData.rxBytes
-    property var tBytes: VPNConnectionData.txBytes
-
-    height: parent.height
     contentHeight: Math.max(content.height, height)
+    height: parent.height
     width: parent.width
     onVisibleChanged: {
         if (visible) {
             speedometerAnimation.play();
         } else {
             speedometerAnimation.stop();
+        }
+    }
+
+    // TODO: This list will be dynamic depending on current connection speeds
+    ListModel {
+        id: checkmarkListModel
+
+        ListElement {
+            title: "Streaming in 4K"
+        }
+        ListElement {
+            title: "High-speed downloads"
+        }
+        ListElement {
+            title: "Online gaming"
+        }
+    }
+
+    // TODO: This list will be dynamic generated depending
+    // on the available connection information we have
+    ListModel {
+        id: connectionInfoModel
+
+        Component.onCompleted: {
+            connectionInfoModel.append({
+                titleString: VPNServerCountryModel.getLocalizedCountryName(
+                    VPNCurrentServer.exitCountryCode
+                ),
+                subtitleString: VPNCurrentServer.localizedCityName,
+                iconSrc: "qrc:/nebula/resources/flags/"
+                    + VPNCurrentServer.exitCountryCode.toUpperCase()
+                    + ".png",
+                isFlag: true
+            })
+            connectionInfoModel.append({
+                titleString: "Ping",
+                subtitleString: "15 ms",
+                iconSrc: "qrc:/nebula/resources/connection-green.svg"
+            })
+            connectionInfoModel.append({
+                //% "Download"
+                //: The current download speed. The speed is shown on the next line.
+                titleString: qsTrId("vpn.connectionInfo.download"),
+                subtitleString: root.getConnectionLabel(1234567890),
+                iconSrc: "qrc:/nebula/resources/download.svg"
+            })
+            connectionInfoModel.append({
+                //% "Upload"
+                //: The current upload speed. The speed is shown on the next line.
+                titleString: qsTrId("vpn.connectionInfo.upload"),
+                subtitleString: root.getConnectionLabel(123456789),
+                iconSrc: "qrc:/nebula/resources/upload.svg"
+            })
         }
     }
 
@@ -61,8 +115,7 @@ Flickable {
         Item {
             Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
-            Layout.minimumHeight: 75
-            Layout.preferredHeight: 100
+            Layout.preferredHeight: parent.width * 0.4
 
             VPNLottieAnimation {
                 id: speedometerAnimation
@@ -70,125 +123,44 @@ Flickable {
             }
         }
 
-        // Bullet list
-        VPNTextBlock {
-            Layout.fillWidth: true
-            Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
-            Layout.bottomMargin: VPNTheme.theme.listSpacing
+        VPNCheckmarkList {
+            // TODO: Replace with localized string
+            listHeader: "At your current speed, here's what your device is optimized for:"
+            listModel: checkmarkListModel
 
-            color: VPNTheme.colors.white
-            text: "At your current speed, here's what your device is optimized for:"
-            wrapMode: Text.WordWrap
-        }
-
-        Row {
-            Layout.fillWidth: true
-
-            VPNCheckmark {
-                color: VPNTheme.colors.secondary
-                height: 24
-                width: 24
-            }
-            VPNTextBlock {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.verticalCenterOffset: 2
-                color: VPNTheme.colors.grey20
-                text: "Streaming in 4K"
-                wrapMode: Text.WordWrap
-            }
-        }
-
-        Row {
-            Layout.fillWidth: true
-
-            VPNCheckmark {
-                color: VPNTheme.colors.secondary
-                height: 24
-                width: 24
-            }
-            VPNTextBlock {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.verticalCenterOffset: 2
-                color: VPNTheme.colors.grey20
-                text: "High-speed downloads"
-                wrapMode: Text.WordWrap
-            }
-        }
-
-        Row {
             Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
-            Layout.fillWidth: true
+            Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
+        }
 
-            VPNCheckmark {
-                color: VPNTheme.colors.secondary
-                height: 24
-                width: 24
+        Component {
+            id: connectionInfoItem
+
+            ColumnLayout {
+                spacing: 0
+                Rectangle {
+                    color: VPNTheme.colors.white
+                    height: 1
+                    opacity: 0.2
+                    visible: index !== 0
+
+                    Layout.fillWidth: true
+                }
+
+                VPNConnectionInfoItem {
+                    title: titleString
+                    subtitle: subtitleString
+                    iconPath: iconSrc
+                    isFlagIcon: isFlag
+                }
             }
-            VPNTextBlock {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.verticalCenterOffset: 2
-                color: VPNTheme.colors.grey20
-                text: "Online gaming"
-                wrapMode: Text.WordWrap
-            }
         }
 
-        // Detailed info section
-        VPNConnectionInfoItem {
-            title: VPNServerCountryModel.getLocalizedCountryName(VPNCurrentServer.exitCountryCode)
-            subtitle: VPNCurrentServer.localizedCityName
-            iconPath: "qrc:/nebula/resources/flags/" + VPNCurrentServer.exitCountryCode.toUpperCase() + ".png"
-            isFlagIcon: true
-        }
-        Rectangle {
-            Layout.fillWidth: true
+        Repeater {
+            id: connectionInfoList
 
-            color: VPNTheme.colors.white
-            height: 1
-            opacity: 0.2
+            model: connectionInfoModel
+            delegate: connectionInfoItem
         }
-        VPNConnectionInfoItem {
-            title: "Ping"
-            subtitle: "15 ms"
-            iconPath: "qrc:/nebula/resources/connection-green.svg"
-        }
-        Rectangle {
-            Layout.fillWidth: true
-
-            color: VPNTheme.colors.white
-            height: 1
-            opacity: 0.2
-        }
-        VPNConnectionInfoItem {
-            //% "Download"
-            //: The current download speed. The speed is shown on the next line.
-            title: qsTrId("vpn.connectionInfo.download")
-            subtitle: root.rBytes
-            iconPath: "qrc:/nebula/resources/download.svg"
-        }
-        Rectangle {
-            Layout.fillWidth: true
-
-            color: VPNTheme.colors.white
-            height: 1
-            opacity: 0.2
-        }
-        VPNConnectionInfoItem {
-            //% "Upload"
-            //: The current upload speed. The speed is shown on the next line.
-            title: qsTrId("vpn.connectionInfo.upload")
-            subtitle: root.getConnectionLabel(root.tBytes)
-            iconPath: "qrc:/nebula/resources/upload.svg"
-        }
-
-        // Rectangle {
-        //     color: "gray"
-
-        //     anchors.fill: parent
-        //     border.color: "red"
-        //     border.width: 2
-        //     z: -1
-        // }
 
     }
 

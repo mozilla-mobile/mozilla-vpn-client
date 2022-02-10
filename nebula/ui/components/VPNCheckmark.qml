@@ -14,14 +14,14 @@ Item {
 
     id: checkmark
 
-    height: 20
-    width: 20
+    height: VPNTheme.theme.iconSize * 1.5
+    width: VPNTheme.theme.iconSize * 1.5
 
     Rectangle {
         id: checkmarkBg
 
-        height: 20
-        width: 20
+        height: parent.height
+        width: parent.width
         antialiasing: true
         smooth: true
         visible: false
@@ -30,9 +30,7 @@ Item {
             PropertyAnimation {
                 duration: 200
             }
-
         }
-
     }
 
     Image {

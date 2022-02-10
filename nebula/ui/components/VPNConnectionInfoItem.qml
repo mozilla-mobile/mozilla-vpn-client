@@ -1,9 +1,13 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 
-Row {
+RowLayout {
     id: infoStatusItem
 
     property string title: ""
@@ -11,19 +15,18 @@ Row {
     property string iconPath: ""
     property bool isFlagIcon: false
 
-    height: 40
-    spacing: 0
+    spacing: VPNTheme.theme.hSpacing * 0.2
 
+    Layout.preferredHeight: VPNTheme.theme.rowHeight
     Layout.fillWidth: true
 
-    Rectangle {
+    Item {
         id: itemIconWrapper
 
-        anchors.verticalCenter: infoStatusItem.verticalCenter
-
-        color: "transparent"
         height: VPNTheme.theme.iconSize * 1.5
         width: VPNTheme.theme.iconSize * 1.5
+
+        Layout.alignment: Qt.AlignVCenter
 
         VPNIcon {
             id: itemIcon
@@ -41,25 +44,18 @@ Row {
     VPNBoldLabel {
         id: itemLabel
         color: VPNTheme.theme.white
-        leftPadding: itemIconWrapper.width + VPNTheme.theme.iconSizeSmall * 0.25
         text: infoStatusItem.title
-        anchors.verticalCenter: infoStatusItem.verticalCenter
+
+        Layout.alignment: Qt.AlignVCenter
+        Layout.fillWidth: true
     }
 
     VPNInterLabel {
         id: itemValue
 
-        color: "white"
+        color: VPNTheme.colors.white
         text: infoStatusItem.subtitle
 
-        anchors.right: infoStatusItem.right
-        anchors.verticalCenter: infoStatusItem.verticalCenter
+        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
     }
-
-    // Rectangle {
-    //     anchors.fill: parent
-    //     border.color: "black"
-    //     color: "orange"
-    //     z: -1
-    // }
 }
