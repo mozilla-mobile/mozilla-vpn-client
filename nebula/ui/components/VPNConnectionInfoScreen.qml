@@ -11,8 +11,8 @@ Rectangle {
 
     id: root
 
-    color: VPNTheme.colors.primary
     clip: true
+    color: VPNTheme.colors.primary
     opacity: 0
     state: "closed"
     states: [
@@ -148,11 +148,12 @@ Rectangle {
     VPNIconButton {
         id: connectionInfoRestartButton
 
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.topMargin: VPNTheme.theme.windowMargin / 2
-        anchors.rightMargin: VPNTheme.theme.windowMargin / 2
-
+        anchors {
+            top: parent.top
+            right: parent.right
+            topMargin: VPNTheme.theme.windowMargin / 2
+            rightMargin: VPNTheme.theme.windowMargin / 2
+        }
         accessibleName: "Restart speed test"
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
         enabled: root.state === "open-loading"
@@ -161,8 +162,8 @@ Rectangle {
         Image {
             anchors.centerIn: connectionInfoRestartButton
             source: "qrc:/nebula/resources/refresh.svg"
-            sourceSize.height: VPNTheme.theme.iconSize
-            sourceSize.width: VPNTheme.theme.iconSize
+            sourceSize.height: VPNTheme.theme.iconSize * 1.25
+            sourceSize.width: sourceSize.height
         }
     }
 
@@ -173,11 +174,12 @@ Rectangle {
 
     // Loading indicator
     Item {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -1 * VPNTheme.theme.rowHeight
-
-        height: VPNTheme.theme.desktopAppWidth * 0.33
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            verticalCenter: parent.verticalCenter
+            verticalCenterOffset: -1 * VPNTheme.theme.rowHeight
+        }
+        height: VPNTheme.theme.desktopAppWidth * 0.35
         visible: root.state === "open-loading"
         width: height
 
@@ -195,9 +197,10 @@ Rectangle {
         }
 
         VPNMetropolisLabel {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.bottom
-
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                top: parent.bottom
+            }
             color: VPNTheme.colors.white
             font.pixelSize: VPNTheme.theme.fontSizeLarge
             text: "Testing speed …"

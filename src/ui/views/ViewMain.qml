@@ -102,42 +102,8 @@ VPNFlickable {
         }
 
         VPNControllerView {
-            property bool testTestVisible: false
-
             id: box
-            connectionInfoScreenVisible: testTestVisible
             z: 1
-
-            VPNIconButton {
-                id: connectionInfoToggleButton
-
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.topMargin: VPNTheme.theme.windowMargin / 2
-                anchors.leftMargin: VPNTheme.theme.windowMargin / 2
-                accessibleName: box.testTestVisible
-                    //% "Connection Information"
-                    ? qsTrId("vpn.connectionInfo.close")
-                    //% "Close"
-                    : qsTrId("vpn.controller.info")
-                buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-                enabled: connectionInfo.visible
-                visible: VPNFeatureList.get("connectionInfo").isSupported
-
-                onClicked: {
-                    box.testTestVisible = !box.testTestVisible;
-                }
-
-                Image {
-                    anchors.centerIn: connectionInfoToggleButton
-                    source: box.testTestVisible
-                        ? "qrc:/nebula/resources/close-white.svg"
-                        : "qrc:/nebula/resources/connection-info.svg"
-                    sourceSize.height: VPNTheme.theme.iconSize
-                    sourceSize.width: VPNTheme.theme.iconSize
-                }
-            }
-
         }
 
         VPNControllerNav {
