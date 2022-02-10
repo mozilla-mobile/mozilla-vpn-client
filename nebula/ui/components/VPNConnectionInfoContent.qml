@@ -7,6 +7,9 @@ import Mozilla.VPN 1.0
 Flickable {
     id: root
 
+    property var rBytes: VPNConnectionData.rxBytes
+    property var tBytes: VPNConnectionData.txBytes
+
     height: parent.height
     contentHeight: Math.max(content.height, height)
     width: parent.width
@@ -20,26 +23,38 @@ Flickable {
 
     ColumnLayout {
         id: content
-
+        
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 0
         width: parent.width - VPNTheme.theme.windowMargin * 2
 
         // IP Adresses
-        VPNInterLabel {
+        VPNIPAddress {
+            //% "IPv4:"
+            //: The abbreviation for Internet Protocol. This is followed by the user’s IPv4 address.
+            property var ipv4label: qsTrId("vpn.connectionInfo.ipv4")
+            //% "IP:"
+            //: The abbreviation for Internet Protocol. This is followed by the user’s IP address.
+            property var iplabel: qsTrId("vpn.connectionInfo.ip2")
+
+            ipVersionText: VPNConnectionData.ipv6Address === "" ? iplabel : ipv4label;
+            ipAddressText: VPNConnectionData.ipv4Address
+            visible: VPNConnectionData.ipv4Address !== ""
+
             Layout.alignment: Qt.AlignHCenter
             Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
             Layout.topMargin: VPNTheme.theme.windowMargin * 1.5
-
-            color: VPNTheme.colors.grey20
-            text: "IP: 103.231.88.10"
         }
-        VPNInterLabel {
+
+        VPNIPAddress {
+            visible: VPNConnectionData.ipv6Address !== ""
+            //% "IPv6:"
+            //: The abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
+            ipVersionText: qsTrId("vpn.connectionInfo.ipv6")
+            ipAddressText: VPNConnectionData.ipv6Address
+
             Layout.alignment: Qt.AlignHCenter
             Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
-
-            color: VPNTheme.colors.grey20
-            text: "IPv6: 2001:ac8:40:b9::a09e"
         }
 
         // Lottie animation
@@ -145,8 +160,10 @@ Flickable {
             opacity: 0.2
         }
         VPNConnectionInfoItem {
-            title: "Download"
-            subtitle: "300.06 Mbps"
+            //% "Download"
+            //: The current download speed. The speed is shown on the next line.
+            title: qsTrId("vpn.connectionInfo.download")
+            subtitle: root.rBytes
             iconPath: "qrc:/nebula/resources/download.svg"
         }
         Rectangle {
@@ -157,8 +174,10 @@ Flickable {
             opacity: 0.2
         }
         VPNConnectionInfoItem {
-            title: "Upload"
-            subtitle: "21.60 Mbps"
+            //% "Upload"
+            //: The current upload speed. The speed is shown on the next line.
+            title: qsTrId("vpn.connectionInfo.upload")
+            subtitle: root.getConnectionLabel(root.tBytes)
             iconPath: "qrc:/nebula/resources/upload.svg"
         }
 
@@ -171,6 +190,56 @@ Flickable {
         //     z: -1
         // }
 
+    }
+
+    function getConnectionLabel(connectionValue) {
+        const connectionValueBits = connectionValue * 8; // convert bytes to bits
+        return `${computeValue(connectionValueBits)} ${computeRange(connectionValueBits)}`;
+    }
+
+    function computeRange(connectionValueBits) {
+        if (connectionValueBits < 1000) {
+            // bit/s
+            return VPNl18n.ConnectionInfoLabelBitps;
+        }
+
+        if (connectionValueBits < Math.pow(1000, 2)) {
+            // kbit/s
+            return VPNl18n.ConnectionInfoLabelKbitps;
+        }
+
+        if (connectionValueBits < Math.pow(1000, 3)) {
+            // Mbit/s
+            return VPNl18n.ConnectionInfoLabelMbitps;
+        }
+
+        if (connectionValueBits < Math.pow(1000, 4)) {
+            // Gbit/s
+            return VPNl18n.ConnectionInfoLabelGbitps;
+        }
+
+        // Tbit/s
+        return VPNl18n.ConnectionInfoLabelTbitps;
+    }
+
+    function roundValue(value) {
+        return Math.round(value * 100) / 100;
+    }
+
+    function computeValue(connectionValueBits) {
+        if (connectionValueBits < 1000)
+            return roundValue(connectionValueBits);
+
+        if (connectionValueBits < Math.pow(1000, 2))
+            return roundValue(connectionValueBits / 1000);
+
+        if (connectionValueBits < Math.pow(1000, 3))
+            return roundValue(connectionValueBits / Math.pow(1000, 2));
+
+        if (connectionValueBits < Math.pow(1000, 4))
+            return roundValue(connectionValueBits / Math.pow(1000, 3));
+
+        return roundValue(connectionValueBits / Math.pow(1000, 4));
     }
 
 }
