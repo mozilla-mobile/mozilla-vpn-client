@@ -49,6 +49,7 @@ describe('Server list', function() {
   cityIDs.set('Paris', 'http://www.wikidata.org/entity/Q90');
   cityIDs.set('Dusseldorf', 'http://www.wikidata.org/entity/Q1718');
   cityIDs.set('Malmö', 'http://www.wikidata.org/entity/Q2211');
+  cityIDs.set('Ashburn, VA', 'http://www.wikidata.org/entity/Q724884');
 
   this.timeout(1000000);
 
@@ -295,6 +296,10 @@ describe('Server list', function() {
 
     for (let city of server.cities) {
       if (city.name === server.name) {
+        continue;
+      }
+
+      if (city.name.includes('BETA')) {
         continue;
       }
 
