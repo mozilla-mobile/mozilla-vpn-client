@@ -48,7 +48,7 @@ Rectangle {
         },
         State {
             name: "open-loading"
-             when: isOpen && !isAnimating && isLoading
+            when: isOpen && !isAnimating && isLoading
 
             PropertyChanges {
                 target: root
@@ -143,33 +143,65 @@ Rectangle {
             timerTwo.start();
         }
     }
+    Timer {
+        id: timerThree
 
-    // Restart button
-    VPNIconButton {
-        id: connectionInfoRestartButton
-
-        anchors {
-            top: parent.top
-            right: parent.right
-            topMargin: VPNTheme.theme.windowMargin / 2
-            rightMargin: VPNTheme.theme.windowMargin / 2
-        }
-        accessibleName: "Restart speed test"
-        buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        enabled: root.state === "open-loading"
-        z: 1
-
-        Image {
-            anchors.centerIn: connectionInfoRestartButton
-            source: "qrc:/nebula/resources/refresh.svg"
-            sourceSize.height: VPNTheme.theme.iconSize * 1.25
-            sourceSize.width: sourceSize.height
+        function setTimeout(callback, timeoutDuration) {
+            timerThree.interval = timeoutDuration;
+            timerThree.repeat = false;
+            timerThree.triggered.connect(callback);
+            timerThree.triggered.connect(function release() {
+                timerThree.triggered.disconnect(callback);
+                timerThree.triggered.disconnect(release);
+            });
+            timerThree.start();
         }
     }
 
     // Content
     VPNConnectionInfoContent {
-        visible: root.state === "open-ready"
+        id: connectionInfoContent
+
+        opacity: visible && root.state !== "closing" ? 1 : 0
+        visible: root.state === "open-ready" || root.state === "closing"
+
+        // Restart button
+        VPNIconButton {
+            id: connectionInfoRestartButton
+
+            anchors {
+                top: parent.top
+                right: parent.right
+                topMargin: VPNTheme.theme.windowMargin / 2
+                rightMargin: VPNTheme.theme.windowMargin / 2
+            }
+            accessibleName: "Restart speed test"
+            buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
+            enabled: connectionInfoContent.visible && !root.isLoading
+            z: 1
+
+            onClicked: {
+                root.isLoading = true;
+
+                timerThree.setTimeout(function() {
+                    root.isLoading = false;
+                }, transitionDuration * 10);
+            }
+
+            Image {
+                anchors.centerIn: connectionInfoRestartButton
+                opacity: 0.8
+                source: "qrc:/nebula/resources/refresh.svg"
+                sourceSize.height: VPNTheme.theme.iconSize * 1.5
+                sourceSize.width: sourceSize.height
+            }
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: root.state !== "closing" ? 250 : 500
+            }
+        }
     }
 
     // Loading indicator
@@ -179,7 +211,8 @@ Rectangle {
             verticalCenter: parent.verticalCenter
             verticalCenterOffset: -1 * VPNTheme.theme.rowHeight
         }
-        height: VPNTheme.theme.desktopAppWidth * 0.35
+        height: VPNTheme.theme.desktopAppWidth * 0.33
+        opacity: visible ? 1 : 0
         visible: root.state === "open-loading"
         width: height
 
@@ -204,6 +237,12 @@ Rectangle {
             color: VPNTheme.colors.white
             font.pixelSize: VPNTheme.theme.fontSizeLarge
             text: "Testing speed …"
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 300
+            }
         }
 
     }
