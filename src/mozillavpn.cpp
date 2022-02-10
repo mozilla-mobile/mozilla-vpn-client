@@ -1440,6 +1440,15 @@ void MozillaVPN::refreshDevices() {
 void MozillaVPN::quit() {
   logger.debug() << "quit";
   TaskScheduler::deleteTasks();
+
+#if QT_VERSION >= 0x060000
+  // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a
+  // quick exit. See: https://bugreports.qt.io/browse/QTBUG-100687
+
+  SettingsHolder::instance()->sync();
+  exit(0);
+#endif
+
   qApp->quit();
 }
 
