@@ -3,6 +3,7 @@
         <file>resources/arrow-forward.svg</file>
         <file>resources/arrow-forward-white.svg</file>
         <file>resources/arrow-toggle.svg</file>
+        <file>resources/avatar.svg</file>
         <file>resources/avatar-default.png</file>
         <file>resources/back-dark.svg</file>
         <file>resources/back.svg</file>
@@ -316,6 +317,5 @@
         <file>resources/warning-dark-orange.svg</file>
         <file>resources/warning-orange.svg</file>
         <file>resources/warning.svg</file>
-        <file>resources/avatar.svg</file>
     </qresource>
 </RCC>
