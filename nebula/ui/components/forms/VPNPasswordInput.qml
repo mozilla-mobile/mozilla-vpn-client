@@ -6,20 +6,22 @@ import QtQuick 2.5
 
 import Mozilla.VPN 1.0
 import components 0.1
+import components.forms 0.1
 
 VPNTextField {
     property bool charactersMasked: true
     property bool isValid: true
+    property alias button: toggleButton
     property alias placeholder: passwordInput.placeholderText
 
     id: passwordInput
     echoMode: charactersMasked ? TextInput.Password : TextInput.Normal
-    hasError: isValid
+    hasError: !isValid
     height: VPNTheme.theme.rowHeight
     width: parent.width
 
     VPNIconButton {
-        id: iconButton
+        id: toggleButton
 
         // TODO: Add accesibleName string
         accessibleName: ""
@@ -31,17 +33,21 @@ VPNTextField {
         height: parent.height - VPNTheme.theme.listSpacing
         width: parent.height - VPNTheme.theme.listSpacing
         onClicked: {
-            passwordInput.charactersMasked = !passwordInput.charactersMasked
+            toggleVisibility();
         }
 
         Image {
-            anchors.centerIn: iconButton
+            anchors.centerIn: toggleButton
             fillMode: Image.PreserveAspectFit
             source: passwordInput.charactersMasked
               ? "qrc:/nebula/resources/eye-hidden.svg"
               : "qrc:/nebula/resources/eye-visible.svg"
             sourceSize.height: VPNTheme.theme.iconSize * 1.5
             sourceSize.width: VPNTheme.theme.iconSize * 1.5
+        }
+
+        function toggleVisibility() {
+            passwordInput.charactersMasked = !passwordInput.charactersMasked
         }
     }
 }
