@@ -86,7 +86,7 @@ class AuthenticationInApp final : public QObject {
   // Sign In/Up.
   Q_INVOKABLE void signIn();
   Q_INVOKABLE void signUp();
-  Q_INVOKABLE QString emailAddress();
+  Q_INVOKABLE const QString& emailAddress() const;
 
 #ifdef UNIT_TEST
   // This method is used to have a test coverage for the TOTP verification.
