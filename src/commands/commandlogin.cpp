@@ -58,7 +58,7 @@ int CommandLogin::run(QStringList& tokens) {
     return 0;
   }
 
-  return runCommandLineApp([&] {
+  return runGuiApp([&] {
     if (SettingsHolder::instance()->hasToken()) {
       QTextStream stream(stdout);
       stream << "User status: already authenticated" << Qt::endl;
