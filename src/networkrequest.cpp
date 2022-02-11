@@ -70,7 +70,7 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
   m_timer.setSingleShot(true);
 
   connect(&m_timer, &QTimer::timeout, this, &NetworkRequest::timeout);
-  connect(&m_timer, &QTimer::timeout, this, &QObject::deleteLater);
+  connect(&m_timer, &QTimer::timeout, this, &NetworkRequest::maybeDeleteLater);
 
   NetworkManager::instance()->increaseNetworkRequestCount();
   enableSSLIntervention();
@@ -777,6 +777,34 @@ void NetworkRequest::replyFinished() {
     return;
   }
 
+  if (m_reply->error() == QNetworkReply::HostNotFoundError && isRedirect()) {
+    QUrl brokenUrl = m_reply->url();
+
+    if (brokenUrl.host().isEmpty() && !m_redirectedUrl.isEmpty()) {
+      QUrl url = m_redirectedUrl.resolved(brokenUrl);
+
+#ifdef MVPN_DEBUG
+      logger.debug()
+          << "QT6 redirect bug! The current URL is broken because it's not "
+             "resolved using the latest HTTP redirection as base-URL";
+      logger.debug() << "Broken URL:" << brokenUrl.toString();
+      logger.debug() << "Latest redirected URL:" << m_redirectedUrl.toString();
+      logger.debug() << "Final URL:" << url.toString();
+#endif
+
+      m_request = QNetworkRequest(url);
+      m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                          "application/json");
+      m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                             QNetworkRequest::NoLessSafeRedirectPolicy);
+
+      m_reply = nullptr;
+      m_timer.stop();
+      getRequest();
+      return;
+    }
+  }
+
   m_completed = true;
   m_timer.stop();
 
@@ -809,12 +837,16 @@ void NetworkRequest::replyFinished() {
   emit requestCompleted(data);
 }
 
+bool NetworkRequest::isRedirect() const {
+  int status = statusCode();
+  return status >= 300 && status < 400;
+}
+
 void NetworkRequest::handleHeaderReceived() {
   // Suppress this signal if a redirect is about to happen.
-  bool isRedirect = (statusCode() >= 300) && (statusCode() < 400);
-  auto redirectAttibute = QNetworkRequest::RedirectPolicyAttribute;
-  int policy = m_request.attribute(redirectAttibute).toInt();
-  if (isRedirect && (policy != QNetworkRequest::ManualRedirectPolicy)) {
+  int policy =
+      m_request.attribute(QNetworkRequest::RedirectPolicyAttribute).toInt();
+  if (isRedirect() && (policy != QNetworkRequest::ManualRedirectPolicy)) {
     return;
   }
 
@@ -822,9 +854,25 @@ void NetworkRequest::handleHeaderReceived() {
   emit requestHeaderReceived(this);
 }
 
-void NetworkRequest::handleRedirect(const QUrl& url) {
-  logger.debug() << "Network request redirected";
-  emit requestRedirected(this, url);
+void NetworkRequest::handleRedirect(const QUrl& redirectUrl) {
+  if (redirectUrl.host().isEmpty()) {
+#ifdef MVPN_DEBUG
+    logger.debug()
+        << "QT6 redirect bug! The redirected URL is broken because it's not "
+           "resolved using the previous HTTP redirection as base-URL";
+    logger.debug() << "Broken URL:" << redirectUrl.toString();
+    logger.debug() << "Latest redirected URL:" << m_redirectedUrl.toString();
+#endif
+
+    if (m_redirectedUrl.isEmpty()) {
+      m_redirectedUrl = url().resolved(redirectUrl);
+    } else {
+      m_redirectedUrl = m_redirectedUrl.resolved(redirectUrl);
+    }
+  } else {
+    m_redirectedUrl = redirectUrl;
+  }
+  emit requestRedirected(this, m_redirectedUrl);
 }
 
 void NetworkRequest::timeout() {
@@ -874,7 +922,14 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
           &NetworkRequest::handleHeaderReceived);
   connect(m_reply, &QNetworkReply::redirected, this,
           &NetworkRequest::handleRedirect);
-  connect(m_reply, &QNetworkReply::finished, this, &QObject::deleteLater);
+  connect(m_reply, &QNetworkReply::finished, this,
+          &NetworkRequest::maybeDeleteLater);
+}
+
+void NetworkRequest::maybeDeleteLater() {
+  if (m_reply && m_reply->isFinished()) {
+    deleteLater();
+  }
 }
 
 int NetworkRequest::statusCode() const {

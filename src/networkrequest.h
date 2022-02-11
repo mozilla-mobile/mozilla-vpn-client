@@ -150,6 +150,10 @@ class NetworkRequest final : public QObject {
   void handleRedirect(const QUrl& url);
   bool checkSubjectName(const QSslCertificate& cert);
 
+  bool isRedirect() const;
+
+  void maybeDeleteLater();
+
  private slots:
   void replyFinished();
   void timeout();
@@ -170,6 +174,8 @@ class NetworkRequest final : public QObject {
   QNetworkReply* m_reply = nullptr;
   int m_status = 0;
   bool m_completed = false;
+
+  QUrl m_redirectedUrl;
 };
 
 #endif  // NETWORKREQUEST_H
