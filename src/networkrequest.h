@@ -135,6 +135,7 @@ class NetworkRequest final : public QObject {
   QUrl url() const { return m_reply ? m_reply->url() : m_request.url(); }
 
   void abort();
+  bool isAborted() const { return m_aborted; }
 
   static QString apiBaseUrl();
 
@@ -174,6 +175,7 @@ class NetworkRequest final : public QObject {
   QNetworkReply* m_reply = nullptr;
   int m_status = 0;
   bool m_completed = false;
+  bool m_aborted = false;
 
   QUrl m_redirectedUrl;
 };

@@ -957,6 +957,8 @@ QByteArray NetworkRequest::rawHeader(const QByteArray& headerName) const {
 }
 
 void NetworkRequest::abort() {
+  m_aborted = true;
+
   if (!m_reply) {
     logger.error() << "INTERNAL ERROR! NetworkRequest::abort called before "
                       "starting the request";
