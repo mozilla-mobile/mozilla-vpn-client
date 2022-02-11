@@ -23,3 +23,5 @@ git submodule update
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
 cp .tmp/src/android-build/mozillavpn.apk  /builds/worker/artifacts/
+
+ccache -s

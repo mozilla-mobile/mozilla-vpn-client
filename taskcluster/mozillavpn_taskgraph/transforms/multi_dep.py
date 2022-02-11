@@ -56,6 +56,20 @@ def resolve_keys(config, tasks):
         )
         yield task
 
+@transforms.add
+def resolve_keys(config, tasks):
+    for task in tasks:
+        resolve_keyed_by(
+            task,
+            "treeherder.platform",
+            item_name=task["name"],
+            **{
+                'build-type': task["attributes"]["build-type"],
+                'level': config.params["level"],
+            }
+        )
+        yield task
+
 
 @transforms.add
 def build_upstream_artifacts(config, tasks):
