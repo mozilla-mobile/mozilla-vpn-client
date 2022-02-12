@@ -354,6 +354,56 @@ connectionInfo:
   labelTbitps:
     value: Tbit/s
     comment: Terabits per second
+  labelPing:
+    value: Ping
+    comment:
+  unitPing:
+    value: ms
+    commnent:
+  # Start: Connection Info Screen
+  # Loading screen text
+  loadingIndicatorText:
+    value: Testing speed
+    comment:
+  # Speed list header for medium and fast speeds
+  listHeaderDefault:
+    value: At your current speed, here's what your device is optimized for
+    comment:
+  # Speed list header for low speeds
+  listHeaderSlow:
+    value: It looks like the connection to this server location is a bit slow, you can try
+    comment:
+  # Bullets for slow speeds
+  slowBulletOne:
+    value: Switching server locations
+  slowBulletTwo:
+    value: Checking your internet connection
+  # Bullets for medium speeds
+  At your current speed, here's what your device is optimized for
+  mediumBulletOne:
+    value: Browsing the internet
+    comment:
+  mediumBulletTwo:
+    value: Streaming video
+    comment:
+  mediumBulletThree:
+    value: Video conferencing
+    comment:
+  # Bullets for fast speeds
+  fastBulletOne:
+    value: Streaming in 4K
+    comment:
+  fastBulletTwo:
+    value: High-speed downloads
+    comment:
+  fastBulletThree:
+    value: Online gaming
+    comment:
+  # Connection error message
+  errorMessage:
+    value: Looks like there was an unexpected error while trying to connect. Please try again or check your connection.
+    comment:
+  # End: Connection Info Screen
     
 crashreporter:
   mainTitle:
