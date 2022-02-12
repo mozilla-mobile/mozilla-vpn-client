@@ -67,15 +67,24 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
             request->abort();
             onResult(PortalDetected);
           });
-  connect(request, &NetworkRequest::requestFailed, this,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.warning() << "Captive portal request failed:" << error;
-            onResult(Failure);
-          });
+  connect(
+      request, &NetworkRequest::requestFailed, this,
+      [this, request](QNetworkReply::NetworkError error, const QByteArray&) {
+        if (request->isAborted()) {
+          return;
+        }
+
+        logger.warning() << "Captive portal request failed:" << error;
+        onResult(Failure);
+      });
 
   connect(
       request, &NetworkRequest::requestCompleted, this,
       [this, request](const QByteArray& data) {
+        if (request->isAborted()) {
+          return;
+        }
+
         logger.debug() << "Captive portal request completed:" << data;
         // Usually, captive-portal pages do a redirect to an internal page.
         if (request->statusCode() != 200) {

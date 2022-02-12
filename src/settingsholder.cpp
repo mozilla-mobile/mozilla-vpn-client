@@ -87,6 +87,8 @@ void SettingsHolder::clear() {
 #undef SETTING
 }
 
+void SettingsHolder::sync() { m_settings.sync(); }
+
 void SettingsHolder::hardReset() {
   logger.debug() << "Hard reset";
   m_settings.clear();

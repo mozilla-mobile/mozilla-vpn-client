@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           python3 -m pip install aqtinstall
-          python3 -m aqt install --outputdir /opt 5.15.2 linux desktop wasm_32 -m qtcharts
+          python3 -m aqt install-qt -O /opt linux desktop 5.15.2 wasm_32 -m qtcharts
 
       - name: Install python dependencies
         shell: bash
@@ -72,16 +72,16 @@ jobs:
         shell: bash
         run: |
           python3 -m pip install aqtinstall
-          # qt6.2.1 for wasm needs the desktop linux installation
-          python3 -m aqt install --outputdir /opt 6.2.1 linux desktop
-          python3 -m aqt install --outputdir /opt 6.2.1 linux desktop wasm_32 -m qtcharts qtwebsockets qt5compat
+          # qt6.2.3 for wasm needs the desktop linux installation
+          python3 -m aqt install-qt -O /opt linux desktop 6.2.3
+          python3 -m aqt install-qt -O /opt linux desktop 6.2.3 wasm_32 -m qtcharts qtwebsockets qt5compat
 
       - name: Patching Qt
         shell: bash
         run: |
           # see: https://wiki.qt.io/Qt_6.2_Known_Issues#WebAssembly
-          sed '/sse/,+5 d' /opt/6.2.1/wasm_32/mkspecs/features/wasm/wasm.prf > /tmp/wasm.prf
-          mv /tmp/wasm.prf /opt/6.2.1/wasm_32/mkspecs/features/wasm/wasm.prf
+          sed '/sse/,+5 d' /opt/6.2.3/wasm_32/mkspecs/features/wasm/wasm.prf > /tmp/wasm.prf
+          mv /tmp/wasm.prf /opt/6.2.3/wasm_32/mkspecs/features/wasm/wasm.prf
 
       - name: Install python dependencies
         shell: bash
@@ -94,7 +94,7 @@ jobs:
       - name: Compiling
         shell: bash
         run: |
-          export PATH=/opt/6.2.1/wasm_32/bin:/opt/6.2.1/gcc_64/bin:$PATH
+          export PATH=/opt/6.2.3/wasm_32/bin:/opt/6.2.3/gcc_64/bin:$PATH
           ./scripts/wasm_compile.sh
 
       - name: Uploading
@@ -138,13 +138,13 @@ jobs:
         with:
           name: WebAssembly Build Qt5
           # Destination path
-          path: _site
+          path: _site/qt5
       - name: Download a Build Artifact
         uses: actions/download-artifact@v2.0.8
         with:
           name: WebAssembly Build Qt6
           # Destination path
-          path: _site/qt6
+          path: _site
       - name: Download a Build Artifact
         uses: actions/download-artifact@v2.0.8
         with:

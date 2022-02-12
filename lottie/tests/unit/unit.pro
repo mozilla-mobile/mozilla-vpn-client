@@ -28,8 +28,6 @@ SOURCES += \
     testnavigator.cpp \
     testwindow.cpp
 
-CONFIG += debug
-
 QT += qml quick testlib
 
 OBJECTS_DIR = .obj
