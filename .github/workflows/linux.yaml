@@ -44,7 +44,7 @@ jobs:
 
       - name: Build source bundle
         shell: bash
-        run: ./scripts/linux_script.sh --source
+        run: ./scripts/linux/script.sh --source
 
       - name: Uploading
         uses: actions/upload-artifact@v2
