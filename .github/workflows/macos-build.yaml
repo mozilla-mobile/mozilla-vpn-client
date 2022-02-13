@@ -121,7 +121,7 @@ jobs:
             CONFIG+=balrog \
             MVPN_MACOS=1 \
             src/src.pro
-          ruby scripts/xcode_patcher.rb \
+          ruby scripts/macos/utils/xcode_patcher.rb \
             "MozillaVPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
@@ -150,7 +150,7 @@ jobs:
         shell: bash
         run: |
           # languages
-          python3 ./scripts/import_macos_pkg_resources.py
+          python3 ./scripts/macos/import_pkg_resources.py
           # Full path of the app in a temp folder
           mkdir -p BUILD/Applications
           cp -r /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app BUILD/Applications
@@ -264,7 +264,7 @@ jobs:
             CONFIG+=balrog \
             MVPN_MACOS=1 \
             src/src.pro
-          ruby scripts/xcode_patcher.rb \
+          ruby scripts/macos/utils/xcode_patcher.rb \
             "MozillaVPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
@@ -279,7 +279,7 @@ jobs:
         shell: bash
         run: |
           # languages
-          python3 ./scripts/import_macos_pkg_resources.py
+          python3 ./scripts/macos/import_pkg_resources.py
           # Full path of the app in a temp folder
           mkdir -p BUILD
           cp -r /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app BUILD
