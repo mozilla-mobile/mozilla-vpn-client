@@ -11,6 +11,10 @@ QT += widgets
 CONFIG += warn_on qmltestcase
 CONFIG += c++1z
 
+macos {
+    CONFIG -= app_bundle
+}
+
 # Allows us to be a supported platform
 DEFINES += UNIT_TEST
 DEFINES += MVPN_DUMMY

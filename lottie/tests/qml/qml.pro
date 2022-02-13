@@ -9,6 +9,10 @@ TARGET = tst_lottie
 
 CONFIG += warn_on qmltestcase
 
+macos {
+    CONFIG -= app_bundle
+}
+
 HEADERS += helper.h
 SOURCES += main.cpp
 

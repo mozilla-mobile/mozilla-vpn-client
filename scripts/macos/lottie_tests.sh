@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-. $(dirname $0)/commons.sh
+. $(dirname $0)/../commons.sh
 
 if [ -f .env ]; then
   . .env
@@ -24,30 +24,7 @@ $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
 export PATH="$QT_BIN:$PATH"
 
 printn Y "Cleaning the existing project... "
-rm -rf tests.xcodeproj/ || die "Failed to remove things"
-rm -rf .qm .moc .obj .rcc || die "Failed"
-print G "done."
-
-print Y "Creating the xcode project for unit-tests via qmake..."
-$QMAKE \
-  -spec macx-xcode \
-  QTPLUGIN+=qsvg \
-  MVPN_MACOS=1 \
-  CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release \
-  CONFIG+=sdk_no_version_check \
-  CONFIG+=coverage \
-  tests/unit/unit.pro || die "Compilation failed"
-
-print Y "Compile the unit-tests..."
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project tests.xcodeproj || die "Failed"
-print G "All done!"
-
-print Y "Running the unit-tests..."
-./Release/tests.app/Contents/MacOS/tests || die "Failed"
-print G "All done!"
-
-printn Y "Cleaning the existing project... "
-rm -rf tests.xcodeproj/ || die "Failed to remove things"
+rm -rf lottie_tests.xcodeproj/ || die "Failed to remove things"
 rm -rf .qm .moc .obj .rcc || die "Failed"
 print G "done."
 
@@ -62,33 +39,11 @@ $QMAKE \
   lottie/tests/unit/unit.pro || die "Compilation failed"
 
 print Y "Compile the lottie unit-tests..."
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project tests.xcodeproj || die "Failed"
+xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -enableCodeCoverage YES -project lottie_tests.xcodeproj || die "Failed"
 print G "All done!"
 
 print Y "Running the lottie unit-tests..."
-./Release/tests.app/Contents/MacOS/tests || die "Failed"
-print G "All done!"
-
-printn Y "Cleaning the existing project... "
-rm -rf qml_tests.xcodeproj/ || die "Failed to remove things"
-rm -rf .qm .moc .obj .rcc || die "Failed"
-print G "done."
-
-print Y "Creating the xcode project via qmake for qml unit-tests..."
-$QMAKE \
-  -spec macx-xcode \
-  QTPLUGIN+=qsvg \
-  MVPN_MACOS=1 \
-  CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release \
-  CONFIG+=sdk_no_version_check \
-  tests/qml/qml.pro || die "Compilation failed"
-
-print Y "Compile the qml unit-tests..."
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project qml_tests.xcodeproj || die "Failed"
-print G "All done!"
-
-print Y "Running the qml unit-tests..."
-./Release/qml_tests.app/Contents/MacOS/qml_tests || die "Failed"
+./Release/lottie_tests || die "Failed"
 print G "All done!"
 
 printn Y "Cleaning the existing project... "
@@ -103,6 +58,7 @@ $QMAKE \
   MVPN_MACOS=1 \
   CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release \
   CONFIG+=sdk_no_version_check \
+  CONFIG+=coverage \
   lottie/tests/qml/qml.pro || die "Compilation failed"
 
 print Y "Compile the qml unit-tests..."
@@ -110,5 +66,5 @@ xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project tst_lot
 print G "All done!"
 
 print Y "Running the qml unit-tests..."
-./Release/tst_lottie.app/Contents/MacOS/tst_lottie || die "Failed"
+./Release/tst_lottie || die "Failed"
 print G "All done!"
