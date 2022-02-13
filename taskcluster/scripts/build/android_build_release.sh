@@ -26,7 +26,7 @@ mkdir -p /builds/worker/artifacts/
 # aqt-name "arm64_v8a"   -> qmake-name: "arm64-v8a"
 # aqt-name "x86"         -> qmake-name: "x86"
 # aqt-name "x86_64"      -> qmake-name: "x86_64"
-./scripts/android_package.sh $QTPATH -A $1 -a $(cat adjust_token)
+./scripts/android/package.sh $QTPATH -A $1 -a $(cat adjust_token)
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/

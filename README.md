@@ -296,7 +296,7 @@ Add the Adjust SDK token with `-a | --adjust <adjust_token>`
 
 6. Build the apk
 ```bash 
-  $  ./scripts/android_package.sh /path/to/Qt/5.15.x/ (debug|release)
+  $  ./scripts/android/package.sh /path/to/Qt/5.15.x/ (debug|release)
 ```
 Add the Adjust SDK token with `-a | --adjust <adjust_token>`
 7. The apk will be located in ```.tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk```
