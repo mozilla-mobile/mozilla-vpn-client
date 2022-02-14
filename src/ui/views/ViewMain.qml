@@ -103,6 +103,7 @@ VPNFlickable {
 
         VPNControllerView {
             id: box
+            z: 1
         }
 
         VPNControllerNav {
