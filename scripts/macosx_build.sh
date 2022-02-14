@@ -35,7 +35,7 @@ qmake \
   CONFIG+=balrog \
   MVPN_MACOS=1 \
   src/src.pro
-ruby scripts/xcode_patcher.rb \
+ruby scripts/macos/utils/xcode_patcher.rb \
   "MozillaVPN.xcodeproj" \
   "$SHORTVERSION" \
   "$FULLVERSION" \
@@ -48,7 +48,7 @@ python3 scripts/importLanguages.py -m
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
 
 # Package
-python3 ./scripts/import_macos_pkg_resources.py
+python3 ./scripts/macos/import_pkg_resources.py
 # Full path of the app in a temp folder
 mkdir -p BUILD
 cp -r Release/Mozilla\ VPN.app BUILD

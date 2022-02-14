@@ -68,9 +68,9 @@ EOF
 
 if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
-  ./scripts/apple_compile.sh macos
+  ./scripts/macos/apple_compile.sh macos
 else
-  ./scripts/apple_compile.sh ios
+  ./scripts/macos/apple_compile.sh ios
 fi
 
 # build Qt resources
