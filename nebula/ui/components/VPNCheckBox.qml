@@ -97,57 +97,9 @@ CheckBox {
         }
     ]
 
-    Item {
-        id: checkmark
-
-        height: 20
-        width: 20
+    VPNCheckmark {
         anchors.fill: checkBoxIndicator
-
-        Rectangle {
-            id: checkmarkBg
-
-            color: checkBox.checked ? VPNTheme.theme.blue : VPNTheme.theme.bgColor
-            height: 20
-            width: 20
-            antialiasing: true
-            smooth: true
-            visible: false
-
-            Behavior on color {
-                PropertyAnimation {
-                    duration: 200
-                }
-
-            }
-
-        }
-
-        Image {
-            id: checkmarkIcon
-
-            source: "qrc:/nebula/resources/checkmark.svg"
-            sourceSize.height: 13
-            sourceSize.width: 12
-            visible: false
-            anchors.centerIn: checkmark
-        }
-
-        VPNOpacityMask {
-            anchors.centerIn: checkmark
-            height: checkmarkIcon.height
-            width: checkmarkIcon.width
-            source: checkmarkBg
-            maskSource: checkmarkIcon
-        }
-
-        Behavior on opacity {
-            PropertyAnimation {
-                duration: 100
-            }
-
-        }
-
+        color: checkBox.checked ? VPNTheme.theme.blue : VPNTheme.theme.bgColor
     }
 
     VPNMouseArea {

@@ -13,7 +13,6 @@ RowLayout {
     property alias ipAddressText: ipAddress.text
 
     spacing: 4
-    anchors.horizontalCenter: parent.horizontalCenter
 
     VPNBoldLabel {
         id: ipVersion
@@ -24,12 +23,12 @@ RowLayout {
     VPNLightLabel {
         id: ipAddress
 
+        Layout.topMargin: 1
         color: VPNTheme.theme.bgColor
         opacity: .8
         minimumPixelSize: VPNTheme.theme.fontSizeSmall / 2
         Accessible.name: text
         Accessible.role: Accessible.StaticText
-        verticalAlignment: Text.AlignVCenter
         Layout.maximumWidth: maxPaintedTextWidth
         textFormat: Text.PlainText
         fontSizeMode: Text.HorizontalFit
