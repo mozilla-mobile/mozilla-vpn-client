@@ -90,6 +90,12 @@ void AuthenticationInApp::signIn() {
   m_listener->signIn();
 }
 
+const QString& AuthenticationInApp::emailAddress() const {
+  Q_ASSERT(m_listener);
+
+  return m_listener->emailAddress();
+}
+
 void AuthenticationInApp::signUp() {
   Q_ASSERT(m_state == StateSignUp);
   Q_ASSERT(m_listener);

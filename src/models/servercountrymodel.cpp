@@ -308,6 +308,11 @@ const QString ServerCountryModel::localizedCountryName(
   return ServerI18N::translateCountryName(countryCode, name);
 }
 
+QString ServerCountryModel::getLocalizedCountryName(
+    const QString& countryCode) {
+  return localizedCountryName(countryCode);
+}
+
 void ServerCountryModel::retranslate() {
   beginResetModel();
   sortCountries();

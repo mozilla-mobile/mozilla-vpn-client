@@ -116,7 +116,7 @@ ColumnLayout {
         onTextChanged: text => {
             model.invalidate();
         }
-        placeholderText: searchBarPlaceholder
+        _placeholderText: searchBarPlaceholder
         hasError: applist.count === 0
         enabled: vpnFlickable.vpnIsOff && VPNSettings.protectSelectedApps
     }

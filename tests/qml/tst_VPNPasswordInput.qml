@@ -18,7 +18,7 @@ Item {
     TestCase {
         name: "VPNPasswordInput"
         when: windowShown
-        
+
         // Display options for text inputs.
         // https://doc.qt.io/qt-6/qml-qtquick-textinput.html#echoMode-prop
         // - TextInput.Normal
@@ -55,7 +55,7 @@ Item {
         function resetPasswordInput() {
             vpnPasswordInputTest.charactersMasked = true;
         }
-        
+
         function cleanup() {
             resetPasswordInput();
         }

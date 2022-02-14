@@ -18,7 +18,7 @@ git submodule update
 # aqt-name "arm64_v8a"   -> qmake-name: "arm64-v8a"
 # aqt-name "x86"         -> qmake-name: "x86"
 # aqt-name "x86_64"      -> qmake-name: "x86_64"
-./scripts/android_package.sh -d $QTPATH -A $1
+./scripts/android/package.sh -d $QTPATH -A $1
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/

@@ -222,6 +222,7 @@ HEADERS += \
         featurelist.h \
         features/featureappreview.h \
         features/featurecaptiveportal.h \
+        features/featureconnectioninfo.h \
         features/featurecustomdns.h \
         features/featureinappaccountcreate.h \
         features/featureinappauth.h \

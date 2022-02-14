@@ -13,6 +13,7 @@
 
 #include "features/featureappreview.h"
 #include "features/featurecaptiveportal.h"
+#include "features/featureconnectioninfo.h"
 #include "features/featurecustomdns.h"
 #include "features/featureinappaccountcreate.h"
 #include "features/featureinappauth.h"
@@ -49,6 +50,7 @@ FeatureList* FeatureList::instance() {
 void FeatureList::initialize() {
   new FeatureAppReview();
   new FeatureCaptivePortal();
+  new FeatureConnectionInfo();
   new FeatureCustomDNS();
   new FeatureInAppAccountCreate();
   new FeatureInAppAuth();

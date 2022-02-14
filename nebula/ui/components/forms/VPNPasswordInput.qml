@@ -12,7 +12,7 @@ VPNTextField {
     property bool charactersMasked: true
     property bool isValid: true
     property alias button: toggleButton
-    property alias placeholder: passwordInput.placeholderText
+    property alias placeholder: passwordInput._placeholderText
 
     id: passwordInput
     echoMode: charactersMasked ? TextInput.Password : TextInput.Normal
