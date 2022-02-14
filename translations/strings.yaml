@@ -367,25 +367,41 @@ connectionInfo:
     value: Testing speed
     comment: Shown to the user while waiting for the connection speed test results
   errorMessage: Looks like there was an unexpected error while trying to connect. Please try again or check your connection.
-  # Speed list header for medium and fast speeds
+  # List header for medium and fast speeds
   listHeaderDefault:
     value: At your current speed, here’s what your device is optimized for
     comment: Headline for a list of things that the current connection is capable of.
-  # Speed list header for low speeds
+  # List header for low speeds and troubleshooting section
   listHeaderSlow:
     value: It looks like the connection to this server location is a bit slow, you can try
     comment: Headline for a list of suggestions for troubleshooting the current connection.
-  # Bullets for slow speeds
-  slowBulletOne: Switching server locations
-  slowBulletTwo: Checking your internet connection
-  # Bullets for medium speeds
-  mediumBulletOne: Browsing the internet
-  mediumBulletTwo: Streaming video
-  mediumBulletThree: Video conferencing
-  # Bullets for fast speeds
-  fastBulletOne: Streaming in 4K
-  fastBulletTwo: High-speed downloads
-  fastBulletThree: Online gaming
+  # Bullet items for trouble slow speedtest results and troubleshooting section
+  troubleshootingBulletOne:
+    value: Switching server locations
+    comment: This is a bullet item in the connection troubleshooting section
+  troubleshootingBulletTwo:
+    value: Checking your internet connection
+    comment: This is a bullet item in the connection troubleshooting section
+  # Bullet items for medium speedtest results
+  mediumBulletOne:
+    value: Browsing the internet
+    comment: This is a bullet item in the connection section for medium speedtest results
+  mediumBulletTwo:
+    value: Streaming video
+    comment: This is a bullet item in the connection section for medium speedtest results
+  mediumBulletThree:
+    value: Video conferencing
+    comment: This is a bullet item in the connection section for medium speedtest results
+  # Bullet items for high speedtest results
+  highBulletOne:
+    value: Streaming in 4K
+    comment: This is a bullet item in the connection section for high speedtest results
+  highBulletTwo:
+    value: High-speed downloads
+    comment: This is a bullet item in the connection section for high speedtest results
+  highBulletThree:
+    value: Online gaming
+    comment: This is a bullet item in the connection section for high speedtest results
     
 crashreporter:
   mainTitle:
