@@ -337,22 +337,25 @@ telemetryPolicyView:
   description: We strive to provide you with choices and collect only the data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional.
   question: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla?
 
+genericError:
+  unexpected: Unexpected error
+
 # Connection Info Screen
 connectionInfo:
   labelBitps:
-    value: bit/s
+    value: bits
     comment: Bits per second
   labelKbitps:
-    value: kbit/s
+    value: kbits
     comment: Kilobits per second
   labelMbitps:
-    value: Mbit/s
+    value: Mbits
     comment: Megabits per second
   labelGbitps:
-    value: Gbit/s
+    value: Gbits
     comment: Gigabits per second
   labelTbitps:
-    value: Tbit/s
+    value: Tbits
     comment: Terabits per second
   labelPing:
     value: Ping
@@ -360,18 +363,18 @@ connectionInfo:
   unitPing:
     value: ms
     commnent: milliseconds
-  loadingIndicatorText:
+  loadingIndicatorLabel:
     value: Testing speed
     comment: Shown to the user while waiting for the connection speed test results
   errorMessage: Looks like there was an unexpected error while trying to connect. Please try again or check your connection.
   # Speed list header for medium and fast speeds
   listHeaderDefault:
     value: At your current speed, here's what your device is optimized for
-    comment: Headline for a list of things that the current connection is capable of
+    comment: Headline for a list of things that the current connection is capable of.
   # Speed list header for low speeds
   listHeaderSlow:
     value: It looks like the connection to this server location is a bit slow, you can try
-    comment: Headline for a list of suggestions for troubleshooting the current connection
+    comment: Headline for a list of suggestions for troubleshooting the current connection.
   # Bullets for slow speeds
   slowBulletOne: Switching server locations
   slowBulletTwo: Checking your internet connection
