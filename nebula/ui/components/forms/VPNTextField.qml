@@ -36,7 +36,7 @@ TextField {
     leftPadding: VPNTheme.theme.windowMargin
     rightPadding: VPNTheme.theme.windowMargin
 
-    PlaceholderText {
+    Text {
         id: centeredPlaceholderText
         verticalAlignment: textField.verticalAlignment
         width: textField.width - (textField.leftPadding + textField.rightPadding)
