@@ -343,19 +343,19 @@ genericError:
 # Connection Info Screen
 connectionInfo:
   labelBitps:
-    value: bits
+    value: bit/s
     comment: Bits per second
   labelKbitps:
-    value: kbits
+    value: kbit/s
     comment: Kilobits per second
   labelMbitps:
-    value: Mbits
+    value: Mbit/s
     comment: Megabits per second
   labelGbitps:
-    value: Gbits
+    value: Gbit/s
     comment: Gigabits per second
   labelTbitps:
-    value: Tbits
+    value: Tbit/s
     comment: Terabits per second
   labelPing:
     value: Ping
