@@ -45,7 +45,7 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/5.15.2/wasm_32/bin:$PATH
-          ./scripts/wasm_compile.sh
+          ./scripts/wasm/compile.sh
 
       - name: Uploading
         uses: actions/upload-artifact@v1
@@ -95,7 +95,7 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/6.2.3/wasm_32/bin:/opt/6.2.3/gcc_64/bin:$PATH
-          ./scripts/wasm_compile.sh
+          ./scripts/wasm/compile.sh
 
       - name: Uploading
         uses: actions/upload-artifact@v1
