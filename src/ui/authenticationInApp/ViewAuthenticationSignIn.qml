@@ -47,6 +47,7 @@ VPNInAppAuthenticationBase {
             id: passwordInput
             Layout.fillWidth: true
             isPassword: true
+            _placeholderText: "secure password" // TODO
         }
 
         VPNButton {

@@ -36,7 +36,7 @@ VPNInAppAuthenticationBase {
         VPNTextField {
             id: emailInput
             hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
-            placeholderText: "Enter email"
+            _placeholderText: "Enter email"
             Layout.fillWidth: true
         }
         VPNButton {
