@@ -213,7 +213,7 @@ NETEXT_ID_IOS = <>
 ```
 7. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
 ```
-  $ ./scripts/apple_compile.sh macos
+  $ ./scripts/macos/apple_compile.sh macos
 ```
 8. Xcode should automatically open. You can then run/test/archive/ship the app
 
@@ -272,7 +272,7 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
 6. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
 ```
-  $ ./scripts/apple_compile.sh ios
+  $ ./scripts/macos/apple_compile.sh ios
 ```
 Add the Adjust SDK token with `-a | --adjust <adjust_token>`
 
