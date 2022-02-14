@@ -369,11 +369,11 @@ connectionInfo:
   errorMessage: Looks like there was an unexpected error while trying to connect. Please try again or check your connection.
   # List header for medium and fast speeds
   listHeaderDefault:
-    value: At your current speed, here’s what your device is optimized for:
+    value: "At your current speed, here’s what your device is optimized for:"
     comment: Headline for a list of things that the current connection is capable of.
   # List header for low speeds and troubleshooting section
   listHeaderSlow:
-    value: It looks like the connection to this server location is a bit slow, you can try:
+    value: "It looks like the connection to this server location is a bit slow, you can try:"
     comment: Headline for a list of suggestions for troubleshooting the current connection.
   # Bullet items for trouble slow speedtest results and troubleshooting section
   troubleshootingBulletOne:
