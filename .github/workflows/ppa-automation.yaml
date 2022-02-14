@@ -62,7 +62,7 @@ jobs:
           KEYGRIP=$(gpg --with-colons --with-keygrip --list-keys | grep -m1 '^grp:' | tr -d [grp:])
 
           echo "$GPG_PASSWORD" | /lib/gnupg2/gpg-preset-passphrase --preset $KEYGRIP
-          ./scripts/linux_script.sh --sign-key $KEYID --source
+          ./scripts/linux/script.sh --sign-key $KEYID --source
 
       - name: Uploading sources
         uses: actions/upload-artifact@v2
