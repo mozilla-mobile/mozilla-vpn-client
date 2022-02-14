@@ -337,7 +337,7 @@ telemetryPolicyView:
   description: We strive to provide you with choices and collect only the data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional.
   question: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla?
 
-
+# Connection Info Screen
 connectionInfo:
   labelBitps:
     value: bit/s
@@ -356,54 +356,33 @@ connectionInfo:
     comment: Terabits per second
   labelPing:
     value: Ping
-    comment:
+    comment: Latency of the connection
   unitPing:
     value: ms
-    commnent:
-  # Start: Connection Info Screen
-  # Loading screen text
+    commnent: milliseconds
   loadingIndicatorText:
     value: Testing speed
-    comment:
+    comment: Shown to the user while waiting for the connection speed test results
+  errorMessage: Looks like there was an unexpected error while trying to connect. Please try again or check your connection.
   # Speed list header for medium and fast speeds
   listHeaderDefault:
     value: At your current speed, here's what your device is optimized for
-    comment:
+    comment: Headline for a list of things that the current connection is capable of
   # Speed list header for low speeds
   listHeaderSlow:
     value: It looks like the connection to this server location is a bit slow, you can try
-    comment:
+    comment: Headline for a list of suggestions for troubleshooting the current connection
   # Bullets for slow speeds
-  slowBulletOne:
-    value: Switching server locations
-  slowBulletTwo:
-    value: Checking your internet connection
+  slowBulletOne: Switching server locations
+  slowBulletTwo: Checking your internet connection
   # Bullets for medium speeds
-  At your current speed, here's what your device is optimized for
-  mediumBulletOne:
-    value: Browsing the internet
-    comment:
-  mediumBulletTwo:
-    value: Streaming video
-    comment:
-  mediumBulletThree:
-    value: Video conferencing
-    comment:
+  mediumBulletOne: Browsing the internet
+  mediumBulletTwo: Streaming video
+  mediumBulletThree: Video conferencing
   # Bullets for fast speeds
-  fastBulletOne:
-    value: Streaming in 4K
-    comment:
-  fastBulletTwo:
-    value: High-speed downloads
-    comment:
-  fastBulletThree:
-    value: Online gaming
-    comment:
-  # Connection error message
-  errorMessage:
-    value: Looks like there was an unexpected error while trying to connect. Please try again or check your connection.
-    comment:
-  # End: Connection Info Screen
+  fastBulletOne: Streaming in 4K
+  fastBulletTwo: High-speed downloads
+  fastBulletThree: Online gaming
     
 crashreporter:
   mainTitle:
