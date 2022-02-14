@@ -10,6 +10,7 @@ if [ -f .env ]; then
   . .env
 fi
 
+COMPILE=
 RELEASE=1
 OS=
 NETWORKEXTENSION=
@@ -22,6 +23,8 @@ helpFunction() {
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N "Use -n or --networkextension to force the network-extension component for MacOS too."
+  print N ""
+  print N "Use -c or --compile if you want to start the compilation directly. Instead, xcode will be executed."
   print N ""
   print N "If MVPN_IOS_ADJUST_TOKEN env is found, this will be used at compilation time."
   print N ""
@@ -43,6 +46,10 @@ while [[ $# -gt 0 ]]; do
   -a | --adjusttoken)
     ADJUST_SDK_TOKEN="$2"
     shift
+    shift
+    ;;
+  -c | --compile)
+    COMPILE=1
     shift
     ;;
   -d | --debug)
@@ -232,6 +239,12 @@ if command -v "sed" &>/dev/null; then
   sed -i '' '/<string>Original<\/string>/d' MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
 fi
 
-print Y "Opening in XCode..."
-open MozillaVPN.xcodeproj
+if [[ "$COMPILE" ]]; then
+  print Y "Compiling..."
+  xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj || die "Compilation failed"
+else
+  print Y "Opening in XCode..."
+  open MozillaVPN.xcodeproj
+fi
+
 print G "All done!"
