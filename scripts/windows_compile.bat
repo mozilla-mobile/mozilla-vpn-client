@@ -128,7 +128,7 @@ IF %DEBUG_BUILD%==T (
 
 IF %DEBUG_BUILD%==F (
   ECHO Generating Release Build for the extension bridge
-  qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+  qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=force_debug_info
 )
 
 IF %ERRORLEVEL% NEQ 0 (
