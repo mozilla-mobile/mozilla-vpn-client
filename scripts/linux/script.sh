@@ -178,7 +178,7 @@ if [ "$SOURCEONLY" == "Y" ]; then
 ## Otherwise, build the desired release.
 else
   case "$RELEASE" in
-    bionic|focal|impish)
+    bionic|focal|impish|jammy)
       build_deb_source $RELEASE
 
       print Y "Building Debian packages for $RELEASE"
@@ -194,7 +194,7 @@ else
       ;;
 
     *)
-      die "We support RELEASE focal, bionic, impish and fedora only"
+      die "We support RELEASE focal, bionic, impish, jammy and fedora only"
       ;; 
   esac
 fi
