@@ -86,11 +86,19 @@ VPNFlickable {
             Layout.alignment: Qt.AlignHCenter
             Layout.maximumWidth: col.width - VPNTheme.theme.vSpacing * 2
 
-            Image {
-                id: img
+            Rectangle {
+                color: "transparent"
+                height: VPNTheme.theme.rowHeight * 2
                 Layout.alignment: Qt.AlignHCenter
-                sourceSize.height: VPNTheme.theme.rowHeight * 2
-                sourceSize.width: VPNTheme.theme.rowHeight * 2
+                Layout.fillWidth: true
+
+                Image {
+                    id: img
+
+                    anchors.fill: parent
+                    sourceSize.height: VPNTheme.theme.rowHeight * 2
+                    fillMode: Image.PreserveAspectFit
+                }
             }
 
             ColumnLayout {
