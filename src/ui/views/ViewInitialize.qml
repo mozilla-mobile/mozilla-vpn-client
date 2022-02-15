@@ -62,8 +62,4 @@ Item {
 
     }
 
-    Component.onCompleted: {
-        VPN.getStarted();
-    }
-
 }

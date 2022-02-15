@@ -65,15 +65,15 @@ VPNInAppAuthenticationBase {
                 {
                     type: "error",
                     message: "Invalid code entry",
-                    visible: true
+                    visible: !createAccountButton.enabled
                 }
             ]
         }
 
         VPNButton {
             id: createAccountButton
-            enabled: codeInput.text && codeInput.text.length === 6
-            text: "Verify"
+            enabled: codeInput.text && codeInput.text.length === VPNAuthInApp.getVerificationCodeLength()
+            text: "Verify" + VPNAuthInApp.getVerificationCodeLength()
             Layout.fillWidth: true
 
             onClicked: {

@@ -88,6 +88,10 @@ class AuthenticationInApp final : public QObject {
   Q_INVOKABLE void signUp();
   Q_INVOKABLE const QString emailAddress() const;
 
+  Q_INVOKABLE int getVerificationCodeLength() {
+    return m_verificationCodeLength;
+  }
+
 #ifdef UNIT_TEST
   // This method is used to have a test coverage for the TOTP verification.
   void enableTotpCreation();
@@ -134,6 +138,8 @@ class AuthenticationInApp final : public QObject {
 
  private:
   State m_state = StateInitializing;
+
+  int m_verificationCodeLength = 6;
 
   AuthenticationInAppListener* m_listener = nullptr;
 };

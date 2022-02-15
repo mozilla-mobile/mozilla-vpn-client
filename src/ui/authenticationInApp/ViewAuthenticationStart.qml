@@ -68,5 +68,4 @@ VPNInAppAuthenticationBase {
             Layout.fillWidth: true
         }
     }
-
 }
