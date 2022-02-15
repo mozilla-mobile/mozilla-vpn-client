@@ -177,7 +177,9 @@ class NetworkRequest final : public QObject {
   bool m_completed = false;
   bool m_aborted = false;
 
+#if QT_VERSION >= 0x060000
   QUrl m_redirectedUrl;
+#endif
 };
 
 #endif  // NETWORKREQUEST_H
