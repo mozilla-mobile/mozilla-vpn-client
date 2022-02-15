@@ -318,6 +318,7 @@
         <file>resources/updateStatusUpdateAvailable.svg</file>
         <file>resources/updateStatusUpToDate.svg</file>
         <file>resources/upload.svg</file>
+        <file>resources/verification-code.svg</file>
         <file>resources/warning-dark-orange.svg</file>
         <file>resources/warning-orange.svg</file>
         <file>resources/warning.svg</file>

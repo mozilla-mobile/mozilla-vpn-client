@@ -150,4 +150,12 @@ VPNFlickable {
             Layout.minimumHeight: VPNTheme.theme.vSpacing * 2
         }
     }
+
+    Connections {
+        target: VPNAuthInApp
+        function onErrorOccurred(error) {
+            console.log("VPNAuthInApp error", error);
+        }
+    }
+
 }
