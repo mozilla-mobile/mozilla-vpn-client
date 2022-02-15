@@ -73,7 +73,7 @@ VPNInAppAuthenticationBase {
         VPNButton {
             id: createAccountButton
             enabled: codeInput.text && codeInput.text.length === VPNAuthInApp.getVerificationCodeLength()
-            text: "Verify" + VPNAuthInApp.getVerificationCodeLength()
+            text: "Verify"
             Layout.fillWidth: true
 
             onClicked: {

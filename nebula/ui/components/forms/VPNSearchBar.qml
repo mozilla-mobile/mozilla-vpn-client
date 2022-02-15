@@ -33,8 +33,12 @@ VPNTextField {
 
     VPNContextualAlerts {
         id: searchWarning
-        anchors.top: searchBar.bottom
-        anchors.topMargin: VPNTheme.theme.listSpacing
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: serverSearchInput.bottom
+            topMargin: VPNTheme.theme.listSpacing
+        }
         width: parent.width
 
         messages: [

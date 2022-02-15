@@ -126,8 +126,13 @@ VPNFlickable {
 
                     VPNContextualAlerts {
                         id: errorAlert
-                        anchors.top: serverSearchInput.bottom
-                        anchors.topMargin: VPNTheme.theme.listSpacing
+
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            top: serverSearchInput.bottom
+                            topMargin: VPNTheme.theme.listSpacing
+                        }
 
                         messages: [
                             {

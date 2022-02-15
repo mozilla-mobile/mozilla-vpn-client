@@ -13,9 +13,6 @@ ColumnLayout {
     id: messagesContainer
     property var messages
 
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.topMargin: VPNTheme.theme.listSpacing
     spacing: VPNTheme.theme.listSpacing / 4
 
     DelegateChooser {
