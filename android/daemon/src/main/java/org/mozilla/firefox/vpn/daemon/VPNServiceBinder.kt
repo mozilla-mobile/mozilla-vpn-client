@@ -15,7 +15,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
     private val mService = service
     private val tag = "VPNServiceBinder"
-    private var mListener: IBinder? = null
+    private var mListener: IBinder? = null // TODO: This now might be more then one!
     private var mResumeConfig: JSONObject? = null
 
     /**
