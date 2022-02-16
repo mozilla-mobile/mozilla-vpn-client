@@ -18,6 +18,7 @@ VPNTextField {
     echoMode: charactersMasked ? TextInput.Password : TextInput.Normal
     hasError: !isValid
     height: VPNTheme.theme.rowHeight
+    rightPadding: VPNTheme.theme.windowMargin * 0.5 + toggleButton.width
     width: parent.width
 
     VPNIconButton {
