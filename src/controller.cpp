@@ -291,12 +291,6 @@ void Controller::activateInternal() {
 void Controller::activateNext() {
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
-  if (device == nullptr) {
-    logger.error()
-        << "Current device is no longer in DeviceModel - cannot continue ";
-    vpn->errorHandle(ErrorHandler::UnrecoverableError);
-    return;
-  }
   const HopConnection& hop = m_activationQueue.first();
 
   logger.debug() << "Activating peer" << hop.m_server.publicKey();
