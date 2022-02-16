@@ -52,7 +52,8 @@ Depends: libpolkit-gobject-1-0 (>=0.105),
          qml-module-qtquick-window2 (>=5.15.2),
          qml-module-qtquick2 (>=5.15.2),
          qml-module-qtqml-models2 (>=5.15.2),
-         qml-module-qtqml (>=5.15.2)
+         qml-module-qtqml (>=5.15.2),
+         qml-module-qt-labs-qmlmodels (>=5.15.2)
 Description: A fast, secure and easy to use VPN. Built by the makers of Firefox.
  Read more on https://vpn.mozilla.org
 
