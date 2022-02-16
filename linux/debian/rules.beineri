@@ -2,12 +2,17 @@
 
 export DH_VERBOSE=1
 export QTDIR := /opt/qt515
-export GODIR := /usr/lib/go-1.13
-export PATH := $(QTDIR)/bin:$(GODIR)/bin:$(PATH)
+export PATH := $(QTDIR)/bin:$(PATH)
 export LD_LIBRARY_PATH := $(QTDIR)/lib:$(LD_LIBRARY_PATH)
 
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
+
+GOLANG_NATIVE_VERSION := $(shell dpkg-query --showformat='${Version}' --show golang 2>/dev/null || echo 0)
+ifneq (ok,$(dpkg --compare-versions $(GOLANG_NATIVE_VERSION) ge 1.13 && echo ok))
+	export GODIR := /usr/lib/go-1.13
+	export PATH := $(GODIR)/bin:$(PATH)
+endif
 
 %:
 	dh $@ --with=systemd --warn-missing
