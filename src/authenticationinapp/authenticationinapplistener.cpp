@@ -113,6 +113,10 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
 
   m_emailAddress = emailAddress;
 
+  AuthenticationInApp* aip = AuthenticationInApp::instance();
+  Q_ASSERT(aip);
+  emit aip->emailAddressChanged();
+
   NetworkRequest* request =
       NetworkRequest::createForFxaAccountStatus(m_task, m_emailAddress);
 

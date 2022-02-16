@@ -14,6 +14,9 @@ class AuthenticationInApp final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AuthenticationInApp)
 
+  Q_PROPERTY(int verificationCodeLength READ verificationCodeLength CONSTANT);
+  Q_PROPERTY(QString emailAddress READ emailAddress NOTIFY emailAddressChanged);
+
  public:
   enum State {
     // The Authencation-In-App has not started yet
@@ -68,9 +71,6 @@ class AuthenticationInApp final : public QObject {
 
   State state() const { return m_state; }
 
-  static int verificationCodeLength() { return 6; }
-  Q_PROPERTY(int verificationCodeLength READ verificationCodeLength CONSTANT);
-
   // Everything starts from here.
   Q_INVOKABLE void checkAccount(const QString& emailAddress);
 
@@ -89,7 +89,6 @@ class AuthenticationInApp final : public QObject {
   // Sign In/Up.
   Q_INVOKABLE void signIn();
   Q_INVOKABLE void signUp();
-  Q_INVOKABLE const QString emailAddress() const;
 
 #ifdef UNIT_TEST
   // This method is used to have a test coverage for the TOTP verification.
@@ -120,10 +119,16 @@ class AuthenticationInApp final : public QObject {
   void requestErrorPropagation(ErrorType errorType,
                                AuthenticationInAppListener* listener);
 
+  static int verificationCodeLength() { return 6; }
+
+  const QString& emailAddress() const;
+
  signals:
   void stateChanged();
 
   void errorOccurred(ErrorType error);
+
+  void emailAddressChanged();
 
 #ifdef UNIT_TEST
   void unitTestFinalUrl(const QUrl& url);

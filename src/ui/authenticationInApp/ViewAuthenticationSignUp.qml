@@ -28,7 +28,7 @@ VPNInAppAuthenticationBase {
         VPNAuthInApp.reset();
     }
     _menuButtonAccessibleName: "Back"
-    _headlineText: VPNAuthInApp.emailAddress()
+    _headlineText: VPNAuthInApp.emailAddress
     _subtitleText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
     _imgSource: "qrc:/nebula/resources/avatar.svg"
 
