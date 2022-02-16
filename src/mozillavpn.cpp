@@ -1669,6 +1669,14 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   // We do not need to remove the current device! guardian-website "overwrites"
   // the current device key when we submit a new one.
   addCurrentDeviceAndRefreshData();
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
+    if (!modelsInitialized()) {
+      logger.error() << "Failed to complete the key regeneration";
+      errorHandle(ErrorHandler::RemoteServiceError);
+      setUserState(UserNotAuthenticated);
+      return;
+    }
+  }));
 }
 
 void MozillaVPN::hardReset() {
