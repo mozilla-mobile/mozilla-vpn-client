@@ -79,7 +79,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install pbuilder debootstrap debhelper devscripts -y
           sudo pbuilder create --distribution ${{ matrix.config.dist }} --basetgz $BASETGZ \
-              --othermirror "deb http://security.ubuntu.com/ubuntu ${{ matrix.config.dist }}-updates main restricted" \
+              --othermirror "deb http://security.ubuntu.com/ubuntu ${{ matrix.config.dist }}-updates main restricted universe" \
               --debootstrapopts --variant=buildd --extrapackages "software-properties-common gpg-agent"
           if [ ! -z "$QTPPA" ]; then
               echo '#/bin/sh' > ppa-${{ matrix.config.qt }}-install.sh
