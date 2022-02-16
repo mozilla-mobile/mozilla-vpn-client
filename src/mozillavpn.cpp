@@ -981,6 +981,14 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
     case ErrorHandler::UnrecoverableError:
       alert = UnrecoverableErrorAlert;
       break;
+    case ErrorHandler::NoCurrentDeviceError:
+      // We unexpectedly have no Device to use
+      // for the connection, something has gone wrong.
+      // So let's logout the user so we can recover.
+      TaskScheduler::deleteTasks();
+      reset(false);
+      alert = UnrecoverableErrorAlert;
+      break;
 
     default:
       break;
