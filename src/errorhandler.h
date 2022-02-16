@@ -27,7 +27,6 @@ class ErrorHandler final : public QObject {
     SubscriptionFailureError,
     GeoIpRestrictionError,
     UnrecoverableError,
-    NoCurrentDeviceError,
     IgnoredError,
   };
 

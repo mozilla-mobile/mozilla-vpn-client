@@ -292,7 +292,8 @@ void Controller::activateNext() {
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   if (device == nullptr) {
-    vpn->errorHandle(ErrorHandler::NoCurrentDeviceError);
+    vpn->errorHandle(ErrorHandler::AuthenticationError);
+    vpn->reset(false);
     return;
   }
   const HopConnection& hop = m_activationQueue.first();

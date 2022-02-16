@@ -981,14 +981,6 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
     case ErrorHandler::UnrecoverableError:
       alert = UnrecoverableErrorAlert;
       break;
-    case ErrorHandler::NoCurrentDeviceError:
-      // We unexpectedly have no Device to use
-      // for the connection, something has gone wrong.
-      // So let's logout the user so we can recover.
-      TaskScheduler::deleteTasks();
-      reset(false);
-      alert = UnrecoverableErrorAlert;
-      break;
 
     default:
       break;
@@ -1686,6 +1678,14 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   // We do not need to remove the current device! guardian-website "overwrites"
   // the current device key when we submit a new one.
   addCurrentDeviceAndRefreshData();
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
+    if (!modelsInitialized()) {
+      logger.error() << "Failed to complete the key regeneration";
+      errorHandle(ErrorHandler::RemoteServiceError);
+      setUserState(UserNotAuthenticated);
+      return;
+    }
+  }));
 }
 
 void MozillaVPN::hardReset() {
