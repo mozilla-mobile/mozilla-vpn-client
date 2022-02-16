@@ -444,3 +444,12 @@ mobileOnboarding:
 
 inAppAuth:
   changeEmailLink: Change email
+  signInButton: Sign in
+  signInSubtitle: Continue to Mozilla VPN by signing in with your Firefox Account
+  forgotPasswordLink: Forgot your password?
+  passwordInputPlaceholder: Enter password
+  passwordInputLabel: Password
+  invalidPasswordErrorMessage: Invalid password. Please try again
+  signInDisclaimer:
+    value: By proceeding, you agree to the following
+    comment: This is followed by links to Firefox Account Terms of Service and Privacy Notice
