@@ -1652,7 +1652,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 
   if (settingsHolder->hasDeviceKeyVersion() &&
       VersionApi::compareVersions(settingsHolder->deviceKeyVersion(),
-                                  APP_VERSION) >= 0) {
+                                  "2.5.0") >= 0) {
     return;
   }
 
