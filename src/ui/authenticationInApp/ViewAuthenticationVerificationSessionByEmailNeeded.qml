@@ -3,12 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import components.inAppAuth 0.1
 
-Item {
+
+VPNInAppAuthenticationBase {
     // TODO
     // we are here if the user is completing the session activation flow.
     // FxA has sent an email with a 6-digit code. The code must be received by
@@ -27,40 +30,80 @@ Item {
     // In theory, this part should be tested on iOS or on Android when we will
     // have IAP there too.
 
-    Component.onCompleted: console.log("SESSION VERIFICATION BY EMAIL")
+    id: authSignUp
 
-    Text {
-        id: msg
-        text: "Email verification needed. Code:"
-        anchors.top: parent.top
+    _changeEmailLinkVisible: true
+    _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
+    _menuButtonOnClick: () => {
+        VPNAuthInApp.reset();
+    }
+    _menuButtonAccessibleName: "Back"
+    _headlineText: "Enter verification code"
+    _subtitleText: "Open your email and enter the verification code it that was sent."
+    _imgSource: "qrc:/nebula/resources/verification-code.svg"
+
+    _inputs: ColumnLayout {
+        spacing: VPNTheme.theme.vSpacingSmall
+
+        VPNBoldLabel {
+            id: codeLabel
+            text: "Verification code"
+        }
+
+        VPNTextField {
+            id: codeInput
+            hasError: false
+            _placeholderText: "Enter 6-digit code"
+            Layout.fillWidth: true
+        }
+
+        VPNContextualAlerts {
+            id: passwordInputCreateWarnings
+            Layout.fillWidth: true
+
+            messages: [
+                {
+                    type: "error",
+                    message: "Invalid code entry",
+                    visible: !createAccountButton.enabled
+                }
+            ]
+        }
+
+        VPNButton {
+            id: createAccountButton
+            enabled: codeInput.text && codeInput.text.length === VPNAuthInApp.verificationCodeLength
+            text: "Verify"
+            Layout.fillWidth: true
+
+            onClicked: {
+                if (enabled) {
+                    VPNAuthInApp.verifySessionEmailCode(codeInput.text);
+                }
+            }
+        }
     }
 
-    VPNTextField {
-        id: codeInput
+    _footerContent: Column {
+        Layout.alignment: Qt.AlignHCenter
+        spacing: VPNTheme.theme.windowMargin
 
-        anchors.top: msg.bottom
-        anchors.bottomMargin: 24
-        width: parent.width
+        VPNLinkButton {
+            labelText: "Resend code"
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: {
+                VPNAuthInApp.resendVerificationSessionCodeEmail();
+            }
+        }
+
+        VPNLinkButton {
+            labelText: "Cancel"
+            fontName: VPNTheme.theme.fontBoldFamily
+            anchors.horizontalCenter: parent.horizontalCenter
+            linkColor: VPNTheme.theme.redButton
+            onClicked: VPNAuthInApp.reset()
+        }
+
     }
 
-    VPNButton {
-        id: codeButton
-        anchors.top: codeInput.bottom
-        anchors.bottomMargin: 24
-        text: "Verify" // TODO
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: 5
-        onClicked: VPNAuthInApp.verifySessionEmailCode(codeInput.text);
-    }
-
-    VPNButton {
-        anchors.top: codeButton.bottom
-        anchors.bottomMargin: 24
-        text: "Send new code" // TODO
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: 5
-        onClicked: VPNAuthInApp.resendVerificationSessionCodeEmail();
-    }
 }

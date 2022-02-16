@@ -40,15 +40,22 @@ Item {
 
         Column {
             id: col
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.rightMargin: VPNTheme.theme.windowMargin
-            anchors.top: parent.top
-            anchors.topMargin: VPNTheme.theme.windowMargin
+            anchors {
+                left: parent.left
+                right: parent.right
+                rightMargin: VPNTheme.theme.windowMargin
+                top: parent.top
+                topMargin: VPNTheme.theme.windowMargin
+            }
             spacing: VPNTheme.theme.windowMargin
 
             VPNContextualAlerts {
-                anchors.leftMargin: VPNTheme.theme.windowMargin
+                anchors {
+                    left: parent.left
+                    leftMargin: VPNTheme.theme.windowMargin / 2
+                    right: parent.right
+                    topMargin: VPNTheme.theme.windowMargin
+                }
                 messages: [
                     {
                         type: "warning",

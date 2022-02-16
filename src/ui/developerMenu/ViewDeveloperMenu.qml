@@ -224,8 +224,13 @@ Item {
 
             property bool isVisible: false
 
-            anchors.left: inspectorLink.left
-            anchors.top: inspectorLink.bottom
+            anchors {
+                left: inspectorLink.left
+                right: parent.right
+                top: inspectorLink.bottom
+                topMargin: VPNTheme.theme.listSpacing
+            }
+
             messages: [
                 {
                     type: "warning",

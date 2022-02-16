@@ -93,6 +93,8 @@ void AuthenticationInApp::signIn() {
 const QString& AuthenticationInApp::emailAddress() const {
   Q_ASSERT(m_listener);
 
+  logger.debug() << "Get email address";
+
   return m_listener->emailAddress();
 }
 

@@ -13,7 +13,6 @@ VPNLoader {
     // The next states are:
     // - StateStart: happy path.
     // - Authentication failed, network down, etc.
-    Component.onCompleted: console.log("INITIALIZE")
     objectName: "authenticatingLoadingView"
     headlineText: ""
 }
