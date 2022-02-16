@@ -488,6 +488,11 @@ void MozillaVPN::openLink(LinkType linkType) {
       url.append("/r/vpn/client/feedback");
       break;
 
+    case LinkForgotPassword:
+      url = Constants::fxaUrl();
+      url.append("/reset_password");
+      break;
+
     case LinkHelpSupport:
       url = NetworkRequest::apiBaseUrl();
       url.append("/r/vpn/support");
