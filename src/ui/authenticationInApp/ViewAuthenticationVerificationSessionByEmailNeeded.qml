@@ -72,7 +72,7 @@ VPNInAppAuthenticationBase {
 
         VPNButton {
             id: createAccountButton
-            enabled: codeInput.text && codeInput.text.length === VPNAuthInApp.getVerificationCodeLength()
+            enabled: codeInput.text && codeInput.text.length === VPNAuthInApp.verificationCodeLength
             text: "Verify"
             Layout.fillWidth: true
 
@@ -104,10 +104,6 @@ VPNInAppAuthenticationBase {
             onClicked: VPNAuthInApp.reset()
         }
 
-    }
-
-    Component.onCompleted: {
-        console.log("SESSION VERIFICATION BY EMAIL");
     }
 
 }

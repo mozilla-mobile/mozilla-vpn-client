@@ -134,8 +134,4 @@ VPNInAppAuthenticationBase {
             && passwordsMatch();
     }
 
-    Component.onCompleted: {
-        console.log("SIGN UP");
-    }
-
 }
