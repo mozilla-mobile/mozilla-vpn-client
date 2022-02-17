@@ -26,33 +26,33 @@ job-defaults:
         max-run-time: 1800
 
 jobs:
-    clang:
-        description: 'clang'
-        run:
-            using: run-task
-            cwd: '{checkout}'
-            command: find . -type f \( -iname "*.c" -or -iname "*.h" -or -iname "*.C" -or -iname "*.H" -or -iname "*.cpp" -or -iname "*.hpp" -or -iname "*.cc" -or -iname "*.hh" -or -iname "*.c++" -or -iname "*.h++" -or -iname "*.cxx" -or -iname "*.hxx" \) | xargs -P1 -n1 clang-format-11 --style=file -i
-        treeherder:
-            symbol: clang
-            tier: 1
-    glean:
-        description: 'glean'
-        run:
-            using: run-task
-            cwd: '{checkout}'
-            command: pip3 install glean_parser && python3 scripts/generate_glean.py
-        treeherder:
-            symbol: glean
-            tier: 1
-    l10n:
-        description: 'l10n'
-        run:
-            using: run-task
-            cwd: '{checkout}'
-            command: export PATH="/opt/qt515/bin:$PATH" && git submodule sync --recursive i18n && git submodule update --init i18n && python3 scripts/importLanguages.py && lupdate -version && python3 .github/l10n/check_l10n_issues.py
-        treeherder:
-            symbol: l10n
-            tier: 1
+    # clang:
+        # description: 'clang'
+        # run:
+            # using: run-task
+            # cwd: '{checkout}'
+            # command: find . -type f \( -iname "*.c" -or -iname "*.h" -or -iname "*.C" -or -iname "*.H" -or -iname "*.cpp" -or -iname "*.hpp" -or -iname "*.cc" -or -iname "*.hh" -or -iname "*.c++" -or -iname "*.h++" -or -iname "*.cxx" -or -iname "*.hxx" \) | xargs -P1 -n1 clang-format-11 --style=file -i
+        # treeherder:
+            # symbol: clang
+            # tier: 1
+    # glean:
+        # description: 'glean'
+        # run:
+            # using: run-task
+            # cwd: '{checkout}'
+            # command: pip3 install glean_parser && python3 scripts/generate_glean.py
+        # treeherder:
+            # symbol: glean
+            # tier: 1
+    # l10n:
+        # description: 'l10n'
+        # run:
+            # using: run-task
+            # cwd: '{checkout}'
+            # command: export PATH="/opt/qt515/bin:$PATH" && git submodule sync --recursive i18n && git submodule update --init i18n && python3 scripts/importLanguages.py && lupdate -version && python3 .github/l10n/check_l10n_issues.py
+        # treeherder:
+            # symbol: l10n
+            # tier: 1
 #    ktlint:
 #        description: 'ktlint'
 #        run:
