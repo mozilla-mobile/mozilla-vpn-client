@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Window 2.12
+import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import compat 0.1
@@ -126,6 +127,37 @@ Window {
         height: visible ? VPNTheme.theme.menuHeight : 0
         anchors.top: parent.top
         anchors.topMargin: iosSafeAreaTopMargin.height
+    }
+
+    ColumnLayout {
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            top: parent.top
+        }
+        z: 99
+        
+        Text {
+            text: "ConnectionBenchmark"
+        }
+        Text {
+            text: "testValue: " + VPNConnectionBenchmark.testValue
+        }
+        Text {
+            text: "pingValue: " + VPNConnectionBenchmark.pingValue
+        }
+        Text {
+            text: "pinLatency 1: " + VPNConnectionBenchmark.pingLatency
+        }
+        Text {
+            text: "pingLatency 2: " + VPNConnectionHealth.latency
+        }
+
+        Rectangle {
+            color: "lightgrey"
+            height: parent.height
+            width: parent.width
+            z: -1
+        }
     }
 
     VPNStackView {
