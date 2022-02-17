@@ -72,7 +72,7 @@ VPNInAppAuthenticationBase {
 
         VPNButton {
             id: createAccountButton
-            enabled: codeInput.text && codeInput.text.length === VPNAuthInApp.verificationCodeLength
+            enabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded && codeInput.text && codeInput.text.length === VPNAuthInApp.verificationCodeLength
             text: "Verify"
             Layout.fillWidth: true
 

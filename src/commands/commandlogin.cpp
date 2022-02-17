@@ -88,17 +88,26 @@ int CommandLogin::run(QStringList& tokens) {
             AuthenticationInApp::instance()->checkAccount(email);
           } break;
 
+          case AuthenticationInApp::StateCheckingAccount:
+            break;
+
           case AuthenticationInApp::StateSignIn: {
             QString password = getPassword("Password:");
             AuthenticationInApp::instance()->setPassword(password);
             AuthenticationInApp::instance()->signIn();
           } break;
 
+          case AuthenticationInApp::StateSigningIn:
+            break;
+
           case AuthenticationInApp::StateSignUp: {
             QTextStream stream(stdout);
             stream << "Sign up is not supported in CLI mode." << Qt::endl;
             loop.exit();
           } break;
+
+          case AuthenticationInApp::StateSigningUp:
+            break;
 
           case AuthenticationInApp::StateUnblockCodeNeeded: {
             QString code = getInput("Check your email. Unblock code:");
@@ -113,11 +122,17 @@ int CommandLogin::run(QStringList& tokens) {
             AuthenticationInApp::instance()->verifySessionEmailCode(code);
           } break;
 
+          case AuthenticationInApp::StateVerifyingSessionEmailCode:
+            break;
+
           case AuthenticationInApp::StateVerificationSessionByTotpNeeded: {
             QString code =
                 getInput("Session verification by TOTP needed. Code:");
             AuthenticationInApp::instance()->verifySessionTotpCode(code);
           } break;
+
+          case AuthenticationInApp::StateVerifyingSessionTotpCode:
+            break;
 
           case AuthenticationInApp::StateFallbackInBrowser: {
             QTextStream stream(stdout);

@@ -75,6 +75,7 @@ VPNInAppAuthenticationBase {
             id: signInBtn
             text: VPNl18n.InAppAuthSignInButton
             Layout.fillWidth: true
+            enabled: VPNAuthInApp.state === VPNAuthInApp.StateSignIn
             onClicked: {
                 VPNAuthInApp.setPassword(passwordInput.text);
                 VPNAuthInApp.signIn();

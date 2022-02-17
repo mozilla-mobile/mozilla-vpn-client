@@ -45,6 +45,7 @@ VPNInAppAuthenticationBase {
         VPNButton {
             text: "Verify"
             Layout.fillWidth: true
+            enabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded
             onClicked: {
               VPNAuthInApp.verifySessionTotpCode(codeInput.text);
             }

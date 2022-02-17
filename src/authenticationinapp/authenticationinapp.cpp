@@ -147,6 +147,13 @@ void AuthenticationInApp::verifySessionTotpCode(const QString& code) {
   m_listener->verifySessionTotpCode(code);
 }
 
+void AuthenticationInApp::requestEmailAddressChange(
+    AuthenticationInAppListener* listener) {
+  Q_ASSERT(listener);
+  Q_ASSERT(m_listener == listener);
+  emit emailAddressChanged();
+}
+
 void AuthenticationInApp::requestState(State state,
                                        AuthenticationInAppListener* listener) {
   Q_ASSERT(listener);
