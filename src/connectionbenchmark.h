@@ -14,21 +14,19 @@ class ConnectionBenchmark final : public QObject {
   Q_OBJECT;
   Q_DISABLE_COPY_MOVE(ConnectionBenchmark);
 
+  Q_PROPERTY(State state READ state NOTIFY stateChanged);
   Q_PROPERTY(QString testValue READ testValue NOTIFY testValueChanged);
   Q_PROPERTY(quint64 pingValue READ pingValue NOTIFY pingValueChanged);
   Q_PROPERTY(uint pingLatency READ pingLatency NOTIFY pingChanged);
 
  public:
   enum State {
-    StateInitializing,
+    StateInitial,
     StateTesting,
     StateReady,
     StateError,
   };
   Q_ENUM(State);
-
- private:
-  Q_PROPERTY(State state READ state NOTIFY stateChanged);
 
  public:
   ConnectionBenchmark();
@@ -43,10 +41,8 @@ class ConnectionBenchmark final : public QObject {
   uint pingLatency() const { return m_connectionHealth.latency(); }
   const QString& testValue() const { return m_testValue; }
 
- public slots:
-  void stateChanged();
-
  signals:
+  void stateChanged();
   void pingChanged();
   void pingValueChanged();
   void testValueChanged();
@@ -58,7 +54,9 @@ class ConnectionBenchmark final : public QObject {
 
   ConnectionHealth m_connectionHealth;
 
-  State m_state = StateInitializing;
+  State m_state = StateInitial;
+
+  void setState(State state);
 };
 
 #endif  // CONNECTIONBENCHMARK_H

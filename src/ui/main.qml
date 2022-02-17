@@ -135,9 +135,12 @@ Window {
             top: parent.top
         }
         z: 99
-        
+
         Text {
             text: "ConnectionBenchmark"
+        }
+        Text {
+            text: "state: " + VPNConnectionBenchmark.state
         }
         Text {
             text: "testValue: " + VPNConnectionBenchmark.testValue
@@ -150,6 +153,19 @@ Window {
         }
         Text {
             text: "pingLatency 2: " + VPNConnectionHealth.latency
+        }
+
+        Button {
+            text: "start"
+            onClicked: {
+                VPNConnectionBenchmark.start();
+            }
+        }
+        Button {
+            text: "stop"
+            onClicked: {
+                VPNConnectionBenchmark.stop();
+            }
         }
 
         Rectangle {

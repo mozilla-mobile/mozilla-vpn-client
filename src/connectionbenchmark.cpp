@@ -19,11 +19,23 @@ ConnectionBenchmark::~ConnectionBenchmark() {
   MVPN_COUNT_DTOR(ConnectionBenchmark);
 }
 
-void ConnectionBenchmark::stateChanged() { logger.debug() << "state changed"; }
+void ConnectionBenchmark::setState(State state) {
+  logger.debug() << "set state" << state;
+  m_state = state;
+  emit stateChanged();
+}
 
-void ConnectionBenchmark::start() { logger.debug() << "start benchmark"; }
+void ConnectionBenchmark::start() {
+  logger.debug() << "start benchmark";
 
-void ConnectionBenchmark::stop() { logger.debug() << "stop benchmark"; }
+  setState(StateTesting);
+}
+
+void ConnectionBenchmark::stop() {
+  logger.debug() << "stop benchmark";
+
+  setState(StateInitial);
+}
 
 const quint64& ConnectionBenchmark::pingValue() {
   logger.debug() << "ping value";
