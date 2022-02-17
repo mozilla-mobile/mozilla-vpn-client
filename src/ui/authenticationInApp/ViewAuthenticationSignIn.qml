@@ -21,68 +21,139 @@ VPNInAppAuthenticationBase {
     // - unblock code needed. This can happen for security reasons. We go
     //   to UnblockCodeNeeded. The user needs to insert the 6-digit code.
     // - The user enters the wrong password, sees error.
-    // - The user clicks "Change email", "Cancel", or the back arrow and goes back to start.
+    // - The user clicks "Change email" or the back arrow and goes back to start.
     // - Some other error, goes back to start and sees error.
 
     // TODOs (likely there are more)
-    // Add final content
     // Open forgot password flow in webview on click
-    // Add TOS and privacy links. Can borrow from ViewSubscriptionNeeded.qml.
-    // Show form error messages
     // Form interaction polish
     // Add password criteria tooltip
+    // Maybe add button loader
 
     _changeEmailLinkVisible: true
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => { VPNAuthInApp.reset() }
     _menuButtonAccessibleName: "Back"
     _headlineText: VPNAuthInApp.emailAddress
-    _subtitleText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
+    _subtitleText: VPNl18n.InAppAuthSignInSubtitle
     _imgSource: "qrc:/nebula/resources/avatar.svg"
-    _inputLabel: "Enter password"
+    _inputLabel: VPNl18n.InAppAuthPasswordInputLabel
 
     _inputs: ColumnLayout {
-        spacing: VPNTheme.theme.vSpacing * 2
-        VPNPasswordInput {
-            id: passwordInput
+        spacing: VPNTheme.theme.vSpacing - VPNTheme.theme.listSpacing
+
+        ColumnLayout {
             Layout.fillWidth: true
-            _placeholderText: "secure password" // TODO
+            spacing: VPNTheme.theme.listSpacing
+
+            VPNPasswordInput {
+                id: passwordInput
+                Layout.fillWidth: true
+                _placeholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
+                Keys.onReturnPressed: if (!hasError && text.length > 0) signInBtn.clicked();
+                onTextChanged: if (passwordInput.hasError) hasError = false
+            }
+
+            VPNContextualAlerts {
+                id: searchWarning
+                anchors.left: undefined
+                anchors.right: undefined
+                anchors.topMargin: undefined
+                Layout.minimumHeight: VPNTheme.theme.vSpacing
+                Layout.fillHeight: false
+                messages: [
+                    {
+                        type: "error",
+                        message: VPNl18n.InAppAuthInvalidPasswordErrorMessage,
+                        visible: passwordInput.hasError
+                    }
+                ]
+            }
         }
 
         VPNButton {
-            text: "Sign in"
+            id: signInBtn
+            text: VPNl18n.InAppAuthSignInButton
             Layout.fillWidth: true
             onClicked: {
                 VPNAuthInApp.setPassword(passwordInput.text);
                 VPNAuthInApp.signIn();
             }
         }
-    }
 
-    _disclaimers: RowLayout {
-        Layout.alignment: Qt.AlignHCenter
-        VPNTextBlock {
-            Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        Connections {
+            target: VPNAuthInApp
+            function onErrorOccurred(e) {
+                if (e === 2) {
+                    passwordInput.hasError = true;
+                    paswordInput.forceActiveFocus();
+                }
+            }
         }
     }
+
+    _disclaimers: ColumnLayout {
+        Layout.alignment: Qt.AlignHCenter
+        Layout.fillWidth: true
+
+        GridLayout {
+            id: grid
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            columnSpacing: 0
+            columns: 3
+            Component.onCompleted: if (implicitWidth > window.width) flow = Grid.TopToBottom
+
+            VPNGreyLink {
+                id: termsOfService
+
+                // Terms of Service - string defined in VPNAboutUs.qml
+                labelText: qsTrId("vpn.aboutUs.tos2")
+                Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
+                textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
+                onClicked: VPN.openLink(VPN.LinkTermsOfService)
+            }
+
+            Rectangle {
+                width: 4
+                height: 4
+                radius: 2
+                Layout.alignment: Qt.AlignHCenter
+                color: VPNTheme.theme.greyLink.defaultColor
+                visible: parent.flow != Grid.TopToBottom
+                opacity: .8
+            }
+
+            VPNGreyLink {
+                id: privacyNotice
+
+                // Privacy Notice - string defined in VPNAboutUs.qml
+                labelText: qsTrId("vpn.aboutUs.privacyNotice2")
+                onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
+                textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
+                Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter
+            }
+        }
+    }
+
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
         spacing: VPNTheme.theme.windowMargin
 
         VPNLinkButton {
-            labelText: "Forgot your password?"
+            labelText: VPNl18n.InAppAuthForgotPasswordLink
             anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: VPN.openLink(VPN.LinkForgotPassword)
         }
 
         VPNLinkButton {
-            labelText: "Cancel"
+            // TODO create cancel component and use everywhere
+            labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText // "Cancel"
             fontName: VPNTheme.theme.fontBoldFamily
             anchors.horizontalCenter: parent.horizontalCenter
             linkColor: VPNTheme.theme.redButton
-            onClicked: VPNAuthInApp.reset()
+            onClicked: VPN.cancelAuthentication()
         }
 
     }

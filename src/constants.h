@@ -87,8 +87,10 @@ constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
 
 constexpr const char* LOGO_URL = ":/nebula/resources/logo-dock.png";
 
-PRODBETAEXPR(const char*, fxaUrl, "https://api.accounts.firefox.com",
+PRODBETAEXPR(const char*, fxaApiBaseUrl, "https://api.accounts.firefox.com",
              "https://api-accounts.stage.mozaws.net")
+PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
+             "https://accounts.stage.mozaws.net")
 PRODBETAEXPR(
     const char*, balrogUrl,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",
