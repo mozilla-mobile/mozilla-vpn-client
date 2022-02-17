@@ -159,6 +159,7 @@ class Controller final : public QObject {
 
   void heartbeatCompleted();
 
+  void clearConnectedTime();
   void resetConnectedTime();
 
   void startUnsettledPeriod();

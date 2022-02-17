@@ -186,7 +186,6 @@ bool Controller::activate() {
     setState(StateConnecting);
   }
 
-  m_timer.stop();
   resetConnectionCheck();
 
   activateInternal();
@@ -197,8 +196,7 @@ void Controller::activateInternal() {
   logger.debug() << "Activation internal";
   Q_ASSERT(m_impl);
 
-  resetConnectedTime();
-  m_timer.stop();
+  clearConnectedTime();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
 
@@ -341,9 +339,9 @@ bool Controller::deactivate() {
     setState(StateDisconnecting);
   }
 
-  m_timer.stop();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
+  clearConnectedTime();
   resetConnectionCheck();
 
   Q_ASSERT(m_impl);
@@ -403,8 +401,6 @@ void Controller::connectionConfirmed() {
     deactivate();
     return;
   }
-
-  m_timer.start(TIMER_MSEC);
 }
 
 void Controller::connectionFailed() {
@@ -479,8 +475,7 @@ void Controller::disconnected() {
   }
 
   startUnsettledPeriod();
-
-  m_timer.stop();
+  clearConnectedTime();
   resetConnectionCheck();
 
   // This is an unexpected disconnection. Let's use the Disconnecting state to
@@ -540,7 +535,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city,
     return;
   }
 
-  m_timer.stop();
+  clearConnectedTime();
   resetConnectionCheck();
 
   logger.debug() << "Switching to a different server";
@@ -853,8 +848,16 @@ void Controller::heartbeatCompleted() {
   }
 }
 
+void Controller::clearConnectedTime() {
+  m_connectedTimeInUTC = QDateTime();
+  emit timeChanged();
+  m_timer.stop();
+}
+
 void Controller::resetConnectedTime() {
   m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
+  emit timeChanged();
+  m_timer.start(TIMER_MSEC);
 }
 
 void Controller::startUnsettledPeriod() {
