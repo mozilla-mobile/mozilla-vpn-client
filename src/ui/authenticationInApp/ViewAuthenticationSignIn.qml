@@ -96,15 +96,6 @@ VPNInAppAuthenticationBase {
         Layout.alignment: Qt.AlignHCenter
         Layout.fillWidth: true
 
-        Text {
-            font.pixelSize: VPNTheme.theme.fontSizeSmallest
-            color: VPNTheme.theme.greyLink.defaultColor
-            Layout.preferredWidth: parent.width
-            horizontalAlignment: Text.AlignHCenter
-            Layout.alignment: Qt.AlignHCenter
-            text: VPNl18n.InAppAuthSignInDisclaimer
-        }
-
         GridLayout {
             id: grid
             Layout.alignment: Qt.AlignHCenter

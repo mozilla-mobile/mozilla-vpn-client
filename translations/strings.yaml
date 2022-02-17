@@ -450,6 +450,3 @@ inAppAuth:
   passwordInputPlaceholder: Enter password
   passwordInputLabel: Password
   invalidPasswordErrorMessage: Invalid password. Please try again
-  signInDisclaimer:
-    value: By proceeding, you agree to the following
-    comment: This is followed by Terms of Service and Privacy Notice links
