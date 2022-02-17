@@ -61,14 +61,16 @@ xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project Mozilla
 
 # Package
 python3 ./scripts/import_macos_pkg_resources.py
-# Full path of the app in a temp folder
-mkdir -p BUILD
-cp -r Release/Mozilla\ VPN.app BUILD
-# Copy the script
-cp -r ./macos/pkg/scripts BUILD
-cp -r ./macos/pkg/Distribution BUILD
-cp -r ./macos/pkg/Resources BUILD
 
-cd BUILD
+export BUILD="/builds/worker/artifacts/"
+# Full path of the app in a temp folder
+mkdir -p $BUILD
+cp -r Release/Mozilla\ VPN.app $BUILD
+# Copy the script
+cp -r ./macos/pkg/scripts $BUILD
+cp -r ./macos/pkg/Distribution $BUILD
+cp -r ./macos/pkg/Resources $BUILD
+
+cd $BUILD
 echo `pwd`
-zip -r ../build/src/artifacts/unsigned.zip .
+zip -r unsigned.zip .
