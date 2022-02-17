@@ -66,9 +66,29 @@ state, the client asks for the email address. The tasks for this state are:
 - Validate the email address
 - Process the email address
 
-When the email address is received and validated, the client checks if there is
-an account associated with this address. This operation can take a few seconds
-(usually less).
+When the email address is received and validated, the client goes to
+**Checking-account** state.
+
+* Next states: **Checking-account**
+* Errors:
+    * Unknown account - the account does not exist anymore. Super rare.
+    * Service unavailable - FxA is down
+    * Email can not be used to login - FxA is blocking the account
+    * Account already exists - rare
+    * Email already exists - rare
+    * Email type not supported - ?!?
+    * Invalid email code
+    * Too many requests
+    * Unknown account - ?!?
+* Available methods:
+    * `VPNAuthInApp.checkAccount(emailAddress)`
+    * `VPNAuthInApp.validateEmailAddress(emailAddress) -> bool`
+
+### State: Checking-account
+
+This state does not require user-interaction. The state machine is completing
+the `checkAccount()` operation. This operation can take a few seconds (usually
+less).
 
 If the account exists, we go to **Sign-in**, otherwise, for a new account, we
 go to **Sign-up** or **fallback in the browser**, in case the authentication
@@ -76,24 +96,14 @@ method is “without account creation”.
 
 * Next states: **Sign-in**, **Sign-up**, **fallback in the browser**
 * Errors: none
-* Available methods:
-    * `VPNAuthInApp.checkAccount(emailAddress)`
-    * `VPNAuthInApp.validateEmailAddress(emailAddress) -> bool`
+* Available methods: none
 
 ### State: Sign-in
 
-The client asks for the password. Then, it interacts with FxA. This should take
-a few seconds (usually less). From here we can go to several states:
-- **Unblock code needed**: FxA requires an extra validation step. An email is
-  sent to the user with a 6-digit code.
-- **Totp verification needed**: the account is configured to use TOTP (double
-  factor authentication). The user needs to submit a 6-digit code.
-- **Finalize**: the authentication is ready to be finalized
+The client asks for the password. Then, it goes to the **Signing-in** state.
 
-* Next states: **Unblock code needed**, **Totp verification needed**,
-  **Finalize**
+* Next states: **Signing-in**
 * Errors:
-    * Unknown account - the account does not exist anymore. Super rare.
     * Incorrect password
     * Sign in with this email type is not currently supported -This is a
       strange FxA code. We have to investigate how to reproduce it.
@@ -102,6 +112,23 @@ a few seconds (usually less). From here we can go to several states:
 * Available methods:
     * `VPNAuthInApp.setPassword(password)`
     * `VPNAuthInApp.signIn()`
+
+### State: Signing-in
+
+The client interacts with FxA. This should take a few seconds (usually less).
+From here we can go to several states:
+
+- **Sign-in**: Something went wrong. Check the error codes.
+- **Unblock code needed**: FxA requires an extra validation step. An email is
+  sent to the user with a 6-digit code.
+- **TOTP verification needed**: the account is configured to use TOTP (double
+  factor authentication). The user needs to submit a 6-digit code.
+- **Finalize**: the authentication is ready to be finalized
+
+* Next states: **Unblock code needed**, **TOTP verification needed**,
+  **Finalize**
+* Errors: none
+* Available methods: none
 
 ### State: unblock code needed
 
@@ -114,29 +141,34 @@ If needed, the user can ask to have a new email code. See:
 
 From here we can go to **Finalize**.
 
-* Next states: Finalize
-* Errors:
-    * Invalid unblock code
-    * Unknown account
-    * Incorrect password
-    * Sign in with this email type is not currently supported
-    * Failed to send email
+* Next states: **Finalize**
+* Errors: none
 * Available methods:
     * `VPNAuthInApp.setUnblockCodeAndContinue(code)`
     * `VPNAuthInApp.resendUnblockCodeEmail()`
 
-### State: Totp verification needed
+### State: TOTP verification needed
 
 If the account is configured to use
 [TOTP](https://en.wikipedia.org/wiki/Time-based_One-Time_Password), we are in
 this state after the **Sign-in**. The client needs to inform the user and asks
-for the 6-digit code.  From here, we can go to **Finalize**.
+for the 6-digit code.  From here, we go to **Verifying session TOTP code**.
 
-* Next states: Finalize
-* Errors:
-    * Invalid totp code
+* Next states: **Verifying session TOTP code**
+* Errors: none
+    * Invalid TOTP code
 * Available methods:
     * `VPNAuthInApp.verifySessionTotpCode(code)`
+
+## State: Verifying session TOTP code
+
+The client is sending the TOTP code to FxA. We are waiting for the result of
+the validation.  From here, we can go to **Finalize** or back to **TOTP
+verification needed** in case the code is invalid.
+
+* Next states: **TOTP verification needed**, **Finalize**
+* Errors: none
+* Available methods: none
 
 ### State: Sign-Up
 
@@ -150,13 +182,10 @@ we need to run a few steps:
     - The password cannot contain the account email address
 - Create the account
 
-The account creation requires email validation. The user receives a 6-digit
-code via email. If this is needed, we go to **Email validation**.
+From here we go to the **Signing-up** state where the real operation is done.
 
-* Next states: Email validation
-* Errors:
-    * Account already exists - rare
-    * Email already exists - rare
+* Next states: **Signing-up**
+* Errors: none
 * Available methods:
     * `VPNAuthInApp.validatePasswordCommons(password) -> bool`
     * `VPNAuthInApp.validatePasswordLength(password) -> bool`
@@ -164,22 +193,41 @@ code via email. If this is needed, we go to **Email validation**.
     * `VPNAuthInApp.setPassword(password)`
     * `VPNAuthInApp.signUp()`
 
-### State: email validation
+### State: Signing-up
+
+The account creation requires email validation. The user receives a 6-digit
+code via email. If this is needed, we go to **Email validation**.
+If an error occur, we go back to **Start**.
+
+* Next states: **Start**, **Email validation**
+* Errors: none
+* Available methods: none
+
+### State: Email validation
 
 This state is super super similar to the “**unblock code needed**” one, but,
 because this is a different FxA concept, we want to keep the 2 separate. The
 behavior is exactly the same: the user needs to insert a 6-digit code and then
-we go to **Finalize**.
+we go to **Verifying session email code**.
 
 If needed, the user can ask for a new session code email. See
 `VPNAuthInApp.resendVerificationSessionCodeEmail()`.
 
-* Next states: Finalize
+* Next states: **Verifying session email code**
 * Errors:
     * Invalid unblock code
 * Available methods:
     * `VPNAuthInApp.verifySessionEmailCode(code)`
     * `VPNAuthInApp.resendVerificationSessionCodeEmail()`
+
+### State:: Verifying session email code
+
+The FxA is performing the email code verification. In case of an error, we go
+back to **Email validation**, otherwise, we go to **Finalize**.
+
+* Next states: **Finalize**
+* Errors: none
+* Available methods: none
 
 ### State: Finalize
 
@@ -216,4 +264,43 @@ The authentication continues in the browser as we used to do in v2.7.
 - Failed to send email
 - Too many requests
 - Server unavailable
-- Invalid Totp code
+- Invalid TOTP code
+
+### The whole flow
+
+```mermaid
+stateDiagram-v2
+  Start: Start
+  CheckingAccount: Checking Account
+  SignIn: Sign In
+  SignUp: Sign Up
+  Fallback: Fallback in the browser
+  SigningIn: Signing In
+  SigningUp: Signing Up
+  UnblockCodeNeeded: Unblock code needed
+  TOTPVerificationNeeded: TOTP verification needed
+  VerifyingSessionTOTPCode: Verifying session TOTP code
+  EmailVerification: Email verification
+  VerifyingSessionEmailCode: Verifying session email code
+
+  Initialization --> Start
+  Start --> CheckingAccount: email address received
+  CheckingAccount --> SignIn: the account already exists
+  CheckingAccount --> SignUp: new account is required
+  CheckingAccount --> Fallback: new account is required
+  SignIn --> SigningIn: password received
+  SigningIn --> SignIn: invalid password or error
+  SigningIn --> UnblockCodeNeeded: unblock code required
+  SigningIn --> TOTPVerificationNeeded: TOTP code required
+  SigningIn --> Finalize: authentication completed
+  UnblockCodeNeeded --> Finalize: authentication completd
+  TOTPVerificationNeeded --> VerifyingSessionTOTPCode: TOTP code received
+  VerifyingSessionTOTPCode --> Finalize: authentication completed
+  VerifyingSessionTOTPCode --> TOTPVerificationNeeded: TOTP code invalid or error
+  SignUp --> SigningUp: password received
+  SigningUp --> EmailVerification: email sent
+  SigningUp --> Start: error
+  EmailVerification --> VerifyingSessionEmailCode: email code received
+  VerifyingSessionEmailCode --> Finalize: authentication completed
+  VerifyingSessionEmailCode --> EmailVerification: code invalid or error
+```

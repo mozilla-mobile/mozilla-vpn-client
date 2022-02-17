@@ -22,12 +22,18 @@ class AuthenticationInApp final : public QObject {
     // The Authencation-In-App has not started yet
     StateInitializing,
     // The client_id and other params has been received. We are ready to
-    // receive email address and password.
+    // receive email address
     StateStart,
+    // The email address is checked.
+    StateCheckingAccount,
     // Sign in
     StateSignIn,
     // Sign up
     StateSignUp,
+    // Signing-in
+    StateSigningIn,
+    // Signing-up
+    StateSigningUp,
     // The authentication requires an unblock code (6-digit code) At this
     // point, the user needs to check their mailbox and pass the 6-digit
     // unblock code. Then, the signIn() can continue.  The code expires after 5
@@ -38,8 +44,12 @@ class AuthenticationInApp final : public QObject {
     // been verified yet.  The code expires after 5 minutes. Call
     // `resendVerificationSessionCodeEmail` to have a new code.
     StateVerificationSessionByEmailNeeded,
+    // Verification in progress
+    StateVerifyingSessionEmailCode,
     // The two-factor authentication session verification.
     StateVerificationSessionByTotpNeeded,
+    // Verification in progress
+    StateVerifyingSessionTotpCode,
     // If we are unable to continue the authentication in-app, the fallback is
     // the browser flow.
     StateFallbackInBrowser,
@@ -115,6 +125,7 @@ class AuthenticationInApp final : public QObject {
 
   void registerListener(AuthenticationInAppListener* listener);
 
+  void requestEmailAddressChange(AuthenticationInAppListener* listener);
   void requestState(State state, AuthenticationInAppListener* listener);
   void requestErrorPropagation(ErrorType errorType,
                                AuthenticationInAppListener* listener);
