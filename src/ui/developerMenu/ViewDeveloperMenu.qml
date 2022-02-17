@@ -28,8 +28,10 @@ Item {
         id: flickableContent
 
         anchors.top: menu.bottom
+        anchors.topMargin: VPNTheme.theme.windowMargin
+        anchors.left: parent.left
+        anchors.right: parent.right
         height: parent.height - menu.height
-        width: parent.width
 
         VPNCheckBoxRow {
             id: developerUnlock
