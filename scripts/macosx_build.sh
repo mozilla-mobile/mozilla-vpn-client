@@ -70,5 +70,6 @@ cp -r ./macos/pkg/Distribution $BUILD
 cp -r ./macos/pkg/Resources $BUILD
 
 cd $BUILD
+echo "$BUILD"
 echo `pwd`
 zip -r ../build/src/artifacts/unsigned.zip .
