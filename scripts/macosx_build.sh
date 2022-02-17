@@ -37,10 +37,6 @@ export PYTHONIOENCODING="UTF-8"
 python3 scripts/generate_glean.py
 python3 scripts/importLanguages.py -m
 
-# cd macos/gobridge
-# (go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
-# cd ../..
-
 curl -O https://dl.google.com/go/go1.17.6.darwin-amd64.tar.gz
 tar -xzf go1.17.6.darwin-amd64.tar.gz
 export PATH="`pwd`/go/bin:$PATH"
@@ -74,4 +70,5 @@ cp -r ./macos/pkg/Distribution BUILD
 cp -r ./macos/pkg/Resources BUILD
 
 cd BUILD
+echo `pwd`
 zip -r ../build/src/artifacts/unsigned.zip .
