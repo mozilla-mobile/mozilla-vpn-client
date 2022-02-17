@@ -48,7 +48,7 @@ class VPNService : android.net.VpnService() {
 
     private var currentTunnelHandle = -1
 
-    private var mCityname =""
+    private var mCityname = ""
 
     fun init() {
         if (mAlreadyInitialised) {
@@ -155,16 +155,18 @@ class VPNService : android.net.VpnService() {
             return mCityname
         }
 
-
     var isUp: Boolean
         get() {
             return currentTunnelHandle >= 0
         }
         private set(value) {
             if (value) {
-                mBinder.dispatchEvent(VPNServiceBinder.EVENTS.connected, JSONObject().apply{
-                    put("city", mCityname)
-                }.toString())
+                mBinder.dispatchEvent(
+                    VPNServiceBinder.EVENTS.connected,
+                    JSONObject().apply {
+                        put("city", mCityname)
+                    }.toString()
+                )
                 mConnectionTime = System.currentTimeMillis()
                 return
             }
