@@ -188,6 +188,7 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   if (fallbackServer) {
     args["serverFallback"] = jFallbackServer;
   }
+  args["city"] = MozillaVPN::instance()->currentServer()->exitCityName();
 
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE,

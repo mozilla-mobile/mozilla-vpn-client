@@ -48,6 +48,8 @@ class VPNService : android.net.VpnService() {
 
     private var currentTunnelHandle = -1
 
+    private var mCityname =""
+
     fun init() {
         if (mAlreadyInitialised) {
             return
@@ -148,6 +150,11 @@ class VPNService : android.net.VpnService() {
         get() {
             return mConnectionTime
         }
+    var cityname: String = ""
+        get() {
+            return mCityname
+        }
+
 
     var isUp: Boolean
         get() {
@@ -155,8 +162,9 @@ class VPNService : android.net.VpnService() {
         }
         private set(value) {
             if (value) {
-                Log.i(tag, "Dispatch Daemon State -> connected")
-                mBinder.dispatchEvent(VPNServiceBinder.EVENTS.connected, "")
+                mBinder.dispatchEvent(VPNServiceBinder.EVENTS.connected, JSONObject().apply{
+                    put("city", mCityname)
+                }.toString())
                 mConnectionTime = System.currentTimeMillis()
                 return
             }
@@ -189,7 +197,8 @@ class VPNService : android.net.VpnService() {
 
     fun turnOn(json: JSONObject, useFallbackServer: Boolean = false) {
         Log.sensitive(tag, json.toString())
-        val wireguard_conf = buildWireugardConfig(json, useFallbackServer)
+        val wireguard_conf = buildWireugardConfig(json,useFallbackServer)
+        mCityname = json.getString("city")
 
         if (checkPermissions() != null) {
             Log.e(tag, "turn on was called without vpn-permission!")

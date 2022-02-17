@@ -27,16 +27,25 @@ class VPNTileService : android.service.quicksettings.TileService() {
   }
  var mState :State = State.Unknown
  var mCriticalError = false;
+ var mCity = "";
  private val mServiceBinder = object : Binder(){
    override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
     when(code){
-      VPNServiceBinder.EVENTS.connected -> mState = State.Connected
+      VPNServiceBinder.EVENTS.connected -> {
+        mState = State.Connected
+        val buffer = data.createByteArray()
+        val json = buffer?.let { String(it) }
+        val config = JSONObject(json)
+        mCity = config.getString("city")
+      }
       VPNServiceBinder.EVENTS.disconnected -> mState = State.Disconnected
       VPNServiceBinder.EVENTS.init -> {
        val buffer = data.createByteArray()
        val json = buffer?.let { String(it) }
        val config = JSONObject(json)
        mState = if(config.getBoolean("connected")) State.Connected else State.Disconnected;
+       mCity = config.getString("city")
+       
       }
     }
     updateTile();
@@ -95,6 +104,7 @@ class VPNTileService : android.service.quicksettings.TileService() {
     mState=State.Connected
    }
   }
+  updateTile();
   super.onClick()
  }
 
@@ -119,7 +129,7 @@ class VPNTileService : android.service.quicksettings.TileService() {
      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       stateDescription = "Connected with VPN"
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-       subtitle ="<Some Server>"
+       subtitle =mCity
       }
      };
     }
