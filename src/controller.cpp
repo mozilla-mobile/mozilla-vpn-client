@@ -48,7 +48,6 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
 constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
-constexpr const uint32_t TIME_ACTIVATION = 1000;
 constexpr const uint32_t TIME_DEACTIVATION = 1500;
 
 // The Mullvad proxy services are located at internal IPv4 addresses in the
@@ -142,7 +141,7 @@ void Controller::initialize() {
 
 void Controller::implInitialized(bool status, bool a_connected,
                                  const QDateTime& connectionDate) {
-  logger.debug() << "Controller activated with status:" << status
+  logger.debug() << "Controller initialized with status:" << status
                  << "connected:" << a_connected
                  << "connectionDate:" << connectionDate.toString();
 
@@ -199,6 +198,7 @@ void Controller::activateInternal() {
   Q_ASSERT(m_impl);
 
   resetConnectedTime();
+  m_timer.stop();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
 
@@ -295,6 +295,9 @@ void Controller::activateNext() {
   logger.debug() << "Activating peer" << hop.m_server.publicKey();
   m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
   m_impl->activate(hop, device, vpn->keys(), stateToReason(m_state));
+
+  // Move to the confirming state if we are awaiting any connection handshakes.
+  setState(StateConfirming);
 }
 
 bool Controller::silentSwitchServers() {
@@ -319,7 +322,7 @@ bool Controller::silentSwitchServers() {
   }
   vpn->setServerCooldown(vpn->serverPublicKey());
 
-  // Activate the connection.
+  // Activate the first connection to kick off the server switch.
   activateInternal();
   return true;
 }
@@ -351,9 +354,11 @@ bool Controller::deactivate() {
 void Controller::connected(const QString& pubkey) {
   logger.debug() << "handshake completed with:" << pubkey;
   if (m_activationQueue.isEmpty()) {
+    logger.warning() << "Unexpected handshake: no pending connections.";
     return;
   }
   if (m_activationQueue.first().m_server.publicKey() != pubkey) {
+    logger.warning() << "Unexpected handshake: public key mismatch.";
     return;
   }
   m_handshakeTimer.stop();
@@ -365,33 +370,10 @@ void Controller::connected(const QString& pubkey) {
     return;
   }
 
+  // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
-
-  // We are currently silently switching servers
-  if (m_state == StateOn) {
-    m_connectionCheck.start();
-    return;
-  }
-
-  // This is an unexpected connection. Let's use the Connecting state to animate
-  // the UI.
-  if (m_state != StateConnecting && m_state != StateSwitching &&
-      m_state != StateConfirming) {
-    setState(StateConnecting);
-
-    resetConnectedTime();
-
-    TimerSingleShot::create(this, TIME_ACTIVATION, [this, pubkey]() {
-      if (m_state == StateConnecting) {
-        connected(pubkey);
-      }
-    });
-    return;
-  }
-
-  setState(StateConfirming);
-
-  // Now, let's wait for a ping sent and received from ConnectionHealth.
+  setState(StateOn);
+  resetConnectedTime();
   m_connectionCheck.start();
 }
 
@@ -603,7 +585,7 @@ void Controller::backendFailure() {
   m_nextStep = BackendFailure;
 
   if ((m_state == StateOn) || (m_state == StateSwitching) ||
-      (m_state == StateConnecting)) {
+      (m_state == StateConnecting) || (m_state == StateConfirming)) {
     deactivate();
     return;
   }
@@ -615,7 +597,7 @@ void Controller::serverUnavailable() {
   m_nextStep = ServerUnavailable;
 
   if ((m_state == StateOn) || (m_state == StateSwitching) ||
-      (m_state == StateConnecting)) {
+      (m_state == StateConnecting) || (m_state == StateConfirming)) {
     deactivate();
     return;
   }
@@ -694,12 +676,12 @@ void Controller::maybeEnableDisconnectInConfirming() {
 }
 
 void Controller::setState(State state) {
-  logger.debug() << "Setting state:" << state;
-
-  if (m_state != state) {
-    m_state = state;
-    emit stateChanged();
+  if (m_state == state) {
+    return;
   }
+  logger.debug() << "Setting state:" << state;
+  m_state = state;
+  emit stateChanged();
 }
 
 qint64 Controller::time() const {
