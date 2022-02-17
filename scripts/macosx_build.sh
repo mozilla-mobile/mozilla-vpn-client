@@ -58,6 +58,7 @@ echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
 echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
 echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
 ./scripts/apple_compile.sh macos
+
 make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
 make -f MozillaVPN.xcodeproj/qt_preprocess.mak
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
