@@ -62,8 +62,3 @@ linux:!android {
 } else:!macos {
     error(Unsupported platform)
 }
-
-coverage {
-    QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
-    QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
-}

@@ -35,7 +35,7 @@ $QMAKE \
   MVPN_MACOS=1 \
   CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release \
   CONFIG+=sdk_no_version_check \
-  CONFIG+=coverage \
+  QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage \
   lottie/tests/unit/unit.pro || die "Compilation failed"
 
 print Y "Compile the lottie unit-tests..."
@@ -58,7 +58,7 @@ $QMAKE \
   MVPN_MACOS=1 \
   CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release \
   CONFIG+=sdk_no_version_check \
-  CONFIG+=coverage \
+  QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage \
   lottie/tests/qml/qml.pro || die "Compilation failed"
 
 print Y "Compile the qml unit-tests..."

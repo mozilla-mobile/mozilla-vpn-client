@@ -994,12 +994,6 @@ QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
 
-coverage {
-    message(Coverage enabled)
-    QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
-    QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
-}
-
 debug {
     # If in debug mode, set mvpn_debug flag too.
     CONFIG += mvpn_debug
