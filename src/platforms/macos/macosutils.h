@@ -10,6 +10,8 @@
 
 class MacOSUtils final {
  public:
+  static NSString* appId();
+
   static QString computerName();
 
   static void enableLoginItem(bool startAtBoot);
