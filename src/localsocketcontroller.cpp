@@ -23,7 +23,7 @@
 #include <QHostAddress>
 
 // How many times do we try to reconnect.
-constexpr int MAX_CONNECTION_RETRY = 3;
+constexpr int MAX_CONNECTION_RETRY = 10;
 
 // How long do we wait between one try and the next one.
 constexpr int CONNECTION_RETRY_TIMER_MSEC = 500;
@@ -72,7 +72,9 @@ void LocalSocketController::errorOccurred(
 }
 
 void LocalSocketController::disconnectInternal() {
-  m_state = eDisconnected;
+  // We're still eReady as the Deamon is alive 
+  // and can make a new connection.
+  m_state = eReady;
   m_initializingRetry = 0;
   m_initializingTimer.stop();
   emit disconnected();
