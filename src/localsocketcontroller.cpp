@@ -72,7 +72,7 @@ void LocalSocketController::errorOccurred(
 }
 
 void LocalSocketController::disconnectInternal() {
-  // We're still eReady as the Deamon is alive 
+  // We're still eReady as the Deamon is alive
   // and can make a new connection.
   m_state = eReady;
   m_initializingRetry = 0;
