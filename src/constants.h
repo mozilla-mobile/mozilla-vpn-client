@@ -44,7 +44,7 @@ constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
 #endif
 
 // Let's refresh the IP address any 10 minutes (in milliseconds).
-CONSTEXPR(uint32_t, ipAddressTimerMsec, 600000, 10000, 0)
+CONSTEXPR(uint32_t, ipAddressTimerMsec, 600000, 10000, 500)
 
 // Let's check the connection status any second.
 CONSTEXPR(uint32_t, checkStatusTimerMsec, 1000, 1000, 0)
