@@ -75,7 +75,6 @@ void DaemonLocalServerConnection::readData() {
 }
 
 void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
-
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {
     logger.error() << "Invalid input";
