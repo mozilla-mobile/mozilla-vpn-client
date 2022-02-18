@@ -36,8 +36,10 @@ void EchoServer::start() {
 
   connect(this, &QTcpServer::newConnection, [this]() {
     QTcpSocket* socket = nextPendingConnection();
-    connect(socket, &QTcpSocket::readyRead,
-            [socket]() { socket->write(socket->readAll()); });
+    connect(socket, &QTcpSocket::readyRead, [socket]() {
+      socket->write(socket->readAll());
+      socket->flush();
+    });
   });
 
   emit ready();

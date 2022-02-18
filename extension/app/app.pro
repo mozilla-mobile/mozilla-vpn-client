@@ -57,7 +57,9 @@ linux:!android {
     # To avoid conficts between the 2 projects
     OBJECTS_DIR = .npobj
     MOC_DIR = .npmoc
-} else {
+} else:macos {
+    CONFIG -= app_bundle
+} else:!macos {
     error(Unsupported platform)
 }
 
