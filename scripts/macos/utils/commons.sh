@@ -27,7 +27,7 @@ _utest_qmake() {
     MVPN_MACOS=1 \
     CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release \
     CONFIG+=sdk_no_version_check \
-    CONFIG+=coverage \
+    QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage \
     "$1" || die "Compilation failed"
 
   [ -d "$2" ] || die "Expected $2 folder"

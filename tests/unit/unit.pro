@@ -265,8 +265,3 @@ UI_DIR = .ui
 
 RESOURCES += ../../src/ui/license.qrc
 RESOURCES += themes/themes.qrc
-
-coverage {
-    QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
-    QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
-}

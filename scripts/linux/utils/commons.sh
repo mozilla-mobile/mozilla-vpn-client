@@ -19,6 +19,7 @@ _utest_qmake() {
     qmake \
       CONFIG+=DUMMY \
       CONFIG+=debug \
+      QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage \
       QT+=svg \
       CONFIG+=webextension \
       CONFIG+=AUTHTEST || die "Compilation failed"
