@@ -45,25 +45,14 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          # Manually add QT executables to path
           export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
           python3 scripts/importLanguages.py
 
-      - name: Compile
+      - name: Running tests
         shell: bash
         run: |
-          # Manually add QT executables to path
-           export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
-          qmake CONFIG+=DUMMY QMAKE_CXX=clang++-10 QMAKE_LINK=clang++-10 CONFIG+=debug QT+=svg CONFIG+=webextension CONFIG+=coverage CONFIG+=AUTHTEST
-          make -j8
-
-      - name: Run the test script
-        shell: bash
-        run: |
-          # Manually add QT executables to path
-           export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
-          export MVPN_API_BASE_URL="https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net"
-          ./scripts/test_coverage.sh -j 8
+          export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
+          ./scripts/tests/unit_tests.sh
 
   macos-unit-test:
     strategy:
@@ -115,4 +104,3 @@ jobs:
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           ./scripts/tests/unit_tests.sh
-

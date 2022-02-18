@@ -10,7 +10,7 @@ if [ -f .env ]; then
   . .env
 fi
 
-print N "This script compiles MozillaVPN tests for MacOS"
+print N "This script compiles MozillaVPN tests for MacOS and Linux"
 print N ""
 
 if ! [ -d "src" ] || ! [ -d "tests" ]; then

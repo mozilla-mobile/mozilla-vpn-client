@@ -24,7 +24,7 @@ After checking out the code:
 
 * Install the git pre-commit hook (`./scripts/git-pre-commit-format install`)
 * Build the source (See below)
-* Run the unit tests with `./scripts/test_coverage.sh` or see below for running the functional tests.
+* Run the unit tests with `./scripts/tests/unit_tests.sh` or see below for running the functional tests.
 * Run the qml tests with `./tests/qml/qml_tests` add `-platform offscreen` to not see the qml app
 
 ### Running the functional tests
