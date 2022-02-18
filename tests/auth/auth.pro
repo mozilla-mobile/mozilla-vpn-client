@@ -8,6 +8,10 @@ QT += networkauth
 QT += qml
 QT += widgets
 
+macos {
+    CONFIG -= app_bundle
+}
+
 DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += BUILD_ID=\\\"1234\\\"
 

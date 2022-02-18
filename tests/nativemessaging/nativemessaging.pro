@@ -5,6 +5,10 @@
 QT += testlib
 QT += network
 
+macos {
+    CONFIG -= app_bundle
+}
+
 TEMPLATE = app
 TARGET = tests
 
