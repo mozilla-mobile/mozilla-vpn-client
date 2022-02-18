@@ -4,33 +4,71 @@
 
 #include "testipfinder.h"
 #include "../../src/tasks/ipfinder/taskipfinder.h"
+#include "../../src/networkrequest.h"
 #include "../../src/settingsholder.h"
 #include "helper.h"
+
+#include <QHostInfo>
 
 void TestIpFinder::ipv4AndIpv6() {
   SettingsHolder settingsHolder;
 
-  TaskIPFinder* ipFinder = new TaskIPFinder();
-
   TestHelper::networkConfig.clear();
 
   QEventLoop loop;
+  QUrl url(NetworkRequest::apiBaseUrl());
+
+  bool ipv4Expected = false;
+  bool ipv6Expected = false;
+
+  QHostInfo::lookupHost(url.host(), [&](const QHostInfo& hostInfo) {
+    if (hostInfo.error() == QHostInfo::NoError) {
+      for (const QHostAddress& address : hostInfo.addresses()) {
+        if (address.isNull() || address.isBroadcast()) continue;
+
+        if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+          TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+              TestHelper::NetworkConfig::Success,
+              QString("{\"ip\":\"42\", \"country\": \"123\"}").toUtf8()));
+          ipv4Expected = true;
+          continue;
+        }
+
+        if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+          TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+              TestHelper::NetworkConfig::Success,
+              QString("{\"ip\":\"43\", \"country\": \"123\"}").toUtf8()));
+          ipv6Expected = true;
+          continue;
+        }
+      }
+
+      loop.exit();
+    }
+  });
+  loop.exec();
+
+  if (!ipv4Expected && !ipv6Expected) {
+    return;
+  }
+
+  TaskIPFinder* ipFinder = new TaskIPFinder();
+
   connect(
       ipFinder, &TaskIPFinder::operationCompleted,
       [&](const QString& ipv4, const QString& ipv6, const QString& country) {
-        QVERIFY(ipv4 == "43" || ipv4 == "42");
-        QVERIFY(ipv6 == "43" || ipv6 == "42");
+        if (ipv4Expected) {
+          QVERIFY(ipv4 == "43" || ipv4 == "42");
+        }
+
+        if (ipv6Expected) {
+          QVERIFY(ipv6 == "43" || ipv6 == "42");
+        }
+
         QVERIFY(ipv4 != ipv6);
         QCOMPARE(country, "123");
         loop.exit();
       });
-
-  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-      TestHelper::NetworkConfig::Success,
-      QString("{\"ip\":\"42\", \"country\": \"123\"}").toUtf8()));
-  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-      TestHelper::NetworkConfig::Success,
-      QString("{\"ip\":\"43\", \"country\": \"123\"}").toUtf8()));
 
   ipFinder->run();
   loop.exec();
