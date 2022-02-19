@@ -124,3 +124,21 @@ lottie_cleanup_unit() {
 lottie_cleanup_qml() {
   _cleanup lottie/tests/qml || die
 }
+
+## QML tests
+
+qmltest_qmake() {
+  _qmake tests/qml || die
+}
+
+qmltest_compile() {
+  _compile tests/qml || die
+}
+
+qmltest_run() {
+  ./tests/qml/qml_tests -platform offscreen|| die
+}
+
+qmltest_cleanup() {
+  _cleanup tests/qml || die
+}

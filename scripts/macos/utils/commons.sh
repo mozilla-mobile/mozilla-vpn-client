@@ -95,16 +95,16 @@ utest_run_nativemessaging() {
 }
 
 utest_cleanup_unit() {
-  _cleanup tests.xcodeproj/ ./Release/tests
+  _cleanup tests.xcodeproj/ ./Release/tests || die
 }
 
 utest_cleanup_auth() {
-  _cleanup tests.xcodeproj/ ./Release/tests
+  _cleanup tests.xcodeproj/ ./Release/tests || die
 }
 
 utest_cleanup_nativemessaging() {
-  _cleanup mozillavpnnp.xcodeproj/ ./Release/mozillavpnnp
-  _cleanup tests.xcodeproj/ ./Release/tests
+  _cleanup mozillavpnnp.xcodeproj/ ./Release/mozillavpnnp || die
+  _cleanup tests.xcodeproj/ ./Release/tests || die
 }
 
 ## Lottie tests
@@ -134,9 +134,27 @@ lottie_run_qml() {
 }
 
 lottie_cleanup_unit() {
-  _cleanup lottie_tests.xcodeproj ./Release/lottie_tests
+  _cleanup lottie_tests.xcodeproj ./Release/lottie_tests || die
 }
 
 lottie_cleanup_qml() {
-  _cleanup tst_lottie.xcodeproj ./Release/tst_lottie
+  _cleanup tst_lottie.xcodeproj ./Release/tst_lottie || die
+}
+
+## QML tests
+
+qmltest_qmake() {
+  _qmake tests/qml/qml.pro qml_tests.xcodeproj || die
+}
+
+qmltest_compile() {
+  _compile qml_tests.xcodeproj ./Release/qml_tests || die
+}
+
+qmltest_run() {
+  ./Release/qml_tests || die
+}
+
+qmltest_cleanup() {
+  _cleanup qml_tests.xcodeproj ./Release/qml_tests || die
 }

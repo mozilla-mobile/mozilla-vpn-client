@@ -46,10 +46,10 @@ lottie_cleanup_unit || die
 print Y "Creating the xcode project via qmake for lottie qml-tests..."
 lottie_qmake_qml || die
 
-print Y "Compile the qml unit-tests..."
+print Y "Compile the lottie QML tests..."
 lottie_compile_qml || die
 
-print Y "Running the qml unit-tests..."
+print Y "Running the lottie QML tests..."
 lottie_run_qml || die
 
 print Y "Cleaning the existing project... "

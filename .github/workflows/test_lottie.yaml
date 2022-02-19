@@ -11,7 +11,7 @@ on:
 
 
 jobs:
-  unit-test:
+  linux-lottie-tests:
     strategy:
       fail-fast: false # Don't cancel other jobs
       matrix:
@@ -35,7 +35,7 @@ jobs:
           export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
           xvfb-run -a ./scripts/tests/lottie_tests.sh
 
-  macos-unit-test:
+  macos-lottie-tests:
     strategy:
       matrix:
         config:
