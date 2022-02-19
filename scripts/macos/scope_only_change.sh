@@ -13,13 +13,13 @@ changeCount=$(($lottie + $qml_neb + $qml_src + $cpp))
 if [ $lottie -gt 0 ]; then
     echo "number of changes in lottie code: $lottie"
     echo "running lottie unit tests"
-    ./scripts/macos/lottie_tests.sh
+    ./scripts/tests/lottie_tests.sh
 fi
 
 if [ $cpp -gt 0 ]; then
     echo "number of changes in Main C++ code: $cpp"
     echo "running unit tests"    
-    ./scripts/macos/unit_tests.sh
+    ./scripts/unit/lottie_tests.sh
 fi
 
 if [[ $qml_src -gt 0 || $qml_neb -gt 0 ]]; then
