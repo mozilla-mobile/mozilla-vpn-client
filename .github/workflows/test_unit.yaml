@@ -104,3 +104,61 @@ jobs:
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           ./scripts/tests/unit_tests.sh
+
+  windows-unit-tests:
+    name: Run Unit tests on Windows Qt5
+    runs-on: windows-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/mozilla-mobile/qt_static_windows
+          cd qt_static_windows
+          cat x* > qt_static.tar.bz2
+          tar xf qt_static.tar.bz2
+          tar xf msm.tar.gz
+          mkdir /c/MozillaVPNBuild
+          cp -r * /c/MozillaVPNBuild
+          cd ..
+          cp /c/MozillaVPNBuild/bin/libssl-1_1-x64.dll .
+          cp /c/MozillaVPNBuild/bin/libcrypto-1_1-x64.dll .
+          cp /c/MozillaVPNBuild/bin/libEGL.dll .
+          cp /c/MozillaVPNBuild/bin/libGLESv2.dll .
+          cp /c/MozillaVPNBuild/*.msm .
+
+      - name: Add msvc dev commands to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
+          python3 scripts/generate_glean.py
+
+      - name: Importing translation files
+        shell: bash
+        run: |
+          export PATH=/c/MozillaVPNBuild/bin:$PATH
+          git submodule update --remote --depth 1 i18n
+          python3 scripts/importLanguages.py -m
+
+      - name: Running tests
+        shell: bash
+        run: |
+          export PATH=/c/MozillaVPNBuild/bin:$PATH
+          ./scripts/tests/unit_tests.sh

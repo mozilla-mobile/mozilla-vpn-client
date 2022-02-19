@@ -23,6 +23,9 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   print N "Configure for darwin"
   . scripts/macos/utils/commons.sh
+elif [[ "$OSTYPE" == "msys"* ]]; then
+  print N "Configure for windows"
+  . scripts/windows/utils/commons.sh
 else
   die "Unsupported platform (yet?)"
 fi
