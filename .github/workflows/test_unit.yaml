@@ -1,4 +1,4 @@
-name: Unit Test Coverage
+name: Unit Tests
 on:
   push:
     branches:
@@ -11,7 +11,7 @@ on:
 
 
 jobs:
-  unit-test:
+  linux-unit-tests:
     strategy:
       fail-fast: false # Don't cancel other jobs
       matrix:
@@ -54,7 +54,7 @@ jobs:
           export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
           ./scripts/tests/unit_tests.sh
 
-  macos-unit-test:
+  macos-unit-tests:
     strategy:
       matrix:
         config:
