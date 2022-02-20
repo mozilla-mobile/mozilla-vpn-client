@@ -143,28 +143,21 @@ Window {
             text: "state: " + VPNConnectionBenchmark.state
         }
         Text {
-            text: "testValue: " + VPNConnectionBenchmark.testValue
-        }
-        Text {
-            text: "pingValue: " + VPNConnectionBenchmark.pingValue
-        }
-        Text {
-            text: "pinLatency 1: " + VPNConnectionBenchmark.pingLatency
-        }
-        Text {
-            text: "pingLatency 2: " + VPNConnectionHealth.latency
+            text: "download: " + VPNConnectionBenchmark.downloadSpeed
         }
 
-        Button {
-            text: "start"
-            onClicked: {
-                VPNConnectionBenchmark.start();
-            }
-        }
-        Button {
-            text: "stop"
-            onClicked: {
-                VPNConnectionBenchmark.stop();
+        RowLayout {
+            Layout.fillWidth: true
+
+            Button {
+                text: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateTesting ? "stop" : "start"
+                onClicked: {
+                    if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateTesting) {
+                        VPNConnectionBenchmark.stop();
+                    } else {
+                        VPNConnectionBenchmark.start();
+                    }
+                }
             }
         }
 

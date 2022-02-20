@@ -6,7 +6,9 @@
 #define CONNECTIONBENCHMARK_H
 
 #include "connectionhealth.h"
+#include "filedownloader.h"
 
+#include <QDateTime>
 #include <QObject>
 #include <QString>
 
@@ -18,6 +20,8 @@ class ConnectionBenchmark final : public QObject {
   Q_PROPERTY(QString testValue READ testValue NOTIFY testValueChanged);
   Q_PROPERTY(quint64 pingValue READ pingValue NOTIFY pingValueChanged);
   Q_PROPERTY(uint pingLatency READ pingLatency NOTIFY pingChanged);
+  Q_PROPERTY(
+      float downloadSpeed READ downloadSpeed NOTIFY downloadSpeedChanged);
 
  public:
   enum State {
@@ -37,15 +41,22 @@ class ConnectionBenchmark final : public QObject {
   Q_INVOKABLE void start();
   Q_INVOKABLE void stop();
 
+  void downloadFiles();
+
   const quint64& pingValue();
   uint pingLatency() const { return m_connectionHealth.latency(); }
   const QString& testValue() const { return m_testValue; }
+  float downloadSpeed() const { return m_mBitsPerSecond; }
 
  signals:
   void stateChanged();
   void pingChanged();
   void pingValueChanged();
   void testValueChanged();
+  void downloadSpeedChanged();
+
+ private slots:
+  void onDownloaded();
 
  private:
   quint64 m_pingValue;
@@ -55,6 +66,13 @@ class ConnectionBenchmark final : public QObject {
   ConnectionHealth m_connectionHealth;
 
   State m_state = StateInitial;
+
+  FileDownloader* m_fileDownloader;
+
+  quint64 m_startTime;
+  quint64 m_endTime;
+  quint64 m_maxRunTime = 3000;
+  float m_mBitsPerSecond;
 
   void setState(State state);
 };

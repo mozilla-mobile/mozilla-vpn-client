@@ -8,7 +8,7 @@
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
-#include "connectionbenchmark.h"
+#include "connectionbenchmark/connectionbenchmark.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "constants.h"
