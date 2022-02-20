@@ -10,6 +10,8 @@
 #include <QUrl>
 
 FileDownloader::FileDownloader(QUrl fileUrl, QObject *parent) : QObject(parent) {
+  MVPN_COUNT_CTOR(FileDownloader);
+
   QNetworkRequest request(fileUrl);
   m_networkReply = m_networkAccessManager.get(request);
 
@@ -19,7 +21,7 @@ FileDownloader::FileDownloader(QUrl fileUrl, QObject *parent) : QObject(parent) 
           &FileDownloader::onDownloadProgress);
 }
 
-FileDownloader::~FileDownloader() { }
+FileDownloader::~FileDownloader() { MVPN_COUNT_DTOR(FileDownloader); }
 
 void FileDownloader::onFinished(QNetworkReply* pReply) {
   m_downloadedData = pReply->readAll();

@@ -31,6 +31,9 @@ constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 // Cooldown period for unresponsive servers
 constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
 
+// Cooldown period for unresponsive servers
+constexpr uint32_t CONNECTION_SPEED_BENCHMARK_DURATION = 3000;
+
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
                     testingValue)                                 \

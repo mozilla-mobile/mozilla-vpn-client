@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionbenchmark.h"
+#include "constants.h"
 #include "filedownloader.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "pinghelper.h"
 #include "timersingleshot.h"
 
 #include <QDateTime>
@@ -26,69 +26,109 @@ ConnectionBenchmark::~ConnectionBenchmark() {
 }
 
 void ConnectionBenchmark::setState(State state) {
-  logger.debug() << "set state" << state;
+  logger.debug() << "Set state" << state;
   m_state = state;
   emit stateChanged();
 }
 
-void ConnectionBenchmark::onDownloaded() {
-  logger.debug() << "on downloaded" << m_fileDownloader->bytesReceived();
+void ConnectionBenchmark::onDownloaded(FileDownloader* downloader) {
+  logger.debug() << "On downloaded";
 
-  m_endTime = QDateTime::currentMSecsSinceEpoch();
-  quint64 benchmarkRuntime = m_endTime - m_startTime;
-  float bytesPerSecond =
-      m_fileDownloader->bytesReceived() / benchmarkRuntime * 1000;
-  float bitsPerSecond = bytesPerSecond * 8;
-  float mBitsPerSecond = bitsPerSecond / pow(1024, 2);
+  quint64 downloadDuration = QDateTime::currentMSecsSinceEpoch() - m_startTime;
+  double bytesPerSecond = downloader->bytesReceived() / downloadDuration * 1000;
+  double bitsPerSecond = bytesPerSecond * 8;
+  double mBitsPerSecond = bitsPerSecond / pow(1024, 2);
 
-  logger.debug() << "run time" << benchmarkRuntime;
-  logger.debug() << "download speed" << mBitsPerSecond;
+  m_mBitsPerSecond += mBitsPerSecond;
+  m_numOfFilesReceived += 1;
 
-  m_mBitsPerSecond = mBitsPerSecond;
-  emit downloadSpeedChanged();
+  if (m_numOfFilesReceived == m_numOfFilesTotal) {
+    m_fileDownloaderList.clear();
+    emit downloadSpeedChanged();
+  }
 
   if (m_state == StateTesting) {
     setState(StateInitial);
   }
 }
 
+void ConnectionBenchmark::populateDownloadUrls() {
+  logger.debug() << "Add download urls";
+
+  m_downloadUrls
+      << "https://speed1.syseleven.net.prod.hosts.ooklaserver.net:8080/"
+         "download?nocache=73d775b0-3082-47fb-8816-d6171c023fa2&size=25000000";
+  m_downloadUrls
+      << "https://warp.cronon.net:8080/"
+         "download?nocache=0e85d3af-efdf-491b-8b26-e8c2d0ffcbb6&size=25000000";
+  m_downloadUrls
+      << "https://ber.wsqm.telekom-dienste.de.prod.hosts.ooklaserver.net:8080/"
+         "download?nocache=c97cb86a-a793-44a6-b933-a824334411e0&size=25000000";
+  m_downloadUrls
+      << "https://speedtest.sewan-group.de.prod.hosts.ooklaserver.net:8080/"
+         "download?nocache=ee336c0e-a0bc-4083-aaf9-6503790febb3&size=25000000";
+  m_downloadUrls
+      << "https://speed1.syseleven.net.prod.hosts.ooklaserver.net:8080/"
+         "download?nocache=4519563d-26d6-4e69-bf7d-3b3334369013&size=25000000";
+  m_downloadUrls
+      << "https://warp.cronon.net:8080/"
+         "download?nocache=2fee0741-8666-4b1d-be7d-407cf1940253&size=25000000";
+  m_downloadUrls
+      << "https://ber.wsqm.telekom-dienste.de.prod.hosts.ooklaserver.net:8080/"
+         "download?nocache=67b1e110-3b15-4877-87bc-6964f65a2af0&size=25000000";
+  m_downloadUrls
+      << "https://speedtest.sewan-group.de.prod.hosts.ooklaserver.net:8080/"
+         "download?nocache=993866ce-83d7-4ea5-bca0-ac0629eace05&size=25000000";
+  m_downloadUrls
+      << "https://speed1.syseleven.net.prod.hosts.ooklaserver.net:8080/"
+         "download?nocache=baf55ab4-0f5e-46ea-b6c8-f6733d546f5f&size=25000000";
+  m_downloadUrls
+      << "https://warp.cronon.net:8080/"
+         "download?nocache=a6ce7368-6819-461d-97a5-c995b1de7ebc&size=25000000";
+
+  m_numOfFilesTotal = m_downloadUrls.size();
+}
+
 void ConnectionBenchmark::start() {
-  logger.debug() << "start benchmark";
+  logger.debug() << "Start benchmark";
+
+  populateDownloadUrls();
 
   m_startTime = QDateTime::currentMSecsSinceEpoch();
+  m_mBitsPerSecond = 0;
+  m_numOfFilesReceived = 0;
+
   setState(StateTesting);
 
-  QUrl fileUrl(
-      "https://warp.cronon.net:8080/"
-      "download?nocache=2e556265-c07c-4413-95f9-bd3e450dcc99&size=25000000&"
-      "guid=7344510e-c2dc-4478-af50-167a26ccf667");
-  m_fileDownloader = new FileDownloader(fileUrl, this);
+  for (const QString& downloadUrl : m_downloadUrls) {
+    FileDownloader* downloader = new FileDownloader(downloadUrl, this);
+    m_fileDownloaderList.append(downloader);
 
-  connect(m_fileDownloader, &FileDownloader::downloaded, this,
-          &ConnectionBenchmark::onDownloaded);
-  connect(m_fileDownloader, &FileDownloader::aborted, this,
-          &ConnectionBenchmark::onDownloaded);
+    connect(downloader, &FileDownloader::downloaded, this, [this, downloader] {
+      ConnectionBenchmark::onDownloaded(downloader);
+    });
+    connect(downloader, &FileDownloader::aborted, this, [this, downloader] {
+      ConnectionBenchmark::onDownloaded(downloader);
+    });
+  }
+
+  m_downloadUrls.clear();
 
   // Stop speedtest when max runtime is reached
-  TimerSingleShot::create(this, m_maxRunTime, [this]() {
-    logger.error() << "max time reached";
+  TimerSingleShot::create(this, Constants::CONNECTION_SPEED_BENCHMARK_DURATION,
+                          [this]() {
+                            logger.error() << "Max testing time reached";
 
-    if (m_state == StateTesting) {
-      stop();
-    }
-  });
+                            if (m_state == StateTesting) {
+                              stop();
+                            }
+                          });
 }
 
 void ConnectionBenchmark::stop() {
-  logger.debug() << "stop benchmark";
+  logger.debug() << "Stop benchmark";
 
-  m_fileDownloader->abort();
-}
-
-const quint64& ConnectionBenchmark::pingValue() {
-  logger.debug() << "ping value";
-
-  m_pingValue = 1234;
-
-  return m_pingValue;
+  for (FileDownloader* downloader : m_fileDownloaderList) {
+    downloader->abort();
+  }
 }

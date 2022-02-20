@@ -5,10 +5,10 @@
 #ifndef CONNECTIONBENCHMARK_H
 #define CONNECTIONBENCHMARK_H
 
-#include "connectionhealth.h"
 #include "filedownloader.h"
 
 #include <QDateTime>
+#include <QList>
 #include <QObject>
 #include <QString>
 
@@ -17,9 +17,6 @@ class ConnectionBenchmark final : public QObject {
   Q_DISABLE_COPY_MOVE(ConnectionBenchmark);
 
   Q_PROPERTY(State state READ state NOTIFY stateChanged);
-  Q_PROPERTY(QString testValue READ testValue NOTIFY testValueChanged);
-  Q_PROPERTY(quint64 pingValue READ pingValue NOTIFY pingValueChanged);
-  Q_PROPERTY(uint pingLatency READ pingLatency NOTIFY pingChanged);
   Q_PROPERTY(
       float downloadSpeed READ downloadSpeed NOTIFY downloadSpeedChanged);
 
@@ -43,38 +40,30 @@ class ConnectionBenchmark final : public QObject {
 
   void downloadFiles();
 
-  const quint64& pingValue();
-  uint pingLatency() const { return m_connectionHealth.latency(); }
-  const QString& testValue() const { return m_testValue; }
-  float downloadSpeed() const { return m_mBitsPerSecond; }
+  double downloadSpeed() const { return m_mBitsPerSecond; }
 
  signals:
   void stateChanged();
-  void pingChanged();
-  void pingValueChanged();
-  void testValueChanged();
   void downloadSpeedChanged();
 
  private slots:
-  void onDownloaded();
+  void onDownloaded(FileDownloader* downloader);
 
  private:
-  quint64 m_pingValue;
-
-  QString m_testValue = "test value";
-
-  ConnectionHealth m_connectionHealth;
-
   State m_state = StateInitial;
 
-  FileDownloader* m_fileDownloader;
+  QList<FileDownloader*> m_fileDownloaderList;
 
   quint64 m_startTime;
-  quint64 m_endTime;
-  quint64 m_maxRunTime = 3000;
   float m_mBitsPerSecond;
 
+  QStringList m_downloadUrls;
+  int m_numOfFilesTotal;
+  int m_numOfFilesReceived;
+
   void setState(State state);
+
+  void populateDownloadUrls();
 };
 
 #endif  // CONNECTIONBENCHMARK_H
