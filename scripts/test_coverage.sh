@@ -66,7 +66,7 @@ print Y "Running the native-messaging tests..."
 print G "done."
 
 print Y "Running the lottie tests..."
-./lottie/tests/unit/tests || die "Failed to run tests"
+./lottie/tests/unit/lottie_tests || die "Failed to run tests"
 print G "done."
 
 printn Y "(unit) Merge the profile data... "

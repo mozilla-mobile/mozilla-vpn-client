@@ -8,8 +8,8 @@
 #include "lottieprivatewindow.h"
 #include "lottiestatus.h"
 
+#include <QFile>
 #include <QJSEngine>
-#include <QTemporaryDir>
 
 constexpr const char* FILLMODE_STRETCH = "stretch";
 constexpr const char* FILLMODE_PAD = "pad";
@@ -25,6 +25,9 @@ static QString s_userAgent;
 void LottiePrivate::initialize(QJSEngine* engine, const QString& userAgent) {
   Q_ASSERT(engine);
   s_engine = engine;
+
+  qmlRegisterTypesAndRevisions<LottiePrivate>("vpn.mozilla.lottie", 1);
+  qmlRegisterModule("vpn.mozilla.lottie", 1, 0);
 
   Q_ASSERT(!userAgent.isEmpty());
   s_userAgent = userAgent;
@@ -54,44 +57,18 @@ void LottiePrivate::setReadyToPlay(bool readyToPlay) {
   createAnimation();
 }
 
+void LottiePrivate::setCanvasAndContainer(QQuickItem* canvas,
+                                          QQuickItem* container) {
+  m_canvas = canvas;
+  m_container = container;
+  createAnimation();
+}
+
 void LottiePrivate::createAnimation() {
   if (!m_readyToPlay || !m_canvas || m_source.isEmpty()) return;
 
   if (!m_lottieModule.isObject()) {
-    QByteArray jsModule;
-    {
-      QFile js(":/lottie/lottie/lottie_wrap.js.template");
-      if (!js.open(QFile::ReadOnly)) {
-        m_status.error("Unable to open the template resource.");
-        return;
-      }
-      jsModule.append(js.readAll());
-    }
-    {
-      QFile js(":/lottie/lottie/lottie.min.js");
-      if (!js.open(QFile::ReadOnly)) {
-        m_status.error("Unable to open the lottie resource.");
-        return;
-      }
-      jsModule.replace("__LOTTIE__", js.readAll());
-    }
-
-    QTemporaryDir tmpDir;
-    if (!tmpDir.isValid()) {
-      m_status.error("Failed to create a temporary folder.");
-      return;
-    }
-
-    QFile modulePath(QDir(tmpDir.path()).filePath("lottie.js"));
-    if (!modulePath.open(QFile::WriteOnly)) {
-      m_status.error("Failed to load the generated lottie.js.");
-      return;
-    }
-
-    modulePath.write(jsModule);
-
-    m_lottieModule =
-        engine()->importModule(QFileInfo(modulePath).absoluteFilePath());
+    m_lottieModule = engine()->importModule(":/lottie/lottie/lottie.mjs");
     if (m_lottieModule.isError()) {
       QString errorMessage("Exception processing the lottie js: ");
       errorMessage.append(m_lottieModule.toString());

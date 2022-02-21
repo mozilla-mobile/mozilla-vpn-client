@@ -3,7 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 TEMPLATE = app
-TARGET = tests
+TARGET = lottie_tests
+
+macos {
+    CONFIG -= app_bundle
+}
 
 INCLUDEPATH += ../../lib
 
@@ -27,8 +31,6 @@ SOURCES += \
     testdocument.cpp \
     testnavigator.cpp \
     testwindow.cpp
-
-CONFIG += debug
 
 QT += qml quick testlib
 

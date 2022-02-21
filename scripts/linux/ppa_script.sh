@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-. $(dirname $0)/commons.sh
+. $(dirname $0)/../commons.sh
 
 BRANCH=
 PPA=mozbaku/mozillavpn-focal
@@ -76,7 +76,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-[ "$RELEASE" != "focal" ] && [ "$RELEASE" != "bionic" ] && [ "$RELEASE" != "hirsute" ] && die "We support RELEASE focal, hirsute and bionic only"
+[ "$RELEASE" != "focal" ] && [ "$RELEASE" != "bionic" ] && [ "$RELEASE" != "impish" ] && die "We support RELEASE focal, impish and bionic only"
 
 printn Y "Computing the version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )

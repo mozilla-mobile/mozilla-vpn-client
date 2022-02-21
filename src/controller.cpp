@@ -291,6 +291,11 @@ void Controller::activateInternal() {
 void Controller::activateNext() {
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+  if (device == nullptr) {
+    vpn->errorHandle(ErrorHandler::AuthenticationError);
+    vpn->reset(false);
+    return;
+  }
   const HopConnection& hop = m_activationQueue.first();
 
   logger.debug() << "Activating peer" << hop.m_server.publicKey();
@@ -340,6 +345,8 @@ bool Controller::deactivate() {
   }
 
   m_timer.stop();
+  m_handshakeTimer.stop();
+  m_activationQueue.clear();
   resetConnectionCheck();
 
   Q_ASSERT(m_impl);

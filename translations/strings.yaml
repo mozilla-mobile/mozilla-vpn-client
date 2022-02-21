@@ -337,7 +337,10 @@ telemetryPolicyView:
   description: We strive to provide you with choices and collect only the data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional.
   question: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla?
 
+genericError:
+  unexpected: Unexpected error
 
+# Connection Info Screen
 connectionInfo:
   labelBitps:
     value: bit/s
@@ -354,6 +357,51 @@ connectionInfo:
   labelTbitps:
     value: Tbit/s
     comment: Terabits per second
+  labelPing:
+    value: Ping
+    comment: Latency of the connection
+  unitPing:
+    value: ms
+    commnent: milliseconds
+  loadingIndicatorLabel:
+    value: Testing speed…
+    comment: Shown to the user while waiting for the connection speed test results
+  errorMessage: Looks like there was an unexpected error while trying to connect. Please try again or check your connection.
+  # List header for medium and fast speeds
+  listHeaderDefault:
+    value: "At your current speed, here’s what your device is optimized for:"
+    comment: Headline for a list of things that the current connection is capable of.
+  # List header for low speeds and troubleshooting section
+  listHeaderSlow:
+    value: "It looks like the connection to this server location is a bit slow, you can try:"
+    comment: Headline for a list of suggestions for troubleshooting the current connection.
+  # Bullet items for trouble slow speedtest results and troubleshooting section
+  troubleshootingBulletOne:
+    value: Switching server locations
+    comment: This is a bullet item in the connection troubleshooting section
+  troubleshootingBulletTwo:
+    value: Checking your internet connection
+    comment: This is a bullet item in the connection troubleshooting section
+  # Bullet items for medium speedtest results
+  mediumBulletOne:
+    value: Browsing the internet
+    comment: This is a bullet item in the connection section for medium speedtest results
+  mediumBulletTwo:
+    value: Streaming video
+    comment: This is a bullet item in the connection section for medium speedtest results
+  mediumBulletThree:
+    value: Video conferencing
+    comment: This is a bullet item in the connection section for medium speedtest results
+  # Bullet items for high speedtest results
+  highBulletOne:
+    value: Streaming in 4K
+    comment: This is a bullet item in the connection section for high speedtest results
+  highBulletTwo:
+    value: High-speed downloads
+    comment: This is a bullet item in the connection section for high speedtest results
+  highBulletThree:
+    value: Online gaming
+    comment: This is a bullet item in the connection section for high speedtest results
     
 crashreporter:
   mainTitle:
@@ -383,7 +431,22 @@ serverUnavailableNotification:
   preferencesSubLabel: Get notified when connecting to a server location failed
 
 mobileOnboarding:
+  panelOneTitle: Mozilla VPN
+  panelOneSubtitle: A safe, reliable and fast VPN. Built by the makers of Firefox.
+  panelTwoTitle: Encrypt your activity
+  panelTwoSubtitle: Mozilla VPN keeps your location and browsing safe from eavesdroppers.
+  panelThreeTitle: Protect your privacy
+  panelThreeSubtitle: Route your activity and location through servers in more than 30 countries.
+  panelFourTitle: More security with one tap
+  panelFourSubtitle: Stream, download and game without limits, monthly caps or ISP throttling.
   signUpBtn: Sign up
   alreadyASubscriber: Already a subscriber?
 
-
+inAppAuth:
+  changeEmailLink: Change email
+  signInButton: Sign in
+  signInSubtitle: Continue to Mozilla VPN by signing in with your Firefox account
+  forgotPasswordLink: Forgot your password?
+  passwordInputPlaceholder: Enter password
+  passwordInputLabel: Password
+  invalidPasswordErrorMessage: Invalid password. Please try again

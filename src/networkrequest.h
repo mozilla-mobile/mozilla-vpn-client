@@ -135,6 +135,7 @@ class NetworkRequest final : public QObject {
   QUrl url() const { return m_reply ? m_reply->url() : m_request.url(); }
 
   void abort();
+  bool isAborted() const { return m_aborted; }
 
   static QString apiBaseUrl();
 
@@ -149,6 +150,10 @@ class NetworkRequest final : public QObject {
   void handleHeaderReceived();
   void handleRedirect(const QUrl& url);
   bool checkSubjectName(const QSslCertificate& cert);
+
+  bool isRedirect() const;
+
+  void maybeDeleteLater();
 
  private slots:
   void replyFinished();
@@ -170,6 +175,11 @@ class NetworkRequest final : public QObject {
   QNetworkReply* m_reply = nullptr;
   int m_status = 0;
   bool m_completed = false;
+  bool m_aborted = false;
+
+#if QT_VERSION >= 0x060000
+  QUrl m_redirectedUrl;
+#endif
 };
 
 #endif  // NETWORKREQUEST_H

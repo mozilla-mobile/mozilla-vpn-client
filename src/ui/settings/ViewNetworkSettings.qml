@@ -43,10 +43,14 @@ Item {
 
         Column {
             id: col
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.topMargin: VPNTheme.theme.windowMargin
+
+            anchors {
+                left: parent.left
+                leftMargin: VPNTheme.theme.windowMargin / 2
+                right: parent.right
+                top: parent.top
+                topMargin: VPNTheme.theme.windowMargin
+            }
             spacing: VPNTheme.theme.windowMargin
 
             VPNContextualAlerts {

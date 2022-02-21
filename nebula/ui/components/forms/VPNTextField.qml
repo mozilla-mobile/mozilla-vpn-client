@@ -14,50 +14,38 @@ TextField {
     property bool hasError: false
     property bool showInteractionStates: true
     property bool forceBlurOnOutsidePress: true
-    property bool isPassword: false
-    property bool charactersMasked: isPassword
+    property alias _placeholderText: centeredPlaceholderText.text
 
     id: textField
 
     background: VPNInputBackground {
         id: textFieldBackground
     }
+
     font.pixelSize: VPNTheme.theme.fontSizeSmall
     font.family: VPNTheme.theme.fontInterFamily
-    padding: VPNTheme.theme.windowMargin * .75
     color: VPNTheme.colors.input.default.text
-    echoMode: charactersMasked ? TextInput.Password : TextInput.Normal
+    echoMode: TextInput.Normal
     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
     onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(textField)
     selectByMouse: true
     Layout.preferredHeight: VPNTheme.theme.rowHeight
+    Layout.alignment: Qt.AlignVCenter
+    verticalAlignment: Text.AlignVCenter
+    placeholderTextColor: VPNTheme.colors.grey40
+    leftPadding: VPNTheme.theme.windowMargin
+    rightPadding: VPNTheme.theme.windowMargin
 
-    VPNIconButton {
-        id: iconButton
-
-        // TODO: Add accesibleName string
-        accessibleName: ""
-        anchors {
-            right: parent.right
-            rightMargin: VPNTheme.theme.listSpacing / 2
-            verticalCenter: parent.verticalCenter
-        }
-        height: parent.height - VPNTheme.theme.listSpacing
-        visible: isPassword
-        width: parent.height - VPNTheme.theme.listSpacing
-        onClicked: {
-            charactersMasked = !charactersMasked
-        }
-
-        Image {
-            id: backImage
-
-            anchors.centerIn: iconButton
-            fillMode: Image.PreserveAspectFit
-            source: charactersMasked ? "qrc:/nebula/resources/eye-hidden.svg" : "qrc:/nebula/resources/eye-visible.svg"
-            sourceSize.height: VPNTheme.theme.iconSize * 1.5
-            sourceSize.width: VPNTheme.theme.iconSize * 1.5
-        }
+    Text {
+        id: centeredPlaceholderText
+        verticalAlignment: textField.verticalAlignment
+        width: textField.width - (textField.leftPadding + textField.rightPadding)
+        height: textField.height
+        elide: Text.ElideRight
+        x: textField.leftPadding
+        visible: !textField.length && !textField.preeditText
+        font: textField.font
+        color: textField.placeholderTextColor
     }
 
     VPNInputStates {

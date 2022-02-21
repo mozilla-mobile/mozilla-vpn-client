@@ -44,7 +44,7 @@ jobs:
 
       - name: Build source bundle
         shell: bash
-        run: ./scripts/linux_script.sh --source
+        run: ./scripts/linux/script.sh --source
 
       - name: Uploading
         uses: actions/upload-artifact@v2
@@ -127,8 +127,8 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: "Hirsute", dist: hirsute }
             - { name: "Impish", dist: impish }
+            - { name: "Jammy", dist: jammy }
 
     runs-on: ubuntu-latest
     env:

@@ -22,6 +22,12 @@
 #include <QStandardPaths>
 #include <QHostAddress>
 
+// How many times do we try to reconnect.
+constexpr int MAX_CONNECTION_RETRY = 3;
+
+// How long do we wait between one try and the next one.
+constexpr int CONNECTION_RETRY_TIMER_MSEC = 500;
+
 namespace {
 Logger logger(LOG_CONTROLLER, "LocalSocketController");
 }
@@ -38,6 +44,10 @@ LocalSocketController::LocalSocketController() {
           &LocalSocketController::errorOccurred);
   connect(m_socket, &QLocalSocket::readyRead, this,
           &LocalSocketController::readData);
+
+  m_initializingTimer.setSingleShot(true);
+  connect(&m_initializingTimer, &QTimer::timeout, this,
+          &LocalSocketController::initializeInternal);
 }
 
 LocalSocketController::~LocalSocketController() {
@@ -49,11 +59,22 @@ void LocalSocketController::errorOccurred(
   logger.error() << "Error occurred:" << error;
 
   if (m_state == eInitializing) {
+    if (m_initializingRetry++ < MAX_CONNECTION_RETRY) {
+      m_initializingTimer.start(CONNECTION_RETRY_TIMER_MSEC);
+      return;
+    }
+
     emit initialized(false, false, QDateTime());
   }
 
-  m_state = eDisconnected;
   MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+  disconnectInternal();
+}
+
+void LocalSocketController::disconnectInternal() {
+  m_state = eDisconnected;
+  m_initializingRetry = 0;
+  m_initializingTimer.stop();
   emit disconnected();
 }
 
@@ -64,6 +85,12 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
   Q_UNUSED(keys);
 
   Q_ASSERT(m_state == eUnknown);
+  m_initializingRetry = 0;
+
+  initializeInternal();
+}
+
+void LocalSocketController::initializeInternal() {
   m_state = eInitializing;
 
 #ifdef MVPN_WINDOWS
@@ -136,6 +163,7 @@ void LocalSocketController::deactivate(Reason reason) {
   logger.debug() << "Deactivating";
 
   if (m_state != eReady) {
+    logger.debug() << "No disconnect, controller is not ready";
     emit disconnected();
     return;
   }
@@ -313,7 +341,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "disconnected") {
-    emit disconnected();
+    disconnectInternal();
     return;
   }
 
@@ -354,4 +382,5 @@ void LocalSocketController::write(const QJsonObject& json) {
   Q_ASSERT(m_socket);
   m_socket->write(QJsonDocument(json).toJson(QJsonDocument::Compact));
   m_socket->write("\n");
+  m_socket->flush();
 }

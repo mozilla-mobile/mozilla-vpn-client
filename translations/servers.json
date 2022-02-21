@@ -216,10 +216,10 @@
      "en": "São Paulo",
      "en_CA": "São Paulo",
      "en_GB": "São Paulo",
-     "es_AR": "São Paulo",
-     "es_CL": "São Paulo",
-     "es_ES": "São Paulo",
-     "es_MX": "São Paulo",
+     "es_AR": "San Pablo",
+     "es_CL": "San Pablo",
+     "es_ES": "San Pablo",
+     "es_MX": "San Pablo",
      "fr": "São Paulo",
      "fy_NL": "São Paulo",
      "hsb": "São Paulo",
@@ -341,18 +341,6 @@
      "ru": "Торонто",
      "uk": "Торонто",
      "zh_TW": "多倫多"
-    }
-   },
-   {
-    "city": "Vancouver",
-    "languages": {
-     "bg": "Ванкувър",
-     "el": "Βανκούβερ",
-     "fy_NL": "Fankoever",
-     "ja": "バンクーバー",
-     "ru": "Ванкувер",
-     "uk": "Ванкувер",
-     "zh_TW": "溫哥華"
     }
    }
   ]
@@ -513,8 +501,8 @@
      "bg": "Талин",
      "el": "Τάλιν",
      "es_AR": "Tallin",
-     "es_ES": "Tallin",
      "es_CL": "Tallin",
+     "es_ES": "Tallin",
      "es_MX": "Tallin",
      "fy_NL": "Tallin",
      "ja": "タリン",
@@ -604,6 +592,23 @@
   },
   "cities": [
    {
+    "city": "Marseille",
+    "languages": {
+     "co": "Marseglia",
+     "el": "Μασσαλία",
+     "es_AR": "Marsella",
+     "es_CL": "Marsella",
+     "es_ES": "Marsella",
+     "es_MX": "Marsella",
+     "it": "Marsiglia",
+     "ja": "マルセイユ",
+     "pt_BR": "Marselha",
+     "ru": "Марсель",
+     "uk": "Марсель",
+     "zh_TW": "馬賽"
+    }
+   },
+   {
     "city": "Paris",
     "languages": {
      "bg": "Париж",
@@ -632,7 +637,7 @@
   "languages": {
    "bg": "Германия",
    "co": "Germania",
-   "cy": "Yr Almaen",
+   "cy": "yr Almaen",
    "de": "Deutschland",
    "dsb": "Nimska",
    "el": "Γερμανία",
@@ -703,9 +708,6 @@
      "de": "Frankfurt am Main",
      "dsb": "Frankfurt nad Mainom",
      "el": "Φραγκφούρτη",
-     "en": "Frankfurt am Main",
-     "en_CA": "Frankfurt am Main",
-     "en_GB": "Frankfurt am Main",
      "es_AR": "Fráncfort del Meno",
      "es_CL": "Fráncfort del Meno",
      "es_ES": "Fráncfort del Meno",
@@ -808,11 +810,13 @@
    "de": "Irland",
    "dsb": "Irska",
    "el": "Δημοκρατία της Ιρλανδίας",
+   "en": "Republic of Ireland",
    "en_CA": "Republic of Ireland",
-   "es_AR": "Irlanda",
-   "es_CL": "Irlanda",
-   "es_ES": "Irlanda",
-   "es_MX": "Irlanda",
+   "en_GB": "Republic of Ireland",
+   "es_AR": "República de Irlanda",
+   "es_CL": "República de Irlanda",
+   "es_ES": "República de Irlanda",
+   "es_MX": "República de Irlanda",
    "fr": "Irlande",
    "fy_NL": "Ierlân",
    "hsb": "Irska",
@@ -1242,6 +1246,7 @@
    "pt_BR": "Macedônia do Norte",
    "ru": "Северная Македония",
    "sk": "Severné Macedónsko",
+   "sq": "Maqedonia e Veriut",
    "sv_SE": "Nordmakedonien",
    "uk": "Північна Македонія",
    "zh_TW": "北馬其頓"
@@ -1258,6 +1263,7 @@
      "hu": "Szkopje",
      "ja": "スコピエ",
      "ru": "Скопье",
+     "sq": "Shkupi",
      "uk": "Скоп'є",
      "zh_TW": "史高比耶"
     }
@@ -1789,7 +1795,7 @@
   "languages": {
    "bg": "Великобритания",
    "co": "Regnu Unitu",
-   "cy": "y Deyrnas Unedig",
+   "cy": "Y Deyrnas Gyfunol",
    "de": "Vereinigtes Königreich",
    "dsb": "Zjadnośone kralojstwo",
    "el": "Ηνωμένο Βασίλειο",
@@ -1897,6 +1903,30 @@
    "zh_TW": "美國"
   },
   "cities": [
+   {
+    "city": "Ashburn, VA",
+    "languages": {
+     "cy": "Ashburn, Virginia",
+     "de": "Ashburn",
+     "en": "Ashburn",
+     "en_CA": "Ashburn",
+     "en_GB": "Ashburn",
+     "es_AR": "Ashburn (Virginia)",
+     "es_CL": "Ashburn (Virginia)",
+     "es_ES": "Ashburn (Virginia)",
+     "es_MX": "Ashburn (Virginia)",
+     "fr": "Ashburn",
+     "id": "Ashburn",
+     "it": "Ashburn",
+     "ja": "アッシュバーン (バージニア州)",
+     "nl": "Ashburn (Virginia)",
+     "pt_BR": "Ashburn (Virgínia)",
+     "ru": "Ашберн",
+     "sv_SE": "Ashburn",
+     "uk": "Ешберн",
+     "zh_TW": "阿什本"
+    }
+   },
    {
     "city": "Atlanta, GA",
     "languages": {

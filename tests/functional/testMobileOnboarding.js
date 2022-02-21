@@ -80,10 +80,10 @@ describe('Mobile Onboarding', function() {
        await vpn.wait();
        assert(
            await vpn.getElementProperty('panelTitle', 'text') ===
-           'No bandwidth restrictions');
+           'Protect your privacy');
        const descriptionText =
            await vpn.getElementProperty('panelDescription', 'text');
-       assert(descriptionText.includes('ISP throttling'));
+       assert(descriptionText.includes('Route your activity and location'));
      });
 
   it('Sign up button opens auth flow', async () => {

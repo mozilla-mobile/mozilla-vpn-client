@@ -140,7 +140,7 @@ Item {
                                 verticalAlignment: Text.AlignVCenter
                                 Layout.fillWidth: true
                                 hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
-                                placeholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
+                                _placeholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
                             }
                         }
 
@@ -151,7 +151,7 @@ Item {
                             verticalAlignment: Text.AlignVCenter
                             Layout.fillWidth: true
                             hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
-                            placeholderText: VPNl18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
+                            _placeholderText: VPNl18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
                         }
                     }
 
@@ -228,7 +228,7 @@ Item {
                         width: parent.width
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
-                        placeholderText: VPNl18n.InAppSupportWorkflowSubjectFieldPlaceholder
+                        _placeholderText: VPNl18n.InAppSupportWorkflowSubjectFieldPlaceholder
                     }
 
                     VPNTextArea {

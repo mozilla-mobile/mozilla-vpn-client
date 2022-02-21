@@ -19,23 +19,12 @@ Item {
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
-    signal clicked(QtObject mouse)
 
     width: parent.width
     height: VPNTheme.theme.menuHeight
     // Ensure that menu is on top of possible scrollable
     // content.
     z: 2
-
-    MouseArea {
-        // Prevent mouse events from passing through to
-        // underlying elements
-        anchors.fill: menuBar
-        preventStealing: true
-        propagateComposedEvents: false
-        hoverEnabled: true
-        onClicked: mouse => menuBar.clicked(mouse)
-    }
 
     Rectangle {
         id: menuBackground

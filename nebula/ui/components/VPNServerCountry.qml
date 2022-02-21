@@ -169,6 +169,7 @@ VPNClickableRow {
                 property string _activeServerCount: modelData[2]
                 property string _countryCode: code
                 property bool isAvailable: _activeServerCount > 0
+                property int itemHeight: 54
 
                 id: del
                 objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
@@ -193,7 +194,7 @@ VPNClickableRow {
                     serversTabs[currentServer.whichHop] = [del._countryCode,  del._cityName, del._localizedCityName]; // [countryCode, cityName, localizedCityName]
                     multiHopStackView.pop();
                 }
-                height: 54
+                height: itemHeight
                 checked: del._countryCode === focusScope.currentServer.countryCode && del._cityName === focusScope.currentServer.cityName
                 isHoverable: cityListVisible && del.isAvailable
                 enabled: cityListVisible && del.isAvailable

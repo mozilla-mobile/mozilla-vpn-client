@@ -28,8 +28,10 @@ Item {
         id: flickableContent
 
         anchors.top: menu.bottom
+        anchors.topMargin: VPNTheme.theme.windowMargin
+        anchors.left: parent.left
+        anchors.right: parent.right
         height: parent.height - menu.height
-        width: parent.width
 
         VPNCheckBoxRow {
             id: developerUnlock
@@ -99,7 +101,7 @@ Item {
                     id: serverAddressInput
 
                     enabled: root.vpnIsOff && VPNSettings.stagingServer
-                    placeholderText: "Staging server address"
+                    _placeholderText: "Staging server address"
                     height: 40
 
                     PropertyAnimation on opacity {
@@ -224,8 +226,13 @@ Item {
 
             property bool isVisible: false
 
-            anchors.left: inspectorLink.left
-            anchors.top: inspectorLink.bottom
+            anchors {
+                left: inspectorLink.left
+                right: parent.right
+                top: inspectorLink.bottom
+                topMargin: VPNTheme.theme.listSpacing
+            }
+
             messages: [
                 {
                     type: "warning",

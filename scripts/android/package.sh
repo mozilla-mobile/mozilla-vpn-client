@@ -3,7 +3,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-. $(dirname $0)/commons.sh
+
+. $(dirname $0)/../commons.sh
 
 if [ -f .env ]; then
   . .env
@@ -14,7 +15,7 @@ QTPATH=
 RELEASE=1
 ADJUST_SDK_TOKEN=
 export SPLITAPK=0
-export ARCH ="x86 x86_64 armeabi-v7a arm64-v8a"
+export ARCH="x86 x86_64 armeabi-v7a arm64-v8a"
 
 helpFunction() {
   print G "Usage:"
@@ -116,7 +117,6 @@ rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
 
 print Y "Importing translation files..."
-git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
 python3 scripts/importLanguages.py || die "Failed to import languages"
 
 print Y "Generating glean samples..."
@@ -144,23 +144,6 @@ fi
 cd .tmp/
 
 if [[ "$RELEASE" ]]; then
-  # On release builds only QT requires these *_metatypes.json
-  # The files are actually all the same, but named by _ABI_ (they only differ for plattforms e.g android/ and ios/ )
-  # But sometimes the resolver seems to miss the current abi and defaults to the "none" abi
-  # This one was missing on my machine, let's create a "none" version in case the resolver might fail too
-  printn Y "Patch qt meta data"
-  cp $QTPATH/lib/metatypes/qt5quick_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5quick_metatypes.json
-  cp $QTPATH/lib/metatypes/qt5charts_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5charts_metatypes.json
-  cp $QTPATH/lib/metatypes/qt5svg_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5svg_metatypes.json
-  cp $QTPATH/lib/metatypes/qt5widgets_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5widgets_metatypes.json
-  cp $QTPATH/lib/metatypes/qt5gui_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5gui_metatypes.json
-  cp $QTPATH/lib/metatypes/qt5qmlmodels_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5qmlmodels_metatypes.json
-  cp $QTPATH/lib/metatypes/qt5qml_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5qml_metatypes.json
-  cp $QTPATH/lib/metatypes/qt5networkauth_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5networkauth_metatypes.json
-  cp $QTPATH/lib/metatypes/qt5network_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5network_xmetatypes.json
-  cp $QTPATH/lib/metatypes/qt5test_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5test_metatypes.json
-  cp $QTPATH/lib/metatypes/qt5androidextras_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5androidextras_metatypes.json
-  cp $QTPATH/lib/metatypes/qt5core_armeabi-v7a_metatypes.json $QTPATH/lib/metatypes/qt5core_metatypes.json
   printn Y "Use release config"
   $QTPATH/bin/qmake -spec android-clang \
     VERSION=$SHORTVERSION \
@@ -169,7 +152,7 @@ if [[ "$RELEASE" ]]; then
     CONFIG-=debug \
     CONFIG-=debug_and_release \
     CONFIG+=release \
-    ANDROID_ABIS=$ARCH \
+    ANDROID_ABIS="$ARCH" \
     $ADJUST \
     ..//mozillavpn.pro  || die "Qmake failed"
 else
@@ -181,7 +164,7 @@ else
     CONFIG-=debug_and_release \
     CONFIG-=release \
     CONFIG+=qml_debug \
-    ANDROID_ABIS=$ARCH \
+    ANDROID_ABIS="$ARCH" \
     $ADJUST \
     ..//mozillavpn.pro || die "Qmake failed"
 fi

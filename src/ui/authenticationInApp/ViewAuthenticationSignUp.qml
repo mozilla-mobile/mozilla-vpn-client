@@ -3,77 +3,135 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import components.inAppAuth 0.1
 
-Item {
+
+VPNInAppAuthenticationBase {
     // TODO
     // We show this view when the user is creating an account.
     // Things are happening in background. The next steps are:
     // - Verification by email needed
     // - errors
 
-    Component.onCompleted: console.log("SIGN UP")
+    property bool signUpEnabled: passwordIsValid(passwordInputCreate.text)
 
-    VPNTextField {
-        id: passwordInput
+    id: authSignUp
 
-        anchors.top: parent.top
-        anchors.bottomMargin: 24
-        width: parent.width
-
-        hasError: !VPNAuthInApp.validatePasswordCommons(passwordInput.text) || !VPNAuthInApp.validatePasswordLength(passwordInput.text) || !VPNAuthInApp.validatePasswordEmail(passwordInput.text)
-
-        echoMode: TextInput.Password
-
-        placeholderText: "secure password" // TODO
+    _changeEmailLinkVisible: true
+    _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
+    _menuButtonOnClick: () => {
+        VPNAuthInApp.reset();
     }
+    _menuButtonAccessibleName: "Back"
+    _headlineText: VPNAuthInApp.emailAddress
+    _subtitleText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
+    _imgSource: "qrc:/nebula/resources/avatar.svg"
 
-    VPNButton {
-        id: button
+    _inputs: ColumnLayout {
+        spacing: VPNTheme.theme.vSpacingSmall
 
-        anchors.top: passwordInput.bottom
-        anchors.bottomMargin: 24
-        text: "Sign Up" // TODO
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: 5
-        onClicked: {
-          VPNAuthInApp.setPassword(passwordInput.text);
-          VPNAuthInApp.signUp();
+        VPNBoldLabel {
+            id: passwordLabelCreate
+            text: "Create password"
+        }
+
+        VPNPasswordInput {
+            id: passwordInputCreate
+            Layout.fillWidth: true
+            _placeholderText: "secure password" // TODO
+        }
+
+        VPNBoldLabel {
+            id: passwordLabelConfirm
+            text: "Confirm password"
+        }
+
+        VPNPasswordInput {
+            id: passwordInputConfirm
+            Layout.fillWidth: true
+            _placeholderText: "secure password" // TODO
+        }
+
+        VPNContextualAlerts {
+            id: passwordInputCreateWarnings
+            Layout.fillWidth: true
+
+            messages: [
+                {
+                    type: "error",
+                    message: "Common password",
+                    visible: !VPNAuthInApp.validatePasswordCommons(passwordInputCreate.text)
+                },
+                {
+                    type: "error",
+                    message: "Password length",
+                    visible: !VPNAuthInApp.validatePasswordLength(passwordInputCreate.text)
+                },
+                {
+                    type: "error",
+                    message: "Password email",
+                    visible: !VPNAuthInApp.validatePasswordEmail(passwordInputCreate.text)
+                },
+                {
+                    type: "error",
+                    message: "Passwords do not match",
+                    visible: !authSignUp.passwordsMatch()
+                }
+            ]
+        }
+
+        VPNButton {
+            id: createAccountButton
+            enabled: authSignUp.signUpEnabled && VPNAuthInApp.state === VPNAuthInApp.StateSignUp
+            text: "Create account"
+            Layout.fillWidth: true
+
+            onClicked: {
+                if (enabled) {
+                    VPNAuthInApp.setPassword(passwordInputCreate.text);
+                    VPNAuthInApp.signUp();
+                }
+            }
         }
     }
 
-    Text {
-        id: invalidCommon
-        anchors.top: button.bottom
-        text: "Common password"
-        visible: !VPNAuthInApp.validatePasswordCommons(passwordInput.text)
+    _disclaimers: RowLayout {
+        Layout.alignment: Qt.AlignHCenter
+        VPNTextBlock {
+            Layout.fillWidth: true
+            horizontalAlignment: Text.AlignHCenter
+            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        }
     }
 
-    Text {
-        id: invalidLength
-        anchors.top: invalidCommon.bottom
-        text: "Password length"
-        visible: !VPNAuthInApp.validatePasswordLength(passwordInput.text)
+    _footerContent: Column {
+        Layout.alignment: Qt.AlignHCenter
+        spacing: VPNTheme.theme.windowMargin
+
+        VPNLinkButton {
+            labelText: "Cancel"
+            fontName: VPNTheme.theme.fontBoldFamily
+            anchors.horizontalCenter: parent.horizontalCenter
+            linkColor: VPNTheme.theme.redButton
+            onClicked: VPNAuthInApp.reset()
+        }
+
     }
 
-    Text {
-        id: invalidString
-        anchors.top: invalidLength.bottom
-        text: "Password email"
-        visible: !VPNAuthInApp.validatePasswordEmail(passwordInput.text)
+    function passwordsMatch() {
+        return passwordInputConfirm.text === passwordInputCreate.text
     }
 
-    VPNButton {
-        anchors.top: invalidString.bottom
-        anchors.bottomMargin: 24
-        text: "Reset" // TODO
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: 5
-        onClicked: VPNAuthInApp.reset();
+    function passwordIsValid(passwordString) {
+        return VPNAuthInApp.validatePasswordCommons(passwordString)
+            && VPNAuthInApp.validatePasswordLength(passwordString)
+            && VPNAuthInApp.validatePasswordEmail(passwordString)
+            && passwordsMatch();
     }
+
 }

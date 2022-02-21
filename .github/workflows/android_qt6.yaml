@@ -45,13 +45,13 @@ jobs:
         continue-on-error: true
         id: compile
         run: |
-          bash ./scripts/android_package.sh $QTPATH -A ${{matrix.arch.qmake}} -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
+          bash ./scripts/android/package.sh $QTPATH -A ${{matrix.arch.qmake}} -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
       - name: Sign Android
         if: ${{ matrix.config.sign }}
         env:
           AUTOGRAPH_TOKEN: ${{ secrets.AUTOGRAPH_KEY }}
         run: |
-          bash ./scripts/android_sign.sh ${{ matrix.config.apk }}
+          bash ./scripts/android/sign.sh ${{ matrix.config.apk }}
           rm ${{ matrix.config.apk }}/*unsigned.apk
       - name: Upload APK${{ matrix.config.args }}
         uses: actions/upload-artifact@v1
