@@ -20,11 +20,7 @@ class ConnectionBenchmarkModel final : public QAbstractListModel {
   ConnectionBenchmarkModel();
   ~ConnectionBenchmarkModel();
 
-  enum ModelRoles {
-    RoleName,
-    RoleResult,
-    RoleIcon,
-  };
+  enum ModelRoles { RoleBenchmark };
 
   QHash<int, QByteArray> roleNames() const override;
 
@@ -37,9 +33,7 @@ class ConnectionBenchmarkModel final : public QAbstractListModel {
  private:
   void initialize();
 
-  QList<QString> m_benchmarks;
-
-  QList<ConnectionBenchmark*> m_benchmarkss;
+  QList<ConnectionBenchmark*> m_benchmarks;
 };
 
 #endif  // CONNECTIONBENCHMARKMODEL_H

@@ -149,7 +149,7 @@ Window {
         Repeater {
             model: VPNConnectionBenchmarkModel
             delegate: Text {
-                text: name + " " + result
+                text: benchmark.id + ", " + benchmark.displayName
             }
         }
 

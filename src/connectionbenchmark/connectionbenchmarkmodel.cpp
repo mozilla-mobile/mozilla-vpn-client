@@ -26,9 +26,7 @@ ConnectionBenchmarkModel::~ConnectionBenchmarkModel() {
 
 QHash<int, QByteArray> ConnectionBenchmarkModel::roleNames() const {
   QHash<int, QByteArray> roles;
-  roles[RoleIcon] = "icon";
-  roles[RoleName] = "name";
-  roles[RoleResult] = "result";
+  roles[RoleBenchmark] = "benchmark";
 
   return roles;
 }
@@ -44,19 +42,15 @@ QVariant ConnectionBenchmarkModel::data(const QModelIndex& index,
   }
 
   switch (role) {
-    case RoleIcon:
-      return "";
-    case RoleName:
+    case RoleBenchmark:
       return QVariant::fromValue(m_benchmarks.at(index.row()));
-    case RoleResult:
-      return "123 Mbits";
     default:
       return QVariant();
   }
 }
 
 void ConnectionBenchmarkModel::initialize() {
-  m_benchmarks = {"one", "two", "three"};
-
-  m_benchmarkss << new ConnectionBenchmark("id", "display name", true);
+  m_benchmarks << new ConnectionBenchmark("ping", "Ping", true);
+  m_benchmarks << new ConnectionBenchmark("download", "Download", true);
+  m_benchmarks << new ConnectionBenchmark("upload", "Upload", true);
 }
