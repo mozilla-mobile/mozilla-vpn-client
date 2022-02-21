@@ -113,7 +113,7 @@ jobs:
 
       - name: Compiling
         shell: bash
-        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
 
       # - name: Resigning
       #   shell: bash
