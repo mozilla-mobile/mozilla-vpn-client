@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "connectionbenchmark.h"
 #include "connectionbenchmarkmodel.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -56,4 +57,6 @@ QVariant ConnectionBenchmarkModel::data(const QModelIndex& index,
 
 void ConnectionBenchmarkModel::initialize() {
   m_benchmarks = {"one", "two", "three"};
+
+  m_benchmarkss << new ConnectionBenchmark("id", "display name", true);
 }

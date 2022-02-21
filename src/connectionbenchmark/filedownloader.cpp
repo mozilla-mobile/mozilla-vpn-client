@@ -37,7 +37,10 @@ void FileDownloader::onFinished(QNetworkReply* reply) {
 void FileDownloader::onDownloadProgress(qint64 bytesReceived,
                                         qint64 bytesTotal) {
   m_bytesReceived = bytesReceived;
-  m_bytesTotal = bytesTotal;
+
+  if (m_bytesTotal != bytesTotal) {
+    m_bytesTotal = bytesTotal;
+  }
 }
 
 void FileDownloader::abort() { m_networkReply->abort(); }
