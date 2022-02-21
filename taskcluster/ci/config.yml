@@ -20,6 +20,13 @@ taskgraph:
     cached-task-prefix: mozillavpn.v2.mozillavpn
     decision-parameters: 'mozillavpn_taskgraph.parameters:get_decision_parameters'
 
+index:
+    products:
+        - "openssl"
+        - "qt"
+# Currently unused:
+#        - "mozillavpn"
+
 workers:
     aliases:
         b-linux:

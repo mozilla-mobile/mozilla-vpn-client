@@ -48,6 +48,4 @@ if(!(Test-Path "C:\VisualStudio\VC\Auxiliary\Build\vcvars64.bat")){
     Wait-Process -Name "setup" # this is the actuall install
 }
 
-Compress-Archive -Path C:\VisualStudio -DestinationPath C:\vsstudio.zip -CompressionLevel Optimal
-
-Get-FileHash -Algorithm SHA256 -Path C:\vsstudio.zip | Format-List
+Copy-Item -Recurse -Path "C:\Program Files (x86)\Windows Kits\10\*" -Destination C:\VisualStudio\SDK\

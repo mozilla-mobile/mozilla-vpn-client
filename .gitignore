@@ -68,6 +68,7 @@ macos/gobridge/wireguard-go-version.h
 
 # Taskcluster/ Taskgraph
 !taskcluster/ci/build
+!taskcluster/scripts/build
 *.pyc
 
 # Editors

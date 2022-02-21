@@ -13,10 +13,11 @@ windows/debug:
         worker-type: b-win2012
         fetches:
             fetch:
-                - win-perl
                 - win-dev-env
-            toolchain:
-                - windows-qt-compile
+            build-qt:
+                - windows
+        dependencies:
+            build-qt: build-qt-windows
 
         worker:
             taskcluster-proxy: false
@@ -29,4 +30,4 @@ windows/debug:
         run:
             using: run-task
             cwd: '{checkout}'
-            command: ./scripts/windows_build.sh
+            command: powershell.exe -ExecutionPolicy Bypass taskcluster/scripts/build/windows.ps1

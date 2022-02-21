@@ -6,10 +6,10 @@ loader: taskgraph.loader.transform:loader
 
 kind-dependencies:
     - fetch
+    - build-openssl
 
 transforms:
     - taskgraph.transforms.job:transforms
-    - taskgraph.transforms.cached_tasks:transforms
     - taskgraph.transforms.task:transforms
 
 
