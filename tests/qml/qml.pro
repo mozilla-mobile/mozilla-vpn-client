@@ -52,6 +52,7 @@ SOURCES += \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/server.cpp \
     ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
@@ -91,6 +92,6 @@ OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 
-win*{
+win* {
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 }

@@ -6,12 +6,12 @@
 
 # Internal methods
 
-_utest_cleanup() {
+_cleanup() {
   rm -rf "$1" "$2" || die
   rm -rf .qm .moc .obj .rcc || die
 }
 
-_utest_qmake() {
+_qmake() {
   QMAKE=qmake
   if [[ "$QT_MACOS_BIN" ]]; then
     QT_BIN=$QT_MACOS_BIN
@@ -33,7 +33,7 @@ _utest_qmake() {
   [ -d "$2" ] || die "Expected $2 folder"
 }
 
-_utest_compile() {
+_compile() {
   [ -f "$2" ] && die "Unexpected $2 binary"
 
   xcodebuild build \
@@ -50,34 +50,36 @@ _utest_compile() {
 
 # Public methods
 
+## Unit-tests
+
 utest_dependencies() {
   brew install oath-toolkit || die
 }
 
 utest_qmake_unit() {
-  _utest_qmake tests/unit/unit.pro tests.xcodeproj/|| die
+  _qmake tests/unit/unit.pro tests.xcodeproj/|| die
 }
 
 utest_qmake_auth() {
-  _utest_qmake tests/auth/auth.pro tests.xcodeproj/ || die
+  _qmake tests/auth/auth.pro tests.xcodeproj/ || die
 }
 
 utest_qmake_nativemessaging() {
-  _utest_qmake tests/nativemessaging/nativemessaging.pro tests.xcodeproj/ || die
-  _utest_qmake extension/app/app.pro mozillavpnnp.xcodeproj/ || die
+  _qmake tests/nativemessaging/nativemessaging.pro tests.xcodeproj/ || die
+  _qmake extension/app/app.pro mozillavpnnp.xcodeproj/ || die
 }
 
 utest_compile_unit() {
-  _utest_compile tests.xcodeproj ./Release/tests || die
+  _compile tests.xcodeproj ./Release/tests || die
 }
 
 utest_compile_auth() {
-  _utest_compile tests.xcodeproj ./Release/tests || die
+  _compile tests.xcodeproj ./Release/tests || die
 }
 
 utest_compile_nativemessaging() {
-  _utest_compile tests.xcodeproj ./Release/tests || die
-  _utest_compile mozillavpnnp.xcodeproj ./Release/mozillavpnnp || die
+  _compile tests.xcodeproj ./Release/tests || die
+  _compile mozillavpnnp.xcodeproj ./Release/mozillavpnnp || die
 }
 
 utest_run_unit() {
@@ -93,14 +95,66 @@ utest_run_nativemessaging() {
 }
 
 utest_cleanup_unit() {
-  _utest_cleanup tests.xcodeproj/ ./Release/tests
+  _cleanup tests.xcodeproj/ ./Release/tests || die
 }
 
 utest_cleanup_auth() {
-  _utest_cleanup tests.xcodeproj/ ./Release/tests
+  _cleanup tests.xcodeproj/ ./Release/tests || die
 }
 
 utest_cleanup_nativemessaging() {
-  _utest_cleanup mozillavpnnp.xcodeproj/ ./Release/mozillavpnnp
-  _utest_cleanup tests.xcodeproj/ ./Release/tests
+  _cleanup mozillavpnnp.xcodeproj/ ./Release/mozillavpnnp || die
+  _cleanup tests.xcodeproj/ ./Release/tests || die
+}
+
+## Lottie tests
+
+lottie_qmake_unit() {
+  _qmake lottie/tests/unit/unit.pro lottie_tests.xcodeproj || die
+}
+
+lottie_qmake_qml() {
+  _qmake lottie/tests/qml/qml.pro tst_lottie.xcodeproj || die
+}
+
+lottie_compile_unit() {
+  _compile lottie_tests.xcodeproj ./Release/lottie_tests || die
+}
+
+lottie_compile_qml() {
+  _compile tst_lottie.xcodeproj ./Release/tst_lottie || die
+}
+
+lottie_run_unit() {
+  ./Release/lottie_tests || die
+}
+
+lottie_run_qml() {
+  ./Release/tst_lottie || die
+}
+
+lottie_cleanup_unit() {
+  _cleanup lottie_tests.xcodeproj ./Release/lottie_tests || die
+}
+
+lottie_cleanup_qml() {
+  _cleanup tst_lottie.xcodeproj ./Release/tst_lottie || die
+}
+
+## QML tests
+
+qmltest_qmake() {
+  _qmake tests/qml/qml.pro qml_tests.xcodeproj || die
+}
+
+qmltest_compile() {
+  _compile qml_tests.xcodeproj ./Release/qml_tests || die
+}
+
+qmltest_run() {
+  ./Release/qml_tests || die
+}
+
+qmltest_cleanup() {
+  _cleanup qml_tests.xcodeproj ./Release/qml_tests || die
 }

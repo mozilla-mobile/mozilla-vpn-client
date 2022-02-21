@@ -10,7 +10,7 @@ if [ -f .env ]; then
   . .env
 fi
 
-print N "This script compiles MozillaVPN tests for MacOS and Linux"
+print N "This script compiles and runs MozillaVPN tests on MacOS and Linux"
 print N ""
 
 if ! [ -d "src" ] || ! [ -d "tests" ]; then
@@ -23,10 +23,12 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   print N "Configure for darwin"
   . scripts/macos/utils/commons.sh
+elif [[ "$OSTYPE" == "msys"* ]]; then
+  print N "Configure for windows"
+  . scripts/windows/utils/commons.sh
 else
   die "Unsupported platform (yet?)"
 fi
-
 
 print Y "Cleaning up all..."
 utest_cleanup_unit || die "Failed"

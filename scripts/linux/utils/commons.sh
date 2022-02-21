@@ -6,12 +6,12 @@
 
 # Internal methods
 
-_utest_cleanup() {
+_cleanup() {
   (cd "$1" && make distclean) || echo "No make distclean error reported"
   (cd "$1" && rm -rf .qm .moc .obj .rcc) || die
 }
 
-_utest_qmake() {
+_qmake() {
   (
     cd "$1" || die
     [ -f Makefile ] && die "Unexpected Makefile"
@@ -28,40 +28,42 @@ _utest_qmake() {
   )
 }
 
-_utest_compile() {
+_compile() {
   (cd "$1" && make -j8) || die
 }
 
 # Public methods
+
+## Unit tests
 
 utest_dependencies() {
   echo "Nothing to do here"
 }
 
 utest_qmake_unit() {
-  _utest_qmake tests/unit || die
+  _qmake tests/unit || die
 }
 
 utest_qmake_auth() {
-  _utest_qmake tests/auth || die
+  _qmake tests/auth || die
 }
 
 utest_qmake_nativemessaging() {
-  _utest_qmake tests/nativemessaging || die
-  _utest_qmake extension/app || die
+  _qmake tests/nativemessaging || die
+  _qmake extension/app || die
 }
 
 utest_compile_unit() {
-  _utest_compile tests/unit || die
+  _compile tests/unit || die
 }
 
 utest_compile_auth() {
-  _utest_compile tests/auth || die
+  _compile tests/auth || die
 }
 
 utest_compile_nativemessaging() {
-  _utest_compile tests/nativemessaging || die
-  _utest_compile extension/app || die
+  _compile tests/nativemessaging || die
+  _compile extension/app || die
 }
 
 utest_run_unit() {
@@ -77,14 +79,66 @@ utest_run_nativemessaging() {
 }
 
 utest_cleanup_unit() {
-  _utest_cleanup tests/unit
+  _cleanup tests/unit
 }
 
 utest_cleanup_auth() {
-  _utest_cleanup tests/auth
+  _cleanup tests/auth
 }
 
 utest_cleanup_nativemessaging() {
-  _utest_cleanup extension/app
-  _utest_cleanup tests/nativemessaging
+  _cleanup extension/app
+  _cleanup tests/nativemessaging
+}
+
+## Lottie tests
+
+lottie_qmake_unit() {
+  _qmake lottie/tests/unit || die
+}
+
+lottie_qmake_qml() {
+  _qmake lottie/tests/qml || die
+}
+
+lottie_compile_unit() {
+  _compile lottie/tests/unit || die
+}
+
+lottie_compile_qml() {
+  _compile lottie/tests/qml || die
+}
+
+lottie_run_unit() {
+  ./lottie/tests/unit/lottie_tests || die
+}
+
+lottie_run_qml() {
+  ./lottie/tests/qml/tst_lottie -platform offscreen || die
+}
+
+lottie_cleanup_unit() {
+  _cleanup lottie/tests/unit || die
+}
+
+lottie_cleanup_qml() {
+  _cleanup lottie/tests/qml || die
+}
+
+## QML tests
+
+qmltest_qmake() {
+  _qmake tests/qml || die
+}
+
+qmltest_compile() {
+  _compile tests/qml || die
+}
+
+qmltest_run() {
+  ./tests/qml/qml_tests -platform offscreen|| die
+}
+
+qmltest_cleanup() {
+  _cleanup tests/qml || die
 }

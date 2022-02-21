@@ -116,6 +116,10 @@ exists($$PWD/../../translations/generated/l18nstrings.h) {
     error("No l18nstrings.h. Have you generated the strings?")
 }
 
+win* {
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+}
+
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc

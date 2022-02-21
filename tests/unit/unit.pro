@@ -258,6 +258,11 @@ else:ios {
             ../../src/platforms/ios/iosutils.h
 }
 
+# Platform-specific: windows
+else:win* {
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+}
+
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
