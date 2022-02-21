@@ -12,7 +12,7 @@ on:
 
 jobs:
   macos:
-    name: MacOS packages
+    name: iOS build
     runs-on: macos-latest
 
     strategy:
