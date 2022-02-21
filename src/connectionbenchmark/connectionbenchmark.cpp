@@ -13,11 +13,14 @@ namespace {
 Logger logger(LOG_MODEL, "ConnectionBenchmark");
 }  // namespace
 
-ConnectionBenchmark::ConnectionBenchmark(const QString& id, const QString& displayName, bool isAvailable) : m_id(id), m_displayName(displayName), m_isAvailable(isAvailable) {
+ConnectionBenchmark::ConnectionBenchmark(const QString& id,
+                                         const QString& displayName,
+                                         bool isAvailable)
+    : m_id(id), m_displayName(displayName), m_isAvailable(isAvailable) {
   logger.debug() << "Initializing connection benchmark" << id;
 }
 
-ConnectionBenchmark::~ConnectionBenchmark() { }
+ConnectionBenchmark::~ConnectionBenchmark() {}
 
 bool ConnectionBenchmark::isAvailable() const {
   logger.debug() << "Is available" << m_id;
