@@ -82,3 +82,25 @@ jobs:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review # Change reporter
           android: true
+
+  taskgraph:
+    name: Test Taskgraph Definition
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 1
+      - name: Install Python dependencies
+        run: |
+          pip3 install -r requirements.txt
+          pip3 install taskcluster-taskgraph==1.1.7 
+      - name: Test main-push
+        run: |
+          taskgraph full --p taskcluster/test/params/main-push.yml 
+      - name: Test pull-request
+        run: |
+          taskgraph full --p taskcluster/test/params/pull-request.yml
+      - name: Test release-push
+        run: |
+          taskgraph full --p taskcluster/test/params/release-push.yml           
