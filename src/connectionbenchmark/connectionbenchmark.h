@@ -16,17 +16,19 @@ class ConnectionBenchmark : public QObject {
 
   Q_PROPERTY(QString id MEMBER m_id CONSTANT)
   Q_PROPERTY(QString displayName MEMBER m_displayName CONSTANT)
+  Q_PROPERTY(quint64 result MEMBER m_result CONSTANT)
   Q_PROPERTY(bool isAvailable READ isAvailable NOTIFY isAvailableChanged)
 
  public:
   ConnectionBenchmark(const QString& id, const QString& displayName,
-                      bool isAvailable);
+                      quint64 result, bool isAvailable);
   ~ConnectionBenchmark();
 
   bool isAvailable() const;
 
   QString id() const { return m_id; }
   QString displayName() const;
+  quint64 result() const { return m_result; }
 
  signals:
   void isAvailableChanged();
@@ -34,6 +36,7 @@ class ConnectionBenchmark : public QObject {
  private:
   const QString m_id;
   const QString m_displayName;
+  const quint64 m_result;
   bool m_isAvailable;
 };
 

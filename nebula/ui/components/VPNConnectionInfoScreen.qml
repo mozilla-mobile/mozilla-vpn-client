@@ -51,7 +51,9 @@ Rectangle {
         },
         State {
             name: "open-loading"
-            when: VPNConnectionBenchmarkDownload.state === VPNConnectionBenchmarkDownload.StateTesting && isOpen && !isTransitioning
+            when: VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateTesting
+                && isOpen
+                && !isTransitioning
 
             PropertyChanges {
                 target: root
@@ -61,7 +63,9 @@ Rectangle {
         },
         State {
             name: "open-ready"
-            when: VPNConnectionBenchmarkDownload.state === VPNConnectionBenchmarkDownload.StateInitial && isOpen && !isTransitioning
+            when: VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateReady
+                && isOpen
+                && !isTransitioning
 
             PropertyChanges {
                 target: root
@@ -73,16 +77,20 @@ Rectangle {
     width: parent.width
 
     onIsOpenChanged: () => {
-        if (VPNConnectionBenchmarkDownload.state === VPNConnectionBenchmarkDownload.StateInitial) {
-            VPNConnectionBenchmarkDownload.start();
-        }
-
         // Start opening/closing transition
         isTransitioning = true;
 
-        timerOne.setTimeout(function() {
+        if (VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateInitial) {
+            VPNConnectionBenchmarkModel.start();
+        }
+
+        timer.setTimeout(function() {
             // Finished opening/closing transition
             isTransitioning = false;
+
+            if (VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateReady) {
+                VPNConnectionBenchmarkModel.reset();
+            }
         }, transitionDuration);
     }
 
@@ -117,7 +125,7 @@ Rectangle {
             z: 1
 
             onClicked: {
-                VPNConnectionBenchmarkDownload.start();
+                VPNConnectionBenchmarkModel.start();
             }
 
             Image {
@@ -160,15 +168,8 @@ Rectangle {
         }
     }
 
-    // TODO: Remove timers that are used for setting fake loading
     VPNTimer {
-        id: timerOne
-    }
-    VPNTimer {
-        id: timerTwo
-    }
-    VPNTimer {
-        id: timerThree
+        id: timer
     }
 
 }

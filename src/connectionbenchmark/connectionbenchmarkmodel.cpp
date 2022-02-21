@@ -3,10 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionbenchmark.h"
+#include "connectionbenchmarkdownload.h"
 #include "connectionbenchmarkmodel.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+
+#include "qmlengineholder.h"
 
 #include <QList>
 
@@ -49,8 +52,57 @@ QVariant ConnectionBenchmarkModel::data(const QModelIndex& index,
   }
 }
 
+void ConnectionBenchmarkModel::setState(State state) {
+  logger.debug() << "Set state" << state;
+  m_state = state;
+
+  emit stateChanged();
+}
+
+void ConnectionBenchmarkModel::addBenchmark() {
+  logger.debug() << "Add benchmark";
+
+  m_benchmarkDownload = new ConnectionBenchmarkDownload();
+
+  connect(m_benchmarkDownload, &ConnectionBenchmarkDownload::stateChanged, this,
+          [&] {
+            logger.debug() << "Download speedtest state changed";
+
+            if (m_benchmarkDownload->state() ==
+                ConnectionBenchmarkDownload::StateReady) {
+              m_benchmarks = {new ConnectionBenchmark(
+                  "download", "Download 2",
+                  m_benchmarkDownload->downloadSpeed(), true)};
+
+              emit dataChanged(createIndex(0, 0),
+                               createIndex(m_benchmarks.size(), 0));
+
+              setState(StateReady);
+            } else if (m_benchmarkDownload->state() ==
+                       ConnectionBenchmarkDownload::StateError) {
+              setState(StateError);
+            }
+          });
+
+  m_benchmarkDownload->start();
+}
+
+void ConnectionBenchmarkModel::start() {
+  logger.debug() << "Start benchmark";
+
+  setState(StateTesting);
+  addBenchmark();
+}
+
+void ConnectionBenchmarkModel::stop() { logger.debug() << "Stop benchmark"; }
+
+void ConnectionBenchmarkModel::reset() {
+  logger.debug() << "Reset benchmark";
+
+  m_benchmarks.clear();
+  setState(StateInitial);
+}
+
 void ConnectionBenchmarkModel::initialize() {
-  m_benchmarks << new ConnectionBenchmark("ping", "Ping", true);
-  m_benchmarks << new ConnectionBenchmark("download", "Download", true);
-  m_benchmarks << new ConnectionBenchmark("upload", "Upload", true);
+  m_benchmarks = {new ConnectionBenchmark("download", "Download 1", 0, true)};
 }

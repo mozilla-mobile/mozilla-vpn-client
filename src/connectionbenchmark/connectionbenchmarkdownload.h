@@ -28,7 +28,7 @@ class ConnectionBenchmarkDownload final : public QObject {
   enum State {
     StateInitial,
     StateTesting,
-    StateFinished,
+    StateReady,
     StateError,
   };
   Q_ENUM(State);

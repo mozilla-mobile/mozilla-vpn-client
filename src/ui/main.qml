@@ -137,19 +137,13 @@ Window {
         z: 99
 
         Text {
-            text: "ConnectionBenchmark"
-        }
-        Text {
-            text: "state: " + VPNConnectionBenchmarkDownload.state
-        }
-        Text {
-            text: "download: " + VPNConnectionBenchmarkDownload.downloadSpeed
+            text: "ConnectionBenchmark: " + VPNConnectionBenchmarkModel.state
         }
 
         Repeater {
             model: VPNConnectionBenchmarkModel
             delegate: Text {
-                text: benchmark.id + ", " + benchmark.displayName
+                text: benchmark.id + ", " + benchmark.displayName + ", " + benchmark.result
             }
         }
 
@@ -157,12 +151,12 @@ Window {
             Layout.fillWidth: true
 
             Button {
-                text: VPNConnectionBenchmarkDownload.state === VPNConnectionBenchmarkDownload.StateTesting ? "stop" : "start"
+                text: VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateTesting ? "stop" : "start"
                 onClicked: {
-                    if (VPNConnectionBenchmarkDownload.state === VPNConnectionBenchmarkDownload.StateTesting) {
-                        VPNConnectionBenchmarkDownload.stop();
+                    if (VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateTesting) {
+                        VPNConnectionBenchmarkModel.stop();
                     } else {
-                        VPNConnectionBenchmarkDownload.start();
+                        VPNConnectionBenchmarkModel.start();
                     }
                 }
             }

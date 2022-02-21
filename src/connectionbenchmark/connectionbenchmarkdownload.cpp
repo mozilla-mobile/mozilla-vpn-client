@@ -14,7 +14,7 @@
 #include <math.h>
 
 namespace {
-Logger logger(LOG_NETWORKING, "ConnectionBenchmarkDownload");
+Logger logger(LOG_MODEL, "ConnectionBenchmarkDownload");
 }
 
 ConnectionBenchmarkDownload::ConnectionBenchmarkDownload() {
@@ -83,9 +83,10 @@ void ConnectionBenchmarkDownload::onReady(FileDownloader* downloader) {
 
   if (m_numOfFilesReceived == m_numOfFilesTotal) {
     m_fileDownloaderList.clear();
-    emit downloadSpeedChanged();
 
-    setState(StateFinished);
+    logger.debug() << "Download speed" << m_bytesPerSecond;
+    emit downloadSpeedChanged();
+    setState(StateReady);
   }
 }
 

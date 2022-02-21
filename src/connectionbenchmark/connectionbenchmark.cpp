@@ -15,8 +15,11 @@ Logger logger(LOG_MODEL, "ConnectionBenchmark");
 
 ConnectionBenchmark::ConnectionBenchmark(const QString& id,
                                          const QString& displayName,
-                                         bool isAvailable)
-    : m_id(id), m_displayName(displayName), m_isAvailable(isAvailable) {
+                                         quint64 result, bool isAvailable)
+    : m_id(id),
+      m_displayName(displayName),
+      m_result(result),
+      m_isAvailable(isAvailable) {
   logger.debug() << "Initializing connection benchmark" << id;
 }
 

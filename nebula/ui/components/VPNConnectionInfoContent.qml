@@ -214,13 +214,4 @@ Flickable {
         return roundValue(connectionValueBits / Math.pow(1000, 4));
     }
 
-    Connections {
-        target: VPNConnectionBenchmarkDownload
-
-        function onStateChanged() {
-            if (VPNConnectionBenchmarkDownload.state === VPNConnectionBenchmarkDownload.Initial) {
-            }
-        }
-    }
-
 }

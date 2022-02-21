@@ -6,6 +6,7 @@
 #define CONNECTIONBENCHMARKMODEL_H
 
 #include "connectionbenchmark.h"
+#include "connectionbenchmarkdownload.h"
 
 #include <QAbstractListModel>
 #include <QPointer>
@@ -13,12 +14,30 @@
 #include <QString>
 
 class ConnectionBenchmarkModel final : public QAbstractListModel {
-  Q_OBJECT
-  Q_DISABLE_COPY_MOVE(ConnectionBenchmarkModel)
+  Q_OBJECT;
+  Q_DISABLE_COPY_MOVE(ConnectionBenchmarkModel);
+
+  Q_PROPERTY(State state READ state NOTIFY stateChanged);
 
  public:
   ConnectionBenchmarkModel();
   ~ConnectionBenchmarkModel();
+
+  enum State {
+    StateInitial,
+    StateTesting,
+    StateReady,
+    StateError,
+  };
+  Q_ENUM(State);
+
+  Q_INVOKABLE void start();
+  Q_INVOKABLE void stop();
+  Q_INVOKABLE void reset();
+
+  void addBenchmark();
+
+  State state() const { return m_state; }
 
   enum ModelRoles { RoleBenchmark };
 
@@ -29,11 +48,18 @@ class ConnectionBenchmarkModel final : public QAbstractListModel {
   QVariant data(const QModelIndex& index, int role) const override;
 
  signals:
+  void stateChanged();
 
  private:
+  State m_state = StateInitial;
+
+  void setState(State state);
+
   void initialize();
 
   QList<ConnectionBenchmark*> m_benchmarks;
+
+  ConnectionBenchmarkDownload* m_benchmarkDownload;
 };
 
 #endif  // CONNECTIONBENCHMARKMODEL_H
