@@ -1,0 +1,280 @@
+name: MacOS
+
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+  pull_request:
+    branches:
+      - main
+      - 'releases/**'
+
+jobs:
+  macos:
+    name: MacOS packages
+    runs-on: macos-latest
+
+    strategy:
+      matrix:
+        config:
+            - { name: "Qt5", pattern: qt5, folder: ios }
+            # - { name: "Qt6", pattern: qt6, folder: qt6 }
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install ${{matrix.config.name}}
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/mozilla-mobile/qt_ios
+          cd qt_ios
+          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
+          tar xf qt_static.tar.gz
+          sudo mv ${{matrix.config.folder}} /opt
+          cd ..
+
+      # - name: Retrieving wireguard-go version
+      #   shell: bash
+      #   run: |
+      #     (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
+
+      - name: Generating glean samples
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
+          python3 scripts/generate_glean.py
+
+      - name: Importing translation files
+        shell: bash
+        run: |
+          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          git submodule update --remote --depth 1 i18n
+          python3 scripts/importLanguages.py -m
+
+      # - name: Install the Apple certificate and provisioning profile
+      #   env:
+      #     MACOS_CERTIFICATE_DEVID_BASE64: ${{ secrets.MACOS_CERTIFICATE_DEVID_BASE64 }}
+      #     MACOS_CERTIFICATE_DEVID_PASSWD: ${{ secrets.MACOS_CERTIFICATE_DEVID_PASSWD }}
+      #     MACOS_CERTIFICATE_INST_BASE64: ${{ secrets.MACOS_CERTIFICATE_INST_BASE64 }}
+      #     MACOS_CERTIFICATE_INST_PASSWD: ${{ secrets.MACOS_CERTIFICATE_INST_PASSWD }}
+      #     MACOS_PROVISON_PROFILE_BASE64: ${{ secrets.MACOS_PROVISON_PROFILE_BASE64 }}
+      #     MACOS_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
+      #   run: |
+      #     # create variables
+      #     DEVID_CERT_PATH=$RUNNER_TEMP/devid_certificate.p12
+      #     INST_CERT_PATH=$RUNNER_TEMP/inst_certificate.p12
+      #     PP_PATH=$RUNNER_TEMP/build_pp.provisionprofile
+      #     KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+      #     # import certificate and provisioning profile from secrets
+      #     echo -n "$MACOS_CERTIFICATE_DEVID_BASE64" | base64 --decode --output $DEVID_CERT_PATH
+      #     echo -n "$MACOS_CERTIFICATE_INST_BASE64" | base64 --decode --output $INST_CERT_PATH
+      #     echo -n "$MACOS_PROVISON_PROFILE_BASE64" | base64 --decode --output $PP_PATH
+      #     # create temporary keychain
+      #     security create-keychain -p $MACOS_KEYCHAIN_PASSWORD $KEYCHAIN_PATH
+      #     security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+      #     security unlock-keychain -p $MACOS_KEYCHAIN_PASSWORD $KEYCHAIN_PATH
+      #     # import certificate to keychain
+      #     security import $DEVID_CERT_PATH -P $MACOS_CERTIFICATE_DEVID_PASSWD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+      #     security import $INST_CERT_PATH -P $MACOS_CERTIFICATE_INST_PASSWD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+      #     security cms -D -i  $PP_PATH > aa.list
+      #     security list-keychain -d user -s $KEYCHAIN_PATH
+      #     # apply provisioning profile
+      #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+      #     cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: Configuring the build
+        shell: bash
+        run: |
+          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          export QT_IOS_BIN=/opt/${{matrix.config.folder}}/bin
+          SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
+          FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
+          echo "$SHORTVERSION - $FULLVERSION"
+          echo "DEVELOPMENT_TEAM = 7W87BT2W9M" >> xcode.xconfig
+          echo "GROUP_ID_MACOS = group.baku.mozilla.macos.Guardian" >> xcode.xconfig
+          echo "APP_ID_MACOS = baku.mozilla.macos.FirefoxVPN" >> xcode.xconfig
+          echo "NETEXT_ID_MACOS = baku.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
+          echo "LOGIN_ID_MACOS = baku.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
+          echo "NATIVEMESSAGING_ID_MACOS = baku.mozilla.macos.FirefoxVPN.native-messaging" >> xcode.xconfig
+          echo "GROUP_ID_IOS = group.baku.mozilla.ios.Guardian" >> xcode.xconfig
+          echo "APP_ID_IOS = baku.mozilla.ios.FirefoxVPN" >> xcode.xconfig
+          echo "NETEXT_ID_IOS = baku.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
+          ./scripts/macos/apple_compile.sh ios
+
+      - name: Compiling
+        shell: bash
+        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+
+      # - name: Resigning
+      #   shell: bash
+      #   env:
+      #     MACOS_EMBEDDED_PP: ${{ secrets.MACOS_EMBEDDED_PP }}
+      #     MACOS_EMBEDDED_PP_LOGIN: ${{ secrets.MACOS_EMBEDDED_PP_LOGIN }}
+      #   run: |
+      #     echo -n "$MACOS_EMBEDDED_PP_LOGIN" | base64 --decode --output /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Library/LoginItems/MozillaVPNLoginItem.app/Contents/embedded.provisionprofile
+      #     echo -n "$MACOS_EMBEDDED_PP" | base64 --decode --output /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/embedded.provisionprofile
+      #     /usr/libexec/PlistBuddy -x -c 'Print:Entitlements' aa.list > bb.list
+      #     /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Library/LoginItems/MozillaVPNLoginItem.app
+      #     /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Library/NativeMessaging/MozillaVPNNativeMessaging.app
+      #     /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Resources/utils/wireguard-go
+      #     /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app
+
+#       - name: Packaging
+#         shell: bash
+#         run: |
+#           # languages
+#           python3 ./scripts/macos/import_pkg_resources.py
+#           # Full path of the app in a temp folder
+#           mkdir -p BUILD/Applications
+#           cp -r /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app BUILD/Applications
+#           # Installation package creation
+#           mkdir STAGE1
+#           pkgbuild --identifier "baku.mozilla.macos.FirefoxVPN" --version "2.0" --scripts ./macos/pkg/scripts --root ./BUILD ./STAGE1/MozillaVPN.pkg
+#           # Adding resources and distribution scripts
+#           mkdir STAGE2
+#           productbuild --distribution ./macos/pkg/Distribution --resources ./macos/pkg/Resources --package-path ./STAGE1 ./STAGE2/MozillaVPN.pkg
+#           # Final signature
+#           mkdir STAGE3
+#           productsign --sign "Developer ID Installer: Andrea Marchesini" ./STAGE2/MozillaVPN.pkg ./STAGE3/MozillaVPN.pkg
+#           # Notarize the package
+#           output=$(xcrun altool --notarize-app -f ./STAGE3/MozillaVPN.pkg --primary-bundle-id baku.mozilla.macos.FirefoxVPN --username andrea.marchesini.baku.vpn@gmail.com --password "${{secrets.MACOS_NOTARIZE_PP }}")
+#           uuid=$(echo $output | grep RequestUUID | cut -d= -f2 | tr -d ' ')
+#           echo "Notarize ID: $uuid"
+#           while sleep 10; do
+#             echo "Checking..."
+#             status=$(xcrun altool --notarization-info $uuid --username andrea.marchesini.baku.vpn@gmail.com --password "${{secrets.MACOS_NOTARIZE_PP }}" | grep Status: |cut -d: -f2 | tr -d ' ')
+#             [ "$status" = "inprogress" ] && continue
+#             [ "$status" = "success" ] && break
+#             echo "Unexpected status"
+#             xcrun altool --notarization-info $uuid --username andrea.marchesini.baku.vpn@gmail.com --password "${{secrets.MACOS_NOTARIZE_PP }}"
+#             exit 1
+#           done
+#           xcrun stapler staple ./STAGE3/MozillaVPN.pkg
+# 
+#       - name: Upload app
+#         uses: actions/upload-artifact@v2
+#         with:
+#             name: ${{matrix.config.name}} Build
+#             path: STAGE3/MozillaVPN.pkg
+# 
+#   prod:
+#     name: MacOS package for release
+#     runs-on: macos-latest
+# 
+#     strategy:
+#       matrix:
+#         config:
+#             - { name: "Qt5", pattern: x, folder: qt }
+#             - { name: "Qt6", pattern: qt6, folder: qt6 }
+# 
+#     steps:
+#       - name: Clone repository
+#         uses: actions/checkout@v2
+# 
+#       - name: Checkout submodules
+#         shell: bash
+#         run: |
+#           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+#           git submodule sync --recursive
+#           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+# 
+#       - name: Install ${{matrix.config.name}}
+#         shell: bash
+#         run: |
+#           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+#           git clone https://github.com/mozilla-mobile/qt_static_macos
+#           cd qt_static_macos
+#           cat ${{matrix.config.pattern}}* > qt_static.tar.gz
+#           tar xf qt_static.tar.gz
+#           sudo mv ${{matrix.config.folder}} /opt
+#           cd ..
+# 
+#       - name: Retrieving wireguard-go version
+#         shell: bash
+#         run: |
+#           (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
+# 
+#       - name: Generating glean samples
+#         shell: bash
+#         run: |
+#           pip3 install -r requirements.txt
+#           python3 scripts/generate_glean.py
+# 
+#       - name: Importing translation files
+#         shell: bash
+#         run: |
+#           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+#           git submodule update --remote --depth 1 i18n
+#           python3 scripts/importLanguages.py -m
+# 
+#       - name: Configuring the build
+#         shell: bash
+#         run: |
+#           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+#           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
+#           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
+#           echo "$SHORTVERSION - $FULLVERSION"
+#           echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
+#           echo "GROUP_ID_MACOS = group.org.mozilla.macos.Guardian" >> xcode.xconfig
+#           echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
+#           echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
+#           echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
+#           echo "NATIVEMESSAGING_ID_MACOS = org.mozilla.macos.FirefoxVPN.native-messaging" >> xcode.xconfig
+#           echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
+#           echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
+#           echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
+#           qmake \
+#             VERSION=$SHORTVERSION \
+#             BUILD_ID=$FULLVERSION \
+#             -spec macx-xcode \
+#             CONFIG-=debug \
+#             CONFIG-=debug_and_release \
+#             CONFIG+=release \
+#             CONFIG+=production \
+#             CONFIG+=webextension \
+#             QTPLUGIN+=qsvg \
+#             CONFIG-=static \
+#             CONFIG+=balrog \
+#             MVPN_MACOS=1 \
+#             src/src.pro
+#           ruby scripts/macos/utils/xcode_patcher.rb \
+#             "MozillaVPN.xcodeproj" \
+#             "$SHORTVERSION" \
+#             "$FULLVERSION" \
+#             macos \
+#             ${{matrix.config.name}}
+# 
+#       - name: Compiling
+#         shell: bash
+#         run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+# 
+#       - name: Packaging
+#         shell: bash
+#         run: |
+#           # languages
+#           python3 ./scripts/macos/import_pkg_resources.py
+#           # Full path of the app in a temp folder
+#           mkdir -p BUILD
+#           cp -r /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app BUILD
+#           # Copy the script
+#           cp -r ./macos/pkg/scripts BUILD
+#           cp -r ./macos/pkg/Distribution BUILD
+#           cp -r ./macos/pkg/Resources BUILD
+#           cd BUILD
+#           zip -r BUILD.zip .
+#           mv BUILD.zip ..
+#       - name: Upload app
+#         uses: actions/upload-artifact@v2
+#         with:
+#             name: ${{matrix.config.name}} Release tarball
+#             path: BUILD.zip
