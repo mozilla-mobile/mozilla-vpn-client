@@ -52,26 +52,26 @@ Flickable {
                     + VPNCurrentServer.exitCountryCode.toUpperCase()
                     + ".png",
                 isFlag: true
-            })
+            });
             connectionInfoModel.append({
                 titleString: "Ping",
                 subtitleString: "15 ms",
                 iconSrc: "qrc:/nebula/resources/connection-green.svg"
-            })
+            });
             connectionInfoModel.append({
                 //% "Download"
                 //: The current download speed. The speed is shown on the next line.
                 titleString: qsTrId("vpn.connectionInfo.download"),
                 subtitleString: root.getConnectionLabel(1234567890),
                 iconSrc: "qrc:/nebula/resources/download.svg"
-            })
+            });
             connectionInfoModel.append({
                 //% "Upload"
                 //: The current upload speed. The speed is shown on the next line.
                 titleString: qsTrId("vpn.connectionInfo.upload"),
                 subtitleString: root.getConnectionLabel(123456789),
                 iconSrc: "qrc:/nebula/resources/upload.svg"
-            })
+            });
         }
     }
 
@@ -212,6 +212,15 @@ Flickable {
             return roundValue(connectionValueBits / Math.pow(1000, 3));
 
         return roundValue(connectionValueBits / Math.pow(1000, 4));
+    }
+
+    Connections {
+        target: VPNConnectionBenchmark
+
+        function onStateChanged() {
+            if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.Initial) {
+            }
+        }
     }
 
 }

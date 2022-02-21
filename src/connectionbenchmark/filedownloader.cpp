@@ -23,11 +23,11 @@ FileDownloader::FileDownloader(QUrl fileUrl, QObject *parent) : QObject(parent) 
 
 FileDownloader::~FileDownloader() { MVPN_COUNT_DTOR(FileDownloader); }
 
-void FileDownloader::onFinished(QNetworkReply* pReply) {
-  m_downloadedData = pReply->readAll();
-  pReply->deleteLater();
+void FileDownloader::onFinished(QNetworkReply* reply) {
+  m_downloadedData = reply->readAll();
+  reply->deleteLater();
 
-  if (pReply->error() == QNetworkReply::OperationCanceledError) {
+  if (reply->error() == QNetworkReply::OperationCanceledError) {
     emit aborted();
   } else {
     emit downloaded();
@@ -41,5 +41,3 @@ void FileDownloader::onDownloadProgress(qint64 bytesReceived,
 }
 
 void FileDownloader::abort() { m_networkReply->abort(); }
-
-QByteArray FileDownloader::downloadedData() const { return m_downloadedData; }

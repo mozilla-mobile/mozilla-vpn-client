@@ -35,19 +35,18 @@ void ConnectionBenchmark::onDownloaded(FileDownloader* downloader) {
   logger.debug() << "On downloaded";
 
   quint64 downloadDuration = QDateTime::currentMSecsSinceEpoch() - m_startTime;
-  double bytesPerSecond = downloader->bytesReceived() / downloadDuration * 1000;
-  double bitsPerSecond = bytesPerSecond * 8;
-  double mBitsPerSecond = bitsPerSecond / pow(1024, 2);
+  quint64 bytesPerSecond =
+      downloader->bytesReceived() / downloadDuration * 1000;
+  // double bitsPerSecond = bytesPerSecond * 8;
+  // double mBitsPerSecond = bitsPerSecond / pow(1024, 2);
 
-  m_mBitsPerSecond += mBitsPerSecond;
+  m_bytesPerSecond += bytesPerSecond;
   m_numOfFilesReceived += 1;
 
   if (m_numOfFilesReceived == m_numOfFilesTotal) {
     m_fileDownloaderList.clear();
     emit downloadSpeedChanged();
-  }
 
-  if (m_state == StateTesting) {
     setState(StateInitial);
   }
 }
@@ -95,7 +94,7 @@ void ConnectionBenchmark::start() {
   populateDownloadUrls();
 
   m_startTime = QDateTime::currentMSecsSinceEpoch();
-  m_mBitsPerSecond = 0;
+  m_bytesPerSecond = 0;
   m_numOfFilesReceived = 0;
 
   setState(StateTesting);

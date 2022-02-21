@@ -143,9 +143,6 @@ Window {
             text: "state: " + VPNConnectionBenchmark.state
         }
         Text {
-            text: "state: " + VPNConnectionBenchmark.pingLatency
-        }
-        Text {
             text: "download: " + VPNConnectionBenchmark.downloadSpeed
         }
 

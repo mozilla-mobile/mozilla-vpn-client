@@ -17,26 +17,25 @@ class FileDownloader : public QObject {
 
   public:
     explicit FileDownloader(QUrl fileUrl, QObject *parent = 0);
-
     virtual ~FileDownloader();
 
-    QByteArray downloadedData() const;
+    QByteArray downloadedData() const { return m_downloadedData; }
+    qint64 bytesReceived() const { return m_bytesReceived; }
 
     void abort();
-
-    qint64 bytesReceived() { return m_bytesReceived; }
 
    signals:
     void downloaded();
     void aborted();
 
    private slots:
-    void onFinished(QNetworkReply* pReply);
+    void onFinished(QNetworkReply* reply);
     void onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 
    private:
     QNetworkAccessManager m_networkAccessManager;
     QNetworkReply* m_networkReply;
+
     QByteArray m_downloadedData;
     qint64 m_bytesReceived;
     qint64 m_bytesTotal;

@@ -18,9 +18,12 @@ class ConnectionBenchmark final : public QObject {
 
   Q_PROPERTY(State state READ state NOTIFY stateChanged);
   Q_PROPERTY(
-      float downloadSpeed READ downloadSpeed NOTIFY downloadSpeedChanged);
+      double downloadSpeed READ downloadSpeed NOTIFY downloadSpeedChanged);
 
  public:
+  ConnectionBenchmark();
+  ~ConnectionBenchmark();
+
   enum State {
     StateInitial,
     StateTesting,
@@ -29,18 +32,11 @@ class ConnectionBenchmark final : public QObject {
   };
   Q_ENUM(State);
 
- public:
-  ConnectionBenchmark();
-  ~ConnectionBenchmark();
-
-  State state() const { return m_state; }
-
   Q_INVOKABLE void start();
   Q_INVOKABLE void stop();
 
-  void downloadFiles();
-
-  double downloadSpeed() const { return m_mBitsPerSecond; }
+  State state() const { return m_state; }
+  double downloadSpeed() const { return m_bytesPerSecond; }
 
  signals:
   void stateChanged();
@@ -53,16 +49,14 @@ class ConnectionBenchmark final : public QObject {
   State m_state = StateInitial;
 
   QList<FileDownloader*> m_fileDownloaderList;
-
   quint64 m_startTime;
-  float m_mBitsPerSecond;
+  quint64 m_bytesPerSecond;
 
   QStringList m_downloadUrls;
   int m_numOfFilesTotal;
   int m_numOfFilesReceived;
 
   void setState(State state);
-
   void populateDownloadUrls();
 };
 

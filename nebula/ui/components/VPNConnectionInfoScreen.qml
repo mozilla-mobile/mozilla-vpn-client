@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 
 Rectangle {
-    property bool isLoading: false
     property bool isOpen: false
     property bool isTransitioning: false
     property int transitionDuration: 750
@@ -52,7 +51,7 @@ Rectangle {
         },
         State {
             name: "open-loading"
-            when: isOpen && !isTransitioning && isLoading
+            when: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateTesting && isOpen && !isTransitioning
 
             PropertyChanges {
                 target: root
@@ -62,7 +61,7 @@ Rectangle {
         },
         State {
             name: "open-ready"
-            when: isOpen && !isTransitioning && !isLoading
+            when: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial && isOpen && !isTransitioning
 
             PropertyChanges {
                 target: root
@@ -74,20 +73,17 @@ Rectangle {
     width: parent.width
 
     onIsOpenChanged: () => {
+        if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial) {
+            VPNConnectionBenchmark.start();
+        }
+
         // Start opening/closing transition
         isTransitioning = true;
 
         timerOne.setTimeout(function() {
             // Finished opening/closing transition
             isTransitioning = false;
-            // Set fake loading state: Starting connection speedtest
-            isLoading = true;
         }, transitionDuration);
-
-        timerTwo.setTimeout(function() {
-            // Set fake loading state: Finished connection speedtest
-            isLoading = false;
-        }, transitionDuration * 10);
     }
 
     Behavior on opacity {
@@ -117,17 +113,11 @@ Rectangle {
             // TODO: Replace with localized string
             accessibleName: "Restart speed test"
             buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-            enabled: connectionInfoContent.visible && !root.isLoading
+            enabled: connectionInfoContent.visible
             z: 1
 
             onClicked: {
-                // Set fake loading state: Restart connection speedtest
-                root.isLoading = true;
-
-                timerThree.setTimeout(function() {
-                    // Set fake loading state: Finished connection speedtest
-                    root.isLoading = false;
-                }, transitionDuration * 10);
+                VPNConnectionBenchmark.start();
             }
 
             Image {
