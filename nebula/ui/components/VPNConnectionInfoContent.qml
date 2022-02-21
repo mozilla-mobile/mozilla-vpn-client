@@ -215,10 +215,10 @@ Flickable {
     }
 
     Connections {
-        target: VPNConnectionBenchmark
+        target: VPNConnectionBenchmarkDownload
 
         function onStateChanged() {
-            if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.Initial) {
+            if (VPNConnectionBenchmarkDownload.state === VPNConnectionBenchmarkDownload.Initial) {
             }
         }
     }

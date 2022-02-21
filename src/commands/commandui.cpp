@@ -368,9 +368,17 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNConnectionBenchmark",
+        "Mozilla.VPN", 1, 0, "VPNConnectionBenchmarkDownload",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->connectionBenchmark();
+          QObject* obj = MozillaVPN::instance()->connectionBenchmarkDownload();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNConnectionBenchmarkModel",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->connectionBenchmarkModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

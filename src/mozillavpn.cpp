@@ -159,8 +159,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &CaptivePortalDetection::settingsChanged);
 
   connect(&m_private->m_controller, &Controller::stateChanged,
-          &m_private->m_connectionBenchmark,
-          &ConnectionBenchmark::stateChanged);
+          &m_private->m_connectionBenchmarkDownload,
+          &ConnectionBenchmarkDownload::stateChanged);
 
   connect(&m_private->m_controller, &Controller::stateChanged,
           &m_private->m_connectionDataHolder,

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "connectionbenchmark.h"
+#include "connectionbenchmarkdownload.h"
 #include "constants.h"
 #include "filedownloader.h"
 #include "leakdetector.h"
@@ -14,44 +14,18 @@
 #include <math.h>
 
 namespace {
-Logger logger(LOG_NETWORKING, "ConnectionBenchmark");
+Logger logger(LOG_NETWORKING, "ConnectionBenchmarkDownload");
 }
 
-ConnectionBenchmark::ConnectionBenchmark() {
-  MVPN_COUNT_CTOR(ConnectionBenchmark);
+ConnectionBenchmarkDownload::ConnectionBenchmarkDownload() {
+  MVPN_COUNT_CTOR(ConnectionBenchmarkDownload);
 }
 
-ConnectionBenchmark::~ConnectionBenchmark() {
-  MVPN_COUNT_DTOR(ConnectionBenchmark);
+ConnectionBenchmarkDownload::~ConnectionBenchmarkDownload() {
+  MVPN_COUNT_DTOR(ConnectionBenchmarkDownload);
 }
 
-void ConnectionBenchmark::setState(State state) {
-  logger.debug() << "Set state" << state;
-  m_state = state;
-  emit stateChanged();
-}
-
-void ConnectionBenchmark::onDownloaded(FileDownloader* downloader) {
-  logger.debug() << "On downloaded";
-
-  quint64 downloadDuration = QDateTime::currentMSecsSinceEpoch() - m_startTime;
-  quint64 bytesPerSecond =
-      downloader->bytesReceived() / downloadDuration * 1000;
-  // double bitsPerSecond = bytesPerSecond * 8;
-  // double mBitsPerSecond = bitsPerSecond / pow(1024, 2);
-
-  m_bytesPerSecond += bytesPerSecond;
-  m_numOfFilesReceived += 1;
-
-  if (m_numOfFilesReceived == m_numOfFilesTotal) {
-    m_fileDownloaderList.clear();
-    emit downloadSpeedChanged();
-
-    setState(StateInitial);
-  }
-}
-
-void ConnectionBenchmark::populateDownloadUrls() {
+void ConnectionBenchmarkDownload::populateUrlList() {
   logger.debug() << "Add download urls";
 
   m_downloadUrls
@@ -88,10 +62,42 @@ void ConnectionBenchmark::populateDownloadUrls() {
   m_numOfFilesTotal = m_downloadUrls.size();
 }
 
-void ConnectionBenchmark::start() {
+void ConnectionBenchmarkDownload::setState(State state) {
+  logger.debug() << "Set state" << state;
+  m_state = state;
+
+  emit stateChanged();
+}
+
+void ConnectionBenchmarkDownload::onReady(FileDownloader* downloader) {
+  logger.debug() << "On downloaded";
+
+  quint64 downloadDuration = QDateTime::currentMSecsSinceEpoch() - m_startTime;
+  quint64 bytesPerSecond =
+      downloader->bytesReceived() / downloadDuration * 1000;
+  // double bitsPerSecond = bytesPerSecond * 8;
+  // double mBitsPerSecond = bitsPerSecond / pow(1024, 2);
+
+  m_bytesPerSecond += bytesPerSecond;
+  m_numOfFilesReceived += 1;
+
+  if (m_numOfFilesReceived == m_numOfFilesTotal) {
+    m_fileDownloaderList.clear();
+    emit downloadSpeedChanged();
+
+    setState(StateFinished);
+  }
+}
+
+void ConnectionBenchmarkDownload::start() {
   logger.debug() << "Start benchmark";
 
-  populateDownloadUrls();
+  ConnectionBenchmarkDownload::populateUrlList();
+
+  // Stop speedtest when max runtime is reached
+  m_timer = new QTimer();
+  connect(m_timer, &QTimer::timeout, this, &ConnectionBenchmarkDownload::stop);
+  m_timer->start(Constants::CONNECTION_SPEED_BENCHMARK_DURATION);
 
   m_startTime = QDateTime::currentMSecsSinceEpoch();
   m_bytesPerSecond = 0;
@@ -104,28 +110,22 @@ void ConnectionBenchmark::start() {
     m_fileDownloaderList.append(downloader);
 
     connect(downloader, &FileDownloader::downloaded, this, [this, downloader] {
-      ConnectionBenchmark::onDownloaded(downloader);
+      ConnectionBenchmarkDownload::onReady(downloader);
     });
     connect(downloader, &FileDownloader::aborted, this, [this, downloader] {
-      ConnectionBenchmark::onDownloaded(downloader);
+      ConnectionBenchmarkDownload::onReady(downloader);
     });
   }
 
   m_downloadUrls.clear();
-
-  // Stop speedtest when max runtime is reached
-  TimerSingleShot::create(this, Constants::CONNECTION_SPEED_BENCHMARK_DURATION,
-                          [this]() {
-                            logger.error() << "Max testing time reached";
-
-                            if (m_state == StateTesting) {
-                              stop();
-                            }
-                          });
 }
 
-void ConnectionBenchmark::stop() {
+void ConnectionBenchmarkDownload::stop() {
   logger.debug() << "Stop benchmark";
+
+  if (m_timer->isActive()) {
+    m_timer->stop();
+  }
 
   for (FileDownloader* downloader : m_fileDownloaderList) {
     downloader->abort();

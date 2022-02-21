@@ -140,22 +140,29 @@ Window {
             text: "ConnectionBenchmark"
         }
         Text {
-            text: "state: " + VPNConnectionBenchmark.state
+            text: "state: " + VPNConnectionBenchmarkDownload.state
         }
         Text {
-            text: "download: " + VPNConnectionBenchmark.downloadSpeed
+            text: "download: " + VPNConnectionBenchmarkDownload.downloadSpeed
+        }
+
+        Repeater {
+            model: VPNConnectionBenchmarkModel
+            delegate: Text {
+                text: name + " " + result
+            }
         }
 
         RowLayout {
             Layout.fillWidth: true
 
             Button {
-                text: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateTesting ? "stop" : "start"
+                text: VPNConnectionBenchmarkDownload.state === VPNConnectionBenchmarkDownload.StateTesting ? "stop" : "start"
                 onClicked: {
-                    if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateTesting) {
-                        VPNConnectionBenchmark.stop();
+                    if (VPNConnectionBenchmarkDownload.state === VPNConnectionBenchmarkDownload.StateTesting) {
+                        VPNConnectionBenchmarkDownload.stop();
                     } else {
-                        VPNConnectionBenchmark.start();
+                        VPNConnectionBenchmarkDownload.start();
                     }
                 }
             }
@@ -168,6 +175,7 @@ Window {
             z: -1
         }
     }
+
 
     VPNStackView {
         id: mainStackView

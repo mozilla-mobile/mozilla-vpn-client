@@ -51,7 +51,7 @@ Rectangle {
         },
         State {
             name: "open-loading"
-            when: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateTesting && isOpen && !isTransitioning
+            when: VPNConnectionBenchmarkDownload.state === VPNConnectionBenchmarkDownload.StateTesting && isOpen && !isTransitioning
 
             PropertyChanges {
                 target: root
@@ -61,7 +61,7 @@ Rectangle {
         },
         State {
             name: "open-ready"
-            when: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial && isOpen && !isTransitioning
+            when: VPNConnectionBenchmarkDownload.state === VPNConnectionBenchmarkDownload.StateInitial && isOpen && !isTransitioning
 
             PropertyChanges {
                 target: root
@@ -73,8 +73,8 @@ Rectangle {
     width: parent.width
 
     onIsOpenChanged: () => {
-        if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial) {
-            VPNConnectionBenchmark.start();
+        if (VPNConnectionBenchmarkDownload.state === VPNConnectionBenchmarkDownload.StateInitial) {
+            VPNConnectionBenchmarkDownload.start();
         }
 
         // Start opening/closing transition
@@ -117,7 +117,7 @@ Rectangle {
             z: 1
 
             onClicked: {
-                VPNConnectionBenchmark.start();
+                VPNConnectionBenchmarkDownload.start();
             }
 
             Image {

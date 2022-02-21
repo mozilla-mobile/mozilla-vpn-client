@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef CONNECTIONBENCHMARK_H
-#define CONNECTIONBENCHMARK_H
+#ifndef CONNECTIONBENCHMARKDOWNLOAD_H
+#define CONNECTIONBENCHMARKDOWNLOAD_H
 
 #include "filedownloader.h"
 
@@ -11,23 +11,24 @@
 #include <QList>
 #include <QObject>
 #include <QString>
+#include <QTimer>
 
-class ConnectionBenchmark final : public QObject {
+class ConnectionBenchmarkDownload final : public QObject {
   Q_OBJECT;
-  Q_DISABLE_COPY_MOVE(ConnectionBenchmark);
+  Q_DISABLE_COPY_MOVE(ConnectionBenchmarkDownload);
 
   Q_PROPERTY(State state READ state NOTIFY stateChanged);
   Q_PROPERTY(
       double downloadSpeed READ downloadSpeed NOTIFY downloadSpeedChanged);
 
  public:
-  ConnectionBenchmark();
-  ~ConnectionBenchmark();
+  ConnectionBenchmarkDownload();
+  ~ConnectionBenchmarkDownload();
 
   enum State {
     StateInitial,
     StateTesting,
-    StateReady,
+    StateFinished,
     StateError,
   };
   Q_ENUM(State);
@@ -43,10 +44,12 @@ class ConnectionBenchmark final : public QObject {
   void downloadSpeedChanged();
 
  private slots:
-  void onDownloaded(FileDownloader* downloader);
+  void onReady(FileDownloader* downloader);
 
  private:
   State m_state = StateInitial;
+
+  QTimer* m_timer;
 
   QList<FileDownloader*> m_fileDownloaderList;
   quint64 m_startTime;
@@ -56,8 +59,8 @@ class ConnectionBenchmark final : public QObject {
   int m_numOfFilesTotal;
   int m_numOfFilesReceived;
 
+  void populateUrlList();
   void setState(State state);
-  void populateDownloadUrls();
 };
 
-#endif  // CONNECTIONBENCHMARK_H
+#endif  // CONNECTIONBENCHMARKDOWNLOAD_H
