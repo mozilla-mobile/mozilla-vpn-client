@@ -43,10 +43,10 @@ jobs:
           sudo mv ${{matrix.config.folder}} /opt
           cd ..
 
-      # - name: Retrieving wireguard-go version
-      #   shell: bash
-      #   run: |
-      #     (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
+      - name: Retrieving wireguard-go version
+        shell: bash
+        run: |
+          (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
 
       - name: Generating glean samples
         shell: bash
