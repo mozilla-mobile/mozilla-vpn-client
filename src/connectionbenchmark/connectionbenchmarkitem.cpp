@@ -6,7 +6,6 @@
 #include "l18nstrings.h"
 #include "logger.h"
 
-#include <QScopeGuard>
 #include <QList>
 
 namespace {
@@ -15,10 +14,9 @@ Logger logger(LOG_MODEL, "ConnectionBenchmarkItem");
 
 ConnectionBenchmarkItem::ConnectionBenchmarkItem(const QString& id,
                                                  const QString& displayName,
+                                                 const QString& icon,
                                                  quint64 result)
-    : m_id(id), m_displayName(displayName), m_result(result) {
-  logger.debug() << "Initializing connection benchmark" << id;
-}
+    : m_id(id), m_displayName(displayName), m_icon(icon), m_result(result) {}
 
 ConnectionBenchmarkItem::~ConnectionBenchmarkItem() {}
 

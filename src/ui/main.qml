@@ -134,6 +134,7 @@ Window {
             horizontalCenter: parent.horizontalCenter
             top: parent.top
         }
+        visible: false
         z: 99
 
         Text {
@@ -143,7 +144,7 @@ Window {
         Repeater {
             model: VPNConnectionBenchmarkModel
             delegate: Text {
-                text: benchmark.id + ", " + benchmark.displayName + ", " + benchmark.result
+                text: benchmark.displayName + ", " + benchmark.result
             }
         }
 

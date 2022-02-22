@@ -37,44 +37,6 @@ Flickable {
         }
     }
 
-    // TODO: This list will be dynamic generated depending
-    // on the available connection information we have
-    ListModel {
-        id: connectionInfoModel
-
-        Component.onCompleted: {
-            connectionInfoModel.append({
-                titleString: VPNServerCountryModel.getLocalizedCountryName(
-                    VPNCurrentServer.exitCountryCode
-                ),
-                subtitleString: VPNCurrentServer.localizedCityName,
-                iconSrc: "qrc:/nebula/resources/flags/"
-                    + VPNCurrentServer.exitCountryCode.toUpperCase()
-                    + ".png",
-                isFlag: true
-            });
-            connectionInfoModel.append({
-                titleString: "Ping",
-                subtitleString: "15 ms",
-                iconSrc: "qrc:/nebula/resources/connection-green.svg"
-            });
-            connectionInfoModel.append({
-                //% "Download"
-                //: The current download speed. The speed is shown on the next line.
-                titleString: qsTrId("vpn.connectionInfo.download"),
-                subtitleString: root.getConnectionLabel(1234567890),
-                iconSrc: "qrc:/nebula/resources/download.svg"
-            });
-            connectionInfoModel.append({
-                //% "Upload"
-                //: The current upload speed. The speed is shown on the next line.
-                titleString: qsTrId("vpn.connectionInfo.upload"),
-                subtitleString: root.getConnectionLabel(123456789),
-                iconSrc: "qrc:/nebula/resources/upload.svg"
-            });
-        }
-    }
-
     ColumnLayout {
         id: content
         
@@ -134,12 +96,18 @@ Flickable {
             Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
-        Repeater {
-            model: VPNConnectionBenchmarkModel
-            delegate: Text {
-                color: "white"
-                text: benchmark.id + ", " + benchmark.displayName + ", " + benchmark.result
-            }
+        VPNConnectionInfoItem {
+            title: VPNServerCountryModel.getLocalizedCountryName(
+                VPNCurrentServer.exitCountryCode
+            )
+            subtitle: VPNCurrentServer.localizedCityName
+            iconPath: "qrc:/nebula/resources/flags/"
+                + VPNCurrentServer.exitCountryCode.toUpperCase()
+                + ".png"
+            isFlagIcon: true
+
+            Layout.leftMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
         Component {
@@ -151,16 +119,16 @@ Flickable {
                     color: VPNTheme.colors.white
                     height: 1
                     opacity: 0.2
-                    visible: index !== 0
 
                     Layout.fillWidth: true
                 }
 
                 VPNConnectionInfoItem {
-                    title: titleString
-                    subtitle: subtitleString
-                    iconPath: iconSrc
-                    isFlagIcon: isFlag
+                    title: benchmark.displayName
+                    subtitle: benchmark.id === "download"
+                        ? root.getConnectionLabel(benchmark.result)
+                        : benchmark.result
+                    iconPath: benchmark.icon
                 }
 
                 Layout.leftMargin: VPNTheme.theme.windowMargin
@@ -171,7 +139,7 @@ Flickable {
         Repeater {
             id: connectionInfoList
 
-            model: connectionInfoModel
+            model: VPNConnectionBenchmarkModel
             delegate: connectionInfoItem
         }
 

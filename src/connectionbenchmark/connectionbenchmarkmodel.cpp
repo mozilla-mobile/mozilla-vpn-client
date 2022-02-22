@@ -70,7 +70,8 @@ void ConnectionBenchmarkModel::runNextBenchmark() {
   if (m_state == StatePing) {
     logger.debug() << "Run ping benchmark";
 
-    addResult(new ConnectionBenchmarkItem("ping", "Ping", 15));
+    addResult(new ConnectionBenchmarkItem(
+        "ping", "Ping", "qrc:/nebula/resources/connection-green.svg", 15));
 
     setState(StateDownload);
     runNextBenchmark();
@@ -87,7 +88,8 @@ void ConnectionBenchmarkModel::runNextBenchmark() {
           if (m_benchmarkDownload->state() ==
               ConnectionBenchmarkDownload::StateReady) {
             addResult(new ConnectionBenchmarkItem(
-                "download", "Download", m_benchmarkDownload->downloadSpeed()));
+                "download", "Download", "qrc:/nebula/resources/download.svg",
+                m_benchmarkDownload->downloadSpeed()));
             setState(StateReady);
 
           } else if (m_benchmarkDownload->state() ==
