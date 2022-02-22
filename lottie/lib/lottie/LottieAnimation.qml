@@ -82,7 +82,7 @@ Item {
 
         property bool componentCompleted: false
 
-        readyToPlay: canvas.available && componentCompleted && source
+        readyToPlay: canvas.available && componentCompleted && source && lottieItem.visible
     }
 
     onParentChanged: Qt.callLater(lottiePrivate.destroyAndRecreate);

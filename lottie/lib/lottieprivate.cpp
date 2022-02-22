@@ -54,6 +54,15 @@ void LottiePrivate::setSource(const QString& source) {
 void LottiePrivate::setReadyToPlay(bool readyToPlay) {
   m_readyToPlay = readyToPlay;
   emit readyToPlayChanged();
+
+  if (m_window) {
+    if (m_readyToPlay) {
+      m_window->resume();
+    } else {
+      m_window->suspend();
+    }
+  }
+
   createAnimation();
 }
 
@@ -199,7 +208,11 @@ void LottiePrivate::setFillMode(const QString& fillMode) {
 }
 
 QJSValue LottiePrivate::createWindowObject() {
-  return engine()->toScriptValue(new LottiePrivateWindow(this));
+  if (!m_window) {
+    m_window = new LottiePrivateWindow(this);
+  }
+
+  return engine()->toScriptValue(m_window);
 }
 
 QJSValue LottiePrivate::createNavigatorObject() {

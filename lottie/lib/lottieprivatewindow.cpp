@@ -21,17 +21,19 @@ int LottiePrivateWindow::setIntervalOrTimeout(QJSValue callback, int interval,
     return timerId;
   }
 
-  TimerData td{new QTimer(this), callback, timerId, singleShot};
+  TimerData td{new QTimer(this), callback, timerId, interval, singleShot};
   connect(td.m_timer, &QTimer::timeout, this, [this, timerId] {
     TimerData td = m_timers.value(timerId);
     if (td.m_singleShot) {
       clearInterval(timerId);
+    } else {
+      td.m_timer->start(td.m_interval);
     }
     td.m_callback.call();
   });
 
   td.m_timer->start(interval);
-  td.m_timer->setSingleShot(singleShot);
+  td.m_timer->setSingleShot(true);
 
   m_timers.insert(td.m_timerId, td);
 
@@ -74,4 +76,26 @@ QJSValue LottiePrivateWindow::lottie() const {
 void LottiePrivateWindow::setLottie(QJSValue lottie) {
   m_private->setLottieInstance(lottie);
   emit lottieChanged();
+}
+
+void LottiePrivateWindow::suspend() {
+  for (QMap<int, TimerData>::iterator i = m_timers.begin(); i != m_timers.end();
+       ++i) {
+    TimerData& td = i.value();
+    if (td.m_timer) {
+      td.m_remainingInterval = td.m_timer->remainingTime();
+      td.m_timer->stop();
+    }
+  }
+}
+
+void LottiePrivateWindow::resume() {
+  for (QMap<int, TimerData>::iterator i = m_timers.begin(); i != m_timers.end();
+       ++i) {
+    TimerData& td = i.value();
+    if (td.m_remainingInterval >= 0 && td.m_timer) {
+      td.m_timer->start(td.m_remainingInterval);
+      td.m_remainingInterval = 0;
+    }
+  }
 }
