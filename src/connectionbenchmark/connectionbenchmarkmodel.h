@@ -5,7 +5,7 @@
 #ifndef CONNECTIONBENCHMARKMODEL_H
 #define CONNECTIONBENCHMARKMODEL_H
 
-#include "connectionbenchmark.h"
+#include "connectionbenchmarkitem.h"
 #include "connectionbenchmarkdownload.h"
 
 #include <QAbstractListModel>
@@ -57,7 +57,7 @@ class ConnectionBenchmarkModel final : public QAbstractListModel {
 
   void initialize();
 
-  QList<ConnectionBenchmark*> m_benchmarks;
+  QList<ConnectionBenchmarkItem*> m_benchmarks;
 
   ConnectionBenchmarkDownload* m_benchmarkDownload;
 };

@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef CONNECTIONBENCHMARK_H
-#define CONNECTIONBENCHMARK_H
+#ifndef CONNECTIONBENCHMARKITEM_H
+#define CONNECTIONBENCHMARKITEM_H
 
 #include "qmlengineholder.h"
 #include "l18nstrings.h"
@@ -11,7 +11,7 @@
 #include <QObject>
 #include <QApplication>
 
-class ConnectionBenchmark : public QObject {
+class ConnectionBenchmarkItem : public QObject {
   Q_OBJECT
 
   Q_PROPERTY(QString id MEMBER m_id CONSTANT)
@@ -20,9 +20,9 @@ class ConnectionBenchmark : public QObject {
   Q_PROPERTY(bool isAvailable READ isAvailable NOTIFY isAvailableChanged)
 
  public:
-  ConnectionBenchmark(const QString& id, const QString& displayName,
-                      quint64 result, bool isAvailable);
-  ~ConnectionBenchmark();
+  ConnectionBenchmarkItem(const QString& id, const QString& displayName,
+                          quint64 result, bool isAvailable);
+  ~ConnectionBenchmarkItem();
 
   bool isAvailable() const;
 
@@ -40,4 +40,4 @@ class ConnectionBenchmark : public QObject {
   bool m_isAvailable;
 };
 
-#endif  // CONNECTIONBENCHMARK_H
+#endif  // CONNECTIONBENCHMARKITEM_H

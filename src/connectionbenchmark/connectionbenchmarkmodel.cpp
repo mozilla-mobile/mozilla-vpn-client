@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "connectionbenchmark.h"
+#include "connectionbenchmarkitem.h"
 #include "connectionbenchmarkdownload.h"
 #include "connectionbenchmarkmodel.h"
 #include "leakdetector.h"
@@ -62,15 +62,17 @@ void ConnectionBenchmarkModel::setState(State state) {
 void ConnectionBenchmarkModel::addBenchmark() {
   logger.debug() << "Add benchmark";
 
-  m_benchmarkDownload = new ConnectionBenchmarkDownload();
+  if (m_state == StateInitial) {
+  }
 
+  m_benchmarkDownload = new ConnectionBenchmarkDownload();
   connect(m_benchmarkDownload, &ConnectionBenchmarkDownload::stateChanged, this,
           [&] {
             logger.debug() << "Download speedtest state changed";
 
             if (m_benchmarkDownload->state() ==
                 ConnectionBenchmarkDownload::StateReady) {
-              m_benchmarks = {new ConnectionBenchmark(
+              m_benchmarks = {new ConnectionBenchmarkItem(
                   "download", "Download 2",
                   m_benchmarkDownload->downloadSpeed(), true)};
 
@@ -104,5 +106,6 @@ void ConnectionBenchmarkModel::reset() {
 }
 
 void ConnectionBenchmarkModel::initialize() {
-  m_benchmarks = {new ConnectionBenchmark("download", "Download 1", 0, true)};
+  m_benchmarks = {
+      new ConnectionBenchmarkItem("download", "Download 1", 0, true)};
 }
