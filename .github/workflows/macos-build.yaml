@@ -60,6 +60,7 @@ jobs:
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           git submodule update --remote --depth 1 i18n
           python3 scripts/importLanguages.py -m
+          echo `go version`
 
       - name: Install the Apple certificate and provisioning profile
         env:
