@@ -33,9 +33,6 @@ fi
 print Y "Cleaning the existing project... "
 qmltest_cleanup || die
 
-print Y "Creating the xcode project via qmake for QML tests..."
-qmltest_qmake || die
-
 print Y "Compile the QML tests..."
 qmltest_compile || die
 

@@ -123,37 +123,30 @@ ECHO BUILD_BUILD = %DEBUG_BUILD%
 
 IF %DEBUG_BUILD%==T (
   ECHO Generating Debug Build for the extension bridge
-  qmake -tp vc extension\app\app.pro CONFIG+=debug
+  CD extension\bridge
+
+  cargo build --debug
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO cargo failed for the extension!
+    EXIT 1
+  )
+
+  CP target/debug/mozillavpnnp.exe ..\..
+  CD ..\..
 )
 
 IF %DEBUG_BUILD%==F (
   ECHO Generating Release Build for the extension bridge
-  qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
-)
+  CD extension\bridge
 
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO qmake failed for the extension!
-  EXIT 1
-)
+  cargo build --release
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO cargo failed for the extension!
+    EXIT 1
+  )
 
-IF NOT EXIST mozillavpnnp.vcxproj (
-  echo The VC project doesn't exist. Why?
-  EXIT 1
-)
-
-set CL=/MP
-
-ECHO Cleaning up the project...
-MSBuild -t:Clean -p:Configuration=%BUILD_CONF% mozillavpnnp.vcxproj
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to clean up the project
-  EXIT 1
-)
-
-MSBuild -t:Build -p:Configuration=%BUILD_CONF% mozillavpnnp.vcxproj
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to build the project
-  EXIT 1
+  CP target/release/mozillavpnnp.exe ..\..
+  CD ..\..
 )
 
 ECHO Creating the project with flags: %FLAGS%

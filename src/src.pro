@@ -484,53 +484,83 @@ else:linux:!android {
 
     GO_MODULES = ../linux/netfilter/netfilter.go
 
+    cargoBridge.input = CARGO_CRATE
+    cargoBridge.output = ${QMAKE_FILE_IN}/target/release/mozillavpnnp
+    cargoBridge.commands = @echo Compiling Rust component ${QMAKE_FILE_IN} && \
+       cd "${QMAKE_FILE_IN}" && \
+       mkdir -p .cargo && \
+       export CARGO_HOME="${PWD}/${QMAKE_FILE_IN}/.cargo_home" && \
+       cargo build --release
+    cargoBridge.clean_commands = cd "${QMAKE_FILE_IN}" && cargo clean && rm -rf vendor
+    cargoBridge.CONFIG = target_predeps no_link
+
+    QMAKE_EXTRA_COMPILERS += cargoBridge
+    CARGO_CRATE = ../extension/bridge
+
     target.path = $${USRPATH}/bin
     INSTALLS += target
 
+    desktopFile.files = $$PWD/../linux/extra/MozillaVPN.desktop
     desktopFile.path = $${USRPATH}/share/applications
-    desktopFile.files = ../linux/extra/MozillaVPN.desktop
     INSTALLS += desktopFile
 
+    autostartFile.files = $$PWD/../linux/extra/MozillaVPN-startup.desktop
     autostartFile.path = $${ETCPATH}/xdg/autostart
-    autostartFile.files = ../linux/extra/MozillaVPN-startup.desktop
     INSTALLS += autostartFile
 
+    icon16x16.files = $$PWD/../linux/extra/icons/16x16/mozillavpn.png
     icon16x16.path = $${USRPATH}/share/icons/hicolor/16x16/apps
-    icon16x16.files = ../linux/extra/icons/16x16/mozillavpn.png
     INSTALLS += icon16x16
 
+    icon32x32.files = $$PWD/../linux/extra/icons/32x32/mozillavpn.png
     icon32x32.path = $${USRPATH}/share/icons/hicolor/32x32/apps
-    icon32x32.files = ../linux/extra/icons/32x32/mozillavpn.png
     INSTALLS += icon32x32
 
+    icon48x48.files = $$PWD/../linux/extra/icons/48x48/mozillavpn.png
     icon48x48.path = $${USRPATH}/share/icons/hicolor/48x48/apps
-    icon48x48.files = ../linux/extra/icons/48x48/mozillavpn.png
     INSTALLS += icon48x48
 
     DEFINES += MVPN_ICON_PATH=\\\"$${USRPATH}/share/icons/hicolor/64x64/apps/mozillavpn.png\\\"
+    icon64x64.files = $$PWD/../linux/extra/icons/64x64/mozillavpn.png
     icon64x64.path = $${USRPATH}/share/icons/hicolor/64x64/apps
-    icon64x64.files = ../linux/extra/icons/64x64/mozillavpn.png
     INSTALLS += icon64x64
 
+    icon128x128.files = $$PWD/../linux/extra/icons/128x128/mozillavpn.png
     icon128x128.path = $${USRPATH}/share/icons/hicolor/128x128/apps
-    icon128x128.files = ../linux/extra/icons/128x128/mozillavpn.png
     INSTALLS += icon128x128
 
-    polkit_actions.files = platforms/linux/daemon/org.mozilla.vpn.policy
     polkit_actions.path = $${USRPATH}/share/polkit-1/actions
+    polkit_actions.files = $$PWD/platforms/linux/daemon/org.mozilla.vpn.policy
     INSTALLS += polkit_actions
 
-    dbus_conf.files = platforms/linux/daemon/org.mozilla.vpn.conf
+    dbus_conf.files = $$PWD/platforms/linux/daemon/org.mozilla.vpn.conf
     dbus_conf.path = $${USRPATH}/share/dbus-1/system.d/
     INSTALLS += dbus_conf
 
-    dbus_service.files = platforms/linux/daemon/org.mozilla.vpn.dbus.service
+    dbus_service.files = $$PWD/platforms/linux/daemon/org.mozilla.vpn.dbus.service
     dbus_service.path = $${USRPATH}/share/dbus-1/system-services
     INSTALLS += dbus_service
 
-    systemd_service.files = ../linux/mozillavpn.service
+    systemd_service.files = $$PWD/../linux/mozillavpn.service
     systemd_service.path = $${USRPATH}/lib/systemd/system
     INSTALLS += systemd_service
+
+    manifestFirefox.files = $$PWD/../extension/manifests/linux/mozillavpn.json
+    manifestFirefox.path = $${USRPATH}/lib/mozilla/native-messaging-hosts
+    INSTALLS += manifestFirefox
+
+    manifestChrome.files = $$PWD/../extension/manifests/linux/mozillavpn.json
+    manifestChrome.path = $${ETCPATH}/opt/chrome/native-messaging-hosts
+    INSTALLS += manifestChrome
+
+    manifestChromium.files = $$PWD/../extension/manifests/linux/mozillavpn.json
+    manifestChromium.path = $${ETCPATH}/chromium/native-messaging-hosts
+    INSTALLS += manifestChromium
+
+    browserBridge.files = $$PWD/../extension/bridge/target/release/mozillavpnnp
+    browserBridge.path = $${USRPATH}/lib/mozillavpn
+    browserBridge.CONFIG = no_check_exist executable
+    INSTALLS += browserBridge
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
