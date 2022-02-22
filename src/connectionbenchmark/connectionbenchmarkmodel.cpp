@@ -116,6 +116,10 @@ void ConnectionBenchmarkModel::stop() { logger.debug() << "Stop benchmark"; }
 void ConnectionBenchmarkModel::reset() {
   logger.debug() << "Reset connection benchmarks";
 
+  beginResetModel();
+  qDeleteAll(m_benchmarks.begin(), m_benchmarks.end());
   m_benchmarks.clear();
+  endResetModel();
+
   setState(StateInitial);
 }

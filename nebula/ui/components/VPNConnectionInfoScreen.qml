@@ -82,7 +82,9 @@ Rectangle {
         // Start opening/closing transition
         isTransitioning = true;
 
-        if (VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateInitial) {
+        if (VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateInitial
+            || VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateReady
+        ) {
             VPNConnectionBenchmarkModel.start();
         }
 
