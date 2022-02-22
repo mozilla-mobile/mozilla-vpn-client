@@ -110,20 +110,11 @@ public class VPNActivity extends org.mozilla.firefox.vpn.compat.CompatVPNActivit
           vpnService = service;
           bound = true;
 
-
-        VPNClientBinder binder = new VPNClientBinder();
-        Parcel out = Parcel.obtain();
-        out.writeStrongBinder(binder);
-        try {
-          // Register our IBinder Listener
-          vpnService.transact(3,out,Parcel.obtain(),0);
-        } catch (DeadObjectException e) {
-          bound = false;
-          vpnService= null;
-        } catch (RemoteException e) {
-          e.printStackTrace();
-        }
-        qtOnServiceConnected();
+          if(registerBinder()){
+            qtOnServiceConnected();
+            return;
+          }
+          qtOnServiceDisconnected();
       }
 
       public void onServiceDisconnected(ComponentName className) {
@@ -135,7 +126,31 @@ public class VPNActivity extends org.mozilla.firefox.vpn.compat.CompatVPNActivit
     }
   };
 
+  private final int VPN_SERVICE_REGISTERBINDER = 3;
+  private boolean registerBinder(){
+      VPNClientBinder binder = new VPNClientBinder();
+      Parcel out = Parcel.obtain();
+      out.writeStrongBinder(binder);
+      try {
+        // Register our IBinder Listener
+        vpnService.transact(VPN_SERVICE_REGISTERBINDER,out,Parcel.obtain(),0);
+        return true;
+      } catch (DeadObjectException e) {
+            bound = false;
+            vpnService= null;
+      } catch (RemoteException e) {
+            e.printStackTrace();
+      }
+    return false;
+  }
+
   private void initServiceConnection(){
+    // We already have a connection to the service,
+    // just need to re-register the binder
+    if(bound && vpnService.isBinderAlive() && registerBinder()){
+      qtOnServiceConnected();
+      return;
+    }
     bindService(new Intent(this, VPNService.class), mConnection,
             Context.BIND_AUTO_CREATE);
   }
