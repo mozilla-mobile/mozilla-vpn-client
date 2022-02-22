@@ -37,7 +37,7 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-6.2.3
 ./configure.bat `
   -static  `
   -opensource  `
-  -release  `
+  -debug-and-release `
   -no-dbus   `
   -no-feature-qdbus  `
   -confirm-license  `
