@@ -61,6 +61,7 @@ jobs:
           git submodule update --remote --depth 1 i18n
           python3 scripts/importLanguages.py -m
           echo `go version`
+          brew unlink go@1.15
           brew install go
 
       # - name: Install the Apple certificate and provisioning profile
