@@ -582,7 +582,7 @@ class XCodeprojPatcher
     copy_nativeMessagingManifest.dst_path = 'Contents/Resources/utils'
 
     group = @project.main_group.new_group('WireGuardHelper')
-    file = group.new_file 'extension/app/manifests/macos/mozillavpn.json'
+    file = group.new_file 'extension/manifests/macos/mozillavpn.json'
 
     nativeMessagingManifest_file = copy_nativeMessagingManifest.add_file_reference file
     nativeMessagingManifest_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }

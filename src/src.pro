@@ -532,6 +532,18 @@ else:linux:!android {
     systemd_service.path = $${USRPATH}/lib/systemd/system
     INSTALLS += systemd_service
 
+    manifestFirefox.path = /usr/lib/mozilla/native-messaging-hosts
+    manifestFirefox.files = ../extension/manifests/linux/mozillavpn.json
+    INSTALLS += manifestFirefox
+
+    manifestChrome.path = /etc/opt/chrome/native-messaging-hosts
+    manifestChrome.files = ../extension/manifests/linux/mozillavpn.json
+    INSTALLS += manifestChrome
+
+    manifestChromium.path = /etc/chromium/native-messaging-hosts
+    manifestChromium.files = ../extension/manifests/linux/mozillavpn.json
+    INSTALLS += manifestChromium
+
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
 }

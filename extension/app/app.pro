@@ -32,18 +32,6 @@ HEADERS += \
 linux:!android {
     target.path = /usr/lib/mozillavpn
     INSTALLS += target
-
-    manifestFirefox.path = /usr/lib/mozilla/native-messaging-hosts
-    manifestFirefox.files = manifests/linux/mozillavpn.json
-    INSTALLS += manifestFirefox
-
-    manifestChrome.path = /etc/opt/chrome/native-messaging-hosts
-    manifestChrome.files = manifests/linux/mozillavpn.json
-    INSTALLS += manifestChrome
-
-    manifestChromium.path = /etc/chromium/native-messaging-hosts
-    manifestChromium.files = manifests/linux/mozillavpn.json
-    INSTALLS += manifestChromium
 } else:win* {
     CONFIG(release, debug|release) {
         QMAKE_CXXFLAGS += -MP -Zc:preprocessor
