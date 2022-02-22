@@ -80,7 +80,7 @@ Flickable {
         
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 0
-        width: parent.width - VPNTheme.theme.windowMargin * 2
+        width: parent.width
 
         // IP Adresses
         VPNIPAddress {
@@ -115,7 +115,7 @@ Flickable {
         Item {
             Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
-            Layout.preferredHeight: parent.width * 0.4
+            Layout.preferredHeight: parent.width * 0.35
 
             VPNLottieAnimation {
                 id: speedometerAnimation
@@ -130,6 +130,8 @@ Flickable {
 
             Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
             Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
+            Layout.leftMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
         Component {
@@ -152,6 +154,9 @@ Flickable {
                     iconPath: iconSrc
                     isFlagIcon: isFlag
                 }
+
+                Layout.leftMargin: VPNTheme.theme.windowMargin
+                Layout.rightMargin: VPNTheme.theme.windowMargin
             }
         }
 
