@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorwebsocketconnection.h"
+#include "inspectoritempicker.h"
+#include "inspectorutils.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -14,6 +16,7 @@
 #include "settingsholder.h"
 #include "networkmanager.h"
 #include "task.h"
+#include "tutorial.h"
 
 #include <functional>
 
@@ -40,71 +43,12 @@ bool s_stealUrls = false;
 bool s_forwardNetwork = false;
 QUrl s_lastUrl;
 QString s_updateVersion;
+QStringList s_pickedItems;
+bool s_pickedItemsSet = false;
+
+InspectorItemPicker* s_itemPicker = nullptr;
 
 }  // namespace
-
-static QObject* findObject(const QString& name) {
-  QStringList parts = name.split("/");
-  Q_ASSERT(!parts.isEmpty());
-
-  QQuickItem* parent = nullptr;
-  QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
-  for (QObject* rootObject : engine->rootObjects()) {
-    if (!rootObject) {
-      continue;
-    }
-
-    parent = rootObject->findChild<QQuickItem*>(parts[0]);
-    if (parent) {
-      break;
-    }
-  }
-
-  if (!parent) {
-    if (parts.length() == 1) {
-      int id = qmlTypeId("Mozilla.VPN", 1, 0, qPrintable(parts[0]));
-      return engine->singletonInstance<QObject*>(id);
-    }
-    return parent;
-  }
-
-  for (int i = 1; i < parts.length(); ++i) {
-    QList<QQuickItem*> children = parent->childItems();
-
-    bool found = false;
-    for (QQuickItem* item : children) {
-      if (item->objectName() == parts[i]) {
-        parent = item;
-        found = true;
-        break;
-      }
-    }
-
-    if (!found) {
-      QQuickItem* contentItem =
-          parent->property("contentItem").value<QQuickItem*>();
-      if (!contentItem) {
-        return nullptr;
-      }
-
-      QList<QQuickItem*> contentItemChildren = contentItem->childItems();
-
-      for (QQuickItem* item : contentItemChildren) {
-        if (item->objectName() == parts[i]) {
-          parent = item;
-          found = true;
-          break;
-        }
-      }
-    }
-
-    if (!found) {
-      return nullptr;
-    }
-  }
-
-  return parent;
-}
 
 struct WebSocketSettingCommand {
   QString m_settingName;
@@ -304,10 +248,37 @@ static QList<WebSocketCommand> s_commands{
                        return QJsonObject();
                      }},
 
+    WebSocketCommand{"pick", "Wait for a click to select an element", 0,
+                     [](const QList<QByteArray>&) {
+                       if (!s_itemPicker) {
+                         s_itemPicker = new InspectorItemPicker(qApp);
+                         qApp->installEventFilter(s_itemPicker);
+                       }
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{"picked", "Retrieve what has been selected with a click",
+                     0,
+                     [](const QList<QByteArray>&) {
+                       QJsonArray array;
+                       for (const QString& element : s_pickedItems) {
+                         array.append(element);
+                       }
+
+                       QJsonObject obj;
+                       obj["value"] = array;
+                       obj["clicked"] = s_pickedItemsSet;
+
+                       s_pickedItemsSet = false;
+                       s_pickedItems.clear();
+                       return obj;
+                     }},
+
     WebSocketCommand{"has", "Check if an object exists", 1,
                      [](const QList<QByteArray>& arguments) {
                        QJsonObject obj;
-                       obj["value"] = !!findObject(arguments[1]);
+                       obj["value"] =
+                           !!InspectorUtils::findObject(arguments[1]);
                        return obj;
                      }},
 
@@ -316,7 +287,7 @@ static QList<WebSocketCommand> s_commands{
                        QJsonObject obj;
                        QString result;
 
-                       QObject* item = findObject(arguments[1]);
+                       QObject* item = InspectorUtils::findObject(arguments[1]);
                        if (!item) {
                          obj["error"] = "Object not found";
                          return obj;
@@ -363,7 +334,7 @@ static QList<WebSocketCommand> s_commands{
                      [](const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
-                       QObject* item = findObject(arguments[1]);
+                       QObject* item = InspectorUtils::findObject(arguments[1]);
                        if (!item) {
                          obj["error"] = "Object not found";
                          return obj;
@@ -392,7 +363,7 @@ static QList<WebSocketCommand> s_commands{
                          obj["error"] = "Unsupported type. Use: i, s";
                        }
 
-                       QObject* item = findObject(arguments[1]);
+                       QObject* item = InspectorUtils::findObject(arguments[1]);
                        if (!item) {
                          obj["error"] = "Object not found";
                          return obj;
@@ -410,7 +381,8 @@ static QList<WebSocketCommand> s_commands{
                      [](const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
-                       QObject* qmlobj = findObject(arguments[1]);
+                       QObject* qmlobj =
+                           InspectorUtils::findObject(arguments[1]);
                        if (!qmlobj) {
                          logger.error() << "Did not find object to click on";
                          obj["error"] = "Object not found";
@@ -431,30 +403,30 @@ static QList<WebSocketCommand> s_commands{
                                          Qt::NoModifier, point);
                        return obj;
                      }},
-    WebSocketCommand{"pushViewTo", "Push a QML View to a StackView", 2,
-                     [](const QList<QByteArray>& arguments) {
-                       QJsonObject obj;
-                       QString stackViewName(arguments[1]);
-                       QUrl qrcPath(arguments[2]);
-                       if (!qrcPath.isValid()) {
-                         obj["error"] = " Not a valid URL!";
-                         logger.error() << "Not a valid URL!";
-                       }
+    WebSocketCommand{
+        "pushViewTo", "Push a QML View to a StackView", 2,
+        [](const QList<QByteArray>& arguments) {
+          QJsonObject obj;
+          QString stackViewName(arguments[1]);
+          QUrl qrcPath(arguments[2]);
+          if (!qrcPath.isValid()) {
+            obj["error"] = " Not a valid URL!";
+            logger.error() << "Not a valid URL!";
+          }
 
-                       QObject* qmlobj = findObject(stackViewName);
-                       if (qmlobj == nullptr) {
-                         obj["error"] =
-                             "Cant find, stackview :" + stackViewName;
-                       }
+          QObject* qmlobj = InspectorUtils::findObject(stackViewName);
+          if (qmlobj == nullptr) {
+            obj["error"] = "Cant find, stackview :" + stackViewName;
+          }
 
-                       QVariant arg = QVariant::fromValue(qrcPath.toString());
+          QVariant arg = QVariant::fromValue(qrcPath.toString());
 
-                       bool ok = QMetaObject::invokeMethod(
-                           qmlobj, "debugPush", QGenericReturnArgument(),
-                           Q_ARG(QVariant, arg));
-                       logger.info() << "WAS OK ->" << ok;
-                       return obj;
-                     }},
+          bool ok = QMetaObject::invokeMethod(qmlobj, "debugPush",
+                                              QGenericReturnArgument(),
+                                              Q_ARG(QVariant, arg));
+          logger.info() << "WAS OK ->" << ok;
+          return obj;
+        }},
 
     WebSocketCommand{"click_notification", "Click on a notification", 0,
                      [](const QList<QByteArray>&) {
@@ -810,6 +782,13 @@ static QList<WebSocketCommand> s_commands{
 
           return QJsonObject();
         }},
+
+    WebSocketCommand{"tutorial", "Play a tutorial", 1,
+                     [](const QList<QByteArray>& arguments) {
+                       Tutorial::instance()->play(arguments[1]);
+                       return QJsonObject();
+                     }},
+
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(
@@ -842,6 +821,8 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
   connect(NetworkManager::instance()->networkAccessManager(),
           &QNetworkAccessManager::finished, this,
           &InspectorWebSocketConnection::networkRequestFinished);
+  connect(Tutorial::instance(), &Tutorial::playingChanged, this,
+          &InspectorWebSocketConnection::tutorialChanged);
 }
 
 InspectorWebSocketConnection::~InspectorWebSocketConnection() {
@@ -905,6 +886,14 @@ void InspectorWebSocketConnection::logEntryAdded(const QByteArray& log) {
   QJsonObject obj;
   obj["type"] = "log";
   obj["value"] = QString(log).trimmed();
+  m_connection->sendTextMessage(
+      QJsonDocument(obj).toJson(QJsonDocument::Compact));
+}
+
+void InspectorWebSocketConnection::tutorialChanged() {
+  QJsonObject obj;
+  obj["type"] = Tutorial::instance()->isPlaying() ? "tutorialStarted"
+                                                  : "tutorialCompleted";
   m_connection->sendTextMessage(
       QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
@@ -1057,4 +1046,15 @@ QJsonObject InspectorWebSocketConnection::serialize(QQuickItem* item) {
   }
   out["subItems"] = subView;
   return out;
+}
+
+void InspectorWebSocketConnection::itemsPicked(const QStringList& objectNames) {
+  s_pickedItems = objectNames;
+  s_pickedItemsSet = true;
+
+  if (s_itemPicker) {
+    qApp->removeEventFilter(s_itemPicker);
+    s_itemPicker->deleteLater();
+    s_itemPicker = nullptr;
+  }
 }

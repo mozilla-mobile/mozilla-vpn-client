@@ -27,6 +27,7 @@ class InspectorWebSocketConnection final : public QObject {
   static QString getObjectClass(const QObject* target);
   static QJsonObject getViewTree();
   static QJsonObject serialize(QQuickItem* item);
+  static void itemsPicked(const QStringList& objectNames);
 
  private:
   void textMessageReceived(const QString& message);
@@ -35,6 +36,8 @@ class InspectorWebSocketConnection final : public QObject {
   void parseCommand(const QByteArray& command);
 
   void logEntryAdded(const QByteArray& log);
+
+  void tutorialChanged();
 
   void notificationShown(const QString& title, const QString& message);
 

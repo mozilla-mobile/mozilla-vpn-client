@@ -4,6 +4,7 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 import QtQuick.Window 2.12
 
 import Mozilla.VPN 1.0
@@ -461,6 +462,47 @@ Window {
         }
 
     }
+
+    // This part needs UI - TODO
+    Popup {
+        id: tooltip
+        property alias text: text.text
+        visible: false
+        x: VPNTheme.theme.windowMargin
+        width: parent.width - VPNTheme.theme.windowMargin * 2
+
+        ColumnLayout {
+            Text {
+                id: text
+                text: ""
+            }
+
+            Button {
+                objectName: "tutorialExit"
+                text: "Exit"
+                Component.onCompleted: VPNTutorial.allowItem("tutorialExit")
+                onClicked: VPNTutorial.stop()
+            }
+        }
+    }
+
+    Connections {
+        target: VPNTutorial
+        function onTooltipNeeded(text, rect) {
+            if (tooltip.height + rect.y + rect.height <= window.height - VPNTheme.theme.windowMargin) {
+              tooltip.y = rect.y + rect.height;
+            } else {
+              tooltip.y = rect.y - tooltip.height;
+            }
+            tooltip.text = text
+            tooltip.open();
+        }
+
+        function onPlayingChanged() {
+            tooltip.visible = VPNTutorial.tooltipShown
+        }
+    }
+
 
     VPNSystemAlert {
     }
