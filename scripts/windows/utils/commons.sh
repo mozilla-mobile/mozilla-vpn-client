@@ -50,7 +50,6 @@ utest_qmake_auth() {
 
 utest_qmake_nativemessaging() {
   _qmake tests/nativemessaging/nativemessaging.pro tests.vcxproj || die
-  _qmake extension/app/app.pro mozillavpnnp.vcxproj || die
 }
 
 utest_compile_unit() {
@@ -64,7 +63,9 @@ utest_compile_auth() {
 
 utest_compile_nativemessaging() {
   _compile tests.vcxproj tests.exe || die
-  _compile mozillavpnnp.vcxproj mozillavpnnp.exe || die
+
+  (cd extension/bridge && cargo build --release) || die
+  [ -f extension/bridge/target/release/mozillavpnnp.exe ] || die "Expected extension/bridge/target/release/mozillavpnnp.exe"
 }
 
 utest_run_unit() {
@@ -77,8 +78,7 @@ utest_run_auth() {
 }
 
 utest_run_nativemessaging() {
-  echo "TODO VPN-1801: No native-messaging tests for windows yet!"
-  #./tests.exe ./mozillavpnnp.exe || die
+  ./tests.exe extension/bridge/target/release/mozillavpnnp.exe || die
 }
 
 utest_cleanup_unit() {

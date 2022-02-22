@@ -1,7 +1,7 @@
 {
   "name": "mozillavpn",
   "description": "A fast, secure and easy to use VPN. Built by the makers of Firefox. ",
-  "path": "/Applications/Mozilla VPN.app/Contents/Library/NativeMessaging/MozillaVPNNativeMessaging.app/Contents/MacOS/MozillaVPNNativeMessaging",
+  "path": "/Applications/Mozilla VPN.app/Contents/Releases/utils/mozillavpnnp",
   "type": "stdio",
   "allowed_extensions": [ "vpn@mozilla.org", "@testpilot-containers" ]
 }

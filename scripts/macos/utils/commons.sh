@@ -66,7 +66,6 @@ utest_qmake_auth() {
 
 utest_qmake_nativemessaging() {
   _qmake tests/nativemessaging/nativemessaging.pro tests.xcodeproj/ || die
-  _qmake extension/app/app.pro mozillavpnnp.xcodeproj/ || die
 }
 
 utest_compile_unit() {
@@ -79,7 +78,9 @@ utest_compile_auth() {
 
 utest_compile_nativemessaging() {
   _compile tests.xcodeproj ./Release/tests || die
-  _compile mozillavpnnp.xcodeproj ./Release/mozillavpnnp || die
+
+  (cd extension/bridge && cargo build --release) || die
+  [ -f extension/bridge/target/release/mozillavpnnp ] || die "Expected extension/bridge/target/release/mozillavpnnp"
 }
 
 utest_run_unit() {
@@ -91,7 +92,7 @@ utest_run_auth() {
 }
 
 utest_run_nativemessaging() {
-  ./Release/tests ./Release/mozillavpnnp || die
+  ./Release/tests extension/bridge/target/release/mozillavpnnp || die
 }
 
 utest_cleanup_unit() {
@@ -103,7 +104,7 @@ utest_cleanup_auth() {
 }
 
 utest_cleanup_nativemessaging() {
-  _cleanup mozillavpnnp.xcodeproj/ ./Release/mozillavpnnp || die
+  (cd extension/bridge && cargo clean) || die
   _cleanup tests.xcodeproj/ ./Release/tests || die
 }
 

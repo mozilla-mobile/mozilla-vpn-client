@@ -50,7 +50,6 @@ utest_qmake_auth() {
 
 utest_qmake_nativemessaging() {
   _qmake tests/nativemessaging || die
-  _qmake extension/app || die
 }
 
 utest_compile_unit() {
@@ -63,7 +62,9 @@ utest_compile_auth() {
 
 utest_compile_nativemessaging() {
   _compile tests/nativemessaging || die
-  _compile extension/app || die
+
+  (cd extension/bridge && cargo build --release) || die
+  [ -f extension/bridge/target/release/mozillavpnnp ] || die "Expected extension/bridge/target/release/mozillavpnnp"
 }
 
 utest_run_unit() {
@@ -75,7 +76,7 @@ utest_run_auth() {
 }
 
 utest_run_nativemessaging() {
-  ./tests/nativemessaging/tests ./extension/app/mozillavpnnp || die
+  ./tests/nativemessaging/tests ./extension/bridge/target/release/mozillavpnnp || die
 }
 
 utest_cleanup_unit() {
@@ -87,7 +88,7 @@ utest_cleanup_auth() {
 }
 
 utest_cleanup_nativemessaging() {
-  _cleanup extension/app
+  (cd extension/bridge && cargo clean) || die
   _cleanup tests/nativemessaging
 }
 

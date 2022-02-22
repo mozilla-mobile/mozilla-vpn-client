@@ -74,7 +74,7 @@ jobs:
           cp windows/split-tunnel/mullvad-split-tunnel.inf unsigned
           cp windows/split-tunnel/mullvad-split-tunnel.sys unsigned
           cp windows/split-tunnel/WdfCoinstaller01011.dll unsigned
-          cp extension/app/manifests/windows/mozillavpn.json unsigned
+          cp extension/manifests/windows/mozillavpn.json unsigned
           cp *.exe unsigned
 
       - name: Upload app

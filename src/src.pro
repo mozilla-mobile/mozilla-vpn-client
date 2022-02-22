@@ -484,6 +484,15 @@ else:linux:!android {
 
     GO_MODULES = ../linux/netfilter/netfilter.go
 
+    cargoBridge.input = CARGO_CRATE
+    cargoBridge.output = ${QMAKE_FILE_IN}/target/release/mozillavpnnp
+    cargoBridge.commands = @echo Compiling Rust component ${QMAKE_FILE_IN} && cd "${QMAKE_FILE_IN}" && cargo build --release
+    cargoBridge.clean_commands = cd "${QMAKE_FILE_IN}" && cargo clean
+    cargoBridge.CONFIG = target_predeps no_link
+
+    QMAKE_EXTRA_COMPILERS += cargoBridge
+    CARGO_CRATE = ../extension/bridge
+
     target.path = $${USRPATH}/bin
     INSTALLS += target
 
@@ -532,17 +541,21 @@ else:linux:!android {
     systemd_service.path = $${USRPATH}/lib/systemd/system
     INSTALLS += systemd_service
 
-    manifestFirefox.path = /usr/lib/mozilla/native-messaging-hosts
+    manifestFirefox.path = $${USRPATH}/lib/mozilla/native-messaging-hosts
     manifestFirefox.files = ../extension/manifests/linux/mozillavpn.json
     INSTALLS += manifestFirefox
 
-    manifestChrome.path = /etc/opt/chrome/native-messaging-hosts
+    manifestChrome.path = $${ETCPATH}/opt/chrome/native-messaging-hosts
     manifestChrome.files = ../extension/manifests/linux/mozillavpn.json
     INSTALLS += manifestChrome
 
-    manifestChromium.path = /etc/chromium/native-messaging-hosts
+    manifestChromium.path = $${ETCPATH}/chromium/native-messaging-hosts
     manifestChromium.files = ../extension/manifests/linux/mozillavpn.json
     INSTALLS += manifestChromium
+
+    browserBridge.path = $${USRPATH}/lib/mozillavpn
+    browserBridge.files = ../extension/bridge/target/release/mozillavpnnp
+    INSTALLS += browserBridge
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1

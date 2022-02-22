@@ -131,12 +131,7 @@ IF %DEBUG_BUILD%==T (
     EXIT 1
   )
 
-  CP target/debug/mozillavpn.exe ..\..
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO cargo failed for the extension!
-    EXIT 1
-  )
-
+  CP target/debug/mozillavpnnp.exe ..\..
   CD ..\..
 )
 
@@ -150,12 +145,7 @@ IF %DEBUG_BUILD%==F (
     EXIT 1
   )
 
-  CP target/release/mozillavpn.exe ..\..
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO cargo failed for the extension!
-    EXIT 1
-  )
-
+  CP target/release/mozillavpnnp.exe ..\..
   CD ..\..
 )
 
