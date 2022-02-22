@@ -85,7 +85,6 @@ void ConnectionBenchmarkDownload::onReady(FileDownloader* downloader) {
     m_fileDownloaderList.clear();
 
     logger.debug() << "Download speed" << m_bytesPerSecond;
-    emit downloadSpeedChanged();
     setState(StateReady);
   }
 }

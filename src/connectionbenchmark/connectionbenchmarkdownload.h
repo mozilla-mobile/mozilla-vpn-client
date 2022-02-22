@@ -17,10 +17,6 @@ class ConnectionBenchmarkDownload final : public QObject {
   Q_OBJECT;
   Q_DISABLE_COPY_MOVE(ConnectionBenchmarkDownload);
 
-  Q_PROPERTY(State state READ state NOTIFY stateChanged);
-  Q_PROPERTY(
-      double downloadSpeed READ downloadSpeed NOTIFY downloadSpeedChanged);
-
  public:
   ConnectionBenchmarkDownload();
   ~ConnectionBenchmarkDownload();
@@ -31,17 +27,14 @@ class ConnectionBenchmarkDownload final : public QObject {
     StateReady,
     StateError,
   };
-  Q_ENUM(State);
-
-  Q_INVOKABLE void start();
-  Q_INVOKABLE void stop();
-
   State state() const { return m_state; }
+
+  void start();
+  void stop();
   double downloadSpeed() const { return m_bytesPerSecond; }
 
  signals:
   void stateChanged();
-  void downloadSpeedChanged();
 
  private slots:
   void onReady(FileDownloader* downloader);
@@ -50,17 +43,16 @@ class ConnectionBenchmarkDownload final : public QObject {
   State m_state = StateInitial;
 
   QTimer* m_timer;
-
-  QList<FileDownloader*> m_fileDownloaderList;
   quint64 m_startTime;
   quint64 m_bytesPerSecond;
 
   QStringList m_downloadUrls;
+  QList<FileDownloader*> m_fileDownloaderList;
   int m_numOfFilesTotal;
   int m_numOfFilesReceived;
 
-  void populateUrlList();
   void setState(State state);
+  void populateUrlList();
 };
 
 #endif  // CONNECTIONBENCHMARKDOWNLOAD_H
