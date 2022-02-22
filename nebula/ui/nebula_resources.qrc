@@ -3,9 +3,11 @@
         <file>resources/arrow-forward.svg</file>
         <file>resources/arrow-forward-white.svg</file>
         <file>resources/arrow-toggle.svg</file>
+        <file>resources/avatar.svg</file>
         <file>resources/avatar-default.png</file>
         <file>resources/back-dark.svg</file>
         <file>resources/back.svg</file>
+        <file>resources/bandwidth.svg</file>
         <file>resources/buttonLoader.svg</file>
         <file>resources/checkmark.svg</file>
         <file>resources/chevron-right-dark.svg</file>
@@ -15,17 +17,23 @@
         <file>resources/close-white.svg</file>
         <file>resources/connection-info.svg</file>
         <file>resources/connection.svg</file>
+        <file>resources/connection-green.svg</file>
+        <file>resources/download.svg</file>
         <file>resources/delete.svg</file>
         <file>resources/devicesLimit.svg</file>
         <file>resources/devicesRemove.svg</file>
         <file>resources/devices.svg</file>
         <file>resources/down.svg</file>
         <file>resources/externalLink.svg</file>
+        <file>resources/eye-hidden.svg</file>
+        <file>resources/eye-visible.svg</file>
         <file>resources/features/features-tour-hero.png</file>
         <file>resources/animations/globe_animation.json</file>
         <file>resources/animations/lock_animation.json</file>
         <file>resources/animations/speedometer_animation.json</file>
         <file>resources/animations/vpnactive_animation.json</file>
+        <file>resources/animations/vpnlogo-drop_animation.json</file>
+        <file>resources/animations/vpnlogo-kinetic_animation.json</file>
         <file>resources/flags/AC.png</file>
         <file>resources/flags/AD.png</file>
         <file>resources/flags/AE.png</file>
@@ -309,6 +317,8 @@
         <file>resources/update-lock.svg</file>
         <file>resources/updateStatusUpdateAvailable.svg</file>
         <file>resources/updateStatusUpToDate.svg</file>
+        <file>resources/upload.svg</file>
+        <file>resources/verification-code.svg</file>
         <file>resources/warning-dark-orange.svg</file>
         <file>resources/warning-orange.svg</file>
         <file>resources/warning.svg</file>

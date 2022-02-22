@@ -90,6 +90,14 @@ void AuthenticationInApp::signIn() {
   m_listener->signIn();
 }
 
+const QString& AuthenticationInApp::emailAddress() const {
+  Q_ASSERT(m_listener);
+
+  logger.debug() << "Get email address";
+
+  return m_listener->emailAddress();
+}
+
 void AuthenticationInApp::signUp() {
   Q_ASSERT(m_state == StateSignUp);
   Q_ASSERT(m_listener);
@@ -137,6 +145,13 @@ void AuthenticationInApp::verifySessionTotpCode(const QString& code) {
   Q_ASSERT(m_state == StateVerificationSessionByTotpNeeded);
   Q_ASSERT(m_listener);
   m_listener->verifySessionTotpCode(code);
+}
+
+void AuthenticationInApp::requestEmailAddressChange(
+    AuthenticationInAppListener* listener) {
+  Q_ASSERT(listener);
+  Q_ASSERT(m_listener == listener);
+  emit emailAddressChanged();
 }
 
 void AuthenticationInApp::requestState(State state,

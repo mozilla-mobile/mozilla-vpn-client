@@ -8,9 +8,10 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
+import components.forms 0.1
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 Item {
     id: root
@@ -39,18 +40,31 @@ Item {
 
         Column {
             id: col
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.rightMargin: VPNTheme.theme.windowMargin
-            anchors.top: parent.top
-            anchors.topMargin: VPNTheme.theme.windowMargin
+            anchors {
+                left: parent.left
+                right: parent.right
+                rightMargin: VPNTheme.theme.windowMargin
+                top: parent.top
+                topMargin: VPNTheme.theme.windowMargin
+            }
             spacing: VPNTheme.theme.windowMargin
 
-            VPNCheckBoxAlert {
-                //% "VPN must be off to edit these settings"
-                //: Associated to a group of settings that require the VPN to be disconnected to change
-                errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
-                visible: !vpnFlickable.vpnIsOff && (captivePortalAlert.visible || unsecuredNetworkAlert.visible)
+            VPNContextualAlerts {
+                anchors {
+                    left: parent.left
+                    leftMargin: VPNTheme.theme.windowMargin / 2
+                    right: parent.right
+                    topMargin: VPNTheme.theme.windowMargin
+                }
+                messages: [
+                    {
+                        type: "warning",
+                        //% "VPN must be off to edit these settings"
+                        //: Associated to a group of settings that require the VPN to be disconnected to change
+                        message: qsTrId("vpn.settings.vpnMustBeOff"),
+                        visible: !vpnFlickable.vpnIsOff && (captivePortalAlert.visible || unsecuredNetworkAlert.visible)
+                    }
+                ]
             }
 
             VPNCheckBoxRow {
@@ -89,7 +103,7 @@ Item {
                     if (vpnFlickable.vpnIsOff) {
                         VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
                     }
-            }
+                }
             }
 
             VPNCheckBoxRow {
@@ -106,7 +120,7 @@ Item {
                 showDivider: false
                 onClicked: {
                     VPNSettings.serverSwitchNotification = !VPNSettings.serverSwitchNotification
-            }
+                }
             }
 
             VPNCheckBoxRow {
@@ -125,7 +139,21 @@ Item {
                     VPNSettings.connectionChangeNotification = !VPNSettings.connectionChangeNotification
                 }
             }
+
+            VPNCheckBoxRow {
+                id: serverUnavailableNotification
+                objectName: "serverUnavailableNotification"
+                visible: VPNFeatureList.get("serverUnavailableNotification").isSupported
+                width: parent.width
+
+                labelText: VPNl18n.ServerUnavailableNotificationPreferencesLabel
+                subLabelText: VPNl18n.ServerUnavailableNotificationPreferencesSubLabel
+                isChecked: (VPNSettings.serverUnavailableNotification)
+                showDivider: false
+                onClicked: {
+                    VPNSettings.serverUnavailableNotification = !VPNSettings.serverUnavailableNotification
+                }
+            }
         }
     }
 }
-

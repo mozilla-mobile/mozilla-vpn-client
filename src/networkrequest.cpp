@@ -5,7 +5,6 @@
 #include "networkrequest.h"
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
-#include "features/featureuniqueid.h"
 #include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -71,7 +70,7 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
   m_timer.setSingleShot(true);
 
   connect(&m_timer, &QTimer::timeout, this, &NetworkRequest::timeout);
-  connect(&m_timer, &QTimer::timeout, this, &QObject::deleteLater);
+  connect(&m_timer, &QTimer::timeout, this, &NetworkRequest::maybeDeleteLater);
 
   NetworkManager::instance()->increaseNetworkRequestCount();
   enableSSLIntervention();
@@ -197,10 +196,7 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
 
   QJsonObject obj;
   obj.insert("name", deviceName);
-
-  if (!FeatureUniqueID::instance()->isSupported()) {
-    obj.insert("unique_id", deviceId);
-  }
+  obj.insert("unique_id", deviceId);
   obj.insert("pubkey", pubKey);
 
   QJsonDocument json;
@@ -299,6 +295,7 @@ NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
 
   QUrl url(apiBaseUrl());
   r->m_request.setRawHeader("Host", url.host().toLocal8Bit());
+  r->m_request.setPeerVerifyName(url.host());
 
   r->getRequest();
   return r;
@@ -312,6 +309,8 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
 
   r->m_request.setUrl(url);
   r->m_request.setRawHeader("Host", host);
+  r->m_request.setPeerVerifyName(host);
+
   // This enables the QNetworkReply::redirected for every type of redirect.
   r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
                             QNetworkRequest::UserVerifiedRedirectPolicy);
@@ -428,7 +427,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountStatus(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::fxaUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/account/status");
   r->m_request.setUrl(url);
 
@@ -448,7 +447,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
     const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/account/create");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -482,7 +481,7 @@ NetworkRequest* NetworkRequest::createForFxaLogin(Task* parent,
                                                   const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/account/login");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -523,7 +522,7 @@ NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::fxaUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/account/login/send_unblock_code");
   r->m_request.setUrl(url);
 
@@ -543,7 +542,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
     const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/session/verify_code");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -581,7 +580,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/session/resend_code");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -604,7 +603,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
     const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/session/verify/totp");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -633,7 +632,7 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
     Task* parent, const QByteArray& sessionToken, const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/oauth/authorization");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -664,7 +663,7 @@ NetworkRequest* NetworkRequest::createForFxaTotpCreation(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/totp/create");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -686,7 +685,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/session/destroy");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -778,6 +777,37 @@ void NetworkRequest::replyFinished() {
     return;
   }
 
+#if QT_VERSION >= 0x060000
+  if (m_reply->error() == QNetworkReply::HostNotFoundError && isRedirect()) {
+    QUrl brokenUrl = m_reply->url();
+
+    if (brokenUrl.host().isEmpty() && !m_redirectedUrl.isEmpty()) {
+      QUrl url = m_redirectedUrl.resolved(brokenUrl);
+
+#  ifdef MVPN_DEBUG
+      // See https://bugreports.qt.io/browse/QTBUG-100651
+      logger.debug()
+          << "QT6 redirect bug! The current URL is broken because it's not "
+             "resolved using the latest HTTP redirection as base-URL";
+      logger.debug() << "Broken URL:" << brokenUrl.toString();
+      logger.debug() << "Latest redirected URL:" << m_redirectedUrl.toString();
+      logger.debug() << "Final URL:" << url.toString();
+#  endif
+
+      m_request = QNetworkRequest(url);
+      m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                          "application/json");
+      m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                             QNetworkRequest::NoLessSafeRedirectPolicy);
+
+      m_reply = nullptr;
+      m_timer.stop();
+      getRequest();
+      return;
+    }
+  }
+#endif
+
   m_completed = true;
   m_timer.stop();
 
@@ -810,12 +840,16 @@ void NetworkRequest::replyFinished() {
   emit requestCompleted(data);
 }
 
+bool NetworkRequest::isRedirect() const {
+  int status = statusCode();
+  return status >= 300 && status < 400;
+}
+
 void NetworkRequest::handleHeaderReceived() {
   // Suppress this signal if a redirect is about to happen.
-  bool isRedirect = (statusCode() >= 300) && (statusCode() < 400);
-  auto redirectAttibute = QNetworkRequest::RedirectPolicyAttribute;
-  int policy = m_request.attribute(redirectAttibute).toInt();
-  if (isRedirect && (policy != QNetworkRequest::ManualRedirectPolicy)) {
+  int policy =
+      m_request.attribute(QNetworkRequest::RedirectPolicyAttribute).toInt();
+  if (isRedirect() && (policy != QNetworkRequest::ManualRedirectPolicy)) {
     return;
   }
 
@@ -823,9 +857,30 @@ void NetworkRequest::handleHeaderReceived() {
   emit requestHeaderReceived(this);
 }
 
-void NetworkRequest::handleRedirect(const QUrl& url) {
-  logger.debug() << "Network request redirected";
-  emit requestRedirected(this, url);
+void NetworkRequest::handleRedirect(const QUrl& redirectUrl) {
+#if QT_VERSION >= 0x060000
+  if (redirectUrl.host().isEmpty()) {
+#  ifdef MVPN_DEBUG
+    // See https://bugreports.qt.io/browse/QTBUG-100651
+    logger.debug()
+        << "QT6 redirect bug! The redirected URL is broken because it's not "
+           "resolved using the previous HTTP redirection as base-URL";
+    logger.debug() << "Broken URL:" << redirectUrl.toString();
+    logger.debug() << "Latest redirected URL:" << m_redirectedUrl.toString();
+#  endif
+
+    if (m_redirectedUrl.isEmpty()) {
+      m_redirectedUrl = url().resolved(redirectUrl);
+    } else {
+      m_redirectedUrl = m_redirectedUrl.resolved(redirectUrl);
+    }
+  } else {
+    m_redirectedUrl = redirectUrl;
+  }
+  emit requestRedirected(this, m_redirectedUrl);
+#else
+  emit requestRedirected(this, redirectUrl);
+#endif
 }
 
 void NetworkRequest::timeout() {
@@ -875,7 +930,14 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
           &NetworkRequest::handleHeaderReceived);
   connect(m_reply, &QNetworkReply::redirected, this,
           &NetworkRequest::handleRedirect);
-  connect(m_reply, &QNetworkReply::finished, this, &QObject::deleteLater);
+  connect(m_reply, &QNetworkReply::finished, this,
+          &NetworkRequest::maybeDeleteLater);
+}
+
+void NetworkRequest::maybeDeleteLater() {
+  if (m_reply && m_reply->isFinished()) {
+    deleteLater();
+  }
 }
 
 int NetworkRequest::statusCode() const {
@@ -903,6 +965,8 @@ QByteArray NetworkRequest::rawHeader(const QByteArray& headerName) const {
 }
 
 void NetworkRequest::abort() {
+  m_aborted = true;
+
   if (!m_reply) {
     logger.error() << "INTERNAL ERROR! NetworkRequest::abort called before "
                       "starting the request";
@@ -976,7 +1040,7 @@ void NetworkRequest::enableSSLIntervention() {
       }
       QSslCertificate cert(&f, QSsl::Pem);
       if (!cert.isNull()) {
-        logger.info() << "Imported cert from: " << cert.issuerDisplayName();
+        logger.info() << "Imported cert from:" << cert.issuerDisplayName();
         s_intervention_certs.append(cert);
       } else {
         logger.error() << "Failed to import cert -" << f.fileName();

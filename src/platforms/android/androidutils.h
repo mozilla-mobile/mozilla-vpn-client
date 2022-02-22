@@ -28,6 +28,8 @@ class AndroidUtils final : public QObject {
  public:
   static QString GetDeviceName();
 
+  static int GetSDKVersion();
+
   // Creates a "share" intent to Open/Send Plaintext
   static bool ShareText(const QString& plainText);
 
@@ -54,6 +56,8 @@ class AndroidUtils final : public QObject {
   static QJsonObject getQJsonObjectFromJString(JNIEnv* env, jstring data);
 
   static QJniObject getActivity();
+
+  static void recordGleanEvent(JNIEnv* env, jobject VPNUtils, jstring event);
 
   static void runOnAndroidThreadSync(const std::function<void()> runnable);
 

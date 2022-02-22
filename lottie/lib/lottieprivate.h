@@ -35,10 +35,7 @@ class LottiePrivate : public QQuickItem {
   LottiePrivate(QQuickItem* parent = 0);
 
   Q_INVOKABLE void setCanvasAndContainer(QQuickItem* canvas,
-                                         QQuickItem* container) {
-    m_canvas = canvas;
-    m_container = container;
-  }
+                                         QQuickItem* container);
   Q_INVOKABLE void clearAndResize();
   Q_INVOKABLE void destroyAndRecreate();
 

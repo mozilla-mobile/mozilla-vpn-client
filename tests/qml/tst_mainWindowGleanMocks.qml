@@ -3,7 +3,7 @@ import QtTest 1.0
 
 import TestHelper 1.0
 import Mozilla.VPN 1.0
-import org.mozilla.Glean 0.24
+import org.mozilla.Glean 0.30
 import ui 0.1
 
 Item {

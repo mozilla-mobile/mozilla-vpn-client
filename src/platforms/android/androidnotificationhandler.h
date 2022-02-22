@@ -19,6 +19,9 @@ class AndroidNotificationHandler final : public NotificationHandler {
  protected:
   void notify(Message type, const QString& title, const QString& message,
               int timerMsec) override;
+
+ private:
+  void applyStrings();
 };
 
 #endif  // ANDROIDNOTIFICATIONHANDLER_H

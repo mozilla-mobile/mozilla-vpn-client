@@ -3,7 +3,10 @@
         <file>components/forms/qmldir</file>
         <file>components/forms/VPNComboBox.qml</file>
         <file>components/forms/VPNInputBackground.qml</file>
+        <file>components/forms/VPNContextualAlert.qml</file>
+        <file>components/forms/VPNContextualAlerts.qml</file>
         <file>components/forms/VPNInputStates.qml</file>
+        <file>components/forms/VPNPasswordInput.qml</file>
         <file>components/forms/VPNRadioButton.qml</file>
         <file>components/forms/VPNSearchBar.qml</file>
         <file>components/forms/VPNTextArea.qml</file>
@@ -22,10 +25,15 @@
         <file>components/VPNCheckBoxAlert.qml</file>
         <file>components/VPNCheckBox.qml</file>
         <file>components/VPNCheckBoxRow.qml</file>
+        <file>components/VPNCheckmark.qml</file>
+        <file>components/VPNCheckmarkList.qml</file>
         <file>components/VPNChevron.qml</file>
         <file>components/VPNClickableRow.qml</file>
         <file>components/VPNCollapsibleCard.qml</file>
         <file>components/VPNConnectionInfo.qml</file>
+        <file>components/VPNConnectionInfoScreen.qml</file>
+        <file>components/VPNConnectionInfoContent.qml</file>
+        <file>components/VPNConnectionInfoItem.qml</file>
         <file>components/VPNConnectionStability.qml</file>
         <file>components/VPNControllerNav.qml</file>
         <file>components/VPNControllerView.qml</file>
@@ -55,6 +63,7 @@
         <file>components/VPNLinkButton.qml</file>
         <file>components/VPNList.qml</file>
         <file>components/VPNLoader.qml</file>
+        <file>components/VPNLogoLoader.qml</file>
         <file>components/VPNLogsButton.qml</file>
         <file>components/VPNMainImage.qml</file>
         <file>components/VPNMenu.qml</file>
@@ -83,6 +92,7 @@
         <file>components/VPNSystemAlert.qml</file>
         <file>components/VPNTabNavigation.qml</file>
         <file>components/VPNTextBlock.qml</file>
+        <file>components/VPNTimer.qml</file>
         <file>components/VPNToggleCard.qml</file>
         <file>components/VPNToggle.qml</file>
         <file>components/VPNToolTip.qml</file>
@@ -93,5 +103,7 @@
         <file>components/VPNWasmHeader.qml</file>
         <file>components/VPNWasmMenuButton.qml</file>
         <file>components/VPNWasmMenu.qml</file>
+        <file>components/inAppAuth/qmldir</file>
+        <file>components/inAppAuth/VPNInAppAuthenticationBase.qml</file>
     </qresource>
 </RCC>

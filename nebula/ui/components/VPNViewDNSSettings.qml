@@ -10,8 +10,8 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 
 VPNFlickable {
@@ -94,7 +94,7 @@ VPNFlickable {
                         id: ipInput
 
                         enabled: (VPNSettings.dnsProvider === VPNSettings.Custom) && vpnIsOff
-                        placeholderText: VPNSettings.placeholderUserDNS
+                        _placeholderText: VPNSettings.placeholderUserDNS
                         text: ""
                         width: parent.width
                         height: 40
@@ -124,76 +124,25 @@ VPNFlickable {
                         }
                     }
 
-                    VPNCheckBoxAlert {
-                            id: errorAlert
-                            errorMessage: ipInput.error
-                            anchors.left: undefined
-                            anchors.right: undefined
-                            anchors.leftMargin: undefined
-                            anchors.rightMargin: undefined
-                            anchors.top: undefined
-                            anchors.topMargin: undefined
-                            Layout.leftMargin: ipInput.Layout.leftMargin
-                            alertColor: VPNTheme.theme.red
-                            width: ipInput.width - ipInput.Layout.leftMargin
+                    VPNContextualAlerts {
+                        id: errorAlert
 
-                            states: [
-                                State {
-                                    name: "visible"
-                                    when: ipInput.valueInvalid && ipInput.visible
-                                    PropertyChanges {
-                                        target: errorAlert
-                                        visible: true
-                                        opacity: 1
-                                    }
-                                },
-                                State {
-                                    name: "hidden"
-                                    when: !ipInput.valueInvalid || !ipInput.visible
-                                    PropertyChanges {
-                                        target: errorAlert
-                                        visible: false
-                                        opacity: 0
-                                    }
-                                }
-                            ]
-
-                            transitions: [
-                                Transition {
-                                    to: "hidden"
-                                    SequentialAnimation {
-                                        PropertyAnimation {
-                                            target: errorAlert
-                                            property: "opacity"
-                                            to: 0
-                                            duration: 100
-                                        }
-                                        PropertyAction {
-                                            target: errorAlert
-                                            property: "visible"
-                                            value: false
-                                        }
-                                    }
-                                },
-                                Transition {
-                                    to: "visible"
-                                    SequentialAnimation {
-                                        PropertyAction {
-                                            target: errorAlert
-                                            property: "visible"
-                                            value: true
-                                        }
-                                        PropertyAnimation {
-                                            target: errorAlert
-                                            property: "opacity"
-                                            from: 0
-                                            to: 1
-                                            duration: 100
-                                        }
-                                    }
-                                }
-                            ]
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            top: serverSearchInput.bottom
+                            topMargin: VPNTheme.theme.listSpacing
                         }
+
+                        messages: [
+                            {
+                                type: "error",
+                                message: ipInput.error,
+                                visible: ipInput.valueInvalid && ipInput.visible
+                            }
+                        ]
+                    }
+
                 }
             }
         }

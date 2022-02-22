@@ -86,11 +86,11 @@ Item {
 
     Rectangle {
         objectName: "activeTabIndicator"
-        width: bar.currentItem.width
+        width: bar.visible ? bar.currentItem.width : 0
         height: 2
         color: VPNTheme.colors.purple70
         anchors.bottom: bar.bottom
-        x: bar.currentItem.x
+        x: bar.visible ? bar.currentItem.x : 0
         visible: stack.children.length > 1
         Behavior on x {
             PropertyAnimation {

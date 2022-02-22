@@ -1,18 +1,16 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 #version 440
-precision lowp int;
-precision lowp float;
 
 layout(location = 0) in vec2 qt_TexCoord0;
 layout(location = 0) out vec4 outColor;
-
-layout(binding = 1) uniform UniformBufferObject {
-    float animationProgress;
+layout(std140, binding = 0) uniform buf {
+    mat4 qt_Matrix;
+    float qt_Opacity;
     float animationOpacity;
-} ubo;
+    float animationProgress;
+};
 
 float drawCircle(float distance, float radius) {
     float antialias = 0.005;
@@ -40,16 +38,16 @@ void main() {
     float strokeWidth = 0.015;
     float minRadius = 0.0;
     float maxRadius = 0.5;
-    vec4 color = vec4(1.0, 1.0, 1.0, 1.0) * ubo.animationOpacity;
+    vec4 color = vec4(1.0, 1.0, 1.0, 1.0) * animationOpacity;
 
     // Rings
-    float ringRadius1 = calcRingRadius(minRadius, maxRadius, ubo.animationProgress, 0.0);
+    float ringRadius1 = calcRingRadius(minRadius, maxRadius, animationProgress, 0.0);
     float ring1 = composeRing(centerDistance, strokeWidth, ringRadius1);
 
-    float ringRadius2 = calcRingRadius(minRadius, maxRadius, ubo.animationProgress, 0.33 * ubo.animationOpacity);
+    float ringRadius2 = calcRingRadius(minRadius, maxRadius, animationProgress, 0.33 * animationOpacity);
     float ring2 = composeRing(centerDistance, strokeWidth, ringRadius2);
 
-    float ringRadius3 = calcRingRadius(minRadius, maxRadius, ubo.animationProgress, 0.66 * ubo.animationOpacity);
+    float ringRadius3 = calcRingRadius(minRadius, maxRadius, animationProgress, 0.66 * animationOpacity);
     float ring3 = composeRing(centerDistance, strokeWidth, ringRadius3);
 
     // Radial gradient

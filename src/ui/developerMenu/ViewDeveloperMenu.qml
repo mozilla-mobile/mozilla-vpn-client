@@ -28,8 +28,10 @@ Item {
         id: flickableContent
 
         anchors.top: menu.bottom
+        anchors.topMargin: VPNTheme.theme.windowMargin
+        anchors.left: parent.left
+        anchors.right: parent.right
         height: parent.height - menu.height
-        width: parent.width
 
         VPNCheckBoxRow {
             id: developerUnlock
@@ -99,7 +101,7 @@ Item {
                     id: serverAddressInput
 
                     enabled: root.vpnIsOff && VPNSettings.stagingServer
-                    placeholderText: "Staging server address"
+                    _placeholderText: "Staging server address"
                     height: 40
 
                     PropertyAnimation on opacity {
@@ -107,7 +109,7 @@ Item {
                     }
 
                     onTextChanged: text => {
-                        if (root.vpnIsOff) {
+                        if (root.vpnIsOff && VPNSettings.stagingServerAddress !== serverAddressInput.text) {
                             VPNSettings.stagingServerAddress = serverAddressInput.text;
                         }
                     }
@@ -219,17 +221,35 @@ Item {
             }
         }
 
-        VPNCheckBoxAlert {
+        VPNContextualAlerts {
             id: restartRequired
-            anchors.top: resetAndQuit.bottom
-            visible: false
-            Connections {
-                target: VPNSettings
-                function onStagingServerAddressChanged() { restartRequired.visible = true; }
-                function onStagingServerChanged() { restartRequired.visible = true; }
+
+            property bool isVisible: false
+
+            anchors {
+                left: inspectorLink.left
+                right: parent.right
+                top: inspectorLink.bottom
+                topMargin: VPNTheme.theme.listSpacing
             }
 
-            errorMessage: VPNl18n.SettingsDevRestartRequired
+            messages: [
+                {
+                    type: "warning",
+                    message: VPNl18n.SettingsDevRestartRequired,
+                    visible: isVisible
+                }
+            ]
+
+            Connections {
+                target: VPNSettings
+                function onStagingServerAddressChanged() {
+                    restartRequired.isVisible = true;
+                }
+                function onStagingServerChanged() {
+                    restartRequired.isVisible = true;
+                }
+            }
         }
     }
 

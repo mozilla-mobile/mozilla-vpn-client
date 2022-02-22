@@ -22,6 +22,12 @@
 #include <QStandardPaths>
 #include <QHostAddress>
 
+// How many times do we try to reconnect.
+constexpr int MAX_CONNECTION_RETRY = 3;
+
+// How long do we wait between one try and the next one.
+constexpr int CONNECTION_RETRY_TIMER_MSEC = 500;
+
 namespace {
 Logger logger(LOG_CONTROLLER, "LocalSocketController");
 }
@@ -38,6 +44,10 @@ LocalSocketController::LocalSocketController() {
           &LocalSocketController::errorOccurred);
   connect(m_socket, &QLocalSocket::readyRead, this,
           &LocalSocketController::readData);
+
+  m_initializingTimer.setSingleShot(true);
+  connect(&m_initializingTimer, &QTimer::timeout, this,
+          &LocalSocketController::initializeInternal);
 }
 
 LocalSocketController::~LocalSocketController() {
@@ -49,11 +59,22 @@ void LocalSocketController::errorOccurred(
   logger.error() << "Error occurred:" << error;
 
   if (m_state == eInitializing) {
+    if (m_initializingRetry++ < MAX_CONNECTION_RETRY) {
+      m_initializingTimer.start(CONNECTION_RETRY_TIMER_MSEC);
+      return;
+    }
+
     emit initialized(false, false, QDateTime());
   }
 
-  m_state = eDisconnected;
   MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+  disconnectInternal();
+}
+
+void LocalSocketController::disconnectInternal() {
+  m_state = eDisconnected;
+  m_initializingRetry = 0;
+  m_initializingTimer.stop();
   emit disconnected();
 }
 
@@ -64,6 +85,12 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
   Q_UNUSED(keys);
 
   Q_ASSERT(m_state == eUnknown);
+  m_initializingRetry = 0;
+
+  initializeInternal();
+}
+
+void LocalSocketController::initializeInternal() {
   m_state = eInitializing;
 
 #ifdef MVPN_WINDOWS
@@ -85,71 +112,17 @@ void LocalSocketController::daemonConnected() {
   checkStatus();
 }
 
-void LocalSocketController::activate(
-    const QList<Server>& serverList, const Device* device, const Keys* keys,
-    const QList<IPAddress>& allowedIPAddressRanges,
-    const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
-    const QHostAddress& dnsServer, Reason reason) {
+void LocalSocketController::activate(const HopConnection& hop,
+                                     const Device* device, const Keys* keys,
+                                     Reason reason) {
   Q_UNUSED(reason);
-  Q_ASSERT(!serverList.isEmpty());
 
-  // The first hop should exclude the entry server.
-  const Server& entry = serverList.last();
-  bool first = true;
-
-  // Clear out any connections that might have been lingering.
-  m_activationQueue.clear();
-  m_device = device;
-  m_keys = keys;
-
-  if (m_state != eReady) {
-    emit disconnected();
-    return;
-  }
-
-  // Activate connections starting from the outermost tunnel
-  for (int hopindex = serverList.count() - 1; hopindex > 0; hopindex--) {
-    const Server& next = serverList[hopindex - 1];
-    HopConnection hop;
-    hop.m_server = serverList[hopindex];
-    hop.m_hopindex = hopindex;
-    hop.m_allowedIPAddressRanges.append(next.ipv4AddrIn());
-    hop.m_allowedIPAddressRanges.append(next.ipv6AddrIn());
-    if (first) {
-      hop.m_excludedAddresses.append(entry.ipv4AddrIn());
-      hop.m_excludedAddresses.append(entry.ipv6AddrIn());
-      first = false;
-    }
-    m_activationQueue.append(hop);
-  }
-
-  // The final hop should be activated last.
-  HopConnection lastHop;
-  lastHop.m_server = serverList.first();
-  lastHop.m_hopindex = 0;
-  lastHop.m_allowedIPAddressRanges = allowedIPAddressRanges;
-  lastHop.m_excludedAddresses = excludedAddresses;
-  if (first) {
-    lastHop.m_excludedAddresses.append(entry.ipv4AddrIn());
-    lastHop.m_excludedAddresses.append(entry.ipv6AddrIn());
-    first = false;
-  }
-  lastHop.m_vpnDisabledApps = vpnDisabledApps;
-  lastHop.m_dnsServer = dnsServer;
-  m_activationQueue.append(lastHop);
-
-  logger.debug() << "Activating";
-  activateNext();
-}
-
-void LocalSocketController::activateNext() {
-  const HopConnection& hop = m_activationQueue.first();
   QJsonObject json;
   json.insert("type", "activate");
   json.insert("hopindex", QJsonValue((double)hop.m_hopindex));
-  json.insert("privateKey", QJsonValue(m_keys->privateKey()));
-  json.insert("deviceIpv4Address", QJsonValue(m_device->ipv4Address()));
-  json.insert("deviceIpv6Address", QJsonValue(m_device->ipv6Address()));
+  json.insert("privateKey", QJsonValue(keys->privateKey()));
+  json.insert("deviceIpv4Address", QJsonValue(device->ipv4Address()));
+  json.insert("deviceIpv6Address", QJsonValue(device->ipv6Address()));
   json.insert("serverPublicKey", QJsonValue(hop.m_server.publicKey()));
   json.insert("serverIpv4AddrIn", QJsonValue(hop.m_server.ipv4AddrIn()));
   json.insert("serverIpv6AddrIn", QJsonValue(hop.m_server.ipv6AddrIn()));
@@ -160,22 +133,22 @@ void LocalSocketController::activateNext() {
     json.insert("dnsServer", QJsonValue(hop.m_dnsServer.toString()));
   }
 
-  QJsonArray allowedIPAddesses;
+  QJsonArray jsAllowedIPAddesses;
   for (const IPAddress& i : hop.m_allowedIPAddressRanges) {
     QJsonObject range;
     range.insert("address", QJsonValue(i.address().toString()));
     range.insert("range", QJsonValue((double)i.prefixLength()));
     range.insert("isIpv6",
                  QJsonValue(i.type() == QAbstractSocket::IPv6Protocol));
-    allowedIPAddesses.append(range);
+    jsAllowedIPAddesses.append(range);
   };
-  json.insert("allowedIPAddressRanges", allowedIPAddesses);
+  json.insert("allowedIPAddressRanges", jsAllowedIPAddesses);
 
-  QJsonArray excludedAddresses;
+  QJsonArray jsExcludedAddresses;
   for (const auto& address : hop.m_excludedAddresses) {
-    excludedAddresses.append(QJsonValue(address));
+    jsExcludedAddresses.append(QJsonValue(address));
   }
-  json.insert("excludedAddresses", excludedAddresses);
+  json.insert("excludedAddresses", jsExcludedAddresses);
 
   QJsonArray splitTunnelApps;
   for (const auto& uri : hop.m_vpnDisabledApps) {
@@ -189,9 +162,8 @@ void LocalSocketController::activateNext() {
 void LocalSocketController::deactivate(Reason reason) {
   logger.debug() << "Deactivating";
 
-  m_activationQueue.clear();
-
   if (m_state != eReady) {
+    logger.debug() << "No disconnect, controller is not ready";
     emit disconnected();
     return;
   }
@@ -369,30 +341,19 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "disconnected") {
-    emit disconnected();
+    disconnectInternal();
     return;
   }
 
   if (type == "connected") {
-    QString pubkey = obj.value("pubkey").toString();
-    logger.debug() << "Handshake completed with:" << pubkey;
-
-    if (m_activationQueue.isEmpty()) {
-      return;
-    }
-    const HopConnection& hop = m_activationQueue.first();
-    if (hop.m_server.publicKey() != pubkey) {
+    QJsonValue pubkey = obj.value("pubkey");
+    if (!pubkey.isString()) {
+      logger.error() << "Unexpected pubkey value";
       return;
     }
 
-    // After a connection is completed, start the next handshake or signal
-    // success if all connections came up successfully.
-    m_activationQueue.removeFirst();
-    if (m_activationQueue.isEmpty()) {
-      emit connected();
-    } else {
-      activateNext();
-    }
+    logger.debug() << "Handshake completed with:" << pubkey.toString();
+    emit connected(pubkey.toString());
     return;
   }
 
@@ -421,4 +382,5 @@ void LocalSocketController::write(const QJsonObject& json) {
   Q_ASSERT(m_socket);
   m_socket->write(QJsonDocument(json).toJson(QJsonDocument::Compact));
   m_socket->write("\n");
+  m_socket->flush();
 }

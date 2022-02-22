@@ -34,8 +34,12 @@ Item {
         //% "Get help"
         title: qsTrId("vpn.main.getHelp2")
         visible: !isSettingsView
+    }
 
-        onClicked: {
+    VPNMouseArea {
+        anchors.fill: menu
+        hoverEnabled: true
+        onMouseAreaClicked: function() {
             if (unlockCounter >= 5) {
                 unlockCounter = 0
                 VPNSettings.developerUnlock = true
@@ -46,7 +50,6 @@ Item {
             }
         }
     }
-
 
     Column {
         objectName: "getHelpLinks"

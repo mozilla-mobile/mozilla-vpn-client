@@ -22,8 +22,14 @@ constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
 // Number of msecs for the unsecured network alert.
 constexpr uint32_t UNSECURED_NETWORK_ALERT_MSEC = 4000;
 
+// Number of msecs for the server unavailable alert.
+constexpr uint32_t SERVER_UNAVAILABLE_ALERT_MSEC = 4000;
+
 // Number of recent connections to retain.
 constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
+
+// Cooldown period for unresponsive servers
+constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
 
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
@@ -75,10 +81,16 @@ constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
+constexpr auto CRASH_PRODUCTION_URL =
+    "https://crash-reports.mozilla.com/submit";
+constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
+
 constexpr const char* LOGO_URL = ":/nebula/resources/logo-dock.png";
 
-PRODBETAEXPR(const char*, fxaUrl, "https://api.accounts.firefox.com",
+PRODBETAEXPR(const char*, fxaApiBaseUrl, "https://api.accounts.firefox.com",
              "https://api-accounts.stage.mozaws.net")
+PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
+             "https://accounts.stage.mozaws.net")
 PRODBETAEXPR(
     const char*, balrogUrl,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",

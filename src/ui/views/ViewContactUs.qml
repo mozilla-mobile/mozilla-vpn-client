@@ -20,12 +20,17 @@ Item {
     id: contactUsRoot
     objectName: "contactUs"
 
+    function stackView() {
+      if (menu.isMainView) return mainStackView;
+      return stackview;
+    }
+
     function tryAgain() {
-        mainStackView.pop();
+        stackView().pop();
     }
 
     function createSupportTicket(email, subject, issueText, category) {
-        mainStackView.push("qrc:/nebula/components/VPNLoader.qml", {
+        stackView().push("qrc:/nebula/components/VPNLoader.qml", {
             footerLinkIsVisible: false
         });
         VPN.createSupportTicket(email, subject, issueText, category);
@@ -41,8 +46,8 @@ Item {
         objectName: "supportTicketScreen"
         title: VPNl18n.InAppSupportWorkflowSupportNavLinkText
 
-        // this view gets pushed to mainStackView from backend always
-        // and so should be removed from mainStackView (even in settings flow) on back clicks
+        // this view gets pushed to stackView from backend always
+        // and so should be removed from stackView (even in settings flow) on back clicks
     }
 
     StackView {
@@ -58,9 +63,9 @@ Item {
             target: VPN
             function onTicketCreationAnswer(successful) {
                 if(successful) {
-                    mainStackView.replace(thankYouView);
+                    stackView().replace(thankYouView);
                 } else {
-                    mainStackView.replace("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                    stackView().replace("qrc:/ui/views/ViewErrorFullScreen.qml", {
                         headlineText: VPNl18n.InAppSupportWorkflowSupportErrorHeader,
                         errorMessage: VPNl18n.InAppSupportWorkflowSupportErrorText,
                         primaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorButton,
@@ -135,7 +140,7 @@ Item {
                                 verticalAlignment: Text.AlignVCenter
                                 Layout.fillWidth: true
                                 hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
-                                placeholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
+                                _placeholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
                             }
                         }
 
@@ -146,7 +151,7 @@ Item {
                             verticalAlignment: Text.AlignVCenter
                             Layout.fillWidth: true
                             hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
-                            placeholderText: VPNl18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
+                            _placeholderText: VPNl18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
                         }
                     }
 
@@ -223,7 +228,7 @@ Item {
                         width: parent.width
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
-                        placeholderText: VPNl18n.InAppSupportWorkflowSubjectFieldPlaceholder
+                        _placeholderText: VPNl18n.InAppSupportWorkflowSubjectFieldPlaceholder
                     }
 
                     VPNTextArea {
@@ -290,7 +295,7 @@ Item {
                             labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText
                             Layout.preferredHeight: VPNTheme.theme.rowHeight
                             Layout.alignment: Qt.AlignHCenter
-                            onClicked: mainStackView.pop()
+                            onClicked: stackView().pop()
                             implicitHeight: VPNTheme.theme.rowHeight
 
                         }
@@ -330,8 +335,8 @@ Item {
                anchors.topMargin: VPNTheme.theme.vSpacing
                anchors.horizontalCenter: parent.horizontalCenter
                onClicked: {
-                   mainStackView.pop();
-                   mainStackView.pop();
+                   stackView().pop();
+                   stackView().pop();
                }
                Component.onCompleted: {
                  if (window.fullscreenRequired()) {

@@ -8,9 +8,7 @@
 #include "models/feature.h"
 
 #ifdef MVPN_ANDROID
-#  if QT_VERSION < 0x060000
-#    include <QtAndroid>
-#  endif
+#  include "androidutils.h"
 #endif
 
 constexpr const char* FEATURE_SHARE_LOGS = "shareLogs";
@@ -41,14 +39,8 @@ class FeatureShareLogs : public Feature {
     defined(MVPN_IOS) || defined(MVPN_DUMMY)
     return true;
 #elif defined(MVPN_ANDROID)
-#  if QT_VERSION >= 0x060000
-    // TODO: Write replacement
-    // See: https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2459
-    return false;
-#  else
-    return QtAndroid::androidSdkVersion() >=
+    return AndroidUtils::GetSDKVersion() >=
            29;  // Android Q (10) is required for this
-#  endif
 #else
     return false;
 #endif

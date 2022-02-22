@@ -48,6 +48,8 @@ theme.fontSizeSmall = 13;
 theme.fontSizeSmallest = 11;
 theme.fontWeightBold = 600;
 theme.iconSize = 16;
+theme.iconSizeFlag = 72;
+theme.iconSizeSmall = 14;
 theme.labelLineHeight = 22;
 theme.cityListTopMargin = 18;
 theme.controllerInterLineHeight = 18;
@@ -131,6 +133,14 @@ theme.linkButton = {
   'focusBorder': theme.bgColorTransparent,
 };
 
+theme.whiteButton = {
+  'defaultColor': theme.white,
+  'buttonHovered': theme.greyHovered,
+  'buttonPressed': theme.greyPressed,
+  'focusOutline': theme.greyHovered,
+  'focusBorder': theme.greyPressed,
+};
+
 theme.greyButton = {
   'defaultColor': '#CECECF',
   'buttonHovered': theme.greyHovered,
@@ -196,6 +206,7 @@ theme.uiState = {
   'statePressed': 'state-pressed',
   'stateFocused': 'state-focused',
   'stateLoading': 'state-loading',
+  'stateDisabled': 'state-disabled',
 };
 
 theme.greyLink = {

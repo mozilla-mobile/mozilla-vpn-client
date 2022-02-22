@@ -8,13 +8,15 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 Item {
     id: box
 
     readonly property alias connectionInfoVisible: connectionInfo.visible
+    property bool connectionInfoIsEnabled: VPNFeatureList.get("connectionInfo").isSupported
+    property bool connectionInfoScreenVisible: false
 
     function formatSingle(value) {
         if (value === 0)
@@ -42,12 +44,30 @@ Item {
     Layout.rightMargin: 8
     Layout.alignment: Qt.AlignHCenter
 
+    Behavior on Layout.preferredWidth  {
+        NumberAnimation {
+            duration: 1000
+            easing.type: Easing.InOutQuad
+        }
+    }
+
     Rectangle {
         id: boxBackground
-        anchors.fill: box
         color: VPNTheme.theme.bgColor
-        radius: 8
+        radius: VPNTheme.theme.cornerRadius * 2
         antialiasing: true
+
+        height: box.connectionInfoScreenVisible
+            ? window.safeContentHeight - VPNTheme.theme.windowMargin * 2
+            : box.height
+        width: box.width
+
+        Behavior on height {
+            NumberAnimation {
+                duration: connectionInfoScreen.transitionDuration
+                easing.type: Easing.InOutQuad
+            }
+        }
     }
 
     VPNDropShadowWithStates {
@@ -94,6 +114,11 @@ Item {
 
             PropertyChanges {
                 target: connectionInfoButton
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionInfoToggleButton
                 visible: false
             }
 
@@ -151,6 +176,11 @@ Item {
             }
 
             PropertyChanges {
+                target: connectionInfoToggleButton
+                visible: false
+            }
+
+            PropertyChanges {
                 target: connectionInfo
                 visible: false
             }
@@ -171,7 +201,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "#321C64"
+                color: VPNTheme.colors.primary
             }
 
             PropertyChanges {
@@ -211,6 +241,11 @@ Item {
             }
 
             PropertyChanges {
+                target: connectionInfoToggleButton
+                visible: false
+            }
+
+            PropertyChanges {
                 target: connectionInfo
                 visible: false
             }
@@ -231,7 +266,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "#321C64"
+                color: VPNTheme.colors.primary
             }
 
             PropertyChanges {
@@ -272,6 +307,11 @@ Item {
             }
 
             PropertyChanges {
+                target: connectionInfoToggleButton
+                visible: false
+            }
+
+            PropertyChanges {
                 target: connectionInfo
                 visible: false
             }
@@ -292,7 +332,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "#321C64"
+                color: VPNTheme.colors.primary
             }
 
             PropertyChanges {
@@ -324,7 +364,12 @@ Item {
 
             PropertyChanges {
                 target: connectionInfoButton
-                visible: true
+                visible: !connectionInfoIsEnabled
+            }
+
+            PropertyChanges {
+                target: connectionInfoToggleButton
+                visible: connectionInfoIsEnabled
             }
 
             PropertyChanges {
@@ -380,6 +425,11 @@ Item {
             }
 
             PropertyChanges {
+                target: connectionInfoToggleButton
+                visible: false
+            }
+
+            PropertyChanges {
                 target: connectionInfo
                 visible: false
             }
@@ -400,7 +450,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "#321C64"
+                color: VPNTheme.colors.primary
             }
 
             PropertyChanges {
@@ -437,7 +487,12 @@ Item {
 
             PropertyChanges {
                 target: connectionInfoButton
-                visible: true
+                visible: !connectionInfoIsEnabled
+            }
+
+            PropertyChanges {
+                target: connectionInfoToggleButton
+                visible: connectionInfoIsEnabled
             }
 
             PropertyChanges {
@@ -521,6 +576,51 @@ Item {
     }
 
     VPNIconButton {
+        id: connectionInfoToggleButton
+
+        anchors {
+            left: parent.left
+            leftMargin: VPNTheme.theme.windowMargin / 2
+            top: parent.top
+            topMargin: VPNTheme.theme.windowMargin / 2
+        }
+        accessibleName: box.connectionInfoScreenVisible
+            //% "Connection Information"
+            ? qsTrId("vpn.connectionInfo.close")
+            //% "Close"
+            : qsTrId("vpn.controller.info")
+        Accessible.ignored: !connectionInfoToggleButton.visible
+        buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
+        enabled: connectionInfoToggleButton.visible
+        opacity: connectionInfoToggleButton.visible ? 1 : 0
+        z: 1
+
+        onClicked: {
+            Sample.connectionInfoOpened.record();
+            box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
+        }
+
+        Image {
+            property int iconSize: box.connectionInfoScreenVisible
+                ? VPNTheme.theme.iconSize
+                : VPNTheme.theme.iconSize * 1.5
+
+            anchors.centerIn: connectionInfoToggleButton
+            source: box.connectionInfoScreenVisible
+                ? "qrc:/nebula/resources/close-white.svg"
+                : "qrc:/nebula/resources/bandwidth.svg"
+            sourceSize.height: iconSize
+            sourceSize.width: iconSize
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 300
+            }
+        }
+    }
+
+    VPNIconButton {
         id: connectionInfoButton
         objectName: "connectionInfoButton"
 
@@ -531,10 +631,12 @@ Item {
 
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
         opacity: connectionInfoButton.visible ? 1 : 0
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.topMargin: VPNTheme.theme.windowMargin / 2
-        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
+        anchors {
+            top: parent.top
+            left: parent.left
+            topMargin: VPNTheme.theme.windowMargin / 2
+            leftMargin: VPNTheme.theme.windowMargin / 2
+        }
         //% "Connection Information"
         accessibleName: qsTrId("vpn.controller.info")
         Accessible.ignored: connectionInfoVisible
@@ -545,8 +647,8 @@ Item {
 
             source: "qrc:/nebula/resources/connection-info.svg"
             anchors.centerIn: connectionInfoButton
-            sourceSize.height: 20
-            sourceSize.width: 20
+            sourceSize.height: VPNTheme.theme.iconSize * 1.25
+            sourceSize.width: VPNTheme.theme.iconSize * 1.25
             visible: connectionInfoButton.visible
         }
 
@@ -554,7 +656,6 @@ Item {
             NumberAnimation {
                 duration: 300
             }
-
         }
 
     }
@@ -752,7 +853,14 @@ Item {
             }
 
         }
+    }
 
+    VPNConnectionInfoScreen {
+        id: connectionInfoScreen
+        isOpen: box.connectionInfoScreenVisible
+
+        height: boxBackground.height
+        radius: VPNTheme.theme.cornerRadius * 2
     }
 
 }

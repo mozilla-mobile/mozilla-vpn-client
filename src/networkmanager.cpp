@@ -7,6 +7,10 @@
 #include "features/featureinapppurchase.h"
 #include "leakdetector.h"
 
+#if MVPN_WINDOWS
+#  include "platforms/windows/windowscommons.h"
+#endif
+
 #include <QTextStream>
 
 namespace {
@@ -44,6 +48,9 @@ QByteArray NetworkManager::osVersion() {
     QTextStream out(&osVersion);
 #ifdef MVPN_WASM
     out << "WASM";
+#elif MVPN_WINDOWS
+    out << QSysInfo::productType().toLocal8Bit() << " "
+        << WindowsCommons::WindowsVersion().toLocal8Bit();
 #else
     out << QSysInfo::productType().toLocal8Bit() << " "
         << QSysInfo::productVersion().toLocal8Bit();

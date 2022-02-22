@@ -4,11 +4,19 @@
 
 import QtQuick 2.5
 
+import Mozilla.VPN 1.0
+
 //VPNHeaderLink
 VPNLinkButton {
-    anchors.top: parent.top
-    anchors.right: parent.right
-    anchors.topMargin: 12
-    anchors.rightMargin: 12
-    horizontalPadding: 4
+    property bool isLightTheme: true
+
+    anchors {
+        top: parent.top
+        right: parent.right
+        topMargin: VPNTheme.theme.listSpacing * 1.5
+        rightMargin: VPNTheme.theme.listSpacing * 1.5
+    }
+    horizontalPadding: VPNTheme.theme.listSpacing * 0.5
+    linkColor: isLightTheme ? VPNTheme.theme.blueButton : VPNTheme.theme.whiteButton
+    width: contentItem.implicitWidth + leftPadding + rightPadding
 }

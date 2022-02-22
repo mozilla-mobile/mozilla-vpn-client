@@ -8,9 +8,10 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
+import components.forms 0.1
 
-import org.mozilla.Glean 0.24
-import telemetry 0.24
+import org.mozilla.Glean 0.30
+import telemetry 0.30
 
 
 Item {
@@ -46,7 +47,7 @@ Item {
         }
 
         ColumnLayout{
-            id:messageBox
+            id: messageBox
             visible: true
             anchors.top: parent.top
             anchors.topMargin: VPNTheme.theme.windowMargin
@@ -54,17 +55,27 @@ Item {
             anchors.leftMargin: 8
             width: toggleCard.width-16
 
-            height:(vpnOnAlert.visible? vpnOnAlert.height:0)+(toast.visible? toast.height:0)
+            height: (vpnOnAlert.visible ? vpnOnAlert.height : 0) + (toast.visible ? toast.height : 0)
 
-            VPNCheckBoxAlert {
-                anchors.fill: parent
-                anchors.leftMargin: VPNTheme.theme.windowMargin
-                anchors.left: parent.left
+            VPNContextualAlerts {
                 id: vpnOnAlert
-                visible: !vpnFlickable.vpnIsOff
-                //% "VPN must be off to edit App Permissions"
-                //: Associated to a group of settings that require the VPN to be disconnected to change
-                errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
+
+                anchors {
+                    left: parent.left
+                    leftMargin: VPNTheme.theme.windowMargin / 2
+                    right: parent.right
+                    topMargin: VPNTheme.theme.listSpacing
+                }
+
+                messages: [
+                    {
+                        type: "error",
+                        //% "VPN must be off to edit App Permissions"
+                        //: Associated to a group of settings that require the VPN to be disconnected to change
+                        message: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff"),
+                        visible: !vpnFlickable.vpnIsOff
+                    }
+                ]
             }
 
             Connections {

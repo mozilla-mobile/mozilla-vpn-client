@@ -5,10 +5,10 @@
 #include "theme.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "qmlengineholder.h"
 #include "settingsholder.h"
 
 #include <QDir>
+#include <QJSEngine>
 
 namespace {
 Logger logger(LOG_MAIN, "Theme");
@@ -18,12 +18,14 @@ Theme::Theme() { MVPN_COUNT_CTOR(Theme); }
 
 Theme::~Theme() { MVPN_COUNT_DTOR(Theme); }
 
-void Theme::loadThemes() {
+void Theme::initialize(QJSEngine* engine) {
+  m_themes.clear();
+
   QDir dir(":/nebula/themes");
   QStringList files = dir.entryList();
 
   for (const QString& file : files) {
-    parseTheme(file);
+    parseTheme(engine, file);
   }
 
   if (!loadTheme(SettingsHolder::instance()->theme())) {
@@ -33,7 +35,7 @@ void Theme::loadThemes() {
   }
 }
 
-void Theme::parseTheme(const QString& themeName) {
+void Theme::parseTheme(QJSEngine* engine, const QString& themeName) {
   logger.debug() << "Parse theme" << themeName;
 
   QString path(":/nebula/themes/");
@@ -41,8 +43,6 @@ void Theme::parseTheme(const QString& themeName) {
 
   QJSValue themeValue;
   QJSValue colorsValue;
-
-  QJSEngine* engine = QmlEngineHolder::instance()->engine();
 
   {
     QString resource = path;

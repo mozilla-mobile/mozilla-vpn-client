@@ -8,5 +8,7 @@ import QtQuick.Controls 2.14
 StackView {
     id: stackview
 
-    initialItem: "qrc:/ui/views/ViewSubscriptionNeeded.qml"
+    Component.onCompleted: function(){
+        stackview.push("qrc:/ui/views/ViewSubscriptionNeeded.qml")
+    }
 }

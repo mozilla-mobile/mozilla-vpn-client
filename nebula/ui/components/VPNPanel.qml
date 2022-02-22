@@ -13,7 +13,6 @@ Item {
     property alias logoTitle: logoTitle.text
     property alias logoSubtitle: logoSubtitle.text
     property var logoSize: 76
-    property var maskImage: false
     property var isSettingsView: false
 
     anchors.horizontalCenter: parent.horizontalCenter
@@ -47,19 +46,6 @@ Item {
                 sourceSize.height: logoSize
                 sourceSize.width: logoSize
                 fillMode: Image.PreserveAspectFit
-                layer.enabled: true
-
-                Rectangle {
-                    id: mask
-
-                    anchors.fill: parent
-                    radius: logoSize / 2
-                    visible: false
-                }
-
-                layer.effect: VPNOpacityMask {
-                    maskSource: maskImage ? mask : undefined
-                }
             }
 
             VPNAvatar {

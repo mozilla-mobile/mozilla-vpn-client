@@ -13,6 +13,7 @@
 
 #include "features/featureappreview.h"
 #include "features/featurecaptiveportal.h"
+#include "features/featureconnectioninfo.h"
 #include "features/featurecustomdns.h"
 #include "features/featureinappaccountcreate.h"
 #include "features/featureinappauth.h"
@@ -23,9 +24,9 @@
 #include "features/featurenotificationcontrol.h"
 #include "features/featuresplittunnel.h"
 #include "features/featuresharelogs.h"
-#include "features/featureuniqueid.h"
 #include "features/featurestartonboot.h"
 #include "features/featureunsecurednetworknotification.h"
+#include "features/featureserverunavailablenotification.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -49,6 +50,7 @@ FeatureList* FeatureList::instance() {
 void FeatureList::initialize() {
   new FeatureAppReview();
   new FeatureCaptivePortal();
+  new FeatureConnectionInfo();
   new FeatureCustomDNS();
   new FeatureInAppAccountCreate();
   new FeatureInAppAuth();
@@ -60,8 +62,8 @@ void FeatureList::initialize() {
   new FeatureShareLogs();
   new FeatureSplitTunnel();
   new FeatureStartOnBoot();
-  new FeatureUniqueID();
   new FeatureUnsecuredNetworkNotification();
+  new FeatureServerUnavailableNotification();
 
   m_featurelist = Feature::getAll();
 }

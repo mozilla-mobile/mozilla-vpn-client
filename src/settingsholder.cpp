@@ -14,6 +14,7 @@
 #include "features/featuresplittunnel.h"
 #include "features/featurestartonboot.h"
 #include "features/featureunsecurednetworknotification.h"
+#include "features/featureserverunavailablenotification.h"
 
 #include <QSettings>
 #include <QProcessEnvironment>
@@ -85,6 +86,8 @@ void SettingsHolder::clear() {
 #include "settingslist.h"
 #undef SETTING
 }
+
+void SettingsHolder::sync() { m_settings.sync(); }
 
 void SettingsHolder::hardReset() {
   logger.debug() << "Hard reset";

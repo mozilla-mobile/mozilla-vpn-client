@@ -68,6 +68,8 @@ void TestSignUpAndIn::signUp() {
 
   // Account
   aia->checkAccount(emailAddress);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
+
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {
     QVERIFY(aia->state() != AuthenticationInApp::StateSignIn);
     if (aia->state() == AuthenticationInApp::StateSignUp) {
@@ -86,6 +88,7 @@ void TestSignUpAndIn::signUp() {
 
   // Sign-up
   aia->signUp();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSigningUp);
 
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {
     if (aia->state() ==
@@ -101,6 +104,7 @@ void TestSignUpAndIn::signUp() {
   QString code = fetchSessionCode();
   QVERIFY(!code.isEmpty());
   aia->verifySessionEmailCode(code);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
 
   QUrl finalUrl;
   connect(aia, &AuthenticationInApp::unitTestFinalUrl,
@@ -160,6 +164,8 @@ void TestSignUpAndIn::signIn() {
 
   // Account
   aia->checkAccount(emailAddress);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
+
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {
     if (aia->state() == AuthenticationInApp::StateSignIn) {
       loop.exit();
@@ -173,6 +179,7 @@ void TestSignUpAndIn::signIn() {
 
   // Sign-in
   aia->signIn();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSigningIn);
 
   if (m_totpCreation) {
     waitForTotpCodes();
@@ -215,6 +222,11 @@ void TestSignUpAndIn::waitForTotpCodes() {
             if (error == AuthenticationInApp::ErrorInvalidTotpCode) {
               qDebug() << "Invalid code. Let's send the right one";
 
+              AuthenticationInApp* aia = AuthenticationInApp::instance();
+              QCOMPARE(
+                  aia->state(),
+                  AuthenticationInApp::StateVerificationSessionByTotpNeeded);
+
               QCOMPARE(oath_init(), OATH_OK);
 
               char otp[/* length + 1 */ 7] = {};
@@ -225,8 +237,10 @@ void TestSignUpAndIn::waitForTotpCodes() {
                        OATH_OK);
 
               qDebug() << "Code:" << otp;
-              AuthenticationInApp* aia = AuthenticationInApp::instance();
               aia->verifySessionTotpCode(otp);
+              QCOMPARE(aia->state(),
+                       AuthenticationInApp::StateVerifyingSessionTotpCode);
+              m_sendWrongTotpCode = true;
             }
           });
 
@@ -247,12 +261,18 @@ void TestSignUpAndIn::waitForTotpCodes() {
             QVERIFY(!m_totpSecret.isEmpty());
           });
 
-  connect(aia, &AuthenticationInApp::stateChanged, []() {
+  connect(aia, &AuthenticationInApp::stateChanged, [this]() {
     AuthenticationInApp* aia = AuthenticationInApp::instance();
-    if (aia->state() ==
-        AuthenticationInApp::StateVerificationSessionByTotpNeeded) {
+    qDebug() << "Send wrong code:" << m_sendWrongTotpCode;
+
+    if (m_sendWrongTotpCode &&
+        aia->state() ==
+            AuthenticationInApp::StateVerificationSessionByTotpNeeded) {
+      m_sendWrongTotpCode = false;
       qDebug() << "Code required. Let's write a wrong code first.";
       aia->verifySessionTotpCode("123456");
+      QCOMPARE(aia->state(),
+               AuthenticationInApp::StateVerifyingSessionTotpCode);
     }
   });
 }

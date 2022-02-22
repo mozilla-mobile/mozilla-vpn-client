@@ -38,7 +38,10 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        initialItem: "qrc:/ui/settings/ViewSettingsMenu.qml"
+
+        Component.onCompleted: {
+            settingsStackView.push("qrc:/ui/settings/ViewSettingsMenu.qml")
+        }
 
         onCurrentItemChanged: {
             menu.title = Qt.binding(() => currentItem._menuTitle || "");

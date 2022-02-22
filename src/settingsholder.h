@@ -44,6 +44,8 @@ class SettingsHolder final : public QObject {
 
   void clear();
 
+  void sync();
+
 #define SETTING(type, toType, getter, setter, has, ...) \
   bool has() const;                                     \
   type getter() const;                                  \

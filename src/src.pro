@@ -44,8 +44,16 @@ INCLUDEPATH += \
             ../nebula
 
 include($$PWD/../glean/glean.pri)
-include($$PWD/../lottie/lottie.pri)
+
 include($$PWD/../nebula/nebula.pri)
+
+!wasm{
+    include($$PWD/crashreporter/crashreporter.pri)
+}
+
+message("Adding Lottie")
+include($$PWD/../lottie/lottie.pri)
+INCLUDEPATH += ../lottie/lib
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -99,6 +107,7 @@ SOURCES += \
         hawkauth.cpp \
         hkdf.cpp \
         iaphandler.cpp \
+        imageproviderfactory.cpp \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
@@ -167,7 +176,6 @@ SOURCES += \
         tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
         theme.cpp \
-        timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
@@ -214,6 +222,7 @@ HEADERS += \
         featurelist.h \
         features/featureappreview.h \
         features/featurecaptiveportal.h \
+        features/featureconnectioninfo.h \
         features/featurecustomdns.h \
         features/featureinappaccountcreate.h \
         features/featureinappauth.h \
@@ -225,13 +234,14 @@ HEADERS += \
         features/featuresharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
-        features/featureuniqueid.h \
         features/featureunsecurednetworknotification.h \
+        features/featureserverunavailablenotification.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
         hkdf.h \
         iaphandler.h \
+        imageproviderfactory.h \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
@@ -300,7 +310,6 @@ HEADERS += \
         tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
         theme.h \
-        timercontroller.h \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
@@ -984,7 +993,6 @@ exists($$PWD/../translations/translations.pri) {
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
-CONFIG += qtquickcompiler
 
 coverage {
     message(Coverage enabled)
@@ -1000,4 +1008,8 @@ debug {
 mvpn_debug {
     message(MVPN Debug enabled)
     DEFINES += MVPN_DEBUG
+
+    # This Flag will enable a qmljsdebugger on 0.0.0.0:1234
+    CONFIG+=qml_debug
+
 }

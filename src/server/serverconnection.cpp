@@ -46,7 +46,12 @@ void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
       cityObj["longitude"] = city.longitude();
 
       QJsonArray servers;
-      for (const Server& server : city.servers()) {
+      for (const QString& pubkey : city.servers()) {
+        const Server server = model->server(pubkey);
+        if (!server.initialized()) {
+          continue;
+        }
+
         QJsonObject serverObj;
         serverObj["hostname"] = server.hostname();
         serverObj["ipv4_gateway"] = server.ipv4Gateway();

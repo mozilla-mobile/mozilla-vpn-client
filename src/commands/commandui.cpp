@@ -24,16 +24,20 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "imageproviderfactory.h"
 #include "theme.h"
 
 #include <glean.h>
 #include <lottie.h>
 #include <nebula.h>
 
+#ifdef MVPN_DEBUG
+#  include <QQmlDebuggingEnabler>
+#endif
+
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
-#  include "platforms/linux/linuxappimageprovider.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -43,7 +47,6 @@
 #endif
 
 #ifdef MVPN_ANDROID
-#  include "platforms/android/androidappimageprovider.h"
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
 #endif
@@ -126,6 +129,23 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 
+#ifdef MVPN_DEBUG
+    // This enables the qt-creator qml debugger on debug builds.:
+    // Go to QtCreator: Debug->Start Debugging-> Attach to QML port
+    // Port is 1234.
+    // Note: Qt creator only will use localhost:port so tunnel any external
+    // device to there i.e on android $adb forward tcp:1234 tcp:1234
+
+    // We need to create the qmldebug server before the engine is created.
+    QQmlDebuggingEnabler enabler;
+    bool ok = enabler.startTcpDebugServer(
+        1234, QQmlDebuggingEnabler::StartMode::DoNotWaitForClient, "0.0.0.0");
+    if (ok) {
+      logger.debug() << "Started QML Debugging server on 0.0.0.0:1234";
+    } else {
+      logger.error() << "Failed to start QML Debugging";
+    }
+#endif
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
@@ -136,8 +156,6 @@ int CommandUI::run(QStringList& tokens) {
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
-
-    vpn.theme()->loadThemes();
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
     // If there is another instance, the execution terminates here.
@@ -185,23 +203,11 @@ int CommandUI::run(QStringList& tokens) {
     if (!LinuxDependencies::checkDependencies()) {
       return 1;
     }
-
-    // Register an Image Provider that will resolve "image://app/{id}" for qml
-    QQuickImageProvider* provider = new LinuxAppImageProvider(qApp);
-    engine->addImageProvider(QString("app"), provider);
 #endif
-
-#ifdef MVPN_ANDROID
-    // Register an Image Provider that will resolve "image://app/{id}" for qml
-    QQuickImageProvider* provider = new AndroidAppImageProvider(qApp);
-    engine->addImageProvider(QString("app"), provider);
-#endif
-#ifdef MVPN_WINDOWS
-    // Register an Image Provider that will resolve "image://app/{id}" for qml
-    QQuickImageProvider* provider = new WindowsAppImageProvider(qApp);
-    engine->addImageProvider(QString("app"), provider);
-#endif
-
+    QQuickImageProvider* provider = ImageProviderFactory::create(qApp);
+    if (provider) {
+      engine->addImageProvider(QString("app"), provider);
+    }
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance();
@@ -330,10 +336,11 @@ int CommandUI::run(QStringList& tokens) {
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNTheme",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->theme();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
+        [](QQmlEngine*, QJSEngine* engine) -> QObject* {
+          Theme* theme = MozillaVPN::instance()->theme();
+          theme->initialize(engine);
+          QQmlEngine::setObjectOwnership(theme, QQmlEngine::CppOwnership);
+          return theme;
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
@@ -418,6 +425,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNl18n",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = L18nStrings::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNErrorHandler",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = ErrorHandler::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

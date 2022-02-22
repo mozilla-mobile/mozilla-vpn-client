@@ -121,6 +121,7 @@ Item {
             visible: VPNConnectionData.ipv4Address !== ""
             ipVersionText: VPNConnectionData.ipv6Address === "" ? iplabel : ipv4label;
             ipAddressText: VPNConnectionData.ipv4Address
+            anchors.horizontalCenter: parent.horizontalCenter
         }
 
         VPNIPAddress {
@@ -129,6 +130,7 @@ Item {
             //: The abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
             ipVersionText: qsTrId("vpn.connectionInfo.ipv6")
             ipAddressText: VPNConnectionData.ipv6Address
+            anchors.horizontalCenter: parent.horizontalCenter
         }
     }
     Row {

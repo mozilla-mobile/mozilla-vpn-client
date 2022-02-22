@@ -3,59 +3,159 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import components.inAppAuth 0.1
 
-Item {
+VPNInAppAuthenticationBase {
+
     // TODO
     // We are completing an authentication using an existing account.
     // There is nothing to do here, except... waiting.
-    // There 3 possible next-steps:
+    // There 5 possible next-steps:
     // - authentication completed (VPN.state will change, the authentication is
     //   completed)
     // - unblock code needed. This can happen for security reasons. We go
     //   to UnblockCodeNeeded. The user needs to insert the 6-digit code.
-    //   Then we go back to SignIn state.
-    // - errors... for instance: the password is wrong. See the ErrorType enum.
+    // - The user enters the wrong password, sees error.
+    // - The user clicks "Change email" or the back arrow and goes back to start.
+    // - Some other error, goes back to start and sees error.
 
-    Component.onCompleted: console.log("SIGN IN")
+    // TODOs (likely there are more)
+    // Open forgot password flow in webview on click
+    // Form interaction polish
+    // Add password criteria tooltip
+    // Maybe add button loader
 
-    VPNTextField {
-        id: passwordInput
+    _changeEmailLinkVisible: true
+    _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
+    _menuButtonOnClick: () => { VPNAuthInApp.reset() }
+    _menuButtonAccessibleName: "Back"
+    _headlineText: VPNAuthInApp.emailAddress
+    _subtitleText: VPNl18n.InAppAuthSignInSubtitle
+    _imgSource: "qrc:/nebula/resources/avatar.svg"
+    _inputLabel: VPNl18n.InAppAuthPasswordInputLabel
 
-        anchors.top: parent.top
-        anchors.bottomMargin: 24
-        width: parent.width
+    _inputs: ColumnLayout {
+        spacing: VPNTheme.theme.vSpacing - VPNTheme.theme.listSpacing
 
-        echoMode: TextInput.Password
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: VPNTheme.theme.listSpacing
 
-        placeholderText: "secure password" // TODO
-    }
+            VPNPasswordInput {
+                id: passwordInput
+                Layout.fillWidth: true
+                _placeholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
+                Keys.onReturnPressed: if (!hasError && text.length > 0) signInBtn.clicked();
+                onTextChanged: if (passwordInput.hasError) hasError = false
+            }
 
-    VPNButton {
-        id: signInButton
+            VPNContextualAlerts {
+                id: searchWarning
+                anchors.left: undefined
+                anchors.right: undefined
+                anchors.topMargin: undefined
+                Layout.minimumHeight: VPNTheme.theme.vSpacing
+                Layout.fillHeight: false
+                messages: [
+                    {
+                        type: "error",
+                        message: VPNl18n.InAppAuthInvalidPasswordErrorMessage,
+                        visible: passwordInput.hasError
+                    }
+                ]
+            }
+        }
 
-        anchors.top: passwordInput.bottom
-        anchors.bottomMargin: 24
-        text: "Sign In" // TODO
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: 5
-        onClicked: {
-          VPNAuthInApp.setPassword(passwordInput.text);
-          VPNAuthInApp.signIn();
+        VPNButton {
+            id: signInBtn
+            text: VPNl18n.InAppAuthSignInButton
+            Layout.fillWidth: true
+            enabled: VPNAuthInApp.state === VPNAuthInApp.StateSignIn
+            onClicked: {
+                VPNAuthInApp.setPassword(passwordInput.text);
+                VPNAuthInApp.signIn();
+            }
+        }
+
+        Connections {
+            target: VPNAuthInApp
+            function onErrorOccurred(e) {
+                if (e === 2) {
+                    passwordInput.hasError = true;
+                    paswordInput.forceActiveFocus();
+                }
+            }
         }
     }
 
-    VPNButton {
-        anchors.top: signInButton.bottom
-        anchors.bottomMargin: 24
-        text: "Reset" // TODO
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: 5
-        onClicked: VPNAuthInApp.reset();
+    _disclaimers: ColumnLayout {
+        Layout.alignment: Qt.AlignHCenter
+        Layout.fillWidth: true
+
+        GridLayout {
+            id: grid
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            columnSpacing: 0
+            columns: 3
+            Component.onCompleted: if (implicitWidth > window.width) flow = Grid.TopToBottom
+
+            VPNGreyLink {
+                id: termsOfService
+
+                // Terms of Service - string defined in VPNAboutUs.qml
+                labelText: qsTrId("vpn.aboutUs.tos2")
+                Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
+                textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
+                onClicked: VPN.openLink(VPN.LinkTermsOfService)
+            }
+
+            Rectangle {
+                width: 4
+                height: 4
+                radius: 2
+                Layout.alignment: Qt.AlignHCenter
+                color: VPNTheme.theme.greyLink.defaultColor
+                visible: parent.flow != Grid.TopToBottom
+                opacity: .8
+            }
+
+            VPNGreyLink {
+                id: privacyNotice
+
+                // Privacy Notice - string defined in VPNAboutUs.qml
+                labelText: qsTrId("vpn.aboutUs.privacyNotice2")
+                onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
+                textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
+                Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter
+            }
+        }
+    }
+
+
+    _footerContent: Column {
+        Layout.alignment: Qt.AlignHCenter
+        spacing: VPNTheme.theme.windowMargin
+
+        VPNLinkButton {
+            labelText: VPNl18n.InAppAuthForgotPasswordLink
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: VPN.openLink(VPN.LinkForgotPassword)
+        }
+
+        VPNLinkButton {
+            // TODO create cancel component and use everywhere
+            labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText // "Cancel"
+            fontName: VPNTheme.theme.fontBoldFamily
+            anchors.horizontalCenter: parent.horizontalCenter
+            linkColor: VPNTheme.theme.redButton
+            onClicked: VPN.cancelAuthentication()
+        }
+
     }
 }
