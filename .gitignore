@@ -144,8 +144,9 @@ tools/inspector/node_modules
 
 *.PDB
 
-
 # taskcluster
 taskcluster/mozillavpn_taskgraph/__pycache__
 taskcluster/mozillavpn_taskgraph/*/__pycache__
 
+# Bridge app
+extension/bridge/target

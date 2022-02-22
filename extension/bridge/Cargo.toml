@@ -1,0 +1,9 @@
+[package]
+name = "mozillavpnnp"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mio = { version = "0.8.0", features = ["os-poll", "net"] }
+chrome_native_messaging = "0.2.0"
+serde_json = "1.0.79"
