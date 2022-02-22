@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
+import compat 0.1
 
 import org.mozilla.Glean 0.30
 import telemetry 0.30
@@ -15,34 +16,40 @@ import telemetry 0.30
 VPNFlickable {
     id: onboardingPanel
     property real panelHeight: window.safeContentHeight
-    flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight
+    flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight - spacerBottom.height
+    height: parent.height
+    interactive: flickContentHeight > height
 
     ListModel {
         id: onboardingModel
 
         ListElement {
-            imageSrc: "qrc:/ui/resources/onboarding/mobile/vpn-off-lightMode.svg"
-            headline: qsTrId("vpn.main.productName")
-            subtitle: qsTrId("vpn.main.productDescription")
+            animationSrc: ":/nebula/resources/animations/vpnlogo-drop_animation.json"
+            loopAnimation: false
+            titleStringId: "MobileOnboardingPanelOneTitle"
+            subtitleStringId: "MobileOnboardingPanelOneSubtitle"
             panelId: "mozilla-vpn"
         }
         ListElement {
-            imageSrc: "qrc:/ui/resources/onboarding/mobile/vpn-security-lightMode.svg"
-            headline: qsTrId("vpn.onboarding.headline.1")
-            subtitle: qsTrId("vpn.onboarding.subtitle.1")
-            panelId: "device-level-encryption"
+            animationSrc: ":/nebula/resources/animations/lock_animation.json"
+            loopAnimation: true
+            titleStringId: "MobileOnboardingPanelTwoTitle"
+            subtitleStringId: "MobileOnboardingPanelTwoSubtitle"
+            panelId: "encrypt-your-activity"
         }
         ListElement {
-            imageSrc: "qrc:/ui/resources/onboarding/mobile/vpn-on-lightMode.svg"
-            headline: qsTrId("vpn.onboarding.headline.3")
-            subtitle: qsTrId("vpn.onboarding.subtitle.3")
-            panelId: "no-bandwidth-restrictions"
+            animationSrc: ":/nebula/resources/animations/globe_animation.json"
+            loopAnimation: true
+            titleStringId: "MobileOnboardingPanelThreeTitle"
+            subtitleStringId: "MobileOnboardingPanelThreeSubtitle"
+            panelId: "protect-your-privacy"
         }
         ListElement {
-            imageSrc: "qrc:/ui/resources/onboarding/mobile/vpn-globe-flags-lightMode.svg"
-            headline: qsTrId("vpn.onboarding.headline.2")
-            subtitle: qsTrId("vpn.onboarding.subtitle.2")
-            panelId: "servers-in-30+-countries"
+            animationSrc: ":/nebula/resources/animations/vpnactive_animation.json"
+            loopAnimation: true
+            titleStringId: "MobileOnboardingPanelFourTitle"
+            subtitleStringId: "MobileOnboardingPanelFourSubtitle"
+            panelId: "more-security"
         }
     }
 
@@ -65,30 +72,31 @@ VPNFlickable {
                 id: loader
                 active: SwipeView.isCurrentItem
                 sourceComponent: SwipeDelegate {
-                    background: Rectangle {
-                        color: "transparent"
-                    }
+                    background: Item {}
 
-                    Image {
-                        id: panelImg
+                    VPNLottieAnimation {
+                        id: panelAnimation
 
                         property real imageScaleValue: 0.9
                         property real imageOpacityValue: 0.0
+                        property int _topMargin: onboardingPanel.panelHeight / 2 - currentPanelValues._animationHeight
+                        property bool _isFirstSlide: swipeView.currentIndex === 0
 
+                        anchors.fill: undefined
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: parent.top
-                        anchors.topMargin: onboardingPanel.panelHeight / 2 - currentPanelValues._imageHeight
-                        antialiasing: true
-                        fillMode: Image.PreserveAspectFit
-                        opacity: panelImg.imageOpacityValue
-                        source: imageSrc
-                        sourceSize.height: currentPanelValues._imageHeight
+                        anchors.topMargin: panelAnimation._isFirstSlide ? 0 : panelAnimation._topMargin
+                        height: currentPanelValues._animationHeight + (panelAnimation._isFirstSlide ? panelAnimation._topMargin : 0)
+                        loop: loopAnimation
+                        opacity: panelAnimation.imageOpacityValue
+                        source: animationSrc
                         transform: Scale {
-                            origin.x: panelImg.width / 2
-                            origin.y: panelImg.height / 2
-                            xScale: panelImg.imageScaleValue
-                            yScale: panelImg.imageScaleValue
+                            origin.x: panelAnimation.width / 2
+                            origin.y: panelAnimation.height / 2
+                            xScale: panelAnimation.imageScaleValue
+                            yScale: panelAnimation.imageScaleValue
                         }
+                        width: parent.width
 
                         SequentialAnimation {
                             id: updatePanel
@@ -101,40 +109,44 @@ VPNFlickable {
                                 targets: [panelTitle, panelDescription]
                                 property: "opacity"
                                 from: 1
-                                to: panelImg.imageOpacityValue
+                                to: panelAnimation.imageOpacityValue
                                 duration: 100
                             }
                             PauseAnimation {
                                 duration: 150
                             }
                             ScriptAction {
-                                script: updatePanel.updateStrings()
+                                script: {
+                                    updatePanel.updateStrings();
+                                    panelAnimation.play();
+                                }
                             }
                             ParallelAnimation {
                                 NumberAnimation {
-                                    target: panelImg
+                                    target: panelAnimation
                                     property: "imageScaleValue"
-                                    from: panelImg.imageScaleValue
+                                    from: panelAnimation.imageScaleValue
                                     to: 1
                                     duration: 250
                                     easing.type: Easing.OutQuad
                                 }
                                 PropertyAnimation {
-                                    targets: [panelTitle, panelDescription, panelImg]
+                                    targets: [panelTitle, panelDescription, panelAnimation]
                                     property: "opacity"
-                                    from: panelImg.imageOpacityValue
+                                    from: panelAnimation.imageOpacityValue
                                     to: 1
                                     duration: 250
                                     easing.type: Easing.OutQuad
                                 }
                             }
                         }
+
                     }
 
                     Component.onCompleted: {
                         currentPanelValues._panelId = panelId;
-                        currentPanelValues._panelTitleText = headline;
-                        currentPanelValues._panelDescriptionText = subtitle;
+                        currentPanelValues._panelTitleText = VPNl18n[titleStringId];
+                        currentPanelValues._panelDescriptionText = VPNl18n[subtitleStringId];
                         updatePanel.start();
                     }
 
@@ -197,6 +209,7 @@ VPNFlickable {
         id: headerLink
         objectName: "getHelpLink"
         labelText: qsTrId("vpn.main.getHelp2")
+        isLightTheme: false
         onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml",
                                   StackView.Immediate)
     }
@@ -207,7 +220,7 @@ VPNFlickable {
         property string _panelId: ""
         property string _panelTitleText: ""
         property string _panelDescriptionText: ""
-        property real _imageHeight: Math.min(240, panelHeight * .35)
+        property real _animationHeight: Math.min(240, panelHeight * .35)
     }
 
     ColumnLayout {
@@ -225,12 +238,14 @@ VPNFlickable {
             VPNHeadline {
                 id: panelTitle
                 objectName: "panelTitle"
+                color: VPNTheme.colors.white
                 width: parent.width
             }
 
             VPNSubtitle {
                 id: panelDescription
                 objectName: "panelDescription"
+                color: VPNTheme.colors.grey20
                 width: parent.width
             }
         }
@@ -284,13 +299,34 @@ VPNFlickable {
                 labelText: VPNl18n.MobileOnboardingAlreadyASubscriber
                 anchors.horizontalCenter: parent.horizontalCenter
                 height: VPNTheme.theme.rowHeight
+                linkColor: VPNTheme.theme.whiteButton
                 onClicked: onboardingPanel.recordGleanEvtAndStartAuth(objectName)
             }
         }
 
         VPNVerticalSpacer {
+            id: spacerBottom
             Layout.preferredHeight: Math.min(window.height * 0.08, VPNTheme.theme.rowHeight)
         }
+    }
+
+    VPNRadialGradient {
+        anchors.fill: parent
+        gradient: Gradient {
+            GradientStop {
+                color: "#472C87"
+                position: 0.0
+            }
+            GradientStop {
+                color: "#301962"
+                position: 0.2
+            }
+            GradientStop {
+                color: "#1D0942"
+                position: 0.5
+            }
+        }
+        z: -1
     }
 
     function recordGleanEvtAndStartAuth(ctaObjectName) {

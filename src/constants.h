@@ -44,7 +44,7 @@ constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
 #endif
 
 // Let's refresh the IP address any 10 minutes (in milliseconds).
-CONSTEXPR(uint32_t, ipAddressTimerMsec, 600000, 10000, 0)
+CONSTEXPR(uint32_t, ipAddressTimerMsec, 600000, 10000, 500)
 
 // Let's check the connection status any second.
 CONSTEXPR(uint32_t, checkStatusTimerMsec, 1000, 1000, 0)
@@ -87,8 +87,10 @@ constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
 
 constexpr const char* LOGO_URL = ":/nebula/resources/logo-dock.png";
 
-PRODBETAEXPR(const char*, fxaUrl, "https://api.accounts.firefox.com",
+PRODBETAEXPR(const char*, fxaApiBaseUrl, "https://api.accounts.firefox.com",
              "https://api-accounts.stage.mozaws.net")
+PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
+             "https://accounts.stage.mozaws.net")
 PRODBETAEXPR(
     const char*, balrogUrl,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",

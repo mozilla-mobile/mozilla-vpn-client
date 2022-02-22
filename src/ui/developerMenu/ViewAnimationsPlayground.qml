@@ -92,6 +92,14 @@ Item {
                 id: animationItems
 
                 ListElement {
+                    name: "VPN Logo (drop)"
+                    value: ":/nebula/resources/animations/vpnlogo-drop_animation.json"
+                }
+                ListElement {
+                    name: "VPN Logo (kinetic)"
+                    value: ":/nebula/resources/animations/vpnlogo-kinetic_animation.json"
+                }
+                ListElement {
                     name: "Lock"
                     value: ":/nebula/resources/animations/lock_animation.json"
                 }

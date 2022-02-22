@@ -113,6 +113,12 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
 
   m_emailAddress = emailAddress;
 
+  AuthenticationInApp* aip = AuthenticationInApp::instance();
+  Q_ASSERT(aip);
+
+  aip->requestEmailAddressChange(this);
+  aip->requestState(AuthenticationInApp::StateCheckingAccount, this);
+
   NetworkRequest* request =
       NetworkRequest::createForFxaAccountStatus(m_task, m_emailAddress);
 
@@ -192,6 +198,9 @@ void AuthenticationInAppListener::enableTotpCreation() {
 void AuthenticationInAppListener::signIn(const QString& unblockCode) {
   logger.debug() << "Sign in";
 
+  AuthenticationInApp::instance()->requestState(
+      AuthenticationInApp::StateSigningIn, this);
+
   NetworkRequest* request = NetworkRequest::createForFxaLogin(
       m_task, m_emailAddress, m_authPw, unblockCode, m_urlQuery);
 
@@ -216,6 +225,9 @@ void AuthenticationInAppListener::signIn(const QString& unblockCode) {
 
 void AuthenticationInAppListener::signUp() {
   logger.debug() << "Sign up";
+
+  AuthenticationInApp::instance()->requestState(
+      AuthenticationInApp::StateSigningUp, this);
 
   NetworkRequest* request = NetworkRequest::createForFxaAccountCreation(
       m_task, m_emailAddress, m_authPw, m_urlQuery);
@@ -275,6 +287,9 @@ void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
   logger.debug() << "Sign in (verify session code by email received)";
   Q_ASSERT(!m_sessionToken.isEmpty());
 
+  AuthenticationInApp::instance()->requestState(
+      AuthenticationInApp::StateVerifyingSessionEmailCode, this);
+
   NetworkRequest* request =
       NetworkRequest::createForFxaSessionVerifyByEmailCode(
           m_task, m_sessionToken, code, m_urlQuery);
@@ -314,6 +329,9 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
   logger.debug() << "Sign in (verify session code by totp received)";
   Q_ASSERT(!m_sessionToken.isEmpty());
 
+  AuthenticationInApp::instance()->requestState(
+      AuthenticationInApp::StateVerifyingSessionTotpCode, this);
+
   NetworkRequest* request = NetworkRequest::createForFxaSessionVerifyByTotpCode(
       m_task, m_sessionToken, code, m_urlQuery);
 
@@ -342,6 +360,9 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
             }
 
             AuthenticationInApp* aip = AuthenticationInApp::instance();
+            aip->requestState(
+                AuthenticationInApp::StateVerificationSessionByTotpNeeded,
+                this);
             aip->requestErrorPropagation(
                 AuthenticationInApp::ErrorInvalidTotpCode, this);
           });
@@ -501,27 +522,27 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
   // https://github.com/mozilla/fxa/blob/main/packages/fxa-auth-server/docs/api.md#defined-errors
   switch (errorCode) {
     case 101:  // Account already exists
+      aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(
           AuthenticationInApp::ErrorAccountAlreadyExists, this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 102:  // Unknown account
+      aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(AuthenticationInApp::ErrorUnknownAccount,
                                    this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 103:  // Incorrect password
+      aip->requestState(AuthenticationInApp::StateSignIn, this);
       aip->requestErrorPropagation(AuthenticationInApp::ErrorIncorrectPassword,
                                    this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 114:  // Client has sent too many requests
+      aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(AuthenticationInApp::ErrorTooManyRequests,
                                    this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 125:  // The request was blocked for security reasons
@@ -529,39 +550,39 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
       break;
 
     case 127:  // Invalid unblock code
+      aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(AuthenticationInApp::ErrorInvalidEmailCode,
                                    this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 142:  // Sign in with this email type is not currently supported
+      aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(
           AuthenticationInApp::ErrorEmailTypeNotSupported, this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 144:  // Email already exists
+      aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(AuthenticationInApp::ErrorEmailAlreadyExists,
                                    this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 149:  // This email can not currently be used to login
+      aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(
           AuthenticationInApp::ErrorEmailCanNotBeUsedToLogin, this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 151:  // Failed to send email
+      aip->requestState(AuthenticationInApp::StateSignIn, this);
       aip->requestErrorPropagation(AuthenticationInApp::ErrorFailedToSendEmail,
                                    this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 201:  // Service unavailable
+      aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(AuthenticationInApp::ErrorServerUnavailable,
                                    this);
-      aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
     case 100:  // Incorrect Database Patch Level

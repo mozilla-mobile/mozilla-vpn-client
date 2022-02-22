@@ -24,7 +24,7 @@ After checking out the code:
 
 * Install the git pre-commit hook (`./scripts/git-pre-commit-format install`)
 * Build the source (See below)
-* Run the unit tests with `./scripts/test_coverage.sh` or see below for running the functional tests.
+* Run the unit tests with `./scripts/tests/unit_tests.sh` or see below for running the functional tests.
 * Run the qml tests with `./tests/qml/qml_tests` add `-platform offscreen` to not see the qml app
 
 ### Running the functional tests
@@ -213,7 +213,7 @@ NETEXT_ID_IOS = <>
 ```
 7. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
 ```
-  $ ./scripts/apple_compile.sh macos
+  $ ./scripts/macos/apple_compile.sh macos
 ```
 8. Xcode should automatically open. You can then run/test/archive/ship the app
 
@@ -272,7 +272,7 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
 6. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
 ```
-  $ ./scripts/apple_compile.sh ios
+  $ ./scripts/macos/apple_compile.sh ios
 ```
 Add the Adjust SDK token with `-a | --adjust <adjust_token>`
 
@@ -296,7 +296,7 @@ Add the Adjust SDK token with `-a | --adjust <adjust_token>`
 
 6. Build the apk
 ```bash 
-  $  ./scripts/android_package.sh /path/to/Qt/5.15.x/ (debug|release)
+  $  ./scripts/android/package.sh /path/to/Qt/5.15.x/ (debug|release)
 ```
 Add the Adjust SDK token with `-a | --adjust <adjust_token>`
 7. The apk will be located in ```.tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk```

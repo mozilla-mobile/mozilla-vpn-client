@@ -1,16 +1,24 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 TEMPLATE = app
 TARGET = qml_tests
 
 QT += quick
+QT += widgets
 
 CONFIG += warn_on qmltestcase
 CONFIG += c++1z
+
+macos {
+    CONFIG -= app_bundle
+}
+
 # Allows us to be a supported platform
 DEFINES += UNIT_TEST
 DEFINES += MVPN_DUMMY
+
 # Sets up app and build id which we test for in test_VPNAboutUs
 DEFINES += APP_VERSION=\\\"QMLTest_AppVersion\\\"
 DEFINES += BUILD_ID=\\\"QMLTest_BuildID\\\"
@@ -44,6 +52,7 @@ SOURCES += \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/server.cpp \
     ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
@@ -83,6 +92,6 @@ OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 
-win*{
+win* {
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 }

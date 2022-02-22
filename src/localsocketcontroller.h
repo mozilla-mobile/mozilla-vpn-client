@@ -10,6 +10,7 @@
 #include <functional>
 #include <QLocalSocket>
 #include <QHostAddress>
+#include <QTimer>
 
 class QJsonObject;
 
@@ -34,6 +35,9 @@ class LocalSocketController final : public ControllerImpl {
   void cleanupBackendLogs() override;
 
  private:
+  void initializeInternal();
+  void disconnectInternal();
+
   void daemonConnected();
   void errorOccurred(QLocalSocket::LocalSocketError socketError);
   void readData();
@@ -47,13 +51,16 @@ class LocalSocketController final : public ControllerImpl {
     eInitializing,
     eReady,
     eDisconnected,
-  } m_state = eUnknown;
+  } m_daemonState = eUnknown;
 
   QLocalSocket* m_socket = nullptr;
 
   QByteArray m_buffer;
 
   std::function<void(const QString&)> m_logCallback = nullptr;
+
+  QTimer m_initializingTimer;
+  uint32_t m_initializingRetry = 0;
 };
 
 #endif  // LOCALSOCKETCONTROLLER_H

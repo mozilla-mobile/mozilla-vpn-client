@@ -4,6 +4,7 @@
 
 #include "cryptosettings.h"
 #include "logger.h"
+#include "macosutils.h"
 
 #include <QRandomGenerator>
 
@@ -26,7 +27,8 @@ void CryptoSettings::resetKey() {
 
   NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 
-  NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
+  NSString* appId = MacOSUtils::appId();
+  Q_ASSERT(appId);
 
   NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
 
@@ -52,7 +54,9 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
 
     NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 
-    NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
+    NSString* appId = MacOSUtils::appId();
+    Q_ASSERT(appId);
+
     NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
 
     [query setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];

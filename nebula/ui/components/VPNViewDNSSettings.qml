@@ -94,7 +94,7 @@ VPNFlickable {
                         id: ipInput
 
                         enabled: (VPNSettings.dnsProvider === VPNSettings.Custom) && vpnIsOff
-                        placeholderText: VPNSettings.placeholderUserDNS
+                        _placeholderText: VPNSettings.placeholderUserDNS
                         text: ""
                         width: parent.width
                         height: 40
@@ -126,8 +126,12 @@ VPNFlickable {
 
                     VPNContextualAlerts {
                         id: errorAlert
-                        anchors.top: serverSearchInput.bottom
-                        anchors.topMargin: VPNTheme.theme.listSpacing
+
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            topMargin: VPNTheme.theme.listSpacing
+                        }
 
                         messages: [
                             {

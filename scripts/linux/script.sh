@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-. $(dirname $0)/commons.sh
+. $(dirname $0)/../commons.sh
 
 REVISION=1
 RELEASE=focal
@@ -178,7 +178,7 @@ if [ "$SOURCEONLY" == "Y" ]; then
 ## Otherwise, build the desired release.
 else
   case "$RELEASE" in
-    bionic|focal|impish)
+    bionic|focal|impish|jammy)
       build_deb_source $RELEASE
 
       print Y "Building Debian packages for $RELEASE"
@@ -194,7 +194,7 @@ else
       ;;
 
     *)
-      die "We support RELEASE focal, bionic, impish and fedora only"
+      die "We support RELEASE focal, bionic, impish, jammy and fedora only"
       ;; 
   esac
 fi

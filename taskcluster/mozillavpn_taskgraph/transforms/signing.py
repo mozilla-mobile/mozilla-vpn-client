@@ -13,12 +13,17 @@ from taskgraph.util.schema import resolve_keyed_by
 transforms = TransformSequence()
 
 PRODUCTION_SIGNING_BUILD_TYPES = [
-    "android-nightly",
-    "android-release"
+    "android-x64/release",
+    "android-x86/release",
+    "android-arm64/release",
+    "android-armv7/release"
 ]
 
 SIGNING_BUILD_TYPES = PRODUCTION_SIGNING_BUILD_TYPES + [
-    "android-debug",
+# Note: it appears we don't have infra for debug sign
+# contact releng if you need it :) 
+#    "android-debug",
+#
 ]
 
 @transforms.add

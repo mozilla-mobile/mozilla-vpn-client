@@ -33,15 +33,19 @@ VPNTextField {
 
     VPNContextualAlerts {
         id: searchWarning
-        anchors.top: searchBar.bottom
-        anchors.topMargin: VPNTheme.theme.listSpacing
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: searchBar.bottom
+            topMargin: VPNTheme.theme.listSpacing
+        }
         width: parent.width
 
         messages: [
             {
                 type: "error",
                 message: VPNl18n.ServersViewSearchNoResultsLabel,
-                visible: serverSearchInput.hasError
+                visible: searchBar.hasError
             }
         ]
     }

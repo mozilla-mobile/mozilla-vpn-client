@@ -1,0 +1,105 @@
+name: Lottie Tests
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+  pull_request:
+    branches:
+      - main
+      - 'releases/**'
+
+
+jobs:
+  linux-lottie-tests:
+    strategy:
+      fail-fast: false # Don't cancel other jobs
+      matrix:
+        version: ["5.15.2","6.2.1"]
+    runs-on: ubuntu-20.04
+    name: "Run Lottie tests on ${{matrix.version}}"
+    steps:
+      - name: Install Linux packages
+        run: |
+          sudo apt update
+          sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
+          python3 -m pip install aqtinstall
+          aqt install-qt --outputdir /opt linux desktop ${{matrix.version}} gcc_64 -m all
+
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Running tests
+        shell: bash
+        run: |
+          export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
+          xvfb-run -a ./scripts/tests/lottie_tests.sh
+
+  macos-lottie-tests:
+    strategy:
+      matrix:
+        config:
+            - { name: "Qt5", pattern: x, folder: qt }
+            - { name: "Qt6", pattern: qt6, folder: qt6 }
+
+    runs-on: macos-latest
+    name: "Run Lottie tests on MacOS ${{matrix.config.name}}"
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install ${{matrix.config.name}}
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/mozilla-mobile/qt_static_macos
+          cd qt_static_macos
+          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
+          tar xf qt_static.tar.gz
+          sudo mv ${{matrix.config.folder}} /opt
+          cd ..
+
+      - name: Running tests
+        shell: bash
+        run: |
+          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          ./scripts/tests/lottie_tests.sh
+
+  windows-lottie-tests:
+    name: Run Lottie tests on Windows Qt5
+    runs-on: windows-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/mozilla-mobile/qt_static_windows
+          cd qt_static_windows
+          cat x* > qt_static.tar.bz2
+          tar xf qt_static.tar.bz2
+          tar xf msm.tar.gz
+          mkdir /c/MozillaVPNBuild
+          cp -r * /c/MozillaVPNBuild
+          cd ..
+          cp /c/MozillaVPNBuild/bin/libssl-1_1-x64.dll .
+          cp /c/MozillaVPNBuild/bin/libcrypto-1_1-x64.dll .
+          cp /c/MozillaVPNBuild/bin/libEGL.dll .
+          cp /c/MozillaVPNBuild/bin/libGLESv2.dll .
+          cp /c/MozillaVPNBuild/*.msm .
+
+      - name: Add msvc dev commands to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Running tests
+        shell: bash
+        run: |
+          export PATH=/c/MozillaVPNBuild/bin:$PATH
+          ./scripts/tests/lottie_tests.sh

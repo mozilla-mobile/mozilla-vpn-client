@@ -488,6 +488,11 @@ void MozillaVPN::openLink(LinkType linkType) {
       url.append("/r/vpn/client/feedback");
       break;
 
+    case LinkForgotPassword:
+      url = Constants::fxaUrl();
+      url.append("/reset_password");
+      break;
+
     case LinkHelpSupport:
       url = NetworkRequest::apiBaseUrl();
       url.append("/r/vpn/support");
@@ -1440,6 +1445,15 @@ void MozillaVPN::refreshDevices() {
 void MozillaVPN::quit() {
   logger.debug() << "quit";
   TaskScheduler::deleteTasks();
+
+#if QT_VERSION >= 0x060000
+  // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a
+  // quick exit. See: https://bugreports.qt.io/browse/QTBUG-100687
+
+  SettingsHolder::instance()->sync();
+  exit(0);
+#endif
+
   qApp->quit();
 }
 
@@ -1652,7 +1666,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 
   if (settingsHolder->hasDeviceKeyVersion() &&
       VersionApi::compareVersions(settingsHolder->deviceKeyVersion(),
-                                  APP_VERSION) >= 0) {
+                                  "2.5.0") >= 0) {
     return;
   }
 
@@ -1669,6 +1683,14 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   // We do not need to remove the current device! guardian-website "overwrites"
   // the current device key when we submit a new one.
   addCurrentDeviceAndRefreshData();
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
+    if (!modelsInitialized()) {
+      logger.error() << "Failed to complete the key regeneration";
+      errorHandle(ErrorHandler::RemoteServiceError);
+      setUserState(UserNotAuthenticated);
+      return;
+    }
+  }));
 }
 
 void MozillaVPN::hardReset() {

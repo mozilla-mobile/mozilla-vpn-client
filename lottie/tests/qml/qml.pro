@@ -7,8 +7,11 @@ QT += qml quick
 TEMPLATE = app
 TARGET = tst_lottie
 
-CONFIG += debug
 CONFIG += warn_on qmltestcase
+
+macos {
+    CONFIG -= app_bundle
+}
 
 HEADERS += helper.h
 SOURCES += main.cpp
