@@ -7,14 +7,11 @@
 #include "filedownloader.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "timersingleshot.h"
 
 #include <QDateTime>
-#include <QUrl>
-#include <math.h>
 
 namespace {
-Logger logger(LOG_MODEL, "ConnectionBenchmarkDownload");
+Logger logger(LOG_NETWORKING, "ConnectionBenchmarkDownload");
 }
 
 ConnectionBenchmarkDownload::ConnectionBenchmarkDownload() {
@@ -26,8 +23,9 @@ ConnectionBenchmarkDownload::~ConnectionBenchmarkDownload() {
 }
 
 void ConnectionBenchmarkDownload::populateUrlList() {
-  logger.debug() << "Add download urls";
+  logger.debug() << "Add download URLs";
 
+  // TODO: Replace test URLs
   m_downloadUrls
       << "https://speed1.syseleven.net.prod.hosts.ooklaserver.net:8080/"
          "download?nocache=73d775b0-3082-47fb-8816-d6171c023fa2&size=25000000";
@@ -70,21 +68,20 @@ void ConnectionBenchmarkDownload::setState(State state) {
 }
 
 void ConnectionBenchmarkDownload::onReady(FileDownloader* downloader) {
-  logger.debug() << "On downloaded";
+  logger.debug() << "On downloader ready";
+  Q_ASSERT(downloader);
 
   quint64 downloadDuration = QDateTime::currentMSecsSinceEpoch() - m_startTime;
   quint64 bytesPerSecond =
       downloader->bytesReceived() / downloadDuration * 1000;
-  // double bitsPerSecond = bytesPerSecond * 8;
-  // double mBitsPerSecond = bitsPerSecond / pow(1024, 2);
 
   m_bytesPerSecond += bytesPerSecond;
   m_numOfFilesReceived += 1;
 
   if (m_numOfFilesReceived == m_numOfFilesTotal) {
+    logger.debug() << "Download speed" << m_bytesPerSecond;
     m_fileDownloaderList.clear();
 
-    logger.debug() << "Download speed" << m_bytesPerSecond;
     setState(StateReady);
   }
 }
@@ -121,7 +118,7 @@ void ConnectionBenchmarkDownload::start() {
 }
 
 void ConnectionBenchmarkDownload::stop() {
-  logger.debug() << "Stop benchmark";
+  logger.debug() << "Stop download benchmark";
 
   if (m_timer->isActive()) {
     m_timer->stop();

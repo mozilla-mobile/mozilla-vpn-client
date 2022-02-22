@@ -129,12 +129,13 @@ Window {
         anchors.topMargin: iosSafeAreaTopMargin.height
     }
 
+    // TODO: Only used for debugging and should be removed
     ColumnLayout {
         anchors {
             horizontalCenter: parent.horizontalCenter
             top: parent.top
         }
-        visible: false
+        visible: true
         z: 99
 
         Text {

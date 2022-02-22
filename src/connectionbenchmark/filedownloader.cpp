@@ -6,7 +6,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-#include <QDebug>
 #include <QUrl>
 
 FileDownloader::FileDownloader(QUrl fileUrl, QObject *parent) : QObject(parent) {

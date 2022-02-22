@@ -9,9 +9,7 @@
 #include "connectionbenchmarkdownload.h"
 
 #include <QAbstractListModel>
-#include <QPointer>
 #include <QList>
-#include <QString>
 
 class ConnectionBenchmarkModel final : public QAbstractListModel {
   Q_OBJECT;

@@ -22,5 +22,5 @@ ConnectionBenchmarkItem::~ConnectionBenchmarkItem() {}
 
 QString ConnectionBenchmarkItem::displayName() const {
   return m_displayName;
-  // return L18nStrings::instance()->t(m_displayName_id);
+  // return L18nStrings::instance()->t(m_displayName);
 }

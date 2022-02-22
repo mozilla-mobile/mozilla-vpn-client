@@ -10,7 +10,6 @@
 #include <QDateTime>
 #include <QList>
 #include <QObject>
-#include <QString>
 #include <QTimer>
 
 class ConnectionBenchmarkDownload final : public QObject {

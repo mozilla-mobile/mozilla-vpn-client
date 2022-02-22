@@ -41,4 +41,4 @@ class FileDownloader : public QObject {
     qint64 m_bytesTotal;
 };
 
-#endif // FILEDOWNLOADER_H
+#endif  // FILEDOWNLOADER_H

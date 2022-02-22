@@ -7,9 +7,6 @@
 #include "connectionbenchmarkmodel.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
-
-#include "qmlengineholder.h"
 
 #include <QList>
 
@@ -70,6 +67,7 @@ void ConnectionBenchmarkModel::runNextBenchmark() {
   if (m_state == StatePing) {
     logger.debug() << "Run ping benchmark";
 
+    // TODO: Add localized string
     addResult(new ConnectionBenchmarkItem(
         "ping", "Ping", "qrc:/nebula/resources/connection-green.svg", 15));
 
@@ -87,6 +85,7 @@ void ConnectionBenchmarkModel::runNextBenchmark() {
 
           if (m_benchmarkDownload->state() ==
               ConnectionBenchmarkDownload::StateReady) {
+            // TODO: Add localized string
             addResult(new ConnectionBenchmarkItem(
                 "download", "Download", "qrc:/nebula/resources/download.svg",
                 m_benchmarkDownload->downloadSpeed()));
@@ -113,7 +112,12 @@ void ConnectionBenchmarkModel::start() {
   runNextBenchmark();
 }
 
-void ConnectionBenchmarkModel::stop() { logger.debug() << "Stop benchmark"; }
+void ConnectionBenchmarkModel::stop() {
+  logger.debug() << "Stop benchmark";
+
+  Q_ASSERT(m_benchmarkDownload);
+  m_benchmarkDownload->stop();
+}
 
 void ConnectionBenchmarkModel::reset() {
   logger.debug() << "Reset connection benchmarks";

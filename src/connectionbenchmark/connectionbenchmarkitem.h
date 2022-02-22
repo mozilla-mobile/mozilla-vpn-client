@@ -6,10 +6,8 @@
 #define CONNECTIONBENCHMARKITEM_H
 
 #include "qmlengineholder.h"
-#include "l18nstrings.h"
 
 #include <QObject>
-#include <QApplication>
 
 class ConnectionBenchmarkItem : public QObject {
   Q_OBJECT
