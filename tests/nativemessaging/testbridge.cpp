@@ -38,7 +38,7 @@ void TestBridge::app_ping_success() {
 void TestBridge::async_connection() {
   QVERIFY(s_nativeMessagingProcess);
 
-  bool started;
+  bool started = false;
   HelperServer hs;
 
   while (true) {

@@ -51,7 +51,7 @@ class LocalSocketController final : public ControllerImpl {
     eInitializing,
     eReady,
     eDisconnected,
-  } m_state = eUnknown;
+  } m_daemonState = eUnknown;
 
   QLocalSocket* m_socket = nullptr;
 

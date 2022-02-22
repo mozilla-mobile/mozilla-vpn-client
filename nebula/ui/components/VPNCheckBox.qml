@@ -58,12 +58,6 @@ CheckBox {
                 border.color: checkBox.checked || checkBox.activeFocus ? VPNTheme.theme.blue : VPNTheme.theme.fontColor
             }
 
-            PropertyChanges {
-                target: checkmarkBg
-
-                color: !!checkBox.checked ? VPNTheme.theme.blue : VPNTheme.theme.bgColor
-            }
-
         },
         State {
             name: uiState.statePressed
@@ -72,13 +66,6 @@ CheckBox {
                 target: checkBoxIndicator
                 border.color: checkBox.checked ? VPNTheme.theme.bluePressed : VPNTheme.theme.fontColorDark
             }
-
-            PropertyChanges {
-                target: checkmarkBg
-
-                color: checkBox.checked ? VPNTheme.theme.bluePressed : VPNTheme.theme.greyPressed
-            }
-
         },
         State {
             name: uiState.stateHovered
@@ -86,12 +73,6 @@ CheckBox {
             PropertyChanges {
                 target: checkBoxIndicator
                 border.color: checkBox.checked || checkBox.activeFocus ? VPNTheme.theme.blueHovered : VPNTheme.theme.fontColorDark
-            }
-
-            PropertyChanges {
-                target: checkmarkBg
-
-                color: checkBox.checked ? VPNTheme.theme.blueHovered : "#DBDBDB"
             }
 
         }

@@ -36,7 +36,7 @@ VPNTextField {
         anchors {
             left: parent.left
             right: parent.right
-            top: serverSearchInput.bottom
+            top: searchBar.bottom
             topMargin: VPNTheme.theme.listSpacing
         }
         width: parent.width
@@ -45,7 +45,7 @@ VPNTextField {
             {
                 type: "error",
                 message: VPNl18n.ServersViewSearchNoResultsLabel,
-                visible: serverSearchInput.hasError
+                visible: searchBar.hasError
             }
         ]
     }

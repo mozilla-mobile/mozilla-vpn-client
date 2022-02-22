@@ -258,6 +258,11 @@ else:ios {
             ../../src/platforms/ios/iosutils.h
 }
 
+# Platform-specific: windows
+else:win* {
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+}
+
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
@@ -265,8 +270,3 @@ UI_DIR = .ui
 
 RESOURCES += ../../src/ui/license.qrc
 RESOURCES += themes/themes.qrc
-
-coverage {
-    QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
-    QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
-}

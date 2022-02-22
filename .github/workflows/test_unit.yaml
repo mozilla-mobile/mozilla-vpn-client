@@ -1,4 +1,4 @@
-name: QML Tests
+name: Unit Tests
 on:
   push:
     branches:
@@ -9,14 +9,15 @@ on:
       - main
       - 'releases/**'
 
+
 jobs:
-  linux-qml-tests:
+  linux-unit-tests:
     strategy:
       fail-fast: false # Don't cancel other jobs
       matrix:
         version: ["5.15.2","6.2.1"]
     runs-on: ubuntu-20.04
-    name: "Run QML tests on ${{matrix.version}}"
+    name: "Run Unit tests on ${{matrix.version}}"
     steps:
       - name: Install Linux packages
         run: |
@@ -51,9 +52,9 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
-          xvfb-run -a ./scripts/tests/qml_tests.sh
+          ./scripts/tests/unit_tests.sh
 
-  macos-qml-tests:
+  macos-unit-tests:
     strategy:
       matrix:
         config:
@@ -61,11 +62,18 @@ jobs:
             - { name: "Qt6", pattern: qt6, folder: qt6 }
 
     runs-on: macos-latest
-    name: "Run QML tests on MacOS ${{matrix.config.name}}"
+    name: "Run Unit tests on MacOS ${{matrix.config.name}}"
 
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
       - name: Install ${{matrix.config.name}}
         shell: bash
@@ -77,13 +85,6 @@ jobs:
           tar xf qt_static.tar.gz
           sudo mv ${{matrix.config.folder}} /opt
           cd ..
-
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
       - name: Generating glean samples
         shell: bash
@@ -102,10 +103,10 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
-          ./scripts/tests/qml_tests.sh
+          ./scripts/tests/unit_tests.sh
 
-  windows-qml-tests:
-    name: Run QML tests on Windows Qt5
+  windows-unit-tests:
+    name: Run Unit tests on Windows Qt5
     runs-on: windows-latest
 
     steps:
@@ -160,4 +161,4 @@ jobs:
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          ./scripts/tests/qml_tests.sh
+          ./scripts/tests/unit_tests.sh
