@@ -29,7 +29,7 @@ windows:
     run:
         using: run-task
         cwd: '{checkout}'
-        command: powershell.exe -ExecutionPolicy Bypass taskcluster/scripts/toolkit/compile_qt_6.ps1         
+        command: powershell.exe -ExecutionPolicy Bypass taskcluster/scripts/build_qt/compile_qt_6.ps1         
     treeherder:
         symbol: TL(QT)
         platform: toolchains/win

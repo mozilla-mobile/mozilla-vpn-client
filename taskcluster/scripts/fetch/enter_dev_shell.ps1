@@ -2,17 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Eleveates a Powershell session into a Dev-Console session
-# Searches for a vs-studio install in $DEFAULT_PATHS
-# Takes the first, records any ENV changes 
-# and apply it into the current session
-
-
 #TODO: PUT THIS INTO THE VSSTUDIO ZIP:#
-
-#Paths where we can look for VSStudio
-echo($PSScriptRoot)
-
+# Is in the VS_bundle used by fetch/vs-dev-env. 
+# Elevates a powershell env to a vs-studio "dev-console" equivalent. 
 
 $VS_STUDIO_LOCATION =resolve-path $PSScriptRoot
 $W10_SDK_PATH =  resolve-path "$PSScriptRoot\SDK"

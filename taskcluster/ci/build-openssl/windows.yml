@@ -25,7 +25,7 @@ windows:
     run:
         using: run-task
         cwd: '{checkout}'
-        command: powershell.exe -ExecutionPolicy Bypass taskcluster/scripts/toolkit/compile_openssl.ps1     
+        command: powershell.exe -ExecutionPolicy Bypass taskcluster/scripts/build_openssl/compile_openssl.ps1     
     treeherder:
         symbol: TL(SSL)
         platform: toolchains/win
