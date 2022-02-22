@@ -18,7 +18,6 @@ class TestHelper : public QObject {
 
   bool write(const QByteArray& data);
   QByteArray read();
-  QByteArray tryToRead();
 
   static int runTests(const char* app);
 

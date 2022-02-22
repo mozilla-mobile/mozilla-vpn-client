@@ -5,9 +5,20 @@
 #include "testbridge.h"
 #include "helperserver.h"
 
+static void sleep(int msecs) {
+  QTimer timer;
+  timer.setSingleShot(true);
+  timer.start(msecs);
+
+  QEventLoop loop;
+  QObject::connect(&timer, &QTimer::timeout, [&]{ loop.exit(); });
+  loop.exec();
+}
+
 void TestBridge::bridge_ping() {
   QVERIFY(s_nativeMessagingProcess);
 
+  // A simple ping/pong.
   QVERIFY(write("\"bridge_ping\""));
   QCOMPARE(read(), "\"bridge_pong\"");
 }
@@ -15,8 +26,12 @@ void TestBridge::bridge_ping() {
 void TestBridge::app_ping_failure() {
   QVERIFY(s_nativeMessagingProcess);
 
-  QVERIFY(write("\"ping\""));
-  QCOMPARE(read(), "{\"error\":\"vpn-client-down\"}");
+  // No VPN client running, we want to receive a "down" status for each
+  // message.
+  for (int i = 0; i < 3; ++i) {
+	  QVERIFY(write("\"ping\""));
+	  QCOMPARE(read(), "{\"status\":\"vpn-client-down\"}");
+  }
 }
 
 void TestBridge::app_ping_success() {
@@ -25,12 +40,26 @@ void TestBridge::app_ping_success() {
   HelperServer hs;
   hs.start();
 
+  // Let's turn on a "VPN client" (echo-server)...
   QEventLoop loop;
   connect(&hs, &HelperServer::ready, [&] { loop.exit(); });
   loop.exec();
 
+  // let's wait for a client-up message
+  bool connected = false;
+  for (int i = 0; i < 10; ++i) {
+    if (read() == "{\"status\":\"vpn-client-up\"}") { connected = true; break; }
+
+    sleep(500);
+  }
+
+  QVERIFY(connected);
+
+  // Now we want to receive our messages back.
+  for (int i = 0; i < 3; ++i) {
   QVERIFY(write("\"hello world\""));
   QCOMPARE(read(), "\"hello world\"");
+  }
 
   hs.stop();
 }
@@ -42,19 +71,26 @@ void TestBridge::async_connection() {
   HelperServer hs;
 
   while (true) {
-    QVERIFY(write("\"hello world\""));
+    QVERIFY(write("\"async connection\""));
 
     if (!started) {
+      QCOMPARE(read(), "{\"status\":\"vpn-client-down\"}");
+
       hs.start();
       started = true;
+
+	  bool connected = false;
+	  for (int i = 0; i < 10; ++i) {
+	    if (read() == "{\"status\":\"vpn-client-up\"}") { connected = true; break; }
+
+	    sleep(500);
+	  }
+
+      continue;
     }
 
-    QByteArray body = read();
-    if (body == "\"hello world\"") {
-      break;
-    }
-
-    QCOMPARE(body, "{\"error\":\"vpn-client-down\"}");
+    QCOMPARE(read(), "\"async connection\"");
+    break;
   }
 
   hs.stop();
@@ -70,22 +106,31 @@ void TestBridge::async_disconnection() {
   connect(&hs, &HelperServer::ready, [&] { loop.exit(); });
   loop.exec();
 
+  // Waiting to be connected
+  bool connected = false;
+  for (int i = 0; i < 10; ++i) {
+    if (read() == "{\"status\":\"vpn-client-up\"}") { connected = true; break; }
+
+    sleep(500);
+  }
+
+  QVERIFY(connected);
   bool stopped = false;
 
   while (true) {
     QVERIFY(write("\"async disconnection\""));
 
+    QByteArray body = read();
     if (!stopped) {
+	    QCOMPARE(body, "\"async disconnection\"");
+
       hs.stop();
       stopped = true;
-    }
-
-    QByteArray body = tryToRead();
-    if (body == "\"async disconnection\"" || body == "") {
       continue;
     }
 
-    QCOMPARE(body, "{\"error\":\"vpn-client-down\"}");
+
+    QCOMPARE(body, "{\"status\":\"vpn-client-down\"}");
     break;
   }
 }
