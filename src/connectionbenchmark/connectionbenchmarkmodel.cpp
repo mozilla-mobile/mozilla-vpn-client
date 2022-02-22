@@ -19,8 +19,6 @@ Logger logger(LOG_MODEL, "ConnectionBenchmarkModel");
 
 ConnectionBenchmarkModel::ConnectionBenchmarkModel() {
   MVPN_COUNT_CTOR(ConnectionBenchmarkModel);
-
-  ConnectionBenchmarkModel::initialize();
 }
 
 ConnectionBenchmarkModel::~ConnectionBenchmarkModel() {
@@ -59,53 +57,65 @@ void ConnectionBenchmarkModel::setState(State state) {
   emit stateChanged();
 }
 
-void ConnectionBenchmarkModel::addBenchmark() {
-  logger.debug() << "Add benchmark";
+void ConnectionBenchmarkModel::addResult(
+    ConnectionBenchmarkItem* benchmarkItem) {
+  logger.debug() << "Add benchmark result";
 
-  if (m_state == StateInitial) {
+  beginInsertRows(QModelIndex(), m_benchmarks.size(), m_benchmarks.size());
+  m_benchmarks.append(benchmarkItem);
+  endInsertRows();
+}
+
+void ConnectionBenchmarkModel::runNextBenchmark() {
+  if (m_state == StatePing) {
+    logger.debug() << "Run ping benchmark";
+
+    addResult(new ConnectionBenchmarkItem("ping", "Ping", 15));
+
+    setState(StateDownload);
+    runNextBenchmark();
+
+  } else if (m_state == StateDownload) {
+    logger.debug() << "Run download benchmark";
+
+    m_benchmarkDownload = new ConnectionBenchmarkDownload();
+    connect(
+        m_benchmarkDownload, &ConnectionBenchmarkDownload::stateChanged, this,
+        [&] {
+          logger.debug() << "Download speedtest state changed";
+
+          if (m_benchmarkDownload->state() ==
+              ConnectionBenchmarkDownload::StateReady) {
+            addResult(new ConnectionBenchmarkItem(
+                "download", "Download", m_benchmarkDownload->downloadSpeed()));
+            setState(StateReady);
+
+          } else if (m_benchmarkDownload->state() ==
+                     ConnectionBenchmarkDownload::StateError) {
+            setState(StateError);
+          }
+        });
+
+    m_benchmarkDownload->start();
   }
-
-  m_benchmarkDownload = new ConnectionBenchmarkDownload();
-  connect(m_benchmarkDownload, &ConnectionBenchmarkDownload::stateChanged, this,
-          [&] {
-            logger.debug() << "Download speedtest state changed";
-
-            if (m_benchmarkDownload->state() ==
-                ConnectionBenchmarkDownload::StateReady) {
-              m_benchmarks = {new ConnectionBenchmarkItem(
-                  "download", "Download 2",
-                  m_benchmarkDownload->downloadSpeed(), true)};
-
-              emit dataChanged(createIndex(0, 0),
-                               createIndex(m_benchmarks.size(), 0));
-
-              setState(StateReady);
-            } else if (m_benchmarkDownload->state() ==
-                       ConnectionBenchmarkDownload::StateError) {
-              setState(StateError);
-            }
-          });
-
-  m_benchmarkDownload->start();
 }
 
 void ConnectionBenchmarkModel::start() {
-  logger.debug() << "Start benchmark";
+  logger.debug() << "Start connection benchmarking";
 
-  setState(StateTesting);
-  addBenchmark();
+  if (m_benchmarks.size() > 0) {
+    reset();
+  }
+
+  setState(StatePing);
+  runNextBenchmark();
 }
 
 void ConnectionBenchmarkModel::stop() { logger.debug() << "Stop benchmark"; }
 
 void ConnectionBenchmarkModel::reset() {
-  logger.debug() << "Reset benchmark";
+  logger.debug() << "Reset connection benchmarks";
 
   m_benchmarks.clear();
   setState(StateInitial);
-}
-
-void ConnectionBenchmarkModel::initialize() {
-  m_benchmarks = {
-      new ConnectionBenchmarkItem("download", "Download 1", 0, true)};
 }

@@ -23,28 +23,24 @@ class ConnectionBenchmarkModel final : public QAbstractListModel {
   ConnectionBenchmarkModel();
   ~ConnectionBenchmarkModel();
 
-  enum State {
-    StateInitial,
-    StateTesting,
-    StateReady,
-    StateError,
-  };
-  Q_ENUM(State);
-
   Q_INVOKABLE void start();
   Q_INVOKABLE void stop();
   Q_INVOKABLE void reset();
 
-  void addBenchmark();
-
+  enum State {
+    StateInitial,
+    StatePing,
+    StateDownload,
+    StateUpload,
+    StateReady,
+    StateError,
+  };
+  Q_ENUM(State);
   State state() const { return m_state; }
 
   enum ModelRoles { RoleBenchmark };
-
   QHash<int, QByteArray> roleNames() const override;
-
   int rowCount(const QModelIndex&) const override;
-
   QVariant data(const QModelIndex& index, int role) const override;
 
  signals:
@@ -52,14 +48,12 @@ class ConnectionBenchmarkModel final : public QAbstractListModel {
 
  private:
   State m_state = StateInitial;
+  QList<ConnectionBenchmarkItem*> m_benchmarks;
+  ConnectionBenchmarkDownload* m_benchmarkDownload;
 
   void setState(State state);
-
-  void initialize();
-
-  QList<ConnectionBenchmarkItem*> m_benchmarks;
-
-  ConnectionBenchmarkDownload* m_benchmarkDownload;
+  void runNextBenchmark();
+  void addResult(ConnectionBenchmarkItem* benchmarkItem);
 };
 
 #endif  // CONNECTIONBENCHMARKMODEL_H

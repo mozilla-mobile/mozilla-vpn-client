@@ -51,7 +51,9 @@ Rectangle {
         },
         State {
             name: "open-loading"
-            when: VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateTesting
+            when: (VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StatePing
+                || VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateDownload
+                || VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateUpload)
                 && isOpen
                 && !isTransitioning
 
@@ -87,10 +89,6 @@ Rectangle {
         timer.setTimeout(function() {
             // Finished opening/closing transition
             isTransitioning = false;
-
-            if (VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateReady) {
-                VPNConnectionBenchmarkModel.reset();
-            }
         }, transitionDuration);
     }
 

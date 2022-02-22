@@ -151,12 +151,16 @@ Window {
             Layout.fillWidth: true
 
             Button {
-                text: VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateTesting ? "stop" : "start"
+                text: (VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StatePing
+                    || VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateDownload
+                    || VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateUpload)
+                    ? "stop"
+                    : "start"
                 onClicked: {
-                    if (VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateTesting) {
-                        VPNConnectionBenchmarkModel.stop();
-                    } else {
+                    if (VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateInitial || VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateReady) {
                         VPNConnectionBenchmarkModel.start();
+                    } else {
+                        VPNConnectionBenchmarkModel.stop();
                     }
                 }
             }

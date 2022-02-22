@@ -134,6 +134,14 @@ Flickable {
             Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
+        Repeater {
+            model: VPNConnectionBenchmarkModel
+            delegate: Text {
+                color: "white"
+                text: benchmark.id + ", " + benchmark.displayName + ", " + benchmark.result
+            }
+        }
+
         Component {
             id: connectionInfoItem
 
