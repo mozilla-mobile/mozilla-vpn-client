@@ -14,8 +14,7 @@ MouseArea {
     property var onMouseAreaClicked: function() { parent.clicked() }
 
     function changeState(stateName) {
-        if (mouseArea.hoverEnabled)
-           targetEl.state = stateName;
+        targetEl.state = stateName;
     }
 
     anchors.fill: parent
@@ -30,5 +29,8 @@ MouseArea {
             changeState(uiState.stateDefault);
             onMouseAreaClicked();
         }
+    }
+    onHoverEnabledChanged: {
+        changeState(hoverEnabled ? uiState.stateDefault : uiState.stateDisabled);
     }
 }
