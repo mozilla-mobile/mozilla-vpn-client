@@ -307,9 +307,10 @@ bool Daemon::deactivate(bool emitSignals) {
     if (!run(Down, state.m_config)) {
       return false;
     }
-    if (emitSignals) {
-      emit disconnected();
-    }
+  }
+
+  if (emitSignals) {
+    emit disconnected();
   }
 
   // Cleanup DNS

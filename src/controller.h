@@ -104,7 +104,6 @@ class Controller final : public QObject {
   void serverUnavailable();
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode);
-  bool hasCooldownForAllServers();
 
   void captivePortalPresent();
   void captivePortalGone();
@@ -160,6 +159,7 @@ class Controller final : public QObject {
 
   void heartbeatCompleted();
 
+  void clearConnectedTime();
   void resetConnectedTime();
 
   void startUnsettledPeriod();
