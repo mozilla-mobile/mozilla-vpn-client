@@ -43,10 +43,10 @@ jobs:
           sudo mv ${{matrix.config.folder}} /opt
           cd ..
 
-      - name: Retrieving wireguard-go version
-        shell: bash
-        run: |
-          (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
+      # - name: Retrieving wireguard-go version
+      #   shell: bash
+      #   run: |
+      #     (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
 
       - name: Generating glean samples
         shell: bash
@@ -66,37 +66,6 @@ jobs:
           rm /usr/local/bin/gofmt
           brew install go
 
-      # - name: Install the Apple certificate and provisioning profile
-      #   env:
-      #     MACOS_CERTIFICATE_DEVID_BASE64: ${{ secrets.MACOS_CERTIFICATE_DEVID_BASE64 }}
-      #     MACOS_CERTIFICATE_DEVID_PASSWD: ${{ secrets.MACOS_CERTIFICATE_DEVID_PASSWD }}
-      #     MACOS_CERTIFICATE_INST_BASE64: ${{ secrets.MACOS_CERTIFICATE_INST_BASE64 }}
-      #     MACOS_CERTIFICATE_INST_PASSWD: ${{ secrets.MACOS_CERTIFICATE_INST_PASSWD }}
-      #     MACOS_PROVISON_PROFILE_BASE64: ${{ secrets.MACOS_PROVISON_PROFILE_BASE64 }}
-      #     MACOS_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
-      #   run: |
-      #     # create variables
-      #     DEVID_CERT_PATH=$RUNNER_TEMP/devid_certificate.p12
-      #     INST_CERT_PATH=$RUNNER_TEMP/inst_certificate.p12
-      #     PP_PATH=$RUNNER_TEMP/build_pp.provisionprofile
-      #     KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-      #     # import certificate and provisioning profile from secrets
-      #     echo -n "$MACOS_CERTIFICATE_DEVID_BASE64" | base64 --decode --output $DEVID_CERT_PATH
-      #     echo -n "$MACOS_CERTIFICATE_INST_BASE64" | base64 --decode --output $INST_CERT_PATH
-      #     echo -n "$MACOS_PROVISON_PROFILE_BASE64" | base64 --decode --output $PP_PATH
-      #     # create temporary keychain
-      #     security create-keychain -p $MACOS_KEYCHAIN_PASSWORD $KEYCHAIN_PATH
-      #     security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-      #     security unlock-keychain -p $MACOS_KEYCHAIN_PASSWORD $KEYCHAIN_PATH
-      #     # import certificate to keychain
-      #     security import $DEVID_CERT_PATH -P $MACOS_CERTIFICATE_DEVID_PASSWD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-      #     security import $INST_CERT_PATH -P $MACOS_CERTIFICATE_INST_PASSWD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-      #     security cms -D -i  $PP_PATH > aa.list
-      #     security list-keychain -d user -s $KEYCHAIN_PATH
-      #     # apply provisioning profile
-      #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-      #     cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-
       - name: Configuring the build
         shell: bash
         run: |
@@ -114,22 +83,7 @@ jobs:
           echo "GROUP_ID_IOS = group.baku.mozilla.ios.Guardian" >> xcode.xconfig
           echo "APP_ID_IOS = baku.mozilla.ios.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_IOS = baku.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
-          qmake \
-            VERSION=$SHORTVERSION \
-            BUILD_ID=$FULLVERSION \
-            -spec macx-xcode \
-            CONFIG-=debug \
-            CONFIG-=debug_and_release \
-            CONFIG+=networkextension \
-            CONFIG+=release \
-            QTPLUGIN+=qsvg \
-            MVPN_IOS=1 \
-            src/src.pro
-          ruby scripts/macos/utils/xcode_patcher.rb \
-            "MozillaVPN.xcodeproj" \
-            "$SHORTVERSION" \
-            "$FULLVERSION" \
-            ios
+          ./scripts/macos/apple_compile.sh ios
           make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
           make -f MozillaVPN.xcodeproj/qt_preprocess.mak
 
