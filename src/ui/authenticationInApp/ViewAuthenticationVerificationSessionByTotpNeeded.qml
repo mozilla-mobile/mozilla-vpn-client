@@ -44,11 +44,12 @@ VPNInAppAuthenticationBase {
 
         VPNButton {
             text: "Verify"
-            Layout.fillWidth: true
             enabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded
+            loaderVisible: VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionTotpCode
             onClicked: {
               VPNAuthInApp.verifySessionTotpCode(codeInput.text);
             }
+            Layout.fillWidth: true
         }
     }
 
