@@ -30,9 +30,10 @@ MacosAuthenticationListener::~MacosAuthenticationListener() {
   qApp->removeEventFilter(this);
 }
 
-void MacosAuthenticationListener::start(Task* task, const QString& codeChallenge,
-                                       const QString& codeChallengeMethod,
-                                       const QString& emailAddress) {
+void MacosAuthenticationListener::start(Task* task,
+                                        const QString& codeChallenge,
+                                        const QString& codeChallengeMethod,
+                                        const QString& emailAddress) {
   logger.debug() << "MacosAuthenticationListener started";
 
   Q_UNUSED(task);
@@ -44,13 +45,12 @@ void MacosAuthenticationListener::start(Task* task, const QString& codeChallenge
   UrlOpener::open(url.toString());
 }
 
-bool MacosAuthenticationListener::eventFilter(QObject* obj, QEvent* event)
-{
+bool MacosAuthenticationListener::eventFilter(QObject* obj, QEvent* event) {
   if (event->type() != QEvent::FileOpen) {
     return QObject::eventFilter(obj, event);
   }
 
-  QFileOpenEvent *ev = static_cast<QFileOpenEvent *>(event);
+  QFileOpenEvent* ev = static_cast<QFileOpenEvent*>(event);
   QUrl url = ev->url();
   if ((url.scheme() != "mozilla-vpn") || (url.authority() != "login")) {
     logger.warning() << "Received unknown URL:" << url.toString();
