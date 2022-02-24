@@ -6,24 +6,47 @@
 #define HELPERSERVER_H
 
 #include <QThread>
+#include <QTimer>
 #include <QTcpServer>
+#include <QTcpSocket>
 
-class EchoServer : public QTcpServer {
+class EchoServer final : public QTcpServer {
   Q_OBJECT
 
  signals:
   void ready();
 
  public:
+  explicit EchoServer(int fuzzy);
+
   void start();
   void newConnection();
+
+ private:
+  const int m_fuzzy;
+};
+
+class EchoConnection final : public QObject {
+  Q_OBJECT
+
+ public:
+  EchoConnection(QTcpSocket* socket, int fuzzy);
+
+ private:
+  void maybeStartTimer();
+
+ private:
+  QTcpSocket* m_socket = nullptr;
+  QTimer m_timer;
+  QByteArray m_buffer;
+  const int m_fuzzy;
 };
 
 class HelperServer final : public QObject {
   Q_OBJECT
 
  public:
-  void start();
+  void start(int fuzzy = 0);
   void stop();
 
  signals:

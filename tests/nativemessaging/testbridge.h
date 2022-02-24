@@ -15,4 +15,6 @@ class TestBridge final : public TestHelper {
 
   void async_connection();
   void async_disconnection();
+
+  void fuzzy();
 };
