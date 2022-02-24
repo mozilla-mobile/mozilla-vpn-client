@@ -3,10 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import components.inAppAuth 0.1
 
 Item {
     id: viewAuthenticationInApp
@@ -16,6 +18,10 @@ Item {
 
         asynchronous: true
         anchors.fill: parent
+    }
+
+    VPNInAppAuthenticationErrorPopup {
+        id: authError
     }
 
     states: [

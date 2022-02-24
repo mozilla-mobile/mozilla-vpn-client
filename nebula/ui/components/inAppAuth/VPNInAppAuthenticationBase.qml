@@ -159,11 +159,4 @@ VPNFlickable {
         }
     }
 
-    Connections {
-        target: VPNAuthInApp
-        function onErrorOccurred(error) {
-            console.log("VPNAuthInApp error", error);
-        }
-    }
-
 }

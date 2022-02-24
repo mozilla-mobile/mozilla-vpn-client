@@ -31,21 +31,19 @@ VPNInAppAuthenticationBase {
     _imgSource: "qrc:/ui/resources/logo.svg"
     _inputLabel: "Email address"
 
-    _inputs: ColumnLayout {
-        spacing: VPNTheme.theme.vSpacing * 2
-        VPNTextField {
-            id: emailInput
-            hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
-            _placeholderText: "Enter email"
-            Layout.fillWidth: true
-        }
-        VPNButton {
-            text: "Continue"
-            enabled: VPNAuthInApp.state === VPNAuthInApp.StateStart && emailInput.text.length !== 0 && !emailInput.hasError
-            loaderVisible: VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
-            onClicked: VPNAuthInApp.checkAccount(emailInput.text);
-            Layout.fillWidth: true
-        }
+    _inputs: VPNInAppAuthenticationInputs {
+        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError
+        _buttonOnClicked: (inputText) => {
+                              if (!VPNAuthInApp.validateEmailAddress(inputText)) {
+                                  activeInput().hasError = true;
+                                  _inputErrorMessage = "invalid email address, try again"
+                                  return activeInput().forceActiveFocus();
+                              }
+                              VPNAuthInApp.checkAccount(inputText);
+                          }
+        _buttonText: "Continue"
+        _inputMethodHints: Qt.ImhEmailCharactersOnly | Qt.ImhNoAutoUppercase
+        _inputPlaceholderText: "Enter email"
     }
 
     _disclaimers: RowLayout {

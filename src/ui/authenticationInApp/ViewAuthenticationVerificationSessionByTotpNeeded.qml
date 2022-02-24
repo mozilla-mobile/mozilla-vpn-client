@@ -28,29 +28,18 @@ VPNInAppAuthenticationBase {
     Component.onCompleted: console.log("SESSION VERIFICATION BY TOTP")
 
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
-    _menuButtonOnClick: () => { VPNAuthInApp.reset() }
+    _menuButtonOnClick: () => { VPN.cancelAuthentication() }
     _menuButtonAccessibleName: "TODO: Lorum Ipsum - Back"
     _headlineText: "Enter 2-factor auth code"
     _subtitleText: "Enter your 2-factor auth code"
     _imgSource: "qrc:/ui/resources/logo.svg"
     _inputLabel: "Enter code"
 
-    _inputs: ColumnLayout {
-        spacing: VPNTheme.theme.vSpacing * 2
-        VPNTextField {
-            id: codeInput
-            Layout.fillWidth: true
-        }
-
-        VPNButton {
-            text: "Verify"
-            enabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded
-            loaderVisible: VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionTotpCode
-            onClicked: {
-              VPNAuthInApp.verifySessionTotpCode(codeInput.text);
-            }
-            Layout.fillWidth: true
-        }
+    _inputs: VPNInAppAuthenticationInputs {
+        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded && !activeInput().hasError
+        _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionTotpCode(inputText) }
+        _buttonText: "Continue"
+        _inputPlaceholderText: "Enter 2-factor auth code"
     }
 
     _footerContent: Column {
@@ -60,7 +49,7 @@ VPNInAppAuthenticationBase {
             fontName: VPNTheme.theme.fontBoldFamily
             anchors.horizontalCenter: parent.horizontalCenter
             linkColor: VPNTheme.theme.redButton
-            onClicked: VPNAuthInApp.reset()
+            onClicked: VPN.cancelAuthentication()
         }
     }
 }
