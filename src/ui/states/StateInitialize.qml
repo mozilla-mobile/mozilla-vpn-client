@@ -5,16 +5,26 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+import Mozilla.VPN 1.0
 import components 0.1
 
 VPNStackView {
+    function defaultView() {
+        return VPNFeatureList.get("mobileOnboarding").isSupported
+                 ? "qrc:/ui/views/ViewMobileOnboarding.qml"
+                 : "qrc:/ui/views/ViewInitialize.qml";
+    }
+
     id: stackview
     objectName: "initialStackView"
     anchors.fill: parent
-    initialItem: {
-        if (Qt.platform.os === "android" || Qt.platform.os === "ios")
-            return "qrc:/ui/views/ViewMobileOnboarding.qml";
-        return "qrc:/ui/views/ViewInitialize.qml"
+    initialItem: defaultView()
+
+    Connections {
+        target: VPNFeatureList.get("mobileOnboarding")
+        function onIsSupportedChanged() {
+           stackview.replace(defaultView());
+        }
     }
 
     states: [
