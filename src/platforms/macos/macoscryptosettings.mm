@@ -23,7 +23,6 @@ QByteArray key;
 
 // static
 void CryptoSettings::resetKey() {
-#if defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION) || defined(MVPN_MACOS_DAEMON)
   logger.debug() << "Reset the key in the keychain";
 
   NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
@@ -43,7 +42,6 @@ void CryptoSettings::resetKey() {
   [query release];
 
   initialized = false;
-#endif
 }
 
 // static

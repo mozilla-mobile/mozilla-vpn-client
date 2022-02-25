@@ -766,7 +766,8 @@ else:ios {
                    adjust/adjustproxypackagehandler.cpp \
                    adjust/adjusttasksubmission.cpp
 
-        OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm
+        OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm \
+                             platforms/macos/macosutils.mm
 
         HEADERS += adjust/adjustfiltering.h \
                    adjust/adjusthandler.h \
@@ -775,7 +776,8 @@ else:ios {
                    adjust/adjustproxypackagehandler.h \
                    adjust/adjusttasksubmission.h
 
-        OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h
+        OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h \
+                             platforms/macos/macosutils.h
     }
 
     TARGET = MozillaVPN
