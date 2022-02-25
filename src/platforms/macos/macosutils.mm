@@ -26,11 +26,7 @@ NSString* MacOSUtils::appId() {
   if (!appId) {
     // Fallback. When an unsigned/un-notarized app is executed in
     // command-line mode, it could fail the fetching of its own bundle id.
-#ifdef MVPN_IOS
-    appId = @"org.mozilla.ios.FirefoxVPN";
-#else
     appId = @"org.mozilla.macos.FirefoxVPN";
-#endif
   }
 
   return appId;
