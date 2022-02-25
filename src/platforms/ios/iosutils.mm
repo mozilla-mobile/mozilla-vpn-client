@@ -19,6 +19,18 @@ Logger logger(LOG_IOS, "IOSUtils");
 }
 
 // static
+NSString* IOSUtils::appId() {
+  NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
+  if (!appId) {
+    // Fallback. When an unsigned/un-notarized app is executed in
+    // command-line mode, it could fail the fetching of its own bundle id.
+    appId = @"org.mozilla.ios.FirefoxVPN";
+  }
+
+  return appId;
+}
+
+// static
 QString IOSUtils::computerName() {
   NSString* name = [[UIDevice currentDevice] name];
   return QString::fromNSString(name);
