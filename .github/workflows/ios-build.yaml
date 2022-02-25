@@ -23,7 +23,7 @@ jobs:
       matrix:
         config:
             - { name: "Qt5", pattern: qt5, folder: ios }
-            # - { name: "Qt6", pattern: qt6, folder: qt6 }
+            - { name: "Qt6", pattern: qt6, folder: ios }
 
     steps:
       - name: Clone repository
@@ -88,8 +88,6 @@ jobs:
           NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
           EOF
           ./scripts/macos/apple_compile.sh ios
-          make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
-          make -f MozillaVPN.xcodeproj/qt_preprocess.mak
 
       - name: Compiling
         shell: bash
