@@ -96,51 +96,52 @@ Flickable {
             Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
-        VPNConnectionInfoItem {
-            title: VPNServerCountryModel.getLocalizedCountryName(
-                VPNCurrentServer.exitCountryCode
-            )
-            subtitle: VPNCurrentServer.localizedCityName
-            iconPath: "qrc:/nebula/resources/flags/"
-                + VPNCurrentServer.exitCountryCode.toUpperCase()
-                + ".png"
-            isFlagIcon: true
+
+        ColumnLayout {
+            spacing: 0
 
             Layout.leftMargin: VPNTheme.theme.windowMargin
             Layout.rightMargin: VPNTheme.theme.windowMargin
-        }
 
-        Component {
-            id: connectionInfoItem
-
-            ColumnLayout {
-                spacing: 0
-                Rectangle {
-                    color: VPNTheme.colors.white
-                    height: 1
-                    opacity: 0.2
-
-                    Layout.fillWidth: true
-                }
-
-                VPNConnectionInfoItem {
-                    title: benchmark.displayName
-                    subtitle: benchmark.id === "download"
-                        ? root.getConnectionLabel(benchmark.result)
-                        : benchmark.result
-                    iconPath: benchmark.icon
-                }
-
-                Layout.leftMargin: VPNTheme.theme.windowMargin
-                Layout.rightMargin: VPNTheme.theme.windowMargin
+            VPNConnectionInfoItem {
+                title: VPNServerCountryModel.getLocalizedCountryName(
+                    VPNCurrentServer.exitCountryCode
+                )
+                subtitle: VPNCurrentServer.localizedCityName
+                iconPath: "qrc:/nebula/resources/flags/"
+                    + VPNCurrentServer.exitCountryCode.toUpperCase()
+                    + ".png"
+                isFlagIcon: true
             }
-        }
 
-        Repeater {
-            id: connectionInfoList
+            Rectangle {
+                color: VPNTheme.colors.white
+                height: 1
+                opacity: 0.2
 
-            model: VPNConnectionBenchmarkModel
-            delegate: connectionInfoItem
+                Layout.fillWidth: true
+            }
+
+            VPNConnectionInfoItem {
+                title: "Ping"
+                subtitle: VPNConnectionBenchmark.ping
+                iconPath: "qrc:/nebula/resources/connection-green.svg"
+            }
+
+            Rectangle {
+                color: VPNTheme.colors.white
+                height: 1
+                opacity: 0.2
+
+                Layout.fillWidth: true
+            }
+
+            VPNConnectionInfoItem {
+                title: "Download"
+                subtitle: root.getConnectionLabel(VPNConnectionBenchmark.download)
+                iconPath: "qrc:/nebula/resources/download.svg"
+            }
+
         }
 
     }

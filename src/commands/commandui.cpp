@@ -368,9 +368,9 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNConnectionBenchmarkModel",
+        "Mozilla.VPN", 1, 0, "VPNConnectionBenchmark",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->connectionBenchmarkModel();
+          QObject* obj = MozillaVPN::instance()->connectionBenchmark();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

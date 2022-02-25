@@ -2,27 +2,30 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "filedownloader.h"
+#include "resourcedownloader.h"
 #include "leakdetector.h"
 #include "logger.h"
 
 #include <QUrl>
 
-FileDownloader::FileDownloader(QUrl fileUrl, QObject *parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(FileDownloader);
+ResourceDownloader::ResourceDownloader(const QUrl& fileUrl, QObject* parent)
+    : QObject(parent) {
+  MVPN_COUNT_CTOR(ResourceDownloader);
 
   QNetworkRequest request(fileUrl);
   m_networkReply = m_networkAccessManager.get(request);
 
   connect(&m_networkAccessManager, &QNetworkAccessManager::finished, this,
-          &FileDownloader::onFinished);
+          &ResourceDownloader::onFinished);
   connect(m_networkReply, &QNetworkReply::downloadProgress, this,
-          &FileDownloader::onDownloadProgress);
+          &ResourceDownloader::onDownloadProgress);
 }
 
-FileDownloader::~FileDownloader() { MVPN_COUNT_DTOR(FileDownloader); }
+ResourceDownloader::~ResourceDownloader() {
+  MVPN_COUNT_DTOR(ResourceDownloader);
+}
 
-void FileDownloader::onFinished(QNetworkReply* reply) {
+void ResourceDownloader::onFinished(QNetworkReply* reply) {
   m_downloadedData = reply->readAll();
   reply->deleteLater();
 
@@ -33,8 +36,8 @@ void FileDownloader::onFinished(QNetworkReply* reply) {
   }
 }
 
-void FileDownloader::onDownloadProgress(qint64 bytesReceived,
-                                        qint64 bytesTotal) {
+void ResourceDownloader::onDownloadProgress(qint64 bytesReceived,
+                                            qint64 bytesTotal) {
   m_bytesReceived = bytesReceived;
 
   if (m_bytesTotal != bytesTotal) {
@@ -42,4 +45,4 @@ void FileDownloader::onDownloadProgress(qint64 bytesReceived,
   }
 }
 
-void FileDownloader::abort() { m_networkReply->abort(); }
+void ResourceDownloader::abort() { m_networkReply->abort(); }

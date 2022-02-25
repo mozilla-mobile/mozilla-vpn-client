@@ -51,9 +51,10 @@ Rectangle {
         },
         State {
             name: "open-loading"
-            when: (VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StatePing
-                || VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateDownload
-                || VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateUpload)
+            when: (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StatePingBenchmarking
+                || VPNConnectionBenchmark.state === VPNConnectionBenchmark.StatePingReady
+                || VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateDownloadBenchmarking
+                || VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateDownloadReady)
                 && isOpen
                 && !isTransitioning
 
@@ -65,7 +66,7 @@ Rectangle {
         },
         State {
             name: "open-ready"
-            when: VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateReady
+            when: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateReady
                 && isOpen
                 && !isTransitioning
 
@@ -82,10 +83,10 @@ Rectangle {
         // Start opening/closing transition
         isTransitioning = true;
 
-        if (VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateInitial
-            || VPNConnectionBenchmarkModel.state === VPNConnectionBenchmarkModel.StateReady
+        if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial
+            || VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateReady
         ) {
-            VPNConnectionBenchmarkModel.start();
+            VPNConnectionBenchmark.start();
         }
 
         timer.setTimeout(function() {
@@ -125,7 +126,7 @@ Rectangle {
             z: 1
 
             onClicked: {
-                VPNConnectionBenchmarkModel.start();
+                VPNConnectionBenchmark.start();
             }
 
             Image {

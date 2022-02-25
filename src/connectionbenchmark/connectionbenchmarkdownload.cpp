@@ -4,7 +4,7 @@
 
 #include "connectionbenchmarkdownload.h"
 #include "constants.h"
-#include "filedownloader.h"
+#include "resourcedownloader.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -67,7 +67,7 @@ void ConnectionBenchmarkDownload::setState(State state) {
   emit stateChanged();
 }
 
-void ConnectionBenchmarkDownload::onReady(FileDownloader* downloader) {
+void ConnectionBenchmarkDownload::onReady(ResourceDownloader* downloader) {
   logger.debug() << "On downloader ready";
   Q_ASSERT(downloader);
 
@@ -80,7 +80,7 @@ void ConnectionBenchmarkDownload::onReady(FileDownloader* downloader) {
 
   if (m_numOfFilesReceived == m_numOfFilesTotal) {
     logger.debug() << "Download speed" << m_bytesPerSecond;
-    m_fileDownloaderList.clear();
+    m_resourceDownloaderList.clear();
 
     setState(StateReady);
   }
@@ -100,16 +100,17 @@ void ConnectionBenchmarkDownload::start() {
   m_bytesPerSecond = 0;
   m_numOfFilesReceived = 0;
 
-  setState(StateTesting);
+  setState(StateDownloading);
 
   for (const QString& downloadUrl : m_downloadUrls) {
-    FileDownloader* downloader = new FileDownloader(downloadUrl, this);
-    m_fileDownloaderList.append(downloader);
+    ResourceDownloader* downloader = new ResourceDownloader(downloadUrl, this);
+    m_resourceDownloaderList.append(downloader);
 
-    connect(downloader, &FileDownloader::downloaded, this, [this, downloader] {
-      ConnectionBenchmarkDownload::onReady(downloader);
-    });
-    connect(downloader, &FileDownloader::aborted, this, [this, downloader] {
+    connect(downloader, &ResourceDownloader::downloaded, this,
+            [this, downloader] {
+              ConnectionBenchmarkDownload::onReady(downloader);
+            });
+    connect(downloader, &ResourceDownloader::aborted, this, [this, downloader] {
       ConnectionBenchmarkDownload::onReady(downloader);
     });
   }
@@ -124,7 +125,7 @@ void ConnectionBenchmarkDownload::stop() {
     m_timer->stop();
   }
 
-  for (FileDownloader* downloader : m_fileDownloaderList) {
+  for (ResourceDownloader* downloader : m_resourceDownloaderList) {
     downloader->abort();
   }
 }
