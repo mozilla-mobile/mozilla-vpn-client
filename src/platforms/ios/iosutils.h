@@ -9,6 +9,8 @@
 
 class IOSUtils final {
  public:
+  static NSString* appId();
+  
   static QString computerName();
 
   static QString IAPReceipt();
