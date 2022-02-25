@@ -23,7 +23,7 @@ jobs:
       matrix:
         config:
             - { name: "Qt5", pattern: qt5, folder: ios }
-            - { name: "Qt6", pattern: qt6, folder: ios }
+            # - { name: "Qt6", pattern: qt6, folder: ios }
 
     steps:
       - name: Clone repository
