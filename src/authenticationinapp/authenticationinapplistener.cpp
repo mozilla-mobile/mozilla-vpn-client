@@ -201,6 +201,10 @@ void AuthenticationInAppListener::signIn(const QString& unblockCode) {
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateSigningIn, this);
 
+  signInInternal(unblockCode);
+}
+
+void AuthenticationInAppListener::signInInternal(const QString& unblockCode) {
   NetworkRequest* request = NetworkRequest::createForFxaLogin(
       m_task, m_emailAddress, m_authPw, unblockCode, m_urlQuery);
 
@@ -258,11 +262,15 @@ void AuthenticationInAppListener::unblockCodeNeeded() {
   sendUnblockCodeEmail();
 }
 
-void AuthenticationInAppListener::setUnblockCodeAndContinue(
+void AuthenticationInAppListener::verifyUnblockCode(
     const QString& unblockCode) {
   logger.debug() << "Sign in (unblock code received)";
   Q_ASSERT(m_sessionToken.isEmpty());
-  signIn(unblockCode);
+
+  AuthenticationInApp::instance()->requestState(
+      AuthenticationInApp::StateVerifyingUnblockCode, this);
+
+  signInInternal(unblockCode);
 }
 
 void AuthenticationInAppListener::sendUnblockCodeEmail() {
@@ -579,6 +587,13 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
                                    this);
       break;
 
+    case 183:  // Invalid or expired verification code
+      aip->requestState(
+          AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
+      aip->requestErrorPropagation(
+          AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode, this);
+      break;
+
     case 201:  // Service unavailable
       aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(AuthenticationInApp::ErrorServerUnavailable,
@@ -734,10 +749,40 @@ void AuthenticationInAppListener::processRequestFailure(
       return;
     }
 
+    // Special error handling for the unblock code.
+    if (errorCode == 107) {
+      QJsonObject objValidation = obj["validation"].toObject();
+      QStringList keys;
+      for (QJsonValue key : objValidation["keys"].toArray()) {
+        if (key.isString()) {
+          keys.append(key.toString());
+        }
+      }
+
+      if (keys.contains("unblockCode")) {
+        AuthenticationInApp* aip = AuthenticationInApp::instance();
+        aip->requestState(AuthenticationInApp::StateUnblockCodeNeeded, this);
+        aip->requestErrorPropagation(
+            AuthenticationInApp::ErrorInvalidUnblockCode, this);
+        return;
+      }
+    }
+
     processErrorCode(errorCode);
     return;
   }
 
   MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
   emit failed(ErrorHandler::toErrorType(error));
+}
+
+void AuthenticationInAppListener::reset() {
+  m_sessionToken.clear();
+
+  m_emailAddress.clear();
+
+  AuthenticationInApp* aip = AuthenticationInApp::instance();
+  Q_ASSERT(aip);
+
+  aip->requestEmailAddressChange(this);
 }

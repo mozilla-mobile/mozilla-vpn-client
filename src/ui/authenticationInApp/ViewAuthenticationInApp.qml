@@ -56,7 +56,7 @@ Item {
 
         State {
             name: "StateUnblockCodeNeeded"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded
+            when: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingUnblockCode
             PropertyChanges {
                 target: loader
                 source: "ViewAuthenticationUnblockCodeNeeded.qml"

@@ -111,8 +111,11 @@ int CommandLogin::run(QStringList& tokens) {
 
           case AuthenticationInApp::StateUnblockCodeNeeded: {
             QString code = getInput("Check your email. Unblock code:");
-            AuthenticationInApp::instance()->setUnblockCodeAndContinue(code);
+            AuthenticationInApp::instance()->verifyUnblockCode(code);
           } break;
+
+          case AuthenticationInApp::StateVerifyingUnblockCode:
+            break;
 
           case AuthenticationInApp::StateVerificationSessionByEmailNeeded: {
             AuthenticationInApp::instance()
@@ -159,8 +162,14 @@ int CommandLogin::run(QStringList& tokens) {
               case AuthenticationInApp::ErrorIncorrectPassword:
                 stream << "Incorrect password!" << Qt::endl;
                 break;
+              case AuthenticationInApp::ErrorInvalidUnblockCode:
+                stream << "Invalid unblock code!" << Qt::endl;
+                break;
               case AuthenticationInApp::ErrorInvalidEmailCode:
                 stream << "Invalid email code!" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode:
+                stream << "Invalid or expired verification code!" << Qt::endl;
                 break;
               case AuthenticationInApp::ErrorEmailTypeNotSupported:
                 stream << "Email type not supported" << Qt::endl;

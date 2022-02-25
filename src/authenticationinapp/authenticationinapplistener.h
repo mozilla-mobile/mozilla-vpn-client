@@ -18,13 +18,15 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   explicit AuthenticationInAppListener(QObject* parent);
   ~AuthenticationInAppListener();
 
+  void reset();
+
   void start(Task* task, const QString& codeChallenge,
              const QString& codeChallengeMethod,
              const QString& emailAddress) override;
 
   void checkAccount(const QString& emailAddress);
   void setPassword(const QString& password);
-  void setUnblockCodeAndContinue(const QString& unblockCode);
+  void verifyUnblockCode(const QString& unblockCode);
   void signIn(const QString& unblockCode = QString());
   void signUp();
   void verifySessionEmailCode(const QString& code);
@@ -41,6 +43,8 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   void aboutToFinish() override;
 
  private:
+  void signInInternal(const QString& unblockCode);
+
   void processErrorCode(int errorCode);
   void processRequestFailure(QNetworkReply::NetworkError error,
                              const QByteArray& data);
