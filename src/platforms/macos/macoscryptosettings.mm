@@ -64,7 +64,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
     NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 
 #ifdef MVPN_IOS
-  NSString* appId = IOSUtils::appId();
+    NSString* appId = IOSUtils::appId();
 #else
     NSString* appId = MacOSUtils::appId();
 #endif
