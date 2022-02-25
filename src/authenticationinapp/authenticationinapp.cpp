@@ -70,6 +70,7 @@ void AuthenticationInApp::reset() {
   Q_ASSERT(m_listener);
   logger.debug() << "Authentication reset";
   setState(StateStart);
+  m_listener->reset();
 }
 
 void AuthenticationInApp::setPassword(const QString& password) {
@@ -116,11 +117,10 @@ void AuthenticationInApp::enableTotpCreation() {
 }
 #endif
 
-void AuthenticationInApp::setUnblockCodeAndContinue(
-    const QString& unblockCode) {
+void AuthenticationInApp::verifyUnblockCode(const QString& unblockCode) {
   Q_ASSERT(m_state == StateUnblockCodeNeeded);
   Q_ASSERT(m_listener);
-  m_listener->setUnblockCodeAndContinue(unblockCode);
+  m_listener->verifyUnblockCode(unblockCode);
 }
 
 void AuthenticationInApp::resendUnblockCodeEmail() {
