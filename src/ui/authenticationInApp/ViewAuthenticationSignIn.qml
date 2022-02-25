@@ -88,7 +88,7 @@ VPNInAppAuthenticationBase {
             function onErrorOccurred(e) {
                 if (e === 2) {
                     passwordInput.hasError = true;
-                    paswordInput.forceActiveFocus();
+                    passwordInput.forceActiveFocus();
                 }
             }
         }
