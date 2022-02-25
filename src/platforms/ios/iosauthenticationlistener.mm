@@ -76,8 +76,7 @@ void IOSAuthenticationListener::start(Task* task, const QString& codeChallenge,
 
   Q_UNUSED(task);
 
-  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser, codeChallenge,
-                                   codeChallengeMethod, emailAddress));
+  QUrl url(createAuthenticationUrl(codeChallenge, codeChallengeMethod, emailAddress));
   QUrlQuery query(url.query());
   query.addQueryItem("platform", "ios");
   url.setQuery(query);
