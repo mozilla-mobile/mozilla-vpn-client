@@ -69,8 +69,7 @@ void AuthenticationInAppListener::start(Task* task,
 
   aip->registerListener(this);
 
-  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInApp,
-                                   codeChallenge, codeChallengeMethod,
+  QUrl url(createAuthenticationUrl(codeChallenge, codeChallengeMethod,
                                    emailAddress));
 
   NetworkRequest* request =
