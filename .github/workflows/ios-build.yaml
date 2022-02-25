@@ -88,6 +88,8 @@ jobs:
           NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
           EOF
           ./scripts/macos/apple_compile.sh ios
+          make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
+          make -f MozillaVPN.xcodeproj/qt_preprocess.mak
 
       - name: Compiling
         shell: bash
