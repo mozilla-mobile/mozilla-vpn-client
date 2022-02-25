@@ -6,7 +6,7 @@
 #include "logger.h"
 
 #ifdef MVPN_IOS
-#  include "iosutils.h"
+#  include "../ios/iosutils.h"
 #else
 #  include "macosutils.h"
 #endif
