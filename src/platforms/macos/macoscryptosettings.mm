@@ -67,7 +67,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
   NSString* appId = IOSUtils::appId();
 #else
     NSString* appId = MacOSUtils::appId();
-  #endif
+#endif
     Q_ASSERT(appId);
 
     NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
