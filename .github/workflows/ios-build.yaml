@@ -1,4 +1,8 @@
-name: MacOS
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+name: iOS
 
 on:
   push:
@@ -73,16 +77,16 @@ jobs:
           export QT_IOS_BIN=/opt/${{matrix.config.folder}}/bin
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
-          echo "$SHORTVERSION - $FULLVERSION"
-          echo "DEVELOPMENT_TEAM = 7W87BT2W9M" >> xcode.xconfig
-          echo "GROUP_ID_MACOS = group.baku.mozilla.macos.Guardian" >> xcode.xconfig
-          echo "APP_ID_MACOS = baku.mozilla.macos.FirefoxVPN" >> xcode.xconfig
-          echo "NETEXT_ID_MACOS = baku.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
-          echo "LOGIN_ID_MACOS = baku.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
-          echo "NATIVEMESSAGING_ID_MACOS = baku.mozilla.macos.FirefoxVPN.native-messaging" >> xcode.xconfig
-          echo "GROUP_ID_IOS = group.baku.mozilla.ios.Guardian" >> xcode.xconfig
-          echo "APP_ID_IOS = baku.mozilla.ios.FirefoxVPN" >> xcode.xconfig
-          echo "NETEXT_ID_IOS = baku.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
+          cat > xcode.xconfig << EOF
+          DEVELOPMENT_TEAM = 43AQ936H96
+          GROUP_ID_MACOS = group.org.mozilla.macos.Guardian
+          APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
+          NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension
+          LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
+          GROUP_ID_IOS = group.org.mozilla.ios.Guardian
+          APP_ID_IOS = org.mozilla.ios.FirefoxVPN
+          NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
+          EOF
           ./scripts/macos/apple_compile.sh ios
           make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
           make -f MozillaVPN.xcodeproj/qt_preprocess.mak
