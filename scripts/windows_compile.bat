@@ -113,11 +113,10 @@ CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "%VCToolsRedistDir%\\MergeModul
 CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
-python scripts\importLanguages.py
-python scripts\generate_strings.py
+python scripts\utils/import_languages.py
 
 ECHO Generating glean samples...
-python scripts\generate_glean.py
+python scripts\utils\generate_glean.py
 
 ECHO BUILD_BUILD = %DEBUG_BUILD%
 

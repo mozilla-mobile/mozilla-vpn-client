@@ -39,14 +39,14 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
-          python3 scripts/generate_glean.py
+          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
         run: |
           # Manually add QT executables to path
           export PATH=/opt/qt515/bin:$PATH
-          python3 scripts/importLanguages.py
+          python3 scripts/utils/import_languages.py
 
       - name: Check for l10n errors
         run: |
@@ -59,7 +59,7 @@ jobs:
         run: |
           # Manually add QT executables to path
           export PATH=/opt/qt515/bin:$PATH
-          python scripts/check_qrc.py
+          python scripts/ci/check_qrc.py
 
       - name: Check for issues with clang-format
         uses: DoozyX/clang-format-lint-action@v0.11

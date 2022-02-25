@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-. $(dirname $0)/../commons.sh
+. $(dirname $0)/../utils/commons.sh
 
 if [ -f .env ]; then
   . .env
@@ -53,10 +53,10 @@ qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
 
 print Y "Importing translation files..."
 git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
-python3 scripts/importLanguages.py || die "Failed to import languages"
+python3 scripts/utils/import_languages.py || die "Failed to import languages"
 
 print Y "Generating glean samples..."
-python3 scripts/generate_glean.py || die "Failed to generate glean samples"
+python3 scripts/utils/generate_glean.py || die "Failed to generate glean samples"
 
 printn Y "Mode: "
 MODE=

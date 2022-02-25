@@ -52,14 +52,14 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/generate_glean.py
+          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py -m
+          python3 scripts/utils/import_languages.py -m
 
       - name: Install the Apple certificate and provisioning profile
         env:
@@ -225,14 +225,14 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/generate_glean.py
+          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py -m
+          python3 scripts/utils/import_languages.py -m
 
       - name: Configuring the build
         shell: bash

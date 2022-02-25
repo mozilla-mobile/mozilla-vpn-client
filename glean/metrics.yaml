@@ -12,8 +12,9 @@
 
 # All the samples are stored in a single category (`sample`) to simplify the
 # C++-JS integration which is currently based on QT signals. The samples are
-# "normalized" as const strings via a script (`scripts/generate_glean.py`), and
-# used in the C++ code to communicate with the JS code.
+# "normalized" as const strings via a script
+# (`scripts/utils/generate_glean.py`), and used in the C++ code to communicate
+# with the JS code.
 ---
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
