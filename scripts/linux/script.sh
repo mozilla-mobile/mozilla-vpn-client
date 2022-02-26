@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-. $(dirname $0)/../commons.sh
+. $(dirname $0)/../utils/commons.sh
 
 REVISION=1
 RELEASE=focal
@@ -107,7 +107,7 @@ rsync -a --exclude='.*' .. $WORKDIR || die "Failed"
 print G "done."
 
 print Y "Generating glean samples..."
-(cd $WORKDIR && python3 scripts/generate_glean.py) || die "Failed to generate glean samples"
+(cd $WORKDIR && python3 scripts/utils/generate_glean.py) || die "Failed to generate glean samples"
 
 printn Y "Downloading Go dependencies..."
 (cd $WORKDIR/linux/netfilter && go mod vendor)

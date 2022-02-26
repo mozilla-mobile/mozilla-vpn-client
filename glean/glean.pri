@@ -10,7 +10,7 @@ exists($$PWD/telemetry/gleansample.h) {
     HEADERS += $$PWD/telemetry/gleansample.h
 }
 else{
-    error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
+    error(Glean generated files are missing. Please run `python3 ./scripts/utils/generate_glean.py`)
 }
 
 SOURCES += \

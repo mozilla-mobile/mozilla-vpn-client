@@ -38,7 +38,7 @@ After checking out the code:
  * `MVPN_BIN` (location of compiled mvpn binary)
  * `ARTIFACT_DIR` (directory to put screenshots from test failures)
 * (Optional) In one window run `./tests/proxy/wsgi.py --mock-devices`
-* To run, say, the authentication tests: `./scripts/test_function.sh tests/functional/testAuthentication.js`.
+* To run, say, the authentication tests: `./scripts/tests/functional_test.sh tests/functional/testAuthentication.js`.
 
 Misc tips from core devs:
 * Make sure there are read/write permissions at every level of your build path
@@ -83,7 +83,7 @@ mv qt-everywhere-src-5.15.1 qt
 sudo apt build-dep qt5-default
 sudo apt install clang llvm
 sudo apt install libxcb-xinerama0-dev libxcb-util-dev
-bash scripts/qt5_compile.sh qt qt
+bash scripts/utils/qt5_compile.sh qt qt
 ```
 
 See https://wiki.qt.io/Building_Qt_5_from_Git#Linux.2FX11 if you get stuck or are on another distro.
@@ -110,11 +110,11 @@ sudo apt-get install qml-module-qtcharts qml-module-qtgraphicaleffects \
 git submodule init
 git submodule update
 # glean
-./scripts/generate_glean.py
+./scripts/utils/generate_glean.py
 # translations
-./scripts/importLanguages.py
+./scripts/utils/import_languages.py
 # Bake shaders (qt6 only)
-sh ./scripts/bake_shaders.sh
+sh ./scripts/utils/bake_shaders.sh
 ```
 
 #### Build
@@ -160,7 +160,7 @@ On macOS, we strongly suggest to compile Qt5 statically. To do that, follow thes
 curl -L https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz --output qt-everywhere-src-5.15.1.tar.xz
 tar vxf qt-everywhere-src-5.15.1.tar.xz
 mv qt-everywhere-src-5.15.1 qt
-bash scripts/qt5_compile.sh `pwd`/qt qt
+bash scripts/utils/qt5_compile.sh `pwd`/qt qt
 export QT_MACOS_BIN=`pwd`/qt/qt/bin
 ```
 

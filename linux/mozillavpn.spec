@@ -35,7 +35,7 @@ Read more on https://vpn.mozilla.org
 %undefine _lto_cflags
 
 %build
-%{_srcdir}/scripts/importLanguages.py
+%{_srcdir}/scripts/utils/import_languages.py
 %{qmake_qt5} %{_srcdir}/mozillavpn.pro QT+=svg
 make %{?_smp_mflags}
 
