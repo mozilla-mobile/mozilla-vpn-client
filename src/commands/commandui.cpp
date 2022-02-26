@@ -15,7 +15,7 @@
 #include "fontloader.h"
 #include "iaphandler.h"
 #include "imageproviderfactory.h"
-#include "inspector/inspectorwebsocketserver.h"
+#include "inspector/inspectorhandler.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -514,13 +514,7 @@ int CommandUI::run(QStringList& tokens) {
       MozillaVPN::instance()->serverCountryModel()->retranslate();
     });
 
-    if (!Constants::inProduction()) {
-      InspectorWebSocketServer* inspectWebSocketServer =
-          new InspectorWebSocketServer(qApp);
-      QObject::connect(vpn.controller(), &Controller::readyToQuit,
-                       inspectWebSocketServer,
-                       &InspectorWebSocketServer::close);
-    }
+    InspectorHandler::initialize();
 
 #ifdef MVPN_WASM
     WasmWindowController wasmWindowController;

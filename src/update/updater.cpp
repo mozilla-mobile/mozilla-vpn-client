@@ -4,7 +4,7 @@
 
 #include "updater.h"
 #include "constants.h"
-#include "inspector/inspectorwebsocketconnection.h"
+#include "inspector/inspectorhandler.h"
 #include "logger.h"
 #include "leakdetector.h"
 #include "versionapi.h"
@@ -52,7 +52,7 @@ Updater::~Updater() {
 // static
 QString Updater::appVersion() {
   if (!Constants::inProduction()) {
-    return InspectorWebSocketConnection::appVersionForUpdate();
+    return InspectorHandler::appVersionForUpdate();
   }
   return APP_VERSION;
 }

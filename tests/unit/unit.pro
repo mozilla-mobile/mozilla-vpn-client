@@ -51,10 +51,10 @@ HEADERS += \
     ../../src/curve25519.h \
     ../../src/errorhandler.h \
     ../../src/featurelist.h \
-    ../../src/inspector/inspectorwebsocketconnection.h \
+    ../../src/inspector/inspectorhandler.h \
+    ../../src/inspector/inspectorutils.h \
     ../../src/ipaddress.h \
     ../../src/itempicker.h \
-    ../../src/inspector/inspectorutils.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
@@ -206,7 +206,7 @@ SOURCES += \
     ../../src/urlopener.cpp \
     main.cpp \
     moccontroller.cpp \
-    mocinspectorwebsocketconnection.cpp \
+    mocinspectorhandler.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
     testadjust.cpp \
