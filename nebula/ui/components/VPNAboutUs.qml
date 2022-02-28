@@ -275,7 +275,6 @@ Item {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignBottom
                 Layout.topMargin: VPNTheme.theme.vSpacing
-                Layout.bottomMargin: VPNTheme.theme.vSpacing * 0.5
                 text: VPNl18n.UpdateButtonActionOnUpdate
                 onClicked: {
                     updateAvailablePopup.close()
@@ -348,7 +347,6 @@ Item {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignBottom
                 Layout.topMargin: VPNTheme.theme.vSpacing
-                Layout.bottomMargin: VPNTheme.theme.vSpacing * 0.5
                 text: VPNl18n.UpdateButtonActionNoUpdate
                 onClicked: {
                     noUpdateAvailablePopup.close();
