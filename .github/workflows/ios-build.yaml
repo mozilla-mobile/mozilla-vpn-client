@@ -22,8 +22,8 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: "Qt5", pattern: qt5, folder: ios, macosPattern: x, macosFolder: qt }
-            - { name: "Qt6", pattern: qt6, folder: ios, macosPattern: qt6, macosFolder: qt6 }
+            - { name: "Qt5", pattern: qt5, folder: ios, macosFolder: qt }
+            - { name: "Qt6", pattern: qt6, folder: ios, macosFolder: qt6 }
 
     steps:
       - name: Clone repository
@@ -48,6 +48,7 @@ jobs:
           if [ -d ${{matrix.config.macosFolder}} ]; then
             sudo mv ${{matrix.config.macosFolder}} /opt
             export PATH=/opt/${{matrix.config.macosFolder}}/bin:$PATH
+          fi
           cd ..
 
       - name: Generating glean samples
