@@ -43,7 +43,6 @@ HEADERS += \
 QMAKE_CXXFLAGS += -Zc:preprocessor
 QT += networkauth
 QT += svg
-QT += winextras
 }
 
 RESOURCES += \

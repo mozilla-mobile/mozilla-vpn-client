@@ -6,6 +6,8 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import QtQuick.Window 2.12
+import Qt5Compat.GraphicalEffects
+import QtCharts 2.2
 
 import Mozilla.VPN 1.0
 import compat 0.1

@@ -24,6 +24,11 @@ QT += charts
 QT += websockets
 QT += sql
 
+versionAtLeast(QT_VERSION, 6.0.0) {
+    message("Enable QT5 Compat")
+    QT += core5compat
+}
+
 # For the inspector
 QT+= testlib
 QT.testlib.CONFIG -= console
@@ -886,8 +891,6 @@ else:win* {
 
     QT += networkauth
     QT += svg
-    QT += winextras
-
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
     DEFINES += WIN32_LEAN_AND_MEAN #Solves Redifinition Errors Of Winsock
