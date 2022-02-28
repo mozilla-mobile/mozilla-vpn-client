@@ -13,6 +13,6 @@ jobs-from:
     - linux.yml
 #    - windows.yml
     - android.yml
-#    - mac.yml
+    - mac.yml
 
 

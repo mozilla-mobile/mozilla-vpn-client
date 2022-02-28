@@ -3,28 +3,28 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 
-#    macosx/opt:
-#        description: "Mac Build"
-#        treeherder:
-#            symbol: B
-#            kind: build
-#            tier: 1
-#            platform: macosx/opt
-#        worker-type: b-osx
-#        scopes:
-#            - project:releng:services/tooltool/api/download/public
-#            - project:releng:services/tooltool/api/download/internal
-#        worker:
-#            taskcluster-proxy: true
-#            chain-of-trust: true
-#            max-run-time: 3600
-#            artifacts:
-#                - type: directory
-#                  name: public/build
-#                  path: build/src/artifacts
-#        run:
-#            using: run-task
-#            cwd: '{checkout}'
-#            command: ./scripts/macosx_build.sh
-#
+   macosx/opt:
+       description: "Mac Build"
+       treeherder:
+           symbol: B
+           kind: build
+           tier: 1
+           platform: macosx/opt
+       worker-type: b-osx
+       scopes:
+           - project:releng:services/tooltool/api/download/public
+           - project:releng:services/tooltool/api/download/internal
+       worker:
+           taskcluster-proxy: true
+           chain-of-trust: true
+           max-run-time: 3600
+           artifacts:
+               - type: directory
+                 name: public/build
+                 path: build/src/artifacts
+       run:
+           using: run-task
+           cwd: '{checkout}'
+           command: ./scripts/macosx_build.sh
+
 
