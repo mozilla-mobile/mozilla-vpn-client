@@ -54,7 +54,7 @@ echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xco
 
 make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
 make -f MozillaVPN.xcodeproj/qt_preprocess.mak
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -project MozillaVPN.xcodeproj
 
 # Package
 python3 ./scripts/macos/import_pkg_resources.py
