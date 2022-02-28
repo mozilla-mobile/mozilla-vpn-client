@@ -92,7 +92,7 @@ jobs:
           ./scripts/macos/apple_compile.sh ios
 
       - name: Prebuilding Qt
-        shell: bach
+        shell: bash
         run: |
           make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
           make -f MozillaVPN.xcodeproj/qt_preprocess.mak
