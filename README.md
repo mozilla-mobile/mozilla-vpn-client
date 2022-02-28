@@ -25,7 +25,8 @@ After checking out the code:
 * Install the git pre-commit hook (`./scripts/git-pre-commit-format install`)
 * Build the source (See below)
 * Run the unit tests with `./scripts/tests/unit_tests.sh` or see below for running the functional tests.
-* Run the qml tests with `./tests/qml/qml_tests` add `-platform offscreen` to not see the qml app
+* Run the qml tests with `./tests/tests/qml_tests.sh`
+* Run the lottie tests with `./tests/tests/lottie_tests.sh`
 
 ### Running the functional tests
 
@@ -204,18 +205,18 @@ GROUP_ID_MACOS = group.org.mozilla.macos.Guardian
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
 NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
-NATIVEMESSAGING_ID_MACOS = org.mozilla.macos.FirefoxVPN.native-messaging
 
 # IOS configuration
 GROUP_ID_IOS = <>
 APP_ID_IOS = <>
 NETEXT_ID_IOS = <>
 ```
-7. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
+7. Install rust: https://www.rust-lang.org/
+8. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
 ```
   $ ./scripts/macos/apple_compile.sh macos
 ```
-8. Xcode should automatically open. You can then run/test/archive/ship the app
+9. Xcode should automatically open. You can then run/test/archive/ship the app
 
 To build a Release style build (ready for signing), use:
 ```
@@ -263,7 +264,6 @@ GROUP_ID_MACOS = <>
 APP_ID_IOS = <>
 NETEXT_ID_IOS = <>
 LOGIN_ID_IOS = <>
-NATIVEMESSAGING_ID_MACOS = <>
 
 # IOS configuration
 GROUP_ID_IOS = group.org.mozilla.ios.Guardian
@@ -318,6 +318,7 @@ The dependencies are:
 3. python3: https://www.python.org/downloads/windows/
 4. visual studio 2019: https://visualstudio.microsoft.com/vs/
 5. Install python3 dependencies (pip3 install -r requirements.txt --user)
+6. Install rust: https://www.rust-lang.org/
 
 Openssl can be obtained from here: https://www.openssl.org/source/
 Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz

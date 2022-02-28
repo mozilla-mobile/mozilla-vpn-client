@@ -38,9 +38,6 @@ utest_cleanup_nativemessaging || die "Failed"
 print Y "Installing dependencies..."
 utest_dependencies || die "Failed"
 
-print Y "Creating the xcode project for unit-tests via qmake..."
-utest_qmake_unit || die "Failed"
-
 print Y "Compile the unit-tests..."
 utest_compile_unit || die "Failed"
 
@@ -50,9 +47,6 @@ utest_run_unit || die "Failed"
 printn Y "Cleaning the existing project... "
 utest_cleanup_unit || die "Failed"
 
-print Y "Creating the xcode project for auth-unit-tests via qmake..."
-utest_qmake_auth || die "Failed"
-
 print Y "Compile the auth-unit-tests..."
 utest_compile_auth || die "Failed"
 
@@ -61,9 +55,6 @@ utest_run_auth || die "Failed"
 
 printn Y "Cleaning the existing project... "
 utest_cleanup_auth || die "Failed"
-
-print Y "Creating the xcode project for native-messaging-unit-tests via qmake..."
-utest_qmake_nativemessaging || die "Failed"
 
 print Y "Compile the native-messaging-unit-tests..."
 utest_compile_nativemessaging || die "Failed"

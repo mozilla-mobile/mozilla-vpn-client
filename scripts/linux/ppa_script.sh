@@ -128,6 +128,10 @@ else
   (cd linux/netfilter && go mod vendor)
   print G "done."
 
+  printn Y "Downloading Rust dependencies..."
+  (cd extension/bridge && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
+  print G "done."
+
   printn Y "Archiving the source code... "
   tar cfz ../mozillavpn_$SHORTVERSION.orig.tar.gz . || die "Failed"
   print G "done."
