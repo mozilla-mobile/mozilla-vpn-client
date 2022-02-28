@@ -12,7 +12,7 @@ VPNPopup {
 
     anchors.centerIn: parent
     maxWidth: VPNTheme.theme.desktopAppWidth
-    contentItem: ColumnLayout {
+    _popupContent: ColumnLayout {
         id: popupContentItem
 
         Item {
@@ -20,7 +20,6 @@ VPNPopup {
             Layout.bottomMargin: VPNTheme.theme.listSpacing * 1.5
             Layout.preferredHeight: 80
             Layout.preferredWidth: 80
-            Layout.topMargin: VPNTheme.theme.vSpacing
 
             Image {
                 anchors.fill: parent

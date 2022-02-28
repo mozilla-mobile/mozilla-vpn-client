@@ -4,6 +4,7 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import compat 0.1
@@ -12,6 +13,7 @@ Popup {
     id: popup
 
     property int maxWidth: ({})
+    property alias _popupContent: popupContent.data
 
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
     enabled: true
@@ -20,11 +22,44 @@ Popup {
     width: Math.min(window.width - VPNTheme.theme.vSpacing, maxWidth)
     horizontalPadding: VPNTheme.theme.popupMargin
 
+    contentItem: ColumnLayout {
+        spacing: 0
+        // Close button
+        VPNIconButton {
+            id: closeButton
+
+            accessibleName: qsTrId("menubar.file.close")
+            onClicked: {
+                popup.close();
+            }
+
+            Layout.preferredHeight: VPNTheme.theme.rowHeight
+            Layout.preferredWidth: VPNTheme.theme.rowHeight
+            Layout.margins: VPNTheme.theme.windowMargin / 2
+            Layout.alignment: Qt.AlignRight
+
+            Image {
+                id: closeImage
+                anchors.centerIn: closeButton
+                fillMode: Image.PreserveAspectFit
+                source: "qrc:/nebula/resources/close-darker.svg"
+                sourceSize.height: VPNTheme.theme.iconSize
+                sourceSize.width: VPNTheme.theme.iconSize
+            }
+        }
+
+        ColumnLayout {
+            id: popupContent
+            Layout.leftMargin: VPNTheme.theme.vSpacing
+            Layout.rightMargin: VPNTheme.theme.vSpacing
+            Layout.bottomMargin: VPNTheme.theme.vSpacing
+        }
+    }
+
     background: Rectangle {
         id: popupBackground
 
         anchors.fill: contentItem
-        anchors.margins: -24
         color: VPNTheme.theme.bgColor
         radius: 8
 
@@ -48,32 +83,6 @@ Popup {
             transparentBorder: true
             verticalOffset: 4
             z: -1
-        }
-
-        // Close button
-        VPNIconButton {
-            id: closeButton
-
-            accessibleName: qsTrId("menubar.file.close")
-            anchors {
-                right: popupBackground.right
-                top: popupBackground.top
-                rightMargin: VPNTheme.theme.windowMargin / 2
-                topMargin: VPNTheme.theme.windowMargin / 2
-            }
-            onClicked: {
-                popup.close();
-            }
-
-            Image {
-                id: closeImage
-
-                anchors.centerIn: closeButton
-                fillMode: Image.PreserveAspectFit
-                source: "qrc:/nebula/resources/close-darker.svg"
-                sourceSize.height: VPNTheme.theme.iconSize
-                sourceSize.width: VPNTheme.theme.iconSize
-            }
         }
     }
 

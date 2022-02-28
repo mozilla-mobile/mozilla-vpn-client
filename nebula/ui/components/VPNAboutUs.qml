@@ -232,7 +232,7 @@ Item {
         id: updateAvailablePopup
         anchors.centerIn: parent
         maxWidth: VPNTheme.theme.desktopAppWidth
-        contentItem: ColumnLayout {
+        _popupContent: ColumnLayout {
 
             Item {
                 // Main Image
@@ -240,7 +240,7 @@ Item {
                 Layout.preferredHeight: 90
                 Layout.preferredWidth: 90
                 Layout.bottomMargin: VPNTheme.theme.listSpacing
-                Layout.topMargin: VPNTheme.theme.vSpacing*1.5
+
                 Image {
                     anchors.fill: parent
                     source:  "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
@@ -304,7 +304,7 @@ Item {
         id: noUpdateAvailablePopup
         anchors.centerIn: parent
         maxWidth: VPNTheme.theme.desktopAppWidth
-        contentItem: ColumnLayout {
+        _popupContent: ColumnLayout {
 
             Item {
                 // Main Image
@@ -312,7 +312,7 @@ Item {
                 Layout.preferredHeight: 90
                 Layout.preferredWidth: 90
                 Layout.bottomMargin: VPNTheme.theme.listSpacing
-                Layout.topMargin: VPNTheme.theme.vSpacing*1.5
+
                 Image {
                     anchors.fill: parent
                     source: "qrc:/nebula/resources/updateStatusUpToDate.svg"
