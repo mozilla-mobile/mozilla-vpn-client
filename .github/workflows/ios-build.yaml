@@ -56,6 +56,8 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
+          echo `pwd`
+          echo `ls -la scripts/`
           pip3 install -r requirements.txt
           python3 scripts/generate_glean.py
 
