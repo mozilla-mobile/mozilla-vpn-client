@@ -3,6 +3,7 @@
 # Dependencies
 python3 scripts/tooltool.py --url http://taskcluster/tooltool.mozilla-releng.net fetch -m macos/qt-dependencies.tt.manifest
 export PATH="`pwd`/qt/bin:$PATH"
+export PATH="~/Library/Python/3.6/bin:~/.gem/ruby/2.6.0/bin:$PATH"
 # install xcodeproj which is needed by xcode_patcher.rb
 # use --user-install for permissions
 gem install xcodeproj --user-install
@@ -22,20 +23,16 @@ cd ..
 export QT_MACOS_BIN=`pwd`/qt_static_macos/qt/bin
 export PATH=`pwd`/qt_static_macos/qt/bin:$PATH
 
-export PATH="~/Library/Python/3.6/bin:~/.gem/ruby/2.6.0/bin:$PATH"
-
 # install python packages
 # use --user for permissions
-pip3 install "glean_parser==3.5" --user
-pip3 install pyhumps --user
-pip3 install pyyaml --user
+pip3 install -r requirements.txt --user
 
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 export PYTHONIOENCODING="UTF-8"  
 
 python3 scripts/utils/generate_glean.py
-python3 scripts/utils/importLanguages.py -m
+python3 scripts/utils/import_languages.py -m
 
 curl -O https://dl.google.com/go/go1.17.6.darwin-amd64.tar.gz
 tar -xzf go1.17.6.darwin-amd64.tar.gz
