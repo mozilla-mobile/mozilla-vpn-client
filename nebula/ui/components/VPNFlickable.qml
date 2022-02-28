@@ -67,8 +67,20 @@ Flickable {
         duration: 200
     }
 
-    ScrollBar.vertical: ScrollBar {
-        policy: windowHeightExceedsContentHeight ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
+    ScrollIndicator.vertical: ScrollIndicator {
+        background: Rectangle {
+            color: "transparent"
+            implicitWidth: VPNTheme.theme.windowMargin / 2
+        }
+
+        contentItem: Rectangle {
+            radius: VPNTheme.theme.windowMargin / 2
+            implicitWidth: VPNTheme.theme.windowMargin / 2 * .75
+            color: VPNTheme.colors.grey40
+            opacity: .3
+        }
+
+        visible: !windowHeightExceedsContentHeight
         Accessible.ignored: true
         opacity: hideScollBarOnStackTransition && (vpnFlickable.StackView.status !== StackView.Active) ? 0 : 1
         Behavior on opacity {
