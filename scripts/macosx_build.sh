@@ -34,6 +34,7 @@ export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 export PYTHONIOENCODING="UTF-8"  
 
+
 python3 scripts/generate_glean.py
 python3 scripts/importLanguages.py -m
 
