@@ -29,8 +29,7 @@ Item {
         id: title
 
         anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -1
+        anchors.verticalCenter: icon.verticalCenter
         color: fontColor
         // VPNIconAndLabel is only used inside a VPNClickableRow
         // which acts as atomic interactive control thus we want
@@ -40,10 +39,10 @@ Item {
         wrapMode: Text.WordWrap
         leftPadding: icon.width + 14
         lineHeightMode: Text.FixedHeight
-        lineHeight: VPNTheme.theme.labelLineHeight
+        lineHeight: 1
+        anchors.verticalCenterOffset: 1
         rightPadding: icon.width + 14
-        topPadding: VPNTheme.theme.labelLineHeight - font.pixelSize
-        width: title.implicitWidth < parent.width ? undefined : parent.width
+        width: implicitWidth
 
         Rectangle {
             id: indicator
