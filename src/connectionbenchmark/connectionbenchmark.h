@@ -12,6 +12,7 @@ class ConnectionBenchmark : public QObject {
   Q_DISABLE_COPY_MOVE(ConnectionBenchmark);
 
   Q_PROPERTY(State state READ state NOTIFY stateChanged);
+  Q_PROPERTY(Speed speed READ speed NOTIFY speedChanged);
   Q_PROPERTY(quint64 download READ download NOTIFY downloadChanged);
   Q_PROPERTY(quint64 ping READ ping NOTIFY pingChanged);
 
@@ -34,17 +35,27 @@ class ConnectionBenchmark : public QObject {
   };
   Q_ENUM(State);
 
+  enum Speed {
+    SpeedSlow,
+    SpeedMedium,
+    SpeedHigh,
+  };
+  Q_ENUM(Speed);
+
   State state() const { return m_state; }
+  Speed speed() const { return m_speed; }
   qint64 download() const { return m_download; }
   qint64 ping() const { return m_ping; }
 
  signals:
   void stateChanged();
+  void speedChanged();
   void downloadChanged();
   void pingChanged();
 
  private:
   State m_state = StateInitial;
+  Speed m_speed;
   qint64 m_download;
   qint64 m_ping;
 
@@ -52,6 +63,7 @@ class ConnectionBenchmark : public QObject {
 
   void runNextBenchmark();
   void setState(State state);
+  void setSpeed(qint64 m_ping, qint64 m_download);
 };
 
 #endif  // CONNECTIONBENCHMARK_H

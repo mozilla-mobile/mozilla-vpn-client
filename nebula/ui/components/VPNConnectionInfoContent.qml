@@ -22,18 +22,43 @@ Flickable {
         }
     }
 
-    // TODO: This list will be dynamic depending on current connection speeds
     ListModel {
         id: checkmarkListModel
 
+        // Fast connection threshold
         ListElement {
             title: "Streaming in 4K"
+            type: "checkmark"
         }
         ListElement {
             title: "High-speed downloads"
+            type: "checkmark"
         }
         ListElement {
             title: "Online gaming"
+            type: "checkmark"
+        }
+        // Medium connection threshold
+        ListElement {
+            title: "Browsing the internet"
+            type: "checkmark"
+        }
+        ListElement {
+            title: "Streaming video"
+            type: "checkmark"
+        }
+        ListElement {
+            title: "Video conferencing"
+            type: "checkmark"
+        }
+        // Slow connection threshold
+        ListElement {
+            title: "Switching server locations"
+            type: "arrow"
+        }
+        ListElement {
+            title: "Checking your internet connection"
+            type: "arrow"
         }
     }
 
@@ -87,7 +112,9 @@ Flickable {
 
         VPNCheckmarkList {
             // TODO: Replace with localized string
-            listHeader: "At your current speed, here's what your device is optimized for:"
+            listHeader: VPNConnectionBenchmark.speed === VPNConnectionBenchmark.Speedslow
+                ? "It looks like the connection to this server location is a bit slow, you can try:"
+                : "At your current speed, here's what your device is optimized for:"
             listModel: checkmarkListModel
 
             Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
@@ -95,7 +122,6 @@ Flickable {
             Layout.leftMargin: VPNTheme.theme.windowMargin
             Layout.rightMargin: VPNTheme.theme.windowMargin
         }
-
 
         ColumnLayout {
             spacing: 0
