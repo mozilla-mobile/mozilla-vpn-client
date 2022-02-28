@@ -45,12 +45,9 @@ jobs:
           cat ${{matrix.config.pattern}}* > qt_static_ios.tar.gz
           tar xf qt_static_ios.tar.gz
           sudo mv ${{matrix.config.folder}} /opt
-          cd ..
-          git clone https://github.com/mozilla-mobile/qt_static_macos
-          cd qt_static_macos
-          cat ${{matrix.config.macosPattern}}* > qt_static.tar.gz
-          tar xf qt_static.tar.gz
-          sudo mv ${{matrix.config.macosFolder}} /opt
+          if [ -d ${{matrix.config.macosFolder}} ]; then
+            sudo mv ${{matrix.config.macosFolder}} /opt
+            export PATH=/opt/${{matrix.config.macosFolder}}/bin:$PATH
           cd ..
 
       - name: Generating glean samples
@@ -62,7 +59,7 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:/opt/${{matrix.config.macosFolder}}/bin:$PATH
+          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
