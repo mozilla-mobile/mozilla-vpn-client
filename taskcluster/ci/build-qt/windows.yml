@@ -14,10 +14,10 @@ windows:
         product: qt
         job-name: qt-v6.2.3-windows
     optimization: 
-        index-search: 
-        # TODO: Question: should this maybe be a pushdate? 
-        # Otherwise we might build once and never again?
-            - mozillavpn.v2.mozilla-vpn-client.latest.qt.qt-v6.2.3-windows
+        hashIndex: 
+            # Re-Do The Job if either changes
+            - taskcluster/scripts/build_qt/compile_qt_6.ps1
+            - taskcluster/scripts/build_qt/configure_qt.ps1
     fetches:
         fetch:
             - win-dev-env
@@ -40,6 +40,6 @@ windows:
         max-run-time: 14400
         artifacts:
              - type: file
-               name: public/qt6_win.zip
+               name: public/build/qt6_win.zip
                path: build/src/qt6_win.zip
     worker-type: b-win2012

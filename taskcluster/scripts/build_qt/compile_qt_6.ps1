@@ -47,6 +47,7 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-6.2.3
   -nomake examples  `
   -make libs  `
   -no-sql-psql  `
+  -no-sql-odbc   `
   -qt-sqlite  `
   -skip qt3d  `
   -skip webengine  `
@@ -73,3 +74,16 @@ Set-Location $REPO_ROOT_PATH
 Copy-Item -Path taskcluster/scripts/build_qt/configure_qt.ps1 -Destination QT_OUT/
 Copy-Item -Path $SSL_PATH -Recurse -Destination QT_OUT/
 zip -r qt6_win.zip QT_OUT
+
+
+Write-Output "Build complete, zip created:"
+
+# mspdbsrv might be stil running after the build, so we need to kill it
+Stop-Process -Name "mspdbsrv.exe" -Force -ErrorAction SilentlyContinue
+Stop-Process -Name "mspdbsrv" -Force -ErrorAction SilentlyContinue
+
+
+Write-Output "Open Processes:"
+
+wmic process get description,executablepath 
+

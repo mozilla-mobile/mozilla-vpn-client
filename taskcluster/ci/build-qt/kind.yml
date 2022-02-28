@@ -9,6 +9,7 @@ kind-dependencies:
     - build-openssl
 
 transforms:
+    - mozillavpn_taskgraph.transforms.hashIndex:transforms
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
 

@@ -42,6 +42,14 @@ jobs:
             artifact-name: open-ssl-src.zip
             sha256: aeb973da474f14210d3e1a1f942dcf779e2ae7e71e4c535e6c53ebabe632cc98
             size: 158837368
+    win-rust:
+        description: Rust for Windows v1.59.0
+        fetch:
+            type: static-url
+            url: https://static.rust-lang.org/dist/rust-1.59.0-x86_64-pc-windows-msvc.tar.gz
+            sha256: d781bfed7e3e5dc4959ce39df101fc476a3a70ab75e2fa1bbc3e59281f6e9e00
+            size: 275420253
+
 
 
     

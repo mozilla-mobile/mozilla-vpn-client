@@ -14,8 +14,10 @@ windows/debug:
         fetches:
             fetch:
                 - win-dev-env
+                - win-rust
             build-qt:
-                - windows
+                - artifact: qt6_win.zip
+                  extract: true
         dependencies:
             build-qt: build-qt-windows
 

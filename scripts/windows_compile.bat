@@ -97,7 +97,6 @@ if "%WEBEXTENSION_BUILD%" == "T" (
 ECHO Checking required commands...
 CALL :CheckCommand git
 CALL :CheckCommand python
-CALL :CheckCommand nmake
 CALL :CheckCommand cl
 CALL :CheckCommand qmake
 
@@ -105,12 +104,12 @@ git submodule init
 git submodule update --remote --depth 1 i18n
 
 ECHO Copying the installer dependencies...
-CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\bin\libcrypto-1_1-x64.dll
-CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\bin\libssl-1_1-x64.dll
-CALL :CopyDependency libEGL.dll %BUILDDIR%\bin\libEGL.dll
-CALL :CopyDependency libGLESv2.dll %BUILDDIR%\bin\libGLESv2.dll
-CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x86.msm"
-CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
+CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\SSL\bin\libcrypto-1_1-x64.dll
+CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\SSL\bin\libssl-1_1-x64.dll
+
+ECHO "Checking vctools in %VCToolsRedistDir%"
+CALL :CopyDependency Microsoft_VC143_CRT_x86.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC143_CRT_x86.msm"
+CALL :CopyDependency Microsoft_VC143_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC143_CRT_x64.msm"
 
 ECHO Importing languages...
 python scripts\utils/import_languages.py
@@ -152,12 +151,12 @@ ECHO Creating the project with flags: %FLAGS%
 
 if %DEBUG_BUILD% == T (
   ECHO Generating Debug Project
-  qmake -tp vc src/src.pro CONFIG+=debug %FLAGS%
+  qmake src/src.pro CONFIG+=debug %FLAGS%
   xcopy /y debug\ release\
 )
 if %DEBUG_BUILD% == F (
   ECHO Generating Release Build
-  qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=force_debug_info %FLAGS%
+  qmake src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=force_debug_info %FLAGS%
 )
 
 IF %ERRORLEVEL% NEQ 0 (
@@ -165,10 +164,6 @@ IF %ERRORLEVEL% NEQ 0 (
   EXIT 1
 )
 
-IF NOT EXIST MozillaVPN.vcxproj (
-  echo The VC project doesn't exist. Why?
-  EXIT 1
-)
 
 ECHO Compiling the balrog.dll...
 CALL balrog\build.cmd
@@ -193,18 +188,13 @@ IF %ERRORLEVEL% NEQ 0 (
   EXIT 1
 )
 
-ECHO Cleaning up the project...
-MSBuild -t:Clean -p:Configuration=%BUILD_CONF% MozillaVPN.vcxproj
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to clean up the project
-  EXIT 1
-)
 
-MSBuild -t:Build -p:Configuration=%BUILD_CONF% MozillaVPN.vcxproj
+nmake 
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to build the project
   EXIT 1
 )
+ECHO Build mozillavpn.exe
 
 if %DEBUG_BUILD% == T (
   REM We need to move the exes in debug so the installer can find them
