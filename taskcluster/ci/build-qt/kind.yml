@@ -4,19 +4,14 @@
 ---
 loader: taskgraph.loader.transform:loader
 
+kind-dependencies:
+    - fetch
+    - build-openssl
+
 transforms:
-    - mozillavpn_taskgraph.transforms.build:transforms
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
 
-kind-dependencies:
-    - fetch
-    - build-qt
-    - build-openssl
 
 jobs-from:
-    - linux.yml
     - windows.yml
-    - android.yml
-#    - mac.yml
-

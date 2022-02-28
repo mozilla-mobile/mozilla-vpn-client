@@ -7,8 +7,8 @@ policy:
 tasks:
     - $let:
           taskgraph:
-              branch: taskgraph
-              revision: 5ff2aeaa3f431596de384434ff38683ca86ab37c
+              branch: taskgraph-try
+              revision: 7702e79b350c15eec769dcf4aa6374197974b01f
           trustDomain: mozillavpn
       in:
           $let:
@@ -185,10 +185,14 @@ tasks:
                                   # `https://` is 8 characters so, ${repoUrl[8:]} is the repository without the protocol.
                                   - 'assume:repo:${repoUrl[8:]}:branch:${short_head_branch}'
                                   - 'secrets:get:project/mozillavpn/tokens'
+                                  -  project:releng:services/tooltool/api/download/public
+                                  -  project:releng:services/tooltool/api/download/internal
                               else:
                                   $if: 'tasks_for == "github-pull-request"'
                                   then:
                                       - 'assume:repo:github.com/${event.pull_request.base.repo.full_name}:pull-request'
+                                      -  project:releng:services/tooltool/api/download/public
+                                      -  project:releng:services/tooltool/api/download/internal
                                   else:
                                       $if: 'tasks_for == "github-release"'
                                       then:

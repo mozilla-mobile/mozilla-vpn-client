@@ -1,0 +1,47 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - taskgraph.transforms.fetch:transforms
+    - taskgraph.transforms.job:transforms
+    - taskgraph.transforms.task:transforms
+
+job-defaults:
+    docker-image: {in-tree: base}
+
+jobs:
+    win-dev-env:
+        description: Windows Dev-Enviroment
+        fetch:
+            type: static-url
+            url: https://s3.nl-ams.scw.cloud/basti.data/vs_studio_sdk.zip
+            artifact-name: vs_studio_sdk.zip
+            sha256: 56ad52e56f61db57446ca2c1a3752b4d33bb7aadc4637eedbf67cfcaece25914
+            size: 1514372704
+        #artifact-prefix: vpn/win-dev-env
+        fetch-alias: win-dev-env
+
+    win-perl:
+        description: Strawberry Perl
+        fetch:
+            type: static-url
+            url: https://strawberryperl.com/download/5.32.1.1/strawberry-perl-5.32.1.1-64bit.zip
+            artifact-name: strawberry-perl.zip
+            sha256: aeb973da474f14210d3e1a1f942dcf779e2ae7e71e4c535e6c53ebabe632cc98
+            size: 158837368
+        #artifact-prefix: vpn/win-perl
+        fetch-alias: win-perl
+    open-ssl:
+        description: Open SSL Source
+        fetch:
+            type: static-url
+            url: https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_1_1_1m.zip
+            artifact-name: open-ssl-src.zip
+            sha256: aeb973da474f14210d3e1a1f942dcf779e2ae7e71e4c535e6c53ebabe632cc98
+            size: 158837368
+
+
+    
