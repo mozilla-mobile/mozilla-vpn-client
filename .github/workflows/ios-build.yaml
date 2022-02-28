@@ -56,17 +56,15 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
-          echo `pwd`
-          echo `ls -la scripts/`
           pip3 install -r requirements.txt
-          python3 scripts/generate_glean.py
+          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:/opt/${{matrix.config.macosFolder}}/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py -m
+          python3 scripts/utils/importLanguages.py -m
 
       - name: Switch to newest go version
         shell: bash
