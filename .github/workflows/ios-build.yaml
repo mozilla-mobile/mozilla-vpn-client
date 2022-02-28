@@ -42,13 +42,13 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_ios
           cd qt_ios
-          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
-          tar xf qt_static.tar.gz
+          cat ${{matrix.config.pattern}}* > qt_static_ios.tar.gz
+          tar xf qt_static_ios.tar.gz
           sudo mv ${{matrix.config.folder}} /opt
           cd ..
           git clone https://github.com/mozilla-mobile/qt_static_macos
           cd qt_static_macos
-          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
+          cat ${{matrix.config.macosPattern}}* > qt_static.tar.gz
           tar xf qt_static.tar.gz
           sudo mv ${{matrix.config.macosFolder}} /opt
           cd ..
