@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo `pwd`
+
 # Dependencies
 python3 scripts/tooltool.py --url http://taskcluster/tooltool.mozilla-releng.net fetch -m macos/qt-dependencies.tt.manifest
 export PATH="`pwd`/qt/bin:$PATH"
