@@ -22,7 +22,8 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: "Qt5", pattern: qt5, folder: ios }
+            - { name: "Qt5", pattern: qt5, folder: ios, macosFolder: qt }
+            - { name: "Qt6", pattern: qt6, folder: ios, macosFolder: qt6 }
 
     steps:
       - name: Clone repository
@@ -45,6 +46,12 @@ jobs:
           tar xf qt_static.tar.gz
           sudo mv ${{matrix.config.folder}} /opt
           cd ..
+          git clone https://github.com/mozilla-mobile/qt_static_macos
+          cd qt_static_macos
+          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
+          tar xf qt_static.tar.gz
+          sudo mv ${{matrix.config.macosFolder}} /opt
+          cd ..
 
       - name: Generating glean samples
         shell: bash
@@ -55,7 +62,7 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          export PATH=/opt/${{matrix.config.folder}}/bin:/opt/${{matrix.config.macosFolder}}/bin:$PATH
           git submodule update --remote --depth 1 i18n
           python3 scripts/importLanguages.py -m
 
@@ -69,7 +76,6 @@ jobs:
       - name: Configuring the build
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           export QT_IOS_BIN=/opt/${{matrix.config.folder}}/bin
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
