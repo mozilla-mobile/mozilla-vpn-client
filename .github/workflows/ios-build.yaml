@@ -64,7 +64,7 @@ jobs:
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:/opt/${{matrix.config.macosFolder}}/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/utils/importLanguages.py -m
+          python3 scripts/utils/import_languages.py -m
 
       - name: Switch to newest go version
         shell: bash
