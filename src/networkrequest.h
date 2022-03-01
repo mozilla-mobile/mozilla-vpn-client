@@ -150,6 +150,7 @@ class NetworkRequest final : public QObject {
   void handleHeaderReceived();
   void handleRedirect(const QUrl& url);
   bool checkSubjectName(const QSslCertificate& cert);
+  void handleProgress(qint64 bytesReceived, qint64 bytesTotal);
 
   bool isRedirect() const;
 
@@ -165,6 +166,7 @@ class NetworkRequest final : public QObject {
   void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data);
   void requestRedirected(NetworkRequest* request, const QUrl& url);
   void requestCompleted(const QByteArray& data);
+  void requestUpdated(qint64 bytesReceived, qint64 bytesTotal);
 
  private:
   QNetworkRequest m_request;

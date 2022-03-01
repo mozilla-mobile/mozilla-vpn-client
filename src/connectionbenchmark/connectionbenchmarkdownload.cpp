@@ -92,10 +92,9 @@ void ConnectionBenchmarkDownload::start() {
   ConnectionBenchmarkDownload::populateUrlList();
 
   // Stop speedtest when max runtime is reached
-  // m_timer = new QTimer();
-  // connect(m_timer, &QTimer::timeout, this,
-  // &ConnectionBenchmarkDownload::stop);
-  // m_timer->start(Constants::CONNECTION_SPEED_BENCHMARK_DURATION);
+  m_timer = new QTimer();
+  connect(m_timer, &QTimer::timeout, this, &ConnectionBenchmarkDownload::stop);
+  m_timer->start(Constants::CONNECTION_SPEED_BENCHMARK_DURATION);
 
   m_startTime = QDateTime::currentMSecsSinceEpoch();
   m_bytesPerSecond = 0;

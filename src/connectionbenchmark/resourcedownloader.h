@@ -31,7 +31,7 @@ class ResourceDownloader final : public QObject {
  private slots:
   void onCompleted(const QByteArray& data);
   void onFailed(QNetworkReply::NetworkError error, const QByteArray& data);
-  void onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+  void onProgress(qint64 bytesReceived, qint64 bytesTotal);
 
  private:
   NetworkRequest* m_request;

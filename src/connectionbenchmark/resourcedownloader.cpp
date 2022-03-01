@@ -25,6 +25,8 @@ ResourceDownloader::ResourceDownloader(const QUrl& fileUrl, QObject* parent)
           &ResourceDownloader::onCompleted);
   connect(m_request, &NetworkRequest::requestFailed, this,
           &ResourceDownloader::onFailed);
+  connect(m_request, &NetworkRequest::requestUpdated, this,
+          &ResourceDownloader::onProgress);
 }
 
 ResourceDownloader::~ResourceDownloader() {
@@ -35,11 +37,8 @@ void ResourceDownloader::onCompleted(const QByteArray& data) {
   logger.debug() << "Finished download" << data.size();
 
   m_downloadedData = data;
-  m_bytesReceived = data.size();
-  m_bytesTotal = data.size();
 
   emit downloaded();
-  deleteLater();
 }
 
 void ResourceDownloader::onFailed(QNetworkReply::NetworkError error,
@@ -47,14 +46,11 @@ void ResourceDownloader::onFailed(QNetworkReply::NetworkError error,
   logger.debug() << "Download failed" << error;
 
   m_downloadedData = data;
-  m_bytesReceived = data.size();
 
   emit aborted();
-  deleteLater();
 }
 
-void ResourceDownloader::onDownloadProgress(qint64 bytesReceived,
-                                            qint64 bytesTotal) {
+void ResourceDownloader::onProgress(qint64 bytesReceived, qint64 bytesTotal) {
   m_bytesReceived = bytesReceived;
 
   if (m_bytesTotal != bytesTotal) {
