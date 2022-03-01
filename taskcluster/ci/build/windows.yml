@@ -3,18 +3,18 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 
-windows/debug:
+windows/opt:
         description: "Windows Build"
         treeherder:
             symbol: B
             kind: build
             tier: 1
-            platform: windows/debug
+            platform: windows/x64
         worker-type: b-win2012
         fetches:
             fetch:
                 - win-dev-env
-                - win-rust
+                - win-rustup
             build-qt:
                 - artifact: qt6_win.zip
                   extract: true
