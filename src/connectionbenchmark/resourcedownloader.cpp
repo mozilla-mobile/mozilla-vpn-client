@@ -5,35 +5,52 @@
 #include "resourcedownloader.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "networkrequest.h"
+#include "tasks/function/taskfunction.h"
 
 #include <QUrl>
+
+namespace {
+Logger logger(LOG_NETWORKING, "ResourceDownloader");
+}
 
 ResourceDownloader::ResourceDownloader(const QUrl& fileUrl, QObject* parent)
     : QObject(parent) {
   MVPN_COUNT_CTOR(ResourceDownloader);
 
-  QNetworkRequest request(fileUrl);
-  m_networkReply = m_networkAccessManager.get(request);
+  TaskFunction* task = new TaskFunction([&]() {});
+  m_request = NetworkRequest::createForGetUrl(task, fileUrl.toString());
 
-  connect(&m_networkAccessManager, &QNetworkAccessManager::finished, this,
-          &ResourceDownloader::onFinished);
-  connect(m_networkReply, &QNetworkReply::downloadProgress, this,
-          &ResourceDownloader::onDownloadProgress);
+  connect(m_request, &NetworkRequest::requestCompleted, this,
+          &ResourceDownloader::onCompleted);
+  connect(m_request, &NetworkRequest::requestFailed, this,
+          &ResourceDownloader::onFailed);
 }
 
 ResourceDownloader::~ResourceDownloader() {
   MVPN_COUNT_DTOR(ResourceDownloader);
 }
 
-void ResourceDownloader::onFinished(QNetworkReply* reply) {
-  m_downloadedData = reply->readAll();
-  reply->deleteLater();
+void ResourceDownloader::onCompleted(const QByteArray& data) {
+  logger.debug() << "Finished download" << data.size();
 
-  if (reply->error() == QNetworkReply::OperationCanceledError) {
-    emit aborted();
-  } else {
-    emit downloaded();
-  }
+  m_downloadedData = data;
+  m_bytesReceived = data.size();
+  m_bytesTotal = data.size();
+
+  emit downloaded();
+  deleteLater();
+}
+
+void ResourceDownloader::onFailed(QNetworkReply::NetworkError error,
+                                  const QByteArray& data) {
+  logger.debug() << "Download failed" << error;
+
+  m_downloadedData = data;
+  m_bytesReceived = data.size();
+
+  emit aborted();
+  deleteLater();
 }
 
 void ResourceDownloader::onDownloadProgress(qint64 bytesReceived,
@@ -45,4 +62,4 @@ void ResourceDownloader::onDownloadProgress(qint64 bytesReceived,
   }
 }
 
-void ResourceDownloader::abort() { m_networkReply->abort(); }
+void ResourceDownloader::abort() { m_request->abort(); }

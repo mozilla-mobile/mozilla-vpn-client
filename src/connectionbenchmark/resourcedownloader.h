@@ -5,19 +5,19 @@
 #ifndef RESOURCEDOWNLOADER_H
 #define RESOURCEDOWNLOADER_H
 
+#include "networkrequest.h"
+
 #include <QObject>
 #include <QByteArray>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
 
-class ResourceDownloader : public QObject {
+class ResourceDownloader final : public QObject {
   Q_OBJECT
 
  public:
-  explicit ResourceDownloader(const QUrl& fileUrl, QObject* parent = 0);
-  virtual ~ResourceDownloader();
+  ResourceDownloader(const QUrl& fileUrl, QObject* parent);
+  ~ResourceDownloader();
 
   QByteArray downloadedData() const { return m_downloadedData; }
   qint64 bytesReceived() const { return m_bytesReceived; }
@@ -29,12 +29,12 @@ class ResourceDownloader : public QObject {
   void aborted();
 
  private slots:
-  void onFinished(QNetworkReply* reply);
+  void onCompleted(const QByteArray& data);
+  void onFailed(QNetworkReply::NetworkError error, const QByteArray& data);
   void onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 
  private:
-  QNetworkAccessManager m_networkAccessManager;
-  QNetworkReply* m_networkReply;
+  NetworkRequest* m_request;
 
   QByteArray m_downloadedData;
   qint64 m_bytesReceived;
