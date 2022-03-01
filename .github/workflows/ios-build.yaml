@@ -46,6 +46,7 @@ jobs:
           tar xf qt_static_ios.tar.gz
           sudo mv ${{matrix.config.folder}} /opt
           if [ -d ${{matrix.config.macosFolder}} ]; then
+            echo "move macos folder"
             sudo mv ${{matrix.config.macosFolder}} /opt
             export PATH=/opt/${{matrix.config.macosFolder}}/bin:$PATH
           fi
@@ -61,6 +62,7 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          echo "$PATH"
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
