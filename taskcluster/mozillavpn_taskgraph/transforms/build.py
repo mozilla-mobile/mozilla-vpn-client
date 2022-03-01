@@ -58,3 +58,17 @@ def add_artifacts(config, tasks):
         yield task
 
 
+# Adds an index route to the build task. 
+@transforms.add
+def index_build_tasks(config, tasks):
+    for task in tasks:
+        head_ref = config.params["head_ref"]
+        short_head_branch = head_ref.replace("refs/heads/", "")
+        task_name = task["name"]
+
+        route = f"mozillavpn.v2.mozilla-vpn-client.latest.client.{short_head_branch}.{task_name}"
+        if task.__contains__("routes"):
+            task["routes"].append(route)
+        else:
+            task["routes"] = [route]
+        yield task
