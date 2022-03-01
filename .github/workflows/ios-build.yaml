@@ -89,6 +89,9 @@ jobs:
           APP_ID_IOS = org.mozilla.ios.FirefoxVPN
           NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
           EOF
+          echo `which qmake`
+          echo `qmake -v`
+          echo `$QT_IOS_BIN/qmake -v`
           ./scripts/macos/apple_compile.sh ios
 
       - name: Prebuilding Qt
