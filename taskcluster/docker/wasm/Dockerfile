@@ -7,14 +7,12 @@ FROM $DOCKER_IMAGE_PARENT
 MAINTAINER Sebastian Streich <sstreich@mozilla.com>
 
 VOLUME /builds/worker/checkouts
-VOLUME /builds/worker/ccache
 
 RUN mkdir -p /builds/worker/.cache/go-build &&\
     chown -R worker:worker /builds/worker/.cache/ &&\
-    chown -R worker:worker /builds/worker/ccache &&\
     chmod -R 777 /builds/worker/ 
 
-RUN apt-get -q update && apt-get install -y git ccache python3 &&\
+RUN apt-get -q update && apt-get install -y git ccache python3 libglib2.0-0 &&\
      python3 -m pip install aqtinstall &&\
      # qt6.2.3 for wasm needs the desktop linux installation
      python3 -m aqt install-qt -O /opt linux desktop 6.2.3 &&\
@@ -25,11 +23,10 @@ RUN apt-get -q update && apt-get install -y git ccache python3 &&\
      cd /opt/ &&\
      git clone https://github.com/emscripten-core/emsdk.git &&\
      cd emsdk &&\
-     ./emsdk install latest &&\
-     ./emsdk activate latest 
+     ./emsdk install 2.0.14 &&\
+     ./emsdk activate 2.0.14 
 
 ENV QTPATH=/opt/6.2.3/
 ENV EMSDKPATH=/opt/emsdk/
-ENV CCACHE_DIR=/builds/worker/ccache
 
 ENV PATH="/opt/6.2.3/wasm_32/bin:/opt/6.2.3/gcc_64/bin:${PATH}"

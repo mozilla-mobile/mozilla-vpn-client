@@ -3,8 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-/opt/emsdk/emsdk activate latest
-source /opt/emsdk/emsdk/emsdk_env.sh
+source /opt/emsdk/emsdk_env.sh
+
+
+echo "TEST"
+ls /opt/emsdk
+ls /opt/emsdk/emsdk
+ls /opt/6.2.3/wasm_32/bin
+ls /opt/6.2.3/gcc_64/bin
+
+where qmake 
+qmake --version
 
 # This script is used in the Android Debug (universal) build task
 git submodule init
@@ -21,6 +30,6 @@ python3 ./scripts/utils/import_languages.py
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
 
-cp wasm/* /builds/worker/artifacts/
+cp -r wasm/* /builds/worker/artifacts/
 
 ccache -s
