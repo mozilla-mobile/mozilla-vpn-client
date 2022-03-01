@@ -110,7 +110,7 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
   logger.debug() << "Authentication starting:"
                  << logger.sensitive(emailAddress);
 
-  m_emailAddress = emailAddress;
+  m_emailAddress = emailAddress.toLower();
 
   AuthenticationInApp* aip = AuthenticationInApp::instance();
   Q_ASSERT(aip);
