@@ -16,22 +16,29 @@ VPNClickableRow {
     property var imageRightSrc
     property bool showIndicator: false
     property string fontColor: VPNTheme.theme.fontColorDark
+
     accessibleName: settingTitle
 
     anchors.left: undefined
     anchors.right: undefined
-    Layout.fillWidth: true
-    Layout.preferredHeight: VPNTheme.theme.rowHeight
 
-    Item {
-        anchors.fill: parent
-        anchors.leftMargin: VPNTheme.theme.listSpacing
-        anchors.rightMargin: VPNTheme.theme.listSpacing
+    Layout.alignment: Qt.AlignHCenter
+    Layout.minimumHeight: VPNTheme.theme.rowHeight
+    Layout.preferredWidth: parent.width
+
+    RowLayout {
+        id: row
+        spacing: 0
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
+        anchors.rightMargin: VPNTheme.theme.windowMargin / 2
+        anchors.verticalCenter: parent.verticalCenter
 
         VPNIconAndLabel {
+            id: iconAndLabel
             icon: imageLeftSrc
             title: settingTitle
-            height: parent.height
             fontColor: root.fontColor
             showIndicator: root.showIndicator
         }
@@ -39,8 +46,7 @@ VPNClickableRow {
         VPNIcon {
             id: imageRight
             source: imageRightSrc
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
         }
     }
 }
