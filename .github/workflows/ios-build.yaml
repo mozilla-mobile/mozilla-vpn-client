@@ -48,7 +48,6 @@ jobs:
           if [ -d ${{matrix.config.macosFolder}} ]; then
             echo "move macos folder"
             sudo mv ${{matrix.config.macosFolder}} /opt
-            export PATH=/opt/${{matrix.config.macosFolder}}/bin:$PATH
           fi
           cd ..
 
@@ -61,6 +60,7 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
+          export PATH=/opt/${{matrix.config.macosFolder}}/bin:$PATH
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           echo "$PATH"
           git submodule update --remote --depth 1 i18n
