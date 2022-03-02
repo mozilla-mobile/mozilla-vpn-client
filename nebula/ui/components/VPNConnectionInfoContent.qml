@@ -150,7 +150,7 @@ Flickable {
 
             VPNConnectionInfoItem {
                 title: "Ping"
-                subtitle: VPNConnectionBenchmark.ping
+                subtitle: VPNConnectionHealth.latency
                 iconPath: "qrc:/nebula/resources/connection-green.svg"
             }
 

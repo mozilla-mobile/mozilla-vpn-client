@@ -29,8 +29,8 @@ void ConnectionBenchmark::setState(State state) {
 }
 
 // TODO: Decide on thresholds for connection speeds
-void ConnectionBenchmark::setSpeed(qint64 m_ping, qint64 m_download) {
-  logger.debug() << "Set speed" << m_ping << m_download;
+void ConnectionBenchmark::setSpeed(qint64 m_download) {
+  logger.debug() << "Set speed";
 
   if (m_download < 10) {
     m_speed = SpeedSlow;
@@ -44,19 +44,12 @@ void ConnectionBenchmark::setSpeed(qint64 m_ping, qint64 m_download) {
 }
 
 void ConnectionBenchmark::runNextBenchmark() {
-  if (m_state == StatePingBenchmarking) {
-    logger.debug() << "Run ping benchmark";
-
-    m_ping = 15;
-    pingChanged();
-
-    setState(StatePingReady);
-    runNextBenchmark();
-  } else if (m_state == StatePingReady) {
+  if (m_state == StateInitial) {
     logger.debug() << "Run download benchmark";
-    setState(StateDownloadBenchmarking);
 
     m_benchmarkDownload = new ConnectionBenchmarkDownload();
+    setState(StateDownloadBenchmarking);
+
     connect(m_benchmarkDownload, &ConnectionBenchmarkDownload::stateChanged,
             this, [&] {
               logger.debug() << "Download speedtest state changed";
@@ -67,7 +60,7 @@ void ConnectionBenchmark::runNextBenchmark() {
                 downloadChanged();
 
                 setState(StateDownloadReady);
-                setSpeed(m_ping, m_download);
+                setSpeed(m_download);
                 runNextBenchmark();
               } else if (m_benchmarkDownload->state() ==
                          ConnectionBenchmarkDownload::StateError) {
@@ -76,6 +69,7 @@ void ConnectionBenchmark::runNextBenchmark() {
             });
 
     m_benchmarkDownload->start();
+
   } else if (m_state == StateDownloadReady) {
     setState(StateReady);
   }
@@ -84,7 +78,6 @@ void ConnectionBenchmark::runNextBenchmark() {
 void ConnectionBenchmark::start() {
   logger.debug() << "Start connection benchmarking";
 
-  setState(StatePingBenchmarking);
   runNextBenchmark();
 }
 

@@ -145,10 +145,10 @@ Window {
             text: "State: " + VPNConnectionBenchmark.state
         }
         Text {
-            text: "Ping: " + VPNConnectionBenchmark.ping
+            text: "Ping: " + VPNConnectionHealth.latency
         }
         Text {
-            text: "Download: " + VPNConnectionBenchmark.download
+            text: "Download: " + (VPNConnectionBenchmark.download * 8 / 1024 * 1024)
         }
 
         RowLayout {

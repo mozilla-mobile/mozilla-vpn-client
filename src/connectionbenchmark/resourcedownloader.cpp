@@ -18,7 +18,8 @@ ResourceDownloader::ResourceDownloader(const QUrl& fileUrl, QObject* parent)
     : QObject(parent) {
   MVPN_COUNT_CTOR(ResourceDownloader);
 
-  TaskFunction* task = new TaskFunction([&]() {});
+  TaskFunction* task =
+      new TaskFunction([&]() { logger.debug() << "Downloader task"; });
   m_request = NetworkRequest::createForGetUrl(task, fileUrl.toString());
 
   connect(m_request, &NetworkRequest::requestCompleted, this,
