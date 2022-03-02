@@ -12,6 +12,10 @@ task-priority:
         "mozilla-vpn-client": highest
         default: low
 
+index:
+    products:
+        - "qt"
+
 taskgraph:
     register: mozillavpn_taskgraph:register
     repositories:

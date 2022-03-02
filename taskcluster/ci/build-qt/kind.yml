@@ -16,3 +16,4 @@ transforms:
 
 jobs-from:
     - windows.yml
+    - mac.yml

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+<<<<<<< main:taskcluster/scripts/macosx_build.sh
 # Dependencies
 python3 scripts/tooltool.py --url http://taskcluster/tooltool.mozilla-releng.net fetch -m macos/qt-dependencies.tt.manifest
 export PATH="`pwd`/qt/bin:$PATH"
@@ -49,3 +50,7 @@ cp -r ./macos/pkg/Resources BUILD
 
 cd BUILD
 zip -r ../build/src/artifacts/unsigned.zip .
+=======
+
+echo "HI"
+>>>>>>> First try: Build Qt6 on a mac runner:scripts/macosx_build.sh
