@@ -106,8 +106,8 @@ void DnsPingSender::readData() {
       logger.debug() << "Received bogus DNS reply: QR == query";
       continue;
     }
-    if ((flags & DNS_FLAG_OPCODE) != DNS_FLAG_OPCODE_STATUS) {
-      logger.debug() << "Received bogus DNS reply: OPCODE != status";
+    if ((flags & DNS_FLAG_OPCODE) != DNS_FLAG_OPCODE_QUERY) {
+      logger.debug() << "Received bogus DNS reply: OPCODE != query";
       continue;
     }
 
