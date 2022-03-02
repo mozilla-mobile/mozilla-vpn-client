@@ -23,25 +23,25 @@ struct dnsHeader {
 };
 
 // Bit definitions for the DNS flags field.
-constexpr quint16 DNS_FLAG_QR = 0x8000;
-constexpr quint16 DNS_FLAG_OPCODE = 0x7800;
-constexpr quint16 DNS_FLAG_OPCODE_QUERY = (0 << 11);
-constexpr quint16 DNS_FLAG_OPCODE_IQUERY = (1 << 11);
-constexpr quint16 DNS_FLAG_OPCODE_STATUS = (2 << 11);
-constexpr quint16 DNS_FLAG_AA = 0x0400;
-constexpr quint16 DNS_FLAG_TC = 0x0200;
-constexpr quint16 DNS_FLAG_RD = 0x0100;
-constexpr quint16 DNS_FLAG_RA = 0x0080;
-constexpr quint16 DNS_FLAG_Z = 0x0070;
-constexpr quint16 DNS_FLAG_RCODE = 0x000F;
-constexpr quint16 DNS_FLAG_RCODE_NO_ERROR = (0 << 0);
-constexpr quint16 DNS_FLAG_RCODE_FORMAT_ERROR = (1 << 0);
-constexpr quint16 DNS_FLAG_RCODE_SERVER_FAILURE = (2 << 0);
-constexpr quint16 DNS_FLAG_RCODE_NAME_ERROR = (3 << 0);
-constexpr quint16 DNS_FLAG_RCODE_NOT_IMPLEMENTED = (4 << 0);
-constexpr quint16 DNS_FLAG_RCODE_REFUSED = (5 << 0);
+#define DNS_FLAG_QR 0x8000
+#define DNS_FLAG_OPCODE 0x7800
+#define DNS_FLAG_OPCODE_QUERY (0x0 << 11)
+#define DNS_FLAG_OPCODE_IQUERY (0x1 << 11)
+#define DNS_FLAG_OPCODE_STATUS (0x2 << 11)
+#define DNS_FLAG_AA 0x0400
+#define DNS_FLAG_TC 0x0200
+#define DNS_FLAG_RD 0x0100
+#define DNS_FLAG_RA 0x0080
+#define DNS_FLAG_Z 0x0070
+#define DNS_FLAG_RCODE 0x000F
+#define DNS_FLAG_RCODE_NO_ERROR (0x0 << 0)
+#define DNS_FLAG_RCODE_FORMAT_ERROR (0x1 << 0)
+#define DNS_FLAG_RCODE_SERVER_FAILURE (0x2 << 0)
+#define DNS_FLAG_RCODE_NAME_ERROR (0x3 << 0)
+#define DNS_FLAG_RCODE_NOT_IMPLEMENTED (0x4 << 0)
+#define DNS_FLAG_RCODE_REFUSED (0x5 << 0)
 
-constexpr quint16 DNS_PORT = 53;
+#define DNS_PORT 53
 
 namespace {
 Logger logger(LOG_NETWORKING, "DnsPingSender");
@@ -63,19 +63,25 @@ DnsPingSender::DnsPingSender(const QString& source, QObject* parent)
 DnsPingSender::~DnsPingSender() { MVPN_COUNT_DTOR(DnsPingSender); }
 
 void DnsPingSender::sendPing(const QString& dest, quint16 sequence) {
+  QByteArray packet;
+
   // Assemble an empty DNS status query.
-  struct dnsHeader packet;
-  memset(&packet, 0, sizeof(packet));
-  packet.id = qToBigEndian<quint16>(sequence);
-  packet.flags = qToBigEndian<quint16>(DNS_FLAG_OPCODE_STATUS);
-  packet.qdcount = 0;
-  packet.ancount = 0;
-  packet.nscount = 0;
-  packet.arcount = 0;
+  struct dnsHeader header;
+  memset(&header, 0, sizeof(header));
+  header.id = qToBigEndian<quint16>(sequence);
+  header.flags = qToBigEndian<quint16>(DNS_FLAG_OPCODE_QUERY);
+  header.qdcount = qToBigEndian<quint16>(1);
+  header.ancount = 0;
+  header.nscount = 0;
+  header.arcount = 0;
+  packet.append(reinterpret_cast<char*>(&header), sizeof(header));
+
+  // Add a query for the root nameserver: {<root>, type A, class IN}
+  const char query[] = {0x00, 0x00, 0x01, 0x00, 0x01};
+  packet.append(query, sizeof(query));
 
   // Send the datagram.
-  m_socket.writeDatagram(reinterpret_cast<char*>(&packet), sizeof(packet),
-                         QHostAddress(dest), DNS_PORT);
+  m_socket.writeDatagram(packet, QHostAddress(dest), DNS_PORT);
 }
 
 void DnsPingSender::readData() {
