@@ -34,7 +34,7 @@ pip3 install -r requirements.txt --user
 
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
-export PYTHONIOENCODING="UTF-8"
+export PYTHONIOENCODING="UTF-8"  
 
 python3 scripts/utils/generate_glean.py
 python3 scripts/utils/import_languages.py -m
