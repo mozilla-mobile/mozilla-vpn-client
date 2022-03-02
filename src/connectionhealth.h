@@ -72,6 +72,7 @@ class ConnectionHealth final : public QObject {
   quint16 m_dnsPingSequence = 0;
   quint64 m_dnsPingTimestamp = 0;
   quint64 m_dnsPingLatency = 0;
+  bool m_dnsPingInitialized = false;
 
   bool m_suspended = false;
   QString m_currentGateway;

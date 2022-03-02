@@ -67,6 +67,9 @@ ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QString()) {
     m_dnsPingTimestamp = QDateTime::currentMSecsSinceEpoch();
     m_dnsPingSender.sendPing(PING_WELL_KNOWN_ANYCAST_DNS, m_dnsPingSequence);
   });
+
+  m_dnsPingInitialized = false;
+  m_dnsPingLatency = PING_TIME_UNSTABLE_SEC * 1000;
 }
 
 ConnectionHealth::~ConnectionHealth() { MVPN_COUNT_DTOR(ConnectionHealth); }
@@ -108,7 +111,8 @@ void ConnectionHealth::startIdle() {
 
   // Reset the DNS latency measurement.
   m_dnsPingSequence = QRandomGenerator::global()->bounded(65536);
-  m_dnsPingLatency = 0;
+  m_dnsPingInitialized = false;
+  m_dnsPingLatency = PING_TIME_UNSTABLE_SEC * 1000;
   m_dnsPingTimer.start(PING_INTERVAL_IDLE_SEC * 1000);
 
   // Send an initial ping right away.
@@ -190,9 +194,14 @@ void ConnectionHealth::dnsPingReceived(quint16 sequence) {
   quint64 latency = QDateTime::currentMSecsSinceEpoch() - m_dnsPingTimestamp;
   logger.debug() << "Received DNS ping:" << latency << "msec";
 
-  m_dnsPingLatency *= (PING_BASELINE_EWMA_DIVISOR - 1);
-  m_dnsPingLatency += latency;
-  m_dnsPingLatency /= PING_BASELINE_EWMA_DIVISOR;
+  if (m_dnsPingInitialized) {
+    m_dnsPingLatency *= (PING_BASELINE_EWMA_DIVISOR - 1);
+    m_dnsPingLatency += latency;
+    m_dnsPingLatency /= PING_BASELINE_EWMA_DIVISOR;
+  } else {
+    m_dnsPingLatency = latency;
+    m_dnsPingInitialized = true;
+  }
 }
 
 void ConnectionHealth::healthCheckup() {
