@@ -61,6 +61,8 @@ void TestSignUpAndIn::signUp() {
     }
   });
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
   QCOMPARE(aia->state(), AuthenticationInApp::StateStart);
 
   QString emailAddress(m_emailAccount);
@@ -77,6 +79,8 @@ void TestSignUpAndIn::signUp() {
     }
   });
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
   QCOMPARE(aia->state(), AuthenticationInApp::StateSignUp);
 
   // Password
@@ -97,10 +101,29 @@ void TestSignUpAndIn::signUp() {
     }
   });
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
   QCOMPARE(aia->state(),
            AuthenticationInApp::StateVerificationSessionByEmailNeeded);
 
-  // Email verification
+  // Email verification - with invalid code
+  aia->verifySessionEmailCode("000000");
+  QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
+
+  connect(aia, &AuthenticationInApp::errorOccurred,
+          [&](AuthenticationInApp::ErrorType error) {
+            if (error ==
+                AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode) {
+              loop.exit();
+            }
+          });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(),
+           AuthenticationInApp::StateVerificationSessionByEmailNeeded);
+
+  // Email verification - with valid code
   QString code = fetchSessionCode();
   QVERIFY(!code.isEmpty());
   aia->verifySessionEmailCode(code);
@@ -119,6 +142,7 @@ void TestSignUpAndIn::signUp() {
   }
 
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
 
   // The account is not active yet. So, let's check the final URL.
   QVERIFY(
@@ -142,21 +166,13 @@ void TestSignUpAndIn::signIn() {
 
   EventLoop loop;
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {
-    if (aia->state() == AuthenticationInApp::StateUnblockCodeNeeded) {
-      // We do not receive the email each time.
-      AuthenticationInApp::instance()->resendUnblockCodeEmail();
-
-      QString code = fetchUnblockCode();
-      QVERIFY(!code.isEmpty());
-      aia->setUnblockCodeAndContinue(code);
-      return;
-    }
-
     if (aia->state() == AuthenticationInApp::StateStart) {
       loop.exit();
     }
   });
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
   QCOMPARE(aia->state(), AuthenticationInApp::StateStart);
 
   QString emailAddress(m_emailAccount);
@@ -171,7 +187,10 @@ void TestSignUpAndIn::signIn() {
       loop.exit();
     }
   });
+
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
   QCOMPARE(aia->state(), AuthenticationInApp::StateSignIn);
 
   // Password
@@ -181,9 +200,42 @@ void TestSignUpAndIn::signIn() {
   aia->signIn();
   QCOMPARE(aia->state(), AuthenticationInApp::StateSigningIn);
 
+  // The next step can be tricky: totp, or unblocked code, or success
   if (m_totpCreation) {
     waitForTotpCodes();
   }
+
+  bool wrongUnblockCodeSent = false;
+
+  connect(aia, &AuthenticationInApp::errorOccurred,
+          [this](AuthenticationInApp::ErrorType error) {
+            if (error == AuthenticationInApp::ErrorInvalidUnblockCode) {
+              qDebug() << "Invalid unblock code. Sending a good one";
+
+              AuthenticationInApp* aia = AuthenticationInApp::instance();
+              QCOMPARE(aia->state(),
+                       AuthenticationInApp::StateUnblockCodeNeeded);
+
+              // We do not receive the email each time.
+              aia->resendUnblockCodeEmail();
+
+              QString code = fetchUnblockCode();
+              QVERIFY(!code.isEmpty());
+              aia->verifyUnblockCode(code);
+              QCOMPARE(aia->state(),
+                       AuthenticationInApp::StateVerifyingUnblockCode);
+            }
+          });
+
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (!wrongUnblockCodeSent &&
+        aia->state() == AuthenticationInApp::StateUnblockCodeNeeded) {
+      aia->verifyUnblockCode("000000");
+      QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingUnblockCode);
+
+      wrongUnblockCodeSent = true;
+    }
+  });
 
   QUrl finalUrl;
   connect(aia, &AuthenticationInApp::unitTestFinalUrl,
@@ -194,6 +246,7 @@ void TestSignUpAndIn::signIn() {
   });
 
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
 
   // The account is not active yet. So, let's check the final URL.
   QVERIFY(

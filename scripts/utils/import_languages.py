@@ -13,7 +13,7 @@ import atexit
 
 # Use the project root as the working directory
 prevdir = os.getcwd()
-workdir = os.path.join(os.path.dirname(__file__), '..')
+workdir = os.path.join(os.path.dirname(__file__), '..', '..')
 os.chdir(workdir)
 atexit.register(os.chdir, prevdir)
 

@@ -80,8 +80,8 @@ jobs:
           pip3 install -r requirements.txt
 
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py
-          python3 scripts/generate_glean.py
+          python3 scripts/utils/import_languages.py
+          python3 scripts/utils/generate_glean.py
 
           # Delete unit tests, so we can get to testing faster
           sed -i '/tests\/unit/d' mozillavpn.pro

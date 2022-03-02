@@ -183,7 +183,7 @@ Item {
 
         VPNExternalLinkListItem {
             id: inspectorLink
-            visible: stagingServerCheckBox.checked && !restartRequired.visible
+            visible: stagingServerCheckBox.checked && !restartRequired.isVisible
             anchors.top: animationsPlaygroundLink.bottom
             anchors.topMargin: VPNTheme.theme.listSpacing
             anchors.left: stagingServerRow.left
@@ -204,7 +204,7 @@ Item {
             id: resetAndQuit
             property int clickNeeded: 5
 
-            anchors.top: stagingServerCheckBox.checked && !restartRequired.visible ? inspectorLink.bottom : animationsPlaygroundLink.bottom
+            anchors.top: stagingServerCheckBox.checked && !restartRequired.isVisible ? inspectorLink.bottom : animationsPlaygroundLink.bottom
             anchors.topMargin: VPNTheme.theme.listSpacing * 2
             anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter

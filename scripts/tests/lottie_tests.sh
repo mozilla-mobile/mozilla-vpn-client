@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-. $(dirname $0)/../commons.sh
+. $(dirname $0)/../utils/commons.sh
 
 if [ -f .env ]; then
   . .env
@@ -34,9 +34,6 @@ print Y "Cleaning the existing project... "
 lottie_cleanup_unit || die
 lottie_cleanup_qml || die
 
-print Y "Creating the xcode project via qmake for lottie unit-tests..."
-lottie_qmake_unit || die
-
 print Y "Compile the lottie unit-tests..."
 lottie_compile_unit || die
 
@@ -45,9 +42,6 @@ lottie_run_unit || die
 
 printn Y "Cleaning the existing project... "
 lottie_cleanup_unit || die
-
-print Y "Creating the xcode project via qmake for lottie qml-tests..."
-lottie_qmake_qml || die
 
 print Y "Compile the lottie QML tests..."
 lottie_compile_qml || die

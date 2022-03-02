@@ -42,7 +42,7 @@ SOURCES += \
     helper.cpp \
     main.cpp \
     mocmozillavpn.cpp \
-    ../unit/mocinspectorwebsocketconnection.cpp \
+    ../unit/mocinspectorhandler.cpp \
     ../../src/closeeventhandler.cpp \
     ../../src/constants.cpp \
     ../../src/featurelist.cpp \
@@ -68,7 +68,7 @@ HEADERS += \
     ../../src/featurelist.h \
     ../../src/hawkauth.h \
     ../../src/hkdf.h \
-    ../../src/inspector/inspectorwebsocketconnection.h \
+    ../../src/inspector/inspectorhandler.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/feature.h \

@@ -58,23 +58,16 @@ AuthenticationListener::~AuthenticationListener() {
 
 // static
 QUrl AuthenticationListener::createAuthenticationUrl(
-    MozillaVPN::AuthenticationType authenticationType,
     const QString& codeChallenge, const QString& codeChallengeMethod,
     const QString& emailAddress) {
   QString path("/api/v2/vpn/login/");
 
-  if (authenticationType == MozillaVPN::AuthenticationInApp) {
-    // hack!
-    path.append("android");
-  } else {
-    Q_ASSERT(authenticationType == MozillaVPN::AuthenticationInBrowser);
 #if !defined(MVPN_DUMMY)
-    path.append(Constants::PLATFORM_NAME);
+  path.append(Constants::PLATFORM_NAME);
 #else
-    // Let's use linux here.
-    path.append("linux");
+  // Let's use linux here.
+  path.append("linux");
 #endif
-  }
 
   QUrl url(NetworkRequest::apiBaseUrl());
   url.setPath(path);

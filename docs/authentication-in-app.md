@@ -46,7 +46,7 @@ password, or the 6-digit codes, etc). After this, the frontend code must call
 one or more available methods (see the list per states) to move to the next
 state or to trigger an error.
 
-### State: Initialization
+### State: Initializing
 
 This is an internal state in which the VPN client communicates with the
 guardian-website to start the process. If there are no connectivity issues,
@@ -105,6 +105,7 @@ The client asks for the password. Then, it goes to the **Signing-in** state.
 * Next states: **Signing-in**
 * Errors:
     * Incorrect password
+    * Too many requests
     * Sign in with this email type is not currently supported -This is a
       strange FxA code. We have to investigate how to reproduce it.
     * Failed to send email - the unblock code is needed but the email sending
@@ -130,7 +131,7 @@ From here we can go to several states:
 * Errors: none
 * Available methods: none
 
-### State: unblock code needed
+### State: Unblock code needed
 
 This state is shown if FxA “doesn’t trust” the account or the user enough. An
 email is sent to the user’s email address with a 6-digit code. In this state,
@@ -139,13 +140,27 @@ the client needs to inform the user and ask for this 6-digit code.
 If needed, the user can ask to have a new email code. See:
 `VPNAuthInApp.resendUnblockCodeEmail()`.
 
-From here we can go to **Finalize**.
+From here we can go to **Verifying unblock code**.
 
-* Next states: **Finalize**
+* Next states: **Verifying unblock code**
 * Errors: none
+    * Invalid unblock code
+    * Too many requests
 * Available methods:
-    * `VPNAuthInApp.setUnblockCodeAndContinue(code)`
+    * `VPNAuthInApp.verifyUnblockCode(code)`
     * `VPNAuthInApp.resendUnblockCodeEmail()`
+
+### State: Verifying unblock code
+
+The client is sending the unblock code to FxA. We are waiting for the result of
+the validation. From here, we can go to **Finalize** or bak to **Unblock code
+needed** in case the code is invalid.
+
+From here we can go to **Finalize**, or **Unblock code needed** in case the code is invalid.
+
+* Next states: **Unblock code needed**, **Finalize**
+* Errors: none
+* Available methods: none
 
 ### State: TOTP verification needed
 
@@ -205,7 +220,7 @@ If an error occur, we go back to **Start**.
 
 ### State: Email validation
 
-This state is super super similar to the “**unblock code needed**” one, but,
+This state is super super similar to the “**Unblock code needed**” one, but,
 because this is a different FxA concept, we want to keep the 2 separate. The
 behavior is exactly the same: the user needs to insert a 6-digit code and then
 we go to **Verifying session email code**.
@@ -215,17 +230,18 @@ If needed, the user can ask for a new session code email. See
 
 * Next states: **Verifying session email code**
 * Errors:
-    * Invalid unblock code
+    * Invalid or expired verification code
+    * Too many requests
 * Available methods:
     * `VPNAuthInApp.verifySessionEmailCode(code)`
     * `VPNAuthInApp.resendVerificationSessionCodeEmail()`
 
-### State:: Verifying session email code
+### State: Verifying session email code
 
 The FxA is performing the email code verification. In case of an error, we go
 back to **Email validation**, otherwise, we go to **Finalize**.
 
-* Next states: **Finalize**
+* Next states: **Email validation**, **Finalize**
 * Errors: none
 * Available methods: none
 
@@ -255,16 +271,18 @@ The authentication continues in the browser as we used to do in v2.7.
 
 ## Errors
 - Account already exists
-- Unknown account
-- Incorrect password
-- Invalid unblock code
-- Email type not supported
 - Email already exists
 - Email can not be used to login
+- Email type not supported
 - Failed to send email
+- Incorrect password
+- Invalid email code
+- Invalid or expired verification code
+- Invalid unblock code
+- Invalid TOTP code
 - Too many requests
 - Server unavailable
-- Invalid TOTP code
+- Unknown account
 
 ### The whole flow
 
@@ -278,24 +296,29 @@ stateDiagram-v2
   SigningIn: Signing In
   SigningUp: Signing Up
   UnblockCodeNeeded: Unblock code needed
+  VerifyingUnblockCode: Verifying unblock code
   TOTPVerificationNeeded: TOTP verification needed
   VerifyingSessionTOTPCode: Verifying session TOTP code
   EmailVerification: Email verification
   VerifyingSessionEmailCode: Verifying session email code
+  state signing_results <<choice>>
 
-  Initialization --> Start
+  Initializing --> Start
   Start --> CheckingAccount: email address received
   CheckingAccount --> SignIn: the account already exists
   CheckingAccount --> SignUp: new account is required
   CheckingAccount --> Fallback: new account is required
   SignIn --> SigningIn: password received
-  SigningIn --> SignIn: invalid password or error
-  SigningIn --> UnblockCodeNeeded: unblock code required
-  SigningIn --> TOTPVerificationNeeded: TOTP code required
-  SigningIn --> Finalize: authentication completed
-  UnblockCodeNeeded --> Finalize: authentication completd
+  SigningIn --> signing_results
+  signing_results --> SignIn: invalid password or error
+  signing_results --> UnblockCodeNeeded: unblock code required
+  signing_results --> TOTPVerificationNeeded: TOTP code required
+  signing_results --> Finalize: authentication completed
+  UnblockCodeNeeded --> VerifyingUnblockCode: Unblock code received
+  VerifyingUnblockCode --> signing_results: authentication completed
+  VerifyingUnblockCode --> UnblockCodeNeeded: Unblock code invalid or error
   TOTPVerificationNeeded --> VerifyingSessionTOTPCode: TOTP code received
-  VerifyingSessionTOTPCode --> Finalize: authentication completed
+  VerifyingSessionTOTPCode --> signing_results: authentication completed
   VerifyingSessionTOTPCode --> TOTPVerificationNeeded: TOTP code invalid or error
   SignUp --> SigningUp: password received
   SigningUp --> EmailVerification: email sent

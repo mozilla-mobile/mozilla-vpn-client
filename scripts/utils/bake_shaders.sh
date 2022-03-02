@@ -10,11 +10,17 @@ parentDir=$(dirname $0)
 print N "This script bakes our custom shaders"
 print N ""
 
-repoDir="$(dirname "$parentDir")"
-shaderSourceDir="$repoDir/nebula/ui/resources/shaders/src"
-shaderDistDir="$repoDir/nebula/ui/resources/shaders/baked"
+if ! [ -d "nebula" ]; then
+  die "No nebula folder"
+fi
 
-rm -rf "$shaderDistDir"/* || die
+shaderSourceDir="nebula/ui/resources/shaders/src"
+shaderDistDir="nebula/ui/resources/shaders/baked"
+
+[ -d "$shaderSourceDir" ] || die "Folder $shaderSourceDir does not exist"
+[ -d "$shaderDistDir" ] || die "Folder $shaderDistDir does not exist"
+
+rm -rf "$shaderDistDir/*" || die
 totalCount=$(find "$shaderSourceDir" -type f | wc -l | xargs)
 
 if [[ $totalCount -eq 0 ]]; then

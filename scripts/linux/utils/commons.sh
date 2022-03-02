@@ -40,30 +40,22 @@ utest_dependencies() {
   echo "Nothing to do here"
 }
 
-utest_qmake_unit() {
-  _qmake tests/unit || die
-}
-
-utest_qmake_auth() {
-  _qmake tests/auth || die
-}
-
-utest_qmake_nativemessaging() {
-  _qmake tests/nativemessaging || die
-  _qmake extension/app || die
-}
-
 utest_compile_unit() {
+  _qmake tests/unit || die
   _compile tests/unit || die
 }
 
 utest_compile_auth() {
+  _qmake tests/auth || die
   _compile tests/auth || die
 }
 
 utest_compile_nativemessaging() {
+  _qmake tests/nativemessaging || die
   _compile tests/nativemessaging || die
-  _compile extension/app || die
+
+  (cd extension/bridge && cargo build --release) || die
+  [ -f extension/bridge/target/release/mozillavpnnp ] || die "Expected extension/bridge/target/release/mozillavpnnp"
 }
 
 utest_run_unit() {
@@ -75,7 +67,7 @@ utest_run_auth() {
 }
 
 utest_run_nativemessaging() {
-  ./tests/nativemessaging/tests ./extension/app/mozillavpnnp || die
+  ./tests/nativemessaging/tests ./extension/bridge/target/release/mozillavpnnp || die
 }
 
 utest_cleanup_unit() {
@@ -87,25 +79,19 @@ utest_cleanup_auth() {
 }
 
 utest_cleanup_nativemessaging() {
-  _cleanup extension/app
+  (cd extension/bridge && cargo clean) || die
   _cleanup tests/nativemessaging
 }
 
 ## Lottie tests
 
-lottie_qmake_unit() {
-  _qmake lottie/tests/unit || die
-}
-
-lottie_qmake_qml() {
-  _qmake lottie/tests/qml || die
-}
-
 lottie_compile_unit() {
+  _qmake lottie/tests/unit || die
   _compile lottie/tests/unit || die
 }
 
 lottie_compile_qml() {
+  _qmake lottie/tests/qml || die
   _compile lottie/tests/qml || die
 }
 
@@ -127,11 +113,8 @@ lottie_cleanup_qml() {
 
 ## QML tests
 
-qmltest_qmake() {
-  _qmake tests/qml || die
-}
-
 qmltest_compile() {
+  _qmake tests/qml || die
   _compile tests/qml || die
 }
 

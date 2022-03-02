@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-. $(dirname $0)/../commons.sh
+. $(dirname $0)/../utils/commons.sh
 
 if [ -f .env ]; then
   . .env
@@ -32,9 +32,6 @@ fi
 
 print Y "Cleaning the existing project... "
 qmltest_cleanup || die
-
-print Y "Creating the xcode project via qmake for QML tests..."
-qmltest_qmake || die
 
 print Y "Compile the QML tests..."
 qmltest_compile || die

@@ -39,32 +39,23 @@ utest_dependencies() {
   echo "Nothing to do"
 }
 
-utest_qmake_unit() {
-  _qmake tests/unit/unit.pro tests.vcxproj || die
-}
-
-utest_qmake_auth() {
-  echo "TODO VPN-1802: Auth tests are not supported on windows (no oath-toolkit installed, yet?)"
-  #_qmake tests/auth/auth.pro tests.vcxproj || die
-}
-
-utest_qmake_nativemessaging() {
-  _qmake tests/nativemessaging/nativemessaging.pro tests.vcxproj || die
-  _qmake extension/app/app.pro mozillavpnnp.vcxproj || die
-}
-
 utest_compile_unit() {
+  _qmake tests/unit/unit.pro tests.vcxproj || die
   _compile tests.vcxproj tests.exe || die
 }
 
 utest_compile_auth() {
   echo "TODO VPN-1802: Auth tests are not supported on windows (no oath-toolkit installed, yet?)"
+  #_qmake tests/auth/auth.pro tests.vcxproj || die
   #_compile tests.vcxproj tests.exe || die
 }
 
 utest_compile_nativemessaging() {
+  _qmake tests/nativemessaging/nativemessaging.pro tests.vcxproj || die
   _compile tests.vcxproj tests.exe || die
-  _compile mozillavpnnp.vcxproj mozillavpnnp.exe || die
+
+  (cd extension/bridge && cargo build --release) || die
+  [ -f extension/bridge/target/release/mozillavpnnp.exe ] || die "Expected extension/bridge/target/release/mozillavpnnp.exe"
 }
 
 utest_run_unit() {
@@ -77,8 +68,7 @@ utest_run_auth() {
 }
 
 utest_run_nativemessaging() {
-  echo "TODO VPN-1801: No native-messaging tests for windows yet!"
-  #./tests.exe ./mozillavpnnp.exe || die
+  ./tests.exe extension/bridge/target/release/mozillavpnnp.exe || die
 }
 
 utest_cleanup_unit() {
@@ -97,19 +87,13 @@ utest_cleanup_nativemessaging() {
 
 ## Lottie tests
 
-lottie_qmake_unit() {
-  _qmake lottie/tests/unit/unit.pro lottie_tests.vcxproj || die
-}
-
-lottie_qmake_qml() {
-  _qmake lottie/tests/qml/qml.pro tst_lottie.vcxproj || die
-}
-
 lottie_compile_unit() {
+  _qmake lottie/tests/unit/unit.pro lottie_tests.vcxproj || die
   _compile lottie_tests.vcxproj lottie_tests.exe || die
 }
 
 lottie_compile_qml() {
+  _qmake lottie/tests/qml/qml.pro tst_lottie.vcxproj || die
   _compile tst_lottie.vcxproj tst_lottie.exe || die
 }
 
@@ -131,11 +115,8 @@ lottie_cleanup_qml() {
 
 ## QML tests
 
-qmltest_qmake() {
-  _qmake tests/qml/qml.pro qml_tests.vcxproj || die
-}
-
 qmltest_compile() {
+  _qmake tests/qml/qml.pro qml_tests.vcxproj || die
   _compile qml_tests.vcxproj qml_tests.exe || die
 }
 

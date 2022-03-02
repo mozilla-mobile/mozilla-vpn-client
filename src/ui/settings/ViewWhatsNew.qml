@@ -82,6 +82,7 @@ Item {
                         text: feature.shortDescription
                         Layout.fillWidth: true
                         Layout.leftMargin: VPNTheme.theme.vSpacing + 14
+                        Layout.topMargin: VPNTheme.theme.windowMargin / 4
                     }
                 }
             }

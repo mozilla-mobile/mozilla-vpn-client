@@ -40,13 +40,13 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/generate_glean.py
+          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
         run: |
           export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
-          python3 scripts/importLanguages.py
+          python3 scripts/utils/import_languages.py
 
       - name: Running tests
         shell: bash
@@ -90,14 +90,14 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/generate_glean.py
+          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py -m
+          python3 scripts/utils/import_languages.py -m
 
       - name: Running tests
         shell: bash
@@ -148,14 +148,14 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/generate_glean.py
+          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py -m
+          python3 scripts/utils/import_languages.py -m
 
       - name: Running tests
         shell: bash

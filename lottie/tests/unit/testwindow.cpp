@@ -137,4 +137,50 @@ void TestWindow::setTimeout() {
   }
 }
 
+void TestWindow::suspendAndResume() {
+  QJSEngine engine;
+  LottiePrivate::initialize(&engine, "Foo 1.0");
+
+  LottiePrivate p;
+  LottiePrivateWindow window(&p);
+
+  QJSValue globalObject = engine.globalObject();
+  globalObject.setProperty("window", engine.toScriptValue(&window));
+
+  engine.evaluate("window.lottie = 1;");
+  QVERIFY(window.lottie().isNumber());
+  QCOMPARE(window.lottie().toInt(), 1);
+
+  QEventLoop loop;
+  QJSValue callback = engine.evaluate("(function() { ++window.lottie; })");
+  QVERIFY(callback.isCallable());
+
+  int id = window.setInterval(callback, 0);
+  QCOMPARE(id, 1);
+
+  window.suspend();
+
+  QTimer wait;
+  connect(&wait, &QTimer::timeout, [&]() {
+    QVERIFY(window.lottie().isNumber());
+    QCOMPARE(window.lottie().toInt(), 1);
+    loop.exit();
+  });
+  wait.start(500);
+  loop.exec();
+
+  window.resume();
+
+  connect(&window, &LottiePrivateWindow::lottieChanged, [&]() {
+    QVERIFY(window.lottie().isNumber());
+    if (window.lottie().toInt() == 2) {
+      loop.exit();
+    }
+  });
+  loop.exec();
+
+  QVERIFY(window.lottie().isNumber());
+  QCOMPARE(window.lottie().toInt(), 2);
+}
+
 static TestWindow s_testWindow;

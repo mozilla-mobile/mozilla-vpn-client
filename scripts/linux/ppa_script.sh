@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-. $(dirname $0)/../commons.sh
+. $(dirname $0)/../utils/commons.sh
 
 BRANCH=
 PPA=mozbaku/mozillavpn-focal
@@ -115,10 +115,10 @@ else
   print G "done."
 
   print Y "Importing translation files..."
-  python3 scripts/importLanguages.py || die "Failed to import languages"
+  python3 scripts/utils/import_languages.py || die "Failed to import languages"
 
   print Y "Generating glean samples..."
-  python3 scripts/generate_glean.py || die "Failed to generate glean samples"
+  python3 scripts/utils/generate_glean.py || die "Failed to generate glean samples"
 
   printn Y "Removing the debian template folder... "
   rm -rf linux/debian || die "Failed"
@@ -126,6 +126,10 @@ else
 
   printn Y "Downloading Go dependencies..."
   (cd linux/netfilter && go mod vendor)
+  print G "done."
+
+  printn Y "Downloading Rust dependencies..."
+  (cd extension/bridge && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
   print G "done."
 
   printn Y "Archiving the source code... "

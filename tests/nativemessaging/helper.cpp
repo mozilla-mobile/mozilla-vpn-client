@@ -16,6 +16,10 @@ void TestHelper::runNativeMessaging(const char* app) {
   s_nativeMessagingProcess = new QProcess();
   s_nativeMessagingProcess->setReadChannel(QProcess::StandardOutput);
 
+  connect(s_nativeMessagingProcess, &QProcess::readyReadStandardError, []() {
+    qDebug() << "[mozillavpnnp - stderr]"
+             << s_nativeMessagingProcess->readAllStandardError();
+  });
   s_nativeMessagingProcess->start(app, QStringList(),
                                   QProcess::Unbuffered | QProcess::ReadWrite);
   if (!s_nativeMessagingProcess->waitForStarted()) {
@@ -31,7 +35,12 @@ void TestHelper::killNativeMessaging() {
   s_nativeMessagingProcess->closeReadChannel(QProcess::StandardOutput);
   s_nativeMessagingProcess->closeReadChannel(QProcess::StandardError);
 
+#ifdef Q_OS_WIN
+  // See https://doc.qt.io/qt-6/qprocess.html#terminate
+  s_nativeMessagingProcess->kill();
+#else
   s_nativeMessagingProcess->terminate();
+#endif
 
   if (!s_nativeMessagingProcess->waitForFinished()) {
     qFatal("Failed to kill the native messaging process");
@@ -73,7 +82,9 @@ bool TestHelper::write(const QByteArray& data) {
 QByteArray TestHelper::read() {
   Q_ASSERT(s_nativeMessagingProcess);
 
-  s_nativeMessagingProcess->waitForReadyRead();
+  while (!s_nativeMessagingProcess->bytesAvailable()) {
+    s_nativeMessagingProcess->waitForReadyRead();
+  }
 
   char rawLength[sizeof(uint32_t)];
   if (s_nativeMessagingProcess->read(rawLength, sizeof(uint32_t)) !=
@@ -85,17 +96,30 @@ QByteArray TestHelper::read() {
   return s_nativeMessagingProcess->read(length);
 }
 
-QByteArray TestHelper::tryToRead() {
-  Q_ASSERT(s_nativeMessagingProcess);
-
-  s_nativeMessagingProcess->waitForReadyRead(200);
-
-  char rawLength[sizeof(uint32_t)];
-  if (s_nativeMessagingProcess->read(rawLength, sizeof(uint32_t)) !=
-      sizeof(uint32_t)) {
-    return QByteArray();
+QByteArray TestHelper::readIgnoringStatus() {
+  while (true) {
+    QByteArray r = read();
+    if (r != "{\"status\":\"vpn-client-down\"}") {
+      return r;
+    }
   }
+}
 
-  uint32_t length = *reinterpret_cast<uint32_t*>(rawLength);
-  return s_nativeMessagingProcess->read(length);
+bool TestHelper::waitForConnection() {
+  bool connected = false;
+  for (int i = 0; i < 10; ++i) {
+    if (read() == "{\"status\":\"vpn-client-up\"}") {
+      connected = true;
+      break;
+    }
+
+    QTimer timer;
+    timer.setSingleShot(true);
+    timer.start(500);
+
+    QEventLoop loop;
+    QObject::connect(&timer, &QTimer::timeout, [&] { loop.exit(); });
+    loop.exec();
+  }
+  return connected;
 }

@@ -11,7 +11,7 @@ VPNPopup {
 
     anchors.centerIn: parent
     maxWidth: VPNTheme.theme.desktopAppWidth
-    contentItem: VPNFeatureTour {
+    _popupContent: VPNFeatureTour {
         id: featureTour
 
         slidesModel: VPNWhatsNewModel

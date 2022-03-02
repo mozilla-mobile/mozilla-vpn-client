@@ -7,10 +7,10 @@
 git submodule init
 git submodule update
 # glean
-./scripts/generate_glean.py
+./scripts/utils/generate_glean.py
 # translations
 echo "Importing translations"
-./scripts/importLanguages.py
+./scripts/utils/import_languages.py
 
 # Get Secrets for building
 echo "Fetching Tokens!"

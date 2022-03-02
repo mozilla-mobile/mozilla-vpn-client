@@ -6,6 +6,7 @@ QT += testlib
 QT += charts
 QT += network
 QT += qml
+QT += quick
 QT += xml
 
 DEFINES += APP_VERSION=\\\"1234\\\"
@@ -50,8 +51,10 @@ HEADERS += \
     ../../src/curve25519.h \
     ../../src/errorhandler.h \
     ../../src/featurelist.h \
-    ../../src/inspector/inspectorwebsocketconnection.h \
+    ../../src/inspector/inspectorhandler.h \
+    ../../src/inspector/inspectorutils.h \
     ../../src/ipaddress.h \
+    ../../src/itempicker.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
@@ -104,6 +107,7 @@ HEADERS += \
     ../../src/taskscheduler.h \
     ../../src/theme.h \
     ../../src/timersingleshot.h \
+    ../../src/tutorial.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
@@ -125,7 +129,8 @@ HEADERS += \
     teststatusicon.h \
     testtasks.h \
     testthemes.h \
-    testtimersingleshot.h
+    testtimersingleshot.h \
+    testtutorial.h
 
 SOURCES += \
     ../../src/adjust/adjustfiltering.cpp \
@@ -145,6 +150,8 @@ SOURCES += \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
     ../../src/hacl-star/Hacl_Poly1305_32.c \
     ../../src/ipaddress.cpp \
+    ../../src/itempicker.cpp \
+    ../../src/inspector/inspectorutils.cpp \
     ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
@@ -193,12 +200,13 @@ SOURCES += \
     ../../src/taskscheduler.cpp \
     ../../src/theme.cpp \
     ../../src/timersingleshot.cpp \
+    ../../src/tutorial.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \
     main.cpp \
     moccontroller.cpp \
-    mocinspectorwebsocketconnection.cpp \
+    mocinspectorhandler.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
     testadjust.cpp \
@@ -218,7 +226,8 @@ SOURCES += \
     teststatusicon.cpp \
     testtasks.cpp \
     testthemes.cpp \
-    testtimersingleshot.cpp
+    testtimersingleshot.cpp \
+    testtutorial.cpp
 
 exists($$PWD/../../translations/generated/l18nstrings.h) {
     SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp

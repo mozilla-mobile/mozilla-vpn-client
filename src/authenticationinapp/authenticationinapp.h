@@ -39,6 +39,8 @@ class AuthenticationInApp final : public QObject {
     // unblock code. Then, the signIn() can continue.  The code expires after 5
     // minutes. Call `resendUnblockCodeEmail` to have a new code.
     StateUnblockCodeNeeded,
+    // Verification in progress,
+    StateVerifyingUnblockCode,
     // The authentication requires an account verification (6-digit code) This
     // is similar to the previous step, but it happens when the account has not
     // been verified yet.  The code expires after 5 minutes. Call
@@ -58,16 +60,18 @@ class AuthenticationInApp final : public QObject {
 
   enum ErrorType {
     ErrorAccountAlreadyExists,
-    ErrorUnknownAccount,
-    ErrorIncorrectPassword,
-    ErrorInvalidEmailCode,
-    ErrorEmailTypeNotSupported,
     ErrorEmailAlreadyExists,
     ErrorEmailCanNotBeUsedToLogin,
+    ErrorEmailTypeNotSupported,
     ErrorFailedToSendEmail,
+    ErrorIncorrectPassword,
+    ErrorInvalidEmailCode,
+    ErrorInvalidOrExpiredVerificationCode,
+    ErrorInvalidUnblockCode,
+    ErrorInvalidTotpCode,
     ErrorTooManyRequests,
     ErrorServerUnavailable,
-    ErrorInvalidTotpCode,
+    ErrorUnknownAccount,
   };
   Q_ENUM(ErrorType);
 
@@ -106,7 +110,7 @@ class AuthenticationInApp final : public QObject {
 #endif
 
   // This needs to be called when we are in StateUnblockCodeNeeded state.
-  Q_INVOKABLE void setUnblockCodeAndContinue(const QString& unblockCode);
+  Q_INVOKABLE void verifyUnblockCode(const QString& unblockCode);
 
   // This can be called when we are in StateUnblockCodeNeeded state.
   Q_INVOKABLE void resendUnblockCodeEmail();

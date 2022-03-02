@@ -10,4 +10,5 @@ class TestWindow : public TestHelper {
  private slots:
   void setInterval();
   void setTimeout();
+  void suspendAndResume();
 };

@@ -48,7 +48,6 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
 constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
-constexpr const uint32_t TIME_ACTIVATION = 1000;
 constexpr const uint32_t TIME_DEACTIVATION = 1500;
 
 // The Mullvad proxy services are located at internal IPv4 addresses in the
@@ -142,7 +141,7 @@ void Controller::initialize() {
 
 void Controller::implInitialized(bool status, bool a_connected,
                                  const QDateTime& connectionDate) {
-  logger.debug() << "Controller activated with status:" << status
+  logger.debug() << "Controller initialized with status:" << status
                  << "connected:" << a_connected
                  << "connectionDate:" << connectionDate.toString();
 
@@ -184,16 +183,9 @@ bool Controller::activate() {
       m_portalDetected = false;
       return true;
     }
-
-    if (hasCooldownForAllServers()) {
-      emit readyToServerUnavailable();
-      return true;
-    }
-
     setState(StateConnecting);
   }
 
-  m_timer.stop();
   resetConnectionCheck();
 
   activateInternal();
@@ -204,7 +196,7 @@ void Controller::activateInternal() {
   logger.debug() << "Activation internal";
   Q_ASSERT(m_impl);
 
-  resetConnectedTime();
+  clearConnectedTime();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
 
@@ -301,6 +293,9 @@ void Controller::activateNext() {
   logger.debug() << "Activating peer" << hop.m_server.publicKey();
   m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
   m_impl->activate(hop, device, vpn->keys(), stateToReason(m_state));
+
+  // Move to the confirming state if we are awaiting any connection handshakes.
+  setState(StateConfirming);
 }
 
 bool Controller::silentSwitchServers() {
@@ -325,7 +320,7 @@ bool Controller::silentSwitchServers() {
   }
   vpn->setServerCooldown(vpn->serverPublicKey());
 
-  // Activate the connection.
+  // Activate the first connection to kick off the server switch.
   activateInternal();
   return true;
 }
@@ -344,9 +339,9 @@ bool Controller::deactivate() {
     setState(StateDisconnecting);
   }
 
-  m_timer.stop();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
+  clearConnectedTime();
   resetConnectionCheck();
 
   Q_ASSERT(m_impl);
@@ -357,9 +352,11 @@ bool Controller::deactivate() {
 void Controller::connected(const QString& pubkey) {
   logger.debug() << "handshake completed with:" << pubkey;
   if (m_activationQueue.isEmpty()) {
+    logger.warning() << "Unexpected handshake: no pending connections.";
     return;
   }
   if (m_activationQueue.first().m_server.publicKey() != pubkey) {
+    logger.warning() << "Unexpected handshake: public key mismatch.";
     return;
   }
   m_handshakeTimer.stop();
@@ -371,33 +368,10 @@ void Controller::connected(const QString& pubkey) {
     return;
   }
 
+  // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
-
-  // We are currently silently switching servers
-  if (m_state == StateOn) {
-    m_connectionCheck.start();
-    return;
-  }
-
-  // This is an unexpected connection. Let's use the Connecting state to animate
-  // the UI.
-  if (m_state != StateConnecting && m_state != StateSwitching &&
-      m_state != StateConfirming) {
-    setState(StateConnecting);
-
-    resetConnectedTime();
-
-    TimerSingleShot::create(this, TIME_ACTIVATION, [this, pubkey]() {
-      if (m_state == StateConnecting) {
-        connected(pubkey);
-      }
-    });
-    return;
-  }
-
-  setState(StateConfirming);
-
-  // Now, let's wait for a ping sent and received from ConnectionHealth.
+  setState(StateOn);
+  resetConnectedTime();
   m_connectionCheck.start();
 }
 
@@ -427,8 +401,6 @@ void Controller::connectionConfirmed() {
     deactivate();
     return;
   }
-
-  m_timer.start(TIMER_MSEC);
 }
 
 void Controller::connectionFailed() {
@@ -482,26 +454,6 @@ void Controller::setCooldownForAllServersInACity(const QString& countryCode,
   vpn->setCooldownForAllServersInACity(countryCode, cityCode);
 }
 
-bool Controller::hasCooldownForAllServers() {
-  logger.debug() << "Has cooldown for all servers in a city";
-
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-
-  bool hasCooldownForAllExitServers = vpn->hasCooldownForAllServersInACity(
-      vpn->currentServer()->exitCountryCode(),
-      vpn->currentServer()->exitCityName());
-
-  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
-    bool hasCooldownForAllEntryServers = vpn->hasCooldownForAllServersInACity(
-        vpn->currentServer()->entryCountryCode(),
-        vpn->currentServer()->entryCityName());
-    return hasCooldownForAllEntryServers || hasCooldownForAllExitServers;
-  }
-
-  return hasCooldownForAllExitServers;
-}
-
 bool Controller::isUnsettled() { return !m_settled; }
 
 void Controller::disconnected() {
@@ -523,8 +475,7 @@ void Controller::disconnected() {
   }
 
   startUnsettledPeriod();
-
-  m_timer.stop();
+  clearConnectedTime();
   resetConnectionCheck();
 
   // This is an unexpected disconnection. Let's use the Disconnecting state to
@@ -584,7 +535,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city,
     return;
   }
 
-  m_timer.stop();
+  clearConnectedTime();
   resetConnectionCheck();
 
   logger.debug() << "Switching to a different server";
@@ -629,7 +580,7 @@ void Controller::backendFailure() {
   m_nextStep = BackendFailure;
 
   if ((m_state == StateOn) || (m_state == StateSwitching) ||
-      (m_state == StateConnecting)) {
+      (m_state == StateConnecting) || (m_state == StateConfirming)) {
     deactivate();
     return;
   }
@@ -641,7 +592,7 @@ void Controller::serverUnavailable() {
   m_nextStep = ServerUnavailable;
 
   if ((m_state == StateOn) || (m_state == StateSwitching) ||
-      (m_state == StateConnecting)) {
+      (m_state == StateConnecting) || (m_state == StateConfirming)) {
     deactivate();
     return;
   }
@@ -720,12 +671,12 @@ void Controller::maybeEnableDisconnectInConfirming() {
 }
 
 void Controller::setState(State state) {
-  logger.debug() << "Setting state:" << state;
-
-  if (m_state != state) {
-    m_state = state;
-    emit stateChanged();
+  if (m_state == state) {
+    return;
   }
+  logger.debug() << "Setting state:" << state;
+  m_state = state;
+  emit stateChanged();
 }
 
 qint64 Controller::time() const {
@@ -897,8 +848,16 @@ void Controller::heartbeatCompleted() {
   }
 }
 
+void Controller::clearConnectedTime() {
+  m_connectedTimeInUTC = QDateTime();
+  emit timeChanged();
+  m_timer.stop();
+}
+
 void Controller::resetConnectedTime() {
   m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
+  emit timeChanged();
+  m_timer.start(TIMER_MSEC);
 }
 
 void Controller::startUnsettledPeriod() {

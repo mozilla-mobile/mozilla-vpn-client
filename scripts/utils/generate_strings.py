@@ -33,7 +33,7 @@ class UniqueKeyLoader(yaml.SafeLoader):
 
 def generateStrings():
     translations_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), os.pardir, "translations")
+        os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "translations")
     )
     yaml_path = os.path.join(translations_path, "strings.yaml")
 

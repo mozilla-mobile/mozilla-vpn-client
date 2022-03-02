@@ -14,7 +14,7 @@ Item {
     // an existing account. That account has not been verified yet. The user
     // needs to insert the 6-digit code. The code expires after 5 minutes. Use
     // `resendUnblockCodeEmail` if needed.
-    // After this step, call `setUnblockCodeAndContinue()` with the code. If the code is
+    // After this step, call `verifyUnblockCode()` with the code. If the code is
     // not valid, an error will be signaled.
     // The next steps are:
     // - Sign-in again.
@@ -44,7 +44,8 @@ Item {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 5
-        onClicked: VPNAuthInApp.setUnblockCodeAndContinue(codeInput.text);
+        onClicked: VPNAuthInApp.verifyUnblockCode(codeInput.text);
+        enabled: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded && codeInput.text.length !== 0
     }
 
     VPNButton {

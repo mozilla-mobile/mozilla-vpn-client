@@ -40,7 +40,7 @@ jobs:
         # run:
             # using: run-task
             # cwd: '{checkout}'
-            # command: pip3 install glean_parser && python3 scripts/generate_glean.py
+            # command: pip3 install glean_parser && python3 scripts/utils/generate_glean.py
         # treeherder:
             # symbol: glean
             # tier: 1
@@ -49,7 +49,7 @@ jobs:
         # run:
             # using: run-task
             # cwd: '{checkout}'
-            # command: export PATH="/opt/qt515/bin:$PATH" && git submodule sync --recursive i18n && git submodule update --init i18n && python3 scripts/importLanguages.py && lupdate -version && python3 .github/l10n/check_l10n_issues.py
+            # command: export PATH="/opt/qt515/bin:$PATH" && git submodule sync --recursive i18n && git submodule update --init i18n && python3 scripts/utils/import_languages.py && lupdate -version && python3 .github/l10n/check_l10n_issues.py
         # treeherder:
             # symbol: l10n
             # tier: 1

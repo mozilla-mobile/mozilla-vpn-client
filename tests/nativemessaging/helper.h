@@ -16,9 +16,12 @@ class TestHelper : public QObject {
  public:
   TestHelper();
 
+  bool waitForConnection();
+
   bool write(const QByteArray& data);
+
   QByteArray read();
-  QByteArray tryToRead();
+  QByteArray readIgnoringStatus();
 
   static int runTests(const char* app);
 

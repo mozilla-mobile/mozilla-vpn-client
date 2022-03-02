@@ -69,8 +69,7 @@ void AuthenticationInAppListener::start(Task* task,
 
   aip->registerListener(this);
 
-  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInApp,
-                                   codeChallenge, codeChallengeMethod,
+  QUrl url(createAuthenticationUrl(codeChallenge, codeChallengeMethod,
                                    emailAddress));
 
   NetworkRequest* request =
@@ -111,7 +110,7 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
   logger.debug() << "Authentication starting:"
                  << logger.sensitive(emailAddress);
 
-  m_emailAddress = emailAddress;
+  m_emailAddress = emailAddress.toLower();
 
   AuthenticationInApp* aip = AuthenticationInApp::instance();
   Q_ASSERT(aip);
@@ -201,6 +200,10 @@ void AuthenticationInAppListener::signIn(const QString& unblockCode) {
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateSigningIn, this);
 
+  signInInternal(unblockCode);
+}
+
+void AuthenticationInAppListener::signInInternal(const QString& unblockCode) {
   NetworkRequest* request = NetworkRequest::createForFxaLogin(
       m_task, m_emailAddress, m_authPw, unblockCode, m_urlQuery);
 
@@ -258,11 +261,15 @@ void AuthenticationInAppListener::unblockCodeNeeded() {
   sendUnblockCodeEmail();
 }
 
-void AuthenticationInAppListener::setUnblockCodeAndContinue(
+void AuthenticationInAppListener::verifyUnblockCode(
     const QString& unblockCode) {
   logger.debug() << "Sign in (unblock code received)";
   Q_ASSERT(m_sessionToken.isEmpty());
-  signIn(unblockCode);
+
+  AuthenticationInApp::instance()->requestState(
+      AuthenticationInApp::StateVerifyingUnblockCode, this);
+
+  signInInternal(unblockCode);
 }
 
 void AuthenticationInAppListener::sendUnblockCodeEmail() {
@@ -486,13 +493,45 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
         connect(
             request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-              logger.error()
-                  << "Failed to fetch the final redirect data" << error;
-              processRequestFailure(error, data);
+              if (error != QNetworkReply::OperationCanceledError) {
+                logger.error()
+                    << "Failed to fetch the final redirect data" << error;
+                processRequestFailure(error, data);
+              }
             });
+
+        // We can have 2 possible paths: a deep link URL (mozilla-vpn:) or a
+        // HTTP redirect. The following 2 "connections" cover both paths.
+
+        connect(request, &NetworkRequest::requestRedirected, this,
+                [this](NetworkRequest* request, const QUrl& redirectUrl) {
+                  if (redirectUrl.scheme() != "mozilla-vpn") return;
+
+                  request->abort();
+
+#ifdef UNIT_TEST
+                  AuthenticationInApp* aip = AuthenticationInApp::instance();
+                  emit aip->unitTestFinalUrl(redirectUrl);
+#endif
+
+                  // On a 200 response, we receive the OAuth code from the
+                  // query string
+                  QString code = QUrlQuery(redirectUrl).queryItemValue("code");
+                  if (code.isEmpty()) {
+                    logger.error() << "Code not received!";
+                    MozillaVPN::instance()->errorHandle(
+                        ErrorHandler::AuthenticationError);
+                    emit failed(ErrorHandler::AuthenticationError);
+                    return;
+                  }
+
+                  emit completed(code);
+                });
 
         connect(request, &NetworkRequest::requestHeaderReceived, this,
                 [this](NetworkRequest* request) {
+                  request->abort();
+
 #ifdef UNIT_TEST
                   AuthenticationInApp* aip = AuthenticationInApp::instance();
                   emit aip->unitTestFinalUrl(request->url());
@@ -577,6 +616,13 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
       aip->requestState(AuthenticationInApp::StateSignIn, this);
       aip->requestErrorPropagation(AuthenticationInApp::ErrorFailedToSendEmail,
                                    this);
+      break;
+
+    case 183:  // Invalid or expired verification code
+      aip->requestState(
+          AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
+      aip->requestErrorPropagation(
+          AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode, this);
       break;
 
     case 201:  // Service unavailable
@@ -734,10 +780,40 @@ void AuthenticationInAppListener::processRequestFailure(
       return;
     }
 
+    // Special error handling for the unblock code.
+    if (errorCode == 107) {
+      QJsonObject objValidation = obj["validation"].toObject();
+      QStringList keys;
+      for (QJsonValue key : objValidation["keys"].toArray()) {
+        if (key.isString()) {
+          keys.append(key.toString());
+        }
+      }
+
+      if (keys.contains("unblockCode")) {
+        AuthenticationInApp* aip = AuthenticationInApp::instance();
+        aip->requestState(AuthenticationInApp::StateUnblockCodeNeeded, this);
+        aip->requestErrorPropagation(
+            AuthenticationInApp::ErrorInvalidUnblockCode, this);
+        return;
+      }
+    }
+
     processErrorCode(errorCode);
     return;
   }
 
   MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
   emit failed(ErrorHandler::toErrorType(error));
+}
+
+void AuthenticationInAppListener::reset() {
+  m_sessionToken.clear();
+
+  m_emailAddress.clear();
+
+  AuthenticationInApp* aip = AuthenticationInApp::instance();
+  Q_ASSERT(aip);
+
+  aip->requestEmailAddressChange(this);
 }

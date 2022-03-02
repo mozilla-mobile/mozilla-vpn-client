@@ -27,7 +27,6 @@ QMLTEST {
 }
 
 webextension {
-    SUBDIRS += extension/app
     SUBDIRS += tests/nativemessaging
 }
 

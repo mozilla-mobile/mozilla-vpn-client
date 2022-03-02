@@ -2,15 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef LOGGER_H
-#define LOGGER_H
+#include "helper.h"
 
-#include <string>
+class TestTutorial : public TestHelper {
+  Q_OBJECT
 
-// A helper class to write to STDERR logging messages.
-class Logger final {
- public:
-  static void log(const std::string& message);
+ private slots:
+  void parser_data();
+  void parser();
 };
-
-#endif  // LOGGER_H
