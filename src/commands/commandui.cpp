@@ -57,9 +57,13 @@
 #endif
 
 #ifdef MVPN_WINDOWS
+#  include "crashreporter/crashclient.h"
 #  include "eventlistener.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #  include "platforms/windows/windowsappimageprovider.h"
+
+#  include <iostream>
+#  include <windows.h>
 #endif
 
 #ifdef MVPN_WASM
@@ -138,6 +142,21 @@ int CommandUI::run(QStringList& tokens) {
 
     // This class receives communications from other instances.
     EventListener eventListener;
+#endif
+
+#ifdef MVPN_WINDOWS
+    // Allocate a console to view log output in debug mode on windows
+    if (AllocConsole()) {
+      FILE* unusedFile;
+      freopen_s(&unusedFile, "CONOUT$", "w", stdout);
+      freopen_s(&unusedFile, "CONOUT$", "w", stderr);
+      std::cout.clear();
+      std::clog.clear();
+      std::cerr.clear();
+    }
+
+    CrashClient::instance().start(CommandLineParser::argc(),
+                                  CommandLineParser::argv());
 #endif
 
 #ifdef MVPN_DEBUG

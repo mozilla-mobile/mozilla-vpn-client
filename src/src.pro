@@ -897,6 +897,7 @@ else:win* {
     RC_ICONS = ui/resources/logo.ico
 
     SOURCES += \
+        commands/commandcrashreporter.cpp \
         daemon/daemon.cpp \
         daemon/daemonlocalserver.cpp \
         daemon/daemonlocalserverconnection.cpp \
@@ -926,6 +927,7 @@ else:win* {
         wgquickprocess.cpp
 
     HEADERS += \
+        commands/commandcrashreporter.h \
         daemon/interfaceconfig.h \
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
