@@ -19,6 +19,10 @@ constexpr uint32_t PING_TIME_NOSIGNAL_SEC = 4;
 // Packet loss threshold for a connection to be considered unstable.
 constexpr double PING_LOSS_UNSTABLE_THRESHOLD = 0.10;
 
+// Duration of time after a connection change were we should be skeptical
+// of network reachability problems.
+constexpr auto SETTLING_TIMEOUT_SEC = 3;
+
 namespace {
 Logger logger(LOG_NETWORKING, "ConnectionHealth");
 }
@@ -27,6 +31,10 @@ ConnectionHealth::ConnectionHealth() {
   MVPN_COUNT_CTOR(ConnectionHealth);
 
   m_noSignalTimer.setSingleShot(true);
+
+  m_settlingTimer.setSingleShot(true);
+  connect(&m_settlingTimer, &QTimer::timeout, this,
+          []() { logger.debug() << "Unsettled period over."; });
 
   connect(&m_healthCheckTimer, &QTimer::timeout, this,
           &ConnectionHealth::healthCheckup);
@@ -88,9 +96,13 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
 }
 
 void ConnectionHealth::connectionStateChanged() {
-  logger.debug() << "Connection state changed";
+  Controller::State state = MozillaVPN::instance()->controller()->state();
+  logger.debug() << "Connection state changed to" << state;
 
-  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+  if (state != Controller::StateInitializing) {
+    startUnsettledPeriod();
+  }
+  if (state != Controller::StateOn) {
     stop();
     return;
   }
@@ -118,8 +130,7 @@ void ConnectionHealth::pingSentAndReceived(qint64 msec) {
   m_healthCheckTimer.start(PING_TIME_UNSTABLE_SEC * 1000);
 
   healthCheckup();
-
-  emit pingChanged();
+  emit pingReceived();
 }
 
 void ConnectionHealth::healthCheckup() {
@@ -139,6 +150,11 @@ void ConnectionHealth::healthCheckup() {
   else {
     setStability(Stable);
   }
+}
+
+void ConnectionHealth::startUnsettledPeriod() {
+  logger.debug() << "Starting unsettled period.";
+  m_settlingTimer.start(SETTLING_TIMEOUT_SEC * 1000);
 }
 
 void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {

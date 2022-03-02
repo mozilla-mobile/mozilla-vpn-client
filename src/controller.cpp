@@ -38,8 +38,6 @@
 #  include "platforms/dummy/dummycontroller.h"
 #endif
 
-constexpr auto SETTLE_TIMEOUT = 3000;
-
 constexpr const uint32_t TIMER_MSEC = 1000;
 
 // X connection retries.
@@ -81,14 +79,11 @@ Controller::Controller() {
 
   connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
 
-  connect(&m_connectionCheck, &ConnectionCheck::success, this,
-          &Controller::connectionConfirmed);
-  connect(&m_connectionCheck, &ConnectionCheck::failure, this,
-          &Controller::connectionFailed);
   connect(&m_connectingTimer, &QTimer::timeout, this, [this]() {
     m_enableDisconnectInConfirming = true;
     emit enableDisconnectInConfirmingChanged();
   });
+
   connect(&m_handshakeTimer, &QTimer::timeout, this,
           &Controller::handshakeTimeout);
 }
@@ -186,7 +181,7 @@ bool Controller::activate() {
     setState(StateConnecting);
   }
 
-  resetConnectionCheck();
+  clearRetryCounter();
 
   activateInternal();
   return true;
@@ -342,7 +337,7 @@ bool Controller::deactivate() {
   m_handshakeTimer.stop();
   m_activationQueue.clear();
   clearConnectedTime();
-  resetConnectionCheck();
+  clearRetryCounter();
 
   Q_ASSERT(m_impl);
   m_impl->deactivate(stateToReason(m_state));
@@ -368,65 +363,19 @@ void Controller::connected(const QString& pubkey) {
     return;
   }
 
+  // Clear the retry counter after all connections have succeeded.
+  m_connectionRetry = 0;
+  emit connectionRetryChanged();
+
   // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
   setState(StateOn);
   resetConnectedTime();
-  m_connectionCheck.start();
-}
-
-void Controller::connectionConfirmed() {
-  logger.debug() << "Connection confirmed";
-
-  if (m_state != StateConfirming && m_state != StateOn) {
-    logger.error() << "Invalid confirmation received";
-    return;
-  }
-
-  m_connectionRetry = 0;
-  emit connectionRetryChanged();
-
-  if (m_state == StateOn) {
-    emit silentSwitchDone();
-    return;
-  }
-
-  setState(StateOn);
-
-  startUnsettledPeriod();
-
-  emit timeChanged();
 
   if (m_nextStep != None) {
     deactivate();
     return;
   }
-}
-
-void Controller::connectionFailed() {
-  logger.debug() << "Connection failed!";
-
-  if (m_state != StateConfirming && m_state != StateOn) {
-    logger.error() << "Invalid confirmation received";
-    return;
-  }
-
-  if (m_state == StateOn) {
-    emit silentSwitchDone();
-  }
-
-  if (m_nextStep != None || m_connectionRetry >= CONNECTION_MAX_RETRY) {
-    deactivate();
-    return;
-  }
-
-  ++m_connectionRetry;
-  emit connectionRetryChanged();
-
-  m_reconnectionStep = ExpectDisconnection;
-
-  Q_ASSERT(m_impl);
-  m_impl->deactivate(ControllerImpl::ReasonConfirming);
 }
 
 void Controller::handshakeTimeout() {
@@ -435,12 +384,27 @@ void Controller::handshakeTimeout() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
   Q_ASSERT(!m_activationQueue.isEmpty());
-  HopConnection& hop = m_activationQueue.first();
 
   // Block the offending server and try again.
-  // TODO: Add some kind of check to limit retries.
+  HopConnection& hop = m_activationQueue.first();
   vpn->setServerCooldown(hop.m_server.publicKey());
-  activateInternal();
+
+  if (m_nextStep != None) {
+    deactivate();
+    return;
+  }
+
+  // Try again, again if there are sufficient retries left.
+  ++m_connectionRetry;
+  emit connectionRetryChanged();
+  if (m_connectionRetry < CONNECTION_MAX_RETRY) {
+    activateInternal();
+    return;
+  }
+
+  // Otherwise, the give up and report the location as unavailable.
+  logger.error() << "Connection retries exhausted, giving up";
+  serverUnavailable();
 }
 
 void Controller::setCooldownForAllServersInACity(const QString& countryCode,
@@ -454,29 +418,11 @@ void Controller::setCooldownForAllServersInACity(const QString& countryCode,
   vpn->setCooldownForAllServersInACity(countryCode, cityCode);
 }
 
-bool Controller::isUnsettled() { return !m_settled; }
-
 void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
 
-  if (m_reconnectionStep == ExpectDisconnection) {
-    Q_ASSERT(m_state == StateConfirming || m_state == StateOn);
-    Q_ASSERT(m_connectionRetry > 0);
-
-    // We are retrying the connection. Let's ignore this disconnect signal and
-    // let's see if the servers are up.
-
-    m_reconnectionStep = ExpectHeartbeat;
-
-    TaskHeartbeat* task = new TaskHeartbeat();
-    connect(task, &Task::completed, this, &Controller::heartbeatCompleted);
-    task->run();
-    return;
-  }
-
-  startUnsettledPeriod();
   clearConnectedTime();
-  resetConnectionCheck();
+  clearRetryCounter();
 
   // This is an unexpected disconnection. Let's use the Disconnecting state to
   // animate the UI.
@@ -536,7 +482,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city,
   }
 
   clearConnectedTime();
-  resetConnectionCheck();
+  clearRetryCounter();
 
   logger.debug() << "Switching to a different server";
 
@@ -826,26 +772,9 @@ QStringList Controller::getExcludedAddresses(const Server& exitServer) {
   return list;
 }
 
-void Controller::resetConnectionCheck() {
-  m_reconnectionStep = NoReconnection;
-
-  m_connectionCheck.stop();
-
+void Controller::clearRetryCounter() {
   m_connectionRetry = 0;
   emit connectionRetryChanged();
-}
-
-void Controller::heartbeatCompleted() {
-  if (m_reconnectionStep != ExpectHeartbeat) {
-    return;
-  }
-
-  m_reconnectionStep = NoReconnection;
-
-  // If we are still in the main state, we can try to reconnect.
-  if (MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
-    activateInternal();
-  }
 }
 
 void Controller::clearConnectedTime() {
@@ -858,16 +787,6 @@ void Controller::resetConnectedTime() {
   m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
   emit timeChanged();
   m_timer.start(TIMER_MSEC);
-}
-
-void Controller::startUnsettledPeriod() {
-  logger.debug() << "Starting unsettled period.";
-  m_settled = false;
-  m_settleTimer.stop();
-  m_settleTimer.singleShot(SETTLE_TIMEOUT, [this]() {
-    m_settled = true;
-    logger.debug() << "Unsettled period over.";
-  });
 }
 
 QString Controller::currentLocalizedCityName() const {

@@ -88,7 +88,6 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
-        connectioncheck.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         constants.cpp \
@@ -213,7 +212,6 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
-        connectioncheck.h \
         connectiondataholder.h \
         connectionhealth.h \
         constants.h \

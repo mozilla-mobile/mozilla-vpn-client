@@ -22,8 +22,8 @@ class ConnectionHealth final : public QObject {
 
   Q_PROPERTY(ConnectionStability stability READ stability()
                  NOTIFY stabilityChanged)
-  Q_PROPERTY(uint latency READ latency NOTIFY pingChanged)
-  Q_PROPERTY(double loss READ loss NOTIFY pingChanged)
+  Q_PROPERTY(uint latency READ latency NOTIFY pingReceived)
+  Q_PROPERTY(double loss READ loss NOTIFY pingReceived)
 
  public:
   ConnectionHealth();
@@ -33,6 +33,7 @@ class ConnectionHealth final : public QObject {
 
   uint latency() const { return m_pingHelper.latency(); }
   double loss() const { return m_pingHelper.loss(); }
+  bool isUnsettled() const { return m_settlingTimer.isActive(); };
 
  public slots:
   void connectionStateChanged();
@@ -40,7 +41,7 @@ class ConnectionHealth final : public QObject {
 
  signals:
   void stabilityChanged();
-  void pingChanged();
+  void pingReceived();
 
  private:
   void stop();
@@ -52,10 +53,12 @@ class ConnectionHealth final : public QObject {
   void setStability(ConnectionStability stability);
 
   void healthCheckup();
+  void startUnsettledPeriod();
 
  private:
   ConnectionStability m_stability = Stable;
 
+  QTimer m_settlingTimer;
   QTimer m_noSignalTimer;
   QTimer m_healthCheckTimer;
 
