@@ -145,6 +145,9 @@ Window {
             text: "State: " + VPNConnectionBenchmark.state
         }
         Text {
+            text: "Speed: " + VPNConnectionBenchmark.speed
+        }
+        Text {
             text: "Ping: " + VPNConnectionHealth.latency
         }
         Text {

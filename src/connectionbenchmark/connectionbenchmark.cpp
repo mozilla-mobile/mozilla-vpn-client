@@ -30,14 +30,14 @@ void ConnectionBenchmark::setState(State state) {
 
 // TODO: Decide on thresholds for connection speeds
 void ConnectionBenchmark::setSpeed(qint64 m_download) {
-  logger.debug() << "Set speed";
+  logger.debug() << "Set speed" << m_download;
 
-  if (m_download < 10) {
-    m_speed = SpeedSlow;
-  } else if (m_download < 25) {
+  if (m_download >= 3125000) {  // 25 Megabit
+    m_speed = SpeedFast;
+  } else if (m_download >= 1250000 && m_download < 3125000) {  // 10 Megabit
     m_speed = SpeedMedium;
   } else {
-    m_speed = SpeedHigh;
+    m_speed = SpeedSlow;
   }
 
   emit speedChanged();

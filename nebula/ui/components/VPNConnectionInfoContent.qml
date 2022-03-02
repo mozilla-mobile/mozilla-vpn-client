@@ -22,10 +22,10 @@ Flickable {
         }
     }
 
+    // Fast connection threshold
     ListModel {
-        id: checkmarkListModel
+        id: checkmarkListModelFast
 
-        // Fast connection threshold
         ListElement {
             title: "Streaming in 4K"
             type: "checkmark"
@@ -38,7 +38,12 @@ Flickable {
             title: "Online gaming"
             type: "checkmark"
         }
-        // Medium connection threshold
+    }
+
+    // Medium connection threshold
+    ListModel {
+        id: checkmarkListModelMedium
+
         ListElement {
             title: "Browsing the internet"
             type: "checkmark"
@@ -51,7 +56,12 @@ Flickable {
             title: "Video conferencing"
             type: "checkmark"
         }
-        // Slow connection threshold
+    }
+
+    // Slow connection threshold
+    ListModel {
+        id: checkmarkListModelSlow
+
         ListElement {
             title: "Switching server locations"
             type: "arrow"
@@ -111,11 +121,20 @@ Flickable {
         }
 
         VPNCheckmarkList {
+            id: checkmarkList
+
             // TODO: Replace with localized string
-            listHeader: VPNConnectionBenchmark.speed === VPNConnectionBenchmark.Speedslow
+            listHeader: VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedSlow
                 ? "It looks like the connection to this server location is a bit slow, you can try:"
                 : "At your current speed, here's what your device is optimized for:"
-            listModel: checkmarkListModel
+            listModel:
+                if (VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedFast) {
+                    checkmarkListModelFast;
+                } else if (VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedMedium) {
+                    checkmarkListModelMedium;
+                } else {
+                    checkmarkListModelSlow;
+                }
 
             Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
             Layout.topMargin: VPNTheme.theme.listSpacing * 0.5

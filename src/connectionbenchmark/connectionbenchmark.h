@@ -35,7 +35,7 @@ class ConnectionBenchmark : public QObject {
   enum Speed {
     SpeedSlow,
     SpeedMedium,
-    SpeedHigh,
+    SpeedFast,
   };
   Q_ENUM(Speed);
 

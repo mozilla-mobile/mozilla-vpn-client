@@ -41,7 +41,7 @@ class ConnectionBenchmarkDownload final : public QObject {
  private:
   State m_state = StateInitial;
 
-  QTimer* m_timer;
+  QTimer* m_timer = new QTimer();
   quint64 m_startTime;
   quint64 m_bytesPerSecond;
 

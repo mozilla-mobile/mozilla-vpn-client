@@ -52,7 +52,7 @@ ColumnLayout {
     Repeater {
         id: checkmarkListRepeater
         delegate: checkMarkItem
-        model: checkmarkListModel
+        model: listModel
     }
 
 }
