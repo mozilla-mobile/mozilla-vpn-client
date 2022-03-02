@@ -55,7 +55,6 @@ class ConnectionBenchmark : public QObject {
 
   ConnectionBenchmarkDownload* m_benchmarkDownload;
 
-  void runNextBenchmark();
   void setState(State state);
   void setSpeed(qint64 m_download);
 };

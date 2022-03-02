@@ -9,6 +9,10 @@
 
 #include <QList>
 
+// TODO: Decide on thresholds for connection speeds
+constexpr uint32_t SPEED_THRESHOLD_FAST = 3125000;    // 25 Megabit
+constexpr uint32_t SPEED_THRESHOLD_MEDIUM = 1250000;  // 10 Megabit
+
 namespace {
 Logger logger(LOG_MODEL, "ConnectionBenchmark");
 }
@@ -28,13 +32,13 @@ void ConnectionBenchmark::setState(State state) {
   emit stateChanged();
 }
 
-// TODO: Decide on thresholds for connection speeds
 void ConnectionBenchmark::setSpeed(qint64 m_download) {
   logger.debug() << "Set speed" << m_download;
 
-  if (m_download >= 3125000) {  // 25 Megabit
+  if (m_download >= SPEED_THRESHOLD_FAST) {
     m_speed = SpeedFast;
-  } else if (m_download >= 1250000 && m_download < 3125000) {  // 10 Megabit
+  } else if (m_download >= SPEED_THRESHOLD_MEDIUM &&
+             m_download < SPEED_THRESHOLD_FAST) {
     m_speed = SpeedMedium;
   } else {
     m_speed = SpeedSlow;
@@ -43,53 +47,29 @@ void ConnectionBenchmark::setSpeed(qint64 m_download) {
   emit speedChanged();
 }
 
-void ConnectionBenchmark::runNextBenchmark() {
-  if (m_state == StateInitial) {
-    logger.debug() << "Run download benchmark";
-
-    m_benchmarkDownload = new ConnectionBenchmarkDownload();
-    setState(StateDownloadBenchmarking);
-
-    connect(m_benchmarkDownload, &ConnectionBenchmarkDownload::stateChanged,
-            this, [&] {
-              logger.debug() << "Download speedtest state changed";
-
-              if (m_benchmarkDownload->state() ==
-                  ConnectionBenchmarkDownload::StateReady) {
-                m_download = m_benchmarkDownload->downloadSpeed();
-                downloadChanged();
-
-                setState(StateDownloadReady);
-                setSpeed(m_download);
-                runNextBenchmark();
-              } else if (m_benchmarkDownload->state() ==
-                         ConnectionBenchmarkDownload::StateError) {
-                setState(StateError);
-              }
-            });
-
-    m_benchmarkDownload->start();
-
-  } else if (m_state == StateDownloadReady) {
-    setState(StateReady);
-  }
-}
-
 void ConnectionBenchmark::start() {
   logger.debug() << "Start connection benchmarking";
 
-  runNextBenchmark();
+  m_benchmarkDownload = new ConnectionBenchmarkDownload();
+
+  connect(m_benchmarkDownload, &ConnectionBenchmarkDownload::stateChanged, this,
+          [&] {
+            logger.debug() << "State changed" << m_benchmarkDownload->state();
+
+            m_download = m_benchmarkDownload->downloadSpeed();
+            downloadChanged();
+          });
+
+  m_benchmarkDownload->start();
 }
 
 void ConnectionBenchmark::stop() {
   logger.debug() << "Stop benchmark";
 
   Q_ASSERT(m_benchmarkDownload);
-  m_benchmarkDownload->stop();
+  // m_benchmarkDownload->stop();
 }
 
 void ConnectionBenchmark::reset() {
   logger.debug() << "Reset connection benchmarks";
-
-  setState(StateInitial);
 }

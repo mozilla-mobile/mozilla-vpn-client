@@ -5,8 +5,7 @@
 #ifndef CONNECTIONBENCHMARKDOWNLOAD_H
 #define CONNECTIONBENCHMARKDOWNLOAD_H
 
-#include "resourcedownloader.h"
-
+#include <initializer_list>
 #include <QDateTime>
 #include <QList>
 #include <QObject>
@@ -22,21 +21,20 @@ class ConnectionBenchmarkDownload final : public QObject {
 
   enum State {
     StateInitial,
-    StateDownloading,
+    StateBenchmarking,
     StateReady,
     StateError,
   };
   State state() const { return m_state; }
 
   void start();
-  void stop();
   double downloadSpeed() const { return m_bytesPerSecond; }
 
  signals:
   void stateChanged();
 
  private slots:
-  void onReady(ResourceDownloader* downloader);
+  void onReady(QByteArray data, bool hasError);
 
  private:
   State m_state = StateInitial;
@@ -45,13 +43,7 @@ class ConnectionBenchmarkDownload final : public QObject {
   quint64 m_startTime;
   quint64 m_bytesPerSecond;
 
-  QStringList m_downloadUrls;
-  QList<ResourceDownloader*> m_resourceDownloaderList;
-  int m_numOfFilesTotal;
-  int m_numOfFilesReceived;
-
   void setState(State state);
-  void populateUrlList();
 };
 
 #endif  // CONNECTIONBENCHMARKDOWNLOAD_H

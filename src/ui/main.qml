@@ -159,13 +159,7 @@ Window {
 
             Button {
                 text: "start"
-                onClicked: {
-                    if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial || VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateReady) {
-                        VPNConnectionBenchmark.start();
-                    } else {
-                        VPNConnectionBenchmark.stop();
-                    }
-                }
+                onClicked: VPNConnectionBenchmark.start()
             }
         }
 
