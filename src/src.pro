@@ -108,6 +108,7 @@ SOURCES += \
         hkdf.cpp \
         iaphandler.cpp \
         imageproviderfactory.cpp \
+        inspector/inspectorhandler.cpp \
         inspector/inspectoritempicker.cpp \
         inspector/inspectorutils.cpp \
         inspector/inspectorwebsocketconnection.cpp \
@@ -246,6 +247,7 @@ HEADERS += \
         hkdf.h \
         iaphandler.h \
         imageproviderfactory.h \
+        inspector/inspectorhandler.h \
         inspector/inspectoritempicker.h \
         inspector/inspectorutils.h \
         inspector/inspectorwebsocketconnection.h \
@@ -916,7 +918,6 @@ else:win* {
         platforms/windows/daemon/windowssplittunnel.cpp \
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
-        platforms/windows/windowsdatamigration.cpp \
         platforms/windows/windowsnetworkwatcher.cpp \
         platforms/windows/windowspingsender.cpp \
         platforms/windows/windowsstartatbootwatcher.cpp \
@@ -948,7 +949,6 @@ else:win* {
         platforms/windows/daemon/windowssplittunnel.h \
         platforms/windows/windowsservicemanager.h \
         platforms/windows/windowscommons.h \
-        platforms/windows/windowsdatamigration.h \
         platforms/windows/windowsnetworkwatcher.h \
         platforms/windows/windowspingsender.h \
         tasks/authenticate/desktopauthenticationlistener.h \
@@ -985,6 +985,7 @@ else:wasm {
             platforms/wasm/wasmnetworkrequest.cpp \
             platforms/wasm/wasmnetworkwatcher.cpp \
             platforms/wasm/wasmwindowcontroller.cpp \
+            platforms/wasm/wasminspector.cpp \
             systemtraynotificationhandler.cpp
 
     HEADERS += \
@@ -993,6 +994,7 @@ else:wasm {
             platforms/wasm/wasmauthenticationlistener.h \
             platforms/wasm/wasmnetworkwatcher.h \
             platforms/wasm/wasmwindowcontroller.h \
+            platforms/wasm/wasminspector.h \
             systemtraynotificationhandler.h
 
     SOURCES -= networkrequest.cpp

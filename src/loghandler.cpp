@@ -167,7 +167,7 @@ LogHandler::LogHandler(LogLevel minLogLevel, const QStringList& modules,
     : m_minLogLevel(minLogLevel), m_modules(modules) {
   Q_UNUSED(proofOfLock);
 
-#if defined(MVPN_DEBUG) || defined(MVPN_WASM)
+#if defined(MVPN_DEBUG)
   m_showDebug = true;
 #endif
 

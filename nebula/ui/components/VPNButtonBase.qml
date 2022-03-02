@@ -47,15 +47,15 @@ RoundButton {
     Accessible.onPressAction: handleKeyClick()
     Accessible.focusable: true
 
-    onActiveFocusChanged: {
-        if (!activeFocus) {
-            return visualStateItem.state = uiState.stateDefault;
-        } else {
-            return visualStateItem.state = uiState.stateFocused;
-        }
 
-        if (typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible)
-            return vpnFlickable.ensureVisible(visualStateItem);
+    onActiveFocusChanged: {
+        if (!focus) {
+            return visualStateItem.state = uiState.stateDefault;
+        }
+        visualStateItem.state = uiState.stateFocused;
+
+        if (typeof(ensureVisible) !== "undefined")
+            ensureVisible(root);
     }
 
     background: Rectangle {
