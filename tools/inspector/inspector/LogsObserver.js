@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { Client } from './client'
+import { Client } from './WebSocketClient'
 import { GenericDispatcher } from './genericdispatcher'
 
 const MAX_LOG_COUNT = 200

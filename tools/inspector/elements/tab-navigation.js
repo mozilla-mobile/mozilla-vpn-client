@@ -10,7 +10,7 @@ export class TabNavigation extends LitElement {
   static styles = css`
     :host {
       display: block;
-      width: 100vw;
+      width: 100%;
       background: white;
       margin:0;
     }
@@ -54,8 +54,8 @@ export class TabNavigation extends LitElement {
       console.error(`Failed to create View Element requested by tab-button <${this.tabView}>`)
       return
     }
-    /** @type {HTMLElement} */
-    const box = document.querySelector(this.target)
+   
+    const box = this.parentElement.querySelector(this.target)
     if (!box) {
       console.error(`Tabview can't find target element: ${this.target}`)
       return
@@ -64,7 +64,7 @@ export class TabNavigation extends LitElement {
     box.appendChild(viewElement)
 
     // Inspector Tabs are in <slots> thus live in document not shadow root :)
-    const old_active = document.querySelector('inspector-tab.active')
+    const old_active = this.querySelector('inspector-tab.active')
     if (old_active) {
       old_active.classList.remove('active')
     }
