@@ -95,6 +95,7 @@ SOURCES += \
         cryptosettings.cpp \
         curve25519.cpp \
         dnshelper.cpp \
+        dnspingsender.cpp \
         errorhandler.cpp \
         featurelist.cpp \
         filterproxymodel.cpp \
@@ -220,6 +221,7 @@ HEADERS += \
         cryptosettings.h \
         curve25519.h \
         dnshelper.h \
+        dnspingsender.h \
         errorhandler.h \
         featurelist.h \
         features/featureappreview.h \

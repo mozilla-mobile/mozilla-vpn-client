@@ -8,7 +8,13 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+
 #include <QApplication>
+#include <QDateTime>
+#include <QRandomGenerator>
+
+// In seconds, the time between pings while the VPN is deactivated.
+constexpr uint32_t PING_INTERVAL_IDLE_SEC = 15;
 
 // In seconds, the timeout for unstable pings.
 constexpr uint32_t PING_TIME_UNSTABLE_SEC = 2;
@@ -19,6 +25,14 @@ constexpr uint32_t PING_TIME_NOSIGNAL_SEC = 4;
 // Packet loss threshold for a connection to be considered unstable.
 constexpr double PING_LOSS_UNSTABLE_THRESHOLD = 0.10;
 
+// Destination address for latency measurements when the VPN is
+// deactivated. This is the Google anycast DNS server.
+constexpr const char* PING_WELL_KNOWN_ANYCAST_DNS = "8.8.8.8";
+
+// The baseline latency measurement averaged using an Exponentially Weighted
+// Moving Average (EWMA), this defines the decay rate.
+constexpr uint32_t PING_BASELINE_EWMA_DIVISOR = 8;
+
 // Duration of time after a connection change were we should be skeptical
 // of network reachability problems.
 constexpr auto SETTLING_TIMEOUT_SEC = 3;
@@ -27,7 +41,7 @@ namespace {
 Logger logger(LOG_NETWORKING, "ConnectionHealth");
 }
 
-ConnectionHealth::ConnectionHealth() {
+ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QString()) {
   MVPN_COUNT_CTOR(ConnectionHealth);
 
   m_noSignalTimer.setSingleShot(true);
@@ -44,6 +58,15 @@ ConnectionHealth::ConnectionHealth() {
 
   connect(qApp, &QApplication::applicationStateChanged, this,
           &ConnectionHealth::applicationStateChanged);
+
+  connect(&m_dnsPingSender, &DnsPingSender::recvPing, this,
+          &ConnectionHealth::dnsPingReceived);
+
+  connect(&m_dnsPingTimer, &QTimer::timeout, this, [this]() {
+    m_dnsPingSequence++;
+    m_dnsPingTimestamp = QDateTime::currentMSecsSinceEpoch();
+    m_dnsPingSender.sendPing(PING_WELL_KNOWN_ANYCAST_DNS, m_dnsPingSequence);
+  });
 }
 
 ConnectionHealth::~ConnectionHealth() { MVPN_COUNT_DTOR(ConnectionHealth); }
@@ -54,13 +77,14 @@ void ConnectionHealth::stop() {
   m_pingHelper.stop();
   m_noSignalTimer.stop();
   m_healthCheckTimer.stop();
+  m_dnsPingTimer.stop();
 
   setStability(Stable);
 }
 
-void ConnectionHealth::start(const QString& serverIpv4Gateway,
-                             const QString& deviceIpv4Address) {
-  logger.debug() << "ConnectionHealth activated";
+void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
+                                   const QString& deviceIpv4Address) {
+  logger.debug() << "ConnectionHealth started";
 
   if (m_suspended || serverIpv4Gateway.isEmpty() ||
       MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
@@ -72,6 +96,24 @@ void ConnectionHealth::start(const QString& serverIpv4Gateway,
   m_pingHelper.start(serverIpv4Gateway, deviceIpv4Address);
   m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
   m_healthCheckTimer.start(PING_TIME_UNSTABLE_SEC * 1000);
+  m_dnsPingTimer.stop();
+}
+
+void ConnectionHealth::startIdle() {
+  logger.debug() << "ConnectionHealth started";
+
+  m_pingHelper.stop();
+  m_noSignalTimer.stop();
+  m_healthCheckTimer.stop();
+
+  // Reset the DNS latency measurement.
+  m_dnsPingSequence = QRandomGenerator::global()->bounded(65536);
+  m_dnsPingLatency = 0;
+  m_dnsPingTimer.start(PING_INTERVAL_IDLE_SEC * 1000);
+
+  // Send an initial ping right away.
+  m_dnsPingTimestamp = QDateTime::currentMSecsSinceEpoch();
+  m_dnsPingSender.sendPing(PING_WELL_KNOWN_ANYCAST_DNS, m_dnsPingSequence);
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
@@ -102,20 +144,28 @@ void ConnectionHealth::connectionStateChanged() {
   if (state != Controller::StateInitializing) {
     startUnsettledPeriod();
   }
-  if (state != Controller::StateOn) {
-    stop();
-    return;
+
+  switch (state) {
+    case Controller::StateOn:
+      MozillaVPN::instance()->controller()->getStatus(
+          [this](const QString& serverIpv4Gateway,
+                 const QString& deviceIpv4Address, uint64_t txBytes,
+                 uint64_t rxBytes) {
+            Q_UNUSED(txBytes);
+            Q_UNUSED(rxBytes);
+
+            stop();
+            startActive(serverIpv4Gateway, deviceIpv4Address);
+          });
+      break;
+
+    case Controller::StateOff:
+      startIdle();
+      break;
+
+    default:
+      stop();
   }
-
-  MozillaVPN::instance()->controller()->getStatus(
-      [this](const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
-             uint64_t txBytes, uint64_t rxBytes) {
-        Q_UNUSED(txBytes);
-        Q_UNUSED(rxBytes);
-
-        stop();
-        start(serverIpv4Gateway, deviceIpv4Address);
-      });
 }
 
 void ConnectionHealth::pingSentAndReceived(qint64 msec) {
@@ -131,6 +181,18 @@ void ConnectionHealth::pingSentAndReceived(qint64 msec) {
 
   healthCheckup();
   emit pingReceived();
+}
+
+void ConnectionHealth::dnsPingReceived(quint16 sequence) {
+  if (sequence != m_dnsPingSequence) {
+    return;
+  }
+  quint64 latency = QDateTime::currentMSecsSinceEpoch() - m_dnsPingTimestamp;
+  logger.debug() << "Received DNS ping:" << latency << "msec";
+
+  m_dnsPingLatency *= (PING_BASELINE_EWMA_DIVISOR - 1);
+  m_dnsPingLatency += latency;
+  m_dnsPingLatency /= PING_BASELINE_EWMA_DIVISOR;
 }
 
 void ConnectionHealth::healthCheckup() {

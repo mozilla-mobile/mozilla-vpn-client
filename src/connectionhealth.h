@@ -6,6 +6,7 @@
 #define CONNECTIONHEALTH_H
 
 #include "pinghelper.h"
+#include "dnspingsender.h"
 
 class ConnectionHealth final : public QObject {
  public:
@@ -45,10 +46,12 @@ class ConnectionHealth final : public QObject {
 
  private:
   void stop();
-  void start(const QString& serverIpv4Gateway,
-             const QString& deviceIpv4Address);
+  void startActive(const QString& serverIpv4Gateway,
+                   const QString& deviceIpv4Address);
+  void startIdle();
 
   void pingSentAndReceived(qint64 msec);
+  void dnsPingReceived(quint16 sequence);
 
   void setStability(ConnectionStability stability);
 
@@ -63,6 +66,12 @@ class ConnectionHealth final : public QObject {
   QTimer m_healthCheckTimer;
 
   PingHelper m_pingHelper;
+
+  DnsPingSender m_dnsPingSender;
+  QTimer m_dnsPingTimer;
+  quint16 m_dnsPingSequence = 0;
+  quint64 m_dnsPingTimestamp = 0;
+  quint64 m_dnsPingLatency = 0;
 
   bool m_suspended = false;
   QString m_currentGateway;
