@@ -117,8 +117,7 @@ jobs:
             CONFIG+=webextension \
             QTPLUGIN+=qsvg \
             CONFIG-=static \
-            CONFIG+=balrog \
-            QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage \
+            CONFIG+=balrog \            
             MVPN_MACOS=1 \
             src/src.pro
           ruby scripts/macos/utils/xcode_patcher.rb \
@@ -130,7 +129,7 @@ jobs:
 
       - name: Compiling
         shell: bash
-        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO enableCodeCoverage=YES -project MozillaVPN.xcodeproj
+        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
 
       - name: Resigning
         shell: bash
@@ -260,8 +259,7 @@ jobs:
             CONFIG+=webextension \
             QTPLUGIN+=qsvg \
             CONFIG-=static \
-            CONFIG+=balrog \
-            QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage \
+            CONFIG+=balrog \            
             MVPN_MACOS=1 \
             src/src.pro
           ruby scripts/macos/utils/xcode_patcher.rb \
@@ -273,7 +271,7 @@ jobs:
 
       - name: Compiling
         shell: bash
-        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO enableCodeCoverage=YES -project MozillaVPN.xcodeproj
+        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
 
       - name: Packaging
         shell: bash

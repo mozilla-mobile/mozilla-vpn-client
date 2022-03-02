@@ -54,6 +54,28 @@ jobs:
           export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
           ./scripts/tests/unit_tests.sh
 
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov
+      
+      - name: Gather coverage data
+        shell: bash
+        run: |
+          grcov tests/unit/.obj -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovunit.info
+          grcov tests/nativemessaging/.obj -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovmessaging.info
+          grcov tests/auth/.obj -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovauth.info
+          grcov -t lcov -o final.lcov lcovunit.info lcovmessaging.info lcovauth.info
+        
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:              
+          directory: .obj/tests.build/Release/tests.build/Objects-normal/x86_64/                               
+          flags: unit_tests
+          name: codecov-poc
+          files: final.lcov
+          verbose: true
+
   macos-unit-tests:
     strategy:
       matrix:
@@ -104,6 +126,28 @@ jobs:
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           ./scripts/tests/unit_tests.sh
+
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov
+      
+      - name: Gather coverage data
+        shell: bash
+        run: |
+          grcov tests/unit/.obj -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovunit.info
+          grcov tests/nativemessaging/.obj -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovmessaging.info
+          grcov tests/auth/.obj -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovauth.info
+          grcov -t lcov -o final.lcov lcovunit.info lcovmessaging.info lcovauth.info
+        
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:              
+          directory: .obj/tests.build/Release/tests.build/Objects-normal/x86_64/                               
+          flags: unit_tests
+          name: codecov-poc
+          files: final.lcov
+          verbose: true
 
   windows-unit-tests:
     name: Run Unit tests on Windows Qt5
@@ -162,27 +206,3 @@ jobs:
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
           ./scripts/tests/unit_tests.sh
-  codecov-push:
-    name: Codecov workflow
-    on: [push]
-
-    jobs:
-      run:
-        runs-on: ${{ matrix.os }}
-        strategy:
-          matrix:
-            os: [ubuntu-20.04, macos-latest, windows-latest]       
-        steps:
-          - name: Gather coverage data
-            id: coverage
-            uses: actions-rs/grcov@v0.1
-            
-          - name: Upload coverage to Codecov
-            uses: codecov/codecov-action@v2
-            with:              
-              directory: .obj/tests.build/Release/tests.build/Objects-normal/x86_64/                               
-              flags: unit_tests
-              name: codecov-poc
-              path_to_write_report: ./coverage/codecov_report.txt
-              verbose: true
-    
