@@ -25,6 +25,6 @@
        run:
            using: run-task
            cwd: '{checkout}'
-           command: ./scripts/macosx_build.sh
+           command: ./taskcluster/scripts/build/macosx_build.sh
 
 
