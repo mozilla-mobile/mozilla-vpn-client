@@ -162,3 +162,23 @@ jobs:
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
           ./scripts/tests/unit_tests.sh
+  codecov-push:
+    name: Codecov workflow
+    on: [push]
+
+    jobs:
+      run:
+        runs-on: ${{ matrix.os }}
+        strategy:
+          matrix:
+            os: [ubuntu-20.04, macos-latest, windows-latest]       
+        steps:
+          - name: Upload coverage to Codecov
+            uses: codecov/codecov-action@v2
+            with:              
+              directory: .obj/tests.build/Release/tests.build/Objects-normal/x86_64/                               
+              flags: unit_tests
+              name: codecov-poc
+              path_to_write_report: ./coverage/codecov_report.txt
+              verbose: true
+    
