@@ -6,7 +6,6 @@
 #define CONTROLLER_H
 
 #include "models/server.h"
-#include "connectioncheck.h"
 #include "ipaddress.h"
 
 #include <QElapsedTimer>
