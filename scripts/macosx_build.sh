@@ -5,10 +5,13 @@ echo `pwd`
 # Dependencies
 python3 scripts/tooltool.py --url http://taskcluster/tooltool.mozilla-releng.net fetch -m macos/qt-dependencies.tt.manifest
 export PATH="`pwd`/qt/bin:$PATH"
-export PATH="/Users/task_163336061065616/Library/Python/3.6/bin:/Users/task_163336061065616/.gem/ruby/2.6.0/bin:$PATH"
+export PATH="~/Library/Python/3.6/bin:~/.gem/ruby/2.6.0/bin:$PATH"
 # install xcodeproj which is needed by xcode_patcher.rb
 # use --user-install for permissions
 gem install xcodeproj --user-install
+
+# install rust
+curl https://sh.rustup.rs -sSf | sh -s -- -y
 
 # make sure submodules are up to date
 # should already be done by XCode cloud cloning but just to make sure
@@ -31,7 +34,7 @@ pip3 install -r requirements.txt --user
 
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
-export PYTHONIOENCODING="UTF-8"  
+export PYTHONIOENCODING="UTF-8"
 
 python3 scripts/utils/generate_glean.py
 python3 scripts/utils/import_languages.py -m
