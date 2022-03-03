@@ -196,6 +196,9 @@ void TestSignUpAndIn::signIn() {
   // Password
   aia->setPassword(PASSWORD);
 
+  // Let's delete the account the end of the flow.
+  aia->enableAccountDeletion();
+
   // Sign-in
   aia->signIn();
   QCOMPARE(aia->state(), AuthenticationInApp::StateSigningIn);

@@ -108,6 +108,8 @@ class AuthenticationInApp final : public QObject {
 #ifdef UNIT_TEST
   // This method is used to have a test coverage for the TOTP verification.
   void enableTotpCreation();
+  // Delete account.
+  void enableAccountDeletion();
 #endif
 
   // This needs to be called when we are in StateUnblockCodeNeeded state.
@@ -149,6 +151,7 @@ class AuthenticationInApp final : public QObject {
 #ifdef UNIT_TEST
   void unitTestFinalUrl(const QUrl& url);
   void unitTestTotpCodeCreated(const QByteArray& data);
+  void unitTestAccountDeleted();
 #endif
 
  private:

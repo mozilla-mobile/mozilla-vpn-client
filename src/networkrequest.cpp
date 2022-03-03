@@ -678,6 +678,32 @@ NetworkRequest* NetworkRequest::createForFxaTotpCreation(
   r->postRequest(payload);
   return r;
 }
+
+// static
+NetworkRequest* NetworkRequest::createForFxaAccountDeletion(
+    Task* parent, const QByteArray& sessionToken, const QString& emailAddress,
+    const QByteArray& authpw) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::fxaApiBaseUrl());
+  url.setPath("/v1/account/destroy");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("email", emailAddress);
+  obj.insert("authPW", QString(authpw.toHex()));
+
+  QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
+
+  HawkAuth hawk = HawkAuth(sessionToken);
+  QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();
+  r->m_request.setRawHeader("Authorization", hawkHeader);
+
+  r->postRequest(payload);
+  return r;
+}
 #endif
 
 // static

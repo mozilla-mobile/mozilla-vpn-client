@@ -37,6 +37,14 @@ void AuthenticationInAppListener::aboutToFinish() {
     return;
   }
 
+#ifdef UNIT_TEST
+  if (m_extraOp == OpAccountDeletionNeeded) {
+    logger.info() << "Deleting account in progress";
+    deleteAccount();
+    return;
+  }
+#endif
+
   NetworkRequest* request =
       NetworkRequest::createForFxaSessionDestroy(m_task, m_sessionToken);
   Q_ASSERT(request);
@@ -190,7 +198,14 @@ void AuthenticationInAppListener::setPassword(const QString& password) {
 #ifdef UNIT_TEST
 void AuthenticationInAppListener::enableTotpCreation() {
   logger.debug() << "Enabling totp creation";
-  m_totpCreationNeeded = true;
+  Q_ASSERT(m_extraOp == OpNone);
+  m_extraOp = OpTotpCreationNeeded;
+}
+
+void AuthenticationInAppListener::enableAccountDeletion() {
+  logger.debug() << "Delete account request";
+  Q_ASSERT(m_extraOp == OpNone);
+  m_extraOp = OpAccountDeletionNeeded;
 }
 #endif
 
@@ -427,17 +442,39 @@ void AuthenticationInAppListener::createTotpCodes() {
             emit aip->unitTestTotpCodeCreated(data);
           });
 }
+
+void AuthenticationInAppListener::deleteAccount() {
+  NetworkRequest* request = NetworkRequest::createForFxaAccountDeletion(
+      m_task, m_sessionToken, m_emailAddress, m_authPw);
+
+  connect(request, &NetworkRequest::requestFailed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Failed to delete the account" << error;
+            emit readyToFinish();
+          });
+
+  connect(request, &NetworkRequest::requestCompleted, this,
+          [this](const QByteArray& data) {
+            logger.debug() << "Account deleted" << data;
+
+            AuthenticationInApp* aip = AuthenticationInApp::instance();
+            aip->requestState(AuthenticationInApp::StateStart, this);
+            emit aip->unitTestAccountDeleted();
+
+            emit readyToFinish();
+          });
+}
 #endif
 
 void AuthenticationInAppListener::finalizeSignInOrUp() {
   Q_ASSERT(!m_sessionToken.isEmpty());
 
 #ifdef UNIT_TEST
-  if (m_totpCreationNeeded) {
+  if (m_extraOp == OpTotpCreationNeeded) {
     logger.info() << "Totp creation in process";
-    m_totpCreationNeeded = false;
-    // Let's set it to false to avoid loops at the next finalizeSignInOrUp()
+    // Let's set it to `OpNone` to avoid loops at the next finalizeSignInOrUp()
     // call.
+    m_extraOp = OpNone;
     createTotpCodes();
     return;
   }
