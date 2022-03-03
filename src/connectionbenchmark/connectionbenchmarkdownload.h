@@ -8,10 +8,9 @@
 #include "tasks/downloadresource/taskdownloadresource.h"
 
 #include <initializer_list>
-#include <QDateTime>
+#include <QElapsedTimer>
 #include <QList>
 #include <QObject>
-#include <QTimer>
 
 class ConnectionBenchmarkDownload final : public QObject {
   Q_OBJECT;
@@ -41,9 +40,9 @@ class ConnectionBenchmarkDownload final : public QObject {
 
  private:
   TaskDownloadResource* m_downloadTask;
+  QElapsedTimer m_timer;
 
   State m_state = StateInitial;
-  quint64 m_startTime;
   quint64 m_bytesPerSecond;
 
   void setState(State state);

@@ -9,8 +9,6 @@
 #include "taskscheduler.h"
 #include "tasks/downloadresource/taskdownloadresource.h"
 
-#include <QDateTime>
-
 namespace {
 Logger logger(LOG_NETWORKING, "ConnectionBenchmarkDownload");
 }
@@ -34,8 +32,6 @@ void ConnectionBenchmarkDownload::start() {
   logger.debug() << "Start benchmark";
 
   m_bytesPerSecond = 0;
-  m_startTime = QDateTime::currentMSecsSinceEpoch();
-
   m_downloadTask = new TaskDownloadResource(QUrl(
       "https://speed1.syseleven.net.prod.hosts.ooklaserver.net:8080/"
       "download?nocache=73d775b0-3082-47fb-8816-d6171c023fa2&size=25000000"));
@@ -43,6 +39,7 @@ void ConnectionBenchmarkDownload::start() {
   connect(m_downloadTask, &TaskDownloadResource::completed, this,
           &ConnectionBenchmarkDownload::onReady);
 
+  m_timer.start();
   TaskScheduler::scheduleTask(m_downloadTask);
   setState(StateBenchmarking);
 }
@@ -62,8 +59,7 @@ void ConnectionBenchmarkDownload::onReady(QByteArray data, bool hasError) {
     return;
   }
 
-  quint64 downloadDuration = QDateTime::currentMSecsSinceEpoch() - m_startTime;
-  m_bytesPerSecond = data.size() / downloadDuration * 1000;
+  m_bytesPerSecond = data.size() / m_timer.elapsed() * 1000;
 
   setState(StateReady);
 }
