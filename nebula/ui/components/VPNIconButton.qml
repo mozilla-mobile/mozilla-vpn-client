@@ -11,7 +11,6 @@ import components 0.1
 
 VPNButtonBase {
     id: iconButton
-
     property bool skipEnsureVisible: false
     property var accessibleName
     property var buttonColorScheme: VPNTheme.theme.iconButtonLightBackground
@@ -34,7 +33,6 @@ VPNButtonBase {
 
     VPNMouseArea {
         id: mouseArea
-        anchors.fill: parent
         onExited: toolTip.close()
     }
 
