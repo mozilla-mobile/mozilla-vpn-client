@@ -15,6 +15,8 @@ Flickable {
     property var windowHeightExceedsContentHeight: (window.safeContentHeight > flickContentHeight)
     property bool hideScollBarOnStackTransition: false
 
+    clip: true
+
     function ensureVisible(item) {
         let yPosition = item.mapToItem(contentItem, 0, 0).y;
         if (windowHeightExceedsContentHeight || item.skipEnsureVisible || yPosition < 0) {
@@ -67,22 +69,44 @@ Flickable {
         duration: 200
     }
 
-    ScrollIndicator.vertical: ScrollIndicator {
+    ScrollBar.vertical: ScrollBar {
+        property var scrollBarWidth: Qt.platform.os === "osx" ? 6 : 10
+        id: scrollBar
+
+        Accessible.ignored: true
+        hoverEnabled: true
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.rightMargin:  Qt.platform.os === "osx" ? 2 : 0
+
         background: Rectangle {
             color: "transparent"
-            implicitWidth: VPNTheme.theme.windowMargin / 2
+            anchors.fill: parent
         }
 
         contentItem: Rectangle {
-            radius: VPNTheme.theme.windowMargin / 2
-            implicitWidth: VPNTheme.theme.windowMargin / 2 * .75
             color: VPNTheme.colors.grey40
-            opacity: .3
+            width: scrollBar.scrollBarWidth
+            implicitWidth: scrollBar.scrollBarWidth
+            radius: scrollBar.scrollBarWidth
+
+            opacity: scrollBar.pressed ? 0.5 :
+                   scrollBar.interactive && scrollBar.hovered ? 0.4 : 0.3
+            Behavior  on opacity {
+                PropertyAnimation {
+                    duration: 100
+                }
+            }
         }
 
-        visible: !windowHeightExceedsContentHeight
-        Accessible.ignored: true
+        implicitWidth: scrollBarWidth
+        width: scrollBarWidth
+        minimumSize: 0
+
         opacity: hideScollBarOnStackTransition && (vpnFlickable.StackView.status !== StackView.Active) ? 0 : 1
+        visible: !windowHeightExceedsContentHeight
+
         Behavior on opacity {
             PropertyAnimation {
                 duration: 100
