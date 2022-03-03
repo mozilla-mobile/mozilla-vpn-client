@@ -86,7 +86,7 @@
 
 
         <File Source="../../extension/manifests/windows/mozillavpn.json" />
-        <File Source="../../extension/bridge/target/release/mozillavpnnp.exe" />
+        <File Source="../../mozillavpnnp.exe" />
 
         <!-- Broker Service -->
         <ServiceInstall

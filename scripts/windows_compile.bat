@@ -122,7 +122,7 @@ ECHO BUILD_BUILD = %DEBUG_BUILD%
 
 IF %DEBUG_BUILD%==T (
   ECHO Generating Debug Build for the extension bridge
-  CD extension\bridge
+  pushd extension\bridge
 
   cargo build --debug
   IF %ERRORLEVEL% NEQ 0 (
@@ -130,13 +130,13 @@ IF %DEBUG_BUILD%==T (
     EXIT 1
   )
 
-  CP target/debug/mozillavpnnp.exe ..\..
-  CD ..\..
+  xcopy /y target\debug\mozillavpnnp.exe ..\..
+  popd
 )
 
 IF %DEBUG_BUILD%==F (
   ECHO Generating Release Build for the extension bridge
-  CD extension\bridge
+  pushd extension\bridge
 
   cargo build --release
   IF %ERRORLEVEL% NEQ 0 (
@@ -144,8 +144,8 @@ IF %DEBUG_BUILD%==F (
     EXIT 1
   )
 
-  CP target/release/mozillavpnnp.exe ..\..
-  CD ..\..
+  xcopy /y target\release\mozillavpnnp.exe ..\..
+  popd
 )
 
 ECHO Creating the project with flags: %FLAGS%
