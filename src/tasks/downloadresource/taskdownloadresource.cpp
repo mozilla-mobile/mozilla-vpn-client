@@ -23,17 +23,23 @@ TaskDownloadResource::~TaskDownloadResource() {
 }
 
 void TaskDownloadResource::run() {
-  logger.debug() << "Download resource";
+  logger.debug() << "Run download resource";
 
-  NetworkRequest* request =
-      NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
+  m_request = NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
 
-  connect(request, &NetworkRequest::requestUpdated, this,
+  connect(m_request, &NetworkRequest::requestUpdated, this,
           &TaskDownloadResource::onProgress);
-  connect(request, &NetworkRequest::requestCompleted, this,
+  connect(m_request, &NetworkRequest::requestCompleted, this,
           &TaskDownloadResource::onCompleted);
-  connect(request, &NetworkRequest::requestFailed, this,
+  connect(m_request, &NetworkRequest::requestFailed, this,
           &TaskDownloadResource::onFailed);
+}
+
+void TaskDownloadResource::stop() {
+  logger.debug() << "Stop download resource";
+  Q_ASSERT(m_request);
+
+  m_request->abort();
 }
 
 void TaskDownloadResource::onProgress(qint64 bytesReceived, qint64 bytesTotal) {

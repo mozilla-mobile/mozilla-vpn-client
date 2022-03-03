@@ -36,15 +36,22 @@ void ConnectionBenchmarkDownload::start() {
   m_bytesPerSecond = 0;
   m_startTime = QDateTime::currentMSecsSinceEpoch();
 
-  TaskDownloadResource* downloadTask = new TaskDownloadResource(QUrl(
+  m_downloadTask = new TaskDownloadResource(QUrl(
       "https://speed1.syseleven.net.prod.hosts.ooklaserver.net:8080/"
       "download?nocache=73d775b0-3082-47fb-8816-d6171c023fa2&size=25000000"));
 
-  connect(downloadTask, &TaskDownloadResource::completed, this,
+  connect(m_downloadTask, &TaskDownloadResource::completed, this,
           &ConnectionBenchmarkDownload::onReady);
 
-  TaskScheduler::scheduleTask(downloadTask);
+  TaskScheduler::scheduleTask(m_downloadTask);
   setState(StateBenchmarking);
+}
+
+void ConnectionBenchmarkDownload::stop() {
+  logger.debug() << "Stop benchmark";
+  Q_ASSERT(m_downloadTask);
+
+  m_downloadTask->stop();
 }
 
 void ConnectionBenchmarkDownload::onReady(QByteArray data, bool hasError) {

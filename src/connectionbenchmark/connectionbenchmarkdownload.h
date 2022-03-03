@@ -5,6 +5,8 @@
 #ifndef CONNECTIONBENCHMARKDOWNLOAD_H
 #define CONNECTIONBENCHMARKDOWNLOAD_H
 
+#include "tasks/downloadresource/taskdownloadresource.h"
+
 #include <initializer_list>
 #include <QDateTime>
 #include <QList>
@@ -28,6 +30,7 @@ class ConnectionBenchmarkDownload final : public QObject {
   State state() const { return m_state; }
 
   void start();
+  void stop();
   double downloadSpeed() const { return m_bytesPerSecond; }
 
  signals:
@@ -37,9 +40,9 @@ class ConnectionBenchmarkDownload final : public QObject {
   void onReady(QByteArray data, bool hasError);
 
  private:
-  State m_state = StateInitial;
+  TaskDownloadResource* m_downloadTask;
 
-  QTimer* m_timer = new QTimer();
+  State m_state = StateInitial;
   quint64 m_startTime;
   quint64 m_bytesPerSecond;
 

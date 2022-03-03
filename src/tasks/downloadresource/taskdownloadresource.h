@@ -5,6 +5,7 @@
 #ifndef TASKDOWNLOADRESOURCE_H
 #define TASKDOWNLOADRESOURCE_H
 
+#include "networkrequest.h"
 #include "task.h"
 
 #include <QByteArray>
@@ -21,6 +22,7 @@ class TaskDownloadResource final : public Task {
   ~TaskDownloadResource();
 
   void run() override;
+  void stop();
 
  private slots:
   void onProgress(qint64 bytesReceived, qint64 bytesTotal);
@@ -33,6 +35,7 @@ class TaskDownloadResource final : public Task {
 
  private:
   QUrl m_fileUrl;
+  NetworkRequest* m_request = nullptr;
 };
 
 #endif  // TASKDOWNLOADRESOURCE_H

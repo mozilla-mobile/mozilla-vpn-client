@@ -161,6 +161,10 @@ Window {
                 text: "start"
                 onClicked: VPNConnectionBenchmark.start()
             }
+            Button {
+                text: "stop"
+                onClicked: VPNConnectionBenchmark.stop()
+            }
         }
 
         Rectangle {
