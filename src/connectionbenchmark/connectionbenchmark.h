@@ -21,7 +21,6 @@ class ConnectionBenchmark : public QObject {
 
   Q_INVOKABLE void start();
   Q_INVOKABLE void stop();
-  Q_INVOKABLE void reset();
 
   enum State {
     StateInitial,

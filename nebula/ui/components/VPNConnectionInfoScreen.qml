@@ -51,10 +51,8 @@ Rectangle {
         },
         State {
             name: "open-loading"
-            when: (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StatePingBenchmarking
-                || VPNConnectionBenchmark.state === VPNConnectionBenchmark.StatePingReady
-                || VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateDownloadBenchmarking
-                || VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateDownloadReady)
+            when: (VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateInitial
+                && VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateReady)
                 && isOpen
                 && !isTransitioning
 

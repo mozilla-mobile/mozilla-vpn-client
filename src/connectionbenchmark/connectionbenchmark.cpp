@@ -60,10 +60,14 @@ void ConnectionBenchmark::start() {
                 ConnectionBenchmarkDownload::StateReady) {
               m_download = m_benchmarkDownload->downloadSpeed();
               downloadChanged();
+
+              setSpeed(m_download);
+              setState(StateReady);
             }
           });
 
   m_benchmarkDownload->start();
+  setState(StateDownloadBenchmarking);
 }
 
 void ConnectionBenchmark::stop() {
@@ -71,8 +75,6 @@ void ConnectionBenchmark::stop() {
   Q_ASSERT(m_benchmarkDownload);
 
   m_benchmarkDownload->stop();
+  setState(StateInitial);
 }
 
-void ConnectionBenchmark::reset() {
-  logger.debug() << "Reset connection benchmarks";
-}
