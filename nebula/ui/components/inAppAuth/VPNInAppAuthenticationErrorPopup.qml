@@ -67,11 +67,6 @@ VPNPopup {
                 openErrorModalAndForceFocus();
                 break;
 
-            case VPNAuthInApp.ErrorInvalidOrExpiredVerificationCode:
-                authErrorMessage.text = "Invalid or expired verification code"
-                openErrorModalAndForceFocus();
-                break;
-
             case VPNAuthInApp.ErrorTooManyRequests:
                 authErrorMessage.text = "Too many login attempts, hold off for 15 minutes"
                 openErrorModalAndForceFocus();

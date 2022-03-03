@@ -113,10 +113,17 @@ ColumnLayout {
                 base._inputErrorMessage =  VPNl18n.InAppAuthInvalidPasswordErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
+
             case VPNAuthInApp.ErrorInvalidEmailCode:
                 base._inputErrorMessage = "Invalid email code";
                 activeInput().forceActiveFocus();
                 break;
+
+            case VPNAuthInApp.ErrorInvalidOrExpiredVerificationCode:
+                base._inputErrorMessage = "Invalid or expired verification code"
+                activeInput().forceActiveFocus();
+                break;
+
             case VPNAuthInApp.ErrorInvalidTotpCode:
                 base._inputErrorMessage = "invalid 2fa unblock code";
                 activeInput().forceActiveFocus();
