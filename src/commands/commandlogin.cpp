@@ -165,6 +165,9 @@ int CommandLogin::run(QStringList& tokens) {
               case AuthenticationInApp::ErrorInvalidUnblockCode:
                 stream << "Invalid unblock code!" << Qt::endl;
                 break;
+              case AuthenticationInApp::ErrorInvalidEmailAddress:
+                stream << "Invalid email address" << Qt::endl;
+                break;
               case AuthenticationInApp::ErrorInvalidEmailCode:
                 stream << "Invalid email code!" << Qt::endl;
                 break;

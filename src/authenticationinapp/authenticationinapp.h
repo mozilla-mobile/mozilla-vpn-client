@@ -65,6 +65,7 @@ class AuthenticationInApp final : public QObject {
     ErrorEmailTypeNotSupported,
     ErrorFailedToSendEmail,
     ErrorIncorrectPassword,
+    ErrorInvalidEmailAddress,
     ErrorInvalidEmailCode,
     ErrorInvalidOrExpiredVerificationCode,
     ErrorInvalidUnblockCode,
