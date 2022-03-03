@@ -162,8 +162,7 @@ Rectangle {
             }
             color: VPNTheme.colors.white
             font.pixelSize: VPNTheme.theme.fontSizeLarge
-            // TODO: Replace with localized string
-            text: "Testing speed …"
+            text: VPNl18n.ConnectionInfoLoadingIndicatorLabel
         }
     }
 

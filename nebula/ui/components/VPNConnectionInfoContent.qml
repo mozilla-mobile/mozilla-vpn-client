@@ -17,59 +17,15 @@ Flickable {
     onVisibleChanged: {
         if (visible) {
             speedometerAnimation.play();
+            populateCheckmarkListModel();
         } else {
             speedometerAnimation.stop();
+            checkmarkListModel.clear();
         }
     }
 
-    // Fast connection threshold
     ListModel {
-        id: checkmarkListModelFast
-
-        ListElement {
-            title: "Streaming in 4K"
-            type: "checkmark"
-        }
-        ListElement {
-            title: "High-speed downloads"
-            type: "checkmark"
-        }
-        ListElement {
-            title: "Online gaming"
-            type: "checkmark"
-        }
-    }
-
-    // Medium connection threshold
-    ListModel {
-        id: checkmarkListModelMedium
-
-        ListElement {
-            title: "Browsing the internet"
-            type: "checkmark"
-        }
-        ListElement {
-            title: "Streaming video"
-            type: "checkmark"
-        }
-        ListElement {
-            title: "Video conferencing"
-            type: "checkmark"
-        }
-    }
-
-    // Slow connection threshold
-    ListModel {
-        id: checkmarkListModelSlow
-
-        ListElement {
-            title: "Switching server locations"
-            type: "arrow"
-        }
-        ListElement {
-            title: "Checking your internet connection"
-            type: "arrow"
-        }
+        id: checkmarkListModel
     }
 
     ColumnLayout {
@@ -125,16 +81,9 @@ Flickable {
 
             // TODO: Replace with localized string
             listHeader: VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedSlow
-                ? "It looks like the connection to this server location is a bit slow, you can try:"
-                : "At your current speed, here's what your device is optimized for:"
-            listModel:
-                if (VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedFast) {
-                    checkmarkListModelFast;
-                } else if (VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedMedium) {
-                    checkmarkListModelMedium;
-                } else {
-                    checkmarkListModelSlow;
-                }
+                ? VPNl18n.ConnectionInfoListHeaderSlow
+                : VPNl18n.ConnectionInfoListHeaderDefault
+            listModel: checkmarkListModel
 
             Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
             Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
@@ -168,7 +117,7 @@ Flickable {
             }
 
             VPNConnectionInfoItem {
-                title: "Ping"
+                title: VPNl18n.ConnectionInfoLabelPing
                 subtitle: VPNConnectionHealth.latency
                 iconPath: "qrc:/nebula/resources/connection-green.svg"
             }
@@ -182,7 +131,8 @@ Flickable {
             }
 
             VPNConnectionInfoItem {
-                title: "Download"
+                //% "Download"
+                title: qsTrId("vpn.connectionInfo.download")
                 subtitle: root.getConnectionLabel(VPNConnectionBenchmark.download)
                 iconPath: "qrc:/nebula/resources/download.svg"
             }
@@ -239,6 +189,48 @@ Flickable {
             return roundValue(connectionValueBits / Math.pow(1000, 3));
 
         return roundValue(connectionValueBits / Math.pow(1000, 4));
+    }
+
+    function populateCheckmarkListModel() {
+        // Fast connection threshold
+        if (VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedFast) {
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoHighBulletOne,
+                type: "checkmark"
+            });
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoHighBulletTwo,
+                type: "checkmark"
+            });
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoHighBulletThree,
+                type: "checkmark"
+            });
+        } else if (VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedMedium) {
+            // Medium connection threshold
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoMediumBulletOne,
+                type: "checkmark"
+            });
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoMediumBulletTwo,
+                type: "checkmark"
+            });
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoMediumBulletThree,
+                type: "checkmark"
+            });
+        } else {
+            // Slow connection threshold
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoTroubleshootingBulletOne,
+                type: "arrow",
+            });
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoTroubleshootingBulletTwo,
+                type: "arrow",
+            });
+        }
     }
 
 }
