@@ -135,9 +135,9 @@ jobs:
       - name: Gather coverage data
         shell: bash
         run: |
-          grcov tests/unit/.obj -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovunit.info
-          grcov tests/nativemessaging/.obj -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovmessaging.info
-          grcov tests/auth/.obj -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovauth.info
+          grcov tests/unit/.obj/tests.build/Release/tests.build/Objects-normal/x86_64/ -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovunit.info
+          grcov tests/nativemessaging/.obj/tests.build/Release/tests.build/Objects-normal/x86_64/ -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovmessaging.info
+          grcov tests/auth/.obj/tests.build/Release/tests.build/Objects-normal/x86_64/ -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovauth.info
           grcov -t lcov -o final.lcov lcovunit.info lcovmessaging.info lcovauth.info
         
       - name: Upload coverage to Codecov
