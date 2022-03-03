@@ -933,19 +933,13 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
   connect(m_reply, &QNetworkReply::finished, this,
           &NetworkRequest::maybeDeleteLater);
   connect(m_reply, &QNetworkReply::downloadProgress, this,
-          &NetworkRequest::handleProgress);
+          &NetworkRequest::requestUpdated);
 }
 
 void NetworkRequest::maybeDeleteLater() {
   if (m_reply && m_reply->isFinished()) {
     deleteLater();
   }
-}
-
-void NetworkRequest::handleProgress(qint64 bytesReceived, qint64 bytesTotal) {
-  Q_ASSERT(m_reply);
-
-  requestUpdated(bytesReceived, bytesTotal);
 }
 
 int NetworkRequest::statusCode() const {

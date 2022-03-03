@@ -7,7 +7,7 @@
 
 #include "connectionbenchmarkdownload.h"
 
-class ConnectionBenchmark : public QObject {
+class ConnectionBenchmark final : public QObject {
   Q_OBJECT;
   Q_DISABLE_COPY_MOVE(ConnectionBenchmark);
 
@@ -24,8 +24,7 @@ class ConnectionBenchmark : public QObject {
 
   enum State {
     StateInitial,
-    StateDownloadBenchmarking,
-    StateDownloadReady,
+    StateRunning,
     StateReady,
     StateError,
   };
@@ -48,14 +47,14 @@ class ConnectionBenchmark : public QObject {
   void downloadChanged();
 
  private:
-  State m_state = StateInitial;
-  Speed m_speed;
-  qint64 m_download;
-
-  ConnectionBenchmarkDownload* m_benchmarkDownload;
-
   void setState(State state);
   void setSpeed(qint64 m_download);
+
+  State m_state = StateInitial;
+  Speed m_speed = SpeedSlow;
+  qint64 m_download = 0;
+
+  ConnectionBenchmarkDownload* m_benchmarkDownload = nullptr;
 };
 
 #endif  // CONNECTIONBENCHMARK_H

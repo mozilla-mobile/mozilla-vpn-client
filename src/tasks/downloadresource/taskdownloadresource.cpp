@@ -28,11 +28,11 @@ void TaskDownloadResource::run() {
   m_request = NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
 
   connect(m_request, &NetworkRequest::requestUpdated, this,
-          &TaskDownloadResource::onProgress);
+          &TaskDownloadResource::taskProgressed);
   connect(m_request, &NetworkRequest::requestCompleted, this,
-          &TaskDownloadResource::onCompleted);
+          &TaskDownloadResource::taskCompleted);
   connect(m_request, &NetworkRequest::requestFailed, this,
-          &TaskDownloadResource::onFailed);
+          &TaskDownloadResource::taskFailed);
 }
 
 void TaskDownloadResource::stop() {
@@ -42,7 +42,8 @@ void TaskDownloadResource::stop() {
   m_request->abort();
 }
 
-void TaskDownloadResource::onProgress(qint64 bytesReceived, qint64 bytesTotal) {
+void TaskDownloadResource::taskProgressed(qint64 bytesReceived,
+                                          qint64 bytesTotal) {
   logger.debug() << "Download progressed";
 
   Q_UNUSED(bytesTotal);
@@ -50,14 +51,14 @@ void TaskDownloadResource::onProgress(qint64 bytesReceived, qint64 bytesTotal) {
   emit progressed(bytesReceived);
 }
 
-void TaskDownloadResource::onCompleted(const QByteArray& data) {
+void TaskDownloadResource::taskCompleted(const QByteArray& data) {
   logger.debug() << "Download completed";
 
   emit completed(data, false);
 }
 
-void TaskDownloadResource::onFailed(QNetworkReply::NetworkError error,
-                                    const QByteArray& data) {
+void TaskDownloadResource::taskFailed(QNetworkReply::NetworkError error,
+                                      const QByteArray& data) {
   logger.debug() << "Download failed";
 
   bool hasError = error != QNetworkReply::NoError;

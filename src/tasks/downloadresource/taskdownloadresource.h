@@ -25,9 +25,9 @@ class TaskDownloadResource final : public Task {
   void stop();
 
  private slots:
-  void onProgress(qint64 bytesReceived, qint64 bytesTotal);
-  void onCompleted(const QByteArray& data);
-  void onFailed(QNetworkReply::NetworkError error, const QByteArray& data);
+  void taskProgressed(qint64 bytesReceived, qint64 bytesTotal);
+  void taskCompleted(const QByteArray& data);
+  void taskFailed(QNetworkReply::NetworkError error, const QByteArray& data);
 
  signals:
   void completed(QByteArray data, bool hasError);

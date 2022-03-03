@@ -2,12 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "connectionbenchmarkdownload.h"
 #include "connectionbenchmark.h"
+#include "connectionbenchmarkdownload.h"
 #include "leakdetector.h"
 #include "logger.h"
-
-#include <QList>
 
 // TODO: Decide on thresholds for connection speeds
 constexpr uint32_t SPEED_THRESHOLD_FAST = 3125000;    // 25 Megabit
@@ -63,11 +61,13 @@ void ConnectionBenchmark::start() {
 
               setSpeed(m_download);
               setState(StateReady);
+            } else {
+              setState(StateError);
             }
           });
 
   m_benchmarkDownload->start();
-  setState(StateDownloadBenchmarking);
+  setState(StateRunning);
 }
 
 void ConnectionBenchmark::stop() {
