@@ -41,11 +41,11 @@ export class LiveView extends LitElement {
   connectedCallback () {
     super.connectedCallback()
     UIObserver.on('screenshot', (evnt) => {
-      this.screen = evnt.screen.value
+      this.screen = evnt.detail.screen.value
       this.decodeImage()
     })
     UIObserver.on('tree', (evnt) => {
-      const tree = evnt.list
+      const tree = evnt.detail.list
       this.qmlRoot = tree[0]
     })
     this.timer = window.setInterval(() => {
@@ -71,6 +71,12 @@ export class LiveView extends LitElement {
       return
     }
     const canvas = this.renderRoot.querySelector('canvas')
+    if(!canvas){
+      return;
+    }
+    if(!this.decodedImage){
+      return;
+    }
     const ctx = canvas.getContext('2d')
     requestAnimationFrame(() => {
       ctx.drawImage(this.decodedImage, 0, 0, canvas.width, canvas.height)

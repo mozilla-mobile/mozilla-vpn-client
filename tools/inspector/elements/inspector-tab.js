@@ -55,7 +55,7 @@ export class InspectorTab extends LitElement {
 
     CommandObserver.on('commandsChanged', (e) => {
       /** @type {Array} */
-      const commandList = e.value
+      const commandList = e.detail.value
       if (this.command == '' || this.command == undefined) {
         this.commandAvaliable = true
         return

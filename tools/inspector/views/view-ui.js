@@ -4,6 +4,7 @@
 
 import { html, css, LitElement } from 'lit'
 import { UIObserver } from '../inspector/UiObserver'
+import { Client } from '../inspector/Client'
 import '../elements/pill-toggle'
 import '../elements/live-view'
 
@@ -23,20 +24,23 @@ export class ViewUi extends LitElement {
         overflow-y: auto;
         flex-grow:1;
         display:flex;
+        position:  relative;
     }
     table{
         width:100%;
     }
     aside{
-        height: 100%;
-        max-width: 50%;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
+      border: 2px solid blue;
+      position:absolute;
+      right: 20px;
+      height: 100%;
+      max-width: 50%;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
         padding: 20px;
-        border-left: solid 1px var(--lt-color-gray-900);
+      border-left: solid 1px var(--lt-color-gray-900);
         background: white;
-        position: sticky;
         top: 10px;
         max-height: 92vh;
         overflow-y: auto;
@@ -87,7 +91,7 @@ export class ViewUi extends LitElement {
     }
     `
 
-  constructor () {
+  constructor() {
     super()
     this.settings = {
       'Hide Invisible Elements': false,
@@ -96,7 +100,7 @@ export class ViewUi extends LitElement {
     }
   }
 
-  connectedCallback () {
+  connectedCallback() {
     super.connectedCallback()
     UIObserver.onAny(() => { this.onRequest() })
     requestIdleCallback(() => {
@@ -104,7 +108,7 @@ export class ViewUi extends LitElement {
     })
   }
 
-  static get properties () {
+  static get properties() {
     return {
       data: { attribute: false },
       detail: { attribute: false },
@@ -112,12 +116,12 @@ export class ViewUi extends LitElement {
     }
   }
 
-  onRequest () {
+  onRequest() {
     this.data = UIObserver.tree
     this.requestUpdate('data')
   }
 
-  renderTree (rootObject) {
+  renderTree(rootObject) {
     if (rootObject.subItems.length == 0) {
       return ''
     }
@@ -128,7 +132,7 @@ export class ViewUi extends LitElement {
         `
   }
 
-  renderNode (node) {
+  renderNode(node) {
     // Check if the Node Matches the Filter:
     if (this.settings['Hide Invisible Elements']) {
       if (!node.visible) {
@@ -150,12 +154,12 @@ export class ViewUi extends LitElement {
     return html`
         <li class="view-element ${hasChilden ? 'hasChilden' : ''} ${isDetail ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}">
         ${hasChilden
-? html`
+        ? html`
             <span class="indicator" @click="${(e) => { this.toggleCollapse(e, node) }}">
             ${isCollapsed ? '➡️' : '⬇️'}
             </span>
         `
-: ''}   
+        : ''}   
             
             <span class="name" @click="${(e) => { this.openDetail(e, node) }}" >${text}</span>  
             ${this.renderTree(node)}
@@ -163,7 +167,7 @@ export class ViewUi extends LitElement {
         `
   }
 
-  renderDetail (node) {
+  renderDetail(node) {
     console.log(node)
     return html`
              <aside style="flex:1;">
@@ -171,52 +175,60 @@ export class ViewUi extends LitElement {
                  <hr>
                 <table>
                     ${Object.entries(node).map(kv => {
-                        const [key, value] = kv
-                        return html`
+      const [key, value] = kv
+      return html`
                             <tr>
                                 <td> ${key}</td>
                                 <td><pre>${value}</pre></td>
                             </tr>
                         `
-                    })}
+    })}
                 </table>
                 <hr>
              </aside>
             `
   }
 
-  openDetail (e, node) {
+  openDetail(e, node) {
     e.stopPropagation()
     this.detail = node
     this.requestUpdate('detail')
   }
 
-  closeDetail () {
+  closeDetail() {
     this.detail = undefined
   }
 
-  quickFilterChange (id) {
+  quickFilterChange(id) {
     this.settings[id] = !this.settings[id]
     this.requestUpdate('settings')
   }
-  saveImage(){
+  saveImage() {
     this.renderRoot.querySelector("live-view").saveImage();
   }
 
-  toggleCollapse (event, node) {
+  toggleCollapse(event, node) {
     node.__collapsed__ = !node.__collapsed__
     this.requestUpdate('data')
   }
+  maybeLiveView() {
+    if (Client.type() == "wasm") {
+      return html``
+    }
+    return html`
+      <live-view .qmlHighlight=${this.detail} .showRulers=${this.settings['Show Rulers']}></live-view>`
+  }
 
-  render () {
+  render() {
     return html`
          <nav>
-            <pill-toggle noActive="true"  @click=${(e) => {this.saveImage()}}>Download Image</pill-toggle>
+            <pill-toggle noActive="true"  @click=${(e) => { this.saveImage() }}>Download Image</pill-toggle>
             <span>Settings:</span>
             ${Object.keys(this.settings).map(e => html` <pill-toggle id="${e}" @click=${() => this.quickFilterChange(e)}>${e}</pill-toggle>`)}
         </nav>
         <main>
-          <live-view .qmlHighlight=${this.detail} .showRulers=${this.settings['Show Rulers']}></live-view>
+          ${this.maybeLiveView()}
+          
           <ul style="flex:1;">
             ${this.data ? this.renderNode(this.data[0]) : ''}
           </ul>

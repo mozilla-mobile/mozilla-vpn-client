@@ -5,6 +5,8 @@
 // Imports the Module that defines <tag></tag>
 export async function loadView (tag) {
     switch(tag){
+        case "view-connection":
+            return import("./view-connection.ts")
         case "view-shell":
             return import("./view-shell.js")
         case "view-logs":

@@ -3,16 +3,12 @@
     <head>
         <title>Mozilla VPN Inspector</title>
         <style>
-            @import url("app.css");
-            @import url("/node_modules/xterm/css/xterm.css");     
+            @import url("app.css");   
         </style>        
     </head>
     <body>
-        <view-appshell></view-appshell>
-        <view-inspectorshell></view-inspectorshell>
+        <app-inspector></app-inspector>
     </body>
-    <script type="module" src="app.js"></script>
-    <script type="module" src="views/app-shell.ts"></script>
-    <script type="module" src="views/inspector-shell.ts"></script>
+    <script type="module" src="app.ts"></script>
     </body>
 </html>

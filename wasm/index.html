@@ -35,6 +35,7 @@
       </div>
 
       <div id="qtstatus"></div>
+      <a href="/inspector/" id="inspectorLink"> Open Inspector</a>
 
     </main>
     <footer>
@@ -47,11 +48,30 @@
       </a>
     </footer>
     <script type='text/javascript'>
+        window.inspectorLink ="http://localhost:1234/";
         function init() {
           const qmlcanvas = document.querySelector('#qmlcanvas');
           const controlcanvas = document.querySelector('#controlcanvas');
           const status = document.querySelector('#qtstatus');
           const bodyClassList = document.body.classList;
+          const inspectorBtn = document.querySelector("#inspectorLink")
+          
+          inspectorBtn.addEventListener("click", (e)=>{
+            e.preventDefault();
+            const url = new URL(window.inspectorLink);
+            url.searchParams.append("connect",window.origin);
+            
+
+            const inspector= window.open(url.toString(), "inspectorWindow","popup");
+            window.inspectorMessage = (msg)=>{
+              inspector.postMessage(msg,"*");
+            }
+            window.addEventListener("message",(event)=>{
+              Module.inspectorCommand(event.data);
+            })
+
+          });
+
 
           const qtLoader = QtLoader({
               canvasElements : [controlcanvas, qmlcanvas],
