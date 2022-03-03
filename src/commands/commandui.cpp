@@ -145,6 +145,7 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MVPN_WINDOWS
+#  ifdef MVPN_DEBUG
     // Allocate a console to view log output in debug mode on windows
     if (AllocConsole()) {
       FILE* unusedFile;
@@ -154,6 +155,7 @@ int CommandUI::run(QStringList& tokens) {
       std::clog.clear();
       std::cerr.clear();
     }
+#  endif
 
     CrashClient::instance().start(CommandLineParser::argc(),
                                   CommandLineParser::argv());
