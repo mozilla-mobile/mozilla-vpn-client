@@ -77,7 +77,7 @@ jobs:
       - name: Configuring the build
         shell: bash
         run: |
-          export QT_IOS_BIN=/opt/${{matrix.config.version}}ios/bin
+          export QT_IOS_BIN=/opt/${{matrix.config.version}}/ios/bin
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           cat > xcode.xconfig << EOF
