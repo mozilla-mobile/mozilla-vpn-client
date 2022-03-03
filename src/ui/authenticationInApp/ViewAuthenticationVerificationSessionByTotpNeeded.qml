@@ -31,8 +31,8 @@ VPNInAppAuthenticationBase {
     _menuButtonOnClick: () => { VPN.cancelAuthentication() }
     _menuButtonAccessibleName: "TODO: Lorum Ipsum - Back"
     _headlineText: "Enter 2-factor auth code"
-    _subtitleText: "Enter your 2-factor auth code"
-    _imgSource: "qrc:/ui/resources/logo.svg"
+    _subtitleText: "Enter 6-digit code"
+    _imgSource: "qrc:/nebula/resources/verification-code.svg"
     _inputLabel: "Enter code"
 
     _inputs: VPNInAppAuthenticationInputs {
