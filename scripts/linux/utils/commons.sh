@@ -36,10 +36,6 @@ _compile() {
 
 ## Unit tests
 
-utest_dependencies() {
-  echo "Nothing to do here"
-}
-
 utest_compile_unit() {
   _qmake tests/unit || die
   _compile tests/unit || die
