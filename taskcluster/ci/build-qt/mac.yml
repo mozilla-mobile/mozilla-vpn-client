@@ -10,9 +10,9 @@ job-defaults:
 
 mac:
     description: "Mac QT compile Task"
-    index:
-        product: qt
-        job-name: qt-v6.2.3-mac
+#    index:
+#        product: qt
+#        job-name: qt-v6.2.3-mac
     optimization: 
         hashIndex: 
             # Re-Do The Job if either changes
@@ -29,5 +29,5 @@ mac:
         artifacts:
              - type: file
                name: public/build/qt6_mac.zip
-               path: build/src/artifacts/qt6_mac.zip
-    worker-type: b-win2012
+               path: checkouts/vcs/artifacts/qt6_mac.zip
+    worker-type: b-osx

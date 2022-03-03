@@ -5,13 +5,22 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+export PATH=$PWD/homebrew/bin:$PATH
+
 mkdir qt_dist
 mkdir artifacts
 
-wget https://download.qt.io/archive/qt/6.2/6.2.3/single/qt-everywhere-src-6.2.3.zip -o qt.zip
-unzip qt.zip -q || true 
+brew install cmake
+brew install ninja
 
+echo "Download QT 6.2.3"
+curl -o qt.zip -L https://download.qt.io/archive/qt/6.2/6.2.3/single/qt-everywhere-src-6.2.3.zip
+unzip -q -aa qt.zip || true 
 
-./scripts/utils/qt6_compile qt-everywhere-src-6.2.3 qt_dist 
-
-zip -r artifacts/qt6_mac.zip qt_dist
+echo "Building QT"
+./scripts/utils/qt6_compile.sh qt-everywhere-src-6.2.3 qt_dist 
+echo "Build Qt- Creating dist artifact"
+ls 
+echo $PWD
+zip -r artifacts/qt6_mac.zip qt-everywhere-src-6.2.3/qt_dist/*
