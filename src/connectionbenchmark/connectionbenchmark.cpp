@@ -2,10 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "benchmarkdownloadtask.h"
 #include "connectionbenchmark.h"
 #include "connectionbenchmarkdownload.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "taskscheduler.h"
 
 // TODO: Decide on thresholds for connection speeds
 constexpr uint32_t SPEED_THRESHOLD_FAST = 3125000;    // 25 Megabit
@@ -48,25 +50,44 @@ void ConnectionBenchmark::setSpeed(qint64 m_download) {
 void ConnectionBenchmark::start() {
   logger.debug() << "Start connection benchmarking";
 
-  m_benchmarkDownload = new ConnectionBenchmarkDownload();
+  // Start: Task test
+  BenchmarkDownloadTask* downloadBenchmarkTask = new BenchmarkDownloadTask();
 
-  connect(m_benchmarkDownload, &ConnectionBenchmarkDownload::stateChanged, this,
-          [&] {
-            logger.debug() << "State changed" << m_benchmarkDownload->state();
+  connect(downloadBenchmarkTask, &BenchmarkDownloadTask::finished, this,
+          [&](quint64 bytesPerSecond) {
+            logger.debug() << "Finished" << bytesPerSecond;
 
-            if (m_benchmarkDownload->state() ==
-                ConnectionBenchmarkDownload::StateReady) {
-              m_download = m_benchmarkDownload->downloadSpeed();
-              downloadChanged();
+            m_download = bytesPerSecond;
+            downloadChanged();
 
-              setSpeed(m_download);
-              setState(StateReady);
-            } else {
-              setState(StateError);
-            }
+            setSpeed(m_download);
+            setState(StateReady);
           });
 
-  m_benchmarkDownload->start();
+  TaskScheduler::scheduleTask(downloadBenchmarkTask);
+  // End: Task test
+
+  // m_benchmarkDownload = new ConnectionBenchmarkDownload();
+  // connect(m_benchmarkDownload, &ConnectionBenchmarkDownload::stateChanged,
+  // this,
+  //         [&] {
+  //           logger.debug() << "State changed" <<
+  //           m_benchmarkDownload->state();
+
+  //           if (m_benchmarkDownload->state() ==
+  //               ConnectionBenchmarkDownload::StateReady) {
+  //             m_download = m_benchmarkDownload->downloadSpeed();
+  //             downloadChanged();
+
+  //             setSpeed(m_download);
+  //             setState(StateReady);
+  //           } else {
+  //             setState(StateError);
+  //           }
+  //         });
+
+  // m_benchmarkDownload->start();
+
   setState(StateRunning);
 }
 
