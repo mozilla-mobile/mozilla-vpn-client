@@ -134,10 +134,10 @@ jobs:
       
       - name: Gather coverage data
         shell: bash
-        run: |
-          grcov tests/unit/.obj/tests.build -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovunit.info
-          grcov tests/nativemessaging/.obj/tests.build -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovmessaging.info
-          grcov tests/auth/.obj/tests.build -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o lcovauth.info
+        run: |          
+          grcov tests/unit/.obj/tests.build -t lcov > lcovunit.info
+          grcov tests/nativemessaging/.obj/tests.build -t lcov > lcovmessaging.info
+          grcov tests/auth/.obj/tests.build -t lcov > lcovauth.info
           grcov -t lcov -o final.lcov lcovunit.info lcovmessaging.info lcovauth.info
         
       - name: Upload coverage to Codecov
