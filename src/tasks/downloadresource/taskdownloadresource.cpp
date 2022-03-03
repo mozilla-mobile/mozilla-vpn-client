@@ -54,7 +54,8 @@ void TaskDownloadResource::taskProgressed(qint64 bytesReceived,
 void TaskDownloadResource::taskCompleted(const QByteArray& data) {
   logger.debug() << "Download completed";
 
-  emit completed(data, false);
+  emit succeeded(data, false);
+  emit completed();
 }
 
 void TaskDownloadResource::taskFailed(QNetworkReply::NetworkError error,
@@ -63,5 +64,6 @@ void TaskDownloadResource::taskFailed(QNetworkReply::NetworkError error,
 
   bool hasError = error != QNetworkReply::NoError;
 
-  emit completed(data, hasError);
+  emit succeeded(data, hasError);
+  emit completed();
 }

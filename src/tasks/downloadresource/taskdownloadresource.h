@@ -30,7 +30,7 @@ class TaskDownloadResource final : public Task {
   void taskFailed(QNetworkReply::NetworkError error, const QByteArray& data);
 
  signals:
-  void completed(QByteArray data, bool hasError);
+  void succeeded(QByteArray data, bool hasError);
   void progressed(qint64 bytesReceived);
 
  private:

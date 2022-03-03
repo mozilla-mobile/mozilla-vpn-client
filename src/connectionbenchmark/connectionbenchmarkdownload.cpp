@@ -36,7 +36,7 @@ void ConnectionBenchmarkDownload::start() {
       "https://speed1.syseleven.net.prod.hosts.ooklaserver.net:8080/"
       "download?nocache=73d775b0-3082-47fb-8816-d6171c023fa2&size=25000000"));
 
-  connect(m_downloadTask, &TaskDownloadResource::completed, this,
+  connect(m_downloadTask, &TaskDownloadResource::succeeded, this,
           &ConnectionBenchmarkDownload::onReady);
 
   m_timer.start();
