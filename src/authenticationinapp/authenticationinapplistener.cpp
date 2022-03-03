@@ -797,6 +797,14 @@ void AuthenticationInAppListener::processRequestFailure(
             AuthenticationInApp::ErrorInvalidUnblockCode, this);
         return;
       }
+
+      if (keys.contains("email")) {
+        AuthenticationInApp* aip = AuthenticationInApp::instance();
+        aip->requestState(AuthenticationInApp::StateStart, this);
+        aip->requestErrorPropagation(
+            AuthenticationInApp::ErrorInvalidEmailAddress, this);
+        return;
+      }
     }
 
     processErrorCode(errorCode);
