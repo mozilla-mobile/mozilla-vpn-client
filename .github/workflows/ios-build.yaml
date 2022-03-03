@@ -44,12 +44,13 @@ jobs:
           cd qt_ios
           cat ${{matrix.config.pattern}}* > qt_static_ios.tar.gz
           tar xf qt_static_ios.tar.gz
-          sudo mkdir /opt/{{matrix.config.version}}
+          sudo mkdir /opt/${{matrix.config.version}}
           sudo mv ios /opt/${{matrix.config.version}}
           if [ -d macos ]; then
             sudo mv macos /opt/${{matrix.config.version}}
           fi
           cd ..
+          echo `ls -la /opt/${{matrix.config.version}}`
 
       - name: Generating glean samples
         shell: bash
