@@ -19,6 +19,7 @@ ARG QT_VERSION=6.2.1
 ARG ANDROID_ARCH=android_armv7
 ENV DEBIAN_FRONTEND=noninteractive
 
+
 RUN apt-get -q update &&\
     apt-get -yq install --no-install-recommends gnupg curl ca-certificates libglib2.0-dev &&\
     # add zulu-jdk to the 
@@ -63,5 +64,5 @@ ENV PATH="/opt/${QT_VERSION}/gcc_64/bin:${QTPATH}/bin:/opt/cmdline-tools/bin:${P
 ENV XDG_CACHE_HOME ="/opt/"
 
 VOLUME /builds/worker/checkouts
-VOLUME /builds/worker/.cache
+VOLUME /builds/worker/.ccache
 

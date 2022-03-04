@@ -24,6 +24,10 @@ android-arm64/debug:
             platform: android/arm64-v8a
         worker:
             docker-image: {in-tree: android-build-arm64}
+            caches:
+                -   name: "android-build-arm64-d"
+                    type: "persistent"
+                    mount-point: "/builds/worker/.ccache"
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
         apk-artifacts:
@@ -36,6 +40,10 @@ android-armv7/debug:
             platform: android/armv7
         worker:
             docker-image: {in-tree: android-build-armv7}
+            caches:
+                -   name: "android-build-armv7-d"
+                    type: "persistent"
+                    mount-point: "/builds/worker/.ccache"
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh armeabi-v7a
         apk-artifacts:
@@ -48,6 +56,10 @@ android-x86/debug:
             platform: android/x86
         worker:
             docker-image: {in-tree: android-build-x86}
+            caches:
+                -   name: "android-build-x86-d"
+                    type: "persistent"
+                    mount-point: "/builds/worker/.ccache"
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh x86
         apk-artifacts:
@@ -59,6 +71,10 @@ android-x64/debug:
             platform: android/x86_64
         worker:
             docker-image: {in-tree: android-build-x64}
+            caches:
+                -   name: "android-build-x64-d"
+                    type: "persistent"
+                    mount-point: "/builds/worker/.ccache"
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh x86_64
         apk-artifacts:
@@ -77,6 +93,10 @@ android-arm64/release:
             platform: android/arm64-v8a
         worker:
             docker-image: {in-tree: android-build-arm64}
+            caches:
+                -   name: "android-build-arm64"
+                    type: "persistent"
+                    mount-point: "/builds/worker/.ccache"
         run:
             command: ./taskcluster/scripts/build/android_build_release.sh arm64-v8a
         apk-artifacts:
@@ -93,6 +113,10 @@ android-armv7/release:
             platform: android/armv7
         worker:
             docker-image: {in-tree: android-build-armv7}
+            caches:
+                -   name: "android-build-armv7"
+                    type: "persistent"
+                    mount-point: "/builds/worker/.ccache"
         run:
             command: ./taskcluster/scripts/build/android_build_release.sh armeabi-v7a
         apk-artifacts:
@@ -110,6 +134,10 @@ android-x86/release:
             platform: android/x86
         worker:
             docker-image: {in-tree: android-build-x86}
+            caches:
+                -   name: "android-build-x86"
+                    type: "persistent"
+                    mount-point: "/builds/worker/.ccache"
         run:
             command: ./taskcluster/scripts/build/android_build_release.sh x86
         apk-artifacts:
@@ -126,6 +154,10 @@ android-x64/release:
             platform: android/x86_64
         worker:
             docker-image: {in-tree: android-build-x64}
+            caches:
+                - name: "android-build-x64"
+                  type: "persistent"
+                  mount-point: "/builds/worker/.ccache"
         run:
             command: ./taskcluster/scripts/build/android_build_release.sh x86_64
         apk-artifacts:
