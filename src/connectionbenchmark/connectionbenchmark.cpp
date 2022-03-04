@@ -62,7 +62,13 @@ void ConnectionBenchmark::start() {
 void ConnectionBenchmark::stop() {
   logger.debug() << "Stop benchmark";
 
-  m_downloadBenchmarkTask->stop();
+  if (state == StateRunning) {
+    Q_ASSERT(m_downloadBenchmarkTask);
+
+    m_downloadBenchmarkTask->stop();
+    m_downloadBenchmarkTask = nullptr;
+  };
+
   setState(StateInitial);
 }
 
