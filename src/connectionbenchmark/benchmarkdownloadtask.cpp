@@ -22,9 +22,20 @@ BenchmarkDownloadTask::~BenchmarkDownloadTask() {
   MVPN_COUNT_DTOR(BenchmarkDownloadTask);
 }
 
+void BenchmarkDownloadTask::setState(State state) {
+  logger.debug() << "Set state" << state;
+
+  m_state = state;
+}
+
 void BenchmarkDownloadTask::run() {
   logger.debug() << "Run download";
 
+  if (m_state == StateAborted) {
+    emit completed();
+  }
+
+  setState(StateActive);
   m_request = NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
 
   connect(m_request, &NetworkRequest::requestCompleted, this,
@@ -41,9 +52,13 @@ void BenchmarkDownloadTask::run() {
 
 void BenchmarkDownloadTask::stop() {
   logger.debug() << "Stop download";
-  Q_ASSERT(m_request);
 
-  m_request->abort();
+  if (m_state == StateActive) {
+    Q_ASSERT(m_request);
+    m_request->abort();
+  } else {
+    setState(StateAborted);
+  }
 }
 
 void BenchmarkDownloadTask::handleTaskFinished(
@@ -55,6 +70,8 @@ void BenchmarkDownloadTask::handleTaskFinished(
                             error != QNetworkReply::OperationCanceledError;
 
   emit finished(m_bytesPerSecond, hasUnexpectedError);
+  setState(StateInactive);
+
   emit completed();
 }
 

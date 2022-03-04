@@ -25,16 +25,24 @@ class BenchmarkDownloadTask final : public Task {
   void run() override;
   void stop();
 
+  enum State { StateActive, StateInactive, StateAborted };
+
+ signals:
+  void aborted();
+  void finished(quint64 bytesPerSecond, bool hasUnexpectedError);
+  void progressed(qint64 bytesReceived);
+
  private slots:
   void handleTaskFinished(QNetworkReply::NetworkError error,
                           const QByteArray& data);
   void taskProgressed(qint64 bytesReceived, qint64 bytesTotal);
 
- signals:
-  void finished(quint64 bytesPerSecond, bool hasUnexpectedError);
-  void progressed(qint64 bytesReceived);
+ private:
+  void setState(State state);
 
  private:
+  State m_state = StateInactive;
+
   NetworkRequest* m_request = nullptr;
   QElapsedTimer m_elapsedTimer;
   QUrl m_fileUrl = QUrl(
