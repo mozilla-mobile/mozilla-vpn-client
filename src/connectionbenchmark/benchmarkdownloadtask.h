@@ -26,20 +26,21 @@ class BenchmarkDownloadTask final : public Task {
   void stop();
 
  private slots:
-  void taskCompleted(const QByteArray& data);
-  void taskFailed(QNetworkReply::NetworkError error, const QByteArray& data);
+  void handleTaskFinished(QNetworkReply::NetworkError error,
+                          const QByteArray& data);
   void taskProgressed(qint64 bytesReceived, qint64 bytesTotal);
 
  signals:
-  void finished(quint64 bytesPerSecond);
+  void finished(quint64 bytesPerSecond, bool hasUnexpectedError);
   void progressed(qint64 bytesReceived);
 
  private:
+  NetworkRequest* m_request = nullptr;
+  QElapsedTimer m_elapsedTimer;
   QUrl m_fileUrl = QUrl(
       "https://speed1.syseleven.net.prod.hosts.ooklaserver.net:8080/"
       "download?nocache=73d775b0-3082-47fb-8816-d6171c023fa2&size=25000000");
-  NetworkRequest* m_request = nullptr;
-  QElapsedTimer m_elapsedTimer;
+  quint64 m_bytesPerSecond = 0;
 };
 
 #endif  // BENCHMARKDOWNLOADTASK_H

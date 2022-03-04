@@ -90,7 +90,6 @@ SOURCES += \
         commands/commandui.cpp \
         connectionbenchmark/benchmarkdownloadtask.cpp \
         connectionbenchmark/connectionbenchmark.cpp \
-        connectionbenchmark/connectionbenchmarkdownload.cpp \
         connectioncheck.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
@@ -167,7 +166,6 @@ SOURCES += \
         tasks/getfeaturelist/taskgetfeaturelist.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
-        tasks/downloadresource/taskdownloadresource.cpp \
         tasks/function/taskfunction.cpp \
         tasks/group/taskgroup.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
@@ -215,7 +213,6 @@ HEADERS += \
         commands/commandui.h \
         connectionbenchmark/benchmarkdownloadtask.h \
         connectionbenchmark/connectionbenchmark.h \
-        connectionbenchmark/connectionbenchmarkdownload.h \
         connectioncheck.h \
         connectiondataholder.h \
         connectionhealth.h \
@@ -305,7 +302,6 @@ HEADERS += \
         tasks/getfeaturelist/taskgetfeaturelist.h \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/createsupportticket/taskcreatesupportticket.h \
-        tasks/downloadresource/taskdownloadresource.h \
         tasks/function/taskfunction.h \
         tasks/group/taskgroup.h \
         tasks/heartbeat/taskheartbeat.h \

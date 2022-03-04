@@ -5,7 +5,7 @@
 #ifndef CONNECTIONBENCHMARK_H
 #define CONNECTIONBENCHMARK_H
 
-#include "connectionbenchmarkdownload.h"
+#include "benchmarkdownloadtask.h"
 
 class ConnectionBenchmark final : public QObject {
   Q_OBJECT;
@@ -39,22 +39,26 @@ class ConnectionBenchmark final : public QObject {
 
   State state() const { return m_state; }
   Speed speed() const { return m_speed; }
-  qint64 download() const { return m_download; }
+  quint64 download() const { return m_download; }
 
  signals:
   void stateChanged();
   void speedChanged();
   void downloadChanged();
 
+ private slots:
+  void benchmarkedDownload(quint64 bytesPerSecond, bool hasUnexpectedError);
+
  private:
+  void setConnectionSpeed(quint64 m_download);
   void setState(State state);
-  void setSpeed(qint64 m_download);
+
+ private:
+  BenchmarkDownloadTask* m_downloadBenchmarkTask = nullptr;
 
   State m_state = StateInitial;
   Speed m_speed = SpeedSlow;
-  qint64 m_download = 0;
-
-  ConnectionBenchmarkDownload* m_benchmarkDownload = nullptr;
+  quint64 m_download = 0;
 };
 
 #endif  // CONNECTIONBENCHMARK_H

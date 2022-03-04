@@ -4,7 +4,6 @@
 
 #include "benchmarkdownloadtask.h"
 #include "connectionbenchmark.h"
-#include "connectionbenchmarkdownload.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "taskscheduler.h"
@@ -25,14 +24,7 @@ ConnectionBenchmark::~ConnectionBenchmark() {
   MVPN_COUNT_DTOR(ConnectionBenchmark);
 }
 
-void ConnectionBenchmark::setState(State state) {
-  logger.debug() << "Set state" << state;
-  m_state = state;
-
-  emit stateChanged();
-}
-
-void ConnectionBenchmark::setSpeed(qint64 m_download) {
+void ConnectionBenchmark::setConnectionSpeed(quint64 m_download) {
   logger.debug() << "Set speed" << m_download;
 
   if (m_download >= SPEED_THRESHOLD_FAST) {
@@ -45,57 +37,46 @@ void ConnectionBenchmark::setSpeed(qint64 m_download) {
   }
 
   emit speedChanged();
+  setState(StateReady);
+}
+
+void ConnectionBenchmark::setState(State state) {
+  logger.debug() << "Set state" << state;
+  m_state = state;
+
+  emit stateChanged();
 }
 
 void ConnectionBenchmark::start() {
   logger.debug() << "Start connection benchmarking";
 
-  // Start: Task test
-  BenchmarkDownloadTask* downloadBenchmarkTask = new BenchmarkDownloadTask();
+  m_downloadBenchmarkTask = new BenchmarkDownloadTask();
+  connect(m_downloadBenchmarkTask, &BenchmarkDownloadTask::finished, this,
+          &ConnectionBenchmark::benchmarkedDownload);
 
-  connect(downloadBenchmarkTask, &BenchmarkDownloadTask::finished, this,
-          [&](quint64 bytesPerSecond) {
-            logger.debug() << "Finished" << bytesPerSecond;
-
-            m_download = bytesPerSecond;
-            downloadChanged();
-
-            setSpeed(m_download);
-            setState(StateReady);
-          });
-
-  TaskScheduler::scheduleTask(downloadBenchmarkTask);
-  // End: Task test
-
-  // m_benchmarkDownload = new ConnectionBenchmarkDownload();
-  // connect(m_benchmarkDownload, &ConnectionBenchmarkDownload::stateChanged,
-  // this,
-  //         [&] {
-  //           logger.debug() << "State changed" <<
-  //           m_benchmarkDownload->state();
-
-  //           if (m_benchmarkDownload->state() ==
-  //               ConnectionBenchmarkDownload::StateReady) {
-  //             m_download = m_benchmarkDownload->downloadSpeed();
-  //             downloadChanged();
-
-  //             setSpeed(m_download);
-  //             setState(StateReady);
-  //           } else {
-  //             setState(StateError);
-  //           }
-  //         });
-
-  // m_benchmarkDownload->start();
+  TaskScheduler::scheduleTask(m_downloadBenchmarkTask);
 
   setState(StateRunning);
 }
 
 void ConnectionBenchmark::stop() {
   logger.debug() << "Stop benchmark";
-  Q_ASSERT(m_benchmarkDownload);
 
-  m_benchmarkDownload->stop();
+  m_downloadBenchmarkTask->stop();
   setState(StateInitial);
 }
 
+void ConnectionBenchmark::benchmarkedDownload(quint64 bytesPerSecond,
+                                              bool hasUnexpectedError) {
+  logger.debug() << "Benchmarked dowload" << bytesPerSecond;
+
+  if (hasUnexpectedError) {
+    setState(StateError);
+    return;
+  }
+
+  m_download = bytesPerSecond;
+  downloadChanged();
+
+  setConnectionSpeed(m_download);
+}

@@ -7,7 +7,6 @@
 #include "logger.h"
 #include "networkrequest.h"
 #include "taskscheduler.h"
-#include "tasks/downloadresource/taskdownloadresource.h"
 
 #include <QByteArray>
 
@@ -29,11 +28,13 @@ void BenchmarkDownloadTask::run() {
   m_request = NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
 
   connect(m_request, &NetworkRequest::requestCompleted, this,
-          &BenchmarkDownloadTask::taskCompleted);
+          [&](const QByteArray& data) {
+            handleTaskFinished(QNetworkReply::NoError, data);
+          });
   connect(m_request, &NetworkRequest::requestUpdated, this,
           &BenchmarkDownloadTask::taskProgressed);
   connect(m_request, &NetworkRequest::requestFailed, this,
-          &BenchmarkDownloadTask::taskFailed);
+          &BenchmarkDownloadTask::handleTaskFinished);
 
   m_elapsedTimer.start();
 }
@@ -45,36 +46,24 @@ void BenchmarkDownloadTask::stop() {
   m_request->abort();
 }
 
-void BenchmarkDownloadTask::taskCompleted(const QByteArray& data) {
-  logger.debug() << "Download completed";
+void BenchmarkDownloadTask::handleTaskFinished(
+    QNetworkReply::NetworkError error, const QByteArray& data) {
+  logger.debug() << "Handle task finished" << data.size();
+  Q_UNUSED(data);
 
-  quint64 bytesPerSecond = data.size() / m_elapsedTimer.elapsed() * 1000;
-  logger.debug() << "Download speed" << bytesPerSecond;
+  bool hasUnexpectedError = error != QNetworkReply::NoError &&
+                            error != QNetworkReply::OperationCanceledError;
 
-  emit finished(bytesPerSecond);
-  emit completed();
-}
-
-void BenchmarkDownloadTask::taskFailed(QNetworkReply::NetworkError error,
-                                       const QByteArray& data) {
-  logger.debug() << "Download failed";
-
-  bool hasError = error != QNetworkReply::NoError;
-  Q_UNUSED(hasError);
-
-  quint64 bytesPerSecond = data.size() / m_elapsedTimer.elapsed() * 1000;
-
-  emit finished(bytesPerSecond);
+  emit finished(m_bytesPerSecond, hasUnexpectedError);
   emit completed();
 }
 
 void BenchmarkDownloadTask::taskProgressed(qint64 bytesReceived,
                                            qint64 bytesTotal) {
   logger.debug() << "Download progressed";
-
   Q_UNUSED(bytesTotal);
 
-  quint64 bytesPerSecond = bytesReceived / m_elapsedTimer.elapsed() * 1000;
+  m_bytesPerSecond = bytesReceived / m_elapsedTimer.elapsed() * 1000;
 
-  emit progressed(bytesPerSecond);
+  emit progressed(m_bytesPerSecond);
 }
