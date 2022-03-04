@@ -46,17 +46,20 @@ bool WinCrashReporter::start(int argc, char* argv[]) {
   for (auto file : dumpFiles) {
     absDumpPaths << dumpRoot.absoluteFilePath(file);
   }
-  if (!absDumpPaths.empty()) {
-    connect(this, &CrashReporter::startUpload, this,
-            [this, absDumpPaths]() { m_uploader->startUploads(absDumpPaths); });
-    connect(this, &CrashReporter::cleanup, this,
-            [this, absDumpPaths]() { cleanupDumps(absDumpPaths); });
-    connect(m_uploader.get(), &CrashUploader::uploadsComplete, this,
-            [this, absDumpPaths]() { cleanupDumps(absDumpPaths); });
-    if (shouldPromptUser()) {
-      if (!promptUser()) {
-        return false;
-      }
+  if (absDumpPaths.empty()) {
+    logger.info() << "No dump files found.";
+    return false;
+  }
+
+  connect(this, &CrashReporter::startUpload, this,
+          [this, absDumpPaths]() { m_uploader->startUploads(absDumpPaths); });
+  connect(this, &CrashReporter::cleanup, this,
+          [this, absDumpPaths]() { cleanupDumps(absDumpPaths); });
+  connect(m_uploader.get(), &CrashUploader::uploadsComplete, this,
+          [this, absDumpPaths]() { cleanupDumps(absDumpPaths); });
+  if (shouldPromptUser()) {
+    if (!promptUser()) {
+      return false;
     }
   }
   return true;

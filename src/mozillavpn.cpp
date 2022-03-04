@@ -50,10 +50,6 @@
 #  include "platforms/android/androidutils.h"
 #endif
 
-#ifdef MVPN_WINDOWS
-#  include "platforms/windows/windowsdatamigration.h"
-#endif
-
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androiddatamigration.h"
 #  include "platforms/android/androidvpnactivity.h"
@@ -234,13 +230,6 @@ void MozillaVPN::initialize() {
   if (!settingsHolder->nativeIOSDataMigrated()) {
     IOSDataMigration::migrate();
     settingsHolder->setNativeIOSDataMigrated(true);
-  }
-#endif
-
-#ifdef MVPN_WINDOWS
-  if (!settingsHolder->nativeWindowsDataMigrated()) {
-    WindowsDataMigration::migrate();
-    settingsHolder->setNativeWindowsDataMigrated(true);
   }
 #endif
 

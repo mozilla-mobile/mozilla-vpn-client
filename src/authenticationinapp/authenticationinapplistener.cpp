@@ -110,7 +110,7 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
   logger.debug() << "Authentication starting:"
                  << logger.sensitive(emailAddress);
 
-  m_emailAddress = emailAddress;
+  m_emailAddress = emailAddress.toLower();
 
   AuthenticationInApp* aip = AuthenticationInApp::instance();
   Q_ASSERT(aip);
@@ -493,13 +493,45 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
         connect(
             request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-              logger.error()
-                  << "Failed to fetch the final redirect data" << error;
-              processRequestFailure(error, data);
+              if (error != QNetworkReply::OperationCanceledError) {
+                logger.error()
+                    << "Failed to fetch the final redirect data" << error;
+                processRequestFailure(error, data);
+              }
             });
+
+        // We can have 2 possible paths: a deep link URL (mozilla-vpn:) or a
+        // HTTP redirect. The following 2 "connections" cover both paths.
+
+        connect(request, &NetworkRequest::requestRedirected, this,
+                [this](NetworkRequest* request, const QUrl& redirectUrl) {
+                  if (redirectUrl.scheme() != "mozilla-vpn") return;
+
+                  request->abort();
+
+#ifdef UNIT_TEST
+                  AuthenticationInApp* aip = AuthenticationInApp::instance();
+                  emit aip->unitTestFinalUrl(redirectUrl);
+#endif
+
+                  // On a 200 response, we receive the OAuth code from the
+                  // query string
+                  QString code = QUrlQuery(redirectUrl).queryItemValue("code");
+                  if (code.isEmpty()) {
+                    logger.error() << "Code not received!";
+                    MozillaVPN::instance()->errorHandle(
+                        ErrorHandler::AuthenticationError);
+                    emit failed(ErrorHandler::AuthenticationError);
+                    return;
+                  }
+
+                  emit completed(code);
+                });
 
         connect(request, &NetworkRequest::requestHeaderReceived, this,
                 [this](NetworkRequest* request) {
+                  request->abort();
+
 #ifdef UNIT_TEST
                   AuthenticationInApp* aip = AuthenticationInApp::instance();
                   emit aip->unitTestFinalUrl(request->url());
@@ -763,6 +795,14 @@ void AuthenticationInAppListener::processRequestFailure(
         aip->requestState(AuthenticationInApp::StateUnblockCodeNeeded, this);
         aip->requestErrorPropagation(
             AuthenticationInApp::ErrorInvalidUnblockCode, this);
+        return;
+      }
+
+      if (keys.contains("email")) {
+        AuthenticationInApp* aip = AuthenticationInApp::instance();
+        aip->requestState(AuthenticationInApp::StateStart, this);
+        aip->requestErrorPropagation(
+            AuthenticationInApp::ErrorInvalidEmailAddress, this);
         return;
       }
     }

@@ -37,6 +37,7 @@ VPNClickableRow {
         if (event.key === Qt.Key_Space) handleKeyClick()
     }
 
+    onActiveFocusChanged: vpnFlickable.ensureVisible(serverCountry)
     handleMouseClick: openCityList
     handleKeyClick: openCityList
     clip: true
@@ -176,9 +177,7 @@ VPNClickableRow {
                 activeFocusOnTab: cityListVisible
                 Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
                 Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
-
-                onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(del)
-
+                onActiveFocusChanged: vpnFlickable.ensureVisible(del)
                 radioButtonLabelText: modelData[1]
                 accessibleName: modelData[1]
                 onClicked: {

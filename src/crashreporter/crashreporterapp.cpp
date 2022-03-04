@@ -19,7 +19,9 @@ int CrashReporterApp::main(int argc, char* argv[]) {
   auto crashreporter = CrashReporterFactory::createCrashReporter();
   qInstallMessageHandler(LogHandler::messageQTHandler);
   QTimer::singleShot(0, &a, [crashreporter, argc, argv]() {
-    crashreporter->start(argc, argv);
+    if (!crashreporter->start(argc, argv)) {
+      qApp->quit();
+    }
   });
   return a.exec();
 }

@@ -8,6 +8,8 @@ QT += networkauth
 QT += qml
 QT += widgets
 
+CONFIG += c++1z
+
 macos {
     CONFIG -= app_bundle
 }
@@ -47,7 +49,7 @@ HEADERS += \
     ../../src/featurelist.h \
     ../../src/hawkauth.h \
     ../../src/hkdf.h \
-    ../../src/inspector/inspectorwebsocketconnection.h \
+    ../../src/inspector/inspectorhandler.h \
     ../../src/ipaddress.h \
     ../../src/leakdetector.h \
     ../../src/logger.h \
@@ -75,7 +77,7 @@ HEADERS += \
 
 SOURCES += \
     mocmozillavpn.cpp \
-    ../unit/mocinspectorwebsocketconnection.cpp \
+    ../unit/mocinspectorhandler.cpp \
     ../../src/authenticationinapp/authenticationinapp.cpp \
     ../../src/authenticationinapp/authenticationinapplistener.cpp \
     ../../src/authenticationinapp/incrementaldecoder.cpp \

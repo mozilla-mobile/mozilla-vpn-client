@@ -5,15 +5,11 @@
 #ifndef INSPECTORWEBSOCKETCONNECTION_H
 #define INSPECTORWEBSOCKETCONNECTION_H
 
-#include <QByteArray>
-#include <QObject>
+#include "inspectorhandler.h"
 
-class QNetworkReply;
-class QUrl;
-class QQuickItem;
 class QWebSocket;
 
-class InspectorWebSocketConnection final : public QObject {
+class InspectorWebSocketConnection final : public InspectorHandler {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(InspectorWebSocketConnection)
 
@@ -21,32 +17,14 @@ class InspectorWebSocketConnection final : public QObject {
   InspectorWebSocketConnection(QObject* parent, QWebSocket* connection);
   ~InspectorWebSocketConnection();
 
-  static void setLastUrl(const QUrl& url);
-  static bool stealUrls();
-  static QString appVersionForUpdate();
-  static QString getObjectClass(const QObject* target);
-  static QJsonObject getViewTree();
-  static QJsonObject serialize(QQuickItem* item);
-  static void itemsPicked(const QStringList& objectNames);
-
  private:
+  void send(const QByteArray& buffer) override;
+
   void textMessageReceived(const QString& message);
   void binaryMessageReceived(const QByteArray& message);
 
-  void parseCommand(const QByteArray& command);
-
-  void logEntryAdded(const QByteArray& log);
-
-  void tutorialChanged();
-
-  void notificationShown(const QString& title, const QString& message);
-
-  void networkRequestFinished(QNetworkReply* reply);
-
  private:
-  QWebSocket* m_connection;
-
-  QByteArray m_buffer;
+  QWebSocket* m_connection = nullptr;
 };
 
 #endif  // INSPECTORWEBSOCKETCONNECTION_H
