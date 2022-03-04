@@ -5,6 +5,8 @@
 QT += testlib
 QT += network
 
+CONFIG += c++1z
+
 macos {
     CONFIG -= app_bundle
 }

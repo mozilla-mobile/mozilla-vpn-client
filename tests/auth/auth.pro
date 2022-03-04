@@ -8,6 +8,8 @@ QT += networkauth
 QT += qml
 QT += widgets
 
+CONFIG += c++1z
+
 macos {
     CONFIG -= app_bundle
 }

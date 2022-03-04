@@ -12,6 +12,8 @@ QT += xml
 DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += BUILD_ID=\\\"1234\\\"
 
+CONFIG += c++1z
+
 macos {
     CONFIG -= app_bundle
 }

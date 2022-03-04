@@ -33,17 +33,16 @@ HEADERS += \
     $$PWD/crashuploader.h
 
 win*{
-SOURCES += \
-    $$PWD/platforms/windows/wincrashreporter.cpp \
-    $$PWD/platforms/windows/windowscrashclient.cpp
-HEADERS += \
-    $$PWD/platforms/windows/wincrashreporter.h \
-    $$PWD/platforms/windows/windowscrashclient.h
+    SOURCES += \
+        $$PWD/platforms/windows/wincrashreporter.cpp \
+        $$PWD/platforms/windows/windowscrashclient.cpp
+    HEADERS += \
+        $$PWD/platforms/windows/wincrashreporter.h \
+        $$PWD/platforms/windows/windowscrashclient.h
 
-QMAKE_CXXFLAGS += -Zc:preprocessor
-QT += networkauth
-QT += svg
-QT += winextras
+    QT += networkauth
+    QT += svg
+    QT += winextras
 }
 
 RESOURCES += \
