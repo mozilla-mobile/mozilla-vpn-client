@@ -163,5 +163,3 @@ android-x64/release:
         apk-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-x86_64-release.apk
-
-
