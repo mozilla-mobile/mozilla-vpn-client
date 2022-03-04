@@ -8,6 +8,11 @@
 #include "logger.h"
 #include "taskscheduler.h"
 
+// TODO: Use file that is hosted by us
+constexpr const char* DOWNLOAD_URL =
+    "https://speed1.syseleven.net.prod.hosts.ooklaserver.net:8080/"
+    "download?nocache=73d775b0-3082-47fb-8816-d6171c023fa2&size=25000000";
+
 // TODO: Decide on thresholds for connection speeds
 constexpr uint32_t SPEED_THRESHOLD_FAST = 3125000;    // 25 Megabit
 constexpr uint32_t SPEED_THRESHOLD_MEDIUM = 1250000;  // 10 Megabit
@@ -50,7 +55,7 @@ void ConnectionBenchmark::setState(State state) {
 void ConnectionBenchmark::start() {
   logger.debug() << "Start connection benchmarking";
 
-  m_downloadBenchmarkTask = new BenchmarkDownloadTask();
+  m_downloadBenchmarkTask = new BenchmarkDownloadTask(DOWNLOAD_URL);
   connect(m_downloadBenchmarkTask, &BenchmarkDownloadTask::finished, this,
           &ConnectionBenchmark::benchmarkedDownload);
 

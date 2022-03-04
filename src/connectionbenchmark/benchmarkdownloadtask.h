@@ -12,20 +12,20 @@
 #include <QElapsedTimer>
 #include <QNetworkReply>
 #include <QObject>
-#include <QUrl>
+#include <QString>
 
 class BenchmarkDownloadTask final : public Task {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(BenchmarkDownloadTask)
 
  public:
-  BenchmarkDownloadTask();
+  explicit BenchmarkDownloadTask(const QString& fileUrl);
   ~BenchmarkDownloadTask();
 
   void run() override;
   void stop();
 
-  enum State { StateActive, StateInactive, StateAborted };
+  enum State { StateActive, StateInactive, StateCancelled };
 
  signals:
   void aborted();
@@ -44,11 +44,10 @@ class BenchmarkDownloadTask final : public Task {
   State m_state = StateInactive;
 
   NetworkRequest* m_request = nullptr;
-  QElapsedTimer m_elapsedTimer;
-  QUrl m_fileUrl = QUrl(
-      "https://speed1.syseleven.net.prod.hosts.ooklaserver.net:8080/"
-      "download?nocache=73d775b0-3082-47fb-8816-d6171c023fa2&size=25000000");
   quint64 m_bytesPerSecond = 0;
+
+  QElapsedTimer m_elapsedTimer;
+  QString m_fileUrl;
 };
 
 #endif  // BENCHMARKDOWNLOADTASK_H

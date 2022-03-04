@@ -14,7 +14,8 @@ namespace {
 Logger logger(LOG_MAIN, "BenchmarkDownloadTask");
 }
 
-BenchmarkDownloadTask::BenchmarkDownloadTask() : Task("BenchmarkDownloadTask") {
+BenchmarkDownloadTask::BenchmarkDownloadTask(const QString& fileUrl)
+    : Task("BenchmarkDownloadTask"), m_fileUrl(fileUrl) {
   MVPN_COUNT_CTOR(BenchmarkDownloadTask);
 }
 
@@ -31,12 +32,12 @@ void BenchmarkDownloadTask::setState(State state) {
 void BenchmarkDownloadTask::run() {
   logger.debug() << "Run download";
 
-  if (m_state == StateAborted) {
+  if (m_state == StateCancelled) {
     emit completed();
   }
 
   setState(StateActive);
-  m_request = NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
+  m_request = NetworkRequest::createForGetUrl(this, m_fileUrl);
 
   connect(m_request, &NetworkRequest::requestCompleted, this,
           [&](const QByteArray& data) {
@@ -57,7 +58,7 @@ void BenchmarkDownloadTask::stop() {
     Q_ASSERT(m_request);
     m_request->abort();
   } else {
-    setState(StateAborted);
+    setState(StateCancelled);
   }
 }
 
