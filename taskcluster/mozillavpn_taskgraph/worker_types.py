@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from voluptuous import Any, Required, Optional
-from six import text_type
 from taskgraph.util.schema import taskref_or_string
 from taskgraph.transforms.task import payload_builder
 
@@ -48,11 +47,9 @@ def build_scriptworker_signing_payload(config, task, task_def):
         "{}:releng:signing:cert:{}".format(scope_prefix, worker["signing-type"])
     )
     task_def["scopes"].extend(
-        [
-            f"{scope_prefix}:releng:signing:format:{format}"
-            for format in sorted(formats)
-        ]
+        [f"{scope_prefix}:releng:signing:format:{format}" for format in sorted(formats)]
     )
+
 
 @payload_builder(
     "scriptworker-pushapk",
@@ -60,14 +57,14 @@ def build_scriptworker_signing_payload(config, task, task_def):
         Required("upstream-artifacts"): [
             {
                 Required("taskId"): taskref_or_string,
-                Required("taskType"): text_type,
-                Required("paths"): [text_type],
+                Required("taskType"): str,
+                Required("paths"): [str],
             }
         ],
-        Required("certificate-alias"): text_type,
+        Required("certificate-alias"): str,
         Required("commit"): bool,
-        Required("channel"): text_type,
-        Required("product"): text_type,
+        Required("channel"): str,
+        Required("product"): str,
     },
 )
 def build_push_apk_payload(config, task, task_def):
@@ -81,7 +78,5 @@ def build_push_apk_payload(config, task, task_def):
     }
     scope_prefix = "project:mozillavpn:releng:googleplay:track"
     task_def["scopes"].append(
-        "project:mozillavpn:releng:googleplay:product:{}".format(
-            worker["product"]
-        )
+        "project:mozillavpn:releng:googleplay:product:{}".format(worker["product"])
     )
