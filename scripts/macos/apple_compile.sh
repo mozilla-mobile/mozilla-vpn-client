@@ -123,6 +123,7 @@ elif [ "$OS" = "ios" ] && ! [ "$QT_IOS_BIN" = "" ]; then
 fi
 
 QMAKE="$QT_BIN/qmake"
+print G "qmake path: $QMAKE"
 $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
 
 export PATH="$QT_BIN:$PATH"
