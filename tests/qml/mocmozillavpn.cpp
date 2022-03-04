@@ -160,3 +160,5 @@ void MozillaVPN::maybeRegenerateDeviceKey() {}
 void MozillaVPN::hardResetAndQuit() {}
 
 void MozillaVPN::hardReset() {}
+
+void MozillaVPN::crashTest() {}
