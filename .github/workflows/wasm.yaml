@@ -11,48 +11,6 @@ on:
       - 'releases/**'
 
 jobs:
-  wasm:
-    runs-on: ubuntu-20.04
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-
-      - name: Install Qt
-        shell: bash
-        run: |
-          python3 -m pip install aqtinstall
-          python3 -m aqt install-qt -O /opt linux desktop 5.15.2 wasm_32 -m qtcharts
-
-      - name: Install python dependencies
-        shell: bash
-        run: |
-          pip install -r requirements.txt
-
-      - name: Setup emsdk
-        uses: mymindstorm/setup-emsdk@v7
-        with:
-          version: 1.39.8
-
-      - name: Compiling
-        shell: bash
-        run: |
-          export PATH=/opt/5.15.2/wasm_32/bin:$PATH
-          ./scripts/wasm/compile.sh
-
-      - name: Uploading
-        uses: actions/upload-artifact@v1
-        with:
-            name: WebAssembly Build Qt5
-            path: wasm
-
   wasmQt6:
     name: Wasm Qt6
     runs-on: ubuntu-20.04
