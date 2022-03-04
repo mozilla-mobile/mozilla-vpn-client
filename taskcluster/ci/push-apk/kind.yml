@@ -27,3 +27,4 @@ job-template:
         channel: internal
         commit: false
         certificate-alias: mozillavpn
+    run-on-tasks-for: [github-release]
