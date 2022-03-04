@@ -56,5 +56,10 @@ workers:
                 by-level:
                     "3": mozillavpn-3-signing
                     default: mozillavpn-t-signing
+        push-apk:
+            provisioner: scriptworker-k8s
+            implementation: scriptworker-pushapk
+            os: scriptworker
+            worker-type: 'mozillavpn-{level}-pushapk'
 scriptworker:
     scope-prefix: project:mozilla-vpn-client

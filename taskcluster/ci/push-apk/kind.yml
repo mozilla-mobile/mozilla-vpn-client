@@ -1,0 +1,29 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: mozillavpn_taskgraph.loader.multi_dep:loader
+
+transforms:
+    - mozillavpn_taskgraph.transforms.multi_dep:transforms
+    - mozillavpn_taskgraph.transforms.push_apk:transforms
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - signing
+
+primary-dependency: signing
+
+group-by: build-type
+
+job-template:
+    description: Publish MozillaVPN for Android
+    worker-type: push-apk
+    treeherder:
+        job-symbol: gp
+        kind: build
+    worker:
+        product: mozillavpn
+        channel: internal
+        commit: false
+        certificate-alias: mozillavpn

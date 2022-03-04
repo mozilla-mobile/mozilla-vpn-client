@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from voluptuous import Any, Required, Optional
-
+from six import text_type
 from taskgraph.util.schema import taskref_or_string
 from taskgraph.transforms.task import payload_builder
 
@@ -52,4 +52,36 @@ def build_scriptworker_signing_payload(config, task, task_def):
             f"{scope_prefix}:releng:signing:format:{format}"
             for format in sorted(formats)
         ]
+    )
+
+@payload_builder(
+    "scriptworker-pushapk",
+    schema={
+        Required("upstream-artifacts"): [
+            {
+                Required("taskId"): taskref_or_string,
+                Required("taskType"): text_type,
+                Required("paths"): [text_type],
+            }
+        ],
+        Required("certificate-alias"): text_type,
+        Required("commit"): bool,
+        Required("channel"): text_type,
+        Required("product"): text_type,
+    },
+)
+def build_push_apk_payload(config, task, task_def):
+    worker = task["worker"]
+    task_def["tags"]["worker-implementation"] = "scriptworker"
+    task_def["payload"] = {
+        "certificate_alias": worker["certificate-alias"],
+        "commit": worker["commit"],
+        "upstreamArtifacts": worker["upstream-artifacts"],
+        "channel": worker["channel"],
+    }
+    scope_prefix = "project:mozillavpn:releng:googleplay:track"
+    task_def["scopes"].append(
+        "project:mozillavpn:releng:googleplay:product:{}".format(
+            worker["product"]
+        )
     )
