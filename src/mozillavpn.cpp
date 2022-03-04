@@ -1689,6 +1689,6 @@ void MozillaVPN::hardResetAndQuit() {
 
 void MozillaVPN::crashTest() {
   char* text = new char[100];
-  delete text;
+  delete[] text;
   delete text;
 }
