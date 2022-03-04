@@ -47,7 +47,7 @@ jobs:
       fail-fast: false # Don't cancel other jobs if a test fails
       matrix:
         test: ${{ fromJson(needs.test_list.outputs.matrix) }}
-        version: ["5.15.2","6.2.1"]
+        version: ["6.2.1"]
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
