@@ -60,8 +60,28 @@ def addHashIndex(config, tasks):
         task["optimization"]= {
             "index-search": [namespace]
         }
+        # We can't set the route out, when we're not level3
+        if int(config.params["level"]) < 3:
+            yield task
+            continue
         if task.__contains__("routes"):
             task["routes"].append(namespace)
         else:
             task["routes"] = [route]
         yield task
+
+
+@transforms.add
+def clearIndex(config, tasks):
+    # Clear task['index] if we're not level 3, 
+    # as we won't have permission to do that
+    for task in tasks:
+        if int(config.params["level"]) >= 3:
+            yield task
+            continue
+        if not task.__contains__("index"):
+            yield task
+            continue
+        task.pop("index")
+        yield task
+        
