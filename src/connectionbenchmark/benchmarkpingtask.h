@@ -27,7 +27,7 @@ class BenchmarkPingTask final : public Task {
 
  signals:
   void aborted();
-  void finished(quint16 pingLatency, bool hasUnexpectedError);
+  void finished(quint16 pingLatency);
 
  private slots:
   void handleTaskFinished();

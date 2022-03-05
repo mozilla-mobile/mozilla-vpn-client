@@ -52,7 +52,7 @@ class ConnectionBenchmark final : public QObject {
 
  private slots:
   void downloadBenchmarked(quint64 bytesPerSecond, bool hasUnexpectedError);
-  void pingBenchmarked(quint16 pingLatency, bool hasUnexpectedError);
+  void pingBenchmarked(quint16 pingLatency);
 
  private:
   void setConnectionSpeed(quint64 m_download);

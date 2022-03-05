@@ -5,8 +5,10 @@
 #include "benchmarkdownloadtask.h"
 #include "benchmarkpingtask.h"
 #include "connectionbenchmark.h"
+#include "connectionhealth.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "taskscheduler.h"
 
 // TODO: Use file that is hosted by us
@@ -63,6 +65,16 @@ void ConnectionBenchmark::start() {
           &ConnectionBenchmark::pingBenchmarked);
   connect(m_downloadBenchmarkTask, &BenchmarkDownloadTask::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
+  connect(MozillaVPN::instance()->connectionHealth(),
+          &ConnectionHealth::stabilityChanged, this, [&] {
+            logger.debug() << "Connection stability changed";
+
+            if (MozillaVPN::instance()->connectionHealth()->stability() ==
+                ConnectionHealth::NoSignal) {
+              setState(StateError);
+              stop();
+            };
+          });
 
   TaskScheduler::scheduleTask(m_pingBenchmarkTask);
   TaskScheduler::scheduleTask(m_downloadBenchmarkTask);
@@ -84,7 +96,9 @@ void ConnectionBenchmark::stop() {
     m_downloadBenchmarkTask = nullptr;
   };
 
-  setState(StateInitial);
+  if (m_state != StateError) {
+    setState(StateInitial);
+  }
 }
 
 void ConnectionBenchmark::downloadBenchmarked(quint64 bytesPerSecond,
@@ -102,14 +116,8 @@ void ConnectionBenchmark::downloadBenchmarked(quint64 bytesPerSecond,
   setConnectionSpeed(m_download);
 }
 
-void ConnectionBenchmark::pingBenchmarked(quint16 pingLatency,
-                                          bool hasUnexpectedError) {
+void ConnectionBenchmark::pingBenchmarked(quint16 pingLatency) {
   logger.debug() << "Benchmarked ping" << pingLatency;
-
-  if (hasUnexpectedError) {
-    setState(StateError);
-    return;
-  }
 
   m_ping = pingLatency;
   emit pingChanged();

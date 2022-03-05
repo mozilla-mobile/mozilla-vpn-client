@@ -66,8 +66,7 @@ void BenchmarkPingTask::handleTaskFinished() {
 
   m_pingLatency = (int)(m_pingLatencyAcc / m_numOfPingSamples + 0.5);
 
-  // TODO: Handle potentiel errors
-  emit finished(m_pingLatency, false);
+  emit finished(m_pingLatency);
   setState(StateInactive);
 
   emit completed();
