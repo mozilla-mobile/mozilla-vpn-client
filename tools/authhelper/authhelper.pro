@@ -8,28 +8,29 @@ QT += networkauth
 QT += qml
 QT += widgets
 
+TEMPLATE = app
+TARGET = authhelper
+
+DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += APP_VERSION=\\\"0.1\\\"
+DEFINES += BUILD_ID=\\\"1234\\\"
+
+DEFINES += MVPN_DEBUG
+DEFINES += MVPN_DUMMY
+DEFINES += UNIT_TEST
+
 CONFIG += c++1z
 
 macos {
     CONFIG -= app_bundle
 }
 
-DEFINES += APP_VERSION=\\\"1234\\\"
-DEFINES += BUILD_ID=\\\"1234\\\"
-
-DEFINES += QT_DEPRECATED_WARNINGS
-DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
-DEFINES += UNIT_TEST
-DEFINES += MVPN_DEBUG
-DEFINES += MVPN_DUMMY
-
-TEMPLATE = app
-TARGET = tests
+win* {
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+}
 
 CONFIG += link_pkgconfig
 PKGCONFIG += liboath
-
-RESOURCES += auth.qrc
 
 INCLUDEPATH += \
             . \
@@ -50,7 +51,6 @@ HEADERS += \
     ../../src/hawkauth.h \
     ../../src/hkdf.h \
     ../../src/inspector/inspectorhandler.h \
-    ../../src/ipaddress.h \
     ../../src/leakdetector.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
@@ -58,10 +58,6 @@ HEADERS += \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
-    ../../src/rfc/rfc1918.h \
-    ../../src/rfc/rfc4193.h \
-    ../../src/rfc/rfc4291.h \
-    ../../src/rfc/rfc5735.h \
     ../../src/settingsholder.h \
     ../../src/simplenetworkmanager.h \
     ../../src/task.h \
@@ -71,14 +67,10 @@ HEADERS += \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
-    testemailvalidation.h \
-    testpasswordvalidation.h \
-    testsignupandin.h \
-    utils.h
+    ../../tests/auth/utils.h \
+
 
 SOURCES += \
-    mocmozillavpn.cpp \
-    ../unit/mocinspectorhandler.cpp \
     ../../src/authenticationinapp/authenticationinapp.cpp \
     ../../src/authenticationinapp/authenticationinapplistener.cpp \
     ../../src/authenticationinapp/incrementaldecoder.cpp \
@@ -88,7 +80,6 @@ SOURCES += \
     ../../src/featurelist.cpp \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
-    ../../src/ipaddress.cpp \
     ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/logger.cpp \
@@ -96,10 +87,6 @@ SOURCES += \
     ../../src/models/feature.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
-    ../../src/rfc/rfc1918.cpp \
-    ../../src/rfc/rfc4193.cpp \
-    ../../src/rfc/rfc4291.cpp \
-    ../../src/rfc/rfc5735.cpp \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/tasks/authenticate/desktopauthenticationlistener.cpp \
@@ -108,21 +95,16 @@ SOURCES += \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \
-    main.cpp \
-    testemailvalidation.cpp \
-    testpasswordvalidation.cpp \
-    testsignupandin.cpp \
-    utils.cpp
+    ../../tests/auth/mocmozillavpn.cpp \
+    ../../tests/auth/utils.cpp \
+    ../../tests/unit/mocinspectorhandler.cpp \
+    main.cpp
 
 exists($$PWD/../../translations/generated/l18nstrings.h) {
     SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
     HEADERS += $$PWD/../../translations/generated/l18nstrings.h
 } else {
     error("No l18nstrings.h. Have you generated the strings?")
-}
-
-win* {
-    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 }
 
 OBJECTS_DIR = .obj

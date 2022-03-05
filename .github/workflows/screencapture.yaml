@@ -56,7 +56,7 @@ jobs:
         run: |
           # Manually add QT executables to path
           export PATH=/opt/qt515/bin:$PATH
-          qmake CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug CONFIG+=inspector QT+=svg
+          qmake CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug CONFIG+=inspector QT+=svg CONFIG+=AUTHTEST
           make -j8
 
       - name: Install geckodriver
@@ -82,11 +82,10 @@ jobs:
           export MVPN_API_BASE_URL="https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net"
           xvfb-run -a npm run functionalTest -- tests/functional/testScreenCapture.js
         env:
-          ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
-          ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
           ARTIFACT_DIR: /tmp/artifacts
           MVPN_API_BASE_URL: http://localhost:5000
           MVPN_BIN: ./src/mozillavpn
+          MVPN_AUTHTOOL: ./tools/authhelper/authhelper
 
 #      - name: Uploading screenshots
 #        uses: actions/upload-artifact@v1

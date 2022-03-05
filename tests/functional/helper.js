@@ -18,6 +18,12 @@ let _lastNotification = {
 };
 
 module.exports = {
+  setAccount(account, emailAddress, password) {
+    this.account = account;
+    this.accountEmailAddress = emailAddress;
+    this.accountPassword = password;
+  },
+
   async connect(hostname = '127.0.0.1') {
     await this.waitForCondition(async () => {
       return await new Promise(resolve => {
@@ -247,7 +253,7 @@ module.exports = {
     // Perform login based on stored credentials in environment
     const emailField = await driver.findElement(By.className('email'));
     assert.ok(!!emailField);
-    await emailField.sendKeys(process.env.ACCOUNT_EMAIL);
+    await emailField.sendKeys(this.accountEmailAddress);
     let buttonElm = await driver.findElement(By.id('submit-btn'));
     assert.ok(!!buttonElm);
     buttonElm.click();
@@ -255,7 +261,7 @@ module.exports = {
         driver, 'https://accounts.stage.mozaws.net/oauth/signin');
     const passwordField = await driver.findElement(By.id('password'));
     assert.ok(!!passwordField);
-    passwordField.sendKeys(process.env.ACCOUNT_PASSWORD);
+    passwordField.sendKeys(this.accountPassword);
     buttonElm = await driver.findElement(By.id('submit-btn'));
     assert.ok(!!buttonElm);
     await buttonElm.click();

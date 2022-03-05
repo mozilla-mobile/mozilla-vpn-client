@@ -16,9 +16,6 @@ class TestSignUpAndIn final : public QObject {
   void signIn();
 
  private:
-  QString fetchSessionCode();
-  QString fetchUnblockCode();
-  QString fetchCode(const QString& code);
   void waitForTotpCodes();
 
   QString m_emailAccount;

@@ -19,6 +19,7 @@ SUBDIRS += lottie/tests/unit
 # separate flag because an extra dependency is needed: liboath
 AUTHTEST {
     SUBDIRS += tests/auth
+    SUBDIRS += tools/authhelper
 }
 
 QMLTEST {

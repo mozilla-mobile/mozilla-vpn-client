@@ -3,10 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testsignupandin.h"
+#include "utils.h"
 #include "../../src/authenticationinapp/authenticationinapp.h"
-#include "../../src/networkrequest.h"
 #include "../../src/tasks/authenticate/taskauthenticate.h"
-#include "../../src/tasks/function/taskfunction.h"
 
 #include <QDateTime>
 #include <QDebug>
@@ -124,7 +123,7 @@ void TestSignUpAndIn::signUp() {
            AuthenticationInApp::StateVerificationSessionByEmailNeeded);
 
   // Email verification - with valid code
-  QString code = fetchSessionCode();
+  QString code = TestUtils::fetchSessionCode(m_emailAccount);
   QVERIFY(!code.isEmpty());
   aia->verifySessionEmailCode(code);
   QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
@@ -222,7 +221,7 @@ void TestSignUpAndIn::signIn() {
               // We do not receive the email each time.
               aia->resendUnblockCodeEmail();
 
-              QString code = fetchUnblockCode();
+              QString code = TestUtils::fetchUnblockCode(m_emailAccount);
               QVERIFY(!code.isEmpty());
               aia->verifyUnblockCode(code);
               QCOMPARE(aia->state(),
@@ -258,14 +257,6 @@ void TestSignUpAndIn::signIn() {
       (finalUrl.host() == "www-dev.allizom.org" &&
        finalUrl.path() == "/en-US/products/vpn/"));
   qDebug() << finalUrl.path();
-}
-
-QString TestSignUpAndIn::fetchSessionCode() {
-  return fetchCode("x-verify-short-code");
-}
-
-QString TestSignUpAndIn::fetchUnblockCode() {
-  return fetchCode("x-unblock-code");
 }
 
 void TestSignUpAndIn::waitForTotpCodes() {
@@ -331,48 +322,4 @@ void TestSignUpAndIn::waitForTotpCodes() {
                AuthenticationInApp::StateVerifyingSessionTotpCode);
     }
   });
-}
-
-QString TestSignUpAndIn::fetchCode(const QString& code) {
-  while (true) {
-    QString url = "http://restmail.net/mail/";
-    url.append(m_emailAccount);
-
-    // In theory, network requests should be executed by tasks, but for this
-    // test we do an hack.
-    TaskFunction dummyTask([] {});
-
-    NetworkRequest* nr = NetworkRequest::createForGetUrl(&dummyTask, url);
-
-    QByteArray jsonData;
-    EventLoop loop;
-    connect(nr, &NetworkRequest::requestFailed,
-            [&](QNetworkReply::NetworkError, const QByteArray&) {
-              qDebug() << "Failed to fetch the restmail.net content";
-              loop.exit();
-            });
-    connect(nr, &NetworkRequest::requestCompleted, [&](const QByteArray& data) {
-      jsonData = data;
-      loop.exit();
-    });
-    loop.exec();
-
-    QJsonDocument doc(QJsonDocument::fromJson(jsonData));
-    QJsonArray array = doc.array();
-    if (!array.isEmpty()) {
-      QJsonObject obj = array.last().toObject();
-      QJsonObject headers = obj["headers"].toObject();
-      if (headers.contains(code)) {
-        return headers[code].toString();
-      }
-    }
-
-    qDebug() << "Email not received yet";
-
-    QTimer timer;
-    connect(&timer, &QTimer::timeout, [&]() { loop.exit(); });
-    timer.setSingleShot(true);
-    timer.start(2000 /* 2 seconds */);
-    loop.exec();
-  }
 }

@@ -16,27 +16,49 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const fs = require('fs');
-const {exec, spawn} = require('child_process');
+const {execSync, spawn} = require('child_process');
 const vpn = require('./helper.js');
 
 const app = process.env.MVPN_BIN;
+const authhelper = process.env.MVPN_AUTHHELPER;
 let vpnProcess = null;
 let stdErr = '';
 
 exports.mochaHooks = {
+  afterAll() {
+    try {
+      console.log(`HERE "${authhelper}" destroy "${vpn.account}" "${
+          vpn.accountPassword}"`);
+      execSync(
+          `"${authhelper}" destroy "${vpn.account}" "${vpn.accountPassword}"`);
+    } catch (e) {
+      console.error('Have you set MVPN_AUTHHELPER in .env or environment?');
+      process.exit(1);
+    }
+  },
+
   beforeAll() {
     // Check VPN app exists. If not, bail.
-    exec(`"${app}" --version`, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Could not run "${app}".`);
-        console.error('Have you set MVPN_BIN in .env or environment?');
-        console.error(`stdout: ${stdout}`);
-        console.error(`stderr: ${stderr}`);
-        process.exit(1);
-      }
+    try {
+      const stdout = execSync(`"${app}" --version`);
       console.log(`VPN Version is: ${stdout}`);
-    })
+    } catch (e) {
+      console.error(`Could not run "${app}".`);
+      console.error('Have you set MVPN_BIN in .env or environment?');
+      process.exit(1);
+    }
+
+    try {
+      const stdout = execSync(`"${authhelper}" create -j`);
+      const json = JSON.parse(stdout);
+      vpn.setAccount(json.account, json.emailAddress, json.password);
+    } catch (e) {
+      console.error(`Could not run "${authhelper}".`);
+      console.error('Have you set MVPN_AUTHHELPER in .env or environment?');
+      process.exit(1);
+    }
   },
+
   async beforeEach() {
     // Start VPN app
     vpnProcess = spawn(app, ['ui', '--testing']);
