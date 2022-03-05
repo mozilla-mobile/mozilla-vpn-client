@@ -118,7 +118,7 @@ Flickable {
 
             VPNConnectionInfoItem {
                 title: VPNl18n.ConnectionInfoLabelPing
-                subtitle: VPNConnectionHealth.latency
+                subtitle: VPNConnectionBenchmark.ping
                 iconPath: "qrc:/nebula/resources/connection-green.svg"
             }
 

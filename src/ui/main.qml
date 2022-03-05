@@ -148,7 +148,7 @@ Window {
             text: "Speed: " + VPNConnectionBenchmark.speed
         }
         Text {
-            text: "Ping: " + VPNConnectionHealth.latency
+            text: "Ping: " + VPNConnectionBenchmark.ping
         }
         Text {
             text: "Download: " + (VPNConnectionBenchmark.download * 8 / 1024 * 1024)

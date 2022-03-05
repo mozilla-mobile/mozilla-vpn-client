@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "benchmarkdownloadtask.h"
+#include "benchmarkpingtask.h"
 #include "connectionbenchmark.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -55,10 +56,15 @@ void ConnectionBenchmark::setState(State state) {
 void ConnectionBenchmark::start() {
   logger.debug() << "Start connection benchmarking";
 
+  m_pingBenchmarkTask = new BenchmarkPingTask();
   m_downloadBenchmarkTask = new BenchmarkDownloadTask(DOWNLOAD_URL);
-  connect(m_downloadBenchmarkTask, &BenchmarkDownloadTask::finished, this,
-          &ConnectionBenchmark::benchmarkedDownload);
 
+  connect(m_pingBenchmarkTask, &BenchmarkPingTask::finished, this,
+          &ConnectionBenchmark::pingBenchmarked);
+  connect(m_downloadBenchmarkTask, &BenchmarkDownloadTask::finished, this,
+          &ConnectionBenchmark::downloadBenchmarked);
+
+  TaskScheduler::scheduleTask(m_pingBenchmarkTask);
   TaskScheduler::scheduleTask(m_downloadBenchmarkTask);
 
   setState(StateRunning);
@@ -77,7 +83,7 @@ void ConnectionBenchmark::stop() {
   setState(StateInitial);
 }
 
-void ConnectionBenchmark::benchmarkedDownload(quint64 bytesPerSecond,
+void ConnectionBenchmark::downloadBenchmarked(quint64 bytesPerSecond,
                                               bool hasUnexpectedError) {
   logger.debug() << "Benchmarked dowload" << bytesPerSecond;
 
@@ -87,7 +93,20 @@ void ConnectionBenchmark::benchmarkedDownload(quint64 bytesPerSecond,
   }
 
   m_download = bytesPerSecond;
-  downloadChanged();
+  emit downloadChanged();
 
   setConnectionSpeed(m_download);
+}
+
+void ConnectionBenchmark::pingBenchmarked(quint16 pingLatency,
+                                          bool hasUnexpectedError) {
+  logger.debug() << "Benchmarked ping" << pingLatency;
+
+  if (hasUnexpectedError) {
+    setState(StateError);
+    return;
+  }
+
+  m_ping = pingLatency;
+  emit pingChanged();
 }

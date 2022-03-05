@@ -30,7 +30,7 @@ void BenchmarkDownloadTask::setState(State state) {
 }
 
 void BenchmarkDownloadTask::run() {
-  logger.debug() << "Run download";
+  logger.debug() << "Run download benchmark";
 
   if (m_state == StateCancelled) {
     emit completed();
@@ -52,7 +52,7 @@ void BenchmarkDownloadTask::run() {
 }
 
 void BenchmarkDownloadTask::stop() {
-  logger.debug() << "Stop download";
+  logger.debug() << "Stop download benchmark";
 
   if (m_state == StateActive) {
     Q_ASSERT(m_request);
