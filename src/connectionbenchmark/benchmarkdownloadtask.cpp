@@ -64,11 +64,12 @@ void BenchmarkDownloadTask::stop() {
 
 void BenchmarkDownloadTask::handleTaskFinished(
     QNetworkReply::NetworkError error, const QByteArray& data) {
-  logger.debug() << "Handle task finished" << data.size();
+  logger.debug() << "Handle task finished" << error;
   Q_UNUSED(data);
 
   bool hasUnexpectedError = error != QNetworkReply::NoError &&
-                            error != QNetworkReply::OperationCanceledError;
+                            error != QNetworkReply::OperationCanceledError &&
+                            error != QNetworkReply::TimeoutError;
 
   emit finished(m_bytesPerSecond, hasUnexpectedError);
   setState(StateInactive);
