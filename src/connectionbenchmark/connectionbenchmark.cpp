@@ -74,9 +74,13 @@ void ConnectionBenchmark::stop() {
   logger.debug() << "Stop benchmark";
 
   if (m_state == StateRunning) {
+    Q_ASSERT(m_pingBenchmarkTask);
     Q_ASSERT(m_downloadBenchmarkTask);
 
+    m_pingBenchmarkTask->stop();
     m_downloadBenchmarkTask->stop();
+
+    m_pingBenchmarkTask = nullptr;
     m_downloadBenchmarkTask = nullptr;
   };
 

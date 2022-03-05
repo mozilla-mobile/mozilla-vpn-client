@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "benchmarkdownloadtask.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
@@ -49,6 +50,9 @@ void BenchmarkDownloadTask::run() {
           &BenchmarkDownloadTask::handleTaskFinished);
 
   m_elapsedTimer.start();
+
+  QTimer::singleShot(Constants::BENCHMARK_MAX_DURATION, this,
+                     &BenchmarkDownloadTask::stop);
 }
 
 void BenchmarkDownloadTask::stop() {

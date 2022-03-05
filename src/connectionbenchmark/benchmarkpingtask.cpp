@@ -35,8 +35,6 @@ void BenchmarkPingTask::run() {
     emit completed();
   }
 
-  setState(StateActive);
-
   connect(MozillaVPN::instance()->connectionHealth(),
           &ConnectionHealth::pingChanged, this, [&] {
             logger.debug() << "Ping changed";
@@ -44,11 +42,12 @@ void BenchmarkPingTask::run() {
             m_pingLatencyAcc +=
                 MozillaVPN::instance()->connectionHealth()->latency();
             m_numOfPingSamples++;
-
-            if (m_numOfPingSamples == Constants::BENCHMARK_MAX_PING_SAMPLES) {
-              handleTaskFinished();
-            }
           });
+
+  setState(StateActive);
+
+  QTimer::singleShot(Constants::BENCHMARK_MAX_DURATION, this,
+                     &BenchmarkPingTask::handleTaskFinished);
 }
 
 void BenchmarkPingTask::stop() {
@@ -67,6 +66,7 @@ void BenchmarkPingTask::handleTaskFinished() {
 
   m_pingLatency = (int)(m_pingLatencyAcc / m_numOfPingSamples + 0.5);
 
+  // TODO: Handle potentiel errors
   emit finished(m_pingLatency, false);
   setState(StateInactive);
 

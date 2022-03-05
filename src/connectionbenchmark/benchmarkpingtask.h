@@ -5,7 +5,6 @@
 #ifndef BENCHMARKPINGTASK_H
 #define BENCHMARKPINGTASK_H
 
-#include "constants.h"
 #include "networkrequest.h"
 #include "task.h"
 
