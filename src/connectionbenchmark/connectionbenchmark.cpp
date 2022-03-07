@@ -6,6 +6,7 @@
 #include "benchmarkpingtask.h"
 #include "connectionbenchmark.h"
 #include "connectionhealth.h"
+#include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -59,7 +60,21 @@ void ConnectionBenchmark::start() {
   logger.debug() << "Start connection benchmarking";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn->controller()->state() == Controller::StateOn);
+  Q_ASSERT(vpn);
+
+  Controller* controller = vpn->controller();
+  Controller::State controllerState = controller->state();
+  Q_ASSERT(controllerState == Controller::StateOn);
+
+  m_connectionHealth = vpn->connectionHealth();
+  if (m_connectionHealth->stability() == ConnectionHealth::NoSignal) {
+    handleStabilityChange();
+  }
+
+  connect(controller, &Controller::stateChanged, this,
+          &ConnectionBenchmark::stop);
+  connect(m_connectionHealth, &ConnectionHealth::stabilityChanged, this,
+          &ConnectionBenchmark::handleStabilityChange);
 
   m_pingBenchmarkTask = new BenchmarkPingTask();
   m_downloadBenchmarkTask = new BenchmarkDownloadTask(DOWNLOAD_URL);
@@ -68,23 +83,6 @@ void ConnectionBenchmark::start() {
           &ConnectionBenchmark::pingBenchmarked);
   connect(m_downloadBenchmarkTask, &BenchmarkDownloadTask::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
-  connect(vpn, &MozillaVPN::stateChanged, this, [&] {
-    logger.debug() << "VPN state changed";
-
-    if (vpn->controller()->state() == Controller::StateDisconnecting) {
-      stop();
-    }
-  });
-  connect(vpn->connectionHealth(), &ConnectionHealth::stabilityChanged, this,
-          [&] {
-            logger.debug() << "Connection stability changed";
-
-            if (vpn->connectionHealth()->stability() ==
-                ConnectionHealth::NoSignal) {
-              setState(StateError);
-              stop();
-            };
-          });
 
   TaskScheduler::scheduleTask(m_pingBenchmarkTask);
   TaskScheduler::scheduleTask(m_downloadBenchmarkTask);
@@ -95,7 +93,7 @@ void ConnectionBenchmark::start() {
 void ConnectionBenchmark::stop() {
   logger.debug() << "Stop benchmark";
 
-  if (m_state == StateRunning) {
+  if (m_state == StateRunning || m_state == StateError) {
     Q_ASSERT(m_pingBenchmarkTask);
     Q_ASSERT(m_downloadBenchmarkTask);
 
@@ -131,4 +129,13 @@ void ConnectionBenchmark::pingBenchmarked(quint16 pingLatency) {
 
   m_ping = pingLatency;
   emit pingChanged();
+}
+
+void ConnectionBenchmark::handleStabilityChange() {
+  logger.debug() << "Handle stability change";
+
+  if (m_connectionHealth->stability() == ConnectionHealth::NoSignal) {
+    setState(StateError);
+    stop();
+  };
 }

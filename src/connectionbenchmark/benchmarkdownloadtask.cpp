@@ -35,6 +35,7 @@ void BenchmarkDownloadTask::run() {
 
   if (m_state == StateCancelled) {
     emit completed();
+    return;
   }
 
   setState(StateActive);
@@ -51,7 +52,7 @@ void BenchmarkDownloadTask::run() {
 
   m_elapsedTimer.start();
 
-  QTimer::singleShot(Constants::BENCHMARK_MAX_DURATION, this,
+  QTimer::singleShot(Constants::BENCHMARK_DOWNLOAD_MAX_DURATION, this,
                      &BenchmarkDownloadTask::stop);
 }
 

@@ -33,6 +33,7 @@ void BenchmarkPingTask::run() {
 
   if (m_state == StateCancelled) {
     emit completed();
+    return;
   }
 
   connect(MozillaVPN::instance()->connectionHealth(),
@@ -46,7 +47,7 @@ void BenchmarkPingTask::run() {
 
   setState(StateActive);
 
-  QTimer::singleShot(Constants::BENCHMARK_MAX_DURATION, this,
+  QTimer::singleShot(Constants::BENCHMARK_PING_MAX_DURATION, this,
                      &BenchmarkPingTask::handleTaskFinished);
 }
 

@@ -7,6 +7,7 @@
 
 #include "benchmarkdownloadtask.h"
 #include "benchmarkpingtask.h"
+#include "connectionhealth.h"
 
 class ConnectionBenchmark final : public QObject {
   Q_OBJECT;
@@ -55,12 +56,14 @@ class ConnectionBenchmark final : public QObject {
   void pingBenchmarked(quint16 pingLatency);
 
  private:
+  void handleStabilityChange();
   void setConnectionSpeed(quint64 m_download);
   void setState(State state);
 
  private:
   BenchmarkDownloadTask* m_downloadBenchmarkTask = nullptr;
   BenchmarkPingTask* m_pingBenchmarkTask = nullptr;
+  ConnectionHealth* m_connectionHealth = nullptr;
 
   State m_state = StateInitial;
   Speed m_speed = SpeedSlow;
