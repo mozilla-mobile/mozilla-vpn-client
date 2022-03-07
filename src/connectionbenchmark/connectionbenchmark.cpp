@@ -58,6 +58,9 @@ void ConnectionBenchmark::setState(State state) {
 void ConnectionBenchmark::start() {
   logger.debug() << "Start connection benchmarking";
 
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn->controller()->state() == Controller::StateOn);
+
   m_pingBenchmarkTask = new BenchmarkPingTask();
   m_downloadBenchmarkTask = new BenchmarkDownloadTask(DOWNLOAD_URL);
 
@@ -65,11 +68,18 @@ void ConnectionBenchmark::start() {
           &ConnectionBenchmark::pingBenchmarked);
   connect(m_downloadBenchmarkTask, &BenchmarkDownloadTask::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
-  connect(MozillaVPN::instance()->connectionHealth(),
-          &ConnectionHealth::stabilityChanged, this, [&] {
+  connect(vpn, &MozillaVPN::stateChanged, this, [&] {
+    logger.debug() << "VPN state changed";
+
+    if (vpn->controller()->state() == Controller::StateDisconnecting) {
+      stop();
+    }
+  });
+  connect(vpn->connectionHealth(), &ConnectionHealth::stabilityChanged, this,
+          [&] {
             logger.debug() << "Connection stability changed";
 
-            if (MozillaVPN::instance()->connectionHealth()->stability() ==
+            if (vpn->connectionHealth()->stability() ==
                 ConnectionHealth::NoSignal) {
               setState(StateError);
               stop();
