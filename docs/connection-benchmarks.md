@@ -14,9 +14,9 @@ The value for ping is determined by listening to changes of ping latency using t
 
 The value for download is determined by downloading data from a remote file server and calculating the amount of data that is being received while running the download.
 
-### Speed
+## Result
 
-Depending on the results of the benchmarks we set a connection speed to indicate what the current connection is capable of.
+Depending on the results of the benchmarks we set a connection `Speed` to indicate what the current connection is capable of.
 
 * `SpeedSlow`: Connection speed is slow and should be potentially troubleshooted.
     * Switching server locations
