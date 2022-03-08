@@ -86,7 +86,7 @@ jobs:
 
   ghPages:
     runs-on: ubuntu-20.04
-    needs: [wasm, wasmQt6, inspector]
+    needs: [wasmQt6, inspector]
     name: Publish Wasm on Github Pages
     env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
