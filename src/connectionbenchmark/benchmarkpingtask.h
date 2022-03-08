@@ -29,10 +29,8 @@ class BenchmarkPingTask final : public Task {
   void aborted();
   void finished(quint16 pingLatency);
 
- private slots:
-  void handleTaskFinished();
-
  private:
+  void handleTaskFinished();
   void setState(State state);
 
  private:

@@ -32,12 +32,10 @@ class BenchmarkDownloadTask final : public Task {
   void finished(quint64 bytesPerSecond, bool hasUnexpectedError);
   void progressed(qint64 bytesReceived);
 
- private slots:
+ private:
   void handleTaskFinished(QNetworkReply::NetworkError error,
                           const QByteArray& data);
   void taskProgressed(qint64 bytesReceived, qint64 bytesTotal);
-
- private:
   void setState(State state);
 
  private:
@@ -47,7 +45,7 @@ class BenchmarkDownloadTask final : public Task {
   quint64 m_bytesPerSecond = 0;
 
   QElapsedTimer m_elapsedTimer;
-  QString m_fileUrl;
+  const QString m_fileUrl;
 };
 
 #endif  // BENCHMARKDOWNLOADTASK_H

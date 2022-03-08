@@ -111,7 +111,7 @@ void ConnectionBenchmark::stop() {
 
 void ConnectionBenchmark::downloadBenchmarked(quint64 bytesPerSecond,
                                               bool hasUnexpectedError) {
-  logger.debug() << "Benchmarked dowload" << bytesPerSecond;
+  logger.debug() << "Benchmarked download" << bytesPerSecond;
 
   if (hasUnexpectedError) {
     setState(StateError);
