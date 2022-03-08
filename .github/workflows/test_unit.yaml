@@ -113,7 +113,7 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
-          ./scripts/tests/unit_tests.sh --grcov final.lcov
+          ./scripts/tests/unit_tests.sh --grcov lcov.info
         
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2

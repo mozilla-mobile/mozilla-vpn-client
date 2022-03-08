@@ -116,7 +116,7 @@ utest_cleanup_nativemessaging || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then  
   printn Y "merging temp files to $GRCOV_FILENAME... "
-  grcov -t lcov -o "$GRCOV_FILENAME" unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die
+  grcov -t lcov -o final.lcov unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die
 
   printn Y "Cleaning the temp coverage files... "
   rm unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die
