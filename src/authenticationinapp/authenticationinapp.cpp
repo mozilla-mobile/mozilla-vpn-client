@@ -61,7 +61,7 @@ void AuthenticationInApp::checkAccount(const QString& emailAddress) {
   Q_ASSERT(m_state == StateStart);
   Q_ASSERT(m_listener);
 
-  logger.debug() << "Authentication starting:" << emailAddress;
+  logger.debug() << "Authentication starting";
 
   m_listener->checkAccount(emailAddress);
 }
