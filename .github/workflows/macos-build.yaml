@@ -18,7 +18,6 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: "Qt5", pattern: x, folder: qt }
             - { name: "Qt6", pattern: qt6, folder: qt6 }
 
     steps:
@@ -190,7 +189,6 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: "Qt5", pattern: x, folder: qt }
             - { name: "Qt6", pattern: qt6, folder: qt6 }
 
     steps:
