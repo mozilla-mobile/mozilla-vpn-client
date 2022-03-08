@@ -48,33 +48,16 @@ jobs:
           export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
           python3 scripts/utils/import_languages.py
 
-      - name: Running tests
-        shell: bash
-        run: |
-          export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
-          ./scripts/tests/unit_tests.sh
-
       - name: Install Grcov
         shell: bash
         run: |
           cargo install grcov
-      
-      - name: Gather coverage data
+
+      - name: Running tests
         shell: bash
         run: |
-          grcov tests/unit/.obj/tests.build -t lcov > lcovunit.info
-          grcov tests/nativemessaging/.obj/tests.build -t lcov > lcovmessaging.info
-          grcov tests/auth/.obj/tests.build -t lcov > lcovauth.info
-          grcov -t lcov -o final.lcov lcovunit.info lcovmessaging.info lcovauth.info
-        
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
-        with:              
-          directory: .obj/tests.build/Release/tests.build/Objects-normal/x86_64/                               
-          flags: unit_tests
-          name: codecov-poc
-          files: final.lcov
-          verbose: true
+          export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
+          ./scripts/tests/unit_tests.sh                 
 
   macos-unit-tests:
     strategy:
@@ -121,29 +104,21 @@ jobs:
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov   
+
       - name: Running tests
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
-          ./scripts/tests/unit_tests.sh
-
-      - name: Install Grcov
-        shell: bash
-        run: |
-          cargo install grcov
-      
-      - name: Gather coverage data
-        shell: bash
-        run: |          
-          grcov tests/unit/.obj/tests.build -t lcov > lcovunit.info
-          grcov tests/nativemessaging/.obj/tests.build -t lcov > lcovmessaging.info
-          grcov tests/auth/.obj/tests.build -t lcov > lcovauth.info
-          grcov -t lcov -o final.lcov lcovunit.info lcovmessaging.info lcovauth.info
+          ./scripts/tests/unit_tests.sh --grcov final.lcov
         
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:              
-          directory: .obj/tests.build/Release/tests.build/Objects-normal/x86_64/                               
+          directory: .                              
           flags: unit_tests
           name: codecov-poc
           files: final.lcov

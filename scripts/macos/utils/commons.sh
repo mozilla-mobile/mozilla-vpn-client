@@ -48,6 +48,10 @@ _compile() {
   [ -f "$2" ] || die "Expected $2 binary"
 }
 
+_grcov() {  
+  grcov .obj  -s . -t lcov --branch -o "$1"
+}
+
 # Public methods
 
 ## Unit-tests
@@ -97,6 +101,18 @@ utest_cleanup_auth() {
 utest_cleanup_nativemessaging() {
   (cd extension/bridge && cargo clean) || die
   _cleanup tests.xcodeproj/ ./Release/tests || die
+}
+
+utest_grcov_unit() {
+  _grcov “$1” || die
+}
+
+utest_grcov_auth() {
+  _grcov “$1” || die
+}
+
+utest_grcov_nativemessaging() {
+  _grcov “$1” || die
 }
 
 ## Lottie tests
