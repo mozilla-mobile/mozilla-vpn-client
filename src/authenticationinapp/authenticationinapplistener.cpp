@@ -664,6 +664,7 @@ void AuthenticationInAppListener::processErrorCode(
       break;
 
     case 127:  // Invalid unblock code
+      aip->requestState(AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
       aip->requestErrorPropagation(AuthenticationInApp::ErrorInvalidEmailCode,
                                    this);
       break;
