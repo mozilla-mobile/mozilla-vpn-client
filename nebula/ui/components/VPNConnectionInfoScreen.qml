@@ -81,11 +81,10 @@ Rectangle {
         // Start opening/closing transition
         isTransitioning = true;
 
-        if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial
-            || VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateReady
-        ) {
+        if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial) {
             VPNConnectionBenchmark.start();
-        } else if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateRunning) {
+        } else if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateRunning
+            || VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateReady) {
             VPNConnectionBenchmark.stop();
         }
 
