@@ -32,8 +32,9 @@ VPNFlickable {
     ColumnLayout {
         id: col
         anchors.top: parent.top
-        height: Math.max(authBase.height, col.implicitHeight)
-        width: authBase.width
+        height: Math.max(parent.height, col.implicitHeight)
+        anchors.left: parent.left
+        anchors.right: parent.right
 
         PropertyAnimation on opacity {
             from: 0
