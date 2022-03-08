@@ -100,6 +100,7 @@ Flickable {
             }
         }
 
+        font.pixelSize: 0 /* QTBUG-96733 workaround */
         implicitWidth: scrollBarWidth
         width: scrollBarWidth
         minimumSize: 0
