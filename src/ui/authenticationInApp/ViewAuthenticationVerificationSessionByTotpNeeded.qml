@@ -38,6 +38,7 @@ VPNInAppAuthenticationBase {
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionTotpCode(inputText) }
         _buttonText: "Continue"
+        _inputMethodHints: Qt.ImhDigitsOnly
         _inputPlaceholderText: "Enter 2-factor auth code"
     }
 

@@ -42,6 +42,7 @@ VPNInAppAuthenticationBase {
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded && activeInput().text && activeInput().text.length === VPNAuthInApp.verificationCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionEmailCode(inputText) }
         _buttonText: "Verify"
+        _inputMethodHints: Qt.ImhDigitsOnly
         _inputPlaceholderText: "Enter 6 digit code"
     }
 
