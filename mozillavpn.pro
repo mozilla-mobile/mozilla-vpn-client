@@ -29,7 +29,3 @@ QMLTEST {
 webextension {
     SUBDIRS += tests/nativemessaging
 }
-
-TOOLS {
-    SUBDIRS += tools/ipmonitor
-}
