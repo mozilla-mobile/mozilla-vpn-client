@@ -5,8 +5,8 @@
 #ifndef CONNECTIONBENCHMARK_H
 #define CONNECTIONBENCHMARK_H
 
-#include "benchmarkdownloadtask.h"
-#include "benchmarkpingtask.h"
+#include "benchmarktaskdownload.h"
+#include "benchmarktaskping.h"
 #include "connectionhealth.h"
 
 class ConnectionBenchmark final : public QObject {
@@ -61,8 +61,8 @@ class ConnectionBenchmark final : public QObject {
   void setState(State state);
 
  private:
-  BenchmarkDownloadTask* m_downloadBenchmarkTask = nullptr;
-  BenchmarkPingTask* m_pingBenchmarkTask = nullptr;
+  BenchmarkTaskDownload* m_downloadBenchmarkTask = nullptr;
+  BenchmarkTaskPing* m_pingBenchmarkTask = nullptr;
   ConnectionHealth* m_connectionHealth = nullptr;
 
   State m_state = StateInitial;

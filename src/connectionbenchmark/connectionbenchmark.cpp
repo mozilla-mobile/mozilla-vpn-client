@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "benchmarkdownloadtask.h"
-#include "benchmarkpingtask.h"
+#include "benchmarktaskdownload.h"
+#include "benchmarktaskping.h"
 #include "connectionbenchmark.h"
 #include "connectionhealth.h"
 #include "controller.h"
@@ -76,12 +76,12 @@ void ConnectionBenchmark::start() {
   connect(m_connectionHealth, &ConnectionHealth::stabilityChanged, this,
           &ConnectionBenchmark::handleStabilityChange);
 
-  m_pingBenchmarkTask = new BenchmarkPingTask();
-  m_downloadBenchmarkTask = new BenchmarkDownloadTask(DOWNLOAD_URL);
+  m_pingBenchmarkTask = new BenchmarkTaskPing();
+  m_downloadBenchmarkTask = new BenchmarkTaskDownload(DOWNLOAD_URL);
 
-  connect(m_pingBenchmarkTask, &BenchmarkPingTask::finished, this,
+  connect(m_pingBenchmarkTask, &BenchmarkTaskPing::finished, this,
           &ConnectionBenchmark::pingBenchmarked);
-  connect(m_downloadBenchmarkTask, &BenchmarkDownloadTask::finished, this,
+  connect(m_downloadBenchmarkTask, &BenchmarkTaskDownload::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
 
   TaskScheduler::scheduleTask(m_pingBenchmarkTask);

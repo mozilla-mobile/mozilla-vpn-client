@@ -88,8 +88,8 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
-        connectionbenchmark/benchmarkdownloadtask.cpp \
-        connectionbenchmark/benchmarkpingtask.cpp \
+        connectionbenchmark/benchmarktaskdownload.cpp \
+        connectionbenchmark/benchmarktaskping.cpp \
         connectionbenchmark/connectionbenchmark.cpp \
         connectioncheck.cpp \
         connectiondataholder.cpp \
@@ -212,8 +212,8 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
-        connectionbenchmark/benchmarkdownloadtask.h \
-        connectionbenchmark/benchmarkpingtask.h \
+        connectionbenchmark/benchmarktaskdownload.h \
+        connectionbenchmark/benchmarktaskping.h \
         connectionbenchmark/connectionbenchmark.h \
         connectioncheck.h \
         connectiondataholder.h \

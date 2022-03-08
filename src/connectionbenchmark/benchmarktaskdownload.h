@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef BENCHMARKDOWNLOADTASK_H
-#define BENCHMARKDOWNLOADTASK_H
+#ifndef BENCHMARKTASKDOWNLOAD_H
+#define BENCHMARKTASKDOWNLOAD_H
 
 #include "networkrequest.h"
 #include "task.h"
@@ -14,13 +14,13 @@
 #include <QObject>
 #include <QString>
 
-class BenchmarkDownloadTask final : public Task {
+class BenchmarkTaskDownload final : public Task {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(BenchmarkDownloadTask)
+  Q_DISABLE_COPY_MOVE(BenchmarkTaskDownload)
 
  public:
-  explicit BenchmarkDownloadTask(const QString& fileUrl);
-  ~BenchmarkDownloadTask();
+  explicit BenchmarkTaskDownload(const QString& fileUrl);
+  ~BenchmarkTaskDownload();
 
   void run() override;
   void stop();
@@ -48,4 +48,4 @@ class BenchmarkDownloadTask final : public Task {
   const QString m_fileUrl;
 };
 
-#endif  // BENCHMARKDOWNLOADTASK_H
+#endif  // BENCHMARKTASKDOWNLOAD_H

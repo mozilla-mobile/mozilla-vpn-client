@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "benchmarkpingtask.h"
+#include "benchmarktaskping.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -13,22 +13,22 @@
 #include <QTimer>
 
 namespace {
-Logger logger(LOG_MAIN, "BenchmarkPingTask");
+Logger logger(LOG_MAIN, "BenchmarkTaskPing");
 }
 
-BenchmarkPingTask::BenchmarkPingTask() : Task("BenchmarkPingTask") {
-  MVPN_COUNT_CTOR(BenchmarkPingTask);
+BenchmarkTaskPing::BenchmarkTaskPing() : Task("BenchmarkTaskPing") {
+  MVPN_COUNT_CTOR(BenchmarkTaskPing);
 }
 
-BenchmarkPingTask::~BenchmarkPingTask() { MVPN_COUNT_DTOR(BenchmarkPingTask); }
+BenchmarkTaskPing::~BenchmarkTaskPing() { MVPN_COUNT_DTOR(BenchmarkTaskPing); }
 
-void BenchmarkPingTask::setState(State state) {
+void BenchmarkTaskPing::setState(State state) {
   logger.debug() << "Set state" << state;
 
   m_state = state;
 }
 
-void BenchmarkPingTask::run() {
+void BenchmarkTaskPing::run() {
   logger.debug() << "Run ping benchmark";
 
   if (m_state == StateCancelled) {
@@ -48,10 +48,10 @@ void BenchmarkPingTask::run() {
   setState(StateActive);
 
   QTimer::singleShot(Constants::BENCHMARK_PING_MAX_DURATION, this,
-                     &BenchmarkPingTask::handleTaskFinished);
+                     &BenchmarkTaskPing::handleTaskFinished);
 }
 
-void BenchmarkPingTask::stop() {
+void BenchmarkTaskPing::stop() {
   logger.debug() << "Stop ping benchmark";
 
   if (m_state == StateActive) {
@@ -62,7 +62,7 @@ void BenchmarkPingTask::stop() {
   }
 }
 
-void BenchmarkPingTask::handleTaskFinished() {
+void BenchmarkTaskPing::handleTaskFinished() {
   logger.debug() << "Handle task finished";
 
   m_pingLatency = (int)(m_pingLatencyAcc / m_numOfPingSamples + 0.5);

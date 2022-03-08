@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "benchmarkdownloadtask.h"
+#include "benchmarktaskdownload.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -12,25 +12,25 @@
 #include <QByteArray>
 
 namespace {
-Logger logger(LOG_MAIN, "BenchmarkDownloadTask");
+Logger logger(LOG_MAIN, "BenchmarkTaskDownload");
 }
 
-BenchmarkDownloadTask::BenchmarkDownloadTask(const QString& fileUrl)
-    : Task("BenchmarkDownloadTask"), m_fileUrl(fileUrl) {
-  MVPN_COUNT_CTOR(BenchmarkDownloadTask);
+BenchmarkTaskDownload::BenchmarkTaskDownload(const QString& fileUrl)
+    : Task("BenchmarkTaskDownload"), m_fileUrl(fileUrl) {
+  MVPN_COUNT_CTOR(BenchmarkTaskDownload);
 }
 
-BenchmarkDownloadTask::~BenchmarkDownloadTask() {
-  MVPN_COUNT_DTOR(BenchmarkDownloadTask);
+BenchmarkTaskDownload::~BenchmarkTaskDownload() {
+  MVPN_COUNT_DTOR(BenchmarkTaskDownload);
 }
 
-void BenchmarkDownloadTask::setState(State state) {
+void BenchmarkTaskDownload::setState(State state) {
   logger.debug() << "Set state" << state;
 
   m_state = state;
 }
 
-void BenchmarkDownloadTask::run() {
+void BenchmarkTaskDownload::run() {
   logger.debug() << "Run download benchmark";
 
   if (m_state == StateCancelled) {
@@ -46,17 +46,17 @@ void BenchmarkDownloadTask::run() {
             handleTaskFinished(QNetworkReply::NoError, data);
           });
   connect(m_request, &NetworkRequest::requestUpdated, this,
-          &BenchmarkDownloadTask::taskProgressed);
+          &BenchmarkTaskDownload::taskProgressed);
   connect(m_request, &NetworkRequest::requestFailed, this,
-          &BenchmarkDownloadTask::handleTaskFinished);
+          &BenchmarkTaskDownload::handleTaskFinished);
 
   m_elapsedTimer.start();
 
   QTimer::singleShot(Constants::BENCHMARK_DOWNLOAD_MAX_DURATION, this,
-                     &BenchmarkDownloadTask::stop);
+                     &BenchmarkTaskDownload::stop);
 }
 
-void BenchmarkDownloadTask::stop() {
+void BenchmarkTaskDownload::stop() {
   logger.debug() << "Stop download benchmark";
 
   if (m_state == StateActive) {
@@ -67,7 +67,7 @@ void BenchmarkDownloadTask::stop() {
   }
 }
 
-void BenchmarkDownloadTask::handleTaskFinished(
+void BenchmarkTaskDownload::handleTaskFinished(
     QNetworkReply::NetworkError error, const QByteArray& data) {
   logger.debug() << "Handle task finished" << error;
   Q_UNUSED(data);
@@ -82,7 +82,7 @@ void BenchmarkDownloadTask::handleTaskFinished(
   emit completed();
 }
 
-void BenchmarkDownloadTask::taskProgressed(qint64 bytesReceived,
+void BenchmarkTaskDownload::taskProgressed(qint64 bytesReceived,
                                            qint64 bytesTotal) {
   logger.debug() << "Download progressed";
   Q_UNUSED(bytesTotal);

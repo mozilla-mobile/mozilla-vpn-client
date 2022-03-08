@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef BENCHMARKPINGTASK_H
-#define BENCHMARKPINGTASK_H
+#ifndef BENCHMARKTASKPING_H
+#define BENCHMARKTASKPING_H
 
 #include "networkrequest.h"
 #include "task.h"
@@ -12,13 +12,13 @@
 #include <QObject>
 #include <QVector>
 
-class BenchmarkPingTask final : public Task {
+class BenchmarkTaskPing final : public Task {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(BenchmarkPingTask)
+  Q_DISABLE_COPY_MOVE(BenchmarkTaskPing)
 
  public:
-  BenchmarkPingTask();
-  ~BenchmarkPingTask();
+  BenchmarkTaskPing();
+  ~BenchmarkTaskPing();
 
   void run() override;
   void stop();
@@ -41,4 +41,4 @@ class BenchmarkPingTask final : public Task {
   quint16 m_pingLatency = 0;
 };
 
-#endif  // BENCHMARKPINGTASK_H
+#endif  // BENCHMARKTASKPING_H
