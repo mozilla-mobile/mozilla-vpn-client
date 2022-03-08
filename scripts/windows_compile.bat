@@ -124,7 +124,7 @@ IF %DEBUG_BUILD%==T (
   ECHO Generating Debug Build for the extension bridge
   pushd extension\bridge
 
-  cargo build --debug
+  cargo build
   IF %ERRORLEVEL% NEQ 0 (
     ECHO cargo failed for the extension!
     EXIT 1
