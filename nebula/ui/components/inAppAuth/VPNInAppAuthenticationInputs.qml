@@ -113,7 +113,10 @@ ColumnLayout {
                 base._inputErrorMessage =  VPNl18n.InAppAuthInvalidPasswordErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
-
+            case VPNAuthInApp.ErrorInvalidEmailAddress:
+                base._inputErrorMessage = "Invalid email address";
+                activeInput().forceActiveFocus();
+                break;
             case VPNAuthInApp.ErrorInvalidEmailCode:
                 base._inputErrorMessage = "Invalid email code";
                 activeInput().forceActiveFocus();
