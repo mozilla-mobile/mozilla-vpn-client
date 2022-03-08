@@ -43,7 +43,7 @@ while [[ $# -gt 0 ]]; do
     ;;
   -h | --help)
     helpFunction
-    ;;   
+    ;;
   esac
 done
 
@@ -80,7 +80,7 @@ utest_run_unit || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for unit tests..."
-  utest_grcov_unit "$GRCOV_FILENAME"_unit || die
+  utest_grcov_unit unit_"$GRCOV_FILENAME" || die
 fi
 
 printn Y "Cleaning the existing project... "
@@ -94,7 +94,7 @@ utest_run_auth || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for auth tests..."
-  utest_grcov_auth "$GRCOV_FILENAME"_auth || die
+  utest_grcov_auth auth_"$GRCOV_FILENAME" || die
 fi
 
 printn Y "Cleaning the existing project... "
@@ -108,7 +108,7 @@ utest_run_nativemessaging || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for native messaging unit tests..."
-  utest_grcov_nativemessaging "$GRCOV_FILENAME"_nativemessaging || die
+  utest_grcov_nativemessaging nativemessaging_"$GRCOV_FILENAME" || die
 fi
 
 printn Y "Cleaning the existing project... "
@@ -116,10 +116,10 @@ utest_cleanup_nativemessaging || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then  
   printn Y "merging temp files to $GRCOV_FILENAME... "
-  grcov -t lcov -o "$GRCOV_FILENAME" "$GRCOV_FILENAME"_auth "$GRCOV_FILENAME"_unit "$GRCOV_FILENAME"_nativemessaging || die
+  grcov -t lcov -o "$GRCOV_FILENAME" unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die
 
   printn Y "Cleaning the temp coverage files... "
-  rm "$GRCOV_FILENAME"_auth "$GRCOV_FILENAME"_nativemessaging "$GRCOV_FILENAME"_unit || die
+  rm unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die
 fi
 
 
