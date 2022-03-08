@@ -178,6 +178,10 @@ void TestSignUpAndIn::signIn() {
   QString emailAddress(m_emailAccount);
   emailAddress.append("@restmail.net");
 
+  // Just to make things more complex, let's pass an upper-case email address.
+  aia->allowUpperCaseEmailAddress();
+  emailAddress[0] = emailAddress[0].toUpper();
+
   // Account
   aia->checkAccount(emailAddress);
   QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);

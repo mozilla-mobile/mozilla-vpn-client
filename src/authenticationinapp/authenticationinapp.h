@@ -108,6 +108,7 @@ class AuthenticationInApp final : public QObject {
 #ifdef UNIT_TEST
   // This method is used to have a test coverage for the TOTP verification.
   void enableTotpCreation();
+  void allowUpperCaseEmailAddress();
 #endif
 
   // This needs to be called when we are in StateUnblockCodeNeeded state.
