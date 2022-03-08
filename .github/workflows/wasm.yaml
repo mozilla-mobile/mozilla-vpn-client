@@ -94,12 +94,6 @@ jobs:
       - name: Download a Build Artifact
         uses: actions/download-artifact@v2.0.8
         with:
-          name: WebAssembly Build Qt5
-          # Destination path
-          path: _site/qt5
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v2.0.8
-        with:
           name: WebAssembly Build Qt6
           # Destination path
           path: _site
