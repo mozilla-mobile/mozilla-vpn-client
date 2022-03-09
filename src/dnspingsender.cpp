@@ -43,7 +43,6 @@ struct dnsHeader {
 #define DNS_FLAG_RCODE_NOT_IMPLEMENTED (0x4 << 0)
 #define DNS_FLAG_RCODE_REFUSED (0x5 << 0)
 
-
 namespace {
 Logger logger(LOG_NETWORKING, "DnsPingSender");
 }
