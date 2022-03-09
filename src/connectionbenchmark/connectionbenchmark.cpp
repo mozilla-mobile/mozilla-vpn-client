@@ -13,9 +13,9 @@
 #include "taskscheduler.h"
 
 // TODO: Use file that is hosted by us
-constexpr const char* DOWNLOAD_URL =
-    "https://speed1.syseleven.net.prod.hosts.ooklaserver.net:8080/"
-    "download?nocache=73d775b0-3082-47fb-8816-d6171c023fa2&size=25000000";
+// constexpr const char* DOWNLOAD_URL =
+//     "https://speed1.syseleven.net.prod.hosts.ooklaserver.net:8080/"
+//     "download?nocache=73d775b0-3082-47fb-8816-d6171c023fa2&size=25000000";
 
 // TODO: Decide on thresholds for connection speeds
 constexpr uint32_t SPEED_THRESHOLD_FAST = 3125000;    // 25 Megabit
@@ -63,8 +63,8 @@ void ConnectionBenchmark::start() {
   Q_ASSERT(vpn);
 
   Controller* controller = vpn->controller();
-  Controller::State controllerState = controller->state();
-  Q_ASSERT(controllerState == Controller::StateOn);
+  // Controller::State controllerState = controller->state();
+  // Q_ASSERT(controllerState == Controller::StateOn);
 
   m_connectionHealth = vpn->connectionHealth();
   if (m_connectionHealth->stability() == ConnectionHealth::NoSignal) {
@@ -77,15 +77,14 @@ void ConnectionBenchmark::start() {
           &ConnectionBenchmark::handleStabilityChange);
 
   m_pingBenchmarkTask = new BenchmarkTaskPing();
-  m_downloadBenchmarkTask = new BenchmarkTaskDownload(DOWNLOAD_URL);
-
   connect(m_pingBenchmarkTask, &BenchmarkTaskPing::finished, this,
           &ConnectionBenchmark::pingBenchmarked);
-  connect(m_downloadBenchmarkTask, &BenchmarkTaskDownload::finished, this,
-          &ConnectionBenchmark::downloadBenchmarked);
-
   TaskScheduler::scheduleTask(m_pingBenchmarkTask);
-  TaskScheduler::scheduleTask(m_downloadBenchmarkTask);
+
+  // m_downloadBenchmarkTask = new BenchmarkTaskDownload(DOWNLOAD_URL);
+  // connect(m_downloadBenchmarkTask, &BenchmarkTaskDownload::finished, this,
+  //         &ConnectionBenchmark::downloadBenchmarked);
+  // TaskScheduler::scheduleTask(m_downloadBenchmarkTask);
 
   setState(StateRunning);
 }
@@ -124,7 +123,7 @@ void ConnectionBenchmark::downloadBenchmarked(quint64 bytesPerSecond,
   setConnectionSpeed(m_download);
 }
 
-void ConnectionBenchmark::pingBenchmarked(quint16 pingLatency) {
+void ConnectionBenchmark::pingBenchmarked(quint64 pingLatency) {
   logger.debug() << "Benchmarked ping" << pingLatency;
 
   m_ping = pingLatency;

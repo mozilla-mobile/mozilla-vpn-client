@@ -5,14 +5,12 @@
 #ifndef BENCHMARKTASKPING_H
 #define BENCHMARKTASKPING_H
 
+#include "benchmarktask.h"
 #include "networkrequest.h"
-#include "task.h"
 
-#include <QElapsedTimer>
 #include <QObject>
-#include <QVector>
 
-class BenchmarkTaskPing final : public Task {
+class BenchmarkTaskPing : public BenchmarkTask {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(BenchmarkTaskPing)
 
@@ -20,25 +18,16 @@ class BenchmarkTaskPing final : public Task {
   BenchmarkTaskPing();
   ~BenchmarkTaskPing();
 
-  void run() override;
-  void stop();
-
-  enum State { StateActive, StateInactive, StateCancelled };
-
  signals:
-  void aborted();
-  void finished(quint16 pingLatency);
+  void finished(quint64 pingLatency);
 
  private:
-  void handleTaskFinished();
-  void setState(State state);
+  void handleState(BenchmarkTask::State state);
+  void runInternal();
 
  private:
-  State m_state = StateInactive;
-
   double m_pingLatencyAcc = 0;
   quint8 m_numOfPingSamples = 0;
-  quint16 m_pingLatency = 0;
 };
 
 #endif  // BENCHMARKTASKPING_H

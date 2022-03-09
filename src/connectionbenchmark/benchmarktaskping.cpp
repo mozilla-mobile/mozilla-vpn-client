@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "benchmarktask.h"
 #include "benchmarktaskping.h"
 #include "constants.h"
 #include "leakdetector.h"
@@ -16,59 +17,32 @@ namespace {
 Logger logger(LOG_MAIN, "BenchmarkTaskPing");
 }
 
-BenchmarkTaskPing::BenchmarkTaskPing() : Task("BenchmarkTaskPing") {
-  MVPN_COUNT_CTOR(BenchmarkTaskPing);
-}
+BenchmarkTaskPing::BenchmarkTaskPing() { MVPN_COUNT_CTOR(BenchmarkTaskPing); }
 
 BenchmarkTaskPing::~BenchmarkTaskPing() { MVPN_COUNT_DTOR(BenchmarkTaskPing); }
 
-void BenchmarkTaskPing::setState(State state) {
-  logger.debug() << "Set state" << state;
-
-  m_state = state;
-}
-
-void BenchmarkTaskPing::run() {
+void BenchmarkTaskPing::runInternal() {
   logger.debug() << "Run ping benchmark";
 
-  if (m_state == StateCancelled) {
-    emit completed();
-    return;
-  }
-
-  connect(MozillaVPN::instance()->connectionHealth(),
-          &ConnectionHealth::pingChanged, this, [&] {
-            logger.debug() << "Ping changed";
-
-            m_pingLatencyAcc +=
-                MozillaVPN::instance()->connectionHealth()->latency();
-            m_numOfPingSamples++;
-          });
-
-  setState(StateActive);
-
-  QTimer::singleShot(Constants::BENCHMARK_PING_MAX_DURATION, this,
-                     &BenchmarkTaskPing::handleTaskFinished);
+  connect(this, &BenchmarkTask::stateChanged, this,
+          &BenchmarkTaskPing::handleState);
 }
 
-void BenchmarkTaskPing::stop() {
-  logger.debug() << "Stop ping benchmark";
+void BenchmarkTaskPing::handleState(BenchmarkTask::State state) {
+  logger.debug() << "Handle state" << state;
 
-  if (m_state == StateActive) {
-    setState(StateInactive);
-    emit completed();
-  } else {
-    setState(StateCancelled);
+  if (state == BenchmarkTask::StateActive) {
+    quint64 m_pingLatency = (int)(m_pingLatencyAcc / m_numOfPingSamples + 0.5);
+    emit finished(m_pingLatency);
+
+  } else if (state == BenchmarkTask::StateInactive) {
+    connect(MozillaVPN::instance()->connectionHealth(),
+            &ConnectionHealth::pingChanged, this, [&] {
+              logger.debug() << "Ping changed";
+
+              m_pingLatencyAcc +=
+                  MozillaVPN::instance()->connectionHealth()->latency();
+              m_numOfPingSamples++;
+            });
   }
-}
-
-void BenchmarkTaskPing::handleTaskFinished() {
-  logger.debug() << "Handle task finished";
-
-  m_pingLatency = (int)(m_pingLatencyAcc / m_numOfPingSamples + 0.5);
-
-  emit finished(m_pingLatency);
-  setState(StateInactive);
-
-  emit completed();
 }

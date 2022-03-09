@@ -9,6 +9,8 @@
 #include "benchmarktaskping.h"
 #include "connectionhealth.h"
 
+#include <QObject>
+
 class ConnectionBenchmark final : public QObject {
   Q_OBJECT;
   Q_DISABLE_COPY_MOVE(ConnectionBenchmark);
@@ -53,7 +55,7 @@ class ConnectionBenchmark final : public QObject {
 
  private slots:
   void downloadBenchmarked(quint64 bytesPerSecond, bool hasUnexpectedError);
-  void pingBenchmarked(quint16 pingLatency);
+  void pingBenchmarked(quint64 pingLatency);
 
  private:
   void handleStabilityChange();
