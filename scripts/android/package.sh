@@ -154,7 +154,7 @@ if [[ "$RELEASE" ]]; then
     CONFIG+=release \
     ANDROID_ABIS="$ARCH" \
     $ADJUST \
-    ..//mozillavpn.pro  || die "Qmake failed"
+    ../mozillavpn.pro  || die "Qmake failed"
 else
   printn Y "Use debug config \n"
   $QTPATH/bin/qmake -spec android-clang \

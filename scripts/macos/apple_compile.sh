@@ -18,10 +18,9 @@ ADJUST="CONFIG-=adjust"
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-n|--networkextension] [-a|--adjusttoken <adjust_token>]"
+  print N "\t$0 <macos|ios|> [-d|--debug] [-a|--adjusttoken <adjust_token>]"
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
-  print N "Use -n or --networkextension to force the network-extension component for MacOS too."
   print N ""
   print N "If MVPN_IOS_ADJUST_TOKEN env is found, this will be used at compilation time."
   print N ""
@@ -47,10 +46,6 @@ while [[ $# -gt 0 ]]; do
     ;;
   -d | --debug)
     RELEASE=
-    shift
-    ;;
-  -n | --networkextension)
-    NETWORKEXTENSION=1
     shift
     ;;
   -h | --help)
@@ -95,7 +90,7 @@ sha256() {
   die "You must have 'sha256sum' or 'openssl' installed."
 }
 
-if [[ "$OS" != "macos" ]] && [[ "$OS" != "ios" ]] && [[ "$OS" != "macostest" ]]; then
+if [[ "$OS" != "macos" ]] && [[ "$OS" != "ios" ]]; then
   helpFunction
 fi
 
@@ -115,8 +110,6 @@ fi
 
 QT_BIN=
 if [ "$OS" = "macos" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
-  QT_BIN=$QT_MACOS_BIN
-elif [ "$OS" = "macostest" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
   QT_BIN=$QT_MACOS_BIN
 elif [ "$OS" = "ios" ] && ! [ "$QT_IOS_BIN" = "" ]; then
   QT_BIN=$QT_IOS_BIN
@@ -151,14 +144,7 @@ print G "$SHORTVERSION - $FULLVERSION"
 MACOS_FLAGS="
   QTPLUGIN+=qsvg
   CONFIG-=static
-  CONFIG+=balrog
   MVPN_MACOS=1
-"
-
-MACOSTEST_FLAGS="
-  QTPLUGIN+=qsvg
-  CONFIG-=static
-  CONFIG+=DUMMY
 "
 
 IOS_FLAGS="
@@ -179,9 +165,6 @@ printn Y "OS: "
 print G "$OS"
 if [ "$OS" = "macos" ]; then
   PLATFORM=$MACOS_FLAGS
-elif [ "$OS" = "macostest" ]; then
-  OSRUBY=macos
-  PLATFORM=$MACOSTEST_FLAGS
 elif [ "$OS" = "ios" ]; then
   PLATFORM=$IOS_FLAGS
   if [[ "$ADJUST_SDK_TOKEN"  ]]; then
@@ -193,32 +176,12 @@ else
   die "Why we are here?"
 fi
 
-VPNMODE=
-printn Y "VPN mode: "
-if [[ "$NETWORKEXTENSION" ]]; then
-  print G network-extension
-  VPNMODE="CONFIG+=networkextension"
-else
-  print G daemon
-fi
-
-printn Y "Web-Extension: "
-WEMODE=
-if [ "$OS" = "macos" ]; then
-  print G web-extension
-  WEMODE="CONFIG+=webextension"
-else
-  print G none
-fi
-
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
   VERSION=$SHORTVERSION \
   BUILD_ID=$FULLVERSION \
   -spec macx-xcode \
   $MODE \
-  $VPNMODE \
-  $WEMODE \
   $PLATFORM \
   $ADJUST \
   src/src.pro || die "Compilation failed"

@@ -47,7 +47,7 @@ include($$PWD/../glean/glean.pri)
 
 include($$PWD/../nebula/nebula.pri)
 
-!wasm{
+!wasm {
     include($$PWD/crashreporter/crashreporter.pri)
 }
 
@@ -325,7 +325,7 @@ HEADERS += \
         update/versionapi.h \
         urlopener.h
 
-webextension {
+linux:!android|macos|win* {
     message(Enabling the webextension support)
 
     DEFINES += MVPN_WEBEXTENSION
@@ -352,7 +352,7 @@ RESOURCES += resources/certs/certs.qrc
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
-balrog {
+macos|win* {
     message(Balrog enabled)
     DEFINES += MVPN_BALROG
 
@@ -661,7 +661,7 @@ else:android {
     # We need to compile our own openssl :/
     exists(../3rdparty/openSSL/openssl.pri) {
        include(../3rdparty/openSSL/openssl.pri)
-    } else{
+    } else {
        message(Have you imported the 3rd-party git submodules? Read the README.md)
        error(Did not found openSSL in 3rdparty/openSSL - Exiting Android Build)
     }
@@ -735,21 +735,6 @@ else:macos {
 
         SOURCES += platforms/dummy/dummycontroller.cpp
         HEADERS += platforms/dummy/dummycontroller.h
-    } else:networkextension {
-        message(Network extension mode)
-
-        DEFINES += MVPN_MACOS_NETWORKEXTENSION
-
-        INCLUDEPATH += \
-                    ../3rdparty/Wireguard-apple/WireGuard/WireGuard/Crypto \
-                    ../3rdparty/wireguard-apple/WireGuard/Shared/Model \
-
-        OBJECTIVE_SOURCES += \
-                platforms/ios/ioscontroller.mm \
-                platforms/ios/iosglue.mm
-
-        OBJECTIVE_HEADERS += \
-                platforms/ios/iosscontroller.h
     } else {
         message(Daemon mode)
 
