@@ -60,7 +60,8 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
   if (status != ERROR_IO_PENDING) {
     QString errmsg = WindowsCommons::getErrorMessage();
     logger.error() << "failed to start Code: " << status
-                   << " Message: " << errmsg << " dest:" << dest.toString();
+                   << " Message: " << errmsg
+                   << " dest:" << logger.sensitive(dest.toString());
   }
 }
 

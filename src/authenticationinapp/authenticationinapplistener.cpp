@@ -149,7 +149,7 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Account status checked" << data;
+            logger.debug() << "Account status checked";
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -267,7 +267,7 @@ void AuthenticationInAppListener::signInInternal(const QString& unblockCode) {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Sign in completed" << data;
+            logger.debug() << "Sign in completed";
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -295,7 +295,7 @@ void AuthenticationInAppListener::signUp() {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Sign up completed" << data;
+            logger.debug() << "Sign up completed";
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -337,9 +337,8 @@ void AuthenticationInAppListener::sendUnblockCodeEmail() {
             processRequestFailure(error, data);
           });
 
-  connect(
-      request, &NetworkRequest::requestCompleted,
-      [](const QByteArray& data) { logger.debug() << "Code resent" << data; });
+  connect(request, &NetworkRequest::requestCompleted,
+          []() { logger.debug() << "Code resent"; });
 }
 
 void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
@@ -359,11 +358,10 @@ void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted, this,
-          [this](const QByteArray& data) {
-            logger.debug() << "Verification completed" << data;
-            finalizeSignInOrUp();
-          });
+  connect(request, &NetworkRequest::requestCompleted, this, [this]() {
+    logger.debug() << "Verification completed";
+    finalizeSignInOrUp();
+  });
 }
 
 void AuthenticationInAppListener::resendVerificationSessionCodeEmail() {
@@ -379,9 +377,8 @@ void AuthenticationInAppListener::resendVerificationSessionCodeEmail() {
             processRequestFailure(error, data);
           });
 
-  connect(
-      request, &NetworkRequest::requestCompleted,
-      [](const QByteArray& data) { logger.debug() << "Code resent" << data; });
+  connect(request, &NetworkRequest::requestCompleted,
+          []() { logger.debug() << "Code resent"; });
 }
 
 void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
@@ -402,7 +399,7 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Verification completed" << data;
+            logger.debug() << "Verification completed";
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             if (json.isNull()) {
@@ -470,7 +467,7 @@ void AuthenticationInAppListener::createTotpCodes() {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Totp code creation completed" << data;
+            logger.debug() << "Totp code creation completed";
 
             AuthenticationInApp* aip = AuthenticationInApp::instance();
             aip->requestState(
@@ -529,7 +526,7 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
   connect(
       request, &NetworkRequest::requestCompleted, this,
       [this](const QByteArray& data) {
-        logger.debug() << "Oauth code creation completed" << data;
+        logger.debug() << "Oauth code creation completed";
 
         QJsonDocument json = QJsonDocument::fromJson(data);
         if (json.isNull()) {

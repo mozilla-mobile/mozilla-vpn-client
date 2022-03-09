@@ -285,7 +285,7 @@ void Controller::activateNext() {
   }
   const HopConnection& hop = m_activationQueue.first();
 
-  logger.debug() << "Activating peer" << hop.m_server.publicKey();
+  logger.debug() << "Activating peer" << logger.keys(hop.m_server.publicKey());
   m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
   m_impl->activate(hop, device, vpn->keys(), stateToReason(m_state));
 
@@ -345,7 +345,7 @@ bool Controller::deactivate() {
 }
 
 void Controller::connected(const QString& pubkey) {
-  logger.debug() << "handshake completed with:" << pubkey;
+  logger.debug() << "handshake completed with:" << logger.keys(pubkey);
   if (m_activationQueue.isEmpty()) {
     logger.warning() << "Unexpected handshake: no pending connections.";
     return;

@@ -100,11 +100,9 @@ void AndroidUtils::startAuthentication(AuthenticationListener* listener,
 }
 
 bool AndroidUtils::maybeCompleteAuthentication(const QString& url) {
-  logger.debug() << "Maybe complete authentication - url:" << url;
+  logger.debug() << "Maybe complete authentication";
 
   Q_ASSERT(m_listener);
-
-  logger.debug() << "AndroidWebView is about to load" << url;
 
   QString apiUrl = NetworkRequest::apiBaseUrl();
   if (!url.startsWith(apiUrl)) {
