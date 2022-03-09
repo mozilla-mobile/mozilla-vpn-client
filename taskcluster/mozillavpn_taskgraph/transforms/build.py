@@ -6,25 +6,44 @@ Apply some defaults and minor modifications to the jobs defined in the build
 kind.
 """
 
-
-import datetime
-
 from taskgraph.transforms.base import TransformSequence
+from taskgraph.transforms.task import task_description_schema
+from taskgraph.util.schema import Schema
+from voluptuous import Optional, Required, Any
+
 
 transforms = TransformSequence()
+
+build_schema = Schema(
+    {
+        Required("name"): str,
+        Required("description"): task_description_schema["description"],
+        Required("treeherder"): task_description_schema["treeherder"],
+        Required("worker-type"): task_description_schema["worker-type"],
+        Optional("scopes"): task_description_schema["scopes"],
+        Optional("job-from"): task_description_schema["job-from"],
+        Required("worker"): object,
+        Required("run"): {str: Any(str, bool)},
+        Optional("requires-level"): int,
+        Optional("release-artifacts"): [str],
+    }
+)
+
+transforms.add_validate(build_schema)
 
 
 # Deletes a task when the current level is < then the required level
 @transforms.add
 def checkRequiredLevel(config, tasks):
     for task in tasks:
-        if("requiresLevel" in task):
-            requiredLevel = int(task.pop("requiresLevel"))
-            currentLevel = int(config.params["level"]) 
+        if "requires-level" in task:
+            requiredLevel = int(task.pop("requires-level"))
+            currentLevel = int(config.params["level"])
             if requiredLevel <= currentLevel:
                 yield task
         else:
             yield task
+
 
 # Add build-type info to the Task. Defaults to taskname
 @transforms.add
@@ -40,21 +59,17 @@ def add_variant_config(config, tasks):
 def add_artifacts(config, tasks):
     for task in tasks:
         artifacts = task.setdefault("worker", {}).setdefault("artifacts", [])
-        task["attributes"]["apks"] = apks = {}
 
-        if "apk-artifacts" in task:
-            artifact_template = task.pop("apk-artifacts")
-            for apk_name in artifact_template:
-                
-                artifacts.append({
-                    "type": "file",
-                    "name": "public/build/vpn/"+apk_name,
-                    "path": "/builds/worker/artifacts/"+apk_name,
-                })
-                apks[apk_name] = {
-                    "name": "public/build/vpn/"+apk_name,
-                }
+        # Android artifacts
+        if "release-artifacts" in task:
+            for filename in task.pop("release-artifacts"):
+                artifacts.append(
+                    {
+                        "type": "file",
+                        "name": f"public/build/{filename}",
+                        "path": f"/builds/worker/artifacts/{filename}",
+                    }
+                )
 
+        task["attributes"]["release-artifacts"] = artifacts
         yield task
-
-
