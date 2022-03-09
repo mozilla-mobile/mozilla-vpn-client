@@ -78,7 +78,7 @@ Flickable {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        anchors.rightMargin:  Qt.platform.os === "osx" ? 2 : 0
+        anchors.rightMargin: Qt.platform.os === "osx" ? 2 : 0
 
         background: Rectangle {
             color: "transparent"
@@ -93,7 +93,7 @@ Flickable {
 
             opacity: scrollBar.pressed ? 0.5 :
                    scrollBar.interactive && scrollBar.hovered ? 0.4 : 0.3
-            Behavior  on opacity {
+            Behavior on opacity {
                 PropertyAnimation {
                     duration: 100
                 }
