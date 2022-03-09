@@ -17,7 +17,7 @@ primary-dependency: build
 group-by: build-type
 
 only-for-build-types:
-    - macosx/opt
+    # - macosx/opt
     - android-x64/release
     - android-x86/release
     - android-arm64/release
@@ -28,7 +28,7 @@ job-template:
     worker: {} # Will be configured by signing:transforms
     signing-format:
         by-build-type:
-            macosx.*: macapp
+            # macosx.*: macapp
             android.*: autograph_apk
 
     treeherder:
@@ -41,4 +41,4 @@ job-template:
                 android-x86/release: android/x86
                 android-arm64/release: android/arm64-v8a
                 android-armv7/release: android/armv7
-                macosx/opt: macosx/all
+                # macosx/opt: macosx/all
