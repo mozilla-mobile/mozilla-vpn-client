@@ -83,13 +83,13 @@ if [[ "$GRCOV_FILENAME" ]]; then
   utest_grcov_unit unit_"$GRCOV_FILENAME" || die
 fi
 
-printn Y "Cleaning the existing project... "
+printn Y "Cleaning the existing unit project... "
 utest_cleanup_unit || die "Failed"
 
 print Y "Compile the auth-unit-tests..."
 utest_compile_auth || die "Failed"
 
-print Y "Running the unit-tests..."
+print Y "Running the auth unit-tests..."
 utest_run_auth || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
@@ -97,13 +97,13 @@ if [[ "$GRCOV_FILENAME" ]]; then
   utest_grcov_auth auth_"$GRCOV_FILENAME" || die
 fi
 
-printn Y "Cleaning the existing project... "
+printn Y "Cleaning the existing auth project... "
 utest_cleanup_auth || die "Failed"
 
 print Y "Compile the native-messaging-unit-tests..."
 utest_compile_nativemessaging || die "Failed"
 
-print Y "Running the unit-tests..."
+print Y "Running the native messaging unit-tests..."
 utest_run_nativemessaging || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
@@ -111,12 +111,12 @@ if [[ "$GRCOV_FILENAME" ]]; then
   utest_grcov_nativemessaging nativemessaging_"$GRCOV_FILENAME" || die
 fi
 
-printn Y "Cleaning the existing project... "
+printn Y "Cleaning the existing native messaging project... "
 utest_cleanup_nativemessaging || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then  
-  printn Y "merging temp files to $GRCOV_FILENAME... "
-  grcov -t lcov -o final.lcov unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die
+  printn Y "merging temp files to finallcov.info... "
+  grcov -t lcov -o finallcov.info unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die
 
   printn Y "Cleaning the temp coverage files... "
   rm unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die
