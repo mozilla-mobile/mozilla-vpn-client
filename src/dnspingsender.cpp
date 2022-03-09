@@ -11,6 +11,8 @@
 
 #include <string.h>
 
+constexpr const quint16 DNS_PORT = 53;
+
 // A quick and dirty DNS Header structure definition from RFC1035,
 // Section 4.1.1: Header Section format.
 struct dnsHeader {
@@ -41,7 +43,6 @@ struct dnsHeader {
 #define DNS_FLAG_RCODE_NOT_IMPLEMENTED (0x4 << 0)
 #define DNS_FLAG_RCODE_REFUSED (0x5 << 0)
 
-#define DNS_PORT 53
 
 namespace {
 Logger logger(LOG_NETWORKING, "DnsPingSender");
@@ -65,7 +66,7 @@ DnsPingSender::~DnsPingSender() { MVPN_COUNT_DTOR(DnsPingSender); }
 void DnsPingSender::sendPing(const QString& dest, quint16 sequence) {
   QByteArray packet;
 
-  // Assemble an empty DNS status query.
+  // Assemble a DNS query header.
   struct dnsHeader header;
   memset(&header, 0, sizeof(header));
   header.id = qToBigEndian<quint16>(sequence);

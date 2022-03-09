@@ -33,7 +33,7 @@ constexpr const char* PING_WELL_KNOWN_ANYCAST_DNS = "8.8.8.8";
 // Moving Average (EWMA), this defines the decay rate.
 constexpr uint32_t PING_BASELINE_EWMA_DIVISOR = 8;
 
-// Duration of time after a connection change were we should be skeptical
+// Duration of time after a connection change when we should be skeptical
 // of network reachability problems.
 constexpr auto SETTLING_TIMEOUT_SEC = 3;
 
@@ -110,7 +110,7 @@ void ConnectionHealth::startIdle() {
   m_healthCheckTimer.stop();
 
   // Reset the DNS latency measurement.
-  m_dnsPingSequence = QRandomGenerator::global()->bounded(65536);
+  m_dnsPingSequence = QRandomGenerator::global()->bounded(UINT16_MAX);
   m_dnsPingInitialized = false;
   m_dnsPingLatency = PING_TIME_UNSTABLE_SEC * 1000;
   m_dnsPingTimer.start(PING_INTERVAL_IDLE_SEC * 1000);
