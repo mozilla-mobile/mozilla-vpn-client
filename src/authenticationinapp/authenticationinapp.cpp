@@ -115,6 +115,11 @@ void AuthenticationInApp::enableTotpCreation() {
 
   m_listener->enableTotpCreation();
 }
+
+void AuthenticationInApp::allowUpperCaseEmailAddress() {
+  Q_ASSERT(m_listener);
+  m_listener->allowUpperCaseEmailAddress();
+}
 #endif
 
 void AuthenticationInApp::verifyUnblockCode(const QString& unblockCode) {
