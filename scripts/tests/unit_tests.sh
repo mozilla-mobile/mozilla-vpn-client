@@ -114,6 +114,12 @@ fi
 printn Y "Cleaning the existing native messaging project... "
 utest_cleanup_nativemessaging || die "Failed"
 
+FILE=nativemessaging_"$GRCOV_FILENAME"
+if test -f "$FILE"; then
+    echo "$FILE exists. Rapha!"
+fi
+
+
 if [[ "$GRCOV_FILENAME" ]]; then  
   printn Y "merging temp files to finallcov.info... "
   grcov -t lcov -o finallcov.info unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die
