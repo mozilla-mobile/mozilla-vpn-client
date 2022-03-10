@@ -126,10 +126,15 @@ ColumnLayout {
         }
     }
 
-    Column {
+
+
+    ColumnLayout {
+        id: col2
         spacing: VPNTheme.theme.windowMargin
         Layout.fillHeight: false
         Layout.topMargin: VPNTheme.theme.windowMargin / 2
+        Layout.fillWidth: true
+
         Repeater {
             id: applist
             model: model
