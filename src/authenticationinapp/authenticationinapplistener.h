@@ -37,6 +37,7 @@ class AuthenticationInAppListener final : public AuthenticationListener {
 #ifdef UNIT_TEST
   void enableTotpCreation();
   void allowUpperCaseEmailAddress();
+  void enableAccountDeletion();
 #endif
 
   const QString& emailAddress() const { return m_emailAddress; }
@@ -60,6 +61,7 @@ class AuthenticationInAppListener final : public AuthenticationListener {
 
 #ifdef UNIT_TEST
   void createTotpCodes();
+  void deleteAccount();
 #endif
 
  private:
@@ -80,8 +82,12 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   QByteArray m_sessionToken;
 
 #ifdef UNIT_TEST
-  bool m_totpCreationNeeded = false;
   bool m_allowUpperCaseEmailAddress = false;
+  enum {
+    OpNone,
+    OpTotpCreationNeeded,
+    OpAccountDeletionNeeded,
+  } m_extraOp = OpNone;
 #endif
 };
 

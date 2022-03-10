@@ -120,6 +120,13 @@ void AuthenticationInApp::allowUpperCaseEmailAddress() {
   Q_ASSERT(m_listener);
   m_listener->allowUpperCaseEmailAddress();
 }
+
+void AuthenticationInApp::enableAccountDeletion() {
+  Q_ASSERT(m_state == StateSignIn || m_state == StateSignUp);
+  Q_ASSERT(m_listener);
+
+  m_listener->enableAccountDeletion();
+}
 #endif
 
 void AuthenticationInApp::verifyUnblockCode(const QString& unblockCode) {
