@@ -39,6 +39,8 @@ void ConnectionBenchmark::setConnectionSpeed() {
 
   emit speedChanged();
   setState(StateReady);
+
+  m_benchmarkTasks.clear();
 }
 
 void ConnectionBenchmark::setState(State state) {
@@ -95,8 +97,6 @@ void ConnectionBenchmark::stop() {
     for (BenchmarkTask* benchmark : m_benchmarkTasks) {
       benchmark->stop();
     }
-
-    m_benchmarkTasks.clear();
   };
 
   if (m_state != StateError) {
