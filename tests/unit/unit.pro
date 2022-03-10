@@ -46,7 +46,6 @@ HEADERS += \
     ../../src/collator.h \
     ../../src/command.h \
     ../../src/commandlineparser.h \
-    ../../src/connectioncheck.h \
     ../../src/connectiondataholder.h \
     ../../src/constants.h \
     ../../src/controller.h \
@@ -141,7 +140,6 @@ SOURCES += \
     ../../src/collator.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
-    ../../src/connectioncheck.cpp \
     ../../src/connectiondataholder.cpp \
     ../../src/constants.cpp \
     ../../src/curve25519.cpp \

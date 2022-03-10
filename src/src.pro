@@ -88,7 +88,6 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
-        connectioncheck.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         constants.cpp \
@@ -96,6 +95,7 @@ SOURCES += \
         cryptosettings.cpp \
         curve25519.cpp \
         dnshelper.cpp \
+        dnspingsender.cpp \
         errorhandler.cpp \
         featurelist.cpp \
         filterproxymodel.cpp \
@@ -214,7 +214,6 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
-        connectioncheck.h \
         connectiondataholder.h \
         connectionhealth.h \
         constants.h \
@@ -223,6 +222,7 @@ HEADERS += \
         cryptosettings.h \
         curve25519.h \
         dnshelper.h \
+        dnspingsender.h \
         errorhandler.h \
         featurelist.h \
         features/featureappreview.h \
