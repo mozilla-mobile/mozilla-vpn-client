@@ -47,6 +47,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+printn Y "second argument is: $2"
+TEMPNAME=unit_"$GRCOV_FILENAME"
+printn Y "second argumentfile name for unit is: $TEMPNAME"
+
 if ! [ -d "src" ] || ! [ -d "tests" ]; then
   die "This script must be executed at the root of the repository."
 fi
