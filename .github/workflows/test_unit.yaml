@@ -121,7 +121,7 @@ jobs:
           directory: .                              
           flags: unit_tests
           name: codecov-poc
-          files: final.lcov
+          files: finallcov.info
           verbose: true
 
   windows-unit-tests:

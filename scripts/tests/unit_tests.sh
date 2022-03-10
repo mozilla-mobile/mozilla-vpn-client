@@ -120,7 +120,7 @@ utest_cleanup_nativemessaging || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then  
   printn Y "merging temp files to finallcov.info... "
-  grcov -t lcov -o final.info unitlcov.info authlcov.info nativemessaginglcov.info || die "merging temp files to final failed"
+  grcov -t lcov -o finallcov.info unitlcov.info authlcov.info nativemessaginglcov.info || die "merging temp files to final failed"
 
   printn Y "Cleaning the temp coverage files... "
   rm unitlcov.info authlcov.info nativemessaginglcov.info || die "cleaning cov files failed"
