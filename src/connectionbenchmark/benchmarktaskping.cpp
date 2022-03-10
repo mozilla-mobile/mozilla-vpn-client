@@ -8,8 +8,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
-#include "taskscheduler.h"
 
 #include <QTimer>
 
