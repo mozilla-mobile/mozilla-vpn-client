@@ -180,6 +180,7 @@ SOURCES += \
     ../../src/networkmanager.cpp \
     ../../src/networkwatcher.cpp \
     ../../src/pinghelper.cpp \
+    ../../src/pingsenderfactory.cpp \
     ../../src/platforms/android/androiddatamigration.cpp \
     ../../src/platforms/android/androidsharedprefs.cpp \
     ../../src/platforms/dummy/dummynetworkwatcher.cpp \
