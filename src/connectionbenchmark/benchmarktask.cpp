@@ -13,7 +13,8 @@ namespace {
 Logger logger(LOG_MAIN, "BenchmarkTask");
 }
 
-BenchmarkTask::BenchmarkTask() : Task("BenchmarkTask") {
+BenchmarkTask::BenchmarkTask(const uint32_t& maxExecutionTime)
+    : Task("BenchmarkTask"), m_maxExecutionTime(maxExecutionTime) {
   MVPN_COUNT_CTOR(BenchmarkTask);
 }
 
@@ -49,7 +50,6 @@ void BenchmarkTask::stop() {
     m_executionTime = m_elapsedTimer.elapsed();
 
     setState(StateInactive);
-    emit completed();
   } else {
     setState(StateCancelled);
   }

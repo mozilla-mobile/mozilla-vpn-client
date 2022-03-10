@@ -7,7 +7,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
-#include "taskscheduler.h"
 
 #include <QByteArray>
 
@@ -16,7 +15,8 @@ Logger logger(LOG_MAIN, "BenchmarkTaskDownload");
 }
 
 BenchmarkTaskDownload::BenchmarkTaskDownload(const QString& fileUrl)
-    : Task("BenchmarkTaskDownload"), m_fileUrl(fileUrl) {
+    : BenchmarkTask(Constants::BENCHMARK_MAX_DURATION_DOWNLOAD),
+      m_fileUrl(fileUrl) {
   MVPN_COUNT_CTOR(BenchmarkTaskDownload);
 }
 
@@ -24,70 +24,44 @@ BenchmarkTaskDownload::~BenchmarkTaskDownload() {
   MVPN_COUNT_DTOR(BenchmarkTaskDownload);
 }
 
-void BenchmarkTaskDownload::setState(State state) {
-  logger.debug() << "Set state" << state;
-
-  m_state = state;
-}
-
-void BenchmarkTaskDownload::run() {
+void BenchmarkTaskDownload::runInternal() {
   logger.debug() << "Run download benchmark";
 
-  if (m_state == StateCancelled) {
-    emit completed();
-    return;
-  }
-
-  setState(StateActive);
-  m_request = NetworkRequest::createForGetUrl(this, m_fileUrl);
-
-  connect(m_request, &NetworkRequest::requestCompleted, this,
-          [&](const QByteArray& data) {
-            handleTaskFinished(QNetworkReply::NoError, data);
-          });
-  connect(m_request, &NetworkRequest::requestUpdated, this,
-          &BenchmarkTaskDownload::taskProgressed);
-  connect(m_request, &NetworkRequest::requestFailed, this,
-          &BenchmarkTaskDownload::handleTaskFinished);
-
-  m_elapsedTimer.start();
-
-  QTimer::singleShot(Constants::BENCHMARK_DOWNLOAD_MAX_DURATION, this,
-                     &BenchmarkTaskDownload::stop);
+  connect(this, &BenchmarkTask::stateChanged, this,
+          &BenchmarkTaskDownload::handleState);
 }
 
-void BenchmarkTaskDownload::stop() {
-  logger.debug() << "Stop download benchmark";
+void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
+  logger.debug() << "Handle state" << state;
 
-  if (m_state == StateActive) {
-    Q_ASSERT(m_request);
+  if (state == BenchmarkTask::StateActive) {
+    m_request = NetworkRequest::createForGetUrl(this, m_fileUrl);
+    connect(m_request, &NetworkRequest::requestFailed, this,
+            &BenchmarkTaskDownload::downloadReady);
+    connect(m_request, &NetworkRequest::requestCompleted, this,
+            [&](const QByteArray& data) {
+              downloadReady(QNetworkReply::NoError, data);
+            });
+  } else if (state == BenchmarkTask::StateInactive && m_request) {
     m_request->abort();
-  } else {
-    setState(StateCancelled);
+    m_request = nullptr;
   }
 }
 
-void BenchmarkTaskDownload::handleTaskFinished(
-    QNetworkReply::NetworkError error, const QByteArray& data) {
-  logger.debug() << "Handle task finished" << error;
-  Q_UNUSED(data);
+void BenchmarkTaskDownload::downloadReady(QNetworkReply::NetworkError error,
+                                          const QByteArray& data) {
+  logger.debug() << "Download ready" << error;
 
+  if (this->state() == BenchmarkTask::StateActive) {
+    this->stop();
+  }
+
+  quint64 bytesPerSecond = data.size() / this->executionTime() * 1000;
   bool hasUnexpectedError = error != QNetworkReply::NoError &&
                             error != QNetworkReply::OperationCanceledError &&
-                            error != QNetworkReply::TimeoutError;
+                            error != QNetworkReply::TimeoutError &&
+                            bytesPerSecond > 0;
 
-  emit finished(m_bytesPerSecond, hasUnexpectedError);
-  setState(StateInactive);
-
+  emit finished(bytesPerSecond, hasUnexpectedError);
   emit completed();
-}
-
-void BenchmarkTaskDownload::taskProgressed(qint64 bytesReceived,
-                                           qint64 bytesTotal) {
-  logger.debug() << "Download progressed";
-  Q_UNUSED(bytesTotal);
-
-  m_bytesPerSecond = bytesReceived / m_elapsedTimer.elapsed() * 1000;
-
-  emit progressed(m_bytesPerSecond);
 }

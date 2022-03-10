@@ -9,6 +9,7 @@
 #include "benchmarktaskping.h"
 #include "connectionhealth.h"
 
+#include <QList>
 #include <QObject>
 
 class ConnectionBenchmark final : public QObject {
@@ -59,10 +60,11 @@ class ConnectionBenchmark final : public QObject {
 
  private:
   void handleStabilityChange();
-  void setConnectionSpeed(quint64 m_download);
+  void setConnectionSpeed();
   void setState(State state);
 
  private:
+  QList<BenchmarkTask*> m_benchmarkTasks;
   BenchmarkTaskDownload* m_downloadBenchmarkTask = nullptr;
   BenchmarkTaskPing* m_pingBenchmarkTask = nullptr;
   ConnectionHealth* m_connectionHealth = nullptr;

@@ -17,7 +17,10 @@ namespace {
 Logger logger(LOG_MAIN, "BenchmarkTaskPing");
 }
 
-BenchmarkTaskPing::BenchmarkTaskPing() { MVPN_COUNT_CTOR(BenchmarkTaskPing); }
+BenchmarkTaskPing::BenchmarkTaskPing()
+    : BenchmarkTask(Constants::BENCHMARK_MAX_DURATION_PING) {
+  MVPN_COUNT_CTOR(BenchmarkTaskPing);
+}
 
 BenchmarkTaskPing::~BenchmarkTaskPing() { MVPN_COUNT_DTOR(BenchmarkTaskPing); }
 
@@ -32,10 +35,6 @@ void BenchmarkTaskPing::handleState(BenchmarkTask::State state) {
   logger.debug() << "Handle state" << state;
 
   if (state == BenchmarkTask::StateActive) {
-    quint64 m_pingLatency = (int)(m_pingLatencyAcc / m_numOfPingSamples + 0.5);
-    emit finished(m_pingLatency);
-
-  } else if (state == BenchmarkTask::StateInactive) {
     connect(MozillaVPN::instance()->connectionHealth(),
             &ConnectionHealth::pingChanged, this, [&] {
               logger.debug() << "Ping changed";
@@ -44,5 +43,9 @@ void BenchmarkTaskPing::handleState(BenchmarkTask::State state) {
                   MozillaVPN::instance()->connectionHealth()->latency();
               m_numOfPingSamples++;
             });
+  } else if (state == BenchmarkTask::StateInactive) {
+    quint64 m_pingLatency = (int)(m_pingLatencyAcc / m_numOfPingSamples + 0.5);
+    emit finished(m_pingLatency);
+    emit completed();
   }
 }

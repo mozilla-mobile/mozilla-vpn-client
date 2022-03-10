@@ -15,7 +15,7 @@ class BenchmarkTask : public Task {
   Q_DISABLE_COPY_MOVE(BenchmarkTask)
 
  public:
-  explicit BenchmarkTask();
+  BenchmarkTask(const uint32_t& maxExecutionTime);
   ~BenchmarkTask();
 
   void run() override;
@@ -23,6 +23,7 @@ class BenchmarkTask : public Task {
 
   enum State { StateActive, StateInactive, StateCancelled };
 
+  State state() const { return m_state; }
   qint64 executionTime() const { return m_executionTime; }
 
  signals:
@@ -36,8 +37,10 @@ class BenchmarkTask : public Task {
 
  private:
   State m_state = StateInactive;
-  QElapsedTimer m_elapsedTimer;
   qint64 m_executionTime = 0;
+
+  const uint32_t m_maxExecutionTime;
+  QElapsedTimer m_elapsedTimer;
 };
 
 #endif  // BENCHMARKTASK_H
