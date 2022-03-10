@@ -4,8 +4,8 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-import QtQuick.Window 2.12
 import QtQuick.Layouts 1.14
+import QtQuick.Window 2.12
 
 import Mozilla.VPN 1.0
 import compat 0.1
@@ -128,53 +128,6 @@ Window {
         anchors.top: parent.top
         anchors.topMargin: iosSafeAreaTopMargin.height
     }
-
-    // TODO: Only used for debugging and should be removed
-    ColumnLayout {
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            top: parent.top
-        }
-        visible: true
-        z: 99
-
-        Text {
-            text: "ConnectionBenchmark"
-        }
-        Text {
-            text: "State: " + VPNConnectionBenchmark.state
-        }
-        Text {
-            text: "Speed: " + VPNConnectionBenchmark.speed
-        }
-        Text {
-            text: "Ping: " + VPNConnectionBenchmark.ping
-        }
-        Text {
-            text: "Download: " + (VPNConnectionBenchmark.download * 8 / 1024 * 1024)
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-
-            Button {
-                text: "start"
-                onClicked: VPNConnectionBenchmark.start()
-            }
-            Button {
-                text: "stop"
-                onClicked: VPNConnectionBenchmark.stop()
-            }
-        }
-
-        Rectangle {
-            color: "lightgrey"
-            height: parent.height
-            width: parent.width
-            z: -1
-        }
-    }
-
 
     VPNStackView {
         id: mainStackView
@@ -509,6 +462,47 @@ Window {
         }
 
     }
+
+    // This part needs UI - TODO
+    Popup {
+        id: tooltip
+        property alias text: text.text
+        visible: false
+        x: VPNTheme.theme.windowMargin
+        width: parent.width - VPNTheme.theme.windowMargin * 2
+
+        ColumnLayout {
+            Text {
+                id: text
+                text: ""
+            }
+
+            Button {
+                objectName: "tutorialExit"
+                text: "Exit"
+                Component.onCompleted: VPNTutorial.allowItem("tutorialExit")
+                onClicked: VPNTutorial.stop()
+            }
+        }
+    }
+
+    Connections {
+        target: VPNTutorial
+        function onTooltipNeeded(text, rect) {
+            if (tooltip.height + rect.y + rect.height <= window.height - VPNTheme.theme.windowMargin) {
+              tooltip.y = rect.y + rect.height;
+            } else {
+              tooltip.y = rect.y - tooltip.height;
+            }
+            tooltip.text = text
+            tooltip.open();
+        }
+
+        function onPlayingChanged() {
+            tooltip.visible = VPNTutorial.tooltipShown
+        }
+    }
+
 
     VPNSystemAlert {
     }
