@@ -7,19 +7,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "pingsender.h"
+#include "pingsenderfactory.h"
 #include "timersingleshot.h"
-
-#if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
-#  include "platforms/linux/linuxpingsender.h"
-#elif defined(MVPN_MACOS) || defined(MVPN_IOS)
-#  include "platforms/macos/macospingsender.h"
-#elif defined(MVPN_WINDOWS)
-#  include "platforms/windows/windowspingsender.h"
-#elif defined(MVPN_DUMMY) || defined(UNIT_TEST)
-#  include "platforms/dummy/dummypingsender.h"
-#else
-#  error "Unsupported platform"
-#endif
 
 #include <QDateTime>
 
@@ -50,19 +39,9 @@ void PingHelper::start(const QString& serverIpv4Gateway,
                        const QString& deviceIpv4Address) {
   logger.debug() << "PingHelper activated for server:" << serverIpv4Gateway;
 
-  m_gateway = serverIpv4Gateway;
-  m_source = deviceIpv4Address.section('/', 0, 0);
-
-  m_pingSender =
-#if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
-      new LinuxPingSender(m_source, this);
-#elif defined(MVPN_MACOS) || defined(MVPN_IOS)
-      new MacOSPingSender(m_source, this);
-#elif defined(MVPN_WINDOWS)
-      new WindowsPingSender(m_source, this);
-#else
-      new DummyPingSender(m_source, this);
-#endif
+  m_gateway = QHostAddress(serverIpv4Gateway);
+  m_source = QHostAddress(deviceIpv4Address.section('/', 0, 0));
+  m_pingSender = PingSenderFactory::create(m_source, this);
 
   // Some platforms require root access to send and receive ICMP pings. If
   // we happen to be on one of these unlucky devices, create a DnsPingSender

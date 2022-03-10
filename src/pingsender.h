@@ -6,6 +6,7 @@
 #define PINGSENDER_H
 
 #include <QElapsedTimer>
+#include <QHostAddress>
 #include <QObject>
 
 class PingSender : public QObject {
@@ -17,7 +18,7 @@ class PingSender : public QObject {
 
   virtual bool isValid() { return true; };
 
-  virtual void sendPing(const QString& destination, quint16 sequence) = 0;
+  virtual void sendPing(const QHostAddress& destination, quint16 sequence) = 0;
 
   static quint16 inetChecksum(const void* data, size_t length);
 

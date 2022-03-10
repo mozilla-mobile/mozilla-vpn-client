@@ -85,6 +85,7 @@ HEADERS += \
     ../../src/networkwatcherimpl.h \
     ../../src/pinghelper.h \
     ../../src/pingsender.h \
+    ../../src/pingsenderfactory.h \
     ../../src/platforms/android/androiddatamigration.h \
     ../../src/platforms/android/androidsharedprefs.h \
     ../../src/platforms/dummy/dummynetworkwatcher.h \

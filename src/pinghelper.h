@@ -5,6 +5,7 @@
 #ifndef PINGHELPER_H
 #define PINGHELPER_H
 
+#include <QHostAddress>
 #include <QList>
 #include <QObject>
 #include <QTimer>
@@ -39,8 +40,8 @@ class PingHelper final : public QObject {
   void pingReceived(quint16 sequence);
 
  private:
-  QString m_gateway;
-  QString m_source;
+  QHostAddress m_gateway;
+  QHostAddress m_source;
   quint16 m_sequence = 0;
 
   class PingSendData {
