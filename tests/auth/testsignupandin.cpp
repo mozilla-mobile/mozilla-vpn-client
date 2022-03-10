@@ -14,9 +14,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QEventLoop>
+#include <QProcess>
+#include <QProcessEnvironment>
 #include <QTest>
-
-#include <liboath/oath.h>
 
 constexpr const char* PASSWORD = "12345678";
 
@@ -287,14 +287,21 @@ void TestSignUpAndIn::waitForTotpCodes() {
                   aia->state(),
                   AuthenticationInApp::StateVerificationSessionByTotpNeeded);
 
-              QCOMPARE(oath_init(), OATH_OK);
+              QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+              QVERIFY(pe.contains("MVPN_OATHTOOL"));
+              QString oathtool = pe.value("MVPN_OATHTOOL");
 
-              char otp[/* length + 1 */ 7] = {};
-              QCOMPARE(oath_totp_generate(m_totpSecret.data(),
-                                          m_totpSecret.length(), time(nullptr),
-                                          OATH_TOTP_DEFAULT_TIME_STEP_SIZE,
-                                          OATH_TOTP_DEFAULT_START_TIME, 6, otp),
-                       OATH_OK);
+              QString otp;
+              {
+                QProcess process;
+                process.start(oathtool, QStringList{m_totpSecret});
+                QVERIFY(process.waitForStarted());
+
+                process.closeWriteChannel();
+                QVERIFY(process.waitForFinished());
+
+                otp = process.readAll().trimmed();
+              }
 
               qDebug() << "Code:" << otp;
               aia->verifySessionTotpCode(otp);
@@ -309,15 +316,7 @@ void TestSignUpAndIn::waitForTotpCodes() {
             qDebug() << "Codes received";
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
-            QByteArray totpSecret = obj["secret"].toString().toLocal8Bit();
-
-            char* secret = nullptr;
-            size_t secretLength = 0;
-            QCOMPARE(oath_base32_decode(totpSecret.data(), totpSecret.length(),
-                                        &secret, &secretLength),
-                     OATH_OK);
-
-            m_totpSecret = QByteArray(secret, secretLength);
+            m_totpSecret = obj["secret"].toString();
             QVERIFY(!m_totpSecret.isEmpty());
           });
 

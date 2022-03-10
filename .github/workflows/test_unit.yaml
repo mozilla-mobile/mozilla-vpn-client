@@ -48,11 +48,17 @@ jobs:
           export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
           python3 scripts/utils/import_languages.py
 
+      - name: Installing the oathtool
+        shell: bash
+        run: |
+          pip3 install oathtool
+          python3 -m oathtool.generate-script
+
       - name: Running tests
         shell: bash
         run: |
           export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
-          ./scripts/tests/unit_tests.sh
+          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh
 
   macos-unit-tests:
     strategy:
@@ -98,11 +104,19 @@ jobs:
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
+      - name: Installing the oathtool
+        shell: bash
+        run: |
+          pip3 install oathtool
+          python3 -m oathtool.generate-script
+          # python3 by default...
+          sed -i '' "s/python/python3/g" oathtool
+
       - name: Running tests
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
-          ./scripts/tests/unit_tests.sh
+          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh
 
   windows-unit-tests:
     name: Run Unit tests on Windows Qt5
@@ -156,8 +170,14 @@ jobs:
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
+      - name: Installing the oathtool
+        shell: bash
+        run: |
+          pip3 install oathtool
+          python3 -m oathtool.generate-script
+
       - name: Running tests
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          ./scripts/tests/unit_tests.sh
+          MVPN_OATHTOOL=oathtool ./scripts/tests/unit_tests.sh
