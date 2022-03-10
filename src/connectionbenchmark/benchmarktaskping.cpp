@@ -40,7 +40,8 @@ void BenchmarkTaskPing::handleState(BenchmarkTask::State state) {
               m_numOfPingSamples++;
             });
   } else if (state == BenchmarkTask::StateInactive) {
-    quint64 m_pingLatency = (int)(m_pingLatencyAcc / m_numOfPingSamples + 0.5);
+    quint64 m_pingLatency =
+        static_cast<quint64>(m_pingLatencyAcc / m_numOfPingSamples) + 0.5;
     emit finished(m_pingLatency);
     emit completed();
   }
