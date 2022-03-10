@@ -20,16 +20,12 @@ Logger logger(LOG_MAIN, "BenchmarkTaskPing");
 BenchmarkTaskPing::BenchmarkTaskPing()
     : BenchmarkTask(Constants::BENCHMARK_MAX_DURATION_PING) {
   MVPN_COUNT_CTOR(BenchmarkTaskPing);
-}
-
-BenchmarkTaskPing::~BenchmarkTaskPing() { MVPN_COUNT_DTOR(BenchmarkTaskPing); }
-
-void BenchmarkTaskPing::runInternal() {
-  logger.debug() << "Run ping benchmark";
 
   connect(this, &BenchmarkTask::stateChanged, this,
           &BenchmarkTaskPing::handleState);
 }
+
+BenchmarkTaskPing::~BenchmarkTaskPing() { MVPN_COUNT_DTOR(BenchmarkTaskPing); }
 
 void BenchmarkTaskPing::handleState(BenchmarkTask::State state) {
   logger.debug() << "Handle state" << state;

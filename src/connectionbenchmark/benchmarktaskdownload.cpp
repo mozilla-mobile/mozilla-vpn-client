@@ -18,17 +18,13 @@ BenchmarkTaskDownload::BenchmarkTaskDownload(const QString& fileUrl)
     : BenchmarkTask(Constants::BENCHMARK_MAX_DURATION_DOWNLOAD),
       m_fileUrl(fileUrl) {
   MVPN_COUNT_CTOR(BenchmarkTaskDownload);
+
+  connect(this, &BenchmarkTask::stateChanged, this,
+          &BenchmarkTaskDownload::handleState);
 }
 
 BenchmarkTaskDownload::~BenchmarkTaskDownload() {
   MVPN_COUNT_DTOR(BenchmarkTaskDownload);
-}
-
-void BenchmarkTaskDownload::runInternal() {
-  logger.debug() << "Run download benchmark";
-
-  connect(this, &BenchmarkTask::stateChanged, this,
-          &BenchmarkTaskDownload::handleState);
 }
 
 void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {

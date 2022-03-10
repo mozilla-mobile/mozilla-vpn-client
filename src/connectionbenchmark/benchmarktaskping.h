@@ -23,7 +23,6 @@ class BenchmarkTaskPing : public BenchmarkTask {
 
  private:
   void handleState(BenchmarkTask::State state);
-  void runInternal();
 
  private:
   double m_pingLatencyAcc = 0;

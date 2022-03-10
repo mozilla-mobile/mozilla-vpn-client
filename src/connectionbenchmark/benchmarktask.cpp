@@ -34,8 +34,6 @@ void BenchmarkTask::run() {
     return;
   }
 
-  runInternal();
-
   setState(StateActive);
   m_elapsedTimer.start();
 

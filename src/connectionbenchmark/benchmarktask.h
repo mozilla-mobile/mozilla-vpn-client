@@ -29,9 +29,6 @@ class BenchmarkTask : public Task {
  signals:
   void stateChanged(State state);
 
- protected:
-  virtual void runInternal() = 0;
-
  private:
   void setState(State state);
 

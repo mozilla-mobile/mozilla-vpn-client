@@ -27,7 +27,6 @@ class BenchmarkTaskDownload : public BenchmarkTask {
  private:
   void downloadReady(QNetworkReply::NetworkError error, const QByteArray& data);
   void handleState(BenchmarkTask::State state);
-  void runInternal();
 
  private:
   NetworkRequest* m_request = nullptr;
