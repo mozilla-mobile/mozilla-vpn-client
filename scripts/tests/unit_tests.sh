@@ -84,7 +84,7 @@ utest_run_unit || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for unit tests..."
-  utest_grcov_unit unit_lcov.info || die
+  grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/ -t lcov > unitlcov.info || die
 fi
 
 printn Y "Cleaning the existing unit project... "
@@ -98,7 +98,7 @@ utest_run_auth || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for auth tests...$GRCOV_FILENAME"
-  utest_grcov_auth auth_lcov.info || die
+  grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/ -t lcov > authlcov.info || die
 fi
 
 printn Y "Cleaning the existing auth project... "
@@ -112,14 +112,7 @@ utest_run_nativemessaging || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for native messaging unit tests..."
-  utest_grcov_nativemessaging nativemessaging_lcov.info || die
-fi
-
-printn Y "About to check if file exists"
-FILE=nativemessaging_lcov.info
-if test -f "$FILE"; then
-    echo "$FILE exists. Rapha!"
-    printn Y "$FILE exists. Rapha!"
+  grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/ -t lcov > nativemessaginglcov.info || die
 fi
 
 printn Y "Cleaning the existing native messaging project... "
@@ -127,10 +120,10 @@ utest_cleanup_nativemessaging || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then  
   printn Y "merging temp files to finallcov.info... "
-  grcov -t lcov -o final.info unit_lcov.info auth_lcov.info nativemessaging_lcov.info || die "merging temp files to final failed"
+  grcov -t lcov -o final.info unitlcov.info authlcov.info nativemessaginglcov.info || die "merging temp files to final failed"
 
   printn Y "Cleaning the temp coverage files... "
-  rm unit_lcov.info auth_lcov.info nativemessaging_lcov.info || die "cleaning cov files failed"
+  rm unitlcov.info authlcov.info nativemessaginglcov.info || die "cleaning cov files failed"
 fi
 
 print G "All done!"
