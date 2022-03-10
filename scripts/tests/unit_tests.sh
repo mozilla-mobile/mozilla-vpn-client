@@ -114,9 +114,11 @@ fi
 printn Y "Cleaning the existing native messaging project... "
 utest_cleanup_nativemessaging || die "Failed"
 
+printn Y "About to check if file exists"
 FILE=nativemessaging_"$GRCOV_FILENAME"
 if test -f "$FILE"; then
     echo "$FILE exists. Rapha!"
+    printn Y "$FILE exists. Rapha!"
 fi
 
 
