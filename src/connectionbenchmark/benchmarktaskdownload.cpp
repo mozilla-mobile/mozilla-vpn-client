@@ -48,11 +48,7 @@ void BenchmarkTaskDownload::downloadReady(QNetworkReply::NetworkError error,
                                           const QByteArray& data) {
   logger.debug() << "Download ready" << error;
 
-  if (this->state() == BenchmarkTask::StateActive) {
-    this->stop();
-  }
-
-  quint64 bytesPerSecond = data.size() / this->executionTime() * 1000;
+  quint64 bytesPerSecond = data.size() / executionTime() * 1000;
   bool hasUnexpectedError = error != QNetworkReply::NoError &&
                             error != QNetworkReply::OperationCanceledError &&
                             error != QNetworkReply::TimeoutError &&

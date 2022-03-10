@@ -16,7 +16,7 @@ class BenchmarkTask : public Task {
 
  public:
   BenchmarkTask(const uint32_t& maxExecutionTime);
-  ~BenchmarkTask();
+  virtual ~BenchmarkTask();
 
   void run() override;
   void stop();
@@ -24,7 +24,7 @@ class BenchmarkTask : public Task {
   enum State { StateActive, StateInactive, StateCancelled };
 
   State state() const { return m_state; }
-  qint64 executionTime() const { return m_executionTime; }
+  qint64 executionTime() const { return m_elapsedTimer.elapsed(); }
 
  signals:
   void stateChanged(State state);

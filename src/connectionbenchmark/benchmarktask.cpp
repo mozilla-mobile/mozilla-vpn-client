@@ -44,8 +44,6 @@ void BenchmarkTask::stop() {
   logger.debug() << "Stop benchmark";
 
   if (m_state == StateActive) {
-    m_executionTime = m_elapsedTimer.elapsed();
-
     setState(StateInactive);
   } else {
     setState(StateCancelled);
