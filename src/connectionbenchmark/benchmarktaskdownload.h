@@ -11,7 +11,7 @@
 
 class NetworkRequest;
 
-class BenchmarkTaskDownload : public BenchmarkTask {
+class BenchmarkTaskDownload final : public BenchmarkTask {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(BenchmarkTaskDownload)
 

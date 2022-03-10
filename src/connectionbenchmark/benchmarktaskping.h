@@ -7,7 +7,7 @@
 
 #include "benchmarktask.h"
 
-class BenchmarkTaskPing : public BenchmarkTask {
+class BenchmarkTaskPing final : public BenchmarkTask {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(BenchmarkTaskPing)
 
