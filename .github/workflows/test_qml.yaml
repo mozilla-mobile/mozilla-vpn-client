@@ -1,4 +1,4 @@
-name: QML Unit Test Coverage
+name: QML Tests
 on:
   push:
     branches:
@@ -10,19 +10,20 @@ on:
       - 'releases/**'
 
 jobs:
-  qml-unit-test:
+  linux-qml-tests:
+    strategy:
+      fail-fast: false # Don't cancel other jobs
+      matrix:
+        version: ["5.15.2","6.2.1"]
     runs-on: ubuntu-20.04
+    name: "Run QML tests on ${{matrix.version}}"
     steps:
       - name: Install Linux packages
         run: |
-          # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
-          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
           sudo apt update
-          sudo apt install -y \
-               git qt515base qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl \
-               libgl-dev libpolkit-gobject-1-dev qt515quickcontrols2 qt515imageformats \
-               qt515graphicaleffects qt515websockets qt515declarative \
-               clang-10 -y
+          sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
+          python3 -m pip install aqtinstall
+          aqt install-qt --outputdir /opt linux desktop ${{matrix.version}} gcc_64 -m all
 
       - name: Clone repository
         uses: actions/checkout@v2
@@ -34,26 +35,128 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Compile test client
+      - name: Generating glean samples
         shell: bash
         run: |
-          export PATH=/opt/qt515/bin:$PATH
-
           pip3 install -r requirements.txt
-          python3 scripts/importLanguages.py
-          python3 scripts/generate_glean.py
+          python3 scripts/utils/generate_glean.py
 
-          qmake CONFIG+=QMLTEST
-          make -j$(nproc)
-
-      - name: Run the QML tests
+      - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/qt515/bin:$PATH
-          xvfb-run -a ./tests/qml/qml_tests -platform offscreen
+          export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
+          python3 scripts/utils/import_languages.py
 
-      - name: Run the Lottie tests
+      - name: Running tests
         shell: bash
         run: |
-          export PATH=/opt/qt515/bin:$PATH
-          xvfb-run -a ./lottie/tests/qml/tst_lottie -platform offscreen
+          export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
+          xvfb-run -a ./scripts/tests/qml_tests.sh
+
+  macos-qml-tests:
+    strategy:
+      matrix:
+        config:
+            - { name: "Qt6", pattern: qt6, folder: qt6 }
+
+    runs-on: macos-latest
+    name: "Run QML tests on MacOS ${{matrix.config.name}}"
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install ${{matrix.config.name}}
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/mozilla-mobile/qt_static_macos
+          cd qt_static_macos
+          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
+          tar xf qt_static.tar.gz
+          sudo mv ${{matrix.config.folder}} /opt
+          cd ..
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Generating glean samples
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
+          python3 scripts/utils/generate_glean.py
+
+      - name: Importing translation files
+        shell: bash
+        run: |
+          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          git submodule update --remote --depth 1 i18n
+          python3 scripts/utils/import_languages.py -m
+
+      - name: Running tests
+        shell: bash
+        run: |
+          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          ./scripts/tests/qml_tests.sh
+
+  windows-qml-tests:
+    name: Run QML tests on Windows Qt5
+    runs-on: windows-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/mozilla-mobile/qt_static_windows
+          cd qt_static_windows
+          cat x* > qt_static.tar.bz2
+          tar xf qt_static.tar.bz2
+          tar xf msm.tar.gz
+          mkdir /c/MozillaVPNBuild
+          cp -r * /c/MozillaVPNBuild
+          cd ..
+          cp /c/MozillaVPNBuild/bin/libssl-1_1-x64.dll .
+          cp /c/MozillaVPNBuild/bin/libcrypto-1_1-x64.dll .
+          cp /c/MozillaVPNBuild/bin/libEGL.dll .
+          cp /c/MozillaVPNBuild/bin/libGLESv2.dll .
+          cp /c/MozillaVPNBuild/*.msm .
+
+      - name: Add msvc dev commands to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
+          python3 scripts/utils/generate_glean.py
+
+      - name: Importing translation files
+        shell: bash
+        run: |
+          export PATH=/c/MozillaVPNBuild/bin:$PATH
+          git submodule update --remote --depth 1 i18n
+          python3 scripts/utils/import_languages.py -m
+
+      - name: Running tests
+        shell: bash
+        run: |
+          export PATH=/c/MozillaVPNBuild/bin:$PATH
+          ./scripts/tests/qml_tests.sh

@@ -18,11 +18,10 @@ Item {
         anchors.fill: parent
     }
 
-    state: VPNAuthInApp.state
-
     states: [
         State {
-            name: VPNAuthInApp.StateInitializing
+            name: "StateInitializing"
+            when: VPNAuthInApp.state === VPNAuthInApp.StateInitializing
             PropertyChanges {
                 target: loader
                 source: "ViewAuthenticationInitializing.qml"
@@ -30,7 +29,8 @@ Item {
         },
 
         State {
-            name: VPNAuthInApp.StateStart
+            name: "StateStart"
+            when: VPNAuthInApp.state === VPNAuthInApp.StateStart || VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
             PropertyChanges {
                 target: loader
                 source: "ViewAuthenticationStart.qml"
@@ -38,7 +38,8 @@ Item {
         },
 
         State {
-            name: VPNAuthInApp.StateSignIn
+            name: "StateSignIn"
+            when: VPNAuthInApp.state === VPNAuthInApp.StateSignIn || VPNAuthInApp.state === VPNAuthInApp.StateSigningIn
             PropertyChanges {
                 target: loader
                 source: "ViewAuthenticationSignIn.qml"
@@ -46,7 +47,7 @@ Item {
         },
 
         State {
-            name: VPNAuthInApp.StateSignUp
+            when: VPNAuthInApp.state === VPNAuthInApp.StateSignUp || VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
             PropertyChanges {
                 target: loader
                 source: "ViewAuthenticationSignUp.qml"
@@ -54,7 +55,8 @@ Item {
         },
 
         State {
-            name: VPNAuthInApp.StateUnblockCodeNeeded
+            name: "StateUnblockCodeNeeded"
+            when: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingUnblockCode
             PropertyChanges {
                 target: loader
                 source: "ViewAuthenticationUnblockCodeNeeded.qml"
@@ -62,7 +64,8 @@ Item {
         },
 
         State {
-            name: VPNAuthInApp.StateVerificationSessionByEmailNeeded
+            name: "StateVerificationSessionByEmailNeeded"
+            when: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionEmailCode
             PropertyChanges {
                 target: loader
                 source: "ViewAuthenticationVerificationSessionByEmailNeeded.qml"
@@ -70,7 +73,8 @@ Item {
         },
 
         State {
-            name: VPNAuthInApp.StateVerificationSessionByTotpNeeded
+            name: "StateVerificationSessionByTotpNeeded"
+            when: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionTotpCode
             PropertyChanges {
                 target: loader
                 source: "ViewAuthenticationVerificationSessionByTotpNeeded.qml"
@@ -78,7 +82,8 @@ Item {
         },
 
         State {
-            name: VPNAuthInApp.StateFallbackInBrowser
+            name: "StateFallbackInBrowser"
+            when: VPNAuthInApp.state === VPNAuthInApp.StateFallbackInBrowser
             PropertyChanges {
                 target: loader
                 source: "ViewAuthenticationFallbackInBrowser.qml"

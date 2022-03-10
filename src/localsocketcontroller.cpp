@@ -23,7 +23,7 @@
 #include <QHostAddress>
 
 // How many times do we try to reconnect.
-constexpr int MAX_CONNECTION_RETRY = 3;
+constexpr int MAX_CONNECTION_RETRY = 10;
 
 // How long do we wait between one try and the next one.
 constexpr int CONNECTION_RETRY_TIMER_MSEC = 500;
@@ -58,7 +58,7 @@ void LocalSocketController::errorOccurred(
     QLocalSocket::LocalSocketError error) {
   logger.error() << "Error occurred:" << error;
 
-  if (m_state == eInitializing) {
+  if (m_daemonState == eInitializing) {
     if (m_initializingRetry++ < MAX_CONNECTION_RETRY) {
       m_initializingTimer.start(CONNECTION_RETRY_TIMER_MSEC);
       return;
@@ -72,7 +72,9 @@ void LocalSocketController::errorOccurred(
 }
 
 void LocalSocketController::disconnectInternal() {
-  m_state = eDisconnected;
+  // We're still eReady as the Deamon is alive
+  // and can make a new connection.
+  m_daemonState = eReady;
   m_initializingRetry = 0;
   m_initializingTimer.stop();
   emit disconnected();
@@ -84,14 +86,14 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
 
-  Q_ASSERT(m_state == eUnknown);
+  Q_ASSERT(m_daemonState == eUnknown);
   m_initializingRetry = 0;
 
   initializeInternal();
 }
 
 void LocalSocketController::initializeInternal() {
-  m_state = eInitializing;
+  m_daemonState = eInitializing;
 
 #ifdef MVPN_WINDOWS
   QString path = "\\\\.\\pipe\\mozillavpn";
@@ -108,7 +110,7 @@ void LocalSocketController::initializeInternal() {
 
 void LocalSocketController::daemonConnected() {
   logger.debug() << "Daemon connected";
-  Q_ASSERT(m_state == eInitializing);
+  Q_ASSERT(m_daemonState == eInitializing);
   checkStatus();
 }
 
@@ -162,7 +164,7 @@ void LocalSocketController::activate(const HopConnection& hop,
 void LocalSocketController::deactivate(Reason reason) {
   logger.debug() << "Deactivating";
 
-  if (m_state != eReady) {
+  if (m_daemonState != eReady) {
     logger.debug() << "No disconnect, controller is not ready";
     emit disconnected();
     return;
@@ -182,7 +184,7 @@ void LocalSocketController::deactivate(Reason reason) {
 void LocalSocketController::checkStatus() {
   logger.debug() << "Check status";
 
-  if (m_state == eReady || m_state == eInitializing) {
+  if (m_daemonState == eReady || m_daemonState == eInitializing) {
     Q_ASSERT(m_socket);
 
     QJsonObject json;
@@ -200,7 +202,7 @@ void LocalSocketController::getBackendLogs(
     m_logCallback = nullptr;
   }
 
-  if (m_state != eReady) {
+  if (m_daemonState != eReady) {
     std::function<void(const QString&)> callback = a_callback;
     callback("");
     return;
@@ -221,7 +223,7 @@ void LocalSocketController::cleanupBackendLogs() {
     m_logCallback = nullptr;
   }
 
-  if (m_state != eReady) {
+  if (m_daemonState != eReady) {
     return;
   }
 
@@ -234,7 +236,7 @@ void LocalSocketController::readData() {
   logger.debug() << "Reading";
 
   Q_ASSERT(m_socket);
-  Q_ASSERT(m_state == eInitializing || m_state == eReady);
+  Q_ASSERT(m_daemonState == eInitializing || m_daemonState == eReady);
   QByteArray input = m_socket->readAll();
   m_buffer.append(input);
 
@@ -276,8 +278,8 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
 
   QString type = typeValue.toString();
 
-  if (m_state == eInitializing && type == "status") {
-    m_state = eReady;
+  if (m_daemonState == eInitializing && type == "status") {
+    m_daemonState = eReady;
 
     QJsonValue connected = obj.value("connected");
     if (!connected.isBool()) {
@@ -304,7 +306,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
     return;
   }
 
-  if (m_state != eReady) {
+  if (m_daemonState != eReady) {
     logger.error() << "Unexpected command";
     return;
   }

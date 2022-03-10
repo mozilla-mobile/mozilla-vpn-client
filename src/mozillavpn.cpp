@@ -50,10 +50,6 @@
 #  include "platforms/android/androidutils.h"
 #endif
 
-#ifdef MVPN_WINDOWS
-#  include "platforms/windows/windowsdatamigration.h"
-#endif
-
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androiddatamigration.h"
 #  include "platforms/android/androidvpnactivity.h"
@@ -234,13 +230,6 @@ void MozillaVPN::initialize() {
   if (!settingsHolder->nativeIOSDataMigrated()) {
     IOSDataMigration::migrate();
     settingsHolder->setNativeIOSDataMigrated(true);
-  }
-#endif
-
-#ifdef MVPN_WINDOWS
-  if (!settingsHolder->nativeWindowsDataMigrated()) {
-    WindowsDataMigration::migrate();
-    settingsHolder->setNativeWindowsDataMigrated(true);
   }
 #endif
 
@@ -957,7 +946,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       break;
 
     case ErrorHandler::NoConnectionError:
-      if (controller()->isUnsettled()) {
+      if (connectionHealth()->isUnsettled()) {
         return;
       }
       alert = NoConnectionAlert;
@@ -1025,13 +1014,6 @@ void MozillaVPN::setCooldownForAllServersInACity(const QString& countryCode,
                                                  const QString& cityCode) {
   m_private->m_serverCountryModel.setCooldownForAllServersInACity(
       countryCode, cityCode, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-  MozillaVPN::instance()->controller()->serverUnavailable();
-}
-
-bool MozillaVPN::hasCooldownForAllServersInACity(const QString& countryCode,
-                                                 const QString& cityName) {
-  return m_private->m_serverCountryModel.hasCooldownForAllServersInACity(
-      countryCode, cityName);
 }
 
 QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {
@@ -1446,7 +1428,7 @@ void MozillaVPN::quit() {
   logger.debug() << "quit";
   TaskScheduler::deleteTasks();
 
-#if QT_VERSION >= 0x060000
+#if QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
   // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a
   // quick exit. See: https://bugreports.qt.io/browse/QTBUG-100687
 
@@ -1703,4 +1685,10 @@ void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
   hardReset();
   quit();
+}
+
+void MozillaVPN::crashTest() {
+  char* text = new char[100];
+  delete[] text;
+  delete[] text;
 }

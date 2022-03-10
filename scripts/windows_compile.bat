@@ -113,47 +113,39 @@ CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "%VCToolsRedistDir%\\MergeModul
 CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
-python scripts\importLanguages.py
-python scripts\generate_strings.py
+python scripts\utils/import_languages.py
 
 ECHO Generating glean samples...
-python scripts\generate_glean.py
+python scripts\utils\generate_glean.py
 
 ECHO BUILD_BUILD = %DEBUG_BUILD%
 
 IF %DEBUG_BUILD%==T (
   ECHO Generating Debug Build for the extension bridge
-  qmake -tp vc extension\app\app.pro CONFIG+=debug
+  pushd extension\bridge
+
+  cargo build
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO cargo failed for the extension!
+    EXIT 1
+  )
+
+  xcopy /y target\debug\mozillavpnnp.exe ..\..
+  popd
 )
 
 IF %DEBUG_BUILD%==F (
   ECHO Generating Release Build for the extension bridge
-  qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
-)
+  pushd extension\bridge
 
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO qmake failed for the extension!
-  EXIT 1
-)
+  cargo build --release
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO cargo failed for the extension!
+    EXIT 1
+  )
 
-IF NOT EXIST mozillavpnnp.vcxproj (
-  echo The VC project doesn't exist. Why?
-  EXIT 1
-)
-
-set CL=/MP
-
-ECHO Cleaning up the project...
-MSBuild -t:Clean -p:Configuration=%BUILD_CONF% mozillavpnnp.vcxproj
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to clean up the project
-  EXIT 1
-)
-
-MSBuild -t:Build -p:Configuration=%BUILD_CONF% mozillavpnnp.vcxproj
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to build the project
-  EXIT 1
+  xcopy /y target\release\mozillavpnnp.exe ..\..
+  popd
 )
 
 ECHO Creating the project with flags: %FLAGS%

@@ -28,8 +28,10 @@ Item {
         id: flickableContent
 
         anchors.top: menu.bottom
+        anchors.topMargin: VPNTheme.theme.windowMargin
+        anchors.left: parent.left
+        anchors.right: parent.right
         height: parent.height - menu.height
-        width: parent.width
 
         VPNCheckBoxRow {
             id: developerUnlock
@@ -181,7 +183,7 @@ Item {
 
         VPNExternalLinkListItem {
             id: inspectorLink
-            visible: stagingServerCheckBox.checked && !restartRequired.visible
+            visible: stagingServerCheckBox.checked && !restartRequired.isVisible
             anchors.top: animationsPlaygroundLink.bottom
             anchors.topMargin: VPNTheme.theme.listSpacing
             anchors.left: stagingServerRow.left
@@ -199,10 +201,34 @@ Item {
         }
 
         VPNButton {
+            id: crashApp
+            property int clickNeeded: 5
+
+            anchors.top: stagingServerCheckBox.checked && !restartRequired.isVisible ? inspectorLink.bottom : animationsPlaygroundLink.bottom
+            anchors.topMargin: VPNTheme.theme.listSpacing * 2
+            anchors.horizontalCenterOffset: 0
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            text: "Test Crash Reporter"
+            onClicked: {
+                if (!VPNSettings.stagingServer){
+                    text = "Test Crash Reporter (Staging only!)";
+                    return;
+                }
+                if (clickNeeded) {
+                    text = "Test Crash Reporter (" + clickNeeded + ")";
+                    --clickNeeded;
+                    return;
+                }
+                VPN.crashTest()
+            }
+        }
+
+        VPNButton {
             id: resetAndQuit
             property int clickNeeded: 5
 
-            anchors.top: stagingServerCheckBox.checked && !restartRequired.visible ? inspectorLink.bottom : animationsPlaygroundLink.bottom
+            anchors.top: restartRequired.isVisible ? restartRequired.bottom : crashApp.bottom
             anchors.topMargin: VPNTheme.theme.listSpacing * 2
             anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter

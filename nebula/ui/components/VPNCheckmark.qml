@@ -25,6 +25,7 @@ Item {
         antialiasing: true
         smooth: true
         visible: false
+        color: "transparent"
 
         Behavior on color {
             PropertyAnimation {

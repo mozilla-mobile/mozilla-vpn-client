@@ -11,85 +11,85 @@
 <?define WintunPlatform = "amd64" ?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-	<Product
+  <Product
 		Id="*"
 		Name="Mozilla VPN"
 		Language="1033"
 		Version="!(bind.FileVersion.MozillaVPNExecutable)"
 		Manufacturer="Mozilla Corporation"
 		UpgradeCode="$(var.UpgradeCode)">
-		<Package
+    <Package
 			InstallerVersion="400"
 			Compressed="yes"
 			InstallScope="perMachine"
 			Description="Mozilla VPN"
 			ReadOnly="yes" />
 
-		<Upgrade Id="$(var.UpgradeCode)">
-			<UpgradeVersion OnlyDetect='no' Property='PREVIOUSFOUND'
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion OnlyDetect='no' Property='PREVIOUSFOUND'
 				Minimum='0.0.0.0' IncludeMinimum='yes'
 				Maximum='1.0.0.0' IncludeMaximum='no' />
-		</Upgrade>
+    </Upgrade>
 
-		<MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
-		<Icon Id="MozillaVPNMainIcon" SourceFile="../../src/ui/resources/logo.ico" />
+    <Icon Id="MozillaVPNMainIcon" SourceFile="../../src/ui/resources/logo.ico" />
 
-		<Property Id="ARPPRODUCTICON" Value="MozillaVPNMainIcon" />
-		<Property Id="ARPURLINFOABOUT" Value="https://vpn.mozilla.org" />
-		<Property Id="ARPNOMODIFY" Value="yes" />
-		<Property Id="DISABLEADVTSHORTCUTS" Value="yes" />
-		<Property Id="DISABLEROLLBACK" Value="yes" />
-		<Property Id="MSIDISABLERMRESTART" Value="1" />
-		<Property Id="MSIRMSHUTDOWN" Value="1" />
+    <Property Id="ARPPRODUCTICON" Value="MozillaVPNMainIcon" />
+    <Property Id="ARPURLINFOABOUT" Value="https://vpn.mozilla.org" />
+    <Property Id="ARPNOMODIFY" Value="yes" />
+    <Property Id="DISABLEADVTSHORTCUTS" Value="yes" />
+    <Property Id="DISABLEROLLBACK" Value="yes" />
+    <Property Id="MSIDISABLERMRESTART" Value="1" />
+    <Property Id="MSIRMSHUTDOWN" Value="1" />
 
-		<!--
+    <!--
 			Upgrading
 		-->
-		<MajorUpgrade
+    <MajorUpgrade
 			AllowDowngrades="no"
 			AllowSameVersionUpgrades="yes"
 			DowngradeErrorMessage="A newer version of [ProductName] is already installed."
 			Schedule="afterInstallExecute" />
 
-		<!--
+    <!--
 			Folders
 		-->
-		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="$(var.PlatformProgramFilesFolder)">
-				<Directory Id="MozillaFolder" Name="Mozilla">
-					<Directory Id="MozillaVPNFolder" Name="Mozilla VPN" />
-				</Directory>
-			</Directory>
-			<Directory Id="ProgramMenuFolder" />
-		</Directory>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="$(var.PlatformProgramFilesFolder)">
+        <Directory Id="MozillaFolder" Name="Mozilla">
+          <Directory Id="MozillaVPNFolder" Name="Mozilla VPN" />
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder" />
+    </Directory>
 
-		<!--
+    <!--
 			Components
 		-->
-		<ComponentGroup Id="MozillaVPNComponents">
-			<Component Directory="MozillaVPNFolder" Id="MozillaVPNExecutable" Guid="EF353A73-A10B-4A2D-87AC-4389BBD9313B">
-				<File Id="MozillaVPNExecutable" Source="../../MozillaVPN.exe" KeyPath="yes">
-					<Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
-				</File>
-				<File Source="../../tunnel/$(var.Platform)/tunnel.dll" />
-				<File Source="../../tunnel/.deps/wintun/bin/$(var.WintunPlatform)/wintun.dll" />
-				<File Source="../../balrog/$(var.Platform)/balrog.dll" />
-				<File Source="../../libcrypto-1_1-x64.dll" />
-				<File Source="../../libssl-1_1-x64.dll" />
-				<File Source="../../libEGL.dll" />
-				<File Source="../../libGLESv2.dll" />
-				<File Source="../split-tunnel/mullvad-split-tunnel.cat" />
-				<File Source="../split-tunnel/mullvad-split-tunnel.inf" />
-				<File Source="../split-tunnel/mullvad-split-tunnel.sys" />
-				<File Source="../split-tunnel/WdfCoinstaller01011.dll" />
-				
+    <ComponentGroup Id="MozillaVPNComponents">
+      <Component Directory="MozillaVPNFolder" Id="MozillaVPNExecutable" Guid="EF353A73-A10B-4A2D-87AC-4389BBD9313B">
+        <File Id="MozillaVPNExecutable" Source="../../MozillaVPN.exe" KeyPath="yes">
+          <Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
+        </File>
+        <File Source="../../tunnel/$(var.Platform)/tunnel.dll" />
+        <File Source="../../tunnel/.deps/wintun/bin/$(var.WintunPlatform)/wintun.dll" />
+        <File Source="../../balrog/$(var.Platform)/balrog.dll" />
+        <File Source="../../libcrypto-1_1-x64.dll" />
+        <File Source="../../libssl-1_1-x64.dll" />
+        <File Source="../../libEGL.dll" />
+        <File Source="../../libGLESv2.dll" />
+        <File Source="../split-tunnel/mullvad-split-tunnel.cat" />
+        <File Source="../split-tunnel/mullvad-split-tunnel.inf" />
+        <File Source="../split-tunnel/mullvad-split-tunnel.sys" />
+        <File Source="../split-tunnel/WdfCoinstaller01011.dll" />
 
-				<File Source="../../extension/app/manifests/windows/mozillavpn.json" />
-				<File Source="../../mozillavpnnp.exe" />
 
-				<!-- Broker Service -->
-				<ServiceInstall
+        <File Source="../../extension/manifests/windows/mozillavpn.json" />
+        <File Source="../../mozillavpnnp.exe" />
+
+        <!-- Broker Service -->
+        <ServiceInstall
 					Type="ownProcess"
 					Name="MozillaVPNBroker"
 					DisplayName="Mozilla VPN (broker)"
@@ -99,7 +99,7 @@
 					ErrorControl="normal"
 					Vital="yes" />
 
-				<util:ServiceConfig
+        <util:ServiceConfig
 					ServiceName="MozillaVPNBroker"
 					FirstFailureActionType="restart"
 					SecondFailureActionType="restart"
@@ -107,65 +107,65 @@
 					ResetPeriodInDays="1"
 					RestartServiceDelayInSeconds="5" />
 
-				<ServiceControl Id="StartService" Start="install" Stop="both" Remove="both" Name="MozillaVPNBroker" Wait="yes" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="both" Name="MozillaVPNBroker" Wait="yes" />
 
-				<!-- Remove Tunnel Service, if running -->
-				<ServiceControl Id="MozillaVPNService" Remove="both" Name="WireGuardTunnel$MozillaVPN" Stop="both" Wait="yes" />
-			</Component>
-		</ComponentGroup>
+        <!-- Remove Tunnel Service, if running -->
+        <ServiceControl Id="MozillaVPNService" Remove="both" Name="WireGuardTunnel$MozillaVPN" Stop="both" Wait="yes" />
+      </Component>
+    </ComponentGroup>
 
-		<!--
+    <!--
 			Merge modules
 		-->
-		<DirectoryRef Id="MozillaVPNFolder">
-			<Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
-		</DirectoryRef>
+    <DirectoryRef Id="MozillaVPNFolder">
+      <Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
+    </DirectoryRef>
 
-		<DirectoryRef Id="MozillaVPNFolder">
-			<Component Id="RegistryEntries" Guid="71d1c1ef-2133-4cbf-954d-7f1e0e24dace">
-				<RegistryKey Root="HKLM" Key="Software\Mozilla\NativeMessagingHosts\mozillavpn">
-					<RegistryValue Type="string" Value="[MozillaVPNFolder]\mozillavpn.json"/>
-				</RegistryKey>
-				<RegistryKey Root="HKLM" Key="Software\Google\Chrome\NativeMessagingHosts\mozillavpn">
-					<RegistryValue Type="string" Value="[MozillaVPNFolder]\mozillavpn.json"/>
-				</RegistryKey>
-                <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\MozillaVPN.exe">
-                    <RegistryValue Type="string" Name="DumpFolder" Value="[LocalAppDataFolder]MozillaVPN\dumps" />
-                    <RegistryValue Type="integer" Name="DumpCount" Value="3" />
-                    <RegistryValue Type="integer" Name="DumpType" Value="1" />
-                </RegistryKey>
-			</Component>
-		</DirectoryRef>
+    <DirectoryRef Id="MozillaVPNFolder">
+      <Component Id="RegistryEntries" Guid="71d1c1ef-2133-4cbf-954d-7f1e0e24dace">
+        <RegistryKey Root="HKLM" Key="Software\Mozilla\NativeMessagingHosts\mozillavpn">
+          <RegistryValue Type="string" Value="[MozillaVPNFolder]\mozillavpn.json"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="Software\Google\Chrome\NativeMessagingHosts\mozillavpn">
+          <RegistryValue Type="string" Value="[MozillaVPNFolder]\mozillavpn.json"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\MozillaVPN.exe">
+          <RegistryValue Type="string" Name="DumpFolder" Value="[LocalAppDataFolder]MozillaVPN\dumps" />
+          <RegistryValue Type="integer" Name="DumpCount" Value="3" />
+          <RegistryValue Type="integer" Name="DumpType" Value="1" />
+        </RegistryKey>
+      </Component>
+    </DirectoryRef>
 
-		<!--
+    <!--
 			Features
 		-->
-		<Feature Id="MozillaVPNFeature" Title="Mozilla VPN" Level="1">
-			<ComponentGroupRef Id="MozillaVPNComponents" />
-		</Feature>
-		<Feature Id="VCRedistFeature" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
-			<MergeRef Id="VCRedistModule" />
-		</Feature>
-		<Feature Id="MozillaVPNRegistryEntries" Title="Native Messaging Registry Entries" Level="1">
-			<ComponentRef Id="RegistryEntries" />
-		</Feature>
+    <Feature Id="MozillaVPNFeature" Title="Mozilla VPN" Level="1">
+      <ComponentGroupRef Id="MozillaVPNComponents" />
+    </Feature>
+    <Feature Id="VCRedistFeature" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+      <MergeRef Id="VCRedistModule" />
+    </Feature>
+    <Feature Id="MozillaVPNRegistryEntries" Title="Native Messaging Registry Entries" Level="1">
+      <ComponentRef Id="RegistryEntries" />
+    </Feature>
 
-		<!--
+    <!--
 			Launch after setup complete
 		-->
-		<Property Id="WixShellExecTarget" Value="[#MozillaVPNExecutable]" />
-		<CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
-		<InstallExecuteSequence>
-			<Custom Action="LaunchApplication" After="InstallFinalize">(&amp;MozillaVPNFeature = 3) OR (&amp;MozillaVPNFeature = -1)</Custom>
-		</InstallExecuteSequence>
+    <Property Id="WixShellExecTarget" Value="[#MozillaVPNExecutable]" />
+    <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+    <InstallExecuteSequence>
+      <Custom Action="LaunchApplication" After="InstallFinalize">(&amp;MozillaVPNFeature = 3) OR (&amp;MozillaVPNFeature = -1)</Custom>
+    </InstallExecuteSequence>
 
-		<!--
+    <!--
 			Force application closed
 		-->
-		<Property Id="QtExecCmdLine" Value='"[#SystemFolder]taskkill.exe" /F /IM MozillaVPN.exe'/>
-		<CustomAction Id="CloseApplication" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="immediate" Return="ignore"/>
-		<InstallExecuteSequence>
-			<Custom Action="CloseApplication" After="StopServices" />
-		</InstallExecuteSequence>
-	</Product>
+    <Property Id="QtExecCmdLine" Value='"[#SystemFolder]taskkill.exe" /F /IM MozillaVPN.exe'/>
+    <CustomAction Id="CloseApplication" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="immediate" Return="ignore"/>
+    <InstallExecuteSequence>
+      <Custom Action="CloseApplication" After="StopServices" />
+    </InstallExecuteSequence>
+  </Product>
 </Wix>

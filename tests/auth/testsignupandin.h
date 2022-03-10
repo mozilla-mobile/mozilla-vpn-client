@@ -24,5 +24,9 @@ class TestSignUpAndIn final : public QObject {
   QString m_emailAccount;
   bool m_totpCreation = false;
 
-  QByteArray m_totpSecret;
+  // We want to send the wrong totp code only once. At the first
+  // StateVerificationSessionByTotpNeeded state change.
+  bool m_sendWrongTotpCode = true;
+
+  QString m_totpSecret;
 };

@@ -18,7 +18,6 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: "Qt5", pattern: x, folder: qt }
             - { name: "Qt6", pattern: qt6, folder: qt6 }
 
     steps:
@@ -52,14 +51,14 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/generate_glean.py
+          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py -m
+          python3 scripts/utils/import_languages.py -m
 
       - name: Install the Apple certificate and provisioning profile
         env:
@@ -104,7 +103,6 @@ jobs:
           echo "APP_ID_MACOS = baku.mozilla.macos.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_MACOS = baku.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
           echo "LOGIN_ID_MACOS = baku.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
-          echo "NATIVEMESSAGING_ID_MACOS = baku.mozilla.macos.FirefoxVPN.native-messaging" >> xcode.xconfig
           echo "GROUP_ID_IOS = group.baku.mozilla.ios.Guardian" >> xcode.xconfig
           echo "APP_ID_IOS = baku.mozilla.ios.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_IOS = baku.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
@@ -142,7 +140,7 @@ jobs:
           echo -n "$MACOS_EMBEDDED_PP" | base64 --decode --output /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/embedded.provisionprofile
           /usr/libexec/PlistBuddy -x -c 'Print:Entitlements' aa.list > bb.list
           /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Library/LoginItems/MozillaVPNLoginItem.app
-          /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Library/NativeMessaging/MozillaVPNNativeMessaging.app
+          /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Resources/utils/mozillavpnnp
           /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Resources/utils/wireguard-go
           /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app
 
@@ -191,7 +189,6 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: "Qt5", pattern: x, folder: qt }
             - { name: "Qt6", pattern: qt6, folder: qt6 }
 
     steps:
@@ -225,14 +222,14 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/generate_glean.py
+          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py -m
+          python3 scripts/utils/import_languages.py -m
 
       - name: Configuring the build
         shell: bash
@@ -246,7 +243,6 @@ jobs:
           echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
           echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
-          echo "NATIVEMESSAGING_ID_MACOS = org.mozilla.macos.FirefoxVPN.native-messaging" >> xcode.xconfig
           echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
           echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig

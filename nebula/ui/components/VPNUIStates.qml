@@ -53,6 +53,16 @@ Rectangle {
                 opacity: 1
             }
 
+        },
+        State {
+            when: itemToAnchor.state === uiState.stateDisabled
+
+            PropertyChanges {
+                target: buttonBackground
+                color: colorScheme.buttonDisabled
+                opacity: 1
+            }
+
         }
     ]
     transitions: [

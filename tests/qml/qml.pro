@@ -42,7 +42,7 @@ SOURCES += \
     helper.cpp \
     main.cpp \
     mocmozillavpn.cpp \
-    ../unit/mocinspectorwebsocketconnection.cpp \
+    ../unit/mocinspectorhandler.cpp \
     ../../src/closeeventhandler.cpp \
     ../../src/constants.cpp \
     ../../src/featurelist.cpp \
@@ -52,6 +52,7 @@ SOURCES += \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/server.cpp \
     ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
@@ -67,7 +68,7 @@ HEADERS += \
     ../../src/featurelist.h \
     ../../src/hawkauth.h \
     ../../src/hkdf.h \
-    ../../src/inspector/inspectorwebsocketconnection.h \
+    ../../src/inspector/inspectorhandler.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/feature.h \
@@ -91,6 +92,6 @@ OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 
-win*{
+win* {
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 }

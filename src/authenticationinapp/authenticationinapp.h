@@ -22,24 +22,36 @@ class AuthenticationInApp final : public QObject {
     // The Authencation-In-App has not started yet
     StateInitializing,
     // The client_id and other params has been received. We are ready to
-    // receive email address and password.
+    // receive email address
     StateStart,
+    // The email address is checked.
+    StateCheckingAccount,
     // Sign in
     StateSignIn,
     // Sign up
     StateSignUp,
+    // Signing-in
+    StateSigningIn,
+    // Signing-up
+    StateSigningUp,
     // The authentication requires an unblock code (6-digit code) At this
     // point, the user needs to check their mailbox and pass the 6-digit
     // unblock code. Then, the signIn() can continue.  The code expires after 5
     // minutes. Call `resendUnblockCodeEmail` to have a new code.
     StateUnblockCodeNeeded,
+    // Verification in progress,
+    StateVerifyingUnblockCode,
     // The authentication requires an account verification (6-digit code) This
     // is similar to the previous step, but it happens when the account has not
     // been verified yet.  The code expires after 5 minutes. Call
     // `resendVerificationSessionCodeEmail` to have a new code.
     StateVerificationSessionByEmailNeeded,
+    // Verification in progress
+    StateVerifyingSessionEmailCode,
     // The two-factor authentication session verification.
     StateVerificationSessionByTotpNeeded,
+    // Verification in progress
+    StateVerifyingSessionTotpCode,
     // If we are unable to continue the authentication in-app, the fallback is
     // the browser flow.
     StateFallbackInBrowser,
@@ -48,16 +60,19 @@ class AuthenticationInApp final : public QObject {
 
   enum ErrorType {
     ErrorAccountAlreadyExists,
-    ErrorUnknownAccount,
-    ErrorIncorrectPassword,
-    ErrorInvalidEmailCode,
-    ErrorEmailTypeNotSupported,
     ErrorEmailAlreadyExists,
     ErrorEmailCanNotBeUsedToLogin,
+    ErrorEmailTypeNotSupported,
     ErrorFailedToSendEmail,
+    ErrorIncorrectPassword,
+    ErrorInvalidEmailAddress,
+    ErrorInvalidEmailCode,
+    ErrorInvalidOrExpiredVerificationCode,
+    ErrorInvalidUnblockCode,
+    ErrorInvalidTotpCode,
     ErrorTooManyRequests,
     ErrorServerUnavailable,
-    ErrorInvalidTotpCode,
+    ErrorUnknownAccount,
   };
   Q_ENUM(ErrorType);
 
@@ -93,10 +108,13 @@ class AuthenticationInApp final : public QObject {
 #ifdef UNIT_TEST
   // This method is used to have a test coverage for the TOTP verification.
   void enableTotpCreation();
+  // Delete account.
+  void enableAccountDeletion();
+  void allowUpperCaseEmailAddress();
 #endif
 
   // This needs to be called when we are in StateUnblockCodeNeeded state.
-  Q_INVOKABLE void setUnblockCodeAndContinue(const QString& unblockCode);
+  Q_INVOKABLE void verifyUnblockCode(const QString& unblockCode);
 
   // This can be called when we are in StateUnblockCodeNeeded state.
   Q_INVOKABLE void resendUnblockCodeEmail();
@@ -115,6 +133,7 @@ class AuthenticationInApp final : public QObject {
 
   void registerListener(AuthenticationInAppListener* listener);
 
+  void requestEmailAddressChange(AuthenticationInAppListener* listener);
   void requestState(State state, AuthenticationInAppListener* listener);
   void requestErrorPropagation(ErrorType errorType,
                                AuthenticationInAppListener* listener);
@@ -133,6 +152,7 @@ class AuthenticationInApp final : public QObject {
 #ifdef UNIT_TEST
   void unitTestFinalUrl(const QUrl& url);
   void unitTestTotpCodeCreated(const QByteArray& data);
+  void unitTestAccountDeleted();
 #endif
 
  private:

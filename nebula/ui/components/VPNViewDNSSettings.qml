@@ -130,7 +130,6 @@ VPNFlickable {
                         anchors {
                             left: parent.left
                             right: parent.right
-                            top: serverSearchInput.bottom
                             topMargin: VPNTheme.theme.listSpacing
                         }
 

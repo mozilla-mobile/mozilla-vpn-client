@@ -18,6 +18,16 @@
 #include <QtTest/QtTest>
 
 int main(int argc, char* argv[]) {
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (!pe.contains("MVPN_OATHTOOL")) {
+    qDebug()
+        << "MVPN_OATHTOOL env not set. Please set it to a valid oathtool app. "
+           "If you need to install it, please use the following instructions:";
+    qDebug()
+        << "\tpip3 install oathtool\n\tpython3 -m oathtool.generate-script";
+    return 1;
+  }
+
 #ifdef MVPN_DEBUG
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);

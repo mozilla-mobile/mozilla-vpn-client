@@ -8,6 +8,12 @@ QT += networkauth
 QT += qml
 QT += widgets
 
+CONFIG += c++1z
+
+macos {
+    CONFIG -= app_bundle
+}
+
 DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += BUILD_ID=\\\"1234\\\"
 
@@ -15,12 +21,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 DEFINES += UNIT_TEST
 DEFINES += MVPN_DEBUG
+DEFINES += MVPN_DUMMY
 
 TEMPLATE = app
 TARGET = tests
-
-CONFIG += link_pkgconfig
-PKGCONFIG += liboath
 
 RESOURCES += auth.qrc
 
@@ -42,12 +46,13 @@ HEADERS += \
     ../../src/featurelist.h \
     ../../src/hawkauth.h \
     ../../src/hkdf.h \
-    ../../src/inspector/inspectorwebsocketconnection.h \
+    ../../src/inspector/inspectorhandler.h \
     ../../src/ipaddress.h \
     ../../src/leakdetector.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/feature.h \
+    ../../src/models/server.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
@@ -70,7 +75,7 @@ HEADERS += \
 
 SOURCES += \
     mocmozillavpn.cpp \
-    ../unit/mocinspectorwebsocketconnection.cpp \
+    ../unit/mocinspectorhandler.cpp \
     ../../src/authenticationinapp/authenticationinapp.cpp \
     ../../src/authenticationinapp/authenticationinapplistener.cpp \
     ../../src/authenticationinapp/incrementaldecoder.cpp \
@@ -86,6 +91,7 @@ SOURCES += \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/server.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
     ../../src/rfc/rfc1918.cpp \
@@ -112,12 +118,11 @@ exists($$PWD/../../translations/generated/l18nstrings.h) {
     error("No l18nstrings.h. Have you generated the strings?")
 }
 
+win* {
+    QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+}
+
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
-
-coverage {
-    QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
-    QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
-}

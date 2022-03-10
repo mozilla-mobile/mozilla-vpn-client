@@ -7,9 +7,9 @@
 git submodule init
 git submodule update
 # glean
-./scripts/generate_glean.py
+./scripts/utils/generate_glean.py
 # translations
-./scripts/importLanguages.py
+./scripts/utils/import_languages.py
 
 # $1 should be the qmake arch. 
 # Note this is different from what aqt expects as arch: 

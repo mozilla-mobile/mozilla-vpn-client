@@ -41,9 +41,10 @@ VPNInAppAuthenticationBase {
         }
         VPNButton {
             text: "Continue"
-            Layout.fillWidth: true
-            enabled: emailInput.text.length !== 0 && !emailInput.hasError
+            enabled: VPNAuthInApp.state === VPNAuthInApp.StateStart && emailInput.text.length !== 0 && !emailInput.hasError
+            loaderVisible: VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
             onClicked: VPNAuthInApp.checkAccount(emailInput.text);
+            Layout.fillWidth: true
         }
     }
 

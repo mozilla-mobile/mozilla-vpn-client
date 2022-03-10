@@ -12,12 +12,21 @@ VPNButtonBase {
     id: button
 
     height: VPNTheme.theme.rowHeight
-    Layout.preferredHeight: Layout ? VPNTheme.theme.rowHeight : undefined
     width: Math.min(parent.width * 0.83, VPNTheme.theme.maxHorizontalContentWidth)
-    Layout.preferredWidth: Layout ? Math.min(parent.width * 0.83, VPNTheme.theme.maxHorizontalContentWidth) : undefined
+
     Layout.alignment: Layout ? Qt.AlignHCenter : undefined
+    Layout.preferredHeight: Layout ? VPNTheme.theme.rowHeight : undefined
+    Layout.preferredWidth: Layout
+        ? Math.min(parent.width * 0.83, VPNTheme.theme.maxHorizontalContentWidth)
+        : undefined
+
     Component.onCompleted: {
-        state = uiState.stateDefault;
+        state = Qt.binding(() => (
+            enabled ? uiState.stateDefault : uiState.stateDisabled
+        ));
+        buttonMouseArea.hoverEnabled = Qt.binding(() => (
+            enabled && loaderVisible === false
+        ));
     }
 
     VPNUIStates {
@@ -31,7 +40,7 @@ VPNButtonBase {
     }
 
     VPNMouseArea {
-        hoverEnabled: loaderVisible === false
+        id: buttonMouseArea
     }
 
     contentItem: Label {

@@ -92,7 +92,6 @@ SOURCES += \
         connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
         connectionbenchmark/connectionbenchmark.cpp \
-        connectioncheck.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         constants.cpp \
@@ -100,6 +99,7 @@ SOURCES += \
         cryptosettings.cpp \
         curve25519.cpp \
         dnshelper.cpp \
+        dnspingsender.cpp \
         errorhandler.cpp \
         featurelist.cpp \
         filterproxymodel.cpp \
@@ -112,9 +112,13 @@ SOURCES += \
         hkdf.cpp \
         iaphandler.cpp \
         imageproviderfactory.cpp \
+        inspector/inspectorhandler.cpp \
+        inspector/inspectoritempicker.cpp \
+        inspector/inspectorutils.cpp \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
+        itempicker.cpp \
         l18nstringsimpl.cpp \
         leakdetector.cpp \
         localizer.cpp \
@@ -181,6 +185,7 @@ SOURCES += \
         taskscheduler.cpp \
         theme.cpp \
         timersingleshot.cpp \
+        tutorial.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
         urlopener.cpp
@@ -217,7 +222,6 @@ HEADERS += \
         connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \
         connectionbenchmark/connectionbenchmark.h \
-        connectioncheck.h \
         connectiondataholder.h \
         connectionhealth.h \
         constants.h \
@@ -226,6 +230,7 @@ HEADERS += \
         cryptosettings.h \
         curve25519.h \
         dnshelper.h \
+        dnspingsender.h \
         errorhandler.h \
         featurelist.h \
         features/featureappreview.h \
@@ -250,9 +255,13 @@ HEADERS += \
         hkdf.h \
         iaphandler.h \
         imageproviderfactory.h \
+        inspector/inspectorhandler.h \
+        inspector/inspectoritempicker.h \
+        inspector/inspectorutils.h \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
+        itempicker.h \
         leakdetector.h \
         localizer.h \
         logger.h \
@@ -319,6 +328,7 @@ HEADERS += \
         taskscheduler.h \
         theme.h \
         timersingleshot.h \
+        tutorial.h \
         update/updater.h \
         update/versionapi.h \
         urlopener.h
@@ -484,53 +494,83 @@ else:linux:!android {
 
     GO_MODULES = ../linux/netfilter/netfilter.go
 
+    cargoBridge.input = CARGO_CRATE
+    cargoBridge.output = ${QMAKE_FILE_IN}/target/release/mozillavpnnp
+    cargoBridge.commands = @echo Compiling Rust component ${QMAKE_FILE_IN} && \
+       cd "${QMAKE_FILE_IN}" && \
+       mkdir -p .cargo && \
+       export CARGO_HOME="${PWD}/${QMAKE_FILE_IN}/.cargo_home" && \
+       cargo build --release
+    cargoBridge.clean_commands = cd "${QMAKE_FILE_IN}" && cargo clean && rm -rf vendor
+    cargoBridge.CONFIG = target_predeps no_link
+
+    QMAKE_EXTRA_COMPILERS += cargoBridge
+    CARGO_CRATE = ../extension/bridge
+
     target.path = $${USRPATH}/bin
     INSTALLS += target
 
+    desktopFile.files = $$PWD/../linux/extra/MozillaVPN.desktop
     desktopFile.path = $${USRPATH}/share/applications
-    desktopFile.files = ../linux/extra/MozillaVPN.desktop
     INSTALLS += desktopFile
 
+    autostartFile.files = $$PWD/../linux/extra/MozillaVPN-startup.desktop
     autostartFile.path = $${ETCPATH}/xdg/autostart
-    autostartFile.files = ../linux/extra/MozillaVPN-startup.desktop
     INSTALLS += autostartFile
 
+    icon16x16.files = $$PWD/../linux/extra/icons/16x16/mozillavpn.png
     icon16x16.path = $${USRPATH}/share/icons/hicolor/16x16/apps
-    icon16x16.files = ../linux/extra/icons/16x16/mozillavpn.png
     INSTALLS += icon16x16
 
+    icon32x32.files = $$PWD/../linux/extra/icons/32x32/mozillavpn.png
     icon32x32.path = $${USRPATH}/share/icons/hicolor/32x32/apps
-    icon32x32.files = ../linux/extra/icons/32x32/mozillavpn.png
     INSTALLS += icon32x32
 
+    icon48x48.files = $$PWD/../linux/extra/icons/48x48/mozillavpn.png
     icon48x48.path = $${USRPATH}/share/icons/hicolor/48x48/apps
-    icon48x48.files = ../linux/extra/icons/48x48/mozillavpn.png
     INSTALLS += icon48x48
 
     DEFINES += MVPN_ICON_PATH=\\\"$${USRPATH}/share/icons/hicolor/64x64/apps/mozillavpn.png\\\"
+    icon64x64.files = $$PWD/../linux/extra/icons/64x64/mozillavpn.png
     icon64x64.path = $${USRPATH}/share/icons/hicolor/64x64/apps
-    icon64x64.files = ../linux/extra/icons/64x64/mozillavpn.png
     INSTALLS += icon64x64
 
+    icon128x128.files = $$PWD/../linux/extra/icons/128x128/mozillavpn.png
     icon128x128.path = $${USRPATH}/share/icons/hicolor/128x128/apps
-    icon128x128.files = ../linux/extra/icons/128x128/mozillavpn.png
     INSTALLS += icon128x128
 
-    polkit_actions.files = platforms/linux/daemon/org.mozilla.vpn.policy
     polkit_actions.path = $${USRPATH}/share/polkit-1/actions
+    polkit_actions.files = $$PWD/platforms/linux/daemon/org.mozilla.vpn.policy
     INSTALLS += polkit_actions
 
-    dbus_conf.files = platforms/linux/daemon/org.mozilla.vpn.conf
+    dbus_conf.files = $$PWD/platforms/linux/daemon/org.mozilla.vpn.conf
     dbus_conf.path = $${USRPATH}/share/dbus-1/system.d/
     INSTALLS += dbus_conf
 
-    dbus_service.files = platforms/linux/daemon/org.mozilla.vpn.dbus.service
+    dbus_service.files = $$PWD/platforms/linux/daemon/org.mozilla.vpn.dbus.service
     dbus_service.path = $${USRPATH}/share/dbus-1/system-services
     INSTALLS += dbus_service
 
-    systemd_service.files = ../linux/mozillavpn.service
+    systemd_service.files = $$PWD/../linux/mozillavpn.service
     systemd_service.path = $${USRPATH}/lib/systemd/system
     INSTALLS += systemd_service
+
+    manifestFirefox.files = $$PWD/../extension/manifests/linux/mozillavpn.json
+    manifestFirefox.path = $${USRPATH}/lib/mozilla/native-messaging-hosts
+    INSTALLS += manifestFirefox
+
+    manifestChrome.files = $$PWD/../extension/manifests/linux/mozillavpn.json
+    manifestChrome.path = $${ETCPATH}/opt/chrome/native-messaging-hosts
+    INSTALLS += manifestChrome
+
+    manifestChromium.files = $$PWD/../extension/manifests/linux/mozillavpn.json
+    manifestChromium.path = $${ETCPATH}/chromium/native-messaging-hosts
+    INSTALLS += manifestChromium
+
+    browserBridge.files = $$PWD/../extension/bridge/target/release/mozillavpnnp
+    browserBridge.path = $${USRPATH}/lib/mozillavpn
+    browserBridge.CONFIG = no_check_exist executable
+    INSTALLS += browserBridge
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
@@ -865,6 +905,7 @@ else:win* {
     RC_ICONS = ui/resources/logo.ico
 
     SOURCES += \
+        commands/commandcrashreporter.cpp \
         daemon/daemon.cpp \
         daemon/daemonlocalserver.cpp \
         daemon/daemonlocalserverconnection.cpp \
@@ -886,7 +927,6 @@ else:win* {
         platforms/windows/daemon/windowssplittunnel.cpp \
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
-        platforms/windows/windowsdatamigration.cpp \
         platforms/windows/windowsnetworkwatcher.cpp \
         platforms/windows/windowspingsender.cpp \
         platforms/windows/windowsstartatbootwatcher.cpp \
@@ -895,6 +935,7 @@ else:win* {
         wgquickprocess.cpp
 
     HEADERS += \
+        commands/commandcrashreporter.h \
         daemon/interfaceconfig.h \
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
@@ -918,7 +959,6 @@ else:win* {
         platforms/windows/daemon/windowssplittunnel.h \
         platforms/windows/windowsservicemanager.h \
         platforms/windows/windowscommons.h \
-        platforms/windows/windowsdatamigration.h \
         platforms/windows/windowsnetworkwatcher.h \
         platforms/windows/windowspingsender.h \
         tasks/authenticate/desktopauthenticationlistener.h \
@@ -955,6 +995,7 @@ else:wasm {
             platforms/wasm/wasmnetworkrequest.cpp \
             platforms/wasm/wasmnetworkwatcher.cpp \
             platforms/wasm/wasmwindowcontroller.cpp \
+            platforms/wasm/wasminspector.cpp \
             systemtraynotificationhandler.cpp
 
     HEADERS += \
@@ -963,6 +1004,7 @@ else:wasm {
             platforms/wasm/wasmauthenticationlistener.h \
             platforms/wasm/wasmnetworkwatcher.h \
             platforms/wasm/wasmwindowcontroller.h \
+            platforms/wasm/wasminspector.h \
             systemtraynotificationhandler.h
 
     SOURCES -= networkrequest.cpp
@@ -1001,12 +1043,6 @@ exists($$PWD/../translations/translations.pri) {
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
-
-coverage {
-    message(Coverage enabled)
-    QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
-    QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
-}
 
 debug {
     # If in debug mode, set mvpn_debug flag too.

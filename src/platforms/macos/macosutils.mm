@@ -21,6 +21,18 @@ Logger logger(LOG_MACOS, "MacOSUtils");
 }
 
 // static
+NSString* MacOSUtils::appId() {
+  NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
+  if (!appId) {
+    // Fallback. When an unsigned/un-notarized app is executed in
+    // command-line mode, it could fail the fetching of its own bundle id.
+    appId = @"org.mozilla.macos.FirefoxVPN";
+  }
+
+  return appId;
+}
+
+// static
 QString MacOSUtils::computerName() {
   NSString* name = [[NSHost currentHost] localizedName];
   return QString::fromNSString(name);
@@ -30,7 +42,9 @@ QString MacOSUtils::computerName() {
 void MacOSUtils::enableLoginItem(bool startAtBoot) {
   logger.debug() << "Enabling login-item";
 
-  NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
+  NSString* appId = MacOSUtils::appId();
+  Q_ASSERT(appId);
+
   NSString* loginItemAppId =
       QString("%1.login-item").arg(QString::fromNSString(appId)).toNSString();
   CFStringRef cfs = (__bridge CFStringRef)loginItemAppId;

@@ -24,6 +24,9 @@ class TaskRelease final : public Task {
 
   void run() override;
 
+  // We do not want to delete update operations, triggered by users.
+  bool deletable() const override { return m_op != Update; }
+
  signals:
   void updaterFailure();
   void updateRequired();

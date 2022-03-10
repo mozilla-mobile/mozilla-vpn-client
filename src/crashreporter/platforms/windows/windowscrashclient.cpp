@@ -18,7 +18,7 @@ namespace {
 Logger logger("CrashClient", "WindowsCrashServerClient");
 }
 
-constexpr auto ARG = L"--crashreporter";
+constexpr auto ARG = L"crashreporter";
 
 DWORD RecoveryCallback(PVOID contextParam) {
   BOOL cancelled;

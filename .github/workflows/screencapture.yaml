@@ -41,7 +41,7 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/generate_glean.py
+          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
@@ -49,7 +49,7 @@ jobs:
           # Manually add QT executables to path
           export PATH=/opt/qt515/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py
+          python3 scripts/utils/import_languages.py
 
       - name: Compile
         shell: bash
@@ -71,19 +71,25 @@ jobs:
           npm install mocha
           npm install websocket
 
+      - name: Launching API proxy
+        shell: bash
+        run: ./tests/proxy/wsgi.py --mock-devices > /dev/null &
+
       - name: Run the test script
         run: |
           export PATH=.:$(npm bin):$PATH
           export HEADLESS=yes
           export MVPN_API_BASE_URL="https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net"
-          xvfb-run -a ./scripts/test_function.sh ./src/mozillavpn tests/functional/screenCapture.js
+          xvfb-run -a npm run functionalTest -- tests/functional/testScreenCapture.js
         env:
           ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
           ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
+          ARTIFACT_DIR: /tmp/artifacts
+          MVPN_API_BASE_URL: http://localhost:5000
+          MVPN_BIN: ./src/mozillavpn
 
-      - name: Uploading screenshots
-        uses: actions/upload-artifact@v1
-        with:
-            name: Screen capture
-            path: /tmp/screencapture
-
+#      - name: Uploading screenshots
+#        uses: actions/upload-artifact@v1
+#        with:
+#            name: Screen capture
+#            path: /tmp/screencapture

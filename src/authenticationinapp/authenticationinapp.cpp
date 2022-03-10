@@ -61,7 +61,7 @@ void AuthenticationInApp::checkAccount(const QString& emailAddress) {
   Q_ASSERT(m_state == StateStart);
   Q_ASSERT(m_listener);
 
-  logger.debug() << "Authentication starting:" << emailAddress;
+  logger.debug() << "Authentication starting";
 
   m_listener->checkAccount(emailAddress);
 }
@@ -70,6 +70,7 @@ void AuthenticationInApp::reset() {
   Q_ASSERT(m_listener);
   logger.debug() << "Authentication reset";
   setState(StateStart);
+  m_listener->reset();
 }
 
 void AuthenticationInApp::setPassword(const QString& password) {
@@ -114,13 +115,24 @@ void AuthenticationInApp::enableTotpCreation() {
 
   m_listener->enableTotpCreation();
 }
+
+void AuthenticationInApp::allowUpperCaseEmailAddress() {
+  Q_ASSERT(m_listener);
+  m_listener->allowUpperCaseEmailAddress();
+}
+
+void AuthenticationInApp::enableAccountDeletion() {
+  Q_ASSERT(m_state == StateSignIn || m_state == StateSignUp);
+  Q_ASSERT(m_listener);
+
+  m_listener->enableAccountDeletion();
+}
 #endif
 
-void AuthenticationInApp::setUnblockCodeAndContinue(
-    const QString& unblockCode) {
+void AuthenticationInApp::verifyUnblockCode(const QString& unblockCode) {
   Q_ASSERT(m_state == StateUnblockCodeNeeded);
   Q_ASSERT(m_listener);
-  m_listener->setUnblockCodeAndContinue(unblockCode);
+  m_listener->verifyUnblockCode(unblockCode);
 }
 
 void AuthenticationInApp::resendUnblockCodeEmail() {
@@ -145,6 +157,13 @@ void AuthenticationInApp::verifySessionTotpCode(const QString& code) {
   Q_ASSERT(m_state == StateVerificationSessionByTotpNeeded);
   Q_ASSERT(m_listener);
   m_listener->verifySessionTotpCode(code);
+}
+
+void AuthenticationInApp::requestEmailAddressChange(
+    AuthenticationInAppListener* listener) {
+  Q_ASSERT(listener);
+  Q_ASSERT(m_listener == listener);
+  emit emailAddressChanged();
 }
 
 void AuthenticationInApp::requestState(State state,

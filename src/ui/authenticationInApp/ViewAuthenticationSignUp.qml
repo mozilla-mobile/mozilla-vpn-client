@@ -87,8 +87,9 @@ VPNInAppAuthenticationBase {
 
         VPNButton {
             id: createAccountButton
-            enabled: authSignUp.signUpEnabled
+            enabled: authSignUp.signUpEnabled && VPNAuthInApp.state === VPNAuthInApp.StateSignUp
             text: "Create account"
+            loaderVisible: VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
             Layout.fillWidth: true
 
             onClicked: {

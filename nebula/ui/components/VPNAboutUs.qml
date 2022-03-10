@@ -232,7 +232,7 @@ Item {
         id: updateAvailablePopup
         anchors.centerIn: parent
         maxWidth: VPNTheme.theme.desktopAppWidth
-        contentItem: ColumnLayout {
+        _popupContent: ColumnLayout {
 
             Item {
                 // Main Image
@@ -240,7 +240,7 @@ Item {
                 Layout.preferredHeight: 90
                 Layout.preferredWidth: 90
                 Layout.bottomMargin: VPNTheme.theme.listSpacing
-                Layout.topMargin: VPNTheme.theme.vSpacing*1.5
+
                 Image {
                     anchors.fill: parent
                     source:  "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
@@ -275,7 +275,6 @@ Item {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignBottom
                 Layout.topMargin: VPNTheme.theme.vSpacing
-                Layout.bottomMargin: VPNTheme.theme.vSpacing * 0.5
                 text: VPNl18n.UpdateButtonActionOnUpdate
                 onClicked: {
                     updateAvailablePopup.close()
@@ -304,7 +303,7 @@ Item {
         id: noUpdateAvailablePopup
         anchors.centerIn: parent
         maxWidth: VPNTheme.theme.desktopAppWidth
-        contentItem: ColumnLayout {
+        _popupContent: ColumnLayout {
 
             Item {
                 // Main Image
@@ -312,7 +311,7 @@ Item {
                 Layout.preferredHeight: 90
                 Layout.preferredWidth: 90
                 Layout.bottomMargin: VPNTheme.theme.listSpacing
-                Layout.topMargin: VPNTheme.theme.vSpacing*1.5
+
                 Image {
                     anchors.fill: parent
                     source: "qrc:/nebula/resources/updateStatusUpToDate.svg"
@@ -348,7 +347,6 @@ Item {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignBottom
                 Layout.topMargin: VPNTheme.theme.vSpacing
-                Layout.bottomMargin: VPNTheme.theme.vSpacing * 0.5
                 text: VPNl18n.UpdateButtonActionNoUpdate
                 onClicked: {
                     noUpdateAvailablePopup.close();

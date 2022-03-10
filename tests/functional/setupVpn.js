@@ -26,7 +26,7 @@ let stdErr = '';
 exports.mochaHooks = {
   beforeAll() {
     // Check VPN app exists. If not, bail.
-    exec(`${app} --version`, (error, stdout, stderr) => {
+    exec(`"${app}" --version`, (error, stdout, stderr) => {
       if (error) {
         console.error(`Could not run "${app}".`);
         console.error('Have you set MVPN_BIN in .env or environment?');

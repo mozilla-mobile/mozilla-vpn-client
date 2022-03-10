@@ -16,11 +16,7 @@ ColumnLayout {
     property var header: ""
     property string searchBarPlaceholder: ""
 
-    anchors.left: parent.left
-    anchors.right:parent.right
-    anchors.leftMargin: VPNTheme.theme.vSpacing
-    anchors.rightMargin: VPNTheme.theme.vSpacing
-    spacing: VPNTheme.theme.vSpacing
+    spacing: VPNTheme.theme.windowMargin
 
     // Ensure the inital presentation of the component is consistent with the
     // "hidden" state. This prevents the transition from firing on the
@@ -101,7 +97,6 @@ ColumnLayout {
         color: VPNTheme.theme.fontColorDark
         horizontalAlignment: Text.AlignLeft
         Layout.alignment: Qt.AlignLeft
-        Layout.topMargin: 4
         verticalAlignment: Text.AlignVCenter
         lineHeight: VPNTheme.theme.vSpacing
         lineHeightMode: Text.FixedHeight
@@ -111,7 +106,7 @@ ColumnLayout {
 
     VPNSearchBar {
         id: filterInput
-        Layout.fillWidth: true
+        Layout.preferredWidth: parent.width
         Layout.preferredHeight: VPNTheme.theme.rowHeight
         onTextChanged: text => {
             model.invalidate();
@@ -131,13 +126,10 @@ ColumnLayout {
         }
     }
 
-    ColumnLayout {
-        spacing: VPNTheme.theme.windowMargin / 2
-
-        VPNVerticalSpacer {
-            Layout.preferredHeight: 1
-        }
-
+    Column {
+        spacing: VPNTheme.theme.windowMargin
+        Layout.fillHeight: false
+        Layout.topMargin: VPNTheme.theme.windowMargin / 2
         Repeater {
             id: applist
             model: model
@@ -152,31 +144,30 @@ ColumnLayout {
                 Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
             }
         }
-        VPNButton {
-            text: ""
-            Layout.fillWidth: true
-            onClicked: VPNAppPermissions.openFilePicker()
-            visible: Qt.platform.os === "windows"
-            contentItem: Text {
-                // for accessibility
-                text: addApplication
-                color: "transparent"
-            }
+    }
 
-            RowLayout {
-                anchors.centerIn: parent
-                VPNIcon {
-                    source: "qrc:/nebula/resources/plus.svg"
-                    sourceSize.height: VPNTheme.theme.windowMargin
-                    sourceSize.width: VPNTheme.theme.windowMargin
-                }
-                VPNBoldLabel {
-                    text: addApplication
-                    color: "white"
-                }
+    VPNButton {
+        text: ""
+        Layout.fillWidth: true
+        onClicked: VPNAppPermissions.openFilePicker()
+        visible: Qt.platform.os === "windows"
+        contentItem: Text {
+            // for accessibility
+            text: addApplication
+            color: "transparent"
+        }
+
+        RowLayout {
+            anchors.centerIn: parent
+            VPNIcon {
+                source: "qrc:/nebula/resources/plus.svg"
+                sourceSize.height: VPNTheme.theme.windowMargin
+                sourceSize.width: VPNTheme.theme.windowMargin
+            }
+            VPNBoldLabel {
+                text: addApplication
+                color: "white"
             }
         }
     }
-
-
 }

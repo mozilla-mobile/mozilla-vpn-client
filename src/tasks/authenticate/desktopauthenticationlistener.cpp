@@ -48,8 +48,7 @@ void DesktopAuthenticationListener::start(Task* task,
 
   Q_UNUSED(task);
 
-  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser,
-                                   codeChallenge, codeChallengeMethod,
+  QUrl url(createAuthenticationUrl(codeChallenge, codeChallengeMethod,
                                    emailAddress));
 
   if (!m_server->isListening()) {

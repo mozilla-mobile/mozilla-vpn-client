@@ -5,6 +5,12 @@
 #include "cryptosettings.h"
 #include "logger.h"
 
+#ifdef MVPN_IOS
+#  include "../ios/iosutils.h"
+#else
+#  include "macosutils.h"
+#endif
+
 #include <QRandomGenerator>
 
 constexpr const NSString* SERVICE = @"Mozilla VPN";
@@ -26,7 +32,12 @@ void CryptoSettings::resetKey() {
 
   NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 
-  NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
+#ifdef MVPN_IOS
+  NSString* appId = IOSUtils::appId();
+#else
+  NSString* appId = MacOSUtils::appId();
+#endif
+  Q_ASSERT(appId);
 
   NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
 
@@ -52,7 +63,13 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
 
     NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 
-    NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
+#ifdef MVPN_IOS
+    NSString* appId = IOSUtils::appId();
+#else
+    NSString* appId = MacOSUtils::appId();
+#endif
+    Q_ASSERT(appId);
+
     NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
 
     [query setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];

@@ -5,6 +5,12 @@
 QT += testlib
 QT += network
 
+CONFIG += c++1z
+
+macos {
+    CONFIG -= app_bundle
+}
+
 TEMPLATE = app
 TARGET = tests
 
@@ -25,8 +31,3 @@ OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
-
-coverage {
-    QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
-    QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
-}

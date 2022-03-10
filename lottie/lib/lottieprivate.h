@@ -11,6 +11,7 @@
 #include <QtQuick/QQuickItem>
 
 class QJSEngine;
+class LottiePrivateWindow;
 
 class LottiePrivate : public QQuickItem {
   Q_OBJECT
@@ -122,6 +123,8 @@ class LottiePrivate : public QQuickItem {
   QJSValue m_lottieModule;
   QJSValue m_lottieInstance;
   QJSValue m_animation;
+
+  LottiePrivateWindow* m_window = nullptr;
 };
 
 #endif  // LOTTIEPRIVATE_H

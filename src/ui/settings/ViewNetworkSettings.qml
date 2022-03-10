@@ -46,7 +46,6 @@ Item {
 
             anchors {
                 left: parent.left
-                leftMargin: VPNTheme.theme.windowMargin / 2
                 right: parent.right
                 top: parent.top
                 topMargin: VPNTheme.theme.windowMargin
@@ -54,7 +53,13 @@ Item {
             spacing: VPNTheme.theme.windowMargin
 
             VPNContextualAlerts {
-                anchors.leftMargin: VPNTheme.theme.windowMargin
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: VPNTheme.theme.windowMargin
+                    rightMargin: VPNTheme.theme.windowMargin
+                }
+
                 messages: [
                     {
                         type: "warning",

@@ -14,9 +14,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QEventLoop>
+#include <QProcess>
+#include <QProcessEnvironment>
 #include <QTest>
-
-#include <liboath/oath.h>
 
 constexpr const char* PASSWORD = "12345678";
 
@@ -61,6 +61,8 @@ void TestSignUpAndIn::signUp() {
     }
   });
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
   QCOMPARE(aia->state(), AuthenticationInApp::StateStart);
 
   QString emailAddress(m_emailAccount);
@@ -68,6 +70,8 @@ void TestSignUpAndIn::signUp() {
 
   // Account
   aia->checkAccount(emailAddress);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
+
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {
     QVERIFY(aia->state() != AuthenticationInApp::StateSignIn);
     if (aia->state() == AuthenticationInApp::StateSignUp) {
@@ -75,6 +79,8 @@ void TestSignUpAndIn::signUp() {
     }
   });
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
   QCOMPARE(aia->state(), AuthenticationInApp::StateSignUp);
 
   // Password
@@ -86,6 +92,7 @@ void TestSignUpAndIn::signUp() {
 
   // Sign-up
   aia->signUp();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSigningUp);
 
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {
     if (aia->state() ==
@@ -94,13 +101,33 @@ void TestSignUpAndIn::signUp() {
     }
   });
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
   QCOMPARE(aia->state(),
            AuthenticationInApp::StateVerificationSessionByEmailNeeded);
 
-  // Email verification
+  // Email verification - with invalid code
+  aia->verifySessionEmailCode("000000");
+  QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
+
+  connect(aia, &AuthenticationInApp::errorOccurred,
+          [&](AuthenticationInApp::ErrorType error) {
+            if (error ==
+                AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode) {
+              loop.exit();
+            }
+          });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(),
+           AuthenticationInApp::StateVerificationSessionByEmailNeeded);
+
+  // Email verification - with valid code
   QString code = fetchSessionCode();
   QVERIFY(!code.isEmpty());
   aia->verifySessionEmailCode(code);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
 
   QUrl finalUrl;
   connect(aia, &AuthenticationInApp::unitTestFinalUrl,
@@ -115,6 +142,7 @@ void TestSignUpAndIn::signUp() {
   }
 
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
 
   // The account is not active yet. So, let's check the final URL.
   QVERIFY(
@@ -138,45 +166,83 @@ void TestSignUpAndIn::signIn() {
 
   EventLoop loop;
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {
-    if (aia->state() == AuthenticationInApp::StateUnblockCodeNeeded) {
-      // We do not receive the email each time.
-      AuthenticationInApp::instance()->resendUnblockCodeEmail();
-
-      QString code = fetchUnblockCode();
-      QVERIFY(!code.isEmpty());
-      aia->setUnblockCodeAndContinue(code);
-      return;
-    }
-
     if (aia->state() == AuthenticationInApp::StateStart) {
       loop.exit();
     }
   });
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
   QCOMPARE(aia->state(), AuthenticationInApp::StateStart);
 
   QString emailAddress(m_emailAccount);
   emailAddress.append("@restmail.net");
 
+  // Just to make things more complex, let's pass an upper-case email address.
+  aia->allowUpperCaseEmailAddress();
+  emailAddress[0] = emailAddress[0].toUpper();
+
   // Account
   aia->checkAccount(emailAddress);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
+
   connect(aia, &AuthenticationInApp::stateChanged, [&]() {
     if (aia->state() == AuthenticationInApp::StateSignIn) {
       loop.exit();
     }
   });
+
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
   QCOMPARE(aia->state(), AuthenticationInApp::StateSignIn);
 
   // Password
   aia->setPassword(PASSWORD);
 
+  // Let's delete the account the end of the flow.
+  aia->enableAccountDeletion();
+
   // Sign-in
   aia->signIn();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSigningIn);
 
+  // The next step can be tricky: totp, or unblocked code, or success
   if (m_totpCreation) {
     waitForTotpCodes();
   }
+
+  bool wrongUnblockCodeSent = false;
+
+  connect(aia, &AuthenticationInApp::errorOccurred,
+          [this](AuthenticationInApp::ErrorType error) {
+            if (error == AuthenticationInApp::ErrorInvalidUnblockCode) {
+              qDebug() << "Invalid unblock code. Sending a good one";
+
+              AuthenticationInApp* aia = AuthenticationInApp::instance();
+              QCOMPARE(aia->state(),
+                       AuthenticationInApp::StateUnblockCodeNeeded);
+
+              // We do not receive the email each time.
+              aia->resendUnblockCodeEmail();
+
+              QString code = fetchUnblockCode();
+              QVERIFY(!code.isEmpty());
+              aia->verifyUnblockCode(code);
+              QCOMPARE(aia->state(),
+                       AuthenticationInApp::StateVerifyingUnblockCode);
+            }
+          });
+
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (!wrongUnblockCodeSent &&
+        aia->state() == AuthenticationInApp::StateUnblockCodeNeeded) {
+      aia->verifyUnblockCode("000000");
+      QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingUnblockCode);
+
+      wrongUnblockCodeSent = true;
+    }
+  });
 
   QUrl finalUrl;
   connect(aia, &AuthenticationInApp::unitTestFinalUrl,
@@ -187,6 +253,7 @@ void TestSignUpAndIn::signIn() {
   });
 
   loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
 
   // The account is not active yet. So, let's check the final URL.
   QVERIFY(
@@ -215,18 +282,32 @@ void TestSignUpAndIn::waitForTotpCodes() {
             if (error == AuthenticationInApp::ErrorInvalidTotpCode) {
               qDebug() << "Invalid code. Let's send the right one";
 
-              QCOMPARE(oath_init(), OATH_OK);
+              AuthenticationInApp* aia = AuthenticationInApp::instance();
+              QCOMPARE(
+                  aia->state(),
+                  AuthenticationInApp::StateVerificationSessionByTotpNeeded);
 
-              char otp[/* length + 1 */ 7] = {};
-              QCOMPARE(oath_totp_generate(m_totpSecret.data(),
-                                          m_totpSecret.length(), time(nullptr),
-                                          OATH_TOTP_DEFAULT_TIME_STEP_SIZE,
-                                          OATH_TOTP_DEFAULT_START_TIME, 6, otp),
-                       OATH_OK);
+              QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+              QVERIFY(pe.contains("MVPN_OATHTOOL"));
+              QString oathtool = pe.value("MVPN_OATHTOOL");
+
+              QString otp;
+              {
+                QProcess process;
+                process.start(oathtool, QStringList{m_totpSecret});
+                QVERIFY(process.waitForStarted());
+
+                process.closeWriteChannel();
+                QVERIFY(process.waitForFinished());
+
+                otp = process.readAll().trimmed();
+              }
 
               qDebug() << "Code:" << otp;
-              AuthenticationInApp* aia = AuthenticationInApp::instance();
               aia->verifySessionTotpCode(otp);
+              QCOMPARE(aia->state(),
+                       AuthenticationInApp::StateVerifyingSessionTotpCode);
+              m_sendWrongTotpCode = true;
             }
           });
 
@@ -235,24 +316,22 @@ void TestSignUpAndIn::waitForTotpCodes() {
             qDebug() << "Codes received";
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
-            QByteArray totpSecret = obj["secret"].toString().toLocal8Bit();
-
-            char* secret = nullptr;
-            size_t secretLength = 0;
-            QCOMPARE(oath_base32_decode(totpSecret.data(), totpSecret.length(),
-                                        &secret, &secretLength),
-                     OATH_OK);
-
-            m_totpSecret = QByteArray(secret, secretLength);
+            m_totpSecret = obj["secret"].toString();
             QVERIFY(!m_totpSecret.isEmpty());
           });
 
-  connect(aia, &AuthenticationInApp::stateChanged, []() {
+  connect(aia, &AuthenticationInApp::stateChanged, [this]() {
     AuthenticationInApp* aia = AuthenticationInApp::instance();
-    if (aia->state() ==
-        AuthenticationInApp::StateVerificationSessionByTotpNeeded) {
+    qDebug() << "Send wrong code:" << m_sendWrongTotpCode;
+
+    if (m_sendWrongTotpCode &&
+        aia->state() ==
+            AuthenticationInApp::StateVerificationSessionByTotpNeeded) {
+      m_sendWrongTotpCode = false;
       qDebug() << "Code required. Let's write a wrong code first.";
       aia->verifySessionTotpCode("123456");
+      QCOMPARE(aia->state(),
+               AuthenticationInApp::StateVerifyingSessionTotpCode);
     }
   });
 }

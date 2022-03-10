@@ -438,16 +438,6 @@ SETTING_BOOL(nativeAndroidDataMigrated,     // getter
 )
 #endif
 
-#if defined(MVPN_WINDOWS)
-SETTING_BOOL(nativeWindowsDataMigrated,     // getter
-             setNativeWindowsDataMigrated,  // setter
-             hasNativeWindowsDataMigrated,  // has
-             "nativeWindowsDataMigrated",   // key
-             false,                         // default value
-             false                          // remove when reset
-)
-#endif
-
 #if defined(MVPN_IOS)
 SETTING_BOOL(nativeIOSDataMigrated,     // getter
              setNativeIOSDataMigrated,  // setter

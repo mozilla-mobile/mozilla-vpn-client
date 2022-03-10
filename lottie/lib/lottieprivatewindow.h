@@ -38,6 +38,9 @@ class LottiePrivateWindow final : public QObject {
   QJSValue lottie() const;
   void setLottie(QJSValue lottie);
 
+  void suspend();
+  void resume();
+
  signals:
   void lottieChanged();
 
@@ -50,15 +53,19 @@ class LottiePrivateWindow final : public QObject {
   struct TimerData {
     TimerData() = default;
 
-    TimerData(QTimer* timer, QJSValue callback, int timerId, bool singleShot)
+    TimerData(QTimer* timer, QJSValue callback, int timerId, int interval,
+              bool singleShot)
         : m_timer(timer),
           m_callback(callback),
           m_timerId(timerId),
+          m_interval(interval),
           m_singleShot(singleShot) {}
 
     QTimer* m_timer = nullptr;
     QJSValue m_callback;
     int m_timerId = 0;
+    int m_interval = 0;
+    int m_remainingInterval = -1;
     bool m_singleShot = true;
   };
 

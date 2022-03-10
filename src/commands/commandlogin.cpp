@@ -88,11 +88,17 @@ int CommandLogin::run(QStringList& tokens) {
             AuthenticationInApp::instance()->checkAccount(email);
           } break;
 
+          case AuthenticationInApp::StateCheckingAccount:
+            break;
+
           case AuthenticationInApp::StateSignIn: {
             QString password = getPassword("Password:");
             AuthenticationInApp::instance()->setPassword(password);
             AuthenticationInApp::instance()->signIn();
           } break;
+
+          case AuthenticationInApp::StateSigningIn:
+            break;
 
           case AuthenticationInApp::StateSignUp: {
             QTextStream stream(stdout);
@@ -100,10 +106,16 @@ int CommandLogin::run(QStringList& tokens) {
             loop.exit();
           } break;
 
+          case AuthenticationInApp::StateSigningUp:
+            break;
+
           case AuthenticationInApp::StateUnblockCodeNeeded: {
             QString code = getInput("Check your email. Unblock code:");
-            AuthenticationInApp::instance()->setUnblockCodeAndContinue(code);
+            AuthenticationInApp::instance()->verifyUnblockCode(code);
           } break;
+
+          case AuthenticationInApp::StateVerifyingUnblockCode:
+            break;
 
           case AuthenticationInApp::StateVerificationSessionByEmailNeeded: {
             AuthenticationInApp::instance()
@@ -113,11 +125,17 @@ int CommandLogin::run(QStringList& tokens) {
             AuthenticationInApp::instance()->verifySessionEmailCode(code);
           } break;
 
+          case AuthenticationInApp::StateVerifyingSessionEmailCode:
+            break;
+
           case AuthenticationInApp::StateVerificationSessionByTotpNeeded: {
             QString code =
                 getInput("Session verification by TOTP needed. Code:");
             AuthenticationInApp::instance()->verifySessionTotpCode(code);
           } break;
+
+          case AuthenticationInApp::StateVerifyingSessionTotpCode:
+            break;
 
           case AuthenticationInApp::StateFallbackInBrowser: {
             QTextStream stream(stdout);
@@ -144,8 +162,17 @@ int CommandLogin::run(QStringList& tokens) {
               case AuthenticationInApp::ErrorIncorrectPassword:
                 stream << "Incorrect password!" << Qt::endl;
                 break;
+              case AuthenticationInApp::ErrorInvalidUnblockCode:
+                stream << "Invalid unblock code!" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorInvalidEmailAddress:
+                stream << "Invalid email address" << Qt::endl;
+                break;
               case AuthenticationInApp::ErrorInvalidEmailCode:
                 stream << "Invalid email code!" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode:
+                stream << "Invalid or expired verification code!" << Qt::endl;
                 break;
               case AuthenticationInApp::ErrorEmailTypeNotSupported:
                 stream << "Email type not supported" << Qt::endl;

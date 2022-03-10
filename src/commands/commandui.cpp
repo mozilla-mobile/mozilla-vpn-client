@@ -13,9 +13,10 @@
 #include "features/featureinapppurchase.h"
 #include "filterproxymodel.h"
 #include "fontloader.h"
-#include "l18nstrings.h"
 #include "iaphandler.h"
-#include "inspector/inspectorwebsocketserver.h"
+#include "imageproviderfactory.h"
+#include "inspector/inspectorhandler.h"
+#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -24,8 +25,8 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "imageproviderfactory.h"
 #include "theme.h"
+#include "tutorial.h"
 
 #include <glean.h>
 #include <lottie.h>
@@ -56,9 +57,13 @@
 #endif
 
 #ifdef MVPN_WINDOWS
+#  include "crashreporter/crashclient.h"
 #  include "eventlistener.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #  include "platforms/windows/windowsappimageprovider.h"
+
+#  include <iostream>
+#  include <windows.h>
 #endif
 
 #ifdef MVPN_WASM
@@ -129,6 +134,33 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
+    // If there is another instance, the execution terminates here.
+    if (!EventListener::checkOtherInstances()) {
+      return 0;
+    }
+
+    // This class receives communications from other instances.
+    EventListener eventListener;
+#endif
+
+#ifdef MVPN_WINDOWS
+#  ifdef MVPN_DEBUG
+    // Allocate a console to view log output in debug mode on windows
+    if (AllocConsole()) {
+      FILE* unusedFile;
+      freopen_s(&unusedFile, "CONOUT$", "w", stdout);
+      freopen_s(&unusedFile, "CONOUT$", "w", stderr);
+      std::cout.clear();
+      std::clog.clear();
+      std::cerr.clear();
+    }
+#  endif
+
+    CrashClient::instance().start(CommandLineParser::argc(),
+                                  CommandLineParser::argv());
+#endif
+
 #ifdef MVPN_DEBUG
     // This enables the qt-creator qml debugger on debug builds.:
     // Go to QtCreator: Debug->Start Debugging-> Attach to QML port
@@ -146,6 +178,7 @@ int CommandUI::run(QStringList& tokens) {
       logger.error() << "Failed to start QML Debugging";
     }
 #endif
+
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
@@ -156,16 +189,6 @@ int CommandUI::run(QStringList& tokens) {
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
-
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
-    // If there is another instance, the execution terminates here.
-    if (!EventListener::checkOtherInstances()) {
-      return 0;
-    }
-
-    // This class receives communications from other instances.
-    EventListener eventListener;
-#endif
 
 #ifndef Q_OS_WIN
     // Signal handling for a proper shutdown.
@@ -204,6 +227,7 @@ int CommandUI::run(QStringList& tokens) {
       return 1;
     }
 #endif
+
     QQuickImageProvider* provider = ImageProviderFactory::create(qApp);
     if (provider) {
       engine->addImageProvider(QString("app"), provider);
@@ -445,6 +469,14 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNTutorial",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = Tutorial::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
     qmlRegisterType<FilterProxyModel>("Mozilla.VPN", 1, 0,
                                       "VPNFilterProxyModel");
 
@@ -513,13 +545,7 @@ int CommandUI::run(QStringList& tokens) {
       MozillaVPN::instance()->serverCountryModel()->retranslate();
     });
 
-    if (!Constants::inProduction()) {
-      InspectorWebSocketServer* inspectWebSocketServer =
-          new InspectorWebSocketServer(qApp);
-      QObject::connect(vpn.controller(), &Controller::readyToQuit,
-                       inspectWebSocketServer,
-                       &InspectorWebSocketServer::close);
-    }
+    InspectorHandler::initialize();
 
 #ifdef MVPN_WASM
     WasmWindowController wasmWindowController;
