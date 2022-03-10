@@ -32,7 +32,7 @@ void BenchmarkTaskPing::handleState(BenchmarkTask::State state) {
 
   if (state == BenchmarkTask::StateActive) {
     connect(MozillaVPN::instance()->connectionHealth(),
-            &ConnectionHealth::pingChanged, this, [&] {
+            &ConnectionHealth::pingReceived, this, [&] {
               logger.debug() << "Ping changed";
 
               m_pingLatencyAcc +=
