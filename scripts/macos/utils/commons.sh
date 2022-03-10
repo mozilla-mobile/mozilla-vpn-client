@@ -49,7 +49,7 @@ _compile() {
 }
 
 _grcov() {    
-  grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing -o "$1"
+  grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1"
 }
 
 # - name: Upload coverage to Codecov
