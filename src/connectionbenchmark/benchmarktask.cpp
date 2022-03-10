@@ -6,8 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "taskscheduler.h"
-
-#include <QTimer>
+#include "timersingleshot.h"
 
 namespace {
 Logger logger(LOG_MAIN, "BenchmarkTask");
@@ -40,7 +39,7 @@ void BenchmarkTask::run() {
   setState(StateActive);
   m_elapsedTimer.start();
 
-  QTimer::singleShot(3000, this, &BenchmarkTask::stop);
+  TimerSingleShot::create(this, m_maxExecutionTime, [this]() { stop(); });
 }
 
 void BenchmarkTask::stop() {
