@@ -69,19 +69,23 @@ void ConnectionBenchmark::start() {
           &ConnectionBenchmark::handleStabilityChange);
 
   // Create ping benchmark
-  m_pingBenchmarkTask = new BenchmarkTaskPing();
-  connect(m_pingBenchmarkTask, &BenchmarkTaskPing::finished, this,
+  BenchmarkTaskPing* pingTask = new BenchmarkTaskPing();
+  connect(pingTask, &BenchmarkTaskPing::finished, this,
           &ConnectionBenchmark::pingBenchmarked);
-  m_benchmarkTasks.append(m_pingBenchmarkTask);
-  TaskScheduler::scheduleTask(m_pingBenchmarkTask);
+  connect(pingTask, &Task::completed, this,
+          [this, pingTask]() { m_benchmarkTasks.removeOne(pingTask); });
+  m_benchmarkTasks.append(pingTask);
+  TaskScheduler::scheduleTask(pingTask);
 
   // Create download benchmark
-  m_downloadBenchmarkTask =
+  BenchmarkTaskDownload* downloadTask =
       new BenchmarkTaskDownload(Constants::BENCHMARK_DOWNLOAD_URL);
-  connect(m_downloadBenchmarkTask, &BenchmarkTaskDownload::finished, this,
+  connect(downloadTask, &BenchmarkTaskDownload::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
-  m_benchmarkTasks.append(m_downloadBenchmarkTask);
-  TaskScheduler::scheduleTask(m_downloadBenchmarkTask);
+  connect(downloadTask, &Task::completed, this,
+          [this, downloadTask]() { m_benchmarkTasks.removeOne(downloadTask); });
+  m_benchmarkTasks.append(downloadTask);
+  TaskScheduler::scheduleTask(downloadTask);
 
   setState(StateRunning);
 }
