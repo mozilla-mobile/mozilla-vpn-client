@@ -52,18 +52,6 @@ _grcov() {
   grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1"
 }
 
-# - name: Upload coverage to Codecov
-#         uses: codecov/codecov-action@v2
-#         with:              
-#           directory: .obj/tests.build/Release/tests.build/Objects-normal/x86_64/                               
-#           flags: unit_tests
-#           name: codecov-poc
-#           files: final.lcov
-#           verbose: true
-# grcov .obj  -s . -t lcov --branch -o "$1"
-# grcov tests/unit/.obj/tests.build -t lcov > lcovunit.info
-# grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/ -t lcov > "$1" ---- works at generating cov info files
-
 # Public methods
 
 ## Unit-tests
