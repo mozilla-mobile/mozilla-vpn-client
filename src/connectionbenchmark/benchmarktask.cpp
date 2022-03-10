@@ -23,7 +23,7 @@ void BenchmarkTask::setState(State state) {
   logger.debug() << "Set state" << state;
 
   m_state = state;
-  stateChanged(m_state);
+  emit stateChanged(m_state);
 }
 
 void BenchmarkTask::run() {
