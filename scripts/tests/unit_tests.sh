@@ -83,8 +83,7 @@ if [[ "$GRCOV_FILENAME" ]]; then
   utest_grcov_unit unit_"$GRCOV_FILENAME" || die
 fi
 
-printn Y "Cleaning the existing unit project... "
-utest_cleanup_unit || die "Failed"
+
 
 print Y "Compile the auth-unit-tests..."
 utest_compile_auth || die "Failed"
@@ -97,8 +96,7 @@ if [[ "$GRCOV_FILENAME" ]]; then
   utest_grcov_auth auth_"$GRCOV_FILENAME" || die
 fi
 
-printn Y "Cleaning the existing auth project... "
-utest_cleanup_auth || die "Failed"
+
 
 print Y "Compile the native-messaging-unit-tests..."
 utest_compile_nativemessaging || die "Failed"
@@ -106,20 +104,18 @@ utest_compile_nativemessaging || die "Failed"
 print Y "Running the native messaging unit-tests..."
 utest_run_nativemessaging || die "Failed"
 
-if [[ "$GRCOV_FILENAME" ]]; then
-  printn Y "Generating temp coverage file for native messaging unit tests..."
-  utest_grcov_nativemessaging nativemessaging_"$GRCOV_FILENAME" || die
-fi
-
-printn Y "Cleaning the existing native messaging project... "
-utest_cleanup_nativemessaging || die "Failed"
-
 printn Y "About to check if file exists"
 FILE=nativemessaging_"$GRCOV_FILENAME"
 if test -f "$FILE"; then
     echo "$FILE exists. Rapha!"
     printn Y "$FILE exists. Rapha!"
 fi
+
+if [[ "$GRCOV_FILENAME" ]]; then
+  printn Y "Generating temp coverage file for native messaging unit tests..."
+  utest_grcov_nativemessaging nativemessaging_"$GRCOV_FILENAME" || die
+fi
+
 
 
 if [[ "$GRCOV_FILENAME" ]]; then  
@@ -130,6 +126,13 @@ if [[ "$GRCOV_FILENAME" ]]; then
   rm unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die
 fi
 
+printn Y "Cleaning the existing unit project... "
+utest_cleanup_unit || die "Failed"
 
+printn Y "Cleaning the existing auth project... "
+utest_cleanup_auth || die "Failed"
+
+printn Y "Cleaning the existing native messaging project... "
+utest_cleanup_nativemessaging || die "Failed"
 
 print G "All done!"
