@@ -119,7 +119,7 @@ jobs:
           MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh
 
   windows-unit-tests:
-    name: Run Unit tests on Windows Qt5
+    name: Run Unit tests on Windows Qt6
     runs-on: windows-latest
 
     steps:
@@ -139,16 +139,14 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_windows
           cd qt_static_windows
-          cat x* > qt_static.tar.bz2
+          cat qt6* > qt_static.tar.bz2
           tar xf qt_static.tar.bz2
           tar xf msm.tar.gz
           mkdir /c/MozillaVPNBuild
           cp -r * /c/MozillaVPNBuild
           cd ..
-          cp /c/MozillaVPNBuild/bin/libssl-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/bin/libcrypto-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/bin/libEGL.dll .
-          cp /c/MozillaVPNBuild/bin/libGLESv2.dll .
+          cp /c/MozillaVPNBuild/SSL/bin/libssl-1_1-x64.dll .
+          cp /c/MozillaVPNBuild/SSL/bin/libcrypto-1_1-x64.dll .
           cp /c/MozillaVPNBuild/*.msm .
 
       - name: Add msvc dev commands to PATH
