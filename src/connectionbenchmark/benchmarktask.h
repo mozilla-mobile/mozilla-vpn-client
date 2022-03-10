@@ -8,7 +8,6 @@
 #include "task.h"
 
 #include <QElapsedTimer>
-#include <QObject>
 
 class BenchmarkTask : public Task {
   Q_OBJECT

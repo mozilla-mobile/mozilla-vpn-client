@@ -6,9 +6,6 @@
 #define BENCHMARKTASKPING_H
 
 #include "benchmarktask.h"
-#include "networkrequest.h"
-
-#include <QObject>
 
 class BenchmarkTaskPing : public BenchmarkTask {
   Q_OBJECT

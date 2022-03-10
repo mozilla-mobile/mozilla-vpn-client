@@ -6,12 +6,10 @@
 #define BENCHMARKTASKDOWNLOAD_H
 
 #include "benchmarktask.h"
-#include "networkrequest.h"
 
-#include <QByteArray>
 #include <QNetworkReply>
-#include <QObject>
-#include <QString>
+
+class NetworkRequest;
 
 class BenchmarkTaskDownload : public BenchmarkTask {
   Q_OBJECT
