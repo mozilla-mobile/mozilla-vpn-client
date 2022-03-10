@@ -32,7 +32,6 @@ qmake \
   CONFIG+=production \
   QTPLUGIN+=qsvg \
   CONFIG-=static \
-  CONFIG+=balrog \
   MVPN_MACOS=1 \
   src/src.pro
 ruby scripts/macos/utils/xcode_patcher.rb \
