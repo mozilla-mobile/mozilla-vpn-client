@@ -50,6 +50,7 @@ HEADERS += \
     ../../src/constants.h \
     ../../src/controller.h \
     ../../src/curve25519.h \
+    ../../src/dnspingsender.h \
     ../../src/errorhandler.h \
     ../../src/featurelist.h \
     ../../src/inspector/inspectorhandler.h \
@@ -143,6 +144,7 @@ SOURCES += \
     ../../src/connectiondataholder.cpp \
     ../../src/constants.cpp \
     ../../src/curve25519.cpp \
+    ../../src/dnspingsender.cpp \
     ../../src/errorhandler.cpp \
     ../../src/featurelist.cpp \
     ../../src/hacl-star/Hacl_Chacha20.c \
