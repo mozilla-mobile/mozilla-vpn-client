@@ -450,3 +450,10 @@ inAppAuth:
   passwordInputPlaceholder: Enter password
   passwordInputLabel: Password
   invalidPasswordErrorMessage: Invalid password. Please try again
+  invalidCodeErrorMessage: Invalid code. Please try again
+  invalidEmailErrorMessage: Invalid email. Please try again
+  invalidEmailFormatErrorMessage: Email format not supported. Please try again
+  verifySecurityCodeButton: Verify
+  securityCodeLabel: Security code
+  securityCodeTitle: Enter security code
+  securityCodeSubtitle: Open your authentication app and enter the security code it provides.
