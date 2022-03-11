@@ -22,13 +22,12 @@ ColumnLayout {
         fillMode: Image.PreserveAspectFit
     }
 
-    VPNBoldLabel {
+    VPNMetropolisLabel {
         Layout.fillWidth: true
         Layout.leftMargin: VPNTheme.theme.vSpacingSmall
         Layout.rightMargin: VPNTheme.theme.windowMargin
 
         color: VPNTheme.colors.white
-        horizontalAlignment: Text.AlignHCenter
         font.pixelSize: VPNTheme.theme.fontSizeLarge
         text: VPNl18n.GenericErrorUnexpected
         width: parent.width - VPNTheme.theme.windowMargin
