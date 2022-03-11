@@ -26,7 +26,7 @@ class ConnectionBenchmark final : public QObject {
   ~ConnectionBenchmark();
 
   Q_INVOKABLE void start();
-  Q_INVOKABLE void stop();
+  Q_INVOKABLE void reset();
 
   enum State {
     StateInitial,
@@ -62,6 +62,7 @@ class ConnectionBenchmark final : public QObject {
   void handleStabilityChange();
   void setConnectionSpeed();
   void setState(State state);
+  void stop();
 
  private:
   QList<BenchmarkTask*> m_benchmarkTasks;

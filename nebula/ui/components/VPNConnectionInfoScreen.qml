@@ -85,7 +85,7 @@ Rectangle {
             VPNConnectionBenchmark.start();
         } else if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateRunning
             || VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateReady) {
-            VPNConnectionBenchmark.stop();
+            VPNConnectionBenchmark.reset();
         }
 
         timer.setTimeout(function() {

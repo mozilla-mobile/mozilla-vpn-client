@@ -93,21 +93,28 @@ void ConnectionBenchmark::start() {
 }
 
 void ConnectionBenchmark::stop() {
-  logger.debug() << "Stop benchmark";
+  logger.debug() << "Stop benchmarks";
 
-  if (m_state == StateRunning || m_state == StateError) {
-    Q_ASSERT(!m_benchmarkTasks.isEmpty());
-
+  if ((m_state == StateRunning || m_state == StateError) &&
+      !m_benchmarkTasks.isEmpty()) {
     for (BenchmarkTask* benchmark : m_benchmarkTasks) {
       benchmark->stop();
     }
 
     m_benchmarkTasks.clear();
   };
+}
 
-  if (m_state != StateError) {
-    setState(StateInitial);
-  }
+void ConnectionBenchmark::reset() {
+  logger.debug() << "Reset benchmarks";
+
+  stop();
+
+  m_connectionHealth = nullptr;
+  m_download = 0;
+  m_ping = 0;
+
+  setState(StateInitial);
 }
 
 void ConnectionBenchmark::downloadBenchmarked(quint64 bytesPerSecond,
