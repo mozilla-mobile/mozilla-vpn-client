@@ -464,6 +464,7 @@ inAppAuth:
   invalidCodeErrorMessage: Invalid code. Please try again
   invalidEmailErrorMessage: Invalid email. Please try again
   invalidEmailFormatErrorMessage: Email format not supported. Please try again
+  verificationCodeTitle: Enter verification code
   verificationCodeInputPlaceholder: Enter 6-digit code
   verifySecurityCodeButton: Verify
   resendCodeLink: Resend code
