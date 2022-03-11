@@ -51,6 +51,8 @@ void ConnectionBenchmark::setState(State state) {
 void ConnectionBenchmark::start() {
   logger.debug() << "Start connection benchmarking";
 
+  Q_ASSERT(m_state != StateRunning);
+
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
