@@ -26,13 +26,11 @@ void BenchmarkTaskPing::handleState(BenchmarkTask::State state) {
   logger.debug() << "Handle state" << state;
 
   if (state == BenchmarkTask::StateActive) {
-    connect(
-        MozillaVPN::instance()->connectionHealth(),
-        &ConnectionHealth::pingReceived, this, [&] {
-          logger.debug() << "Ping received";
-
-          pingReady();
-        });
+    connect(MozillaVPN::instance()->connectionHealth(),
+            &ConnectionHealth::pingReceived, this, [&] {
+              logger.debug() << "Ping received";
+              pingReady();
+            });
   } else if (state == BenchmarkTask::StateInactive) {
     pingReady();
   }
