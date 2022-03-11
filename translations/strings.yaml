@@ -443,25 +443,40 @@ mobileOnboarding:
   alreadyASubscriber: Already a subscriber?
 
 inAppAuth:
+  emailInputPlaceholder: Enter email
   changeEmailLink: Change email
   signInButton: Sign in
   signInSubtitle: Continue to Mozilla VPN by signing in with your Firefox account
+  createPasswordLabel: Create password
+  confirmPasswordLabel: Confirm password
   forgotPasswordLink: Forgot your password?
   passwordInputPlaceholder: Enter password
   passwordInputLabel: Password
+  passwordHintCharacterLength: Must be at least 8 characters
+  passwordHintEmailAddressAsPassword: Must not be your email address
+  passwordHintCommonPassword: Must not be a common password
+  passwordHintNotMatching: Passwords must match
+  productUpdateOptInDescription: I’d like to receive product update emails from Firefox.
+  createAccountButton: Create account
+  finishAccountCreationDescription: Finish creating your Firefox account to continue to Mozilla VPN
+  emailVerificationDescription: Open your email and enter the verification code it that was sent.
   invalidPasswordErrorMessage: Invalid password. Please try again
   invalidCodeErrorMessage: Invalid code. Please try again
   invalidEmailErrorMessage: Invalid email. Please try again
   invalidEmailFormatErrorMessage: Email format not supported. Please try again
+  verificationCodeInputPlaceholder: Enter 6-digit code
   verifySecurityCodeButton: Verify
+  resendCodeLink: Resend code
   securityCodeLabel: Security code
-  securityCodeTitle: Enter security code
+  securityCodeTitle: Enter security code  
   securityCodeSubtitle: Open your authentication app and enter the security code it provides.
   informationUsageDisclaimer: We only use your email to create your account or sign in. We will never sell it to a third party.
   dataCollectionDisclaimer: Learn more about what data Mozilla collects and how it's used
   signInFailedPopupTitle: Sign-in failed
   signInFailedPopupDescription: You’ve made too many attempts to sign in. You won’t be able to try again with this account for 15 minutes.
   problemSigningInTitle: Problem signing in...
-  problemSigningInDescription: Sorry, we were unable to sign you in to your account.
+  problemSigningInErrorMessage: Sorry, we were unable to sign you in to your account.
+  problemSendingEmailTitle: Problem sending email...
+  problemSendingEmailErrorMessage: Sorry, we were unable to send you a verification code.
   errorConfirmingSubscriptionTitle: Error confirming subscription...
   enterEmailAddressDescription: Enter your email address to continue using Mozilla VPN
