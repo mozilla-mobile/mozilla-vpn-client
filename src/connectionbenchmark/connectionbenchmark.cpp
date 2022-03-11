@@ -60,14 +60,13 @@ void ConnectionBenchmark::start() {
   Controller::State controllerState = controller->state();
   Q_ASSERT(controllerState == Controller::StateOn);
 
-  m_connectionHealth = vpn->connectionHealth();
-  if (m_connectionHealth->stability() == ConnectionHealth::NoSignal) {
+  if (vpn->connectionHealth()->stability() == ConnectionHealth::NoSignal) {
     handleStabilityChange();
   }
 
   connect(controller, &Controller::stateChanged, this,
           &ConnectionBenchmark::stop);
-  connect(m_connectionHealth, &ConnectionHealth::stabilityChanged, this,
+  connect(vpn->connectionHealth(), &ConnectionHealth::stabilityChanged, this,
           &ConnectionBenchmark::handleStabilityChange);
 
   // Create ping benchmark
@@ -110,7 +109,6 @@ void ConnectionBenchmark::reset() {
 
   stop();
 
-  m_connectionHealth = nullptr;
   m_download = 0;
   m_ping = 0;
 
@@ -142,7 +140,8 @@ void ConnectionBenchmark::pingBenchmarked(quint64 pingLatency) {
 void ConnectionBenchmark::handleStabilityChange() {
   logger.debug() << "Handle stability change";
 
-  if (m_connectionHealth->stability() == ConnectionHealth::NoSignal) {
+  if (MozillaVPN::instance()->connectionHealth()->stability() ==
+      ConnectionHealth::NoSignal) {
     setState(StateError);
     stop();
   };

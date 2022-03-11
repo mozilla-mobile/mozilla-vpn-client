@@ -66,7 +66,6 @@ class ConnectionBenchmark final : public QObject {
 
  private:
   QList<BenchmarkTask*> m_benchmarkTasks;
-  ConnectionHealth* m_connectionHealth = nullptr;
 
   State m_state = StateInitial;
   Speed m_speed = SpeedSlow;
