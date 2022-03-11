@@ -7,6 +7,8 @@
 #include "leakdetector.h"
 #include "windowscommons.h"
 
+#include <QtEndian>
+
 namespace {
 Logger logger({LOG_WINDOWS, LOG_NETWORKING}, "WindowsPingSender");
 }

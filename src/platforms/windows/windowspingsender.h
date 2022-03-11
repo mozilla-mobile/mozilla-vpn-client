@@ -38,7 +38,7 @@ class WindowsPingSender final : public PingSender {
   void pingEventReady();
 
  private:
-  QString m_source;
+  QHostAddress m_source;
   HANDLE m_handle = INVALID_HANDLE_VALUE;
   HANDLE m_event = INVALID_HANDLE_VALUE;
   QWinEventNotifier* m_notifier = nullptr;
