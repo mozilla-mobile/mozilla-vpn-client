@@ -79,7 +79,6 @@ Flickable {
         VPNCheckmarkList {
             id: checkmarkList
 
-            // TODO: Replace with localized string
             listHeader: VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedSlow
                 ? VPNl18n.ConnectionInfoListHeaderSlow
                 : VPNl18n.ConnectionInfoListHeaderDefault
@@ -118,7 +117,7 @@ Flickable {
 
             VPNConnectionInfoItem {
                 title: VPNl18n.ConnectionInfoLabelPing
-                subtitle: VPNConnectionBenchmark.ping
+                subtitle: VPNConnectionBenchmark.ping + " " + VPNl18n.ConnectionInfoUnitPing
                 iconPath: "qrc:/nebula/resources/connection-green.svg"
             }
 
