@@ -16,7 +16,7 @@ class BenchmarkTaskDownload final : public BenchmarkTask {
   Q_DISABLE_COPY_MOVE(BenchmarkTaskDownload)
 
  public:
-  BenchmarkTaskDownload(const QString& fileUrl);
+  explicit BenchmarkTaskDownload(const QString& fileUrl);
   ~BenchmarkTaskDownload();
 
  signals:

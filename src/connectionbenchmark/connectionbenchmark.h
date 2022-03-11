@@ -5,12 +5,12 @@
 #ifndef CONNECTIONBENCHMARK_H
 #define CONNECTIONBENCHMARK_H
 
-#include "benchmarktaskdownload.h"
-#include "benchmarktaskping.h"
-#include "connectionhealth.h"
+#include "benchmarktask.h"
 
 #include <QList>
 #include <QObject>
+
+class ConnectionHealth;
 
 class ConnectionBenchmark final : public QObject {
   Q_OBJECT;

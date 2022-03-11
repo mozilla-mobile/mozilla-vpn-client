@@ -14,7 +14,7 @@ class BenchmarkTask : public Task {
   Q_DISABLE_COPY_MOVE(BenchmarkTask)
 
  public:
-  BenchmarkTask(uint32_t maxExecutionTime);
+  explicit BenchmarkTask(uint32_t maxExecutionTime);
   virtual ~BenchmarkTask();
 
   void run() override;
