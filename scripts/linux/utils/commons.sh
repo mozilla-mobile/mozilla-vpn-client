@@ -21,7 +21,6 @@ _qmake() {
       CONFIG+=debug \
       QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage \
       QT+=svg \
-      CONFIG+=webextension \
       CONFIG+=AUTHTEST || die "Compilation failed"
 
     [ -f Makefile ] || die "Expected Makefile"
@@ -35,10 +34,6 @@ _compile() {
 # Public methods
 
 ## Unit tests
-
-utest_dependencies() {
-  echo "Nothing to do here"
-}
 
 utest_compile_unit() {
   _qmake tests/unit || die

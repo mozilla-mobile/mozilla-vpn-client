@@ -585,9 +585,9 @@ Item {
             topMargin: VPNTheme.theme.windowMargin / 2
         }
         accessibleName: box.connectionInfoScreenVisible
-            //% "Connection Information"
-            ? qsTrId("vpn.connectionInfo.close")
             //% "Close"
+            ? qsTrId("vpn.connectionInfo.close")
+            //% "Connection Information"
             : qsTrId("vpn.controller.info")
         Accessible.ignored: !connectionInfoToggleButton.visible
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground

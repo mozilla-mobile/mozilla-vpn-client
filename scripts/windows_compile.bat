@@ -30,24 +30,14 @@ if "%1" NEQ "" (
   if "%1" == "-h" SET SHOW_HELP=T
   if "%1" == "--help" SET SHOW_HELP=T
 
-  if "%1" NEQ "-t" (
-    if "%1" NEQ "--test" (
-      if "%1" NEQ "-w" (
-        if "%1" NEQ "--webextension" (
-          if "%1" NEQ "--debug" (
-             SET SHOW_HELP=T
-          )
-        )
-      )
-    )
+  if "%1" NEQ "--debug" (
+     SET SHOW_HELP=T
   )
 )
 
 if "%SHOW_HELP%" == "T" (
   ECHO "Options:"
   ECHO "  -h|--help            Help menu"
-  ECHO "  -t|--test            Test mode"
-  ECHO "  -w|--webextension    Enable the webExtension support"
   ECHO "  --debug               Build a debug version"
   EXIT 0
 )
@@ -59,14 +49,6 @@ IF "%BUILDDIR%" == "" (
    ECHO Using Build Directory %BUILDDIR%
 
 
-
-SET TEST_BUILD=F
-if "%1"== "-t" SET TEST_BUILD=T
-if "%1"== "--test" SET TEST_BUILD=T
-
-SET WEBEXTENSION_BUILD=F
-if "%1"== "-w" SET WEBEXTENSION_BUILD=T
-if "%1"== "--webextension" SET WEBEXTENSION_BUILD=T
 
 SET DEBUG_BUILD=F
 if "%1"== "--debug" SET DEBUG_BUILD=T
@@ -81,18 +63,6 @@ ECHO Extract version...
 FOR /F "tokens=2* delims==" %%A IN ('FINDSTR /IC:":VERSION" version.pri') DO call :SetVersion %%A
 
 SET FLAGS=BUILD_ID=%VERSION%
-
-if "%TEST_BUILD%" == "T" (
-  ECHO Test build enabled
-  SET FLAGS=%FLAGS% CONFIG+=DUMMY
-) else (
-  SET FLAGS=%FLAGS% CONFIG+=balrog
-)
-
-if "%WEBEXTENSION_BUILD%" == "T" (
-  ECHO Web-Extension support enabled
-  SET FLAGS=%FLAGS% CONFIG+=webextension
-)
 
 ECHO Checking required commands...
 CALL :CheckCommand git
@@ -122,21 +92,21 @@ ECHO BUILD_BUILD = %DEBUG_BUILD%
 
 IF %DEBUG_BUILD%==T (
   ECHO Generating Debug Build for the extension bridge
-  CD extension\bridge
+  pushd extension\bridge
 
-  cargo build --debug
+  cargo build
   IF %ERRORLEVEL% NEQ 0 (
     ECHO cargo failed for the extension!
     EXIT 1
   )
 
-  CP target/debug/mozillavpnnp.exe ..\..
-  CD ..\..
+  xcopy /y target\debug\mozillavpnnp.exe ..\..
+  popd
 )
 
 IF %DEBUG_BUILD%==F (
   ECHO Generating Release Build for the extension bridge
-  CD extension\bridge
+  pushd extension\bridge
 
   cargo build --release
   IF %ERRORLEVEL% NEQ 0 (
@@ -144,8 +114,8 @@ IF %DEBUG_BUILD%==F (
     EXIT 1
   )
 
-  CP target/release/mozillavpnnp.exe ..\..
-  CD ..\..
+  xcopy /y target\release\mozillavpnnp.exe ..\..
+  popd
 )
 
 ECHO Creating the project with flags: %FLAGS%

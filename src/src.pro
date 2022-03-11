@@ -47,7 +47,7 @@ include($$PWD/../glean/glean.pri)
 
 include($$PWD/../nebula/nebula.pri)
 
-!wasm{
+!wasm {
     include($$PWD/crashreporter/crashreporter.pri)
 }
 
@@ -88,7 +88,6 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
-        connectioncheck.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         constants.cpp \
@@ -96,6 +95,7 @@ SOURCES += \
         cryptosettings.cpp \
         curve25519.cpp \
         dnshelper.cpp \
+        dnspingsender.cpp \
         errorhandler.cpp \
         featurelist.cpp \
         filterproxymodel.cpp \
@@ -214,7 +214,6 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
-        connectioncheck.h \
         connectiondataholder.h \
         connectionhealth.h \
         constants.h \
@@ -223,6 +222,7 @@ HEADERS += \
         cryptosettings.h \
         curve25519.h \
         dnshelper.h \
+        dnspingsender.h \
         errorhandler.h \
         featurelist.h \
         features/featureappreview.h \
@@ -325,7 +325,7 @@ HEADERS += \
         update/versionapi.h \
         urlopener.h
 
-webextension {
+linux:!android|macos|win* {
     message(Enabling the webextension support)
 
     DEFINES += MVPN_WEBEXTENSION
@@ -352,7 +352,7 @@ RESOURCES += resources/certs/certs.qrc
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
-balrog {
+macos|win* {
     message(Balrog enabled)
     DEFINES += MVPN_BALROG
 
@@ -661,7 +661,7 @@ else:android {
     # We need to compile our own openssl :/
     exists(../3rdparty/openSSL/openssl.pri) {
        include(../3rdparty/openSSL/openssl.pri)
-    } else{
+    } else {
        message(Have you imported the 3rd-party git submodules? Read the README.md)
        error(Did not found openSSL in 3rdparty/openSSL - Exiting Android Build)
     }
@@ -735,21 +735,6 @@ else:macos {
 
         SOURCES += platforms/dummy/dummycontroller.cpp
         HEADERS += platforms/dummy/dummycontroller.h
-    } else:networkextension {
-        message(Network extension mode)
-
-        DEFINES += MVPN_MACOS_NETWORKEXTENSION
-
-        INCLUDEPATH += \
-                    ../3rdparty/Wireguard-apple/WireGuard/WireGuard/Crypto \
-                    ../3rdparty/wireguard-apple/WireGuard/Shared/Model \
-
-        OBJECTIVE_SOURCES += \
-                platforms/ios/ioscontroller.mm \
-                platforms/ios/iosglue.mm
-
-        OBJECTIVE_HEADERS += \
-                platforms/ios/iosscontroller.h
     } else {
         message(Daemon mode)
 
@@ -897,6 +882,7 @@ else:win* {
     RC_ICONS = ui/resources/logo.ico
 
     SOURCES += \
+        commands/commandcrashreporter.cpp \
         daemon/daemon.cpp \
         daemon/daemonlocalserver.cpp \
         daemon/daemonlocalserverconnection.cpp \
@@ -918,7 +904,6 @@ else:win* {
         platforms/windows/daemon/windowssplittunnel.cpp \
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
-        platforms/windows/windowsdatamigration.cpp \
         platforms/windows/windowsnetworkwatcher.cpp \
         platforms/windows/windowspingsender.cpp \
         platforms/windows/windowsstartatbootwatcher.cpp \
@@ -927,6 +912,7 @@ else:win* {
         wgquickprocess.cpp
 
     HEADERS += \
+        commands/commandcrashreporter.h \
         daemon/interfaceconfig.h \
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
@@ -950,7 +936,6 @@ else:win* {
         platforms/windows/daemon/windowssplittunnel.h \
         platforms/windows/windowsservicemanager.h \
         platforms/windows/windowscommons.h \
-        platforms/windows/windowsdatamigration.h \
         platforms/windows/windowsnetworkwatcher.h \
         platforms/windows/windowspingsender.h \
         tasks/authenticate/desktopauthenticationlistener.h \

@@ -61,7 +61,7 @@ void AuthenticationInApp::checkAccount(const QString& emailAddress) {
   Q_ASSERT(m_state == StateStart);
   Q_ASSERT(m_listener);
 
-  logger.debug() << "Authentication starting:" << emailAddress;
+  logger.debug() << "Authentication starting";
 
   m_listener->checkAccount(emailAddress);
 }
@@ -114,6 +114,18 @@ void AuthenticationInApp::enableTotpCreation() {
   Q_ASSERT(m_listener);
 
   m_listener->enableTotpCreation();
+}
+
+void AuthenticationInApp::allowUpperCaseEmailAddress() {
+  Q_ASSERT(m_listener);
+  m_listener->allowUpperCaseEmailAddress();
+}
+
+void AuthenticationInApp::enableAccountDeletion() {
+  Q_ASSERT(m_state == StateSignIn || m_state == StateSignUp);
+  Q_ASSERT(m_listener);
+
+  m_listener->enableAccountDeletion();
 }
 #endif
 

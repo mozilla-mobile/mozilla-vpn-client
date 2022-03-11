@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false # Don't cancel other jobs
       matrix:
-        version: ["5.15.2","6.2.1"]
+        version: ["6.2.1"]
     runs-on: ubuntu-20.04
     name: "Run Unit tests on ${{matrix.version}}"
     steps:
@@ -52,18 +52,23 @@ jobs:
         shell: bash
         run: |
           cargo install grcov
+          
+      - name: Installing the oathtool
+        shell: bash
+        run: |
+          pip3 install oathtool
+          python3 -m oathtool.generate-script
 
       - name: Running tests
         shell: bash
         run: |
           export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
-          ./scripts/tests/unit_tests.sh                 
+          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh
 
   macos-unit-tests:
     strategy:
       matrix:
         config:
-            - { name: "Qt5", pattern: x, folder: qt }
             - { name: "Qt6", pattern: qt6, folder: qt6 }
 
     runs-on: macos-latest
@@ -108,12 +113,20 @@ jobs:
         shell: bash
         run: |
           cargo install grcov   
+          
+      - name: Installing the oathtool
+        shell: bash
+        run: |
+          pip3 install oathtool
+          python3 -m oathtool.generate-script
+          # python3 by default...
+          sed -i '' "s/python/python3/g" oathtool
 
       - name: Running tests
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
-          ./scripts/tests/unit_tests.sh --grcov lcov.info
+          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov lcov.info
         
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
@@ -176,8 +189,14 @@ jobs:
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
+      - name: Installing the oathtool
+        shell: bash
+        run: |
+          pip3 install oathtool
+          python3 -m oathtool.generate-script
+
       - name: Running tests
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          ./scripts/tests/unit_tests.sh
+          MVPN_OATHTOOL=oathtool ./scripts/tests/unit_tests.sh

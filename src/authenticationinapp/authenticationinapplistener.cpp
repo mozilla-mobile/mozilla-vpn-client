@@ -37,6 +37,14 @@ void AuthenticationInAppListener::aboutToFinish() {
     return;
   }
 
+#ifdef UNIT_TEST
+  if (m_extraOp == OpAccountDeletionNeeded) {
+    logger.info() << "Deleting account in progress";
+    deleteAccount();
+    return;
+  }
+#endif
+
   NetworkRequest* request =
       NetworkRequest::createForFxaSessionDestroy(m_task, m_sessionToken);
   Q_ASSERT(request);
@@ -110,7 +118,17 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
   logger.debug() << "Authentication starting:"
                  << logger.sensitive(emailAddress);
 
-  m_emailAddress = emailAddress.toLower();
+#ifdef UNIT_TEST
+  if (!m_allowUpperCaseEmailAddress) {
+#endif
+    m_emailAddress = emailAddress.toLower();
+#ifdef UNIT_TEST
+  } else {
+    m_emailAddress = emailAddress;
+  }
+#endif
+
+  m_emailAddressCaseFix = emailAddress;
 
   AuthenticationInApp* aip = AuthenticationInApp::instance();
   Q_ASSERT(aip);
@@ -169,13 +187,12 @@ void AuthenticationInAppListener::accountChecked(bool exists) {
           &AuthenticationListener::abortedByUser);
 }
 
-QByteArray AuthenticationInAppListener::generateAuthPw(
-    const QString& password) const {
+QByteArray AuthenticationInAppListener::generateAuthPw() const {
   // Process the user's password into an FxA auth token
   QString salt = QString("identity.mozilla.com/picl/v1/quickStretch:%1")
-                     .arg(m_emailAddress);
+                     .arg(m_emailAddressCaseFix);
   QByteArray pbkdf = QPasswordDigestor::deriveKeyPbkdf2(
-      QCryptographicHash::Sha256, password.toUtf8(), salt.toUtf8(), 1000, 32);
+      QCryptographicHash::Sha256, m_password.toUtf8(), salt.toUtf8(), 1000, 32);
 
   HKDF hash(QCryptographicHash::Sha256);
   hash.addData(pbkdf);
@@ -184,13 +201,25 @@ QByteArray AuthenticationInAppListener::generateAuthPw(
 }
 
 void AuthenticationInAppListener::setPassword(const QString& password) {
-  m_authPw = generateAuthPw(password);
+  m_password = password;
 }
 
 #ifdef UNIT_TEST
 void AuthenticationInAppListener::enableTotpCreation() {
   logger.debug() << "Enabling totp creation";
-  m_totpCreationNeeded = true;
+  Q_ASSERT(m_extraOp == OpNone);
+  m_extraOp = OpTotpCreationNeeded;
+}
+
+void AuthenticationInAppListener::enableAccountDeletion() {
+  logger.debug() << "Delete account request";
+  Q_ASSERT(m_extraOp == OpNone);
+  m_extraOp = OpAccountDeletionNeeded;
+}
+
+void AuthenticationInAppListener::allowUpperCaseEmailAddress() {
+  logger.debug() << "Forcing an upper email address";
+  m_allowUpperCaseEmailAddress = true;
 }
 #endif
 
@@ -205,10 +234,31 @@ void AuthenticationInAppListener::signIn(const QString& unblockCode) {
 
 void AuthenticationInAppListener::signInInternal(const QString& unblockCode) {
   NetworkRequest* request = NetworkRequest::createForFxaLogin(
-      m_task, m_emailAddress, m_authPw, unblockCode, m_urlQuery);
+      m_task, m_emailAddressCaseFix, generateAuthPw(), unblockCode, m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed, this,
-          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
+          [this, unblockCode](QNetworkReply::NetworkError error,
+                              const QByteArray& data) {
+            QJsonDocument json = QJsonDocument::fromJson(data);
+            if (json.isObject()) {
+              QJsonObject obj = json.object();
+
+              int errorCode = obj["errno"].toInt();
+
+              // Incorrect email case
+              if (errorCode == 120) {
+                QString email = obj["email"].toString();
+                if (!email.isEmpty()) {
+                  logger.error()
+                      << "Failed to sign in for email case issues. New email:"
+                      << logger.sensitive(email);
+                  m_emailAddressCaseFix = email;
+                  signInInternal(unblockCode);
+                  return;
+                }
+              }
+            }
+
             logger.error() << "Failed to sign in" << error;
             processRequestFailure(error, data);
           });
@@ -233,7 +283,7 @@ void AuthenticationInAppListener::signUp() {
       AuthenticationInApp::StateSigningUp, this);
 
   NetworkRequest* request = NetworkRequest::createForFxaAccountCreation(
-      m_task, m_emailAddress, m_authPw, m_urlQuery);
+      m_task, m_emailAddressCaseFix, generateAuthPw(), m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -276,8 +326,8 @@ void AuthenticationInAppListener::sendUnblockCodeEmail() {
   logger.debug() << "Resend unblock code";
   Q_ASSERT(m_sessionToken.isEmpty());
 
-  NetworkRequest* request =
-      NetworkRequest::createForFxaSendUnblockCode(m_task, m_emailAddress);
+  NetworkRequest* request = NetworkRequest::createForFxaSendUnblockCode(
+      m_task, m_emailAddressCaseFix);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -427,17 +477,39 @@ void AuthenticationInAppListener::createTotpCodes() {
             emit aip->unitTestTotpCodeCreated(data);
           });
 }
+
+void AuthenticationInAppListener::deleteAccount() {
+  NetworkRequest* request = NetworkRequest::createForFxaAccountDeletion(
+      m_task, m_sessionToken, m_emailAddress, generateAuthPw());
+
+  connect(request, &NetworkRequest::requestFailed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Failed to delete the account" << error;
+            emit readyToFinish();
+          });
+
+  connect(request, &NetworkRequest::requestCompleted, this,
+          [this](const QByteArray& data) {
+            logger.debug() << "Account deleted" << data;
+
+            AuthenticationInApp* aip = AuthenticationInApp::instance();
+            aip->requestState(AuthenticationInApp::StateStart, this);
+            emit aip->unitTestAccountDeleted();
+
+            emit readyToFinish();
+          });
+}
 #endif
 
 void AuthenticationInAppListener::finalizeSignInOrUp() {
   Q_ASSERT(!m_sessionToken.isEmpty());
 
 #ifdef UNIT_TEST
-  if (m_totpCreationNeeded) {
+  if (m_extraOp == OpTotpCreationNeeded) {
     logger.info() << "Totp creation in process";
-    m_totpCreationNeeded = false;
-    // Let's set it to false to avoid loops at the next finalizeSignInOrUp()
+    // Let's set it to `OpNone` to avoid loops at the next finalizeSignInOrUp()
     // call.
+    m_extraOp = OpNone;
     createTotpCodes();
     return;
   }
@@ -797,6 +869,14 @@ void AuthenticationInAppListener::processRequestFailure(
             AuthenticationInApp::ErrorInvalidUnblockCode, this);
         return;
       }
+
+      if (keys.contains("email")) {
+        AuthenticationInApp* aip = AuthenticationInApp::instance();
+        aip->requestState(AuthenticationInApp::StateStart, this);
+        aip->requestErrorPropagation(
+            AuthenticationInApp::ErrorInvalidEmailAddress, this);
+        return;
+      }
     }
 
     processErrorCode(errorCode);
@@ -811,6 +891,7 @@ void AuthenticationInAppListener::reset() {
   m_sessionToken.clear();
 
   m_emailAddress.clear();
+  m_emailAddressCaseFix.clear();
 
   AuthenticationInApp* aip = AuthenticationInApp::instance();
   Q_ASSERT(aip);

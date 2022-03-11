@@ -28,6 +28,9 @@ jobs:
     lint:
         parent: base
         symbol: I(lint)
+    wasm:
+        parent: base
+        symbol: I(wasm)
     android-build:
         parent: base
         symbol: I(android)

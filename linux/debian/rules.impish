@@ -10,7 +10,7 @@ DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
 
 override_dh_auto_configure:
 	python3 scripts/utils/import_languages.py
-	qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release BUILD_ID=$(DEB_VERSION) CONFIG+=webextension
+	qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release BUILD_ID=$(DEB_VERSION)
 
 override_dh_installdocs:
 

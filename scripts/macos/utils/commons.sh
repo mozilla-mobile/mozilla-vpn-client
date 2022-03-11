@@ -37,7 +37,6 @@ _compile() {
   [ -f "$2" ] && die "Unexpected $2 binary"
 
   xcodebuild build \
-  HEADER_SEARCH_PATHS="\$(HEADER_SEARCH_PATHS) $(brew --prefix oath-toolkit)/include" \
     CODE_SIGN_IDENTITY="" \
     CODE_SIGNING_REQUIRED=NO \
     -derivedDataPath=/build \
@@ -55,10 +54,6 @@ _grcov() {
 # Public methods
 
 ## Unit-tests
-
-utest_dependencies() {
-  brew install oath-toolkit || die
-}
 
 utest_compile_unit() {
   _qmake tests/unit/unit.pro tests.xcodeproj/|| die

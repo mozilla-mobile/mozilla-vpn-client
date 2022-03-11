@@ -12,6 +12,8 @@ QT += xml
 DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += BUILD_ID=\\\"1234\\\"
 
+CONFIG += c++1z
+
 macos {
     CONFIG -= app_bundle
 }
@@ -44,7 +46,6 @@ HEADERS += \
     ../../src/collator.h \
     ../../src/command.h \
     ../../src/commandlineparser.h \
-    ../../src/connectioncheck.h \
     ../../src/connectiondataholder.h \
     ../../src/constants.h \
     ../../src/controller.h \
@@ -139,7 +140,6 @@ SOURCES += \
     ../../src/collator.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
-    ../../src/connectioncheck.cpp \
     ../../src/connectiondataholder.cpp \
     ../../src/constants.cpp \
     ../../src/curve25519.cpp \

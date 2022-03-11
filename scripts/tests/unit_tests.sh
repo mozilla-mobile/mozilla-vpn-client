@@ -55,6 +55,10 @@ if ! [ -d "src" ] || ! [ -d "tests" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
+if ! [[ "$MVPN_OATHTOOL" ]]; then
+  die "Please set env var MVPN_OATHTOOL."
+fi
+
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   print N "Configure for linux"
   . scripts/linux/utils/commons.sh
@@ -72,9 +76,6 @@ print Y "Cleaning up all..."
 utest_cleanup_unit || die "Failed"
 utest_cleanup_auth || die "Failed"
 utest_cleanup_nativemessaging || die "Failed"
-
-print Y "Installing dependencies..."
-utest_dependencies || die "Failed"
 
 print Y "Compile the unit-tests..."
 utest_compile_unit || die "Failed"
