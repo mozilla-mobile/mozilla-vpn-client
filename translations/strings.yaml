@@ -457,3 +457,10 @@ inAppAuth:
   securityCodeLabel: Security code
   securityCodeTitle: Enter security code
   securityCodeSubtitle: Open your authentication app and enter the security code it provides.
+  informationUsageDisclaimer: We only use your email to create your account or sign in. We will never sell it to a third party.
+  signInFailedPopupTitle: Sign-in failed
+  signInFailedPopupDescription: You’ve made too many attempts to sign in. You won’t be able to try again with this account for 15 minutes.
+  problemSigningInTitle: Problem signing in...
+  problemSigningInDescription: Sorry, we were unable to sign you in to your account.
+  errorConfirmingSubscriptionTitle: Error confirming subscription...
+  
