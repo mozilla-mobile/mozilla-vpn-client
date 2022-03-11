@@ -28,16 +28,14 @@ void BenchmarkTaskPing::handleState(BenchmarkTask::State state) {
   if (state == BenchmarkTask::StateActive) {
     connect(MozillaVPN::instance()->connectionHealth(),
             &ConnectionHealth::pingReceived, this, [&] {
-              logger.debug() << "Ping changed";
+              logger.debug() << "Ping received";
 
-              m_pingLatencyAcc +=
-                  MozillaVPN::instance()->connectionHealth()->latency();
-              m_numOfPingSamples++;
+              emit finished(
+                  MozillaVPN::instance()->connectionHealth()->latency());
+              emit completed();
             });
   } else if (state == BenchmarkTask::StateInactive) {
-    quint64 m_pingLatency =
-        static_cast<quint64>(m_pingLatencyAcc / m_numOfPingSamples) + 0.5;
-    emit finished(m_pingLatency);
+    emit finished(MozillaVPN::instance()->connectionHealth()->latency());
     emit completed();
   }
 }
