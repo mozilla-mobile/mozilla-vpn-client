@@ -99,15 +99,15 @@ utest_cleanup_nativemessaging() {
 }
 
 utest_grcov_unit() {
-  _grcov “$1” || die
+  _grcov "$1" || die
 }
 
 utest_grcov_auth() {
-  _grcov “$1” || die
+  _grcov "$1" || die
 }
 
 utest_grcov_nativemessaging() {
-  _grcov “$1” || die
+  _grcov "$1" || die
 }
 
 ## Lottie tests
