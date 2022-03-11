@@ -52,7 +52,8 @@ Rectangle {
         State {
             name: "open-loading"
             when: (VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateInitial
-                && VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateReady)
+                && VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateReady
+                && VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateError)
                 && isOpen
                 && !isTransitioning
 
@@ -65,6 +66,18 @@ Rectangle {
         State {
             name: "open-ready"
             when: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateReady
+                && isOpen
+                && !isTransitioning
+
+            PropertyChanges {
+                target: root
+                opacity: 1
+                visible: true
+            }
+        },
+        State {
+            name: "open-error"
+            when: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateError
                 && isOpen
                 && !isTransitioning
 
@@ -109,40 +122,49 @@ Rectangle {
         opacity: visible && root.state !== "closing" ? 1 : 0
         visible: root.state === "open-ready" || root.state === "closing"
 
-        VPNIconButton {
-            id: connectionInfoRestartButton
-
-            anchors {
-                top: parent.top
-                right: parent.right
-                topMargin: VPNTheme.theme.windowMargin / 2
-                rightMargin: VPNTheme.theme.windowMargin / 2
-            }
-            // TODO: Replace with localized string
-            accessibleName: "Restart speed test"
-            buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-            enabled: connectionInfoContent.visible
-            z: 1
-
-            onClicked: {
-                VPNConnectionBenchmark.start();
-            }
-
-            Image {
-                anchors.centerIn: connectionInfoRestartButton
-                opacity: 0.8
-                source: "qrc:/nebula/resources/refresh.svg"
-                sourceSize.height: VPNTheme.theme.iconSize * 1.5
-                sourceSize.width: VPNTheme.theme.iconSize * 1.5
-            }
-        }
-
         Behavior on opacity {
             NumberAnimation {
                 duration: root.state !== "closing"
                     ? root.transitionDuration
                     : root.transitionDuration * 2
             }
+        }
+    }
+
+    VPNConnectionInfoError {
+        id: connectionInfoError
+
+        opacity: visible && root.state !== "closing" ? 1 : 0
+        visible: root.state === "open-error" || root.state === "closing"
+    }
+
+    VPNIconButton {
+        id: connectionInfoRestartButton
+
+        visible: connectionInfoContent.visible || connectionInfoError.visible
+
+        anchors {
+            top: parent.top
+            right: parent.right
+            topMargin: VPNTheme.theme.windowMargin / 2
+            rightMargin: VPNTheme.theme.windowMargin / 2
+        }
+        // TODO: Replace with localized string
+        accessibleName: "Restart speed test"
+        buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
+        enabled: connectionInfoContent.visible
+        z: 1
+
+        onClicked: {
+            VPNConnectionBenchmark.start();
+        }
+
+        Image {
+            anchors.centerIn: connectionInfoRestartButton
+            opacity: 0.8
+            source: "qrc:/nebula/resources/refresh.svg"
+            sourceSize.height: VPNTheme.theme.iconSize * 1.5
+            sourceSize.width: VPNTheme.theme.iconSize * 1.5
         }
     }
 
