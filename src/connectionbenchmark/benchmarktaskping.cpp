@@ -31,11 +31,14 @@ void BenchmarkTaskPing::handleState(BenchmarkTask::State state) {
         &ConnectionHealth::pingReceived, this, [&] {
           logger.debug() << "Ping received";
 
-          emit finished(MozillaVPN::instance()->connectionHealth()->latency());
-          emit completed();
+          pingReady();
         });
   } else if (state == BenchmarkTask::StateInactive) {
-    emit finished(MozillaVPN::instance()->connectionHealth()->latency());
-    emit completed();
+    pingReady();
   }
+}
+
+void BenchmarkTaskPing::pingReady() {
+  emit finished(MozillaVPN::instance()->connectionHealth()->latency());
+  emit completed();
 }
