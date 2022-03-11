@@ -32,16 +32,14 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_windows
           cd qt_static_windows
-          cat x* > qt_static.tar.bz2
+          cat qt6* > qt_static.tar.bz2
           tar xf qt_static.tar.bz2
           tar xf msm.tar.gz
           mkdir /c/MozillaVPNBuild
           cp -r * /c/MozillaVPNBuild
           cd ..
-          cp /c/MozillaVPNBuild/bin/libssl-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/bin/libcrypto-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/bin/libEGL.dll .
-          cp /c/MozillaVPNBuild/bin/libGLESv2.dll .
+          cp /c/MozillaVPNBuild/SSL/bin/libssl-1_1-x64.dll .
+          cp /c/MozillaVPNBuild/SSL/bin/libcrypto-1_1-x64.dll .
           cp /c/MozillaVPNBuild/*.msm .
 
       - name: Install glean depedencies
@@ -62,10 +60,8 @@ jobs:
         shell: bash
         run: |
           mkdir unsigned
-          cp /c/MozillaVPNBuild/bin/libssl-1_1-x64.dll unsigned
-          cp /c/MozillaVPNBuild/bin/libcrypto-1_1-x64.dll unsigned
-          cp /c/MozillaVPNBuild/bin/libEGL.dll unsigned
-          cp /c/MozillaVPNBuild/bin/libGLESv2.dll unsigned
+          cp /c/MozillaVPNBuild/SSL/bin/libssl-1_1-x64.dll unsigned
+          cp /c/MozillaVPNBuild/SSL/bin/libcrypto-1_1-x64.dll unsigned
           cp /c/MozillaVPNBuild/*.msm unsigned
           cp windows/tunnel/x64/tunnel.dll unsigned
           cp windows/tunnel/.deps/wintun/bin/amd64/wintun.dll unsigned

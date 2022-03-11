@@ -15,7 +15,6 @@
 #include <QScopedArrayPointer>
 #include <QStringList>
 #include <QSysInfo>
-#include <QtWin>
 
 #include <Windows.h>
 #include <shellapi.h>
@@ -54,7 +53,7 @@ QPixmap WindowsAppImageProvider::requestPixmap(const QString& path, QSize* size,
     return QPixmap();
   }
 
-  auto pixmap = QtWin::fromHICON(icons[0]);
+  auto pixmap = QPixmap::fromImage(QImage::fromHICON(icons[0]));
   if (pixmap.isNull()) {
     WindowsCommons::windowsLog(path + " Failed to convert icon");
     return QPixmap();
