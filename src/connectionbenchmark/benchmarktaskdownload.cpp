@@ -49,10 +49,10 @@ void BenchmarkTaskDownload::downloadReady(QNetworkReply::NetworkError error,
   logger.debug() << "Download ready" << error;
 
   quint64 bytesPerSecond = data.size() / executionTime() * 1000;
-  bool hasUnexpectedError = error != QNetworkReply::NoError &&
-                            error != QNetworkReply::OperationCanceledError &&
-                            error != QNetworkReply::TimeoutError &&
-                            bytesPerSecond > 0;
+  bool hasUnexpectedError = (error != QNetworkReply::NoError &&
+                             error != QNetworkReply::OperationCanceledError &&
+                             error != QNetworkReply::TimeoutError) ||
+                            bytesPerSecond == 0;
 
   emit finished(bytesPerSecond, hasUnexpectedError);
   emit completed();
