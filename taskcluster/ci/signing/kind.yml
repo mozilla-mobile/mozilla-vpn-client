@@ -26,10 +26,12 @@ only-for-build-types:
 job-template:
     description: Sign MozillaVPN
     worker: {} # Will be configured by signing:transforms
+    run-on-tasks-for: []
     signing-format:
         by-build-type:
             # macosx.*: macapp
             android.*: autograph_apk
+            default: ""
 
     treeherder:
         job-symbol: Bs
