@@ -34,6 +34,7 @@
 #include <QObject>
 #include <QStandardPaths>
 #include <QTimer>
+#include <QVariant>
 
 #ifdef MVPN_WINDOWS
 #  include "platforms/windows/windowscommons.h"
@@ -391,6 +392,8 @@ class MozillaVPN final : public QObject {
   void initializeGlean();
   void sendGleanPings();
   void recordGleanEvent(const QString& gleanSampleName);
+  void recordGleanEventWithExtraKeys(const QString& gleanSampleName,
+                                     const QVariantMap& extraKeys);
   void setGleanSourceTags(const QStringList& tags);
 
   void aboutToQuit();

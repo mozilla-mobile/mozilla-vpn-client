@@ -12,6 +12,8 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
+#include "../../glean/telemetry/gleansample.h"
+
 #include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -625,7 +627,8 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
       });
 }
 
-void AuthenticationInAppListener::processErrorCode(int errorCode) {
+void AuthenticationInAppListener::processErrorCode(
+    int errorCode, const QString& errorString, const QString& errorMessage) {
   AuthenticationInApp* aip = AuthenticationInApp::instance();
   Q_ASSERT(aip);
 
@@ -826,6 +829,11 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
     case 998:  // An internal validation check failed.
       [[fallthrough]];
     default:
+      emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+          GleanSample::authenticationInappError,
+          {{"errno", QString::number(errorCode)},
+           {"error", errorString},
+           {"message", errorMessage}});
       logger.error() << "Unsupported error code:" << errorCode;
       break;
   }
@@ -846,6 +854,10 @@ void AuthenticationInAppListener::processRequestFailure(
         unblockCodeNeeded();
         return;
       }
+
+      emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+          GleanSample::authenticationInappError,
+          {{"errno", "125"}, {"verificationMethod", verificationMethod}});
 
       logger.error() << "Unsupported verification method:"
                      << verificationMethod;
@@ -879,7 +891,8 @@ void AuthenticationInAppListener::processRequestFailure(
       }
     }
 
-    processErrorCode(errorCode);
+    processErrorCode(errorCode, obj["error"].toString(),
+                     obj["message"].toString());
     return;
   }
 

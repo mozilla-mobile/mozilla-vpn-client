@@ -8,8 +8,11 @@
 #include "leakdetector.h"
 #include "incrementaldecoder.h"
 
+#include "../../glean/telemetry/gleansample.h"
+
 #include <QCoreApplication>
 #include <QFile>
+#include <QMetaEnum>
 #include <QRegularExpression>
 
 constexpr int PASSWORD_MIN_LENGTH = 8;
@@ -43,6 +46,10 @@ AuthenticationInApp::~AuthenticationInApp() {
 void AuthenticationInApp::setState(State state) {
   m_state = state;
   emit stateChanged();
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::authenticationInappStep,
+      {{"state", QVariant::fromValue(state).toString()}});
 }
 
 void AuthenticationInApp::registerListener(
