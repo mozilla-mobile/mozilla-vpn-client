@@ -448,36 +448,85 @@ inAppAuth:
   signInButton: Sign in
   signInSubtitle: Continue to Mozilla VPN by signing in with your Firefox account
   createPasswordLabel: Create password
-  confirmPasswordLabel: Confirm password
   forgotPasswordLink: Forgot your password?
   passwordInputPlaceholder: Enter password
   passwordInputLabel: Password
-  passwordHintCharacterLength: Must be at least 8 characters
-  passwordHintEmailAddressAsPassword: Must not be your email address
-  passwordHintCommonPassword: Must not be a common password
-  passwordHintNotMatching: Passwords must match
-  productUpdateOptInDescription: I’d like to receive product update emails from Firefox.
+  passwordHintCharacterLength: 
+    value: Must be at least 8 characters
+    comment: This is a hint for the user - they must provide a password with at least 8 characters 
+  passwordHintEmailAddressAsPassword: 
+    value: Must not be your email address
+    comment: This is a hint for the user - they must provide a password that does not match their email. 
+  passwordHintCommonPassword: 
+    value: Must not be a common password
+    comment: This is a hint for the user - password they provide must not be a common password. Ex. password.
+  passwordHintNotMatching: 
+    value: Passwords must match
+    comment: This is a hint for the user - password confirmation input and initial password input field must have matching values.
+  productUpdateOptInDescription: 
+    value: I’d like to receive product update emails from Firefox.
+    comment: User has the option to opt-in to receive product update emails from Firefox. They are asked this when creating an account with us. 
   createAccountButton: Create account
-  finishAccountCreationDescription: Finish creating your Firefox account to continue to Mozilla VPN
-  emailVerificationDescription: Open your email and enter the verification code it that was sent.
-  invalidPasswordErrorMessage: Invalid password. Please try again
-  invalidCodeErrorMessage: Invalid code. Please try again
-  invalidEmailErrorMessage: Invalid email. Please try again
-  invalidEmailFormatErrorMessage: Email format not supported. Please try again
+  finishAccountCreationDescription: 
+    value: Finish creating your Firefox account to continue to Mozilla VPN
+    comment: User message prompting user to finish creating their account to use Mozilla VPN. 
+  emailVerificationDescription: 
+    value: Open your email and enter the verification code it that was sent.
+    comment: User has been sent a verification email containing a code. 
+  invalidPasswordErrorMessage: 
+    value: Invalid password. Please try again
+    comment: User has submitted an invalid password.
+  invalidCodeErrorMessage: 
+    value: Invalid code. Please try again
+    comment: User provided did not provide a correct security code.
+  invalidEmailErrorMessage: 
+    value: Invalid email. Please try again
+    comment: Generic message for when user submits incorrect email.
+  invalidEmailFormatErrorMessage: 
+    value: Email format not supported. Please try again
+    comment: User is providing us an email that is not formatted correctly. Ex. jsmith&gmail.com
+  # Verification code is used when user is creating a new account.  
   verificationCodeTitle: Enter verification code
-  verificationCodeInputPlaceholder: Enter 6-digit code
+  verificationCodeInputPlaceholder: 
+    value: Enter 6-digit code
+    comment: Placeholder text for input element asking user for 6-digit verification code from their email.
   verifySecurityCodeButton: Verify
-  resendCodeLink: Resend code
-  securityCodeLabel: Security code
-  securityCodeTitle: Enter security code  
-  securityCodeSubtitle: Open your authentication app and enter the security code it provides.
-  informationUsageDisclaimer: We only use your email to create your account or sign in. We will never sell it to a third party.
-  dataCollectionDisclaimer: Learn more about what data Mozilla collects and how it's used
+  resendCodeLink: 
+    value: Resend code
+    comment: This link allows the user to request for another 6-digit verification code to be sent to their email.
+  # Security code is used for 2FA purposes.   
+  securityCodeLabel: 
+    value: Security code
+    comment: Label for input asking user for their security code. 
+  securityCodeTitle: 
+    value: Enter security code  
+    comment: Title for app screen asking user for their security code.
+  securityCodeSubtitle: 
+    value: Open your authentication app and enter the security code it provides.
+    comment: User is asked for a security code from their authentication app for verification.
+  informationUsageDisclaimer: 
+    value: We only use your email to create your account or sign in. We will never sell it to a third party.
+    comment: Non-op text that informs user about how Mozilla will not sell it to a third party. 
+  dataCollectionDisclaimer: 
+    value: Learn more about what data Mozilla collects and how it's used
+    comment: Non-op text follows a link to our Mozilla VPN privacy notice. 
   signInFailedPopupTitle: Sign-in failed
-  signInFailedPopupDescription: You’ve made too many attempts to sign in. You won’t be able to try again with this account for 15 minutes.
-  problemSigningInTitle: Problem signing in...
-  problemSigningInErrorMessage: Sorry, we were unable to sign you in to your account.
-  problemSendingEmailTitle: Problem sending email...
-  problemSendingEmailErrorMessage: Sorry, we were unable to send you a verification code.
-  errorConfirmingSubscriptionTitle: Error confirming subscription...
+  signInFailedPopupDescription: 
+    value: You’ve made too many attempts to sign in. You won’t be able to try again with this account for 15 minutes.
+    comment: User has been unable to sign in correctly, they have a cool down period of 15 minutes until they can try again.
+  problemSigningInTitle: 
+    value: Problem signing in...
+    comment: App screen that informs the user we are having a problem signing them in - this is the title.
+  problemSigningInErrorMessage: 
+    value: Sorry, we were unable to sign you in to your account.
+    comment: App screen that informs the user there was an error signing them in - this is the message.
+  problemSendingEmailTitle: 
+    value: Problem sending email...
+    comment: App screen that informs the user there was an error sending them their verification code email - this is the title.
+  problemSendingEmailErrorMessage: 
+    value: Sorry, we were unable to send you a verification code.
+    comment: App screen that informs the user there was an error sending them their verification code email - this is the message.
+  errorConfirmingSubscriptionTitle: 
+    value: Error confirming subscription...
+    comment: App screen that informs the user there was an error confirming their subscription - this is the title.
   enterEmailAddressDescription: Enter your email address to continue using Mozilla VPN
