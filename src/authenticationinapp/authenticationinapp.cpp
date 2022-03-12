@@ -222,20 +222,24 @@ bool AuthenticationInApp::validateEmailAddress(const QString& emailAddress) {
   return true;
 }
 
-// static
 bool AuthenticationInApp::validatePasswordCommons(const QString& password) {
-  if (password.isEmpty()) {
+  if (!validatePasswordLength(password)) {
     // The task of this function is not the length validation.
     return true;
   }
 
-  QFile file(":/ui/resources/encodedPassword.txt");
-  if (!file.open(QFile::ReadOnly | QFile::Text)) {
-    logger.error() << "Failed to open the encodedPassword.txt";
-    return true;
+  // Let's cache the encoded-password content.
+  if (m_encodedPassword.isEmpty()) {
+    QFile file(":/ui/resources/encodedPassword.txt");
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+      logger.error() << "Failed to open the encodedPassword.txt";
+      return true;
+    }
+
+    m_encodedPassword = file.readAll();
   }
 
-  QTextStream stream(&file);
+  QTextStream stream(&m_encodedPassword);
 
   IncrementalDecoder id(qApp);
   IncrementalDecoder::Result result = id.match(stream, password);
