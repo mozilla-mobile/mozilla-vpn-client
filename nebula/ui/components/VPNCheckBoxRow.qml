@@ -38,8 +38,8 @@ RowLayout {
 
     Rectangle {
         visible: showAppImage
-        width: VPNTheme.theme.windowMargin * 2
-        height: VPNTheme.theme.windowMargin * 2
+        Layout.preferredWidth: VPNTheme.theme.windowMargin * 2
+        Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
         color: "transparent"
         radius: 4
         Layout.alignment: Qt.AlignTop
@@ -79,6 +79,7 @@ RowLayout {
             id: subLabel
 
             Layout.fillWidth: true
+            Layout.preferredWidth: parent.width
             text: subLabelText
             visible: !!subLabelText.length
             wrapMode: showAppImage ? Text.WrapAtWordBoundaryOrAnywhere : Text.WordWrap
