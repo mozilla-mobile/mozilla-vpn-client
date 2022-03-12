@@ -7,7 +7,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import components.forms 0.1
 import components.inAppAuth 0.1
 
 
@@ -32,57 +31,19 @@ VPNInAppAuthenticationBase {
 
     id: authSignUp
 
-    _changeEmailLinkVisible: true
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
-    _menuButtonOnClick: () => {
-        VPNAuthInApp.reset();
-    }
+    _menuButtonOnClick: () => { VPNAuthInApp.reset() }
     _menuButtonAccessibleName: "Back"
     _headlineText: "Enter verification code"
     _subtitleText: "Open your email and enter the verification code it that was sent."
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
 
-    _inputs: ColumnLayout {
-        spacing: VPNTheme.theme.vSpacingSmall
-
-        VPNBoldLabel {
-            id: codeLabel
-            text: "Verification code"
-        }
-
-        VPNTextField {
-            id: codeInput
-            hasError: false
-            _placeholderText: "Enter 6-digit code"
-            Layout.fillWidth: true
-        }
-
-        VPNContextualAlerts {
-            id: passwordInputCreateWarnings
-            Layout.fillWidth: true
-
-            messages: [
-                {
-                    type: "error",
-                    message: "Invalid code entry",
-                    visible: !createAccountButton.enabled
-                }
-            ]
-        }
-
-        VPNButton {
-            id: createAccountButton
-            enabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded && codeInput.text && codeInput.text.length === VPNAuthInApp.verificationCodeLength
-            loaderVisible: VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionEmailCode
-            text: "Verify"
-            Layout.fillWidth: true
-
-            onClicked: {
-                if (enabled) {
-                    VPNAuthInApp.verifySessionEmailCode(codeInput.text);
-                }
-            }
-        }
+    _inputs: VPNInAppAuthenticationInputs {
+        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded && activeInput().text && activeInput().text.length === VPNAuthInApp.verificationCodeLength && !activeInput().hasError
+        _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionEmailCode(inputText) }
+        _buttonText: "Verify"
+        _inputMethodHints: Qt.ImhDigitsOnly
+        _inputPlaceholderText: "Enter 6 digit code"
     }
 
     _footerContent: Column {
@@ -92,9 +53,7 @@ VPNInAppAuthenticationBase {
         VPNLinkButton {
             labelText: "Resend code"
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: {
-                VPNAuthInApp.resendVerificationSessionCodeEmail();
-            }
+            onClicked: VPNAuthInApp.resendVerificationSessionCodeEmail();
         }
 
         VPNLinkButton {
