@@ -11,6 +11,8 @@
         <file>resources/faces/poor.svg</file>
         <file>resources/faces/veryGood.svg</file>
         <file>resources/faces/veryPoor.svg</file>
+        <file>resources/features/connection-info-icon.svg</file>
+        <file>resources/features/connection-info-preview.png</file>
         <file>resources/features/custom-dns-preview.png</file>
         <file>resources/features/multi-account-containers-icon.svg</file>
         <file>resources/features/multi-account-containers-preview.png</file>
