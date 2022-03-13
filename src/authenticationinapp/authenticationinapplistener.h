@@ -47,8 +47,7 @@ class AuthenticationInAppListener final : public AuthenticationListener {
  private:
   void signInInternal(const QString& unblockCode);
 
-  void processErrorCode(int errorCode, const QString& errorString,
-                        const QString& errorMessage);
+  void processErrorObject(const QJsonObject& obj);
   void processRequestFailure(QNetworkReply::NetworkError error,
                              const QByteArray& data);
 
