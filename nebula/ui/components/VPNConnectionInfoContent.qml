@@ -17,62 +17,15 @@ Flickable {
     onVisibleChanged: {
         if (visible) {
             speedometerAnimation.play();
+            populateCheckmarkListModel();
         } else {
             speedometerAnimation.stop();
+            checkmarkListModel.clear();
         }
     }
 
-    // TODO: This list will be dynamic depending on current connection speeds
     ListModel {
         id: checkmarkListModel
-
-        ListElement {
-            title: "Streaming in 4K"
-        }
-        ListElement {
-            title: "High-speed downloads"
-        }
-        ListElement {
-            title: "Online gaming"
-        }
-    }
-
-    // TODO: This list will be dynamic generated depending
-    // on the available connection information we have
-    ListModel {
-        id: connectionInfoModel
-
-        Component.onCompleted: {
-            connectionInfoModel.append({
-                titleString: VPNServerCountryModel.getLocalizedCountryName(
-                    VPNCurrentServer.exitCountryCode
-                ),
-                subtitleString: VPNCurrentServer.localizedCityName,
-                iconSrc: "qrc:/nebula/resources/flags/"
-                    + VPNCurrentServer.exitCountryCode.toUpperCase()
-                    + ".png",
-                isFlag: true
-            })
-            connectionInfoModel.append({
-                titleString: "Ping",
-                subtitleString: "15 ms",
-                iconSrc: "qrc:/nebula/resources/connection-green.svg"
-            })
-            connectionInfoModel.append({
-                //% "Download"
-                //: The current download speed. The speed is shown on the next line.
-                titleString: qsTrId("vpn.connectionInfo.download"),
-                subtitleString: root.getConnectionLabel(1234567890),
-                iconSrc: "qrc:/nebula/resources/download.svg"
-            })
-            connectionInfoModel.append({
-                //% "Upload"
-                //: The current upload speed. The speed is shown on the next line.
-                titleString: qsTrId("vpn.connectionInfo.upload"),
-                subtitleString: root.getConnectionLabel(123456789),
-                iconSrc: "qrc:/nebula/resources/upload.svg"
-            })
-        }
     }
 
     ColumnLayout {
@@ -80,7 +33,7 @@ Flickable {
         
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 0
-        width: parent.width - VPNTheme.theme.windowMargin * 2
+        width: parent.width
 
         // IP Adresses
         VPNIPAddress {
@@ -115,7 +68,7 @@ Flickable {
         Item {
             Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
-            Layout.preferredHeight: parent.width * 0.4
+            Layout.preferredHeight: parent.width * 0.35
 
             VPNLottieAnimation {
                 id: speedometerAnimation
@@ -124,42 +77,65 @@ Flickable {
         }
 
         VPNCheckmarkList {
-            // TODO: Replace with localized string
-            listHeader: "At your current speed, here's what your device is optimized for:"
+            id: checkmarkList
+
+            listHeader: VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedSlow
+                ? VPNl18n.ConnectionInfoListHeaderSlow
+                : VPNl18n.ConnectionInfoListHeaderDefault
             listModel: checkmarkListModel
 
             Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
             Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
+            Layout.leftMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
-        Component {
-            id: connectionInfoItem
+        ColumnLayout {
+            spacing: 0
 
-            ColumnLayout {
-                spacing: 0
-                Rectangle {
-                    color: VPNTheme.colors.white
-                    height: 1
-                    opacity: 0.2
-                    visible: index !== 0
+            Layout.leftMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: VPNTheme.theme.windowMargin
 
-                    Layout.fillWidth: true
-                }
-
-                VPNConnectionInfoItem {
-                    title: titleString
-                    subtitle: subtitleString
-                    iconPath: iconSrc
-                    isFlagIcon: isFlag
-                }
+            VPNConnectionInfoItem {
+                title: VPNServerCountryModel.getLocalizedCountryName(
+                    VPNCurrentServer.exitCountryCode
+                )
+                subtitle: VPNCurrentServer.localizedCityName
+                iconPath: "qrc:/nebula/resources/flags/"
+                    + VPNCurrentServer.exitCountryCode.toUpperCase()
+                    + ".png"
+                isFlagIcon: true
             }
-        }
 
-        Repeater {
-            id: connectionInfoList
+            Rectangle {
+                color: VPNTheme.colors.white
+                height: 1
+                opacity: 0.2
 
-            model: connectionInfoModel
-            delegate: connectionInfoItem
+                Layout.fillWidth: true
+            }
+
+            VPNConnectionInfoItem {
+                title: VPNl18n.ConnectionInfoLabelPing
+                subtitle: VPNConnectionBenchmark.ping + " " + VPNl18n.ConnectionInfoUnitPing
+                iconPath: "qrc:/nebula/resources/connection-green.svg"
+            }
+
+            Rectangle {
+                color: VPNTheme.colors.white
+                height: 1
+                opacity: 0.2
+
+                Layout.fillWidth: true
+            }
+
+            VPNConnectionInfoItem {
+                //% "Download"
+                title: qsTrId("vpn.connectionInfo.download")
+                subtitle: root.getConnectionLabel(VPNConnectionBenchmark.download)
+                iconPath: "qrc:/nebula/resources/download.svg"
+            }
+
         }
 
     }
@@ -212,6 +188,48 @@ Flickable {
             return roundValue(connectionValueBits / Math.pow(1000, 3));
 
         return roundValue(connectionValueBits / Math.pow(1000, 4));
+    }
+
+    function populateCheckmarkListModel() {
+        // Fast connection threshold
+        if (VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedFast) {
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoHighBulletOne,
+                type: "checkmark"
+            });
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoHighBulletTwo,
+                type: "checkmark"
+            });
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoHighBulletThree,
+                type: "checkmark"
+            });
+        } else if (VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedMedium) {
+            // Medium connection threshold
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoMediumBulletOne,
+                type: "checkmark"
+            });
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoMediumBulletTwo,
+                type: "checkmark"
+            });
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoMediumBulletThree,
+                type: "checkmark"
+            });
+        } else {
+            // Slow connection threshold
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoTroubleshootingBulletOne,
+                type: "arrow",
+            });
+            checkmarkListModel.append({
+                title: VPNl18n.ConnectionInfoTroubleshootingBulletTwo,
+                type: "arrow",
+            });
+        }
     }
 
 }

@@ -2,6 +2,7 @@
     <qresource prefix="/ui">
         <file>resources/app-rating.svg</file>
         <file>resources/chevron-purple.svg</file>
+        <file>resources/connection-error-unstable.svg</file>
         <file>resources/connection-info-dark.svg</file>
         <file>resources/copy.svg</file>
         <file>resources/developer.svg</file>

@@ -93,6 +93,10 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
+        connectionbenchmark/benchmarktask.cpp \
+        connectionbenchmark/benchmarktaskdownload.cpp \
+        connectionbenchmark/benchmarktaskping.cpp \
+        connectionbenchmark/connectionbenchmark.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         constants.cpp \
@@ -219,6 +223,10 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
+        connectionbenchmark/benchmarktask.h \
+        connectionbenchmark/benchmarktaskdownload.h \
+        connectionbenchmark/benchmarktaskping.h \
+        connectionbenchmark/connectionbenchmark.h \
         connectiondataholder.h \
         connectionhealth.h \
         constants.h \
