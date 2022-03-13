@@ -13,21 +13,22 @@ RowLayout {
 
     property bool _passwordConditionIsSatisfied: false
     property alias _passwordConditionDescription: passwordConditionDescription.text
-    Layout.maximumWidth: 260
 
     VPNIcon {
-        source: parent._passwordConditionIsSatisfied ? "qrc:/nebula/resources/checkmark.svg" : "qrc:/nebula/resources/close-darker.svg"
-        sourceSize.width: 12
-        sourceSize.height: 12
+        source: parent._passwordConditionIsSatisfied ? "qrc:/nebula/resources/check-green70.svg" : "qrc:/nebula/resources/x-red50.svg"
+        sourceSize.width: 20
+        sourceSize.height: 20
         Layout.alignment: Qt.AlignTop
-        Layout.topMargin: 3
     }
 
     Text {
         id: passwordConditionDescription
+
+        color: VPNTheme.theme.fontColor
+        font.family: VPNTheme.theme.fontInterFamily
+        font.pixelSize: VPNTheme.theme.fontSizeSmall
         Layout.fillWidth: true
-        text: "Must be at least 8 characters"
-        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         lineHeight: 1
+        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
     }
 }

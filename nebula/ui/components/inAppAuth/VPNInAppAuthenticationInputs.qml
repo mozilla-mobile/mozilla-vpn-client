@@ -58,7 +58,8 @@ ColumnLayout {
                 id: toolTip
                 visible: _isSignUp && passwordInput.activeFocus
                 padding: VPNTheme.theme.windowMargin
-                x: parent.width - implicitWidth
+                x: VPNTheme.theme.vSpacing
+                width: passwordInput.width - VPNTheme.theme.vSpacing
 
                 background: Rectangle {
                     id: bg
@@ -67,11 +68,11 @@ ColumnLayout {
 
                     VPNRectangularGlow {
                         anchors.fill: glowVector
-                        glowRadius: 5
-                        spread: .2
+                        glowRadius: 4
+                        spread: .3
                         color: "#0C0C0D"
                         cornerRadius: glowVector.radius + glowRadius
-                        opacity: 0.1
+                        opacity: 0.15
                         z: -2
                     }
 
@@ -96,13 +97,11 @@ ColumnLayout {
                 }
 
                 contentItem: ColumnLayout {
-
-                    id: tooltipContent
                     spacing: VPNTheme.theme.windowMargin / 2
 
                     VPNInAppAuthenticationPasswordCondition {
                         _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
-                        _passwordConditionDescription:  "Must be a minumum of 8 characters"
+                        _passwordConditionDescription:  "Must be a minumum of 8 characters and lots of wrapping text"
                     }
                     VPNInAppAuthenticationPasswordCondition {
                         _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
