@@ -107,5 +107,6 @@
         <file>components/inAppAuth/VPNInAppAuthenticationBase.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationErrorPopup.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationInputs.qml</file>
+        <file>components/inAppAuth/VPNInAppAuthenticationPasswordCondition.qml</file>
     </qresource>
 </RCC>

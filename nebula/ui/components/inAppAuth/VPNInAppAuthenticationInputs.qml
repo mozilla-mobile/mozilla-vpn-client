@@ -4,6 +4,8 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
+import QtQuick.Controls 2.14
+import compat 0.1
 
 import Mozilla.VPN 1.0
 import components 0.1
@@ -17,10 +19,10 @@ ColumnLayout {
     property var _buttonOnClicked
     property alias _buttonEnabled: btn.enabled
     property alias _buttonText: btn.text
-    property bool _isSignInView: (VPNAuthInApp.state === VPNAuthInApp.StateSignIn || VPNAuthInApp.state === VPNAuthInApp.StateSigningIn)
+    property bool _isSignUpOrIn: VPNAuthInApp.state === VPNAuthInApp.StateSignIn || VPNAuthInApp.state === VPNAuthInApp.StateSigningIn || VPNAuthInApp.state === VPNAuthInApp.StateSignUp || VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
 
     function activeInput() {
-        return _isSignInView ? passwordInput : textInput
+        return _isSignUpOrIn ? passwordInput : textInput
     }
 
     Component.onCompleted: if (typeof(authError) === "undefined" || !authError.visible) activeInput().forceActiveFocus();
@@ -28,13 +30,13 @@ ColumnLayout {
     spacing: VPNTheme.theme.vSpacing - VPNTheme.theme.listSpacing
 
     ColumnLayout {
-        id: col
-        Layout.fillWidth: true
-        spacing: VPNTheme.theme.listSpacing
-
         function submitInfo(input) {
             if (!input.hasError && input.text.length > 0) btn.clicked();
         }
+
+        id: col
+
+        spacing: VPNTheme.theme.listSpacing
 
         VPNTextField {
             id: textInput
@@ -50,14 +52,78 @@ ColumnLayout {
             Layout.fillWidth: true
             Keys.onReturnPressed: col.submitInfo(passwordInput)
             onTextChanged: if (hasError) hasError = false
+
+            ToolTip {
+                property bool _isSignUp: VPNAuthInApp.state === VPNAuthInApp.StateSignUp
+                id: toolTip
+                visible: _isSignUp && passwordInput.activeFocus
+                padding: VPNTheme.theme.windowMargin
+                x: parent.width - implicitWidth
+
+                background: Rectangle {
+                    id: bg
+                    color: VPNTheme.colors.white
+                    radius: 4
+
+                    VPNRectangularGlow {
+                        anchors.fill: glowVector
+                        glowRadius: 5
+                        spread: .2
+                        color: "#0C0C0D"
+                        cornerRadius: glowVector.radius + glowRadius
+                        opacity: 0.1
+                        z: -2
+                    }
+
+                    Rectangle {
+                        id: glowVector
+                        anchors.fill: parent
+                        radius: bg.radius
+                        color: bg.color
+                    }
+
+                    Rectangle {
+                        radius: 1
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: -3
+                        anchors.right: parent.right
+                        anchors.rightMargin: VPNTheme.theme.windowMargin
+                        width: VPNTheme.theme.windowMargin / 2
+                        height: VPNTheme.theme.windowMargin / 2
+                        color: parent.color
+                        rotation: 45
+                    }
+                }
+
+                contentItem: ColumnLayout {
+
+                    id: tooltipContent
+                    spacing: VPNTheme.theme.windowMargin / 2
+
+                    VPNInAppAuthenticationPasswordCondition {
+                        _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
+                        _passwordConditionDescription:  "Must be a minumum of 8 characters"
+                    }
+                    VPNInAppAuthenticationPasswordCondition {
+                        _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
+                        _passwordConditionDescription:  "Must not be email"
+                    }
+                    VPNInAppAuthenticationPasswordCondition {
+                        _passwordConditionIsSatisfied: toolTip._isSignUp && passwordInput.text.length > 0 && VPNAuthInApp.validatePasswordCommons(passwordInput.text)
+                        _passwordConditionDescription:  "Must not be a common password"
+                    }
+                }
+            }
         }
 
         VPNContextualAlerts {
+            id: inputErrors
             anchors.left: undefined
             anchors.right: undefined
             anchors.topMargin: undefined
             Layout.minimumHeight: VPNTheme.theme.vSpacing
             Layout.fillHeight: false
+
             messages: [
                 {
                     type: "error",
@@ -70,7 +136,7 @@ ColumnLayout {
 
     states: [
         State {
-            when: _isSignInView
+            when: _isSignUpOrIn
             PropertyChanges {
                 target: textInput
                 visible: false
@@ -81,7 +147,7 @@ ColumnLayout {
             }
         },
         State {
-            when: !_isSignInView
+            when: !_isSignUpOrIn
             PropertyChanges {
                 target: textInput
                 visible: true
@@ -102,8 +168,10 @@ ColumnLayout {
                         VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionEmailCode ||
                         VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionTotpCode
         onClicked: _buttonOnClicked(activeInput().text)
+        width: undefined
 
     }
+
 
     Connections {
         target: VPNAuthInApp

@@ -50,12 +50,10 @@ VPNInAppAuthenticationBase {
 
     _disclaimers: ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
-        Layout.fillWidth: true
 
         GridLayout {
             id: grid
             Layout.alignment: Qt.AlignHCenter
-            Layout.fillWidth: true
             columnSpacing: 0
             columns: 3
             Component.onCompleted: if (implicitWidth > window.width) flow = Grid.TopToBottom
