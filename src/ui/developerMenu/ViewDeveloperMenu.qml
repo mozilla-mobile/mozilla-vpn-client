@@ -245,6 +245,17 @@ Item {
             }
         }
 
+        VPNTextBlock {
+            id: qtVersionText
+
+            text: VPN.devVersion
+            textFormat: Text.RichText
+            anchors.top: resetAndQuit.bottom
+            anchors.topMargin: 8
+            anchors.horizontalCenterOffset: 0
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
         VPNContextualAlerts {
             id: restartRequired
 
