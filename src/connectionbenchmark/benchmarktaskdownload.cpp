@@ -32,6 +32,8 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
 
   if (state == BenchmarkTask::StateActive) {
     m_request = NetworkRequest::createForGetUrl(this, m_fileUrl);
+    connect(m_request, &NetworkRequest::requestUpdated, this,
+            &BenchmarkTaskDownload::downloadProgressed);
     connect(m_request, &NetworkRequest::requestFailed, this,
             &BenchmarkTaskDownload::downloadReady);
     connect(m_request, &NetworkRequest::requestCompleted, this,
@@ -44,11 +46,26 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
   }
 }
 
+void BenchmarkTaskDownload::downloadProgressed(qint64 bytesReceived,
+                                               qint64 bytesTotal,
+                                               QNetworkReply* reply) {
+  logger.debug() << "Handle progressed:" << bytesReceived << "(received)"
+                 << bytesTotal << "(total)";
+
+  if (bytesReceived != m_bytesReceived) {
+    m_bytesReceived = bytesReceived;
+  }
+
+  // discard downloaded data
+  reply->readAll();
+}
+
 void BenchmarkTaskDownload::downloadReady(QNetworkReply::NetworkError error,
                                           const QByteArray& data) {
   logger.debug() << "Download ready" << error;
+  Q_UNUSED(data);
 
-  quint64 bytesPerSecond = data.size() / executionTime() * 1000;
+  quint64 bytesPerSecond = m_bytesReceived / executionTime() * 1000;
   bool hasUnexpectedError = (error != QNetworkReply::NoError &&
                              error != QNetworkReply::OperationCanceledError &&
                              error != QNetworkReply::TimeoutError) ||

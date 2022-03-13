@@ -168,7 +168,8 @@ class NetworkRequest final : public QObject {
   void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data);
   void requestRedirected(NetworkRequest* request, const QUrl& url);
   void requestCompleted(const QByteArray& data);
-  void requestUpdated(qint64 bytesReceived, qint64 bytesTotal);
+  void requestUpdated(qint64 bytesReceived, qint64 bytesTotal,
+                      QNetworkReply* reply);
 
  private:
   QNetworkRequest m_request;
