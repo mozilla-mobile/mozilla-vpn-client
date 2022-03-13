@@ -26,7 +26,7 @@ RadioDelegate {
         state = Qt.binding(() => radioControl.enabled ? uiState.stateDefault : uiState.stateDisabled)
     }
 
-    onFocusChanged: {
+    onActiveFocusChanged: {
         if (!radioControl.focus)
             return mouseArea.changeState(uiState.stateDefault);
         if (typeof (ensureVisible) !== "undefined")
@@ -65,6 +65,7 @@ RadioDelegate {
         },
         State {
             name: uiState.stateDefault
+            when: radioButton.enabled
 
             PropertyChanges {
                 target: radioButtonInsetCircle
@@ -95,6 +96,7 @@ RadioDelegate {
         },
         State {
             name: uiState.stateDisabled
+            when: !radioControl.enabled
 
             PropertyChanges {
                 target: radioButtonInsetCircle
