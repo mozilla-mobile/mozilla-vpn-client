@@ -8,8 +8,11 @@
 #include "leakdetector.h"
 #include "incrementaldecoder.h"
 
+#include "../../glean/telemetry/gleansample.h"
+
 #include <QCoreApplication>
 #include <QFile>
+#include <QMetaEnum>
 #include <QRegularExpression>
 
 constexpr int PASSWORD_MIN_LENGTH = 8;
@@ -43,6 +46,10 @@ AuthenticationInApp::~AuthenticationInApp() {
 void AuthenticationInApp::setState(State state) {
   m_state = state;
   emit stateChanged();
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::authenticationInappStep,
+      {{"state", QVariant::fromValue(state).toString()}});
 }
 
 void AuthenticationInApp::registerListener(
@@ -215,20 +222,24 @@ bool AuthenticationInApp::validateEmailAddress(const QString& emailAddress) {
   return true;
 }
 
-// static
 bool AuthenticationInApp::validatePasswordCommons(const QString& password) {
-  if (password.isEmpty()) {
+  if (!validatePasswordLength(password)) {
     // The task of this function is not the length validation.
     return true;
   }
 
-  QFile file(":/ui/resources/encodedPassword.txt");
-  if (!file.open(QFile::ReadOnly | QFile::Text)) {
-    logger.error() << "Failed to open the encodedPassword.txt";
-    return true;
+  // Let's cache the encoded-password content.
+  if (m_encodedPassword.isEmpty()) {
+    QFile file(":/ui/resources/encodedPassword.txt");
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+      logger.error() << "Failed to open the encodedPassword.txt";
+      return true;
+    }
+
+    m_encodedPassword = file.readAll();
   }
 
-  QTextStream stream(&file);
+  QTextStream stream(&m_encodedPassword);
 
   IncrementalDecoder id(qApp);
   IncrementalDecoder::Result result = id.match(stream, password);

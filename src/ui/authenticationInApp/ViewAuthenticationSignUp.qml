@@ -115,11 +115,11 @@ VPNInAppAuthenticationBase {
         spacing: VPNTheme.theme.windowMargin
 
         VPNLinkButton {
-            labelText: "Cancel"
+            labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText // "Cancel"
             fontName: VPNTheme.theme.fontBoldFamily
             anchors.horizontalCenter: parent.horizontalCenter
             linkColor: VPNTheme.theme.redButton
-            onClicked: VPNAuthInApp.reset()
+            onClicked: VPN.cancelAuthentication()
         }
 
     }
@@ -129,10 +129,10 @@ VPNInAppAuthenticationBase {
     }
 
     function passwordIsValid(passwordString) {
-        return VPNAuthInApp.validatePasswordCommons(passwordString)
+        return passwordsMatch()
             && VPNAuthInApp.validatePasswordLength(passwordString)
             && VPNAuthInApp.validatePasswordEmail(passwordString)
-            && passwordsMatch();
+            && VPNAuthInApp.validatePasswordCommons(passwordString)
     }
 
 }

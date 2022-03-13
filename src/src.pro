@@ -24,6 +24,11 @@ QT += charts
 QT += websockets
 QT += sql
 
+versionAtLeast(QT_VERSION, 6.0.0) {
+    message("Enable QT5 Compat")
+    QT += core5compat
+}
+
 # For the inspector
 QT+= testlib
 QT.testlib.CONFIG -= console
@@ -47,7 +52,7 @@ include($$PWD/../glean/glean.pri)
 
 include($$PWD/../nebula/nebula.pri)
 
-!wasm{
+!wasm {
     include($$PWD/crashreporter/crashreporter.pri)
 }
 
@@ -333,7 +338,7 @@ HEADERS += \
         update/versionapi.h \
         urlopener.h
 
-webextension {
+linux:!android|macos|win* {
     message(Enabling the webextension support)
 
     DEFINES += MVPN_WEBEXTENSION
@@ -360,7 +365,7 @@ RESOURCES += resources/certs/certs.qrc
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
-balrog {
+macos|win* {
     message(Balrog enabled)
     DEFINES += MVPN_BALROG
 
@@ -669,7 +674,7 @@ else:android {
     # We need to compile our own openssl :/
     exists(../3rdparty/openSSL/openssl.pri) {
        include(../3rdparty/openSSL/openssl.pri)
-    } else{
+    } else {
        message(Have you imported the 3rd-party git submodules? Read the README.md)
        error(Did not found openSSL in 3rdparty/openSSL - Exiting Android Build)
     }
@@ -743,21 +748,6 @@ else:macos {
 
         SOURCES += platforms/dummy/dummycontroller.cpp
         HEADERS += platforms/dummy/dummycontroller.h
-    } else:networkextension {
-        message(Network extension mode)
-
-        DEFINES += MVPN_MACOS_NETWORKEXTENSION
-
-        INCLUDEPATH += \
-                    ../3rdparty/Wireguard-apple/WireGuard/WireGuard/Crypto \
-                    ../3rdparty/wireguard-apple/WireGuard/Shared/Model \
-
-        OBJECTIVE_SOURCES += \
-                platforms/ios/ioscontroller.mm \
-                platforms/ios/iosglue.mm
-
-        OBJECTIVE_HEADERS += \
-                platforms/ios/iosscontroller.h
     } else {
         message(Daemon mode)
 
@@ -886,6 +876,14 @@ else:win* {
 
     TARGET = MozillaVPN
 
+    versionAtLeast(QT_VERSION, 6.0.0) {
+        versionAtLeast(QT_VERSION, 6.3.0) {
+            # See https://mozilla-hub.atlassian.net/browse/VPN-1894
+	    error(Remove the qt6 windows hack!)
+        }
+        RESOURCES += ui/qt6winhack.qrc
+    }
+
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 
@@ -896,7 +894,6 @@ else:win* {
 
     QT += networkauth
     QT += svg
-    QT += winextras
 
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS

@@ -30,24 +30,14 @@ if "%1" NEQ "" (
   if "%1" == "-h" SET SHOW_HELP=T
   if "%1" == "--help" SET SHOW_HELP=T
 
-  if "%1" NEQ "-t" (
-    if "%1" NEQ "--test" (
-      if "%1" NEQ "-w" (
-        if "%1" NEQ "--webextension" (
-          if "%1" NEQ "--debug" (
-             SET SHOW_HELP=T
-          )
-        )
-      )
-    )
+  if "%1" NEQ "--debug" (
+     SET SHOW_HELP=T
   )
 )
 
 if "%SHOW_HELP%" == "T" (
   ECHO "Options:"
   ECHO "  -h|--help            Help menu"
-  ECHO "  -t|--test            Test mode"
-  ECHO "  -w|--webextension    Enable the webExtension support"
   ECHO "  --debug               Build a debug version"
   EXIT 0
 )
@@ -59,14 +49,6 @@ IF "%BUILDDIR%" == "" (
    ECHO Using Build Directory %BUILDDIR%
 
 
-
-SET TEST_BUILD=F
-if "%1"== "-t" SET TEST_BUILD=T
-if "%1"== "--test" SET TEST_BUILD=T
-
-SET WEBEXTENSION_BUILD=F
-if "%1"== "-w" SET WEBEXTENSION_BUILD=T
-if "%1"== "--webextension" SET WEBEXTENSION_BUILD=T
 
 SET DEBUG_BUILD=F
 if "%1"== "--debug" SET DEBUG_BUILD=T
@@ -82,18 +64,6 @@ FOR /F "tokens=2* delims==" %%A IN ('FINDSTR /IC:":VERSION" version.pri') DO cal
 
 SET FLAGS=BUILD_ID=%VERSION%
 
-if "%TEST_BUILD%" == "T" (
-  ECHO Test build enabled
-  SET FLAGS=%FLAGS% CONFIG+=DUMMY
-) else (
-  SET FLAGS=%FLAGS% CONFIG+=balrog
-)
-
-if "%WEBEXTENSION_BUILD%" == "T" (
-  ECHO Web-Extension support enabled
-  SET FLAGS=%FLAGS% CONFIG+=webextension
-)
-
 ECHO Checking required commands...
 CALL :CheckCommand git
 CALL :CheckCommand python
@@ -105,18 +75,16 @@ git submodule init
 git submodule update --remote --depth 1 i18n
 
 ECHO Copying the installer dependencies...
-CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\bin\libcrypto-1_1-x64.dll
-CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\bin\libssl-1_1-x64.dll
-CALL :CopyDependency libEGL.dll %BUILDDIR%\bin\libEGL.dll
-CALL :CopyDependency libGLESv2.dll %BUILDDIR%\bin\libGLESv2.dll
+CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\SSL\bin\libcrypto-1_1-x64.dll
+CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\SSL\bin\libssl-1_1-x64.dll
 CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x86.msm"
 CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
-python scripts\utils/import_languages.py
+python3 scripts\utils\import_languages.py
 
 ECHO Generating glean samples...
-python scripts\utils\generate_glean.py
+python3 scripts\utils\generate_glean.py
 
 ECHO BUILD_BUILD = %DEBUG_BUILD%
 
@@ -201,6 +169,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 MSBuild -t:Build -p:Configuration=%BUILD_CONF% MozillaVPN.vcxproj
+
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to build the project
   EXIT 1
