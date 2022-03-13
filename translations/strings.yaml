@@ -453,3 +453,6 @@ inAppAuth:
   passwordInputPlaceholder: Enter password
   passwordInputLabel: Password
   invalidPasswordErrorMessage: Invalid password. Please try again
+  termsOfServiceAndPrivacyDisclaimer: 
+    value: By continuing, you agree to the <a href="terms-and-conditions">Terms and Conditions</a> and the <a href="privacy-notice">Privacy Notice</a>.
+    comment:  This string contains html markup to support two nested links. 
