@@ -19,12 +19,6 @@ jobs:
     name: iOS build
     runs-on: macos-latest
 
-    strategy:
-      matrix:
-        config:
-          - { name: "Qt5", pattern: qt5, version: 5.11.1 }
-          - { name: "Qt6", pattern: qt6, version: 6.2.3 }
-
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
@@ -36,21 +30,20 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Install ${{matrix.config.name}}
+      - name: Install Qt6
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_ios
           cd qt_ios
-          cat ${{matrix.config.pattern}}* > qt_static_ios.tar.gz
+          cat qt6* > qt_static_ios.tar.gz
           tar xf qt_static_ios.tar.gz
-          sudo mkdir /opt/${{matrix.config.version}}
-          sudo mv ios /opt/${{matrix.config.version}}
+          sudo mkdir /opt/6.2.3
+          sudo mv ios /opt/6.2.3
           if [ -d macos ]; then
-            sudo mv macos /opt/${{matrix.config.version}}
+            sudo mv macos /opt/6.2.3
           fi
           cd ..
-          echo `ls -la /opt/${{matrix.config.version}}`
 
       - name: Generating glean samples
         shell: bash
@@ -61,8 +54,8 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.version}}/macos/bin:$PATH
-          export PATH=/opt/${{matrix.config.version}}/ios/bin:$PATH
+          export PATH=/opt/6.2.3/macos/bin:$PATH
+          export PATH=/opt/6.2.3/ios/bin:$PATH
           echo "$PATH"
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
@@ -77,9 +70,9 @@ jobs:
       - name: Configuring the build
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.version}}/macos/bin:$PATH
-          export PATH=/opt/${{matrix.config.version}}/ios/bin:$PATH
-          export QT_IOS_BIN=/opt/${{matrix.config.version}}/ios/bin
+          export PATH=/opt/6.2.3/macos/bin:$PATH
+          export PATH=/opt/6.2.3/ios/bin:$PATH
+          export QT_IOS_BIN=/opt/6.2.3/ios/bin
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           cat > xcode.xconfig << EOF

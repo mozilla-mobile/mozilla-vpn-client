@@ -94,4 +94,12 @@ RCC_DIR = .rcc
 
 win* {
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
+
+    versionAtLeast(QT_VERSION, 6.0.0) {
+        versionAtLeast(QT_VERSION, 6.3.0) {
+            # See https://mozilla-hub.atlassian.net/browse/VPN-1894
+	    error(Remove the qt6 windows hack!)
+        }
+        RESOURCES += qt6winhack.qrc
+    }
 }

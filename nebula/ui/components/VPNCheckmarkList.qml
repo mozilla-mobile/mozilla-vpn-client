@@ -4,6 +4,7 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
+import Qt.labs.qmlmodels 1.0
 
 import Mozilla.VPN 1.0
 
@@ -30,10 +31,13 @@ ColumnLayout {
         Row {
             Layout.fillWidth: true
 
-            VPNCheckmark {
-                color: VPNTheme.colors.secondary
-                height: VPNTheme.theme.iconSize * 1.5
-                width: VPNTheme.theme.iconSize * 1.5
+            Image {
+                fillMode: Image.PreserveAspectFit
+                source: type === "checkmark"
+                    ? "qrc:/nebula/resources/checkmark-green.svg"
+                    : "qrc:/nebula/resources/dropdown-closed.svg"
+                sourceSize.height: VPNTheme.theme.iconSize * 1.5
+                sourceSize.width: VPNTheme.theme.iconSize * 1.5
             }
             VPNTextBlock {
                 anchors.verticalCenter: parent.verticalCenter
@@ -46,7 +50,9 @@ ColumnLayout {
     }
 
     Repeater {
-        model: listModel
+        id: checkmarkListRepeater
         delegate: checkMarkItem
+        model: listModel
     }
+
 }

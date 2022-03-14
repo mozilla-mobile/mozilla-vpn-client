@@ -24,6 +24,11 @@ QT += charts
 QT += websockets
 QT += sql
 
+versionAtLeast(QT_VERSION, 6.0.0) {
+    message("Enable QT5 Compat")
+    QT += core5compat
+}
+
 # For the inspector
 QT+= testlib
 QT.testlib.CONFIG -= console
@@ -88,6 +93,10 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
+        connectionbenchmark/benchmarktask.cpp \
+        connectionbenchmark/benchmarktaskdownload.cpp \
+        connectionbenchmark/benchmarktaskping.cpp \
+        connectionbenchmark/connectionbenchmark.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         constants.cpp \
@@ -214,6 +223,10 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
+        connectionbenchmark/benchmarktask.h \
+        connectionbenchmark/benchmarktaskdownload.h \
+        connectionbenchmark/benchmarktaskping.h \
+        connectionbenchmark/connectionbenchmark.h \
         connectiondataholder.h \
         connectionhealth.h \
         constants.h \
@@ -863,6 +876,14 @@ else:win* {
 
     TARGET = MozillaVPN
 
+    versionAtLeast(QT_VERSION, 6.0.0) {
+        versionAtLeast(QT_VERSION, 6.3.0) {
+            # See https://mozilla-hub.atlassian.net/browse/VPN-1894
+	    error(Remove the qt6 windows hack!)
+        }
+        RESOURCES += ui/qt6winhack.qrc
+    }
+
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 
@@ -873,7 +894,6 @@ else:win* {
 
     QT += networkauth
     QT += svg
-    QT += winextras
 
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS

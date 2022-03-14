@@ -8,6 +8,7 @@
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
+#include "connectionbenchmark/connectionbenchmark.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "constants.h"
@@ -34,6 +35,7 @@
 #include <QObject>
 #include <QStandardPaths>
 #include <QTimer>
+#include <QVariant>
 
 #ifdef MVPN_WINDOWS
 #  include "platforms/windows/windowscommons.h"
@@ -200,6 +202,9 @@ class MozillaVPN final : public QObject {
   }
   CloseEventHandler* closeEventHandler() {
     return &m_private->m_closeEventHandler;
+  }
+  ConnectionBenchmark* connectionBenchmark() {
+    return &m_private->m_connectionBenchmark;
   }
   ConnectionDataHolder* connectionDataHolder() {
     return &m_private->m_connectionDataHolder;
@@ -391,6 +396,8 @@ class MozillaVPN final : public QObject {
   void initializeGlean();
   void sendGleanPings();
   void recordGleanEvent(const QString& gleanSampleName);
+  void recordGleanEventWithExtraKeys(const QString& gleanSampleName,
+                                     const QVariantMap& extraKeys);
   void setGleanSourceTags(const QStringList& tags);
 
   void aboutToQuit();
@@ -413,6 +420,7 @@ class MozillaVPN final : public QObject {
     CaptivePortal m_captivePortal;
     CaptivePortalDetection m_captivePortalDetection;
     CloseEventHandler m_closeEventHandler;
+    ConnectionBenchmark m_connectionBenchmark;
     ConnectionDataHolder m_connectionDataHolder;
     ConnectionHealth m_connectionHealth;
     Controller m_controller;

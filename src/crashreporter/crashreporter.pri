@@ -42,7 +42,6 @@ win*{
 
     QT += networkauth
     QT += svg
-    QT += winextras
 }
 
 RESOURCES += \

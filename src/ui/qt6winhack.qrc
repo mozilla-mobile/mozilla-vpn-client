@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/ui">
+        <file>qt6winhack.qml</file>
+    </qresource>
+</RCC>

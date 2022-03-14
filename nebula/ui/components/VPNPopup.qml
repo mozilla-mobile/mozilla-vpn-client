@@ -53,6 +53,7 @@ Popup {
             Layout.leftMargin: VPNTheme.theme.vSpacing
             Layout.rightMargin: VPNTheme.theme.vSpacing
             Layout.bottomMargin: VPNTheme.theme.vSpacing
+            Layout.alignment: Qt.AlignHCenter
         }
     }
 
