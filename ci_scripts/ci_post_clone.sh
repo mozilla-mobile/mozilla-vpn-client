@@ -39,9 +39,9 @@ else
   #echo `ls -la /opt/6.2.3`
   #cd ..
   pip3 install aqtinstall
-  aqt install-qt -O ./qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
+  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
   export QT_IOS_BIN=`pwd`/qt_ios/6.2.3/ios/bin
-  export PATH=`pwd`/qt_ios/6.2.3/ios/bin:`pwd`/qt_ios/6.2.3/macos/bin:$PATH
+  export PATH=`pwd`/qt_ios/6.2.3/ios/bin:`pwd`/qt_ios/6.2.3/macos/bin:`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
 fi
 
 # install xcodeproj which is needed by xcode_patcher.rb
