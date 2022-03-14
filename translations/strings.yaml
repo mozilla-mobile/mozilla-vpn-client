@@ -455,4 +455,4 @@ inAppAuth:
   invalidPasswordErrorMessage: Invalid password. Please try again
   termsOfServiceAndPrivacyDisclaimer: 
     value: By continuing, you agree to the <a href="terms-of-service">Terms of Service</a> and the <a href="privacy-notice">Privacy Notice</a>.
-    comment:  Do not remove or translate the markup: '<a href="terms-of-service">', '<a href="privacy-notice">, '</a>'.
+    comment:  Do not remove or translate the markup: '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
