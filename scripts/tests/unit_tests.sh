@@ -31,7 +31,7 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  -h | --help)
+  *)
     helpFunction
     ;;
   esac
@@ -71,7 +71,7 @@ utest_run_unit || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for unit tests..."  
-  _grcov_unit unit_"$GRCOV_FILENAME"
+  utest_grcov unit_"$GRCOV_FILENAME"
 fi
 
 printn Y "Cleaning the existing unit project... "
@@ -85,7 +85,7 @@ utest_run_auth || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for auth tests...$GRCOV_FILENAME"  
-  _grcov_unit auth_"$GRCOV_FILENAME"
+  utest_grcov auth_"$GRCOV_FILENAME"
 fi
 
 printn Y "Cleaning the existing auth project... "
@@ -99,7 +99,7 @@ utest_run_nativemessaging || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for native messaging unit tests..."  
-  _grcov_unit nativemessaging_"$GRCOV_FILENAME"
+  utest_grcov nativemessaging_"$GRCOV_FILENAME"
 fi
 
 printn Y "Cleaning the existing native messaging project... "

@@ -64,8 +64,8 @@ print Y "Running the QML tests..."
 qmltest_run || die
 
 if [[ "$GRCOV_FILENAME" ]]; then
-  printn Y "Generating temp coverage file for lottie unit tests..."  
-  grcov -t lcov -o "$GRCOV_FILENAME" || die "Failure generating final qml lcov file"
+  printn Y "Generating temp coverage file for qml tests..."  
+  qmltest_grcov "$GRCOV_FILENAME"1wqSAXresfdzvcx ¨.
 fi
 
 printn Y "Cleaning the existing project... "

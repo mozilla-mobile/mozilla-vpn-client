@@ -47,22 +47,6 @@ _compile() {
   [ -f "$2" ] || die "Expected $2 binary"
 }
 
-_grcov_unit() {    
-  grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov unit"
-}
-
-_grcov_lottie() {    
-  grcov .obj/lottie_tests.build/Release/lottie_tests.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov lottie"
-}
-
-_grcov_lottie_qml() {    
-  grcov .obj/tst_lottie.build/Release/tst_lottie.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov qml lottie"
-}
-
-_grcov_qml() {      
-  grcov .obj/qml_tests.build/Release/qml_tests.build/Objects-normal/x86_64/ -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov qml"
-}
-
 # Public methods
 
 ## Unit-tests
@@ -110,6 +94,10 @@ utest_cleanup_nativemessaging() {
   _cleanup tests.xcodeproj/ ./Release/tests || die
 }
 
+utest_grcov() {    
+  grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov unit"
+}
+
 ## Lottie tests
 
 lottie_compile_unit() {
@@ -138,6 +126,14 @@ lottie_cleanup_qml() {
   _cleanup tst_lottie.xcodeproj ./Release/tst_lottie || die
 }
 
+lottie_unit_grcov() {    
+  grcov .obj/lottie_tests.build/Release/lottie_tests.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov lottie"
+}
+
+lottie_qml_grcov() {    
+  grcov .obj/tst_lottie.build/Release/tst_lottie.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov qml lottie"
+}
+
 ## QML tests
 
 qmltest_compile() {
@@ -151,4 +147,8 @@ qmltest_run() {
 
 qmltest_cleanup() {
   _cleanup qml_tests.xcodeproj ./Release/qml_tests || die
+}
+
+qmltest_grcov() {      
+  grcov .obj/qml_tests.build/Release/qml_tests.build/Objects-normal/x86_64/ -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov qml"
 }

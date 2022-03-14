@@ -66,7 +66,7 @@ lottie_run_unit || die
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for lottie unit tests..."  
-  _grcov_lottie unit_"$GRCOV_FILENAME"
+  lottie_unit_grcov unit_"$GRCOV_FILENAME"
 fi
 
 printn Y "Cleaning the existing project... "
@@ -80,7 +80,7 @@ lottie_run_qml || die
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for lottie qml tests...$GRCOV_FILENAME"  
-  _grcov_lottie_qml qml_"$GRCOV_FILENAME"
+  lottie_qml_grcov qml_"$GRCOV_FILENAME"
 fi
 
 print Y "Cleaning the existing project... "
