@@ -59,7 +59,16 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/qt6/bin:$PATH
-          ./scripts/tests/lottie_tests.sh
+          ./scripts/tests/lottie_tests.sh --grcov lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:              
+          directory: .                              
+          flags: lottie_tests
+          name: codecov-poc
+          files: lottie_final_lcov.info
+          verbose: true
 
   windows-lottie-tests:
     name: Run Lottie tests on Windows Qt6
