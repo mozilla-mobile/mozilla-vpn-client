@@ -54,8 +54,9 @@ void BenchmarkTaskDownload::downloadProgressed(qint64 bytesReceived,
 
   m_bytesReceived = bytesReceived;
 
-  // discard downloaded data
-  reply->readAll();
+  // Discard downloaded data
+  QByteArray data = reply->readAll();
+  Q_UNUSED(data);
 }
 
 void BenchmarkTaskDownload::downloadReady(QNetworkReply::NetworkError error,
