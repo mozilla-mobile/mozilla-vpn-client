@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000 --retries 3"
+    "functionalTest": "mocha --require ./tests/functional/setupVpn.js --reporter json > mocha-results.json  --timeout 30000 --retries 3"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
