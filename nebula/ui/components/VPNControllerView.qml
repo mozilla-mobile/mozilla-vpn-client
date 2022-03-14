@@ -666,6 +666,9 @@ Item {
         opacity: 1
 
         onClicked: {
+            if (box.connectionInfoScreenVisible) {
+                return;
+            }
             Sample.settingsViewOpened.record();
             stackview.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate)
         }
@@ -677,7 +680,7 @@ Item {
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
         Accessible.ignored: connectionInfoVisible
-        enabled: !connectionInfoVisible
+        enabled: !connectionInfoVisible || !box.connectionInfoScreenVisible
 
         VPNIcon {
             id: settingsImage

@@ -14,10 +14,10 @@ class DnsPingSender final : public PingSender {
   Q_DISABLE_COPY_MOVE(DnsPingSender)
 
  public:
-  DnsPingSender(const QString& source, QObject* parent = nullptr);
+  DnsPingSender(const QHostAddress& source, QObject* parent = nullptr);
   ~DnsPingSender();
 
-  void sendPing(const QString& dest, quint16 sequence) override;
+  void sendPing(const QHostAddress& dest, quint16 sequence) override;
 
  private:
   void readData();

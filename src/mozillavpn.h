@@ -8,6 +8,7 @@
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
+#include "connectionbenchmark/connectionbenchmark.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "constants.h"
@@ -119,6 +120,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(QString versionString READ versionString CONSTANT)
   Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
   Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
+  Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
   Q_PROPERTY(QString architecture READ architecture CONSTANT)
   Q_PROPERTY(QString platform READ platform CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
@@ -202,6 +204,9 @@ class MozillaVPN final : public QObject {
   CloseEventHandler* closeEventHandler() {
     return &m_private->m_closeEventHandler;
   }
+  ConnectionBenchmark* connectionBenchmark() {
+    return &m_private->m_connectionBenchmark;
+  }
   ConnectionDataHolder* connectionDataHolder() {
     return &m_private->m_connectionDataHolder;
   }
@@ -261,19 +266,18 @@ class MozillaVPN final : public QObject {
 
   void silentSwitch();
 
-  const QString versionString() const { return QString(APP_VERSION); }
-  const QString buildNumber() const { return QString(BUILD_ID); }
-  const QString osVersion() const {
+  static QString versionString() { return QString(APP_VERSION); }
+  static QString buildNumber() { return QString(BUILD_ID); }
+  static QString osVersion() {
 #ifdef MVPN_WINDOWS
     return WindowsCommons::WindowsVersion();
 #else
     return QSysInfo::productVersion();
 #endif
   }
-  const QString architecture() const {
-    return QSysInfo::currentCpuArchitecture();
-  }
-  const QString platform() const { return Constants::PLATFORM_NAME; }
+  static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
+  static QString platform() { return Constants::PLATFORM_NAME; }
+  static QString devVersion();
 
   void logout();
 
@@ -416,6 +420,7 @@ class MozillaVPN final : public QObject {
     CaptivePortal m_captivePortal;
     CaptivePortalDetection m_captivePortalDetection;
     CloseEventHandler m_closeEventHandler;
+    ConnectionBenchmark m_connectionBenchmark;
     ConnectionDataHolder m_connectionDataHolder;
     ConnectionHealth m_connectionHealth;
     Controller m_controller;

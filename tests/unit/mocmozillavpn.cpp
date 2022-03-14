@@ -157,3 +157,5 @@ void MozillaVPN::hardResetAndQuit() {}
 void MozillaVPN::hardReset() {}
 
 void MozillaVPN::crashTest() {}
+
+QString MozillaVPN::devVersion() { return qVersion(); }

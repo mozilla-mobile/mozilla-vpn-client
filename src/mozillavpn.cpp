@@ -1692,3 +1692,17 @@ void MozillaVPN::crashTest() {
   delete[] text;
   delete[] text;
 }
+
+// static
+QString MozillaVPN::devVersion() {
+  QString out;
+  QTextStream stream(&out);
+
+  stream << "Qt version: <b>";
+  stream << qVersion();
+  stream << "</b> - compiled: <b>";
+  stream << QT_VERSION_STR;
+  stream << "</b>";
+
+  return out;
+}

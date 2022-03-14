@@ -41,7 +41,7 @@ namespace {
 Logger logger(LOG_NETWORKING, "ConnectionHealth");
 }
 
-ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QString()) {
+ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
   MVPN_COUNT_CTOR(ConnectionHealth);
 
   m_noSignalTimer.setSingleShot(true);
@@ -65,7 +65,8 @@ ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QString()) {
   connect(&m_dnsPingTimer, &QTimer::timeout, this, [this]() {
     m_dnsPingSequence++;
     m_dnsPingTimestamp = QDateTime::currentMSecsSinceEpoch();
-    m_dnsPingSender.sendPing(PING_WELL_KNOWN_ANYCAST_DNS, m_dnsPingSequence);
+    m_dnsPingSender.sendPing(QHostAddress(PING_WELL_KNOWN_ANYCAST_DNS),
+                             m_dnsPingSequence);
   });
 
   m_dnsPingInitialized = false;
@@ -117,7 +118,8 @@ void ConnectionHealth::startIdle() {
 
   // Send an initial ping right away.
   m_dnsPingTimestamp = QDateTime::currentMSecsSinceEpoch();
-  m_dnsPingSender.sendPing(PING_WELL_KNOWN_ANYCAST_DNS, m_dnsPingSequence);
+  m_dnsPingSender.sendPing(QHostAddress(PING_WELL_KNOWN_ANYCAST_DNS),
+                           m_dnsPingSequence);
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {

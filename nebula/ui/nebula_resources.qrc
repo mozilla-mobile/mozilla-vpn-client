@@ -10,6 +10,7 @@
         <file>resources/bandwidth.svg</file>
         <file>resources/buttonLoader.svg</file>
         <file>resources/checkmark.svg</file>
+        <file>resources/checkmark-green.svg</file>
         <file>resources/chevron-right-dark.svg</file>
         <file>resources/chevron.svg</file>
         <file>resources/close-darker.svg</file>
@@ -24,6 +25,7 @@
         <file>resources/devicesRemove.svg</file>
         <file>resources/devices.svg</file>
         <file>resources/down.svg</file>
+        <file>resources/dropdown-closed.svg</file>
         <file>resources/externalLink.svg</file>
         <file>resources/eye-hidden.svg</file>
         <file>resources/eye-visible.svg</file>

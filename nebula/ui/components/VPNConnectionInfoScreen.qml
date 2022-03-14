@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 
 Rectangle {
-    property bool isLoading: false
     property bool isOpen: false
     property bool isTransitioning: false
     property int transitionDuration: 750
@@ -52,7 +51,11 @@ Rectangle {
         },
         State {
             name: "open-loading"
-            when: isOpen && !isTransitioning && isLoading
+            when: (VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateInitial
+                && VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateReady
+                && VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateError)
+                && isOpen
+                && !isTransitioning
 
             PropertyChanges {
                 target: root
@@ -62,7 +65,21 @@ Rectangle {
         },
         State {
             name: "open-ready"
-            when: isOpen && !isTransitioning && !isLoading
+            when: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateReady
+                && isOpen
+                && !isTransitioning
+
+            PropertyChanges {
+                target: root
+                opacity: 1
+                visible: true
+            }
+        },
+        State {
+            name: "open-error"
+            when: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateError
+                && isOpen
+                && !isTransitioning
 
             PropertyChanges {
                 target: root
@@ -77,17 +94,17 @@ Rectangle {
         // Start opening/closing transition
         isTransitioning = true;
 
-        timerOne.setTimeout(function() {
+        if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial) {
+            VPNConnectionBenchmark.start();
+        } else if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateRunning
+            || VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateReady) {
+            VPNConnectionBenchmark.reset();
+        }
+
+        timer.setTimeout(function() {
             // Finished opening/closing transition
             isTransitioning = false;
-            // Set fake loading state: Starting connection speedtest
-            isLoading = true;
         }, transitionDuration);
-
-        timerTwo.setTimeout(function() {
-            // Set fake loading state: Finished connection speedtest
-            isLoading = false;
-        }, transitionDuration * 10);
     }
 
     Behavior on opacity {
@@ -105,46 +122,49 @@ Rectangle {
         opacity: visible && root.state !== "closing" ? 1 : 0
         visible: root.state === "open-ready" || root.state === "closing"
 
-        VPNIconButton {
-            id: connectionInfoRestartButton
-
-            anchors {
-                top: parent.top
-                right: parent.right
-                topMargin: VPNTheme.theme.windowMargin / 2
-                rightMargin: VPNTheme.theme.windowMargin / 2
-            }
-            // TODO: Replace with localized string
-            accessibleName: "Restart speed test"
-            buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-            enabled: connectionInfoContent.visible && !root.isLoading
-            z: 1
-
-            onClicked: {
-                // Set fake loading state: Restart connection speedtest
-                root.isLoading = true;
-
-                timerThree.setTimeout(function() {
-                    // Set fake loading state: Finished connection speedtest
-                    root.isLoading = false;
-                }, transitionDuration * 10);
-            }
-
-            Image {
-                anchors.centerIn: connectionInfoRestartButton
-                opacity: 0.8
-                source: "qrc:/nebula/resources/refresh.svg"
-                sourceSize.height: VPNTheme.theme.iconSize * 1.5
-                sourceSize.width: VPNTheme.theme.iconSize * 1.5
-            }
-        }
-
         Behavior on opacity {
             NumberAnimation {
                 duration: root.state !== "closing"
                     ? root.transitionDuration
                     : root.transitionDuration * 2
             }
+        }
+    }
+
+    VPNConnectionInfoError {
+        id: connectionInfoError
+
+        opacity: visible && root.state !== "closing" ? 1 : 0
+        visible: root.state === "open-error" || root.state === "closing"
+    }
+
+    VPNIconButton {
+        id: connectionInfoRestartButton
+
+        visible: connectionInfoContent.visible || connectionInfoError.visible
+
+        anchors {
+            top: parent.top
+            right: parent.right
+            topMargin: VPNTheme.theme.windowMargin / 2
+            rightMargin: VPNTheme.theme.windowMargin / 2
+        }
+        // TODO: Replace with localized string
+        accessibleName: "Restart speed test"
+        buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
+        enabled: connectionInfoContent.visible
+        z: 1
+
+        onClicked: {
+            VPNConnectionBenchmark.start();
+        }
+
+        Image {
+            anchors.centerIn: connectionInfoRestartButton
+            opacity: 0.8
+            source: "qrc:/nebula/resources/refresh.svg"
+            sourceSize.height: VPNTheme.theme.iconSize * 1.5
+            sourceSize.width: VPNTheme.theme.iconSize * 1.5
         }
     }
 
@@ -165,20 +185,12 @@ Rectangle {
             }
             color: VPNTheme.colors.white
             font.pixelSize: VPNTheme.theme.fontSizeLarge
-            // TODO: Replace with localized string
-            text: "Testing speed …"
+            text: VPNl18n.ConnectionInfoLoadingIndicatorLabel
         }
     }
 
-    // TODO: Remove timers that are used for setting fake loading
     VPNTimer {
-        id: timerOne
-    }
-    VPNTimer {
-        id: timerTwo
-    }
-    VPNTimer {
-        id: timerThree
+        id: timer
     }
 
 }
