@@ -52,9 +52,7 @@ void BenchmarkTaskDownload::downloadProgressed(qint64 bytesReceived,
   logger.debug() << "Handle progressed:" << bytesReceived << "(received)"
                  << bytesTotal << "(total)";
 
-  if (bytesReceived != m_bytesReceived) {
-    m_bytesReceived = bytesReceived;
-  }
+  m_bytesReceived = bytesReceived;
 
   // discard downloaded data
   reply->readAll();
