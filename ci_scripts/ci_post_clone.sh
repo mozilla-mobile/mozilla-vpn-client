@@ -18,20 +18,20 @@ then
   auth_header="$(git config --local --get http.https://github.com/.extraheader)"
   git clone https://github.com/mozilla-mobile/qt_static_macos
   cd qt_static_macos
-  cat x* > qt_static.tar.gz
+  cat qt6* > qt_static.tar.gz
   tar xf qt_static.tar.gz
   cd ..
-  export QT_MACOS_BIN=`pwd`/qt_static_macos/qt/bin
-  export PATH=`pwd`/qt_static_macos/qt/bin:$PATH
+  export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
+  export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 else
   # generate qt_ios
   git clone https://github.com/mozilla-mobile/qt_ios
   cd qt_ios
-  cat qt5* > qt_static.tar.gz
+  cat qt6* > qt_static.tar.gz
   tar xf qt_static.tar.gz
   cd ..
-  export QT_IOS_BIN=`pwd`/qt_ios/ios/bin
-  export PATH=`pwd`/qt_ios/ios/bin:$PATH
+  export QT_IOS_BIN=`pwd`/qt_ios/6.2.3/ios/bin
+  export PATH=`pwd`/qt_ios/6.2.3/ios/bin:`pwd`/qt_ios/6.2.3/macos/bin:$PATH
 fi
 
 
