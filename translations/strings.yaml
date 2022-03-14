@@ -460,9 +460,6 @@ inAppAuth:
   passwordHintCommonPassword: 
     value: Must not be a common password
     comment: This is a hint for the user - password they provide must not be a common password. Ex. password.
-  passwordHintNotMatching: 
-    value: Passwords must match
-    comment: This is a hint for the user - password confirmation input and initial password input field must have matching values.
   productUpdateOptInDescription: 
     value: I’d like to receive product update emails from Firefox.
     comment: User has the option to opt-in to receive product update emails from Firefox. They are asked this when creating an account with us. 
@@ -507,9 +504,6 @@ inAppAuth:
   informationUsageDisclaimer: 
     value: We only use your email to create your account or sign in. We will never sell it to a third party.
     comment: Non-op text that informs user about how Mozilla will not sell it to a third party. 
-  dataCollectionDisclaimer: 
-    value: Learn more about what data Mozilla collects and how it's used
-    comment: Non-op text follows a link to our Mozilla VPN privacy notice. 
   signInFailedPopupTitle: Sign-in failed
   signInFailedPopupDescription: 
     value: You’ve made too many attempts to sign in. You won’t be able to try again with this account for 15 minutes.
@@ -526,7 +520,4 @@ inAppAuth:
   problemSendingEmailErrorMessage: 
     value: Sorry, we were unable to send you a verification code.
     comment: App screen that informs the user there was an error sending them their verification code email - this is the message.
-  errorConfirmingSubscriptionTitle: 
-    value: Error confirming subscription...
-    comment: App screen that informs the user there was an error confirming their subscription - this is the title.
   enterEmailAddressDescription: Enter your email address to continue using Mozilla VPN
