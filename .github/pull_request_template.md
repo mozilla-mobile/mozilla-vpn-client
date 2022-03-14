@@ -4,7 +4,7 @@
 
 ## Reference
 
-    i.e Jira or Github
+    i.e Jira or Github issue URL
 
 ## Type Of Change
 

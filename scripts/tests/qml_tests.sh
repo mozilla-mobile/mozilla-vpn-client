@@ -12,10 +12,10 @@ fi
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios|macostest> [-g|--grcov]"
-  print N ""  
+  print N "\t$0 [-g|--grcov <grcov.info>]"
+  print N ""
   print N "Use -g or --grcov to name the code coverage output"
-  print N ""  
+  print N ""
   exit 0
 }
 
@@ -65,18 +65,10 @@ qmltest_run || die
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for lottie unit tests..."  
-  _grcov_qml test_"$GRCOV_FILENAME"
+  grcov -t lcov -o "$GRCOV_FILENAME" || die "Failure generating final qml lcov file"
 fi
 
 printn Y "Cleaning the existing project... "
 qmltest_cleanup || die
-
-if [[ "$GRCOV_FILENAME" ]]; then  
-  printn Y "merging temp files to qml_lcov.info... "
-  grcov -t lcov -o "$GRCOV_FILENAME" test_"$GRCOV_FILENAME" || die "merging temp files to final failed"
-
-  printn Y "Cleaning the temp coverage files... "
-  rm test_"$GRCOV_FILENAME" || die "cleaning cov files failed"
-fi
 
 print G "All done!"

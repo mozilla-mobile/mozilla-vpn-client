@@ -12,8 +12,8 @@ fi
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios|macostest> [-g|--grcov]"
-  print N ""  
+  print N "\t$0 [-g|--grcov <grcov.info>]"
+  print N ""
   print N "Use -g or --grcov to name the code coverage output"
   print N ""
   exit 0
