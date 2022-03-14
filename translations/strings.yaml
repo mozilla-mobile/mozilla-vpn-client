@@ -447,7 +447,9 @@ inAppAuth:
   changeEmailLink: Change email
   signInButton: Sign in
   signInSubtitle: Continue to Mozilla VPN by signing in with your Firefox account
-  createPasswordLabel: Create password
+  createPasswordLabel: 
+    value: Create password
+    comment: This is a password input label which appears on the password creation screen.
   forgotPasswordLink: Forgot your password?
   passwordInputPlaceholder: Enter password
   passwordInputLabel: Password
@@ -468,7 +470,7 @@ inAppAuth:
     value: Finish creating your Firefox account to continue to Mozilla VPN
     comment: User message prompting user to finish creating their account to use Mozilla VPN. 
   emailVerificationDescription: 
-    value: Open your email and enter the verification code it that was sent.
+    value: Open your email and enter the verification code that was sent.
     comment: User has been sent a verification email containing a code. 
   invalidPasswordErrorMessage: 
     value: Invalid password. Please try again
@@ -480,7 +482,7 @@ inAppAuth:
     value: Invalid email. Please try again
     comment: Generic message for when user submits incorrect email.
   invalidEmailFormatErrorMessage: 
-    value: Email format not supported. Please try again
+    value: Email format not supported. Please try again with a different email
     comment: User is providing us an email that is not formatted correctly. Ex. jsmith&gmail.com
   # Verification code is used when user is creating a new account.  
   verificationCodeTitle: Enter verification code
