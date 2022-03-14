@@ -9,8 +9,9 @@ DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
 	dh $@ --with=systemd --warn-missing
 
 override_dh_auto_configure:
+	qtchooser -install qt6 /usr/lib/qt6/bin/qmake || echo qtchooser already configured
 	python3 scripts/utils/import_languages.py
-	qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release BUILD_ID=$(DEB_VERSION)
+	qmake6 CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release BUILD_ID=$(DEB_VERSION)
 
 override_dh_installdocs:
 
