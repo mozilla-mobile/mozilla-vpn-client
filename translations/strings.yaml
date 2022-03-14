@@ -462,7 +462,7 @@ inAppAuth:
     comment: This is a hint for the user - password they provide must not be a common password. Ex. password.
   productUpdateOptInDescription: 
     value: I’d like to receive product update emails from Firefox.
-    comment: User has the option to opt-in to receive product update emails from Firefox. They are asked this when creating an account with us. 
+    comment: Checkbox label for users to opt in, when creating an account, to receive product update emails from Firefox.
   createAccountButton: Create account
   finishAccountCreationDescription: 
     value: Finish creating your Firefox account to continue to Mozilla VPN
