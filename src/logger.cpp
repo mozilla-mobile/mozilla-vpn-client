@@ -60,7 +60,7 @@ QString Logger::sensitive(const QString& input) {
 #endif
 }
 
-QString Logger::keys(const QString& pubkey) {
+QString Logger::keys(const QString& input) {
 #ifdef MVPN_DEBUG
   if (input.length() < 12) {
     return input;
