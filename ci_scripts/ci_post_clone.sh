@@ -32,6 +32,8 @@ else
   sudo mkdir /opt/6.2.3
   sudo mv ios /opt/6.2.3
   sudo mv macos /opt/6.2.3
+  echo `ls -la /opt`
+  echo `ls -la /opt/6.2.3`
   cd ..
   export QT_IOS_BIN=/opt/6.2.3/ios/bin
   export PATH=/opt/6.2.3/ios/bin:/opt/6.2.3/macos/bin:$PATH
