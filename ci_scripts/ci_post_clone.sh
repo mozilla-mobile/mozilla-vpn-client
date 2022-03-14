@@ -12,6 +12,9 @@ cd /Volumes/workspace/repository
 git submodule init
 git submodule update
 
+# add necessary directories to path
+export PATH=/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
+
 if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
   # generate qt_static_macos
@@ -40,10 +43,6 @@ else
   export QT_IOS_BIN=`pwd`/qt_ios/6.2.3/ios/bin
   export PATH=`pwd`/qt_ios/6.2.3/ios/bin:`pwd`/qt_ios/6.2.3/macos/bin:$PATH
 fi
-
-
-# add necessary directories to path
-export PATH=/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
 
 # install xcodeproj which is needed by xcode_patcher.rb
 # use --user-install for permissions
