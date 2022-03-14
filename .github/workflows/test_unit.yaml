@@ -43,12 +43,7 @@ jobs:
         run: |
           export PATH=/opt/6.2.1/gcc_64/bin:$PATH
           python3 scripts/utils/import_languages.py
-
-      - name: Install Grcov
-        shell: bash
-        run: |
-          cargo install grcov
-          
+                
       - name: Installing the oathtool
         shell: bash
         run: |
@@ -117,7 +112,7 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/qt6/bin:$PATH
-          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov lcov.info
+          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
         
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
@@ -125,7 +120,7 @@ jobs:
           directory: .                              
           flags: unit_tests
           name: codecov-poc
-          files: unit_final_lcov.info
+          files: unit_lcov.info
           verbose: true
 
   windows-unit-tests:

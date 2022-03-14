@@ -1,12 +1,12 @@
-### Description
+## Description
 
     Describe your changes
 
-### Jira Ticket
+## Reference
 
-    i.e https://mozilla-hub.atlassian.net/browse/XXX-####
+    i.e Jira or Github
 
-### Type Of Change
+## Type Of Change
 
 - [ ] Bug Fix
 - [ ] New Feature 
@@ -14,7 +14,7 @@
 - [ ] New/Updated Test
 
 
-### Checklist
+## Checklist
     
 - [ ] My code follows the style guidelines for this project
 - [ ] I have not added any packages that contain high risk or unknown licenses (GPL,  LGPL, MPL, etc. consult with DevOps if in question)
