@@ -155,6 +155,7 @@ SOURCES += \
         notificationhandler.cpp \
         pinghelper.cpp \
         pingsender.cpp \
+        pingsenderfactory.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
         platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
@@ -297,6 +298,7 @@ HEADERS += \
         notificationhandler.h \
         pinghelper.h \
         pingsender.h \
+        pingsenderfactory.h \
         platforms/dummy/dummyapplistprovider.h \
         platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
