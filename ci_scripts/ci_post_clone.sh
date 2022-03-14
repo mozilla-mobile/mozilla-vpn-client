@@ -39,7 +39,9 @@ else
   #echo `ls -la /opt/6.2.3`
   #cd ..
   pip3 install aqtinstall
-  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios clang_64 6.2.3 -m qtcharts qtwebsockets qt5compat
+  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop 6.2.3 -m qtcharts qtwebsockets qt5compat
+  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
+  mv /Volumes/workspace/qt_ios/6.2.3/macos /Volumes/workspace/qt_ios/6.2.3/clang_64
   export QT_IOS_BIN=`pwd`/qt_ios/6.2.3/ios/bin
   export PATH=`pwd`/qt_ios/6.2.3/ios/bin:`pwd`/qt_ios/6.2.3/macos/bin:`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
 fi
