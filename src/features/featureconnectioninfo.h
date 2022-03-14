@@ -15,8 +15,9 @@ class FeatureConnectionInfo final : public Feature {
       : Feature(
             FEATURE_CONNECTION_INFO, "Connection info",
             true,  // Is Major Feature
-            L18nStrings::WhatsNewReleaseNotesConnectionInfoDisplayName,  // Display
-                                                                         // name
+            L18nStrings ::
+                WhatsNewReleaseNotesConnectionInfoDisplayName,  // Display
+                                                                // name
             L18nStrings::
                 WhatsNewReleaseNotesConnectionInfoDescriptionShort,  // Description
             L18nStrings::
