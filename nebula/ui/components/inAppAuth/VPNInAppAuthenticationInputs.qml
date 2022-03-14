@@ -70,9 +70,8 @@ ColumnLayout {
                         anchors.fill: glowVector
                         glowRadius: 4
                         spread: .3
-                        color: "#0C0C0D"
+                        color: VPNTheme.theme.divider
                         cornerRadius: glowVector.radius + glowRadius
-                        opacity: 0.15
                         z: -2
                     }
 

@@ -16,8 +16,8 @@ RowLayout {
 
     VPNIcon {
         source: parent._passwordConditionIsSatisfied ? "qrc:/nebula/resources/check-green70.svg" : "qrc:/nebula/resources/x-red50.svg"
-        sourceSize.width: 20
-        sourceSize.height: 20
+        sourceSize.width: VPNTheme.theme.iconSize * 1.25
+        sourceSize.height: VPNTheme.theme.iconSize * 1.25
         Layout.alignment: Qt.AlignTop
     }
 
