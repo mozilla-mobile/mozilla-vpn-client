@@ -27,17 +27,6 @@ then
   export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
   export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 else
-  # generate qt_ios
-  #git clone https://github.com/mozilla-mobile/qt_ios
-  #cd qt_ios
-  #cat qt6* > qt_static.tar.gz
-  #tar xf qt_static.tar.gz
-  #sudo mkdir /opt/6.2.3
-  #sudo mv ios /opt/6.2.3
-  #sudo mv macos /opt/6.2.3
-  #echo `ls -la /opt`
-  #echo `ls -la /opt/6.2.3`
-  #cd ..
   pip3 install aqtinstall
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop 6.2.3 -m qtcharts qtwebsockets qt5compat
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
