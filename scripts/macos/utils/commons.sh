@@ -47,8 +47,20 @@ _compile() {
   [ -f "$2" ] || die "Expected $2 binary"
 }
 
-_grcov() {    
-  grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1"
+_grcov_unit() {    
+  grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov unit"
+}
+
+_grcov_lottie() {    
+  grcov .obj/lottie_tests.build/Release/lottie_tests.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov lottie"
+}
+
+_grcov_lottie_qml() {    
+  grcov .obj/tst_lottie.build/Release/tst_lottie.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov qml lottie"
+}
+
+_grcov_qml() {      
+  grcov .obj/qml_tests.build/Release/qml_tests.build/Objects-normal/x86_64/ -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov qml"
 }
 
 # Public methods
@@ -96,18 +108,6 @@ utest_cleanup_auth() {
 utest_cleanup_nativemessaging() {
   (cd extension/bridge && cargo clean) || die
   _cleanup tests.xcodeproj/ ./Release/tests || die
-}
-
-utest_grcov_unit() {
-  _grcov "$1" || die
-}
-
-utest_grcov_auth() {
-  _grcov "$1" || die
-}
-
-utest_grcov_nativemessaging() {
-  _grcov "$1" || die
 }
 
 ## Lottie tests

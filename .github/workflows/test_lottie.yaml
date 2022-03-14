@@ -59,11 +59,25 @@ jobs:
           sudo mv ${{matrix.config.folder}} /opt
           cd ..
 
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov
+
       - name: Running tests
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
-          ./scripts/tests/lottie_tests.sh
+          ./scripts/tests/lottie_tests.sh --grcov lcov.info
+
+      - name: Upload lottie coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:              
+          directory: .                              
+          flags: lottie_tests
+          name: codecov-poc
+          files: lottie_final_lcov.info
+          verbose: true
 
   windows-lottie-tests:
     name: Run Lottie tests on Windows Qt5

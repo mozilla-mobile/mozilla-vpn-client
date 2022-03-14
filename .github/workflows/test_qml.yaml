@@ -97,11 +97,25 @@ jobs:
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov
+
       - name: Running tests
         shell: bash
         run: |
           export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
-          ./scripts/tests/qml_tests.sh
+          ./scripts/tests/qml_tests.sh --grcov lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:              
+          directory: .                              
+          flags: qml_tests
+          name: codecov-poc
+          files: qml_final_lcov.info
+          verbose: true
 
   windows-qml-tests:
     name: Run QML tests on Windows Qt5
