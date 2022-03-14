@@ -64,7 +64,7 @@ ColumnLayout {
                 background: Rectangle {
                     id: bg
                     color: VPNTheme.colors.white
-                    radius: 4
+                    radius: VPNTheme.theme.cornerRadius
 
                     VPNRectangularGlow {
                         anchors.fill: glowVector
