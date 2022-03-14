@@ -958,6 +958,8 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
           &NetworkRequest::handleRedirect);
   connect(m_reply, &QNetworkReply::finished, this,
           &NetworkRequest::maybeDeleteLater);
+  connect(m_reply, &QNetworkReply::downloadProgress, this,
+          &NetworkRequest::requestUpdated);
 }
 
 void NetworkRequest::maybeDeleteLater() {

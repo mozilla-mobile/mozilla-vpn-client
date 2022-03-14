@@ -7,7 +7,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import components.forms 0.1
 import components.inAppAuth 0.1
 
 VPNInAppAuthenticationBase {
@@ -39,59 +38,14 @@ VPNInAppAuthenticationBase {
     _imgSource: "qrc:/nebula/resources/avatar.svg"
     _inputLabel: VPNl18n.InAppAuthPasswordInputLabel
 
-    _inputs: ColumnLayout {
-        spacing: VPNTheme.theme.vSpacing - VPNTheme.theme.listSpacing
-
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: VPNTheme.theme.listSpacing
-
-            VPNPasswordInput {
-                id: passwordInput
-                Layout.fillWidth: true
-                _placeholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
-                Keys.onReturnPressed: if (!hasError && text.length > 0) signInBtn.clicked();
-                onTextChanged: if (passwordInput.hasError) hasError = false
-            }
-
-            VPNContextualAlerts {
-                id: searchWarning
-                anchors.left: undefined
-                anchors.right: undefined
-                anchors.topMargin: undefined
-                Layout.minimumHeight: VPNTheme.theme.vSpacing
-                Layout.fillHeight: false
-                messages: [
-                    {
-                        type: "error",
-                        message: VPNl18n.InAppAuthInvalidPasswordErrorMessage,
-                        visible: passwordInput.hasError
-                    }
-                ]
-            }
-        }
-
-        VPNButton {
-            id: signInBtn
-            text: VPNl18n.InAppAuthSignInButton
-            enabled: VPNAuthInApp.state === VPNAuthInApp.StateSignIn
-            loaderVisible: VPNAuthInApp.state === VPNAuthInApp.StateSigningIn
-            onClicked: {
-                VPNAuthInApp.setPassword(passwordInput.text);
-                VPNAuthInApp.signIn();
-            }
-            Layout.fillWidth: true
-        }
-
-        Connections {
-            target: VPNAuthInApp
-            function onErrorOccurred(e) {
-                if (e === 2) {
-                    passwordInput.hasError = true;
-                    passwordInput.forceActiveFocus();
-                }
-            }
-        }
+    _inputs: VPNInAppAuthenticationInputs {
+        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateSignIn && !activeInput().hasError
+        _buttonOnClicked: (inputText) => {
+             VPNAuthInApp.setPassword(inputText);
+             VPNAuthInApp.signIn();
+         }
+        _buttonText: VPNl18n.InAppAuthSignInButton
+        _inputPlaceholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
     }
 
     _disclaimers: ColumnLayout {

@@ -129,10 +129,10 @@ VPNInAppAuthenticationBase {
     }
 
     function passwordIsValid(passwordString) {
-        return VPNAuthInApp.validatePasswordCommons(passwordString)
+        return passwordsMatch()
             && VPNAuthInApp.validatePasswordLength(passwordString)
             && VPNAuthInApp.validatePasswordEmail(passwordString)
-            && passwordsMatch();
+            && VPNAuthInApp.validatePasswordCommons(passwordString)
     }
 
 }

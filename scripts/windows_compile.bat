@@ -75,18 +75,16 @@ git submodule init
 git submodule update --remote --depth 1 i18n
 
 ECHO Copying the installer dependencies...
-CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\bin\libcrypto-1_1-x64.dll
-CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\bin\libssl-1_1-x64.dll
-CALL :CopyDependency libEGL.dll %BUILDDIR%\bin\libEGL.dll
-CALL :CopyDependency libGLESv2.dll %BUILDDIR%\bin\libGLESv2.dll
+CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\SSL\bin\libcrypto-1_1-x64.dll
+CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\SSL\bin\libssl-1_1-x64.dll
 CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x86.msm"
 CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
-python scripts\utils/import_languages.py
+python3 scripts\utils\import_languages.py
 
 ECHO Generating glean samples...
-python scripts\utils\generate_glean.py
+python3 scripts\utils\generate_glean.py
 
 ECHO BUILD_BUILD = %DEBUG_BUILD%
 
@@ -171,6 +169,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 MSBuild -t:Build -p:Configuration=%BUILD_CONF% MozillaVPN.vcxproj
+
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to build the project
   EXIT 1

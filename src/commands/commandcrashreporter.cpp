@@ -18,6 +18,7 @@ CommandCrashReporter::~CommandCrashReporter() {
 }
 
 int CommandCrashReporter::run(QStringList& tokens) {
+  Q_UNUSED(tokens);
   return CrashReporterApp::main(CommandLineParser::argc(),
                                 CommandLineParser::argv());
 }

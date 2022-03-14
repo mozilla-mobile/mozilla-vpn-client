@@ -15,11 +15,6 @@ jobs:
     name: MacOS packages
     runs-on: macos-latest
 
-    strategy:
-      matrix:
-        config:
-            - { name: "Qt6", pattern: qt6, folder: qt6 }
-
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
@@ -31,15 +26,15 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Install ${{matrix.config.name}}
+      - name: Install Qt6
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_macos
           cd qt_static_macos
-          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
+          cat qt6* > qt_static.tar.gz
           tar xf qt_static.tar.gz
-          sudo mv ${{matrix.config.folder}} /opt
+          sudo mv qt6 /opt
           cd ..
 
       - name: Retrieving wireguard-go version
@@ -56,7 +51,7 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          export PATH=/opt/qt6/bin:$PATH
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
@@ -94,7 +89,7 @@ jobs:
       - name: Configuring the build
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          export PATH=/opt/qt6/bin:$PATH
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           echo "$SHORTVERSION - $FULLVERSION"
@@ -124,7 +119,7 @@ jobs:
             "$SHORTVERSION" \
             "$FULLVERSION" \
             macos \
-            ${{matrix.config.name}}
+            Qt6
 
       - name: Compiling
         shell: bash
@@ -179,17 +174,12 @@ jobs:
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
-            name: ${{matrix.config.name}} Build
+            name: Qt6 Build
             path: STAGE3/MozillaVPN.pkg
 
   prod:
     name: MacOS package for release
     runs-on: macos-latest
-
-    strategy:
-      matrix:
-        config:
-            - { name: "Qt6", pattern: qt6, folder: qt6 }
 
     steps:
       - name: Clone repository
@@ -202,15 +192,15 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Install ${{matrix.config.name}}
+      - name: Install Qt6
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_macos
           cd qt_static_macos
-          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
+          cat qt6* > qt_static.tar.gz
           tar xf qt_static.tar.gz
-          sudo mv ${{matrix.config.folder}} /opt
+          sudo mv qt6 /opt
           cd ..
 
       - name: Retrieving wireguard-go version
@@ -227,14 +217,14 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          export PATH=/opt/qt6/bin:$PATH
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
       - name: Configuring the build
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          export PATH=/opt/qt6/bin:$PATH
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           echo "$SHORTVERSION - $FULLVERSION"
@@ -265,7 +255,7 @@ jobs:
             "$SHORTVERSION" \
             "$FULLVERSION" \
             macos \
-            ${{matrix.config.name}}
+            Qt6
 
       - name: Compiling
         shell: bash
@@ -289,5 +279,5 @@ jobs:
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
-            name: ${{matrix.config.name}} Release tarball
+            name: Qt6 Release tarball
             path: BUILD.zip

@@ -344,6 +344,11 @@ Window {
             Sample[sample].record();
         }
 
+        function onRecordGleanEventWithExtraKeys(sample, extraKeys) {
+            console.debug("recording Glean event with extra keys");
+            Sample[sample].record(extraKeys);
+        }
+
         function onAboutToQuit() {
             console.debug("about to quit, shutdown Glean");
             // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
