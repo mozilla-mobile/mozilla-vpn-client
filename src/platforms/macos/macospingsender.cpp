@@ -70,7 +70,7 @@ void MacOSPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
   bzero(&addr, sizeof(addr));
   addr.sin_family = AF_INET;
   addr.sin_len = sizeof(addr);
-  addr.sin_addr.s_addr = qToBigEndian<quint32>(dest);
+  addr.sin_addr.s_addr = qToBigEndian<quint32>(ipv4dest);
 
   struct icmp packet;
   bzero(&packet, sizeof packet);
