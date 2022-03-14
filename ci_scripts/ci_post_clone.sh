@@ -29,9 +29,12 @@ else
   cd qt_ios
   cat qt6* > qt_static.tar.gz
   tar xf qt_static.tar.gz
+  sudo mkdir /opt/6.2.3
+  sudo mv ios /opt/6.2.3
+  sudo mv macos /opt/6.2.3
   cd ..
-  export QT_IOS_BIN=`pwd`/qt_ios/6.2.3/ios/bin
-  export PATH=`pwd`/qt_ios/6.2.3/ios/bin:`pwd`/qt_ios/6.2.3/macos/bin:$PATH
+  export QT_IOS_BIN=/opt/6.2.3/ios/bin
+  export PATH=/opt/6.2.3/ios/bin:/opt/6.2.3/macos/bin:$PATH
 fi
 
 
