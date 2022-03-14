@@ -76,13 +76,19 @@ void TestPasswordValidation::commonPasswords_data() {
 
   // Empty password, is not a common password :)
   QTest::addRow("common 3") << "" << true;
+
+  // Let's check everything again
+  QTest::addRow("common 4") << "12345678" << false;
 }
 
 void TestPasswordValidation::commonPasswords() {
   QFETCH(QString, input);
   QFETCH(bool, result);
 
-  QCOMPARE(AuthenticationInApp::validatePasswordCommons(input), result);
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QVERIFY(!!aia);
+
+  QCOMPARE(aia->validatePasswordCommons(input), result);
 }
 
 void TestPasswordValidation::passwordLength_data() {

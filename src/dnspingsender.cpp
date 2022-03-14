@@ -47,14 +47,14 @@ namespace {
 Logger logger(LOG_NETWORKING, "DnsPingSender");
 }
 
-DnsPingSender::DnsPingSender(const QString& source, QObject* parent)
+DnsPingSender::DnsPingSender(const QHostAddress& source, QObject* parent)
     : PingSender(parent) {
   MVPN_COUNT_CTOR(DnsPingSender);
 
-  if (source.isEmpty()) {
+  if (source.isNull()) {
     m_socket.bind();
   } else {
-    m_socket.bind(QHostAddress(source));
+    m_socket.bind(source);
   }
 
   connect(&m_socket, &QUdpSocket::readyRead, this, &DnsPingSender::readData);
@@ -62,7 +62,7 @@ DnsPingSender::DnsPingSender(const QString& source, QObject* parent)
 
 DnsPingSender::~DnsPingSender() { MVPN_COUNT_DTOR(DnsPingSender); }
 
-void DnsPingSender::sendPing(const QString& dest, quint16 sequence) {
+void DnsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
   QByteArray packet;
 
   // Assemble a DNS query header.
@@ -81,7 +81,7 @@ void DnsPingSender::sendPing(const QString& dest, quint16 sequence) {
   packet.append(query, sizeof(query));
 
   // Send the datagram.
-  m_socket.writeDatagram(packet, QHostAddress(dest), DNS_PORT);
+  m_socket.writeDatagram(packet, dest, DNS_PORT);
 }
 
 void DnsPingSender::readData() {

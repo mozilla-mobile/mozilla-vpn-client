@@ -31,6 +31,7 @@
         <file>components/VPNClickableRow.qml</file>
         <file>components/VPNCollapsibleCard.qml</file>
         <file>components/VPNConnectionInfo.qml</file>
+        <file>components/VPNConnectionInfoError.qml</file>
         <file>components/VPNConnectionInfoScreen.qml</file>
         <file>components/VPNConnectionInfoContent.qml</file>
         <file>components/VPNConnectionInfoItem.qml</file>
@@ -105,5 +106,7 @@
         <file>components/VPNWasmMenu.qml</file>
         <file>components/inAppAuth/qmldir</file>
         <file>components/inAppAuth/VPNInAppAuthenticationBase.qml</file>
+        <file>components/inAppAuth/VPNInAppAuthenticationErrorPopup.qml</file>
+        <file>components/inAppAuth/VPNInAppAuthenticationInputs.qml</file>
     </qresource>
 </RCC>

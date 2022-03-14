@@ -627,10 +627,11 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
       });
 }
 
-void AuthenticationInAppListener::processErrorCode(
-    int errorCode, const QString& errorString, const QString& errorMessage) {
+void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
   AuthenticationInApp* aip = AuthenticationInApp::instance();
   Q_ASSERT(aip);
+
+  int errorCode = obj["errno"].toInt();
 
   // See
   // https://github.com/mozilla/fxa/blob/main/packages/fxa-auth-server/docs/api.md#defined-errors
@@ -653,18 +654,74 @@ void AuthenticationInAppListener::processErrorCode(
                                    this);
       break;
 
+    case 107: {  // Invalid parameter in request body
+      QJsonObject objValidation = obj["validation"].toObject();
+      QStringList keys;
+      for (QJsonValue key : objValidation["keys"].toArray()) {
+        if (key.isString()) {
+          keys.append(key.toString());
+        }
+      }
+
+      if (keys.contains("unblockCode")) {
+        AuthenticationInApp* aip = AuthenticationInApp::instance();
+        aip->requestState(AuthenticationInApp::StateUnblockCodeNeeded, this);
+        aip->requestErrorPropagation(
+            AuthenticationInApp::ErrorInvalidUnblockCode, this);
+        break;
+      }
+
+      if (keys.contains("email")) {
+        AuthenticationInApp* aip = AuthenticationInApp::instance();
+        aip->requestState(AuthenticationInApp::StateStart, this);
+        aip->requestErrorPropagation(
+            AuthenticationInApp::ErrorInvalidEmailAddress, this);
+        break;
+      }
+
+      if (keys.contains("code")) {
+        AuthenticationInApp* aip = AuthenticationInApp::instance();
+        aip->requestState(
+            AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
+        aip->requestErrorPropagation(
+            AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode, this);
+        break;
+      }
+
+      emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+          GleanSample::authenticationInappError,
+          {{"errno", "107"},
+           {"validation", QJsonDocument(objValidation).toJson()}});
+
+      logger.error() << "Unsupported validation parameter";
+      break;
+    }
+
     case 114:  // Client has sent too many requests
       aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(AuthenticationInApp::ErrorTooManyRequests,
                                    this);
       break;
 
-    case 125:  // The request was blocked for security reasons
-      Q_ASSERT(false);
+    case 125: {  // The request was blocked for security reasons
+      QString verificationMethod = obj["verificationMethod"].toString();
+      if (verificationMethod == "email-captcha") {
+        unblockCodeNeeded();
+        break;
+      }
+
+      emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+          GleanSample::authenticationInappError,
+          {{"errno", "125"}, {"verificationMethod", verificationMethod}});
+
+      logger.error() << "Unsupported verification method:"
+                     << verificationMethod;
       break;
+    }
 
     case 127:  // Invalid unblock code
-      aip->requestState(AuthenticationInApp::StateStart, this);
+      aip->requestState(
+          AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
       aip->requestErrorPropagation(AuthenticationInApp::ErrorInvalidEmailCode,
                                    this);
       break;
@@ -713,8 +770,6 @@ void AuthenticationInAppListener::processErrorCode(
     case 105:  // Invalid verification code
       [[fallthrough]];
     case 106:  // Invalid JSON in request body
-      [[fallthrough]];
-    case 107:  // Invalid parameter in request body
       [[fallthrough]];
     case 108:  // Missing parameter in request body
       [[fallthrough]];
@@ -832,8 +887,8 @@ void AuthenticationInAppListener::processErrorCode(
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::authenticationInappError,
           {{"errno", QString::number(errorCode)},
-           {"error", errorString},
-           {"message", errorMessage}});
+           {"error", obj["error"].toString()},
+           {"message", obj["message"].toString()}});
       logger.error() << "Unsupported error code:" << errorCode;
       break;
   }
@@ -843,56 +898,7 @@ void AuthenticationInAppListener::processRequestFailure(
     QNetworkReply::NetworkError error, const QByteArray& data) {
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isObject()) {
-    QJsonObject obj = json.object();
-
-    int errorCode = obj["errno"].toInt();
-
-    // The request was blocked for security reasons
-    if (errorCode == 125) {
-      QString verificationMethod = obj["verificationMethod"].toString();
-      if (verificationMethod == "email-captcha") {
-        unblockCodeNeeded();
-        return;
-      }
-
-      emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-          GleanSample::authenticationInappError,
-          {{"errno", "125"}, {"verificationMethod", verificationMethod}});
-
-      logger.error() << "Unsupported verification method:"
-                     << verificationMethod;
-      return;
-    }
-
-    // Special error handling for the unblock code.
-    if (errorCode == 107) {
-      QJsonObject objValidation = obj["validation"].toObject();
-      QStringList keys;
-      for (QJsonValue key : objValidation["keys"].toArray()) {
-        if (key.isString()) {
-          keys.append(key.toString());
-        }
-      }
-
-      if (keys.contains("unblockCode")) {
-        AuthenticationInApp* aip = AuthenticationInApp::instance();
-        aip->requestState(AuthenticationInApp::StateUnblockCodeNeeded, this);
-        aip->requestErrorPropagation(
-            AuthenticationInApp::ErrorInvalidUnblockCode, this);
-        return;
-      }
-
-      if (keys.contains("email")) {
-        AuthenticationInApp* aip = AuthenticationInApp::instance();
-        aip->requestState(AuthenticationInApp::StateStart, this);
-        aip->requestErrorPropagation(
-            AuthenticationInApp::ErrorInvalidEmailAddress, this);
-        return;
-      }
-    }
-
-    processErrorCode(errorCode, obj["error"].toString(),
-                     obj["message"].toString());
+    processErrorObject(json.object());
     return;
   }
 

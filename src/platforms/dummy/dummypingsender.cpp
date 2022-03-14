@@ -10,7 +10,7 @@ namespace {
 Logger logger(LOG_NETWORKING, "DummyPingSender");
 }
 
-DummyPingSender::DummyPingSender(const QString& source, QObject* parent)
+DummyPingSender::DummyPingSender(const QHostAddress& source, QObject* parent)
     : PingSender(parent) {
   MVPN_COUNT_CTOR(DummyPingSender);
   Q_UNUSED(source);
@@ -18,7 +18,7 @@ DummyPingSender::DummyPingSender(const QString& source, QObject* parent)
 
 DummyPingSender::~DummyPingSender() { MVPN_COUNT_DTOR(DummyPingSender); }
 
-void DummyPingSender::sendPing(const QString& dest, quint16 sequence) {
-  logger.debug() << "Dummy ping to:" << dest;
+void DummyPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
+  logger.debug() << "Dummy ping to:" << dest.toString();
   emit recvPing(sequence);
 }

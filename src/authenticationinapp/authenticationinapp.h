@@ -93,7 +93,7 @@ class AuthenticationInApp final : public QObject {
 
   Q_INVOKABLE static bool validateEmailAddress(const QString& emailAddress);
 
-  Q_INVOKABLE static bool validatePasswordCommons(const QString& password);
+  Q_INVOKABLE bool validatePasswordCommons(const QString& password);
   Q_INVOKABLE static bool validatePasswordLength(const QString& password);
   Q_INVOKABLE bool validatePasswordEmail(const QString& password);
 
@@ -164,6 +164,8 @@ class AuthenticationInApp final : public QObject {
   State m_state = StateInitializing;
 
   AuthenticationInAppListener* m_listener = nullptr;
+
+  QByteArray m_encodedPassword;
 };
 
 #endif  // AUTHENTICATIONINAPP_H

@@ -93,6 +93,10 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
+        connectionbenchmark/benchmarktask.cpp \
+        connectionbenchmark/benchmarktaskdownload.cpp \
+        connectionbenchmark/benchmarktaskping.cpp \
+        connectionbenchmark/connectionbenchmark.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         constants.cpp \
@@ -151,6 +155,7 @@ SOURCES += \
         notificationhandler.cpp \
         pinghelper.cpp \
         pingsender.cpp \
+        pingsenderfactory.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
         platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
@@ -219,6 +224,10 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
+        connectionbenchmark/benchmarktask.h \
+        connectionbenchmark/benchmarktaskdownload.h \
+        connectionbenchmark/benchmarktaskping.h \
+        connectionbenchmark/connectionbenchmark.h \
         connectiondataholder.h \
         connectionhealth.h \
         constants.h \
@@ -289,6 +298,7 @@ HEADERS += \
         notificationhandler.h \
         pinghelper.h \
         pingsender.h \
+        pingsenderfactory.h \
         platforms/dummy/dummyapplistprovider.h \
         platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \

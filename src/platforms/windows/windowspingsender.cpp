@@ -7,11 +7,14 @@
 #include "leakdetector.h"
 #include "windowscommons.h"
 
+#include <QtEndian>
+
 namespace {
 Logger logger({LOG_WINDOWS, LOG_NETWORKING}, "WindowsPingSender");
 }
 
-WindowsPingSender::WindowsPingSender(const QString& source, QObject* parent)
+WindowsPingSender::WindowsPingSender(const QHostAddress& source,
+                                     QObject* parent)
     : PingSender(parent) {
   MVPN_COUNT_CTOR(WindowsPingSender);
   m_source = source;
@@ -38,15 +41,7 @@ WindowsPingSender::~WindowsPingSender() {
   }
 }
 
-void WindowsPingSender::sendPing(const QString& dest, quint16 sequence) {
-  IN_ADDR dst{};
-  IN_ADDR src{};
-  if (InetPtonA(AF_INET, dest.toLocal8Bit(), &dst) != 1) {
-    return;
-  }
-  if (InetPtonA(AF_INET, m_source.toLocal8Bit(), &src) != 1) {
-    return;
-  }
+void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
   if (m_handle == INVALID_HANDLE_VALUE) {
     return;
   }
@@ -54,15 +49,18 @@ void WindowsPingSender::sendPing(const QString& dest, quint16 sequence) {
     return;
   }
 
-  IcmpSendEcho2Ex(m_handle, m_event, nullptr, nullptr, src.S_un.S_addr,
-                  dst.S_un.S_addr, &sequence, sizeof(sequence), nullptr,
-                  m_buffer, sizeof(m_buffer), 10000);
+  quint32 v4src = m_source.toIPv4Address();
+  quint32 v4dst = dest.toIPv4Address();
+  IcmpSendEcho2Ex(m_handle, m_event, nullptr, nullptr,
+                  qToBigEndian<quint32>(v4src), qToBigEndian<quint32>(v4dst),
+                  &sequence, sizeof(sequence), nullptr, m_buffer,
+                  sizeof(m_buffer), 10000);
 
   DWORD status = GetLastError();
   if (status != ERROR_IO_PENDING) {
     QString errmsg = WindowsCommons::getErrorMessage();
     logger.error() << "failed to start Code: " << status
-                   << " Message: " << errmsg << " dest:" << dest;
+                   << " Message: " << errmsg << " dest:" << dest.toString();
   }
 }
 

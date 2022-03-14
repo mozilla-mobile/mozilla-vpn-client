@@ -244,6 +244,9 @@ whatsNewReleaseNotes:
     value: Mozilla VPN is now integrated with the Multi-Account Containers add-on for more privacy and security.
     comment: “Multi-Account Containers” is the name of the add-on and should not be translated.
   multiAccountContainersDescription: You can now use different Mozilla VPN locations in multiple tabs simultaneously.
+  connectionInfoDisplayName: Test your speed
+  connectionInfoDescription: You can now run speed tests in Mozilla VPN! Select the performance icon in the top left corner of your screen to test your connection speed while using VPN.
+  connectionInfoDescriptionShort: You can now run speed tests within the VPN to check your connection speed.
 
 
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
@@ -523,3 +526,7 @@ inAppAuth:
     value: Sorry, we were unable to send you a verification code.
     comment: App screen that informs the user there was an error sending them their verification code email - this is the message.
   enterEmailAddressDescription: Enter your email address to continue using Mozilla VPN
+  invalidPasswordErrorMessage: Invalid password. Please try again
+  termsOfServiceAndPrivacyDisclaimer:
+    value: By continuing, you agree to the <a href="terms-of-service">Terms of Service</a> and the <a href="privacy-notice">Privacy Notice</a>.
+    comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
