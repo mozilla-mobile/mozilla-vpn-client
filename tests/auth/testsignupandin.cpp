@@ -130,8 +130,10 @@ void TestSignUpAndIn::signUp() {
   QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
 
   QUrl finalUrl;
-  connect(aia, &AuthenticationInApp::unitTestFinalUrl,
-          [&](const QUrl& url) { finalUrl = url; });
+  connect(aia, &AuthenticationInApp::unitTestFinalUrl, [&](const QUrl& url) {
+    finalUrl = url;
+    loop.exit();
+  });
   connect(&task, &Task::completed, [&]() {
     qDebug() << "Task completed";
     loop.exit();
@@ -245,8 +247,10 @@ void TestSignUpAndIn::signIn() {
   });
 
   QUrl finalUrl;
-  connect(aia, &AuthenticationInApp::unitTestFinalUrl,
-          [&](const QUrl& url) { finalUrl = url; });
+  connect(aia, &AuthenticationInApp::unitTestFinalUrl, [&](const QUrl& url) {
+    finalUrl = url;
+    loop.exit();
+  });
   connect(&task, &Task::completed, [&]() {
     qDebug() << "Task completed";
     loop.exit();
