@@ -49,6 +49,7 @@ _compile() {
 
 _grcov() {
   grcov "$1"  -s . -t lcov --branch --ignore-not-existing -o "$2" || die "Failed to run grcov"
+  [ -f "$2" ] || die "Expected $2 grcov output"
 }
 
 # Public methods
@@ -95,7 +96,15 @@ utest_cleanup_nativemessaging() {
   _cleanup tests.xcodeproj/ ./Release/tests || die
 }
 
-utest_grcov() {
+utest_grcov_unit() {
+  _grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/ "$1"
+}
+
+utest_grcov_auth() {
+  _grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/ "$1"
+}
+
+utest_grcov_nativemessaging() {
   _grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/ "$1"
 }
 
@@ -127,11 +136,11 @@ lottie_cleanup_qml() {
   _cleanup tst_lottie.xcodeproj ./Release/tst_lottie || die
 }
 
-lottie_unit_grcov() {
+lottie_grcov_unit() {
   _grcov .obj/lottie_tests.build/Release/lottie_tests.build/Objects-normal/x86_64/ "$1"
 }
 
-lottie_qml_grcov() {
+lottie_grcov_qml() {
   _grcov .obj/tst_lottie.build/Release/tst_lottie.build/Objects-normal/x86_64/ "$1"
 }
 
