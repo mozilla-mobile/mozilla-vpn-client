@@ -317,7 +317,9 @@ settings:
     value: Tunnel VPN through port 53/DNS
     comment: Tunnel is used as a verb, as in to direct traffic through
   tunnelPort53Description: Use port 53/DNS for Wireguard traffic, which may help evade firewalls
-
+  crashOptInDescription:
+    value: Allow Mozilla VPN to automatically send crash reports to help fix unexpected crashes
+    comment: This is the description of a checkbox option to allow the app to send crash reports without a user prompt
 
 aboutUs:
   licenses: Licenses
@@ -422,6 +424,9 @@ crashreporter:
   dontSendButton:
     value: No thanks
     comment: User does not agree to send a crash report.
+  crashOptInDialogDescription:
+    value:  Don’t show this again. Autosend crash reports to Mozilla.
+    comment:  This is a description for a checkbox on the crash reporter dialog.
 
 serverUnavailableModal:
   headerText: Server unavailable
