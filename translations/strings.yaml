@@ -425,7 +425,7 @@ crashreporter:
     value: No thanks
     comment: User does not agree to send a crash report.
   crashOptInDialogDescription:
-    value:  Don't show this again.  Auto-send crash reports to Mozilla.
+    value:  Don’t show this again. Auto-send crash reports to Mozilla.
     comment:  This is a descrption for a checked option on the crash reporter dialog.
 
 serverUnavailableModal:
