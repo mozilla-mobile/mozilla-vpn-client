@@ -50,7 +50,6 @@ VPNInAppAuthenticationBase {
 
     _disclaimers: ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
-        Layout.fillWidth: true
 
         Text {
             text: VPNl18n.InAppAuthTermsOfServiceAndPrivacyDisclaimer
