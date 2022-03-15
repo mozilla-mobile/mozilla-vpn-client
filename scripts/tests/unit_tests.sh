@@ -22,11 +22,11 @@ helpFunction() {
 print N "This script compiles and runs MozillaVPN tests on MacOS and Linux"
 print N ""
 
-while [[ $# -gt 0 ]]; do  
+while [[ $# -gt 0 ]]; do
   key="$1"
-  
+
   case $key in
-  -g | --grcov)    
+  -g | --grcov)
     GRCOV_FILENAME="$2"
     shift
     shift
@@ -70,11 +70,11 @@ print Y "Running the unit-tests..."
 utest_run_unit || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
-  printn Y "Generating temp coverage file for unit tests..."  
-  utest_grcov unit_"$GRCOV_FILENAME"
+  print Y "Generating temp coverage file for unit tests..."
+  utest_grcov_unit /tmp/utest_unit.info
 fi
 
-printn Y "Cleaning the existing unit project... "
+print Y "Cleaning the existing unit project... "
 utest_cleanup_unit || die "Failed"
 
 print Y "Compile the auth-unit-tests..."
@@ -84,11 +84,11 @@ print Y "Running the auth unit-tests..."
 utest_run_auth || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
-  printn Y "Generating temp coverage file for auth tests..."  
-  utest_grcov auth_"$GRCOV_FILENAME"
+  print Y "Generating temp coverage file for auth tests..."
+  utest_grcov_auth /tmp/utest_auth.info
 fi
 
-printn Y "Cleaning the existing auth project... "
+print Y "Cleaning the existing auth project... "
 utest_cleanup_auth || die "Failed"
 
 print Y "Compile the native-messaging-unit-tests..."
@@ -98,19 +98,22 @@ print Y "Running the native messaging unit-tests..."
 utest_run_nativemessaging || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
-  printn Y "Generating temp coverage file for native messaging unit tests..."  
-  utest_grcov nativemessaging_"$GRCOV_FILENAME"
+  print Y "Generating temp coverage file for native messaging unit tests..."
+  utest_grcov_nativemessaging /tmp/utest_nativemessaging.info
 fi
 
-printn Y "Cleaning the existing native messaging project... "
+print Y "Cleaning the existing native messaging project... "
 utest_cleanup_nativemessaging || die "Failed"
 
-if [[ "$GRCOV_FILENAME" ]]; then  
-  printn Y "merging temp files to finallcov.info... "
-  grcov -t lcov -o "$GRCOV_FILENAME" unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die "merging temp files to final failed"
+if [[ "$GRCOV_FILENAME" ]]; then
+  print Y "merging temp files to $GRCOV_FILENAME... "
+  grcov -t lcov -o "$GRCOV_FILENAME" \
+    /tmp/utest_unit.info \
+    /tmp/utest_auth.info \
+    /tmp/utest_nativemessaging.info || die "merging temp files to final failed"
 
-  printn Y "Cleaning the temp coverage files... "
-  rm unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die "cleaning cov files failed"
+  print Y "Cleaning the temp coverage files... "
+  rm /tmp/utest_unit.info  /tmp/utest_auth.info /tmp/utest_nativemessaging.info || die "cleaning cov files failed"
 fi
 
 print G "All done!"

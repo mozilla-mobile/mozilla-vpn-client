@@ -43,11 +43,25 @@ jobs:
           export PATH=/opt/6.2.1/gcc_64/bin:$PATH
           python3 scripts/utils/import_languages.py
 
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov
+
       - name: Running tests
         shell: bash
         run: |
           export PATH=/opt/6.2.1/gcc_64/bin:$PATH
-          xvfb-run -a ./scripts/tests/qml_tests.sh
+          xvfb-run -a ./scripts/tests/qml_tests.sh --grcov qml_lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          directory: .
+          flags: qml_tests
+          name: codecov-poc
+          files: qml_lcov.info
+          verbose: true
 
   macos-qml-tests:
     runs-on: macos-latest
@@ -101,8 +115,8 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
-        with:              
-          directory: .                              
+        with:
+          directory: .
           flags: qml_tests
           name: codecov-poc
           files: qml_lcov.info

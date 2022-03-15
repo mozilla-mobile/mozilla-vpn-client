@@ -50,11 +50,25 @@ jobs:
           pip3 install oathtool
           python3 -m oathtool.generate-script
 
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov
+
       - name: Running tests
         shell: bash
         run: |
           export PATH=/opt/6.2.1/gcc_64/bin:$PATH
-          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh
+          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          directory: .
+          flags: unit_tests
+          name: codecov-poc
+          files: unit_lcov.info
+          verbose: true
 
   macos-unit-tests:
     runs-on: macos-latest
@@ -98,8 +112,8 @@ jobs:
       - name: Install Grcov
         shell: bash
         run: |
-          cargo install grcov   
-          
+          cargo install grcov
+
       - name: Installing the oathtool
         shell: bash
         run: |
@@ -113,11 +127,11 @@ jobs:
         run: |
           export PATH=/opt/qt6/bin:$PATH
           MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
-        
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
-        with:              
-          directory: .                              
+        with:
+          directory: .
           flags: unit_tests
           name: codecov-poc
           files: unit_lcov.info
