@@ -108,6 +108,10 @@ class Feature : public QObject {
   // If true, the feature can be enabled in the Dev-Settings
   const bool m_devModeWriteable;
 
+  // If true, the feature is enabled in the Dev-Settings. If
+  // `m_devModeWriteable` is false, this will always be false.
+  bool m_devModeEnabled = false;
+
   // Determines if the feature should be available if possible
   // Otherwise it can only be reached via a dev-override
   bool m_released = false;
