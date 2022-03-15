@@ -602,31 +602,36 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
         connect(
             request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-              if (error != QNetworkReply::OperationCanceledError) {
-                logger.error()
-                    << "Failed to fetch the final redirect data" << error;
-                processRequestFailure(error, data);
+              QJsonDocument json = QJsonDocument::fromJson(data);
+              if (!json.isObject()) {
+                MozillaVPN::instance()->errorHandle(
+                    ErrorHandler::toErrorType(error));
+                emit failed(ErrorHandler::toErrorType(error));
+                return;
               }
+
+              QJsonObject obj = json.object();
+              QString detail = obj["detail"].toString();
+              if (detail.isEmpty()) {
+                logger.error() << "Invalid JSON: no detail value";
+                MozillaVPN::instance()->errorHandle(
+                    ErrorHandler::AuthenticationError);
+                return;
+              }
+
+#ifdef UNIT_TEST
+              AuthenticationInApp* aia = AuthenticationInApp::instance();
+              emit aia->unitTestAuthFailedWithDetail(detail);
+#endif
+
+              logger.error() << "Authentication failed:" << detail;
+              MozillaVPN::instance()->errorHandle(
+                  ErrorHandler::AuthenticationError);
             });
 
         connect(request, &NetworkRequest::requestCompleted, this,
-                [this
-#ifdef UNIT_TEST
-                 ,
-                 request
-#endif
-        ](const QByteArray& data) {
-
-#ifdef UNIT_TEST
-                  // TODO: this will go away as soon as we will receive a proper
-                  // error message.
-                  logger.debug() << "Final redirect fetch completed:"
-                                 << request->url().toString();
-                  AuthenticationInApp* aip = AuthenticationInApp::instance();
-                  emit aip->unitTestFinalUrl(request->url());
-#else
-  logger.debug() << "Final redirect fetch completed:" << data;
-#endif
+                [this](const QByteArray& data) {
+                  logger.debug() << "Final redirect fetch completed:" << data;
 
                   QJsonDocument json = QJsonDocument::fromJson(data);
                   if (json.isNull()) {
