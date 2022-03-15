@@ -40,17 +40,9 @@ VPNInAppAuthenticationBase {
 
     _disclaimers: RowLayout {
         spacing: VPNTheme.theme.vSpacing / 2
-        Rectangle {
-            Layout.alignment: Qt.AlignTop
-            Layout.topMargin: 2
-            height: VPNTheme.theme.vSpacing
-            width: VPNTheme.theme.vSpacing
-            color: "transparent"
-
-            VPNIcon {
-                source: "qrc:/ui/resources/logo.svg"
-                anchors.centerIn: parent
-            }
+        VPNIcon {
+            source: "qrc:/nebula/resources/shield-green50.svg"
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         }
 
         VPNTextBlock {
