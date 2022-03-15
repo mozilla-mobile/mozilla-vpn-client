@@ -48,7 +48,7 @@ _compile() {
 }
 
 _grcov() {
-  grcov "$2"  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failed to run grcov"
+  grcov "$1"  -s . -t lcov --branch --ignore-not-existing -o "$2" || die "Failed to run grcov"
 }
 
 # Public methods
