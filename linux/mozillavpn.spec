@@ -8,24 +8,26 @@ Summary:   Mozilla VPN
 License:   MPLv2.0
 URL:       https://vpn.mozilla.org
 Packager:  Owen Kirby
-Requires:  qt5-qtbase >= 5.15
-Requires:  qt5-qtcharts >= 5.15
-Requires:  qt5-qtnetworkauth >= 5.15
-Requires:  qt5-qtquickcontrols2 >= 5.15
-Requires:  qt5-qtsvg >= 5.15
+Requires:  qt6-qtbase >= 6.2.0
+Requires:  qt6-qt5compat >= 6.2.0
+Requires:  qt6-qtcharts >= 6.2.0
+Requires:  qt6-qtnetworkauth >= 6.2.0
+Requires:  qt6-qtquickcontrols2 >= 6.2.0
+Requires:  qt6-qtsvg >= 6.2.0
 Requires:  wireguard-tools
 
 BuildRequires: golang >= 1.13
 BuildRequires: polkit-devel
 BuildRequires: python3-yaml
 BuildRequires: cargo
-BuildRequires: qt5-qtbase-devel >= 5.15
-BuildRequires: qt5-qtcharts-devel >= 5.15
-BuildRequires: qt5-qtnetworkauth-devel >= 5.15
-BuildRequires: qt5-qtdeclarative-devel >= 5.15
-BuildRequires: qt5-qtsvg-devel >= 5.15
-BuildRequires: qt5-qttools-devel >= 5.15
-BuildRequires: qt5-qtwebsockets-devel >= 5.15
+BuildRequires: qt6-qtbase-devel >= 6.2.0
+BuildRequires: qt6-qt5compat-devel >= 6.2.0
+BuildRequires: qt6-qtcharts-devel >= 6.2.0
+BuildRequires: qt6-qtnetworkauth-devel >= 6.2.0
+BuildRequires: qt6-qtdeclarative-devel >= 6.2.0
+BuildRequires: qt6-qtsvg-devel >= 6.2.0
+BuildRequires: qt6-qttools-devel >= 6.2.0
+BuildRequires: qt6-qtwebsockets-devel >= 6.2.0
 BuildRequires: systemd-rpm-macros
 
 %description
@@ -37,7 +39,7 @@ Read more on https://vpn.mozilla.org
 
 %build
 %{_srcdir}/scripts/utils/import_languages.py
-%{qmake_qt5} %{_srcdir}/mozillavpn.pro QT+=svg
+%{qmake_qt6} %{_srcdir}/mozillavpn.pro QT+=svg
 make %{?_smp_mflags}
 
 %install
