@@ -32,7 +32,7 @@ VPNInAppAuthenticationBase {
     _changeEmailLinkVisible: true
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => { VPNAuthInApp.reset() }
-    _menuButtonAccessibleName: "Back"
+    _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _headlineText: VPNAuthInApp.emailAddress
     _subtitleText: VPNl18n.InAppAuthSignInSubtitle
     _imgSource: "qrc:/nebula/resources/avatar.svg"
