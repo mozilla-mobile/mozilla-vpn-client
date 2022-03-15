@@ -11,35 +11,43 @@ import components 0.1
 VPNPopup {
     id: authError
     anchors.centerIn: parent
-    width: Math.min(parent.width * 0.73, VPNTheme.theme.maxHorizontalContentWidth)
+    width: Math.min(parent.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.maxHorizontalContentWidth)
+    height: Math.min(parent.height - VPNTheme.theme.windowMargin * 2, implicitHeight + VPNTheme.theme.windowMargin * 2)
     maxWidth: Math.min(parent.width * 0.83, VPNTheme.theme.maxHorizontalContentWidth)
+
     _popupContent:
         ColumnLayout {
             id: authErrorContent
             spacing: VPNTheme.theme.vSpacing
 
-                Image {
-                    source: "qrc:/ui/resources/updateRequired.svg"
-                    antialiasing: true
-                    sourceSize.height: 80
-                    sourceSize.width: 80
-                    Layout.alignment: Qt.AlignHCenter
-                }
+
+            Image {
+                source: "qrc:/ui/resources/updateRequired.svg"
+                antialiasing: true
+                sourceSize.height: 80
+                sourceSize.width: 80
+                Layout.alignment: Qt.AlignHCenter
+            }
+            VPNHeadline {
+                text: VPNl18n.InAppAuthSignInFailedPopupTitle
+                width: undefined
+                Layout.fillWidth: true
+
+            }
+
             VPNTextBlock {
                 id: authErrorMessage
                 text: ""
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: parent.width
                 Layout.fillWidth: true
-                width: undefined
             }
 
             VPNButton {
-                text: "Okay"
+                text: VPNl18n.CaptivePortalAlertButtonTextPreActivation
                 onClicked: authError.close()
             }
         }
-
 
     Connections {
         target: VPNAuthInApp
@@ -62,12 +70,12 @@ VPNPopup {
         function onErrorOccurred(e, retryAfterSec) {
             switch(e) {
             case VPNAuthInApp.ErrorEmailCanNotBeUsedToLogin:
-                authErrorMessage.text = "email can not be used to log in";
+                authErrorMessage.text = VPNl18n.InAppAuthProblemSigningInErrorMessage;
                 openErrorModalAndForceFocus();
                 break;
 
             case VPNAuthInApp.ErrorEmailTypeNotSupported:
-                authErrorMessage.text = "email type not supported";
+                authErrorMessage.text = VPNl18n.InAppAuthInvalidEmailFormatErrorMessage
                 openErrorModalAndForceFocus();
                 break;
 
