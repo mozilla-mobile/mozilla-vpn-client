@@ -7,7 +7,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import components.forms 0.1
 import components.inAppAuth 0.1
 
 VPNInAppAuthenticationBase {
@@ -39,105 +38,38 @@ VPNInAppAuthenticationBase {
     _imgSource: "qrc:/nebula/resources/avatar.svg"
     _inputLabel: VPNl18n.InAppAuthPasswordInputLabel
 
-    _inputs: ColumnLayout {
-        spacing: VPNTheme.theme.vSpacing - VPNTheme.theme.listSpacing
-
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: VPNTheme.theme.listSpacing
-
-            VPNPasswordInput {
-                id: passwordInput
-                Layout.fillWidth: true
-                _placeholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
-                Keys.onReturnPressed: if (!hasError && text.length > 0) signInBtn.clicked();
-                onTextChanged: if (passwordInput.hasError) hasError = false
-            }
-
-            VPNContextualAlerts {
-                id: searchWarning
-                anchors.left: undefined
-                anchors.right: undefined
-                anchors.topMargin: undefined
-                Layout.minimumHeight: VPNTheme.theme.vSpacing
-                Layout.fillHeight: false
-                messages: [
-                    {
-                        type: "error",
-                        message: VPNl18n.InAppAuthInvalidPasswordErrorMessage,
-                        visible: passwordInput.hasError
-                    }
-                ]
-            }
-        }
-
-        VPNButton {
-            id: signInBtn
-            text: VPNl18n.InAppAuthSignInButton
-            enabled: VPNAuthInApp.state === VPNAuthInApp.StateSignIn
-            loaderVisible: VPNAuthInApp.state === VPNAuthInApp.StateSigningIn
-            onClicked: {
-                VPNAuthInApp.setPassword(passwordInput.text);
-                VPNAuthInApp.signIn();
-            }
-            Layout.fillWidth: true
-        }
-
-        Connections {
-            target: VPNAuthInApp
-            function onErrorOccurred(e) {
-                if (e === 2) {
-                    passwordInput.hasError = true;
-                    passwordInput.forceActiveFocus();
-                }
-            }
-        }
+    _inputs: VPNInAppAuthenticationInputs {
+        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateSignIn && !activeInput().hasError
+        _buttonOnClicked: (inputText) => {
+             VPNAuthInApp.setPassword(inputText);
+             VPNAuthInApp.signIn();
+         }
+        _buttonText: VPNl18n.InAppAuthSignInButton
+        _inputPlaceholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
     }
 
     _disclaimers: ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
         Layout.fillWidth: true
 
-        GridLayout {
-            id: grid
-            Layout.alignment: Qt.AlignHCenter
+        Text {
+            text: VPNl18n.InAppAuthTermsOfServiceAndPrivacyDisclaimer
+            font.family: VPNTheme.theme.fontInterFamily
+            font.pixelSize: VPNTheme.theme.fontSizeSmall
+            color: VPNTheme.theme.fontColor
             Layout.fillWidth: true
-            columnSpacing: 0
-            columns: 3
-            Component.onCompleted: if (implicitWidth > window.width) flow = Grid.TopToBottom
-
-            VPNGreyLink {
-                id: termsOfService
-
-                // Terms of Service - string defined in VPNAboutUs.qml
-                labelText: qsTrId("vpn.aboutUs.tos2")
-                Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
-                textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
-                onClicked: VPN.openLink(VPN.LinkTermsOfService)
-            }
-
-            Rectangle {
-                width: 4
-                height: 4
-                radius: 2
-                Layout.alignment: Qt.AlignHCenter
-                color: VPNTheme.theme.greyLink.defaultColor
-                visible: parent.flow != Grid.TopToBottom
-                opacity: .8
-            }
-
-            VPNGreyLink {
-                id: privacyNotice
-
-                // Privacy Notice - string defined in VPNAboutUs.qml
-                labelText: qsTrId("vpn.aboutUs.privacyNotice2")
-                onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
-                textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
-                Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            horizontalAlignment: Text.AlignHCenter
+            linkColor: VPNTheme.theme.fontColorDark
+            lineHeightMode: Text.FixedHeight
+            lineHeight: VPNTheme.theme.labelLineHeight
+            onLinkActivated: {
+                if (link === "terms-of-service")
+                    return VPN.openLink(VPN.LinkTermsOfService);
+                VPN.openLink(VPN.LinkPrivacyNotice);
             }
         }
     }
-
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
