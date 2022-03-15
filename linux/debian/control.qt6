@@ -18,6 +18,7 @@ Build-Depends: debhelper (>= 9.20160709),
                qt6-base-dev-tools (>=6.2.0~),
                qt6-declarative-dev (>=6.2.0~),
                qt6-declarative-dev-tools (>=6.2.0~),
+               qt6-l10n-tools (>=6.2.0~),
                qmake6 (>=6.2.0~),
                qt6-tools-dev-tools (>=6.2.0~),
                libpolkit-gobject-1-dev
