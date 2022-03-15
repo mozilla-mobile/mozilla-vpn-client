@@ -37,7 +37,7 @@ constexpr uint32_t BENCHMARK_MAX_DURATION_DOWNLOAD = 15000;
 constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_FAST = 3125000;    // 25 Megabit
 constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_MEDIUM = 1250000;  // 10 Megabit
 constexpr const char* BENCHMARK_DOWNLOAD_URL =
-    "https://archive.mozilla.org/pub/vpn/releases/2.7.0/windows/MozillaVPN.msi";
+    "https://archive.mozilla.org/pub/vpn/speedtest/50m.data";
 
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
