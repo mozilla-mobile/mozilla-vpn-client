@@ -423,7 +423,7 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
                 AuthenticationInApp::StateVerificationSessionByTotpNeeded,
                 this);
             aip->requestErrorPropagation(
-                AuthenticationInApp::ErrorInvalidTotpCode, this);
+                this, AuthenticationInApp::ErrorInvalidTotpCode);
           });
 }
 
@@ -639,19 +639,19 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
     case 101:  // Account already exists
       aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(
-          AuthenticationInApp::ErrorAccountAlreadyExists, this);
+          this, AuthenticationInApp::ErrorAccountAlreadyExists);
       break;
 
     case 102:  // Unknown account
       aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorUnknownAccount,
-                                   this);
+      aip->requestErrorPropagation(this,
+                                   AuthenticationInApp::ErrorUnknownAccount);
       break;
 
     case 103:  // Incorrect password
       aip->requestState(AuthenticationInApp::StateSignIn, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorIncorrectPassword,
-                                   this);
+      aip->requestErrorPropagation(this,
+                                   AuthenticationInApp::ErrorIncorrectPassword);
       break;
 
     case 107: {  // Invalid parameter in request body
@@ -667,7 +667,7 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
         AuthenticationInApp* aip = AuthenticationInApp::instance();
         aip->requestState(AuthenticationInApp::StateUnblockCodeNeeded, this);
         aip->requestErrorPropagation(
-            AuthenticationInApp::ErrorInvalidUnblockCode, this);
+            this, AuthenticationInApp::ErrorInvalidUnblockCode);
         break;
       }
 
@@ -675,7 +675,7 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
         AuthenticationInApp* aip = AuthenticationInApp::instance();
         aip->requestState(AuthenticationInApp::StateStart, this);
         aip->requestErrorPropagation(
-            AuthenticationInApp::ErrorInvalidEmailAddress, this);
+            this, AuthenticationInApp::ErrorInvalidEmailAddress);
         break;
       }
 
@@ -684,7 +684,7 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
         aip->requestState(
             AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
         aip->requestErrorPropagation(
-            AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode, this);
+            this, AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode);
         break;
       }
 
@@ -699,8 +699,9 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
 
     case 114:  // Client has sent too many requests
       aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorTooManyRequests,
-                                   this);
+      aip->requestErrorPropagation(this,
+                                   AuthenticationInApp::ErrorTooManyRequests,
+                                   obj["retryAfter"].toInt());
       break;
 
     case 125: {  // The request was blocked for security reasons
@@ -722,45 +723,45 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
     case 127:  // Invalid unblock code
       aip->requestState(
           AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorInvalidEmailCode,
-                                   this);
+      aip->requestErrorPropagation(this,
+                                   AuthenticationInApp::ErrorInvalidEmailCode);
       break;
 
     case 142:  // Sign in with this email type is not currently supported
       aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(
-          AuthenticationInApp::ErrorEmailTypeNotSupported, this);
+          this, AuthenticationInApp::ErrorEmailTypeNotSupported);
       break;
 
     case 144:  // Email already exists
       aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorEmailAlreadyExists,
-                                   this);
+      aip->requestErrorPropagation(
+          this, AuthenticationInApp::ErrorEmailAlreadyExists);
       break;
 
     case 149:  // This email can not currently be used to login
       aip->requestState(AuthenticationInApp::StateStart, this);
       aip->requestErrorPropagation(
-          AuthenticationInApp::ErrorEmailCanNotBeUsedToLogin, this);
+          this, AuthenticationInApp::ErrorEmailCanNotBeUsedToLogin);
       break;
 
     case 151:  // Failed to send email
       aip->requestState(AuthenticationInApp::StateSignIn, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorFailedToSendEmail,
-                                   this);
+      aip->requestErrorPropagation(this,
+                                   AuthenticationInApp::ErrorFailedToSendEmail);
       break;
 
     case 183:  // Invalid or expired verification code
       aip->requestState(
           AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
       aip->requestErrorPropagation(
-          AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode, this);
+          this, AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode);
       break;
 
     case 201:  // Service unavailable
       aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorServerUnavailable,
-                                   this);
+      aip->requestErrorPropagation(this,
+                                   AuthenticationInApp::ErrorServerUnavailable);
       break;
 
     case 100:  // Incorrect Database Patch Level

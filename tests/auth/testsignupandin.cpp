@@ -111,7 +111,7 @@ void TestSignUpAndIn::signUp() {
   QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
 
   connect(aia, &AuthenticationInApp::errorOccurred,
-          [&](AuthenticationInApp::ErrorType error) {
+          [&](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error ==
                 AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode) {
               loop.exit();
@@ -215,7 +215,7 @@ void TestSignUpAndIn::signIn() {
   bool wrongUnblockCodeSent = false;
 
   connect(aia, &AuthenticationInApp::errorOccurred,
-          [this](AuthenticationInApp::ErrorType error) {
+          [this](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error == AuthenticationInApp::ErrorInvalidUnblockCode) {
               qDebug() << "Invalid unblock code. Sending a good one";
 
@@ -278,7 +278,7 @@ void TestSignUpAndIn::waitForTotpCodes() {
   AuthenticationInApp* aia = AuthenticationInApp::instance();
 
   connect(aia, &AuthenticationInApp::errorOccurred,
-          [this](AuthenticationInApp::ErrorType error) {
+          [this](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error == AuthenticationInApp::ErrorInvalidTotpCode) {
               qDebug() << "Invalid code. Let's send the right one";
 
