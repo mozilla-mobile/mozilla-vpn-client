@@ -49,7 +49,17 @@ VPNPopup {
             authErrorContent.forceActiveFocus();
         }
 
-        function onErrorOccurred(e) {
+        function retryAfterSecToMin(retryAfterSec) {
+            if (retryAfterSec <= 0) {
+                // This should not happen.
+                console.log("Invalid retryAfter value", retryAfterSec);
+                return 15;
+            }
+
+            return Math.ceil(retryAfterSec / 60);
+        }
+
+        function onErrorOccurred(e, retryAfterSec) {
             switch(e) {
             case VPNAuthInApp.ErrorEmailCanNotBeUsedToLogin:
                 authErrorMessage.text = "email can not be used to log in";
@@ -67,7 +77,12 @@ VPNPopup {
                 break;
 
             case VPNAuthInApp.ErrorTooManyRequests:
-                authErrorMessage.text = "Too many login attempts, hold off for 15 minutes"
+                const retryAfterMin = retryAfterSecToMin(retryAfterSec);
+                if (retryAfterMin === 1) {
+                    authErrorMessage.text = "Too many login attempts, hold off for just one minute";
+                } else {
+                    authErrorMessage.text = "Too many login attempts, hold off for " + retryAfterMin + " minutes";
+                }
                 openErrorModalAndForceFocus();
                 break;
             }

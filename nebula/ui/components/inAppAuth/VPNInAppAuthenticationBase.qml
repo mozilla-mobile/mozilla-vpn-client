@@ -29,12 +29,14 @@ VPNFlickable {
     id: authBase
     flickContentHeight: col.implicitHeight
 
+
     ColumnLayout {
         id: col
         anchors.top: parent.top
         height: Math.max(parent.height, col.implicitHeight)
         anchors.left: parent.left
         anchors.right: parent.right
+        width: Math.min(authBase.width, 200)
 
         PropertyAnimation on opacity {
             from: 0
@@ -45,8 +47,7 @@ VPNFlickable {
         RowLayout {
             id: authHeader
             Layout.preferredHeight: VPNTheme.theme.rowHeight * 1.2
-            Layout.preferredWidth: col.width - VPNTheme.theme.windowMargin * 1.5
-            Layout.alignment: Qt.AlignHCenter
+            Layout.preferredWidth: parent.width
             Layout.topMargin: VPNTheme.theme.windowMargin / 2
 
             VPNIconButton {
@@ -54,6 +55,7 @@ VPNFlickable {
                 onClicked: _menuButtonOnClick()
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.preferredWidth: VPNTheme.theme.rowHeight
+                Layout.leftMargin: VPNTheme.theme.windowMargin / 2
 
                 VPNIcon {
                     id: menuButtonImage
@@ -68,6 +70,7 @@ VPNFlickable {
                 objectName: "getHelpLink"
                 Layout.preferredHeight: menuButton.height
                 Layout.alignment: Qt.AlignRight
+                Layout.rightMargin: VPNTheme.theme.windowMargin
                 labelText: qsTrId("vpn.main.getHelp2")
                 horizontalPadding: VPNTheme.theme.windowMargin / 2
                 onClicked: {
@@ -78,20 +81,22 @@ VPNFlickable {
 
         VPNVerticalSpacer {
             Layout.fillHeight: true
+            Layout.fillWidth: true
             Layout.minimumHeight: VPNTheme.theme.vSpacing / 2
             Layout.maximumHeight: VPNTheme.theme.vSpacing * 2
         }
 
         ColumnLayout {
             spacing:  VPNTheme.theme.windowMargin
-            Layout.alignment: Qt.AlignHCenter
-            Layout.maximumWidth: col.width - VPNTheme.theme.vSpacing * 2
+            Layout.leftMargin: VPNTheme.theme.vSpacing
+            Layout.rightMargin: VPNTheme.theme.vSpacing
+            Layout.preferredWidth: col.width - VPNTheme.theme.vSpacing * 2
 
             Rectangle {
                 color: "transparent"
                 height: VPNTheme.theme.rowHeight * 2
+                Layout.preferredWidth: 100
                 Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
 
                 Image {
                     id: img
@@ -103,13 +108,25 @@ VPNFlickable {
             }
 
             ColumnLayout {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.maximumWidth: col.width - VPNTheme.theme.vSpacing * 2
                 Layout.topMargin: VPNTheme.theme.windowMargin / 2
                 spacing: VPNTheme.theme.windowMargin / 2
 
                 VPNHeadline {
                     id: headline
+                    width: undefined
+                    Layout.maximumWidth: col.width - VPNTheme.theme.vSpacing * 2
+                    Layout.minimumWidth: col.width - VPNTheme.theme.vSpacing * 2
+                    Component.onCompleted: {
+                        if (
+                                VPNAuthInApp.state === VPNAuthInApp.StateSignIn ||
+                                VPNAuthInApp.state === VPNAuthInApp.StateSigningIn ||
+                                VPNAuthInApp.state === VPNAuthInApp.StateSignUp ||
+                                VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
+                                ) {
+                            fontSizeMode = Text.FixedSize
+                            elide = Text.ElideMiddle
+                        }
+                    }
                 }
 
                 VPNLinkButton {
@@ -122,9 +139,10 @@ VPNFlickable {
                 VPNSubtitle {
                     id: subtitle
                     horizontalAlignment: Text.AlignHCenter
-                    Layout.alignment: Qt.AlignHCenter
                     Layout.maximumWidth: col.width - VPNTheme.theme.vSpacing * 2
+                    Layout.minimumWidth: col.width - VPNTheme.theme.vSpacing * 2
                 }
+
             }
 
             VPNBoldLabel {
@@ -133,14 +151,15 @@ VPNFlickable {
 
             ColumnLayout {
                 id: inputs
+                Layout.maximumWidth: col.width - VPNTheme.theme.vSpacing * 2
             }
         }
 
         ColumnLayout {
             id: disclaimers
-            Layout.preferredWidth: col.width - VPNTheme.theme.vSpacing * 2
             Layout.maximumWidth: col.width - VPNTheme.theme.vSpacing * 2
-            Layout.alignment: Qt.AlignHCenter
+            Layout.leftMargin: VPNTheme.theme.vSpacing
+            Layout.rightMargin: VPNTheme.theme.vSpacing
             Layout.topMargin: VPNTheme.theme.vSpacing
         }
 
@@ -152,11 +171,16 @@ VPNFlickable {
         ColumnLayout {
             id: footerContent
             Layout.alignment: Qt.AlignBottom
-            Layout.preferredWidth: parent.width
+            Layout.maximumWidth: col.width - VPNTheme.theme.vSpacing * 2
+            Layout.minimumWidth: col.width - VPNTheme.theme.vSpacing * 2
+            Layout.leftMargin: VPNTheme.theme.vSpacing
+            Layout.rightMargin: VPNTheme.theme.vSpacing
+
         }
 
         VPNVerticalSpacer {
             Layout.minimumHeight: VPNTheme.theme.vSpacing * 2
+            Layout.fillWidth: true
         }
     }
 

@@ -1,3 +1,4 @@
 VPNInAppAuthenticationBase 0.1 VPNInAppAuthenticationBase.qml
 VPNInAppAuthenticationErrorPopup 0.1 VPNInAppAuthenticationErrorPopup.qml
 VPNInAppAuthenticationInputs 0.1 VPNInAppAuthenticationInputs.qml
+VPNInAppAuthenticationPasswordCondition 0.1 VPNInAppAuthenticationPasswordCondition.qml

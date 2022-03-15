@@ -53,48 +53,25 @@ VPNInAppAuthenticationBase {
 
     _disclaimers: ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
-        Layout.fillWidth: true
 
-        GridLayout {
-            id: grid
-            Layout.alignment: Qt.AlignHCenter
+        Text {
+            text: VPNl18n.InAppAuthTermsOfServiceAndPrivacyDisclaimer
+            font.family: VPNTheme.theme.fontInterFamily
+            font.pixelSize: VPNTheme.theme.fontSizeSmall
+            color: VPNTheme.theme.fontColor
             Layout.fillWidth: true
-            columnSpacing: 0
-            columns: 3
-            Component.onCompleted: if (implicitWidth > window.width) flow = Grid.TopToBottom
-
-            VPNGreyLink {
-                id: termsOfService
-
-                // Terms of Service - string defined in VPNAboutUs.qml
-                labelText: qsTrId("vpn.aboutUs.tos2")
-                Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
-                textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
-                onClicked: VPN.openLink(VPN.LinkTermsOfService)
-            }
-
-            Rectangle {
-                width: 4
-                height: 4
-                radius: 2
-                Layout.alignment: Qt.AlignHCenter
-                color: VPNTheme.theme.greyLink.defaultColor
-                visible: parent.flow != Grid.TopToBottom
-                opacity: .8
-            }
-
-            VPNGreyLink {
-                id: privacyNotice
-
-                // Privacy Notice - string defined in VPNAboutUs.qml
-                labelText: qsTrId("vpn.aboutUs.privacyNotice2")
-                onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
-                textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
-                Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            horizontalAlignment: Text.AlignHCenter
+            linkColor: VPNTheme.theme.fontColorDark
+            lineHeightMode: Text.FixedHeight
+            lineHeight: VPNTheme.theme.labelLineHeight
+            onLinkActivated: {
+                if (link === "terms-of-service")
+                    return VPN.openLink(VPN.LinkTermsOfService);
+                VPN.openLink(VPN.LinkPrivacyNotice);
             }
         }
     }
-
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter

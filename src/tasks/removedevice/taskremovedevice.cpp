@@ -32,7 +32,8 @@ TaskRemoveDevice::~TaskRemoveDevice() {
 }
 
 void TaskRemoveDevice::run() {
-  logger.debug() << "Removing the device with public key" << m_publicKey;
+  logger.debug() << "Removing the device with public key"
+                 << logger.keys(m_publicKey);
 
   NetworkRequest* request =
       NetworkRequest::createForDeviceRemoval(this, m_publicKey);

@@ -167,7 +167,8 @@ void LinuxNetworkWatcherWorker::checkDevices() {
       // network devices.
       logger.warning() << "Unsecured AP detected!"
                        << "rsnFlags:" << rsnFlags.toInt()
-                       << "wpaFlags:" << wpaFlags.toInt() << "ssid:" << ssid;
+                       << "wpaFlags:" << wpaFlags.toInt()
+                       << "ssid:" << logger.sensitive(ssid);
       emit unsecuredNetwork(ssid, bssid);
       break;
     }

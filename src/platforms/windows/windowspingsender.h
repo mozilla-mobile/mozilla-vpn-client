@@ -29,16 +29,16 @@ class WindowsPingSender final : public PingSender {
   Q_DISABLE_COPY_MOVE(WindowsPingSender)
 
  public:
-  WindowsPingSender(const QString& source, QObject* parent = nullptr);
+  WindowsPingSender(const QHostAddress& source, QObject* parent = nullptr);
   ~WindowsPingSender();
 
-  void sendPing(const QString& destination, quint16 sequence) override;
+  void sendPing(const QHostAddress& destination, quint16 sequence) override;
 
  private slots:
   void pingEventReady();
 
  private:
-  QString m_source;
+  QHostAddress m_source;
   HANDLE m_handle = INVALID_HANDLE_VALUE;
   HANDLE m_event = INVALID_HANDLE_VALUE;
   QWinEventNotifier* m_notifier = nullptr;

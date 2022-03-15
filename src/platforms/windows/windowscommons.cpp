@@ -111,7 +111,7 @@ QString WindowsCommons::tunnelLogFile() {
 // static
 int WindowsCommons::AdapterIndexTo(const QHostAddress& dst) {
   logger.debug() << "Getting Current Internet Adapter that routes to"
-                 << dst.toString();
+                 << logger.sensitive(dst.toString());
   quint32_be ipBigEndian;
   quint32 ip = dst.toIPv4Address();
   qToBigEndian(ip, &ipBigEndian);

@@ -186,7 +186,8 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
 bool ServerCountryModel::pickIfExists(const QString& countryCode,
                                       const QString& cityCode,
                                       ServerData& data) const {
-  logger.debug() << "Checking if the server exists" << countryCode << cityCode;
+  logger.debug() << "Checking if a server exists"
+                 << logger.sensitive(countryCode) << logger.sensitive(cityCode);
 
   for (const ServerCountry& country : m_countries) {
     if (country.code() == countryCode) {
@@ -239,7 +240,8 @@ void ServerCountryModel::pickRandom(ServerData& data) const {
 
 bool ServerCountryModel::pickByIPv4Address(const QString& ipv4Address,
                                            ServerData& data) const {
-  logger.debug() << "Choosing a server with addres:" << ipv4Address;
+  logger.debug() << "Choosing a server with addres:"
+                 << logger.sensitive(ipv4Address);
 
   for (const ServerCountry& country : m_countries) {
     for (const ServerCity& city : country.cities()) {
@@ -329,8 +331,8 @@ void ServerCountryModel::setServerCooldown(const QString& publicKey,
 void ServerCountryModel::setCooldownForAllServersInACity(
     const QString& countryCode, const QString& cityCode,
     unsigned int duration) {
-  logger.debug() << "Set cooldown for all servers for: " << countryCode << " - "
-                 << cityCode;
+  logger.debug() << "Set cooldown for all servers for: "
+                 << logger.sensitive(countryCode) << logger.sensitive(cityCode);
 
   for (const ServerCountry& country : m_countries) {
     if (country.code() == countryCode) {

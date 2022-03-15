@@ -401,7 +401,7 @@ void MozillaVPN::maybeStateMain() {
 }
 
 void MozillaVPN::setServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set server public key:" << publicKey;
+  logger.debug() << "Set server public key:" << logger.keys(publicKey);
   m_serverPublicKey = publicKey;
 }
 

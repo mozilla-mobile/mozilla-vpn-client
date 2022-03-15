@@ -23,14 +23,13 @@ class XCodeprojPatcher
     if platform == 'macos'
       setup_target_loginitem shortVersion, fullVersion, configHash
       setup_target_nativemessaging shortVersion, fullVersion, configHash
+      setup_target_wireguardgo
     end
 
 
-    if networkExtension
-      setup_target_extension shortVersion, fullVersion, platform, configHash
+    if platform == 'ios'
+      setup_target_extension shortVersion, fullVersion, configHash
       setup_target_gobridge
-    else
-      setup_target_wireguardgo
     end
 
     setup_target_balrog if platform == 'macos'
@@ -101,7 +100,7 @@ class XCodeprojPatcher
 
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
         'GROUP_ID=\"' + groupId + '\"',
-        "VPN_NE_BUNDLEID=\\\"" + (platform == 'macos' ? configHash['NETEXT_ID_MACOS'] : configHash['NETEXT_ID_IOS']) + "\\\"",
+        "VPN_NE_BUNDLEID=\\\"" + configHash['NETEXT_ID_IOS'] + "\\\"",
       ]
 
       if config.name == 'Release'
@@ -238,8 +237,8 @@ class XCodeprojPatcher
     end
   end
 
-  def setup_target_extension(shortVersion, fullVersion, platform, configHash)
-    @target_extension = @project.new_target(:app_extension, 'WireGuardNetworkExtension', platform == 'macos' ? :osx : :ios)
+  def setup_target_extension(shortVersion, fullVersion, configHash)
+    @target_extension = @project.new_target(:app_extension, 'WireGuardNetworkExtension', :ios)
 
     @target_extension.build_configurations.each do |config|
       config.base_configuration_reference = @configFile
@@ -247,48 +246,40 @@ class XCodeprojPatcher
       config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
-      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/networkextension/WireGuardNetworkExtension-Bridging-Header.h'
+      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'ios/networkextension/WireGuardNetworkExtension-Bridging-Header.h'
       config.build_settings['SWIFT_PRECOMPILE_BRIDGING_HEADER'] = 'NO'
       config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'YES'
 
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= shortVersion
       config.build_settings['CURRENT_PROJECT_VERSION'] ||= fullVersion
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= configHash['NETEXT_ID_MACOS'] if platform == 'macos'
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= configHash['NETEXT_ID_IOS'] if platform == 'ios'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= configHash['NETEXT_ID_IOS']
       config.build_settings['PRODUCT_NAME'] = 'WireGuardNetworkExtension'
 
       # other configs
-      config.build_settings['INFOPLIST_FILE'] ||= 'macos/networkextension/Info.plist'
-      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= platform + '/networkextension/MozillaVPNNetworkExtension.entitlements'
+      config.build_settings['INFOPLIST_FILE'] ||= 'ios/networkextension/Info.plist'
+      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'ios/networkextension/MozillaVPNNetworkExtension.entitlements'
       config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Development'
 
-      if platform == 'ios'
-        config.build_settings['ENABLE_BITCODE'] ||= 'NO'
-        config.build_settings['SDKROOT'] = 'iphoneos'
+      config.build_settings['ENABLE_BITCODE'] ||= 'NO'
+      config.build_settings['SDKROOT'] = 'iphoneos'
 
-        config.build_settings['OTHER_LDFLAGS'] ||= [
-          "-stdlib=libc++",
-          "-Wl,-rpath,@executable_path/Frameworks",
-          "-framework",
-          "AssetsLibrary",
-          "-framework",
-          "MobileCoreServices",
-          "-lm",
-          "-framework",
-          "UIKit",
-          "-lz",
-          "-framework",
-          "OpenGLES",
-        ]
-      end
+      config.build_settings['OTHER_LDFLAGS'] ||= [
+        "-stdlib=libc++",
+        "-Wl,-rpath,@executable_path/Frameworks",
+        "-framework",
+        "AssetsLibrary",
+        "-framework",
+        "MobileCoreServices",
+        "-lm",
+        "-framework",
+        "UIKit",
+        "-lz",
+        "-framework",
+        "OpenGLES",
+      ]
 
-      groupId = "";
-      if (platform == 'macos')
-        groupId = configHash['DEVELOPMENT_TEAM'] + "." + configHash['GROUP_ID_MACOS']
-      else
-        groupId = configHash['GROUP_ID_IOS']
-      end
+      groupId = configHash['GROUP_ID_IOS']
 
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
         # This is needed to compile the iosglue without Qt.

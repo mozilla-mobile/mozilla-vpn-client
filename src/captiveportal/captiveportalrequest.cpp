@@ -63,7 +63,7 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
           [this](NetworkRequest* request, const QUrl& url) {
             // In Case the Captive Portal request Redirects, we 100% have one.
             logger.info() << "Portal Detected -> Redirect to "
-                          << url.toString();
+                          << logger.sensitive(url.toString());
             request->abort();
             onResult(PortalDetected);
           });

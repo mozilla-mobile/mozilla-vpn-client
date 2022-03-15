@@ -18,8 +18,6 @@ VPNInAppAuthenticationBase {
     // - Verification by email needed
     // - errors
 
-    property bool signUpEnabled: passwordIsValid(passwordInputCreate.text)
-
     id: authSignUp
 
     _changeEmailLinkVisible: true
@@ -31,74 +29,21 @@ VPNInAppAuthenticationBase {
     _headlineText: VPNAuthInApp.emailAddress
     _subtitleText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
     _imgSource: "qrc:/nebula/resources/avatar.svg"
+    _inputLabel: "Create password"
 
-    _inputs: ColumnLayout {
-        spacing: VPNTheme.theme.vSpacingSmall
-
-        VPNBoldLabel {
-            id: passwordLabelCreate
-            text: "Create password"
+    _inputs: VPNInAppAuthenticationInputs {
+        function validatePassword(passwordString) {
+            return VPNAuthInApp.validatePasswordCommons(passwordString)
+                && VPNAuthInApp.validatePasswordLength(passwordString)
+                && VPNAuthInApp.validatePasswordEmail(passwordString)
         }
-
-        VPNPasswordInput {
-            id: passwordInputCreate
-            Layout.fillWidth: true
-            _placeholderText: "secure password" // TODO
-        }
-
-        VPNBoldLabel {
-            id: passwordLabelConfirm
-            text: "Confirm password"
-        }
-
-        VPNPasswordInput {
-            id: passwordInputConfirm
-            Layout.fillWidth: true
-            _placeholderText: "secure password" // TODO
-        }
-
-        VPNContextualAlerts {
-            id: passwordInputCreateWarnings
-            Layout.fillWidth: true
-
-            messages: [
-                {
-                    type: "error",
-                    message: "Common password",
-                    visible: !VPNAuthInApp.validatePasswordCommons(passwordInputCreate.text)
-                },
-                {
-                    type: "error",
-                    message: "Password length",
-                    visible: !VPNAuthInApp.validatePasswordLength(passwordInputCreate.text)
-                },
-                {
-                    type: "error",
-                    message: "Password email",
-                    visible: !VPNAuthInApp.validatePasswordEmail(passwordInputCreate.text)
-                },
-                {
-                    type: "error",
-                    message: "Passwords do not match",
-                    visible: !authSignUp.passwordsMatch()
-                }
-            ]
-        }
-
-        VPNButton {
-            id: createAccountButton
-            enabled: authSignUp.signUpEnabled && VPNAuthInApp.state === VPNAuthInApp.StateSignUp
-            text: "Create account"
-            loaderVisible: VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
-            Layout.fillWidth: true
-
-            onClicked: {
-                if (enabled) {
-                    VPNAuthInApp.setPassword(passwordInputCreate.text);
-                    VPNAuthInApp.signUp();
-                }
-            }
-        }
+        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateSignUp && validatePassword(activeInput().text)
+        _buttonOnClicked: (inputText) => {
+                              VPNAuthInApp.setPassword(inputText);
+                              VPNAuthInApp.signUp();
+                          }
+        _buttonText: "Create account"
+        _inputPlaceholderText: "Secure password"
     }
 
     _disclaimers: RowLayout {
@@ -123,16 +68,4 @@ VPNInAppAuthenticationBase {
         }
 
     }
-
-    function passwordsMatch() {
-        return passwordInputConfirm.text === passwordInputCreate.text
-    }
-
-    function passwordIsValid(passwordString) {
-        return passwordsMatch()
-            && VPNAuthInApp.validatePasswordLength(passwordString)
-            && VPNAuthInApp.validatePasswordEmail(passwordString)
-            && VPNAuthInApp.validatePasswordCommons(passwordString)
-    }
-
 }
