@@ -135,8 +135,8 @@ class AuthenticationInApp final : public QObject {
 
   void requestEmailAddressChange(AuthenticationInAppListener* listener);
   void requestState(State state, AuthenticationInAppListener* listener);
-  void requestErrorPropagation(ErrorType errorType,
-                               AuthenticationInAppListener* listener);
+  void requestErrorPropagation(AuthenticationInAppListener* listener,
+                               ErrorType errorType, uint32_t retryAfterSec = 0);
 
   static int verificationCodeLength() { return 6; }
 
@@ -145,7 +145,7 @@ class AuthenticationInApp final : public QObject {
  signals:
   void stateChanged();
 
-  void errorOccurred(ErrorType error);
+  void errorOccurred(ErrorType error, uint32_t retryAfter);
 
   void emailAddressChanged();
 

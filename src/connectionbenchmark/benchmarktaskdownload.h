@@ -23,12 +23,15 @@ class BenchmarkTaskDownload final : public BenchmarkTask {
   void finished(quint64 bytesPerSecond, bool hasUnexpectedError);
 
  private:
+  void downloadProgressed(qint64 bytesReceived, qint64 bytesTotal,
+                          QNetworkReply* reply);
   void downloadReady(QNetworkReply::NetworkError error, const QByteArray& data);
   void handleState(BenchmarkTask::State state);
 
  private:
   NetworkRequest* m_request = nullptr;
   const QString m_fileUrl;
+  qint64 m_bytesReceived = 0;
 };
 
 #endif  // BENCHMARKTASKDOWNLOAD_H

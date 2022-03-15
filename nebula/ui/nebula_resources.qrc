@@ -324,5 +324,7 @@
         <file>resources/warning-dark-orange.svg</file>
         <file>resources/warning-orange.svg</file>
         <file>resources/warning.svg</file>
+        <file>resources/x-red50.svg</file>
+        <file>resources/check-green70.svg</file>
     </qresource>
 </RCC>

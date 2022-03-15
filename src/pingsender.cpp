@@ -5,11 +5,6 @@
 #include "pingsender.h"
 #include "logger.h"
 
-// QProcess is not supported on iOS and Wasm
-#if !defined(MVPN_IOS) && !defined(MVPN_WASM)
-#  include <QProcess>
-#endif
-
 namespace {
 Logger logger(LOG_NETWORKING, "PingSender");
 }
@@ -50,68 +45,3 @@ quint16 PingSender::inetChecksum(const void* data, size_t len) {
   answer = ~sum;                      /* truncate to 16 bits */
   return (answer);
 }
-
-// QProcess is not supported on iOS
-#if !defined(MVPN_IOS) && !defined(MVPN_WASM)
-// Send a ping by launching the "ping" command.
-void PingSender::genericSendPing(const QStringList& args, qint16 sequence) {
-  QProcess* process = new QProcess(this);
-  process->setProcessChannelMode(QProcess::MergedChannels);
-  process->start("ping", args, QIODevice::ReadOnly);
-
-  connect(process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
-          this, [this, sequence](int exitCode, QProcess::ExitStatus) {
-            if (exitCode == 0) {
-              emit recvPing(sequence);
-              return;
-            }
-            // exitCode == 1 -> ok but no ping response
-            if (exitCode == 2) {
-              logger.info() << "QProcess-Ping encountered an error!";
-              emit criticalPingError();
-            }
-          });
-  connect(process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
-          process, &QObject::deleteLater);
-  connect(
-      process, &QProcess::errorOccurred, this,
-      [this](QProcess::ProcessError error) {
-        switch (error) {
-          case QProcess::ProcessError::Crashed:
-            logger.error() << "Failed to use native Ping: Crashed";
-            break;
-          case QProcess::ProcessError::FailedToStart:
-            logger.error() << "Failed to use native Ping: FailedToStart";
-            break;
-          case QProcess::ProcessError::ReadError:
-            logger.error() << "Failed to use native Ping: ReadError";
-            break;
-          case QProcess::ProcessError::Timedout:
-            logger.error() << "Failed to use native Ping: Timedout";
-            break;
-          case QProcess::ProcessError::UnknownError:
-            logger.error() << "Failed to use native Ping: UnknownError";
-            break;
-          case QProcess::ProcessError::WriteError:
-            logger.error() << "Failed to use native Ping: WriteError";
-            break;
-        };
-        // Using generic ping is a fallback anyway, if we fail here
-        // we won't be able to infer any info about connection health -
-        // so lets just return a fake ping, so the user can use the app
-        // but without the "no connection" / "no confirm"
-        logger.info() << "Pushing fake ping response";
-        emit criticalPingError();
-      },
-      Qt::ConnectionType::QueuedConnection);
-  connect(process, &QProcess::errorOccurred, process, &QObject::deleteLater);
-
-  // Ensure any lingering pings are cleaned up when the PingSender is destroyed
-  connect(this, &QObject::destroyed, process, [process] {
-    process->terminate();
-    if (!process->waitForFinished(100)) {
-      process->kill();
-    }
-  });
-}
-#endif

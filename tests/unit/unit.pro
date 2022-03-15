@@ -50,6 +50,7 @@ HEADERS += \
     ../../src/constants.h \
     ../../src/controller.h \
     ../../src/curve25519.h \
+    ../../src/dnspingsender.h \
     ../../src/errorhandler.h \
     ../../src/featurelist.h \
     ../../src/inspector/inspectorhandler.h \
@@ -84,6 +85,7 @@ HEADERS += \
     ../../src/networkwatcherimpl.h \
     ../../src/pinghelper.h \
     ../../src/pingsender.h \
+    ../../src/pingsenderfactory.h \
     ../../src/platforms/android/androiddatamigration.h \
     ../../src/platforms/android/androidsharedprefs.h \
     ../../src/platforms/dummy/dummynetworkwatcher.h \
@@ -143,6 +145,7 @@ SOURCES += \
     ../../src/connectiondataholder.cpp \
     ../../src/constants.cpp \
     ../../src/curve25519.cpp \
+    ../../src/dnspingsender.cpp \
     ../../src/errorhandler.cpp \
     ../../src/featurelist.cpp \
     ../../src/hacl-star/Hacl_Chacha20.c \
@@ -177,6 +180,7 @@ SOURCES += \
     ../../src/networkmanager.cpp \
     ../../src/networkwatcher.cpp \
     ../../src/pinghelper.cpp \
+    ../../src/pingsenderfactory.cpp \
     ../../src/platforms/android/androiddatamigration.cpp \
     ../../src/platforms/android/androidsharedprefs.cpp \
     ../../src/platforms/dummy/dummynetworkwatcher.cpp \

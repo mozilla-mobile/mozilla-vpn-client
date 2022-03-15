@@ -95,6 +95,11 @@ jobs:
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov   
+          
       - name: Installing the oathtool
         shell: bash
         run: |
@@ -107,7 +112,16 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/qt6/bin:$PATH
-          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh
+          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
+        
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:              
+          directory: .                              
+          flags: unit_tests
+          name: codecov-poc
+          files: unit_lcov.info
+          verbose: true
 
   windows-unit-tests:
     name: Run Unit tests on Windows Qt6

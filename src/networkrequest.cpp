@@ -959,7 +959,9 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
   connect(m_reply, &QNetworkReply::finished, this,
           &NetworkRequest::maybeDeleteLater);
   connect(m_reply, &QNetworkReply::downloadProgress, this,
-          &NetworkRequest::requestUpdated);
+          [&](qint64 bytesReceived, qint64 bytesTotal) {
+            requestUpdated(bytesReceived, bytesTotal, m_reply);
+          });
 }
 
 void NetworkRequest::maybeDeleteLater() {
