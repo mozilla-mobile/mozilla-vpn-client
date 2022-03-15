@@ -452,7 +452,7 @@ inAppAuth:
   signInSubtitle: Continue to Mozilla VPN by signing in with your Firefox account
   createPasswordLabel: 
     value: Create password
-    comment: This is a password input label which appears on the password creation screen.
+    comment: This is a label displayed on the password creation screen.
   forgotPasswordLink: Forgot your password?
   passwordInputPlaceholder: Enter password
   passwordInputLabel: Password
