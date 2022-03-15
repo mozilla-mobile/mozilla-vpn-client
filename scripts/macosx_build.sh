@@ -17,7 +17,6 @@ echo "$SHORTVERSION - $FULLVERSION"
 echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
 echo "GROUP_ID_MACOS = group.org.mozilla.macos.Guardian" >> xcode.xconfig
 echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
-echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
 echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login" >> xcode.xconfig
 echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
 echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
