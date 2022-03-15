@@ -129,13 +129,12 @@ void TestSignUpAndIn::signUp() {
   aia->verifySessionEmailCode(code);
   QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
 
-  QUrl finalUrl;
-  connect(aia, &AuthenticationInApp::unitTestFinalUrl,
-          [&](const QUrl& url) { finalUrl = url; });
-  connect(&task, &Task::completed, [&]() {
-    qDebug() << "Task completed";
-    loop.exit();
-  });
+  QString authFailureDetail;
+  connect(aia, &AuthenticationInApp::unitTestAuthFailedWithDetail,
+          [&](const QString& detail) {
+            authFailureDetail = detail;
+            loop.exit();
+          });
 
   if (m_totpCreation) {
     waitForTotpCodes();
@@ -144,13 +143,7 @@ void TestSignUpAndIn::signUp() {
   loop.exec();
   disconnect(aia, nullptr, nullptr, nullptr);
 
-  // The account is not active yet. So, let's check the final URL.
-  QVERIFY(
-      (finalUrl.host() == "stage-vpn.guardian.nonprod.cloudops.mozgcp.net" &&
-       finalUrl.path() == "/vpn/client/login/success") ||
-      (finalUrl.host() == "www-dev.allizom.org" &&
-       finalUrl.path() == "/en-US/products/vpn/"));
-  qDebug() << finalUrl.path();
+  QCOMPARE(authFailureDetail, "no_subscription_for_user");
 }
 
 void TestSignUpAndIn::signIn() {
@@ -244,24 +237,17 @@ void TestSignUpAndIn::signIn() {
     }
   });
 
-  QUrl finalUrl;
-  connect(aia, &AuthenticationInApp::unitTestFinalUrl,
-          [&](const QUrl& url) { finalUrl = url; });
-  connect(&task, &Task::completed, [&]() {
-    qDebug() << "Task completed";
-    loop.exit();
-  });
+  QString authFailureDetail;
+  connect(aia, &AuthenticationInApp::unitTestAuthFailedWithDetail,
+          [&](const QString& detail) {
+            authFailureDetail = detail;
+            loop.exit();
+          });
 
   loop.exec();
   disconnect(aia, nullptr, nullptr, nullptr);
 
-  // The account is not active yet. So, let's check the final URL.
-  QVERIFY(
-      (finalUrl.host() == "stage-vpn.guardian.nonprod.cloudops.mozgcp.net" &&
-       finalUrl.path() == "/vpn/client/login/success") ||
-      (finalUrl.host() == "www-dev.allizom.org" &&
-       finalUrl.path() == "/en-US/products/vpn/"));
-  qDebug() << finalUrl.path();
+  QCOMPARE(authFailureDetail, "no_subscription_for_user");
 }
 
 QString TestSignUpAndIn::fetchSessionCode() {
