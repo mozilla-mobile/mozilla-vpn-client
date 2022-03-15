@@ -37,7 +37,6 @@ jobs:
           aqt install-qt -O `pwd`/qt_ios mac desktop 6.2.3 -m qtcharts qtwebsockets qt5compat
           aqt install-qt -O `pwd`/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
           mv `pwd`/qt_ios/6.2.3/macos `pwd`/qt_ios/6.2.3/clang_64
- 
 
       - name: Generating glean samples
         shell: bash
@@ -48,8 +47,8 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=`pwd`/6.2.3/clang_64/bin:$PATH
-          export PATH=`pwd`/6.2.3/ios/bin:$PATH
+          export PATH=`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
+          export PATH=`pwd`/qt_ios/6.2.3/ios/bin:$PATH
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
@@ -63,9 +62,9 @@ jobs:
       - name: Configuring the build
         shell: bash
         run: |
-          export PATH=`pwd`/6.2.3/clang_64/bin:$PATH
-          export PATH=`pwd`/6.2.3/ios/bin:$PATH
-          export QT_IOS_BIN=`pwd`/6.2.3/ios/bin
+          export PATH=`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
+          export PATH=`pwd`/qt_ios/6.2.3/ios/bin:$PATH
+          export QT_IOS_BIN=`pwd`/qt_ios/6.2.3/ios/bin
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           cat > xcode.xconfig << EOF
