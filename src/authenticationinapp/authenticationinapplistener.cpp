@@ -404,32 +404,31 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted, this,
-          [this](const QByteArray& data) {
-            logger.debug() << "Verification completed:"
-                           << logger.sensitive(data);
+  connect(
+      request, &NetworkRequest::requestCompleted, this,
+      [this](const QByteArray& data) {
+        logger.debug() << "Verification completed:" << logger.sensitive(data);
 
-            QJsonDocument json = QJsonDocument::fromJson(data);
-            if (json.isNull()) {
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
-              return;
-            }
+        QJsonDocument json = QJsonDocument::fromJson(data);
+        if (json.isNull()) {
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
+          return;
+        }
 
-            QJsonObject obj = json.object();
-            bool success = obj.value("success").toBool();
-            if (success) {
-              finalizeSignInOrUp();
-              return;
-            }
+        QJsonObject obj = json.object();
+        bool success = obj.value("success").toBool();
+        if (success) {
+          finalizeSignInOrUp();
+          return;
+        }
 
-            AuthenticationInApp* aip = AuthenticationInApp::instance();
-            aip->requestState(
-                AuthenticationInApp::StateVerificationSessionByTotpNeeded,
-                this);
-            aip->requestErrorPropagation(
-                this, AuthenticationInApp::ErrorInvalidTotpCode);
-          });
+        AuthenticationInApp* aip = AuthenticationInApp::instance();
+        aip->requestState(
+            AuthenticationInApp::StateVerificationSessionByTotpNeeded, this);
+        aip->requestErrorPropagation(this,
+                                     AuthenticationInApp::ErrorInvalidTotpCode);
+      });
 }
 
 void AuthenticationInAppListener::signInOrUpCompleted(
