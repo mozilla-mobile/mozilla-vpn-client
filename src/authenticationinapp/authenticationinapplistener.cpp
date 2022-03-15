@@ -74,10 +74,10 @@ void AuthenticationInAppListener::start(Task* task,
   m_codeChallenge = codeChallenge;
   m_codeChallengeMethod = codeChallengeMethod;
 
-  AuthenticationInApp* aip = AuthenticationInApp::instance();
-  Q_ASSERT(aip);
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  Q_ASSERT(aia);
 
-  aip->registerListener(this);
+  aia->registerListener(this);
 
   QUrl url(createAuthenticationUrl(codeChallenge, codeChallengeMethod,
                                    emailAddress));
@@ -154,11 +154,11 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
 
   m_emailAddressCaseFix = emailAddress;
 
-  AuthenticationInApp* aip = AuthenticationInApp::instance();
-  Q_ASSERT(aip);
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  Q_ASSERT(aia);
 
-  aip->requestEmailAddressChange(this);
-  aip->requestState(AuthenticationInApp::StateCheckingAccount, this);
+  aia->requestEmailAddressChange(this);
+  aia->requestState(AuthenticationInApp::StateCheckingAccount, this);
 
   NetworkRequest* request =
       NetworkRequest::createForFxaAccountStatus(m_task, m_emailAddress);
@@ -451,10 +451,10 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
           return;
         }
 
-        AuthenticationInApp* aip = AuthenticationInApp::instance();
-        aip->requestState(
+        AuthenticationInApp* aia = AuthenticationInApp::instance();
+        aia->requestState(
             AuthenticationInApp::StateVerificationSessionByTotpNeeded, this);
-        aip->requestErrorPropagation(this,
+        aia->requestErrorPropagation(this,
                                      AuthenticationInApp::ErrorInvalidTotpCode);
       });
 }
@@ -505,11 +505,11 @@ void AuthenticationInAppListener::createTotpCodes() {
             logger.debug() << "Totp code creation completed:"
                            << logger.sensitive(data);
 
-            AuthenticationInApp* aip = AuthenticationInApp::instance();
-            aip->requestState(
+            AuthenticationInApp* aia = AuthenticationInApp::instance();
+            aia->requestState(
                 AuthenticationInApp::StateVerificationSessionByTotpNeeded,
                 this);
-            emit aip->unitTestTotpCodeCreated(data);
+            emit aia->unitTestTotpCodeCreated(data);
           });
 }
 
@@ -527,9 +527,9 @@ void AuthenticationInAppListener::deleteAccount() {
           [this](const QByteArray& data) {
             logger.debug() << "Account deleted" << logger.sensitive(data);
 
-            AuthenticationInApp* aip = AuthenticationInApp::instance();
-            aip->requestState(AuthenticationInApp::StateStart, this);
-            emit aip->unitTestAccountDeleted();
+            AuthenticationInApp* aia = AuthenticationInApp::instance();
+            aia->requestState(AuthenticationInApp::StateStart, this);
+            emit aia->unitTestAccountDeleted();
 
             emit readyToFinish();
           });
@@ -655,8 +655,8 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
 }
 
 void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
-  AuthenticationInApp* aip = AuthenticationInApp::instance();
-  Q_ASSERT(aip);
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  Q_ASSERT(aia);
 
   int errorCode = obj["errno"].toInt();
 
@@ -664,20 +664,20 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
   // https://github.com/mozilla/fxa/blob/main/packages/fxa-auth-server/docs/api.md#defined-errors
   switch (errorCode) {
     case 101:  // Account already exists
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(
           this, AuthenticationInApp::ErrorAccountAlreadyExists);
       break;
 
     case 102:  // Unknown account
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(this,
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(this,
                                    AuthenticationInApp::ErrorUnknownAccount);
       break;
 
     case 103:  // Incorrect password
-      aip->requestState(AuthenticationInApp::StateSignIn, this);
-      aip->requestErrorPropagation(this,
+      aia->requestState(AuthenticationInApp::StateSignIn, this);
+      aia->requestErrorPropagation(this,
                                    AuthenticationInApp::ErrorIncorrectPassword);
       break;
 
@@ -691,26 +691,26 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
       }
 
       if (keys.contains("unblockCode")) {
-        AuthenticationInApp* aip = AuthenticationInApp::instance();
-        aip->requestState(AuthenticationInApp::StateUnblockCodeNeeded, this);
-        aip->requestErrorPropagation(
+        AuthenticationInApp* aia = AuthenticationInApp::instance();
+        aia->requestState(AuthenticationInApp::StateUnblockCodeNeeded, this);
+        aia->requestErrorPropagation(
             this, AuthenticationInApp::ErrorInvalidUnblockCode);
         break;
       }
 
       if (keys.contains("email")) {
-        AuthenticationInApp* aip = AuthenticationInApp::instance();
-        aip->requestState(AuthenticationInApp::StateStart, this);
-        aip->requestErrorPropagation(
+        AuthenticationInApp* aia = AuthenticationInApp::instance();
+        aia->requestState(AuthenticationInApp::StateStart, this);
+        aia->requestErrorPropagation(
             this, AuthenticationInApp::ErrorInvalidEmailAddress);
         break;
       }
 
       if (keys.contains("code")) {
-        AuthenticationInApp* aip = AuthenticationInApp::instance();
-        aip->requestState(
+        AuthenticationInApp* aia = AuthenticationInApp::instance();
+        aia->requestState(
             AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
-        aip->requestErrorPropagation(
+        aia->requestErrorPropagation(
             this, AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode);
         break;
       }
@@ -725,8 +725,8 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
     }
 
     case 114:  // Client has sent too many requests
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(this,
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(this,
                                    AuthenticationInApp::ErrorTooManyRequests,
                                    obj["retryAfter"].toInt());
       break;
@@ -748,46 +748,46 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
     }
 
     case 127:  // Invalid unblock code
-      aip->requestState(
+      aia->requestState(
           AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
-      aip->requestErrorPropagation(this,
+      aia->requestErrorPropagation(this,
                                    AuthenticationInApp::ErrorInvalidEmailCode);
       break;
 
     case 142:  // Sign in with this email type is not currently supported
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(
           this, AuthenticationInApp::ErrorEmailTypeNotSupported);
       break;
 
     case 144:  // Email already exists
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(
           this, AuthenticationInApp::ErrorEmailAlreadyExists);
       break;
 
     case 149:  // This email can not currently be used to login
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(
           this, AuthenticationInApp::ErrorEmailCanNotBeUsedToLogin);
       break;
 
     case 151:  // Failed to send email
-      aip->requestState(AuthenticationInApp::StateSignIn, this);
-      aip->requestErrorPropagation(this,
+      aia->requestState(AuthenticationInApp::StateSignIn, this);
+      aia->requestErrorPropagation(this,
                                    AuthenticationInApp::ErrorFailedToSendEmail);
       break;
 
     case 183:  // Invalid or expired verification code
-      aip->requestState(
+      aia->requestState(
           AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
-      aip->requestErrorPropagation(
+      aia->requestErrorPropagation(
           this, AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode);
       break;
 
     case 201:  // Service unavailable
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(this,
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(this,
                                    AuthenticationInApp::ErrorServerUnavailable);
       break;
 
@@ -940,8 +940,8 @@ void AuthenticationInAppListener::reset() {
   m_emailAddress.clear();
   m_emailAddressCaseFix.clear();
 
-  AuthenticationInApp* aip = AuthenticationInApp::instance();
-  Q_ASSERT(aip);
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  Q_ASSERT(aia);
 
-  aip->requestEmailAddressChange(this);
+  aia->requestEmailAddressChange(this);
 }
