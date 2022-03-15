@@ -182,11 +182,12 @@ void AuthenticationInApp::requestState(State state,
 }
 
 void AuthenticationInApp::requestErrorPropagation(
-    ErrorType errorType, AuthenticationInAppListener* listener) {
+    AuthenticationInAppListener* listener, ErrorType errorType,
+    uint32_t retryAfterSec) {
   Q_ASSERT(listener);
   Q_ASSERT(m_listener == listener);
 
-  emit errorOccurred(errorType);
+  emit errorOccurred(errorType, retryAfterSec);
 }
 
 // static

@@ -173,7 +173,7 @@ ColumnLayout {
 
     Connections {
         target: VPNAuthInApp
-        function onErrorOccurred(e) {
+        function onErrorOccurred(e, retryAfter) {
             switch(e) {
             case VPNAuthInApp.ErrorIncorrectPassword:
                 base._inputErrorMessage =  VPNl18n.InAppAuthInvalidPasswordErrorMessage;
