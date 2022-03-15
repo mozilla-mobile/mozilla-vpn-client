@@ -526,7 +526,6 @@ inAppAuth:
     value: Sorry, we were unable to send you a verification code.
     comment: App screen that informs the user there was an error sending them their verification code email - this is the message.
   enterEmailAddressDescription: Enter your email address to continue using Mozilla VPN
-  invalidPasswordErrorMessage: Invalid password. Please try again
   termsOfServiceAndPrivacyDisclaimer:
     value: By continuing, you agree to the <a href="terms-of-service">Terms of Service</a> and the <a href="privacy-notice">Privacy Notice</a>.
     comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
