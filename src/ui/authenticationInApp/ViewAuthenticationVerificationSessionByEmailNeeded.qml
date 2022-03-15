@@ -44,6 +44,7 @@ VPNInAppAuthenticationBase {
         _buttonText: "Verify"
         _inputMethodHints: Qt.ImhDigitsOnly
         _inputPlaceholderText: "Enter 6 digit code"
+        _itemToPan: authSignUp
     }
 
     _footerContent: Column {

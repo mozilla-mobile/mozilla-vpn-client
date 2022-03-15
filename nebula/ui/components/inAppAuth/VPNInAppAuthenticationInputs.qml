@@ -19,6 +19,9 @@ ColumnLayout {
     property alias _buttonText: btn.text
     property bool _isSignInView: (VPNAuthInApp.state === VPNAuthInApp.StateSignIn || VPNAuthInApp.state === VPNAuthInApp.StateSigningIn)
 
+    property var _itemToPan
+    property bool keyboardIsVisible: false
+
     function activeInput() {
         return _isSignInView ? passwordInput : textInput
     }
@@ -143,4 +146,44 @@ ColumnLayout {
             activeInput().hasError = true;
         }
     }
+
+    function handlePanInputIntoView() {
+        if (!_itemToPan) {
+            return;
+        }
+
+        const keyboardHeight = Qt.inputMethod.keyboardRectangle.height;
+        const activeInputItem = activeInput();
+        const cursorRectangle = _itemToPan.contentItem.mapFromItem(
+            activeInputItem,
+            activeInputItem.cursorRectangle.x,
+            activeInputItem.cursorRectangle.y
+        );
+
+        const activeInputBottom = cursorRectangle.y + activeInputItem.cursorRectangle.height;
+        const distanceToViewportBottom = _itemToPan.height - activeInputBottom;
+        const minOverlapClearance = VPNTheme.theme.rowHeight;
+        const overlapVertical = distanceToViewportBottom - keyboardHeight - minOverlapClearance;
+        const keyboardWillIntesectWithInput = overlapVertical < 0;
+
+        if (keyboardIsVisible && keyboardWillIntesectWithInput) {
+            _itemToPan.y = -1 * Math.abs(overlapVertical);
+        } else if (!keyboardIsVisible) {
+            _itemToPan.y = 0;
+        }
+    }
+
+    Connections {
+        target: Qt.inputMethod
+        enabled: Qt.platform.os === "android"
+
+        function onKeyboardRectangleChanged() {
+            handlePanInputIntoView();
+        }
+
+        function onVisibleChanged() {
+            keyboardIsVisible = !keyboardIsVisible;
+        }
+    }
+
 }

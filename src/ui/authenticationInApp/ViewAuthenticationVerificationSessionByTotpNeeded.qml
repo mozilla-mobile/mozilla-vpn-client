@@ -24,6 +24,8 @@ VPNInAppAuthenticationBase {
     // In theory, this part should be tested on iOS or on Android when we will
     // have IAP there too.
 
+    id: totpNeeded
+
     Component.onCompleted: console.log("SESSION VERIFICATION BY TOTP")
 
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
@@ -40,6 +42,7 @@ VPNInAppAuthenticationBase {
         _buttonText: "Continue"
         _inputMethodHints: Qt.ImhDigitsOnly
         _inputPlaceholderText: "Enter 2-factor auth code"
+        _itemToPan: totpNeeded
     }
 
     _footerContent: Column {

@@ -22,6 +22,8 @@ VPNInAppAuthenticationBase {
     // Form interaction polish
     // Show form error messages
 
+    id: viewAuthenticationStart
+
     _menuButtonOnClick: () => {VPN.cancelAuthentication() }
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonAccessibleName: "Back"
@@ -43,6 +45,7 @@ VPNInAppAuthenticationBase {
         _buttonText: "Continue"
         _inputMethodHints: Qt.ImhEmailCharactersOnly | Qt.ImhNoAutoUppercase
         _inputPlaceholderText: "Enter email"
+        _itemToPan: viewAuthenticationStart
     }
 
     _disclaimers: RowLayout {
@@ -66,4 +69,5 @@ VPNInAppAuthenticationBase {
             Layout.fillWidth: true
         }
     }
+
 }

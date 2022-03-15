@@ -29,6 +29,8 @@ VPNInAppAuthenticationBase {
     // Add password criteria tooltip
     // Maybe add button loader
 
+    id: viewAuthenticationSignIn
+
     _changeEmailLinkVisible: true
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => { VPNAuthInApp.reset() }
@@ -46,6 +48,7 @@ VPNInAppAuthenticationBase {
          }
         _buttonText: VPNl18n.InAppAuthSignInButton
         _inputPlaceholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
+        _itemToPan: viewAuthenticationSignIn
     }
 
     _disclaimers: ColumnLayout {
