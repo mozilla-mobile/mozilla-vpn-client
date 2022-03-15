@@ -48,6 +48,8 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
+          export PATH=`pwd`/6.2.3/clang_64/bin:$PATH
+          export PATH=`pwd`/6.2.3/ios/bin:$PATH
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
