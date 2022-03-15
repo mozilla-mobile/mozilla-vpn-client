@@ -149,7 +149,8 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Account status checked" << data;
+            logger.debug() << "Account status checked:"
+                           << logger.sensitive(data);
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -267,7 +268,7 @@ void AuthenticationInAppListener::signInInternal(const QString& unblockCode) {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Sign in completed" << data;
+            logger.debug() << "Sign in completed:" << logger.sensitive(data);
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -295,7 +296,7 @@ void AuthenticationInAppListener::signUp() {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Sign up completed" << data;
+            logger.debug() << "Sign up completed:" << logger.sensitive(data);
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -337,9 +338,10 @@ void AuthenticationInAppListener::sendUnblockCodeEmail() {
             processRequestFailure(error, data);
           });
 
-  connect(
-      request, &NetworkRequest::requestCompleted,
-      [](const QByteArray& data) { logger.debug() << "Code resent" << data; });
+  connect(request, &NetworkRequest::requestCompleted,
+          [](const QByteArray& data) {
+            logger.debug() << "Code resent:" << logger.sensitive(data);
+          });
 }
 
 void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
@@ -361,7 +363,8 @@ void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Verification completed" << data;
+            logger.debug() << "Verification completed:"
+                           << logger.sensitive(data);
             finalizeSignInOrUp();
           });
 }
@@ -379,9 +382,10 @@ void AuthenticationInAppListener::resendVerificationSessionCodeEmail() {
             processRequestFailure(error, data);
           });
 
-  connect(
-      request, &NetworkRequest::requestCompleted,
-      [](const QByteArray& data) { logger.debug() << "Code resent" << data; });
+  connect(request, &NetworkRequest::requestCompleted,
+          [](const QByteArray& data) {
+            logger.debug() << "Code resent:" << logger.sensitive(data);
+          });
 }
 
 void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
@@ -400,31 +404,31 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted, this,
-          [this](const QByteArray& data) {
-            logger.debug() << "Verification completed" << data;
+  connect(
+      request, &NetworkRequest::requestCompleted, this,
+      [this](const QByteArray& data) {
+        logger.debug() << "Verification completed:" << logger.sensitive(data);
 
-            QJsonDocument json = QJsonDocument::fromJson(data);
-            if (json.isNull()) {
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
-              return;
-            }
+        QJsonDocument json = QJsonDocument::fromJson(data);
+        if (json.isNull()) {
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
+          return;
+        }
 
-            QJsonObject obj = json.object();
-            bool success = obj.value("success").toBool();
-            if (success) {
-              finalizeSignInOrUp();
-              return;
-            }
+        QJsonObject obj = json.object();
+        bool success = obj.value("success").toBool();
+        if (success) {
+          finalizeSignInOrUp();
+          return;
+        }
 
-            AuthenticationInApp* aip = AuthenticationInApp::instance();
-            aip->requestState(
-                AuthenticationInApp::StateVerificationSessionByTotpNeeded,
-                this);
-            aip->requestErrorPropagation(
-                this, AuthenticationInApp::ErrorInvalidTotpCode);
-          });
+        AuthenticationInApp* aip = AuthenticationInApp::instance();
+        aip->requestState(
+            AuthenticationInApp::StateVerificationSessionByTotpNeeded, this);
+        aip->requestErrorPropagation(this,
+                                     AuthenticationInApp::ErrorInvalidTotpCode);
+      });
 }
 
 void AuthenticationInAppListener::signInOrUpCompleted(
@@ -470,7 +474,8 @@ void AuthenticationInAppListener::createTotpCodes() {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Totp code creation completed" << data;
+            logger.debug() << "Totp code creation completed:"
+                           << logger.sensitive(data);
 
             AuthenticationInApp* aip = AuthenticationInApp::instance();
             aip->requestState(
@@ -492,7 +497,7 @@ void AuthenticationInAppListener::deleteAccount() {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Account deleted" << data;
+            logger.debug() << "Account deleted" << logger.sensitive(data);
 
             AuthenticationInApp* aip = AuthenticationInApp::instance();
             aip->requestState(AuthenticationInApp::StateStart, this);
@@ -529,7 +534,8 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
   connect(
       request, &NetworkRequest::requestCompleted, this,
       [this](const QByteArray& data) {
-        logger.debug() << "Oauth code creation completed" << data;
+        logger.debug() << "Oauth code creation completed:"
+                       << logger.sensitive(data);
 
         QJsonDocument json = QJsonDocument::fromJson(data);
         if (json.isNull()) {

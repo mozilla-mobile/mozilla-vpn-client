@@ -139,7 +139,8 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
 }
 
 bool WindowsRouteMonitor::addExclusionRoute(const QHostAddress& address) {
-  logger.debug() << "Adding exclusion route for" << address.toString();
+  logger.debug() << "Adding exclusion route for"
+                 << logger.sensitive(address.toString());
 
   if (m_exclusionRoutes.contains(address)) {
     logger.warning() << "Exclusion route already exists";
@@ -197,7 +198,8 @@ bool WindowsRouteMonitor::addExclusionRoute(const QHostAddress& address) {
 }
 
 bool WindowsRouteMonitor::deleteExclusionRoute(const QHostAddress& address) {
-  logger.debug() << "Deleting exclusion route for" << address.toString();
+  logger.debug() << "Deleting exclusion route for"
+                 << logger.sensitive(address.toString());
 
   for (;;) {
     MIB_IPFORWARD_ROW2* data = m_exclusionRoutes.take(address);
@@ -207,7 +209,8 @@ bool WindowsRouteMonitor::deleteExclusionRoute(const QHostAddress& address) {
 
     DWORD result = DeleteIpForwardEntry2(data);
     if ((result != ERROR_NOT_FOUND) && (result != NO_ERROR)) {
-      logger.error() << "Failed to delete route to" << address.toString()
+      logger.error() << "Failed to delete route to"
+                     << logger.sensitive(address.toString())
                      << "result:" << result;
     }
     delete data;
@@ -221,7 +224,8 @@ void WindowsRouteMonitor::flushExclusionRoutes() {
     MIB_IPFORWARD_ROW2* data = i.value();
     DWORD result = DeleteIpForwardEntry2(data);
     if ((result != ERROR_NOT_FOUND) && (result != NO_ERROR)) {
-      logger.error() << "Failed to delete route to" << i.key().toString()
+      logger.error() << "Failed to delete route to"
+                     << logger.sensitive(i.key().toString())
                      << "result:" << result;
     }
     delete data;

@@ -92,9 +92,13 @@ class Logger {
   Log info();
   Log debug();
 
-  // Use this to log sensitive data such as IP address, session tokens, and so
-  // on.
+  // Use this to log sensitive data such as IP address, session tokens, and etc.
+  // When compiled with debug, this allows the sensitive data to be logged.
   QString sensitive(const QString& input);
+
+  // Use this to log keys, which should always be obscured.
+  // When compiled with debug, this truncates the keys instead for readability.
+  QString keys(const QString& input);
 
  private:
   QStringList m_modules;

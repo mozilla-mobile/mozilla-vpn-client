@@ -37,7 +37,8 @@ PingHelper::~PingHelper() { MVPN_COUNT_DTOR(PingHelper); }
 
 void PingHelper::start(const QString& serverIpv4Gateway,
                        const QString& deviceIpv4Address) {
-  logger.debug() << "PingHelper activated for server:" << serverIpv4Gateway;
+  logger.debug() << "PingHelper activated for server:"
+                 << logger.sensitive(serverIpv4Gateway);
 
   m_gateway = QHostAddress(serverIpv4Gateway);
   m_source = QHostAddress(deviceIpv4Address.section('/', 0, 0));

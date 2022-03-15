@@ -211,7 +211,8 @@ bool WindowsFirewall::enablePeerTraffic(const InterfaceConfig& config) {
   });
 
   // Build the firewall rules for this peer.
-  logger.info() << "Enabling traffic for peer" << config.m_serverPublicKey;
+  logger.info() << "Enabling traffic for peer"
+                << logger.keys(config.m_serverPublicKey);
   if (!blockTrafficTo(config.m_allowedIPAddressRanges, LOW_WEIGHT,
                       "Block Internet", config.m_serverPublicKey)) {
     return false;
@@ -256,7 +257,7 @@ bool WindowsFirewall::disablePeerTraffic(const QString& pubkey) {
     return false;
   }
 
-  logger.info() << "Disabling traffic for peer" << pubkey;
+  logger.info() << "Disabling traffic for peer" << logger.keys(pubkey);
   for (const auto& filterID : m_peerRules.values(pubkey)) {
     FwpmFilterDeleteById0(m_sessionHandle, filterID);
     m_peerRules.remove(pubkey, filterID);

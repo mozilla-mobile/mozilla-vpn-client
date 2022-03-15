@@ -130,6 +130,7 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
         (char)connectionInfo->wlanAssociationAttributes.dot11Ssid.ucSSID[i]));
   }
 
-  logger.debug() << "Unsecure network:" << ssid << "id:" << bssid;
+  logger.debug() << "Unsecure network:" << logger.sensitive(ssid)
+                 << "id:" << logger.sensitive(bssid);
   emit unsecuredNetwork(ssid, bssid);
 }
