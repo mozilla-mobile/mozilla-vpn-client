@@ -47,6 +47,10 @@ _compile() {
   [ -f "$2" ] || die "Expected $2 binary"
 }
 
+_grcov() {
+  grcov "$2"  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failed to run grcov"
+}
+
 # Public methods
 
 ## Unit-tests
@@ -94,8 +98,8 @@ utest_cleanup_nativemessaging() {
   _cleanup tests.xcodeproj/ ./Release/tests || die
 }
 
-utest_grcov() {    
-  grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov unit"
+utest_grcov() {
+  _grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/ "$1"
 }
 
 ## Lottie tests
@@ -126,12 +130,12 @@ lottie_cleanup_qml() {
   _cleanup tst_lottie.xcodeproj ./Release/tst_lottie || die
 }
 
-lottie_unit_grcov() {    
-  grcov .obj/lottie_tests.build/Release/lottie_tests.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov lottie"
+lottie_unit_grcov() {
+  _grcov .obj/lottie_tests.build/Release/lottie_tests.build/Objects-normal/x86_64/ "$1"
 }
 
-lottie_qml_grcov() {    
-  grcov .obj/tst_lottie.build/Release/tst_lottie.build/Objects-normal/x86_64/  -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov qml lottie"
+lottie_qml_grcov() {
+  _grcov .obj/tst_lottie.build/Release/tst_lottie.build/Objects-normal/x86_64/ "$1"
 }
 
 ## QML tests
@@ -149,6 +153,6 @@ qmltest_cleanup() {
   _cleanup qml_tests.xcodeproj ./Release/qml_tests || die
 }
 
-qmltest_grcov() {      
-  grcov .obj/qml_tests.build/Release/qml_tests.build/Objects-normal/x86_64/ -s . -t lcov --branch --ignore-not-existing . -o "$1" || die "Failure running grcov qml"
+qmltest_grcov() {
+  _grcov .obj/qml_tests.build/Release/qml_tests.build/Objects-normal/x86_64/ "$1"
 }

@@ -43,7 +43,7 @@ jobs:
         run: |
           export PATH=/opt/6.2.1/gcc_64/bin:$PATH
           python3 scripts/utils/import_languages.py
-                
+
       - name: Installing the oathtool
         shell: bash
         run: |

@@ -65,7 +65,7 @@ qmltest_run || die
 
 if [[ "$GRCOV_FILENAME" ]]; then
   printn Y "Generating temp coverage file for qml tests..."  
-  qmltest_grcov "$GRCOV_FILENAME"1wqSAXresfdzvcx ¨.
+  qmltest_grcov "$GRCOV_FILENAME"
 fi
 
 printn Y "Cleaning the existing project... "

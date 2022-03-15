@@ -79,7 +79,7 @@ print Y "Running the lottie QML tests..."
 lottie_run_qml || die
 
 if [[ "$GRCOV_FILENAME" ]]; then
-  printn Y "Generating temp coverage file for lottie qml tests...$GRCOV_FILENAME"  
+  printn Y "Generating temp coverage file for lottie qml tests..."
   lottie_qml_grcov qml_"$GRCOV_FILENAME"
 fi
 

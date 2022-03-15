@@ -84,7 +84,7 @@ print Y "Running the auth unit-tests..."
 utest_run_auth || die "Failed"
 
 if [[ "$GRCOV_FILENAME" ]]; then
-  printn Y "Generating temp coverage file for auth tests...$GRCOV_FILENAME"  
+  printn Y "Generating temp coverage file for auth tests..."  
   utest_grcov auth_"$GRCOV_FILENAME"
 fi
 
