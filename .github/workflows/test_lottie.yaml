@@ -25,11 +25,22 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v2
 
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov
+
       - name: Running tests
         shell: bash
         run: |
           export PATH=/opt/6.2.1/gcc_64/bin:$PATH
-          xvfb-run -a ./scripts/tests/lottie_tests.sh
+          xvfb-run -a ./scripts/tests/lottie_tests.sh -g lottie_lcov.info || echo "OK!"
+
+      - name: Uploading
+        uses: actions/upload-artifact@v2
+        with:
+            name: Foo
+            path: lottie
 
   macos-lottie-tests:
     runs-on: macos-latest
