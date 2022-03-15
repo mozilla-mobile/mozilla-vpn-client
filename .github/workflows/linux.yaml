@@ -58,10 +58,10 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: "Bionic", dist: bionic, qt: "beineri", ppa: "ppa:beineri/opt-qt-5.15.2-bionic" }
-            - { name: "Focal", dist: focal, qt: "beineri", ppa: "ppa:beineri/opt-qt-5.15.2-focal" }
-            - { name: "Impish", dist: impish, qt: "qt5", ppa: "ppa:okirby/qt6-testing" }
-            - { name: "Jammy", dist: jammy, qt: "qt5", ppa: "" }
+            - { name: "Bionic", dist: bionic, ppa: "ppa:okirby/qt6-testing" }
+            - { name: "Focal", dist: focal, ppa: "ppa:okirby/qt6-testing" }
+            - { name: "Impish", dist: impish, ppa: "ppa:okirby/qt6-testing" }
+            - { name: "Jammy", dist: jammy, ppa: "" }
 
     runs-on: ubuntu-latest
     env:
@@ -82,9 +82,9 @@ jobs:
               --othermirror "deb http://security.ubuntu.com/ubuntu ${{ matrix.config.dist }}-updates main restricted universe" \
               --debootstrapopts --variant=buildd --extrapackages "software-properties-common gpg-agent"
           if [ ! -z "$QTPPA" ]; then
-              echo '#/bin/sh' > ppa-${{ matrix.config.qt }}-install.sh
-              echo "add-apt-repository ${QTPPA} -y" >> ppa-${{ matrix.config.qt }}-install.sh
-              sudo pbuilder execute --basetgz $BASETGZ --save-after-exec -- ppa-${{ matrix.config.qt }}-install.sh
+              echo '#/bin/sh' > ppa-${{ matrix.config.dist }}-install.sh
+              echo "add-apt-repository ${QTPPA} -y" >> ppa-${{ matrix.config.dist }}-install.sh
+              sudo pbuilder execute --basetgz $BASETGZ --save-after-exec -- ppa-${{ matrix.config.dist }}-install.sh
           fi
 
       - name: Building package

@@ -8,7 +8,7 @@
 
 REVISION=1
 RELEASE=
-QTVERSION="auto"
+QTVERSION="qt6"
 SOURCEONLY=N
 PPA_URL=
 DPKG_SIGN="--no-sign"
@@ -27,7 +27,7 @@ helpFunction() {
   print N "  -v, --version REV      Set package revision to REV"
   print N "      --beineri          Build using Stephan Binner's Qt5.15 PPA"
   print N "      --qt5              Build using Qt5 packages"
-  print N "      --qt6              Build using Qt6 packages"
+  print N "      --qt6              Build using Qt6 packages (default)"
   print N "      --source           Build source packages only (no binary)"
   print N "      --ppa URL          Upload source packages to PPA at URL (implies: --source)"
   print N ""
@@ -40,26 +40,6 @@ helpFunction() {
   print N "The default version is 1, but you can recreate packages using the same code version changing the version id."
   print N ""
   exit 0
-}
-
-## Return the Qt version to use for a given distro.
-qtVersion() {
-  if [ "$QTVERSION" != "auto" ]; then
-    ## User has forced a particular Qt version.
-    echo "$QTVERSION"
-  else
-    case "$1" in
-    bionic|focal)
-      echo "beineri"
-      ;;
-    hirsute|impish|jammy)
-      echo "qt5"
-      ;;
-    *)
-      echo "qt5"
-      ;;
-    esac;
-  fi
 }
 
 print N "This script compiles MozillaVPN and creates a debian/ubuntu package"
@@ -190,8 +170,8 @@ build_deb_source() {
   rm -rf $WORKDIR/debian || die "Failed"
   cp -r ../linux/debian $WORKDIR || die "Failed"
 
-  mv $WORKDIR/debian/rules.$(qtVersion $distro) $WORKDIR/debian/rules
-  mv $WORKDIR/debian/control.$(qtVersion $distro) $WORKDIR/debian/control
+  mv $WORKDIR/debian/rules.$QTVERSION $WORKDIR/debian/rules
+  mv $WORKDIR/debian/control.$QTVERSION $WORKDIR/debian/control
   rm $WORKDIR/debian/control.*
   rm $WORKDIR/debian/rules.*
 
