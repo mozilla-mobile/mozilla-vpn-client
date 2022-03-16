@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef MVPN_IOS
-#error "This feature should be exposed only to IOS"
-#endif
-
 #ifndef FEATURE_IOS_KILLSWITCH_H
 #define FEATURE_IOS_KILLSWITCH_H
+
+#ifndef MVPN_IOS
+#  error "This feature should be exposed only to IOS"
+#endif
 
 #include "models/feature.h"
 
