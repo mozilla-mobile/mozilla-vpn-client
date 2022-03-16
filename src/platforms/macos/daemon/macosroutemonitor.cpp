@@ -77,9 +77,11 @@ void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
   }
 
   QStringList list;
+#ifdef MVPN_DEBUG
   for (auto addr : addrlist) {
     list.append(addrToString(addr));
   }
+#endif
   char ifname[IF_NAMESIZE] = "null";
   if (rtm->rtm_index != 0) {
     if_indextoname(rtm->rtm_index, ifname);
@@ -136,10 +138,11 @@ void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
   }
 
   logger.debug() << "Lost default route via" << ifname
-                 << addrToString(addrlist[1]);
+                 << logger.sensitive(addrToString(addrlist[1]));
   for (const QHostAddress& addr : m_exclusionRoutes) {
     if (addr.protocol() == protocol) {
-      logger.debug() << "Removing exclusion route to" << addr.toString();
+      logger.debug() << "Removing exclusion route to"
+                     << logger.sensitive(addr.toString());
       rtmSendRoute(RTM_DELETE, addr, plen, rtm->rtm_index, nullptr);
     }
   }
@@ -186,9 +189,11 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
 
   // Log relevant updates to the routing table.
   QStringList list;
+#ifdef MVPN_DEBUG
   for (auto addr : addrlist) {
     list.append(addrToString(addr));
   }
+#endif
   if_indextoname(ifindex, ifname);
   logger.debug() << "Route update via" << ifname
                  << QString("addrs(%1):").arg(rtm->rtm_addrs, 0, 16)
@@ -249,7 +254,8 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
                  << addrToString(addrlist[1]);
   for (const QHostAddress& addr : m_exclusionRoutes) {
     if (addr.protocol() == protocol) {
-      logger.debug() << "Updating exclusion route to" << addr.toString();
+      logger.debug() << "Updating exclusion route to"
+                     << logger.sensitive(addr.toString());
       rtmSendRoute(rtm_type, addr, plen, ifindex, addrlist[1].constData());
     }
   }
@@ -257,17 +263,21 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
 
 void MacosRouteMonitor::handleIfaceInfo(const struct if_msghdr* ifm,
                                         const QByteArray& payload) {
-  QList<QByteArray> addrlist = parseAddrList(payload);
+  QStringList list;
 
   if (ifm->ifm_index != if_nametoindex(qPrintable(m_ifname))) {
     return;
   }
   m_ifflags = ifm->ifm_flags;
 
-  QStringList list;
+#ifdef MVPN_DEBUG
+  QList<QByteArray> addrlist = parseAddrList(payload);
   for (auto addr : addrlist) {
     list.append(addrToString(addr));
   }
+#else
+  Q_UNUSED(payload);
+#endif
   logger.debug() << "Interface" << ifm->ifm_index
                  << "chagned flags:" << ifm->ifm_flags
                  << QString("addrs(%1):").arg(ifm->ifm_addrs, 0, 16)
@@ -497,7 +507,8 @@ bool MacosRouteMonitor::deleteRoute(const IPAddress& prefix) {
 }
 
 bool MacosRouteMonitor::addExclusionRoute(const QHostAddress& address) {
-  logger.debug() << "Adding exclusion route for" << address.toString();
+  logger.debug() << "Adding exclusion route for"
+                 << logger.sensitive(address.toString());
 
   if (m_exclusionRoutes.contains(address)) {
     logger.warning() << "Exclusion route already exists";
@@ -522,7 +533,8 @@ bool MacosRouteMonitor::addExclusionRoute(const QHostAddress& address) {
 }
 
 bool MacosRouteMonitor::deleteExclusionRoute(const QHostAddress& address) {
-  logger.debug() << "Deleting exclusion route for" << address.toString();
+  logger.debug() << "Deleting exclusion route for"
+                 << logger.sensitive(address.toString());
 
   m_exclusionRoutes.removeAll(address);
   if (address.protocol() == QAbstractSocket::IPv4Protocol) {

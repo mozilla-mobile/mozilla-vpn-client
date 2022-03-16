@@ -150,7 +150,7 @@ class AuthenticationInApp final : public QObject {
   void emailAddressChanged();
 
 #ifdef UNIT_TEST
-  void unitTestFinalUrl(const QUrl& url);
+  void unitTestAuthFailedWithDetail(const QString& detail);
   void unitTestTotpCodeCreated(const QByteArray& data);
   void unitTestAccountDeleted();
 #endif

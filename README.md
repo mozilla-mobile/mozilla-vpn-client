@@ -185,7 +185,6 @@ DEVELOPMENT_TEAM = 43AQ936H96
 # MacOS configuration
 GROUP_ID_MACOS = group.org.mozilla.macos.Guardian
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
-NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
 
 # IOS configuration

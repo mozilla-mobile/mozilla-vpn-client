@@ -194,7 +194,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   }
   device->first_peer = device->last_peer = peer;
 
-  logger.debug() << "Adding peer" << printableKey(config.m_serverPublicKey);
+  logger.debug() << "Adding peer" << logger.keys(config.m_serverPublicKey);
 
   // Public Key
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
@@ -258,7 +258,7 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   }
   device->first_peer = device->last_peer = peer;
 
-  logger.debug() << "Removing peer" << printableKey(config.m_serverPublicKey);
+  logger.debug() << "Removing peer" << logger.keys(config.m_serverPublicKey);
 
   // Public Key
   peer->flags = (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REMOVE_ME);
@@ -316,7 +316,7 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
     status.m_handshake += peer->last_handshake_time.tv_nsec / 1000000;
     status.m_txBytes = peer->tx_bytes;
     status.m_rxBytes = peer->rx_bytes;
-    logger.debug() << "found" << printableKey(status.m_pubkey) << "handshake"
+    logger.debug() << "found" << logger.keys(status.m_pubkey) << "handshake"
                    << peer->last_handshake_time.tv_sec;
     peerList.append(status);
   }
@@ -333,19 +333,21 @@ bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix,
 
 bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddress& prefix,
                                             int hopindex) {
-  logger.debug() << "Removing route to" << prefix.toString();
+  logger.debug() << "Removing route to" << logger.sensitive(prefix.toString());
   const int flags = NLM_F_REQUEST | NLM_F_ACK;
   return rtmSendRoute(RTM_DELROUTE, flags, prefix, hopindex);
 }
 
 bool WireguardUtilsLinux::addExclusionRoute(const QHostAddress& address) {
-  logger.debug() << "Adding exclusion route for" << address.toString();
+  logger.debug() << "Adding exclusion route for"
+                 << logger.sensitive(address.toString());
   const int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
   return rtmSendExclude(RTM_NEWRULE, flags, address);
 }
 
 bool WireguardUtilsLinux::deleteExclusionRoute(const QHostAddress& address) {
-  logger.debug() << "Removing exclusion route for" << address.toString();
+  logger.debug() << "Removing exclusion route for"
+                 << logger.sensitive(address.toString());
   return rtmSendExclude(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, address);
 }
 

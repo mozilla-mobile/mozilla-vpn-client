@@ -261,8 +261,6 @@ void LocalSocketController::readData() {
 }
 
 void LocalSocketController::parseCommand(const QByteArray& command) {
-  logger.debug() << "Parse command:" << command.left(20);
-
   QJsonDocument json = QJsonDocument::fromJson(command);
   if (!json.isObject()) {
     logger.error() << "Invalid JSON - object expected";
@@ -275,8 +273,9 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
     logger.error() << "Invalid JSON - no type";
     return;
   }
-
   QString type = typeValue.toString();
+
+  logger.debug() << "Parse command:" << type;
 
   if (m_daemonState == eInitializing && type == "status") {
     m_daemonState = eReady;
@@ -354,7 +353,8 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
       return;
     }
 
-    logger.debug() << "Handshake completed with:" << pubkey.toString();
+    logger.debug() << "Handshake completed with:"
+                   << logger.keys(pubkey.toString());
     emit connected(pubkey.toString());
     return;
   }

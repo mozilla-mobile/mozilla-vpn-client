@@ -42,8 +42,13 @@ if ! [ -d "src" ] || ! [ -d "tests" ]; then
 fi
 
 if ! [[ "$MVPN_OATHTOOL" ]]; then
-  die "Please set env var MVPN_OATHTOOL."
+  printn Y "MVPN_OATHTOOL env not set. Let's generate the oathtool... "
+  (cd /tmp && python3 -m oathtool.generate-script) || die
+  MVPN_OATHTOOL=/tmp/oathtool
+  print G "Done."
 fi
+
+[ -f "$MVPN_OATHTOOL" ] || die
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   print N "Configure for linux"

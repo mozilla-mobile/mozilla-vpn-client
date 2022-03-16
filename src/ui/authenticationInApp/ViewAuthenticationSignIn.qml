@@ -32,7 +32,7 @@ VPNInAppAuthenticationBase {
     _changeEmailLinkVisible: true
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => { VPNAuthInApp.reset() }
-    _menuButtonAccessibleName: "Back"
+    _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _headlineText: VPNAuthInApp.emailAddress
     _subtitleText: VPNl18n.InAppAuthSignInSubtitle
     _imgSource: "qrc:/nebula/resources/avatar.svg"
@@ -48,27 +48,7 @@ VPNInAppAuthenticationBase {
         _inputPlaceholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
     }
 
-    _disclaimers: ColumnLayout {
-        Layout.alignment: Qt.AlignHCenter
-
-        Text {
-            text: VPNl18n.InAppAuthTermsOfServiceAndPrivacyDisclaimer
-            font.family: VPNTheme.theme.fontInterFamily
-            font.pixelSize: VPNTheme.theme.fontSizeSmall
-            color: VPNTheme.theme.fontColor
-            Layout.fillWidth: true
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            horizontalAlignment: Text.AlignHCenter
-            linkColor: VPNTheme.theme.fontColorDark
-            lineHeightMode: Text.FixedHeight
-            lineHeight: VPNTheme.theme.labelLineHeight
-            onLinkActivated: {
-                if (link === "terms-of-service")
-                    return VPN.openLink(VPN.LinkTermsOfService);
-                VPN.openLink(VPN.LinkPrivacyNotice);
-            }
-        }
-    }
+    _disclaimers: VPNInAppAuthenticationLegalDisclaimer {}
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
@@ -80,14 +60,6 @@ VPNInAppAuthenticationBase {
             onClicked: VPN.openLink(VPN.LinkForgotPassword)
         }
 
-        VPNLinkButton {
-            // TODO create cancel component and use everywhere
-            labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText // "Cancel"
-            fontName: VPNTheme.theme.fontBoldFamily
-            anchors.horizontalCenter: parent.horizontalCenter
-            linkColor: VPNTheme.theme.redButton
-            onClicked: VPN.cancelAuthentication()
-        }
-
+        VPNInAppAuthenticationCancel {}
     }
 }

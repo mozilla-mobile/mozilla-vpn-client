@@ -141,7 +141,8 @@ bool Daemon::activate(const InterfaceConfig& config) {
   // set routing
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
-      logger.debug() << "Routing configuration failed for" << ip.toString();
+      logger.debug() << "Routing configuration failed for"
+                     << logger.sensitive(ip.toString());
       return false;
     }
   }
@@ -478,8 +479,7 @@ void Daemon::checkHandshake() {
     if (connection.m_date.isValid()) {
       continue;
     }
-    logger.debug() << "awaiting"
-                   << WireguardUtils::printableKey(config.m_serverPublicKey);
+    logger.debug() << "awaiting" << logger.keys(config.m_serverPublicKey);
 
     // Check if the handshake has completed.
     for (const WireguardUtils::PeerStatus& status : peers) {
