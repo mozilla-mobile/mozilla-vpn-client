@@ -33,10 +33,17 @@ jobs:
       - name: Install Qt6
         shell: bash
         run: |
-          pip3 install aqtinstall
-          aqt install-qt -O `pwd`/qt_ios mac desktop 6.2.3 -m qtcharts qtwebsockets qt5compat
-          aqt install-qt -O `pwd`/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
-          mv `pwd`/qt_ios/6.2.3/macos `pwd`/qt_ios/6.2.3/clang_64
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/mozilla-mobile/qt_ios
+          cd qt_ios
+          cat qt6* > qt_static_ios.tar.gz
+          tar xf qt_static_ios.tar.gz
+          sudo mkdir /opt/6.2.3
+          sudo mv ios /opt/6.2.3
+          if [ -d macos ]; then
+            sudo mv macos /opt/6.2.3
+          fi
+          cd ..
 
       - name: Generating glean samples
         shell: bash
@@ -47,8 +54,9 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
-          export PATH=`pwd`/qt_ios/6.2.3/ios/bin:$PATH
+          export PATH=/opt/6.2.3/macos/bin:$PATH
+          export PATH=/opt/6.2.3/ios/bin:$PATH
+          echo "$PATH"
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
@@ -62,9 +70,9 @@ jobs:
       - name: Configuring the build
         shell: bash
         run: |
-          export PATH=`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
-          export PATH=`pwd`/qt_ios/6.2.3/ios/bin:$PATH
-          export QT_IOS_BIN=`pwd`/qt_ios/6.2.3/ios/bin
+          export PATH=/opt/6.2.3/macos/bin:$PATH
+          export PATH=/opt/6.2.3/ios/bin:$PATH
+          export QT_IOS_BIN=/opt/6.2.3/ios/bin
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           cat > xcode.xconfig << EOF
