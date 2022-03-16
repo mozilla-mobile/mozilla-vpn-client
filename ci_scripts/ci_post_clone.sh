@@ -41,7 +41,7 @@ gem install xcodeproj --user-install
 
 # install python packages
 # use --user for permissions
-pip3 install "glean_parser==3.5" --user
+pip3 install glean_parser --user
 pip3 install pyhumps --user
 pip3 install pyyaml --user
 python3 scripts/utils/generate_glean.py

@@ -4,7 +4,7 @@
 python3 scripts/tooltool.py --url http://taskcluster/tooltool.mozilla-releng.net fetch -m macos/qt-dependencies.tt.manifest
 export PATH="`pwd`/qt/bin:$PATH"
 # TODO: internal pypi mirror, if it doesn't get used by default?
-pip3 install glean_parser==3.5
+pip3 install glean_parser
 
 cd macos/gobridge
 go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
