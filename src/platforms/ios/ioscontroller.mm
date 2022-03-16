@@ -5,6 +5,7 @@
 #include "ioscontroller.h"
 #include "Mozilla_VPN-Swift.h"
 #include "device.h"
+#include "features/featureioskillswitch.h"
 #include "ipaddress.h"
 #include "keys.h"
 #include "leakdetector.h"
@@ -12,7 +13,6 @@
 #include "mozillavpn.h"
 #include "server.h"
 #include "settingsholder.h"
-#include "features/featureioskillswitch.h"
 
 #include <QByteArray>
 #include <QFile>
