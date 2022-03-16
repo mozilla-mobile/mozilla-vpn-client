@@ -216,6 +216,8 @@ void MozillaVPN::initialize() {
 
   m_private->m_releaseMonitor.runSoon();
 
+  m_private->m_telemetry.initialize();
+
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
 #ifdef MVPN_ADJUST

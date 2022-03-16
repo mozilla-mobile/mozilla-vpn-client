@@ -764,3 +764,49 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
+
+  connectivity_handshake_timeout:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The connection handshake with the VPN server is taking too long, and has
+      timed out.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-1595
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      server:
+        description: |
+          The mullvad server public key and the connection latency, packet
+          loss, stddev.
+        type: string
+
+  connectivity_stable:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The connection has been stable for more than 10 seconds after the
+      activation
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-1595
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      server:
+        description: The mullvad server public key
+        type: string

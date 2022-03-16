@@ -124,6 +124,7 @@ SOURCES += \
         tasks/servers/taskservers.cpp \
         tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
+        telemetry.cpp \
         theme.cpp \
         timersingleshot.cpp \
         tutorial.cpp \
@@ -268,6 +269,7 @@ HEADERS += \
         tasks/servers/taskservers.h \
         tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
+        telemetry.h \
         theme.h \
         timersingleshot.h \
         tutorial.h \
