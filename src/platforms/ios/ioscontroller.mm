@@ -12,6 +12,7 @@
 #include "mozillavpn.h"
 #include "server.h"
 #include "settingsholder.h"
+#include "features/featureincludeallnetworks.h"
 
 #include <QByteArray>
 #include <QFile>
@@ -126,7 +127,8 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
     [allowedIPAddressRangesNS addObject:[range autorelease]];
   }
 
-  [impl connectWithDnsServer:hop.m_dnsServer.toString().toNSString()
+  [impl   includeAllNetworks:FeatureIncludeAllNetworks::instance()->isSupported()
+        connectWithDnsServer:hop.m_dnsServer.toString().toNSString()
            serverIpv6Gateway:hop.m_server.ipv6Gateway().toNSString()
              serverPublicKey:hop.m_server.publicKey().toNSString()
             serverIpv4AddrIn:hop.m_server.ipv4AddrIn().toNSString()

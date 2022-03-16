@@ -246,6 +246,7 @@ HEADERS += \
         features/featureinappaccountcreate.h \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
+        features/featureincludeallnetworks.h \
         features/featurelocalareaaccess.h \
         features/featuremultiaccountcontainers.h \
         features/featuremultihop.h \
