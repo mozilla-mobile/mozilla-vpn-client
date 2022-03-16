@@ -2,17 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef FEATURE_INCLUDEALLNETWORKS_H
-#define FEATURE_INCLUDEALLNETWORKS_H
+#ifndef FEATURE_IOS_KILLSWITCH_H
+#define FEATURE_IOS_KILLSWITCH_H
 
 #include "models/feature.h"
 
-constexpr const char* FEATURE_INCLUDEALLNETWORKS = "includeAllNetworks";
+constexpr const char* FEATURE_IOS_KILLSWITCH = "iosKillswitch";
 
-class FeatureIncludeAllNetworks : public Feature {
+class FeatureIosKillswitch : public Feature {
  public:
-  FeatureIncludeAllNetworks()
-      : Feature(FEATURE_INCLUDEALLNETWORKS, "Include All Networks",
+  FeatureIosKillswitch()
+      : Feature(FEATURE_IOS_KILLSWITCH, "iOS Kill Switch",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
@@ -32,9 +32,9 @@ class FeatureIncludeAllNetworks : public Feature {
 #endif
   }
 
-  static const FeatureIncludeAllNetworks* instance() {
-    return static_cast<const FeatureIncludeAllNetworks*>(get(FEATURE_INCLUDEALLNETWORKS));
+  static const FeatureIosKillswitch* instance() {
+    return static_cast<const FeatureIosKillswitch*>(get(FEATURE_IOS_KILLSWITCH));
   }
 };
 
-#endif  // FEATURE_INCLUDEALLNETWORKS_H
+#endif  // FEATURE_IOS_KILLSWITCH_H

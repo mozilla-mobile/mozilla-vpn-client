@@ -18,7 +18,7 @@
 #include "features/featureinappaccountcreate.h"
 #include "features/featureinappauth.h"
 #include "features/featureinapppurchase.h"
-#include "features/featureincludeallnetworks.h"
+#include "features/featureioskillswitch.h"
 #include "features/featurelocalareaaccess.h"
 #include "features/featuremobileonboarding.h"
 #include "features/featuremultiaccountcontainers.h"
@@ -57,7 +57,7 @@ void FeatureList::initialize() {
   new FeatureInAppAccountCreate();
   new FeatureInAppAuth();
   new FeatureInAppPurchase();
-  new FeatureIncludeAllNetworks();
+  new FeatureIosKillswitch();
   new FeatureLocalAreaAccess();
   new FeatureMobileOnboarding();
   new FeatureMultiAccountContainers();

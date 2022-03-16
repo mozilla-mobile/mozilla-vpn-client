@@ -132,7 +132,7 @@ public class IOSControllerImpl : NSObject {
         return true
     }
 
-    @objc func connect(includeAllNetworks: Bool, dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, failureCallback: @escaping () -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, includeAllNetworks: Bool, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
@@ -179,6 +179,7 @@ public class IOSControllerImpl : NSObject {
 
         if #available(iOS 15.1, *) {
             if includeAllNetworks {
+                Logger.global?.log(message: "Activating includeAllNetworks")
                 proto!.includeAllNetworks = true
             }
         }

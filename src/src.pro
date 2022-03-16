@@ -246,7 +246,6 @@ HEADERS += \
         features/featureinappaccountcreate.h \
         features/featureinappauth.h \
         features/featureinapppurchase.h \
-        features/featureincludeallnetworks.h \
         features/featurelocalareaaccess.h \
         features/featuremultiaccountcontainers.h \
         features/featuremultihop.h \
@@ -856,6 +855,7 @@ else:ios {
             tasks/purchase/taskpurchase.h
 
     OBJECTIVE_HEADERS += \
+            features/featureioskillswitch.h \
             platforms/ios/iosiaphandler.h \
             platforms/ios/iosauthenticationlistener.h \
             platforms/ios/ioscontroller.h \
