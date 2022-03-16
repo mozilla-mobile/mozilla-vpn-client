@@ -16,7 +16,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const fs = require('fs');
-const {exec, spawn} = require('child_process');
+const {execSync, spawn} = require('child_process');
 const vpn = require('./helper.js');
 
 const app = process.env.MVPN_BIN;
@@ -26,32 +26,45 @@ let stdErr = '';
 exports.mochaHooks = {
   beforeAll() {
     // Check VPN app exists. If not, bail.
-    exec(`"${app}" --version`, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Could not run "${app}".`);
-        console.error('Have you set MVPN_BIN in .env or environment?');
-        console.error(`stdout: ${stdout}`);
-        console.error(`stderr: ${stderr}`);
-        process.exit(1);
-      }
+    try {
+      const stdout = execSync(`"${app}" --version`);
       console.log(`VPN Version is: ${stdout}`);
-    })
+    } catch (e) {
+      console.error(`Could not run "${app}".`);
+      console.error('Have you set MVPN_BIN in .env or environment?');
+      process.exit(1);
+    }
+
   },
   async beforeEach() {
+console.log("BAKU a");
     // Start VPN app
     vpnProcess = spawn(app, ['ui', '--testing']);
     stdErr += 'VPN Process ID: ' + vpnProcess.pid;
-    vpnProcess.stderr.on('data', (data) => {
-      stdErr += data;
+    vpnProcess.stdout.on('data', (data) => {
+console.log("BAKU stdout", stdErr);
     });
+    vpnProcess.stderr.on('data', (data) => {
+console.log("BAKU stderr", stdErr);
+    });
+    vpnProcess.on('close', (code) => {
+console.log("BAKU CLOSE", code);
+    });
+    vpnProcess.on('exit', (code) => {
+console.log("BAKU EXIT", code);
+    });
+console.log("BAKU c");
     // Connect to VPN
     await vpn.connect();
+console.log("BAKU d");
     // NOTE - It's important that the hard reset is at the start.
     // That way if there's any left over state from the previous test
     // or other work it'll get cleaned up - this is most likely to happen
     // on a dev's machine.
     await vpn.hardReset();
+console.log("BAKU e");
     await vpn.setGleanAutomationHeader();
+console.log("BAKU f");
 
     console.log('Starting test:', this.currentTest.title);
   },
