@@ -7,8 +7,7 @@
 . $(dirname $0)/../utils/commons.sh
 
 REVISION=1
-RELEASE=
-QTVERSION="qt6"
+RELEASE=focal
 SOURCEONLY=N
 PPA_URL=
 DPKG_SIGN="--no-sign"
@@ -25,9 +24,6 @@ helpFunction() {
   print N "Build options:"
   print N "  -r, --release DIST     Build packages for distribution DIST"
   print N "  -v, --version REV      Set package revision to REV"
-  print N "      --beineri          Build using Stephan Binner's Qt5.15 PPA"
-  print N "      --qt5              Build using Qt5 packages"
-  print N "      --qt6              Build using Qt6 packages (default)"
   print N "      --source           Build source packages only (no binary)"
   print N "      --ppa URL          Upload source packages to PPA at URL (implies: --source)"
   print N ""
@@ -50,7 +46,7 @@ while [[ $# -gt 0 ]]; do
 
   case $key in
   -r | --release)
-    RELEASE+=" $2"
+    RELEASE="$2"
     shift
     shift
     ;;
@@ -59,20 +55,7 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  --beineri)
-    QTVERSION="beineri"
-    shift
-    ;;
-  --qt5)
-    QTVERSION="qt5"
-    shift
-    ;;
-  --qt6)
-    QTVERSION="qt6"
-    shift
-    ;;
   --source)
-    RELEASE="bionic focal impish jammy fedora"
     SOURCEONLY=Y
     shift
     ;;
@@ -100,12 +83,6 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
-
-# Fall back to the host operating system if no release was specified
-if [ -z "$RELEASE" ]; then
-  . /etc/os-release
-  RELEASE="$VERSION_CODENAME"
-fi
 
 printn Y "Computing the version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
@@ -170,8 +147,8 @@ build_deb_source() {
   rm -rf $WORKDIR/debian || die "Failed"
   cp -r ../linux/debian $WORKDIR || die "Failed"
 
-  mv $WORKDIR/debian/rules.$QTVERSION $WORKDIR/debian/rules
-  mv $WORKDIR/debian/control.$QTVERSION $WORKDIR/debian/control
+  mv $WORKDIR/debian/rules.$distro $WORKDIR/debian/rules
+  mv $WORKDIR/debian/control.$distro $WORKDIR/debian/control
   rm $WORKDIR/debian/control.*
   rm $WORKDIR/debian/rules.*
 
@@ -184,40 +161,56 @@ build_deb_source() {
   (cd $WORKDIR && dpkg-buildpackage --build=source $DPKG_SIGN --no-check-builddeps) || die "Failed"
 }
 
-## Prepare the distribution's packaging sources
-for distro in $RELEASE; do
-  case "$distro" in
-    fedora|rpm)
-      print Y "Building RPM packages for $distro"
+## For source-only, build all the source bundles we can.
+if [ "$SOURCEONLY" == "Y" ]; then
+  print Y "Configuring the DEB sources..."
+  (which dpkg-buildpackage > /dev/null) && for control in ../linux/debian/control.*; do
+    filename=$(basename $control)
+    distro=$(echo $filename | cut -d'.' -f2)
+
+    build_deb_source $distro $buildtype
+
+    mkdir $distro
+    mv mozillavpn_${SHORTVERSION}-*_source.buildinfo $distro/ || die "Failed"
+    mv mozillavpn_${SHORTVERSION}-*_source.changes $distro/ || die "Failed"
+    mv mozillavpn_${SHORTVERSION}-*.debian.tar.* $distro/ || die "Failed"
+    mv mozillavpn_${SHORTVERSION}-*.dsc $distro/ || die "Failed"
+  done
+
+  print Y "Configuring the RPM spec..."
+  build_rpm_spec
+## Otherwise, build the desired release.
+else
+  case "$RELEASE" in
+    bionic|focal|impish|jammy)
+      build_deb_source $RELEASE
+
+      print Y "Building Debian packages for $RELEASE"
+      (cd $WORKDIR && dpkg-buildpackage --build=binary $DPKG_SIGN) || die "Failed"
+      ;;
+    
+    fedora)
       build_rpm_spec
+
+      print Y "Building RPM packages for $RELEASE"
       rpmbuild --define "_topdir $(pwd)" --define "_sourcedir $(pwd)" -bs mozillavpn.spec
+      RPM=Y
       ;;
 
     *)
-      print Y "Building Debian packages for $distro"
-      build_deb_source $distro
-      ;;
+      die "We support RELEASE focal, bionic, impish, jammy and fedora only"
+      ;; 
   esac
-done
+fi
 
 print Y "Cleaning up working directory..."
 rm -rf $WORKDIR || die "Failed"
 
-## Handle PPA Uploads
 if [ ! -z "$PPA_URL" ]; then
   print Y "Uploading sources to $PPA_URL"
-  for changeset in $(find . -type f -name '*_source.changes'); do
-    dput "$PPA_URL" $changeset
-  done
-fi
-
-## Build Binary packages
-if [ "$SOURCEONLY" != "Y" ]; then
-  for changeset in $(find . -type f -name '*_source.changes'); do
-    print Y "Building binary package from $changeset"
-    dpkg-source -x ${changeset%_source.changes}.dsc
-    (cd $WORKDIR && dpkg-buildpackage --build=binary $DPKG_SIGN) || die "Failed"
-    rm -rf $WORKDIR
+  for dist in $(find . -type d -name); do
+    ln -s ../mozillavpn_${SHORTVERSION}.orig.tar.gz $dist/mozillavpn_${SHORTVERSION}.orig.tar.gz
+    dput "$PPA_URL" $dist/mozillavpn_${SHORTVERSION}-*_source.changes
   done
 fi
 
