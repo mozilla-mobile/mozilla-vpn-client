@@ -851,11 +851,11 @@ else:ios {
             platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
+            features/featureioskillswitch.h \
             platforms/macos/macospingsender.h \
             tasks/purchase/taskpurchase.h
 
     OBJECTIVE_HEADERS += \
-            features/featureioskillswitch.h \
             platforms/ios/iosiaphandler.h \
             platforms/ios/iosauthenticationlistener.h \
             platforms/ios/ioscontroller.h \

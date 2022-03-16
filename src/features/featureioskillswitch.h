@@ -2,6 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#ifndef MVPN_IOS
+#error "This feature should be exposed only to IOS"
+#endif
+
 #ifndef FEATURE_IOS_KILLSWITCH_H
 #define FEATURE_IOS_KILLSWITCH_H
 
@@ -21,19 +25,14 @@ class FeatureIosKillswitch : public Feature {
                 "",                  // IconPath
                 "",                  // link URL
                 "2.8",               // released
-                true                // Can be enabled in devmode
+                true                 // Can be enabled in devmode
         ) {}
 
-  bool checkSupportCallback() const override {
-#if defined(MVPN_IOS) 
-    return true;
-#else
-    return false;
-#endif
-  }
+  bool checkSupportCallback() const override { return true; }
 
   static const FeatureIosKillswitch* instance() {
-    return static_cast<const FeatureIosKillswitch*>(get(FEATURE_IOS_KILLSWITCH));
+    return static_cast<const FeatureIosKillswitch*>(
+        get(FEATURE_IOS_KILLSWITCH));
   }
 };
 

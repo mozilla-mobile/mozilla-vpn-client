@@ -18,7 +18,9 @@
 #include "features/featureinappaccountcreate.h"
 #include "features/featureinappauth.h"
 #include "features/featureinapppurchase.h"
-#include "features/featureioskillswitch.h"
+#ifdef MVPN_IOS
+#  include "features/featureioskillswitch.h"
+#endif
 #include "features/featurelocalareaaccess.h"
 #include "features/featuremobileonboarding.h"
 #include "features/featuremultiaccountcontainers.h"
@@ -57,7 +59,9 @@ void FeatureList::initialize() {
   new FeatureInAppAccountCreate();
   new FeatureInAppAuth();
   new FeatureInAppPurchase();
+#ifdef MVPN_IOS
   new FeatureIosKillswitch();
+#endif
   new FeatureLocalAreaAccess();
   new FeatureMobileOnboarding();
   new FeatureMultiAccountContainers();
