@@ -30,20 +30,30 @@ def title(a, b):
     print(f"\033[96m\033[1m{a}\033[0m: \033[97m{b}\033[0m")
 
 # Step 0
-title("Step 0", "Locate the lupdate and lconvert tools...")
-lupdate = shutil.which('lupdate')
-if lupdate is None:
-    lupdate = shutil.which('lupdate-qt5')
-if lupdate is None:
-    print('Unable to locate lupdate tool.')
+title("Step 0", "Find the Qt localization tools...")
+def qtquery(qmake, propname):
+    try:
+        qtquery = os.popen(f'{qmake} -query {propname}')
+        qtpath = qtquery.read().strip()
+        if len(qtpath) > 0:
+            return qtpath
+    finally:
+        pass
+    return None
+
+qtbinpath = qtquery('qmake', 'QT_INSTALL_BINS')
+if qtbinpath is None:
+    qtbinpath = qtquery('qmake6', 'QT_INSTALL_BINS')
+if qtbinpath is None:
+    qtbinpath = qtquery('qmake5', 'QT_INSTALL_BINS')
+if qtbinpath is None:
+    qtbinpath = qtquery('qmake-qt5', 'QT_INSTALL_BINS')
+if qtbinpath is None:
+    print('Unable to locate qmake tool.')
     sys.exit(1)
 
-lconvert = shutil.which('lconvert')
-if lconvert is None:
-    lconvert = shutil.which('lconvert-qt5')
-if lconvert is None:
-    print('Unable to locate lconvert tool.')
-    sys.exit(1)
+lupdate = os.path.join(qtbinpath, 'lupdate')
+lconvert = os.path.join(qtbinpath, 'lconvert')
 
 # Step 1
 # Go through the i18n repo, check each XLIFF file and take
