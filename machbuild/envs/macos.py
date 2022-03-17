@@ -8,29 +8,15 @@ import os
 import subprocess
 import sys
 
-# TODO: support !ubuntu
+class MacOSBootstrap(Bootstrap):
+    CLANG_DIRNAME = 'clang+llvm-13.0.1-x86_64-apple-darwin'
+    CLANG_FILENAME = 'clang+llvm-13.0.1-x86_64-apple-darwin.tar.xz'
+    CLANG_URL = 'https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.1/clang+llvm-13.0.1-x86_64-apple-darwin.tar.xz'
+    CLANG_SHA256 = 'dec02d17698514d0fc7ace8869c38937851c542b02adf102c4e898f027145a4d'
 
-class LinuxBootstrap(Bootstrap):
-    DEBIAN_PACKAGES = [
-        'build-essential',
-        'libdbus-glib-1-dev',
-        'libegl-dev',
-        'libfontconfig1-dev',
-        'libgl-dev',
-        'libglib2.0-dev',
-        'libpolkit-gobject-1-dev',
-        'libxkbcommon-x11-dev',
-        'unzip',
-    ]
-
-    CLANG_DIRNAME = 'clang+llvm-13.0.1-x86_64-linux-gnu-ubuntu-18.04'
-    CLANG_FILENAME = 'clang+llvm-13.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz'
-    CLANG_URL = 'https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.1/clang+llvm-13.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz'
-    CLANG_SHA256 = '84a54c69781ad90615d1b0276a83ff87daaeded99fbc64457c350679df7b4ff0'
-
-    GO_FILENAME = 'go1.18.linux-amd64.tar.gz'
-    GO_URL = 'https://dl.google.com/go/go1.18.linux-amd64.tar.gz'
-    GO_SHA256 = 'e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f'
+    GO_FILENAME = 'go1.18.darwin-amd64.tar.gz'
+    GO_URL = 'https://go.dev/dl/go1.18.darwin-amd64.tar.gz'
+    GO_SHA256 = '70bb4a066997535e346c8bfa3e0dfe250d61100b17ccc5676274642447834969'
 
     def __init__(self, mach):
         super().__init__(mach)
@@ -38,10 +24,7 @@ class LinuxBootstrap(Bootstrap):
     def install_system_packages(self):
         print('Installing system packages')
 
-        command = ['apt-get', 'install', '-y']
-        command.extend(self.DEBIAN_PACKAGES)
-
-        self.run_as_root(command)
+        # TODO: check xcode version
 
         print(f'Downloading {self.GO_URL}...')
         self.http_download_and_save(self.GO_URL, self.GO_FILENAME, self.GO_SHA256)
@@ -54,7 +37,7 @@ class LinuxBootstrap(Bootstrap):
         print(f'{self.CLANG_FILENAME} downloaded.')
 
     def install_qt(self):
-        self.install_qt_for_platform("linux")
+        self.install_qt_for_platform('mac')
 
     def ensure_rust_modern(self):
         print('Installing rust... TODO')
@@ -83,4 +66,4 @@ class LinuxBootstrap(Bootstrap):
         subprocess.check_call(command, stdin=sys.stdin)
 
 def bootstrap(mach):
-    return LinuxBootstrap(mach).run()
+    return MacOSBootstrap(mach).run()

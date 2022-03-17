@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import hashlib
+import machbuild.env
 import os
 import shutil
 import subprocess
@@ -117,3 +118,22 @@ class Bootstrap:
             shutil.rmtree(path)
         else:
             os.remove(path)
+
+    def install_qt_for_platform(self, platform):
+        print('Installing aqt...')
+        command = [sys.executable, '-m', 'pip', 'install', '--target',
+                   os.path.join(self.mach.state_dir, 'pip'),
+                  'aqtinstall']
+        subprocess.check_call(command, stdin=sys.stdin)
+
+        aqt = os.path.join(self.mach.state_dir, 'pip', 'bin', 'aqt')
+        if not os.path.isfile(aqt) or not os.access(aqt, os.X_OK):
+            raise NotImplementedError('Unable to find `aqt`');
+
+        print('Installing qt...')
+        self.remove_dir_or_file(os.path.join(self.mach.state_dir, 'qt'))
+        command = [aqt, 'install-qt', '-O',
+                   os.path.join(self.mach.state_dir, 'qt'),
+                  platform, 'desktop', machbuild.env.current_env(mach)['qt_version'],
+                  '-m', 'qtcharts', 'qtwebsockets', 'qt5compat', 'qtnetworkauth']
+        subprocess.check_call(command, stdin=sys.stdin)

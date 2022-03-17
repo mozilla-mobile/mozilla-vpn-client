@@ -6,6 +6,8 @@ include($$PWD/../version.pri)
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
 
+include($$PWD/golang.pri)
+
 !isEmpty(MVPN_EXTRA_USERAGENT) {
     DEFINES += MVPN_EXTRA_USERAGENT=\\\"$$MVPN_EXTRA_USERAGENT\\\"
 }
@@ -343,6 +345,8 @@ HEADERS += \
 linux:!android|macos|win* {
     message(Enabling the webextension support)
 
+    QMAKE_MAC_SDK = macosx12.3
+
     DEFINES += MVPN_WEBEXTENSION
 
     SOURCES += \
@@ -351,6 +355,19 @@ linux:!android|macos|win* {
     HEADERS += \
             server/serverconnection.h \
             server/serverhandler.h
+
+    cargoBridge.input = CARGO_CRATE
+    cargoBridge.output = ${QMAKE_FILE_IN}/target/release/mozillavpnnp
+    cargoBridge.commands = @echo Compiling Rust component ${QMAKE_FILE_IN} && \
+       cd "${QMAKE_FILE_IN}" && \
+       mkdir -p .cargo && \
+       export CARGO_HOME="${PWD}/${QMAKE_FILE_IN}/.cargo_home" && \
+       cargo build --release
+    cargoBridge.clean_commands = cd "${QMAKE_FILE_IN}" && cargo clean && rm -rf vendor
+    cargoBridge.CONFIG = target_predeps no_link
+
+    QMAKE_EXTRA_COMPILERS += cargoBridge
+    CARGO_CRATE = ../extension/bridge
 }
 
 # Signal handling for unix platforms
@@ -373,6 +390,8 @@ macos|win* {
 
     SOURCES += update/balrog.cpp
     HEADERS += update/balrog.h
+
+    GO_MODULES = $$PWD/../balrog/api.go
 }
 
 DUMMY {
@@ -414,7 +433,6 @@ DUMMY {
 # Platform-specific: Linux
 else:linux:!android {
     message(Linux build)
-    include($$PWD/golang.pri)
 
     TARGET = mozillavpn
     QT += networkauth
@@ -500,19 +518,6 @@ else:linux:!android {
     DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
     GO_MODULES = ../linux/netfilter/netfilter.go
-
-    cargoBridge.input = CARGO_CRATE
-    cargoBridge.output = ${QMAKE_FILE_IN}/target/release/mozillavpnnp
-    cargoBridge.commands = @echo Compiling Rust component ${QMAKE_FILE_IN} && \
-       cd "${QMAKE_FILE_IN}" && \
-       mkdir -p .cargo && \
-       export CARGO_HOME="${PWD}/${QMAKE_FILE_IN}/.cargo_home" && \
-       cargo build --release
-    cargoBridge.clean_commands = cd "${QMAKE_FILE_IN}" && cargo clean && rm -rf vendor
-    cargoBridge.CONFIG = target_predeps no_link
-
-    QMAKE_EXTRA_COMPILERS += cargoBridge
-    CARGO_CRATE = ../extension/bridge
 
     target.path = $${USRPATH}/bin
     INSTALLS += target
@@ -716,18 +721,31 @@ else:macos {
     CONFIG += c++1z
 
     # For the loginitem
+    LIBS += -framework SystemConfiguration
     LIBS += -framework ServiceManagement
     LIBS += -framework Security
     LIBS += -framework CoreWLAN
 
     DEFINES += MVPN_MACOS
+    DEFINES += MVPN_MACOS_DAEMON
 
     SOURCES += \
+            daemon/daemon.cpp \
+            daemon/daemonlocalserver.cpp \
+            daemon/daemonlocalserverconnection.cpp \
+            localsocketcontroller.cpp \
+            platforms/macos/daemon/dnsutilsmacos.cpp \
+            platforms/macos/daemon/iputilsmacos.cpp \
+            platforms/macos/daemon/macosdaemon.cpp \
+            platforms/macos/daemon/macosdaemonserver.cpp \
+            platforms/macos/daemon/macosroutemonitor.cpp \
+            platforms/macos/daemon/wireguardutilsmacos.cpp \
             platforms/macos/macosmenubar.cpp \
             platforms/macos/macospingsender.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
             systemtraynotificationhandler.cpp \
-            tasks/authenticate/desktopauthenticationlistener.cpp
+            tasks/authenticate/desktopauthenticationlistener.cpp \
+            wgquickprocess.cpp
 
     OBJECTIVE_SOURCES += \
             platforms/macos/macoscryptosettings.mm \
@@ -735,60 +753,58 @@ else:macos {
             platforms/macos/macosutils.mm
 
     HEADERS += \
+            daemon/interfaceconfig.h \
+            daemon/daemon.h \
+            daemon/daemonlocalserver.h \
+            daemon/daemonlocalserverconnection.h \
+            daemon/dnsutils.h \
+            daemon/iputils.h \
+            daemon/wireguardutils.h \
+            localsocketcontroller.h \
+            platforms/macos/daemon/dnsutilsmacos.h \
+            platforms/macos/daemon/iputilsmacos.h \
+            platforms/macos/daemon/macosdaemon.h \
+            platforms/macos/daemon/macosdaemonserver.h \
+            platforms/macos/daemon/macosroutemonitor.h \
+            platforms/macos/daemon/wireguardutilsmacos.h \
             platforms/macos/macosmenubar.h \
             platforms/macos/macospingsender.h \
             platforms/macos/macosstartatbootwatcher.h \
             systemtraynotificationhandler.h \
-            tasks/authenticate/desktopauthenticationlistener.h
+            tasks/authenticate/desktopauthenticationlistener.h \
+            wgquickprocess.h \
 
     OBJECTIVE_HEADERS += \
             platforms/macos/macosnetworkwatcher.h \
             platforms/macos/macosutils.h
 
-    isEmpty(MVPN_MACOS) {
-        message(No integration required for this build - let\'s use the dummy controller)
-
-        SOURCES += platforms/dummy/dummycontroller.cpp
-        HEADERS += platforms/dummy/dummycontroller.h
-    } else {
-        message(Daemon mode)
-
-        DEFINES += MVPN_MACOS_DAEMON
-
-        SOURCES += \
-                   daemon/daemon.cpp \
-                   daemon/daemonlocalserver.cpp \
-                   daemon/daemonlocalserverconnection.cpp \
-                   localsocketcontroller.cpp \
-                   wgquickprocess.cpp \
-                   platforms/macos/daemon/dnsutilsmacos.cpp \
-                   platforms/macos/daemon/iputilsmacos.cpp \
-                   platforms/macos/daemon/macosdaemon.cpp \
-                   platforms/macos/daemon/macosdaemonserver.cpp \
-                   platforms/macos/daemon/macosroutemonitor.cpp \
-                   platforms/macos/daemon/wireguardutilsmacos.cpp
-        HEADERS += \
-                   daemon/interfaceconfig.h \
-                   daemon/daemon.h \
-                   daemon/daemonlocalserver.h \
-                   daemon/daemonlocalserverconnection.h \
-                   daemon/dnsutils.h \
-                   daemon/iputils.h \
-                   daemon/wireguardutils.h \
-                   localsocketcontroller.h \
-                   wgquickprocess.h \
-                   platforms/macos/daemon/dnsutilsmacos.h \
-                   platforms/macos/daemon/iputilsmacos.h \
-                   platforms/macos/daemon/macosdaemon.h \
-                   platforms/macos/daemon/macosdaemonserver.h \
-                   platforms/macos/daemon/macosroutemonitor.h \
-                   platforms/macos/daemon/wireguardutilsmacos.h
-    }
-
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
     QMAKE_INFO_PLIST=../macos/app/Info.plist
     QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
     QMAKE_ASSET_CATALOGS = $$PWD/../macos/app/Images.xcassets
+
+    extension_bridge.files = $$files($$PWD/../extension/bridge/target/release/mozillavpnnp)
+    extension_bridge.path = 'Contents/Resources/utils'
+    QMAKE_BUNDLE_DATA += extension_bridge
+
+    extension_manifest.files = $$files($$PWD/../extension/manifests/macos/mozillavpn.json)
+    extension_manifest.path = 'Contents/Resources/utils'
+    QMAKE_BUNDLE_DATA += extension_manifest
+
+    wireguardGo.input = WIREGUARDGO
+    wireguardGo.output = ${QMAKE_FILE_IN}/wireguard-go
+    wireguardGo.commands = @echo Compiling Wireguard GO ${QMAKE_FILE_IN} && \
+       cd "${QMAKE_FILE_IN}" && \
+       make
+    wireguardGo.clean_commands = cd "${QMAKE_FILE_IN}" && make clean generate-version-and-build
+    wireguardGo.CONFIG = target_predeps no_link
+
+    QMAKE_EXTRA_COMPILERS += wireguardGo
+    WIREGUARDGO = $$PWD/../3rdparty/wireguard-go
+
+    wireguardGo_binary.files = $$files($$PWD/../3rdparty/wireguard-go/wireguard-go)
+    wireguardGo_binary.path = 'Contents/Resources/utils'
+    QMAKE_BUNDLE_DATA += wireguardGo_binary
 }
 
 # Platform-specific: IOS

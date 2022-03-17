@@ -6,43 +6,11 @@
 import importlib.util
 import os
 import sys
+import machbuild.env
 
-envs = [
-    {
-        'name': 'linux builds',
-        'platform': 'linux',
-        'env': 'envs/linux.py',
-    },
-#    {
-#        'name': 'android builds on linux',
-#        'platform': 'linux',
-#        'env': 'envs/linux_android.py',
-#    },
-#    {
-#        'name': 'macos builds',
-#        'platform': 'darwin',
-#        'env': 'envs/macos.py',
-#    },
-#    {
-#        'name': 'ios builds on macos',
-#        'platform': 'darwin',
-#        'env': 'envs/ios.py',
-#    },
-#    {
-#        'name': 'windows builds',
-#        'platform': 'win',
-#        'env': 'envs/windows.py',
-#    },
-#    {
-#        'name': 'wasm builds on linux',
-#        'platform': 'linux',
-#        'env': 'envs/wasm_linux.py',
-#    },
-]
-
-def ask_env():
+def ask_env(mach):
     supported_envs = []
-    for env in envs:
+    for env in machbuild.env.envs:
         if sys.platform.startswith(env['platform']):
             supported_envs.append(env)
 
@@ -57,13 +25,14 @@ def ask_env():
         try:
             choice = int(choice)
             if 0 < choice <= len(supported_envs):
-                return supported_envs[choice-1]["env"]
+                machbuild.env.set_current_env(mach, supported_envs[choice-1]["name"])
+                return machbuild.env.current_env(mach)["env"]
         except ValueError:
             pass
         print("ERROR! Please enter a valid option!")
 
 def run(mach, args):
-    env_file = ask_env()
+    env_file = ask_env(mach)
     spec = importlib.util.spec_from_file_location('env', os.path.join(mach.topdir_path, 'machbuild', env_file))
     env = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(env)

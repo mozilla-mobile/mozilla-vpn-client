@@ -6,23 +6,32 @@
 import os
 import sys
 import subprocess
+import machbuild.env
 
 def run(mach, args):
+    env = machbuild.env.current_env(mach)
+    if env == None:
+        print('No bootstrap yet?')
+        return 1
+
     print('Configure the PATH env...')
     paths = [
         os.path.join(mach.state_dir, 'clang', 'bin'),
         os.path.join(mach.state_dir, 'go', 'bin'),
-        os.path.join(mach.state_dir, 'qt', '6.2.3', 'gcc_64', 'bin'),
+        os.path.join(mach.state_dir, 'qt', env['qt_version'], env['qt_platform'], 'bin'),
     ]
+    print(paths)
     os.environ['PATH'] = ':'.join(paths) + ':' + os.environ['PATH']
 
     # TODO: Use the script as a module!
     print('Importing languages...')
     command = [os.path.join('scripts', 'utils', 'import_languages.py')]
+    if env['extra_import_params'] != None:
+        command.extend(env['extra_import_params'])
     subprocess.check_call(command, stdin=sys.stdin)
 
     print('Running qmake...')
-    command = [os.path.join(mach.state_dir, 'qt', '6.2.3', 'gcc_64', 'bin', 'qmake')]
+    command = [os.path.join(mach.state_dir, 'qt', env['qt_version'], env['qt_platform'], 'bin', 'qmake')]
     subprocess.check_call(command, stdin=sys.stdin)
 
     print('Compiling...')
