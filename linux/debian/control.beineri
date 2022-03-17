@@ -75,9 +75,9 @@ Vcs-Git: https://github.com/mozilla-mobile/mozilla-vpn-client
 
 Package: mozillavpn
 Architecture: any
-Depends: libpolkit-gobject-1-0 (>=0.105-20),
-         wireguard (>=1.0.20200513-1~18.04.2),
-         wireguard-tools (>=1.0.20200513-1~18.04.2),
+Depends: libpolkit-gobject-1-0 (>=0.105),
+         wireguard (>=1.0.20200319),
+         wireguard-tools (>=1.0.20200319),
          libxcb-xinerama0 (>=1.13-1),
          qt515base (>=5.15.2-1basyskom4),
          qt515charts-no-lgpl (>=5.15.2-1basyskom1),
@@ -90,3 +90,5 @@ Depends: libpolkit-gobject-1-0 (>=0.105-20),
          qt515websockets (>=5.15.2-1basyskom1)
 Description: A fast, secure and easy to use VPN. Built by the makers of Firefox.
  Read more on https://vpn.mozilla.org
+
+

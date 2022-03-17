@@ -26,8 +26,8 @@ Vcs-Git: https://github.com/mozilla-mobile/mozilla-vpn-client
 Package: mozillavpn
 Architecture: any
 Depends: libpolkit-gobject-1-0 (>=0.105),
-         wireguard (>=1.0.20210424),
-         wireguard-tools (>=1.0.20210424),
+         wireguard (>=1.0.20200319),
+         wireguard-tools (>=1.0.20200319),
          resolvconf (>=1.82),
          libqt5charts5 (>=5.15.2),
          libqt5quick5 (>=5.15.2),
