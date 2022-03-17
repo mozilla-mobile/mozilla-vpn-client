@@ -31,7 +31,7 @@ VPNInAppAuthenticationBase {
 
     id: authSignUp
 
-    _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
+    _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
     _menuButtonOnClick: () => { VPNAuthInApp.reset() }
     _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
     _headlineText: VPNl18n.InAppAuthVerificationCodeTitle
