@@ -47,8 +47,7 @@ def ask_env():
             supported_envs.append(env)
 
     if len(supported_envs) == 0:
-        print('Unsupported platform (yet?')
-        return 1
+        raise NotImplementedError('Unsupported platform (yet?')
 
     while True:
         print('Please choose the version of Firefox you want to build:')

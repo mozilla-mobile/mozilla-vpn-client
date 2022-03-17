@@ -43,7 +43,7 @@ class LinuxBootstrap(Bootstrap):
 
         self.run_as_root(command)
 
-        print(f'Downloading ${self.GO_URL}...')
+        print(f'Downloading {self.GO_URL}...')
         self.http_download_and_save(self.GO_URL, self.GO_FILENAME, self.GO_SHA256)
         self.extract_from_cache(self.GO_FILENAME, 'go')
 
@@ -54,14 +54,15 @@ class LinuxBootstrap(Bootstrap):
         print(f'{self.CLANG_FILENAME} downloaded.')
 
     def install_qt(self):
-        print('Checking aqt...')
-        if self.which('aqt'):
-            aqt = 'aqt'
-        else:
-            localpath = os.path.expanduser("~/.local")
-            aqt = os.path.join(localpath, 'bin', 'aqt')
-            if not os.path.isfile(aqt) or not os.access(aqt, os.X_OK):
-                raise NotImplementedError('Unable to find `aqt`. Have you actually installed it?')
+        print('Installing aqt...')
+        command = [sys.executable, '-m', 'pip', 'install', '--target',
+                   os.path.join(self.mach.state_dir, 'pip'),
+                  'aqtinstall']
+        subprocess.check_call(command, stdin=sys.stdin)
+
+        aqt = os.path.join(self.mach.state_dir, 'pip', 'bin', 'aqt')
+        if not os.path.isfile(aqt) or not os.access(aqt, os.X_OK):
+            raise NotImplementedError('Unable to find `aqt`');
 
         print('Installing qt...')
         self.remove_dir_or_file(os.path.join(self.mach.state_dir, 'qt'))
