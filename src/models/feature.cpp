@@ -60,9 +60,19 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
   }
 
   if (m_devModeWriteable) {
-    connect(SettingsHolder::instance(),
-            &SettingsHolder::devModeFeatureFlagsChanged, this,
-            [this]() { emit supportedChanged(); });
+    m_devModeEnabled =
+        SettingsHolder::instance()->devModeFeatureFlags().contains(m_id);
+
+    connect(
+        SettingsHolder::instance(), &SettingsHolder::devModeFeatureFlagsChanged,
+        this, [this]() {
+          bool newDevModeEnabled =
+              SettingsHolder::instance()->devModeFeatureFlags().contains(m_id);
+          if (newDevModeEnabled != m_devModeEnabled) {
+            m_devModeEnabled = newDevModeEnabled;
+            emit supportedChanged();
+          }
+        });
   }
 }
 
@@ -91,7 +101,7 @@ bool Feature::isDevModeEnabled() const {
     return false;
   }
 
-  return SettingsHolder::instance()->devModeFeatureFlags().contains(m_id);
+  return m_devModeEnabled;
 }
 
 bool Feature::isSupported() const {

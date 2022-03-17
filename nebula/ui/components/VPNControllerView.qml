@@ -578,17 +578,18 @@ Item {
     VPNIconButton {
         id: connectionInfoToggleButton
 
+        //% "Close"
+        property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")
+        //% "Connection Information"
+        property var connectionInfoText: qsTrId("vpn.controller.info")
+
         anchors {
             left: parent.left
             leftMargin: VPNTheme.theme.windowMargin / 2
             top: parent.top
             topMargin: VPNTheme.theme.windowMargin / 2
         }
-        accessibleName: box.connectionInfoScreenVisible
-            //% "Close"
-            ? qsTrId("vpn.connectionInfo.close")
-            //% "Connection Information"
-            : qsTrId("vpn.controller.info")
+        accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText :connectionInfoText
         Accessible.ignored: !connectionInfoToggleButton.visible
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
         enabled: connectionInfoToggleButton.visible
@@ -666,6 +667,9 @@ Item {
         opacity: 1
 
         onClicked: {
+            if (box.connectionInfoScreenVisible) {
+                return;
+            }
             Sample.settingsViewOpened.record();
             stackview.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate)
         }
@@ -677,7 +681,7 @@ Item {
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
         Accessible.ignored: connectionInfoVisible
-        enabled: !connectionInfoVisible
+        enabled: !connectionInfoVisible || !box.connectionInfoScreenVisible
 
         VPNIcon {
             id: settingsImage

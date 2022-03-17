@@ -201,10 +201,34 @@ Item {
         }
 
         VPNButton {
-            id: resetAndQuit
+            id: crashApp
             property int clickNeeded: 5
 
             anchors.top: stagingServerCheckBox.checked && !restartRequired.isVisible ? inspectorLink.bottom : animationsPlaygroundLink.bottom
+            anchors.topMargin: VPNTheme.theme.listSpacing * 2
+            anchors.horizontalCenterOffset: 0
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            text: "Test Crash Reporter"
+            onClicked: {
+                if (!VPNSettings.stagingServer){
+                    text = "Test Crash Reporter (Staging only!)";
+                    return;
+                }
+                if (clickNeeded) {
+                    text = "Test Crash Reporter (" + clickNeeded + ")";
+                    --clickNeeded;
+                    return;
+                }
+                VPN.crashTest()
+            }
+        }
+
+        VPNButton {
+            id: resetAndQuit
+            property int clickNeeded: 5
+
+            anchors.top: restartRequired.isVisible ? restartRequired.bottom : crashApp.bottom
             anchors.topMargin: VPNTheme.theme.listSpacing * 2
             anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter
@@ -219,6 +243,17 @@ Item {
 
                 VPN.hardResetAndQuit()
             }
+        }
+
+        VPNTextBlock {
+            id: qtVersionText
+
+            text: VPN.devVersion
+            textFormat: Text.RichText
+            anchors.top: resetAndQuit.bottom
+            anchors.topMargin: 8
+            anchors.horizontalCenterOffset: 0
+            anchors.horizontalCenter: parent.horizontalCenter
         }
 
         VPNContextualAlerts {

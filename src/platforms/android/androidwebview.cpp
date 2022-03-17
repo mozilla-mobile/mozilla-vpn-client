@@ -148,7 +148,8 @@ QUrl AndroidWebView::url() const {
 }
 
 void AndroidWebView::setUrl(const QUrl& url) {
-  logger.debug() << "Set URL:" << url.toString();
+  QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
+  logger.debug() << "Set URL:" << url.toString(options);
 
   if (!m_object.isValid()) {
     logger.error() << "Invalid object. Failed the loading.";

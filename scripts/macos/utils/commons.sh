@@ -37,7 +37,6 @@ _compile() {
   [ -f "$2" ] && die "Unexpected $2 binary"
 
   xcodebuild build \
-  HEADER_SEARCH_PATHS="\$(HEADER_SEARCH_PATHS) $(brew --prefix oath-toolkit)/include" \
     CODE_SIGN_IDENTITY="" \
     CODE_SIGNING_REQUIRED=NO \
     -derivedDataPath=/build \
@@ -48,13 +47,13 @@ _compile() {
   [ -f "$2" ] || die "Expected $2 binary"
 }
 
+_grcov() {
+  grcov "$1"  -s . -t lcov --branch --ignore-not-existing -o "$2" || die "Failed to run grcov"
+}
+
 # Public methods
 
 ## Unit-tests
-
-utest_dependencies() {
-  brew install oath-toolkit || die
-}
 
 utest_compile_unit() {
   _qmake tests/unit/unit.pro tests.xcodeproj/|| die
@@ -99,6 +98,10 @@ utest_cleanup_nativemessaging() {
   _cleanup tests.xcodeproj/ ./Release/tests || die
 }
 
+utest_grcov() {
+  _grcov .obj/tests.build/Release/tests.build/Objects-normal/x86_64/ "$1"
+}
+
 ## Lottie tests
 
 lottie_compile_unit() {
@@ -127,6 +130,14 @@ lottie_cleanup_qml() {
   _cleanup tst_lottie.xcodeproj ./Release/tst_lottie || die
 }
 
+lottie_unit_grcov() {
+  _grcov .obj/lottie_tests.build/Release/lottie_tests.build/Objects-normal/x86_64/ "$1"
+}
+
+lottie_qml_grcov() {
+  _grcov .obj/tst_lottie.build/Release/tst_lottie.build/Objects-normal/x86_64/ "$1"
+}
+
 ## QML tests
 
 qmltest_compile() {
@@ -140,4 +151,8 @@ qmltest_run() {
 
 qmltest_cleanup() {
   _cleanup qml_tests.xcodeproj ./Release/qml_tests || die
+}
+
+qmltest_grcov() {
+  _grcov .obj/qml_tests.build/Release/qml_tests.build/Objects-normal/x86_64/ "$1"
 }

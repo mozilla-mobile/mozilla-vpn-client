@@ -401,7 +401,7 @@ void MozillaVPN::maybeStateMain() {
 }
 
 void MozillaVPN::setServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set server public key:" << publicKey;
+  logger.debug() << "Set server public key:" << logger.keys(publicKey);
   m_serverPublicKey = publicKey;
 }
 
@@ -946,7 +946,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       break;
 
     case ErrorHandler::NoConnectionError:
-      if (controller()->isUnsettled()) {
+      if (connectionHealth()->isUnsettled()) {
         return;
       }
       alert = NoConnectionAlert;
@@ -1428,7 +1428,7 @@ void MozillaVPN::quit() {
   logger.debug() << "quit";
   TaskScheduler::deleteTasks();
 
-#if QT_VERSION >= 0x060000
+#if QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
   // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a
   // quick exit. See: https://bugreports.qt.io/browse/QTBUG-100687
 
@@ -1685,4 +1685,24 @@ void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
   hardReset();
   quit();
+}
+
+void MozillaVPN::crashTest() {
+  char* text = new char[100];
+  delete[] text;
+  delete[] text;
+}
+
+// static
+QString MozillaVPN::devVersion() {
+  QString out;
+  QTextStream stream(&out);
+
+  stream << "Qt version: <b>";
+  stream << qVersion();
+  stream << "</b> - compiled: <b>";
+  stream << QT_VERSION_STR;
+  stream << "</b>";
+
+  return out;
 }

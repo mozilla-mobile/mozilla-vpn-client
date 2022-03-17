@@ -10,12 +10,45 @@ if [ -f .env ]; then
   . .env
 fi
 
+helpFunction() {
+  print G "Usage:"
+  print N "\t$0 [-g|--grcov <grcov.info>]"
+  print N ""
+  print N "Use -g or --grcov to name the code coverage output"
+  print N ""
+  exit 0
+}
+
 print N "This script compiles and runs MozillaVPN tests on MacOS and Linux"
 print N ""
+
+while [[ $# -gt 0 ]]; do  
+  key="$1"
+  
+  case $key in
+  -g | --grcov)    
+    GRCOV_FILENAME="$2"
+    shift
+    shift
+    ;;
+  *)
+    helpFunction
+    ;;
+  esac
+done
 
 if ! [ -d "src" ] || ! [ -d "tests" ]; then
   die "This script must be executed at the root of the repository."
 fi
+
+if ! [[ "$MVPN_OATHTOOL" ]]; then
+  printn Y "MVPN_OATHTOOL env not set. Let's generate the oathtool... "
+  (cd /tmp && python3 -m oathtool.generate-script) || die
+  MVPN_OATHTOOL=/tmp/oathtool
+  print G "Done."
+fi
+
+[ -f "$MVPN_OATHTOOL" ] || die
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   print N "Configure for linux"
@@ -35,34 +68,54 @@ utest_cleanup_unit || die "Failed"
 utest_cleanup_auth || die "Failed"
 utest_cleanup_nativemessaging || die "Failed"
 
-print Y "Installing dependencies..."
-utest_dependencies || die "Failed"
-
 print Y "Compile the unit-tests..."
 utest_compile_unit || die "Failed"
 
 print Y "Running the unit-tests..."
 utest_run_unit || die "Failed"
 
-printn Y "Cleaning the existing project... "
+if [[ "$GRCOV_FILENAME" ]]; then
+  printn Y "Generating temp coverage file for unit tests..."  
+  utest_grcov unit_"$GRCOV_FILENAME"
+fi
+
+printn Y "Cleaning the existing unit project... "
 utest_cleanup_unit || die "Failed"
 
 print Y "Compile the auth-unit-tests..."
 utest_compile_auth || die "Failed"
 
-print Y "Running the unit-tests..."
+print Y "Running the auth unit-tests..."
 utest_run_auth || die "Failed"
 
-printn Y "Cleaning the existing project... "
+if [[ "$GRCOV_FILENAME" ]]; then
+  printn Y "Generating temp coverage file for auth tests..."  
+  utest_grcov auth_"$GRCOV_FILENAME"
+fi
+
+printn Y "Cleaning the existing auth project... "
 utest_cleanup_auth || die "Failed"
 
 print Y "Compile the native-messaging-unit-tests..."
 utest_compile_nativemessaging || die "Failed"
 
-print Y "Running the unit-tests..."
+print Y "Running the native messaging unit-tests..."
 utest_run_nativemessaging || die "Failed"
 
-printn Y "Cleaning the existing project... "
+if [[ "$GRCOV_FILENAME" ]]; then
+  printn Y "Generating temp coverage file for native messaging unit tests..."  
+  utest_grcov nativemessaging_"$GRCOV_FILENAME"
+fi
+
+printn Y "Cleaning the existing native messaging project... "
 utest_cleanup_nativemessaging || die "Failed"
+
+if [[ "$GRCOV_FILENAME" ]]; then  
+  printn Y "merging temp files to finallcov.info... "
+  grcov -t lcov -o "$GRCOV_FILENAME" unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die "merging temp files to final failed"
+
+  printn Y "Cleaning the temp coverage files... "
+  rm unit_"$GRCOV_FILENAME" auth_"$GRCOV_FILENAME" nativemessaging_"$GRCOV_FILENAME" || die "cleaning cov files failed"
+fi
 
 print G "All done!"

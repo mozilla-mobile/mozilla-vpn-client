@@ -93,7 +93,7 @@ class AuthenticationInApp final : public QObject {
 
   Q_INVOKABLE static bool validateEmailAddress(const QString& emailAddress);
 
-  Q_INVOKABLE static bool validatePasswordCommons(const QString& password);
+  Q_INVOKABLE bool validatePasswordCommons(const QString& password);
   Q_INVOKABLE static bool validatePasswordLength(const QString& password);
   Q_INVOKABLE bool validatePasswordEmail(const QString& password);
 
@@ -108,6 +108,9 @@ class AuthenticationInApp final : public QObject {
 #ifdef UNIT_TEST
   // This method is used to have a test coverage for the TOTP verification.
   void enableTotpCreation();
+  // Delete account.
+  void enableAccountDeletion();
+  void allowUpperCaseEmailAddress();
 #endif
 
   // This needs to be called when we are in StateUnblockCodeNeeded state.
@@ -132,8 +135,8 @@ class AuthenticationInApp final : public QObject {
 
   void requestEmailAddressChange(AuthenticationInAppListener* listener);
   void requestState(State state, AuthenticationInAppListener* listener);
-  void requestErrorPropagation(ErrorType errorType,
-                               AuthenticationInAppListener* listener);
+  void requestErrorPropagation(AuthenticationInAppListener* listener,
+                               ErrorType errorType, uint32_t retryAfterSec = 0);
 
   static int verificationCodeLength() { return 6; }
 
@@ -142,13 +145,14 @@ class AuthenticationInApp final : public QObject {
  signals:
   void stateChanged();
 
-  void errorOccurred(ErrorType error);
+  void errorOccurred(ErrorType error, uint32_t retryAfter);
 
   void emailAddressChanged();
 
 #ifdef UNIT_TEST
-  void unitTestFinalUrl(const QUrl& url);
+  void unitTestAuthFailedWithDetail(const QString& detail);
   void unitTestTotpCodeCreated(const QByteArray& data);
+  void unitTestAccountDeleted();
 #endif
 
  private:
@@ -160,6 +164,8 @@ class AuthenticationInApp final : public QObject {
   State m_state = StateInitializing;
 
   AuthenticationInAppListener* m_listener = nullptr;
+
+  QByteArray m_encodedPassword;
 };
 
 #endif  // AUTHENTICATIONINAPP_H

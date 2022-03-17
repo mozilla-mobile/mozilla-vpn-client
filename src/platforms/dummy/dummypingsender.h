@@ -12,10 +12,10 @@ class DummyPingSender final : public PingSender {
   Q_DISABLE_COPY_MOVE(DummyPingSender)
 
  public:
-  DummyPingSender(const QString& source, QObject* parent = nullptr);
+  DummyPingSender(const QHostAddress& source, QObject* parent = nullptr);
   ~DummyPingSender();
 
-  void sendPing(const QString& dest, quint16 sequence) override;
+  void sendPing(const QHostAddress& dest, quint16 sequence) override;
 };
 
 #endif  // DUMMYPINGSENDER_H

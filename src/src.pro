@@ -24,6 +24,11 @@ QT += charts
 QT += websockets
 QT += sql
 
+versionAtLeast(QT_VERSION, 6.0.0) {
+    message("Enable QT5 Compat")
+    QT += core5compat
+}
+
 # For the inspector
 QT+= testlib
 QT.testlib.CONFIG -= console
@@ -47,7 +52,7 @@ include($$PWD/../glean/glean.pri)
 
 include($$PWD/../nebula/nebula.pri)
 
-!wasm{
+!wasm {
     include($$PWD/crashreporter/crashreporter.pri)
 }
 
@@ -88,7 +93,10 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
-        connectioncheck.cpp \
+        connectionbenchmark/benchmarktask.cpp \
+        connectionbenchmark/benchmarktaskdownload.cpp \
+        connectionbenchmark/benchmarktaskping.cpp \
+        connectionbenchmark/connectionbenchmark.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         constants.cpp \
@@ -96,6 +104,7 @@ SOURCES += \
         cryptosettings.cpp \
         curve25519.cpp \
         dnshelper.cpp \
+        dnspingsender.cpp \
         errorhandler.cpp \
         featurelist.cpp \
         filterproxymodel.cpp \
@@ -146,6 +155,7 @@ SOURCES += \
         notificationhandler.cpp \
         pinghelper.cpp \
         pingsender.cpp \
+        pingsenderfactory.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
         platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
@@ -214,7 +224,10 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
-        connectioncheck.h \
+        connectionbenchmark/benchmarktask.h \
+        connectionbenchmark/benchmarktaskdownload.h \
+        connectionbenchmark/benchmarktaskping.h \
+        connectionbenchmark/connectionbenchmark.h \
         connectiondataholder.h \
         connectionhealth.h \
         constants.h \
@@ -223,6 +236,7 @@ HEADERS += \
         cryptosettings.h \
         curve25519.h \
         dnshelper.h \
+        dnspingsender.h \
         errorhandler.h \
         featurelist.h \
         features/featureappreview.h \
@@ -284,6 +298,7 @@ HEADERS += \
         notificationhandler.h \
         pinghelper.h \
         pingsender.h \
+        pingsenderfactory.h \
         platforms/dummy/dummyapplistprovider.h \
         platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
@@ -325,7 +340,7 @@ HEADERS += \
         update/versionapi.h \
         urlopener.h
 
-webextension {
+linux:!android|macos|win* {
     message(Enabling the webextension support)
 
     DEFINES += MVPN_WEBEXTENSION
@@ -352,7 +367,7 @@ RESOURCES += resources/certs/certs.qrc
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
-balrog {
+macos|win* {
     message(Balrog enabled)
     DEFINES += MVPN_BALROG
 
@@ -661,7 +676,7 @@ else:android {
     # We need to compile our own openssl :/
     exists(../3rdparty/openSSL/openssl.pri) {
        include(../3rdparty/openSSL/openssl.pri)
-    } else{
+    } else {
        message(Have you imported the 3rd-party git submodules? Read the README.md)
        error(Did not found openSSL in 3rdparty/openSSL - Exiting Android Build)
     }
@@ -735,21 +750,6 @@ else:macos {
 
         SOURCES += platforms/dummy/dummycontroller.cpp
         HEADERS += platforms/dummy/dummycontroller.h
-    } else:networkextension {
-        message(Network extension mode)
-
-        DEFINES += MVPN_MACOS_NETWORKEXTENSION
-
-        INCLUDEPATH += \
-                    ../3rdparty/Wireguard-apple/WireGuard/WireGuard/Crypto \
-                    ../3rdparty/wireguard-apple/WireGuard/Shared/Model \
-
-        OBJECTIVE_SOURCES += \
-                platforms/ios/ioscontroller.mm \
-                platforms/ios/iosglue.mm
-
-        OBJECTIVE_HEADERS += \
-                platforms/ios/iosscontroller.h
     } else {
         message(Daemon mode)
 
@@ -851,6 +851,7 @@ else:ios {
             platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
+            features/featureioskillswitch.h \
             platforms/macos/macospingsender.h \
             tasks/purchase/taskpurchase.h
 
@@ -878,6 +879,14 @@ else:win* {
 
     TARGET = MozillaVPN
 
+    versionAtLeast(QT_VERSION, 6.0.0) {
+        versionAtLeast(QT_VERSION, 6.3.0) {
+            # See https://mozilla-hub.atlassian.net/browse/VPN-1894
+	    error(Remove the qt6 windows hack!)
+        }
+        RESOURCES += ui/qt6winhack.qrc
+    }
+
     CONFIG += c++1z
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor
 
@@ -888,7 +897,6 @@ else:win* {
 
     QT += networkauth
     QT += svg
-    QT += winextras
 
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS

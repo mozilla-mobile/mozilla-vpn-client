@@ -14,9 +14,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QEventLoop>
+#include <QProcess>
+#include <QProcessEnvironment>
 #include <QTest>
-
-#include <liboath/oath.h>
 
 constexpr const char* PASSWORD = "12345678";
 
@@ -111,7 +111,7 @@ void TestSignUpAndIn::signUp() {
   QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
 
   connect(aia, &AuthenticationInApp::errorOccurred,
-          [&](AuthenticationInApp::ErrorType error) {
+          [&](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error ==
                 AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode) {
               loop.exit();
@@ -129,13 +129,12 @@ void TestSignUpAndIn::signUp() {
   aia->verifySessionEmailCode(code);
   QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
 
-  QUrl finalUrl;
-  connect(aia, &AuthenticationInApp::unitTestFinalUrl,
-          [&](const QUrl& url) { finalUrl = url; });
-  connect(&task, &Task::completed, [&]() {
-    qDebug() << "Task completed";
-    loop.exit();
-  });
+  QString authFailureDetail;
+  connect(aia, &AuthenticationInApp::unitTestAuthFailedWithDetail,
+          [&](const QString& detail) {
+            authFailureDetail = detail;
+            loop.exit();
+          });
 
   if (m_totpCreation) {
     waitForTotpCodes();
@@ -144,13 +143,7 @@ void TestSignUpAndIn::signUp() {
   loop.exec();
   disconnect(aia, nullptr, nullptr, nullptr);
 
-  // The account is not active yet. So, let's check the final URL.
-  QVERIFY(
-      (finalUrl.host() == "stage-vpn.guardian.nonprod.cloudops.mozgcp.net" &&
-       finalUrl.path() == "/vpn/client/login/success") ||
-      (finalUrl.host() == "www-dev.allizom.org" &&
-       finalUrl.path() == "/en-US/products/vpn/"));
-  qDebug() << finalUrl.path();
+  QCOMPARE(authFailureDetail, "no_subscription_for_user");
 }
 
 void TestSignUpAndIn::signIn() {
@@ -178,6 +171,10 @@ void TestSignUpAndIn::signIn() {
   QString emailAddress(m_emailAccount);
   emailAddress.append("@restmail.net");
 
+  // Just to make things more complex, let's pass an upper-case email address.
+  aia->allowUpperCaseEmailAddress();
+  emailAddress[0] = emailAddress[0].toUpper();
+
   // Account
   aia->checkAccount(emailAddress);
   QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
@@ -196,6 +193,9 @@ void TestSignUpAndIn::signIn() {
   // Password
   aia->setPassword(PASSWORD);
 
+  // Let's delete the account the end of the flow.
+  aia->enableAccountDeletion();
+
   // Sign-in
   aia->signIn();
   QCOMPARE(aia->state(), AuthenticationInApp::StateSigningIn);
@@ -208,7 +208,7 @@ void TestSignUpAndIn::signIn() {
   bool wrongUnblockCodeSent = false;
 
   connect(aia, &AuthenticationInApp::errorOccurred,
-          [this](AuthenticationInApp::ErrorType error) {
+          [this](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error == AuthenticationInApp::ErrorInvalidUnblockCode) {
               qDebug() << "Invalid unblock code. Sending a good one";
 
@@ -237,24 +237,17 @@ void TestSignUpAndIn::signIn() {
     }
   });
 
-  QUrl finalUrl;
-  connect(aia, &AuthenticationInApp::unitTestFinalUrl,
-          [&](const QUrl& url) { finalUrl = url; });
-  connect(&task, &Task::completed, [&]() {
-    qDebug() << "Task completed";
-    loop.exit();
-  });
+  QString authFailureDetail;
+  connect(aia, &AuthenticationInApp::unitTestAuthFailedWithDetail,
+          [&](const QString& detail) {
+            authFailureDetail = detail;
+            loop.exit();
+          });
 
   loop.exec();
   disconnect(aia, nullptr, nullptr, nullptr);
 
-  // The account is not active yet. So, let's check the final URL.
-  QVERIFY(
-      (finalUrl.host() == "stage-vpn.guardian.nonprod.cloudops.mozgcp.net" &&
-       finalUrl.path() == "/vpn/client/login/success") ||
-      (finalUrl.host() == "www-dev.allizom.org" &&
-       finalUrl.path() == "/en-US/products/vpn/"));
-  qDebug() << finalUrl.path();
+  QCOMPARE(authFailureDetail, "no_subscription_for_user");
 }
 
 QString TestSignUpAndIn::fetchSessionCode() {
@@ -271,7 +264,7 @@ void TestSignUpAndIn::waitForTotpCodes() {
   AuthenticationInApp* aia = AuthenticationInApp::instance();
 
   connect(aia, &AuthenticationInApp::errorOccurred,
-          [this](AuthenticationInApp::ErrorType error) {
+          [this](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error == AuthenticationInApp::ErrorInvalidTotpCode) {
               qDebug() << "Invalid code. Let's send the right one";
 
@@ -280,14 +273,21 @@ void TestSignUpAndIn::waitForTotpCodes() {
                   aia->state(),
                   AuthenticationInApp::StateVerificationSessionByTotpNeeded);
 
-              QCOMPARE(oath_init(), OATH_OK);
+              QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+              QVERIFY(pe.contains("MVPN_OATHTOOL"));
+              QString oathtool = pe.value("MVPN_OATHTOOL");
 
-              char otp[/* length + 1 */ 7] = {};
-              QCOMPARE(oath_totp_generate(m_totpSecret.data(),
-                                          m_totpSecret.length(), time(nullptr),
-                                          OATH_TOTP_DEFAULT_TIME_STEP_SIZE,
-                                          OATH_TOTP_DEFAULT_START_TIME, 6, otp),
-                       OATH_OK);
+              QString otp;
+              {
+                QProcess process;
+                process.start(oathtool, QStringList{m_totpSecret});
+                QVERIFY(process.waitForStarted());
+
+                process.closeWriteChannel();
+                QVERIFY(process.waitForFinished());
+
+                otp = process.readAll().trimmed();
+              }
 
               qDebug() << "Code:" << otp;
               aia->verifySessionTotpCode(otp);
@@ -302,15 +302,7 @@ void TestSignUpAndIn::waitForTotpCodes() {
             qDebug() << "Codes received";
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
-            QByteArray totpSecret = obj["secret"].toString().toLocal8Bit();
-
-            char* secret = nullptr;
-            size_t secretLength = 0;
-            QCOMPARE(oath_base32_decode(totpSecret.data(), totpSecret.length(),
-                                        &secret, &secretLength),
-                     OATH_OK);
-
-            m_totpSecret = QByteArray(secret, secretLength);
+            m_totpSecret = obj["secret"].toString();
             QVERIFY(!m_totpSecret.isEmpty());
           });
 

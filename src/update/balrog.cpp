@@ -472,7 +472,7 @@ bool Balrog::install(const QString& filePath) {
               logger.warning() << "Unable to read the msiexec log file";
             } else {
               QTextStream logStream(&log);
-              logStream.setCodec("utf-16");
+              logStream.setEncoding(QStringConverter::Encoding::Utf16);
               logger.debug() << "Log file:" << Qt::endl << logStream.readAll();
             }
 
