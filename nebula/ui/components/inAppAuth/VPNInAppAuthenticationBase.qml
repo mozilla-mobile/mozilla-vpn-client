@@ -26,6 +26,8 @@ VPNFlickable {
     property alias _disclaimers: disclaimers.data
     property alias _footerContent: footerContent.data
 
+    property bool inputTransitionEnabled: false
+
     id: authBase
     flickContentHeight: col.implicitHeight
 
@@ -181,6 +183,13 @@ VPNFlickable {
         VPNVerticalSpacer {
             Layout.minimumHeight: VPNTheme.theme.vSpacing * 2
             Layout.fillWidth: true
+        }
+    }
+
+    Behavior on y {
+        NumberAnimation {
+            duration: inputTransitionEnabled ? 350 : 0
+            easing.type: Easing.InOutQuad
         }
     }
 

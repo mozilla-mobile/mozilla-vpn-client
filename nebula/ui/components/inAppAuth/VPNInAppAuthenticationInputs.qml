@@ -214,9 +214,12 @@ ColumnLayout {
     }
 
     function handlePanInputIntoView() {
-        if (!_itemToPan) {
+        if (!keyboardIsVisible) {
+            _itemToPan.inputTransitionEnabled = false;
             return;
         }
+
+        _itemToPan.inputTransitionEnabled = true;
 
         const keyboardHeight = Qt.inputMethod.keyboardRectangle.height;
         const activeInputItem = activeInput();
@@ -232,10 +235,8 @@ ColumnLayout {
         const overlapVertical = distanceToViewportBottom - keyboardHeight - minOverlapClearance;
         const keyboardWillIntesectWithInput = overlapVertical < 0;
 
-        if (keyboardIsVisible && keyboardWillIntesectWithInput) {
+        if (keyboardWillIntesectWithInput) {
             _itemToPan.y = -1 * Math.abs(overlapVertical);
-        } else if (!keyboardIsVisible) {
-            _itemToPan.y = 0;
         }
     }
 
@@ -249,6 +250,10 @@ ColumnLayout {
 
         function onVisibleChanged() {
             keyboardIsVisible = !keyboardIsVisible;
+
+            if (!keyboardIsVisible) {
+                _itemToPan.y = 0;
+            }
         }
     }
 
