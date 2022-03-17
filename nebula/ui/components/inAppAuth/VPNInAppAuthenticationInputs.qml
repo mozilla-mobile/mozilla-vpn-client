@@ -213,6 +213,13 @@ ColumnLayout {
         }
     }
 
+    /**
+     * For Android the native support for panning inputs that are covered
+     * by the virtual keyboard is currently not working. (QTBUG-96117)
+     *
+     * This temporary solution aims to work around the issue and pans the
+     * passed item `_itemToPan` into view if it gets covered by the keyboard.
+     */
     function handlePanInputIntoView() {
         if (!keyboardIsVisible) {
             _itemToPan.inputTransitionEnabled = false;
@@ -256,5 +263,4 @@ ColumnLayout {
             }
         }
     }
-
 }
