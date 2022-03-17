@@ -6,7 +6,6 @@ loader: mozillavpn_taskgraph.loader.multi_dep:loader
 
 transforms:
     - mozillavpn_taskgraph.transforms.multi_dep:transforms
-    - mozillavpn_taskgraph.transforms.push_apk:transforms
     - taskgraph.transforms.task:transforms
 
 kind-dependencies:
@@ -15,6 +14,12 @@ kind-dependencies:
 primary-dependency: signing
 
 group-by: build-type
+
+only-for-build-types:
+    - android-x64/release
+    - android-x86/release
+    - android-arm64/release
+    - android-armv7/release
 
 job-template:
     description: Publish MozillaVPN for Android
