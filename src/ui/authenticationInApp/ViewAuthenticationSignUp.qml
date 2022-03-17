@@ -25,11 +25,11 @@ VPNInAppAuthenticationBase {
     _menuButtonOnClick: () => {
         VPNAuthInApp.reset();
     }
-    _menuButtonAccessibleName: "Back"
+    _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _headlineText: VPNAuthInApp.emailAddress
-    _subtitleText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
+    _subtitleText: VPNl18n.InAppAuthFinishAccountCreationDescription
     _imgSource: "qrc:/nebula/resources/avatar.svg"
-    _inputLabel: "Create password"
+    _inputLabel: VPNl18n.InAppAuthCreatePasswordLabel
 
     _inputs: VPNInAppAuthenticationInputs {
         function validatePassword(passwordString) {
@@ -42,30 +42,15 @@ VPNInAppAuthenticationBase {
                               VPNAuthInApp.setPassword(inputText);
                               VPNAuthInApp.signUp();
                           }
-        _buttonText: "Create account"
+        _buttonText: VPNl18n.InAppAuthCreateAccountButton
         _inputPlaceholderText: "Secure password"
     }
 
-    _disclaimers: RowLayout {
-        Layout.alignment: Qt.AlignHCenter
-        VPNTextBlock {
-            Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        }
-    }
+    _disclaimers: VPNInAppAuthenticationLegalDisclaimer {}
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
-        spacing: VPNTheme.theme.windowMargin
 
-        VPNLinkButton {
-            labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText // "Cancel"
-            fontName: VPNTheme.theme.fontBoldFamily
-            anchors.horizontalCenter: parent.horizontalCenter
-            linkColor: VPNTheme.theme.redButton
-            onClicked: VPN.cancelAuthentication()
-        }
-
+        VPNInAppAuthenticationCancel {}
     }
 }

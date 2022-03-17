@@ -18,21 +18,20 @@ transforms = TransformSequence()
 def build_name_and_attributes(config, tasks):
     for task in tasks:
         task["dependencies"] = {
-            dep_key: dep.label
-            for dep_key, dep in _get_all_deps(task).items()
+            dep_key: dep.label for dep_key, dep in _get_all_deps(task).items()
         }
         primary_dep = task["primary-dependency"]
         copy_of_attributes = primary_dep.attributes.copy()
         task.setdefault("attributes", copy_of_attributes)
         # run_on_tasks_for is set as an attribute later in the pipeline
-        task.setdefault("run-on-tasks-for", copy_of_attributes['run_on_tasks_for'])
+        task.setdefault("run-on-tasks-for", copy_of_attributes["run_on_tasks_for"])
         task["name"] = _get_dependent_job_name_without_its_kind(primary_dep)
 
         yield task
 
 
 def _get_dependent_job_name_without_its_kind(dependent_job):
-    return dependent_job.label[len(dependent_job.kind) + 1:]
+    return dependent_job.label[len(dependent_job.kind) + 1 :]
 
 
 def _get_all_deps(task):
@@ -50,11 +49,12 @@ def resolve_keys(config, tasks):
             "treeherder.job-symbol",
             item_name=task["name"],
             **{
-                'build-type': task["attributes"]["build-type"],
-                'level': config.params["level"],
-            }
+                "build-type": task["attributes"]["build-type"],
+                "level": config.params["level"],
+            },
         )
         yield task
+
 
 @transforms.add
 def resolve_keys(config, tasks):
@@ -64,9 +64,9 @@ def resolve_keys(config, tasks):
             "treeherder.platform",
             item_name=task["name"],
             **{
-                'build-type': task["attributes"]["build-type"],
-                'level': config.params["level"],
-            }
+                "build-type": task["attributes"]["build-type"],
+                "level": config.params["level"],
+            },
         )
         yield task
 
@@ -80,15 +80,18 @@ def build_upstream_artifacts(config, tasks):
 
         for dep in _get_all_deps(task).values():
             paths = sorted(
-                apk_metadata["name"]
-                for apk_metadata in dep.attributes.get("apks", {}).values()
+                artifact["name"]
+                for artifact in dep.attributes.get("release-artifacts", [])
             )
+
             if paths:
-                worker_definition["upstream-artifacts"] = [{
-                    "taskId": {"task-reference": f"<{dep.kind}>"},
-                    "taskType": dep.kind,
-                    "paths": paths,
-                }]
+                worker_definition["upstream-artifacts"] = [
+                    {
+                        "taskId": {"task-reference": f"<{dep.kind}>"},
+                        "taskType": dep.kind,
+                        "paths": paths,
+                    }
+                ]
 
         task.setdefault("worker", {}).update(worker_definition)
         yield task

@@ -33,17 +33,17 @@ VPNInAppAuthenticationBase {
 
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => { VPNAuthInApp.reset() }
-    _menuButtonAccessibleName: "Back"
-    _headlineText: "Enter verification code"
-    _subtitleText: "Open your email and enter the verification code it that was sent."
+    _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
+    _headlineText: VPNl18n.InAppAuthVerificationCodeTitle
+    _subtitleText: VPNl18n.InAppAuthEmailVerificationDescription
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
 
     _inputs: VPNInAppAuthenticationInputs {
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded && activeInput().text && activeInput().text.length === VPNAuthInApp.verificationCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionEmailCode(inputText) }
-        _buttonText: "Verify"
+        _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton
         _inputMethodHints: Qt.ImhDigitsOnly
-        _inputPlaceholderText: "Enter 6 digit code"
+        _inputPlaceholderText: VPNl18n.InAppAuthVerificationCodeInputPlaceholder
         _itemToPan: authSignUp
     }
 
@@ -52,18 +52,12 @@ VPNInAppAuthenticationBase {
         spacing: VPNTheme.theme.windowMargin
 
         VPNLinkButton {
-            labelText: "Resend code"
+            labelText: VPNl18n.InAppAuthResendCodeLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: VPNAuthInApp.resendVerificationSessionCodeEmail();
         }
 
-        VPNLinkButton {
-            labelText: "Cancel"
-            fontName: VPNTheme.theme.fontBoldFamily
-            anchors.horizontalCenter: parent.horizontalCenter
-            linkColor: VPNTheme.theme.redButton
-            onClicked: VPNAuthInApp.reset()
-        }
+        VPNInAppAuthenticationCancel{}
 
     }
 

@@ -103,15 +103,15 @@ ColumnLayout {
 
                     VPNInAppAuthenticationPasswordCondition {
                         _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
-                        _passwordConditionDescription:  "Must be a minumum of 8 characters and lots of wrapping text"
+                        _passwordConditionDescription:  VPNl18n.InAppAuthPasswordHintCharacterLength
                     }
                     VPNInAppAuthenticationPasswordCondition {
                         _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
-                        _passwordConditionDescription:  "Must not be email"
+                        _passwordConditionDescription:  VPNl18n.InAppAuthPasswordHintEmailAddressAsPassword
                     }
                     VPNInAppAuthenticationPasswordCondition {
                         _passwordConditionIsSatisfied: toolTip._isSignUp && passwordInput.text.length > 0 && VPNAuthInApp.validatePasswordCommons(passwordInput.text)
-                        _passwordConditionDescription:  "Must not be a common password"
+                        _passwordConditionDescription:  VPNl18n.InAppAuthPasswordHintCommonPassword
                     }
                 }
             }
@@ -183,26 +183,26 @@ ColumnLayout {
                 activeInput().forceActiveFocus();
                 break;
             case VPNAuthInApp.ErrorInvalidEmailAddress:
-                base._inputErrorMessage = "Invalid email address";
+                base._inputErrorMessage =  VPNl18n.InAppAuthInvalidEmailErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case VPNAuthInApp.ErrorInvalidEmailCode:
-                base._inputErrorMessage = "Invalid email code";
+                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
 
             case VPNAuthInApp.ErrorInvalidOrExpiredVerificationCode:
-                base._inputErrorMessage = "Invalid or expired verification code"
+                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage
                 activeInput().forceActiveFocus();
                 break;
 
             case VPNAuthInApp.ErrorInvalidTotpCode:
-                base._inputErrorMessage = "invalid 2fa unblock code";
+                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
 
             case VPNAuthInApp.ErrorInvalidUnblockCode:
-                base._inputErrorMessage = "Invalid unblock code";
+                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             }

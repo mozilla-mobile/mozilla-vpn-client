@@ -170,7 +170,6 @@ Item {
         anchors.left: parent.left
         anchors.topMargin: VPNTheme.theme.windowMargin / 2
         anchors.leftMargin: VPNTheme.theme.windowMargin / 2
-        //% "Close"
         accessibleName: qsTrId("vpn.connectionInfo.close")
         enabled: connectionInfo.visible
 

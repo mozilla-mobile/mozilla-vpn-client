@@ -20,6 +20,8 @@
 #  include "tasks/authenticate/desktopauthenticationlistener.h"
 #endif
 
+#include <QUrlQuery>
+
 namespace {
 Logger logger(LOG_MAIN, "AuthenticationListener");
 }  // anonymous namespace

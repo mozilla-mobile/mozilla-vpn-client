@@ -8,7 +8,6 @@
 #include "authenticationlistener.h"
 
 #include <QNetworkReply>
-#include <QUrlQuery>
 
 class AuthenticationInAppListener final : public AuthenticationListener {
   Q_OBJECT
@@ -70,7 +69,15 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   QString m_codeChallenge;
   QString m_codeChallengeMethod;
 
-  QUrlQuery m_urlQuery;
+  struct {
+    QString m_clientId;
+    QString m_deviceId;
+    QString m_state;
+    QString m_scope;
+    QString m_accessType;
+    QString m_flowId;
+    double m_flowBeginTime;
+  } m_fxaParams;
 
   QString m_emailAddress;
   QString m_password;

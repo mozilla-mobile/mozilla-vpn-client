@@ -30,29 +30,24 @@ VPNInAppAuthenticationBase {
 
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
     _menuButtonOnClick: () => { VPN.cancelAuthentication() }
-    _menuButtonAccessibleName: "TODO: Lorum Ipsum - Back"
-    _headlineText: "Enter 2-factor auth code"
-    _subtitleText: "Enter 6-digit code"
+    _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
+    _headlineText: VPNl18n.InAppAuthSecurityCodeTitle
+    _subtitleText: VPNl18n.InAppAuthSecurityCodeSubtitle
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
-    _inputLabel: "Enter code"
+    _inputLabel: VPNl18n.InAppAuthSecurityCodeLabel
 
     _inputs: VPNInAppAuthenticationInputs {
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionTotpCode(inputText) }
-        _buttonText: "Continue"
+        _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton
         _inputMethodHints: Qt.ImhDigitsOnly
-        _inputPlaceholderText: "Enter 2-factor auth code"
+        _inputPlaceholderText: VPNl18n.InAppAuthVerificationCodeInputPlaceholder
         _itemToPan: totpNeeded
     }
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
-        VPNLinkButton {
-            labelText: "Cancel"
-            fontName: VPNTheme.theme.fontBoldFamily
-            anchors.horizontalCenter: parent.horizontalCenter
-            linkColor: VPNTheme.theme.redButton
-            onClicked: VPN.cancelAuthentication()
-        }
+
+        VPNInAppAuthenticationCancel {}
     }
 }

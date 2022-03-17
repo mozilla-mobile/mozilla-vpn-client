@@ -26,46 +26,31 @@ VPNInAppAuthenticationBase {
 
     _menuButtonOnClick: () => {VPN.cancelAuthentication() }
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
-    _menuButtonAccessibleName: "Back"
+    _menuButtonAccessibleName:  qsTrId("vpn.main.back")
     _headlineText: "Mozilla VPN"
-    _subtitleText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut"
+    _subtitleText: VPNl18n.InAppAuthEnterEmailAddressDescription
     _imgSource: "qrc:/ui/resources/logo.svg"
-    _inputLabel: "Email address"
+    _inputLabel: VPNl18n.InAppAuthEmailInputPlaceholder
 
     _inputs: VPNInAppAuthenticationInputs {
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError
-        _buttonOnClicked: (inputText) => {
-                              if (!VPNAuthInApp.validateEmailAddress(inputText)) {
-                                  activeInput().hasError = true;
-                                  _inputErrorMessage = "invalid email address, try again"
-                                  return activeInput().forceActiveFocus();
-                              }
-                              VPNAuthInApp.checkAccount(inputText);
-                          }
-        _buttonText: "Continue"
+        _buttonOnClicked: (inputText) => { VPNAuthInApp.checkAccount(inputText); }
+        _buttonText: qsTrId("vpn.postAuthentication.continue")
         _inputMethodHints: Qt.ImhEmailCharactersOnly | Qt.ImhNoAutoUppercase
-        _inputPlaceholderText: "Enter email"
+        _inputPlaceholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
         _itemToPan: viewAuthenticationStart
     }
 
     _disclaimers: RowLayout {
         spacing: VPNTheme.theme.vSpacing / 2
-        Rectangle {
-            Layout.alignment: Qt.AlignTop
-            Layout.topMargin: 2
-            height: VPNTheme.theme.vSpacing
-            width: VPNTheme.theme.vSpacing
-            color: "transparent"
-
-            VPNIcon {
-                source: "qrc:/ui/resources/logo.svg"
-                anchors.centerIn: parent
-            }
+        VPNIcon {
+            source: "qrc:/nebula/resources/shield-green50.svg"
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         }
 
         VPNTextBlock {
             id: txt
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            text: VPNl18n.InAppAuthInformationUsageDisclaimer
             Layout.fillWidth: true
         }
     }

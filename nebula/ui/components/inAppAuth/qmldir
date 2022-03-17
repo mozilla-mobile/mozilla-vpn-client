@@ -1,4 +1,6 @@
 VPNInAppAuthenticationBase 0.1 VPNInAppAuthenticationBase.qml
+VPNInAppAuthenticationCancel 0.1 VPNInAppAuthenticationCancel.qml
 VPNInAppAuthenticationErrorPopup 0.1 VPNInAppAuthenticationErrorPopup.qml
 VPNInAppAuthenticationInputs 0.1 VPNInAppAuthenticationInputs.qml
+VPNInAppAuthenticationLegalDisclaimer 0.1 VPNInAppAuthenticationLegalDisclaimer.qml
 VPNInAppAuthenticationPasswordCondition 0.1 VPNInAppAuthenticationPasswordCondition.qml
