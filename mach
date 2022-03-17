@@ -1,0 +1,65 @@
+#!/bin/sh
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# The beginning of this script is both valid POSIX shell and valid Python,
+# such that the script starts with the shell and is reexecuted with
+# the right Python.
+
+# Embeds a shell script inside a Python triple quote. This pattern is valid
+# shell because `''':'`, `':'` and `:` are all equivalent, and `:` is a no-op.
+''':'
+
+run_py() {
+    # Try to run a specific Python interpreter.
+    py_executable="$1"
+    shift
+    if command -v "$py_executable" > /dev/null
+    then
+        exec "$py_executable" "$0" "$@"
+    else
+        echo "This mach command requires $py_executable, which wasn't found on the system!"
+    fi
+}
+
+run_py python3 "$@"
+'''
+
+import os
+import sys
+
+
+def load_mach(dir_path, mach_path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('mach_initialize', mach_path)
+    mach_initialize = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mach_initialize)
+    return mach_initialize.initialize(dir_path)
+
+
+def check_and_get_mach(dir_path):
+    mach_path = os.path.join(dir_path, 'machbuild/mach_initialize.py')
+    if os.path.isfile(mach_path):
+        return load_mach(dir_path, mach_path)
+    return None
+
+
+def main(args):
+    # XCode python sets __PYVENV_LAUNCHER__, which overrides the executable
+    # used when a python subprocess is created. This is an issue when we want
+    # to run using our virtualenv python executables.
+    # In future Python relases, __PYVENV_LAUNCHER__ will be cleared before
+    # application code (mach) is started.
+    # https://github.com/python/cpython/pull/9516
+    os.environ.pop("__PYVENV_LAUNCHER__", None)
+
+    mach = check_and_get_mach(os.path.dirname(os.path.realpath(__file__)))
+    if not mach:
+        print('Could not run mach: No mach source directory found.')
+        sys.exit(1)
+    sys.exit(mach.run(args))
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

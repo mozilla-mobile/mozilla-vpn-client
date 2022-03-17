@@ -2,6 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+QT += testlib
+QT += qml
+QT += quick
+
+CONFIG += c++1z
+
 TEMPLATE = app
 TARGET = lottie_tests
 
@@ -31,8 +37,6 @@ SOURCES += \
     testdocument.cpp \
     testnavigator.cpp \
     testwindow.cpp
-
-QT += qml quick testlib
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
