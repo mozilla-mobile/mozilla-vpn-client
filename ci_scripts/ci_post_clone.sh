@@ -53,8 +53,6 @@ brew install go
 
 # create xcode.xconfig
 cat > xcode.xconfig << EOF
-DEVELOPMENT_TEAM = 43AQ936H96
-GROUP_ID_MACOS = group.org.mozilla.macos.Guardian
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
 GROUP_ID_IOS = group.org.mozilla.ios.Guardian
@@ -75,6 +73,5 @@ fi
 # build Qt resources
 # XCode Cloud has some problem with dependencies and timing therefore we have to
 # build Qt before we call xcodebuild
-make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
-make -f MozillaVPN.xcodeproj/qt_preprocess.mak
-
+make -f "Mozilla VPN.xcodeproj/qt_makeqmake.mak"
+make -f "Mozilla VPN.xcodeproj/qt_preprocess.mak"

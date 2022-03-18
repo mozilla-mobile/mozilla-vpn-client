@@ -14,8 +14,6 @@ cd ../..
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
 FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
 echo "$SHORTVERSION - $FULLVERSION"
-echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
-echo "GROUP_ID_MACOS = group.org.mozilla.macos.Guardian" >> xcode.xconfig
 echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
 echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login" >> xcode.xconfig
 echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
@@ -34,7 +32,7 @@ qmake \
   MVPN_MACOS=1 \
   src/src.pro
 ruby scripts/macos/utils/xcode_patcher.rb \
-  "MozillaVPN.xcodeproj" \
+  "Mozilla VPN.xcodeproj" \
   "$SHORTVERSION" \
   "$FULLVERSION" \
   macos \
@@ -43,7 +41,7 @@ ruby scripts/macos/utils/xcode_patcher.rb \
 # Build
 python3 scripts/utils/generate_glean.py
 python3 scripts/utils/import_languages.py -m
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 
 # Package
 python3 ./scripts/macos/import_pkg_resources.py

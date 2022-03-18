@@ -187,15 +187,15 @@ $QMAKE \
   src/src.pro || die "Compilation failed"
 
 print Y "Patching the xcode project..."
-ruby scripts/macos/utils/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
+ruby scripts/macos/utils/xcode_patcher.rb "Mozilla VPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 
 if command -v "sed" &>/dev/null; then
-  sed -i '' '/<key>BuildSystemType<\/key>/d' MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-  sed -i '' '/<string>Original<\/string>/d' MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+  sed -i '' '/<key>BuildSystemType<\/key>/d' "Mozilla VPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings"
+  sed -i '' '/<string>Original<\/string>/d' "Mozilla VPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings"
 fi
 
 print Y "Opening in XCode..."
-open MozillaVPN.xcodeproj
+open "Mozilla VPN.xcodeproj"
 print G "All done!"

@@ -93,10 +93,7 @@ jobs:
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           echo "$SHORTVERSION - $FULLVERSION"
-          echo "DEVELOPMENT_TEAM = 7W87BT2W9M" >> xcode.xconfig
-          echo "GROUP_ID_MACOS = group.baku.mozilla.macos.Guardian" >> xcode.xconfig
           echo "APP_ID_MACOS = baku.mozilla.macos.FirefoxVPN" >> xcode.xconfig
-          echo "NETEXT_ID_MACOS = baku.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
           echo "LOGIN_ID_MACOS = baku.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
           echo "GROUP_ID_IOS = group.baku.mozilla.ios.Guardian" >> xcode.xconfig
           echo "APP_ID_IOS = baku.mozilla.ios.FirefoxVPN" >> xcode.xconfig
@@ -113,9 +110,12 @@ jobs:
             CONFIG-=static \
             CONFIG+=balrog \
             MVPN_MACOS=1 \
+            MVPN_DEVELOPMENT_TEAM=7W87BT2W9M \
+            MVPN_GROUP_ID_MACOS=group.baku.mozilla.macos.Guardian \
+            MVPN_APP_ID_PREFIX=baku.mozilla.macos \
             src/src.pro
           ruby scripts/macos/utils/xcode_patcher.rb \
-            "MozillaVPN.xcodeproj" \
+            "Mozilla VPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
             macos \
@@ -123,7 +123,7 @@ jobs:
 
       - name: Compiling
         shell: bash
-        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 
       - name: Resigning
         shell: bash
@@ -228,10 +228,7 @@ jobs:
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           echo "$SHORTVERSION - $FULLVERSION"
-          echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
-          echo "GROUP_ID_MACOS = group.org.mozilla.macos.Guardian" >> xcode.xconfig
           echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
-          echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
           echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
           echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
           echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
@@ -251,7 +248,7 @@ jobs:
             MVPN_MACOS=1 \
             src/src.pro
           ruby scripts/macos/utils/xcode_patcher.rb \
-            "MozillaVPN.xcodeproj" \
+            "Mozilla VPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
             macos \
@@ -259,7 +256,7 @@ jobs:
 
       - name: Compiling
         shell: bash
-        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 
       - name: Packaging
         shell: bash
