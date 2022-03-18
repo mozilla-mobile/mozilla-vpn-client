@@ -53,3 +53,34 @@ def build_scriptworker_signing_payload(config, task, task_def):
             for format in sorted(formats)
         ]
     )
+
+
+@payload_builder(
+    "scriptworker-pushapk",
+    schema={
+        Required("upstream-artifacts"): [
+            {
+                Required("taskId"): taskref_or_string,
+                Required("taskType"): str,
+                Required("paths"): [str],
+            }
+        ],
+        Required("certificate-alias"): str,
+        Required("commit"): bool,
+        Required("channel"): str,
+        Required("product"): str,
+    },
+)
+def build_push_apk_payload(config, task, task_def):
+    worker = task["worker"]
+    task_def["tags"]["worker-implementation"] = "scriptworker"
+    task_def["payload"] = {
+        "certificate_alias": worker["certificate-alias"],
+        "commit": worker["commit"],
+        "upstreamArtifacts": worker["upstream-artifacts"],
+        "channel": worker["channel"],
+    }
+    scope_prefix = "project:mozillavpn:releng:googleplay:track"
+    task_def["scopes"].append(
+        "project:mozillavpn:releng:googleplay:product:{}".format(worker["product"])
+    )
