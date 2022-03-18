@@ -31,7 +31,7 @@ ColumnLayout {
 
     ColumnLayout {
         function submitInfo(input) {
-            if (!input.hasError && input.text.length > 0) btn.clicked();
+            if (!input.hasError && input.text.length > 0 && btn.enabled) btn.clicked();
         }
 
         id: col
