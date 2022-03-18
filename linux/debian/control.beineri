@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 9.20160709),
                cdbs,
                quilt,
                flex,
-               golang-1.13,
+               golang (>=2:1.13~) | golang-1.13,
                cargo,
                python3-yaml,
                qt515base (>=5.15.2-1basyskom4),
@@ -37,7 +37,7 @@ Build-Depends: debhelper (>= 9.20160709),
                libxcb-xfixes0-dev,
                libxrender-dev,
                libxcb-shape0-dev,
-               libasound2-dev,
+               libasound2-dev [linux-any],
                libaudio-dev,
                libcups2-dev,
                libdbus-1-dev,
@@ -75,12 +75,10 @@ Vcs-Git: https://github.com/mozilla-mobile/mozilla-vpn-client
 
 Package: mozillavpn
 Architecture: any
-Depends: libpolkit-gobject-1-0 (>=0.105-20),
-         wireguard (>=1.0.20200513-1~18.04.2),
-         wireguard-tools (>=1.0.20200513-1~18.04.2),
-         libicu60 (>=60.2-3ubuntu3),
+Depends: libpolkit-gobject-1-0 (>=0.105),
+         wireguard (>=1.0.20200319),
+         wireguard-tools (>=1.0.20200319),
          libxcb-xinerama0 (>=1.13-1),
-         resolvconf (>=1.79ubuntu10),
          qt515base (>=5.15.2-1basyskom4),
          qt515charts-no-lgpl (>=5.15.2-1basyskom1),
          qt515declarative (>= 5.15.2-1basyskom1),
@@ -92,3 +90,5 @@ Depends: libpolkit-gobject-1-0 (>=0.105-20),
          qt515websockets (>=5.15.2-1basyskom1)
 Description: A fast, secure and easy to use VPN. Built by the makers of Firefox.
  Read more on https://vpn.mozilla.org
+
+
