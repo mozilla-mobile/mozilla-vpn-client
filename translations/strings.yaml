@@ -518,6 +518,9 @@ inAppAuth:
   signInFailedPopupDescription: 
     value: You’ve made too many attempts to sign in. You won’t be able to try again with this account for 15 minutes.
     comment: User has been unable to sign in correctly, they have a cool down period of 15 minutes until they can try again.
+  signInBlockedForOneMinute: 
+    value: You’ve made too many attempts to sign in. You won’t be able to try again with this account for 1 minute.
+    comment: User has been unable to sign in correctly, they have a cool down period of 1 minute until they can try again.
   problemSigningInTitle: 
     value: Problem signing in…
     comment: App screen that informs the user we are having a problem signing them in - this is the title.
