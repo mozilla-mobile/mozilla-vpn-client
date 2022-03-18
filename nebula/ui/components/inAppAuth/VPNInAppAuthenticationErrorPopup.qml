@@ -87,9 +87,9 @@ VPNPopup {
             case VPNAuthInApp.ErrorTooManyRequests:
                 const retryAfterMin = retryAfterSecToMin(retryAfterSec);
                 if (retryAfterMin === 1) {
-                    authErrorMessage.text = "Too many login attempts, hold off for just one minute";
+                    authErrorMessage.text = VPNl18n.InAppAuthSignInBlockedForOneMinute;
                 } else {
-                    authErrorMessage.text = "Too many login attempts, hold off for " + retryAfterMin + " minutes";
+                    authErrorMessage.text = VPNl18n.InAppAuthSignInFailedPopupDescription
                 }
                 openErrorModalAndForceFocus();
                 break;
