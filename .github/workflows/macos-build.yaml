@@ -37,11 +37,10 @@ jobs:
           sudo mv qt6 /opt
           cd ..
 
-      - name: Generating glean samples
+      - name: Installing python dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
@@ -198,11 +197,10 @@ jobs:
           sudo mv qt6 /opt
           cd ..
 
-      - name: Generating glean samples
+      - name: Installing python dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash

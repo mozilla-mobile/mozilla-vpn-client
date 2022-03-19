@@ -117,9 +117,6 @@ else
   print Y "Importing translation files..."
   python3 scripts/utils/import_languages.py || die "Failed to import languages"
 
-  print Y "Generating glean samples..."
-  python3 scripts/utils/generate_glean.py || die "Failed to generate glean samples"
-
   printn Y "Removing the debian template folder... "
   rm -rf linux/debian || die "Failed"
   print G "done."

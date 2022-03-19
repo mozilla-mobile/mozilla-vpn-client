@@ -36,7 +36,7 @@ INCLUDEPATH += \
             ../../glean \
             ../../nebula
 
-include($$PWD/../../glean/glean.pri)
+include($$PWD/../../src/qmake/glean.pri)
 include($$PWD/../../nebula/nebula.pri)
 
 HEADERS += \

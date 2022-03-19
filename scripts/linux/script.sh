@@ -130,7 +130,7 @@ rsync -a --exclude='.*' .. $WORKDIR || die "Failed"
 print G "done."
 
 print Y "Generating glean samples..."
-(cd $WORKDIR && python3 scripts/utils/generate_glean.py) || die "Failed to generate glean samples"
+(cd $WORKDIR && python3 scripts/qmake/glean.py build) || die "Failed to generate glean samples"
 
 printn Y "Downloading Go dependencies..."
 (cd $WORKDIR/linux/netfilter && go mod vendor)

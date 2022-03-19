@@ -102,23 +102,18 @@ what we wrote before, you also need the following dependencies:
 - resolvconf >= 1.82
 - golang >= 1.13
 
-2. Instrument the glean events:
-```bash
-./scripts/utils/generate_glean.py
-```
-
-3. Import the languages and generate the translation strings:
+2. Import the languages and generate the translation strings:
 ```bash
 ./scripts/utils/import_languages.py
 ```
 
-4. **Optional**: In case you want to change the shaders, you must regenerate
+3. **Optional**: In case you want to change the shaders, you must regenerate
 them:
 ```bash
 ./scripts/utils/bake_shaders.sh
 ```
 
-5. Finally, we are able to configure the whole project using `qmake`. Usually,
+4. Finally, we are able to configure the whole project using `qmake`. Usually,
 `qmake` is already in your path, but if it's not, add the Qt6 installation path
 in your `PATH` env variable.
 ```bash
@@ -130,17 +125,17 @@ prefixes. Using no prefixes is equivalent to:
 qmake USRPATH=/usr ETCPATH=/etc
 ```
 
-6. Compile the source code:
+5. Compile the source code:
 ```bash
 make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
 ```
 
-7. Installation:
+6. Installation:
 ```bash
 sudo make install
 ```
 
-8.  After the installation, you can run the app simply running:
+7.  After the installation, you can run the app simply running:
 ```bash
 mozillavpn
 ```

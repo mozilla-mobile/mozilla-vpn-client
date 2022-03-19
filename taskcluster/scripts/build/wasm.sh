@@ -21,8 +21,6 @@ git submodule update
 
 
 pip3 install -r requirements.txt
-# glean
-python3 ./scripts/utils/generate_glean.py
 # translations
 python3 ./scripts/utils/import_languages.py
 

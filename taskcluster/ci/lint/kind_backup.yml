@@ -35,15 +35,6 @@ jobs:
         # treeherder:
             # symbol: clang
             # tier: 1
-    # glean:
-        # description: 'glean'
-        # run:
-            # using: run-task
-            # cwd: '{checkout}'
-            # command: pip3 install glean_parser && python3 scripts/utils/generate_glean.py
-        # treeherder:
-            # symbol: glean
-            # tier: 1
     # l10n:
         # description: 'l10n'
         # run:

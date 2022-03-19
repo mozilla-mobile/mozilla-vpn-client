@@ -32,11 +32,10 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Generating glean samples
+      - name: Installing python dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
@@ -82,11 +81,10 @@ jobs:
           sudo mv qt6 /opt
           cd ..
 
-      - name: Generating glean samples
+      - name: Installing python dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
@@ -160,11 +158,10 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Install glean depedencies
+      - name: Installing python dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash

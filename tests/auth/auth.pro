@@ -10,6 +10,8 @@ QT += widgets
 
 CONFIG += c++1z
 
+include($$PWD/../../src/qmake/glean.pri)
+
 macos {
     CONFIG -= app_bundle
 }

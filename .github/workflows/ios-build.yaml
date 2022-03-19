@@ -38,11 +38,10 @@ jobs:
           aqt install-qt -O `pwd`/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
           mv `pwd`/qt_ios/6.2.3/macos `pwd`/qt_ios/6.2.3/clang_64
 
-      - name: Generating glean samples
+      - name: Installing python dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash

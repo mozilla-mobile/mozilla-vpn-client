@@ -44,7 +44,6 @@ gem install xcodeproj --user-install
 pip3 install "glean_parser==3.5" --user
 pip3 install pyhumps --user
 pip3 install pyyaml --user
-python3 scripts/utils/generate_glean.py
 python3 scripts/utils/import_languages.py -m
 
 # install go and set GOROOT using brew

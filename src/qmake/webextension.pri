@@ -14,9 +14,12 @@ linux:!android|macos|win* {
             $$PWD/../server/serverconnection.h \
             $$PWD/../server/serverhandler.h
 
-    # This cannot be an EXTRA_TARGET because we want to 'clean' the cargo build
-    # too when `make clean` runs. and QMAKE_CLEAN is not enough (it does not
-    # run scripts such as `cargo clean`)
+    # This cannot be an EXTRA_TARGET for two reasons:
+    # - because we want to 'clean' the cargo build too when `make clean` runs.
+    #   and QMAKE_CLEAN is not enough (it does not run scripts such as `cargo
+    #   clean`)
+    # - EXTRA_TARGET requires PRE_TARGETDEPS but this is not supported by
+    #   xcode/vs
 
     cargoBridge.input = CARGO_CRATE
     cargoBridge.output = ${QMAKE_FILE_IN}/target/release/mozillavpnnp

@@ -41,7 +41,6 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash

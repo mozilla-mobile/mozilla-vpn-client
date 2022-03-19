@@ -39,7 +39,7 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
-          python3 scripts/utils/generate_glean.py
+          python3 scripts/qmake/glean.py build
 
       - name: Importing translation files
         shell: bash

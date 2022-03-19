@@ -33,7 +33,6 @@ ruby scripts/macos/utils/xcode_patcher.rb \
   Qt5
 
 # Build
-python3 scripts/utils/generate_glean.py
 python3 scripts/utils/import_languages.py -m
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 

@@ -1,7 +1,6 @@
 ## To build and run the tests
 
 * From a clean project at the root level
-* `./scripts/utils/generate_glean.py`
 * `./scripts/utils/import_languages.py`
 * `qmake CONFIG+=QMLTEST`
 * `make -j XX` (number of procs you have)

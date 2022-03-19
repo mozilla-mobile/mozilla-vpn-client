@@ -37,7 +37,7 @@ Read more on https://vpn.mozilla.org
 
 %build
 %{_srcdir}/scripts/utils/import_languages.py
-%{qmake_qt5} %{_srcdir}/mozillavpn.pro QT+=svg
+%{qmake_qt5} %{_srcdir}/mozillavpn.pro QT+=svg CONFIG+=no_glean_gen
 make %{?_smp_mflags}
 
 %install

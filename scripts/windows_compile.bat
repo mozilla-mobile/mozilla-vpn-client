@@ -83,9 +83,6 @@ CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModul
 ECHO Importing languages...
 python3 scripts\utils\import_languages.py
 
-ECHO Generating glean samples...
-python3 scripts\utils\generate_glean.py
-
 ECHO BUILD_BUILD = %DEBUG_BUILD%
 
 ECHO Creating the project with flags: %FLAGS%
