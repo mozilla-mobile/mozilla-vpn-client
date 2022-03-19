@@ -33,6 +33,7 @@ TARGET = "Mozilla VPN"
 
 QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
 QT += gui-private
+QT -= networkauth
 
 CONFIG += c++1z
 
