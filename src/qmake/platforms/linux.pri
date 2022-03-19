@@ -150,6 +150,7 @@ INSTALLS += manifestChromium
 
 browserBridge.files = $$PWD/../../../extension/bridge/target/release/mozillavpnnp
 browserBridge.path = $${USRPATH}/lib/mozillavpn
+browserBridge.CONFIG = no_check_exist executable
 INSTALLS += browserBridge
 
 CONFIG += link_pkgconfig
