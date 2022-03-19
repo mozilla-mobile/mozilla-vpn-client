@@ -6,10 +6,6 @@ export PATH="`pwd`/qt/bin:$PATH"
 # TODO: internal pypi mirror, if it doesn't get used by default?
 pip3 install glean_parser==3.5
 
-cd macos/gobridge
-go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
-cd ../..
-
 # Xcode config - maybe we should just maintain a full Xcode config somewhere instead of replacing things here?
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
 FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
@@ -17,8 +13,6 @@ echo "$SHORTVERSION - $FULLVERSION"
 echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
 echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login" >> xcode.xconfig
 echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
-echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
-echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
 qmake \
   VERSION=$SHORTVERSION \
   BUILD_ID=$FULLVERSION \

@@ -121,9 +121,11 @@ $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
 
 export PATH="$QT_BIN:$PATH"
 
-printn Y "Retrieve the wireguard-go version... "
-(cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
-print G "done."
+if [[ "$OS" == "ios" ]]; then
+  printn Y "Retrieve the wireguard-go version... "
+  (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
+  print G "done."
+fi
 
 printn Y "Cleaning the existing project... "
 rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"
