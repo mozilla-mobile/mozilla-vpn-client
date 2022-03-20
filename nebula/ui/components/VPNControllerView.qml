@@ -607,7 +607,9 @@ Item {
         z: 1
 
         onClicked: {
-            Sample.connectionInfoOpened.record();
+            if (!box.connectionInfoScreenVisible) {
+                Sample.connectionInfoOpened.record();
+            }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
         }
 
@@ -836,7 +838,7 @@ Item {
 
         VPNConnectionStability {
             id: connectionStability
-            Accessible.ignored: connectionInfoVisible || !visible
+            Accessible.ignored: connectionInfoScreenVisible || !visible
             width: parent.width
             implicitHeight: childrenRect.height
         }
@@ -851,8 +853,8 @@ Item {
         anchors.bottomMargin: 48
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        Accessible.ignored: connectionInfoVisible
-        enabled: !connectionInfoVisible
+        Accessible.ignored: connectionInfoScreenVisible
+        enabled: !connectionInfoScreenVisible
     }
 
     VPNConnectionInfo {
