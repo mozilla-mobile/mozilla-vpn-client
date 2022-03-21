@@ -26,7 +26,6 @@ VPNFlickable {
     property alias _disclaimers: disclaimers.data
     property alias _footerContent: footerContent.data
 
-
     id: authBase
     flickContentHeight: col.implicitHeight
 
