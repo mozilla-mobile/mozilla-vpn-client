@@ -24,7 +24,6 @@ VPNInAppAuthenticationBase {
     // In theory, this part should be tested on iOS or on Android when we will
     // have IAP there too.
 
-    id: totpNeeded
 
     Component.onCompleted: console.log("SESSION VERIFICATION BY TOTP")
 
@@ -42,7 +41,6 @@ VPNInAppAuthenticationBase {
         _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton
         _inputMethodHints: Qt.ImhDigitsOnly
         _inputPlaceholderText: VPNl18n.InAppAuthVerificationCodeInputPlaceholder
-        _itemToPan: totpNeeded
     }
 
     _footerContent: Column {

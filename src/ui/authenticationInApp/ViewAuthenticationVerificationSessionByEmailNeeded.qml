@@ -44,7 +44,6 @@ VPNInAppAuthenticationBase {
         _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton
         _inputMethodHints: Qt.ImhDigitsOnly
         _inputPlaceholderText: VPNl18n.InAppAuthVerificationCodeInputPlaceholder
-        _itemToPan: authSignUp
     }
 
     _footerContent: Column {

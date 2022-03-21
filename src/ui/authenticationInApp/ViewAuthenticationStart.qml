@@ -22,7 +22,6 @@ VPNInAppAuthenticationBase {
     // Form interaction polish
     // Show form error messages
 
-    id: viewAuthenticationStart
 
     _menuButtonOnClick: () => {VPN.cancelAuthentication() }
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
@@ -38,7 +37,6 @@ VPNInAppAuthenticationBase {
         _buttonText: qsTrId("vpn.postAuthentication.continue")
         _inputMethodHints: Qt.ImhEmailCharactersOnly | Qt.ImhNoAutoUppercase
         _inputPlaceholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
-        _itemToPan: viewAuthenticationStart
     }
 
     _disclaimers: RowLayout {

@@ -21,9 +21,6 @@ ColumnLayout {
     property alias _buttonText: btn.text
     property bool _isSignUpOrIn: VPNAuthInApp.state === VPNAuthInApp.StateSignIn || VPNAuthInApp.state === VPNAuthInApp.StateSigningIn || VPNAuthInApp.state === VPNAuthInApp.StateSignUp || VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
 
-    property var _itemToPan
-    property bool keyboardIsVisible: false
-
     function activeInput() {
         return _isSignUpOrIn ? passwordInput : textInput
     }
@@ -210,57 +207,6 @@ ColumnLayout {
             if (!authError.visible)
                 activeInput().forceActiveFocus();
             activeInput().hasError = true;
-        }
-    }
-
-    /**
-     * For Android the native support for panning inputs that are covered
-     * by the virtual keyboard is currently not working. (QTBUG-96117)
-     *
-     * This temporary solution aims to work around the issue and pans the
-     * passed item `_itemToPan` into view if it gets covered by the keyboard.
-     */
-    function handlePanInputIntoView() {
-        if (!keyboardIsVisible) {
-            _itemToPan.inputTransitionEnabled = false;
-            return;
-        }
-
-        _itemToPan.inputTransitionEnabled = true;
-
-        const keyboardHeight = Qt.inputMethod.keyboardRectangle.height;
-        const activeInputItem = activeInput();
-        const cursorRectangle = _itemToPan.contentItem.mapFromItem(
-            activeInputItem,
-            activeInputItem.cursorRectangle.x,
-            activeInputItem.cursorRectangle.y
-        );
-
-        const activeInputBottom = cursorRectangle.y + activeInputItem.cursorRectangle.height;
-        const distanceToViewportBottom = _itemToPan.height - activeInputBottom;
-        const minOverlapClearance = VPNTheme.theme.rowHeight;
-        const overlapVertical = distanceToViewportBottom - keyboardHeight - minOverlapClearance;
-        const keyboardWillIntesectWithInput = overlapVertical < 0;
-
-        if (keyboardWillIntesectWithInput) {
-            _itemToPan.y = -1 * Math.abs(overlapVertical);
-        }
-    }
-
-    Connections {
-        target: Qt.inputMethod
-        enabled: Qt.platform.os === "android"
-
-        function onKeyboardRectangleChanged() {
-            handlePanInputIntoView();
-        }
-
-        function onVisibleChanged() {
-            keyboardIsVisible = !keyboardIsVisible;
-
-            if (!keyboardIsVisible) {
-                _itemToPan.y = 0;
-            }
         }
     }
 }
