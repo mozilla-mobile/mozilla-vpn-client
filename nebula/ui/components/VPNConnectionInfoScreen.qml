@@ -152,7 +152,7 @@ Rectangle {
         // TODO: Replace with localized string
         accessibleName: "Restart speed test"
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        enabled: connectionInfoContent.visible
+        enabled: visible
         z: 1
 
         onClicked: {
