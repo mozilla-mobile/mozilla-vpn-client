@@ -71,8 +71,8 @@ void CrashUploader::startRequest(const QString& file) {
                          .arg(fileName);
   formPart.setHeader(QNetworkRequest::ContentDispositionHeader,
                      QVariant(contentDisp));
-  formPart.setHeader(QNetworkRequest::ContentLengthHeader,
-                     QVariant(dumpContent.size()));
+  formPart.setHeader(QNetworkRequest::ContentTypeHeader,
+                     "application/octet-stream");
   formPart.setBody(dumpContent);
   QHttpPart namePart;
   namePart.setHeader(QNetworkRequest::ContentDispositionHeader,
@@ -83,9 +83,9 @@ void CrashUploader::startRequest(const QString& file) {
   versionPart.setHeader(QNetworkRequest::ContentDispositionHeader,
                         "form-data; name=\"Version\"");
   versionPart.setBody(APP_VERSION);
+  multipart->append(versionPart);
   multipart->append(namePart);
   multipart->append(formPart);
-  multipart->append(versionPart);
 
   auto urlStr = Constants::inProduction() ? Constants::CRASH_STAGING_URL
                                           : Constants::CRASH_PRODUCTION_URL;
@@ -94,7 +94,7 @@ void CrashUploader::startRequest(const QString& file) {
 #endif  // MVPN_DEBUG
 
   logger.debug() << "Uploading to : " << urlStr;
-  QUrl url(Constants::CRASH_PRODUCTION_URL);
+  QUrl url(urlStr);
   QNetworkRequest request(url);
   request.setHeader(QNetworkRequest::UserAgentHeader, "mozillaVPN");
   // Qt changes the content type automatically to multipart/mixed.  Socorro
