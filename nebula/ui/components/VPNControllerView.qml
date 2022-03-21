@@ -53,12 +53,15 @@ Item {
 
     Rectangle {
         id: boxBackground
+
+        property int maximumBoxHeight
+
         color: VPNTheme.theme.bgColor
         radius: VPNTheme.theme.cornerRadius * 2
         antialiasing: true
 
         height: box.connectionInfoScreenVisible
-            ? window.safeContentHeight - VPNTheme.theme.windowMargin * 2
+            ? maximumBoxHeight
             : box.height
         width: box.width
 
@@ -67,6 +70,13 @@ Item {
                 duration: connectionInfoScreen.transitionDuration
                 easing.type: Easing.InOutQuad
             }
+        }
+
+        Component.onCompleted: {
+            const boxCoordinates = box.mapToItem(box.parent, 0, 0);
+            maximumBoxHeight = window.safeContentHeight
+                - VPNTheme.theme.windowMargin * 2
+                - (window.fullscreenRequired() ? boxCoordinates.y + VPNTheme.theme.windowMargin : 0);
         }
     }
 
