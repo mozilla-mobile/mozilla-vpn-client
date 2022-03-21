@@ -31,7 +31,10 @@ Flickable {
     ColumnLayout {
         id: content
         
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            verticalCenter: parent.verticalCenter
+        }
         spacing: 0
         width: parent.width
 
