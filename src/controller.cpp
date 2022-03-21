@@ -28,7 +28,7 @@
 
 #if defined(MVPN_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
-#elif defined(MVPN_MACOS_DAEMON) || defined(MVPN_WINDOWS)
+#elif defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
 #  include "localsocketcontroller.h"
 #elif defined(MVPN_IOS)
 #  include "platforms/ios/ioscontroller.h"
@@ -106,7 +106,7 @@ void Controller::initialize() {
 
 #if defined(MVPN_LINUX)
   m_impl.reset(new LinuxController());
-#elif defined(MVPN_MACOS_DAEMON) || defined(MVPN_WINDOWS)
+#elif defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
   m_impl.reset(new LocalSocketController());
 #elif defined(MVPN_IOS)
   m_impl.reset(new IOSController());

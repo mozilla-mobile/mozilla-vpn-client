@@ -15,24 +15,20 @@ class XCodeprojPatcher
 
     die 'IOS requires networkExtension mode' if not networkExtension and platform == 'ios'
 
-    group = @project.main_group.new_group('Configuration')
-    @configFile = group.new_file('xcode.xconfig')
-
-    setup_target_main shortVersion, fullVersion, platform, networkExtension, configHash, adjust_sdk_token
-
     if platform == 'macos'
       setup_target_loginitem shortVersion, fullVersion, configHash
-      setup_target_nativemessaging shortVersion, fullVersion, configHash
-      setup_target_wireguardgo
     end
 
 
     if platform == 'ios'
+      setup_target_main shortVersion, fullVersion, platform, networkExtension, configHash, adjust_sdk_token
+
+      group = @project.main_group.new_group('Configuration')
+      @configFile = group.new_file('xcode.xconfig')
+
       setup_target_extension shortVersion, fullVersion, configHash
       setup_target_gobridge
     end
-
-    setup_target_balrog if platform == 'macos'
 
     @project.save
   end
@@ -43,69 +39,54 @@ class XCodeprojPatcher
   end
 
   def open_target_main
-    @target_main = @project.targets.find { |target| target.to_s == 'MozillaVPN' }
+    @target_main = @project.targets.find { |target| target.to_s == 'Mozilla VPN' }
     return @target_main if not @target_main.nil?
 
-    die 'Unable to open MozillaVPN target'
+    die 'Unable to open Mozilla VPN target'
   end
 
   def setup_target_main(shortVersion, fullVersion, platform, networkExtension, configHash, adjust_sdk_token)
     @target_main.build_configurations.each do |config|
       config.base_configuration_reference = @configFile
 
-      config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
-      config.build_settings['SWIFT_VERSION'] ||= '5.0'
-      config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
-      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/app/WireGuard-Bridging-Header.h'
       config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= [
         "$(inherited)",
         "$(PROJECT_DIR)/3rdparty"
       ]
 
+      config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
+      config.build_settings['SWIFT_VERSION'] ||= '5.0'
+      config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
+      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'ios/app/WireGuard-Bridging-Header.h'
+
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= shortVersion
       config.build_settings['CURRENT_PROJECT_VERSION'] ||= fullVersion
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = configHash['APP_ID_MACOS'] if platform == 'macos'
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = configHash['APP_ID_IOS'] if platform == 'ios'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = configHash['APP_ID_IOS']
       config.build_settings['PRODUCT_NAME'] = 'Mozilla VPN'
+      config.build_settings['INFOPLIST_FILE'] ||= 'ios/app/Info.plist'
 
-      # other config
-      config.build_settings['INFOPLIST_FILE'] ||= platform + '/app/Info.plist'
-      if platform == 'ios'
-        config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'ios/app/main.entitlements'
-        if adjust_sdk_token != ""
-          config.build_settings['ADJUST_SDK_TOKEN'] = adjust_sdk_token
-        end
-      elsif networkExtension
-        config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/app.entitlements'
-      else
-        config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/daemon.entitlements'
+      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'ios/app/main.entitlements'
+      if adjust_sdk_token != ""
+        config.build_settings['ADJUST_SDK_TOKEN'] = adjust_sdk_token
       end
 
       config.build_settings['CODE_SIGN_IDENTITY'] ||= 'Apple Development'
-      config.build_settings['ENABLE_BITCODE'] ||= 'NO' if platform == 'ios'
-      config.build_settings['SDKROOT'] = 'iphoneos' if platform == 'ios'
-      config.build_settings['SWIFT_PRECOMPILE_BRIDGING_HEADER'] = 'NO' if platform == 'ios'
-
-      groupId = "";
-      if (platform == 'macos')
-        groupId = configHash['DEVELOPMENT_TEAM'] + "." + configHash['GROUP_ID_MACOS']
-        config.build_settings['APP_ID_MACOS'] ||= configHash['APP_ID_MACOS']
-      else
-        groupId = configHash['GROUP_ID_IOS']
-        config.build_settings['GROUP_ID_IOS'] ||= configHash['GROUP_ID_IOS']
-        # Force xcode to not set QT_LIBRARY_SUFFIX to "_debug", which causes crash
-        config.build_settings['QT_LIBRARY_SUFFIX'] = ""
-      end
-
-      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
-        'GROUP_ID=\"' + groupId + '\"',
-        "VPN_NE_BUNDLEID=\\\"" + configHash['NETEXT_ID_IOS'] + "\\\"",
-      ]
+      config.build_settings['ENABLE_BITCODE'] ||= 'NO'
+      config.build_settings['SDKROOT'] = 'iphoneos'
+      config.build_settings['SWIFT_PRECOMPILE_BRIDGING_HEADER'] = 'NO'
 
       if config.name == 'Release'
         config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] ||= '-Onone'
       end
+
+      config.build_settings['GROUP_ID_IOS'] ||= configHash['GROUP_ID_IOS']
+      # Force xcode to not set QT_LIBRARY_SUFFIX to "_debug", which causes crash
+      config.build_settings['QT_LIBRARY_SUFFIX'] = ""
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        'GROUP_ID=\"' + configHash['GROUP_ID_IOS'] + '\"',
+        "VPN_NE_BUNDLEID=\\\"" + configHash['NETEXT_ID_IOS'] + "\\\"",
+      ]
     end
 
     if networkExtension
@@ -145,7 +126,7 @@ class XCodeprojPatcher
       }
     end
 
-    if (platform == 'ios' && adjust_sdk_token != "")
+    if adjust_sdk_token != ""
       frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }
       frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
 
@@ -377,77 +358,6 @@ class XCodeprojPatcher
     @target_extension.add_dependency target_gobridge
   end
 
-  def setup_target_balrog
-    target_balrog = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
-
-    target_balrog.build_working_directory = 'balrog'
-    target_balrog.build_tool_path = 'make'
-    target_balrog.pass_build_settings_in_environment = '1'
-    target_balrog.build_arguments_string = 'clean build'
-    target_balrog.name = 'WireGuardBalrog'
-    target_balrog.product_name = 'WireGuardBalrog'
-
-    @project.targets << target_balrog
-
-    frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }
-    frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
-
-    framework_ref = frameworks_group.new_file('balrog/balrog.a')
-    frameworks_build_phase.add_file_reference(framework_ref)
-
-    # This fails: @target_main.add_dependency target_balrog
-    container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
-    container_proxy.container_portal = @project.root_object.uuid
-    container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
-    container_proxy.remote_global_id_string = target_balrog.uuid
-    container_proxy.remote_info = target_balrog.name
-
-    dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
-    dependency.name = target_balrog.name
-    dependency.target = @target_main
-    dependency.target_proxy = container_proxy
-
-    @target_main.dependencies << dependency
-  end
-
-  def setup_target_wireguardgo
-    target_wireguardgo = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
-
-    target_wireguardgo.build_working_directory = '3rdparty/wireguard-go'
-    target_wireguardgo.build_tool_path = 'make'
-    target_wireguardgo.pass_build_settings_in_environment = '1'
-    target_wireguardgo.build_arguments_string = 'clean generate-version-and-build'
-    target_wireguardgo.name = 'WireGuardGo'
-    target_wireguardgo.product_name = 'WireGuardGo'
-
-    @project.targets << target_wireguardgo
-
-    # This fails: @target_main.add_dependency target_wireguardgo
-    container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
-    container_proxy.container_portal = @project.root_object.uuid
-    container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
-    container_proxy.remote_global_id_string = target_wireguardgo.uuid
-    container_proxy.remote_info = target_wireguardgo.name
-
-    dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
-    dependency.name = target_wireguardgo.name
-    dependency.target = @target_main
-    dependency.target_proxy = container_proxy
-
-    @target_main.dependencies << dependency
-
-    copy_wireguardGo = @target_main.new_copy_files_build_phase
-    copy_wireguardGo.name = 'Copy wireguard-go'
-    copy_wireguardGo.symbol_dst_subfolder_spec = :wrapper
-    copy_wireguardGo.dst_path = 'Contents/Resources/utils'
-
-    group = @project.main_group.new_group('WireGuardGo')
-    file = group.new_file '3rdparty/wireguard-go/wireguard-go'
-
-    wireguardGo_file = copy_wireguardGo.add_file_reference file
-    wireguardGo_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
-  end
-
   def setup_target_loginitem(shortVersion, fullVersion, configHash)
     @target_loginitem = @project.new_target(:application, 'MozillaVPNLoginItem', :osx)
 
@@ -506,56 +416,6 @@ class XCodeprojPatcher
 
     app_file = copy_app.add_file_reference @target_loginitem.product_reference
     app_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
-  end
-
-  def setup_target_nativemessaging(shortVersion, fullVersion, configHash)
-    target_nativemessaging = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
-
-    target_nativemessaging.build_working_directory = 'extension/bridge'
-    target_nativemessaging.build_tool_path = 'cargo'
-    target_nativemessaging.pass_build_settings_in_environment = '1'
-    target_nativemessaging.build_arguments_string = 'build --release'
-    target_nativemessaging.name = 'Bridge'
-    target_nativemessaging.product_name = 'Bridge'
-
-    @project.targets << target_nativemessaging
-
-    # This fails: @target_main.add_dependency target_nativemessaging
-    container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
-    container_proxy.container_portal = @project.root_object.uuid
-    container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
-    container_proxy.remote_global_id_string = target_nativemessaging.uuid
-    container_proxy.remote_info = target_nativemessaging.name
-
-    dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
-    dependency.name = target_nativemessaging.name
-    dependency.target = @target_main
-    dependency.target_proxy = container_proxy
-
-    @target_main.dependencies << dependency
-
-    copy_nativemessaging = @target_main.new_copy_files_build_phase
-    copy_nativemessaging.name = 'Copy mozillavpnnp'
-    copy_nativemessaging.symbol_dst_subfolder_spec = :wrapper
-    copy_nativemessaging.dst_path = 'Contents/Resources/utils'
-
-    group = @project.main_group.new_group('Browser bridge')
-    file = group.new_file 'extension/bridge/target/release/mozillavpnnp'
-
-    nativemessaging_file = copy_nativemessaging.add_file_reference file
-    nativemessaging_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
-
-    copy_nativeMessagingManifest = @target_main.new_copy_files_build_phase
-    copy_nativeMessagingManifest.name = 'Copy native messaging manifest'
-    copy_nativeMessagingManifest.symbol_dst_subfolder_spec = :wrapper
-    copy_nativeMessagingManifest.dst_path = 'Contents/Resources/utils'
-
-    group = @project.main_group.new_group('Browser bridge manifest')
-    file = group.new_file 'extension/manifests/macos/mozillavpn.json'
-
-    nativeMessagingManifest_file = copy_nativeMessagingManifest.add_file_reference file
-    nativeMessagingManifest_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
-
   end
 
   def die(msg)

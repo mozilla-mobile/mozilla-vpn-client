@@ -68,8 +68,6 @@ utest_compile_auth() {
 utest_compile_nativemessaging() {
   _qmake tests/nativemessaging/nativemessaging.pro tests.xcodeproj/ || die
   _compile tests.xcodeproj ./Release/tests || die
-
-  (cd extension/bridge && cargo build --release) || die
   [ -f extension/bridge/target/release/mozillavpnnp ] || die "Expected extension/bridge/target/release/mozillavpnnp"
 }
 
@@ -94,7 +92,6 @@ utest_cleanup_auth() {
 }
 
 utest_cleanup_nativemessaging() {
-  (cd extension/bridge && cargo clean) || die
   _cleanup tests.xcodeproj/ ./Release/tests || die
 }
 
