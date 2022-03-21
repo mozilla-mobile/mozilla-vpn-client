@@ -55,11 +55,6 @@ Item {
                 anchors.rightMargin: VPNTheme.theme.windowMargin
             }
 
-            VPNVerticalSpacer {
-                height: 1
-                width: parent.width
-            }
-
             VPNCheckBoxRow {
                 id: dataCollection
                 objectName: "dataCollection"
@@ -67,7 +62,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.rightMargin: VPNTheme.theme.windowMargin
-
+                showDivider: false
                 //% "Data collection and use"
                 labelText: qsTrId("vpn.settings.dataCollection")
                 subLabelText: VPNl18n.SettingsDataCollectionDescription
@@ -75,6 +70,24 @@ Item {
                 onClicked: {
                     VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
                }
+            }
+
+            VPNCheckBoxRow {
+                id: crashOptInCheckBox
+                objectName: "crashOptIn"
+                labelText: VPNl18n.SettingsCrashOptInLabel
+                subLabelText: VPNl18n.SettingsCrashOptInDescription
+                isChecked: VPNSettings.crashReportOptIn
+                isEnabled: true
+                width: parent.width - VPNTheme.theme.windowMargin
+                onClicked: VPNSettings.crashReportOptIn = !VPNSettings.crashReportOptIn
+                visible: true
+                anchors.rightMargin: VPNTheme.theme.windowMargin
+            }
+
+            VPNVerticalSpacer {
+                height: 1
+                width: parent.width
             }
 
             Column {

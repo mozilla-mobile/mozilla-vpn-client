@@ -12,6 +12,7 @@ RowLayout {
     id: checkBoxRow
 
     property var labelText
+    property bool labelVisible: true
     property var subLabelText: ""
     property bool isChecked
     property bool isEnabled: true
@@ -71,6 +72,7 @@ RowLayout {
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             Layout.fillWidth: true
             text: labelText
+            visible: labelVisible
             color: VPNTheme.theme.fontColorDark
             horizontalAlignment: Text.AlignLeft
         }

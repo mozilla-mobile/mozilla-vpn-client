@@ -89,6 +89,19 @@ Window {
           text: qsTrId("vpn.crashreporter.description")
       }
 
+      VPNCheckBoxRow {
+          id: crashOptInCheckBox
+          objectName: "crashOptIn"
+          subLabelText: VPNl18n.CrashreporterCrashOptInDialogDescription
+          isChecked: VPNSettings.crashReportOptIn
+          isEnabled: true
+          labelVisible: false
+          width: parent.width - VPNTheme.theme.windowMargin
+          onClicked: VPNSettings.crashReportOptIn = !VPNSettings.crashReportOptIn
+          visible: true
+          anchors.rightMargin: VPNTheme.theme.windowMargin
+      }
+
       VPNButton {
         text: qsTrId("vpn.crashreporter.sendButtonLabel");
         anchors.horizontalCenter: parent.horizontalCenter

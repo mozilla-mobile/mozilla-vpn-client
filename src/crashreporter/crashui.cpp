@@ -11,6 +11,7 @@
 #include "nebula.h"
 #include "qmlengineholder.h"
 #include "theme.h"
+#include "settingsholder.h"
 
 #include <QCoreApplication>
 #include <QWindow>
@@ -60,7 +61,14 @@ void CrashUI::initialize() {
           QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
           return this;
         });
-
+    auto settings = SettingsHolder::instance();
+    qmlRegisterSingletonType<SettingsHolder>(
+        "Mozilla.VPN", 1, 0, "VPNSettings",
+        [this](QQmlEngine*, QJSEngine*) -> QObject* {
+          auto obj = SettingsHolder::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
     const QUrl url(QML_MAIN);
     QmlEngineHolder::instance()->engine()->load(url);
     m_initialized = true;

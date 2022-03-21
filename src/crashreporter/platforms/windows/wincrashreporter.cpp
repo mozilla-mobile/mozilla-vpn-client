@@ -62,6 +62,9 @@ bool WinCrashReporter::start(int argc, char* argv[]) {
       return false;
     }
   }
+  else{
+    startUpload();
+  }
   return true;
 }
 

@@ -76,6 +76,14 @@ SETTING_STRING(currentServerCity,     // getter
                true                   // remove when reset
 )
 
+SETTING_BOOL(crashReportOptIn,   // getter
+             setCrashReportOptIn,  // setter
+             hasCrashReportOptIn,  // has
+             "crashReportOptIn",     // key
+             false,                  // default value
+             false                   // remove when reset
+)
+
 SETTING_STRING(currentServerCountry,     // getter
                setCurrentServerCountry,  // setter
                hasCurrentServerCountry,  // has
