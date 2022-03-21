@@ -61,10 +61,10 @@ void CrashUI::initialize() {
           QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
           return this;
         });
-    auto settings = SettingsHolder::instance();
+
     qmlRegisterSingletonType<SettingsHolder>(
         "Mozilla.VPN", 1, 0, "VPNSettings",
-        [this](QQmlEngine*, QJSEngine*) -> QObject* {
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
           auto obj = SettingsHolder::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
