@@ -389,6 +389,8 @@ void Controller::handshakeTimeout() {
   HopConnection& hop = m_activationQueue.first();
   vpn->setServerCooldown(hop.m_server.publicKey());
 
+  emit handshakeFailed(hop.m_server.publicKey());
+
   if (m_nextStep != None) {
     deactivate();
     return;
