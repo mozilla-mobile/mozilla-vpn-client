@@ -29,6 +29,7 @@ VPNButtonBase {
     VPNToolTip {
         id: toolTip
         text: accessibleName
+        visible: iconButton.enabled
     }
 
     VPNMouseArea {
