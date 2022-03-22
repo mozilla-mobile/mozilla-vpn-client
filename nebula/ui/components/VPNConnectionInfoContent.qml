@@ -75,6 +75,7 @@ Flickable {
 
             VPNLottieAnimation {
                 id: speedometerAnimation
+                loop: false
                 source: ":/nebula/resources/animations/speedometer_animation.json"
             }
         }
