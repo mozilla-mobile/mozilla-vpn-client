@@ -5,21 +5,17 @@
 #ifndef MACOSAUTHENTICATIONLISTENER_H
 #define MACOSAUTHENTICATIONLISTENER_H
 
-#include "authenticationlistener.h"
+#include "desktopauthenticationlistener.h"
 
 #include <QEvent>
 
-class MacosAuthenticationListener final : public AuthenticationListener {
+class MacosAuthenticationListener final : public DesktopAuthenticationListener {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(MacosAuthenticationListener)
 
  public:
   explicit MacosAuthenticationListener(QObject* parent);
   ~MacosAuthenticationListener();
-
-  void start(Task* task, const QString& codeChallenge,
-             const QString& codeChallengeMethod,
-             const QString& emailAddress) override;
 
  private:
   bool eventFilter(QObject* obj, QEvent* event) override;

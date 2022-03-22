@@ -18,7 +18,7 @@ Logger logger(LOG_MAIN, "MacosAuthenticationListener");
 }  // anonymous namespace
 
 MacosAuthenticationListener::MacosAuthenticationListener(QObject* parent)
-    : AuthenticationListener(parent) {
+    : DesktopAuthenticationListener(parent) {
   MVPN_COUNT_CTOR(MacosAuthenticationListener);
 
   qApp->installEventFilter(this);
@@ -28,21 +28,6 @@ MacosAuthenticationListener::~MacosAuthenticationListener() {
   MVPN_COUNT_DTOR(MacosAuthenticationListener);
 
   qApp->removeEventFilter(this);
-}
-
-void MacosAuthenticationListener::start(Task* task,
-                                        const QString& codeChallenge,
-                                        const QString& codeChallengeMethod,
-                                        const QString& emailAddress) {
-  logger.debug() << "MacosAuthenticationListener started";
-
-  Q_UNUSED(task);
-
-  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser,
-                                   codeChallenge, codeChallengeMethod,
-                                   emailAddress));
-
-  UrlOpener::open(url.toString());
 }
 
 bool MacosAuthenticationListener::eventFilter(QObject* obj, QEvent* event) {
