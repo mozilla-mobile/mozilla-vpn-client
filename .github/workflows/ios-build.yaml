@@ -47,10 +47,9 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
-          export PATH=`pwd`/qt_ios/6.2.3/ios/bin:$PATH
+          export PATH=`pwd`/qt_ios/6.2.3/ios/bin:`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/utils/import_languages.py -m
+          python3 scripts/utils/import_languages.py -m -q "`pwd`/qt_ios/6.2.3/clang_64/bin"
 
       - name: Switch to newest go version
         shell: bash
