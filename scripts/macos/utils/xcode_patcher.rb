@@ -73,7 +73,7 @@ class XCodeprojPatcher
     group = @project.main_group.new_group('WireGuard')
 
     [
-      'macos/gobridge/wireguard-go-version.h',
+      'ios/gobridge/wireguard-go-version.h',
       '3rdparty/wireguard-apple/Sources/Shared/Keychain.swift',
       '3rdparty/wireguard-apple/Sources/WireGuardKit/IPAddressRange.swift',
       '3rdparty/wireguard-apple/Sources/WireGuardKit/InterfaceConfiguration.swift',
@@ -325,7 +325,7 @@ class XCodeprojPatcher
   def setup_target_gobridge
     target_gobridge = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
 
-    target_gobridge.build_working_directory = 'macos/gobridge'
+    target_gobridge.build_working_directory = 'ios/gobridge'
     target_gobridge.build_tool_path = 'make'
     target_gobridge.pass_build_settings_in_environment = '1'
     target_gobridge.build_arguments_string = '$(ACTION)'
