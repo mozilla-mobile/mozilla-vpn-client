@@ -147,15 +147,15 @@ ColumnLayout {
                             color: VPNTheme.theme.fontColorDark
                             horizontalAlignment: Text.AlignHCenter
                             font.pixelSize: VPNTheme.theme.fontSizeLarge
-                            text: featureName
 
                             Layout.bottomMargin: VPNTheme.theme.listSpacing
                             Layout.fillWidth: true
                         }
 
                         VPNTextBlock {
+                            id: popupText
+
                             horizontalAlignment: Text.AlignHCenter
-                            text: featureDescription
                             Layout.fillWidth: true
                             Layout.preferredWidth: parent.width
                         }
@@ -181,6 +181,13 @@ ColumnLayout {
                             const featureIdChanged = tour.currentFeatureID !== featureID;
                             if (featureIdChanged) {
                                 tour.currentFeatureID = featureID;
+
+                                popupTitle.text = featureID !== ""
+                                    ? VPNFeatureList.get(featureID).displayName
+                                    : VPNl18n.WhatsNewReleaseNotesTourModalHeader;
+                                popupText.text = featureID !== ""
+                                    ? VPNFeatureList.get(featureID).description
+                                    : VPNl18n.WhatsNewReleaseNotesTourModalBodyText;
                             }
                         }
                     }
