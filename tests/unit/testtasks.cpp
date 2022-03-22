@@ -96,10 +96,6 @@ void TestTasks::addDevice_failure() {
   loop.exec();
 }
 
-void TestTasks::authenticate() {
-  // TODO
-}
-
 void TestTasks::function() {
   bool completed = false;
   TaskFunction* task = new TaskFunction([&]() { completed = true; });
