@@ -11,7 +11,7 @@ class XCodeprojPatcher
 
   def run(file, shortVersion, fullVersion, platform, networkExtension, configHash, adjust_sdk_token)
     open_project file
-    open_target_main
+    open_target_main platform
 
     die 'IOS requires networkExtension mode' if not networkExtension and platform == 'ios'
 
@@ -21,7 +21,7 @@ class XCodeprojPatcher
 
 
     if platform == 'ios'
-      setup_target_main shortVersion, fullVersion, platform, networkExtension, configHash, adjust_sdk_token
+      setup_target_main configHash, adjust_sdk_token
 
       group = @project.main_group.new_group('Configuration')
       @configFile = group.new_file('xcode.xconfig')
@@ -38,14 +38,15 @@ class XCodeprojPatcher
     die 'Failed to open the project file: ' + file if @project.nil?
   end
 
-  def open_target_main
-    @target_main = @project.targets.find { |target| target.to_s == 'Mozilla VPN' }
+  def open_target_main(platform)
+    @target_main = @project.targets.find { |target| target.to_s == 'Mozilla VPN' } if platform == 'macos'
+    @target_main = @project.targets.find { |target| target.to_s == 'MozillaVPN' } if platform == 'ios'
     return @target_main if not @target_main.nil?
 
     die 'Unable to open Mozilla VPN target'
   end
 
-  def setup_target_main(shortVersion, fullVersion, platform, networkExtension, configHash, adjust_sdk_token)
+  def setup_target_main(configHash, adjust_sdk_token)
     @target_main.build_configurations.each do |config|
       config.base_configuration_reference = @configFile
 
@@ -54,33 +55,12 @@ class XCodeprojPatcher
         "$(PROJECT_DIR)/3rdparty"
       ]
 
-      config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
-      config.build_settings['SWIFT_VERSION'] ||= '5.0'
-      config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
-      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'ios/app/WireGuard-Bridging-Header.h'
-
-      # Versions and names
-      config.build_settings['MARKETING_VERSION'] ||= shortVersion
-      config.build_settings['CURRENT_PROJECT_VERSION'] ||= fullVersion
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = configHash['APP_ID_IOS']
       config.build_settings['PRODUCT_NAME'] = 'Mozilla VPN'
-      config.build_settings['INFOPLIST_FILE'] ||= 'ios/app/Info.plist'
 
-      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'ios/app/main.entitlements'
       if adjust_sdk_token != ""
         config.build_settings['ADJUST_SDK_TOKEN'] = adjust_sdk_token
       end
 
-      config.build_settings['CODE_SIGN_IDENTITY'] ||= 'Apple Development'
-      config.build_settings['ENABLE_BITCODE'] ||= 'NO'
-      config.build_settings['SDKROOT'] = 'iphoneos'
-      config.build_settings['SWIFT_PRECOMPILE_BRIDGING_HEADER'] = 'NO'
-
-      if config.name == 'Release'
-        config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] ||= '-Onone'
-      end
-
-      config.build_settings['GROUP_ID_IOS'] ||= configHash['GROUP_ID_IOS']
       # Force xcode to not set QT_LIBRARY_SUFFIX to "_debug", which causes crash
       config.build_settings['QT_LIBRARY_SUFFIX'] = ""
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
@@ -89,42 +69,40 @@ class XCodeprojPatcher
       ]
     end
 
-    if networkExtension
-      # WireGuard group
-      group = @project.main_group.new_group('WireGuard')
+    # WireGuard group
+    group = @project.main_group.new_group('WireGuard')
 
-      [
-        'macos/gobridge/wireguard-go-version.h',
-        '3rdparty/wireguard-apple/Sources/Shared/Keychain.swift',
-        '3rdparty/wireguard-apple/Sources/WireGuardKit/IPAddressRange.swift',
-        '3rdparty/wireguard-apple/Sources/WireGuardKit/InterfaceConfiguration.swift',
-        '3rdparty/wireguard-apple/Sources/Shared/Model/NETunnelProviderProtocol+Extension.swift',
-        '3rdparty/wireguard-apple/Sources/WireGuardKit/TunnelConfiguration.swift',
-        '3rdparty/wireguard-apple/Sources/Shared/Model/TunnelConfiguration+WgQuickConfig.swift',
-        '3rdparty/wireguard-apple/Sources/WireGuardKit/Endpoint.swift',
-        '3rdparty/wireguard-apple/Sources/Shared/Model/String+ArrayConversion.swift',
-        '3rdparty/wireguard-apple/Sources/WireGuardKit/PeerConfiguration.swift',
-        '3rdparty/wireguard-apple/Sources/WireGuardKit/DNSServer.swift',
-        '3rdparty/wireguard-apple/Sources/WireGuardApp/LocalizationHelper.swift',
-        '3rdparty/wireguard-apple/Sources/Shared/FileManager+Extension.swift',
-        '3rdparty/wireguard-apple/Sources/WireGuardKitC/x25519.c',
-        '3rdparty/wireguard-apple/Sources/WireGuardKit/PrivateKey.swift',
-      ].each { |filename|
-        file = group.new_file(filename)
-        @target_main.add_file_references([file])
-      }
+    [
+      'macos/gobridge/wireguard-go-version.h',
+      '3rdparty/wireguard-apple/Sources/Shared/Keychain.swift',
+      '3rdparty/wireguard-apple/Sources/WireGuardKit/IPAddressRange.swift',
+      '3rdparty/wireguard-apple/Sources/WireGuardKit/InterfaceConfiguration.swift',
+      '3rdparty/wireguard-apple/Sources/Shared/Model/NETunnelProviderProtocol+Extension.swift',
+      '3rdparty/wireguard-apple/Sources/WireGuardKit/TunnelConfiguration.swift',
+      '3rdparty/wireguard-apple/Sources/Shared/Model/TunnelConfiguration+WgQuickConfig.swift',
+      '3rdparty/wireguard-apple/Sources/WireGuardKit/Endpoint.swift',
+      '3rdparty/wireguard-apple/Sources/Shared/Model/String+ArrayConversion.swift',
+      '3rdparty/wireguard-apple/Sources/WireGuardKit/PeerConfiguration.swift',
+      '3rdparty/wireguard-apple/Sources/WireGuardKit/DNSServer.swift',
+      '3rdparty/wireguard-apple/Sources/WireGuardApp/LocalizationHelper.swift',
+      '3rdparty/wireguard-apple/Sources/Shared/FileManager+Extension.swift',
+      '3rdparty/wireguard-apple/Sources/WireGuardKitC/x25519.c',
+      '3rdparty/wireguard-apple/Sources/WireGuardKit/PrivateKey.swift',
+    ].each { |filename|
+      file = group.new_file(filename)
+      @target_main.add_file_references([file])
+    }
 
-      # @target_main + swift integration
-      group = @project.main_group.new_group('SwiftIntegration')
+    # @target_main + swift integration
+    group = @project.main_group.new_group('SwiftIntegration')
 
-      [
-        'src/platforms/ios/ioscontroller.swift',
-        'src/platforms/ios/ioslogger.swift',
-      ].each { |filename|
-        file = group.new_file(filename)
-        @target_main.add_file_references([file])
-      }
-    end
+    [
+      'src/platforms/ios/ioscontroller.swift',
+      'src/platforms/ios/ioslogger.swift',
+    ].each { |filename|
+      file = group.new_file(filename)
+      @target_main.add_file_references([file])
+    }
 
     if adjust_sdk_token != ""
       frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }

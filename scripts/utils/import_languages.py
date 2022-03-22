@@ -24,6 +24,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     '-m', '--macos', default=False, action="store_true", dest="ismacos",
     help='Include the MacOS bundle data')
+parser.add_argument(
+    '-q', '--qt_path',  default=None, dest="qtpath",
+    help='The QT binary path. If not set, we try to guess.')
 args = parser.parse_args()
 
 def title(a, b):
@@ -41,7 +44,9 @@ def qtquery(qmake, propname):
         pass
     return None
 
-qtbinpath = qtquery('qmake', 'QT_INSTALL_BINS')
+qtbinpath = args.qtpath
+if qtbinpath is None:
+  qtbinpath = qtquery('qmake', 'QT_INSTALL_BINS')
 if qtbinpath is None:
     qtbinpath = qtquery('qmake6', 'QT_INSTALL_BINS')
 if qtbinpath is None:
@@ -50,6 +55,10 @@ if qtbinpath is None:
     qtbinpath = qtquery('qmake-qt5', 'QT_INSTALL_BINS')
 if qtbinpath is None:
     print('Unable to locate qmake tool.')
+    sys.exit(1)
+
+if not os.path.isdir(qtbinpath):
+    print("QT path is not a diretory: %s" % qtbinpath)
     sys.exit(1)
 
 lupdate = os.path.join(qtbinpath, 'lupdate')
