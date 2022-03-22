@@ -692,8 +692,8 @@ Item {
         anchors.rightMargin: VPNTheme.theme.windowMargin / 2
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
-        Accessible.ignored: connectionInfoVisible
-        enabled: !connectionInfoVisible || !box.connectionInfoScreenVisible
+        Accessible.ignored: box.connectionInfoScreenVisible
+        enabled: !box.connectionInfoScreenVisible
 
         VPNIcon {
             id: settingsImage
