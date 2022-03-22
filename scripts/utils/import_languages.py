@@ -58,7 +58,7 @@ if qtbinpath is None:
     sys.exit(1)
 
 if not os.path.isdir(qtbinpath):
-    print("QT path is not a diretory: %s" % qtbinpath)
+    print(f"QT path is not a diretory: {qtbinpath}")
     sys.exit(1)
 
 lupdate = os.path.join(qtbinpath, 'lupdate')
