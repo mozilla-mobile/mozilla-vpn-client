@@ -786,17 +786,22 @@ void MozillaVPN::createSupportTicket(const QString& email,
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
 
-  serializeLogs(out, [out, buffer, email, subject, issueText, category] {
+  serializeLogs(out, [this, out, buffer, email, subject, issueText, category] {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
     // buffer is getting copied by TaskCreateSupportTicket so we can delete it
     // afterwards
-    TaskScheduler::scheduleTask(new TaskCreateSupportTicket(
-        email, subject, issueText, *buffer, category));
-
+    Task* task = new TaskCreateSupportTicket(email, subject, issueText, *buffer,
+                                             category);
     delete buffer;
     delete out;
+
+    if (state() == StateAuthenticating && m_userState == UserNotAuthenticated) {
+      TaskScheduler::scheduleTaskNow(task);
+    } else {
+      TaskScheduler::scheduleTask(task);
+    }
   });
 }
 
