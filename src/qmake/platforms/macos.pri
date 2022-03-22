@@ -27,6 +27,7 @@ QMAKE_BUNDLE = "FirefoxVPN"
 CONFIG += c++1z
 
 # For the loginitem
+LIBS += -framework SystemConfiguration
 LIBS += -framework ServiceManagement
 LIBS += -framework Security
 LIBS += -framework CoreWLAN
