@@ -3,7 +3,7 @@
 # Dependencies
 python3 scripts/tooltool.py --url http://taskcluster/tooltool.mozilla-releng.net fetch -m macos/qt-dependencies.tt.manifest
 export PATH="`pwd`/qt/bin:$PATH"
-export PATH="$(realpath ~/Library/Python/3.6/bin):$(realpath ~/.gem/ruby/2.6.0/bin):$PATH"
+export PATH="~/Library/Python/3.6/bin:~/.gem/ruby/2.6.0/bin:$PATH"
 # install xcodeproj which is needed by xcode_patcher.rb
 # use --user-install for permissions
 gem install xcodeproj --user-install
