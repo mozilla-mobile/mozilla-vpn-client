@@ -142,7 +142,7 @@ INSTALLS += systemd_service
 ORIG_MOZILLAVPN_JSON = $$PWD/../../../extension/manifests/linux/mozillavpn.json
 manifestFile.input = ORIG_MOZILLAVPN_JSON
 manifestFile.output = $$PWD/../../../linux/mozillavpn.json
-manifestFile.commands = @$(SED) \'/\"path\":/c\ \ \"path\":\ \"$${LIBPATH}/mozillavpn/mozillavpnnp\",\' $$ORIG_MOZILLAVPN_JSON >  $$manifestFile.output
+manifestFile.commands = @python3 -c \'with open(\"$$ORIG_MOZILLAVPN_JSON\") as fin, open(\"$$manifestFile.output\", \"w\") as fout: [print(l.replace(\"/usr/lib/\", \"$${LIBPATH}/\"), end=\"\", file=fout) for l in fin]\'
 manifestFile.CONFIG = target_predeps no_link
 QMAKE_EXTRA_COMPILERS += manifestFile
 
