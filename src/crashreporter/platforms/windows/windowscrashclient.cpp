@@ -10,8 +10,9 @@
 #include <Windows.h>
 #include <sstream>
 #include <codecvt>
-
-#include <crashreporter/crashreporterapp.h>
+#include <QStandardPaths>
+#include <QDir>
+#include "crashreporter/crashreporterapp.h"
 using namespace std;
 
 namespace {
@@ -35,6 +36,11 @@ WindowsCrashClient::WindowsCrashClient() {}
 WindowsCrashClient::~WindowsCrashClient() {}
 
 bool WindowsCrashClient::start(int argc, char* argv[]) {
+  auto appDatas =
+      QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
+  auto appLocal = appDatas.first() + "\\dumps";
+  QDir().mkpath(appLocal);
+
   m_launchPath = argv[0];
   if (!SUCCEEDED(RegisterApplicationRecoveryCallback(RecoveryCallback, this,
                                                      30000, 0))) {
