@@ -34,7 +34,7 @@ Item {
     }
 
     function closeConnectionInfo() {
-        connectionInfo.close();
+        box.connectionInfoScreenVisible = false;
     }
 
     state: VPNController.state
