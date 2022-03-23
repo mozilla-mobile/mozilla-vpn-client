@@ -79,6 +79,9 @@ HEADERS += \
 isEmpty(USRPATH) {
     USRPATH=/usr
 }
+isEmpty(LIBPATH) {
+    LIBPATH=$${USRPATH}/lib
+}
 isEmpty(ETCPATH) {
     ETCPATH=/etc
 }
@@ -136,20 +139,33 @@ systemd_service.files = $$PWD/../../../linux/mozillavpn.service
 systemd_service.path = $${USRPATH}/lib/systemd/system
 INSTALLS += systemd_service
 
-manifestFirefox.files = $$PWD/../../../extension/manifests/linux/mozillavpn.json
-manifestFirefox.path = $${USRPATH}/lib/mozilla/native-messaging-hosts
+ORIG_MOZILLAVPN_JSON = $$PWD/../../../extension/manifests/linux/mozillavpn.json
+manifestFile.input = ORIG_MOZILLAVPN_JSON
+manifestFile.output = $$PWD/../../../linux/mozillavpn.json
+manifestFile.commands = @$(SED) \'/\"path\":/c\ \ \"path\":\ \"$${LIBPATH}/mozillavpn/mozillavpnnp\",\' $$ORIG_MOZILLAVPN_JSON >  $$manifestFile.output
+manifestFile.CONFIG = target_predeps no_link
+QMAKE_EXTRA_COMPILERS += manifestFile
+
+manifestFirefox.files = $$manifestFile.output
+manifestFirefox.path = $${LIBPATH}/mozilla/native-messaging-hosts
+manifestFirefox.depends = $$manifestFile.output
+manifestFirefox.CONFIG = no_check_exist
 INSTALLS += manifestFirefox
 
-manifestChrome.files = $$PWD/../../../extension/manifests/linux/mozillavpn.json
+manifestChrome.files = $$manifestFile.output
 manifestChrome.path = $${ETCPATH}/opt/chrome/native-messaging-hosts
+manifestChrome.depends = $$manifestFile.output
+manifestChrome.CONFIG = no_check_exist
 INSTALLS += manifestChrome
 
-manifestChromium.files = $$PWD/../../../extension/manifests/linux/mozillavpn.json
+manifestChromium.files = $$manifestFile.output
 manifestChromium.path = $${ETCPATH}/chromium/native-messaging-hosts
+manifestChromium.depends = $$manifestFile.output
+manifestChromium.CONFIG = no_check_exist
 INSTALLS += manifestChromium
 
 browserBridge.files = $$PWD/../../../extension/bridge/target/release/mozillavpnnp
-browserBridge.path = $${USRPATH}/lib/mozillavpn
+browserBridge.path = $${LIBPATH}/mozillavpn
 browserBridge.CONFIG = no_check_exist executable
 INSTALLS += browserBridge
 
