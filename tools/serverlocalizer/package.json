@@ -1,0 +1,16 @@
+{
+  "name": "serverlocalizer",
+  "version": "1.0.0",
+  "description": "The localizator of countries and cities",
+  "main": "serverlocalizer.js",
+  "type": "module",
+  "license": "Mozilla Public License 2.0",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^8.2.0",
+    "inquirer": "^8.2.1",
+    "node-fetch": "^3.2.3",
+    "websocket": "^1.0.34",
+    "wikibase-sdk": "^7.14.4"
+  }
+}
