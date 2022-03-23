@@ -34,7 +34,6 @@ TODO: unify build.sh and script.sh (or remove build.sh)
 - ./macos/utils/commons.sh - common functions for cross-platform scrips
 - ./macos/import_pkg_resources.py - configure resources for the PKG generation
 - ./macos/scope_only_change.sh - runs tests when needed
-- ./macosx_build.sh
 
 TODO:
 1. scope_only_change.sh should be croll-platform! Do we actually use it?
