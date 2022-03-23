@@ -21,7 +21,6 @@ can be used to run tests locally or via the CI.
 
 # Linux-specific scripts
 
-- ./linux/build.sh - compile the client for linux. See the main README.md file.
 - ./linux/ppa_script.sh - upload ubuntu packages to the PPA
 - ./linux/script.sh - compile the client and upload it to the PPA
 - ./linux/utils/commons.sh - common functions for cross-platform scripts
