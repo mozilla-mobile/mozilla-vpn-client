@@ -8,6 +8,8 @@ QT += networkauth
 QT += qml
 QT += widgets
 
+CONFIG += c++1z
+
 macos {
     CONFIG -= app_bundle
 }
@@ -23,9 +25,6 @@ DEFINES += MVPN_DUMMY
 
 TEMPLATE = app
 TARGET = tests
-
-CONFIG += link_pkgconfig
-PKGCONFIG += liboath
 
 RESOURCES += auth.qrc
 
@@ -53,6 +52,7 @@ HEADERS += \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/feature.h \
+    ../../src/models/server.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
@@ -91,6 +91,7 @@ SOURCES += \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/server.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
     ../../src/rfc/rfc1918.cpp \

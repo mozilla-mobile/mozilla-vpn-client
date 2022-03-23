@@ -3,22 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "pinghelper.h"
+#include "dnspingsender.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "pingsender.h"
-#include "platforms/dummy/dummypingsender.h"
+#include "pingsenderfactory.h"
 #include "timersingleshot.h"
-
-#if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
-#  include "platforms/linux/linuxpingsender.h"
-#elif defined(MVPN_MACOS) || defined(MVPN_IOS)
-#  include "platforms/macos/macospingsender.h"
-#elif defined(MVPN_WINDOWS)
-#  include "platforms/windows/windowspingsender.h"
-#elif defined(MVPN_DUMMY) || defined(UNIT_TEST)
-#else
-#  error "Unsupported platform"
-#endif
 
 #include <QDateTime>
 
@@ -32,8 +22,7 @@ constexpr int PING_STATS_WINDOW = 32;
 
 namespace {
 Logger logger(LOG_NETWORKING, "PingHelper");
-bool s_has_critical_ping_error = false;
-}  // namespace
+}
 
 PingHelper::PingHelper() {
   MVPN_COUNT_CTOR(PingHelper);
@@ -48,28 +37,24 @@ PingHelper::~PingHelper() { MVPN_COUNT_DTOR(PingHelper); }
 
 void PingHelper::start(const QString& serverIpv4Gateway,
                        const QString& deviceIpv4Address) {
-  logger.debug() << "PingHelper activated for server:" << serverIpv4Gateway;
+  logger.debug() << "PingHelper activated for server:"
+                 << logger.sensitive(serverIpv4Gateway);
 
-  m_gateway = serverIpv4Gateway;
-  m_source = deviceIpv4Address.section('/', 0, 0);
+  m_gateway = QHostAddress(serverIpv4Gateway);
+  m_source = QHostAddress(deviceIpv4Address.section('/', 0, 0));
+  m_pingSender = PingSenderFactory::create(m_source, this);
 
-  if (s_has_critical_ping_error) {
-    m_pingSender = new DummyPingSender(m_source, this);
-  } else {
-    m_pingSender =
-#if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
-        new LinuxPingSender(m_source, this);
-#elif defined(MVPN_MACOS) || defined(MVPN_IOS)
-        new MacOSPingSender(m_source, this);
-#elif defined(MVPN_WINDOWS)
-        new WindowsPingSender(m_source, this);
-#else
-        new DummyPingSender(m_source, this);
-#endif
+  // Some platforms require root access to send and receive ICMP pings. If
+  // we happen to be on one of these unlucky devices, create a DnsPingSender
+  // instead.
+  if (!m_pingSender->isValid()) {
+    delete m_pingSender;
+    m_pingSender = new DnsPingSender(m_source, this);
   }
+
   connect(m_pingSender, &PingSender::recvPing, this, &PingHelper::pingReceived);
   connect(m_pingSender, &PingSender::criticalPingError, this,
-          &PingHelper::handlePingError);
+          []() { logger.info() << "Encountered Unrecoverable ping error"; });
 
   // Reset the ping statistics
   m_sequence = 0;
@@ -200,28 +185,4 @@ double PingHelper::loss() const {
     return 0.0;
   }
   return (double)(sendCount - recvCount) / sendCount;
-}
-
-void PingHelper::handlePingError() {
-  if (s_has_critical_ping_error) {
-    return;
-  }
-  logger.info() << "Encountered Unrecoverable ping error, switching to DUMMY "
-                   "Ping for next 10 Minutes";
-  // When the ping helper is unable to work, set the error flag
-  // and restart the pinghelper, to replace the impl with a dummy impl
-  // which we will use for the rest of the session
-  emit pingSentAndReceived(1);  // Fake a ping response with 1ms;
-  s_has_critical_ping_error = true;
-  stop();
-  start(m_gateway, m_source);
-
-  TimerSingleShot::create(this, 600000, [&] {  // 10 Minutes
-    logger.debug() << "Removing ping error state";
-    s_has_critical_ping_error = false;
-    if (m_pingSender) {
-      stop();
-      start(m_gateway, m_source);
-    }
-  });
 }

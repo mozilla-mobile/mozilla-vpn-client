@@ -56,5 +56,16 @@ workers:
                 by-level:
                     "3": mozillavpn-3-signing
                     default: mozillavpn-t-signing
-scriptworker:
-    scope-prefix: project:mozilla-vpn-client
+        push-apk:
+            provisioner: scriptworker-k8s
+            implementation: scriptworker-pushapk
+            os: scriptworker
+            worker-type: 'mozillavpn-{level}-pushapk'
+        # mac-signing:
+        #     provisioner: scriptworker-prov-v1
+        #     implementation: scriptworker-signing
+        #     os: macosx
+        #     worker-type:
+        #         by-level:
+        #             "3": mozillavpn-3-signing-mac
+        #             default: mozillavpn-t-signing-mac

@@ -137,7 +137,7 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
-  logger.debug() << "Configuring peer" << printableKey(config.m_serverPublicKey)
+  logger.debug() << "Configuring peer" << logger.keys(config.m_serverPublicKey)
                  << "via" << config.m_serverIpv4AddrIn;
 
   // Update/create the peer config

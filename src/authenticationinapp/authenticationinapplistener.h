@@ -8,7 +8,6 @@
 #include "authenticationlistener.h"
 
 #include <QNetworkReply>
-#include <QUrlQuery>
 
 class AuthenticationInAppListener final : public AuthenticationListener {
   Q_OBJECT
@@ -36,6 +35,8 @@ class AuthenticationInAppListener final : public AuthenticationListener {
 
 #ifdef UNIT_TEST
   void enableTotpCreation();
+  void allowUpperCaseEmailAddress();
+  void enableAccountDeletion();
 #endif
 
   const QString& emailAddress() const { return m_emailAddress; }
@@ -45,11 +46,11 @@ class AuthenticationInAppListener final : public AuthenticationListener {
  private:
   void signInInternal(const QString& unblockCode);
 
-  void processErrorCode(int errorCode);
+  void processErrorObject(const QJsonObject& obj);
   void processRequestFailure(QNetworkReply::NetworkError error,
                              const QByteArray& data);
 
-  QByteArray generateAuthPw(const QString& password) const;
+  QByteArray generateAuthPw() const;
 
   void accountChecked(bool exists);
   void signInOrUpCompleted(const QString& sessionToken, bool accountVerified,
@@ -59,6 +60,7 @@ class AuthenticationInAppListener final : public AuthenticationListener {
 
 #ifdef UNIT_TEST
   void createTotpCodes();
+  void deleteAccount();
 #endif
 
  private:
@@ -67,15 +69,32 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   QString m_codeChallenge;
   QString m_codeChallengeMethod;
 
-  QUrlQuery m_urlQuery;
+  struct {
+    QString m_clientId;
+    QString m_deviceId;
+    QString m_state;
+    QString m_scope;
+    QString m_accessType;
+    QString m_flowId;
+    double m_flowBeginTime;
+  } m_fxaParams;
 
   QString m_emailAddress;
-  QByteArray m_authPw;
+  QString m_password;
+
+  // FxA can return a different case format for the email address. Usually,
+  // this is equal to `m_emailAddress`.
+  QString m_emailAddressCaseFix;
 
   QByteArray m_sessionToken;
 
 #ifdef UNIT_TEST
-  bool m_totpCreationNeeded = false;
+  bool m_allowUpperCaseEmailAddress = false;
+  enum {
+    OpNone,
+    OpTotpCreationNeeded,
+    OpAccountDeletionNeeded,
+  } m_extraOp = OpNone;
 #endif
 };
 

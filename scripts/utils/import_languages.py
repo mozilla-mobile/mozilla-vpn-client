@@ -24,26 +24,45 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     '-m', '--macos', default=False, action="store_true", dest="ismacos",
     help='Include the MacOS bundle data')
+parser.add_argument(
+    '-q', '--qt_path',  default=None, dest="qtpath",
+    help='The QT binary path. If not set, we try to guess.')
 args = parser.parse_args()
 
 def title(a, b):
     print(f"\033[96m\033[1m{a}\033[0m: \033[97m{b}\033[0m")
 
 # Step 0
-title("Step 0", "Locate the lupdate and lconvert tools...")
-lupdate = shutil.which('lupdate')
-if lupdate is None:
-    lupdate = shutil.which('lupdate-qt5')
-if lupdate is None:
-    print('Unable to locate lupdate tool.')
+title("Step 0", "Find the Qt localization tools...")
+def qtquery(qmake, propname):
+    try:
+        qtquery = os.popen(f'{qmake} -query {propname}')
+        qtpath = qtquery.read().strip()
+        if len(qtpath) > 0:
+            return qtpath
+    finally:
+        pass
+    return None
+
+qtbinpath = args.qtpath
+if qtbinpath is None:
+  qtbinpath = qtquery('qmake', 'QT_INSTALL_BINS')
+if qtbinpath is None:
+    qtbinpath = qtquery('qmake6', 'QT_INSTALL_BINS')
+if qtbinpath is None:
+    qtbinpath = qtquery('qmake5', 'QT_INSTALL_BINS')
+if qtbinpath is None:
+    qtbinpath = qtquery('qmake-qt5', 'QT_INSTALL_BINS')
+if qtbinpath is None:
+    print('Unable to locate qmake tool.')
     sys.exit(1)
 
-lconvert = shutil.which('lconvert')
-if lconvert is None:
-    lconvert = shutil.which('lconvert-qt5')
-if lconvert is None:
-    print('Unable to locate lconvert tool.')
+if not os.path.isdir(qtbinpath):
+    print(f"QT path is not a diretory: {qtbinpath}")
     sys.exit(1)
+
+lupdate = os.path.join(qtbinpath, 'lupdate')
+lconvert = os.path.join(qtbinpath, 'lconvert')
 
 # Step 1
 # Go through the i18n repo, check each XLIFF file and take

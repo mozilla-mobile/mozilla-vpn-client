@@ -15,12 +15,6 @@ jobs:
     name: MacOS packages
     runs-on: macos-latest
 
-    strategy:
-      matrix:
-        config:
-            - { name: "Qt5", pattern: x, folder: qt }
-            - { name: "Qt6", pattern: qt6, folder: qt6 }
-
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
@@ -32,21 +26,16 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Install ${{matrix.config.name}}
+      - name: Install Qt6
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_macos
           cd qt_static_macos
-          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
+          cat qt6* > qt_static.tar.gz
           tar xf qt_static.tar.gz
-          sudo mv ${{matrix.config.folder}} /opt
+          sudo mv qt6 /opt
           cd ..
-
-      - name: Retrieving wireguard-go version
-        shell: bash
-        run: |
-          (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
 
       - name: Generating glean samples
         shell: bash
@@ -57,7 +46,7 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          export PATH=/opt/qt6/bin:$PATH
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
@@ -95,14 +84,11 @@ jobs:
       - name: Configuring the build
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          export PATH=/opt/qt6/bin:$PATH
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           echo "$SHORTVERSION - $FULLVERSION"
-          echo "DEVELOPMENT_TEAM = 7W87BT2W9M" >> xcode.xconfig
-          echo "GROUP_ID_MACOS = group.baku.mozilla.macos.Guardian" >> xcode.xconfig
           echo "APP_ID_MACOS = baku.mozilla.macos.FirefoxVPN" >> xcode.xconfig
-          echo "NETEXT_ID_MACOS = baku.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
           echo "LOGIN_ID_MACOS = baku.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
           echo "GROUP_ID_IOS = group.baku.mozilla.ios.Guardian" >> xcode.xconfig
           echo "APP_ID_IOS = baku.mozilla.ios.FirefoxVPN" >> xcode.xconfig
@@ -119,17 +105,20 @@ jobs:
             CONFIG-=static \
             CONFIG+=balrog \
             MVPN_MACOS=1 \
+            MVPN_DEVELOPMENT_TEAM=7W87BT2W9M \
+            MVPN_GROUP_ID_MACOS=group.baku.mozilla.macos.Guardian \
+            MVPN_APP_ID_PREFIX=baku.mozilla.macos \
             src/src.pro
           ruby scripts/macos/utils/xcode_patcher.rb \
-            "MozillaVPN.xcodeproj" \
+            "Mozilla VPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
             macos \
-            ${{matrix.config.name}}
+            Qt6
 
       - name: Compiling
         shell: bash
-        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 
       - name: Resigning
         shell: bash
@@ -180,18 +169,12 @@ jobs:
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
-            name: ${{matrix.config.name}} Build
+            name: Qt6 Build
             path: STAGE3/MozillaVPN.pkg
 
   prod:
     name: MacOS package for release
     runs-on: macos-latest
-
-    strategy:
-      matrix:
-        config:
-            - { name: "Qt5", pattern: x, folder: qt }
-            - { name: "Qt6", pattern: qt6, folder: qt6 }
 
     steps:
       - name: Clone repository
@@ -204,21 +187,16 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Install ${{matrix.config.name}}
+      - name: Install Qt6
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_macos
           cd qt_static_macos
-          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
+          cat qt6* > qt_static.tar.gz
           tar xf qt_static.tar.gz
-          sudo mv ${{matrix.config.folder}} /opt
+          sudo mv qt6 /opt
           cd ..
-
-      - name: Retrieving wireguard-go version
-        shell: bash
-        run: |
-          (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
 
       - name: Generating glean samples
         shell: bash
@@ -229,21 +207,18 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          export PATH=/opt/qt6/bin:$PATH
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
       - name: Configuring the build
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          export PATH=/opt/qt6/bin:$PATH
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           echo "$SHORTVERSION - $FULLVERSION"
-          echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
-          echo "GROUP_ID_MACOS = group.org.mozilla.macos.Guardian" >> xcode.xconfig
           echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
-          echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
           echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
           echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
           echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
@@ -263,15 +238,15 @@ jobs:
             MVPN_MACOS=1 \
             src/src.pro
           ruby scripts/macos/utils/xcode_patcher.rb \
-            "MozillaVPN.xcodeproj" \
+            "Mozilla VPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
             macos \
-            ${{matrix.config.name}}
+            Qt6
 
       - name: Compiling
         shell: bash
-        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 
       - name: Packaging
         shell: bash
@@ -291,5 +266,5 @@ jobs:
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
-            name: ${{matrix.config.name}} Release tarball
+            name: Qt6 Release tarball
             path: BUILD.zip

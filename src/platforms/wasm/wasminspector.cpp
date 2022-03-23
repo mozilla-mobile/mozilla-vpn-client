@@ -26,8 +26,13 @@ EMSCRIPTEN_BINDINGS(MozillaVPNIntegraton) {
   emscripten::function("inspectorCommand", &inspectorCommand);
 }
 
-EM_JS(void, call_inspectorMessage, (const char* msg),
-      { inspectorMessage(JSON.parse(UTF8ToString(msg))); });
+EM_JS(void, call_inspectorMessage, (const char* msg), {
+  try {
+    inspectorMessage(JSON.parse(UTF8ToString(msg)));
+  } catch (e) {
+    console.log("Failed to deliver message from Inspector");
+  }
+});
 
 // static
 WasmInspector* WasmInspector::instance() {

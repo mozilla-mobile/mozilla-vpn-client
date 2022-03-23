@@ -216,6 +216,8 @@ void MozillaVPN::initialize() {
 
   m_private->m_releaseMonitor.runSoon();
 
+  m_private->m_telemetry.initialize();
+
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
 #ifdef MVPN_ADJUST
@@ -401,7 +403,7 @@ void MozillaVPN::maybeStateMain() {
 }
 
 void MozillaVPN::setServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set server public key:" << publicKey;
+  logger.debug() << "Set server public key:" << logger.keys(publicKey);
   m_serverPublicKey = publicKey;
 }
 
@@ -786,17 +788,22 @@ void MozillaVPN::createSupportTicket(const QString& email,
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
 
-  serializeLogs(out, [out, buffer, email, subject, issueText, category] {
+  serializeLogs(out, [this, out, buffer, email, subject, issueText, category] {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
     // buffer is getting copied by TaskCreateSupportTicket so we can delete it
     // afterwards
-    TaskScheduler::scheduleTask(new TaskCreateSupportTicket(
-        email, subject, issueText, *buffer, category));
-
+    Task* task = new TaskCreateSupportTicket(email, subject, issueText, *buffer,
+                                             category);
     delete buffer;
     delete out;
+
+    if (state() == StateAuthenticating && m_userState == UserNotAuthenticated) {
+      TaskScheduler::scheduleTaskNow(task);
+    } else {
+      TaskScheduler::scheduleTask(task);
+    }
   });
 }
 
@@ -946,7 +953,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       break;
 
     case ErrorHandler::NoConnectionError:
-      if (controller()->isUnsettled()) {
+      if (connectionHealth()->isUnsettled()) {
         return;
       }
       alert = NoConnectionAlert;
@@ -1428,7 +1435,7 @@ void MozillaVPN::quit() {
   logger.debug() << "quit";
   TaskScheduler::deleteTasks();
 
-#if QT_VERSION >= 0x060000
+#if QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
   // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a
   // quick exit. See: https://bugreports.qt.io/browse/QTBUG-100687
 
@@ -1457,6 +1464,8 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   }
 
   iap->startSubscription(productIdentifier);
+
+  emit recordGleanEvent(GleanSample::iapSubscriptionStarted);
 }
 
 void MozillaVPN::restoreSubscriptionStarted() {
@@ -1465,6 +1474,8 @@ void MozillaVPN::restoreSubscriptionStarted() {
   setState(StateSubscriptionInProgress);
 
   IAPHandler::instance()->startRestoreSubscription();
+
+  emit recordGleanEvent(GleanSample::iapRestoreSubStarted);
 }
 
 void MozillaVPN::subscriptionCompleted() {
@@ -1487,6 +1498,8 @@ void MozillaVPN::subscriptionCompleted() {
   AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
 
+  emit recordGleanEvent(GleanSample::iapSubscriptionCompleted);
+
   completeActivation();
 }
 
@@ -1500,14 +1513,20 @@ void MozillaVPN::billingNotAvailable() {
 
 void MozillaVPN::subscriptionNotValidated() {
   setState(StateSubscriptionNotValidated);
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
+                                     {{"error", "not-validated"}});
 }
 
 void MozillaVPN::subscriptionFailed() {
   subscriptionFailedInternal(false /* canceled by user */);
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
+                                     {{"error", "failed"}});
 }
 
 void MozillaVPN::subscriptionCanceled() {
   subscriptionFailedInternal(true /* canceled by user */);
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
+                                     {{"error", "canceled"}});
 }
 
 void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
@@ -1551,8 +1570,12 @@ void MozillaVPN::alreadySubscribed() {
     return;
   }
 #endif
+
   logger.info() << "Setting state: Subscription Blocked";
   setState(StateSubscriptionBlocked);
+
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
+                                     {{"error", "alrady-subscribed"}});
 }
 
 void MozillaVPN::update() {
@@ -1685,4 +1708,24 @@ void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
   hardReset();
   quit();
+}
+
+void MozillaVPN::crashTest() {
+  char* text = new char[100];
+  delete[] text;
+  delete[] text;
+}
+
+// static
+QString MozillaVPN::devVersion() {
+  QString out;
+  QTextStream stream(&out);
+
+  stream << "Qt version: <b>";
+  stream << qVersion();
+  stream << "</b> - compiled: <b>";
+  stream << QT_VERSION_STR;
+  stream << "</b>";
+
+  return out;
 }

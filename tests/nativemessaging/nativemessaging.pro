@@ -5,6 +5,10 @@
 QT += testlib
 QT += network
 
+include($$PWD/../../src/qmake/extensionbridge.pri)
+
+CONFIG += c++1z
+
 macos {
     CONFIG -= app_bundle
 }

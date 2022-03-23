@@ -16,10 +16,12 @@ class LinuxPingSender final : public PingSender {
   Q_DISABLE_COPY_MOVE(LinuxPingSender)
 
  public:
-  LinuxPingSender(const QString& source, QObject* parent = nullptr);
+  LinuxPingSender(const QHostAddress& source, QObject* parent = nullptr);
   ~LinuxPingSender();
 
-  void sendPing(const QString& dest, quint16 sequence) override;
+  bool isValid() override { return (m_socket >= 0); };
+
+  void sendPing(const QHostAddress& dest, quint16 sequence) override;
 
  private:
   int createSocket();
@@ -30,8 +32,7 @@ class LinuxPingSender final : public PingSender {
 
  private:
   QSocketNotifier* m_notifier = nullptr;
-  QString m_source;
-  int m_socket = 0;
+  int m_socket = -1;
   quint16 m_ident = 0;
 };
 

@@ -21,7 +21,6 @@ _qmake() {
       CONFIG+=debug \
       QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage \
       QT+=svg \
-      CONFIG+=webextension \
       CONFIG+=AUTHTEST || die "Compilation failed"
 
     [ -f Makefile ] || die "Expected Makefile"
@@ -32,13 +31,17 @@ _compile() {
   (cd "$1" && make -j8) || die
 }
 
+_grcov() {
+  (
+    cd "$1" || die
+    grcov .obj  -s . -t lcov --branch --ignore-not-existing || die "Failed to run grcov"
+    [ -f "$2" ] || die "Expected $2 grcov output"
+  ) > "$2"
+}
+
 # Public methods
 
 ## Unit tests
-
-utest_dependencies() {
-  echo "Nothing to do here"
-}
 
 utest_compile_unit() {
   _qmake tests/unit || die
@@ -53,8 +56,6 @@ utest_compile_auth() {
 utest_compile_nativemessaging() {
   _qmake tests/nativemessaging || die
   _compile tests/nativemessaging || die
-
-  (cd extension/bridge && cargo build --release) || die
   [ -f extension/bridge/target/release/mozillavpnnp ] || die "Expected extension/bridge/target/release/mozillavpnnp"
 }
 
@@ -79,8 +80,19 @@ utest_cleanup_auth() {
 }
 
 utest_cleanup_nativemessaging() {
-  (cd extension/bridge && cargo clean) || die
   _cleanup tests/nativemessaging
+}
+
+utest_grcov_unit() {
+  _grcov ./tests/unit/ "$1"
+}
+
+utest_grcov_auth() {
+  _grcov ./tests/auth/ "$1"
+}
+
+utest_grcov_nativemessaging() {
+  _grcov ./tests/nativemessaging/ "$1"
 }
 
 ## Lottie tests
@@ -111,6 +123,14 @@ lottie_cleanup_qml() {
   _cleanup lottie/tests/qml || die
 }
 
+lottie_grcov_unit() {
+  _grcov ./lottie/tests/unit "$1" || die
+}
+
+lottie_grcov_qml() {
+  _grcov ./lottie/tests/qml "$1" || die
+}
+
 ## QML tests
 
 qmltest_compile() {
@@ -124,4 +144,8 @@ qmltest_run() {
 
 qmltest_cleanup() {
   _cleanup tests/qml || die
+}
+
+qmltest_grcov() {
+  _grcov ./tests/qml "$1"
 }

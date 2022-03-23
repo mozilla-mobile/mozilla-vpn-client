@@ -136,7 +136,7 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   // Enable the windows firewall for this peer.
   WindowsFirewall::instance()->enablePeerTraffic(config);
 
-  logger.debug() << "Configuring peer" << printableKey(config.m_serverPublicKey)
+  logger.debug() << "Configuring peer" << logger.keys(config.m_serverPublicKey)
                  << "via" << config.m_serverIpv4AddrIn;
 
   // Update/create the peer config
@@ -227,7 +227,8 @@ bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix,
     return true;
   }
   if (result != NO_ERROR) {
-    logger.error() << "Failed to create route to" << prefix.toString()
+    logger.error() << "Failed to create route to"
+                   << logger.sensitive(prefix.toString())
                    << "result:" << result;
   }
   return result == NO_ERROR;
@@ -245,7 +246,8 @@ bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix,
     return true;
   }
   if (result != NO_ERROR) {
-    logger.error() << "Failed to delete route to" << prefix.toString()
+    logger.error() << "Failed to delete route to"
+                   << logger.sensitive(prefix.toString())
                    << "result:" << result;
   }
   return result == NO_ERROR;

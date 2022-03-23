@@ -77,6 +77,7 @@ When the email address is received and validated, the client goes to
     * Account already exists - rare
     * Email already exists - rare
     * Email type not supported - ?!?
+    * Invalid email address
     * Invalid email code
     * Too many requests
     * Unknown account - ?!?

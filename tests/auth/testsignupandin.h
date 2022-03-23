@@ -28,5 +28,5 @@ class TestSignUpAndIn final : public QObject {
   // StateVerificationSessionByTotpNeeded state change.
   bool m_sendWrongTotpCode = true;
 
-  QByteArray m_totpSecret;
+  QString m_totpSecret;
 };

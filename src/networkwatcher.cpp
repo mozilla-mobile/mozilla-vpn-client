@@ -98,7 +98,8 @@ void NetworkWatcher::settingsChanged(const bool& active) {
 
 void NetworkWatcher::unsecuredNetwork(const QString& networkName,
                                       const QString& networkId) {
-  logger.debug() << "Unsecured network:" << networkName << "id:" << networkId;
+  logger.debug() << "Unsecured network:" << logger.sensitive(networkName)
+                 << "id:" << logger.sensitive(networkId);
 
 #ifndef UNIT_TEST
   if (!m_reportUnsecuredNetwork) {

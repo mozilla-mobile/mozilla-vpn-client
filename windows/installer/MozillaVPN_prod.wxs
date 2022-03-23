@@ -77,8 +77,6 @@
 				<File Source="../../balrog.dll" />
 				<File Source="../../libcrypto-1_1-x64.dll" />
 				<File Source="../../libssl-1_1-x64.dll" />
-				<File Source="../../libEGL.dll" />
-				<File Source="../../libGLESv2.dll" />
 				<File Source="../../mullvad-split-tunnel.cat" />
 				<File Source="../../mullvad-split-tunnel.inf" />
 				<File Source="../../mullvad-split-tunnel.sys" />

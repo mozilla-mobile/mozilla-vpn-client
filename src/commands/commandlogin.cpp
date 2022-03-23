@@ -76,9 +76,9 @@ int CommandLogin::run(QStringList& tokens) {
     QEventLoop loop;
 
     if (passwordOption.m_set) {
-      AuthenticationInApp* aip = AuthenticationInApp::instance();
+      AuthenticationInApp* aia = AuthenticationInApp::instance();
 
-      QObject::connect(aip, &AuthenticationInApp::stateChanged, [&] {
+      QObject::connect(aia, &AuthenticationInApp::stateChanged, [&] {
         switch (AuthenticationInApp::instance()->state()) {
           case AuthenticationInApp::StateInitializing:
             break;
@@ -147,7 +147,7 @@ int CommandLogin::run(QStringList& tokens) {
       });
 
       QObject::connect(
-          aip, &AuthenticationInApp::errorOccurred,
+          aia, &AuthenticationInApp::errorOccurred,
           [&](AuthenticationInApp::ErrorType error) {
             QTextStream stream(stdout);
             switch (error) {
@@ -164,6 +164,9 @@ int CommandLogin::run(QStringList& tokens) {
                 break;
               case AuthenticationInApp::ErrorInvalidUnblockCode:
                 stream << "Invalid unblock code!" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorInvalidEmailAddress:
+                stream << "Invalid email address" << Qt::endl;
                 break;
               case AuthenticationInApp::ErrorInvalidEmailCode:
                 stream << "Invalid email code!" << Qt::endl;

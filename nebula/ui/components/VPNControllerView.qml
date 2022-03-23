@@ -53,12 +53,15 @@ Item {
 
     Rectangle {
         id: boxBackground
+
+        property int maximumBoxHeight
+
         color: VPNTheme.theme.bgColor
         radius: VPNTheme.theme.cornerRadius * 2
         antialiasing: true
 
         height: box.connectionInfoScreenVisible
-            ? window.safeContentHeight - VPNTheme.theme.windowMargin * 2
+            ? maximumBoxHeight
             : box.height
         width: box.width
 
@@ -67,6 +70,13 @@ Item {
                 duration: connectionInfoScreen.transitionDuration
                 easing.type: Easing.InOutQuad
             }
+        }
+
+        Component.onCompleted: {
+            const boxCoordinates = box.mapToItem(box.parent, 0, 0);
+            maximumBoxHeight = window.safeContentHeight
+                - VPNTheme.theme.windowMargin * 2
+                - (window.fullscreenRequired() ? boxCoordinates.y + VPNTheme.theme.windowMargin : 0);
         }
     }
 
@@ -578,17 +588,16 @@ Item {
     VPNIconButton {
         id: connectionInfoToggleButton
 
+        //% "Close"
+        property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")
+
         anchors {
             left: parent.left
             leftMargin: VPNTheme.theme.windowMargin / 2
             top: parent.top
             topMargin: VPNTheme.theme.windowMargin / 2
         }
-        accessibleName: box.connectionInfoScreenVisible
-            //% "Close"
-            ? qsTrId("vpn.connectionInfo.close")
-            //% "Connection Information"
-            : qsTrId("vpn.controller.info")
+        accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : VPNl18n.ConnectionInfoOpenButton
         Accessible.ignored: !connectionInfoToggleButton.visible
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
         enabled: connectionInfoToggleButton.visible
@@ -596,7 +605,9 @@ Item {
         z: 1
 
         onClicked: {
-            Sample.connectionInfoOpened.record();
+            if (!box.connectionInfoScreenVisible) {
+                Sample.connectionInfoOpened.record();
+            }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
         }
 
@@ -666,6 +677,9 @@ Item {
         opacity: 1
 
         onClicked: {
+            if (box.connectionInfoScreenVisible) {
+                return;
+            }
             Sample.settingsViewOpened.record();
             stackview.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate)
         }
@@ -676,8 +690,8 @@ Item {
         anchors.rightMargin: VPNTheme.theme.windowMargin / 2
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
-        Accessible.ignored: connectionInfoVisible
-        enabled: !connectionInfoVisible
+        Accessible.ignored: box.connectionInfoScreenVisible
+        enabled: !box.connectionInfoScreenVisible
 
         VPNIcon {
             id: settingsImage
@@ -822,7 +836,7 @@ Item {
 
         VPNConnectionStability {
             id: connectionStability
-            Accessible.ignored: connectionInfoVisible || !visible
+            Accessible.ignored: connectionInfoScreenVisible || !visible
             width: parent.width
             implicitHeight: childrenRect.height
         }
@@ -837,8 +851,8 @@ Item {
         anchors.bottomMargin: 48
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        Accessible.ignored: connectionInfoVisible
-        enabled: !connectionInfoVisible
+        Accessible.ignored: connectionInfoScreenVisible
+        enabled: !connectionInfoScreenVisible
     }
 
     VPNConnectionInfo {

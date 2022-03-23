@@ -68,6 +68,7 @@ RowLayout {
         Layout.preferredWidth: VPNTheme.theme.iconSize - VPNTheme.theme.focusBorderWidth
         Layout.rightMargin: VPNTheme.theme.listSpacing
         Layout.topMargin: 1
+        visible: messageText.text && messageText.text.length !== 0;
     }
 
     VPNTextBlock {

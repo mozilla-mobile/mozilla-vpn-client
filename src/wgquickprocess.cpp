@@ -11,7 +11,7 @@
 
 namespace {
 Logger logger(
-#if defined(MVPN_MACOS_DAEMON)
+#if defined(MVPN_MACOS)
     LOG_MACOS
 #elif defined(MVPN_WINDOWS)
     LOG_WINDOWS
@@ -76,7 +76,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
   //
   // This function should go away as soon as we fixup the Mac implementation
   // anyways.
-#if !defined(MVPN_WINDOWS) && !defined(MVPN_MACOS_DAEMON)
+#if !defined(MVPN_WINDOWS) && !defined(MVPN_MACOS)
   out << "\n[Peer]\n";
   out << "PublicKey = " << config.m_serverPublicKey << "\n";
   out << "Endpoint = " << config.m_serverIpv4AddrIn.toUtf8() << ":"

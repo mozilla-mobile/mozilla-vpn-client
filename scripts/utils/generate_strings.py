@@ -108,7 +108,8 @@ def generateStrings():
                     )
 
         with open(
-            os.path.join(translations_path, "generated", "l18nstrings.h"), "w"
+            os.path.join(translations_path, "generated", "l18nstrings.h"), "w",
+            encoding="utf-8"
         ) as output:
             output.write(
                 """/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -157,7 +158,8 @@ class L18nStrings final : public QQmlPropertyMap {
             )
 
         with open(
-            os.path.join(translations_path, "generated", "l18nstrings_p.cpp"), "w"
+            os.path.join(translations_path, "generated", "l18nstrings_p.cpp"), "w",
+            encoding="utf-8"
         ) as output:
             output.write(
                 """/* This Source Code Form is subject to the terms of the Mozilla Public

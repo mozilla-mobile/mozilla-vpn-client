@@ -6,7 +6,6 @@
 #define CONTROLLER_H
 
 #include "models/server.h"
-#include "connectioncheck.h"
 #include "ipaddress.h"
 
 #include <QElapsedTimer>
@@ -107,7 +106,6 @@ class Controller final : public QObject {
 
   void captivePortalPresent();
   void captivePortalGone();
-  bool isUnsettled();
 
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
@@ -126,9 +124,6 @@ class Controller final : public QObject {
   void statusUpdated(const QString& serverIpv4Gateway,
                      const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes);
-
-  void connectionConfirmed();
-  void connectionFailed();
   void handshakeTimeout();
 
  signals:
@@ -142,6 +137,7 @@ class Controller final : public QObject {
   void enableDisconnectInConfirmingChanged();
   void silentSwitchDone();
   void activationBlockedForCaptivePortal();
+  void handshakeFailed(const QString& serverHostname);
 
  private:
   void setState(State state);
@@ -155,22 +151,14 @@ class Controller final : public QObject {
   void activateInternal();
   void activateNext();
 
-  void resetConnectionCheck();
-
-  void heartbeatCompleted();
-
+  void clearRetryCounter();
   void clearConnectedTime();
   void resetConnectedTime();
-
-  void startUnsettledPeriod();
 
  private:
   State m_state = StateInitializing;
 
   QTimer m_timer;
-  QTimer m_settleTimer;
-
-  bool m_settled = true;
 
   bool m_portalDetected = false;
 
@@ -201,16 +189,7 @@ class Controller final : public QObject {
 
   NextStep m_nextStep = None;
 
-  ConnectionCheck m_connectionCheck;
   int m_connectionRetry = 0;
-
-  enum ReconnectionStep {
-    NoReconnection,
-    ExpectDisconnection,
-    ExpectHeartbeat,
-  };
-
-  ReconnectionStep m_reconnectionStep = NoReconnection;
 
   QList<HopConnection> m_activationQueue;
 

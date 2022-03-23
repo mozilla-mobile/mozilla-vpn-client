@@ -57,9 +57,13 @@
 #endif
 
 #ifdef MVPN_WINDOWS
+#  include "crashreporter/crashclient.h"
 #  include "eventlistener.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #  include "platforms/windows/windowsappimageprovider.h"
+
+#  include <iostream>
+#  include <windows.h>
 #endif
 
 #ifdef MVPN_WASM
@@ -138,6 +142,23 @@ int CommandUI::run(QStringList& tokens) {
 
     // This class receives communications from other instances.
     EventListener eventListener;
+#endif
+
+#ifdef MVPN_WINDOWS
+#  ifdef MVPN_DEBUG
+    // Allocate a console to view log output in debug mode on windows
+    if (AllocConsole()) {
+      FILE* unusedFile;
+      freopen_s(&unusedFile, "CONOUT$", "w", stdout);
+      freopen_s(&unusedFile, "CONOUT$", "w", stderr);
+      std::cout.clear();
+      std::clog.clear();
+      std::cerr.clear();
+    }
+#  endif
+
+    CrashClient::instance().start(CommandLineParser::argc(),
+                                  CommandLineParser::argv());
 #endif
 
 #ifdef MVPN_DEBUG
@@ -366,6 +387,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNSettings",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = SettingsHolder::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNConnectionBenchmark",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->connectionBenchmark();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

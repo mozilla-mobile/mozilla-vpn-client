@@ -82,7 +82,6 @@ void ServerData::writeSettings() {
 void ServerData::update(const QString& countryCode, const QString& cityName,
                         const QString& entryCountryCode,
                         const QString& entryCityName) {
-  logger.debug() << "Country:" << countryCode << "City:" << cityName;
   initializeInternal(countryCode, cityName, entryCountryCode, entryCityName);
   emit changed();
 }

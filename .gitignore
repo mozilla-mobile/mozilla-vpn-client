@@ -28,6 +28,7 @@ linux/netfilter/vendor/
 .tmp
 .env
 .venv
+__pycache__
 
 # Node (for functional tests)
 node_modules
@@ -53,7 +54,6 @@ xcode.xconfig
 tests/auth/tests
 tests/unit/tests
 tests/nativemessaging/tests
-tests/proxy/__pycache__/
 tests/qml/qml_tests
 tests/qml/target_wrapper.sh
 build
@@ -117,9 +117,6 @@ android/src/org/mozilla/firefox/vpn/glean/GleanEvents.kt
 # For users compiling QT per the README
 /qt/
 
-# Scripts
-scripts/__pycache__
-
 # Language files
 translations/*/*.ts
 translations/*/*.qm
@@ -143,10 +140,6 @@ tools/inspector/dist
 tools/inspector/node_modules
 
 *.PDB
-
-# taskcluster
-taskcluster/mozillavpn_taskgraph/__pycache__
-taskcluster/mozillavpn_taskgraph/*/__pycache__
 
 # Bridge app
 extension/bridge/target
