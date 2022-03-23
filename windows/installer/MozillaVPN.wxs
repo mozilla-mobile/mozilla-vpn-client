@@ -67,27 +67,27 @@
     <!--
 			Components
 		-->
-		<ComponentGroup Id="MozillaVPNComponents">
-			<Component Directory="MozillaVPNFolder" Id="MozillaVPNExecutable" Guid="EF353A73-A10B-4A2D-87AC-4389BBD9313B">
-				<File Id="MozillaVPNExecutable" Source="../../MozillaVPN.exe" KeyPath="yes">
-					<Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
-				</File>
-				<File Source="../../tunnel/$(var.Platform)/tunnel.dll" />
-				<File Source="../../tunnel/.deps/wintun/bin/$(var.WintunPlatform)/wintun.dll" />
-				<File Source="../../balrog/$(var.Platform)/balrog.dll" />
-				<File Source="../../libcrypto-1_1-x64.dll" />
-				<File Source="../../libssl-1_1-x64.dll" />
-				<File Source="../split-tunnel/mullvad-split-tunnel.cat" />
-				<File Source="../split-tunnel/mullvad-split-tunnel.inf" />
-				<File Source="../split-tunnel/mullvad-split-tunnel.sys" />
-				<File Source="../split-tunnel/WdfCoinstaller01011.dll" />
-				
+    <ComponentGroup Id="MozillaVPNComponents">
+      <Component Directory="MozillaVPNFolder" Id="MozillaVPNExecutable" Guid="EF353A73-A10B-4A2D-87AC-4389BBD9313B">
+        <File Id="MozillaVPNExecutable" Source="../../MozillaVPN.exe" KeyPath="yes">
+          <Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
+        </File>
+        <File Source="../../tunnel/$(var.Platform)/tunnel.dll" />
+        <File Source="../../tunnel/.deps/wintun/bin/$(var.WintunPlatform)/wintun.dll" />
+        <File Source="../../balrog/$(var.Platform)/balrog.dll" />
+        <File Source="../../libcrypto-1_1-x64.dll" />
+        <File Source="../../libssl-1_1-x64.dll" />
+        <File Source="../split-tunnel/mullvad-split-tunnel.cat" />
+        <File Source="../split-tunnel/mullvad-split-tunnel.inf" />
+        <File Source="../split-tunnel/mullvad-split-tunnel.sys" />
+        <File Source="../split-tunnel/WdfCoinstaller01011.dll" />
 
-				<File Source="../../extension/manifests/windows/mozillavpn.json" />
-				<File Source="../../mozillavpnnp.exe" />
 
-				<!-- Broker Service -->
-				<ServiceInstall
+        <File Source="../../extension/manifests/windows/mozillavpn.json" />
+        <File Source="../../mozillavpnnp.exe" />
+
+        <!-- Broker Service -->
+        <ServiceInstall
 					Type="ownProcess"
 					Name="MozillaVPNBroker"
 					DisplayName="Mozilla VPN (broker)"
@@ -116,7 +116,7 @@
 			Merge modules
 		-->
     <DirectoryRef Id="MozillaVPNFolder">
-      <Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC143_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
+      <Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
     </DirectoryRef>
 
     <DirectoryRef Id="MozillaVPNFolder">

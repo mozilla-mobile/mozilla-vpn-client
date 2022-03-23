@@ -114,7 +114,7 @@
 			Merge modules
 		-->
 		<DirectoryRef Id="MozillaVPNFolder">
-			<Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC143_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
+			<Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
 		</DirectoryRef>
 
 		<DirectoryRef Id="MozillaVPNFolder">

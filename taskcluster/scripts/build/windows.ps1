@@ -25,13 +25,16 @@ $env:PATH ="$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 $env:VCToolsRedistDir=(resolve-path "$FETCHES_PATH/VisualStudio/VC/Redist/MSVC/14.30.30704/").ToString()
 $env:BUILDDIR=resolve-path $FETCHES_PATH/QT_OUT
 
+# TODO: Remove this and change all to Microsoft_VC143 once we know there is no cavecat building with msvcv143
+Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x64.msm
+Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x86.msm
 
 # CMD does for some reason not use the new PATH, thus
 # We need to pre-generate those resources here.
 python3 ./scripts/utils/generate_glean.py
 python3 ./scripts/utils/import_languages.py
 
-./scripts/windows_compile.bat -w
+./scripts/windows_compile.bat -w --nmake
 
 Write-Output "Writing Artifacts"
 

@@ -29,10 +29,6 @@ SET SHOW_HELP=F
 if "%1" NEQ "" (
   if "%1" == "-h" SET SHOW_HELP=T
   if "%1" == "--help" SET SHOW_HELP=T
-
-  if "%1" NEQ "--debug" (
-     SET SHOW_HELP=T
-  )
 )
 
 if "%SHOW_HELP%" == "T" (
@@ -87,8 +83,8 @@ CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\SSL\bin\libcrypto-1_1-x64.
 CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\SSL\bin\libssl-1_1-x64.dll
 
 ECHO "Checking vctools in %VCToolsRedistDir%"
-CALL :CopyDependency Microsoft_VC143_CRT_x86.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC143_CRT_x86.msm"
-CALL :CopyDependency Microsoft_VC143_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC143_CRT_x64.msm"
+CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x86.msm"
+CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
 python3 scripts\utils\import_languages.py
