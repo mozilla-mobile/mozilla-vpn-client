@@ -63,7 +63,8 @@ xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALL
 # Package
 python3 ./scripts/macos/import_pkg_resources.py
 
-export BUILD=$UPLOAD_DIR
+#export BUILD=$UPLOAD_DIR
+export BUILD="/builds/worker/artifacts/"
 # Full path of the app in a temp folder
 mkdir -p $BUILD
 cp -r Release/Mozilla\ VPN.app $BUILD
