@@ -872,7 +872,7 @@ Item {
         }
     }
 
-    ConnectionInfoScreen {
+    VPNConnectionInfoScreen {
         id: connectionInfoScreen
         isOpen: box.connectionInfoScreenVisible
 

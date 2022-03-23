@@ -75,7 +75,6 @@ Flickable {
 
             VPNLottieAnimation {
                 id: speedometerAnimation
-                loop: false
                 source: ":/nebula/resources/animations/speedometer_animation.json"
             }
         }
@@ -100,7 +99,7 @@ Flickable {
             Layout.leftMargin: VPNTheme.theme.windowMargin
             Layout.rightMargin: VPNTheme.theme.windowMargin
 
-            ConnectionInfoItem {
+            VPNConnectionInfoItem {
                 title: VPNServerCountryModel.getLocalizedCountryName(
                     VPNCurrentServer.exitCountryCode
                 )
@@ -119,7 +118,7 @@ Flickable {
                 Layout.fillWidth: true
             }
 
-            ConnectionInfoItem {
+            VPNConnectionInfoItem {
                 title: VPNl18n.ConnectionInfoLabelPing
                 subtitle: VPNConnectionBenchmark.ping + " " + VPNl18n.ConnectionInfoUnitPing
                 iconPath: "qrc:/nebula/resources/connection-green.svg"
@@ -133,7 +132,7 @@ Flickable {
                 Layout.fillWidth: true
             }
 
-            ConnectionInfoItem {
+            VPNConnectionInfoItem {
                 //% "Download"
                 title: qsTrId("vpn.connectionInfo.download")
                 subtitle: root.getConnectionLabel(VPNConnectionBenchmark.download)

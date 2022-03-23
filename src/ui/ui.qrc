@@ -11,10 +11,10 @@
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
         <file>components/VPNControllerView.qml</file>
-        <file>connectionInfo/ConnectionInfoContent.qml</file>
-        <file>connectionInfo/ConnectionInfoError.qml</file>
-        <file>connectionInfo/ConnectionInfoItem.qml</file>
-        <file>connectionInfo/ConnectionInfoScreen.qml</file>
+        <file>connectionInfo/VPNConnectionInfoContent.qml</file>
+        <file>connectionInfo/VPNConnectionInfoError.qml</file>
+        <file>connectionInfo/VPNConnectionInfoItem.qml</file>
+        <file>connectionInfo/VPNConnectionInfoScreen.qml</file>
         <file>developerMenu/ViewAnimationsPlayground.qml</file>
         <file>developerMenu/ViewDeveloperMenu.qml</file>
         <file>developerMenu/ViewFeatureList.qml</file>

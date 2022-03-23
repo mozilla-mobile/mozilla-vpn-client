@@ -117,7 +117,7 @@ Rectangle {
         }
     }
 
-    ConnectionInfoContent {
+    VPNConnectionInfoContent {
         id: connectionInfoContent
 
         opacity: visible && root.state !== "closing" ? 1 : 0
@@ -132,7 +132,7 @@ Rectangle {
         }
     }
 
-    ConnectionInfoError {
+    VPNConnectionInfoError {
         id: connectionInfoError
 
         opacity: visible && root.state !== "closing" ? 1 : 0
