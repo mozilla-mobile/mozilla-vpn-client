@@ -10,8 +10,6 @@ const fetch = require('node-fetch');
 const WBK = require('wikibase-sdk');
 const fs = require('fs');
 
-const exec = util.promisify(require('child_process').exec);
-
 describe('Server list', function() {
   let servers;
   let currentCountryCode;
@@ -28,10 +26,14 @@ describe('Server list', function() {
   countryIDs.set('Netherlands', 'http://www.wikidata.org/entity/Q55');
   countryIDs.set('Luxembourg', 'http://www.wikidata.org/entity/Q32');
   countryIDs.set('Germany', 'http://www.wikidata.org/entity/Q183');
+  countryIDs.set('Denmark', 'http://www.wikidata.org/entity/Q35');
+  countryIDs.set('France', 'http://www.wikidata.org/entity/Q142');
+  countryIDs.set('Island', 'http://www.wikidata.org/entity/Q189');
 
   const cityIDs = new Map();
   cityIDs.set('Frankfurt', 'http://www.wikidata.org/entity/Q1794');
   cityIDs.set('Melbourne', 'http://www.wikidata.org/entity/Q3141');
+  cityIDs.set('Marseille', 'http://www.wikidata.org/entity/Q23482');
   cityIDs.set('Dallas, TX', 'http://www.wikidata.org/entity/Q16557');
   cityIDs.set('Denver, CO', 'http://www.wikidata.org/entity/Q16554');
   cityIDs.set('Miami, FL', 'http://www.wikidata.org/entity/Q8652');

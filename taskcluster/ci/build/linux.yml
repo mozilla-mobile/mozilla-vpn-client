@@ -23,4 +23,4 @@ linux/opt:
             using: run-task
             use-caches: true
             cwd: '{checkout}'
-            command: ./scripts/linux/build.sh
+            command: ./taskcluster/scripts/build/linux.sh

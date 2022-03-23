@@ -216,6 +216,8 @@ void MozillaVPN::initialize() {
 
   m_private->m_releaseMonitor.runSoon();
 
+  m_private->m_telemetry.initialize();
+
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
 #ifdef MVPN_ADJUST
@@ -1462,6 +1464,8 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   }
 
   iap->startSubscription(productIdentifier);
+
+  emit recordGleanEvent(GleanSample::iapSubscriptionStarted);
 }
 
 void MozillaVPN::restoreSubscriptionStarted() {
@@ -1470,6 +1474,8 @@ void MozillaVPN::restoreSubscriptionStarted() {
   setState(StateSubscriptionInProgress);
 
   IAPHandler::instance()->startRestoreSubscription();
+
+  emit recordGleanEvent(GleanSample::iapRestoreSubStarted);
 }
 
 void MozillaVPN::subscriptionCompleted() {
@@ -1492,6 +1498,8 @@ void MozillaVPN::subscriptionCompleted() {
   AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
 
+  emit recordGleanEvent(GleanSample::iapSubscriptionCompleted);
+
   completeActivation();
 }
 
@@ -1505,14 +1513,20 @@ void MozillaVPN::billingNotAvailable() {
 
 void MozillaVPN::subscriptionNotValidated() {
   setState(StateSubscriptionNotValidated);
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
+                                     {{"error", "not-validated"}});
 }
 
 void MozillaVPN::subscriptionFailed() {
   subscriptionFailedInternal(false /* canceled by user */);
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
+                                     {{"error", "failed"}});
 }
 
 void MozillaVPN::subscriptionCanceled() {
   subscriptionFailedInternal(true /* canceled by user */);
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
+                                     {{"error", "canceled"}});
 }
 
 void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
@@ -1556,8 +1570,12 @@ void MozillaVPN::alreadySubscribed() {
     return;
   }
 #endif
+
   logger.info() << "Setting state: Subscription Blocked";
   setState(StateSubscriptionBlocked);
+
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
+                                     {{"error", "alrady-subscribed"}});
 }
 
 void MozillaVPN::update() {
