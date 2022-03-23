@@ -20,6 +20,15 @@ void TaskScheduler::scheduleTask(Task* task) {
 }
 
 // static
+void TaskScheduler::scheduleTaskNow(Task* task) {
+  Q_ASSERT(task);
+  logger.debug() << "Scheduling task NOW!:" << task->name();
+
+  task->run();
+  connect(task, &Task::completed, task, &QObject::deleteLater);
+}
+
+// static
 void TaskScheduler::deleteTasks() { maybeCreate()->deleteTasksInternal(); }
 
 // static

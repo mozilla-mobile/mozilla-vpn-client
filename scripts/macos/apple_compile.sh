@@ -121,9 +121,11 @@ $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
 
 export PATH="$QT_BIN:$PATH"
 
-printn Y "Retrieve the wireguard-go version... "
-(cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
-print G "done."
+if [[ "$OS" == "ios" ]]; then
+  printn Y "Retrieve the wireguard-go version... "
+  (cd ios/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > ios/gobridge/wireguard-go-version.h
+  print G "done."
+fi
 
 printn Y "Cleaning the existing project... "
 rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"
@@ -186,16 +188,19 @@ $QMAKE \
   $ADJUST \
   src/src.pro || die "Compilation failed"
 
+PROJECT="Mozilla VPN.xcodeproj"
+[[ "$OS" = "ios" ]] && PROJECT="MozillaVPN.xcodeproj"
+
 print Y "Patching the xcode project..."
-ruby scripts/macos/utils/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
+ruby scripts/macos/utils/xcode_patcher.rb "$PROJECT" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 
 if command -v "sed" &>/dev/null; then
-  sed -i '' '/<key>BuildSystemType<\/key>/d' MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-  sed -i '' '/<string>Original<\/string>/d' MozillaVPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+  sed -i '' '/<key>BuildSystemType<\/key>/d' "$PROJECT/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings"
+  sed -i '' '/<string>Original<\/string>/d' "$PROJECT/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings"
 fi
 
 print Y "Opening in XCode..."
-open MozillaVPN.xcodeproj
+open "$PROJECT"
 print G "All done!"

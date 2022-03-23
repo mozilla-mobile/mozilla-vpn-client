@@ -48,7 +48,6 @@ utest_compile_nativemessaging() {
   _qmake tests/nativemessaging/nativemessaging.pro tests.vcxproj || die
   _compile tests.vcxproj tests.exe || die
 
-  (cd extension/bridge && cargo build --release) || die
   [ -f extension/bridge/target/release/mozillavpnnp.exe ] || die "Expected extension/bridge/target/release/mozillavpnnp.exe"
 }
 
