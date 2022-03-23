@@ -11,7 +11,6 @@ import Mozilla.VPN 1.0
 Flickable {
     id: root
 
-    contentHeight: Math.max(content.height, height)
     height: parent.height
     width: parent.width
     onVisibleChanged: {
@@ -22,6 +21,10 @@ Flickable {
             speedometerAnimation.stop();
             checkmarkListModel.clear();
         }
+    }
+
+    Component.onCompleted: {
+        root.contentHeight = Qt.binding(() => Math.max(content.height, root.height));
     }
 
     ListModel {
@@ -138,9 +141,7 @@ Flickable {
                 subtitle: root.getConnectionLabel(VPNConnectionBenchmark.download)
                 iconPath: "qrc:/nebula/resources/download.svg"
             }
-
         }
-
     }
 
     function getConnectionLabel(connectionValue) {
