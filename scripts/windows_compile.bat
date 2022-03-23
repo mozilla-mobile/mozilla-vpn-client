@@ -30,25 +30,16 @@ if "%1" NEQ "" (
   if "%1" == "-h" SET SHOW_HELP=T
   if "%1" == "--help" SET SHOW_HELP=T
 
-  if "%1" NEQ "-t" (
-    if "%1" NEQ "--test" (
-      if "%1" NEQ "-w" (
-        if "%1" NEQ "--webextension" (
-          if "%1" NEQ "--debug" (
-             SET SHOW_HELP=T
-          )
-        )
-      )
-    )
+  if "%1" NEQ "--debug" (
+     SET SHOW_HELP=T
   )
 )
 
 if "%SHOW_HELP%" == "T" (
   ECHO "Options:"
   ECHO "  -h|--help            Help menu"
-  ECHO "  -t|--test            Test mode"
-  ECHO "  -w|--webextension    Enable the webExtension support"
   ECHO "  --debug               Build a debug version"
+  ECHO "  --nmake               Build using nmake instead of msbuild"
   EXIT 0
 )
 
@@ -60,17 +51,17 @@ IF "%BUILDDIR%" == "" (
 
 
 
-SET TEST_BUILD=F
-if "%1"== "-t" SET TEST_BUILD=T
-if "%1"== "--test" SET TEST_BUILD=T
-
-SET WEBEXTENSION_BUILD=F
-if "%1"== "-w" SET WEBEXTENSION_BUILD=T
-if "%1"== "--webextension" SET WEBEXTENSION_BUILD=T
-
 SET DEBUG_BUILD=F
 if "%1"== "--debug" SET DEBUG_BUILD=T
 if "%2"== "--debug" SET DEBUG_BUILD=T
+
+
+SET PROJECT_TYPE=vc
+if "%1"== "--nmake" SET PROJECT_TYPE=app
+if "%2"== "--nmake" SET PROJECT_TYPE=app
+if "%3"== "--nmake" SET PROJECT_TYPE=app
+if "%4"== "--nmake" SET PROJECT_TYPE=app
+
 
 SET BUILD_CONF=Release
 if %DEBUG_BUILD% ==T (
@@ -81,18 +72,6 @@ ECHO Extract version...
 FOR /F "tokens=2* delims==" %%A IN ('FINDSTR /IC:":VERSION" version.pri') DO call :SetVersion %%A
 
 SET FLAGS=BUILD_ID=%VERSION%
-
-if "%TEST_BUILD%" == "T" (
-  ECHO Test build enabled
-  SET FLAGS=%FLAGS% CONFIG+=DUMMY
-) else (
-  SET FLAGS=%FLAGS% CONFIG+=balrog
-)
-
-if "%WEBEXTENSION_BUILD%" == "T" (
-  ECHO Web-Extension support enabled
-  SET FLAGS=%FLAGS% CONFIG+=webextension
-)
 
 ECHO Checking required commands...
 CALL :CheckCommand git
@@ -119,42 +98,16 @@ python3 scripts\utils\generate_glean.py
 
 ECHO BUILD_BUILD = %DEBUG_BUILD%
 
-IF %DEBUG_BUILD%==T (
-  ECHO Generating Debug Build for the extension bridge
-  pushd extension\bridge
-
-  cargo build --debug
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO cargo failed for the extension?
-  )
-
-  xcopy /y target\debug\mozillavpnnp.exe ..\..
-  popd
-)
-
-IF %DEBUG_BUILD%==F (
-  ECHO Generating Release Build for the extension bridge
-  pushd extension\bridge
-
-  cargo build --release
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO cargo failed for the extension?
-  )
-
-  xcopy /y target\release\mozillavpnnp.exe ..\..
-  popd
-)
-
 ECHO Creating the project with flags: %FLAGS%
 
 if %DEBUG_BUILD% == T (
   ECHO Generating Debug Project
-  qmake src/src.pro CONFIG+=debug %FLAGS%
+  qmake -tp %PROJECT_TYPE% src/src.pro CONFIG+=debug %FLAGS%
   xcopy /y debug\ release\
 )
 if %DEBUG_BUILD% == F (
   ECHO Generating Release Build
-  qmake src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=force_debug_info %FLAGS%
+  qmake -tp %PROJECT_TYPE% src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=force_debug_info %FLAGS%
 )
 
 IF %ERRORLEVEL% NEQ 0 (
@@ -187,16 +140,36 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 
-nmake 
+if %DEBUG_BUILD% == F (
+  ECHO Generating Debug Project
+  qmake -tp %PROJECT_TYPE% src/src.pro CONFIG+=debug %FLAGS%
+  xcopy /y debug\ release\
+)
+
+if %PROJECT_TYPE% == app (
+  ECHO  Build Using nmake
+  nmake
+)
+if %PROJECT_TYPE% == vc (
+  ECHO  Build Using MSBuild
+  MSBuild -t:Build -p:Configuration=%BUILD_CONF% MozillaVPN.vcxproj
+)
+
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to build the project
   EXIT 1
 )
-ECHO Build mozillavpn.exe
+ECHO Moving mozillavpn.exe
 
 if %DEBUG_BUILD% == T (
   REM We need to move the exes in debug so the installer can find them
   xcopy /y debug\*.exe .\
+  xcopy /y extension\bridge\target\debug\mozillavpnnp.exe .\
+)
+
+IF %DEBUG_BUILD%==F (
+  REM We need to move the exes in release so the installer can find them
+  xcopy /y extension\bridge\target\release\mozillavpnnp.exe .
 )
 
 ECHO Creating the installer...

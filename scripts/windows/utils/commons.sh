@@ -34,27 +34,20 @@ _compile() {
 
 ## Unit-tests
 
-utest_dependencies() {
-  #brew install oath-toolkit || die
-  echo "Nothing to do"
-}
-
 utest_compile_unit() {
   _qmake tests/unit/unit.pro tests.vcxproj || die
   _compile tests.vcxproj tests.exe || die
 }
 
 utest_compile_auth() {
-  echo "TODO VPN-1802: Auth tests are not supported on windows (no oath-toolkit installed, yet?)"
-  #_qmake tests/auth/auth.pro tests.vcxproj || die
-  #_compile tests.vcxproj tests.exe || die
+  _qmake tests/auth/auth.pro tests.vcxproj || die
+  _compile tests.vcxproj tests.exe || die
 }
 
 utest_compile_nativemessaging() {
   _qmake tests/nativemessaging/nativemessaging.pro tests.vcxproj || die
   _compile tests.vcxproj tests.exe || die
 
-  (cd extension/bridge && cargo build --release) || die
   [ -f extension/bridge/target/release/mozillavpnnp.exe ] || die "Expected extension/bridge/target/release/mozillavpnnp.exe"
 }
 
@@ -63,8 +56,8 @@ utest_run_unit() {
 }
 
 utest_run_auth() {
-  echo "TODO VPN-1802: Auth tests are not supported on windows (no oath-toolkit installed, yet?)"
-  #./tests.exe || die
+  ./tests.exe 2>&1 | tee LOGAUTH.txt
+  cat LOGAUTH.txt
 }
 
 utest_run_nativemessaging() {
@@ -76,8 +69,7 @@ utest_cleanup_unit() {
 }
 
 utest_cleanup_auth() {
-  echo "TODO VPN-1802: Auth tests are not supported on windows (no oath-toolkit installed, yet?)"
-  #_cleanup tests.vcxproj tests.exe || die
+  _cleanup tests.vcxproj tests.exe || die
 }
 
 utest_cleanup_nativemessaging() {

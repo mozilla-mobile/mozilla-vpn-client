@@ -9,52 +9,50 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 
 // VPNIconAndLabel
-Item {
+RowLayout {
     id: iconAndLabel
     property alias icon: icon.source
     property alias title: title.text
     property string fontColor: VPNTheme.theme.fontColorDark
     property bool showIndicator: false
 
-    implicitHeight: title.implicitHeight
-    width: parent.width
+    Layout.alignment: Qt.AlignLeft
+
+    spacing: 0
 
     VPNIcon {
         id: icon
-
-        anchors.verticalCenter: parent.verticalCenter
+        Layout.alignment: Qt.AlignVCenter
     }
 
     VPNBoldLabel {
         id: title
-
-        anchors.left: parent.left
-        anchors.verticalCenter: icon.verticalCenter
         color: fontColor
         // VPNIconAndLabel is only used inside a VPNClickableRow
         // which acts as atomic interactive control thus we want
         // to hide its content (such as VPNIconAndLabel) from
         // assistive technology.
         Accessible.ignored: true
+
+        horizontalAlignment: Text.AlignLeft
+        verticalAlignment: Text.AlignVCenter
         wrapMode: Text.WordWrap
-        leftPadding: icon.width + 14
         lineHeightMode: Text.FixedHeight
-        lineHeight: 1
-        anchors.verticalCenterOffset: 1
-        rightPadding: icon.width + 14
-        width: implicitWidth
+        lineHeight: VPNTheme.theme.labelLineHeight
+        leftPadding: VPNTheme.theme.windowMargin
+        rightPadding: VPNTheme.theme.windowMargin / 2
+        topPadding: 1
+        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+        Layout.minimumHeight: VPNTheme.theme.vSpacing
+    }
 
-        Rectangle {
-            id: indicator
+    Rectangle {
+        id: indicator
+        visible: iconAndLabel.showIndicator
+        color: VPNTheme.colors.error.default
 
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.rightMargin: icon.width
-            color: VPNTheme.colors.error.default
-            height: VPNTheme.theme.iconSize / 2
-            radius: width / 2
-            visible: iconAndLabel.showIndicator
-            width: VPNTheme.theme.iconSize / 2
-        }
+        radius: Layout.preferredWidth / 2
+        Layout.preferredWidth: VPNTheme.theme.iconSize / 2
+        Layout.preferredHeight: VPNTheme.theme.iconSize / 2
     }
 }

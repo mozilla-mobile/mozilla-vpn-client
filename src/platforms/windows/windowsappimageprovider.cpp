@@ -52,6 +52,7 @@ QPixmap WindowsAppImageProvider::requestPixmap(const QString& path, QSize* size,
     WindowsCommons::windowsLog(path + " Failed to extract icon");
     return QPixmap();
   }
+
   auto pixmap = QPixmap::fromImage(QImage::fromHICON(icons[0]));
   if (pixmap.isNull()) {
     WindowsCommons::windowsLog(path + " Failed to convert icon");

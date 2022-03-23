@@ -46,15 +46,6 @@ class WireguardUtils : public QObject {
 
   virtual bool addExclusionRoute(const QHostAddress& address) = 0;
   virtual bool deleteExclusionRoute(const QHostAddress& address) = 0;
-
-  // static
-  static QString printableKey(const QString& pubkey) {
-    if (pubkey.length() < 12) {
-      return pubkey;
-    } else {
-      return pubkey.left(6) + "..." + pubkey.right(6);
-    }
-  }
 };
 
 #endif  // WIREGUARDUTILS_H

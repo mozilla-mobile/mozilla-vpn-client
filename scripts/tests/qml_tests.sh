@@ -10,8 +10,32 @@ if [ -f .env ]; then
   . .env
 fi
 
+helpFunction() {
+  print G "Usage:"
+  print N "\t$0 [-g|--grcov <grcov.info>]"
+  print N ""
+  print N "Use -g or --grcov to name the code coverage output"
+  print N ""
+  exit 0
+}
+
 print N "This script compiles and runs MozillaVPN QML tests on MacOS and Linux"
 print N ""
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+  -g | --grcov)
+    GRCOV_FILENAME="$2"
+    shift
+    shift
+    ;;
+  *)
+    helpFunction
+    ;;
+  esac
+done
 
 if ! [ -d "src" ] || ! [ -d "tests" ]; then
   die "This script must be executed at the root of the repository."
@@ -39,7 +63,12 @@ qmltest_compile || die
 print Y "Running the QML tests..."
 qmltest_run || die
 
-printn Y "Cleaning the existing project... "
+if [[ "$GRCOV_FILENAME" ]]; then
+  print Y "Generating temp coverage file for qml tests..."
+  qmltest_grcov "$GRCOV_FILENAME"
+fi
+
+print Y "Cleaning the existing project... "
 qmltest_cleanup || die
 
 print G "All done!"

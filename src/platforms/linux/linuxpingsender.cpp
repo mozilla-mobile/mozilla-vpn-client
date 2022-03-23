@@ -7,6 +7,7 @@
 #include "logger.h"
 
 #include <QSocketNotifier>
+#include <QtEndian>
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -61,10 +62,12 @@ int LinuxPingSender::createSocket() {
   return m_socket;
 }
 
-LinuxPingSender::LinuxPingSender(const QString& source, QObject* parent)
-    : PingSender(parent), m_source(source) {
+LinuxPingSender::LinuxPingSender(const QHostAddress& source, QObject* parent)
+    : PingSender(parent) {
   MVPN_COUNT_CTOR(LinuxPingSender);
-  logger.debug() << "LinuxPingSender(" + source + ") created";
+
+  logger.debug() << "LinuxPingSender(" + logger.sensitive(source.toString()) +
+                        ") created";
 
   m_socket = createSocket();
   if (m_socket < 0) {
@@ -72,13 +75,12 @@ LinuxPingSender::LinuxPingSender(const QString& source, QObject* parent)
     return;
   }
 
+  quint32 ipv4addr = source.toIPv4Address();
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof addr);
   addr.sin_family = AF_INET;
-  if (inet_aton(source.toLocal8Bit().constData(), &addr.sin_addr) == 0) {
-    logger.error() << "source" << source << "error:" << strerror(errno);
-    return;
-  }
+  addr.sin_addr.s_addr = qToBigEndian<quint32>(ipv4addr);
+
   if (bind(m_socket, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
     close(m_socket);
     m_socket = -1;
@@ -103,28 +105,12 @@ LinuxPingSender::~LinuxPingSender() {
   }
 }
 
-void LinuxPingSender::sendPing(const QString& dest, quint16 sequence) {
-  // QProcess is not supported on iOS. Because of this we cannot use the `ping`
-  // app as fallback on this platform.
-#ifndef MVPN_IOS
-  // Use the generic ping sender if we failed to open an ICMP socket.
-  if (m_socket < 0) {
-    QStringList args;
-    args << "-c"
-         << "1";
-    args << "-I" << m_source;
-    args << dest;
-    genericSendPing(args, sequence);
-    return;
-  }
-#endif
-
+void LinuxPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
+  quint32 ipv4dest = dest.toIPv4Address();
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));
   addr.sin_family = AF_INET;
-  if (inet_aton(dest.toLocal8Bit().constData(), &addr.sin_addr) == 0) {
-    return;
-  }
+  addr.sin_addr.s_addr = qToBigEndian<quint32>(ipv4dest);
 
   struct icmphdr packet;
   memset(&packet, 0, sizeof(packet));

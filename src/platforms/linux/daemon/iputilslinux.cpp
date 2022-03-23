@@ -100,7 +100,7 @@ bool IPUtilsLinux::addIP4AddressToDevice(const InterfaceConfig& config) {
   // Set ifr to interface
   int ret = ioctl(sockfd, SIOCSIFADDR, &ifr);
   if (ret) {
-    logger.error() << "Failed to set IPv4: " << deviceAddr
+    logger.error() << "Failed to set IPv4: " << logger.sensitive(deviceAddr)
                    << "error:" << strerror(errno);
     return false;
   }
@@ -141,7 +141,7 @@ bool IPUtilsLinux::addIP6AddressToDevice(const InterfaceConfig& config) {
   // Set ifr6 to the interface
   ret = ioctl(sockfd, SIOCSIFADDR, &ifr6);
   if (ret && (errno != EEXIST)) {
-    logger.error() << "Failed to set IPv6: " << deviceAddr
+    logger.error() << "Failed to set IPv6: " << logger.sensitive(deviceAddr)
                    << "error:" << strerror(errno);
     return false;
   }

@@ -12,6 +12,8 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
+#include "../../glean/telemetry/gleansample.h"
+
 #include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -36,6 +38,14 @@ void AuthenticationInAppListener::aboutToFinish() {
     emit readyToFinish();
     return;
   }
+
+#ifdef UNIT_TEST
+  if (m_extraOp == OpAccountDeletionNeeded) {
+    logger.info() << "Deleting account in progress";
+    deleteAccount();
+    return;
+  }
+#endif
 
   NetworkRequest* request =
       NetworkRequest::createForFxaSessionDestroy(m_task, m_sessionToken);
@@ -64,10 +74,10 @@ void AuthenticationInAppListener::start(Task* task,
   m_codeChallenge = codeChallenge;
   m_codeChallengeMethod = codeChallengeMethod;
 
-  AuthenticationInApp* aip = AuthenticationInApp::instance();
-  Q_ASSERT(aip);
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  Q_ASSERT(aia);
 
-  aip->registerListener(this);
+  aia->registerListener(this);
 
   QUrl url(createAuthenticationUrl(codeChallenge, codeChallengeMethod,
                                    emailAddress));
@@ -75,26 +85,48 @@ void AuthenticationInAppListener::start(Task* task,
   NetworkRequest* request =
       NetworkRequest::createForGetUrl(task, url.toString());
 
-  connect(request, &NetworkRequest::requestRedirected, this,
-          [this](NetworkRequest* request, const QUrl& url) {
-            logger.debug() << "Redirect received";
-            m_urlQuery = QUrlQuery(url.query());
+  connect(request, &NetworkRequest::requestCompleted, this,
+          [this](const QByteArray& data) {
+            logger.debug() << "Request completed";
 
-            if (!m_urlQuery.hasQueryItem("client_id")) {
-              logger.error() << "No `client_id` token. Unable to proceed";
+            QJsonDocument json = QJsonDocument::fromJson(data);
+            QJsonObject obj = json.object();
+
+            if (!obj["fxa_oauth"].isObject()) {
+              logger.error() << "Invalid JSON document. No fxa_oauth";
               emit failed(ErrorHandler::AuthenticationError);
               return;
             }
 
-            if (!m_urlQuery.hasQueryItem("state")) {
-              logger.error() << "No `state` token. Unable to proceed";
+            QJsonObject fxaObj = obj["fxa_oauth"].toObject();
+            if (!fxaObj["params"].isObject()) {
+              logger.error() << "Invalid JSON document. No fxa_oauth/params";
               emit failed(ErrorHandler::AuthenticationError);
               return;
             }
+
+            QJsonObject paramsObj = fxaObj["params"].toObject();
+
+#define GETPARAM(x, y, to)                                               \
+  if (!paramsObj.contains(y)) {                                          \
+    logger.error() << "Invalid JSON document. No fxa_oauth/params" << y; \
+    emit failed(ErrorHandler::AuthenticationError);                      \
+    return;                                                              \
+  }                                                                      \
+  m_fxaParams.x = paramsObj[y].to();
+
+            GETPARAM(m_clientId, "client_id", toString);
+            GETPARAM(m_deviceId, "device_id", toString);
+            GETPARAM(m_state, "state", toString);
+            GETPARAM(m_scope, "scope", toString);
+            GETPARAM(m_accessType, "access_type", toString);
+            GETPARAM(m_flowId, "flow_id", toString);
+            GETPARAM(m_flowBeginTime, "flow_begin_time", toString().toDouble);
+
+#undef GETPARAM
 
             AuthenticationInApp::instance()->requestState(
                 AuthenticationInApp::StateStart, this);
-            request->abort();
           });
 
   connect(request, &NetworkRequest::requestFailed, this,
@@ -110,13 +142,23 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
   logger.debug() << "Authentication starting:"
                  << logger.sensitive(emailAddress);
 
-  m_emailAddress = emailAddress.toLower();
+#ifdef UNIT_TEST
+  if (!m_allowUpperCaseEmailAddress) {
+#endif
+    m_emailAddress = emailAddress.toLower();
+#ifdef UNIT_TEST
+  } else {
+    m_emailAddress = emailAddress;
+  }
+#endif
 
-  AuthenticationInApp* aip = AuthenticationInApp::instance();
-  Q_ASSERT(aip);
+  m_emailAddressCaseFix = emailAddress;
 
-  aip->requestEmailAddressChange(this);
-  aip->requestState(AuthenticationInApp::StateCheckingAccount, this);
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  Q_ASSERT(aia);
+
+  aia->requestEmailAddressChange(this);
+  aia->requestState(AuthenticationInApp::StateCheckingAccount, this);
 
   NetworkRequest* request =
       NetworkRequest::createForFxaAccountStatus(m_task, m_emailAddress);
@@ -129,7 +171,8 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Account status checked" << data;
+            logger.debug() << "Account status checked:"
+                           << logger.sensitive(data);
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -169,13 +212,12 @@ void AuthenticationInAppListener::accountChecked(bool exists) {
           &AuthenticationListener::abortedByUser);
 }
 
-QByteArray AuthenticationInAppListener::generateAuthPw(
-    const QString& password) const {
+QByteArray AuthenticationInAppListener::generateAuthPw() const {
   // Process the user's password into an FxA auth token
   QString salt = QString("identity.mozilla.com/picl/v1/quickStretch:%1")
-                     .arg(m_emailAddress);
+                     .arg(m_emailAddressCaseFix);
   QByteArray pbkdf = QPasswordDigestor::deriveKeyPbkdf2(
-      QCryptographicHash::Sha256, password.toUtf8(), salt.toUtf8(), 1000, 32);
+      QCryptographicHash::Sha256, m_password.toUtf8(), salt.toUtf8(), 1000, 32);
 
   HKDF hash(QCryptographicHash::Sha256);
   hash.addData(pbkdf);
@@ -184,13 +226,25 @@ QByteArray AuthenticationInAppListener::generateAuthPw(
 }
 
 void AuthenticationInAppListener::setPassword(const QString& password) {
-  m_authPw = generateAuthPw(password);
+  m_password = password;
 }
 
 #ifdef UNIT_TEST
 void AuthenticationInAppListener::enableTotpCreation() {
   logger.debug() << "Enabling totp creation";
-  m_totpCreationNeeded = true;
+  Q_ASSERT(m_extraOp == OpNone);
+  m_extraOp = OpTotpCreationNeeded;
+}
+
+void AuthenticationInAppListener::enableAccountDeletion() {
+  logger.debug() << "Delete account request";
+  Q_ASSERT(m_extraOp == OpNone);
+  m_extraOp = OpAccountDeletionNeeded;
+}
+
+void AuthenticationInAppListener::allowUpperCaseEmailAddress() {
+  logger.debug() << "Forcing an upper email address";
+  m_allowUpperCaseEmailAddress = true;
 }
 #endif
 
@@ -205,17 +259,40 @@ void AuthenticationInAppListener::signIn(const QString& unblockCode) {
 
 void AuthenticationInAppListener::signInInternal(const QString& unblockCode) {
   NetworkRequest* request = NetworkRequest::createForFxaLogin(
-      m_task, m_emailAddress, m_authPw, unblockCode, m_urlQuery);
+      m_task, m_emailAddressCaseFix, generateAuthPw(), unblockCode,
+      m_fxaParams.m_clientId, m_fxaParams.m_deviceId, m_fxaParams.m_flowId,
+      m_fxaParams.m_flowBeginTime);
 
   connect(request, &NetworkRequest::requestFailed, this,
-          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
+          [this, unblockCode](QNetworkReply::NetworkError error,
+                              const QByteArray& data) {
+            QJsonDocument json = QJsonDocument::fromJson(data);
+            if (json.isObject()) {
+              QJsonObject obj = json.object();
+
+              int errorCode = obj["errno"].toInt();
+
+              // Incorrect email case
+              if (errorCode == 120) {
+                QString email = obj["email"].toString();
+                if (!email.isEmpty()) {
+                  logger.error()
+                      << "Failed to sign in for email case issues. New email:"
+                      << logger.sensitive(email);
+                  m_emailAddressCaseFix = email;
+                  signInInternal(unblockCode);
+                  return;
+                }
+              }
+            }
+
             logger.error() << "Failed to sign in" << error;
             processRequestFailure(error, data);
           });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Sign in completed" << data;
+            logger.debug() << "Sign in completed:" << logger.sensitive(data);
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -233,7 +310,9 @@ void AuthenticationInAppListener::signUp() {
       AuthenticationInApp::StateSigningUp, this);
 
   NetworkRequest* request = NetworkRequest::createForFxaAccountCreation(
-      m_task, m_emailAddress, m_authPw, m_urlQuery);
+      m_task, m_emailAddressCaseFix, generateAuthPw(), m_fxaParams.m_clientId,
+      m_fxaParams.m_deviceId, m_fxaParams.m_flowId,
+      m_fxaParams.m_flowBeginTime);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -243,7 +322,7 @@ void AuthenticationInAppListener::signUp() {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Sign up completed" << data;
+            logger.debug() << "Sign up completed:" << logger.sensitive(data);
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -276,8 +355,8 @@ void AuthenticationInAppListener::sendUnblockCodeEmail() {
   logger.debug() << "Resend unblock code";
   Q_ASSERT(m_sessionToken.isEmpty());
 
-  NetworkRequest* request =
-      NetworkRequest::createForFxaSendUnblockCode(m_task, m_emailAddress);
+  NetworkRequest* request = NetworkRequest::createForFxaSendUnblockCode(
+      m_task, m_emailAddressCaseFix);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -285,9 +364,10 @@ void AuthenticationInAppListener::sendUnblockCodeEmail() {
             processRequestFailure(error, data);
           });
 
-  connect(
-      request, &NetworkRequest::requestCompleted,
-      [](const QByteArray& data) { logger.debug() << "Code resent" << data; });
+  connect(request, &NetworkRequest::requestCompleted,
+          [](const QByteArray& data) {
+            logger.debug() << "Code resent:" << logger.sensitive(data);
+          });
 }
 
 void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
@@ -299,7 +379,8 @@ void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
 
   NetworkRequest* request =
       NetworkRequest::createForFxaSessionVerifyByEmailCode(
-          m_task, m_sessionToken, code, m_urlQuery);
+          m_task, m_sessionToken, code, m_fxaParams.m_clientId,
+          m_fxaParams.m_scope);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -309,7 +390,8 @@ void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Verification completed" << data;
+            logger.debug() << "Verification completed:"
+                           << logger.sensitive(data);
             finalizeSignInOrUp();
           });
 }
@@ -327,9 +409,10 @@ void AuthenticationInAppListener::resendVerificationSessionCodeEmail() {
             processRequestFailure(error, data);
           });
 
-  connect(
-      request, &NetworkRequest::requestCompleted,
-      [](const QByteArray& data) { logger.debug() << "Code resent" << data; });
+  connect(request, &NetworkRequest::requestCompleted,
+          [](const QByteArray& data) {
+            logger.debug() << "Code resent:" << logger.sensitive(data);
+          });
 }
 
 void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
@@ -340,7 +423,8 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
       AuthenticationInApp::StateVerifyingSessionTotpCode, this);
 
   NetworkRequest* request = NetworkRequest::createForFxaSessionVerifyByTotpCode(
-      m_task, m_sessionToken, code, m_urlQuery);
+      m_task, m_sessionToken, code, m_fxaParams.m_clientId,
+      m_fxaParams.m_scope);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -348,31 +432,31 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted, this,
-          [this](const QByteArray& data) {
-            logger.debug() << "Verification completed" << data;
+  connect(
+      request, &NetworkRequest::requestCompleted, this,
+      [this](const QByteArray& data) {
+        logger.debug() << "Verification completed:" << logger.sensitive(data);
 
-            QJsonDocument json = QJsonDocument::fromJson(data);
-            if (json.isNull()) {
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
-              return;
-            }
+        QJsonDocument json = QJsonDocument::fromJson(data);
+        if (json.isNull()) {
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
+          return;
+        }
 
-            QJsonObject obj = json.object();
-            bool success = obj.value("success").toBool();
-            if (success) {
-              finalizeSignInOrUp();
-              return;
-            }
+        QJsonObject obj = json.object();
+        bool success = obj.value("success").toBool();
+        if (success) {
+          finalizeSignInOrUp();
+          return;
+        }
 
-            AuthenticationInApp* aip = AuthenticationInApp::instance();
-            aip->requestState(
-                AuthenticationInApp::StateVerificationSessionByTotpNeeded,
-                this);
-            aip->requestErrorPropagation(
-                AuthenticationInApp::ErrorInvalidTotpCode, this);
-          });
+        AuthenticationInApp* aia = AuthenticationInApp::instance();
+        aia->requestState(
+            AuthenticationInApp::StateVerificationSessionByTotpNeeded, this);
+        aia->requestErrorPropagation(this,
+                                     AuthenticationInApp::ErrorInvalidTotpCode);
+      });
 }
 
 void AuthenticationInAppListener::signInOrUpCompleted(
@@ -418,13 +502,36 @@ void AuthenticationInAppListener::createTotpCodes() {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Totp code creation completed" << data;
+            logger.debug() << "Totp code creation completed:"
+                           << logger.sensitive(data);
 
-            AuthenticationInApp* aip = AuthenticationInApp::instance();
-            aip->requestState(
+            AuthenticationInApp* aia = AuthenticationInApp::instance();
+            aia->requestState(
                 AuthenticationInApp::StateVerificationSessionByTotpNeeded,
                 this);
-            emit aip->unitTestTotpCodeCreated(data);
+            emit aia->unitTestTotpCodeCreated(data);
+          });
+}
+
+void AuthenticationInAppListener::deleteAccount() {
+  NetworkRequest* request = NetworkRequest::createForFxaAccountDeletion(
+      m_task, m_sessionToken, m_emailAddress, generateAuthPw());
+
+  connect(request, &NetworkRequest::requestFailed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Failed to delete the account" << error;
+            emit readyToFinish();
+          });
+
+  connect(request, &NetworkRequest::requestCompleted, this,
+          [this](const QByteArray& data) {
+            logger.debug() << "Account deleted" << logger.sensitive(data);
+
+            AuthenticationInApp* aia = AuthenticationInApp::instance();
+            aia->requestState(AuthenticationInApp::StateStart, this);
+            emit aia->unitTestAccountDeleted();
+
+            emit readyToFinish();
           });
 }
 #endif
@@ -433,18 +540,19 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
   Q_ASSERT(!m_sessionToken.isEmpty());
 
 #ifdef UNIT_TEST
-  if (m_totpCreationNeeded) {
+  if (m_extraOp == OpTotpCreationNeeded) {
     logger.info() << "Totp creation in process";
-    m_totpCreationNeeded = false;
-    // Let's set it to false to avoid loops at the next finalizeSignInOrUp()
+    // Let's set it to `OpNone` to avoid loops at the next finalizeSignInOrUp()
     // call.
+    m_extraOp = OpNone;
     createTotpCodes();
     return;
   }
 #endif
 
-  NetworkRequest* request =
-      NetworkRequest::createForFxaAuthz(m_task, m_sessionToken, m_urlQuery);
+  NetworkRequest* request = NetworkRequest::createForFxaAuthz(
+      m_task, m_sessionToken, m_fxaParams.m_clientId, m_fxaParams.m_state,
+      m_fxaParams.m_scope, m_fxaParams.m_accessType);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -455,7 +563,8 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
   connect(
       request, &NetworkRequest::requestCompleted, this,
       [this](const QByteArray& data) {
-        logger.debug() << "Oauth code creation completed" << data;
+        logger.debug() << "Oauth code creation completed:"
+                       << logger.sensitive(data);
 
         QJsonDocument json = QJsonDocument::fromJson(data);
         if (json.isNull()) {
@@ -493,142 +602,193 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
         connect(
             request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-              if (error != QNetworkReply::OperationCanceledError) {
-                logger.error()
-                    << "Failed to fetch the final redirect data" << error;
-                processRequestFailure(error, data);
+              QJsonDocument json = QJsonDocument::fromJson(data);
+              if (!json.isObject()) {
+                MozillaVPN::instance()->errorHandle(
+                    ErrorHandler::toErrorType(error));
+                emit failed(ErrorHandler::toErrorType(error));
+                return;
               }
+
+              QJsonObject obj = json.object();
+              QString detail = obj["detail"].toString();
+              if (detail.isEmpty()) {
+                logger.error() << "Invalid JSON: no detail value";
+                MozillaVPN::instance()->errorHandle(
+                    ErrorHandler::AuthenticationError);
+                return;
+              }
+
+#ifdef UNIT_TEST
+              AuthenticationInApp* aia = AuthenticationInApp::instance();
+              emit aia->unitTestAuthFailedWithDetail(detail);
+#endif
+
+              logger.error() << "Authentication failed:" << detail;
+              MozillaVPN::instance()->errorHandle(
+                  ErrorHandler::AuthenticationError);
             });
 
-        // We can have 2 possible paths: a deep link URL (mozilla-vpn:) or a
-        // HTTP redirect. The following 2 "connections" cover both paths.
+        connect(request, &NetworkRequest::requestCompleted, this,
+                [this](const QByteArray& data) {
+                  logger.debug() << "Final redirect fetch completed:" << data;
 
-        connect(request, &NetworkRequest::requestRedirected, this,
-                [this](NetworkRequest* request, const QUrl& redirectUrl) {
-                  if (redirectUrl.scheme() != "mozilla-vpn") return;
-
-                  request->abort();
-
-#ifdef UNIT_TEST
-                  AuthenticationInApp* aip = AuthenticationInApp::instance();
-                  emit aip->unitTestFinalUrl(redirectUrl);
-#endif
-
-                  // On a 200 response, we receive the OAuth code from the
-                  // query string
-                  QString code = QUrlQuery(redirectUrl).queryItemValue("code");
-                  if (code.isEmpty()) {
-                    logger.error() << "Code not received!";
+                  QJsonDocument json = QJsonDocument::fromJson(data);
+                  if (json.isNull()) {
                     MozillaVPN::instance()->errorHandle(
                         ErrorHandler::AuthenticationError);
-                    emit failed(ErrorHandler::AuthenticationError);
                     return;
                   }
 
-                  emit completed(code);
-                });
-
-        connect(request, &NetworkRequest::requestHeaderReceived, this,
-                [this](NetworkRequest* request) {
-                  request->abort();
-
-#ifdef UNIT_TEST
-                  AuthenticationInApp* aip = AuthenticationInApp::instance();
-                  emit aip->unitTestFinalUrl(request->url());
-#endif
-                  // On a 200 response, we receive the OAuth code from the
-                  // query string
-                  QString code =
-                      QUrlQuery(request->url()).queryItemValue("code");
-                  if (code.isEmpty()) {
+                  QJsonObject obj = json.object();
+                  QJsonValue code = obj.value("code");
+                  if (!code.isString()) {
                     logger.error() << "Code not received!";
                     MozillaVPN::instance()->errorHandle(
                         ErrorHandler::AuthenticationError);
-                    emit failed(ErrorHandler::AuthenticationError);
                     return;
                   }
 
-                  emit completed(code);
+                  emit completed(code.toString());
                 });
       });
 }
 
-void AuthenticationInAppListener::processErrorCode(int errorCode) {
-  AuthenticationInApp* aip = AuthenticationInApp::instance();
-  Q_ASSERT(aip);
+void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  Q_ASSERT(aia);
+
+  int errorCode = obj["errno"].toInt();
 
   // See
   // https://github.com/mozilla/fxa/blob/main/packages/fxa-auth-server/docs/api.md#defined-errors
   switch (errorCode) {
     case 101:  // Account already exists
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(
-          AuthenticationInApp::ErrorAccountAlreadyExists, this);
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(
+          this, AuthenticationInApp::ErrorAccountAlreadyExists);
       break;
 
     case 102:  // Unknown account
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorUnknownAccount,
-                                   this);
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(this,
+                                   AuthenticationInApp::ErrorUnknownAccount);
       break;
 
     case 103:  // Incorrect password
-      aip->requestState(AuthenticationInApp::StateSignIn, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorIncorrectPassword,
-                                   this);
+      aia->requestState(AuthenticationInApp::StateSignIn, this);
+      aia->requestErrorPropagation(this,
+                                   AuthenticationInApp::ErrorIncorrectPassword);
       break;
+
+    case 107: {  // Invalid parameter in request body
+      QJsonObject objValidation = obj["validation"].toObject();
+      QStringList keys;
+      for (QJsonValue key : objValidation["keys"].toArray()) {
+        if (key.isString()) {
+          keys.append(key.toString());
+        }
+      }
+
+      if (keys.contains("unblockCode")) {
+        AuthenticationInApp* aia = AuthenticationInApp::instance();
+        aia->requestState(AuthenticationInApp::StateUnblockCodeNeeded, this);
+        aia->requestErrorPropagation(
+            this, AuthenticationInApp::ErrorInvalidUnblockCode);
+        break;
+      }
+
+      if (keys.contains("email")) {
+        AuthenticationInApp* aia = AuthenticationInApp::instance();
+        aia->requestState(AuthenticationInApp::StateStart, this);
+        aia->requestErrorPropagation(
+            this, AuthenticationInApp::ErrorInvalidEmailAddress);
+        break;
+      }
+
+      if (keys.contains("code")) {
+        AuthenticationInApp* aia = AuthenticationInApp::instance();
+        aia->requestState(
+            AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
+        aia->requestErrorPropagation(
+            this, AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode);
+        break;
+      }
+
+      emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+          GleanSample::authenticationInappError,
+          {{"errno", "107"},
+           {"validation", QJsonDocument(objValidation).toJson()}});
+
+      logger.error() << "Unsupported validation parameter";
+      break;
+    }
 
     case 114:  // Client has sent too many requests
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorTooManyRequests,
-                                   this);
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(this,
+                                   AuthenticationInApp::ErrorTooManyRequests,
+                                   obj["retryAfter"].toInt());
       break;
 
-    case 125:  // The request was blocked for security reasons
-      Q_ASSERT(false);
+    case 125: {  // The request was blocked for security reasons
+      QString verificationMethod = obj["verificationMethod"].toString();
+      if (verificationMethod == "email-captcha") {
+        unblockCodeNeeded();
+        break;
+      }
+
+      emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+          GleanSample::authenticationInappError,
+          {{"errno", "125"}, {"verificationMethod", verificationMethod}});
+
+      logger.error() << "Unsupported verification method:"
+                     << verificationMethod;
       break;
+    }
 
     case 127:  // Invalid unblock code
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorInvalidEmailCode,
-                                   this);
+      aia->requestState(
+          AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
+      aia->requestErrorPropagation(this,
+                                   AuthenticationInApp::ErrorInvalidEmailCode);
       break;
 
     case 142:  // Sign in with this email type is not currently supported
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(
-          AuthenticationInApp::ErrorEmailTypeNotSupported, this);
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(
+          this, AuthenticationInApp::ErrorEmailTypeNotSupported);
       break;
 
     case 144:  // Email already exists
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorEmailAlreadyExists,
-                                   this);
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(
+          this, AuthenticationInApp::ErrorEmailAlreadyExists);
       break;
 
     case 149:  // This email can not currently be used to login
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(
-          AuthenticationInApp::ErrorEmailCanNotBeUsedToLogin, this);
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(
+          this, AuthenticationInApp::ErrorEmailCanNotBeUsedToLogin);
       break;
 
     case 151:  // Failed to send email
-      aip->requestState(AuthenticationInApp::StateSignIn, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorFailedToSendEmail,
-                                   this);
+      aia->requestState(AuthenticationInApp::StateSignIn, this);
+      aia->requestErrorPropagation(this,
+                                   AuthenticationInApp::ErrorFailedToSendEmail);
       break;
 
     case 183:  // Invalid or expired verification code
-      aip->requestState(
+      aia->requestState(
           AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
-      aip->requestErrorPropagation(
-          AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode, this);
+      aia->requestErrorPropagation(
+          this, AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode);
       break;
 
     case 201:  // Service unavailable
-      aip->requestState(AuthenticationInApp::StateStart, this);
-      aip->requestErrorPropagation(AuthenticationInApp::ErrorServerUnavailable,
-                                   this);
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(this,
+                                   AuthenticationInApp::ErrorServerUnavailable);
       break;
 
     case 100:  // Incorrect Database Patch Level
@@ -638,8 +798,6 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
     case 105:  // Invalid verification code
       [[fallthrough]];
     case 106:  // Invalid JSON in request body
-      [[fallthrough]];
-    case 107:  // Invalid parameter in request body
       [[fallthrough]];
     case 108:  // Missing parameter in request body
       [[fallthrough]];
@@ -754,6 +912,11 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
     case 998:  // An internal validation check failed.
       [[fallthrough]];
     default:
+      emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+          GleanSample::authenticationInappError,
+          {{"errno", QString::number(errorCode)},
+           {"error", obj["error"].toString()},
+           {"message", obj["message"].toString()}});
       logger.error() << "Unsupported error code:" << errorCode;
       break;
   }
@@ -763,51 +926,7 @@ void AuthenticationInAppListener::processRequestFailure(
     QNetworkReply::NetworkError error, const QByteArray& data) {
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isObject()) {
-    QJsonObject obj = json.object();
-
-    int errorCode = obj["errno"].toInt();
-
-    // The request was blocked for security reasons
-    if (errorCode == 125) {
-      QString verificationMethod = obj["verificationMethod"].toString();
-      if (verificationMethod == "email-captcha") {
-        unblockCodeNeeded();
-        return;
-      }
-
-      logger.error() << "Unsupported verification method:"
-                     << verificationMethod;
-      return;
-    }
-
-    // Special error handling for the unblock code.
-    if (errorCode == 107) {
-      QJsonObject objValidation = obj["validation"].toObject();
-      QStringList keys;
-      for (QJsonValue key : objValidation["keys"].toArray()) {
-        if (key.isString()) {
-          keys.append(key.toString());
-        }
-      }
-
-      if (keys.contains("unblockCode")) {
-        AuthenticationInApp* aip = AuthenticationInApp::instance();
-        aip->requestState(AuthenticationInApp::StateUnblockCodeNeeded, this);
-        aip->requestErrorPropagation(
-            AuthenticationInApp::ErrorInvalidUnblockCode, this);
-        return;
-      }
-
-      if (keys.contains("email")) {
-        AuthenticationInApp* aip = AuthenticationInApp::instance();
-        aip->requestState(AuthenticationInApp::StateStart, this);
-        aip->requestErrorPropagation(
-            AuthenticationInApp::ErrorInvalidEmailAddress, this);
-        return;
-      }
-    }
-
-    processErrorCode(errorCode);
+    processErrorObject(json.object());
     return;
   }
 
@@ -819,9 +938,10 @@ void AuthenticationInAppListener::reset() {
   m_sessionToken.clear();
 
   m_emailAddress.clear();
+  m_emailAddressCaseFix.clear();
 
-  AuthenticationInApp* aip = AuthenticationInApp::instance();
-  Q_ASSERT(aip);
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  Q_ASSERT(aia);
 
-  aip->requestEmailAddressChange(this);
+  aia->requestEmailAddressChange(this);
 }

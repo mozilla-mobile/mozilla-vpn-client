@@ -7,7 +7,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import components.forms 0.1
 import components.inAppAuth 0.1
 
 VPNInAppAuthenticationBase {
@@ -28,39 +27,24 @@ VPNInAppAuthenticationBase {
     Component.onCompleted: console.log("SESSION VERIFICATION BY TOTP")
 
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
-    _menuButtonOnClick: () => { VPNAuthInApp.reset() }
-    _menuButtonAccessibleName: "TODO: Lorum Ipsum - Back"
-    _headlineText: "Enter 2-factor auth code"
-    _subtitleText: "Enter your 2-factor auth code"
-    _imgSource: "qrc:/ui/resources/logo.svg"
-    _inputLabel: "Enter code"
+    _menuButtonOnClick: () => { VPN.cancelAuthentication() }
+    _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
+    _headlineText: VPNl18n.InAppAuthSecurityCodeTitle
+    _subtitleText: VPNl18n.InAppAuthSecurityCodeSubtitle
+    _imgSource: "qrc:/nebula/resources/verification-code.svg"
+    _inputLabel: VPNl18n.InAppAuthSecurityCodeLabel
 
-    _inputs: ColumnLayout {
-        spacing: VPNTheme.theme.vSpacing * 2
-        VPNTextField {
-            id: codeInput
-            Layout.fillWidth: true
-        }
-
-        VPNButton {
-            text: "Verify"
-            enabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded
-            loaderVisible: VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionTotpCode
-            onClicked: {
-              VPNAuthInApp.verifySessionTotpCode(codeInput.text);
-            }
-            Layout.fillWidth: true
-        }
+    _inputs: VPNInAppAuthenticationInputs {
+        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded && !activeInput().hasError && activeInput().text.length > 0
+        _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionTotpCode(inputText) }
+        _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton
+        _inputMethodHints: Qt.ImhDigitsOnly
+        _inputPlaceholderText: VPNl18n.InAppAuthVerificationCodeInputPlaceholder
     }
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
-        VPNLinkButton {
-            labelText: "Cancel"
-            fontName: VPNTheme.theme.fontBoldFamily
-            anchors.horizontalCenter: parent.horizontalCenter
-            linkColor: VPNTheme.theme.redButton
-            onClicked: VPNAuthInApp.reset()
-        }
+
+        VPNInAppAuthenticationCancel {}
     }
 }

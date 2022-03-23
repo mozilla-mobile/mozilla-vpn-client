@@ -233,11 +233,15 @@ NetworkRequest* NetworkRequest::createForFxaAccountStatus(
 // static
 NetworkRequest* NetworkRequest::createForFxaAccountCreation(
     Task* parent, const QString& email, const QByteArray& authpw,
-    const QUrlQuery& query) {
+    const QString& fxaClientId, const QString& fxaDeviceId,
+    const QString& fxaFlowId, double fxaFlowBeginTime) {
   Q_ASSERT(parent);
   Q_UNUSED(email);
   Q_UNUSED(authpw);
-  Q_UNUSED(query);
+  Q_UNUSED(fxaClientId);
+  Q_UNUSED(fxaDeviceId);
+  Q_UNUSED(fxaFlowId);
+  Q_UNUSED(fxaFlowBeginTime);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);
@@ -245,16 +249,19 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForFxaLogin(Task* parent,
-                                                  const QString& email,
-                                                  const QByteArray& authpw,
-                                                  const QString& unblockCode,
-                                                  const QUrlQuery& query) {
+NetworkRequest* NetworkRequest::createForFxaLogin(
+    Task* parent, const QString& email, const QByteArray& authpw,
+    const QString& unblockCode, const QString& fxaClientId,
+    const QString& fxaDeviceId, const QString& fxaFlowId,
+    double fxaFlowBeginTime) {
   Q_ASSERT(parent);
   Q_UNUSED(email);
   Q_UNUSED(authpw);
   Q_UNUSED(unblockCode);
-  Q_UNUSED(query);
+  Q_UNUSED(fxaClientId);
+  Q_UNUSED(fxaDeviceId);
+  Q_UNUSED(fxaFlowId);
+  Q_UNUSED(fxaFlowBeginTime);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);
@@ -275,11 +282,12 @@ NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
     Task* parent, const QByteArray& sessionToken, const QString& code,
-    const QUrlQuery& query) {
+    const QString& fxaClientId, const QString& fxaScope) {
   Q_ASSERT(parent);
   Q_UNUSED(sessionToken);
   Q_UNUSED(code);
-  Q_UNUSED(query);
+  Q_UNUSED(fxaClientId);
+  Q_UNUSED(fxaScope);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);
@@ -289,11 +297,12 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
     Task* parent, const QByteArray& sessionToken, const QString& code,
-    const QUrlQuery& query) {
+    const QString& fxaClientId, const QString& fxaScope) {
   Q_ASSERT(parent);
   Q_UNUSED(sessionToken);
   Q_UNUSED(code);
-  Q_UNUSED(query);
+  Q_UNUSED(fxaClientId);
+  Q_UNUSED(fxaScope);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);
@@ -313,10 +322,15 @@ NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaAuthz(
-    Task* parent, const QByteArray& sessionToken, const QUrlQuery& query) {
+    Task* parent, const QByteArray& sessionToken, const QString& fxaClientId,
+    const QString& fxaState, const QString& fxaScope,
+    const QString& fxaAccessType) {
   Q_ASSERT(parent);
   Q_UNUSED(sessionToken);
-  Q_UNUSED(query);
+  Q_UNUSED(fxaClientId);
+  Q_UNUSED(fxaState);
+  Q_UNUSED(fxaScope);
+  Q_UNUSED(fxaAccessType);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);

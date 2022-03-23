@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtCharts 2.2
+import QtCharts 2.0
 import QtQuick.Controls 2.14
 
 import Mozilla.VPN 1.0
@@ -170,7 +170,6 @@ Item {
         anchors.left: parent.left
         anchors.topMargin: VPNTheme.theme.windowMargin / 2
         anchors.leftMargin: VPNTheme.theme.windowMargin / 2
-        //% "Close"
         accessibleName: qsTrId("vpn.connectionInfo.close")
         enabled: connectionInfo.visible
 

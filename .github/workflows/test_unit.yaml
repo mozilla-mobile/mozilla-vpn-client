@@ -12,19 +12,15 @@ on:
 
 jobs:
   linux-unit-tests:
-    strategy:
-      fail-fast: false # Don't cancel other jobs
-      matrix:
-        version: ["5.15.2","6.2.1"]
     runs-on: ubuntu-20.04
-    name: "Run Unit tests on ${{matrix.version}}"
+    name: "Run Unit tests on 6.2.1"
     steps:
       - name: Install Linux packages
         run: |
           sudo apt update
           sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
           python3 -m pip install aqtinstall
-          aqt install-qt --outputdir /opt linux desktop ${{matrix.version}} gcc_64 -m all
+          aqt install-qt --outputdir /opt linux desktop 6.2.1 gcc_64 -m all
 
       - name: Clone repository
         uses: actions/checkout@v2
@@ -45,24 +41,38 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
+          export PATH=/opt/6.2.1/gcc_64/bin:$PATH
           python3 scripts/utils/import_languages.py
+
+      - name: Installing the oathtool
+        shell: bash
+        run: |
+          pip3 install oathtool
+          python3 -m oathtool.generate-script
+
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov
 
       - name: Running tests
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.version}}/gcc_64/bin:$PATH
-          ./scripts/tests/unit_tests.sh
+          export PATH=/opt/6.2.1/gcc_64/bin:$PATH
+          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          directory: .
+          flags: unit_tests
+          name: codecov-poc
+          files: unit_lcov.info
+          verbose: true
 
   macos-unit-tests:
-    strategy:
-      matrix:
-        config:
-            - { name: "Qt5", pattern: x, folder: qt }
-            - { name: "Qt6", pattern: qt6, folder: qt6 }
-
     runs-on: macos-latest
-    name: "Run Unit tests on MacOS ${{matrix.config.name}}"
+    name: "Run Unit tests on MacOS Qt6"
 
     steps:
       - name: Clone repository
@@ -75,15 +85,15 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Install ${{matrix.config.name}}
+      - name: Install Qt6
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_macos
           cd qt_static_macos
-          cat ${{matrix.config.pattern}}* > qt_static.tar.gz
+          cat qt6* > qt_static.tar.gz
           tar xf qt_static.tar.gz
-          sudo mv ${{matrix.config.folder}} /opt
+          sudo mv qt6 /opt
           cd ..
 
       - name: Generating glean samples
@@ -95,18 +105,40 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
+          export PATH=/opt/qt6/bin:$PATH
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
+
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov
+
+      - name: Installing the oathtool
+        shell: bash
+        run: |
+          pip3 install oathtool
+          python3 -m oathtool.generate-script
+          # python3 by default...
+          sed -i '' "s/python/python3/g" oathtool
 
       - name: Running tests
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.folder}}/bin:$PATH
-          ./scripts/tests/unit_tests.sh
+          export PATH=/opt/qt6/bin:$PATH
+          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          directory: .
+          flags: unit_tests
+          name: codecov-poc
+          files: unit_lcov.info
+          verbose: true
 
   windows-unit-tests:
-    name: Run Unit tests on Windows Qt5
+    name: Run Unit tests on Windows Qt6
     runs-on: windows-latest
 
     steps:
@@ -126,16 +158,14 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_windows
           cd qt_static_windows
-          cat x* > qt_static.tar.bz2
+          cat qt6* > qt_static.tar.bz2
           tar xf qt_static.tar.bz2
           tar xf msm.tar.gz
           mkdir /c/MozillaVPNBuild
           cp -r * /c/MozillaVPNBuild
           cd ..
-          cp /c/MozillaVPNBuild/bin/libssl-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/bin/libcrypto-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/bin/libEGL.dll .
-          cp /c/MozillaVPNBuild/bin/libGLESv2.dll .
+          cp /c/MozillaVPNBuild/SSL/bin/libssl-1_1-x64.dll .
+          cp /c/MozillaVPNBuild/SSL/bin/libcrypto-1_1-x64.dll .
           cp /c/MozillaVPNBuild/*.msm .
 
       - name: Add msvc dev commands to PATH
@@ -157,8 +187,14 @@ jobs:
           git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
+      - name: Installing the oathtool
+        shell: bash
+        run: |
+          pip3 install oathtool
+          python3 -m oathtool.generate-script
+
       - name: Running tests
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          ./scripts/tests/unit_tests.sh
+          MVPN_OATHTOOL=oathtool ./scripts/tests/unit_tests.sh

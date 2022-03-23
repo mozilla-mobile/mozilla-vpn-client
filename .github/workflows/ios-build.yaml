@@ -19,12 +19,6 @@ jobs:
     name: iOS build
     runs-on: macos-latest
 
-    strategy:
-      matrix:
-        config:
-          - { name: "Qt5", pattern: qt5, version: 5.11.1 }
-          - { name: "Qt6", pattern: qt6, version: 6.2.3 }
-
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
@@ -36,21 +30,13 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Install ${{matrix.config.name}}
+      - name: Install Qt6
         shell: bash
         run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_ios
-          cd qt_ios
-          cat ${{matrix.config.pattern}}* > qt_static_ios.tar.gz
-          tar xf qt_static_ios.tar.gz
-          sudo mkdir /opt/${{matrix.config.version}}
-          sudo mv ios /opt/${{matrix.config.version}}
-          if [ -d macos ]; then
-            sudo mv macos /opt/${{matrix.config.version}}
-          fi
-          cd ..
-          echo `ls -la /opt/${{matrix.config.version}}`
+          pip3 install aqtinstall
+          aqt install-qt -O `pwd`/qt_ios mac desktop 6.2.3 -m qtcharts qtwebsockets qt5compat
+          aqt install-qt -O `pwd`/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
+          mv `pwd`/qt_ios/6.2.3/macos `pwd`/qt_ios/6.2.3/clang_64
 
       - name: Generating glean samples
         shell: bash
@@ -61,11 +47,9 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.version}}/macos/bin:$PATH
-          export PATH=/opt/${{matrix.config.version}}/ios/bin:$PATH
-          echo "$PATH"
+          export PATH=`pwd`/qt_ios/6.2.3/ios/bin:`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/utils/import_languages.py -m
+          python3 scripts/utils/import_languages.py -m -q "`pwd`/qt_ios/6.2.3/clang_64/bin"
 
       - name: Switch to newest go version
         shell: bash
@@ -77,16 +61,13 @@ jobs:
       - name: Configuring the build
         shell: bash
         run: |
-          export PATH=/opt/${{matrix.config.version}}/macos/bin:$PATH
-          export PATH=/opt/${{matrix.config.version}}/ios/bin:$PATH
-          export QT_IOS_BIN=/opt/${{matrix.config.version}}/ios/bin
+          export PATH=`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
+          export PATH=`pwd`/qt_ios/6.2.3/ios/bin:$PATH
+          export QT_IOS_BIN=`pwd`/qt_ios/6.2.3/ios/bin
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           cat > xcode.xconfig << EOF
-          DEVELOPMENT_TEAM = 43AQ936H96
-          GROUP_ID_MACOS = group.org.mozilla.macos.Guardian
           APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
-          NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension
           LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
           GROUP_ID_IOS = group.org.mozilla.ios.Guardian
           APP_ID_IOS = org.mozilla.ios.FirefoxVPN
@@ -100,9 +81,9 @@ jobs:
       - name: Prebuilding Qt
         shell: bash
         run: |
-          make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
-          make -f MozillaVPN.xcodeproj/qt_preprocess.mak
+          make -f "MozillaVPN.xcodeproj/qt_makeqmake.mak"
+          make -f "MozillaVPN.xcodeproj/qt_preprocess.mak"
 
       - name: Compiling
         shell: bash
-        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO -project "MozillaVPN.xcodeproj"

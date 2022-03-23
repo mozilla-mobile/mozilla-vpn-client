@@ -1,9 +1,5 @@
-DEVELOPMENT_TEAM = <>
-
 # MacOS configuration
-GROUP_ID_MACOS = <>
 APP_ID_MACOS = <>
-NETEXT_ID_MACOS = <>
 LOGIN_ID_MACOS = <>
 
 # IOS configuration

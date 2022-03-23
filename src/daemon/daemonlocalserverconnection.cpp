@@ -87,9 +87,9 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
     logger.warning() << "No type command. Ignoring request.";
     return;
   }
-
   QString type = typeValue.toString();
-  logger.debug() << type << "received:" << data.left(20);
+
+  logger.debug() << "Command received:" << type;
 
   if (type == "activate") {
     InterfaceConfig config;

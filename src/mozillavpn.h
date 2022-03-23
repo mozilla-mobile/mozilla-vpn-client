@@ -8,6 +8,7 @@
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
+#include "connectionbenchmark/connectionbenchmark.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "constants.h"
@@ -27,6 +28,7 @@
 #include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
+#include "telemetry.h"
 #include "theme.h"
 
 #include <QList>
@@ -34,6 +36,7 @@
 #include <QObject>
 #include <QStandardPaths>
 #include <QTimer>
+#include <QVariant>
 
 #ifdef MVPN_WINDOWS
 #  include "platforms/windows/windowscommons.h"
@@ -118,6 +121,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(QString versionString READ versionString CONSTANT)
   Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
   Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
+  Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
   Q_PROPERTY(QString architecture READ architecture CONSTANT)
   Q_PROPERTY(QString platform READ platform CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
@@ -186,6 +190,7 @@ class MozillaVPN final : public QObject {
                                        const QString& category);
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
   Q_INVOKABLE void hardResetAndQuit();
+  Q_INVOKABLE void crashTest();
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
@@ -199,6 +204,9 @@ class MozillaVPN final : public QObject {
   }
   CloseEventHandler* closeEventHandler() {
     return &m_private->m_closeEventHandler;
+  }
+  ConnectionBenchmark* connectionBenchmark() {
+    return &m_private->m_connectionBenchmark;
   }
   ConnectionDataHolder* connectionDataHolder() {
     return &m_private->m_connectionDataHolder;
@@ -225,6 +233,7 @@ class MozillaVPN final : public QObject {
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
+  Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
   WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
   User* user() { return &m_private->m_user; }
@@ -259,19 +268,18 @@ class MozillaVPN final : public QObject {
 
   void silentSwitch();
 
-  const QString versionString() const { return QString(APP_VERSION); }
-  const QString buildNumber() const { return QString(BUILD_ID); }
-  const QString osVersion() const {
+  static QString versionString() { return QString(APP_VERSION); }
+  static QString buildNumber() { return QString(BUILD_ID); }
+  static QString osVersion() {
 #ifdef MVPN_WINDOWS
     return WindowsCommons::WindowsVersion();
 #else
     return QSysInfo::productVersion();
 #endif
   }
-  const QString architecture() const {
-    return QSysInfo::currentCpuArchitecture();
-  }
-  const QString platform() const { return Constants::PLATFORM_NAME; }
+  static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
+  static QString platform() { return Constants::PLATFORM_NAME; }
+  static QString devVersion();
 
   void logout();
 
@@ -390,6 +398,8 @@ class MozillaVPN final : public QObject {
   void initializeGlean();
   void sendGleanPings();
   void recordGleanEvent(const QString& gleanSampleName);
+  void recordGleanEventWithExtraKeys(const QString& gleanSampleName,
+                                     const QVariantMap& extraKeys);
   void setGleanSourceTags(const QStringList& tags);
 
   void aboutToQuit();
@@ -412,6 +422,7 @@ class MozillaVPN final : public QObject {
     CaptivePortal m_captivePortal;
     CaptivePortalDetection m_captivePortalDetection;
     CloseEventHandler m_closeEventHandler;
+    ConnectionBenchmark m_connectionBenchmark;
     ConnectionDataHolder m_connectionDataHolder;
     ConnectionHealth m_connectionHealth;
     Controller m_controller;
@@ -427,6 +438,7 @@ class MozillaVPN final : public QObject {
     ServerData m_serverData;
     StatusIcon m_statusIcon;
     SurveyModel m_surveyModel;
+    Telemetry m_telemetry;
     Theme m_theme;
     WhatsNewModel m_whatsNewModel;
     User m_user;

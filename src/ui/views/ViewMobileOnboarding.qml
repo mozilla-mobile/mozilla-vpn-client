@@ -15,7 +15,10 @@ import telemetry 0.30
 
 VPNFlickable {
     id: onboardingPanel
+
     property real panelHeight: window.safeContentHeight
+    property bool shouldRestoreSlide: false
+
     flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight - spacerBottom.height
     height: parent.height
     interactive: flickContentHeight > height
@@ -51,6 +54,11 @@ VPNFlickable {
             subtitleStringId: "MobileOnboardingPanelFourSubtitle"
             panelId: "more-security"
         }
+    }
+
+    StackView.onActivating: if (shouldRestoreSlide) {
+        shouldRestoreSlide = false;
+        goToPreviousSlide();
     }
 
     SwipeView {
@@ -150,22 +158,6 @@ VPNFlickable {
                         updatePanel.start();
                     }
 
-                    function goToNextSlide() {
-                        if (swipeView.currentIndex < onboardingModel.count - 1) {
-                            swipeView.currentIndex += 1;
-                        } else {
-                            swipeView.currentIndex = 0;
-                        }
-                    }
-
-                    function goToPreviousSlide() {
-                        if (swipeView.currentIndex > 0) {
-                            swipeView.currentIndex -= 1;
-                        } else {
-                            swipeView.currentIndex = onboardingModel.count - 1;
-                        }
-                    }
-
                     MouseArea {
                         property int previousMouseX: 0
                         property int swipeDirection: 0
@@ -179,11 +171,11 @@ VPNFlickable {
 
                         onReleased: {
                             if (swipeDirection < 0) {
-                                goToPreviousSlide();
+                                onboardingPanel.goToPreviousSlide();
                             } else if (swipeDirection > 0) {
-                                goToNextSlide();
+                                onboardingPanel.goToNextSlide();
                             } else {
-                                goToNextSlide();
+                                onboardingPanel.goToNextSlide();
                             }
                         }
 
@@ -210,8 +202,13 @@ VPNFlickable {
         objectName: "getHelpLink"
         labelText: qsTrId("vpn.main.getHelp2")
         isLightTheme: false
-        onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml",
-                                  StackView.Immediate)
+        onClicked: {
+            if (!shouldRestoreSlide) {
+                shouldRestoreSlide = true;
+                goToNextSlide();
+            }
+            stackview.push("qrc:/ui/views/ViewGetHelp.qml", StackView.Immediate);
+        }
     }
 
     QtObject {
@@ -327,6 +324,22 @@ VPNFlickable {
             }
         }
         z: -1
+    }
+
+    function goToNextSlide() {
+        if (swipeView.contentItem.currentIndex < onboardingModel.count - 1) {
+            swipeView.contentItem.currentIndex += 1;
+        } else {
+            swipeView.contentItem.currentIndex = 0;
+        }
+    }
+
+    function goToPreviousSlide() {
+        if (swipeView.contentItem.currentIndex > 0) {
+            swipeView.contentItem.currentIndex -= 1;
+        } else {
+            swipeView.contentItem.currentIndex = onboardingModel.count - 1;
+        }
     }
 
     function recordGleanEvtAndStartAuth(ctaObjectName) {

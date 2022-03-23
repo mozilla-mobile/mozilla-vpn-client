@@ -23,7 +23,6 @@
 #include <QNetworkRequest>
 #include <QRegularExpression>
 #include <QUrl>
-#include <QUrlQuery>
 
 // Timeout for the network requests.
 constexpr uint32_t REQUEST_TIMEOUT_MSEC = 15000;
@@ -444,7 +443,8 @@ NetworkRequest* NetworkRequest::createForFxaAccountStatus(
 // static
 NetworkRequest* NetworkRequest::createForFxaAccountCreation(
     Task* parent, const QString& email, const QByteArray& authpw,
-    const QUrlQuery& query) {
+    const QString& fxaClientId, const QString& fxaDeviceId,
+    const QString& fxaFlowId, double fxaFlowBeginTime) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaApiBaseUrl());
@@ -456,14 +456,13 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
   QJsonObject obj;
   obj.insert("email", email);
   obj.insert("authPW", QString(authpw.toHex()));
-  obj.insert("service", query.queryItemValue("client_id"));
+  obj.insert("service", fxaClientId);
   obj.insert("verificationMethod", "email-otp");
 
   QJsonObject metrics;
-  metrics.insert("deviceId", query.queryItemValue("device_id"));
-  metrics.insert("flowBeginTime",
-                 query.queryItemValue("flow_begin_time").toDouble());
-  metrics.insert("flowId", query.queryItemValue("flow_id"));
+  metrics.insert("deviceId", fxaDeviceId);
+  metrics.insert("flowId", fxaFlowId);
+  metrics.insert("flowBeginTime", fxaFlowBeginTime);
   obj.insert("metricsContext", metrics);
 
   QJsonDocument json;
@@ -474,11 +473,11 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForFxaLogin(Task* parent,
-                                                  const QString& email,
-                                                  const QByteArray& authpw,
-                                                  const QString& unblockCode,
-                                                  const QUrlQuery& query) {
+NetworkRequest* NetworkRequest::createForFxaLogin(
+    Task* parent, const QString& email, const QByteArray& authpw,
+    const QString& unblockCode, const QString& fxaClientId,
+    const QString& fxaDeviceId, const QString& fxaFlowId,
+    double fxaFlowBeginTime) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaApiBaseUrl());
@@ -491,7 +490,7 @@ NetworkRequest* NetworkRequest::createForFxaLogin(Task* parent,
   obj.insert("email", email);
   obj.insert("authPW", QString(authpw.toHex()));
   obj.insert("reason", "signin");
-  obj.insert("service", query.queryItemValue("client_id"));
+  obj.insert("service", fxaClientId);
   obj.insert("skipErrorCase", true);
   obj.insert("verificationMethod", "email-otp");
 
@@ -500,10 +499,9 @@ NetworkRequest* NetworkRequest::createForFxaLogin(Task* parent,
   }
 
   QJsonObject metrics;
-  metrics.insert("deviceId", query.queryItemValue("device_id"));
-  metrics.insert("flowBeginTime",
-                 query.queryItemValue("flow_begin_time").toDouble());
-  metrics.insert("flowId", query.queryItemValue("flow_id"));
+  metrics.insert("deviceId", fxaDeviceId);
+  metrics.insert("flowId", fxaFlowId);
+  metrics.insert("flowBeginTime", fxaFlowBeginTime);
   obj.insert("metricsContext", metrics);
 
   QJsonDocument json;
@@ -539,7 +537,7 @@ NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
     Task* parent, const QByteArray& sessionToken, const QString& code,
-    const QUrlQuery& query) {
+    const QString& fxaClientId, const QString& fxaScope) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaApiBaseUrl());
@@ -550,10 +548,10 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
 
   QJsonObject obj;
   obj.insert("code", code);
-  obj.insert("service", query.queryItemValue("client_id"));
+  obj.insert("service", fxaClientId);
 
   QJsonArray scopes;
-  QStringList queryScopes = query.queryItemValue("scope").split("+");
+  QStringList queryScopes = fxaScope.split(" ");
   foreach (const QString& s, queryScopes) {
     QString parsedScope;
     if (s.startsWith("http")) {
@@ -600,7 +598,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
     Task* parent, const QByteArray& sessionToken, const QString& code,
-    const QUrlQuery& query) {
+    const QString& fxaClientId, const QString& fxaScope) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaApiBaseUrl());
@@ -611,10 +609,10 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
 
   QJsonObject obj;
   obj.insert("code", code);
-  obj.insert("service", query.queryItemValue("client_id"));
+  obj.insert("service", fxaClientId);
 
   QJsonArray scopes;
-  scopes.append(query.queryItemValue("scope"));
+  scopes.append(fxaScope);
   obj.insert("scopes", scopes);
 
   QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
@@ -629,7 +627,9 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
 
 // static
 NetworkRequest* NetworkRequest::createForFxaAuthz(
-    Task* parent, const QByteArray& sessionToken, const QUrlQuery& query) {
+    Task* parent, const QByteArray& sessionToken, const QString& fxaClientId,
+    const QString& fxaState, const QString& fxaScope,
+    const QString& fxaAccessType) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaApiBaseUrl());
@@ -639,13 +639,10 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
                          "application/json");
 
   QJsonObject obj;
-  obj.insert("client_id", query.queryItemValue("client_id"));
-  obj.insert("state", query.queryItemValue("state"));
-  // QUrl does not covert '+' to <space>. But we need it to split the scopes.
-  obj.insert(
-      "scope",
-      query.queryItemValue("scope", QUrl::FullyDecoded).replace("+", " "));
-  obj.insert("access_type", query.queryItemValue("access_type"));
+  obj.insert("client_id", fxaClientId);
+  obj.insert("state", fxaState);
+  obj.insert("scope", fxaScope);
+  obj.insert("access_type", fxaAccessType);
 
   QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
 
@@ -670,6 +667,32 @@ NetworkRequest* NetworkRequest::createForFxaTotpCreation(
                          "application/json");
 
   QByteArray payload = "{}";
+
+  HawkAuth hawk = HawkAuth(sessionToken);
+  QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();
+  r->m_request.setRawHeader("Authorization", hawkHeader);
+
+  r->postRequest(payload);
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaAccountDeletion(
+    Task* parent, const QByteArray& sessionToken, const QString& emailAddress,
+    const QByteArray& authpw) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::fxaApiBaseUrl());
+  url.setPath("/v1/account/destroy");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("email", emailAddress);
+  obj.insert("authPW", QString(authpw.toHex()));
+
+  QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
 
   HawkAuth hawk = HawkAuth(sessionToken);
   QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();
@@ -932,6 +955,10 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
           &NetworkRequest::handleRedirect);
   connect(m_reply, &QNetworkReply::finished, this,
           &NetworkRequest::maybeDeleteLater);
+  connect(m_reply, &QNetworkReply::downloadProgress, this,
+          [&](qint64 bytesReceived, qint64 bytesTotal) {
+            requestUpdated(bytesReceived, bytesTotal, m_reply);
+          });
 }
 
 void NetworkRequest::maybeDeleteLater() {
