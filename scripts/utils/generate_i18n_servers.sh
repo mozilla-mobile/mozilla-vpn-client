@@ -24,7 +24,7 @@ printn Y "Retrieving mozillavpn version... "
 print G "done."
 
 print Y "Running the app..."
-"$1" &>/tmp/VPN_LOG.txt &
+"$1" ui --testing &>/tmp/VPN_LOG.txt &
 PID=$!
 print G "done."
 

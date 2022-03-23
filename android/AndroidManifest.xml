@@ -35,7 +35,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
             android:label="Mozilla VPN"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Splash"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustPan"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

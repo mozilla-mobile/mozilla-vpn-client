@@ -590,8 +590,6 @@ Item {
 
         //% "Close"
         property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")
-        //% "Connection Information"
-        property var connectionInfoText: qsTrId("vpn.controller.info")
 
         anchors {
             left: parent.left
@@ -599,7 +597,7 @@ Item {
             top: parent.top
             topMargin: VPNTheme.theme.windowMargin / 2
         }
-        accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText :connectionInfoText
+        accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : VPNl18n.ConnectionInfoOpenButton
         Accessible.ignored: !connectionInfoToggleButton.visible
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
         enabled: connectionInfoToggleButton.visible
@@ -692,8 +690,8 @@ Item {
         anchors.rightMargin: VPNTheme.theme.windowMargin / 2
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
-        Accessible.ignored: connectionInfoVisible
-        enabled: !connectionInfoVisible || !box.connectionInfoScreenVisible
+        Accessible.ignored: box.connectionInfoScreenVisible
+        enabled: !box.connectionInfoScreenVisible
 
         VPNIcon {
             id: settingsImage

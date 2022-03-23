@@ -34,6 +34,7 @@ class ConnectionHealth final : public QObject {
 
   uint latency() const { return m_pingHelper.latency(); }
   double loss() const { return m_pingHelper.loss(); }
+  double stddev() const { return m_pingHelper.stddev(); }
   bool isUnsettled() const { return m_settlingTimer.isActive(); };
 
  public slots:

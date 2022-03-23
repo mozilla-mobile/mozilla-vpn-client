@@ -22,11 +22,11 @@ helpFunction() {
 print N "This script compiles and runs MozillaVPN QML tests on MacOS and Linux"
 print N ""
 
-while [[ $# -gt 0 ]]; do  
+while [[ $# -gt 0 ]]; do
   key="$1"
-  
+
   case $key in
-  -g | --grcov)    
+  -g | --grcov)
     GRCOV_FILENAME="$2"
     shift
     shift
@@ -64,11 +64,11 @@ print Y "Running the QML tests..."
 qmltest_run || die
 
 if [[ "$GRCOV_FILENAME" ]]; then
-  printn Y "Generating temp coverage file for qml tests..."  
+  print Y "Generating temp coverage file for qml tests..."
   qmltest_grcov "$GRCOV_FILENAME"
 fi
 
-printn Y "Cleaning the existing project... "
+print Y "Cleaning the existing project... "
 qmltest_cleanup || die
 
 print G "All done!"

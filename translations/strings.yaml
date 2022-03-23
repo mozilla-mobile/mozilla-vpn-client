@@ -347,6 +347,7 @@ genericError:
 
 # Connection Info Screen
 connectionInfo:
+  openButton: Connection Info
   labelBitps:
     value: bit/s
     comment: Bits per second

@@ -88,34 +88,6 @@ python3 scripts\utils\generate_glean.py
 
 ECHO BUILD_BUILD = %DEBUG_BUILD%
 
-IF %DEBUG_BUILD%==T (
-  ECHO Generating Debug Build for the extension bridge
-  pushd extension\bridge
-
-  cargo build
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO cargo failed for the extension!
-    EXIT 1
-  )
-
-  xcopy /y target\debug\mozillavpnnp.exe ..\..
-  popd
-)
-
-IF %DEBUG_BUILD%==F (
-  ECHO Generating Release Build for the extension bridge
-  pushd extension\bridge
-
-  cargo build --release
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO cargo failed for the extension!
-    EXIT 1
-  )
-
-  xcopy /y target\release\mozillavpnnp.exe ..\..
-  popd
-)
-
 ECHO Creating the project with flags: %FLAGS%
 
 if %DEBUG_BUILD% == T (
@@ -178,6 +150,12 @@ IF %ERRORLEVEL% NEQ 0 (
 if %DEBUG_BUILD% == T (
   REM We need to move the exes in debug so the installer can find them
   xcopy /y debug\*.exe .\
+  xcopy /y extension\bridge\target\debug\mozillavpnnp.exe .\
+)
+
+IF %DEBUG_BUILD%==F (
+  REM We need to move the exes in release so the installer can find them
+  xcopy /y extension\bridge\target\release\mozillavpnnp.exe .
 )
 
 ECHO Creating the installer...

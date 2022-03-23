@@ -180,10 +180,7 @@ cp xcode.xconfig.template xcode.xconfig
 
 5. Modify xcode.xconfig to something like:
 ```
-DEVELOPMENT_TEAM = 43AQ936H96
-
 # MacOS configuration
-GROUP_ID_MACOS = group.org.mozilla.macos.Guardian
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
 
@@ -205,7 +202,7 @@ QT\_MACOS\_BIN env to set the path for the Qt6 macos build bin folder.
 If you prefer to compile the app in command-line mode, use the following
 command:
 ```bash
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 ```
 
 The built up will show up in `Release/Mozilla VPN.app` (relative to the root of the repo).

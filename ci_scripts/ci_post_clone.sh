@@ -31,8 +31,8 @@ else
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop 6.2.3 -m qtcharts qtwebsockets qt5compat
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
   mv /Volumes/workspace/repository/qt_ios/6.2.3/macos /Volumes/workspace/repository/qt_ios/6.2.3/clang_64
-  export QT_IOS_BIN=`pwd`/qt_ios/6.2.3/ios/bin
-  export PATH=`pwd`/qt_ios/6.2.3/ios/bin:`pwd`/qt_ios/6.2.3/macos/bin:`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
+  export QT_IOS_BIN=/Volumes/workspace/repository/qt_ios/6.2.3/ios/bin
+  export PATH=/Volumes/workspace/repository/qt_ios/6.2.3/ios/bin:/Volumes/workspace/repository/qt_ios/6.2.3/clang_64/bin:$PATH
 fi
 
 # install xcodeproj which is needed by xcode_patcher.rb
@@ -41,11 +41,7 @@ gem install xcodeproj --user-install
 
 # install python packages
 # use --user for permissions
-pip3 install "glean_parser==3.5" --user
-pip3 install pyhumps --user
-pip3 install pyyaml --user
-python3 scripts/utils/generate_glean.py
-python3 scripts/utils/import_languages.py -m
+pip3 install -r requirements.txt --user
 
 # install go and set GOROOT using brew
 # wget is currently not supported so we need to use brew
@@ -53,8 +49,6 @@ brew install go
 
 # create xcode.xconfig
 cat > xcode.xconfig << EOF
-DEVELOPMENT_TEAM = 43AQ936H96
-GROUP_ID_MACOS = group.org.mozilla.macos.Guardian
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
 GROUP_ID_IOS = group.org.mozilla.ios.Guardian
@@ -69,12 +63,5 @@ if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
   ./scripts/macos/apple_compile.sh macos
 else
-  ./scripts/macos/apple_compile.sh ios
+  ./scripts/macos/apple_compile.sh ios -q /Volumes/workspace/repository/qt_ios/6.2.3/clang_64/bin
 fi
-
-# build Qt resources
-# XCode Cloud has some problem with dependencies and timing therefore we have to
-# build Qt before we call xcodebuild
-make -f MozillaVPN.xcodeproj/qt_makeqmake.mak
-make -f MozillaVPN.xcodeproj/qt_preprocess.mak
-
