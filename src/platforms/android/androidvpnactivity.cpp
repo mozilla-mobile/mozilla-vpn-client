@@ -74,13 +74,11 @@ void AndroidVPNActivity::sendToService(ServiceAction type,
   if (!Constants::inProduction()) {
     logger.debug() << "sendToService: " << messageType << " " << data;
   }
-  AndroidUtils::runOnAndroidThreadSync([messageType, &data]() {
-    QJniEnvironment env;
-    QJniObject::callStaticMethod<void>(
-        CLASSNAME, "sendToService", "(ILjava/lang/String;)V",
-        static_cast<int>(messageType),
-        QJniObject::fromString(data).object<jstring>());
-  });
+  QJniEnvironment env;
+  QJniObject::callStaticMethod<void>(
+      CLASSNAME, "sendToService", "(ILjava/lang/String;)V",
+      static_cast<int>(messageType),
+      QJniObject::fromString(data).object<jstring>());
 }
 
 // static
