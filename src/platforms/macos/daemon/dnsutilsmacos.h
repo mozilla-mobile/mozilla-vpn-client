@@ -5,7 +5,7 @@
 #ifndef DNSUTILSMACOS_H
 #define DNSUTILSMACOS_H
 
-#include "dnsutils.h"
+#include "daemon/dnsutils.h"
 
 #include <QHostAddress>
 #include <QMap>

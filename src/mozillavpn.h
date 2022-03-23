@@ -28,6 +28,7 @@
 #include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
+#include "telemetry.h"
 #include "theme.h"
 
 #include <QList>
@@ -232,6 +233,7 @@ class MozillaVPN final : public QObject {
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
+  Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
   WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
   User* user() { return &m_private->m_user; }
@@ -436,6 +438,7 @@ class MozillaVPN final : public QObject {
     ServerData m_serverData;
     StatusIcon m_statusIcon;
     SurveyModel m_surveyModel;
+    Telemetry m_telemetry;
     Theme m_theme;
     WhatsNewModel m_whatsNewModel;
     User m_user;
