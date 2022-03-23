@@ -81,8 +81,9 @@ Item {
                 isEnabled: true
                 width: parent.width - VPNTheme.theme.windowMargin
                 onClicked: VPNSettings.crashReportOptIn = !VPNSettings.crashReportOptIn
-                visible: true
+                visible: Qt.platform.os === "windows"
                 anchors.rightMargin: VPNTheme.theme.windowMargin
+                showDivider: false;
             }
 
             VPNVerticalSpacer {
