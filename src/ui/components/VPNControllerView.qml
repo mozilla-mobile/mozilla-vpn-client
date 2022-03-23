@@ -7,9 +7,12 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
+import components 0.1
 
 import org.mozilla.Glean 0.30
 import telemetry 0.30
+
+import "qrc:/ui"
 
 Item {
     id: box
@@ -871,12 +874,11 @@ Item {
         }
     }
 
-    VPNConnectionInfoScreen {
+    ConnectionInfoScreen {
         id: connectionInfoScreen
         isOpen: box.connectionInfoScreenVisible
 
         height: boxBackground.height
         radius: VPNTheme.theme.cornerRadius * 2
     }
-
 }

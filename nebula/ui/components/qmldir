@@ -17,13 +17,8 @@ VPNChevron 0.1 VPNChevron.qml
 VPNClickableRow 0.1 VPNClickableRow.qml
 VPNCollapsibleCard 0.1 VPNCollapsibleCard.qml
 VPNConnectionInfo 0.1 VPNConnectionInfo.qml
-VPNConnectionInfoError 0.1 VPNConnectionInfoError.qml
-VPNConnectionInfoScreen 0.1 VPNConnectionInfoScreen.qml
-VPNConnectionInfoContent 0.1 VPNConnectionInfoContent.qml
-VPNConnectionInfoItem 0.1 VPNConnectionInfoItem.qml
 VPNConnectionStability 0.1 VPNConnectionStability.qml
 VPNControllerNav 0.1 VPNControllerNav.qml
-VPNControllerView 0.1 VPNControllerView.qml
 VPNDeviceListItem 0.1 VPNDeviceListItem.qml
 VPNDevicesListHeader 0.1 VPNDevicesListHeader.qml
 VPNDropShadowWithStates 0.1 VPNDropShadowWithStates.qml

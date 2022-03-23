@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
+import components 0.1
 
 Rectangle {
     property bool isOpen: false
@@ -116,7 +117,7 @@ Rectangle {
         }
     }
 
-    VPNConnectionInfoContent {
+    ConnectionInfoContent {
         id: connectionInfoContent
 
         opacity: visible && root.state !== "closing" ? 1 : 0
@@ -131,7 +132,7 @@ Rectangle {
         }
     }
 
-    VPNConnectionInfoError {
+    ConnectionInfoError {
         id: connectionInfoError
 
         opacity: visible && root.state !== "closing" ? 1 : 0
