@@ -213,6 +213,10 @@ tasks:
                               MOZILLAVPN_HEAD_TAG: '${head_tag}'
                               MOZILLAVPN_REPOSITORY_TYPE: git
                               MOZILLAVPN_PIP_REQUIREMENTS: taskcluster/requirements.txt
+                              TASKGRAPH_BASE_REPOSITORY: https://hg.mozilla.org/ci/taskgraph
+                              TASKGRAPH_HEAD_REPOSITORY: https://hg.mozilla.org/ci/${taskgraph.branch}
+                              TASKGRAPH_HEAD_REV: ${taskgraph.revision}
+                              TASKGRAPH_REPOSITORY_TYPE: hg
                               REPOSITORIES: {$json: {mozillavpn: "MozillaVPN"}}
                               HG_STORE_PATH: /builds/worker/checkouts/hg-store
                               ANDROID_SDK_ROOT: /builds/worker/android-sdk
