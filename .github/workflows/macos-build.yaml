@@ -135,7 +135,7 @@ jobs:
           echo -n "$MACOS_EMBEDDED_PP" | base64 --decode --output /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/embedded.provisionprofile
           /usr/libexec/PlistBuddy -x -c 'Print:Entitlements' aa.list > bb.list
           /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Library/LoginItems/MozillaVPNLoginItem.app
-          /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Resources/utils/mozillavpnnp
+          /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Resources/utils/mozillavpnnp
           /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app/Contents/Resources/utils/wireguard-go
           /usr/bin/codesign --timestamp -f -s "Developer ID Application: Andrea Marchesini" --entitlements bb.list --options=runtime /Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla\ VPN.app
 
