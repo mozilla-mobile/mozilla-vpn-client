@@ -34,6 +34,8 @@ class LocalSocketController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
+  bool multihopSupported() override { return true; }
+
  private:
   void initializeInternal();
   void disconnectInternal();
