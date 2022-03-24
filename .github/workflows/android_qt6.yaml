@@ -52,13 +52,16 @@ jobs:
           AUTOGRAPH_TOKEN: ${{ secrets.AUTOGRAPH_KEY }}
         run: |
           bash ./scripts/android/sign.sh ${{ matrix.config.apk }}
-          # Delete all unsigned
-          rm ${{ matrix.config.apk }}/*unsigned.apk
-          # Delete all other apks except the selected arch
-          cd ${{ matrix.config.apk }}
-          ls | grep -v "${{ matrix.arch.qmake }}" | xargs rm
-      - name: Upload APK${{ matrix.config.args }}
+
+      - name: Upload Signed APK${{ matrix.config.args }}
         uses: actions/upload-artifact@v1
+        if: ${{ matrix.config.sign }}
+        with:
+            name: ${{matrix.arch.name}}_${{ matrix.config.name }}
+            path: ${{ matrix.config.apk }}/android-build-${{ matrix.arch.qmake }}-release-signed.apk
+      - name: Upload Unsigned APK${{ matrix.config.args }}
+        uses: actions/upload-artifact@v1
+        if: ${{ matrix.config.sign }} == false
         with:
             name: ${{matrix.arch.name}}_${{ matrix.config.name }}
             path: ${{ matrix.config.apk }}
