@@ -59,6 +59,7 @@ class ConnectionBenchmark final : public QObject {
   void pingBenchmarked(quint64 pingLatency);
 
  private:
+  void handleControllerState();
   void handleStabilityChange();
   void setConnectionSpeed();
   void setState(State state);

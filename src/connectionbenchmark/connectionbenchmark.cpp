@@ -82,7 +82,7 @@ void ConnectionBenchmark::start() {
   BenchmarkTaskDownload* downloadTask =
       new BenchmarkTaskDownload(Constants::BENCHMARK_DOWNLOAD_URL);
   connect(downloadTask, &BenchmarkTaskDownload::finished, this,
-          &ConnectionBenchmark::downloadBenchmarked);
+          &ConnectionBenchmark::handleControllerState);
   connect(downloadTask, &Task::completed, this,
           [this, downloadTask]() { m_benchmarkTasks.removeOne(downloadTask); });
   m_benchmarkTasks.append(downloadTask);
@@ -135,6 +135,17 @@ void ConnectionBenchmark::pingBenchmarked(quint64 pingLatency) {
 
   m_ping = pingLatency;
   emit pingChanged();
+}
+
+void ConnectionBenchmark::handleControllerState() {
+  Controller::State controllerState =
+      MozillaVPN::instance()->controller()->state();
+  logger.debug() << "Handle controller state" << controllerState;
+
+  if (m_state == StateRunning) {
+    setState(StateError);
+    stop();
+  }
 }
 
 void ConnectionBenchmark::handleStabilityChange() {
