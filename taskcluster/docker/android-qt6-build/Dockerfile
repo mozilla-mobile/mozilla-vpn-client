@@ -58,7 +58,9 @@ RUN python3 -m aqt install-qt --outputdir /opt linux android ${QT_VERSION} ${AND
 
 ENV QTPATH=/opt/${QT_VERSION}/${ANDROID_ARCH}
 ENV ANDROID_SDK_ROOT="/opt/android/sdk"
-ENV ANDROID_NDK_ROOT=/opt/NDK/${NDK_VERSION}
+ENV ANDROID_NDK_ROOT="/opt/NDK/${NDK_VERSION}"
+ENV ANDROID_NDK_HOME="/opt/NDK/${NDK_VERSION}"
+
 ENV PATH="/opt/${QT_VERSION}/gcc_64/bin:${QTPATH}/bin:/opt/cmdline-tools/bin:${PATH}"
 ENV XDG_CACHE_HOME ="/opt/"
 
