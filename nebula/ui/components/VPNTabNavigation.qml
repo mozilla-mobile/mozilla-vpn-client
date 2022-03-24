@@ -37,7 +37,7 @@ Item {
         visible: stack.children.length > 1
         contentHeight: stack.children.length === 1 ? 0 : VPNTheme.theme.menuHeight
         background: Rectangle {
-            color: "transparent"
+            color: VPNTheme.theme.transparent
         }
 
         Repeater {
@@ -51,7 +51,7 @@ Item {
                 onClicked: handleTabClick(btn)
 
                 background: Rectangle {
-                    color: "transparent"
+                    color: VPNTheme.theme.transparent
 
                     Rectangle {
                         height: 2

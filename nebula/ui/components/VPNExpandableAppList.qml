@@ -159,7 +159,7 @@ ColumnLayout {
         contentItem: Text {
             // for accessibility
             text: addApplication
-            color: "transparent"
+            color: VPNTheme.theme.transparent
         }
 
         RowLayout {

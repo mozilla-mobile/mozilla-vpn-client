@@ -4,6 +4,8 @@
 
 const theme = {};
 
+theme.transparent = '#00000000';
+
 theme.bgColor = '#F9F9FA';
 theme.bgColor30 = '#4DF9F9FA';
 theme.bgColor80 = '#CCF9F9FA';

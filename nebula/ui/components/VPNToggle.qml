@@ -221,7 +221,7 @@ VPNButtonBase {
         anchors.margins: -4
         radius: height / 2
         border.color: toggleColor.focusBorder
-        color: "transparent"
+        color: VPNTheme.theme.transparent
         opacity: toggleButton.activeFocus && (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOff) ? 1 : 0
 
         VPNFocusOutline {
@@ -232,7 +232,7 @@ VPNButtonBase {
             setMargins: -6
             radius: height / 2
             border.width: 7
-            color: "transparent"
+            color: VPNTheme.theme.transparent
             border.color: toggleColor.focusOutline
             opacity: 0.25
         }

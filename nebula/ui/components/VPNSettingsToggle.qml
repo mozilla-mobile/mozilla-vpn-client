@@ -73,7 +73,7 @@ CheckBox {
 
         anchors.fill: hoverPressHandler
         border.color: toggleColor.focusBorder
-        color: "transparent"
+        color: VPNTheme.theme.transparent
         anchors.margins: -1
         radius: 50
         opacity: vpnSettingsToggle.activeFocus ? 1: 0
@@ -158,7 +158,7 @@ CheckBox {
         id: uiPlaceholder /* Binding loop hack-around */
         height: 24
         width: 45
-        color: "transparent"
+        color: VPNTheme.theme.transparent
     }
 
     indicator:  VPNUIStates {

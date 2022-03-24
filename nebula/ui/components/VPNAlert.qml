@@ -183,7 +183,7 @@ Rectangle {
         Rectangle {
             id: labelWrapper
             height: label.paintedHeight + VPNTheme.theme.windowMargin
-            color: "transparent"
+            color: VPNTheme.theme.transparent
             anchors.left: alertAction.left
             width: alertAction.width - VPNTheme.theme.rowHeight
             anchors.verticalCenter: parent.verticalCenter
@@ -306,16 +306,16 @@ Rectangle {
         id: focusIndicators
         anchors.fill: closeButton.activeFocus ? closeButton : alertAction
         anchors.margins: -3
-        border.color: colorScheme ? colorScheme.focusOutline : "transparent"
+        border.color: colorScheme ? colorScheme.focusOutline : VPNTheme.theme.transparent
         border.width: 3
         visible: closeButton.activeFocus || alertAction.activeFocus
-        color: "transparent"
+        color: VPNTheme.theme.transparent
         radius: VPNTheme.theme.cornerRadius + (anchors.margins * -1)
 
         Rectangle {
-            color: "transparent"
+            color: VPNTheme.theme.transparent
             border.width: 2
-            border.color: parent.colorScheme ? parent.colorScheme.focusBorder : "transparent"
+            border.color: parent.colorScheme ? parent.colorScheme.focusBorder : VPNTheme.theme.transparent
             radius: VPNTheme.theme.cornerRadius
             anchors.fill: parent
             anchors.margins: 3

@@ -67,7 +67,7 @@ Item {
         anchors.rightMargin: VPNTheme.theme.windowMargin
         height: childrenRect.height
         width: viewAboutUs.width - (VPNTheme.theme.windowMargin * 2)
-        color: "transparent"
+        color: VPNTheme.theme.transparent
 
         VPNBoldLabel {
             id: mozillaLabel
