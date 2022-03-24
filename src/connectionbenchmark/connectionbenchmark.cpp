@@ -142,8 +142,10 @@ void ConnectionBenchmark::handleControllerState() {
       MozillaVPN::instance()->controller()->state();
   logger.debug() << "Handle controller state" << controllerState;
 
-  setState(StateError);
-  stop();
+  if (StateRunning) {
+    setState(StateError);
+    stop();
+  }
 }
 
 void ConnectionBenchmark::handleStabilityChange() {
