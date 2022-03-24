@@ -769,7 +769,8 @@ else:macos {
                    platforms/macos/daemon/macosdaemon.cpp \
                    platforms/macos/daemon/macosdaemonserver.cpp \
                    platforms/macos/daemon/macosroutemonitor.cpp \
-                   platforms/macos/daemon/wireguardutilsmacos.cpp
+                   platforms/macos/daemon/wireguardutilsmacos.cpp \
+                   platforms/macos/macosauthenticationlistener.cpp
         HEADERS += \
                    daemon/interfaceconfig.h \
                    daemon/daemon.h \
@@ -785,7 +786,8 @@ else:macos {
                    platforms/macos/daemon/macosdaemon.h \
                    platforms/macos/daemon/macosdaemonserver.h \
                    platforms/macos/daemon/macosroutemonitor.h \
-                   platforms/macos/daemon/wireguardutilsmacos.h
+                   platforms/macos/daemon/wireguardutilsmacos.h \
+                   platforms/macos/macosauthenticationlistener.h
     }
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
