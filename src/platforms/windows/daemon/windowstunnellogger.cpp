@@ -96,17 +96,21 @@ int WindowsTunnelLogger::nextIndex() {
 void WindowsTunnelLogger::process(int index) {
   Q_ASSERT(index >= 0);
   Q_ASSERT(index < RINGLOG_MAX_ENTRIES);
-  size_t offset = index * (RINGLOG_TIMESTAMP_SIZE + RINGLOG_MESSAGE_SIZE);
+  size_t offset = static_cast<size_t>(index) *
+                  (RINGLOG_TIMESTAMP_SIZE + RINGLOG_MESSAGE_SIZE);
   uchar* data = m_logdata + RINGLOG_HEADER_SIZE + offset;
 
   quint64 timestamp;
-  memcpy(&timestamp, data, 8);
+  memcpy(&timestamp, data, RINGLOG_TIMESTAMP_SIZE);
   if (timestamp <= m_startTime) {
     return;
   }
-
   QByteArray message((const char*)data + RINGLOG_TIMESTAMP_SIZE,
                      RINGLOG_MESSAGE_SIZE);
+  int nullIndex = message.indexOf(0x0);
+  if (nullIndex >= 0) {
+    message.truncate(nullIndex);
+  }
   logger.info() << QString::fromUtf8(message);
 }
 
