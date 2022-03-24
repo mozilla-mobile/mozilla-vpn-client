@@ -74,7 +74,7 @@ FocusScope {
 
             height: VPNTheme.theme.vSpacing
             width: parent.width
-            color: "transparent"
+            color: VPNTheme.theme.transparent
         }
 
         NumberAnimation on contentY {

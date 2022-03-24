@@ -20,7 +20,7 @@ RowLayout {
     Rectangle {
         Layout.preferredHeight: 24
         Layout.preferredWidth: 24
-        color: "transparent"
+        color: VPNTheme.theme.transparent
 
         VPNIcon {
             id: img
