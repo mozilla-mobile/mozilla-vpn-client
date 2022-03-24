@@ -56,7 +56,7 @@ jobs:
           rm ${{ matrix.config.apk }}/*unsigned.apk
           # Delete all other apks except the selected arch
           cd ${{ matrix.config.apk }}
-          ls | grep "${{ matrix.arch.qmake }}" | xargs rm
+          ls | grep -v "${{ matrix.arch.qmake }}" | xargs rm
       - name: Upload APK${{ matrix.config.args }}
         uses: actions/upload-artifact@v1
         with:
