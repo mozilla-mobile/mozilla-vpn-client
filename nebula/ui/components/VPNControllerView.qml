@@ -811,7 +811,7 @@ Item {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         Accessible.ignored: connectionInfoScreenVisible
-        // enabled: !connectionInfoScreenVisible
+        enabled: !connectionInfoScreenVisible
     }
 
     VPNConnectionInfo {

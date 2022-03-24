@@ -49,8 +49,6 @@ brew install go
 
 # create xcode.xconfig
 cat > xcode.xconfig << EOF
-DEVELOPMENT_TEAM = 43AQ936H96
-GROUP_ID_MACOS = group.org.mozilla.macos.Guardian
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
 GROUP_ID_IOS = group.org.mozilla.ios.Guardian

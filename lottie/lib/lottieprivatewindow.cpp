@@ -17,6 +17,11 @@ int LottiePrivateWindow::setIntervalOrTimeout(QJSValue callback, int interval,
                                               bool singleShot) {
   int timerId = ++m_timerId;
 
+  // No too aggressive animations.
+  if (interval == 0) {
+    interval = 100;
+  }
+
   if (!callback.isCallable()) {
     return timerId;
   }

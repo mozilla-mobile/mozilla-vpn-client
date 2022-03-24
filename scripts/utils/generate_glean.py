@@ -3,6 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import sys
 import os.path
 import yaml
 import subprocess
@@ -85,7 +86,7 @@ output.close();
 
 print("Generating the JS modules...")
 try:
-  subprocess.call(["glean_parser", "translate", "glean/metrics.yaml", "glean/pings.yaml",
+  subprocess.call([sys.executable, "-m", "glean_parser", "translate", "glean/metrics.yaml", "glean/pings.yaml",
                    "-f", "javascript", "-o", "glean/telemetry", "--option", "platform=qt",
                    "--option", "version=0.30"])
 except:
