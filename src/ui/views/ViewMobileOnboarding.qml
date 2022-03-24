@@ -207,8 +207,10 @@ VPNFlickable {
                 shouldRestoreSlide = true;
                 goToNextSlide();
             }
-            stackview.push("qrc:/ui/views/ViewGetHelp.qml", StackView.Immediate);
+            stackview.push("qrc:/ui/views/ViewGetHelp.qml", { addSafeAreaMargin: true });
         }
+
+        anchors.topMargin: VPNTheme.theme.listSpacing * 1.5 + safeAreaHeightByDevice()
     }
 
     QtObject {

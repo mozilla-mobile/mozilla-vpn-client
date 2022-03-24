@@ -14,7 +14,6 @@ import telemetry 0.30
 Item {
     id: box
 
-    readonly property alias connectionInfoVisible: connectionInfo.visible
     property bool connectionInfoIsEnabled: VPNFeatureList.get("connectionInfo").isSupported
     property bool connectionInfoScreenVisible: false
 
@@ -34,7 +33,7 @@ Item {
     }
 
     function closeConnectionInfo() {
-        connectionInfo.close();
+        box.connectionInfoScreenVisible = false;
     }
 
     state: VPNController.state
@@ -632,46 +631,6 @@ Item {
     }
 
     VPNIconButton {
-        id: connectionInfoButton
-        objectName: "connectionInfoButton"
-
-        onClicked: {
-            Sample.connectionInfoOpened.record();
-            connectionInfo.open()
-        }
-
-        buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        opacity: connectionInfoButton.visible ? 1 : 0
-        anchors {
-            top: parent.top
-            left: parent.left
-            topMargin: VPNTheme.theme.windowMargin / 2
-            leftMargin: VPNTheme.theme.windowMargin / 2
-        }
-        //% "Connection Information"
-        accessibleName: qsTrId("vpn.controller.info")
-        Accessible.ignored: connectionInfoVisible
-        enabled: !connectionInfoVisible
-
-        VPNIcon {
-            id: connectionInfoImage
-
-            source: "qrc:/nebula/resources/connection-info.svg"
-            anchors.centerIn: connectionInfoButton
-            sourceSize.height: VPNTheme.theme.iconSize * 1.25
-            sourceSize.width: VPNTheme.theme.iconSize * 1.25
-            visible: connectionInfoButton.visible
-        }
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 300
-            }
-        }
-
-    }
-
-    VPNIconButton {
         id: settingsButton
         objectName: "settingsButton"
         opacity: 1
@@ -787,7 +746,7 @@ Item {
             objectName: "controllerTitle"
             lineHeight: 22
             font.pixelSize: 22
-            Accessible.ignored: connectionInfoVisible
+            Accessible.ignored: connectionInfoScreenVisible
             Accessible.description: logoSubtitle.text
             width: parent.width
             onPaintedHeightChanged: if (visible) col.handleMultilineText()
