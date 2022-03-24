@@ -61,7 +61,7 @@ jobs:
             path: ${{ matrix.config.apk }}/android-build-${{ matrix.arch.qmake }}-release-signed.apk
       - name: Upload Unsigned APK${{ matrix.config.args }}
         uses: actions/upload-artifact@v1
-        if: ${{ matrix.config.sign }} == false
+        if: matrix.config.sign == false
         with:
             name: ${{matrix.arch.name}}_${{ matrix.config.name }}
             path: ${{ matrix.config.apk }}
