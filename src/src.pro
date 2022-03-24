@@ -726,6 +726,7 @@ else:macos {
     DEFINES += MVPN_MACOS
 
     SOURCES += \
+            platforms/macos/macosauthenticationlistener.cpp \
             platforms/macos/macosmenubar.cpp \
             platforms/macos/macospingsender.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
@@ -738,6 +739,7 @@ else:macos {
             platforms/macos/macosutils.mm
 
     HEADERS += \
+            platforms/macos/macosauthenticationlistener.h \
             platforms/macos/macosmenubar.h \
             platforms/macos/macospingsender.h \
             platforms/macos/macosstartatbootwatcher.h \
