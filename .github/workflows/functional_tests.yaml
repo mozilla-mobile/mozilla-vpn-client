@@ -85,9 +85,10 @@ jobs:
 
           # Delete unit tests, so we can get to testing faster
           sed -i '/tests\/unit/d' mozillavpn.pro
-          qmake CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug CONFIG+=inspector QT+=svg
+          qmake CONFIG+=DUMMY QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage CONFIG+=debug CONFIG+=inspector QT+=svg
           make -j$(nproc)
           cp ./src/mozillavpn build/
+          cp -r ./src/.obj build/
 
       - name: Check build
         run: |
@@ -130,6 +131,11 @@ jobs:
         shell: bash
         run: ./tests/proxy/wsgi.py --mock-devices > /dev/null &
 
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov
+
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
         uses: nick-invision/retry@v2
@@ -148,6 +154,30 @@ jobs:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_API_BASE_URL: http://localhost:5000
           MVPN_BIN: ./build/mozillavpn
+
+      - name: Generating grcov reports
+        shell: bash
+        run: |
+          cp build/.obj/*.gcno src/.obj
+          cd src
+          find .
+          grcov .obj -s . -t lcov --branch --ignore-not-existing > ../functional_lcov.info || rm -f ../functional_lcov.info
+
+      - name: Check grcov file existence
+        id: grcov_check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: functional_lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        if: steps.grcov_check_files.outputs.files_exists == 'true'
+        with:
+          directory: .
+          flags: functional_tests
+          name: codecov-poc
+          files: functional_lcov.info
+          verbose: true
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v1
