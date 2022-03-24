@@ -22,7 +22,7 @@ RowLayout {
     anchors.leftMargin: VPNTheme.theme.windowMargin
 
     Rectangle {
-        color: "transparent"
+        color: VPNTheme.theme.transparent
         Layout.preferredHeight: message.lineHeight
         Layout.maximumHeight: message.lineHeight
         Layout.preferredWidth: VPNTheme.theme.iconSizeSmall

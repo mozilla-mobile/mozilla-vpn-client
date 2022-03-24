@@ -40,7 +40,7 @@ RowLayout {
         visible: showAppImage
         Layout.preferredWidth: VPNTheme.theme.windowMargin * 2
         Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
-        color: "transparent"
+        color: VPNTheme.theme.transparent
         radius: 4
         Layout.alignment: Qt.AlignTop
 

@@ -167,7 +167,7 @@ Item {
                             Rectangle {
                                 Layout.preferredWidth: 40
                                 Layout.preferredHeight: 40
-                                color: "transparent"
+                                color: VPNTheme.theme.transparent
 
                                 VPNAvatar {
                                     id: avatar

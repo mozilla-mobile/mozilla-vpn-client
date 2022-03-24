@@ -94,7 +94,7 @@ Item {
             Rectangle {
                 height: 16
                 width: VPNTheme.theme.iconSizeSmall
-                color: "transparent"
+                color: VPNTheme.theme.transparent
 
                 Image {
                     id: warningIcon

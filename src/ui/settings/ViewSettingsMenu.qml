@@ -141,7 +141,7 @@ VPNFlickable {
         Rectangle {
             Layout.preferredHeight: fullscreenRequired? VPNTheme.theme.rowHeight * 1.5 : VPNTheme.theme.rowHeight
             Layout.fillWidth: true
-            color: "transparent"
+            color: VPNTheme.theme.transparent
         }
     }
 
