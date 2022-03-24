@@ -65,7 +65,7 @@ void ConnectionBenchmark::start() {
   }
 
   connect(controller, &Controller::stateChanged, this,
-          &ConnectionBenchmark::stop);
+          &ConnectionBenchmark::handleControllerState);
   connect(vpn->connectionHealth(), &ConnectionHealth::stabilityChanged, this,
           &ConnectionBenchmark::handleStabilityChange);
 
@@ -135,6 +135,15 @@ void ConnectionBenchmark::pingBenchmarked(quint64 pingLatency) {
 
   m_ping = pingLatency;
   emit pingChanged();
+}
+
+void ConnectionBenchmark::handleControllerState() {
+  Controller::State controllerState =
+      MozillaVPN::instance()->controller()->state();
+  logger.debug() << "Handle controller state" << controllerState;
+
+  setState(StateError);
+  stop();
 }
 
 void ConnectionBenchmark::handleStabilityChange() {
