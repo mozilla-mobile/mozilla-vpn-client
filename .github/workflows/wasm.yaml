@@ -126,13 +126,50 @@ jobs:
             name: Inspector Build
             path: tools/inspector/dist
 
+  ghPagesPreview:
+    runs-on: ubuntu-20.04
+    needs: [wasmQt6, inspector]
+    name: Publish Wasm on Github Pages
+    env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} #github.ref_name
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+        with: 
+          path: _site
+          ref: 'refs/heads/gh-pages'
+
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v2.0.8
+        with:
+          name: WebAssembly Build Qt6
+          # Destination path
+          path: _site/branches/${{github.ref_name}}
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v2.0.8
+        with:
+          name: Inspector Build
+          path: _site/branches/${{github.ref_name}}/inspector
+      - name: Uploading site Build
+        uses: actions/upload-artifact@v1
+        with:
+            name: GH-Pages Build
+            path: _site
+
   ghPages:
     runs-on: ubuntu-20.04
     needs: [wasm, wasmQt6, inspector]
     name: Publish Wasm on Github Pages
+    if: github.ref == 'refs/heads/main'  # Only publish on main branch.
     env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} #github.ref_name
     steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+        with: 
+          path: _site
+          ref: 'refs/heads/gh-pages'
+
       - name: Download a Build Artifact
         uses: actions/download-artifact@v2.0.8
         with:
