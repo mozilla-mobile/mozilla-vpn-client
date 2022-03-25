@@ -11,7 +11,8 @@ MouseArea {
 
     property var targetEl: parent
     property var uiState: VPNTheme.theme.uiState
-    property var onMouseAreaClicked: function() { parent.clicked() }
+    property bool propagateClickToParent: true
+    property var onMouseAreaClicked: function() { if(propagateClickToParent) parent.clicked() }
 
     function changeState(stateName) {
         targetEl.state = stateName;

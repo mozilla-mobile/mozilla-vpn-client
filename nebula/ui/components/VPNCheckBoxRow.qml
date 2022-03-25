@@ -18,6 +18,7 @@ RowLayout {
     property bool showDivider: true
     property var leftMargin: 18
     property bool showAppImage: false
+    property alias labelWidth: labelWrapper.width
 
     signal clicked()
 
@@ -73,6 +74,11 @@ RowLayout {
             text: labelText
             color: VPNTheme.theme.fontColorDark
             horizontalAlignment: Text.AlignLeft
+
+            VPNMouseArea {
+                propagateClickToParent: false
+                onClicked: checkBox.clicked()
+            }
         }
 
         VPNTextBlock {
