@@ -163,6 +163,7 @@ HEADERS += \
         connectionbenchmark/benchmarktask.h \
         connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \
+        connectionbenchmark/benchmarktasksentinel.h \
         connectionbenchmark/connectionbenchmark.h \
         connectiondataholder.h \
         connectionhealth.h \
