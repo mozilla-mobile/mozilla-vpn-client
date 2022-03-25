@@ -14,7 +14,7 @@ Item {
     property string _menuTitle: VPNl18n.SettingsDevTitle
     property alias isSettingsView: menu.isSettingsView
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff) ||
-        (VPNController.state === VPNController.StateInitializing)
+                            (VPNController.state === VPNController.StateInitializing)
 
     id: root
 
@@ -28,37 +28,49 @@ Item {
         id: flickableContent
 
         anchors.top: menu.bottom
-        anchors.topMargin: VPNTheme.theme.windowMargin
         anchors.left: parent.left
         anchors.right: parent.right
         height: parent.height - menu.height
 
-        VPNCheckBoxRow {
-            id: developerUnlock
+        ColumnLayout {
+            id: layout
 
-            width: parent.width - VPNTheme.theme.windowMargin
+            anchors.right: parent.right
+            anchors.left: parent.left
 
-            labelText:  VPNl18n.SettingsDevShowOptionTitle
-            subLabelText: VPNl18n.SettingsDevShowOptionSubtitle
+            spacing: 0
 
-            isChecked: VPNSettings.developerUnlock
-            onClicked: VPNSettings.developerUnlock = !VPNSettings.developerUnlock
-        }
+            onImplicitHeightChanged: {
+                flickableContent.contentHeight = layout.implicitHeight
+            }
 
-        RowLayout {
-            id: stagingServerRow
+            VPNCheckBoxRow {
+                id: developerUnlock
 
-            anchors.top: developerUnlock.bottom
-            anchors.topMargin: VPNTheme.theme.windowMargin
-            spacing: VPNTheme.theme.windowMargin
-            width: parent.width - VPNTheme.theme.windowMargin
+                Layout.fillWidth: true
+                Layout.topMargin: VPNTheme.theme.windowMargin
+                Layout.rightMargin: VPNTheme.theme.windowMargin
 
-            VPNCheckBox {
-                id: stagingServerCheckBox
-                Layout.leftMargin: 18
-                checked: (VPNSettings.stagingServer)
-                enabled: root.vpnIsOff
-                opacity: root.vpnIsOff ? 1 : 0.5
+                labelText:  VPNl18n.SettingsDevShowOptionTitle
+                subLabelText: VPNl18n.SettingsDevShowOptionSubtitle
+
+                isChecked: VPNSettings.developerUnlock
+                onClicked: VPNSettings.developerUnlock = !VPNSettings.developerUnlock
+            }
+
+            VPNCheckBoxRow {
+                id: checkBoxRowStagingServer
+
+                Layout.fillWidth: true
+                Layout.topMargin: VPNTheme.theme.windowMargin
+                Layout.rightMargin: VPNTheme.theme.windowMargin
+
+                labelText: VPNl18n.SettingsDevUseStagingTitle
+                subLabelText: VPNl18n.SettingsDevUseStagingSubtitle
+
+                isChecked: VPNSettings.stagingServer
+                isEnabled: root.vpnIsOff
+                showDivider: false
                 onClicked: {
                     if (root.vpnIsOff) {
                         VPNSettings.stagingServer = !VPNSettings.stagingServer
@@ -66,230 +78,195 @@ Item {
                 }
             }
 
-            ColumnLayout {
-                id: labelWrapper
+            VPNTextField {
+                id: serverAddressInput
 
+                Layout.topMargin: VPNTheme.theme.windowMargin
+                Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+                implicitWidth: checkBoxRowStagingServer.labelWidth - VPNTheme.theme.windowMargin
+                Layout.alignment: Qt.AlignRight
+
+                enabled: root.vpnIsOff && VPNSettings.stagingServer
+                _placeholderText: "Staging server address"
+                height: 40
+
+                PropertyAnimation on opacity {
+                    duration: 200
+                }
+
+                onTextChanged: text => {
+                                   if (root.vpnIsOff && VPNSettings.stagingServerAddress !== serverAddressInput.text) {
+                                       VPNSettings.stagingServerAddress = serverAddressInput.text;
+                                   }
+                               }
+
+                Component.onCompleted: {
+                    serverAddressInput.text = VPNSettings.stagingServerAddress;
+                }
+            }
+
+            Rectangle {
+                id: divider
+
+                Layout.topMargin: VPNTheme.theme.listSpacing * 2.5
+                Layout.rightMargin: VPNTheme.theme.windowMargin
+                Layout.preferredHeight: 1
+                Layout.preferredWidth: checkBoxRowStagingServer.labelWidth
+                Layout.alignment: Qt.AlignRight
+
+                color: "#E7E7E7"
+            }
+
+            VPNSettingsItem {
+                id: themeListLink
+
+                Layout.topMargin: VPNTheme.theme.listSpacing
+                Layout.leftMargin: VPNTheme.theme.windowMargin/2
+                Layout.rightMargin: VPNTheme.theme.windowMargin/2
                 Layout.fillWidth: true
-                Layout.topMargin: 2
-                spacing: 4
-                Layout.alignment: Qt.AlignTop
 
-                VPNInterLabel {
-                    id: label
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                    Layout.fillWidth: true
-                    text: VPNl18n.SettingsDevUseStagingTitle
-                    color: VPNTheme.theme.fontColorDark
-                    horizontalAlignment: Text.AlignLeft
+                // Do not translate this string!
+                settingTitle: "Theme list"
+                imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: stackview.push("qrc:/ui/developerMenu/ViewThemeList.qml")
+            }
+
+            VPNSettingsItem {
+                id: featureListLink
+                objectName: "settingsFeatureList"
+
+                Layout.topMargin: VPNTheme.theme.listSpacing
+                Layout.leftMargin: VPNTheme.theme.windowMargin/2
+                Layout.rightMargin: VPNTheme.theme.windowMargin/2
+                Layout.fillWidth: true
+
+                // Do not translate this string!
+                settingTitle: "Feature list"
+                imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: stackview.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
+            }
+
+            VPNSettingsItem {
+                id: animationsPlaygroundLink
+                objectName: "settingsAnimationsPlayground"
+
+                Layout.topMargin: VPNTheme.theme.listSpacing
+                Layout.leftMargin: VPNTheme.theme.windowMargin/2
+                Layout.rightMargin: VPNTheme.theme.windowMargin/2
+                Layout.fillWidth: true
+
+                // Do not translate this string!
+                settingTitle: "Animations playground"
+                imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: stackview.push("qrc:/ui/developerMenu/ViewAnimationsPlayground.qml")
+            }
+
+            //Need to wrap VPNExternalLinkListItem in an item since it is not written to work in a layout
+            Item {
+                Layout.topMargin: VPNTheme.theme.listSpacing
+                Layout.fillWidth: true
+                implicitHeight: inspectorLink.height
+
+                visible: checkBoxRowStagingServer.isChecked && !restartRequired.isVisible
+
+                VPNExternalLinkListItem {
+                    id: inspectorLink
+
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    objectName: "openInspector"
+                    title: "Open Inspector"
+                    accessibleName: "Open Inspector"
+                    iconSource:  "qrc:/nebula/resources/externalLink.svg"
+                    backgroundColor: VPNTheme.theme.clickableRowBlue
+                    onClicked: {
+                        VPN.openLink(VPN.LinkInspector)
+                    }
                 }
+            }
 
-                VPNTextBlock {
-                    id: subLabel
+            VPNContextualAlerts {
+                id: restartRequired
 
-                    Layout.fillWidth: true
-                    text: VPNl18n.SettingsDevUseStagingSubtitle
+                property bool isVisible: false
+
+                Layout.topMargin: VPNTheme.theme.listSpacing
+                Layout.leftMargin: VPNTheme.theme.windowMargin/2
+
+                messages: [
+                    {
+                        type: "warning",
+                        message: VPNl18n.SettingsDevRestartRequired,
+                        visible: isVisible
+                    }
+                ]
+
+                Connections {
+                    target: VPNSettings
+                    function onStagingServerAddressChanged() {
+                        restartRequired.isVisible = true;
+                    }
+                    function onStagingServerChanged() {
+                        restartRequired.isVisible = true;
+                    }
                 }
+            }
 
-                VPNVerticalSpacer {
-                    height: VPNTheme.theme.windowMargin
+            VPNButton {
+                id: crashApp
+                property int clickNeeded: 5
+
+                Layout.topMargin: VPNTheme.theme.listSpacing * 2
+
+                text: "Test Crash Reporter"
+                onClicked: {
+                    if (!VPNSettings.stagingServer){
+                        text = "Test Crash Reporter (Staging only!)";
+                        return;
+                    }
+                    if (clickNeeded) {
+                        text = "Test Crash Reporter (" + clickNeeded + ")";
+                        --clickNeeded;
+                        return;
+                    }
+                    VPN.crashTest()
                 }
+            }
 
-                VPNTextField {
-                    Layout.fillWidth: true
-                    Layout.rightMargin: VPNTheme.theme.windowMargin
+            VPNButton {
+                id: resetAndQuit
+                property int clickNeeded: 5
 
-                    id: serverAddressInput
+                Layout.topMargin: VPNTheme.theme.listSpacing * 2
 
-                    enabled: root.vpnIsOff && VPNSettings.stagingServer
-                    _placeholderText: "Staging server address"
-                    height: 40
-
-                    PropertyAnimation on opacity {
-                        duration: 200
+                text: "Reset and Quit"
+                onClicked: {
+                    if (clickNeeded) {
+                        text = "Reset and Quit (" + clickNeeded + ")";
+                        --clickNeeded;
+                        return;
                     }
 
-                    onTextChanged: text => {
-                        if (root.vpnIsOff && VPNSettings.stagingServerAddress !== serverAddressInput.text) {
-                            VPNSettings.stagingServerAddress = serverAddressInput.text;
-                        }
-                    }
-
-                    Component.onCompleted: {
-                        serverAddressInput.text = VPNSettings.stagingServerAddress;
-                    }
-                }
-
-                Rectangle {
-                    id: divider
-
-                    Layout.topMargin: VPNTheme.theme.windowMargin
-                    Layout.preferredHeight: 1
-                    Layout.fillWidth: true
-                    color: "#E7E7E7"
-                    visible: true
+                    VPN.hardResetAndQuit()
                 }
             }
-        }
 
-        VPNSettingsItem {
-            id: themeListLink
+            VPNTextBlock {
+                id: qtVersionText
 
-            anchors.top: stagingServerRow.bottom
-            anchors.topMargin: VPNTheme.theme.listSpacing
-            anchors.left: stagingServerRow.left
-            anchors.leftMargin: VPNTheme.theme.windowMargin/2
-            width: parent.width - VPNTheme.theme.windowMargin
+                Layout.topMargin: VPNTheme.theme.listSpacing
+                Layout.leftMargin: 31
+                Layout.rightMargin: 31
+                Layout.bottomMargin: VPNTheme.theme.listSpacing
+                Layout.fillWidth: true
 
-            // Do not translate this string!
-            settingTitle: "Theme list"
-            imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-            onClicked: stackview.push("qrc:/ui/developerMenu/ViewThemeList.qml")
-        }
-
-        VPNSettingsItem {
-            id: featureListLink
-            objectName: "settingsFeatureList"
-
-            anchors.top: themeListLink.bottom
-            anchors.topMargin: VPNTheme.theme.listSpacing
-            anchors.left: stagingServerRow.left
-            anchors.leftMargin: VPNTheme.theme.windowMargin/2
-            width: parent.width - VPNTheme.theme.windowMargin
-
-            // Do not translate this string!
-            settingTitle: "Feature list"
-            imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-            onClicked: stackview.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
-        }
-
-        VPNSettingsItem {
-            id: animationsPlaygroundLink
-            objectName: "settingsAnimationsPlayground"
-
-            anchors.top: featureListLink.bottom
-            anchors.topMargin: VPNTheme.theme.listSpacing
-            anchors.left: stagingServerRow.left
-            anchors.leftMargin: VPNTheme.theme.windowMargin/2
-            width: parent.width - VPNTheme.theme.windowMargin
-
-            // Do not translate this string!
-            settingTitle: "Animations playground"
-            imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-            onClicked: stackview.push("qrc:/ui/developerMenu/ViewAnimationsPlayground.qml")
-        }
-
-        VPNExternalLinkListItem {
-            id: inspectorLink
-            visible: stagingServerCheckBox.checked && !restartRequired.isVisible
-            anchors.top: animationsPlaygroundLink.bottom
-            anchors.topMargin: VPNTheme.theme.listSpacing
-            anchors.left: stagingServerRow.left
-            anchors.leftMargin: VPNTheme.theme.windowMargin/2
-            width: parent.width - VPNTheme.theme.windowMargin
-
-            objectName: "openInspector"
-            title: "Open Inspector"
-            accessibleName: "Open Inspector"
-            iconSource:  "qrc:/nebula/resources/externalLink.svg"
-            backgroundColor: VPNTheme.theme.clickableRowBlue
-            onClicked: {
-                VPN.openLink(VPN.LinkInspector)
+                text: VPN.devVersion
             }
         }
-
-        VPNButton {
-            id: crashApp
-            property int clickNeeded: 5
-
-            anchors.top: stagingServerCheckBox.checked && !restartRequired.isVisible ? inspectorLink.bottom : animationsPlaygroundLink.bottom
-            anchors.topMargin: VPNTheme.theme.listSpacing * 2
-            anchors.horizontalCenterOffset: 0
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            text: "Test Crash Reporter"
-            onClicked: {
-                if (!VPNSettings.stagingServer){
-                    text = "Test Crash Reporter (Staging only!)";
-                    return;
-                }
-                if (clickNeeded) {
-                    text = "Test Crash Reporter (" + clickNeeded + ")";
-                    --clickNeeded;
-                    return;
-                }
-                VPN.crashTest()
-            }
-        }
-
-        VPNButton {
-            id: resetAndQuit
-            property int clickNeeded: 5
-
-            anchors.top: restartRequired.isVisible ? restartRequired.bottom : crashApp.bottom
-            anchors.topMargin: VPNTheme.theme.listSpacing * 2
-            anchors.horizontalCenterOffset: 0
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            text: "Reset and Quit"
-            onClicked: {
-                if (clickNeeded) {
-                    text = "Reset and Quit (" + clickNeeded + ")";
-                    --clickNeeded;
-                    return;
-                }
-
-                VPN.hardResetAndQuit()
-            }
-        }
-
-        VPNTextBlock {
-            id: qtVersionText
-
-            text: VPN.devVersion
-            textFormat: Text.RichText
-            anchors.top: resetAndQuit.bottom
-            anchors.topMargin: 8
-            anchors.horizontalCenterOffset: 0
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
-
-        VPNContextualAlerts {
-            id: restartRequired
-
-            property bool isVisible: false
-
-            anchors {
-                left: inspectorLink.left
-                right: parent.right
-                top: inspectorLink.bottom
-                topMargin: VPNTheme.theme.listSpacing
-            }
-
-            messages: [
-                {
-                    type: "warning",
-                    message: VPNl18n.SettingsDevRestartRequired,
-                    visible: isVisible
-                }
-            ]
-
-            Connections {
-                target: VPNSettings
-                function onStagingServerAddressChanged() {
-                    restartRequired.isVisible = true;
-                }
-                function onStagingServerChanged() {
-                    restartRequired.isVisible = true;
-                }
-            }
-        }
-    }
-
-    Component.onCompleted: {
-        const contentHeight = developerUnlock.height + stagingServerRow.height + themeListLink.height + featureListLink.height + animationsPlaygroundLink.height + inspectorLink.height + resetAndQuit.height + VPNTheme.theme.listSpacing * 10;
-        flickableContent.flickContentHeight = contentHeight;
     }
 }
+
