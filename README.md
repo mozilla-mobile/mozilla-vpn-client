@@ -42,7 +42,7 @@ pre-commit hook: `./scripts/git-pre-commit-format install`
 
 ```bash
 git clone https://github.com/mozilla-mobile/mozilla-vpn-client.git
-cd mozilla-vn-client
+cd mozilla-vpn-client
 git submodule update --init
 ```
 
