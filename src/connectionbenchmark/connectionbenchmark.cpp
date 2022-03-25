@@ -62,6 +62,7 @@ void ConnectionBenchmark::start() {
 
   if (vpn->connectionHealth()->stability() == ConnectionHealth::NoSignal) {
     handleStabilityChange();
+    return;
   }
 
   connect(controller, &Controller::stateChanged, this,
