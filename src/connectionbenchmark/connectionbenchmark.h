@@ -25,6 +25,8 @@ class ConnectionBenchmark final : public QObject {
   ConnectionBenchmark();
   ~ConnectionBenchmark();
 
+  void initialize();
+
   Q_INVOKABLE void start();
   Q_INVOKABLE void reset();
 
