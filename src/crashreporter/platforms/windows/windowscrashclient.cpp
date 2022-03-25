@@ -3,15 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowscrashclient.h"
+
+#include "crashreporter/crashreporterapp.h"
 #include "../logger.h"
 
-#include <QObject>
-#include <iostream>
-#include <Windows.h>
-#include <sstream>
 #include <codecvt>
+#include <iostream>
+#include <QDir>
+#include <QObject>
+#include <QStandardPaths>
+#include <sstream>
+#include <Windows.h>
 
-#include <crashreporter/crashreporterapp.h>
 using namespace std;
 
 namespace {
@@ -35,6 +38,13 @@ WindowsCrashClient::WindowsCrashClient() {}
 WindowsCrashClient::~WindowsCrashClient() {}
 
 bool WindowsCrashClient::start(int argc, char* argv[]) {
+  auto appDatas =
+      QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
+  auto appLocal = appDatas.first() + "\\dumps";
+  if (!QDir().mkpath(appLocal)) {
+    logger.error() << "Unable to create dump folder at " << appLocal;
+  }
+
   m_launchPath = argv[0];
   if (!SUCCEEDED(RegisterApplicationRecoveryCallback(RecoveryCallback, this,
                                                      30000, 0))) {
