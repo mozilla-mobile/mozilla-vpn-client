@@ -122,11 +122,6 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
                 visible: false
             }
@@ -177,11 +172,6 @@ Item {
             PropertyChanges {
                 target: settingsImage
                 source: "qrc:/nebula/resources/settings.svg"
-            }
-
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: false
             }
 
             PropertyChanges {
@@ -242,11 +232,6 @@ Item {
             PropertyChanges {
                 target: settingsButton
                 buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-            }
-
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: false
             }
 
             PropertyChanges {
@@ -311,11 +296,6 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
                 visible: false
             }
@@ -372,11 +352,6 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: !connectionInfoIsEnabled
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
                 visible: connectionInfoIsEnabled
             }
@@ -426,11 +401,6 @@ Item {
             PropertyChanges {
                 target: settingsButton
                 buttonColorScheme: VPNTheme.theme.iconButtonLightBackground
-            }
-
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: false
             }
 
             PropertyChanges {
@@ -492,11 +462,6 @@ Item {
             PropertyChanges {
                 target: settingsButton
                 buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-            }
-
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: !connectionInfoIsEnabled
             }
 
             PropertyChanges {

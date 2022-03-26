@@ -246,15 +246,13 @@ VPNButtonBase {
         color: "#C2C2C2"
         state: toggle.state
         opacity: {
-            if (state === uiState.stateDefault || toggleButton.activeFocus)
-                return 0;
-
             if (state === uiState.stateHovered)
                 return 0.2;
 
             if (state === uiState.statePressed)
                 return 0.3;
 
+            return 0;
         }
         z: -1
         anchors.fill: toggle
