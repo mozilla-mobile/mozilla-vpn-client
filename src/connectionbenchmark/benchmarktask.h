@@ -6,6 +6,7 @@
 #define BENCHMARKTASK_H
 
 #include "task.h"
+#include "benchmarktasksentinel.h"
 
 #include <QElapsedTimer>
 
@@ -25,6 +26,8 @@ class BenchmarkTask : public Task {
   State state() const { return m_state; }
   qint64 executionTime() const { return m_elapsedTimer.elapsed(); }
 
+  const BenchmarkTaskSentinel* sentinel() const { return &m_sentinel; }
+
  signals:
   void stateChanged(State state);
 
@@ -36,6 +39,8 @@ class BenchmarkTask : public Task {
 
   const uint32_t m_maxExecutionTime;
   QElapsedTimer m_elapsedTimer;
+
+  BenchmarkTaskSentinel m_sentinel;
 };
 
 #endif  // BENCHMARKTASK_H
