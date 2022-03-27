@@ -19,7 +19,7 @@ RadioDelegate {
     signal clicked()
 
     ButtonGroup.group: radioButtonGroup
-    width: parent.width
+    implicitWidth: parent.width
     height: VPNTheme.theme.rowHeight
 
     Component.onCompleted: {
