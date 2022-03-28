@@ -9,6 +9,8 @@
 #include <QWindow>
 #include <QNetworkAccessManager>
 
+#include <QApplication>
+
 namespace {
 Logger logger(LOG_MAIN, "QmlEngineHolder");
 QmlEngineHolder* s_instance = nullptr;
@@ -30,7 +32,9 @@ QmlEngineHolder::~QmlEngineHolder() {
 
 // static
 QmlEngineHolder* QmlEngineHolder::instance() {
-  Q_ASSERT(s_instance);
+  if(!s_instance) {
+    s_instance = new QmlEngineHolder();
+  };
   return s_instance;
 }
 

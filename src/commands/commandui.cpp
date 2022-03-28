@@ -179,8 +179,6 @@ int CommandUI::run(QStringList& tokens) {
     }
 #endif
 
-    // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
-    QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
 
     Glean::Initialize(engine);
@@ -510,7 +508,7 @@ int CommandUI::run(QStringList& tokens) {
     engine->load(url);
 
     NotificationHandler* notificationHandler =
-        NotificationHandler::create(&engineHolder);
+        NotificationHandler::create(QmlEngineHolder::instance());
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
                      notificationHandler,
