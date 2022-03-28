@@ -313,15 +313,15 @@ VPNFlickable {
         anchors.fill: parent
         gradient: Gradient {
             GradientStop {
-                color: "#472C87"
+                color: VPNTheme.theme.onBoardingGradient.start
                 position: 0.0
             }
             GradientStop {
-                color: "#301962"
+                color: VPNTheme.theme.onBoardingGradient.middle
                 position: 0.2
             }
             GradientStop {
-                color: "#1D0942"
+                color: VPNTheme.theme.onBoardingGradient.end
                 position: 0.5
             }
         }

@@ -70,6 +70,12 @@ theme.darkFocusBorder = theme.fontColor;
 theme.lightFocusBorder = '#d5d3e0';
 
 
+theme.onBoardingGradient = {
+  'start': '#472C87',
+  'middle': '#301962',
+  'end': '#1D0942',
+};
+
 theme.blueButton = {
   'defaultColor': theme.blue,
   'buttonHovered': theme.blueHovered,
