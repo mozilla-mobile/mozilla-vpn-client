@@ -14,7 +14,6 @@ import telemetry 0.30
 Item {
     id: box
 
-    property bool connectionInfoIsEnabled: VPNFeatureList.get("connectionInfo").isSupported
     property bool connectionInfoScreenVisible: false
 
     function formatSingle(value) {
@@ -122,17 +121,7 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
                 visible: false
             }
 
@@ -180,18 +169,8 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
+                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -244,19 +223,10 @@ Item {
                 buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
             }
 
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
 
             PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
+                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -311,18 +281,8 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
+                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -372,13 +332,8 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: !connectionInfoIsEnabled
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: connectionInfoIsEnabled
+                visible: true
             }
 
             PropertyChanges {
@@ -429,18 +384,8 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
+                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -495,13 +440,8 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: !connectionInfoIsEnabled
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: connectionInfoIsEnabled
+                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -597,10 +537,10 @@ Item {
             topMargin: VPNTheme.theme.windowMargin / 2
         }
         accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : VPNl18n.ConnectionInfoOpenButton
-        Accessible.ignored: !connectionInfoToggleButton.visible
+        Accessible.ignored: !visible
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        enabled: connectionInfoToggleButton.visible
-        opacity: connectionInfoToggleButton.visible ? 1 : 0
+        enabled: visible
+        opacity: visible ? 1 : 0
         z: 1
 
         onClicked: {
@@ -812,20 +752,6 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         Accessible.ignored: connectionInfoScreenVisible
         enabled: !connectionInfoScreenVisible
-    }
-
-    VPNConnectionInfo {
-        id: connectionInfo
-        visible: false
-
-        Behavior on opacity {
-            NumberAnimation {
-                target: connectionInfo
-                property: "opacity"
-                duration: 200
-            }
-
-        }
     }
 
     VPNConnectionInfoScreen {

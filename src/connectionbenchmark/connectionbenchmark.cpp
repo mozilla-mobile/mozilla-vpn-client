@@ -168,10 +168,11 @@ void ConnectionBenchmark::handleStabilityChange() {
     return;
   }
 
-  logger.debug() << "Handle stability change";
+  ConnectionHealth::ConnectionStability stability =
+      MozillaVPN::instance()->connectionHealth()->stability();
+  logger.debug() << "Handle stability change" << stability;
 
-  if (MozillaVPN::instance()->connectionHealth()->stability() ==
-      ConnectionHealth::NoSignal) {
+  if (stability == ConnectionHealth::NoSignal) {
     setState(StateError);
     stop();
   };
