@@ -30,7 +30,11 @@ QmlEngineHolder::~QmlEngineHolder() {
 
 // static
 QmlEngineHolder* QmlEngineHolder::instance() {
-  Q_ASSERT(s_instance);
+  if (!s_instance) {
+    // We do not set the parent since destroying this instance will cause
+    // crashes
+    s_instance = new QmlEngineHolder();
+  };
   return s_instance;
 }
 
