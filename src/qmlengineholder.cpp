@@ -31,7 +31,7 @@ QmlEngineHolder::~QmlEngineHolder() {
 // static
 QmlEngineHolder* QmlEngineHolder::instance() {
   if (!s_instance) {
-    // We do not set the parent since destroying this instance will cause 
+    // We do not set the parent since destroying this instance will cause
     // crashes
     s_instance = new QmlEngineHolder();
   };
