@@ -1,0 +1,24 @@
+[
+ {
+  "countryCode": "au",
+  "languages": {
+   "sk": "au_SK",
+   "en": "au_EN"
+  },
+  "cities": [
+   {
+    "city": "Melbourne",
+    "languages": {
+     "sk": "Melbourne_SK"
+    }
+   },
+   {
+    "city": "Sydney",
+    "languages": {
+     "sk": "Sydney_SK",
+     "en": "Sydney_EN"
+    }
+   }
+  ]
+ }
+]
