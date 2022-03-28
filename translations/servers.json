@@ -32,7 +32,8 @@
      "sq": "Melburni",
      "uk": "Мельбурн",
      "zh_TW": "墨爾本"
-    }
+    },
+    "wikiDataID": "Q3141"
    },
    {
     "city": "Sydney",
@@ -47,9 +48,11 @@
      "ru": "Сидней",
      "uk": "Сідней",
      "zh_TW": "雪梨"
-    }
+    },
+    "wikiDataID": "Q3130"
    }
-  ]
+  ],
+  "wikiDataID": "Q408"
  },
  {
   "countryCode": "at",
@@ -103,9 +106,11 @@
      "sv_SE": "Wien",
      "uk": "Відень",
      "zh_TW": "維也納"
-    }
+    },
+    "wikiDataID": "Q1741"
    }
-  ]
+  ],
+  "wikiDataID": "Q40"
  },
  {
   "countryCode": "be",
@@ -146,9 +151,9 @@
      "cy": "Dinas Brwsel",
      "de": "Brüssel",
      "el": "Βρυξέλλες",
-     "en": "Brussels",
-     "en_CA": "Brussels",
-     "en_GB": "Brussels",
+     "en": "City of Brussels",
+     "en_CA": "City of Brussels",
+     "en_GB": "City of Brussels",
      "es_AR": "Bruselas",
      "es_CL": "Bruselas",
      "es_ES": "Bruselas",
@@ -164,16 +169,18 @@
      "it": "Bruxelles",
      "ja": "ブリュッセル＝ヴィル",
      "nl": "Brussel",
-     "pt_BR": "Bruxelas",
+     "pt_BR": "Cidade de Bruxelas",
      "ru": "Брюссель",
      "sk": "Brusel",
      "sq": "Brukseli",
      "sv_SE": "Bryssel",
      "uk": "Брюссель",
      "zh_TW": "布魯塞爾市"
-    }
+    },
+    "wikiDataID": "Q239"
    }
-  ]
+  ],
+  "wikiDataID": "Q31"
  },
  {
   "countryCode": "br",
@@ -242,9 +249,11 @@
      "sv_SE": "São Paulo",
      "uk": "Сан-Паулу",
      "zh_TW": "聖保羅"
-    }
+    },
+    "wikiDataID": "Q174"
    }
-  ]
+  ],
+  "wikiDataID": "Q155"
  },
  {
   "countryCode": "bg",
@@ -289,9 +298,11 @@
      "sq": "Sofja",
      "uk": "Софія",
      "zh_TW": "索菲亞"
-    }
+    },
+    "wikiDataID": "Q472"
    }
-  ]
+  ],
+  "wikiDataID": "Q219"
  },
  {
   "countryCode": "ca",
@@ -338,7 +349,8 @@
      "sv_SE": "Montréal",
      "uk": "Монреаль",
      "zh_TW": "蒙特婁"
-    }
+    },
+    "wikiDataID": "Q340"
    },
    {
     "city": "Toronto",
@@ -350,9 +362,11 @@
      "ru": "Торонто",
      "uk": "Торонто",
      "zh_TW": "多倫多"
-    }
+    },
+    "wikiDataID": "Q172"
    },
    {
+    "wikiDataID": "Q24639",
     "city": "Vancouver",
     "languages": {
      "el": "Βανκούβερ",
@@ -364,7 +378,8 @@
      "zh_TW": "溫哥華"
     }
    }
-  ]
+  ],
+  "wikiDataID": "Q16"
  },
  {
   "countryCode": "cz",
@@ -429,9 +444,11 @@
      "sv_SE": "Prag",
      "uk": "Прага",
      "zh_TW": "布拉格"
-    }
+    },
+    "wikiDataID": "Q1085"
    }
-  ]
+  ],
+  "wikiDataID": "Q213"
  },
  {
   "countryCode": "dk",
@@ -494,9 +511,11 @@
      "sv_SE": "Köpenhamn",
      "uk": "Копенгаген",
      "zh_TW": "哥本哈根"
-    }
+    },
+    "wikiDataID": "Q1748"
    }
-  ]
+  ],
+  "wikiDataID": "Q35"
  },
  {
   "countryCode": "ee",
@@ -537,9 +556,11 @@
      "sq": "Talini",
      "uk": "Таллінн",
      "zh_TW": "塔林"
-    }
+    },
+    "wikiDataID": "Q1770"
    }
-  ]
+  ],
+  "wikiDataID": "Q191"
  },
  {
   "countryCode": "fi",
@@ -584,9 +605,11 @@
      "sv_SE": "Helsingfors",
      "uk": "Гельсінкі",
      "zh_TW": "赫爾辛基"
-    }
+    },
+    "wikiDataID": "Q1757"
    }
-  ]
+  ],
+  "wikiDataID": "Q33"
  },
  {
   "countryCode": "fr",
@@ -636,7 +659,8 @@
      "ru": "Марсель",
      "uk": "Марсель",
      "zh_TW": "馬賽"
-    }
+    },
+    "wikiDataID": "Q23482"
    },
    {
     "city": "Paris",
@@ -659,9 +683,11 @@
      "sk": "Paríž",
      "uk": "Париж",
      "zh_TW": "巴黎"
-    }
+    },
+    "wikiDataID": "Q90"
    }
-  ]
+  ],
+  "wikiDataID": "Q142"
  },
  {
   "countryCode": "de",
@@ -729,7 +755,8 @@
      "sv_SE": "Düsseldorf",
      "uk": "Дюссельдорф",
      "zh_TW": "杜塞爾多夫"
-    }
+    },
+    "wikiDataID": "Q1718"
    },
    {
     "city": "Frankfurt",
@@ -765,9 +792,11 @@
      "sv_SE": "Frankfurt am Main",
      "uk": "Франкфурт-на-Майні",
      "zh_TW": "美茵河畔法蘭克福"
-    }
+    },
+    "wikiDataID": "Q1794"
    }
-  ]
+  ],
+  "wikiDataID": "Q183"
  },
  {
   "countryCode": "hk",
@@ -787,7 +816,29 @@
    "uk": "Гонконг",
    "zh_TW": "香港"
   },
-  "cities": []
+  "cities": [
+   {
+    "wikiDataID": "Q8646",
+    "city": "Hong Kong",
+    "languages": {
+     "cy": "Hong Cong",
+     "de": "Hongkong",
+     "el": "Χονγκ Κονγκ",
+     "fi": "Hongkong",
+     "fy_NL": "Hongkong",
+     "hu": "Hongkong",
+     "ja": "香港",
+     "nl": "Hongkong",
+     "pa_IN": "ਹਾਂਗ ਕਾਂਗ",
+     "ru": "Гонконг",
+     "sk": "Hongkong",
+     "sv_SE": "Hongkong",
+     "uk": "Гонконг",
+     "zh_TW": "香港"
+    }
+   }
+  ],
+  "wikiDataID": "Q8646"
  },
  {
   "countryCode": "hu",
@@ -836,9 +887,11 @@
      "sk": "Budapešť",
      "uk": "Будапешт",
      "zh_TW": "布達佩斯"
-    }
+    },
+    "wikiDataID": "Q1781"
    }
-  ]
+  ],
+  "wikiDataID": "Q28"
  },
  {
   "countryCode": "it",
@@ -900,9 +953,11 @@
      "sv_SE": "Milano",
      "uk": "Мілан",
      "zh_TW": "米蘭"
-    }
+    },
+    "wikiDataID": "Q490"
    }
-  ]
+  ],
+  "wikiDataID": "Q38"
  },
  {
   "countryCode": "jp",
@@ -939,7 +994,8 @@
      "en_GB": "Ōsaka",
      "ja": "大阪",
      "zh_TW": "大阪"
-    }
+    },
+    "wikiDataID": "Q11439906"
    },
    {
     "city": "Tokyo",
@@ -967,9 +1023,11 @@
      "sv_SE": "Tokyo prefektur",
      "uk": "Токіо",
      "zh_TW": "東京都"
-    }
+    },
+    "wikiDataID": "Q1490"
    }
-  ]
+  ],
+  "wikiDataID": "Q17"
  },
  {
   "countryCode": "lv",
@@ -1013,9 +1071,11 @@
      "ru": "Рига",
      "uk": "Рига",
      "zh_TW": "里加"
-    }
+    },
+    "wikiDataID": "Q1773"
    }
-  ]
+  ],
+  "wikiDataID": "Q211"
  },
  {
   "countryCode": "lu",
@@ -1048,7 +1108,42 @@
    "uk": "Люксембург",
    "zh_TW": "盧森堡"
   },
-  "cities": []
+  "cities": [
+   {
+    "wikiDataID": "Q32",
+    "city": "Luxembourg",
+    "languages": {
+     "co": "Lussemburgu",
+     "cy": "Lwcsembwrg",
+     "de": "Luxemburg",
+     "dsb": "Luxemburgska",
+     "el": "Λουξεμβούργο",
+     "es_AR": "Luxemburgo",
+     "es_CL": "Luxemburgo",
+     "es_ES": "Luxemburgo",
+     "es_MX": "Luxemburgo",
+     "fi": "Luxemburg",
+     "fy_NL": "Lúksemboarch",
+     "hsb": "Luxemburgska",
+     "hu": "Luxemburg",
+     "ia": "Luxemburg",
+     "id": "Luksemburg",
+     "is": "Lúxemborg",
+     "it": "Lussemburgo",
+     "ja": "ルクセンブルク",
+     "nl": "Luxemburg",
+     "pa_IN": "ਲਕਸਮਬਰਗ",
+     "pt_BR": "Luxemburgo",
+     "ru": "Люксембург",
+     "sk": "Luxembursko",
+     "sq": "Luksemburgu",
+     "sv_SE": "Luxemburg",
+     "uk": "Люксембург",
+     "zh_TW": "盧森堡"
+    }
+   }
+  ],
+  "wikiDataID": "Q32"
  },
  {
   "countryCode": "md",
@@ -1111,9 +1206,11 @@
      "sv_SE": "Chișinău",
      "uk": "Кишинів",
      "zh_TW": "奇西瑙"
-    }
+    },
+    "wikiDataID": "Q21197"
    }
-  ]
+  ],
+  "wikiDataID": "Q217"
  },
  {
   "countryCode": "nl",
@@ -1164,9 +1261,11 @@
      "sq": "Amsterdami",
      "uk": "Амстердам",
      "zh_TW": "阿姆斯特丹"
-    }
+    },
+    "wikiDataID": "Q727"
    }
-  ]
+  ],
+  "wikiDataID": "Q55"
  },
  {
   "countryCode": "nz",
@@ -1211,9 +1310,11 @@
      "sq": "Okland",
      "uk": "Окленд",
      "zh_TW": "奧克蘭"
-    }
+    },
+    "wikiDataID": "Q37100"
    }
-  ]
+  ],
+  "wikiDataID": "Q664"
  },
  {
   "countryCode": "mk",
@@ -1263,9 +1364,11 @@
      "sq": "Shkupi",
      "uk": "Скоп'є",
      "zh_TW": "史高比耶"
-    }
+    },
+    "wikiDataID": "Q384"
    }
-  ]
+  ],
+  "wikiDataID": "Q221"
  },
  {
   "countryCode": "no",
@@ -1311,9 +1414,11 @@
      "ru": "Осло",
      "uk": "Осло",
      "zh_TW": "奧斯陸"
-    }
+    },
+    "wikiDataID": "Q585"
    }
-  ]
+  ],
+  "wikiDataID": "Q20"
  },
  {
   "countryCode": "pl",
@@ -1378,9 +1483,11 @@
      "sv_SE": "Warszawa",
      "uk": "Варшава",
      "zh_TW": "華沙"
-    }
+    },
+    "wikiDataID": "Q270"
    }
-  ]
+  ],
+  "wikiDataID": "Q36"
  },
  {
   "countryCode": "pt",
@@ -1434,9 +1541,11 @@
      "sv_SE": "Lissabon",
      "uk": "Лісабон",
      "zh_TW": "里斯本"
-    }
+    },
+    "wikiDataID": "Q597"
    }
-  ]
+  ],
+  "wikiDataID": "Q45"
  },
  {
   "countryCode": "ie",
@@ -1492,9 +1601,11 @@
      "sq": "Dublini",
      "uk": "Дублін",
      "zh_TW": "都柏林"
-    }
+    },
+    "wikiDataID": "Q1761"
    }
-  ]
+  ],
+  "wikiDataID": "Q27"
  },
  {
   "countryCode": "ro",
@@ -1556,9 +1667,11 @@
      "sv_SE": "Bukarest",
      "uk": "Бухарест",
      "zh_TW": "布加勒斯特"
-    }
+    },
+    "wikiDataID": "Q19660"
    }
-  ]
+  ],
+  "wikiDataID": "Q218"
  },
  {
   "countryCode": "rs",
@@ -1612,9 +1725,11 @@
      "sv_SE": "Belgrad",
      "uk": "Белград",
      "zh_TW": "貝爾格勒"
-    }
+    },
+    "wikiDataID": "Q3711"
    }
-  ]
+  ],
+  "wikiDataID": "Q403"
  },
  {
   "countryCode": "sg",
@@ -1642,7 +1757,37 @@
    "uk": "Сінгапур",
    "zh_TW": "新加坡"
   },
-  "cities": []
+  "cities": [
+   {
+    "wikiDataID": "Q334",
+    "city": "Singapore",
+    "languages": {
+     "cy": "Singapôr",
+     "de": "Singapur",
+     "dsb": "Singapur",
+     "el": "Σιγκαπούρη",
+     "es_AR": "Singapur",
+     "es_CL": "Singapur",
+     "es_ES": "Singapur",
+     "es_MX": "Singapur",
+     "fr": "Singapour",
+     "hsb": "Singapur",
+     "hu": "Szingapúr",
+     "ia": "Singapur",
+     "id": "Singapura",
+     "is": "Singapúr",
+     "ja": "シンガポール",
+     "pa_IN": "ਸਿੰਘਾਪੁਰ",
+     "pt_BR": "Singapura",
+     "ru": "Сингапур",
+     "sk": "Singapur",
+     "sq": "Singapori",
+     "uk": "Сінгапур",
+     "zh_TW": "新加坡"
+    }
+   }
+  ],
+  "wikiDataID": "Q334"
  },
  {
   "countryCode": "es",
@@ -1688,9 +1833,11 @@
      "sq": "Madridi",
      "uk": "Мадрид",
      "zh_TW": "馬德里"
-    }
+    },
+    "wikiDataID": "Q2807"
    }
-  ]
+  ],
+  "wikiDataID": "Q29"
  },
  {
   "countryCode": "se",
@@ -1753,7 +1900,8 @@
      "sv_SE": "Göteborg",
      "uk": "Гетеборг",
      "zh_TW": "哥特堡"
-    }
+    },
+    "wikiDataID": "Q25287"
    },
    {
     "city": "Malmö",
@@ -1763,7 +1911,8 @@
      "ru": "Мальмё",
      "uk": "Мальме",
      "zh_TW": "馬爾摩"
-    }
+    },
+    "wikiDataID": "Q2211"
    },
    {
     "city": "Stockholm",
@@ -1786,9 +1935,11 @@
      "sq": "Stokholmi",
      "uk": "Стокгольм",
      "zh_TW": "斯德哥爾摩"
-    }
+    },
+    "wikiDataID": "Q1754"
    }
-  ]
+  ],
+  "wikiDataID": "Q34"
  },
  {
   "countryCode": "ch",
@@ -1855,9 +2006,11 @@
      "sv_SE": "Zürich",
      "uk": "Цюрих",
      "zh_TW": "蘇黎世"
-    }
+    },
+    "wikiDataID": "Q72"
    }
-  ]
+  ],
+  "wikiDataID": "Q39"
  },
  {
   "countryCode": "gb",
@@ -1918,7 +2071,8 @@
      "sq": "Londër",
      "uk": "Лондон",
      "zh_TW": "倫敦"
-    }
+    },
+    "wikiDataID": "Q84"
    },
    {
     "city": "Manchester",
@@ -1935,9 +2089,11 @@
      "ru": "Манчестер",
      "uk": "Манчестер",
      "zh_TW": "曼徹斯特"
-    }
+    },
+    "wikiDataID": "Q18125"
    }
-  ]
+  ],
+  "wikiDataID": "Q145"
  },
  {
   "countryCode": "us",
@@ -1962,7 +2118,7 @@
    "ia": "Statos Unite de America",
    "id": "Amerika Serikat",
    "is": "Bandaríkin",
-   "it": "USA",
+   "it": "Stati Uniti d'America",
    "ja": "アメリカ合衆国",
    "nl": "Verenigde Staten van Amerika",
    "pa_IN": "ਸੰਯੁਕਤ ਰਾਜ ਅਮਰੀਕਾ",
@@ -1996,7 +2152,8 @@
      "sv_SE": "Ashburn",
      "uk": "Ешберн",
      "zh_TW": "阿什本"
-    }
+    },
+    "wikiDataID": "Q724884"
    },
    {
     "city": "Atlanta, GA",
@@ -2030,7 +2187,8 @@
      "sv_SE": "Atlanta",
      "uk": "Атланта",
      "zh_TW": "亞特蘭大"
-    }
+    },
+    "wikiDataID": "Q23556"
    },
    {
     "city": "Chicago, IL",
@@ -2066,7 +2224,8 @@
      "sv_SE": "Chicago",
      "uk": "Чикаго",
      "zh_TW": "芝加哥"
-    }
+    },
+    "wikiDataID": "Q1297"
    },
    {
     "city": "Dallas, TX",
@@ -2101,7 +2260,8 @@
      "sv_SE": "Dallas",
      "uk": "Даллас",
      "zh_TW": "達拉斯"
-    }
+    },
+    "wikiDataID": "Q16557"
    },
    {
     "city": "Denver, CO",
@@ -2135,9 +2295,11 @@
      "sv_SE": "Denver",
      "uk": "Денвер",
      "zh_TW": "丹佛"
-    }
+    },
+    "wikiDataID": "Q16554"
    },
    {
+    "wikiDataID": "Q16555",
     "city": "Houston, TX",
     "languages": {
      "cy": "Houston, Texas",
@@ -2204,7 +2366,8 @@
      "sv_SE": "Los Angeles",
      "uk": "Лос-Анджелес",
      "zh_TW": "洛杉磯"
-    }
+    },
+    "wikiDataID": "Q65"
    },
    {
     "city": "Miami, FL",
@@ -2237,7 +2400,8 @@
      "sv_SE": "Miami",
      "uk": "Маямі",
      "zh_TW": "邁阿密"
-    }
+    },
+    "wikiDataID": "Q8652"
    },
    {
     "city": "New York, NY",
@@ -2273,7 +2437,8 @@
      "sv_SE": "New York",
      "uk": "Нью-Йорк",
      "zh_TW": "紐約"
-    }
+    },
+    "wikiDataID": "Q60"
    },
    {
     "city": "Phoenix, AZ",
@@ -2307,7 +2472,8 @@
      "sv_SE": "Phoenix",
      "uk": "Фінікс",
      "zh_TW": "鳳凰城"
-    }
+    },
+    "wikiDataID": "Q16556"
    },
    {
     "city": "Raleigh, NC",
@@ -2339,7 +2505,8 @@
      "sv_SE": "Raleigh",
      "uk": "Ралі",
      "zh_TW": "羅利"
-    }
+    },
+    "wikiDataID": "Q41087"
    },
    {
     "city": "Salt Lake City, UT",
@@ -2373,7 +2540,8 @@
      "sv_SE": "Salt Lake City",
      "uk": "Солт-Лейк-Сіті",
      "zh_TW": "鹽湖城"
-    }
+    },
+    "wikiDataID": "Q23337"
    },
    {
     "city": "San Jose, CA",
@@ -2406,7 +2574,8 @@
      "sv_SE": "San Jos",
      "uk": "Сан-Хосе",
      "zh_TW": "聖荷西"
-    }
+    },
+    "wikiDataID": "Q16553"
    },
    {
     "city": "Seattle, WA",
@@ -2440,7 +2609,8 @@
      "sv_SE": "Seattle",
      "uk": "Сіетл",
      "zh_TW": "西雅圖"
-    }
+    },
+    "wikiDataID": "Q5083"
    },
    {
     "city": "Secaucus, NJ",
@@ -2462,8 +2632,10 @@
      "ru": "Секокус (Нью-Джерси)",
      "uk": "Сікокес",
      "zh_TW": "西考克斯市，新泽西州"
-    }
+    },
+    "wikiDataID": "Q1013249"
    }
-  ]
+  ],
+  "wikiDataID": "Q30"
  }
 ]
