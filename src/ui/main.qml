@@ -118,7 +118,7 @@ Window {
     Rectangle {
         id: iosSafeAreaTopMargin
 
-        color: "transparent"
+        color: VPNTheme.theme.transparent
         height: isMobileOnboardingOnIos ? 0 : safeAreaHeightByDevice();
         width: window.width
         anchors.top: parent.top

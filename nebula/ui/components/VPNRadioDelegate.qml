@@ -119,7 +119,7 @@ RadioDelegate {
     }
 
     background: Rectangle {
-        color: "transparent"
+        color: VPNTheme.theme.transparent
     }
 
     VPNMouseArea {

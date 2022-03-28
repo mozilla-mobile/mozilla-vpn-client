@@ -4,7 +4,9 @@
 
 import QtQuick 2.0
 
+import Mozilla.VPN 1.0
+
 Rectangle {
-    color: "transparent"
+    color: VPNTheme.theme.transparent
     width: parent.width
 }

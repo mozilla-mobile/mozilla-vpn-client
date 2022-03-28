@@ -123,7 +123,7 @@ ComboBox {
                 anchors.fill: parent
                 anchors.bottomMargin: -4
                 anchors.topMargin: anchors.bottomMargin
-                border.color: "transparent"
+                border.color: VPNTheme.theme.transparent
             }
         }
 

@@ -10,7 +10,7 @@ Rectangle {
 
     id: focusInnerBorder
 
-    color: "transparent"
+    color: VPNTheme.theme.transparent
     anchors.fill: parent
     radius: parent.radius
     border.width: VPNTheme.theme.focusBorderWidth
