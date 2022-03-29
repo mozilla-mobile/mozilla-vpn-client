@@ -60,6 +60,7 @@ class ConnectionBenchmark final : public QObject {
   void downloadBenchmarked(quint64 bitsPerSec, bool hasUnexpectedError);
   void pingBenchmarked(quint64 pingLatencyLatency);
 
+  void handleControllerState();
   void handleStabilityChange();
   void setConnectionSpeed();
   void setState(State state);
