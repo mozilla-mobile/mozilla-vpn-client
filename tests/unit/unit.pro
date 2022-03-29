@@ -129,6 +129,7 @@ HEADERS += \
     testmozillavpnh.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
+    testserveri18n.h \
     teststatusicon.h \
     testtasks.h \
     testthemes.h \
@@ -227,6 +228,7 @@ SOURCES += \
     testmozillavpnh.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \
+    testserveri18n.cpp \
     teststatusicon.cpp \
     testtasks.cpp \
     testthemes.cpp \
@@ -281,5 +283,6 @@ MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
 
+RESOURCES += servers/servers.qrc
 RESOURCES += ../../src/ui/license.qrc
 RESOURCES += themes/themes.qrc

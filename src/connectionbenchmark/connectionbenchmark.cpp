@@ -41,10 +41,9 @@ void ConnectionBenchmark::initialize() {
 void ConnectionBenchmark::setConnectionSpeed() {
   logger.debug() << "Set speed";
 
-  if (m_download >= Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
+  if (m_bitsPerSec >= Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
     m_speed = SpeedFast;
-  } else if (m_download >= Constants::BENCHMARK_THRESHOLD_SPEED_MEDIUM &&
-             m_download < Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
+  } else if (m_bitsPerSec >= Constants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
     m_speed = SpeedMedium;
   } else {
     m_speed = SpeedSlow;
@@ -120,23 +119,23 @@ void ConnectionBenchmark::reset() {
 
   stop();
 
-  m_download = 0;
-  m_ping = 0;
+  m_bitsPerSec = 0;
+  m_pingLatency = 0;
 
   setState(StateInitial);
 }
 
-void ConnectionBenchmark::downloadBenchmarked(quint64 bytesPerSecond,
+void ConnectionBenchmark::downloadBenchmarked(quint64 bitsPerSec,
                                               bool hasUnexpectedError) {
-  logger.debug() << "Benchmarked download" << bytesPerSecond;
+  logger.debug() << "Benchmarked download" << bitsPerSec;
 
   if (hasUnexpectedError) {
     setState(StateError);
     return;
   }
 
-  m_download = bytesPerSecond;
-  emit downloadChanged();
+  m_bitsPerSec = bitsPerSec;
+  emit bitsPerSecChanged();
 
   setConnectionSpeed();
 }
@@ -144,8 +143,8 @@ void ConnectionBenchmark::downloadBenchmarked(quint64 bytesPerSecond,
 void ConnectionBenchmark::pingBenchmarked(quint64 pingLatency) {
   logger.debug() << "Benchmarked ping" << pingLatency;
 
-  m_ping = pingLatency;
-  emit pingChanged();
+  m_pingLatency = pingLatency;
+  emit pingLatencyChanged();
 }
 
 void ConnectionBenchmark::handleControllerState() {
