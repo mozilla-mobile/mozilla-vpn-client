@@ -36,19 +36,20 @@ void TaskHeartbeat::run() {
             // Internal server errors.
             if (statusCode >= 500 && statusCode <= 509) {
               vpn->heartbeatCompleted(false);
-              return;
             }
 
             // Request failure ((?!?)
-            if (statusCode >= 400 && statusCode <= 409) {
+            else if (statusCode >= 400 && statusCode <= 409) {
               vpn->heartbeatCompleted(false);
-              return;
             }
 
             // We don't know if this happeneded because of a global network
             // failure or a local network issue. In general, let's ignore this
             // error.
-            vpn->heartbeatCompleted(true);
+            else {
+              vpn->heartbeatCompleted(true);
+            }
+
             emit completed();
           });
 
@@ -62,13 +63,10 @@ void TaskHeartbeat::run() {
             QJsonObject json = QJsonDocument::fromJson(data).object();
             QJsonValue mullvad = json.value("mullvadOK");
             QJsonValue db = json.value("dbOK");
-            if ((mullvad.isBool() && db.isBool()) &&
-                (!mullvad.toBool() || !db.toBool())) {
-              vpn->heartbeatCompleted(false);
-              return;
-            }
 
-            vpn->heartbeatCompleted(true);
+            vpn->heartbeatCompleted(!mullvad.isBool() || !db.isBool() ||
+                                    (mullvad.toBool() && db.toBool()));
+
             emit completed();
           });
 }
