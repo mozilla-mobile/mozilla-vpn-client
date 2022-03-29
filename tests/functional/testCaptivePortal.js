@@ -106,7 +106,7 @@ describe('Captive portal', function() {
     await vpn.waitForCondition(() => {
       return vpn.lastNotification().title === null;
     });
-    assert(vpn.lastNotification().title === null);
+    assert.strictEqual(vpn.lastNotification().title, null);
 
     // Something about this test upsets the next tests,
     // adding these waits gives everything a change to resolve.

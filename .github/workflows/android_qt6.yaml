@@ -45,6 +45,7 @@ jobs:
         continue-on-error: true
         id: compile
         run: |
+          git submodule update --remote --depth 1 i18n 
           bash ./scripts/android/package.sh $QTPATH -A ${{matrix.arch.qmake}} -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
       - name: Sign Android
         if: ${{ matrix.config.sign }}
@@ -52,9 +53,16 @@ jobs:
           AUTOGRAPH_TOKEN: ${{ secrets.AUTOGRAPH_KEY }}
         run: |
           bash ./scripts/android/sign.sh ${{ matrix.config.apk }}
-          rm ${{ matrix.config.apk }}/*unsigned.apk
-      - name: Upload APK${{ matrix.config.args }}
+
+      - name: Upload Signed APK${{ matrix.config.args }}
         uses: actions/upload-artifact@v1
+        if: ${{ matrix.config.sign }}
+        with:
+            name: ${{matrix.arch.name}}_${{ matrix.config.name }}
+            path: ${{ matrix.config.apk }}/android-build-${{ matrix.arch.qmake }}-release-signed.apk
+      - name: Upload Unsigned APK${{ matrix.config.args }}
+        uses: actions/upload-artifact@v1
+        if: matrix.config.sign == false
         with:
             name: ${{matrix.arch.name}}_${{ matrix.config.name }}
             path: ${{ matrix.config.apk }}

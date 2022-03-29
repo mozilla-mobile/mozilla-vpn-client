@@ -172,3 +172,7 @@ for l10n_file in l10n_files:
     os.system(f"{lconvert} -i {l10n_file['ts']} -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
 
 print(f'Imported {len(l10n_files)} locales')
+
+git = os.popen(f'git submodule status i18n')
+git_commit_hash = git.read().strip().replace("+","").split(' ')[0]
+print(f'Current commit:  https://github.com/mozilla-l10n/mozilla-vpn-client-l10n/commit/{git_commit_hash}')
