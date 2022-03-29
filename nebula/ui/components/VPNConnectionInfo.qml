@@ -55,7 +55,7 @@ Item {
 
         Accessible.focusable: true
         Accessible.role: Accessible.Dialog
-        Accessible.name: connectionInfoButton.accessibleName
+        Accessible.name: connectionInfoToggleButton.accessibleName
 
 
         ValueAxis {

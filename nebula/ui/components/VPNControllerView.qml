@@ -223,7 +223,6 @@ Item {
                 buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
             }
 
-
             PropertyChanges {
                 target: connectionInfoToggleButton
                 visible: connectionInfoScreenVisible
