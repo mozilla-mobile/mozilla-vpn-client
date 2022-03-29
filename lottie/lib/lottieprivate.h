@@ -116,6 +116,8 @@ class LottiePrivate : public QQuickItem {
   LottieStatus m_status;
   bool m_autoPlay = false;
   QString m_fillMode = "stretch";
+  const QString m_context_type = "2d";
+  const QString m_renderer = "canvas";
 
   QQuickItem* m_canvas = nullptr;
   QQuickItem* m_container = nullptr;
