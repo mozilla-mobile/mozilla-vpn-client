@@ -129,8 +129,10 @@ QString SettingsHolder::getReport() {
     return m_settings.value(key).toType();                              \
   }                                                                     \
   void SettingsHolder::setter(const type& value) {                      \
-    m_settings.setValue(key, value);                                    \
-    emit getter##Changed(value);                                        \
+    if (!has() || getter() != value) {                                  \
+      m_settings.setValue(key, value);                                  \
+      emit getter##Changed(value);                                      \
+    }                                                                   \
   }
 
 #include "settingslist.h"
