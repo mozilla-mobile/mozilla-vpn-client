@@ -10,6 +10,7 @@ git submodule update
 ./scripts/utils/generate_glean.py
 # translations
 echo "Importing translations"
+git submodule update --remote --depth 1 i18n      
 ./scripts/utils/import_languages.py
 
 # Get Secrets for building
