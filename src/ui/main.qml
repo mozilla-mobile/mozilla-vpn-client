@@ -312,13 +312,10 @@ Window {
         }
 
         function onInitializeGlean() {
-            var debug = {};
             if (VPN.debugMode) {
                 console.debug("Initializing glean with debug mode");
-                debug = {
-                    logPings: true,
-                    debugViewTag: "MozillaVPN"
-                };
+                Glean.setLogPings(true);
+                Glean.setDebugViewTag("MozillaVPN");
             }
             var channel = VPN.stagingMode ? "staging" : "production";
             console.debug("Initializing glean with channel set to:", channel);
@@ -326,7 +323,6 @@ Window {
                 appBuild: "MozillaVPN/" + VPN.versionString,
                 appDisplayVersion: VPN.versionString,
                 channel: channel,
-                debug: debug,
                 osVersion: VPN.osVersion,
                 architecture: VPN.architecture,
             });
