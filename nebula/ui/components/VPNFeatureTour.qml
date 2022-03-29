@@ -182,7 +182,7 @@ ColumnLayout {
 
                     Connections {
                         target: tour
-                        onStarted: {
+                        function onStarted() {
                             if (isCurrentSlide()) {
                                 updateSlideContent();
                             }
