@@ -18,8 +18,8 @@ class ConnectionBenchmark final : public QObject {
 
   Q_PROPERTY(State state READ state NOTIFY stateChanged);
   Q_PROPERTY(Speed speed READ speed NOTIFY speedChanged);
-  Q_PROPERTY(quint64 download READ download NOTIFY downloadChanged);
-  Q_PROPERTY(quint16 ping READ ping NOTIFY pingChanged);
+  Q_PROPERTY(quint64 bitsPerSec READ bitsPerSec NOTIFY bitsPerSecChanged);
+  Q_PROPERTY(quint16 pingLatency READ pingLatency NOTIFY pingLatencyChanged);
 
  public:
   ConnectionBenchmark();
@@ -47,20 +47,19 @@ class ConnectionBenchmark final : public QObject {
 
   State state() const { return m_state; }
   Speed speed() const { return m_speed; }
-  quint16 ping() const { return m_ping; }
-  quint64 download() const { return m_download; }
+  quint16 pingLatency() const { return m_pingLatency; }
+  quint64 bitsPerSec() const { return m_bitsPerSec; }
 
  signals:
-  void downloadChanged();
-  void pingChanged();
+  void bitsPerSecChanged();
+  void pingLatencyChanged();
   void speedChanged();
   void stateChanged();
 
- private slots:
-  void downloadBenchmarked(quint64 bytesPerSecond, bool hasUnexpectedError);
-  void pingBenchmarked(quint64 pingLatency);
-
  private:
+  void downloadBenchmarked(quint64 bitsPerSec, bool hasUnexpectedError);
+  void pingBenchmarked(quint64 pingLatencyLatency);
+
   void handleStabilityChange();
   void setConnectionSpeed();
   void setState(State state);
@@ -72,8 +71,8 @@ class ConnectionBenchmark final : public QObject {
   State m_state = StateInitial;
   Speed m_speed = SpeedSlow;
 
-  quint64 m_download = 0;
-  quint16 m_ping = 0;
+  quint64 m_bitsPerSec = 0;
+  quint16 m_pingLatency = 0;
 };
 
 #endif  // CONNECTIONBENCHMARK_H
