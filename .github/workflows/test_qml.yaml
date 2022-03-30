@@ -99,7 +99,6 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/qt6/bin:$PATH
-          git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
       - name: Install Grcov
@@ -169,7 +168,6 @@ jobs:
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py -m
 
       - name: Running tests
