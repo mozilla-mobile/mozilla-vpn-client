@@ -33,7 +33,7 @@ jobs:
           path: build/
           key: ${{ github.sha }}
 
-      - name: Install Linux packages
+      - name: Install dependecies
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
           mkdir -p build/archive
@@ -48,6 +48,10 @@ jobs:
                libgl-dev libpolkit-gobject-1-dev qt515quickcontrols2 qt515imageformats \
                qt515graphicaleffects qt515websockets qt515declarative -y
           sudo chown -R $USER:$USER build/archive
+
+          # Some debug
+          echo "Listing $(pwd)/build/bin"
+          ls -al $(pwd)/build/bin
 
       - name: Compile test client
         shell: bash
