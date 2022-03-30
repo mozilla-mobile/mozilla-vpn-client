@@ -154,7 +154,7 @@ jobs:
         continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
         run: |
           cp build/.obj/*.gcno src/.obj
-          ${{runner.temp}}/build/bin/grcov src/.obj -s src -t lcov --branch --ignore-not-existing \
+          ./build/bin/grcov src/.obj -s src -t lcov --branch --ignore-not-existing \
               -o ${{runner.temp}}/artifacts/functional_lcov.info
 
       - name: Upload coverage to Codecov
