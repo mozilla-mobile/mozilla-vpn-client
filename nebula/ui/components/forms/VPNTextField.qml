@@ -35,9 +35,28 @@ TextField {
     placeholderTextColor: VPNTheme.colors.grey40
     leftPadding: VPNTheme.theme.windowMargin
     rightPadding: VPNTheme.theme.windowMargin
-
     topPadding: VPNTheme.theme.windowMargin / 2
     bottomPadding: VPNTheme.theme.windowMargin / 2
+
+    cursorDelegate: Rectangle {
+        // force cursor color and blink
+        id: cursor
+        visible: parent.activeFocus && !parent.readOnly && parent.selectionStart === parent.selectionEnd
+        color: textField.placeholderTextColor
+        width: 1
+
+        Timer {
+            // This is duped from CursorDelegate.qml to preserve cursor blinking which is overwritten
+            // when explicity setting cursor.color.
+            id: timer
+            running: cursor.parent.activeFocus && !cursor.parent.readOnly && interval != 0
+            repeat: true
+            interval: Qt.styleHints.cursorFlashTime / 2
+            onTriggered: cursor.opacity = !cursor.opacity ? 1 : 0
+            // force the cursor visible when gaining focus
+            onRunningChanged: cursor.opacity = 1
+        }
+    }
 
     Text {
         id: centeredPlaceholderText
