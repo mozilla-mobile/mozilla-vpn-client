@@ -439,8 +439,7 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
 
         QJsonDocument json = QJsonDocument::fromJson(data);
         if (json.isNull()) {
-          MozillaVPN::instance()->errorHandle(
-              ErrorHandler::AuthenticationError);
+          emit failed(ErrorHandler::AuthenticationError);
           return;
         }
 
@@ -568,8 +567,7 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
 
         QJsonDocument json = QJsonDocument::fromJson(data);
         if (json.isNull()) {
-          MozillaVPN::instance()->errorHandle(
-              ErrorHandler::AuthenticationError);
+          emit failed(ErrorHandler::AuthenticationError);
           return;
         }
 
@@ -577,22 +575,19 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
         QJsonValue code = obj.value("code");
         if (!code.isString()) {
           logger.error() << "FxA Authz: code not found";
-          MozillaVPN::instance()->errorHandle(
-              ErrorHandler::AuthenticationError);
+          emit failed(ErrorHandler::AuthenticationError);
           return;
         }
         QJsonValue state = obj.value("state");
         if (!state.isString()) {
           logger.error() << "FxA Authz: state not found";
-          MozillaVPN::instance()->errorHandle(
-              ErrorHandler::AuthenticationError);
+          emit failed(ErrorHandler::AuthenticationError);
           return;
         }
         QJsonValue redirect = obj.value("redirect");
         if (!redirect.isString()) {
           logger.error() << "FxA Authz: redirect not found";
-          MozillaVPN::instance()->errorHandle(
-              ErrorHandler::AuthenticationError);
+          emit failed(ErrorHandler::AuthenticationError);
           return;
         }
 
@@ -604,8 +599,6 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
             [this](QNetworkReply::NetworkError error, const QByteArray& data) {
               QJsonDocument json = QJsonDocument::fromJson(data);
               if (!json.isObject()) {
-                MozillaVPN::instance()->errorHandle(
-                    ErrorHandler::toErrorType(error));
                 emit failed(ErrorHandler::toErrorType(error));
                 return;
               }
@@ -614,8 +607,7 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
               QString detail = obj["detail"].toString();
               if (detail.isEmpty()) {
                 logger.error() << "Invalid JSON: no detail value";
-                MozillaVPN::instance()->errorHandle(
-                    ErrorHandler::AuthenticationError);
+                emit failed(ErrorHandler::AuthenticationError);
                 return;
               }
 
@@ -625,8 +617,7 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
 #endif
 
               logger.error() << "Authentication failed:" << detail;
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
+              emit failed(ErrorHandler::AuthenticationError);
             });
 
         connect(request, &NetworkRequest::requestCompleted, this,
@@ -635,8 +626,7 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
 
                   QJsonDocument json = QJsonDocument::fromJson(data);
                   if (json.isNull()) {
-                    MozillaVPN::instance()->errorHandle(
-                        ErrorHandler::AuthenticationError);
+                    emit failed(ErrorHandler::AuthenticationError);
                     return;
                   }
 
@@ -644,8 +634,7 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
                   QJsonValue code = obj.value("code");
                   if (!code.isString()) {
                     logger.error() << "Code not received!";
-                    MozillaVPN::instance()->errorHandle(
-                        ErrorHandler::AuthenticationError);
+                    emit failed(ErrorHandler::AuthenticationError);
                     return;
                   }
 
@@ -930,7 +919,6 @@ void AuthenticationInAppListener::processRequestFailure(
     return;
   }
 
-  MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
   emit failed(ErrorHandler::toErrorType(error));
 }
 
