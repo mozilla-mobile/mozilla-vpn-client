@@ -92,20 +92,22 @@ tasks:
                   $if: 'tasks_for == "github-pull-request"'
                   then: ${event.action}
                   else: 'UNDEFINED'
-              releaseAction:
-                  $if: 'tasks_for == "github-release"'
-                  then: ${event.action}
-                  else: 'UNDEFINED'
+              isRelease:
+                  $if: >
+                    tasks_for == "github-release" && event.action == "published"
+                    || (tasks_for == "github-push" && event.ref[:10] == "refs/tags/" && event.base_ref[:19] == "refs/heads/releases")
+                  then: true
+                  else: false
           in:
               $if: >
                 tasks_for in ["action", "cron"]
                 || (tasks_for == "github-pull-request" && pullRequestAction in ["opened", "reopened", "synchronize"])
                 || (tasks_for == "github-push" && (head_branch == "refs/heads/main" || head_branch[:19] == "refs/heads/releases"))
-                || (tasks_for == "github-release" && releaseAction == "published")
+                || isRelease
               then:
                   $let:
                       level:
-                          $if: 'tasks_for in ["github-push", "github-release", "action", "cron"] && repoUrl == "https://github.com/mozilla-mobile/mozilla-vpn-client"'
+                          $if: '(tasks_for in ["github-push", "action", "cron"] || isRelease) && repoUrl == "https://github.com/mozilla-mobile/mozilla-vpn-client"'
                           then: '3'
                           else: '1'
 
@@ -190,7 +192,7 @@ tasks:
                                   then:
                                       - 'assume:repo:github.com/${event.pull_request.base.repo.full_name}:pull-request'
                                   else:
-                                      $if: 'tasks_for == "github-release"'
+                                      $if: 'isRelease'
                                       then:
                                           - 'assume:repo:${repoUrl[8:]}:release'
                                       else:
@@ -232,9 +234,12 @@ tasks:
                                             ACTION_TASK_ID: {$json: {$eval: 'taskId'}}  # taskId of the target task (JSON-encoded)
                                             ACTION_INPUT: {$json: {$eval: 'input'}}
                                             ACTION_CALLBACK: '${action.cb_name}'
-                                      - $if: 'tasks_for == "github-release"'
+                                      - $if: 'isRelease'
                                         then:
-                                            MOZILLAVPN_HEAD_TAG: '${event.release.tag_name}'
+                                            MOZILLAVPN_HEAD_TAG:
+                                              $if: 'tasks_for == "github-release"'
+                                              then: '${event.release.tag_name}'
+                                              else: '${event.ref}[10:]'  # 10 == len('/refs/tags/')
                               features:
                                   taskclusterProxy: true
                                   chainOfTrust: true
@@ -306,7 +311,7 @@ tasks:
                                               then:
                                                   symbol: D
                                               else:
-                                                  $if: 'tasks_for == "github-release"'
+                                                  $if: 'isRelease'
                                                   then:
                                                       symbol: 'ship_mozillavpn'
                                                   else:
