@@ -9,7 +9,6 @@ git submodule update
 # glean
 ./scripts/utils/generate_glean.py
 # translations
-git submodule update --remote --depth 1 i18n 
 ./scripts/utils/import_languages.py
 
 # $1 should be the qmake arch. 

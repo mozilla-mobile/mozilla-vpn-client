@@ -64,6 +64,11 @@ if not os.path.isdir(qtbinpath):
 lupdate = os.path.join(qtbinpath, 'lupdate')
 lconvert = os.path.join(qtbinpath, 'lconvert')
 
+# Step 0
+# Let's update the i18n repo
+os.system(f"git submodule init")
+os.system(f"git submodule update --remote --depth 1 i18n")
+
 # Step 1
 # Go through the i18n repo, check each XLIFF file and take
 # note which locale is complete above the minimum threshold.

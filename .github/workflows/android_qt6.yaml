@@ -45,7 +45,6 @@ jobs:
         continue-on-error: true
         id: compile
         run: |
-          git submodule update --remote --depth 1 i18n 
           bash ./scripts/android/package.sh $QTPATH -A ${{matrix.arch.qmake}} -a ${{ secrets.ADJUST_SDK_TOKEN }} ${{ matrix.config.args }}
       - name: Sign Android
         if: ${{ matrix.config.sign }}

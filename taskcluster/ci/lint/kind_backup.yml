@@ -49,7 +49,7 @@ jobs:
         # run:
             # using: run-task
             # cwd: '{checkout}'
-            # command: export PATH="/opt/qt515/bin:$PATH" && git submodule sync --recursive i18n && git submodule update --init i18n && python3 scripts/utils/import_languages.py && lupdate -version && python3 .github/l10n/check_l10n_issues.py
+            # command: export PATH="/opt/qt515/bin:$PATH" && python3 scripts/utils/import_languages.py && lupdate -version && python3 .github/l10n/check_l10n_issues.py
         # treeherder:
             # symbol: l10n
             # tier: 1
