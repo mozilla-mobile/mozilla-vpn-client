@@ -88,6 +88,12 @@ jobs:
         run: |
           echo $TEST_LIST | jq
 
+      - name: Uploading artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: Test Bundle
+          path: build/
+
   functionaltests:
     name: Functional tests
     needs: 
