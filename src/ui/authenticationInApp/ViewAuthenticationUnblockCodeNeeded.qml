@@ -52,7 +52,7 @@ VPNInAppAuthenticationBase {
         VPNLinkButton {
             labelText: VPNl18n.InAppAuthResendCodeLink
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: VPNAuthInApp.resendVerificationSessionCodeEmail();
+            onClicked: VPNAuthInApp.resendUnblockCodeEmail();
         }
         VPNInAppAuthenticationCancel{}
     }
