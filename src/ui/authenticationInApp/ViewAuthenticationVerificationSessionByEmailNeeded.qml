@@ -39,11 +39,11 @@ VPNInAppAuthenticationBase {
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
 
     _inputs: VPNInAppAuthenticationInputs {
-        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded && activeInput().text && activeInput().text.length === VPNAuthInApp.verificationCodeLength && !activeInput().hasError
+        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded && activeInput().text && activeInput().text.length === VPNAuthInApp.sessionEmailCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionEmailCode(inputText) }
         _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton
         _inputMethodHints: Qt.ImhDigitsOnly
-        _inputPlaceholderText: VPNl18n.InAppAuthVerificationCodeInputPlaceholder
+        _inputPlaceholderText: VPNl18n.InAppAuthSessionEmailCodeInputPlaceholder
     }
 
     _footerContent: Column {
