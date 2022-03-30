@@ -338,7 +338,13 @@ QString LottiePrivate::fillModeToAspectRatio() const {
   return "none";
 }
 
-void LottiePrivate::eventPlayingCompleted() { m_status.resetAndNotify(); }
+void LottiePrivate::eventPlayingCompleted() {
+  if (m_window) {
+    m_window->suspend();
+  }
+
+  m_status.resetAndNotify();
+}
 
 void LottiePrivate::eventLoopCompleted() { emit loopCompleted(); }
 
