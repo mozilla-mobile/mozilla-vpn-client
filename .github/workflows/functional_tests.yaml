@@ -65,7 +65,7 @@ jobs:
 
           # Delete unit tests, so we can get to testing faster
           sed -i '/tests\/unit/d' mozillavpn.pro
-          qmake CONFIG+=DUMMY QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage CONFIG+=debug CONFIG+=inspector QT+=svg
+          qmake6 CONFIG+=DUMMY QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage CONFIG+=debug CONFIG+=inspector QT+=svg
           make -j$(nproc)
           cp ./src/mozillavpn build/
           cp -r ./src/.obj build/
