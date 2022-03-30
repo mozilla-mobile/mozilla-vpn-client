@@ -6,14 +6,6 @@
 
     i.e Jira or Github issue URL
 
-## Type Of Change
-
-- [ ] Bug Fix
-- [ ] New Feature 
-- [ ] Refactor
-- [ ] New/Updated Test
-
-
 ## Checklist
     
 - [ ] My code follows the style guidelines for this project
