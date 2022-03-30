@@ -16,6 +16,7 @@ ColumnLayout {
         font.pixelSize: VPNTheme.theme.fontSizeSmall
         color: VPNTheme.theme.fontColor
         Layout.fillWidth: true
+        Layout.maximumWidth: VPNTheme.theme.maxTextWidth
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         horizontalAlignment: Text.AlignHCenter
         linkColor: VPNTheme.theme.fontColorDark
