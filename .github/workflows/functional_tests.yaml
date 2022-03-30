@@ -45,10 +45,8 @@ jobs:
           sudo add-apt-repository ppa:okirby/qt6-backports
 
           # Download the Qt6 package dependencies.
-          sudo apt-get install devscripts equivs -y
-          sudo mk-build-deps linux/debian/control.qt6
           sudo apt-get -o "Dir::Cache::archives=$(pwd)/build/archive" install -y \
-               ./mozillavpn-build-deps_1.0_all.deb $(./scripts/linux/getdeps.py)
+               $(./scripts/linux/getdeps.py -a linux/debian/control.qt6)
           sudo chown -R $USER:$USER build/archive
 
       - name: Compile test client
