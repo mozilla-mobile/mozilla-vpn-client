@@ -10,36 +10,11 @@ on:
       - 'releases/**'
 
 jobs:
-  test_list:
-    name: Generate Tasklist
-    runs-on: ubuntu-20.04
-    outputs:
-      matrix: ${{ steps.testGen.outputs.tests }}
-    steps:
-      - name: Install Packages
-        run: |
-          sudo apt update
-          sudo apt install jq -y
-      
-      - name: Clone repository
-        uses: actions/checkout@v2
-      - id: testGen
-        shell: bash
-        run: |
-          echo -n "::set-output name=tests::"
-          for test in $(find tests/functional -name 'test*.js' | sort); do
-            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
-          done | jq -s -c
-      - name: Check Tests
-        shell: bash
-        env:
-          TEST_LIST: ${{ steps.testGen.outputs.tests }}
-        run: |
-          echo $TEST_LIST | jq
-
   build_test_app:
     name: Build Test Client
     runs-on: ubuntu-20.04
+    outputs:
+      matrix: ${{ steps.testGen.outputs.tests }}
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
@@ -90,21 +65,32 @@ jobs:
           cp ./src/mozillavpn build/
           cp -r ./src/.obj build/
 
-      - name: Check build
+      - name: Generate Tasklist
+        id: testGen
+        shell: bash
         run: |
-          ls -ial build/
+          echo -n "::set-output name=tests::"
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c
+
+      - name: Check Tests
+        shell: bash
+        env:
+          TEST_LIST: ${{ steps.testGen.outputs.tests }}
+        run: |
+          echo $TEST_LIST | jq
 
   functionaltests:
     name: Functional tests
     needs: 
       - build_test_app
-      - test_list
     runs-on: ubuntu-20.04
     timeout-minutes: 45
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
       matrix:
-        test: ${{ fromJson(needs.test_list.outputs.matrix) }}
+        test: ${{ fromJson(needs.build_test_app.outputs.matrix) }}
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
@@ -156,22 +142,17 @@ jobs:
           MVPN_BIN: ./build/mozillavpn
 
       - name: Generating grcov reports
+        id: generateGrcov
+        continue-on-error: true
         shell: bash
         run: |
           cp build/.obj/*.gcno src/.obj
           cd src
-          find .
-          grcov .obj -s . -t lcov --branch --ignore-not-existing > ../functional_lcov.info || rm -f ../functional_lcov.info
-
-      - name: Check grcov file existence
-        id: grcov_check_files
-        uses: andstor/file-existence-action@v1
-        with:
-          files: functional_lcov.info
+          grcov .obj -s . -t lcov --branch --ignore-not-existing > ../functional_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
-        if: steps.grcov_check_files.outputs.files_exists == 'true'
+        if: steps.generateGrcov.outcome == 'success'
         with:
           directory: .
           flags: functional_tests
