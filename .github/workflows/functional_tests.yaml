@@ -41,17 +41,15 @@ jobs:
           # Install grcov into the build directory, to reduce downstream compilation times.
           cargo install --root $(pwd)/build grcov 
 
-          # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
-          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
-          sudo apt-get -o "Dir::Cache::archives=$(pwd)/build/archive" install -y \
-               git qt515base qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl \
-               libgl-dev libpolkit-gobject-1-dev qt515quickcontrols2 qt515imageformats \
-               qt515graphicaleffects qt515websockets qt515declarative -y
-          sudo chown -R $USER:$USER build/archive
+          # Add external PPA for Qt6 support on Ubuntu 20.04
+          sudo add-apt-repository ppa:okirby/qt6-backports
 
-          # Some debug
-          echo "Listing $(pwd)/build/bin"
-          ls -al $(pwd)/build/bin
+          # Download the Qt6 package dependencies.
+          sudo apt-get install devscripts equivs -y
+          sudo mk-build-deps linux/debian/control.qt6
+          sudo apt-get -o "Dir::Cache::archives=$(pwd)/build/archive" install -y \
+               ./mozillavpn-build-deps_1.0_all.deb $(./scripts/linux/getdeps.py)
+          sudo chown -R $USER:$USER build/archive
 
       - name: Compile test client
         shell: bash
@@ -87,12 +85,6 @@ jobs:
           TEST_LIST: ${{ steps.testGen.outputs.tests }}
         run: |
           echo $TEST_LIST | jq
-
-      - name: Uploading artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: Test Bundle
-          path: build/
 
   functionaltests:
     name: Functional tests
@@ -152,10 +144,13 @@ jobs:
       - name: Generating grcov reports
         id: generateGrcov
         continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
+        timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs due to panics
         run: |
           cp build/.obj/*.gcno src/.obj
+          echo foo
           ./build/bin/grcov src/.obj -s src -t lcov --branch --ignore-not-existing \
-              -o ${{runner.temp}}/artifacts/functional_lcov.info
+              -o ${{runner.temp}}/artifacts/functional_lcov.info || exit 1
+          echo bar
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
