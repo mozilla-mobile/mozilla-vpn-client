@@ -11,7 +11,7 @@ import Mozilla.VPN 1.0
 RowLayout {
     id: checkBoxRow
 
-    property var labelText
+    property var labelText: ""
     property var subLabelText: ""
     property bool isChecked
     property bool isEnabled: true
