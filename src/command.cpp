@@ -164,6 +164,11 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
+#ifdef MVPN_ANDROID
+  QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
+      Qt::HighDpiScaleFactorRoundingPolicy::Round);
+#endif
+
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
