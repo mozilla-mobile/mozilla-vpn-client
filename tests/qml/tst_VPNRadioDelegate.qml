@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtTest 1.0
@@ -50,13 +54,13 @@ Item {
 
         function test_clickingRadioDelegateLabelSelectsIt() {
             var radioDelegate = testItem.testComponent.radioDelegateTest
-            //CheckBox starts out unchecked
+            //Radio delegate starts out unselected
             var expected = false
             var actual = radioDelegate.checked
             verify(expected === actual, `checked was ${actual} not ${expected}.`);
 
-            //Simulate clicking in the center of the label of the checkbox. The last parameter (2) represents the topMargin for the VPNInterLabel in VPNCheckBoxRow
-            mouseClick(radioDelegate, 50, 2)
+            //Simulate clicking the label of the radio delegate.
+            mouseClick(radioDelegate, 50, 0)
             expected = true
             actual = radioDelegate.checked
             verify(expected === actual, `checked was ${actual} not ${expected}.`);
