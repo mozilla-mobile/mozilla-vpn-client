@@ -71,11 +71,9 @@ describe('User authentication', function() {
     await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
   });
 
-  it('Completes authentication', async () => {
+  it('Completes authentication and logout', async () => {
     await vpn.authenticate(true, true);
-  });
 
-  it('Logout again', async () => {
     await vpn.waitForElement('settingsButton');
     await vpn.clickOnElement('settingsButton');
 
