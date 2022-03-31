@@ -13,6 +13,7 @@ import components.forms 0.1
 Item {
     property string _menuTitle: VPNl18n.SettingsDevTitle
     property alias isSettingsView: menu.isSettingsView
+    property bool addSafeAreaMargin: false
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff) ||
         (VPNController.state === VPNController.StateInitializing)
 
@@ -22,6 +23,7 @@ Item {
         id: menu
         title: VPNl18n.SettingsDevTitle
         isSettingsView: false
+        y: addSafeAreaMargin ? safeAreaHeightByDevice() : 0
     }
 
     VPNFlickable {

@@ -109,9 +109,15 @@ Item {
             visible: VPNSettings.developerUnlock
             onClicked: {
                 if (isSettingsView) {
-                    settingsStackView.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml", {isSettingsView: true})
+                    settingsStackView.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml", {
+                        isSettingsView: true,
+                        addSafeAreaMargin: getHelp.addSafeAreaMargin
+                    })
                 } else {
-                    stackview.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml", {isSettingsView: false})
+                    stackview.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml", {
+                        isSettingsView: false,
+                        addSafeAreaMargin: getHelp.addSafeAreaMargin
+                    })
                 }
             }
         }
