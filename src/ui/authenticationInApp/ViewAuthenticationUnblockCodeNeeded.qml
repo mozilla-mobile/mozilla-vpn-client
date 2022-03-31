@@ -41,7 +41,7 @@ VPNInAppAuthenticationBase {
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded && activeInput().text.length === VPNAuthInApp.unblockCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifyUnblockCode(inputText) }
         _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton
-        _inputMethodHints: Qt.ImhDigitsOnly
+        _inputMethodHints: Qt.ImhNone
     }
 
     _footerContent: Column {
