@@ -107,7 +107,7 @@ jobs:
 
       - name: Install dependecies
         run: |
-          sudo dpkg -i build/archive/*.deb
+          sudo apt install ./build/archive/*.deb
           sudo apt install --no-upgrade firefox xvfb -y
           pip3 install -r requirements.txt
           npm install
