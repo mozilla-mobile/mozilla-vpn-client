@@ -71,19 +71,17 @@ describe('User authentication', function() {
     await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
   });
 
-  it('Completes authentication and logout', async () => {
+  it('Completes authentication after logout', async () => {
     await vpn.authenticate(true, true);
 
     await vpn.waitForElement('settingsButton');
     await vpn.clickOnElement('settingsButton');
 
     await vpn.waitForElement('settingsLogout');
+    await vpn.scrollToElement('settingsView', 'settingsLogout');
     await vpn.clickOnElement('settingsLogout');
     await vpn.waitForMainView();
-  });
 
-  it('Login again', async () => {
     await vpn.authenticate();
   });
-
 });

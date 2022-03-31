@@ -133,6 +133,8 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
   Q_PROPERTY(QString currentView READ currentView WRITE setCurrentView NOTIFY
                  currentViewChanged)
+  Q_PROPERTY(
+      QString lastUrl READ lastUrl WRITE setLastUrl NOTIFY lastUrlChanged)
 
  public:
   MozillaVPN();
@@ -323,6 +325,12 @@ class MozillaVPN final : public QObject {
     emit currentViewChanged();
   }
 
+  const QString& lastUrl() const { return m_lastUrl; }
+  void setLastUrl(const QString& url) {
+    m_lastUrl = url;
+    emit lastUrlChanged();
+  }
+
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);
   }
@@ -411,6 +419,7 @@ class MozillaVPN final : public QObject {
   void logsReady(const QString& logs);
 
   void currentViewChanged();
+  void lastUrlChanged();
 
   void ticketCreationAnswer(bool successful);
 
@@ -449,6 +458,7 @@ class MozillaVPN final : public QObject {
   State m_state = StateInitialize;
   AlertType m_alert = NoAlert;
   QString m_currentView;
+  QString m_lastUrl;
 
   UserState m_userState = UserNotAuthenticated;
 
