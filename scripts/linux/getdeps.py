@@ -3,7 +3,7 @@ from debian.deb822 import Deb822
 import argparse
 import os
 
-## Parse arguments for the control file
+## Parse arguments for the control file and desired dependency section.
 parser = argparse.ArgumentParser(description='List package dependencies')
 parser.add_argument('control', type=str, nargs='?',
                     help='Debian control file to parse')
@@ -29,8 +29,7 @@ if args.all:
 if not (args.build or args.runtime):
     args.runtime = True
 
-
-# Parse the control file to dump the runtime dependencies.
+# Parse the control file to dump the package dependencies.
 def dump(depends):
     for dep in depends.split(','):
         print(dep.split()[0])

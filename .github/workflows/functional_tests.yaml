@@ -44,7 +44,7 @@ jobs:
           # Add external PPA for Qt6 support on Ubuntu 20.04
           sudo add-apt-repository ppa:okirby/qt6-backports
 
-          # Download the Qt6 package dependencies.
+          # Download the build and runtime package dependencies.
           sudo apt-get -o "Dir::Cache::archives=$(pwd)/build/archive" install -y \
                $(./scripts/linux/getdeps.py -a linux/debian/control.qt6)
           sudo chown -R $USER:$USER build/archive
@@ -142,13 +142,11 @@ jobs:
       - name: Generating grcov reports
         id: generateGrcov
         continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
-        timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs due to panics
+        timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic
         run: |
           cp build/.obj/*.gcno src/.obj
-          echo foo
           ./build/bin/grcov src/.obj -s src -t lcov --branch --ignore-not-existing \
-              -o ${{runner.temp}}/artifacts/functional_lcov.info || exit 1
-          echo bar
+              -o ${{runner.temp}}/artifacts/functional_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
