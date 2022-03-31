@@ -29,6 +29,7 @@ then
   export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
   export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 else
+  pip3 install pyppmd==0.17.4
   pip3 install aqtinstall
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop 6.2.3 -m qtcharts qtwebsockets qt5compat
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
