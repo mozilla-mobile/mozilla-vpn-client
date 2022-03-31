@@ -64,8 +64,12 @@ ColumnLayout {
             width: passwordInput.width - VPNTheme.theme.vSpacing
             height: passwordConditions.implicitHeight + padding * 2
 
-            background: Rectangle {
+            background: Rectangle { color: VPNTheme.theme.transparent }
+
+            Rectangle {
                 id: bg
+                anchors.fill: passwordConditions
+                anchors.margins: VPNTheme.theme.windowMargin * -1
                 color: VPNTheme.colors.white
                 radius: VPNTheme.theme.cornerRadius
 
@@ -98,9 +102,11 @@ ColumnLayout {
                 }
             }
 
-            contentItem: ColumnLayout {
+            ColumnLayout {
                 id: passwordConditions
                 spacing: VPNTheme.theme.windowMargin / 2
+                anchors.right: parent.right
+                width: parent.width
 
                 VPNInAppAuthenticationPasswordCondition {
                     _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
