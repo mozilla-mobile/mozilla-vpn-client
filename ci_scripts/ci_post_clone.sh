@@ -15,7 +15,6 @@ git submodule update
 # add necessary directories to path
 export PATH=/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
 
-python3 -m pip3 install --upgrade pip3
 python3 -m pip install --upgrade pip
 
 if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
@@ -30,10 +29,7 @@ then
   export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
   export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 else
-  pip3 install pyppmd==0.17.3
   pip3 install aqtinstall
-  pip3 show pyppmd
-  pip3 show aqtinstall
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop 6.2.3 -m qtcharts qtwebsockets qt5compat
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
   mv /Volumes/workspace/repository/qt_ios/6.2.3/macos /Volumes/workspace/repository/qt_ios/6.2.3/clang_64
