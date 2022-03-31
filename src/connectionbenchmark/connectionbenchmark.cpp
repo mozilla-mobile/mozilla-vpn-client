@@ -89,7 +89,7 @@ void ConnectionBenchmark::start() {
 
   // Create download benchmark
   BenchmarkTaskDownload* downloadTask =
-      new BenchmarkTaskDownload(Constants::BENCHMARK_DOWNLOAD_URL);
+      new BenchmarkTaskDownload(QUrl(Constants::BENCHMARK_DOWNLOAD_URL));
   connect(downloadTask, &BenchmarkTaskDownload::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
   connect(downloadTask->sentinel(), &BenchmarkTask::destroyed, this,
