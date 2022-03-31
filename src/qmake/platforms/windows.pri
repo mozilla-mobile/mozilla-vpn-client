@@ -95,10 +95,12 @@ HEADERS += \
 
 mvpnExe.files = $$PWD/../../../mozillavpn.exe
 mvpnExe.path = $$PWD/../../../unsigned/
+mvpnExe.CONFIG = no_check_exist executable
 INSTALLS += mvpnExe
 
 MozillaVPNpdb.files = $$PWD/../../../MozillaVPN.pdb
 MozillaVPNpdb.path = $$PWD/../../../unsigned/
+MozillaVPNpdb.CONFIG = no_check_exist executable
 INSTALLS += MozillaVPNpdb
 
 libssl.files = $$PWD/../../../libssl-1_1-x64.dll
@@ -115,14 +117,17 @@ INSTALLS += VC142
 
 tunnel.files = $$PWD/../../../windows/tunnel/x64/tunnel.dll
 tunnel.path = $$PWD/../../../unsigned/
+tunnel.CONFIG = no_check_exist executable
 INSTALLS += tunnel
 
 wintun.files = $$PWD/../../../windows/tunnel/.deps/wintun/bin/amd64/wintun.dll
 wintun.path = $$PWD/../../../unsigned/
+wintun.CONFIG = no_check_exist executable
 INSTALLS += wintun
 
 balrog.files = $$PWD/../../../balrog/x64/balrog.dll
 balrog.path = $$PWD/../../../unsigned/
+balrog.CONFIG = no_check_exist executable
 INSTALLS += balrog
 
 splittunnelcat.files = $$PWD/../../../windows/split-tunnel/mullvad-split-tunnel.cat
@@ -143,12 +148,10 @@ INSTALLS += WdfCoinstaller01011
 
 mozillavpnjson.files = $$PWD/../../../extension/manifests/windows/mozillavpn.json
 mozillavpnjson.path = $$PWD/../../../unsigned/
+mozillavpnnp.CONFIG = no_check_exist executable
 INSTALLS += mozillavpnjson
 
 mozillavpnnp.files = $$PWD/../../../mozillavpnnp.exe
 mozillavpnnp.path = $$PWD/../../../unsigned/
+mozillavpnnp.CONFIG = no_check_exist executable
 INSTALLS += mozillavpnnp
-
-
-
-
