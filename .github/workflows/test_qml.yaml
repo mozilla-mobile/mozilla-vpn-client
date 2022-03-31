@@ -12,14 +12,16 @@ on:
 jobs:
   linux-qml-tests:
     runs-on: ubuntu-20.04
-    name: "Run QML tests on 6.2.1"
+    name: Run QML tests on Linux
+    env:
+      QTVERSION: 6.2.4
     steps:
       - name: Install Linux packages
         run: |
           sudo apt update
           sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
           python3 -m pip install aqtinstall
-          aqt install-qt --outputdir /opt linux desktop 6.2.1 gcc_64 -m all
+          aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
 
       - name: Clone repository
         uses: actions/checkout@v2
@@ -40,7 +42,7 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/6.2.1/gcc_64/bin:$PATH
+          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           python3 scripts/utils/import_languages.py
 
       - name: Install Grcov
@@ -51,7 +53,7 @@ jobs:
       - name: Running tests
         shell: bash
         run: |
-          export PATH=/opt/6.2.1/gcc_64/bin:$PATH
+          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           xvfb-run -a ./scripts/tests/qml_tests.sh --grcov qml_lcov.info
 
       - name: Upload coverage to Codecov
@@ -65,7 +67,7 @@ jobs:
 
   macos-qml-tests:
     runs-on: macos-latest
-    name: "Run QML tests on MacOS Qt6"
+    name: Run QML tests on MacOS
 
     steps:
       - name: Clone repository
@@ -122,7 +124,7 @@ jobs:
           verbose: true
 
   windows-qml-tests:
-    name: Run QML tests on Windows Qt6
+    name: Run QML tests on Windows
     runs-on: windows-latest
 
     steps:
