@@ -26,21 +26,16 @@ Item {
         title: qsTrId("vpn.viewlogs.title")
     }
 
-    ScrollView {
+    VPNFlickable {
         id: logScrollView
 
         height: logs.height - menu.height - copyClearWrapper.height
-        width: logs.width
+        flickContentHeight: logText.height + VPNTheme.theme.windowMargin
+        width: logs.width - VPNTheme.theme.windowMargin
         anchors.top: menu.bottom
+        anchors.leftMargin: VPNTheme.theme.windowMargin
         anchors.horizontalCenter: logs.horizontalCenter
         contentWidth: width - (VPNTheme.theme.windowMargin * 2)
-        clip: true
-        topInset: VPNTheme.theme.rowHeight
-        bottomInset: VPNTheme.theme.rowHeight * 2
-        leftPadding: VPNTheme.theme.windowMargin
-        rightPadding: VPNTheme.theme.windowMargin
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
         VPNTextBlock {
             id: logText
