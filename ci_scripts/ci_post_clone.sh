@@ -31,6 +31,8 @@ then
 else
   pip3 install pyppmd==0.17.3
   pip3 install aqtinstall
+  pip3 show pyppmd
+  pip3 show aqtinstall
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop 6.2.3 -m qtcharts qtwebsockets qt5compat
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
   mv /Volumes/workspace/repository/qt_ios/6.2.3/macos /Volumes/workspace/repository/qt_ios/6.2.3/clang_64
