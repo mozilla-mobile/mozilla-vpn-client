@@ -89,3 +89,66 @@ HEADERS += \
     platforms/windows/windowsstartatbootwatcher.h \
     systemtraynotificationhandler.h \
     wgquickprocess.h
+
+
+# Installs for the /unsigned folder
+
+mvpnExe.files = $$PWD/../../../mozillavpn.exe
+mvpnExe.path = $$PWD/../../../unsigned/
+INSTALLS += mvpnExe
+
+MozillaVPNpdb.files = $$PWD/../../../MozillaVPN.pdb
+MozillaVPNpdb.path = $$PWD/../../../unsigned/
+INSTALLS += MozillaVPNpdb
+
+libssl.files = $$PWD/../../../libssl-1_1-x64.dll
+libssl.path = $$PWD/../../../unsigned/
+INSTALLS += libssl
+
+libcrypto.files = $$PWD/../../../libcrypto-1_1-x64.dll
+libcrypto.path = $$PWD/../../../unsigned/
+INSTALLS += libcrypto
+
+VC142.files = $$PWD/../../../Microsoft_VC142_CRT_x64.msm
+VC142.path = $$PWD/../../../unsigned/
+INSTALLS += VC142
+
+tunnel.files = $$PWD/../../../windows/tunnel/x64/tunnel.dll
+tunnel.path = $$PWD/../../../unsigned/
+INSTALLS += tunnel
+
+wintun.files = $$PWD/../../../windows/tunnel/.deps/wintun/bin/amd64/wintun.dll
+wintun.path = $$PWD/../../../unsigned/
+INSTALLS += wintun
+
+balrog.files = $$PWD/../../../balrog/x64/balrog.dll
+balrog.path = $$PWD/../../../unsigned/
+INSTALLS += balrog
+
+splittunnelcat.files = $$PWD/../../../windows/split-tunnel/mullvad-split-tunnel.cat
+splittunnelcat.path = $$PWD/../../../unsigned/
+INSTALLS += splittunnelcat
+
+splittunnelinf.files = $$PWD/../../../windows/split-tunnel/mullvad-split-tunnel.inf
+splittunnelinf.path = $$PWD/../../../unsigned/
+INSTALLS += splittunnelinf
+
+splittunnelsys.files = $$PWD/../../../windows/split-tunnel/mullvad-split-tunnel.sys
+splittunnelsys.path = $$PWD/../../../unsigned/
+INSTALLS += splittunnelsys
+
+WdfCoinstaller01011.files = $$PWD/../../../windows/split-tunnel/WdfCoinstaller01011.dll
+WdfCoinstaller01011.path = $$PWD/../../../unsigned/
+INSTALLS += WdfCoinstaller01011
+
+mozillavpnjson.files = $$PWD/../../../extension/manifests/windows/mozillavpn.json
+mozillavpnjson.path = $$PWD/../../../unsigned/
+INSTALLS += mozillavpnjson
+
+mozillavpnnp.files = $$PWD/../../../mozillavpnnp.exe
+mozillavpnnp.path = $$PWD/../../../unsigned/
+INSTALLS += mozillavpnnp
+
+
+
+

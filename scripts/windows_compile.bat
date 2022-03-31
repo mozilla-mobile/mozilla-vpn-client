@@ -128,11 +128,6 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 
-if %DEBUG_BUILD% == F (
-  ECHO Generating Debug Project
-  qmake -tp %PROJECT_TYPE% src/src.pro CONFIG+=debug %FLAGS%
-  xcopy /y debug\ release\
-)
 
 if %PROJECT_TYPE% == app (
   ECHO  Build Using nmake

@@ -102,6 +102,9 @@ windows/tunnel/x64/
 windows/split-tunnel/*
 !windows/split-tunnel/get.ps1
 
+#Rust
+.cargo_home/
+
 
 # WASM
 mozillavpn.js

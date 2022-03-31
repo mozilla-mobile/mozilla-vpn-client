@@ -34,26 +34,13 @@ Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm
 python3 ./scripts/utils/generate_glean.py
 python3 ./scripts/utils/import_languages.py
 
-./scripts/windows_compile.bat -w --nmake
+./scripts/windows_compile.bat --nmake
+nmake install 
 
 Write-Output "Writing Artifacts"
 
 New-Item -Path $REPO_ROOT_PATH/artifacts -ItemType "directory"
 Copy-Item -Path windows/installer/x64/MozillaVPN.msi -Destination ./artifacts/MozillaVPN.msi
-
-New-Item -Path $REPO_ROOT_PATH/unsigned -ItemType "directory"
-Copy-Item -Path libssl-1_1-x64.dll -Destination $REPO_ROOT_PATH/unsigned
-Copy-Item -Path libcrypto-1_1-x64.dll -Destination $REPO_ROOT_PATH/unsigned
-Copy-Item -Path Microsoft_VC143_CRT_x64.msm -Destination $REPO_ROOT_PATH/unsigned
-Copy-Item -Path windows/tunnel/x64/tunnel.dll -Destination $REPO_ROOT_PATH/unsigned
-Copy-Item -Path windows/tunnel/.deps/wintun/bin/amd64/wintun.dll -Destination $REPO_ROOT_PATH/unsigned
-Copy-Item -Path balrog/x64/balrog.dll  -Destination $REPO_ROOT_PATH/unsigned
-Copy-Item -Path windows/split-tunnel/mullvad-split-tunnel.cat -Destination $REPO_ROOT_PATH/unsigned
-Copy-Item -Path windows/split-tunnel/mullvad-split-tunnel.inf -Destination $REPO_ROOT_PATH/unsigned
-Copy-Item -Path windows/split-tunnel/mullvad-split-tunnel.sys -Destination $REPO_ROOT_PATH/unsigned
-Copy-Item -Path windows/split-tunnel/WdfCoinstaller01011.dll -Destination $REPO_ROOT_PATH/unsigned
-Copy-Item -Path extension/manifests/windows/mozillavpn.json -Destination $REPO_ROOT_PATH/unsigned
-Copy-Item -Path *.exe -Destination $REPO_ROOT_PATH/unsigned
 
 Compress-Archive -Path unsigned/* -Destination $REPO_ROOT_PATH/artifacts/unsigned.zip
 
