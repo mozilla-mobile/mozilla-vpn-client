@@ -7,10 +7,12 @@ $FETCHES_PATH =resolve-path "$REPO_ROOT_PATH/../../fetches"
 
 
 $BIN_PATH = "$REPO_ROOT_PATH/bin"
+$QT_VERSION = $env:QT_VERSION
+$QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
 
 Set-Location $FETCHES_PATH 
-Invoke-WebRequest -Uri https://download.qt.io/archive/qt/6.2/6.2.3/single/qt-everywhere-src-6.2.3.zip -OutFile qt-everywhere-src-6.2.3.zip
-unzip -o -qq qt-everywhere-src-6.2.3.zip
+Invoke-WebRequest -Uri https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip -OutFile qt-everywhere-src-$QT_VERSION.zip
+unzip -o -qq qt-everywhere-src-$QT_VERSION.zip
 unzip -o -qq open_ssl_win.zip # See Build-qt/windows.yml why
 
 # Setup Openssl Import
@@ -32,7 +34,7 @@ if(!(Test-Path $REPO_ROOT_PATH/QT_OUT)){
 $BUILD_PREFIX = (resolve-path "$REPO_ROOT_PATH/QT_OUT").toString()
 
 # Enter QT source directory
-Set-Location $FETCHES_PATH/qt-everywhere-src-6.2.3
+Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
 
 ./configure.bat `
   -static  `

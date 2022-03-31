@@ -24,12 +24,23 @@ IF NOT EXIST src (
   EXIT 1
 )
 
-SET SHOW_HELP=F
-
-if "%1" NEQ "" (
-  if "%1" == "-h" SET SHOW_HELP=T
-  if "%1" == "--help" SET SHOW_HELP=T
+IF "%BUILDDIR%" == "" (
+   SET BUILDDIR=C:\MozillaVPNBuild
 )
+ECHO Using Build Directory %BUILDDIR%
+
+
+SET SHOW_HELP=F
+SET DEBUG_BUILD=F
+SET PROJECT_TYPE=vc
+:: Iterate over all the args provided and set the appropriate flags
+:loop
+if "%1"== "--debug" SET DEBUG_BUILD=T
+if "%1"== "--nmake" SET PROJECT_TYPE=app
+if "%1" == "-h" SET SHOW_HELP=T
+if "%1" == "--help" SET SHOW_HELP=T
+shift
+if not "%~1"=="" goto loop
 
 if "%SHOW_HELP%" == "T" (
   ECHO "Options:"
@@ -38,25 +49,6 @@ if "%SHOW_HELP%" == "T" (
   ECHO "  --nmake               Build using nmake instead of msbuild"
   EXIT 0
 )
-
-
-IF "%BUILDDIR%" == "" (
-   SET BUILDDIR=C:\MozillaVPNBuild
-)
-   ECHO Using Build Directory %BUILDDIR%
-
-
-
-SET DEBUG_BUILD=F
-if "%1"== "--debug" SET DEBUG_BUILD=T
-if "%2"== "--debug" SET DEBUG_BUILD=T
-
-
-SET PROJECT_TYPE=vc
-if "%1"== "--nmake" SET PROJECT_TYPE=app
-if "%2"== "--nmake" SET PROJECT_TYPE=app
-if "%3"== "--nmake" SET PROJECT_TYPE=app
-if "%4"== "--nmake" SET PROJECT_TYPE=app
 
 
 SET BUILD_CONF=Release
