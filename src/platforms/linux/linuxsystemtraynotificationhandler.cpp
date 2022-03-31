@@ -30,9 +30,9 @@ bool LinuxSystemTrayNotificationHandler::requiredCustomImpl() {
     return false;
   }
 
-  // This custom systemTrayHandler implementation is required only on Unity.
+  // Use the custom handler on all freedesktop-compliant systems.
   QStringList registeredServices = interface->registeredServiceNames().value();
-  return registeredServices.contains("com.canonical.Unity");
+  return registeredServices.contains(DBUS_ITEM);
 }
 
 LinuxSystemTrayNotificationHandler::LinuxSystemTrayNotificationHandler(
@@ -53,23 +53,25 @@ void LinuxSystemTrayNotificationHandler::notify(Message type,
                                                 const QString& title,
                                                 const QString& message,
                                                 int timerMsec) {
-  QString actionMessage;
+  QStringList actions;
   switch (type) {
     case None:
     case ServerUnavailable:
-      return SystemTrayNotificationHandler::notify(type, title, message,
-                                                   timerMsec);
+      break;
 
     case UnsecuredNetwork:
-      actionMessage = qtTrId("vpn.toggle.on");
+      actions.append(ACTION_ID);
+      actions.append(qtTrId("vpn.toggle.on"));
       break;
 
     case CaptivePortalBlock:
-      actionMessage = qtTrId("vpn.toggle.off");
+      actions.append(ACTION_ID);
+      actions.append(qtTrId("vpn.toggle.off"));
       break;
 
     case CaptivePortalUnblock:
-      actionMessage = qtTrId("vpn.toggle.on");
+      actions.append(ACTION_ID);
+      actions.append(qtTrId("vpn.toggle.on"));
       break;
 
     default:
@@ -88,7 +90,6 @@ void LinuxSystemTrayNotificationHandler::notify(Message type,
 
   uint32_t replacesId = 0;  // Don't replace.
   const char* appIcon = MVPN_ICON_PATH;
-  QStringList actions{ACTION_ID, actionMessage};
   QMap<QString, QVariant> hints;
 
   QDBusReply<uint> reply = n.call("Notify", "Mozilla VPN", replacesId, appIcon,
