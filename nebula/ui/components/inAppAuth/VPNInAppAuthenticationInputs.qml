@@ -52,64 +52,67 @@ ColumnLayout {
             Layout.fillWidth: true
             Keys.onReturnPressed: col.submitInfo(passwordInput)
             onTextChanged: if (hasError) hasError = false
+        }
 
-            ToolTip {
-                property bool _isSignUp: VPNAuthInApp.state === VPNAuthInApp.StateSignUp
-                id: toolTip
-                visible: _isSignUp && passwordInput.activeFocus
-                padding: VPNTheme.theme.windowMargin
-                x: VPNTheme.theme.vSpacing
-                width: passwordInput.width - VPNTheme.theme.vSpacing
+        ToolTip {
+            property bool _isSignUp: VPNAuthInApp.state === VPNAuthInApp.StateSignUp
+            id: toolTip
+            visible: _isSignUp && passwordInput.activeFocus
+            padding: VPNTheme.theme.windowMargin
+            x: VPNTheme.theme.vSpacing
+            y: passwordInput.y - height - 4
+            width: passwordInput.width - VPNTheme.theme.vSpacing
+            height: passwordConditions.implicitHeight + padding * 2
 
-                background: Rectangle {
-                    id: bg
-                    color: VPNTheme.colors.white
-                    radius: VPNTheme.theme.cornerRadius
+            background: Rectangle {
+                id: bg
+                color: VPNTheme.colors.white
+                radius: VPNTheme.theme.cornerRadius
 
-                    VPNRectangularGlow {
-                        anchors.fill: glowVector
-                        glowRadius: 4
-                        spread: .3
-                        color: VPNTheme.theme.divider
-                        cornerRadius: glowVector.radius + glowRadius
-                        z: -2
-                    }
-
-                    Rectangle {
-                        id: glowVector
-                        anchors.fill: parent
-                        radius: bg.radius
-                        color: bg.color
-                    }
-
-                    Rectangle {
-                        radius: 1
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: -3
-                        anchors.right: parent.right
-                        anchors.rightMargin: VPNTheme.theme.windowMargin
-                        width: VPNTheme.theme.windowMargin / 2
-                        height: VPNTheme.theme.windowMargin / 2
-                        color: parent.color
-                        rotation: 45
-                    }
+                VPNRectangularGlow {
+                    anchors.fill: glowVector
+                    glowRadius: 4
+                    spread: .3
+                    color: VPNTheme.theme.divider
+                    cornerRadius: glowVector.radius + glowRadius
+                    z: -2
                 }
 
-                contentItem: ColumnLayout {
-                    spacing: VPNTheme.theme.windowMargin / 2
+                Rectangle {
+                    id: glowVector
+                    anchors.fill: parent
+                    radius: bg.radius
+                    color: bg.color
+                }
 
-                    VPNInAppAuthenticationPasswordCondition {
-                        _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
-                        _passwordConditionDescription:  VPNl18n.InAppAuthPasswordHintCharacterLength
-                    }
-                    VPNInAppAuthenticationPasswordCondition {
-                        _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
-                        _passwordConditionDescription:  VPNl18n.InAppAuthPasswordHintEmailAddressAsPassword
-                    }
-                    VPNInAppAuthenticationPasswordCondition {
-                        _passwordConditionIsSatisfied: toolTip._isSignUp && passwordInput.text.length > 0 && VPNAuthInApp.validatePasswordCommons(passwordInput.text)
-                        _passwordConditionDescription:  VPNl18n.InAppAuthPasswordHintCommonPassword
-                    }
+                Rectangle {
+                    radius: 1
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: -3
+                    anchors.right: parent.right
+                    anchors.rightMargin: VPNTheme.theme.windowMargin
+                    width: VPNTheme.theme.windowMargin / 2
+                    height: VPNTheme.theme.windowMargin / 2
+                    color: parent.color
+                    rotation: 45
+                }
+            }
+
+            contentItem: ColumnLayout {
+                id: passwordConditions
+                spacing: VPNTheme.theme.windowMargin / 2
+
+                VPNInAppAuthenticationPasswordCondition {
+                    _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
+                    _passwordConditionDescription:  VPNl18n.InAppAuthPasswordHintCharacterLength
+                }
+                VPNInAppAuthenticationPasswordCondition {
+                    _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
+                    _passwordConditionDescription:  VPNl18n.InAppAuthPasswordHintEmailAddressAsPassword
+                }
+                VPNInAppAuthenticationPasswordCondition {
+                    _passwordConditionIsSatisfied: toolTip._isSignUp && passwordInput.text.length > 0 && VPNAuthInApp.validatePasswordCommons(passwordInput.text)
+                    _passwordConditionDescription:  VPNl18n.InAppAuthPasswordHintCommonPassword
                 }
             }
         }
