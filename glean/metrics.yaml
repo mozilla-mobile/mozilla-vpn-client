@@ -316,9 +316,9 @@ sample:
     description: |
       The user has advanced in the authentication flow.
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
     data_sensitivity:
       - technical
     notification_emails:
@@ -340,9 +340,9 @@ sample:
     description: |
       The authentication in app has failed for a non-handled FxA error.
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
     data_sensitivity:
       - technical
     notification_emails:
@@ -567,9 +567,9 @@ sample:
     description: |
       User initiates authentication process from mobile onboarding
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/2545
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
     data_sensitivity:
       - interaction
     expires: never
@@ -647,9 +647,9 @@ sample:
       The user has viewed an error message after attempting to subscribe
       through Google Play store, but the validation could not be completed.
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/1541
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
     data_sensitivity:
       - interaction
     notification_emails:
@@ -665,9 +665,9 @@ sample:
       The user has viewed an error message after attempting to subscribe
       through Google Play store, but the billing service is not availble.
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/1541
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
     data_sensitivity:
       - interaction
     notification_emails:
@@ -682,9 +682,9 @@ sample:
     description: |
       The user has viewed the advanced DNS Settings
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/1242
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
     data_sensitivity:
       - interaction
     notification_emails:
