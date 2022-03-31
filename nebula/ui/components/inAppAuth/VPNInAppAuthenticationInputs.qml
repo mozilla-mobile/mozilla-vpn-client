@@ -109,16 +109,22 @@ ColumnLayout {
                 width: parent.width
 
                 VPNInAppAuthenticationPasswordCondition {
+                    id: passwordLength
+                    _iconVisible: true
                     _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
-                    _passwordConditionDescription:  VPNl18n.InAppAuthPasswordHintCharacterLength
+                    _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCharacterLength
                 }
                 VPNInAppAuthenticationPasswordCondition {
-                    _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
-                    _passwordConditionDescription:  VPNl18n.InAppAuthPasswordHintEmailAddressAsPassword
+                    _iconVisible: passwordLength._passwordConditionIsSatisfied
+                    _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
+                    _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintEmailAddressAsPassword
+                    opacity: passwordLength._passwordConditionIsSatisfied ? 1 : .5
                 }
                 VPNInAppAuthenticationPasswordCondition {
-                    _passwordConditionIsSatisfied: toolTip._isSignUp && passwordInput.text.length > 0 && VPNAuthInApp.validatePasswordCommons(passwordInput.text)
-                    _passwordConditionDescription:  VPNl18n.InAppAuthPasswordHintCommonPassword
+                    _iconVisible:  passwordLength._passwordConditionIsSatisfied
+                    _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordCommons(passwordInput.text)
+                    _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCommonPassword
+                    opacity: _iconVisible ? 1 : .5
                 }
             }
         }
