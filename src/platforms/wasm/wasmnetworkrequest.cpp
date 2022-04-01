@@ -77,6 +77,18 @@ NetworkRequest* NetworkRequest::createForGetUrl(Task* parent,
 }
 
 // static
+NetworkRequest* NetworkRequest::createForGetHostAddress(
+    Task* parent, const QString& url, const QHostAddress& address) {
+  Q_ASSERT(parent);
+  Q_UNUSED(url);
+  Q_UNUSED(address);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(
     Task* parent, const QString&, const QString&) {
   Q_ASSERT(parent);
