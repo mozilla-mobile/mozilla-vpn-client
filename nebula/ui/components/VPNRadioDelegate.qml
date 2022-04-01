@@ -13,13 +13,13 @@ RadioDelegate {
 
     property bool isHoverable: true
     property var radioButtonLabelText
-    property var accessibleName
+    property var accessibleName: ""
     property var uiState: VPNTheme.theme.uiState
 
     signal clicked()
 
     ButtonGroup.group: radioButtonGroup
-    width: parent.width
+    implicitWidth: parent.width
     height: VPNTheme.theme.rowHeight
 
     Component.onCompleted: {
