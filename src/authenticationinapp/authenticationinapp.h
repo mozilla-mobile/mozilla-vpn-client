@@ -62,7 +62,6 @@ class AuthenticationInApp final : public QObject {
 
   enum ErrorType {
     ErrorAccountAlreadyExists,
-    ErrorEmailAlreadyExists,
     ErrorEmailCanNotBeUsedToLogin,
     ErrorEmailTypeNotSupported,
     ErrorFailedToSendEmail,

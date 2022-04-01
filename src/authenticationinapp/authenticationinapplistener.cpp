@@ -750,12 +750,6 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
           this, AuthenticationInApp::ErrorEmailTypeNotSupported);
       break;
 
-    case 144:  // Email already exists
-      aia->requestState(AuthenticationInApp::StateStart, this);
-      aia->requestErrorPropagation(
-          this, AuthenticationInApp::ErrorEmailAlreadyExists);
-      break;
-
     case 149:  // This email can not currently be used to login
       aia->requestState(AuthenticationInApp::StateStart, this);
       aia->requestErrorPropagation(
@@ -836,6 +830,8 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
     case 141:  // Email already exists
       [[fallthrough]];
     case 143:  // Unknown email
+      [[fallthrough]];
+    case 144:  // Email already exists
       [[fallthrough]];
     case 145:  // Reset password with this email type is not currently supported
       [[fallthrough]];
