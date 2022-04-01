@@ -92,6 +92,8 @@ void BenchmarkTaskDownload::downloadProgressed(qint64 bytesReceived,
 #ifdef MVPN_DEBUG
   logger.debug() << "Handle progressed:" << bytesReceived << "(received)"
                  << bytesTotal << "(total)";
+#else
+  Q_UNUSED(bytesReceived);
 #endif
 
   // Count and discard downloaded data
