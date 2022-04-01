@@ -146,6 +146,70 @@ void TestSignUpAndIn::signUp() {
   QCOMPARE(authFailureDetail, "no_subscription_for_user");
 }
 
+void TestSignUpAndIn::signUpWithError() {
+  // This test works only for non-blocked accounts.
+  if (!m_emailAccount.startsWith("vpn")) {
+    return;
+  }
+
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QVERIFY(!!aia);
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
+
+  // Starting the authentication flow.
+  TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
+  task.run();
+
+  EventLoop loop;
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateStart) {
+      loop.exit();
+    }
+  });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateStart);
+
+  QString emailAddress(m_emailAccount);
+  emailAddress.append("@restmail.net");
+
+  // Account
+  aia->checkAccount(emailAddress);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
+
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateSignIn) {
+      loop.exit();
+    }
+  });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSignIn);
+
+  // Password
+  aia->setPassword(PASSWORD);
+
+  // Even if we are in SignIn, let's call the Sign-up
+  aia->signUp();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSigningUp);
+
+  connect(
+      aia, &AuthenticationInApp::errorOccurred,
+      [&](AuthenticationInApp::ErrorType error, uint32_t) {
+        if (error == AuthenticationInApp::ErrorAccountAlreadyExists) {
+          qDebug() << "The account already exist. Error correctly propagated.";
+          loop.exit();
+        }
+      });
+  loop.exec();
+
+  disconnect(aia, nullptr, nullptr, nullptr);
+}
+
 void TestSignUpAndIn::signIn() {
   AuthenticationInApp* aia = AuthenticationInApp::instance();
   QVERIFY(!!aia);
@@ -190,11 +254,28 @@ void TestSignUpAndIn::signIn() {
 
   QCOMPARE(aia->state(), AuthenticationInApp::StateSignIn);
 
-  // Password
-  aia->setPassword(PASSWORD);
-
   // Let's delete the account the end of the flow.
   aia->enableAccountDeletion();
+
+  // Invalid Password
+  if (m_emailAccount.startsWith("vpn")) {
+    // We run this part only for non-blocked accounts because for them, the
+    // password doesn't really matter.
+    aia->setPassword("Invalid!");
+    connect(aia, &AuthenticationInApp::errorOccurred,
+            [&](AuthenticationInApp::ErrorType error, uint32_t) {
+              if (error == AuthenticationInApp::ErrorIncorrectPassword) {
+                qDebug() << "Incorrect password!";
+                loop.exit();
+              }
+            });
+
+    // Sign-in
+    aia->signIn();
+    loop.exec();
+  }
+
+  aia->setPassword(PASSWORD);
 
   // Sign-in
   aia->signIn();
@@ -248,6 +329,62 @@ void TestSignUpAndIn::signIn() {
   disconnect(aia, nullptr, nullptr, nullptr);
 
   QCOMPARE(authFailureDetail, "no_subscription_for_user");
+}
+
+void TestSignUpAndIn::signInWithError() {
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QVERIFY(!!aia);
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
+
+  // Starting the authentication flow.
+  TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
+  task.run();
+
+  EventLoop loop;
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateStart) {
+      loop.exit();
+    }
+  });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateStart);
+
+  QString emailAddress(m_emailAccount);
+  emailAddress.append("@restmail.net");
+
+  // Account
+  aia->checkAccount(emailAddress);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
+
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateSignUp) {
+      loop.exit();
+    }
+  });
+
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSignUp);
+
+  aia->setPassword(PASSWORD);
+
+  // Sign-in even if the account does not exist.
+  aia->signIn();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSigningIn);
+
+  connect(aia, &AuthenticationInApp::errorOccurred,
+          [&](AuthenticationInApp::ErrorType error, uint32_t) {
+            if (error == AuthenticationInApp::ErrorUnknownAccount) {
+              qDebug() << "The account does not exist yet";
+              loop.exit();
+            }
+          });
+  loop.exec();
 }
 
 QString TestSignUpAndIn::fetchSessionCode() {
