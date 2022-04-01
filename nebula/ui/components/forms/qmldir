@@ -1,9 +1,10 @@
 VPNComboBox 0.1 VPNComboBox.qml
-VPNInputBackground 0.1 VPNInputBackground.qml
 VPNContextualAlert 0.1 VPNContextualAlert.qml
 VPNContextualAlerts 0.1 VPNContextualAlerts.qml
-VPNPasswordInput 0.1 VPNPasswordInput.qml
+VPNCursorDelegate 0.1 VPNCursorDelegate.qml
+VPNInputBackground 0.1 VPNInputBackground.qml
 VPNInputStates 0.1 VPNInputStates.qml
+VPNPasswordInput 0.1 VPNPasswordInput.qml
 VPNRadioButton 0.1 VPNRadioButton.qml
 VPNSearchBar 0.1 VPNSearchBar.qml
 VPNTextArea 0.1 VPNTextArea.qml

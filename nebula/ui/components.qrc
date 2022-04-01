@@ -111,5 +111,6 @@
         <file>components/inAppAuth/VPNInAppAuthenticationPasswordCondition.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationLegalDisclaimer.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationCancel.qml</file>
+        <file>components/forms/VPNCursorDelegate.qml</file>
     </qresource>
 </RCC>
