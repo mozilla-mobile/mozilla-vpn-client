@@ -10,6 +10,7 @@
 
 #include <QByteArray>
 #include <QDnsLookup>
+#include <QHostAddress>
 
 constexpr const char* MULLVAD_DEFAULT_DNS = "10.64.0.1";
 
