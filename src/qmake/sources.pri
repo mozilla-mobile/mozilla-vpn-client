@@ -71,6 +71,9 @@ SOURCES += \
         models/devicemodel.cpp \
         models/feature.cpp \
         models/feedbackcategorymodel.cpp \
+        models/guide.cpp \
+        models/guideblock.cpp \
+        models/guidemodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
         models/licensemodel.cpp \
@@ -218,6 +221,9 @@ HEADERS += \
         models/devicemodel.h \
         models/feature.h \
         models/feedbackcategorymodel.h \
+        models/guide.h \
+        models/guideblock.h \
+        models/guidemodel.h \
         models/helpmodel.h \
         models/keys.h \
         models/licensemodel.h \
@@ -293,5 +299,4 @@ RESOURCES += ui/resources.qrc
 RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
-
-
+RESOURCES += ui/guides.qrc

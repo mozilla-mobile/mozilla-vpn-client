@@ -35,8 +35,8 @@ _grcov() {
   (
     cd "$1" || die
     grcov .obj  -s . -t lcov --branch --ignore-not-existing || die "Failed to run grcov"
-    [ -f "$2" ] || die "Expected $2 grcov output"
   ) > "$2"
+  [ -f "$2" ] || die "Expected $2 grcov output"
 }
 
 # Public methods

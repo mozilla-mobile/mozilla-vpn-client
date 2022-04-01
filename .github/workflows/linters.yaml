@@ -60,6 +60,10 @@ jobs:
           export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           python scripts/ci/check_qrc.py
 
+      - name: Check for guide JSON syntax
+        run: |
+          python scripts/ci/check_guides.py
+
       - name: Check for issues with clang-format
         uses: DoozyX/clang-format-lint-action@v0.11
         with:

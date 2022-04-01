@@ -65,6 +65,9 @@ HEADERS += \
     ../../src/models/devicemodel.h \
     ../../src/models/feature.h \
     ../../src/models/feedbackcategorymodel.h \
+    ../../src/models/guide.h \
+    ../../src/models/guideblock.h \
+    ../../src/models/guidemodel.h \
     ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
     ../../src/models/licensemodel.h \
@@ -119,12 +122,13 @@ HEADERS += \
     testandroidmigration.h \
     testcommandlineparser.h \
     testfeature.h \
-    testlocalizer.h \
-    testlogger.h \
+    testguide.h \
     testipaddress.h \
     testipaddresslookup.h \
     testipfinder.h \
     testlicense.h \
+    testlocalizer.h \
+    testlogger.h \
     testmodels.h \
     testmozillavpnh.h \
     testnetworkmanager.h \
@@ -165,6 +169,9 @@ SOURCES += \
     ../../src/models/devicemodel.cpp \
     ../../src/models/feature.cpp \
     ../../src/models/feedbackcategorymodel.cpp \
+    ../../src/models/guide.cpp \
+    ../../src/models/guideblock.cpp \
+    ../../src/models/guidemodel.cpp \
     ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
     ../../src/models/licensemodel.cpp \
@@ -218,12 +225,13 @@ SOURCES += \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \
     testfeature.cpp \
-    testlocalizer.cpp \
-    testlogger.cpp \
+    testguide.cpp \
     testipaddress.cpp \
     testipaddresslookup.cpp \
     testipfinder.cpp \
     testlicense.cpp \
+    testlocalizer.cpp \
+    testlogger.cpp \
     testmodels.cpp \
     testmozillavpnh.cpp \
     testnetworkmanager.cpp \
@@ -286,3 +294,4 @@ UI_DIR = .ui
 RESOURCES += servers/servers.qrc
 RESOURCES += ../../src/ui/license.qrc
 RESOURCES += themes/themes.qrc
+RESOURCES += guides/guides.qrc
