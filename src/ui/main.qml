@@ -300,7 +300,10 @@ Window {
                 mainStackView.pop(null, StackView.Immediate);
             }
 
-            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", { isMainView: true });
+            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", {
+                isMainView: true,
+                addSafeAreaMargin: true
+            });
         }
 
         function onLoadAndroidAuthenticationView() {

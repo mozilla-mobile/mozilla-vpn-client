@@ -13,6 +13,7 @@ import components.forms 0.1
 Item {
     property string _menuTitle: VPNl18n.InAppSupportWorkflowSupportNavLinkText
     property alias isMainView: menu.isMainView
+    property bool addSafeAreaMargin: false
 
     // This property is used to cache the emailAddress between the sub-views.
     property string emailAddress: ""
@@ -45,6 +46,7 @@ Item {
         id: menu
         objectName: "supportTicketScreen"
         title: VPNl18n.InAppSupportWorkflowSupportNavLinkText
+        y: addSafeAreaMargin ? safeAreaHeightByDevice() : 0
 
         // this view gets pushed to stackView from backend always
         // and so should be removed from stackView (even in settings flow) on back clicks
