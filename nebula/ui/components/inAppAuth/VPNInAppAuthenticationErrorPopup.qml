@@ -20,7 +20,6 @@ VPNPopup {
             id: authErrorContent
             spacing: VPNTheme.theme.vSpacing
 
-
             Image {
                 source: "qrc:/ui/resources/updateRequired.svg"
                 antialiasing: true
@@ -29,10 +28,10 @@ VPNPopup {
                 Layout.alignment: Qt.AlignHCenter
             }
             VPNHeadline {
-                text: VPNl18n.InAppAuthSignInFailedPopupTitle
+                id: authErrorTitle
+                text: ""
                 width: undefined
                 Layout.fillWidth: true
-
             }
 
             VPNTextBlock {
@@ -67,24 +66,46 @@ VPNPopup {
             return Math.ceil(retryAfterSec / 60);
         }
 
+        function showGenericAuthError() {
+            authErrorTitle.text = VPNl18n.InAppAuthProblemSigningInTitle
+            authErrorMessage.text = VPNl18n.InAppSupportWorkflowSupportErrorText
+            openErrorModalAndForceFocus();
+        }
+
         function onErrorOccurred(e, retryAfterSec) {
             switch(e) {
+            case VPNAuthInApp.ErrorAccountAlreadyExists:
+                showGenericAuthError();
+                break;
+
+            case VPNAuthInApp.ErrorAccountUnknown:
+                showGenericAuthError();
+                break;
+
             case VPNAuthInApp.ErrorEmailCanNotBeUsedToLogin:
+                authErrorTitle.text = VPNl18n.InAppAuthProblemSigningInTitle
                 authErrorMessage.text = VPNl18n.InAppAuthProblemSigningInErrorMessage;
                 openErrorModalAndForceFocus();
                 break;
 
             case VPNAuthInApp.ErrorEmailTypeNotSupported:
+                authErrorTitle.text = VPNl18n.InAppAuthProblemSigningInTitle
                 authErrorMessage.text = VPNl18n.InAppAuthInvalidEmailFormatErrorMessage
                 openErrorModalAndForceFocus();
                 break;
 
             case VPNAuthInApp.ErrorFailedToSendEmail:
-                authErrorMessage.text = "Error - failed to send email"
+                authErrorTitle.text = VPNl18n.InAppAuthProblemSigningInTitle
+                authErrorMessage.text =VPNl18n.InAppAuthProblemSendingEmailErrorMessage
                 openErrorModalAndForceFocus();
                 break;
 
+            case VPNAuthInApp.ErrorServerUnavailable:
+                showGenericAuthError();
+                break;
+
             case VPNAuthInApp.ErrorTooManyRequests:
+                authErrorTitle.text = VPNl18n.InAppAuthSignInFailedPopupTitle
                 const retryAfterMin = retryAfterSecToMin(retryAfterSec);
                 if (retryAfterMin === 1) {
                     authErrorMessage.text = VPNl18n.InAppAuthSignInBlockedForOneMinute;
