@@ -12,6 +12,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "taskscheduler.h"
+#include "timersingleshot.h"
 
 namespace {
 Logger logger(LOG_MODEL, "ConnectionBenchmark");
@@ -75,7 +76,7 @@ void ConnectionBenchmark::start() {
   setState(StateRunning);
 
   if (vpn->connectionHealth()->stability() == ConnectionHealth::NoSignal) {
-    handleStabilityChange();
+    TimerSingleShot::create(this, 3000, [this]() { handleStabilityChange(); });
   }
 
   // Create ping benchmark
