@@ -5,6 +5,7 @@
 #include "urlopener.h"
 #include "constants.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "inspector/inspectorhandler.h"
 #include "settingsholder.h"
 
@@ -28,7 +29,8 @@ void UrlOpener::open(QUrl url, bool addEmailAddress) {
   }
 
   if (!Constants::inProduction()) {
-    InspectorHandler::setLastUrl(url.toString());
+    MozillaVPN* vpn = MozillaVPN::instance();
+    vpn->setLastUrl(url.toString());
 
     if (InspectorHandler::stealUrls()) {
       return;
