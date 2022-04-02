@@ -12,7 +12,9 @@
 #include <QDnsLookup>
 #include <QHostAddress>
 
+#if !defined(MVPN_DUMMY)
 constexpr const char* MULLVAD_DEFAULT_DNS = "10.64.0.1";
+#endif
 
 namespace {
 Logger logger(LOG_MAIN, "BenchmarkTaskDownload");
@@ -39,7 +41,9 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
 
   if (state == BenchmarkTask::StateActive) {
     // Start DNS resolution
+#if !defined(MVPN_DUMMY)
     m_dnsLookup.setNameserver(QHostAddress(MULLVAD_DEFAULT_DNS));
+#endif
     m_dnsLookup.lookup();
   } else if (state == BenchmarkTask::StateInactive) {
     for (NetworkRequest* request : m_requests) {

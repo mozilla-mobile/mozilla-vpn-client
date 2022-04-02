@@ -17,7 +17,8 @@ namespace {
 Logger logger(LOG_MODEL, "ConnectionBenchmark");
 }
 
-ConnectionBenchmark::ConnectionBenchmark() {
+ConnectionBenchmark::ConnectionBenchmark()
+    : m_downloadUrl(Constants::BENCHMARK_DOWNLOAD_URL) {
   MVPN_COUNT_CTOR(ConnectionBenchmark);
 }
 
@@ -89,7 +90,7 @@ void ConnectionBenchmark::start() {
 
   // Create download benchmark
   BenchmarkTaskDownload* downloadTask =
-      new BenchmarkTaskDownload(QUrl(Constants::BENCHMARK_DOWNLOAD_URL));
+      new BenchmarkTaskDownload(m_downloadUrl);
   connect(downloadTask, &BenchmarkTaskDownload::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
   connect(downloadTask->sentinel(), &BenchmarkTask::destroyed, this,
