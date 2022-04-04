@@ -11,6 +11,8 @@ import components 0.1
 
 Item {
     id: testItem
+    height: 100
+    width: 200
 
     property alias testComponent: testLoader.item
 
@@ -62,6 +64,20 @@ Item {
             //Simulate clicking the label of the radio delegate.
             mouseClick(radioDelegate, 50, 0)
             expected = true
+            actual = radioDelegate.checked
+            verify(expected === actual, `checked was ${actual} not ${expected}.`);
+        }
+
+        function test_clickingRadioDelegateLabelTrailingSpaceDoesNotSelectIt() {
+            var radioDelegate = testItem.testComponent.radioDelegateTest
+            //Radio delegate starts out unselected
+            var expected = false
+            var actual = radioDelegate.checked
+            verify(expected === actual, `checked was ${actual} not ${expected}.`);
+
+            //Simulate clicking the trailing space after the label of the radio delegate.
+            mouseClick(radioDelegate, testItem.width, 0)
+            expected = false
             actual = radioDelegate.checked
             verify(expected === actual, `checked was ${actual} not ${expected}.`);
         }
