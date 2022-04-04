@@ -27,9 +27,9 @@ VPNPopup {
                 sourceSize.width: 80
                 Layout.alignment: Qt.AlignHCenter
             }
+
             VPNHeadline {
-                id: authErrorTitle
-                text: ""
+                text: VPNl18n.InAppAuthSignInFailedPopupTitle
                 width: undefined
                 Layout.fillWidth: true
             }
@@ -67,7 +67,6 @@ VPNPopup {
         }
 
         function showGenericAuthError() {
-            authErrorTitle.text = VPNl18n.InAppAuthProblemSigningInTitle
             authErrorMessage.text = VPNl18n.InAppSupportWorkflowSupportErrorText
             openErrorModalAndForceFocus();
         }
@@ -83,19 +82,16 @@ VPNPopup {
                 break;
 
             case VPNAuthInApp.ErrorEmailCanNotBeUsedToLogin:
-                authErrorTitle.text = VPNl18n.InAppAuthProblemSigningInTitle
                 authErrorMessage.text = VPNl18n.InAppAuthProblemSigningInErrorMessage;
                 openErrorModalAndForceFocus();
                 break;
 
             case VPNAuthInApp.ErrorEmailTypeNotSupported:
-                authErrorTitle.text = VPNl18n.InAppAuthProblemSigningInTitle
-                authErrorMessage.text = VPNl18n.InAppAuthInvalidEmailFormatErrorMessage
+                authErrorMessage.text = VPNl18n.InAppAuthProblemEmailTypeNotSupported
                 openErrorModalAndForceFocus();
                 break;
 
             case VPNAuthInApp.ErrorFailedToSendEmail:
-                authErrorTitle.text = VPNl18n.InAppAuthProblemSigningInTitle
                 authErrorMessage.text =VPNl18n.InAppAuthProblemSendingEmailErrorMessage
                 openErrorModalAndForceFocus();
                 break;
@@ -105,7 +101,6 @@ VPNPopup {
                 break;
 
             case VPNAuthInApp.ErrorTooManyRequests:
-                authErrorTitle.text = VPNl18n.InAppAuthSignInFailedPopupTitle
                 const retryAfterMin = retryAfterSecToMin(retryAfterSec);
                 if (retryAfterMin === 1) {
                     authErrorMessage.text = VPNl18n.InAppAuthSignInBlockedForOneMinute;
