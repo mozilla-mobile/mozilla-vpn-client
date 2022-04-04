@@ -17,6 +17,7 @@
         <file>developerMenu/ViewFeatureList.qml</file>
         <file>developerMenu/ViewGuides.qml</file>
         <file>developerMenu/ViewThemeList.qml</file>
+        <file>developerMenu/ViewTutorials.qml</file>
         <file>main.qml</file>
         <file>qmldir</file>
         <file>settings/ViewAdvancedDNSSettings.qml</file>

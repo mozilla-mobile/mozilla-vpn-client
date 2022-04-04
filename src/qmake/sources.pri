@@ -85,6 +85,8 @@ SOURCES += \
         models/supportcategorymodel.cpp \
         models/survey.cpp \
         models/surveymodel.cpp \
+        models/tutorial.cpp \
+        models/tutorialmodel.cpp \
         models/user.cpp \
         models/whatsnewmodel.cpp \
         mozillavpn.cpp \
@@ -132,7 +134,6 @@ SOURCES += \
         telemetry.cpp \
         theme.cpp \
         timersingleshot.cpp \
-        tutorial.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
         urlopener.cpp
@@ -235,6 +236,8 @@ HEADERS += \
         models/supportcategorymodel.h \
         models/survey.h \
         models/surveymodel.h \
+        models/tutorial.h \
+        models/tutorialmodel.h \
         models/user.h \
         models/whatsnewmodel.h \
         mozillavpn.h \
@@ -284,7 +287,6 @@ HEADERS += \
         telemetry.h \
         theme.h \
         timersingleshot.h \
-        tutorial.h \
         update/updater.h \
         update/versionapi.h \
         urlopener.h
@@ -300,3 +302,4 @@ RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
 RESOURCES += ui/guides.qrc
+RESOURCES += ui/tutorials.qrc

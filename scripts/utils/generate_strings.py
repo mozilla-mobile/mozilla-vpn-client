@@ -10,6 +10,12 @@ import json
 
 string_ids = []
 
+comment_types = {
+    "text": f"Standard text in a guide block",
+    "title": f"Title in a guide block",
+    "list": f"Bullet list item in a guide block",
+}
+
 
 def stop(string_id):
     exit(
@@ -192,7 +198,7 @@ def parseGuideStrings():
                         )
                     guide_ids.append(enum_id)
 
-                    comment = f"A guide block content of type {block['type']}"
+                    comment = comment_types.get(block["type"], "")
                     if "comment" in subblock:
                         comment = subblock["comment"]
 
@@ -205,7 +211,7 @@ def parseGuideStrings():
                         }
                     )
             else:
-                comment = f"A guide block content of type {block['type']}"
+                comment = comment_types.get(block["type"], "")
                 if "comment" in block:
                     comment = block["comment"]
 
@@ -217,6 +223,75 @@ def parseGuideStrings():
                         "comments": [comment],
                     }
                 )
+
+
+def parseTutorialStrings():
+    tutorials_path = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__), os.pardir, os.pardir, "src", "ui", "tutorials"
+        )
+    )
+
+    tutorial_ids = []
+
+    for tutorial_filename in os.listdir(tutorials_path):
+        if not tutorial_filename.endswith(".json"):
+            continue
+        with open(os.path.join(tutorials_path, tutorial_filename)) as tutorial_file:
+            tutorial_json = json.load(tutorial_file)
+        if not "id" in tutorial_json:
+            exit(f"Tutorial file {tutorial_filename} does not have an id")
+        if not "title" in tutorial_json:
+            exit(f"Tutorial file {tutorial_filename} does not have a title")
+
+        enum_id = pascalize(f"tutorial_{tutorial_json['id']}_title")
+        if enum_id in tutorial_ids:
+            exit(f"Duplicate id {enum_id} when parsing {tutorial_filename}")
+        tutorial_ids.append(enum_id)
+
+        comment = "Title for a tutorial view"
+        if "comment" in tutorial_json:
+            comment = tutorial_json["comment"]
+
+        string_ids.append(
+            {
+                "enum_id": enum_id,
+                "string_id": f"tutorial.{tutorial_json['id']}.title",
+                "value": [tutorial_json["title"]],
+                "comments": [comment],
+            }
+        )
+
+        if not "steps" in tutorial_json:
+            exit(f"Tutorial file {tutorial_filename} does not have a steps")
+        for step in tutorial_json["steps"]:
+            if not "id" in step:
+                exit(
+                    f"Tutorial file {tutorial_filename} does not have an id for one of the steps"
+                )
+            if not "tooltip" in step:
+                exit(
+                    f"Tutorial file {tutorial_filename} does not have a tooltip for step id {step['id']}"
+                )
+            enum_id = pascalize(f"tutorial_{tutorial_json['id']}_step_{step['id']}")
+            if enum_id in tutorial_ids:
+                exit(
+                    f"Duplicate id {enum_id} when parsing {tutorial_filename} - step {step['id']}"
+                )
+            tutorial_ids.append(enum_id)
+
+            comment = "A tutorial step tooltip"
+            if "comment" in step:
+                comment = step["comment"]
+
+            string_ids.append(
+                {
+                    "enum_id": enum_id,
+                    "string_id": f"tutorial.{tutorial_json['id']}.step.{step['id']}",
+                    "value": [step["tooltip"]],
+                    "comments": [comment],
+                }
+            )
 
 
 def writeOutputFiles():
@@ -328,6 +403,7 @@ void L18nStrings::retranslate() {
 def generateStrings():
     parseTranslationStrings()
     parseGuideStrings()
+    parseTutorialStrings()
     writeOutputFiles()
 
 

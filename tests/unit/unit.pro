@@ -79,6 +79,8 @@ HEADERS += \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
+    ../../src/models/tutorial.h \
+    ../../src/models/tutorialmodel.h \
     ../../src/models/user.h \
     ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
@@ -113,7 +115,6 @@ HEADERS += \
     ../../src/taskscheduler.h \
     ../../src/theme.h \
     ../../src/timersingleshot.h \
-    ../../src/tutorial.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
@@ -183,6 +184,8 @@ SOURCES += \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
+    ../../src/models/tutorial.cpp \
+    ../../src/models/tutorialmodel.cpp \
     ../../src/models/user.cpp \
     ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
@@ -212,7 +215,6 @@ SOURCES += \
     ../../src/taskscheduler.cpp \
     ../../src/theme.cpp \
     ../../src/timersingleshot.cpp \
-    ../../src/tutorial.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \
@@ -295,3 +297,4 @@ RESOURCES += servers/servers.qrc
 RESOURCES += ../../src/ui/license.qrc
 RESOURCES += themes/themes.qrc
 RESOURCES += guides/guides.qrc
+RESOURCES += tutorials/tutorials.qrc

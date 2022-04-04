@@ -166,6 +166,14 @@ void TestGuide::createNotExisting() {
 }
 
 void TestGuide::model() {
+  L18nStrings* l18nStrings = L18nStrings::instance();
+  QVERIFY(!!l18nStrings);
+  for (const QString& s : QStringList{
+           "GuideDemoTitle", "GuideDemoBlockC1", "GuideDemoBlockC2",
+           "GuideDemoBlockC3L1", "GuideDemoBlockC3L2", "GuideDemoBlockC3L3"}) {
+    l18nStrings->insert(s, "WOW!");
+  }
+
   GuideModel* mg = GuideModel::instance();
   QVERIFY(!!mg);
 
