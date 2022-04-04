@@ -50,9 +50,9 @@ Flickable {
             //: The abbreviation for Internet Protocol. This is followed by the user’s IP address.
             property var iplabel: qsTrId("vpn.connectionInfo.ip2")
 
-            ipVersionText: VPNConnectionData.ipv6Address === "" ? iplabel : ipv4label;
-            ipAddressText: VPNConnectionData.ipv4Address
-            visible: VPNConnectionData.ipv4Address !== ""
+            ipVersionText: VPNIPAddressLookup.ipv6Address === "" ? iplabel : ipv4label;
+            ipAddressText: VPNIPAddressLookup.ipv4Address
+            visible: VPNIPAddressLookup.ipv4Address !== ""
 
             Layout.alignment: Qt.AlignHCenter
             Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
@@ -60,11 +60,11 @@ Flickable {
         }
 
         VPNIPAddress {
-            visible: VPNConnectionData.ipv6Address !== ""
+            visible: VPNIPAddressLookup.ipv6Address !== ""
             //% "IPv6:"
             //: The abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
             ipVersionText: qsTrId("vpn.connectionInfo.ipv6")
-            ipAddressText: VPNConnectionData.ipv6Address
+            ipAddressText: VPNIPAddressLookup.ipv6Address
 
             Layout.alignment: Qt.AlignHCenter
             Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5

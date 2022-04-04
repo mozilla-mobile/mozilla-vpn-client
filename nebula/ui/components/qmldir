@@ -16,7 +16,6 @@ VPNCheckmarkList 0.1 VPNCheckmarkList.qml
 VPNChevron 0.1 VPNChevron.qml
 VPNClickableRow 0.1 VPNClickableRow.qml
 VPNCollapsibleCard 0.1 VPNCollapsibleCard.qml
-VPNConnectionInfo 0.1 VPNConnectionInfo.qml
 VPNConnectionInfoError 0.1 VPNConnectionInfoError.qml
 VPNConnectionInfoScreen 0.1 VPNConnectionInfoScreen.qml
 VPNConnectionInfoContent 0.1 VPNConnectionInfoContent.qml
