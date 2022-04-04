@@ -82,8 +82,7 @@ VPNPopup {
                 break;
 
             case VPNAuthInApp.ErrorEmailCanNotBeUsedToLogin:
-                authErrorMessage.text = VPNl18n.InAppAuthProblemSigningInErrorMessage;
-                openErrorModalAndForceFocus();
+                showGenericAuthError();
                 break;
 
             case VPNAuthInApp.ErrorEmailTypeNotSupported:
