@@ -50,10 +50,15 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
       request->abort();
     }
     m_requests.clear();
+    m_dnsLookup.abort();
   }
 }
 
 void BenchmarkTaskDownload::dnsLookupFinished() {
+  if (state() != BenchmarkTask::StateActive) {
+    logger.warning() << "DNS Lookup finished after task aborted";
+    return;
+  }
   if (m_dnsLookup.error() != QDnsLookup::NoError) {
     logger.error() << "DNS Lookup Failed:" << m_dnsLookup.errorString();
     emit finished(0, true);
