@@ -9,11 +9,11 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
 #include "connectionbenchmark/connectionbenchmark.h"
-#include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "constants.h"
 #include "controller.h"
 #include "errorhandler.h"
+#include "ipaddresslookup.h"
 #include "models/devicemodel.h"
 #include "models/feedbackcategorymodel.h"
 #include "models/helpmodel.h"
@@ -208,9 +208,6 @@ class MozillaVPN final : public QObject {
   ConnectionBenchmark* connectionBenchmark() {
     return &m_private->m_connectionBenchmark;
   }
-  ConnectionDataHolder* connectionDataHolder() {
-    return &m_private->m_connectionDataHolder;
-  }
   ConnectionHealth* connectionHealth() {
     return &m_private->m_connectionHealth;
   }
@@ -220,6 +217,7 @@ class MozillaVPN final : public QObject {
   FeedbackCategoryModel* feedbackCategoryModel() {
     return &m_private->m_feedbackCategoryModel;
   }
+  IpAddressLookup* ipAddressLookup() { return &m_private->m_ipAddressLookup; }
   SupportCategoryModel* supportCategoryModel() {
     return &m_private->m_supportCategoryModel;
   }
@@ -423,11 +421,11 @@ class MozillaVPN final : public QObject {
     CaptivePortalDetection m_captivePortalDetection;
     CloseEventHandler m_closeEventHandler;
     ConnectionBenchmark m_connectionBenchmark;
-    ConnectionDataHolder m_connectionDataHolder;
     ConnectionHealth m_connectionHealth;
     Controller m_controller;
     DeviceModel m_deviceModel;
     FeedbackCategoryModel m_feedbackCategoryModel;
+    IpAddressLookup m_ipAddressLookup;
     SupportCategoryModel m_supportCategoryModel;
     Keys m_keys;
     LicenseModel m_licenseModel;

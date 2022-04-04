@@ -398,9 +398,9 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNConnectionData",
+        "Mozilla.VPN", 1, 0, "VPNIPAddressLookup",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->connectionDataHolder();
+          QObject* obj = MozillaVPN::instance()->ipAddressLookup();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

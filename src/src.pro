@@ -97,7 +97,6 @@ SOURCES += \
         connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
         connectionbenchmark/connectionbenchmark.cpp \
-        connectiondataholder.cpp \
         connectionhealth.cpp \
         constants.cpp \
         controller.cpp \
@@ -123,6 +122,7 @@ SOURCES += \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
+        ipaddresslookup.cpp \
         itempicker.cpp \
         l18nstringsimpl.cpp \
         leakdetector.cpp \
@@ -230,7 +230,6 @@ HEADERS += \
         connectionbenchmark/benchmarktaskping.h \
         connectionbenchmark/benchmarktasksentinel.h \
         connectionbenchmark/connectionbenchmark.h \
-        connectiondataholder.h \
         connectionhealth.h \
         constants.h \
         controller.h \
@@ -269,6 +268,7 @@ HEADERS += \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
+        ipaddresslookup.h \
         itempicker.h \
         leakdetector.h \
         localizer.h \
