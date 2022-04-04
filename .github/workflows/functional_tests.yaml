@@ -53,8 +53,6 @@ jobs:
         shell: bash
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
-          export PATH=/opt/qt515/bin:$PATH
-
           pip3 install -r requirements.txt
 
           python3 scripts/utils/import_languages.py
