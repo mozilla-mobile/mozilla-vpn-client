@@ -70,7 +70,6 @@ VPNFlickable {
                     VPNInterLabel {
                         text: settingTitle
                         wrapMode: Text.WordWrap
-                        width: parent.width
                         opacity: vpnIsOff ? 1 : .5
                         horizontalAlignment: Text.AlignLeft
 

@@ -147,36 +147,43 @@ Item {
                     id: repeater
 
                     model: model
-                    delegate: VPNRadioDelegate {
-                        property bool isSelectedLanguage: checked
+                    delegate: ColumnLayout {
 
-                        id: del
-                        objectName: "language-" + code
-                        enabled: !useSystemLanguageEnabled
-                        radioButtonLabelText: localizedLanguage
-                        checked: VPNLocalizer.code === code && !useSystemLanguageEnabled
-                        onClicked: {
-                            VPNLocalizer.code = code;
-                        }
-                        anchors.left: parent.left
-                        width: parent.width
-                        //% "%1 %2"
-                        //: This string is read by accessibility tools.
-                        //: %1 is the language name, %2 is the localized language name.
-                        accessibleName: qsTrId("vpn.settings.languageAccessibleName")
+                        spacing: 0
+
+                        VPNRadioDelegate {
+                            property bool isSelectedLanguage: checked
+
+                            id: del
+                            objectName: "language-" + code
+                            enabled: !useSystemLanguageEnabled
+                            radioButtonLabelText: localizedLanguage
+                            checked: VPNLocalizer.code === code && !useSystemLanguageEnabled
+                            onClicked: {
+                                VPNLocalizer.code = code;
+                            }
+
+                            //% "%1 %2"
+                            //: This string is read by accessibility tools.
+                            //: %1 is the language name, %2 is the localized language name.
+                            accessibleName: qsTrId("vpn.settings.languageAccessibleName")
                             .arg(language)
                             .arg(localizedLanguage)
 
-                        activeFocusOnTab: !useSystemLanguageEnabled
-                        onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(del)
-                        Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
-                        Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : filterInput.forceActiveFocus()
-                        Keys.onBacktabPressed: filterInput.forceActiveFocus()
-
-                        VPNRadioSublabel {
-                            text: language
+                            activeFocusOnTab: !useSystemLanguageEnabled
+                            onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(del)
+                            Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
+                            Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : filterInput.forceActiveFocus()
+                            Keys.onBacktabPressed: filterInput.forceActiveFocus()
                         }
 
+                        VPNTextBlock {
+                            Layout.leftMargin: del.indicator.implicitWidth + VPNTheme.theme.hSpacing - 2
+                            Layout.topMargin: 4
+                            Layout.fillWidth: true
+
+                            text: language
+                        }
                     }
                 }
             }
