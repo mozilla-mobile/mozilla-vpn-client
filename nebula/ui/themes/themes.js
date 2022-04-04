@@ -36,6 +36,8 @@ theme.redPressed = '#C50042';
 theme.redfocusOutline = '#66C50042';
 theme.white = '#FFFFFF'
 
+theme.overlayBackground = '#4D000000';
+
 theme.checkBoxWarning = '#C45A27';
 
 theme.errorFocusOutline = '#FFBDC5';

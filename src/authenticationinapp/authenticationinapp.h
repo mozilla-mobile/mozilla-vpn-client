@@ -73,6 +73,7 @@ class AuthenticationInApp final : public QObject {
     ErrorInvalidTotpCode,
     ErrorTooManyRequests,
     ErrorServerUnavailable,
+    ErrorConnectionTimeout,
     ErrorUnknownAccount,
   };
   Q_ENUM(ErrorType);

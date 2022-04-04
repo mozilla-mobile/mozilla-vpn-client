@@ -208,6 +208,10 @@ ColumnLayout {
                 base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
+            case VPNAuthInApp.ErrorConnectionTimeout:
+                // In case of a timeout we want to exit here 
+                // to skip setting hasError - so the user can retry instantly
+                return;
             }
 
             if (!authError.visible)

@@ -78,7 +78,10 @@ VPNPopup {
                 authErrorMessage.text = VPNl18n.InAppAuthInvalidEmailFormatErrorMessage
                 openErrorModalAndForceFocus();
                 break;
-
+            case VPNAuthInApp.ErrorConnectionTimeout:
+                authErrorMessage.text = qsTrId("vpn.alert.noInternet")
+                openErrorModalAndForceFocus();
+                break;
             case VPNAuthInApp.ErrorFailedToSendEmail:
                 authErrorMessage.text = "Error - failed to send email"
                 openErrorModalAndForceFocus();
