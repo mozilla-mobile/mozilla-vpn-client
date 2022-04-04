@@ -5,7 +5,6 @@
 // See https://mozilla-hub.atlassian.net/browse/VPN-1894
 
 import Qt5Compat.GraphicalEffects
-import QtCharts 2.0
 import QtGraphicalEffects 1.0
 import Qt.labs.qmlmodels 1.0
 import QtQuick.LocalStorage 2.0

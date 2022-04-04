@@ -14,7 +14,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QSplineSeries>
 
 namespace {
 Logger logger(LOG_NETWORKING, "IpAddressLookup");
