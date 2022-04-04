@@ -1713,6 +1713,7 @@ void MozillaVPN::hardResetAndQuit() {
 }
 
 void MozillaVPN::crashTest() {
+  logger.debug() << "Crashing Application";
   char* text = new char[100];
   delete[] text;
   delete[] text;

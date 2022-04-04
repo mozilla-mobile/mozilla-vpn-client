@@ -24,6 +24,7 @@ Logger logger("CrashClient", "WindowsCrashServerClient");
 constexpr auto ARG = L"crashreporter";
 
 DWORD RecoveryCallback(PVOID contextParam) {
+  logger.debug() << "Notified of application crash.";
   BOOL cancelled;
   ApplicationRecoveryInProgress(&cancelled);
   WindowsCrashClient* client = static_cast<WindowsCrashClient*>(contextParam);
@@ -38,6 +39,7 @@ WindowsCrashClient::WindowsCrashClient() {}
 WindowsCrashClient::~WindowsCrashClient() {}
 
 bool WindowsCrashClient::start(int argc, char* argv[]) {
+  logger.debug() << "Starting crash client.";
   auto appDatas =
       QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
   auto appLocal = appDatas.first() + "\\dumps";
@@ -55,6 +57,7 @@ bool WindowsCrashClient::start(int argc, char* argv[]) {
 }
 
 bool WindowsCrashClient::launchUploader() {
+  logger.debug() << "Trying to launch crash reporter.";
   wstringstream pathStr;
   std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
   pathStr << converter.from_bytes(m_launchPath) << L" " << ARG;
