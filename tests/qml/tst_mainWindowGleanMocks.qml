@@ -18,6 +18,8 @@ Item {
         property var spyUploadEnabledInitialize
         property var spyConfig
         property var spyTags
+        property var spyLogPings
+        property var spySetDebugViewTag
         property var spyShutdownCalled: false
         property var spyUploadEnabled
 
@@ -34,6 +36,14 @@ Item {
                 spyTags = tags
             }
             Glean.setSourceTags = mockGleanSetSourceTags;
+            function mockGleanSetLogPings(flag) {
+                spyLogPings = flag
+            }
+            Glean.setLogPings = mockGleanSetLogPings;
+            function mockGleanSetDebugViewTag(tag) {
+                spySetDebugViewTag = tag
+            }
+            Glean.setDebugViewTag = mockGleanSetDebugViewTag;
             function mockGleanShutdown() {
                 // Should be false before setting it to true in this function.
                 // Helps protect us from bad testing state.
@@ -101,13 +111,13 @@ Item {
         function test_onInitializeGleanByDebugMode() {
             TestHelper.debugMode = false
             TestHelper.triggerInitializeGlean()
-            compare(spyConfig.debug.logPings, undefined)
-            compare(spyConfig.debug.debugViewTag, undefined)
+            compare(spyLogPings, undefined)
+            compare(spySetDebugViewTag, undefined)
 
             TestHelper.debugMode = true
             TestHelper.triggerInitializeGlean()
-            compare(spyConfig.debug.logPings, true)
-            compare(spyConfig.debug.debugViewTag, "MozillaVPN")
+            compare(spyLogPings, true)
+            compare(spySetDebugViewTag, "MozillaVPN")
         }
 
         /*

@@ -151,3 +151,5 @@ tools/inspector/node_modules
 
 # Bridge app
 extension/bridge/target
+extension/bridge/.cargo_home
+extension/bridge/.cargo

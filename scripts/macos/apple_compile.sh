@@ -15,10 +15,11 @@ OS=
 NETWORKEXTENSION=
 ADJUST_SDK_TOKEN=
 ADJUST="CONFIG-=adjust"
+QTBINPATH=
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios|> [-d|--debug] [-a|--adjusttoken <adjust_token>]"
+  print N "\t$0 <macos|ios|> [-d|--debug] [-a|--adjusttoken <adjust_token>] [-q|--qtbin <qtbinpath>]"
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N ""
@@ -46,6 +47,11 @@ while [[ $# -gt 0 ]]; do
     ;;
   -d | --debug)
     RELEASE=
+    shift
+    ;;
+  -q | --qtbinpath)
+    QTBINPATH="$2"
+    shift
     shift
     ;;
   -h | --help)
@@ -132,8 +138,7 @@ rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"
 print G "done."
 
 print Y "Importing translation files..."
-git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
-python3 scripts/utils/import_languages.py $([[ "$OS" = "macos" ]] && echo "-m" || echo "") || die "Failed to import languages"
+python3 scripts/utils/import_languages.py $([[ $QTBINPATH ]] && echo "-q $QTBINPATH") $([[ "$OS" = "macos" ]] && echo "-m" || echo "") || die "Failed to import languages"
 
 print Y "Generating glean samples..."
 python3 scripts/utils/generate_glean.py || die "Failed to generate glean samples"

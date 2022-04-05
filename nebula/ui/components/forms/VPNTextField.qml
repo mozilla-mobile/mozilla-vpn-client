@@ -35,9 +35,10 @@ TextField {
     placeholderTextColor: VPNTheme.colors.grey40
     leftPadding: VPNTheme.theme.windowMargin
     rightPadding: VPNTheme.theme.windowMargin
-
     topPadding: VPNTheme.theme.windowMargin / 2
     bottomPadding: VPNTheme.theme.windowMargin / 2
+
+    cursorDelegate: VPNCursorDelegate {}
 
     Text {
         id: centeredPlaceholderText

@@ -12,6 +12,7 @@ import components 0.1
 Item {
     property alias isSettingsView: menu.isSettingsView
     property alias isMainView: menu.isMainView
+    property bool addSafeAreaMargin: false
     //% "Get help"
     property string _menuTitle: qsTrId("vpn.main.getHelp2")
     property int unlockCounter: 0
@@ -34,6 +35,8 @@ Item {
         //% "Get help"
         title: qsTrId("vpn.main.getHelp2")
         visible: !isSettingsView
+
+        y: addSafeAreaMargin ? safeAreaHeightByDevice() : 0
     }
 
     VPNMouseArea {
@@ -106,9 +109,15 @@ Item {
             visible: VPNSettings.developerUnlock
             onClicked: {
                 if (isSettingsView) {
-                    settingsStackView.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml", {isSettingsView: true})
+                    settingsStackView.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml", {
+                        isSettingsView: true,
+                        addSafeAreaMargin: getHelp.addSafeAreaMargin
+                    })
                 } else {
-                    stackview.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml", {isSettingsView: false})
+                    stackview.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml", {
+                        isSettingsView: false,
+                        addSafeAreaMargin: getHelp.addSafeAreaMargin
+                    })
                 }
             }
         }

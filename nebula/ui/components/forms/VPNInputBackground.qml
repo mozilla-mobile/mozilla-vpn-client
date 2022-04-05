@@ -31,7 +31,7 @@ Rectangle {
         antialiasing: true
         border.color: itemToFocus && itemToFocus.hasError ? VPNTheme.colors.input.error.highlight : VPNTheme.colors.input.focus.highlight
         border.width: 4
-        color: "transparent"
+        color: VPNTheme.theme.transparent
         opacity: itemToFocus && itemToFocus.activeFocus && itemToFocus.showInteractionStates ? 1 : 0
         radius: parent.radius + anchors.margins * -1
         z: -1

@@ -14,7 +14,9 @@ class AuthenticationInApp final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AuthenticationInApp)
 
-  Q_PROPERTY(int verificationCodeLength READ verificationCodeLength CONSTANT);
+  Q_PROPERTY(int totpCodeLength READ totpCodeLength CONSTANT);
+  Q_PROPERTY(int sessionEmailCodeLength READ sessionEmailCodeLength CONSTANT);
+  Q_PROPERTY(int unblockCodeLength READ unblockCodeLength CONSTANT);
   Q_PROPERTY(QString emailAddress READ emailAddress NOTIFY emailAddressChanged);
 
  public:
@@ -60,7 +62,6 @@ class AuthenticationInApp final : public QObject {
 
   enum ErrorType {
     ErrorAccountAlreadyExists,
-    ErrorEmailAlreadyExists,
     ErrorEmailCanNotBeUsedToLogin,
     ErrorEmailTypeNotSupported,
     ErrorFailedToSendEmail,
@@ -138,7 +139,9 @@ class AuthenticationInApp final : public QObject {
   void requestErrorPropagation(AuthenticationInAppListener* listener,
                                ErrorType errorType, uint32_t retryAfterSec = 0);
 
-  static int verificationCodeLength() { return 6; }
+  static int totpCodeLength() { return 6; }
+  static int sessionEmailCodeLength() { return 6; }
+  static int unblockCodeLength() { return 8; }
 
   const QString& emailAddress() const;
 

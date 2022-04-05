@@ -35,11 +35,11 @@ VPNInAppAuthenticationBase {
     _inputLabel: VPNl18n.InAppAuthSecurityCodeLabel
 
     _inputs: VPNInAppAuthenticationInputs {
-        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded && !activeInput().hasError && activeInput().text.length > 0
+        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded && activeInput().text.length === VPNAuthInApp.totpCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionTotpCode(inputText) }
         _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton
         _inputMethodHints: Qt.ImhDigitsOnly
-        _inputPlaceholderText: VPNl18n.InAppAuthVerificationCodeInputPlaceholder
+        _inputPlaceholderText: VPNl18n.InAppAuthSecurityCodeInputPlaceholder
     }
 
     _footerContent: Column {

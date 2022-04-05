@@ -11,7 +11,6 @@ import Mozilla.VPN 1.0
 Flickable {
     id: root
 
-    contentHeight: Math.max(content.height, height)
     height: parent.height
     width: parent.width
     onVisibleChanged: {
@@ -22,6 +21,10 @@ Flickable {
             speedometerAnimation.stop();
             checkmarkListModel.clear();
         }
+    }
+
+    Component.onCompleted: {
+        root.contentHeight = Qt.binding(() => Math.max(content.height, root.height));
     }
 
     ListModel {
@@ -75,6 +78,7 @@ Flickable {
 
             VPNLottieAnimation {
                 id: speedometerAnimation
+                loop: false
                 source: ":/nebula/resources/animations/speedometer_animation.json"
             }
         }
@@ -120,7 +124,7 @@ Flickable {
 
             VPNConnectionInfoItem {
                 title: VPNl18n.ConnectionInfoLabelPing
-                subtitle: VPNConnectionBenchmark.ping + " " + VPNl18n.ConnectionInfoUnitPing
+                subtitle: VPNConnectionBenchmark.pingLatency + " " + VPNl18n.ConnectionInfoUnitPing
                 iconPath: "qrc:/nebula/resources/connection-green.svg"
             }
 
@@ -135,16 +139,13 @@ Flickable {
             VPNConnectionInfoItem {
                 //% "Download"
                 title: qsTrId("vpn.connectionInfo.download")
-                subtitle: root.getConnectionLabel(VPNConnectionBenchmark.download)
+                subtitle: root.getConnectionLabel(VPNConnectionBenchmark.bitsPerSec)
                 iconPath: "qrc:/nebula/resources/download.svg"
             }
-
         }
-
     }
 
-    function getConnectionLabel(connectionValue) {
-        const connectionValueBits = connectionValue * 8; // convert bytes to bits
+    function getConnectionLabel(connectionValueBits) {
         return `${computeValue(connectionValueBits)} ${computeRange(connectionValueBits)}`;
     }
 

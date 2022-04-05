@@ -52,7 +52,6 @@ print G "done."
 qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
 
 print Y "Importing translation files..."
-git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
 python3 scripts/utils/import_languages.py || die "Failed to import languages"
 
 print Y "Generating glean samples..."

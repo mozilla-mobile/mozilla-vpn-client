@@ -12,7 +12,9 @@ class TestSignUpAndIn final : public QObject {
   ~TestSignUpAndIn() = default;
 
  private slots:
+  void signInWithError();
   void signUp();
+  void signUpWithError();
   void signIn();
 
  private:

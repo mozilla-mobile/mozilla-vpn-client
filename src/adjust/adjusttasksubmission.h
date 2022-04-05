@@ -32,7 +32,7 @@ class AdjustTaskSubmission final : public Task {
  private:
   const QString m_method;
   const QString m_path;
-  const QList<QPair<QString, QString>>& m_headers;
+  const QList<QPair<QString, QString>> m_headers;
   const QString m_queryParameters;
   const QString m_bodyParameters;
   const QStringList m_unknownParameters;

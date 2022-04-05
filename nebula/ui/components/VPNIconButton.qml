@@ -29,11 +29,11 @@ VPNButtonBase {
     VPNToolTip {
         id: toolTip
         text: accessibleName
-        visible: iconButton.enabled
     }
 
     VPNMouseArea {
         id: mouseArea
+        hoverEnabled: iconButton.enabled
         onExited: toolTip.close()
     }
 

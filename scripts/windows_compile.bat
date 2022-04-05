@@ -67,9 +67,6 @@ CALL :CheckCommand python
 CALL :CheckCommand cl
 CALL :CheckCommand qmake
 
-git submodule init
-git submodule update --remote --depth 1 i18n
-
 ECHO Copying the installer dependencies...
 CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\SSL\bin\libcrypto-1_1-x64.dll
 CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\SSL\bin\libssl-1_1-x64.dll
