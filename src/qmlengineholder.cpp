@@ -69,3 +69,10 @@ void QmlEngineHolder::hideWindow() {
 
   w->hide();
 }
+
+void QmlEngineHolder::clearLocalStorage() {
+  QDir offlineStorageDir(m_engine.offlineStoragePath());
+  if (!offlineStorageDir.removeRecursively()) {
+    logger.debug() << "Failed to clear storage at" << offlineStorageDir.path();
+  }
+}

@@ -1699,6 +1699,10 @@ void MozillaVPN::hardReset() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
   settingsHolder->hardReset();
+
+  QmlEngineHolder* engineHolder = QmlEngineHolder::instance();
+  Q_ASSERT(engineHolder);
+  engineHolder->clearLocalStorage();
 }
 
 void MozillaVPN::hardResetAndQuit() {

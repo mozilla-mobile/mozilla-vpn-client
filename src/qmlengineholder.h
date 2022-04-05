@@ -7,6 +7,7 @@
 
 #include "networkmanager.h"
 
+#include <QDir>
 #include <QQmlApplicationEngine>
 
 class QWindow;
@@ -29,6 +30,8 @@ class QmlEngineHolder final : public NetworkManager {
   QWindow* window() const;
   void showWindow();
   void hideWindow();
+
+  void clearLocalStorage();
 
  protected:
   void clearCacheInternal() override;
