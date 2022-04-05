@@ -74,10 +74,6 @@ void ConnectionBenchmark::start() {
 
   setState(StateRunning);
 
-  if (vpn->connectionHealth()->stability() == ConnectionHealth::NoSignal) {
-    handleStabilityChange();
-  }
-
   // Create ping benchmark
   BenchmarkTaskPing* pingTask = new BenchmarkTaskPing();
   connect(pingTask, &BenchmarkTaskPing::finished, this,
