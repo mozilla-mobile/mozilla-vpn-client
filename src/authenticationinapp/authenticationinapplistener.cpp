@@ -266,6 +266,14 @@ void AuthenticationInAppListener::signInInternal(const QString& unblockCode) {
   connect(request, &NetworkRequest::requestFailed, this,
           [this, unblockCode](QNetworkReply::NetworkError error,
                               const QByteArray& data) {
+            if (error == QNetworkReply::TimeoutError) {
+              AuthenticationInApp* aia = AuthenticationInApp::instance();
+              aia->requestState(AuthenticationInApp::StateSignIn, this);
+              aia->requestErrorPropagation(
+                  this, AuthenticationInApp::ErrorConnectionTimeout);
+              return;
+            }
+
             QJsonDocument json = QJsonDocument::fromJson(data);
             if (json.isObject()) {
               QJsonObject obj = json.object();

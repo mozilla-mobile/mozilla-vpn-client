@@ -189,6 +189,9 @@ int CommandLogin::run(QStringList& tokens) {
               case AuthenticationInApp::ErrorInvalidTotpCode:
                 stream << "Invalid TOTP code" << Qt::endl;
                 break;
+              case AuthenticationInApp::ErrorConnectionTimeout:
+                stream << "Request Timed Out" << Qt::endl;
+                break;
             }
           });
     }
