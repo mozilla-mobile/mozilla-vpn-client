@@ -89,7 +89,8 @@ try:
   subprocess.call([sys.executable, "-m", "glean_parser", "translate", "glean/metrics.yaml", "glean/pings.yaml",
                    "-f", "javascript", "-o", "glean/telemetry", "--option", "platform=qt",
                    "--option", "version=0.30"])
-except:
+except Exception as e:
   print("glean_parser failed. Is it installed? Try with:\n\tpip3 install -r requirements.txt --user");
+  print(e);
   exit(1)
 

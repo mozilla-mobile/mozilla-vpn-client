@@ -35,7 +35,7 @@ if exist .deps\prepared goto :build
 
 :download
 	echo [+] Downloading %1
-	curl -#fLo %1 %2 || exit /b 1
+	powershell -command "Invoke-WebRequest" -Uri %2 -OutFile %1 || exit /b 1
 	echo [+] Verifying %1
 	for /f %%a in ('CertUtil -hashfile %1 SHA256 ^| findstr /r "^[0-9a-f]*$"') do if not "%%a"=="%~3" exit /b 1
 	goto :eof

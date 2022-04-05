@@ -66,6 +66,11 @@ Release/
 Release-iphone*
 macos/gobridge/wireguard-go-version.h
 
+# Taskcluster/ Taskgraph
+!taskcluster/ci/build
+!taskcluster/scripts/build
+*.pyc
+
 # Editors
 *.swp
 .idea/
@@ -96,6 +101,9 @@ windows/installer/x64/
 windows/tunnel/x64/
 windows/split-tunnel/*
 !windows/split-tunnel/get.ps1
+
+#Rust
+.cargo_home/
 
 
 # WASM
