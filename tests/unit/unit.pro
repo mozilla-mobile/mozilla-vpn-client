@@ -3,11 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 QT += testlib
-QT += charts
 QT += network
 QT += qml
 QT += quick
 QT += xml
+QT += widgets
 
 DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += BUILD_ID=\\\"1234\\\"

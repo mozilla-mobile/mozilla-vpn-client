@@ -25,7 +25,7 @@ RUN apt-get -q update &&\
                python3-pip wget git rsync ccache make patch &&\
     #Install QT
     python3 -m pip install aqtinstall &&\
-    python3 -m aqt install --outputdir /opt 5.15.2 linux android -m qtcharts qtnetworkauth &&\
+    python3 -m aqt install --outputdir /opt 5.15.2 linux android -m qtnetworkauth &&\
     #Download Additional stuff that is not in a repo
     wget -q https://dl.google.com/android/repository/android-ndk-r20b-linux-x86_64.zip &&\
     wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip &&\

@@ -16,7 +16,7 @@ RUN apt-get -q update && apt-get install -y git ccache python3 libglib2.0-0 &&\
      python3 -m pip install aqtinstall &&\
      # qt6.2.3 for wasm needs the desktop linux installation
      python3 -m aqt install-qt -O /opt linux desktop 6.2.3 &&\
-     python3 -m aqt install-qt -O /opt linux desktop 6.2.3 wasm_32 -m qtcharts qtwebsockets qt5compat &&\
+     python3 -m aqt install-qt -O /opt linux desktop 6.2.3 wasm_32 -m qtwebsockets qt5compat &&\
      # see: https://wiki.qt.io/Qt_6.2_Known_Issues#WebAssembly
      sed '/sse/,+5 d' /opt/6.2.3/wasm_32/mkspecs/features/wasm/wasm.prf > /tmp/wasm.prf &&\
      mv /tmp/wasm.prf /opt/6.2.3/wasm_32/mkspecs/features/wasm/wasm.prf &&\

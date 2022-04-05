@@ -6,7 +6,6 @@ QT += network
 QT += networkauth
 QT += quick
 QT += widgets
-QT += charts
 QT += websockets
 QT += sql
 
