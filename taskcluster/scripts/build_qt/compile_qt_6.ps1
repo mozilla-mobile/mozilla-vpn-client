@@ -10,8 +10,18 @@ $BIN_PATH = "$REPO_ROOT_PATH/bin"
 $QT_VERSION = $env:QT_VERSION
 $QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
 
+$QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
+
 Set-Location $FETCHES_PATH 
-Invoke-WebRequest -Uri https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip -OutFile qt-everywhere-src-$QT_VERSION.zip
+Write-Output "Downloading : $QT_URI"
+Invoke-WebRequest -Uri $QT_URI -OutFile qt-everywhere-src-$QT_VERSION.zip
+if($?){
+    Write-Output "Downloaded : $QT_URI"
+}else{
+    Write-Output "Failed to download : $QT_URI"
+    exit 1
+}
+
 unzip -o -qq qt-everywhere-src-$QT_VERSION.zip
 unzip -o -qq open_ssl_win.zip # See Build-qt/windows.yml why
 
@@ -69,7 +79,8 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
 
  cmake --build . --parallel
 
- cmake --install .
+ cmake --install . --config Debug
+ cmake --install . --config Release
 
 
 Set-Location $REPO_ROOT_PATH
