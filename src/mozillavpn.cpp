@@ -32,6 +32,7 @@
 #include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/servers/taskservers.h"
+#include "tasks/serververify/taskserververify.h"
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
@@ -123,10 +124,12 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
             setState(StateBackendFailure);
           });
 
-  connect(&m_private->m_controller, &Controller::readyToServerUnavailable, this,
-          []() {
-            NotificationHandler::instance()->serverUnavailableNotification();
-          });
+  connect(
+      &m_private->m_controller, &Controller::readyToServerUnavailable, this,
+      [this]() {
+        TaskScheduler::scheduleTask(new TaskServerVerify(m_serverPublicKey));
+        NotificationHandler::instance()->serverUnavailableNotification();
+      });
 
   connect(&m_private->m_controller, &Controller::stateChanged, this,
           &MozillaVPN::controllerStateChanged);

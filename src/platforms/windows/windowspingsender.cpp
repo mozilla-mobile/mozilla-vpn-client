@@ -9,6 +9,8 @@
 
 #include <QtEndian>
 
+constexpr const DWORD WINDOWS_ICMP_ECHO_TIMEOUT = 10000;
+
 namespace {
 Logger logger({LOG_WINDOWS, LOG_NETWORKING}, "WindowsPingSender");
 }
@@ -49,12 +51,19 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
     return;
   }
 
-  quint32 v4src = m_source.toIPv4Address();
   quint32 v4dst = dest.toIPv4Address();
-  IcmpSendEcho2Ex(m_handle, m_event, nullptr, nullptr,
-                  qToBigEndian<quint32>(v4src), qToBigEndian<quint32>(v4dst),
-                  &sequence, sizeof(sequence), nullptr, m_buffer,
-                  sizeof(m_buffer), 10000);
+  if (m_source.isNull()) {
+    IcmpSendEcho2(m_handle, m_event, nullptr, nullptr,
+                  qToBigEndian<quint32>(v4dst), &sequence, sizeof(sequence)),
+                  nullptr, m_buffer, sizeof(m_buffer),
+                  WINDOWS_ICMP_ECHO_TIMEOUT);
+  } else {
+    quint32 v4src = m_source.toIPv4Address();
+    IcmpSendEcho2Ex(m_handle, m_event, nullptr, nullptr,
+                    qToBigEndian<quint32>(v4src), qToBigEndian<quint32>(v4dst),
+                    &sequence, sizeof(sequence), nullptr, m_buffer,
+                    sizeof(m_buffer), WINDOWS_ICMP_ECHO_TIMEOUT);
+  }
 
   DWORD status = GetLastError();
   if (status != ERROR_IO_PENDING) {

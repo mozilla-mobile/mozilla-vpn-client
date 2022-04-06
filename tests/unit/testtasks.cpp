@@ -8,6 +8,7 @@
 #include "../../src/tasks/adddevice/taskadddevice.h"
 #include "../../src/tasks/function/taskfunction.h"
 #include "../../src/tasks/servers/taskservers.h"
+#include "../../src/tasks/serververify/taskserververify.h"
 #include "../../src/taskscheduler.h"
 
 void TestTasks::account() {

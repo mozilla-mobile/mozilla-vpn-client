@@ -137,7 +137,7 @@ class Controller final : public QObject {
   void enableDisconnectInConfirmingChanged();
   void silentSwitchDone();
   void activationBlockedForCaptivePortal();
-  void handshakeFailed(const QString& serverHostname);
+  void handshakeFailed(const QString& serverPublicKey);
 
  private:
   void setState(State state);

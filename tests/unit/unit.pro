@@ -107,6 +107,7 @@ HEADERS += \
     ../../src/tasks/function/taskfunction.h \
     ../../src/tasks/release/taskrelease.h \
     ../../src/tasks/servers/taskservers.h \
+    ../../src/tasks/serververify/taskserververify.h \
     ../../src/taskscheduler.h \
     ../../src/theme.h \
     ../../src/timersingleshot.h \
@@ -202,6 +203,7 @@ SOURCES += \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/tasks/release/taskrelease.cpp \
     ../../src/tasks/servers/taskservers.cpp \
+    ../../src/tasks/serververify/taskserververify.cpp \
     ../../src/taskscheduler.cpp \
     ../../src/theme.cpp \
     ../../src/timersingleshot.cpp \

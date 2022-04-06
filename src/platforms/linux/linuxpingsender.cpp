@@ -75,17 +75,19 @@ LinuxPingSender::LinuxPingSender(const QHostAddress& source, QObject* parent)
     return;
   }
 
-  quint32 ipv4addr = source.toIPv4Address();
-  struct sockaddr_in addr;
-  memset(&addr, 0, sizeof addr);
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = qToBigEndian<quint32>(ipv4addr);
+  if (!source.isNull()) {
+    quint32 ipv4addr = source.toIPv4Address();
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof addr);
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = qToBigEndian<quint32>(ipv4addr);
 
-  if (bind(m_socket, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
-    close(m_socket);
-    m_socket = -1;
-    logger.error() << "bind error:" << strerror(errno);
-    return;
+    if (bind(m_socket, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
+      close(m_socket);
+      m_socket = -1;
+      logger.error() << "bind error:" << strerror(errno);
+      return;
+    }
   }
 
   m_notifier = new QSocketNotifier(m_socket, QSocketNotifier::Read, this);

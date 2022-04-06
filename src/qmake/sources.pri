@@ -122,6 +122,7 @@ SOURCES += \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
         tasks/servers/taskservers.cpp \
+        tasks/serververify/taskserververify.cpp \
         tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
         telemetry.cpp \
@@ -268,6 +269,7 @@ HEADERS += \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
         tasks/servers/taskservers.h \
+        tasks/serververify/taskserververify.h \
         tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
         telemetry.h \
