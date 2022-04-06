@@ -41,6 +41,7 @@ Write-Output "Writing Artifacts"
 
 New-Item -Path $REPO_ROOT_PATH/artifacts -ItemType "directory"
 Copy-Item -Path windows/installer/x64/MozillaVPN.msi -Destination ./artifacts/MozillaVPN.msi
+Copy-Item -Path MozillaVPN.pdb -Destination ./artifacts/MozillaVPN.pdb
 
 Compress-Archive -Path unsigned/* -Destination $REPO_ROOT_PATH/artifacts/unsigned.zip
 
@@ -52,3 +53,7 @@ Get-ChildItem -Path $REPO_ROOT_PATH/artifacts
 Stop-Process -Name "mspdbsrv.exe" -Force -ErrorAction SilentlyContinue
 Stop-Process -Name "mspdbsrv" -Force -ErrorAction SilentlyContinue
 Stop-Process -Name "vctip.exe" -Force -ErrorAction SilentlyContinue
+
+Write-Output "Open Processes:"
+
+wmic process get description,executablepath 
