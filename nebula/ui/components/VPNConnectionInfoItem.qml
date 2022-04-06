@@ -45,9 +45,10 @@ RowLayout {
         id: itemLabel
         color: VPNTheme.theme.white
         text: infoStatusItem.title
-
+        
         Layout.alignment: Qt.AlignVCenter
         Layout.fillWidth: true
+        elide: Text.ElideRight
     }
 
     VPNInterLabel {
@@ -55,7 +56,8 @@ RowLayout {
 
         color: VPNTheme.colors.white
         text: infoStatusItem.subtitle
-
-        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+        horizontalAlignment: Text.AlignRight
+        
+        Layout.alignment: Qt.AlignRight | Qt. AlignVCenter
     }
 }
