@@ -43,7 +43,7 @@ VPNInAppAuthenticationBase {
                               VPNAuthInApp.signUp();
                           }
         _buttonText: VPNl18n.InAppAuthCreateAccountButton
-        _inputPlaceholderText: "Secure password"
+        _inputPlaceholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
     }
 
     _disclaimers: VPNInAppAuthenticationLegalDisclaimer {}

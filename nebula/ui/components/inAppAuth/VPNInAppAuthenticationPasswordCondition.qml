@@ -10,15 +10,20 @@ import components 0.1
 import components.forms 0.1
 
 RowLayout {
-
+    id: root
+    property alias _iconVisible: icon.visible
     property bool _passwordConditionIsSatisfied: false
     property alias _passwordConditionDescription: passwordConditionDescription.text
 
-    VPNIcon {
-        source: parent._passwordConditionIsSatisfied ? "qrc:/nebula/resources/check-green70.svg" : "qrc:/nebula/resources/x-red50.svg"
-        sourceSize.width: VPNTheme.theme.iconSize * 1.25
-        sourceSize.height: VPNTheme.theme.iconSize * 1.25
+    Rectangle {
+        Layout.preferredHeight: VPNTheme.theme.iconSize * 1.25
+        Layout.preferredWidth: VPNTheme.theme.iconSize * 1.25
         Layout.alignment: Qt.AlignTop
+        VPNIcon {
+            id: icon
+            source: root._passwordConditionIsSatisfied ? "qrc:/nebula/resources/check-green70.svg" : "qrc:/nebula/resources/x-red50.svg"
+            anchors.fill: parent
+        }
     }
 
     Text {

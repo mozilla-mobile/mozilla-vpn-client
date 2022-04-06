@@ -110,7 +110,7 @@ Popup {
     Overlay.modal: Rectangle {
         id: overlayBackground
 
-        color: "#4D000000"
+        color: VPNTheme.theme.overlayBackground
 
         Behavior on opacity {
             NumberAnimation {

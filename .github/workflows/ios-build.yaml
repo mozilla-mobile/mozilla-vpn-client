@@ -18,6 +18,8 @@ jobs:
   macos:
     name: iOS build
     runs-on: macos-latest
+    env:
+      QTVERSION: 6.2.4
 
     steps:
       - name: Clone repository
@@ -34,23 +36,21 @@ jobs:
         shell: bash
         run: |
           pip3 install aqtinstall
-          aqt install-qt -O `pwd`/qt_ios mac desktop 6.2.3 -m qtcharts qtwebsockets qt5compat
-          aqt install-qt -O `pwd`/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
-          mv `pwd`/qt_ios/6.2.3/macos `pwd`/qt_ios/6.2.3/clang_64
+          aqt install-qt -O `pwd`/qt_ios mac desktop $QTVERSION -m qtcharts qtwebsockets qt5compat
+          aqt install-qt -O `pwd`/qt_ios mac ios $QTVERSION -m qtcharts qtwebsockets qt5compat
+          mv `pwd`/qt_ios/$QTVERSION/macos `pwd`/qt_ios/$QTVERSION/clang_64
 
-      - name: Generating glean samples
+      - name: Python dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
 
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
-          export PATH=`pwd`/qt_ios/6.2.3/ios/bin:$PATH
+          export PATH=`pwd`/qt_ios/$QTVERSION/ios/bin:`pwd`/qt_ios/$QTVERSION/clang_64/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/utils/import_languages.py -m
+          python3 scripts/utils/import_languages.py -m -q "`pwd`/qt_ios/$QTVERSION/clang_64/bin"
 
       - name: Switch to newest go version
         shell: bash
@@ -62,9 +62,9 @@ jobs:
       - name: Configuring the build
         shell: bash
         run: |
-          export PATH=`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
-          export PATH=`pwd`/qt_ios/6.2.3/ios/bin:$PATH
-          export QT_IOS_BIN=`pwd`/qt_ios/6.2.3/ios/bin
+          export PATH=`pwd`/qt_ios/$QTVERSION/clang_64/bin:$PATH
+          export PATH=`pwd`/qt_ios/$QTVERSION/ios/bin:$PATH
+          export QT_IOS_BIN=`pwd`/qt_ios/$QTVERSION/ios/bin
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           cat > xcode.xconfig << EOF
@@ -77,14 +77,14 @@ jobs:
           echo `which qmake`
           echo `qmake -v`
           echo `$QT_IOS_BIN/qmake -v`
-          ./scripts/macos/apple_compile.sh ios
+          ./scripts/macos/apple_compile.sh ios -q "`pwd`/qt_ios/$QTVERSION/clang_64/bin"
 
       - name: Prebuilding Qt
         shell: bash
         run: |
-          make -f "Mozilla VPN.xcodeproj/qt_makeqmake.mak"
-          make -f "Mozilla VPN.xcodeproj/qt_preprocess.mak"
+          make -f "MozillaVPN.xcodeproj/qt_makeqmake.mak"
+          make -f "MozillaVPN.xcodeproj/qt_preprocess.mak"
 
       - name: Compiling
         shell: bash
-        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
+        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO -project "MozillaVPN.xcodeproj"

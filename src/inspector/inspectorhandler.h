@@ -19,7 +19,6 @@ class InspectorHandler : public QObject {
  public:
   static void initialize();
 
-  static void setLastUrl(const QUrl& url);
   static bool stealUrls();
   static QString appVersionForUpdate();
   static QString getObjectClass(const QObject* target);

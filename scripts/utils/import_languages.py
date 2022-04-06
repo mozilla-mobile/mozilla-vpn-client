@@ -24,6 +24,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     '-m', '--macos', default=False, action="store_true", dest="ismacos",
     help='Include the MacOS bundle data')
+parser.add_argument(
+    '-q', '--qt_path',  default=None, dest="qtpath",
+    help='The QT binary path. If not set, we try to guess.')
 args = parser.parse_args()
 
 def title(a, b):
@@ -41,7 +44,9 @@ def qtquery(qmake, propname):
         pass
     return None
 
-qtbinpath = qtquery('qmake', 'QT_INSTALL_BINS')
+qtbinpath = args.qtpath
+if qtbinpath is None:
+  qtbinpath = qtquery('qmake', 'QT_INSTALL_BINS')
 if qtbinpath is None:
     qtbinpath = qtquery('qmake6', 'QT_INSTALL_BINS')
 if qtbinpath is None:
@@ -52,8 +57,17 @@ if qtbinpath is None:
     print('Unable to locate qmake tool.')
     sys.exit(1)
 
+if not os.path.isdir(qtbinpath):
+    print(f"QT path is not a diretory: {qtbinpath}")
+    sys.exit(1)
+
 lupdate = os.path.join(qtbinpath, 'lupdate')
 lconvert = os.path.join(qtbinpath, 'lconvert')
+
+# Step 0
+# Let's update the i18n repo
+os.system(f"git submodule init")
+os.system(f"git submodule update --remote --depth 1 i18n")
 
 # Step 1
 # Go through the i18n repo, check each XLIFF file and take
@@ -163,3 +177,7 @@ for l10n_file in l10n_files:
     os.system(f"{lconvert} -i {l10n_file['ts']} -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
 
 print(f'Imported {len(l10n_files)} locales')
+
+git = os.popen(f'git submodule status i18n')
+git_commit_hash = git.read().strip().replace("+","").split(' ')[0]
+print(f'Current commit:  https://github.com/mozilla-l10n/mozilla-vpn-client-l10n/commit/{git_commit_hash}')

@@ -154,13 +154,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::settingsChanged);
 
-  connect(&m_private->m_controller, &Controller::stateChanged,
-          &m_private->m_connectionDataHolder,
-          &ConnectionDataHolder::stateChanged);
-
-  connect(this, &MozillaVPN::stateChanged, &m_private->m_connectionDataHolder,
-          &ConnectionDataHolder::stateChanged);
-
   if (FeatureInAppPurchase::instance()->isSupported()) {
     IAPHandler* iap = IAPHandler::createInstance();
     connect(iap, &IAPHandler::subscriptionStarted, this,
@@ -215,6 +208,12 @@ void MozillaVPN::initialize() {
   Q_ASSERT(m_state == StateInitialize);
 
   m_private->m_releaseMonitor.runSoon();
+
+  m_private->m_telemetry.initialize();
+
+  m_private->m_connectionBenchmark.initialize();
+
+  m_private->m_ipAddressLookup.initialize();
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
@@ -786,17 +785,22 @@ void MozillaVPN::createSupportTicket(const QString& email,
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
 
-  serializeLogs(out, [out, buffer, email, subject, issueText, category] {
+  serializeLogs(out, [this, out, buffer, email, subject, issueText, category] {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
     // buffer is getting copied by TaskCreateSupportTicket so we can delete it
     // afterwards
-    TaskScheduler::scheduleTask(new TaskCreateSupportTicket(
-        email, subject, issueText, *buffer, category));
-
+    Task* task = new TaskCreateSupportTicket(email, subject, issueText, *buffer,
+                                             category);
     delete buffer;
     delete out;
+
+    if (state() == StateAuthenticating && m_userState == UserNotAuthenticated) {
+      TaskScheduler::scheduleTaskNow(task);
+    } else {
+      TaskScheduler::scheduleTask(task);
+    }
   });
 }
 
@@ -1457,6 +1461,8 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   }
 
   iap->startSubscription(productIdentifier);
+
+  emit recordGleanEvent(GleanSample::iapSubscriptionStarted);
 }
 
 void MozillaVPN::restoreSubscriptionStarted() {
@@ -1465,6 +1471,8 @@ void MozillaVPN::restoreSubscriptionStarted() {
   setState(StateSubscriptionInProgress);
 
   IAPHandler::instance()->startRestoreSubscription();
+
+  emit recordGleanEvent(GleanSample::iapRestoreSubStarted);
 }
 
 void MozillaVPN::subscriptionCompleted() {
@@ -1487,6 +1495,8 @@ void MozillaVPN::subscriptionCompleted() {
   AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
 
+  emit recordGleanEvent(GleanSample::iapSubscriptionCompleted);
+
   completeActivation();
 }
 
@@ -1500,14 +1510,20 @@ void MozillaVPN::billingNotAvailable() {
 
 void MozillaVPN::subscriptionNotValidated() {
   setState(StateSubscriptionNotValidated);
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
+                                     {{"error", "not-validated"}});
 }
 
 void MozillaVPN::subscriptionFailed() {
   subscriptionFailedInternal(false /* canceled by user */);
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
+                                     {{"error", "failed"}});
 }
 
 void MozillaVPN::subscriptionCanceled() {
   subscriptionFailedInternal(true /* canceled by user */);
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
+                                     {{"error", "canceled"}});
 }
 
 void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
@@ -1551,8 +1567,12 @@ void MozillaVPN::alreadySubscribed() {
     return;
   }
 #endif
+
   logger.info() << "Setting state: Subscription Blocked";
   setState(StateSubscriptionBlocked);
+
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
+                                     {{"error", "alrady-subscribed"}});
 }
 
 void MozillaVPN::update() {
@@ -1688,6 +1708,7 @@ void MozillaVPN::hardResetAndQuit() {
 }
 
 void MozillaVPN::crashTest() {
+  logger.debug() << "Crashing Application";
   char* text = new char[100];
   delete[] text;
   delete[] text;

@@ -4,6 +4,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+QTVERSION=6.2.4
+
 # switch to repository directory for setup
 cd /Volumes/workspace/repository
 
@@ -14,6 +16,8 @@ git submodule update
 
 # add necessary directories to path
 export PATH=/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
+
+python3 -m pip install --upgrade pip
 
 if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
@@ -28,11 +32,11 @@ then
   export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 else
   pip3 install aqtinstall
-  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop 6.2.3 -m qtcharts qtwebsockets qt5compat
-  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
-  mv /Volumes/workspace/repository/qt_ios/6.2.3/macos /Volumes/workspace/repository/qt_ios/6.2.3/clang_64
-  export QT_IOS_BIN=`pwd`/qt_ios/6.2.3/ios/bin
-  export PATH=`pwd`/qt_ios/6.2.3/ios/bin:`pwd`/qt_ios/6.2.3/macos/bin:`pwd`/qt_ios/6.2.3/clang_64/bin:$PATH
+  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop $QTVERSION -m qtwebsockets qt5compat
+  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios $QTVERSION -m qtwebsockets qt5compat
+  mv /Volumes/workspace/repository/qt_ios/$QTVERSION/macos /Volumes/workspace/repository/qt_ios/$QTVERSION/clang_64
+  export QT_IOS_BIN=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin
+  export PATH=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin:/Volumes/workspace/repository/qt_ios/$QTVERSION/clang_64/bin:$PATH
 fi
 
 # install xcodeproj which is needed by xcode_patcher.rb
@@ -41,11 +45,7 @@ gem install xcodeproj --user-install
 
 # install python packages
 # use --user for permissions
-pip3 install "glean_parser==3.5" --user
-pip3 install pyhumps --user
-pip3 install pyyaml --user
-python3 scripts/utils/generate_glean.py
-python3 scripts/utils/import_languages.py -m
+pip3 install -r requirements.txt --user
 
 # install go and set GOROOT using brew
 # wget is currently not supported so we need to use brew
@@ -67,11 +67,5 @@ if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
   ./scripts/macos/apple_compile.sh macos
 else
-  ./scripts/macos/apple_compile.sh ios
+  ./scripts/macos/apple_compile.sh ios -q /Volumes/workspace/repository/qt_ios/$QTVERSION/clang_64/bin
 fi
-
-# build Qt resources
-# XCode Cloud has some problem with dependencies and timing therefore we have to
-# build Qt before we call xcodebuild
-make -f "Mozilla VPN.xcodeproj/qt_makeqmake.mak"
-make -f "Mozilla VPN.xcodeproj/qt_preprocess.mak"

@@ -21,7 +21,7 @@ Rectangle {
 
     anchors.fill: itemToAnchor
     antialiasing: true
-    color: "transparent"
+    color: VPNTheme.theme.transparent
     radius: VPNTheme.theme.cornerRadius
     z: -1
     states: [

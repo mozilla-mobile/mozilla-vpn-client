@@ -32,7 +32,6 @@ SOURCES += \
         connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
         connectionbenchmark/connectionbenchmark.cpp \
-        connectiondataholder.cpp \
         connectionhealth.cpp \
         constants.cpp \
         controller.cpp \
@@ -58,6 +57,7 @@ SOURCES += \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
+        ipaddresslookup.cpp \
         itempicker.cpp \
         l18nstringsimpl.cpp \
         leakdetector.cpp \
@@ -124,6 +124,7 @@ SOURCES += \
         tasks/servers/taskservers.cpp \
         tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
+        telemetry.cpp \
         theme.cpp \
         timersingleshot.cpp \
         tutorial.cpp \
@@ -162,8 +163,8 @@ HEADERS += \
         connectionbenchmark/benchmarktask.h \
         connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \
+        connectionbenchmark/benchmarktasksentinel.h \
         connectionbenchmark/connectionbenchmark.h \
-        connectiondataholder.h \
         connectionhealth.h \
         constants.h \
         controller.h \
@@ -202,6 +203,7 @@ HEADERS += \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
+        ipaddresslookup.h \
         itempicker.h \
         leakdetector.h \
         localizer.h \
@@ -268,6 +270,7 @@ HEADERS += \
         tasks/servers/taskservers.h \
         tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
+        telemetry.h \
         theme.h \
         timersingleshot.h \
         tutorial.h \

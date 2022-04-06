@@ -411,9 +411,9 @@ describe('Settings', function() {
   it('Checking the logout', async () => {
     await vpn.waitForElement('settingsLogout');
     await vpn.waitForElementProperty('settingsLogout', 'visible', 'true');
-    // TODO - Should be able to click on SignOut and observe
-    // the signout, but the next line doesn't work
-    // await vpn.clickOnElement('settingsLogout');
-    // await vpn.waitForMainView();
+    await vpn.scrollToElement('settingsView', 'settingsLogout');
+
+    await vpn.clickOnElement('settingsLogout');
+    await vpn.waitForMainView();
   });
 });

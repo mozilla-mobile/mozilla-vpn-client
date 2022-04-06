@@ -25,7 +25,7 @@ jobs:
           - {name: "arm64_v8a", qmake: "arm64-v8a"}
           - {name: "x86" , qmake: "x86"}
           - {name: "x86_64", qmake: "x86_64"}
-        version: ["6.2.1"]
+        version: ["6.2.4"]
     container:
       image: ghcr.io/strseb/vpn-builder-android:android_${{matrix.arch.name}}_${{matrix.version}}
     steps:
@@ -52,9 +52,16 @@ jobs:
           AUTOGRAPH_TOKEN: ${{ secrets.AUTOGRAPH_KEY }}
         run: |
           bash ./scripts/android/sign.sh ${{ matrix.config.apk }}
-          rm ${{ matrix.config.apk }}/*unsigned.apk
-      - name: Upload APK${{ matrix.config.args }}
+
+      - name: Upload Signed APK${{ matrix.config.args }}
         uses: actions/upload-artifact@v1
+        if: ${{ matrix.config.sign }}
+        with:
+            name: ${{matrix.arch.name}}_${{ matrix.config.name }}
+            path: ${{ matrix.config.apk }}/android-build-${{ matrix.arch.qmake }}-release-signed.apk
+      - name: Upload Unsigned APK${{ matrix.config.args }}
+        uses: actions/upload-artifact@v1
+        if: matrix.config.sign == false
         with:
             name: ${{matrix.arch.name}}_${{ matrix.config.name }}
             path: ${{ matrix.config.apk }}

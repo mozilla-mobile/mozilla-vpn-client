@@ -8,8 +8,6 @@ InspectorHandler::InspectorHandler(QObject*) {}
 
 InspectorHandler::~InspectorHandler() = default;
 
-void InspectorHandler::setLastUrl(const QUrl&) {}
-
 bool InspectorHandler::stealUrls() { return false; }
 
 QString InspectorHandler::appVersionForUpdate() { return "42"; }

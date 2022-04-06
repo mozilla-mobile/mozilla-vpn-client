@@ -4,7 +4,7 @@
 python3 scripts/tooltool.py --url http://taskcluster/tooltool.mozilla-releng.net fetch -m macos/qt-dependencies.tt.manifest
 export PATH="`pwd`/qt/bin:$PATH"
 # TODO: internal pypi mirror, if it doesn't get used by default?
-pip3 install glean_parser==3.5
+pip3 install glean_parser
 
 # Xcode config - maybe we should just maintain a full Xcode config somewhere instead of replacing things here?
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )

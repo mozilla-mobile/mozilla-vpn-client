@@ -11,7 +11,6 @@ import Mozilla.VPN 1.0
 Flickable {
     id: root
 
-    contentHeight: Math.max(content.height, height)
     height: parent.height
     width: parent.width
     onVisibleChanged: {
@@ -22,6 +21,10 @@ Flickable {
             speedometerAnimation.stop();
             checkmarkListModel.clear();
         }
+    }
+
+    Component.onCompleted: {
+        root.contentHeight = Qt.binding(() => Math.max(content.height, root.height));
     }
 
     ListModel {
@@ -47,9 +50,9 @@ Flickable {
             //: The abbreviation for Internet Protocol. This is followed by the user’s IP address.
             property var iplabel: qsTrId("vpn.connectionInfo.ip2")
 
-            ipVersionText: VPNConnectionData.ipv6Address === "" ? iplabel : ipv4label;
-            ipAddressText: VPNConnectionData.ipv4Address
-            visible: VPNConnectionData.ipv4Address !== ""
+            ipVersionText: VPNIPAddressLookup.ipv6Address === "" ? iplabel : ipv4label;
+            ipAddressText: VPNIPAddressLookup.ipv4Address
+            visible: VPNIPAddressLookup.ipv4Address !== ""
 
             Layout.alignment: Qt.AlignHCenter
             Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
@@ -57,11 +60,11 @@ Flickable {
         }
 
         VPNIPAddress {
-            visible: VPNConnectionData.ipv6Address !== ""
+            visible: VPNIPAddressLookup.ipv6Address !== ""
             //% "IPv6:"
             //: The abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
             ipVersionText: qsTrId("vpn.connectionInfo.ipv6")
-            ipAddressText: VPNConnectionData.ipv6Address
+            ipAddressText: VPNIPAddressLookup.ipv6Address
 
             Layout.alignment: Qt.AlignHCenter
             Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
@@ -75,6 +78,7 @@ Flickable {
 
             VPNLottieAnimation {
                 id: speedometerAnimation
+                loop: false
                 source: ":/nebula/resources/animations/speedometer_animation.json"
             }
         }
@@ -120,7 +124,7 @@ Flickable {
 
             VPNConnectionInfoItem {
                 title: VPNl18n.ConnectionInfoLabelPing
-                subtitle: VPNConnectionBenchmark.ping + " " + VPNl18n.ConnectionInfoUnitPing
+                subtitle: VPNConnectionBenchmark.pingLatency + " " + VPNl18n.ConnectionInfoUnitPing
                 iconPath: "qrc:/nebula/resources/connection-green.svg"
             }
 
@@ -135,16 +139,13 @@ Flickable {
             VPNConnectionInfoItem {
                 //% "Download"
                 title: qsTrId("vpn.connectionInfo.download")
-                subtitle: root.getConnectionLabel(VPNConnectionBenchmark.download)
+                subtitle: root.getConnectionLabel(VPNConnectionBenchmark.bitsPerSec)
                 iconPath: "qrc:/nebula/resources/download.svg"
             }
-
         }
-
     }
 
-    function getConnectionLabel(connectionValue) {
-        const connectionValueBits = connectionValue * 8; // convert bytes to bits
+    function getConnectionLabel(connectionValueBits) {
         return `${computeValue(connectionValueBits)} ${computeRange(connectionValueBits)}`;
     }
 

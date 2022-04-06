@@ -9,11 +9,11 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
 #include "connectionbenchmark/connectionbenchmark.h"
-#include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "constants.h"
 #include "controller.h"
 #include "errorhandler.h"
+#include "ipaddresslookup.h"
 #include "models/devicemodel.h"
 #include "models/feedbackcategorymodel.h"
 #include "models/helpmodel.h"
@@ -28,6 +28,7 @@
 #include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
+#include "telemetry.h"
 #include "theme.h"
 
 #include <QList>
@@ -132,6 +133,8 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
   Q_PROPERTY(QString currentView READ currentView WRITE setCurrentView NOTIFY
                  currentViewChanged)
+  Q_PROPERTY(
+      QString lastUrl READ lastUrl WRITE setLastUrl NOTIFY lastUrlChanged)
 
  public:
   MozillaVPN();
@@ -207,9 +210,6 @@ class MozillaVPN final : public QObject {
   ConnectionBenchmark* connectionBenchmark() {
     return &m_private->m_connectionBenchmark;
   }
-  ConnectionDataHolder* connectionDataHolder() {
-    return &m_private->m_connectionDataHolder;
-  }
   ConnectionHealth* connectionHealth() {
     return &m_private->m_connectionHealth;
   }
@@ -219,6 +219,7 @@ class MozillaVPN final : public QObject {
   FeedbackCategoryModel* feedbackCategoryModel() {
     return &m_private->m_feedbackCategoryModel;
   }
+  IpAddressLookup* ipAddressLookup() { return &m_private->m_ipAddressLookup; }
   SupportCategoryModel* supportCategoryModel() {
     return &m_private->m_supportCategoryModel;
   }
@@ -232,6 +233,7 @@ class MozillaVPN final : public QObject {
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
+  Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
   WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
   User* user() { return &m_private->m_user; }
@@ -319,6 +321,12 @@ class MozillaVPN final : public QObject {
   void setCurrentView(const QString& name) {
     m_currentView = name;
     emit currentViewChanged();
+  }
+
+  const QString& lastUrl() const { return m_lastUrl; }
+  void setLastUrl(const QString& url) {
+    m_lastUrl = url;
+    emit lastUrlChanged();
   }
 
   void createTicketAnswerRecieved(bool successful) {
@@ -409,6 +417,7 @@ class MozillaVPN final : public QObject {
   void logsReady(const QString& logs);
 
   void currentViewChanged();
+  void lastUrlChanged();
 
   void ticketCreationAnswer(bool successful);
 
@@ -421,11 +430,11 @@ class MozillaVPN final : public QObject {
     CaptivePortalDetection m_captivePortalDetection;
     CloseEventHandler m_closeEventHandler;
     ConnectionBenchmark m_connectionBenchmark;
-    ConnectionDataHolder m_connectionDataHolder;
     ConnectionHealth m_connectionHealth;
     Controller m_controller;
     DeviceModel m_deviceModel;
     FeedbackCategoryModel m_feedbackCategoryModel;
+    IpAddressLookup m_ipAddressLookup;
     SupportCategoryModel m_supportCategoryModel;
     Keys m_keys;
     LicenseModel m_licenseModel;
@@ -436,6 +445,7 @@ class MozillaVPN final : public QObject {
     ServerData m_serverData;
     StatusIcon m_statusIcon;
     SurveyModel m_surveyModel;
+    Telemetry m_telemetry;
     Theme m_theme;
     WhatsNewModel m_whatsNewModel;
     User m_user;
@@ -446,6 +456,7 @@ class MozillaVPN final : public QObject {
   State m_state = StateInitialize;
   AlertType m_alert = NoAlert;
   QString m_currentView;
+  QString m_lastUrl;
 
   UserState m_userState = UserNotAuthenticated;
 

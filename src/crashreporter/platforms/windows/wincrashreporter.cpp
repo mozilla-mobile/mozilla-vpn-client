@@ -41,16 +41,28 @@ bool WinCrashReporter::start(int argc, char* argv[]) {
   QDir dumpRoot(appLocal);
   QStringList filters = {"*.dmp"};
   dumpRoot.setNameFilters(filters);
-  auto dumpFiles = dumpRoot.entryList();
   QStringList absDumpPaths;
-  for (auto file : dumpFiles) {
-    absDumpPaths << dumpRoot.absoluteFilePath(file);
+
+  // In case the dump has not been written, retry 5 times
+  // with an increasing sleep interval
+  for (int i = 1; i < 6; i++) {
+    auto dumpFiles = dumpRoot.entryList();
+    if (dumpFiles.empty()) {
+      if (i < 5) {
+        Sleep(i * 1000);
+      }
+    } else {
+      for (auto file : dumpFiles) {
+        absDumpPaths << dumpRoot.absoluteFilePath(file);
+      }
+      break;
+    }
   }
+
   if (absDumpPaths.empty()) {
     logger.info() << "No dump files found.";
     return false;
   }
-
   connect(this, &CrashReporter::startUpload, this,
           [this, absDumpPaths]() { m_uploader->startUploads(absDumpPaths); });
   connect(this, &CrashReporter::cleanup, this,

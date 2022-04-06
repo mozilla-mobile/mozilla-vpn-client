@@ -25,10 +25,13 @@ jobs:
 
       - name: Install Linux packages
         run: |
-          # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
-          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
+          # Add external PPA for Qt6 support on Ubuntu 20.04
+          sudo add-apt-repository ppa:okirby/qt6-backports
           sudo apt update
-          sudo apt install git qt515base qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev qt515quickcontrols2 qt515imageformats qt515graphicaleffects  qt515websockets qt515declarative jp2a xvfb firefox wget -y
+
+          # Download the build and runtime package dependencies.
+          sudo apt-get install -y \
+               $(./scripts/linux/getdeps.py -a linux/debian/control.qt6)
 
       - name: Checkout submodules
         shell: bash
@@ -46,18 +49,13 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          # Manually add QT executables to path
-          export PATH=/opt/qt515/bin:$PATH
-          git submodule update --remote --depth 1 i18n
           python3 scripts/utils/import_languages.py
 
       - name: Compile
         shell: bash
         run: |
-          # Manually add QT executables to path
-          export PATH=/opt/qt515/bin:$PATH
-          qmake CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug CONFIG+=inspector QT+=svg
-          make -j8
+          qmake6 CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug CONFIG+=inspector QT+=svg
+          make -j$(nproc)
 
       - name: Install geckodriver
         run: |

@@ -27,6 +27,7 @@ QMAKE_BUNDLE = "FirefoxVPN"
 CONFIG += c++1z
 
 # For the loginitem
+LIBS += -framework SystemConfiguration
 LIBS += -framework ServiceManagement
 LIBS += -framework Security
 LIBS += -framework CoreWLAN
@@ -44,6 +45,7 @@ SOURCES += \
     platforms/macos/daemon/macosdaemonserver.cpp \
     platforms/macos/daemon/macosroutemonitor.cpp \
     platforms/macos/daemon/wireguardutilsmacos.cpp \
+    platforms/macos/macosauthenticationlistener.cpp \
     platforms/macos/macosmenubar.cpp \
     platforms/macos/macospingsender.cpp \
     platforms/macos/macosstartatbootwatcher.cpp \
@@ -71,6 +73,7 @@ HEADERS += \
     platforms/macos/daemon/macosdaemonserver.h \
     platforms/macos/daemon/macosroutemonitor.h \
     platforms/macos/daemon/wireguardutilsmacos.h \
+    platforms/macos/macosauthenticationlistener.h \
     platforms/macos/macosmenubar.h \
     platforms/macos/macospingsender.h \
     platforms/macos/macosstartatbootwatcher.h \

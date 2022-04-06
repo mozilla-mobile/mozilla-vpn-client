@@ -88,7 +88,7 @@ VPNButtonBase {
 
     background: Rectangle {
         id: backgroundRect
-        color: "transparent"
+        color: VPNTheme.theme.transparent
     }
 
     contentItem: Label {

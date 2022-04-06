@@ -15,10 +15,11 @@ OS=
 NETWORKEXTENSION=
 ADJUST_SDK_TOKEN=
 ADJUST="CONFIG-=adjust"
+QTBINPATH=
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios|> [-d|--debug] [-a|--adjusttoken <adjust_token>]"
+  print N "\t$0 <macos|ios|> [-d|--debug] [-a|--adjusttoken <adjust_token>] [-q|--qtbin <qtbinpath>]"
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N ""
@@ -46,6 +47,11 @@ while [[ $# -gt 0 ]]; do
     ;;
   -d | --debug)
     RELEASE=
+    shift
+    ;;
+  -q | --qtbinpath)
+    QTBINPATH="$2"
+    shift
     shift
     ;;
   -h | --help)
@@ -123,7 +129,7 @@ export PATH="$QT_BIN:$PATH"
 
 if [[ "$OS" == "ios" ]]; then
   printn Y "Retrieve the wireguard-go version... "
-  (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
+  (cd ios/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > ios/gobridge/wireguard-go-version.h
   print G "done."
 fi
 
@@ -132,8 +138,7 @@ rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"
 print G "done."
 
 print Y "Importing translation files..."
-git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
-python3 scripts/utils/import_languages.py $([[ "$OS" = "macos" ]] && echo "-m" || echo "") || die "Failed to import languages"
+python3 scripts/utils/import_languages.py $([[ $QTBINPATH ]] && echo "-q $QTBINPATH") $([[ "$OS" = "macos" ]] && echo "-m" || echo "") || die "Failed to import languages"
 
 print Y "Generating glean samples..."
 python3 scripts/utils/generate_glean.py || die "Failed to generate glean samples"
@@ -188,16 +193,19 @@ $QMAKE \
   $ADJUST \
   src/src.pro || die "Compilation failed"
 
+PROJECT="Mozilla VPN.xcodeproj"
+[[ "$OS" = "ios" ]] && PROJECT="MozillaVPN.xcodeproj"
+
 print Y "Patching the xcode project..."
-ruby scripts/macos/utils/xcode_patcher.rb "Mozilla VPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
+ruby scripts/macos/utils/xcode_patcher.rb "$PROJECT" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 
 if command -v "sed" &>/dev/null; then
-  sed -i '' '/<key>BuildSystemType<\/key>/d' "Mozilla VPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings"
-  sed -i '' '/<string>Original<\/string>/d' "Mozilla VPN.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings"
+  sed -i '' '/<key>BuildSystemType<\/key>/d' "$PROJECT/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings"
+  sed -i '' '/<string>Original<\/string>/d' "$PROJECT/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings"
 fi
 
 print Y "Opening in XCode..."
-open "Mozilla VPN.xcodeproj"
+open "$PROJECT"
 print G "All done!"

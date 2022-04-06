@@ -2,7 +2,6 @@
  {
   "countryCode": "au",
   "languages": {
-   "bg": "Австралия",
    "cy": "Awstralia",
    "de": "Australien",
    "dsb": "Awstralska",
@@ -11,9 +10,10 @@
    "fy_NL": "Austraalje",
    "hsb": "Awstralska",
    "hu": "Ausztrália",
+   "is": "Ástralía",
    "ja": "オーストラリア",
    "nl": "Australië",
-   "oc": "Austràlia",
+   "pa_IN": "ਆਸਟ੍ਰੇਲੀਆ",
    "pt_BR": "Austrália",
    "ru": "Австралия",
    "sk": "Austrália",
@@ -25,47 +25,51 @@
    {
     "city": "Melbourne",
     "languages": {
-     "bg": "Мелбърн",
      "el": "Μελβούρνη",
      "ja": "メルボルン",
+     "pa_IN": "ਮੈਲਬਰਨ",
      "ru": "Мельбурн",
      "sq": "Melburni",
      "uk": "Мельбурн",
      "zh_TW": "墨爾本"
-    }
+    },
+    "wikiDataID": "Q3141"
    },
    {
     "city": "Sydney",
     "languages": {
-     "bg": "Сидни",
      "el": "Σίδνεϊ",
      "es_AR": "Sídney",
      "es_CL": "Sídney",
      "es_ES": "Sídney",
      "es_MX": "Sídney",
      "ja": "シドニー",
+     "pa_IN": "ਸਿਡਨੀ",
      "ru": "Сидней",
      "uk": "Сідней",
      "zh_TW": "雪梨"
-    }
+    },
+    "wikiDataID": "Q3130"
    }
-  ]
+  ],
+  "wikiDataID": "Q408"
  },
  {
   "countryCode": "at",
   "languages": {
-   "bg": "Австрия",
    "cy": "Awstria",
    "de": "Österreich",
    "dsb": "Awstriska",
    "el": "Αυστρία",
+   "fi": "Itävalta",
    "fr": "Autriche",
    "fy_NL": "Eastenryk",
    "hsb": "Awstriska",
    "hu": "Ausztria",
+   "is": "Austurríki",
    "ja": "オーストリア",
    "nl": "Oostenrijk",
-   "oc": "Àustria",
+   "pa_IN": "ਆਸਟਰੀਆ",
    "pt_BR": "Áustria",
    "ru": "Австрия",
    "sk": "Rakúsko",
@@ -77,7 +81,6 @@
    {
     "city": "Vienna",
     "languages": {
-     "bg": "Виена",
      "cy": "Fienna",
      "de": "Wien",
      "dsb": "Wien",
@@ -86,14 +89,16 @@
      "es_CL": "Viena",
      "es_ES": "Viena",
      "es_MX": "Viena",
+     "fi": "Wien",
      "fr": "Vienne",
      "fy_NL": "Wenen",
      "hsb": "Wien",
      "hu": "Bécs",
      "id": "Wina",
+     "is": "Vín",
      "ja": "ウィーン",
      "nl": "Wenen",
-     "oc": "Viena",
+     "pa_IN": "ਵਿਆਨਾ",
      "pt_BR": "Viena",
      "ru": "Вена",
      "sk": "Viedeň",
@@ -101,15 +106,16 @@
      "sv_SE": "Wien",
      "uk": "Відень",
      "zh_TW": "維也納"
-    }
+    },
+    "wikiDataID": "Q1741"
    }
-  ]
+  ],
+  "wikiDataID": "Q40"
  },
  {
   "countryCode": "be",
   "languages": {
-   "bg": "Белгия",
-   "co": "Belgica",
+   "co": "Belghju",
    "cy": "Gwlad Belg",
    "de": "Belgien",
    "dsb": "Belgiska",
@@ -118,15 +124,17 @@
    "es_CL": "Bélgica",
    "es_ES": "Bélgica",
    "es_MX": "Bélgica",
+   "fi": "Belgia",
    "fr": "Belgique",
    "fy_NL": "Belgje",
    "hsb": "Belgiska",
    "ia": "Belgica",
    "id": "Belgia",
+   "is": "Belgía",
    "it": "Belgio",
    "ja": "ベルギー",
    "nl": "België",
-   "oc": "Belgica",
+   "pa_IN": "ਬੈਲਜੀਅਮ",
    "pt_BR": "Bélgica",
    "ru": "Бельгия",
    "sk": "Belgicko",
@@ -139,43 +147,44 @@
    {
     "city": "Brussels",
     "languages": {
-     "bg": "Брюксел",
      "co": "Bruxelles",
      "cy": "Dinas Brwsel",
      "de": "Brüssel",
      "el": "Βρυξέλλες",
-     "en": "Brussels",
-     "en_CA": "Brussels",
-     "en_GB": "Brussels",
+     "en": "City of Brussels",
+     "en_CA": "City of Brussels",
+     "en_GB": "City of Brussels",
      "es_AR": "Bruselas",
      "es_CL": "Bruselas",
      "es_ES": "Bruselas",
      "es_MX": "Bruselas",
+     "fi": "Bryssel",
      "fr": "Bruxelles",
      "fy_NL": "Brussel",
      "hsb": "Brüssel",
      "hu": "Brüsszel",
      "ia": "Brussel",
      "id": "Brussel",
+     "is": "Brussel",
      "it": "Bruxelles",
      "ja": "ブリュッセル＝ヴィル",
      "nl": "Brussel",
-     "oc": "Brussèlas",
-     "pt_BR": "Bruxelas",
+     "pt_BR": "Cidade de Bruxelas",
      "ru": "Брюссель",
      "sk": "Brusel",
      "sq": "Brukseli",
      "sv_SE": "Bryssel",
      "uk": "Брюссель",
      "zh_TW": "布魯塞爾市"
-    }
+    },
+    "wikiDataID": "Q239"
    }
-  ]
+  ],
+  "wikiDataID": "Q31"
  },
  {
   "countryCode": "br",
   "languages": {
-   "bg": "Бразилия",
    "co": "Brasile",
    "cy": "Brasil",
    "de": "Brasilien",
@@ -185,16 +194,18 @@
    "es_CL": "Brasil",
    "es_ES": "Brasil",
    "es_MX": "Brasil",
+   "fi": "Brasilia",
    "fr": "Brésil",
    "fy_NL": "Brazylje",
    "hsb": "Brazilska",
    "hu": "Brazília",
    "ia": "Brasil",
    "id": "Brasil",
+   "is": "Brasilía",
    "it": "Brasile",
    "ja": "ブラジル",
    "nl": "Brazilië",
-   "oc": "Brasil",
+   "pa_IN": "ਬ੍ਰਾਜ਼ੀਲ",
    "pt_BR": "Brasil",
    "ru": "Бразилия",
    "sk": "Brazília",
@@ -207,7 +218,6 @@
    {
     "city": "Sao Paulo",
     "languages": {
-     "bg": "Сао Пауло",
      "co": "São Paulo",
      "cy": "São Paulo",
      "de": "São Paulo",
@@ -220,16 +230,18 @@
      "es_CL": "San Pablo",
      "es_ES": "San Pablo",
      "es_MX": "San Pablo",
+     "fi": "São Paulo",
      "fr": "São Paulo",
      "fy_NL": "São Paulo",
      "hsb": "São Paulo",
      "hu": "São Paulo",
      "ia": "São Paulo",
      "id": "São Paulo",
+     "is": "São Paulo",
      "it": "San Paolo",
      "ja": "サンパウロ",
      "nl": "São Paulo",
-     "oc": "São Paulo",
+     "pa_IN": "ਸਾਓ ਪਾਓਲੋ",
      "pt_BR": "São Paulo",
      "ru": "Сан-Паулу",
      "sk": "São Paulo",
@@ -237,14 +249,15 @@
      "sv_SE": "São Paulo",
      "uk": "Сан-Паулу",
      "zh_TW": "聖保羅"
-    }
+    },
+    "wikiDataID": "Q174"
    }
-  ]
+  ],
+  "wikiDataID": "Q155"
  },
  {
   "countryCode": "bg",
   "languages": {
-   "bg": "България",
    "cy": "Bwlgaria",
    "de": "Bulgarien",
    "dsb": "Bulgaŕska",
@@ -253,8 +266,10 @@
    "fy_NL": "Bulgarije",
    "hsb": "Bołharska",
    "hu": "Bulgária",
+   "is": "Búlgaría",
    "ja": "ブルガリア",
    "nl": "Bulgarije",
+   "pa_IN": "ਬਲਜੈਰੀਆ",
    "pt_BR": "Bulgária",
    "ru": "Болгария",
    "sk": "Bulharsko",
@@ -267,7 +282,6 @@
    {
     "city": "Sofia",
     "languages": {
-     "bg": "София",
      "dsb": "Sofija",
      "el": "Σόφια",
      "es_AR": "Sofía",
@@ -276,21 +290,23 @@
      "es_MX": "Sofía",
      "hsb": "Sofija",
      "hu": "Szófia",
+     "is": "Sófía",
      "ja": "ソフィア",
-     "oc": "Sòfia",
+     "pa_IN": "ਸੋਫ਼ੀਆ",
      "pt_BR": "Sófia",
      "ru": "София",
      "sq": "Sofja",
      "uk": "Софія",
      "zh_TW": "索菲亞"
-    }
+    },
+    "wikiDataID": "Q472"
    }
-  ]
+  ],
+  "wikiDataID": "Q219"
  },
  {
   "countryCode": "ca",
   "languages": {
-   "bg": "Канада",
    "co": "Canadà",
    "de": "Kanada",
    "dsb": "Kanada",
@@ -299,12 +315,14 @@
    "es_CL": "Canadá",
    "es_ES": "Canadá",
    "es_MX": "Canadá",
+   "fi": "Kanada",
    "fy_NL": "Kanada",
    "hsb": "Kanada",
    "hu": "Kanada",
    "id": "Kanada",
+   "is": "Kanada",
    "ja": "カナダ",
-   "oc": "Canadà",
+   "pa_IN": "ਕੈਨੇਡਾ",
    "pt_BR": "Canadá",
    "ru": "Канада",
    "sk": "Kanada",
@@ -317,38 +335,55 @@
    {
     "city": "Montreal",
     "languages": {
-     "bg": "Монреал",
      "co": "Montréal",
      "cy": "Montréal",
      "el": "Μόντρεαλ",
      "fr": "Montréal",
      "hu": "Montréal",
+     "is": "Montréal",
      "it": "Montréal",
      "ja": "モントリオール",
+     "pa_IN": "ਮੋਨਟਰਿਆਲ",
      "ru": "Монреаль",
      "sq": "Montreali",
      "sv_SE": "Montréal",
      "uk": "Монреаль",
      "zh_TW": "蒙特婁"
-    }
+    },
+    "wikiDataID": "Q340"
    },
    {
     "city": "Toronto",
     "languages": {
-     "bg": "Торонто",
      "el": "Τορόντο",
+     "is": "Torontó",
      "ja": "トロント",
+     "pa_IN": "ਟੋਰਾਂਟੋ",
      "ru": "Торонто",
      "uk": "Торонто",
      "zh_TW": "多倫多"
+    },
+    "wikiDataID": "Q172"
+   },
+   {
+    "wikiDataID": "Q24639",
+    "city": "Vancouver",
+    "languages": {
+     "el": "Βανκούβερ",
+     "fy_NL": "Fankoever",
+     "ja": "バンクーバー",
+     "pa_IN": "ਵੈਨਕੂਵਰ",
+     "ru": "Ванкувер",
+     "uk": "Ванкувер",
+     "zh_TW": "溫哥華"
     }
    }
-  ]
+  ],
+  "wikiDataID": "Q16"
  },
  {
   "countryCode": "cz",
   "languages": {
-   "bg": "Чехия",
    "co": "Cechia",
    "cy": "Y Weriniaeth Tsiec",
    "de": "Tschechien",
@@ -358,16 +393,18 @@
    "es_CL": "República Checa",
    "es_ES": "República Checa",
    "es_MX": "República Checa",
+   "fi": "Tšekki",
    "fr": "Tchéquie",
    "fy_NL": "Tsjechje",
    "hsb": "Čěska",
    "hu": "Csehország",
    "ia": "Republica Chec",
    "id": "Republik Ceko",
+   "is": "Tékkland",
    "it": "Repubblica Ceca",
    "ja": "チェコ",
    "nl": "Tsjechië",
-   "oc": "Republica Chèca",
+   "pa_IN": "ਚੈੱਕ ਗਣਰਾਜ",
    "pt_BR": "Tchéquia",
    "ru": "Чехия",
    "sk": "Česko",
@@ -380,7 +417,6 @@
    {
     "city": "Prague",
     "languages": {
-     "bg": "Прага",
      "co": "Praga",
      "cy": "Prag",
      "de": "Prag",
@@ -390,15 +426,17 @@
      "es_CL": "Praga",
      "es_ES": "Praga",
      "es_MX": "Praga",
+     "fi": "Praha",
      "fy_NL": "Praach",
      "hsb": "Praha",
      "hu": "Prága",
      "ia": "Praga",
      "id": "Praha",
+     "is": "Prag",
      "it": "Praga",
      "ja": "プラハ",
      "nl": "Praag",
-     "oc": "Praga",
+     "pa_IN": "ਪ੍ਰਾਗ",
      "pt_BR": "Praga",
      "ru": "Прага",
      "sk": "Praha",
@@ -406,14 +444,15 @@
      "sv_SE": "Prag",
      "uk": "Прага",
      "zh_TW": "布拉格"
-    }
+    },
+    "wikiDataID": "Q1085"
    }
-  ]
+  ],
+  "wikiDataID": "Q213"
  },
  {
   "countryCode": "dk",
   "languages": {
-   "bg": "Дания",
    "co": "Danimarca",
    "cy": "Denmarc",
    "de": "Dänemark",
@@ -423,15 +462,17 @@
    "es_CL": "Dinamarca",
    "es_ES": "Dinamarca",
    "es_MX": "Dinamarca",
+   "fi": "Tanska",
    "fr": "Danemark",
    "fy_NL": "Denemark",
    "hsb": "Danska",
    "hu": "Dánia",
    "ia": "Danmark",
+   "is": "Danmörk",
    "it": "Danimarca",
    "ja": "デンマーク",
    "nl": "Denemarken",
-   "oc": "Danemarc",
+   "pa_IN": "ਡੈੱਨਮਾਰਕ",
    "pt_BR": "Dinamarca",
    "ru": "Дания",
    "sk": "Dánsko",
@@ -444,7 +485,6 @@
    {
     "city": "Copenhagen",
     "languages": {
-     "bg": "Копенхаген",
      "co": "Copenaghen",
      "de": "Kopenhagen",
      "dsb": "Kopenhagen",
@@ -453,15 +493,17 @@
      "es_CL": "Copenhague",
      "es_ES": "Copenhague",
      "es_MX": "Copenhague",
+     "fi": "Kööpenhamina",
      "fr": "Copenhague",
      "fy_NL": "Kopenhagen",
      "hsb": "Kopenhagen",
      "hu": "Koppenhága",
      "id": "Kopenhagen",
+     "is": "Kaupmannahöfn",
      "it": "Copenaghen",
      "ja": "コペンハーゲン",
      "nl": "Kopenhagen",
-     "oc": "Copenaga",
+     "pa_IN": "ਕੋਪਨਹੈਗਨ",
      "pt_BR": "Copenhague",
      "ru": "Копенгаген",
      "sk": "Kodaň",
@@ -469,24 +511,27 @@
      "sv_SE": "Köpenhamn",
      "uk": "Копенгаген",
      "zh_TW": "哥本哈根"
-    }
+    },
+    "wikiDataID": "Q1748"
    }
-  ]
+  ],
+  "wikiDataID": "Q35"
  },
  {
   "countryCode": "ee",
   "languages": {
-   "bg": "Естония",
    "de": "Estland",
    "dsb": "Estniska",
    "el": "Εσθονία",
+   "fi": "Viro",
    "fr": "Estonie",
    "fy_NL": "Estlân",
    "hsb": "Estiska",
    "hu": "Észtország",
+   "is": "Eistland",
    "ja": "エストニア",
    "nl": "Estland",
-   "oc": "Estònia",
+   "pa_IN": "ਏਸਟੋਨੀਆ",
    "pt_BR": "Estônia",
    "ru": "Эстония",
    "sk": "Estónsko",
@@ -498,26 +543,28 @@
    {
     "city": "Tallinn",
     "languages": {
-     "bg": "Талин",
      "el": "Τάλιν",
      "es_AR": "Tallin",
      "es_CL": "Tallin",
      "es_ES": "Tallin",
      "es_MX": "Tallin",
+     "fi": "Tallinna",
      "fy_NL": "Tallin",
      "ja": "タリン",
+     "pa_IN": "ਤਾਲਿਨ",
      "ru": "Таллин",
      "sq": "Talini",
      "uk": "Таллінн",
      "zh_TW": "塔林"
-    }
+    },
+    "wikiDataID": "Q1770"
    }
-  ]
+  ],
+  "wikiDataID": "Q191"
  },
  {
   "countryCode": "fi",
   "languages": {
-   "bg": "Финландия",
    "co": "Finlandia",
    "cy": "Y Ffindir",
    "de": "Finnland",
@@ -527,15 +574,17 @@
    "es_CL": "Finlandia",
    "es_ES": "Finlandia",
    "es_MX": "Finlandia",
+   "fi": "Suomi",
    "fr": "Finlande",
    "fy_NL": "Finlân",
    "hsb": "Finska",
    "hu": "Finnország",
    "ia": "Finlandia",
    "id": "Finlandia",
+   "is": "Finnland",
    "it": "Finlandia",
    "ja": "フィンランド",
-   "oc": "Finlàndia",
+   "pa_IN": "ਫ਼ਿਨਲੈਂਡ",
    "pt_BR": "Finlândia",
    "ru": "Финляндия",
    "sk": "Fínsko",
@@ -547,23 +596,24 @@
    {
     "city": "Helsinki",
     "languages": {
-     "bg": "Хелзинки",
      "el": "Ελσίνκι",
      "fy_NL": "Helsinky",
      "ja": "ヘルシンキ",
+     "pa_IN": "ਹੈਲਸਿੰਕੀ",
      "pt_BR": "Helsinque",
      "ru": "Хельсинки",
      "sv_SE": "Helsingfors",
      "uk": "Гельсінкі",
      "zh_TW": "赫爾辛基"
-    }
+    },
+    "wikiDataID": "Q1757"
    }
-  ]
+  ],
+  "wikiDataID": "Q33"
  },
  {
   "countryCode": "fr",
   "languages": {
-   "bg": "Франция",
    "co": "Francia",
    "cy": "Ffrainc",
    "de": "Frankreich",
@@ -573,15 +623,17 @@
    "es_CL": "Francia",
    "es_ES": "Francia",
    "es_MX": "Francia",
+   "fi": "Ranska",
    "fy_NL": "Frankryk",
    "hsb": "Francoska",
    "hu": "Franciaország",
    "ia": "Francia",
    "id": "Prancis",
+   "is": "Frakkland",
    "it": "Francia",
    "ja": "フランス",
    "nl": "Frankrijk",
-   "oc": "França",
+   "pa_IN": "ਫ਼ਰਾਂਸ",
    "pt_BR": "França",
    "ru": "Франция",
    "sk": "Francúzsko",
@@ -602,40 +654,44 @@
      "es_MX": "Marsella",
      "it": "Marsiglia",
      "ja": "マルセイユ",
+     "pa_IN": "ਮਾਰਸੇਈ",
      "pt_BR": "Marselha",
      "ru": "Марсель",
      "uk": "Марсель",
      "zh_TW": "馬賽"
-    }
+    },
+    "wikiDataID": "Q23482"
    },
    {
     "city": "Paris",
     "languages": {
-     "bg": "Париж",
      "co": "Parighji",
      "el": "Παρίσι",
      "es_AR": "París",
      "es_CL": "París",
      "es_ES": "París",
      "es_MX": "París",
+     "fi": "Pariisi",
      "fy_NL": "Parys",
      "hu": "Párizs",
+     "is": "París",
      "it": "Parigi",
      "ja": "パリ",
      "nl": "Parijs",
-     "oc": "París",
+     "pa_IN": "ਪੈਰਿਸ",
      "ru": "Париж",
      "sk": "Paríž",
      "uk": "Париж",
      "zh_TW": "巴黎"
-    }
+    },
+    "wikiDataID": "Q90"
    }
-  ]
+  ],
+  "wikiDataID": "Q142"
  },
  {
   "countryCode": "de",
   "languages": {
-   "bg": "Германия",
    "co": "Germania",
    "cy": "yr Almaen",
    "de": "Deutschland",
@@ -645,16 +701,18 @@
    "es_CL": "Alemania",
    "es_ES": "Alemania",
    "es_MX": "Alemania",
+   "fi": "Saksa",
    "fr": "Allemagne",
    "fy_NL": "Dútslân",
    "hsb": "Němska",
    "hu": "Németország",
    "ia": "Germania",
    "id": "Jerman",
+   "is": "Þýskaland",
    "it": "Germania",
    "ja": "ドイツ",
    "nl": "Duitsland",
-   "oc": "Alemanha",
+   "pa_IN": "ਜਰਮਨੀ",
    "pt_BR": "Alemanha",
    "ru": "Германия",
    "sk": "Nemecko",
@@ -667,7 +725,6 @@
    {
     "city": "Dusseldorf",
     "languages": {
-     "bg": "Дюселдорф",
      "co": "Düsseldorf",
      "cy": "Düsseldorf",
      "de": "Düsseldorf",
@@ -680,16 +737,17 @@
      "es_CL": "Düsseldorf",
      "es_ES": "Düsseldorf",
      "es_MX": "Düsseldorf",
+     "fi": "Düsseldorf",
      "fr": "Düsseldorf",
      "fy_NL": "Düsseldorf",
      "hsb": "Düsseldorf",
      "hu": "Düsseldorf",
      "ia": "Düsseldorf",
      "id": "Düsseldorf",
+     "is": "Düsseldorf",
      "it": "Düsseldorf",
      "ja": "デュッセルドルフ",
      "nl": "Düsseldorf",
-     "oc": "Düsseldorf",
      "pt_BR": "Düsseldorf",
      "ru": "Дюссельдорф",
      "sk": "Düsseldorf",
@@ -697,64 +755,94 @@
      "sv_SE": "Düsseldorf",
      "uk": "Дюссельдорф",
      "zh_TW": "杜塞爾多夫"
-    }
+    },
+    "wikiDataID": "Q1718"
    },
    {
     "city": "Frankfurt",
     "languages": {
-     "bg": "Франкфурт на Майн",
      "co": "Francuforte nant'à u Menu",
      "cy": "Frankfurt am Main",
      "de": "Frankfurt am Main",
      "dsb": "Frankfurt nad Mainom",
      "el": "Φραγκφούρτη",
+     "en": "Frankfurt am Main",
+     "en_CA": "Frankfurt am Main",
+     "en_GB": "Frankfurt am Main",
      "es_AR": "Fráncfort del Meno",
      "es_CL": "Fráncfort del Meno",
      "es_ES": "Fráncfort del Meno",
      "es_MX": "Fráncfort del Meno",
+     "fi": "Frankfurt am Main",
      "fr": "Francfort-sur-le-Main",
      "fy_NL": "Frankfurt am Main",
      "hsb": "Frankobrod nad Mohanom",
      "hu": "Frankfurt am Main",
      "ia": "Frankfurt am Main",
      "id": "Frankfurt am Main",
+     "is": "Frankfurt am Main",
      "it": "Francoforte sul Meno",
      "ja": "フランクフルト・アム・マイン",
      "nl": "Frankfurt am Main",
-     "oc": "Francfòrt de Men",
+     "pa_IN": "ਫ਼ਰਾਂਕਫ਼ੁਰਟ",
+     "pt_BR": "Frankfurt am Main",
      "ru": "Франкфурт-на-Майне",
      "sk": "Frankfurt nad Mohanom",
      "sq": "Frankfurti mbi Main",
      "sv_SE": "Frankfurt am Main",
      "uk": "Франкфурт-на-Майні",
      "zh_TW": "美茵河畔法蘭克福"
-    }
+    },
+    "wikiDataID": "Q1794"
    }
-  ]
+  ],
+  "wikiDataID": "Q183"
  },
  {
   "countryCode": "hk",
   "languages": {
-   "bg": "Хонконг",
    "cy": "Hong Cong",
    "de": "Hongkong",
    "el": "Χονγκ Κονγκ",
+   "fi": "Hongkong",
    "fy_NL": "Hongkong",
    "hu": "Hongkong",
    "ja": "香港",
    "nl": "Hongkong",
+   "pa_IN": "ਹਾਂਗ ਕਾਂਗ",
    "ru": "Гонконг",
    "sk": "Hongkong",
    "sv_SE": "Hongkong",
    "uk": "Гонконг",
    "zh_TW": "香港"
   },
-  "cities": []
+  "cities": [
+   {
+    "wikiDataID": "Q8646",
+    "city": "Hong Kong",
+    "languages": {
+     "cy": "Hong Cong",
+     "de": "Hongkong",
+     "el": "Χονγκ Κονγκ",
+     "fi": "Hongkong",
+     "fy_NL": "Hongkong",
+     "hu": "Hongkong",
+     "ja": "香港",
+     "nl": "Hongkong",
+     "pa_IN": "ਹਾਂਗ ਕਾਂਗ",
+     "ru": "Гонконг",
+     "sk": "Hongkong",
+     "sv_SE": "Hongkong",
+     "uk": "Гонконг",
+     "zh_TW": "香港"
+    }
+   }
+  ],
+  "wikiDataID": "Q8646"
  },
  {
   "countryCode": "hu",
   "languages": {
-   "bg": "Унгария",
    "co": "Ungheria",
    "cy": "Hwngari",
    "de": "Ungarn",
@@ -764,16 +852,18 @@
    "es_CL": "Hungría",
    "es_ES": "Hungría",
    "es_MX": "Hungría",
+   "fi": "Unkari",
    "fr": "Hongrie",
    "fy_NL": "Hongarije",
    "hsb": "Madźarska",
    "hu": "Magyarország",
    "ia": "Hungaria",
    "id": "Hongaria",
+   "is": "Ungverjaland",
    "it": "Ungheria",
    "ja": "ハンガリー",
    "nl": "Hongarije",
-   "oc": "Ongria",
+   "pa_IN": "ਹੰਗਰੀ",
    "pt_BR": "Hungria",
    "ru": "Венгрия",
    "sk": "Maďarsko",
@@ -786,81 +876,26 @@
    {
     "city": "Budapest",
     "languages": {
-     "bg": "Будапеща",
      "el": "Βουδαπέστη",
      "fy_NL": "Bûdapest",
+     "is": "Búdapest",
      "ja": "ブダペスト",
      "nl": "Boedapest",
-     "oc": "Budapèst",
+     "pa_IN": "ਬੁਦਾਪੈਸਤ",
      "pt_BR": "Budapeste",
      "ru": "Будапешт",
      "sk": "Budapešť",
      "uk": "Будапешт",
      "zh_TW": "布達佩斯"
-    }
+    },
+    "wikiDataID": "Q1781"
    }
-  ]
- },
- {
-  "countryCode": "ie",
-  "languages": {
-   "bg": "Ирландия",
-   "co": "Irlanda",
-   "cy": "Iwerddon",
-   "de": "Irland",
-   "dsb": "Irska",
-   "el": "Δημοκρατία της Ιρλανδίας",
-   "en": "Republic of Ireland",
-   "en_CA": "Republic of Ireland",
-   "en_GB": "Republic of Ireland",
-   "es_AR": "República de Irlanda",
-   "es_CL": "República de Irlanda",
-   "es_ES": "República de Irlanda",
-   "es_MX": "República de Irlanda",
-   "fr": "Irlande",
-   "fy_NL": "Ierlân",
-   "hsb": "Irska",
-   "hu": "Írország",
-   "ia": "Republica de Irlanda",
-   "id": "Republik Irlandia",
-   "it": "Irlanda",
-   "ja": "アイルランド",
-   "nl": "Ierland",
-   "oc": "Republica d'Irlanda",
-   "pt_BR": "República da Irlanda",
-   "ru": "Ирландия",
-   "sk": "Írsko",
-   "sq": "Republika e Irlandës",
-   "sv_SE": "Irland",
-   "uk": "Ірландія",
-   "zh_TW": "愛爾蘭"
-  },
-  "cities": [
-   {
-    "city": "Dublin",
-    "languages": {
-     "bg": "Дъблин",
-     "co": "Dublinu",
-     "cy": "Dulyn",
-     "el": "Δουβλίνο",
-     "es_AR": "Dublín",
-     "es_CL": "Dublín",
-     "es_ES": "Dublín",
-     "es_MX": "Dublín",
-     "it": "Dublino",
-     "ja": "ダブリン",
-     "ru": "Дублин",
-     "sq": "Dublini",
-     "uk": "Дублін",
-     "zh_TW": "都柏林"
-    }
-   }
-  ]
+  ],
+  "wikiDataID": "Q28"
  },
  {
   "countryCode": "it",
   "languages": {
-   "bg": "Италия",
    "co": "Italia",
    "cy": "Yr Eidal",
    "de": "Italien",
@@ -870,16 +905,18 @@
    "es_CL": "Italia",
    "es_ES": "Italia",
    "es_MX": "Italia",
+   "fi": "Italia",
    "fr": "Italie",
    "fy_NL": "Itaalje",
    "hsb": "Italska",
    "hu": "Olaszország",
    "ia": "Italia",
    "id": "Italia",
+   "is": "Ítalía",
    "it": "Italia",
    "ja": "イタリア",
    "nl": "Italië",
-   "oc": "Itàlia",
+   "pa_IN": "ਇਟਲੀ",
    "pt_BR": "Itália",
    "ru": "Италия",
    "sk": "Taliansko",
@@ -892,7 +929,6 @@
    {
     "city": "Milan",
     "languages": {
-     "bg": "Милано",
      "co": "Milanu",
      "de": "Mailand",
      "el": "Μιλάνο",
@@ -900,13 +936,16 @@
      "es_CL": "Milán",
      "es_ES": "Milán",
      "es_MX": "Milán",
+     "fi": "Milano",
      "fy_NL": "Milaan",
      "hsb": "Mailand",
      "hu": "Milánó",
      "ia": "Milano",
+     "is": "Mílanó",
      "it": "Milano",
      "ja": "ミラノ",
      "nl": "Milaan",
+     "pa_IN": "ਮਿਲਾਨ",
      "pt_BR": "Milão",
      "ru": "Милан",
      "sk": "Miláno",
@@ -914,14 +953,15 @@
      "sv_SE": "Milano",
      "uk": "Мілан",
      "zh_TW": "米蘭"
-    }
+    },
+    "wikiDataID": "Q490"
    }
-  ]
+  ],
+  "wikiDataID": "Q38"
  },
  {
   "countryCode": "jp",
   "languages": {
-   "bg": "Япония",
    "co": "Giapponu",
    "dsb": "Japańska",
    "el": "Ιαπωνία",
@@ -929,6 +969,7 @@
    "es_CL": "Japón",
    "es_ES": "Japón",
    "es_MX": "Japón",
+   "fi": "Japani",
    "fr": "Japon",
    "hsb": "Japanska",
    "hu": "Japán",
@@ -936,7 +977,7 @@
    "id": "Jepang",
    "it": "Giappone",
    "ja": "日本",
-   "oc": "Japon",
+   "pa_IN": "ਜਪਾਨ",
    "pt_BR": "Japão",
    "ru": "Япония",
    "sk": "Japonsko",
@@ -953,12 +994,12 @@
      "en_GB": "Ōsaka",
      "ja": "大阪",
      "zh_TW": "大阪"
-    }
+    },
+    "wikiDataID": "Q11439906"
    },
    {
     "city": "Tokyo",
     "languages": {
-     "bg": "Токио",
      "co": "Tokiu",
      "de": "Tokio",
      "dsb": "Tokio",
@@ -967,12 +1008,14 @@
      "es_CL": "Tokio",
      "es_ES": "Tokio",
      "es_MX": "Tokio",
+     "fi": "Tokio",
      "fy_NL": "Tokio",
      "hsb": "Tokio",
      "hu": "Tokió",
+     "is": "Tókýó",
      "ja": "東京都",
      "nl": "Tokio",
-     "oc": "prefectura de Tòquio",
+     "pa_IN": "ਟੋਕੀਓ",
      "pt_BR": "Tóquio",
      "ru": "Токио",
      "sk": "Tokio",
@@ -980,14 +1023,15 @@
      "sv_SE": "Tokyo prefektur",
      "uk": "Токіо",
      "zh_TW": "東京都"
-    }
+    },
+    "wikiDataID": "Q1490"
    }
-  ]
+  ],
+  "wikiDataID": "Q17"
  },
  {
   "countryCode": "lv",
   "languages": {
-   "bg": "Латвия",
    "co": "Lettonia",
    "cy": "Latfia",
    "de": "Lettland",
@@ -1002,10 +1046,11 @@
    "hsb": "Letiska",
    "hu": "Lettország",
    "ia": "Lettonia",
+   "is": "Lettland",
    "it": "Lettonia",
    "ja": "ラトビア",
    "nl": "Letland",
-   "oc": "Letònia",
+   "pa_IN": "ਲਾਤਵੀਆ",
    "pt_BR": "Letônia",
    "ru": "Латвия",
    "sk": "Lotyšsko",
@@ -1018,20 +1063,23 @@
    {
     "city": "Riga",
     "languages": {
-     "bg": "Рига",
      "el": "Ρίγα",
+     "fi": "Riika",
+     "is": "Ríga",
      "ja": "リガ",
+     "pa_IN": "ਰੀਗਾ",
      "ru": "Рига",
      "uk": "Рига",
      "zh_TW": "里加"
-    }
+    },
+    "wikiDataID": "Q1773"
    }
-  ]
+  ],
+  "wikiDataID": "Q211"
  },
  {
   "countryCode": "lu",
   "languages": {
-   "bg": "Люксембург",
    "co": "Lussemburgu",
    "cy": "Lwcsembwrg",
    "de": "Luxemburg",
@@ -1041,15 +1089,17 @@
    "es_CL": "Luxemburgo",
    "es_ES": "Luxemburgo",
    "es_MX": "Luxemburgo",
+   "fi": "Luxemburg",
    "fy_NL": "Lúksemboarch",
    "hsb": "Luxemburgska",
    "hu": "Luxemburg",
    "ia": "Luxemburg",
    "id": "Luksemburg",
+   "is": "Lúxemborg",
    "it": "Lussemburgo",
    "ja": "ルクセンブルク",
    "nl": "Luxemburg",
-   "oc": "Luxemborg",
+   "pa_IN": "ਲਕਸਮਬਰਗ",
    "pt_BR": "Luxemburgo",
    "ru": "Люксембург",
    "sk": "Luxembursko",
@@ -1058,12 +1108,46 @@
    "uk": "Люксембург",
    "zh_TW": "盧森堡"
   },
-  "cities": []
+  "cities": [
+   {
+    "wikiDataID": "Q32",
+    "city": "Luxembourg",
+    "languages": {
+     "co": "Lussemburgu",
+     "cy": "Lwcsembwrg",
+     "de": "Luxemburg",
+     "dsb": "Luxemburgska",
+     "el": "Λουξεμβούργο",
+     "es_AR": "Luxemburgo",
+     "es_CL": "Luxemburgo",
+     "es_ES": "Luxemburgo",
+     "es_MX": "Luxemburgo",
+     "fi": "Luxemburg",
+     "fy_NL": "Lúksemboarch",
+     "hsb": "Luxemburgska",
+     "hu": "Luxemburg",
+     "ia": "Luxemburg",
+     "id": "Luksemburg",
+     "is": "Lúxemborg",
+     "it": "Lussemburgo",
+     "ja": "ルクセンブルク",
+     "nl": "Luxemburg",
+     "pa_IN": "ਲਕਸਮਬਰਗ",
+     "pt_BR": "Luxemburgo",
+     "ru": "Люксембург",
+     "sk": "Luxembursko",
+     "sq": "Luksemburgu",
+     "sv_SE": "Luxemburg",
+     "uk": "Люксембург",
+     "zh_TW": "盧森堡"
+    }
+   }
+  ],
+  "wikiDataID": "Q32"
  },
  {
   "countryCode": "md",
   "languages": {
-   "bg": "Молдова",
    "co": "Moldavia",
    "cy": "Moldofa",
    "de": "Republik Moldau",
@@ -1077,10 +1161,11 @@
    "fy_NL": "Moldaavje",
    "hsb": "Moldawska",
    "ia": "Moldavia",
+   "is": "Moldóva",
    "it": "Moldavia",
    "ja": "モルドバ",
    "nl": "Moldavië",
-   "oc": "Moldàvia",
+   "pa_IN": "ਮੋਲਦੋਵਾ",
    "pt_BR": "Moldávia",
    "ru": "Молдавия",
    "sk": "Moldavsko",
@@ -1093,7 +1178,6 @@
    {
     "city": "Chisinau",
     "languages": {
-     "bg": "Кишинев",
      "co": "Chişinău",
      "cy": "Chișinău",
      "de": "Chișinău",
@@ -1105,14 +1189,16 @@
      "es_CL": "Chisináu",
      "es_ES": "Chisináu",
      "es_MX": "Chisináu",
+     "fi": "Chișinău",
      "fr": "Chișinău",
      "hsb": "Kišinjow",
      "hu": "Chișinău",
      "ia": "Chișinău",
      "id": "Kishinev",
+     "is": "Kisínev",
      "it": "Chișinău",
      "ja": "キシナウ",
-     "oc": "Chișinău",
+     "pa_IN": "ਕਿਸ਼ਨਾਓ",
      "pt_BR": "Chişinău",
      "ru": "Кишинёв",
      "sk": "Kišiňov",
@@ -1120,14 +1206,15 @@
      "sv_SE": "Chișinău",
      "uk": "Кишинів",
      "zh_TW": "奇西瑙"
-    }
+    },
+    "wikiDataID": "Q21197"
    }
-  ]
+  ],
+  "wikiDataID": "Q217"
  },
  {
   "countryCode": "nl",
   "languages": {
-   "bg": "Нидерландия",
    "co": "Paesi Bassi",
    "cy": "Yr Iseldiroedd",
    "de": "Niederlande",
@@ -1137,16 +1224,18 @@
    "es_CL": "Países Bajos",
    "es_ES": "Países Bajos",
    "es_MX": "Países Bajos",
+   "fi": "Alankomaat",
    "fr": "Pays-Bas",
    "fy_NL": "Nederlân",
    "hsb": "Nižozemska",
    "hu": "Hollandia",
    "ia": "Nederlandia",
    "id": "Belanda",
+   "is": "Holland",
    "it": "Paesi Bassi",
    "ja": "オランダ",
    "nl": "Nederland",
-   "oc": "Païses Basses",
+   "pa_IN": "ਨੀਦਰਲੈਂਡ",
    "pt_BR": "Países Baixos",
    "ru": "Нидерланды",
    "sk": "Holandsko",
@@ -1159,7 +1248,6 @@
    {
     "city": "Amsterdam",
     "languages": {
-     "bg": "Амстердам",
      "el": "Άμστερνταμ",
      "es_AR": "Ámsterdam",
      "es_CL": "Ámsterdam",
@@ -1167,19 +1255,21 @@
      "es_MX": "Ámsterdam",
      "hu": "Amszterdam",
      "ja": "アムステルダム",
+     "pa_IN": "ਅਮਸਤਰਦਮ",
      "pt_BR": "Amsterdã",
      "ru": "Амстердам",
      "sq": "Amsterdami",
      "uk": "Амстердам",
      "zh_TW": "阿姆斯特丹"
-    }
+    },
+    "wikiDataID": "Q727"
    }
-  ]
+  ],
+  "wikiDataID": "Q55"
  },
  {
   "countryCode": "nz",
   "languages": {
-   "bg": "Нова Зеландия",
    "co": "Nova Zilanda",
    "cy": "Seland Newydd",
    "de": "Neuseeland",
@@ -1189,16 +1279,18 @@
    "es_CL": "Nueva Zelanda",
    "es_ES": "Nueva Zelanda",
    "es_MX": "Nueva Zelanda",
+   "fi": "Uusi-Seelanti",
    "fr": "Nouvelle-Zélande",
    "fy_NL": "Nij-Seelân",
    "hsb": "Nowoseelandska",
    "hu": "Új-Zéland",
    "ia": "Nove Zelanda",
    "id": "Selandia Baru",
+   "is": "Nýja-Sjáland",
    "it": "Nuova Zelanda",
    "ja": "ニュージーランド",
    "nl": "Nieuw-Zeeland",
-   "oc": "Nòva Zelanda",
+   "pa_IN": "ਨਿਊਜ਼ੀਲੈਂਡ",
    "pt_BR": "Nova Zelândia",
    "ru": "Новая Зеландия",
    "sk": "Nový Zéland",
@@ -1211,16 +1303,18 @@
    {
     "city": "Auckland",
     "languages": {
-     "bg": "Окланд",
-     "el": "Ώκλαντ",
+     "el": "Όκλαντ",
      "ja": "オークランド",
+     "pa_IN": "ਆਕਲੈਂਡ",
      "ru": "Окленд",
      "sq": "Okland",
      "uk": "Окленд",
      "zh_TW": "奧克蘭"
-    }
+    },
+    "wikiDataID": "Q37100"
    }
-  ]
+  ],
+  "wikiDataID": "Q664"
  },
  {
   "countryCode": "mk",
@@ -1234,15 +1328,18 @@
    "es_CL": "Macedonia del Norte",
    "es_ES": "Macedonia del Norte",
    "es_MX": "Macedonia del Norte",
+   "fi": "Pohjois-Makedonia",
    "fr": "Macédoine du Nord",
    "fy_NL": "Noard-Masedoanje",
    "hsb": "Sewjerna Makedonska",
    "hu": "Észak-Macedónia",
    "ia": "Republica del Macedonia del Nord",
-   "id": "Republik Makedonia Utara",
+   "id": "Makedonia Utara",
+   "is": "Norður-Makedónía",
    "it": "Macedonia del Nord",
    "ja": "北マケドニア",
    "nl": "Noord-Macedonië",
+   "pa_IN": "ਰੀਪਬਲਿਕ ਆਫ ਨਾਰਥ ਮਕਦੂਨੀਆ",
    "pt_BR": "Macedônia do Norte",
    "ru": "Северная Македония",
    "sk": "Severné Macedónsko",
@@ -1262,18 +1359,20 @@
      "es_MX": "Skopie",
      "hu": "Szkopje",
      "ja": "スコピエ",
+     "pa_IN": "ਸਕੋਪੀਏ",
      "ru": "Скопье",
      "sq": "Shkupi",
      "uk": "Скоп'є",
      "zh_TW": "史高比耶"
-    }
+    },
+    "wikiDataID": "Q384"
    }
-  ]
+  ],
+  "wikiDataID": "Q221"
  },
  {
   "countryCode": "no",
   "languages": {
-   "bg": "Норвегия",
    "co": "Nurvegia",
    "cy": "Norwy",
    "de": "Norwegen",
@@ -1283,16 +1382,18 @@
    "es_CL": "Noruega",
    "es_ES": "Noruega",
    "es_MX": "Noruega",
+   "fi": "Norja",
    "fr": "Norvège",
    "fy_NL": "Noarwegen",
    "hsb": "Norwegska",
    "hu": "Norvégia",
    "ia": "Norvegia",
    "id": "Norwegia",
+   "is": "Noregur",
    "it": "Norvegia",
    "ja": "ノルウェー",
    "nl": "Noorwegen",
-   "oc": "Norvègia",
+   "pa_IN": "ਨੌਰਵੇ",
    "pt_BR": "Noruega",
    "ru": "Норвегия",
    "sk": "Nórsko",
@@ -1305,22 +1406,23 @@
    {
     "city": "Oslo",
     "languages": {
-     "bg": "Осло",
      "co": "Oslu",
      "el": "Όσλο",
+     "is": "Osló",
      "ja": "オスロ",
-     "oc": "Òslo",
+     "pa_IN": "ਓਸਲੋ",
      "ru": "Осло",
      "uk": "Осло",
      "zh_TW": "奧斯陸"
-    }
+    },
+    "wikiDataID": "Q585"
    }
-  ]
+  ],
+  "wikiDataID": "Q20"
  },
  {
   "countryCode": "pl",
   "languages": {
-   "bg": "Полша",
    "co": "Polonia",
    "cy": "Gwlad Pwyl",
    "de": "Polen",
@@ -1330,16 +1432,18 @@
    "es_CL": "Polonia",
    "es_ES": "Polonia",
    "es_MX": "Polonia",
+   "fi": "Puola",
    "fr": "Pologne",
    "fy_NL": "Poalen",
    "hsb": "Pólska",
    "hu": "Lengyelország",
    "ia": "Polonia",
    "id": "Polandia",
+   "is": "Pólland",
    "it": "Polonia",
    "ja": "ポーランド",
    "nl": "Polen",
-   "oc": "Polonha",
+   "pa_IN": "ਪੋਲੈਂਡ",
    "pt_BR": "Polônia",
    "ru": "Польша",
    "sk": "Poľsko",
@@ -1352,7 +1456,6 @@
    {
     "city": "Warsaw",
     "languages": {
-     "bg": "Варшава",
      "co": "Varsavia",
      "de": "Warschau",
      "dsb": "Waršawa",
@@ -1361,16 +1464,18 @@
      "es_CL": "Varsovia",
      "es_ES": "Varsovia",
      "es_MX": "Varsovia",
+     "fi": "Varsova",
      "fr": "Varsovie",
      "fy_NL": "Warsjau",
      "hsb": "Waršawa",
      "hu": "Varsó",
      "ia": "Varsovia",
      "id": "Warsawa",
+     "is": "Varsjá",
      "it": "Varsavia",
      "ja": "ワルシャワ",
      "nl": "Warschau",
-     "oc": "Varsòvia",
+     "pa_IN": "ਵਾਰਸਾ",
      "pt_BR": "Varsóvia",
      "ru": "Варшава",
      "sk": "Varšava",
@@ -1378,23 +1483,27 @@
      "sv_SE": "Warszawa",
      "uk": "Варшава",
      "zh_TW": "華沙"
-    }
+    },
+    "wikiDataID": "Q270"
    }
-  ]
+  ],
+  "wikiDataID": "Q36"
  },
  {
   "countryCode": "pt",
   "languages": {
-   "bg": "Португалия",
    "co": "Portugallu",
    "cy": "Portiwgal",
    "dsb": "Portugalska",
    "el": "Πορτογαλία",
+   "fi": "Portugali",
    "fy_NL": "Portegal",
    "hsb": "Portugalska",
    "hu": "Portugália",
+   "is": "Portúgal",
    "it": "Portogallo",
    "ja": "ポルトガル",
+   "pa_IN": "ਪੁਰਤਗਾਲ",
    "ru": "Португалия",
    "sk": "Portugalsko",
    "sq": "Portugalia",
@@ -1405,7 +1514,6 @@
    {
     "city": "Lisbon",
     "languages": {
-     "bg": "Лисабон",
      "co": "Lisbona",
      "de": "Lissabon",
      "dsb": "Lisabon",
@@ -1414,16 +1522,18 @@
      "es_CL": "Lisboa",
      "es_ES": "Lisboa",
      "es_MX": "Lisboa",
+     "fi": "Lissabon",
      "fr": "Lisbonne",
      "fy_NL": "Lissabon",
      "hsb": "Lisabon",
      "hu": "Lisszabon",
      "ia": "Lisbona",
      "id": "Lisboa",
+     "is": "Lissabon",
      "it": "Lisbona",
      "ja": "リスボン",
      "nl": "Lissabon",
-     "oc": "Lisbona",
+     "pa_IN": "ਲਿਸਬਨ",
      "pt_BR": "Lisboa",
      "ru": "Лиссабон",
      "sk": "Lisabon",
@@ -1431,14 +1541,75 @@
      "sv_SE": "Lissabon",
      "uk": "Лісабон",
      "zh_TW": "里斯本"
-    }
+    },
+    "wikiDataID": "Q597"
    }
-  ]
+  ],
+  "wikiDataID": "Q45"
+ },
+ {
+  "countryCode": "ie",
+  "languages": {
+   "co": "Irlanda",
+   "cy": "Iwerddon",
+   "de": "Irland",
+   "dsb": "Irska",
+   "el": "Δημοκρατία της Ιρλανδίας",
+   "en": "Republic of Ireland",
+   "en_CA": "Republic of Ireland",
+   "en_GB": "Republic of Ireland",
+   "es_AR": "Irlanda",
+   "es_CL": "Irlanda",
+   "es_ES": "Irlanda",
+   "es_MX": "Irlanda",
+   "fi": "Irlanti",
+   "fr": "Irlande",
+   "fy_NL": "Ierlân",
+   "hsb": "Irska",
+   "hu": "Írország",
+   "ia": "Republica de Irlanda",
+   "id": "Republik Irlandia",
+   "is": "Írska lýðveldið",
+   "it": "Irlanda",
+   "ja": "アイルランド",
+   "nl": "Ierland",
+   "pa_IN": "ਆਇਰਲੈਂਡ",
+   "pt_BR": "República da Irlanda",
+   "ru": "Ирландия",
+   "sk": "Írsko",
+   "sq": "Republika e Irlandës",
+   "sv_SE": "Irland",
+   "uk": "Ірландія",
+   "zh_TW": "愛爾蘭"
+  },
+  "cities": [
+   {
+    "city": "Dublin",
+    "languages": {
+     "co": "Dublinu",
+     "cy": "Dulyn",
+     "el": "Δουβλίνο",
+     "es_AR": "Dublín",
+     "es_CL": "Dublín",
+     "es_ES": "Dublín",
+     "es_MX": "Dublín",
+     "is": "Dyflinn",
+     "it": "Dublino",
+     "ja": "ダブリン",
+     "pa_IN": "ਡਬਲਿਨ",
+     "ru": "Дублин",
+     "sq": "Dublini",
+     "uk": "Дублін",
+     "zh_TW": "都柏林"
+    },
+    "wikiDataID": "Q1761"
+   }
+  ],
+  "wikiDataID": "Q27"
  },
  {
   "countryCode": "ro",
   "languages": {
-   "bg": "Румъния",
    "cy": "Rwmania",
    "de": "Rumänien",
    "dsb": "Rumuńska",
@@ -1452,8 +1623,10 @@
    "hsb": "Rumunska",
    "hu": "Románia",
    "id": "Rumania",
+   "is": "Rúmenía",
    "ja": "ルーマニア",
    "nl": "Roemenië",
+   "pa_IN": "ਰੋਮਾਨੀਆ",
    "pt_BR": "Romênia",
    "ru": "Румыния",
    "sk": "Rumunsko",
@@ -1466,7 +1639,6 @@
    {
     "city": "Bucharest",
     "languages": {
-     "bg": "Букурещ",
      "co": "Bucarest",
      "cy": "Bwcarést",
      "de": "Bukarest",
@@ -1476,16 +1648,18 @@
      "es_CL": "Bucarest",
      "es_ES": "Bucarest",
      "es_MX": "Bucarest",
+     "fi": "Bukarest",
      "fr": "Bucarest",
      "fy_NL": "Bûkarest",
      "hsb": "Bukarest",
      "hu": "Bukarest",
      "ia": "Bucarest",
      "id": "Bukares",
+     "is": "Búkarest",
      "it": "Bucarest",
      "ja": "ブカレスト",
      "nl": "Boekarest",
-     "oc": "Bucarèst",
+     "pa_IN": "ਬੁਖ਼ਾਰੈਸਟ",
      "pt_BR": "Bucareste",
      "ru": "Бухарест",
      "sk": "Bukurešť",
@@ -1493,14 +1667,15 @@
      "sv_SE": "Bukarest",
      "uk": "Бухарест",
      "zh_TW": "布加勒斯特"
-    }
+    },
+    "wikiDataID": "Q19660"
    }
-  ]
+  ],
+  "wikiDataID": "Q218"
  },
  {
   "countryCode": "rs",
   "languages": {
-   "bg": "Сърбия",
    "de": "Serbien",
    "dsb": "Serbiska",
    "el": "Σερβία",
@@ -1508,8 +1683,10 @@
    "fy_NL": "Servje",
    "hsb": "Serbiska",
    "hu": "Szerbia",
+   "is": "Serbía",
    "ja": "セルビア",
    "nl": "Servië",
+   "pa_IN": "ਸਰਬੀਆ",
    "pt_BR": "Sérvia",
    "ru": "Сербия",
    "sk": "Srbsko",
@@ -1521,7 +1698,6 @@
    {
     "city": "Belgrade",
     "languages": {
-     "bg": "Белград",
      "co": "Belgradu",
      "cy": "Beograd",
      "de": "Belgrad",
@@ -1531,15 +1707,17 @@
      "es_CL": "Belgrado",
      "es_ES": "Belgrado",
      "es_MX": "Belgrado",
+     "fi": "Belgrad",
      "fy_NL": "Belgrado",
      "hsb": "Běłohród",
      "hu": "Belgrád",
      "ia": "Belgrad",
      "id": "Beograd",
+     "is": "Belgrad",
      "it": "Belgrado",
      "ja": "ベオグラード",
      "nl": "Belgrado",
-     "oc": "Belgrad",
+     "pa_IN": "ਬੈਲਗ੍ਰਾਦ",
      "pt_BR": "Belgrado",
      "ru": "Белград",
      "sk": "Belehrad",
@@ -1547,14 +1725,15 @@
      "sv_SE": "Belgrad",
      "uk": "Белград",
      "zh_TW": "貝爾格勒"
-    }
+    },
+    "wikiDataID": "Q3711"
    }
-  ]
+  ],
+  "wikiDataID": "Q403"
  },
  {
   "countryCode": "sg",
   "languages": {
-   "bg": "Сингапур",
    "cy": "Singapôr",
    "de": "Singapur",
    "dsb": "Singapur",
@@ -1568,8 +1747,9 @@
    "hu": "Szingapúr",
    "ia": "Singapur",
    "id": "Singapura",
+   "is": "Singapúr",
    "ja": "シンガポール",
-   "oc": "Singapor",
+   "pa_IN": "ਸਿੰਘਾਪੁਰ",
    "pt_BR": "Singapura",
    "ru": "Сингапур",
    "sk": "Singapur",
@@ -1577,12 +1757,41 @@
    "uk": "Сінгапур",
    "zh_TW": "新加坡"
   },
-  "cities": []
+  "cities": [
+   {
+    "wikiDataID": "Q334",
+    "city": "Singapore",
+    "languages": {
+     "cy": "Singapôr",
+     "de": "Singapur",
+     "dsb": "Singapur",
+     "el": "Σιγκαπούρη",
+     "es_AR": "Singapur",
+     "es_CL": "Singapur",
+     "es_ES": "Singapur",
+     "es_MX": "Singapur",
+     "fr": "Singapour",
+     "hsb": "Singapur",
+     "hu": "Szingapúr",
+     "ia": "Singapur",
+     "id": "Singapura",
+     "is": "Singapúr",
+     "ja": "シンガポール",
+     "pa_IN": "ਸਿੰਘਾਪੁਰ",
+     "pt_BR": "Singapura",
+     "ru": "Сингапур",
+     "sk": "Singapur",
+     "sq": "Singapori",
+     "uk": "Сінгапур",
+     "zh_TW": "新加坡"
+    }
+   }
+  ],
+  "wikiDataID": "Q334"
  },
  {
   "countryCode": "es",
   "languages": {
-   "bg": "Испания",
    "co": "Spagna",
    "cy": "Sbaen",
    "de": "Spanien",
@@ -1592,16 +1801,18 @@
    "es_CL": "España",
    "es_ES": "España",
    "es_MX": "España",
+   "fi": "Espanja",
    "fr": "Espagne",
    "fy_NL": "Spanje",
    "hsb": "Španiska",
    "hu": "Spanyolország",
    "ia": "Espania",
    "id": "Spanyol",
+   "is": "Spánn",
    "it": "Spagna",
    "ja": "スペイン",
    "nl": "Spanje",
-   "oc": "Espanha",
+   "pa_IN": "ਸਪੇਨ",
    "pt_BR": "Espanha",
    "ru": "Испания",
    "sk": "Španielsko",
@@ -1614,22 +1825,23 @@
    {
     "city": "Madrid",
     "languages": {
-     "bg": "Мадрид",
      "el": "Μαδρίτη",
      "ja": "マドリード",
+     "pa_IN": "ਮਾਦਰਿਦ",
      "pt_BR": "Madri",
      "ru": "Мадрид",
      "sq": "Madridi",
      "uk": "Мадрид",
      "zh_TW": "馬德里"
-    }
+    },
+    "wikiDataID": "Q2807"
    }
-  ]
+  ],
+  "wikiDataID": "Q29"
  },
  {
   "countryCode": "se",
   "languages": {
-   "bg": "Швеция",
    "co": "Svezia",
    "de": "Schweden",
    "dsb": "Šwedska",
@@ -1638,15 +1850,17 @@
    "es_CL": "Suecia",
    "es_ES": "Suecia",
    "es_MX": "Suecia",
+   "fi": "Ruotsi",
    "fr": "Suède",
    "hsb": "Šwedska",
    "hu": "Svédország",
    "ia": "Svedia",
    "id": "Swedia",
+   "is": "Svíþjóð",
    "it": "Svezia",
    "ja": "スウェーデン",
    "nl": "Zweden",
-   "oc": "Suècia",
+   "pa_IN": "ਸਵੀਡਨ",
    "pt_BR": "Suécia",
    "ru": "Швеция",
    "sk": "Švédsko",
@@ -1659,7 +1873,6 @@
    {
     "city": "Gothenburg",
     "languages": {
-     "bg": "Гьотеборг",
      "co": "Göteborg",
      "cy": "Göteborg",
      "de": "Göteborg",
@@ -1669,16 +1882,17 @@
      "es_CL": "Gotemburgo",
      "es_ES": "Gotemburgo",
      "es_MX": "Gotemburgo",
+     "fi": "Göteborg",
      "fr": "Göteborg",
      "fy_NL": "Goateboarch",
      "hsb": "Göteborg",
      "hu": "Göteborg",
      "ia": "Göteborg",
      "id": "Göteborg",
+     "is": "Gautaborg",
      "it": "Göteborg",
      "ja": "ヨーテボリ",
      "nl": "Göteborg",
-     "oc": "Göteborg",
      "pt_BR": "Gotemburgo",
      "ru": "Гётеборг",
      "sk": "Göteborg",
@@ -1686,47 +1900,50 @@
      "sv_SE": "Göteborg",
      "uk": "Гетеборг",
      "zh_TW": "哥特堡"
-    }
+    },
+    "wikiDataID": "Q25287"
    },
    {
     "city": "Malmö",
     "languages": {
-     "bg": "Малмьо",
      "el": "Μάλμε",
      "ja": "マルメ",
      "ru": "Мальмё",
      "uk": "Мальме",
      "zh_TW": "馬爾摩"
-    }
+    },
+    "wikiDataID": "Q2211"
    },
    {
     "city": "Stockholm",
     "languages": {
-     "bg": "Стокхолм",
      "co": "Stoccolma",
      "el": "Στοκχόλμη",
      "es_AR": "Estocolmo",
      "es_CL": "Estocolmo",
      "es_ES": "Estocolmo",
      "es_MX": "Estocolmo",
+     "fi": "Tukholma",
      "fy_NL": "Stokholm",
+     "is": "Stokkhólmur",
      "it": "Stoccolma",
      "ja": "ストックホルム",
-     "oc": "Estocòlme",
+     "pa_IN": "ਸਟਾਕਹੋਮ",
      "pt_BR": "Estocolmo",
      "ru": "Стокгольм",
      "sk": "Štokholm",
      "sq": "Stokholmi",
      "uk": "Стокгольм",
      "zh_TW": "斯德哥爾摩"
-    }
+    },
+    "wikiDataID": "Q1754"
    }
-  ]
+  ],
+  "wikiDataID": "Q34"
  },
  {
   "countryCode": "ch",
   "languages": {
-   "bg": "Швейцария",
    "co": "Svizzera",
    "cy": "Y Swistir",
    "de": "Schweiz",
@@ -1736,16 +1953,18 @@
    "es_CL": "Suiza",
    "es_ES": "Suiza",
    "es_MX": "Suiza",
+   "fi": "Sveitsi",
    "fr": "Suisse",
    "fy_NL": "Switserlân",
    "hsb": "Šwicarska",
    "hu": "Svájc",
    "ia": "Switza",
    "id": "Swiss",
+   "is": "Sviss",
    "it": "Svizzera",
    "ja": "スイス",
    "nl": "Zwitserland",
-   "oc": "Soïssa",
+   "pa_IN": "ਸਵਿਟਜ਼ਰਲੈਂਡ",
    "pt_BR": "Suíça",
    "ru": "Швейцария",
    "sk": "Švajčiarsko",
@@ -1758,7 +1977,6 @@
    {
     "city": "Zurich",
     "languages": {
-     "bg": "Цюрих",
      "cy": "Zürich",
      "de": "Zürich",
      "dsb": "Zürich",
@@ -1770,15 +1988,17 @@
      "es_CL": "Zúrich",
      "es_ES": "Zúrich",
      "es_MX": "Zúrich",
+     "fi": "Zürich",
      "fy_NL": "Zürich",
      "hsb": "Zürich",
      "hu": "Zürich",
      "ia": "Zurico",
      "id": "Zürich",
+     "is": "Zürich",
      "it": "Zurigo",
      "ja": "チューリッヒ",
      "nl": "Zürich",
-     "oc": "Zuric",
+     "pa_IN": "ਜਿਊਰਿਖ",
      "pt_BR": "Zurique",
      "ru": "Цюрих",
      "sk": "Zürich",
@@ -1786,14 +2006,15 @@
      "sv_SE": "Zürich",
      "uk": "Цюрих",
      "zh_TW": "蘇黎世"
-    }
+    },
+    "wikiDataID": "Q72"
    }
-  ]
+  ],
+  "wikiDataID": "Q39"
  },
  {
   "countryCode": "gb",
   "languages": {
-   "bg": "Великобритания",
    "co": "Regnu Unitu",
    "cy": "Y Deyrnas Gyfunol",
    "de": "Vereinigtes Königreich",
@@ -1806,16 +2027,18 @@
    "es_CL": "Reino Unido",
    "es_ES": "Reino Unido",
    "es_MX": "Reino Unido",
+   "fi": "Yhdistynyt kuningaskunta",
    "fr": "Royaume-Uni",
    "fy_NL": "Feriene Keninkryk",
    "hsb": "Zjednoćene kralestwo",
    "hu": "Egyesült Királyság",
    "ia": "Regno Unite",
    "id": "Britania Raya",
+   "is": "Bretland",
    "it": "Regno Unito",
    "ja": "イギリス",
    "nl": "Verenigd Koninkrijk",
-   "oc": "Reialme Unit",
+   "pa_IN": "ਯੂਨਾਈਟਡ ਕਿੰਗਡਮ",
    "pt_BR": "Reino Unido",
    "ru": "Великобритания",
    "sk": "Spojené kráľovstvo",
@@ -1828,7 +2051,6 @@
    {
     "city": "London",
     "languages": {
-     "bg": "Лондон",
      "co": "Londra",
      "cy": "Llundain",
      "el": "Λονδίνο",
@@ -1836,24 +2058,25 @@
      "es_CL": "Londres",
      "es_ES": "Londres",
      "es_MX": "Londres",
+     "fi": "Lontoo",
      "fr": "Londres",
      "fy_NL": "Londen",
      "it": "Londra",
      "ja": "ロンドン",
      "nl": "Londen",
-     "oc": "Londres",
+     "pa_IN": "ਲੰਡਨ",
      "pt_BR": "Londres",
      "ru": "Лондон",
      "sk": "Londýn",
      "sq": "Londër",
      "uk": "Лондон",
      "zh_TW": "倫敦"
-    }
+    },
+    "wikiDataID": "Q84"
    },
    {
     "city": "Manchester",
     "languages": {
-     "bg": "Манчестър",
      "cy": "Manceinion",
      "el": "Μάντσεστερ",
      "es_AR": "Mánchester",
@@ -1862,17 +2085,19 @@
      "es_MX": "Mánchester",
      "ia": "Manchester (Anglaterra)",
      "ja": "マンチェスター",
+     "pa_IN": "ਮਾਨਚੈਸਟਰ",
      "ru": "Манчестер",
      "uk": "Манчестер",
      "zh_TW": "曼徹斯特"
-    }
+    },
+    "wikiDataID": "Q18125"
    }
-  ]
+  ],
+  "wikiDataID": "Q145"
  },
  {
   "countryCode": "us",
   "languages": {
-   "bg": "САЩ",
    "co": "Stati Uniti d'America",
    "cy": "Unol Daleithiau America",
    "de": "Vereinigte Staaten",
@@ -1885,16 +2110,18 @@
    "es_CL": "Estados Unidos",
    "es_ES": "Estados Unidos",
    "es_MX": "Estados Unidos",
+   "fi": "Yhdysvallat",
    "fr": "États-Unis",
    "fy_NL": "Feriene Steaten fan Amearika",
    "hsb": "Zjednoćene staty Ameriki",
    "hu": "Amerikai Egyesült Államok",
    "ia": "Statos Unite de America",
    "id": "Amerika Serikat",
-   "it": "USA",
+   "is": "Bandaríkin",
+   "it": "Stati Uniti d'America",
    "ja": "アメリカ合衆国",
    "nl": "Verenigde Staten van Amerika",
-   "oc": "Estats Units d'America",
+   "pa_IN": "ਸੰਯੁਕਤ ਰਾਜ ਅਮਰੀਕਾ",
    "pt_BR": "Estados Unidos",
    "ru": "США",
    "sk": "Spojené štáty americké",
@@ -1925,12 +2152,12 @@
      "sv_SE": "Ashburn",
      "uk": "Ешберн",
      "zh_TW": "阿什本"
-    }
+    },
+    "wikiDataID": "Q724884"
    },
    {
     "city": "Atlanta, GA",
     "languages": {
-     "bg": "Атланта",
      "co": "Atlanta",
      "cy": "Atlanta",
      "de": "Atlanta",
@@ -1942,15 +2169,17 @@
      "es_CL": "Atlanta",
      "es_ES": "Atlanta",
      "es_MX": "Atlanta",
+     "fi": "Atlanta",
      "fr": "Atlanta",
      "fy_NL": "Atlanta",
      "hu": "Atlanta",
      "ia": "Atlanta",
      "id": "Atlanta",
+     "is": "Atlanta",
      "it": "Atlanta",
      "ja": "アトランタ",
      "nl": "Atlanta",
-     "oc": "Atlanta",
+     "pa_IN": "ਅਟਲਾਂਟਾ",
      "pt_BR": "Atlanta",
      "ru": "Атланта",
      "sk": "Atlanta",
@@ -1958,12 +2187,12 @@
      "sv_SE": "Atlanta",
      "uk": "Атланта",
      "zh_TW": "亞特蘭大"
-    }
+    },
+    "wikiDataID": "Q23556"
    },
    {
     "city": "Chicago, IL",
     "languages": {
-     "bg": "Чикаго",
      "co": "Chicago",
      "cy": "Chicago",
      "de": "Chicago",
@@ -1976,16 +2205,18 @@
      "es_CL": "Chicago",
      "es_ES": "Chicago",
      "es_MX": "Chicago",
+     "fi": "Chicago",
      "fr": "Chicago",
      "fy_NL": "Chicago",
      "hsb": "Chicago",
      "hu": "Chicago",
      "ia": "Chicago",
      "id": "Chicago",
+     "is": "Chicago",
      "it": "Chicago",
      "ja": "シカゴ",
      "nl": "Chicago",
-     "oc": "Chicago",
+     "pa_IN": "ਸ਼ਿਕਾਗੋ",
      "pt_BR": "Chicago",
      "ru": "Чикаго",
      "sk": "Chicago",
@@ -1993,12 +2224,12 @@
      "sv_SE": "Chicago",
      "uk": "Чикаго",
      "zh_TW": "芝加哥"
-    }
+    },
+    "wikiDataID": "Q1297"
    },
    {
     "city": "Dallas, TX",
     "languages": {
-     "bg": "Далас",
      "co": "Dallas",
      "cy": "Dallas, Texas",
      "de": "Dallas",
@@ -2010,16 +2241,18 @@
      "es_CL": "Dallas",
      "es_ES": "Dallas",
      "es_MX": "Dallas",
+     "fi": "Dallas",
      "fr": "Dallas",
      "fy_NL": "Dallas",
      "hsb": "Dallas",
      "hu": "Dallas",
      "ia": "Dallas, Texas",
      "id": "Dallas",
+     "is": "Dallas",
      "it": "Dallas",
      "ja": "ダラス",
      "nl": "Dallas",
-     "oc": "Dallas",
+     "pa_IN": "ਡਾਲਸ",
      "pt_BR": "Dallas",
      "ru": "Даллас",
      "sk": "Dallas",
@@ -2027,12 +2260,12 @@
      "sv_SE": "Dallas",
      "uk": "Даллас",
      "zh_TW": "達拉斯"
-    }
+    },
+    "wikiDataID": "Q16557"
    },
    {
     "city": "Denver, CO",
     "languages": {
-     "bg": "Денвър",
      "co": "Denver",
      "cy": "Denver, Colorado",
      "de": "Denver",
@@ -2044,15 +2277,17 @@
      "es_CL": "Denver",
      "es_ES": "Denver",
      "es_MX": "Denver",
+     "fi": "Denver",
      "fr": "Denver",
      "fy_NL": "Denver",
      "hu": "Denver",
      "ia": "Denver, Colorado",
      "id": "Denver",
+     "is": "Denver",
      "it": "Denver",
      "ja": "デンヴァー",
      "nl": "Denver",
-     "oc": "Denver",
+     "pa_IN": "ਡੈਨਵਰ",
      "pt_BR": "Denver",
      "ru": "Денвер",
      "sk": "Denver",
@@ -2060,12 +2295,46 @@
      "sv_SE": "Denver",
      "uk": "Денвер",
      "zh_TW": "丹佛"
+    },
+    "wikiDataID": "Q16554"
+   },
+   {
+    "wikiDataID": "Q16555",
+    "city": "Houston, TX",
+    "languages": {
+     "cy": "Houston, Texas",
+     "de": "Houston",
+     "el": "Χιούστον",
+     "en": "Houston",
+     "en_CA": "Houston",
+     "en_GB": "Houston",
+     "es_AR": "Houston",
+     "es_CL": "Houston",
+     "es_ES": "Houston",
+     "es_MX": "Houston",
+     "fi": "Houston",
+     "fr": "Houston",
+     "fy_NL": "Houston",
+     "hu": "Houston",
+     "ia": "Houston, Texas",
+     "id": "Houston",
+     "is": "Houston",
+     "it": "Houston",
+     "ja": "ヒューストン",
+     "nl": "Houston",
+     "pa_IN": "ਹੂਸਟਨ",
+     "pt_BR": "Houston",
+     "ru": "Хьюстон",
+     "sk": "Houston",
+     "sq": "Houston",
+     "sv_SE": "Houston",
+     "uk": "Х'юстон",
+     "zh_TW": "休士頓"
     }
    },
    {
     "city": "Los Angeles, CA",
     "languages": {
-     "bg": "Лос Анджелис",
      "co": "Los Angeles",
      "cy": "Los Angeles",
      "de": "Los Angeles",
@@ -2078,16 +2347,18 @@
      "es_CL": "Los Ángeles",
      "es_ES": "Los Ángeles",
      "es_MX": "Los Ángeles",
+     "fi": "Los Angeles",
      "fr": "Los Angeles",
      "fy_NL": "Los Angeles",
      "hsb": "Los Angeles",
      "hu": "Los Angeles",
      "ia": "Los Angeles",
      "id": "Los Angeles",
+     "is": "Los Angeles",
      "it": "Los Angeles",
      "ja": "ロサンゼルス",
      "nl": "Los Angeles",
-     "oc": "Los Angeles",
+     "pa_IN": "ਲਾਸ ਐਂਜਲਸ",
      "pt_BR": "Los Angeles",
      "ru": "Лос-Анджелес",
      "sk": "Los Angeles",
@@ -2095,12 +2366,12 @@
      "sv_SE": "Los Angeles",
      "uk": "Лос-Анджелес",
      "zh_TW": "洛杉磯"
-    }
+    },
+    "wikiDataID": "Q65"
    },
    {
     "city": "Miami, FL",
     "languages": {
-     "bg": "Маями",
      "co": "Miami",
      "cy": "Miami",
      "de": "Miami",
@@ -2112,15 +2383,16 @@
      "es_CL": "Miami",
      "es_ES": "Miami",
      "es_MX": "Miami",
+     "fi": "Miami",
      "fr": "Miami",
      "fy_NL": "Miami",
      "hu": "Miami",
      "ia": "Miami, Florida",
      "id": "Miami",
+     "is": "Miami",
      "it": "Miami",
      "ja": "マイアミ",
      "nl": "Miami",
-     "oc": "Miami",
      "pt_BR": "Miami",
      "ru": "Майами",
      "sk": "Miami",
@@ -2128,12 +2400,12 @@
      "sv_SE": "Miami",
      "uk": "Маямі",
      "zh_TW": "邁阿密"
-    }
+    },
+    "wikiDataID": "Q8652"
    },
    {
     "city": "New York, NY",
     "languages": {
-     "bg": "Ню Йорк",
      "co": "New York",
      "cy": "Dinas Efrog Newydd",
      "de": "New York City",
@@ -2146,16 +2418,18 @@
      "es_CL": "Nueva York",
      "es_ES": "Nueva York",
      "es_MX": "Nueva York",
+     "fi": "New York",
      "fr": "New York",
      "fy_NL": "New York City",
      "hsb": "New York City",
      "hu": "New York",
      "ia": "New York",
      "id": "New York City",
+     "is": "New York-borg",
      "it": "New York",
      "ja": "ニューヨーク",
      "nl": "New York",
-     "oc": "Nòva York",
+     "pa_IN": "ਨਿਊਯਾਰਕ ਸ਼ਹਿਰ",
      "pt_BR": "Nova Iorque",
      "ru": "Нью-Йорк",
      "sk": "New York",
@@ -2163,12 +2437,12 @@
      "sv_SE": "New York",
      "uk": "Нью-Йорк",
      "zh_TW": "紐約"
-    }
+    },
+    "wikiDataID": "Q60"
    },
    {
     "city": "Phoenix, AZ",
     "languages": {
-     "bg": "Финикс",
      "co": "Phoenix",
      "cy": "Phoenix",
      "de": "Phoenix",
@@ -2180,15 +2454,17 @@
      "es_CL": "Phoenix",
      "es_ES": "Phoenix",
      "es_MX": "Phoenix",
+     "fi": "Phoenix",
      "fr": "Phoenix",
      "fy_NL": "Phoenix",
      "hu": "Phoenix",
      "ia": "Phoenix",
      "id": "Phoenix",
+     "is": "Phoenix",
      "it": "Phoenix",
      "ja": "フェニックス",
      "nl": "Phoenix",
-     "oc": "Phoenix",
+     "pa_IN": "ਫ਼ੀਨਿਕਸ",
      "pt_BR": "Phoenix",
      "ru": "Финикс",
      "sk": "Phoenix",
@@ -2196,12 +2472,12 @@
      "sv_SE": "Phoenix",
      "uk": "Фінікс",
      "zh_TW": "鳳凰城"
-    }
+    },
+    "wikiDataID": "Q16556"
    },
    {
     "city": "Raleigh, NC",
     "languages": {
-     "bg": "Роли",
      "cy": "Raleigh, Gogledd Carolina",
      "de": "Raleigh",
      "el": "Ράλεϊ",
@@ -2212,15 +2488,16 @@
      "es_CL": "Raleigh",
      "es_ES": "Raleigh",
      "es_MX": "Raleigh",
+     "fi": "Raleigh",
      "fr": "Raleigh",
      "fy_NL": "Raleigh",
      "hu": "Raleigh",
      "ia": "Raleigh",
      "id": "Raleigh, Carolina Utara",
+     "is": "Raleigh",
      "it": "Raleigh",
      "ja": "ローリー",
      "nl": "Raleigh",
-     "oc": "Raleigh",
      "pt_BR": "Raleigh",
      "ru": "Роли",
      "sk": "Raleigh",
@@ -2228,12 +2505,12 @@
      "sv_SE": "Raleigh",
      "uk": "Ралі",
      "zh_TW": "羅利"
-    }
+    },
+    "wikiDataID": "Q41087"
    },
    {
     "city": "Salt Lake City, UT",
     "languages": {
-     "bg": "Солт Лейк Сити",
      "co": "Salt Lake City",
      "cy": "Salt Lake City",
      "de": "Salt Lake City",
@@ -2245,15 +2522,17 @@
      "es_CL": "Salt Lake City",
      "es_ES": "Salt Lake City",
      "es_MX": "Salt Lake City",
+     "fi": "Salt Lake City",
      "fr": "Salt Lake City",
      "fy_NL": "Salt Lake City",
      "hu": "Salt Lake City",
      "ia": "Salt Lake City",
      "id": "Salt Lake City",
+     "is": "Salt Lake City",
      "it": "Salt Lake City",
      "ja": "ソルトレイクシティ",
      "nl": "Salt Lake City",
-     "oc": "Salt Lake City",
+     "pa_IN": "ਸਾਲਟ ਲੇਕ ਸਿਟੀ",
      "pt_BR": "Salt Lake City",
      "ru": "Солт-Лейк-Сити",
      "sk": "Salt Lake City",
@@ -2261,12 +2540,12 @@
      "sv_SE": "Salt Lake City",
      "uk": "Солт-Лейк-Сіті",
      "zh_TW": "鹽湖城"
-    }
+    },
+    "wikiDataID": "Q23337"
    },
    {
     "city": "San Jose, CA",
     "languages": {
-     "bg": "Сан Хосе",
      "cy": "San Jose, Califfornia",
      "de": "San José",
      "el": "Σαν Χοσέ",
@@ -2277,15 +2556,17 @@
      "es_CL": "San José",
      "es_ES": "San José",
      "es_MX": "San José",
+     "fi": "San José",
      "fr": "San José",
      "fy_NL": "San Jose",
      "hu": "San José",
      "ia": "San Jose",
      "id": "San Jose, California",
+     "is": "San Jose",
      "it": "San Jose",
      "ja": "サンノゼ",
      "nl": "San Jose",
-     "oc": "San José",
+     "pa_IN": "ਸਾਨ ਹੋਜ਼ੇ",
      "pt_BR": "São José",
      "ru": "Сан-Хосе",
      "sk": "San José",
@@ -2293,12 +2574,12 @@
      "sv_SE": "San Jos",
      "uk": "Сан-Хосе",
      "zh_TW": "聖荷西"
-    }
+    },
+    "wikiDataID": "Q16553"
    },
    {
     "city": "Seattle, WA",
     "languages": {
-     "bg": "Сиатъл",
      "co": "Seattle",
      "cy": "Seattle",
      "de": "Seattle",
@@ -2310,15 +2591,17 @@
      "es_CL": "Seattle",
      "es_ES": "Seattle",
      "es_MX": "Seattle",
+     "fi": "Seattle",
      "fr": "Seattle",
      "fy_NL": "Seattle",
      "hu": "Seattle",
      "ia": "Seattle",
      "id": "Seattle",
+     "is": "Seattle",
      "it": "Seattle",
      "ja": "シアトル",
      "nl": "Seattle",
-     "oc": "Seattle",
+     "pa_IN": "ਸੀਐਟਲ",
      "pt_BR": "Seattle",
      "ru": "Сиэтл",
      "sk": "Seattle",
@@ -2326,7 +2609,8 @@
      "sv_SE": "Seattle",
      "uk": "Сіетл",
      "zh_TW": "西雅圖"
-    }
+    },
+    "wikiDataID": "Q5083"
    },
    {
     "city": "Secaucus, NJ",
@@ -2348,8 +2632,10 @@
      "ru": "Секокус (Нью-Джерси)",
      "uk": "Сікокес",
      "zh_TW": "西考克斯市，新泽西州"
-    }
+    },
+    "wikiDataID": "Q1013249"
    }
-  ]
+  ],
+  "wikiDataID": "Q30"
  }
 ]

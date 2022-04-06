@@ -46,8 +46,6 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
 constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
-constexpr const uint32_t TIME_DEACTIVATION = 1500;
-
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
 // private address range.
@@ -389,6 +387,8 @@ void Controller::handshakeTimeout() {
   HopConnection& hop = m_activationQueue.first();
   vpn->setServerCooldown(hop.m_server.publicKey());
 
+  emit handshakeFailed(hop.m_server.publicKey());
+
   if (m_nextStep != None) {
     deactivate();
     return;
@@ -423,18 +423,6 @@ void Controller::disconnected() {
 
   clearConnectedTime();
   clearRetryCounter();
-
-  // This is an unexpected disconnection. Let's use the Disconnecting state to
-  // animate the UI.
-  if (m_state != StateDisconnecting && m_state != StateSwitching) {
-    setState(StateDisconnecting);
-    TimerSingleShot::create(this, TIME_DEACTIVATION, [this]() {
-      if (m_state == StateDisconnecting) {
-        disconnected();
-      }
-    });
-    return;
-  }
 
   NextStep nextStep = m_nextStep;
 

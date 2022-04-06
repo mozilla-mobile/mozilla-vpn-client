@@ -7,6 +7,10 @@ policy:
 tasks:
     - $let:
         trustDomain: mozillavpn
+        # TODO: Land patch from taskgraph-try upstream
+        taskgraph:
+              branch: taskgraph-try
+              revision: 7702e79b350c15eec769dcf4aa6374197974b01f
         # Github events have this stuff in different places...
         ownerEmail:
             $if: 'tasks_for in ["cron", "action"]'
@@ -209,6 +213,10 @@ tasks:
                               MOZILLAVPN_HEAD_TAG: '${head_tag}'
                               MOZILLAVPN_REPOSITORY_TYPE: git
                               MOZILLAVPN_PIP_REQUIREMENTS: taskcluster/requirements.txt
+                              TASKGRAPH_BASE_REPOSITORY: https://hg.mozilla.org/ci/taskgraph
+                              TASKGRAPH_HEAD_REPOSITORY: https://hg.mozilla.org/ci/${taskgraph.branch}
+                              TASKGRAPH_HEAD_REV: ${taskgraph.revision}
+                              TASKGRAPH_REPOSITORY_TYPE: hg
                               REPOSITORIES: {$json: {mozillavpn: "MozillaVPN"}}
                               HG_STORE_PATH: /builds/worker/checkouts/hg-store
                               ANDROID_SDK_ROOT: /builds/worker/android-sdk

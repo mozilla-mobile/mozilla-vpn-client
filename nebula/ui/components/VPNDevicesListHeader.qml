@@ -62,7 +62,7 @@ Item {
         anchors.top: listHeader.top
         height: VPNTheme.theme.windowMargin * 2
         width: listHeader.width
-        color: "transparent"
+        color: VPNTheme.theme.transparent
     }
 
     VPNPanel {
@@ -84,7 +84,7 @@ Item {
         anchors.top: vpnPanel.bottom
         height: VPNTheme.theme.windowMargin * 2
         width: listHeader.width
-        color: "transparent"
+        color: VPNTheme.theme.transparent
     }
 
 }

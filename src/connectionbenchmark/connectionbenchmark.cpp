@@ -25,13 +25,25 @@ ConnectionBenchmark::~ConnectionBenchmark() {
   MVPN_COUNT_DTOR(ConnectionBenchmark);
 }
 
+void ConnectionBenchmark::initialize() {
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+
+  Controller* controller = vpn->controller();
+  Q_ASSERT(controller);
+
+  connect(controller, &Controller::stateChanged, this,
+          &ConnectionBenchmark::handleControllerState);
+  connect(vpn->connectionHealth(), &ConnectionHealth::stabilityChanged, this,
+          &ConnectionBenchmark::handleStabilityChange);
+}
+
 void ConnectionBenchmark::setConnectionSpeed() {
   logger.debug() << "Set speed";
 
-  if (m_download >= Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
+  if (m_bitsPerSec >= Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
     m_speed = SpeedFast;
-  } else if (m_download >= Constants::BENCHMARK_THRESHOLD_SPEED_MEDIUM &&
-             m_download < Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
+  } else if (m_bitsPerSec >= Constants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
     m_speed = SpeedMedium;
   } else {
     m_speed = SpeedSlow;
@@ -60,20 +72,13 @@ void ConnectionBenchmark::start() {
   Controller::State controllerState = controller->state();
   Q_ASSERT(controllerState == Controller::StateOn);
 
-  if (vpn->connectionHealth()->stability() == ConnectionHealth::NoSignal) {
-    handleStabilityChange();
-  }
-
-  connect(controller, &Controller::stateChanged, this,
-          &ConnectionBenchmark::stop);
-  connect(vpn->connectionHealth(), &ConnectionHealth::stabilityChanged, this,
-          &ConnectionBenchmark::handleStabilityChange);
+  setState(StateRunning);
 
   // Create ping benchmark
   BenchmarkTaskPing* pingTask = new BenchmarkTaskPing();
   connect(pingTask, &BenchmarkTaskPing::finished, this,
           &ConnectionBenchmark::pingBenchmarked);
-  connect(pingTask, &Task::completed, this,
+  connect(pingTask->sentinel(), &BenchmarkTask::destroyed, this,
           [this, pingTask]() { m_benchmarkTasks.removeOne(pingTask); });
   m_benchmarkTasks.append(pingTask);
   TaskScheduler::scheduleTask(pingTask);
@@ -83,17 +88,18 @@ void ConnectionBenchmark::start() {
       new BenchmarkTaskDownload(Constants::BENCHMARK_DOWNLOAD_URL);
   connect(downloadTask, &BenchmarkTaskDownload::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
-  connect(downloadTask, &Task::completed, this,
+  connect(downloadTask->sentinel(), &BenchmarkTask::destroyed, this,
           [this, downloadTask]() { m_benchmarkTasks.removeOne(downloadTask); });
   m_benchmarkTasks.append(downloadTask);
   TaskScheduler::scheduleTask(downloadTask);
-
-  setState(StateRunning);
 }
 
 void ConnectionBenchmark::stop() {
-  logger.debug() << "Stop benchmarks";
+  if (m_state == StateInitial) {
+    return;
+  }
 
+  logger.debug() << "Stop benchmarks";
   if ((m_state == StateRunning || m_state == StateError) &&
       !m_benchmarkTasks.isEmpty()) {
     for (BenchmarkTask* benchmark : m_benchmarkTasks) {
@@ -109,23 +115,23 @@ void ConnectionBenchmark::reset() {
 
   stop();
 
-  m_download = 0;
-  m_ping = 0;
+  m_bitsPerSec = 0;
+  m_pingLatency = 0;
 
   setState(StateInitial);
 }
 
-void ConnectionBenchmark::downloadBenchmarked(quint64 bytesPerSecond,
+void ConnectionBenchmark::downloadBenchmarked(quint64 bitsPerSec,
                                               bool hasUnexpectedError) {
-  logger.debug() << "Benchmarked download" << bytesPerSecond;
+  logger.debug() << "Benchmarked download" << bitsPerSec;
 
   if (hasUnexpectedError) {
     setState(StateError);
     return;
   }
 
-  m_download = bytesPerSecond;
-  emit downloadChanged();
+  m_bitsPerSec = bitsPerSec;
+  emit bitsPerSecChanged();
 
   setConnectionSpeed();
 }
@@ -133,15 +139,35 @@ void ConnectionBenchmark::downloadBenchmarked(quint64 bytesPerSecond,
 void ConnectionBenchmark::pingBenchmarked(quint64 pingLatency) {
   logger.debug() << "Benchmarked ping" << pingLatency;
 
-  m_ping = pingLatency;
-  emit pingChanged();
+  m_pingLatency = pingLatency;
+  emit pingLatencyChanged();
+}
+
+void ConnectionBenchmark::handleControllerState() {
+  if (m_state == StateInitial || m_state == StateReady) {
+    return;
+  }
+
+  Controller::State controllerState =
+      MozillaVPN::instance()->controller()->state();
+  logger.debug() << "Handle controller state" << controllerState;
+
+  if (controllerState != Controller::StateOn) {
+    setState(StateError);
+    stop();
+  }
 }
 
 void ConnectionBenchmark::handleStabilityChange() {
-  logger.debug() << "Handle stability change";
+  if (m_state == StateInitial || m_state == StateReady) {
+    return;
+  }
 
-  if (MozillaVPN::instance()->connectionHealth()->stability() ==
-      ConnectionHealth::NoSignal) {
+  ConnectionHealth::ConnectionStability stability =
+      MozillaVPN::instance()->connectionHealth()->stability();
+  logger.debug() << "Handle stability change" << stability;
+
+  if (stability == ConnectionHealth::NoSignal) {
     setState(StateError);
     stop();
   };

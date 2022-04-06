@@ -14,8 +14,12 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
+import android.util.Log
 import org.mozilla.firefox.vpn.glean.GleanEvent
 import java.io.IOException
+import java.lang.Exception
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 // Companion for AndroidUtils.cpp
 object VPNUtils {
@@ -37,10 +41,10 @@ object VPNUtils {
 
         // Find the right volume to use:
         val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-
+        val dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("y-mm-dd-H-m-ss"))
         val fileMetaData = ContentValues().apply {
             put(MediaStore.Downloads.MIME_TYPE, "text/plain")
-            put(MediaStore.Downloads.DISPLAY_NAME, "Mozilla VPN Logs")
+            put(MediaStore.Downloads.DISPLAY_NAME, "MozillaVPN_Logs_$dateTime")
             put(MediaStore.Downloads.IS_PENDING, 1)
         }
         // Create the File and get the URI
@@ -65,7 +69,15 @@ object VPNUtils {
         // Now update the Files meta data that the file exists
         fileMetaData.clear()
         fileMetaData.put(MediaStore.Downloads.IS_PENDING, 0)
-        resolver.update(fileURI, fileMetaData, null, null)
+
+        try {
+            val ok = resolver.update(fileURI, fileMetaData, null, null)
+            if (ok == 0) {
+                Log.e("MozillaVPNLogs", "resolver update - err: 0 Rows updated")
+            }
+        } catch (e: Exception) {
+            Log.e("MozillaVPNLogs", "resolver update - exception: " + e.message)
+        }
 
         val sendIntent = Intent(Intent.ACTION_SEND)
         sendIntent.putExtra(Intent.EXTRA_STREAM, fileURI)
