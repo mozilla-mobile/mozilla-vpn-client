@@ -115,10 +115,14 @@ class NetworkRequest final : public QObject {
 #ifdef UNIT_TEST
   static NetworkRequest* createForFxaTotpCreation(
       Task* parent, const QByteArray& sessionToken);
+#endif
+
   static NetworkRequest* createForFxaAccountDeletion(
       Task* parent, const QByteArray& sessionToken, const QString& emailAddress,
       const QByteArray& authpw);
-#endif
+
+  static NetworkRequest* createForFxaAttachedClients(
+      Task* parent, const QByteArray& sessionToken);
 
   static NetworkRequest* createForFxaSessionDestroy(
       Task* parent, const QByteArray& sessionToken);

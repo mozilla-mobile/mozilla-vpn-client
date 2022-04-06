@@ -269,6 +269,31 @@ NetworkRequest* NetworkRequest::createForFxaLogin(
 }
 
 // static
+NetworkRequest* NetworkRequest::createForFxaAttachedClients(
+    Task* parent, const QByteArray& sessionToken) {
+  Q_ASSERT(parent);
+  Q_UNUSED(sessionToken);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaAccountDeletion(
+    Task* parent, const QByteArray& sessionToken, const QString& emailAddress,
+    const QByteArray& authpw) {
+  Q_ASSERT(parent);
+  Q_UNUSED(sessionToken);
+  Q_UNUSED(emailAddress);
+  Q_UNUSED(authpw);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
     Task* parent, const QString& emailAddress) {
   Q_ASSERT(parent);

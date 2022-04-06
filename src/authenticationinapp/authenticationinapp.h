@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QUrl>
 
-class AuthenticationInAppListener;
+class AuthenticationInAppSession;
 
 class AuthenticationInApp final : public QObject {
   Q_OBJECT
@@ -18,6 +18,8 @@ class AuthenticationInApp final : public QObject {
   Q_PROPERTY(int sessionEmailCodeLength READ sessionEmailCodeLength CONSTANT);
   Q_PROPERTY(int unblockCodeLength READ unblockCodeLength CONSTANT);
   Q_PROPERTY(QString emailAddress READ emailAddress NOTIFY emailAddressChanged);
+  Q_PROPERTY(QStringList attachedClients READ attachedClients NOTIFY
+                 attachedClientsChanged);
 
  public:
   enum State {
@@ -54,6 +56,11 @@ class AuthenticationInApp final : public QObject {
     StateVerificationSessionByTotpNeeded,
     // Verification in progress
     StateVerifyingSessionTotpCode,
+    // The account deletion request has started. The user needs to accept a few
+    // things before proceeding.
+    StateAccountDeletionRequest,
+    // The account deletion is in progress.
+    StateDeletingAccount,
     // If we are unable to continue the authentication in-app, the fallback is
     // the browser flow.
     StateFallbackInBrowser,
@@ -111,7 +118,6 @@ class AuthenticationInApp final : public QObject {
   // This method is used to have a test coverage for the TOTP verification.
   void enableTotpCreation();
   // Delete account.
-  void enableAccountDeletion();
   void allowUpperCaseEmailAddress();
 #endif
 
@@ -133,18 +139,26 @@ class AuthenticationInApp final : public QObject {
   // StateVerificationSessionByTotpNeeded state.
   Q_INVOKABLE void verifySessionTotpCode(const QString& code);
 
-  void registerListener(AuthenticationInAppListener* listener);
+  // This can be called at the end of the authentication flow.
+  // We go into StateDeletingAccount.
+  Q_INVOKABLE void deleteAccount();
 
-  void requestEmailAddressChange(AuthenticationInAppListener* listener);
-  void requestState(State state, AuthenticationInAppListener* listener);
-  void requestErrorPropagation(AuthenticationInAppListener* listener,
+  void registerSession(AuthenticationInAppSession* session);
+
+  void requestEmailAddressChange(AuthenticationInAppSession* session);
+  void requestState(State state, AuthenticationInAppSession* session);
+  void requestErrorPropagation(AuthenticationInAppSession* session,
                                ErrorType errorType, uint32_t retryAfterSec = 0);
+  void requestAttachedClientsChange(AuthenticationInAppSession* session);
 
   static int totpCodeLength() { return 6; }
   static int sessionEmailCodeLength() { return 6; }
   static int unblockCodeLength() { return 8; }
 
   const QString& emailAddress() const;
+  const QStringList& attachedClients() const;
+
+  void terminateSession();
 
  signals:
   void stateChanged();
@@ -152,11 +166,10 @@ class AuthenticationInApp final : public QObject {
   void errorOccurred(ErrorType error, uint32_t retryAfter);
 
   void emailAddressChanged();
+  void attachedClientsChanged();
 
 #ifdef UNIT_TEST
-  void unitTestAuthFailedWithDetail(const QString& detail);
   void unitTestTotpCodeCreated(const QByteArray& data);
-  void unitTestAccountDeleted();
 #endif
 
  private:
@@ -167,7 +180,7 @@ class AuthenticationInApp final : public QObject {
  private:
   State m_state = StateInitializing;
 
-  AuthenticationInAppListener* m_listener = nullptr;
+  AuthenticationInAppSession* m_session = nullptr;
 
   QByteArray m_encodedPassword;
 };
