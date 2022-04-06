@@ -10,9 +10,6 @@ transforms:
     - taskgraph.transforms.cached_tasks:transforms
     - taskgraph.transforms.task:transforms
 
-job-defaults:
-    args:
-        QT_VERSION: 6.2.4
 
 jobs:
 #   <image_name>:   Defines the imagename we can use in kind.yml
@@ -44,21 +41,25 @@ jobs:
         definition: android-qt6-build
         args:
             ANDROID_ARCH: android_arm64_v8a
+            QT_VERSION: 6.2.4
     android-build-armv7:
         parent: base
         symbol: I(android_armv7)
         definition: android-qt6-build
         args:
             ANDROID_ARCH: android_armv7
+            QT_VERSION: 6.2.4
     android-build-x86:
         parent: base
         symbol: I(android_x86)
         definition: android-qt6-build
         args:
             ANDROID_ARCH: android_x86
+            QT_VERSION: 6.2.4
     android-build-x64:
         parent: base
         symbol: I(android_x86_64)
         definition: android-qt6-build
         args:
             ANDROID_ARCH: android_x86_64
+            QT_VERSION: 6.2.4
