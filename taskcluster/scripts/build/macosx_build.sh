@@ -75,4 +75,4 @@ cd $BUILD
 zip -r unsigned.zip .
 
 mkdir -p "/builds/worker/artifacts/"
-mv unsigned.zip "/builds/worker/artifacts/"
+mv unsigned.zip /builds/worker/artifacts/unsigned.zip
