@@ -171,8 +171,27 @@ ColumnLayout {
                         return slideIndex === swipeView.currentIndex;
                     }
 
+                    function updateSlideContent() {
+                        popupTitle.text = featureID !== ""
+                            ? VPNFeatureList.get(featureID).displayName
+                            : VPNl18n.WhatsNewReleaseNotesTourModalHeader;
+                        popupText.text = featureID !== ""
+                            ? VPNFeatureList.get(featureID).description
+                            : VPNl18n.WhatsNewReleaseNotesTourModalBodyText;
+                    }
+
+                    Connections {
+                        target: tour
+                        function onStarted() {
+                            if (isCurrentSlide()) {
+                                updateSlideContent();
+                            }
+                        }
+                    }
+
                     Connections {
                         target: swipeView
+
                         function onCurrentIndexChanged() {
                             if (!isCurrentSlide()) {
                                 return;
@@ -181,13 +200,7 @@ ColumnLayout {
                             const featureIdChanged = tour.currentFeatureID !== featureID;
                             if (featureIdChanged) {
                                 tour.currentFeatureID = featureID;
-
-                                popupTitle.text = featureID !== ""
-                                    ? VPNFeatureList.get(featureID).displayName
-                                    : VPNl18n.WhatsNewReleaseNotesTourModalHeader;
-                                popupText.text = featureID !== ""
-                                    ? VPNFeatureList.get(featureID).description
-                                    : VPNl18n.WhatsNewReleaseNotesTourModalBodyText;
+                                updateSlideContent();
                             }
                         }
                     }

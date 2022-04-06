@@ -26,6 +26,8 @@ build_schema = Schema(
         Required("run"): {str: Any(str, bool)},
         Optional("requires-level"): int,
         Optional("release-artifacts"): [str],
+        Optional("dependencies"): task_description_schema["dependencies"],
+        Optional("fetches"):any
     }
 )
 

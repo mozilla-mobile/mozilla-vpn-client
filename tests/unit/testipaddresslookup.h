@@ -4,7 +4,7 @@
 
 #include "helper.h"
 
-class TestConnectionDataHolder final : public TestHelper {
+class TestIpAddressLookup final : public TestHelper {
   Q_OBJECT
 
  private slots:
@@ -12,8 +12,6 @@ class TestConnectionDataHolder final : public TestHelper {
   void checkIpAddressFailure();
   void checkIpAddressSucceess_data();
   void checkIpAddressSucceess();
-
-  void chart();
 
   void cleanupTestCase() {
     TestHelper::controllerState = Controller::StateInitializing;

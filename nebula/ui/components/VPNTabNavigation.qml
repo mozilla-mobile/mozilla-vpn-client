@@ -37,7 +37,7 @@ Item {
         visible: stack.children.length > 1
         contentHeight: stack.children.length === 1 ? 0 : VPNTheme.theme.menuHeight
         background: Rectangle {
-            color: "transparent"
+            color: VPNTheme.theme.transparent
         }
 
         Repeater {
@@ -51,7 +51,7 @@ Item {
                 onClicked: handleTabClick(btn)
 
                 background: Rectangle {
-                    color: "transparent"
+                    color: VPNTheme.theme.transparent
 
                     Rectangle {
                         height: 2
@@ -86,11 +86,11 @@ Item {
 
     Rectangle {
         objectName: "activeTabIndicator"
-        width: bar.visible ? bar.currentItem.width : 0
+        width: (bar.visible && bar.currentItem) ? bar.currentItem.width : 0
         height: 2
         color: VPNTheme.colors.purple70
         anchors.bottom: bar.bottom
-        x: bar.visible ? bar.currentItem.x : 0
+        x: (bar.visible && bar.currentItem) ? bar.currentItem.x : 0
         visible: stack.children.length > 1
         Behavior on x {
             PropertyAnimation {

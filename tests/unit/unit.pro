@@ -3,11 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 QT += testlib
-QT += charts
 QT += network
 QT += qml
 QT += quick
 QT += xml
+QT += widgets
 
 DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += BUILD_ID=\\\"1234\\\"
@@ -46,7 +46,6 @@ HEADERS += \
     ../../src/collator.h \
     ../../src/command.h \
     ../../src/commandlineparser.h \
-    ../../src/connectiondataholder.h \
     ../../src/constants.h \
     ../../src/controller.h \
     ../../src/curve25519.h \
@@ -56,6 +55,7 @@ HEADERS += \
     ../../src/inspector/inspectorhandler.h \
     ../../src/inspector/inspectorutils.h \
     ../../src/ipaddress.h \
+    ../../src/ipaddresslookup.h \
     ../../src/itempicker.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
@@ -118,17 +118,18 @@ HEADERS += \
     testadjust.h \
     testandroidmigration.h \
     testcommandlineparser.h \
-    testconnectiondataholder.h \
     testfeature.h \
     testlocalizer.h \
     testlogger.h \
     testipaddress.h \
+    testipaddresslookup.h \
     testipfinder.h \
     testlicense.h \
     testmodels.h \
     testmozillavpnh.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
+    testserveri18n.h \
     teststatusicon.h \
     testtasks.h \
     testthemes.h \
@@ -142,7 +143,6 @@ SOURCES += \
     ../../src/collator.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
-    ../../src/connectiondataholder.cpp \
     ../../src/constants.cpp \
     ../../src/curve25519.cpp \
     ../../src/dnspingsender.cpp \
@@ -153,6 +153,7 @@ SOURCES += \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
     ../../src/hacl-star/Hacl_Poly1305_32.c \
     ../../src/ipaddress.cpp \
+    ../../src/ipaddresslookup.cpp \
     ../../src/itempicker.cpp \
     ../../src/inspector/inspectorutils.cpp \
     ../../src/l18nstringsimpl.cpp \
@@ -216,17 +217,18 @@ SOURCES += \
     testadjust.cpp \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \
-    testconnectiondataholder.cpp \
     testfeature.cpp \
     testlocalizer.cpp \
     testlogger.cpp \
     testipaddress.cpp \
+    testipaddresslookup.cpp \
     testipfinder.cpp \
     testlicense.cpp \
     testmodels.cpp \
     testmozillavpnh.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \
+    testserveri18n.cpp \
     teststatusicon.cpp \
     testtasks.cpp \
     testthemes.cpp \
@@ -281,5 +283,6 @@ MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
 
+RESOURCES += servers/servers.qrc
 RESOURCES += ../../src/ui/license.qrc
 RESOURCES += themes/themes.qrc

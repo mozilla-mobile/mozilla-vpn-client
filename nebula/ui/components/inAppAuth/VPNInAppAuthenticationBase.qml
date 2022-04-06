@@ -91,7 +91,7 @@ VPNFlickable {
             Layout.preferredWidth: col.width - VPNTheme.theme.vSpacing * 2
 
             Rectangle {
-                color: "transparent"
+                color: VPNTheme.theme.transparent
                 height: VPNTheme.theme.rowHeight * 2
                 Layout.preferredWidth: 100
                 Layout.alignment: Qt.AlignHCenter

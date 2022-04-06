@@ -119,7 +119,7 @@ StackView {
                     Layout.preferredHeight: VPNTheme.theme.rowHeight
 
                     Rectangle {
-                        color: "transparent"
+                        color: VPNTheme.theme.transparent
                         Layout.preferredHeight: VPNTheme.theme.vSpacing
                         Layout.preferredWidth: VPNTheme.theme.vSpacing
                         Layout.leftMargin: 12

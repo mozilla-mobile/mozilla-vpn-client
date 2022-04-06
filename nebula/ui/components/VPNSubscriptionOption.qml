@@ -83,7 +83,7 @@ RadioDelegate {
         Rectangle {
             anchors.fill: parent
             border.color: (radioDelegate.checked || radioDelegate.focus) ? VPNTheme.theme.purple60 : VPNTheme.theme.white
-            color: "transparent"
+            color: VPNTheme.theme.transparent
             radius: VPNTheme.theme.cornerRadius
 
             Behavior on border.color {

@@ -110,7 +110,6 @@ else
 
   print Y "Update the submodules..."
   git submodule init || die "Failed"
-  git submodule update --remote --depth 1 i18n || die "Failed"
   git submodule update --remote --depth 1 3rdparty/wireguard-tools || die "Failed"
   print G "done."
 

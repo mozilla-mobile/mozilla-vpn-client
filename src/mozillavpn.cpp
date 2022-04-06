@@ -154,13 +154,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::settingsChanged);
 
-  connect(&m_private->m_controller, &Controller::stateChanged,
-          &m_private->m_connectionDataHolder,
-          &ConnectionDataHolder::stateChanged);
-
-  connect(this, &MozillaVPN::stateChanged, &m_private->m_connectionDataHolder,
-          &ConnectionDataHolder::stateChanged);
-
   if (FeatureInAppPurchase::instance()->isSupported()) {
     IAPHandler* iap = IAPHandler::createInstance();
     connect(iap, &IAPHandler::subscriptionStarted, this,
@@ -217,6 +210,10 @@ void MozillaVPN::initialize() {
   m_private->m_releaseMonitor.runSoon();
 
   m_private->m_telemetry.initialize();
+
+  m_private->m_connectionBenchmark.initialize();
+
+  m_private->m_ipAddressLookup.initialize();
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
@@ -1711,6 +1708,7 @@ void MozillaVPN::hardResetAndQuit() {
 }
 
 void MozillaVPN::crashTest() {
+  logger.debug() << "Crashing Application";
   char* text = new char[100];
   delete[] text;
   delete[] text;

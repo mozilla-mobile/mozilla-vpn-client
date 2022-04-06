@@ -122,7 +122,7 @@ void LottiePrivate::createAnimation() {
   }
 
   QJSValue jsonData =
-      jsonParser.call(QList<QJSValue>{QJSValue(QString(file.readAll()))});
+      jsonParser.call(QList<QJSValue>{engine()->toScriptValue(file.readAll())});
   if (jsonData.isError()) {
     QString errorMessage("Failed to parse the source as JSON: ");
     errorMessage.append(jsonData.toString());
@@ -134,11 +134,12 @@ void LottiePrivate::createAnimation() {
 
   QJSValue rendererSettings = engine()->newObject();
   rendererSettings.setProperty("clearCanvas", true);
-  rendererSettings.setProperty("preserveAspectRatio", fillModeToAspectRatio());
+  rendererSettings.setProperty(
+      "preserveAspectRatio", engine()->toScriptValue(fillModeToAspectRatio()));
 
   QJSValue obj = engine()->newObject();
   obj.setProperty("container", engine()->toScriptValue(m_container));
-  obj.setProperty("renderer", "canvas");
+  obj.setProperty("renderer", engine()->toScriptValue(m_renderer));
   obj.setProperty("rendererSettings", rendererSettings);
   obj.setProperty("loop", m_loops);
   obj.setProperty("autoplay", m_autoPlay);
@@ -273,8 +274,8 @@ void LottiePrivate::clearCanvas() {
 
   QJSValue getContext = canvasValue.property("getContext");
   Q_ASSERT(getContext.isCallable());
-  QJSValue ctx =
-      getContext.callWithInstance(canvasValue, QList<QJSValue>{"2d"});
+  QJSValue ctx = getContext.callWithInstance(
+      canvasValue, QList<QJSValue>{engine()->toScriptValue(m_context_type)});
   if (ctx.isObject() && ctx.hasProperty("reset")) {
     QJSValue ctxReset = ctx.property("reset");
     Q_ASSERT(ctxReset.isCallable());
@@ -337,7 +338,13 @@ QString LottiePrivate::fillModeToAspectRatio() const {
   return "none";
 }
 
-void LottiePrivate::eventPlayingCompleted() { m_status.resetAndNotify(); }
+void LottiePrivate::eventPlayingCompleted() {
+  if (m_window) {
+    m_window->suspend();
+  }
+
+  m_status.resetAndNotify();
+}
 
 void LottiePrivate::eventLoopCompleted() { emit loopCompleted(); }
 

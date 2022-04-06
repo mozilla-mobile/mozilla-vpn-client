@@ -268,9 +268,7 @@ void AndroidController::startActivityForResult(JNIEnv* env, jobject /*thiz*/,
 
     if (resultCode == ACTIVITY_RESULT_OK) {
       logger.debug() << "VPN PROMPT RESULT - Accepted";
-      AndroidUtils::dispatchToMainThread(
-          [&] { s_instance->resume_activate(); });
-
+      s_instance->resume_activate();
       return;
     }
     // If the request got rejected abort the current

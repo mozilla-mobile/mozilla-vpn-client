@@ -9,11 +9,15 @@ transforms:
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
 
+kind-dependencies:
+    - fetch
+    - build-qt
+    - build-openssl
+
 jobs-from:
     - linux.yml
-#    - windows.yml
+    - windows.yml
     - android.yml
     - mac.yml
     - wasm.yml
-
 

@@ -81,7 +81,7 @@ Flickable {
         anchors.rightMargin: Qt.platform.os === "osx" ? 2 : 0
 
         background: Rectangle {
-            color: "transparent"
+            color: VPNTheme.theme.transparent
             anchors.fill: parent
         }
 

@@ -25,7 +25,7 @@ Item {
         antialiasing: true
         smooth: true
         visible: false
-        color: "transparent"
+        color: VPNTheme.theme.transparent
 
         Behavior on color {
             PropertyAnimation {

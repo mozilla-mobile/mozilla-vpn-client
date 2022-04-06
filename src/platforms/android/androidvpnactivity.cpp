@@ -74,13 +74,11 @@ void AndroidVPNActivity::sendToService(ServiceAction type,
   if (!Constants::inProduction()) {
     logger.debug() << "sendToService: " << messageType << " " << data;
   }
-  AndroidUtils::runOnAndroidThreadSync([messageType, &data]() {
-    QJniEnvironment env;
-    QJniObject::callStaticMethod<void>(
-        CLASSNAME, "sendToService", "(ILjava/lang/String;)V",
-        static_cast<int>(messageType),
-        QJniObject::fromString(data).object<jstring>());
-  });
+  QJniEnvironment env;
+  QJniObject::callStaticMethod<void>(
+      CLASSNAME, "sendToService", "(ILjava/lang/String;)V",
+      static_cast<int>(messageType),
+      QJniObject::fromString(data).object<jstring>());
 }
 
 // static
@@ -100,7 +98,10 @@ void AndroidVPNActivity::onServiceMessage(JNIEnv* env, jobject thiz,
 }
 
 void AndroidVPNActivity::handleServiceMessage(int code, const QString& data) {
-  logger.debug() << "handleServiceMessage" << code << data;
+  if (code != ServiceEvents::EVENT_BACKEND_LOGS) {
+    // Don't put the logs in the log.
+    logger.debug() << "handleServiceMessage" << code << data;
+  }
   auto mode = (ServiceEvents)code;
   switch (mode) {
     case ServiceEvents::EVENT_INIT:

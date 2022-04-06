@@ -153,9 +153,6 @@ int CommandLogin::run(QStringList& tokens) {
             switch (error) {
               case AuthenticationInApp::ErrorAccountAlreadyExists:
                 [[fallthrough]];
-              case AuthenticationInApp::ErrorEmailAlreadyExists:
-                stream << "Account already exists" << Qt::endl;
-                break;
               case AuthenticationInApp::ErrorUnknownAccount:
                 stream << "Unknown account" << Qt::endl;
                 break;
@@ -191,6 +188,9 @@ int CommandLogin::run(QStringList& tokens) {
                 break;
               case AuthenticationInApp::ErrorInvalidTotpCode:
                 stream << "Invalid TOTP code" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorConnectionTimeout:
+                stream << "Request Timed Out" << Qt::endl;
                 break;
             }
           });

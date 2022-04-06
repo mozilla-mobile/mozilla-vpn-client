@@ -12,7 +12,7 @@ Rectangle {
 
     property var showVPNOnIcon: false
 
-    color: "transparent"
+    color: VPNTheme.theme.transparent
     opacity: 1
     states: [
         State {

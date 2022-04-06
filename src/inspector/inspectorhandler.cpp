@@ -49,7 +49,6 @@ Logger logger(LOG_INSPECTOR, "InspectorHandler");
 bool s_stealUrls = false;
 bool s_forwardNetwork = false;
 
-QUrl s_lastUrl;
 QString s_updateVersion;
 QStringList s_pickedItems;
 bool s_pickedItemsSet = false;
@@ -452,7 +451,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"lasturl", "Retrieve the last opened URL", 0,
                      [](const QList<QByteArray>&) {
                        QJsonObject obj;
-                       obj["value"] = s_lastUrl.toString();
+                       obj["value"] = MozillaVPN::instance()->lastUrl();
                        return obj;
                      }},
 
@@ -947,9 +946,6 @@ QString InspectorHandler::getObjectClass(const QObject* target) {
   auto metaObject = target->metaObject();
   return metaObject->className();
 }
-
-// static
-void InspectorHandler::setLastUrl(const QUrl& url) { s_lastUrl = url; }
 
 // static
 bool InspectorHandler::stealUrls() { return s_stealUrls; }

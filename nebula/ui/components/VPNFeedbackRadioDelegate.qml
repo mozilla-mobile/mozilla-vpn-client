@@ -58,7 +58,7 @@ RadioDelegate {
 
     background: VPNFocusOutline {
             opacity: radio.checked || radio.activeFocus ? 1 : 0
-            color: "transparent"
+            color: VPNTheme.theme.transparent
             border.width: 4
             border.color: VPNTheme.theme.blueFocusOutline
             anchors.margins: 2

@@ -162,7 +162,7 @@ VPNFlickable {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: VPNTheme.theme.windowMargin / 2
-            color: "transparent"
+            color: VPNTheme.theme.transparent
         }
 
         VPNButton {
@@ -198,7 +198,7 @@ VPNFlickable {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
-            color: "transparent"
+            color: VPNTheme.theme.transparent
         }
 
     }

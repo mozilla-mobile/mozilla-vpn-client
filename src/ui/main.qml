@@ -19,6 +19,9 @@ Window {
 
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
     property var isWasmApp: Qt.platform.os === "wasm"
+    property bool isMobileOnboardingOnIos: VPNFeatureList.get("mobileOnboarding").isSupported
+        && Qt.platform.os === "ios"
+        && VPN.state === VPN.StateInitialize
 
     signal clearCurrentViewStack
     signal showServersView
@@ -35,6 +38,27 @@ Window {
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
     }
+
+    function safeAreaHeightByDevice() {
+        if (Qt.platform.os !== "ios") {
+            return 0;
+        }
+        switch(window.height * Screen.devicePixelRatio) {
+        case 1624: // iPhone_XR (Qt Provided Physical Resolution)
+        case 1792: // iPhone_XR
+
+        case 2436: // iPhone_X_XS
+        case 2688: // iPhone_XS_MAX
+
+        case 2532: // iPhone_12_Pro
+        case 2778: // iPhone_12_Pro_Max
+        case 2340: // iPhone_12_mini
+            return 34;
+        default:
+            return 20;
+        }
+    }
+
     screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
     visible: true
@@ -94,31 +118,10 @@ Window {
     Rectangle {
         id: iosSafeAreaTopMargin
 
-        color: "transparent"
-        height: marginHeightByDevice()
+        color: VPNTheme.theme.transparent
+        height: isMobileOnboardingOnIos ? 0 : safeAreaHeightByDevice();
         width: window.width
         anchors.top: parent.top
-
-        function marginHeightByDevice() {
-            if (Qt.platform.os !== "ios") {
-                return 0;
-            }
-            switch(window.height * Screen.devicePixelRatio) {
-            case 1624: // iPhone_XR (Qt Provided Physical Resolution)
-            case 1792: // iPhone_XR
-
-            case 2436: // iPhone_X_XS
-            case 2688: // iPhone_XS_MAX
-
-            case 2532: // iPhone_12_Pro
-            case 2778: // iPhone_12_Pro_Max
-            case 2340: // iPhone_12_mini
-                return 34;
-            default:
-                return 20;
-            }
-
-        }
     }
 
     VPNWasmHeader {
@@ -297,7 +300,10 @@ Window {
                 mainStackView.pop(null, StackView.Immediate);
             }
 
-            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", { isMainView: true });
+            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", {
+                isMainView: true,
+                addSafeAreaMargin: true
+            });
         }
 
         function onLoadAndroidAuthenticationView() {
@@ -309,13 +315,10 @@ Window {
         }
 
         function onInitializeGlean() {
-            var debug = {};
             if (VPN.debugMode) {
                 console.debug("Initializing glean with debug mode");
-                debug = {
-                    logPings: true,
-                    debugViewTag: "MozillaVPN"
-                };
+                Glean.setLogPings(true);
+                Glean.setDebugViewTag("MozillaVPN");
             }
             var channel = VPN.stagingMode ? "staging" : "production";
             console.debug("Initializing glean with channel set to:", channel);
@@ -323,7 +326,6 @@ Window {
                 appBuild: "MozillaVPN/" + VPN.versionString,
                 appDisplayVersion: VPN.versionString,
                 channel: channel,
-                debug: debug,
                 osVersion: VPN.osVersion,
                 architecture: VPN.architecture,
             });

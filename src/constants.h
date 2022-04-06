@@ -34,8 +34,8 @@ constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
 // Number of msecs for max runtime of the connection benchmarks.
 constexpr uint32_t BENCHMARK_MAX_DURATION_PING = 3000;
 constexpr uint32_t BENCHMARK_MAX_DURATION_DOWNLOAD = 15000;
-constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_FAST = 3125000;    // 25 Megabit
-constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_MEDIUM = 1250000;  // 10 Megabit
+constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_FAST = 25000000;    // 25 Megabit
+constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_MEDIUM = 10000000;  // 10 Megabit
 constexpr const char* BENCHMARK_DOWNLOAD_URL =
     "https://archive.mozilla.org/pub/vpn/speedtest/50m.data";
 
@@ -50,15 +50,6 @@ constexpr const char* BENCHMARK_DOWNLOAD_URL =
       return inProduction() ? releaseValue : debugValue;          \
     }
 #endif
-
-// Let's refresh the IP address any 10 minutes (in milliseconds).
-CONSTEXPR(uint32_t, ipAddressTimerMsec, 600000, 10000, 500)
-
-// Let's check the connection status any second.
-CONSTEXPR(uint32_t, checkStatusTimerMsec, 1000, 1000, 0)
-
-// Number of points for the charts.
-CONSTEXPR(int, chartsMaxPoints, 30, 30, 30);
 
 // Any 6 hours, a new check
 CONSTEXPR(uint32_t, releaseMonitorMsec, 21600000, 4000, 0)

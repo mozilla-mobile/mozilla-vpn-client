@@ -73,6 +73,11 @@ VPNFlickable {
                         width: parent.width
                         opacity: vpnIsOff ? 1 : .5
                         horizontalAlignment: Text.AlignLeft
+
+                        VPNMouseArea {
+                            propagateClickToParent: false
+                            onClicked: VPNSettings.dnsProvider = settingValue
+                        }
                     }
 
                     VPNTextBlock {

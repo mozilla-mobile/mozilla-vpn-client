@@ -90,7 +90,13 @@ void AuthenticationInApp::setPassword(const QString& password) {
 }
 
 void AuthenticationInApp::signIn() {
+#ifndef UNIT_TEST
+  // In unit-test we try to reproduce errors creating race-conditions between
+  // sign-in/sign-up. Basically we ignore we are in sign-in and we proceed with
+  // a sign-up. This is a race-condition between 2 devices and it's not
+  // possible to reproduce it with one single istance of AuthenticationInApp.
   Q_ASSERT(m_state == StateSignIn);
+#endif
   Q_ASSERT(m_listener);
 
   logger.debug() << "Sign In";
@@ -107,7 +113,13 @@ const QString& AuthenticationInApp::emailAddress() const {
 }
 
 void AuthenticationInApp::signUp() {
+#ifndef UNIT_TEST
+  // In unit-test we try to reproduce errors creating race-conditions between
+  // sign-in/sign-up. Basically we ignore we are in sign-in and we proceed with
+  // a sign-up. This is a race-condition between 2 devices and it's not
+  // possible to reproduce it with one single istance of AuthenticationInApp.
   Q_ASSERT(m_state == StateSignUp);
+#endif
   Q_ASSERT(m_listener);
 
   logger.debug() << "Sign Up";

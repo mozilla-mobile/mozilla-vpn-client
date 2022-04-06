@@ -107,6 +107,7 @@ The client asks for the password. Then, it goes to the **Signing-in** state.
 * Errors:
     * Incorrect password
     * Too many requests
+    * Request Timeout 
     * Sign in with this email type is not currently supported -This is a
       strange FxA code. We have to investigate how to reproduce it.
     * Failed to send email - the unblock code is needed but the email sending
@@ -283,6 +284,7 @@ The authentication continues in the browser as we used to do in v2.7.
 - Invalid TOTP code
 - Too many requests
 - Server unavailable
+- Request Timeout
 - Unknown account
 
 ### The whole flow

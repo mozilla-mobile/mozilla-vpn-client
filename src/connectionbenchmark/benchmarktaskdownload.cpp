@@ -66,12 +66,18 @@ void BenchmarkTaskDownload::downloadReady(QNetworkReply::NetworkError error,
 
   m_request = nullptr;
 
-  quint64 bytesPerSecond = m_bytesReceived / executionTime() * 1000;
+  quint64 bitsPerSec = 0;
+  double msecs = static_cast<double>(executionTime());
+  if (m_bytesReceived > 0 && msecs > 0) {
+    bitsPerSec = static_cast<quint64>(static_cast<double>(m_bytesReceived * 8) /
+                                      (msecs / 1000.00));
+  }
+
   bool hasUnexpectedError = (error != QNetworkReply::NoError &&
                              error != QNetworkReply::OperationCanceledError &&
                              error != QNetworkReply::TimeoutError) ||
-                            bytesPerSecond == 0;
+                            bitsPerSec == 0;
 
-  emit finished(bytesPerSecond, hasUnexpectedError);
+  emit finished(bitsPerSec, hasUnexpectedError);
   emit completed();
 }

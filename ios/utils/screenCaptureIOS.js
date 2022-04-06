@@ -183,8 +183,8 @@ describe('Take screenshots for each view', function() {
   });
 
   it('connection info', async () => {
-    await vpn.waitForElement('connectionInfoButton');
-    await vpn.clickOnElement('connectionInfoButton');
+    await vpn.waitForElement('connectionInfoToggleButton');
+    await vpn.clickOnElement('connectionInfoToggleButton');
     await vpn.wait();
 
     await screenCapture('connection_info');
