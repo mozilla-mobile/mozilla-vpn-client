@@ -541,3 +541,12 @@ inAppAuth:
   termsOfServiceAndPrivacyDisclaimer:
     value: By continuing, you agree to the <a href="terms-of-service">Terms of Service</a> and the <a href="privacy-notice">Privacy Notice</a>.
     comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
+
+freeTrials:
+  startYourFreeTrial: 
+    value: "Sign up to start your %1-day free trial."
+    comment: "%1 is the number of free trial days"
+  freeTrialLabel: 
+    value: "%1-day free trial"
+    comment: "%1 is the number of free trial days"
+
