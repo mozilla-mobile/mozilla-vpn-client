@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Dependencies
-python3 scripts/tooltool.py --url http://taskcluster/tooltool.mozilla-releng.net fetch -m macos/qt-dependencies.tt.manifest
 export PATH="`pwd`/qt/bin:$PATH"
 export PATH="$HOME/Library/Python/3.6/bin:$HOME/.gem/ruby/2.6.0/bin:$PATH"
 
@@ -10,7 +8,7 @@ export PATH="$HOME/Library/Python/3.6/bin:$HOME/.gem/ruby/2.6.0/bin:$PATH"
 gem install xcodeproj --user-install
 
 # install rust
-curl https://sh.rustup.rs -sSf | sh -s -- -y
+brew install rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
 # make sure submodules are up to date
@@ -64,7 +62,7 @@ xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALL
 # Package
 python3 ./scripts/macos/import_pkg_resources.py
 
-export BUILD="/builds/worker/artifacts/"
+export BUILD="/builds/worker/tmp/"
 # Full path of the app in a temp folder
 mkdir -p $BUILD
 cp -r Release/Mozilla\ VPN.app $BUILD
@@ -75,3 +73,6 @@ cp -r ./macos/pkg/Resources $BUILD
 
 cd $BUILD
 zip -r unsigned.zip .
+
+mkdir -p "/builds/worker/artifacts/"
+mv unsigned.zip "/builds/worker/artifacts/"
