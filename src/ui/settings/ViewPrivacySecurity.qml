@@ -62,11 +62,11 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.rightMargin: VPNTheme.theme.windowMargin
-                showDivider: false
                 //% "Data collection and use"
                 labelText: qsTrId("vpn.settings.dataCollection")
                 subLabelText: VPNl18n.SettingsDataCollectionDescription
                 isChecked: VPNSettings.gleanEnabled
+                showDivider: !crashOptInCheckBox.visible
                 onClicked: {
                     VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
                }
@@ -83,7 +83,7 @@ Item {
                 onClicked: VPNSettings.crashReportOptIn = !VPNSettings.crashReportOptIn
                 visible: Qt.platform.os === "windows"
                 anchors.rightMargin: VPNTheme.theme.windowMargin
-                showDivider: false;
+                showDivider: true;
             }
 
             VPNVerticalSpacer {
