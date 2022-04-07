@@ -29,7 +29,6 @@ buildscript {
 repositories {
     mavenCentral()
     google()
-    jcenter()
 }
 
 
@@ -48,7 +47,7 @@ apply plugin: 'kotlinx-serialization'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation 'androidx.core:core-ktx:1.1.0'
+    implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'com.android.installreferrer:installreferrer:2.2'
     implementation 'com.android.billingclient:billing-ktx:4.0.0'
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0-alpha02"
@@ -99,16 +98,16 @@ android {
        }
         debug{
             try {
-                res.srcDirs =  [qtAndroidDir + '/res', 'res/all','res/debug']
+                res.srcDirs =  [qtAndroidDir + '/res', 'resources/all','resources/debug','res']
             }catch(Exception ignored){
-                res.srcDirs = ['res/all','res/debug']
+                res.srcDirs = ['resources/all','resources/debug','res']
             }
         }
         release{
             try {
-                res.srcDirs =  [qtAndroidDir + '/res', 'res/all','res/release']
+                res.srcDirs =  [qtAndroidDir + '/res', 'resources/all','resources/release','res']
             }catch(Exception ignored){
-                res.srcDirs = ['res/all','res/release']
+                res.srcDirs = ['resources/all','resources/release','res']
             }
         }
     }
@@ -142,6 +141,10 @@ android {
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
+            packagingOptions {
+                // specify the path to your object binaries, or generally:
+                doNotStrip '**.so'
+            }
         }
     }
 
