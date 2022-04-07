@@ -32,7 +32,7 @@ class WindowsRouteMonitor final : public QObject {
   void routeChanged();
 
  private:
-  void updateExclusionRoute(MIB_IPFORWARD_ROW2* data, const void* table);
+  void updateExclusionRoute(MIB_IPFORWARD_ROW2* data, void* table);
 
   QHash<QHostAddress, MIB_IPFORWARD_ROW2*> m_exclusionRoutes;
 

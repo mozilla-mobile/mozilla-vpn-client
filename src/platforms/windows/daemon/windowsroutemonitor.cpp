@@ -69,8 +69,8 @@ WindowsRouteMonitor::~WindowsRouteMonitor() {
 }
 
 void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
-                                               const void* ptable) {
-  PMIB_IPFORWARD_TABLE2 table = (PMIB_IPFORWARD_TABLE2)ptable;
+                                               void* ptable) {
+  PMIB_IPFORWARD_TABLE2 table = reinterpret_cast<PMIB_IPFORWARD_TABLE2>(ptable);
   SOCKADDR_INET nexthop = {0};
   quint64 bestLuid = 0;
   int bestMatch = -1;
@@ -117,12 +117,11 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
     }
 
     // Ensure that the outgoing network interface is actually online and usable.
-    DWORD hintResult;
+    DWORD result;
     NL_NETWORK_CONNECTIVITY_HINT hint;
-    hintResult = GetNetworkConnectivityHintForInterface(row->InterfaceIndex,
-                                                        &hint);
-    if ((hint.ConnectivityLevel == NetworkConnectivityLevelHintHidden) ||
-        (hintResult != NO_ERROR)) {
+    result = GetNetworkConnectivityHintForInterface(row->InterfaceIndex, &hint);
+    if ((result != NO_ERROR) ||
+        (hint.ConnectivityLevel == NetworkConnectivityLevelHintHidden)) {
       logger.debug() << "Ignoring hidden ifindex:" << row->InterfaceIndex;
       continue;
     }
