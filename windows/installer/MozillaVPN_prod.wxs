@@ -18,16 +18,17 @@
 		Version="!(bind.FileVersion.MozillaVPNExecutable)"
 		Manufacturer="Mozilla Corporation"
 		UpgradeCode="$(var.UpgradeCode)">
-    <Condition Message="This application is only supported on Windows 10 or higher.">
-      <![CDATA[Installed OR (VersionNT >= 603)]]>
-    </Condition>
-    <Condition Message="This application is only supported on 64 bit x86 platforms."> %PROCESSOR_ARCHITECTURE="AMD64" </Condition>
     <Package
 			InstallerVersion="400"
 			Compressed="yes"
 			InstallScope="perMachine"
 			Description="Mozilla VPN"
 			ReadOnly="yes" />
+
+    <Condition Message="This application is only supported on Windows 10 or higher.">
+      <![CDATA[Installed OR (VersionNT >= 603)]]>
+    </Condition>
+    <Condition Message="This application is only supported on 64 bit x86 platforms."> %PROCESSOR_ARCHITECTURE="AMD64" </Condition>
 
     <Upgrade Id="$(var.UpgradeCode)">
       <UpgradeVersion OnlyDetect='no' Property='PREVIOUSFOUND'
