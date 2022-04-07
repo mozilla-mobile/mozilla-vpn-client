@@ -46,6 +46,7 @@ android/build
 android/local.properties
 android/*/.cxx/*
 android/.cxx/*
+!android/res/debug/**/*
 !android/*/*/Makefile 
 xcode.xconfig
 .gradle/
@@ -62,9 +63,11 @@ build
 !taskcluster/scripts/build
 Debug/
 !android/src/debug/
+!android/res/debug/
 Debug-iphone*
 Release/
 Release-iphone*
+!android/res/release/
 macos/gobridge/wireguard-go-version.h
 
 # Taskcluster/ Taskgraph

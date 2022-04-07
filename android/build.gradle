@@ -94,12 +94,16 @@ android {
                 aidl.srcDirs = [ 'src', 'aidl']
             }
             manifest.srcFile 'AndroidManifest.xml'
-            
-            resources.srcDirs = ['resources']
             renderscript.srcDirs = ['src']
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
        }
+        debug{
+            res.srcDirs = ['res/all','res/release']
+        }
+        release{
+            res.srcDirs = ['res/all','res/debug']
+        }
     }
     // In case generate a new key anytime:
     // $: keytool -genkey -v -keystore debug.keystore -storepass android \
