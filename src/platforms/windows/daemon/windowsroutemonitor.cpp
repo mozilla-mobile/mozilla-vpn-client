@@ -70,11 +70,13 @@ WindowsRouteMonitor::~WindowsRouteMonitor() {
 
 void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
                                                void* ptable) {
-  PMIB_IPFORWARD_TABLE2 table = (PMIB_IPFORWARD_TABLE2)ptable;
-  SOCKADDR_INET nexthop;
+  PMIB_IPFORWARD_TABLE2 table = reinterpret_cast<PMIB_IPFORWARD_TABLE2>(ptable);
+  SOCKADDR_INET nexthop = {0};
   quint64 bestLuid = 0;
   int bestMatch = -1;
+  ULONG bestMetric = ULONG_MAX;
 
+  nexthop.si_family = data->DestinationPrefix.Prefix.si_family;
   for (ULONG i = 0; i < table->NumEntries; i++) {
     MIB_IPFORWARD_ROW2* row = &table->Table[i];
     // Ignore routes into the VPN interface.
@@ -114,10 +116,28 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
       continue;
     }
 
+    // Ensure that the outgoing network interface is actually online and usable.
+    DWORD result;
+    NL_NETWORK_CONNECTIVITY_HINT hint;
+    result = GetNetworkConnectivityHintForInterface(row->InterfaceIndex, &hint);
+    if ((result != NO_ERROR) ||
+        (hint.ConnectivityLevel == NetworkConnectivityLevelHintHidden)) {
+      logger.debug() << "Ignoring hidden ifindex:" << row->InterfaceIndex;
+      continue;
+    }
+
+    // Prefer routes with lower metric if we find multiple matches
+    // with the same prefix length.
+    if ((row->DestinationPrefix.PrefixLength == bestMatch) &&
+        (row->Metric >= bestMetric)) {
+      continue;
+    }
+
     // If we got here, then this is the longest prefix match so far.
     memcpy(&nexthop, &row->NextHop, sizeof(SOCKADDR_INET));
     bestLuid = row->InterfaceLuid.Value;
     bestMatch = row->DestinationPrefix.PrefixLength;
+    bestMetric = row->Metric;
   }
 
   // If neither the interface nor next-hop have changed, then do nothing.
@@ -135,7 +155,12 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
   }
   data->InterfaceLuid.Value = bestLuid;
   memcpy(&data->NextHop, &nexthop, sizeof(SOCKADDR_INET));
-  CreateIpForwardEntry2(data);
+  if (data->InterfaceLuid.Value != 0) {
+    DWORD result = CreateIpForwardEntry2(data);
+    if (result != NO_ERROR) {
+      logger.error() << "Failed to update route:" << result;
+    }
+  }
 }
 
 bool WindowsRouteMonitor::addExclusionRoute(const QHostAddress& address) {
