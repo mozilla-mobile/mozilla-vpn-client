@@ -11,6 +11,7 @@ on:
 jobs:
   ppa-release-candidate:
     name: PPA Releases
+    if: github.repository == 'mozilla-mobile/mozilla-vpn-client'
     runs-on: ubuntu-latest
     environment: PPA Automation
     steps:
