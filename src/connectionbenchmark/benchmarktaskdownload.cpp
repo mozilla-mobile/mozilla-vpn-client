@@ -11,6 +11,7 @@
 #include <QByteArray>
 #include <QDnsLookup>
 #include <QHostAddress>
+#include <QScopeGuard>
 
 #if !defined(MVPN_DUMMY)
 constexpr const char* MULLVAD_DEFAULT_DNS = "10.64.0.1";
@@ -55,24 +56,25 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
 }
 
 void BenchmarkTaskDownload::dnsLookupFinished() {
-  if (state() != BenchmarkTask::StateActive) {
-    logger.warning() << "DNS Lookup finished after task aborted";
-    return;
-  }
-  if (m_dnsLookup.error() != QDnsLookup::NoError) {
-    logger.error() << "DNS Lookup Failed:" << m_dnsLookup.errorString();
+  auto guard = qScopeGuard([&] {
     emit finished(0, true);
     emit completed();
+  });
+
+  if (m_dnsLookup.error() != QDnsLookup::NoError) {
+    logger.error() << "DNS Lookup Failed:" << m_dnsLookup.errorString();
     return;
   }
   if (m_dnsLookup.hostAddressRecords().isEmpty()) {
     logger.error() << "DNS Lookup Failed: no records";
-    emit finished(0, true);
-    emit completed();
     return;
   }
-  logger.debug() << "DNS Lookup Finished";
+  if (state() != BenchmarkTask::StateActive) {
+    logger.warning() << "DNS Lookup finished after task aborted";
+    return;
+  }
 
+  logger.debug() << "DNS Lookup Finished";
   for (const QDnsHostAddressRecord& record : m_dnsLookup.hostAddressRecords()) {
     logger.debug() << "Host record:" << record.value().toString();
 
@@ -93,6 +95,7 @@ void BenchmarkTaskDownload::dnsLookupFinished() {
   }
 
   m_elapsedTimer.start();
+  guard.dismiss();
 }
 
 void BenchmarkTaskDownload::downloadProgressed(qint64 bytesReceived,
