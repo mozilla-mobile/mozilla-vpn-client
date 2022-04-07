@@ -745,10 +745,9 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
     }
 
     case 127:  // Invalid unblock code
-      aia->requestState(
-          AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
-      aia->requestErrorPropagation(this,
-                                   AuthenticationInApp::ErrorInvalidEmailCode);
+      aia->requestState(AuthenticationInApp::StateUnblockCodeNeeded, this);
+      aia->requestErrorPropagation(
+          this, AuthenticationInApp::ErrorInvalidUnblockCode);
       break;
 
     case 142:  // Sign in with this email type is not currently supported
