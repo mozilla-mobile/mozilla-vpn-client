@@ -85,9 +85,14 @@ android {
 
     sourceSets {
         main {
-            java.srcDirs = [qtAndroidDir + '/src', 'src', 'java']
-            aidl.srcDirs = [qtAndroidDir + '/src', 'src', 'aidl']
-            res.srcDirs =  [qtAndroidDir + '/res', 'res']
+            try {
+                java.srcDirs = [qtAndroidDir + '/src', 'src', 'java']
+                aidl.srcDirs = [qtAndroidDir + '/src', 'src', 'aidl']
+                res.srcDirs =  [qtAndroidDir + '/res']
+            }catch(Exception e){
+                java.srcDirs = [ 'src', 'java']
+                aidl.srcDirs = [ 'src', 'aidl']
+            }
             manifest.srcFile 'AndroidManifest.xml'
             
             resources.srcDirs = ['resources']
@@ -148,8 +153,8 @@ android {
         resConfig "en"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode  System.getenv("VERSIONCODE")?.toInteger()
-        versionName  System.getenv("SHORTVERSION")
+        versionCode  System.getenv("VERSIONCODE")? System.getenv("VERSIONCODE")?.toInteger() : 99999
+        versionName  System.getenv("SHORTVERSION") ? System.getenv("SHORTVERSION"): ""
         buildConfigField "String", "ADJUST_SDK_TOKEN", '"' + System.getenv("ADJUST_SDK_TOKEN") + '"'
     }
     compileOptions {
