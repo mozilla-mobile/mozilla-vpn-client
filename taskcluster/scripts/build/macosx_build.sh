@@ -72,8 +72,8 @@ cp -r ./macos/pkg/Distribution $BUILD
 cp -r ./macos/pkg/Resources $BUILD
 cd $BUILD
 echo `ls -la`
-echo `ls -la /builds/worker/artifacts/`
 zip -r unsigned.zip .
 
 mkdir -p "/builds/worker/artifacts/"
+echo `ls -la /builds/worker/artifacts/`
 mv unsigned.zip /builds/worker/artifacts/unsigned.zip
