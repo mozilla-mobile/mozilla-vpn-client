@@ -13,7 +13,7 @@ if not os.path.isfile('glean/metrics.yaml'):
   print('Unable to find glean/metrics.yaml')
   exit(1)
 
-yaml_file = open("glean/metrics.yaml", 'r')
+yaml_file = open("glean/metrics.yaml", 'r', encoding='utf-8')
 yaml_content = yaml.safe_load(yaml_file)
 
 print("Generating the C++ header...")
