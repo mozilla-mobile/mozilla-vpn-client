@@ -75,6 +75,3 @@ echo `ls -la`
 echo `pwd`
 zip -r unsigned.zip .
 
-mkdir -p "/builds/worker/artifacts/"
-echo `ls -la /builds/worker/artifacts/`
-mv unsigned.zip /builds/worker/artifacts/unsigned.zip
