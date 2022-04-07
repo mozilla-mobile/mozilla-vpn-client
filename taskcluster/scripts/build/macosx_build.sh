@@ -70,8 +70,9 @@ cp -r Release/Mozilla\ VPN.app $BUILD
 cp -r ./macos/pkg/scripts $BUILD
 cp -r ./macos/pkg/Distribution $BUILD
 cp -r ./macos/pkg/Resources $BUILD
-echo `ls -la`
 cd $BUILD
+echo `ls -la`
+echo `ls -la /builds/worker/artifacts/`
 zip -r unsigned.zip .
 
 mkdir -p "/builds/worker/artifacts/"
