@@ -5,3 +5,4 @@ buildCache {
         removeUnusedEntriesAfterDays = 30
     }
 }
+include ':daemon'

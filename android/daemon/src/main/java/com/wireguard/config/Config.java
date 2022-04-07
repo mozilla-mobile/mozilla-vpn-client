@@ -5,10 +5,6 @@
 
 package com.wireguard.config;
 
-import com.wireguard.config.BadConfigException.Location;
-import com.wireguard.config.BadConfigException.Reason;
-import com.wireguard.config.BadConfigException.Section;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,7 +84,7 @@ public final class Config {
           inPeerSection = true;
         } else {
           throw new BadConfigException(
-              Section.CONFIG, Location.TOP_LEVEL, Reason.UNKNOWN_SECTION, line);
+              BadConfigException.Section.CONFIG, BadConfigException.Location.TOP_LEVEL, BadConfigException.Reason.UNKNOWN_SECTION, line);
         }
       } else if (inInterfaceSection) {
         interfaceLines.add(line);
@@ -96,14 +92,14 @@ public final class Config {
         peerLines.add(line);
       } else {
         throw new BadConfigException(
-            Section.CONFIG, Location.TOP_LEVEL, Reason.UNKNOWN_SECTION, line);
+            BadConfigException.Section.CONFIG, BadConfigException.Location.TOP_LEVEL, BadConfigException.Reason.UNKNOWN_SECTION, line);
       }
     }
     if (inPeerSection)
       builder.parsePeer(peerLines);
     if (!seenInterfaceSection)
       throw new BadConfigException(
-          Section.CONFIG, Location.TOP_LEVEL, Reason.MISSING_SECTION, null);
+          BadConfigException.Section.CONFIG, BadConfigException.Location.TOP_LEVEL, BadConfigException.Reason.MISSING_SECTION, null);
     // Combine all [Interface] sections in the file.
     builder.parseInterface(interfaceLines);
     return builder.build();

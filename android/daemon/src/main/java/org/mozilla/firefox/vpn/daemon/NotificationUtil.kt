@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.firefox.vpn
+package org.mozilla.firefox.vpn.daemon
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -109,7 +109,8 @@ class NotificationUtil {
         val pendingIntent = PendingIntent.getActivity(service, 0, intent, 0)
         // Build our notification
         mNotificationBuilder
-            .setSmallIcon(org.mozilla.firefox.vpn.R.drawable.ic_mozvpn_round)
+                // TODO: FIX
+            //.setSmallIcon(org.mozilla.firefox.vpn.R.drawable.ic_mozvpn_round)
             .setContentTitle(header)
             .setContentText(message)
             .setOnlyAlertOnce(true)

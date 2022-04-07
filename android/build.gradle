@@ -16,13 +16,12 @@ buildscript {
     }
     repositories {
         google()
-        jcenter()
         mavenCentral()
     }
 
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
     }
 }
@@ -57,6 +56,7 @@ dependencies {
     implementation "androidx.security:security-identity-credential:1.0.0-alpha02"
     implementation 'com.google.android.gms:play-services-ads-identifier:17.0.1'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+    implementation project(path: ':daemon')
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.0.10"
 }
 
@@ -88,7 +88,6 @@ android {
             try {
                 java.srcDirs = [qtAndroidDir + '/src', 'src', 'java']
                 aidl.srcDirs = [qtAndroidDir + '/src', 'src', 'aidl']
-                res.srcDirs =  [qtAndroidDir + '/res']
             }catch(Exception e){
                 java.srcDirs = [ 'src', 'java']
                 aidl.srcDirs = [ 'src', 'aidl']
@@ -99,10 +98,18 @@ android {
             jniLibs.srcDirs = ['libs']
        }
         debug{
-            res.srcDirs = ['res/all','res/release']
+            try {
+                res.srcDirs =  [qtAndroidDir + '/res', 'res/all','res/debug']
+            }catch(Exception ignored){
+                res.srcDirs = ['res/all','res/debug']
+            }
         }
         release{
-            res.srcDirs = ['res/all','res/debug']
+            try {
+                res.srcDirs =  [qtAndroidDir + '/res', 'res/all','res/release']
+            }catch(Exception ignored){
+                res.srcDirs = ['res/all','res/release']
+            }
         }
     }
     // In case generate a new key anytime:
@@ -131,25 +138,10 @@ android {
         release {
             // That would enable treeshaking and remove java code that is just called from qt
             minifyEnabled false
-            externalNativeBuild {
-                cmake {
-                    arguments "-DANDROID_PACKAGE_NAME=${groupName}", "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}"
-                }
-            }
         }
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
-            externalNativeBuild {
-                cmake {
-                    arguments "-DANDROID_PACKAGE_NAME=${groupName}.debug", "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}"
-                }
-            }
-        }
-    }
-    externalNativeBuild {
-        cmake {
-            path 'tunnel/CMakeLists.txt'
         }
     }
 
@@ -158,7 +150,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 30
         versionCode  System.getenv("VERSIONCODE")? System.getenv("VERSIONCODE")?.toInteger() : 99999
-        versionName  System.getenv("SHORTVERSION") ? System.getenv("SHORTVERSION"): ""
+        versionName  System.getenv("SHORTVfERSION") ? System.getenv("SHORTVERSION"): ""
         buildConfigField "String", "ADJUST_SDK_TOKEN", '"' + System.getenv("ADJUST_SDK_TOKEN") + '"'
     }
     compileOptions {

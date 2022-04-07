@@ -5,9 +5,6 @@
 
 package com.wireguard.config;
 
-import com.wireguard.config.BadConfigException.Location;
-import com.wireguard.config.BadConfigException.Reason;
-import com.wireguard.config.BadConfigException.Section;
 import com.wireguard.crypto.Key;
 import com.wireguard.crypto.KeyFormatException;
 
@@ -56,8 +53,8 @@ public final class Peer {
     for (final CharSequence line : lines) {
       final Attribute attribute =
           Attribute.parse(line).orElseThrow(()
-                                                -> new BadConfigException(Section.PEER,
-                                                    Location.TOP_LEVEL, Reason.SYNTAX_ERROR, line));
+                                                -> new BadConfigException(BadConfigException.Section.PEER,
+                                                    BadConfigException.Location.TOP_LEVEL, BadConfigException.Reason.SYNTAX_ERROR, line));
       switch (attribute.getKey().toLowerCase(Locale.ENGLISH)) {
         case "allowedips":
           builder.parseAllowedIPs(attribute.getValue());
@@ -76,7 +73,7 @@ public final class Peer {
           break;
         default:
           throw new BadConfigException(
-              Section.PEER, Location.TOP_LEVEL, Reason.UNKNOWN_ATTRIBUTE, attribute.getKey());
+              BadConfigException.Section.PEER, BadConfigException.Location.TOP_LEVEL, BadConfigException.Reason.UNKNOWN_ATTRIBUTE, attribute.getKey());
       }
     }
     return builder.build();
@@ -231,7 +228,7 @@ public final class Peer {
     public Peer build() throws BadConfigException {
       if (publicKey == null)
         throw new BadConfigException(
-            Section.PEER, Location.PUBLIC_KEY, Reason.MISSING_ATTRIBUTE, null);
+            BadConfigException.Section.PEER, BadConfigException.Location.PUBLIC_KEY, BadConfigException.Reason.MISSING_ATTRIBUTE, null);
       return new Peer(this);
     }
 
@@ -241,7 +238,7 @@ public final class Peer {
           addAllowedIp(InetNetwork.parse(allowedIp));
         return this;
       } catch (final ParseException e) {
-        throw new BadConfigException(Section.PEER, Location.ALLOWED_IPS, e);
+        throw new BadConfigException(BadConfigException.Section.PEER, BadConfigException.Location.ALLOWED_IPS, e);
       }
     }
 
@@ -249,7 +246,7 @@ public final class Peer {
       try {
         return setEndpoint(InetEndpoint.parse(endpoint));
       } catch (final ParseException e) {
-        throw new BadConfigException(Section.PEER, Location.ENDPOINT, e);
+        throw new BadConfigException(BadConfigException.Section.PEER, BadConfigException.Location.ENDPOINT, e);
       }
     }
 
@@ -259,7 +256,7 @@ public final class Peer {
         return setPersistentKeepalive(Integer.parseInt(persistentKeepalive));
       } catch (final NumberFormatException e) {
         throw new BadConfigException(
-            Section.PEER, Location.PERSISTENT_KEEPALIVE, persistentKeepalive, e);
+            BadConfigException.Section.PEER, BadConfigException.Location.PERSISTENT_KEEPALIVE, persistentKeepalive, e);
       }
     }
 
@@ -267,7 +264,7 @@ public final class Peer {
       try {
         return setPreSharedKey(Key.fromBase64(preSharedKey));
       } catch (final KeyFormatException e) {
-        throw new BadConfigException(Section.PEER, Location.PRE_SHARED_KEY, e);
+        throw new BadConfigException(BadConfigException.Section.PEER, BadConfigException.Location.PRE_SHARED_KEY, e);
       }
     }
 
@@ -275,7 +272,7 @@ public final class Peer {
       try {
         return setPublicKey(Key.fromBase64(publicKey));
       } catch (final KeyFormatException e) {
-        throw new BadConfigException(Section.PEER, Location.PUBLIC_KEY, e);
+        throw new BadConfigException(BadConfigException.Section.PEER, BadConfigException.Location.PUBLIC_KEY, e);
       }
     }
 
@@ -286,8 +283,8 @@ public final class Peer {
 
     public Builder setPersistentKeepalive(final int persistentKeepalive) throws BadConfigException {
       if (persistentKeepalive < 0 || persistentKeepalive > MAX_PERSISTENT_KEEPALIVE)
-        throw new BadConfigException(Section.PEER, Location.PERSISTENT_KEEPALIVE,
-            Reason.INVALID_VALUE, String.valueOf(persistentKeepalive));
+        throw new BadConfigException(BadConfigException.Section.PEER, BadConfigException.Location.PERSISTENT_KEEPALIVE,
+            BadConfigException.Reason.INVALID_VALUE, String.valueOf(persistentKeepalive));
       this.persistentKeepalive =
           persistentKeepalive == 0 ? Optional.empty() : Optional.of(persistentKeepalive);
       return this;
