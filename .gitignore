@@ -29,6 +29,7 @@ linux/netfilter/vendor/
 .env
 .venv
 __pycache__
+lottie.mjs
 
 # Node (for functional tests)
 node_modules

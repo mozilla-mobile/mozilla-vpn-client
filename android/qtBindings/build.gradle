@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+// This module either loads the Qt-Provided bindings, present in qtAndroid dir
+// or replaces them with it's basic android counter part form moc/ , so dev's can enjoy
+// code completeion and such in their favorite ide
+
+dependencies {
+    implementation fileTree(dir: '../libs', include: ['*.jar', '*.aar'])
+    }
+
+
+android {
+    compileSdkVersion 30
+    defaultConfig {
+        minSdkVersion 24
+    }
+    sourceSets {
+        main {
+            try {
+                java.srcDirs = [qtAndroidDir + '/src']
+                aidl.srcDirs = [qtAndroidDir + '/src']
+            } catch (Exception ignored) {
+                print("Using fake Qt-Application, this will not build a real app!")
+                print("Please invoke the build using qmake")
+                java.srcDirs = ['moc']
+                aidl.srcDirs = ['moc']
+            }
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}

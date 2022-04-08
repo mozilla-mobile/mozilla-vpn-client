@@ -6,3 +6,4 @@ buildCache {
     }
 }
 include ':daemon'
+include ':qtBindings'

@@ -56,6 +56,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads-identifier:17.0.1'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
     implementation project(path: ':daemon')
+    implementation project(path: ':qtBindings')
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.0.10"
 }
 
@@ -84,13 +85,9 @@ android {
 
     sourceSets {
         main {
-            try {
-                java.srcDirs = [qtAndroidDir + '/src', 'src', 'java']
-                aidl.srcDirs = [qtAndroidDir + '/src', 'src', 'aidl']
-            }catch(Exception e){
-                java.srcDirs = [ 'src', 'java']
-                aidl.srcDirs = [ 'src', 'aidl']
-            }
+            java.srcDirs = ['src', 'java']
+            aidl.srcDirs = ['src', 'aidl']
+
             manifest.srcFile 'AndroidManifest.xml'
             renderscript.srcDirs = ['src']
             assets.srcDirs = ['assets']
