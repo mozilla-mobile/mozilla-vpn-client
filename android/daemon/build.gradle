@@ -3,6 +3,12 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+buildscript {
+    ext{
+        groupName = 'org.mozilla.firefox.vpn'
+    }
+}
+
 android {
     compileSdkVersion 30
     ndkVersion "23.1.7779620"

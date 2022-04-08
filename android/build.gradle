@@ -5,13 +5,6 @@
 buildscript {
     ext{
         kotlin_version = "1.4.30-M1"
-        //  for libwg
-        appcompatVersion = '1.1.0'
-        annotationsVersion = '1.0.1'
-        databindingVersion = '3.3.1'
-        jsr305Version = '3.0.2'
-        streamsupportVersion = '1.7.0'
-        threetenabpVersion = '1.1.1'
         groupName = 'org.mozilla.firefox.vpn'
     }
     repositories {
