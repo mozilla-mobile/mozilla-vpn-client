@@ -48,7 +48,7 @@ android/local.properties
 android/*/.cxx/*
 android/.cxx/*
 !android/res/debug/**/*
-!android/*/*/Makefile 
+!android/*/**/Makefile 
 xcode.xconfig
 .gradle/
 .gradle_cache/
