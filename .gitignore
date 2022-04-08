@@ -63,11 +63,11 @@ build
 !taskcluster/scripts/build
 Debug/
 !android/src/debug/
-!android/res/debug/
+!android/resources/debug/
 Debug-iphone*
 Release/
 Release-iphone*
-!android/res/release/
+!android/resources/release/
 macos/gobridge/wireguard-go-version.h
 
 # Taskcluster/ Taskgraph
