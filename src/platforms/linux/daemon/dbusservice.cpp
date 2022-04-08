@@ -9,7 +9,10 @@
 #include "loghandler.h"
 #include "polkithelper.h"
 
+#include <QtDBus/QtDBus>
 #include <QCoreApplication>
+#include <QDBusConnection>
+#include <QDBusInterface>
 #include <QJsonDocument>
 #include <QJsonObject>
 
@@ -21,15 +24,16 @@ constexpr const char* APP_STATE_ACTIVE = "active";
 constexpr const char* APP_STATE_EXCLUDED = "excluded";
 constexpr const char* APP_STATE_BLOCKED = "blocked";
 
+constexpr const char* DBUS_LOGIN_SERVICE = "org.freedesktop.login1";
+constexpr const char* DBUS_LOGIN_PATH = "/org/freedesktop/login1";
+constexpr const char* DBUS_LOGIN_MANAGER = "org.freedesktop.login1.Manager";
+
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MVPN_COUNT_CTOR(DBusService);
 
   m_wgutils = new WireguardUtilsLinux(this);
-  m_apptracker = new AppTracker(this);
   m_pidtracker = new PidTracker(this);
 
-  connect(m_apptracker, SIGNAL(appLaunched(const QString&, int)), this,
-          SLOT(appLaunched(const QString&, int)));
   connect(m_pidtracker, SIGNAL(terminated(const QString&, int)), this,
           SLOT(appTerminated(const QString&, int)));
 
@@ -37,6 +41,20 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
     qFatal("Interface `%s` exists and cannot be removed. Cannot proceed!",
            WG_INTERFACE);
   }
+
+  // Setup to track user login sessions.
+  QDBusConnection bus = QDBusConnection::systemBus();
+  bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserNew", this,
+              SLOT(userCreated(uint, const QDBusObjectPath&)));
+  bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserRemoved", this,
+              SLOT(userRemoved(uint, const QDBusObjectPath&)));
+
+  QDBusMessage listUsersCall = QDBusMessage::createMethodCall(
+      DBUS_LOGIN_SERVICE, DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "ListUsers");
+  QDBusPendingReply<UserDataList> reply = bus.asyncCall(listUsersCall);
+  QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
+  QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this,
+                   SLOT(userListCompleted(QDBusPendingCallWatcher*)));
 }
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
@@ -122,6 +140,40 @@ QString DBusService::status() {
 QString DBusService::getLogs() {
   logger.debug() << "Log request";
   return Daemon::logs();
+}
+
+void DBusService::userListCompleted(QDBusPendingCallWatcher* watcher) {
+  QDBusPendingReply<UserDataList> reply = *watcher;
+  if (reply.isValid()) {
+    UserDataList list = reply.value();
+    for (auto user : list) {
+      userCreated(user.userid, user.path);
+    }
+  }
+
+  delete watcher;
+}
+
+void DBusService::userCreated(uint userid, const QDBusObjectPath& path) {
+  logger.debug() << "User created uid:" << userid << "at:" << path.path();
+  if (m_appTrackers.contains(userid)) {
+    logger.warning() << "User already tracked, ignoring change.";
+  }
+
+  AppTracker* tracker = new AppTracker(userid, path, this);
+  m_appTrackers[userid] = tracker;
+
+  connect(tracker, SIGNAL(appLaunched(const QString&, int)), this,
+          SLOT(appLaunched(const QString&, int)));
+}
+
+void DBusService::userRemoved(uint userid, const QDBusObjectPath& path) {
+  logger.debug() << "User removed uid:" << userid << "at:" << path.path();
+
+  AppTracker* tracker = m_appTrackers.take(userid);
+  if (tracker != nullptr) {
+    delete tracker;
+  }
 }
 
 void DBusService::appLaunched(const QString& name, int rootpid) {

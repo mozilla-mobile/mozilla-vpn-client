@@ -57,14 +57,18 @@ class DBusService final : public Daemon {
   void appLaunched(const QString& name, int rootpid);
   void appTerminated(const QString& name, int rootpid);
 
+  void userListCompleted(QDBusPendingCallWatcher* call);
+  void userCreated(uint uid, const QDBusObjectPath& path);
+  void userRemoved(uint uid, const QDBusObjectPath& path);
+
  private:
   DbusAdaptor* m_adaptor = nullptr;
   WireguardUtilsLinux* m_wgutils = nullptr;
   IPUtilsLinux* m_iputils = nullptr;
   DnsUtilsLinux* m_dnsutils = nullptr;
 
-  AppTracker* m_apptracker = nullptr;
   PidTracker* m_pidtracker = nullptr;
+  QMap<uint, AppTracker*> m_appTrackers;
   QMap<QString, QString> m_firewallApps;
 };
 

@@ -5,27 +5,35 @@
 #ifndef APPTRACKER_H
 #define APPTRACKER_H
 
-#include <QDBusPendingCallWatcher>
 #include <QDBusObjectPath>
+#include <QFileSystemWatcher>
+#include <QString>
 
 class AppTracker final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AppTracker)
 
  public:
-  explicit AppTracker(QObject* parent);
+  explicit AppTracker(uint userid, const QDBusObjectPath& path,
+                      QObject* parent = nullptr);
   ~AppTracker();
 
  signals:
   void appLaunched(const QString& name, int rootpid);
 
  private slots:
-  void userListCompleted(QDBusPendingCallWatcher* call);
-  void userCreated(uint uid, const QDBusObjectPath& path);
-  void userRemoved(uint uid, const QDBusObjectPath& path);
   void gtkLaunchEvent(const QByteArray& appid, const QString& display,
                       qlonglong pid, const QStringList& uris,
                       const QVariantMap& extra);
+
+  void cgroupsChanged(const QString& directory);
+
+ private:
+  const uint m_userid;
+  const QDBusObjectPath m_objectPath;
+
+  QString m_cgroupPath;
+  QFileSystemWatcher m_cgroupWatcher;
 };
 
 #endif  // APPTRACKER_H

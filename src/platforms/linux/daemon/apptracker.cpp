@@ -6,6 +6,7 @@
 #include "dbustypeslinux.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "../linuxdependencies.h"
 
 #include <QtDBus/QtDBus>
 #include <QDBusConnection>
@@ -17,82 +18,72 @@
 constexpr const char* GTK_DESKTOP_APP_SERVICE = "org.gtk.gio.DesktopAppInfo";
 constexpr const char* GTK_DESKTOP_APP_PATH = "/org/gtk/gio/DesktopAppInfo";
 
-constexpr const char* DBUS_LOGIN_SERVICE = "org.freedesktop.login1";
-constexpr const char* DBUS_LOGIN_PATH = "/org/freedesktop/login1";
-constexpr const char* DBUS_LOGIN_MANAGER = "org.freedesktop.login1.Manager";
+constexpr const char* DBUS_SYSTEMD_SERVICE = "org.freedesktop.systemd1";
+constexpr const char* DBUS_SYSTEMD_PATH = "/org/freedesktop/systemd1";
+constexpr const char* DBUS_SYSTEMD_MANAGER = "org.freedesktop.systemd1.Manager";
 
 namespace {
 Logger logger(LOG_LINUX, "AppTracker");
 }
 
-AppTracker::AppTracker(QObject* parent) : QObject(parent) {
+AppTracker::AppTracker(uint userid, const QDBusObjectPath& path,
+                       QObject* parent)
+    : QObject(parent), m_userid(userid), m_objectPath(path) {
   MVPN_COUNT_CTOR(AppTracker);
-  logger.debug() << "AppTracker created.";
-
-  QDBusConnection m_conn = QDBusConnection::systemBus();
-  m_conn.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserNew", this,
-                 SLOT(userCreated(uint, const QDBusObjectPath&)));
-  m_conn.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserRemoved", this,
-                 SLOT(userRemoved(uint, const QDBusObjectPath&)));
-
-  QDBusInterface n(DBUS_LOGIN_SERVICE, DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER,
-                   m_conn);
-  QDBusPendingReply<UserDataList> reply = n.asyncCall("ListUsers");
-  QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
-  QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this,
-                   SLOT(userListCompleted(QDBusPendingCallWatcher*)));
-}
-
-AppTracker::~AppTracker() {
-  MVPN_COUNT_DTOR(AppTracker);
-  logger.debug() << "AppTracker destroyed.";
-}
-
-void AppTracker::userListCompleted(QDBusPendingCallWatcher* watcher) {
-  QDBusPendingReply<UserDataList> reply = *watcher;
-  if (reply.isValid()) {
-    UserDataList list = reply.value();
-    for (auto user : list) {
-      userCreated(user.userid, user.path);
-    }
-  }
-
-  delete watcher;
-}
-
-void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
-  logger.debug() << "User created uid:" << userid << "at:" << path.path();
+  logger.debug() << "AppTracker(" + QString::number(m_userid) + ") created.";
 
   /* Acquire the effective UID of the user to connect to their session bus. */
   uid_t realuid = getuid();
-  if (seteuid(userid) < 0) {
-    logger.warning() << "Failed to set effective UID";
-  }
   auto guard = qScopeGuard([&] {
     if (seteuid(realuid) < 0) {
       logger.warning() << "Failed to restore effective UID";
     }
   });
+  if (realuid == m_userid) {
+    guard.dismiss();
+  } else if (seteuid(m_userid) < 0) {
+    logger.warning() << "Failed to set effective UID";
+  }
 
   /* For correctness we should ask systemd for the user's runtime directory. */
-  QString busPath = "unix:path=/run/user/" + QString::number(userid) + "/bus";
+  QString busPath = "unix:path=/run/user/" + QString::number(m_userid) + "/bus";
   logger.debug() << "Connection to" << busPath;
-  QDBusConnection connection =
-      QDBusConnection::connectToBus(busPath, "user-" + QString::number(userid));
+  QDBusConnection connection = QDBusConnection::connectToBus(
+      busPath, "user-" + QString::number(m_userid));
 
   /* Connect to the user's GTK launch event. */
-  bool isConnected = connection.connect(
+  bool gtkConnected = connection.connect(
       "", GTK_DESKTOP_APP_PATH, GTK_DESKTOP_APP_SERVICE, "Launched", this,
       SLOT(gtkLaunchEvent(const QByteArray&, const QString&, qlonglong,
                           const QStringList&, const QVariantMap&)));
-  if (!isConnected) {
+  if (!gtkConnected) {
     logger.warning() << "Failed to connect to GTK Launched signal";
+  }
+
+  /* Monitor for changes to the user's application control groups. */
+  QDBusInterface interface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
+                           DBUS_SYSTEMD_MANAGER, connection);
+  QVariant qv = interface.property("ControlGroup");
+  if (qv.type() == QMetaType::QString) {
+    m_cgroupPath = LinuxDependencies::findCgroup2Path() + qv.toString();
+    logger.debug() << "Found Control Groups v2 at:" << m_cgroupPath;
+
+    connect(&m_cgroupWatcher, SIGNAL(directoryChanged(const QString&)), this,
+            SLOT(cgroupsChanged(const QString&)));
+
+    m_cgroupWatcher.addPath(m_cgroupPath);
+    m_cgroupWatcher.addPath(m_cgroupPath + "/app.slice");
+
+    cgroupsChanged(m_cgroupPath);
+    cgroupsChanged(m_cgroupPath + "/app.slice");
   }
 }
 
-void AppTracker::userRemoved(uint uid, const QDBusObjectPath& path) {
-  logger.debug() << "User removed uid:" << uid << "at:" << path.path();
-  QDBusConnection::disconnectFromBus("user-" + QString::number(uid));
+AppTracker::~AppTracker() {
+  MVPN_COUNT_DTOR(AppTracker);
+  logger.debug() << "AppTracker(" + QString::number(m_userid) + ") destroyed.";
+
+  QDBusConnection::disconnectFromBus("user-" + QString::number(m_userid));
 }
 
 void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
@@ -105,5 +96,15 @@ void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
   QString appIdName(appid);
   if (!appIdName.isEmpty()) {
     emit appLaunched(appIdName, pid);
+  }
+}
+
+void AppTracker::cgroupsChanged(const QString& directory) {
+  QDir cgroupDir(directory);
+  QStringList cgroupScopes = cgroupDir.entryList(QStringList("*.scope"));
+
+  logger.debug() << "Cgroups Changed at:" << directory;
+  for (const QString& scope : cgroupScopes) {
+    logger.debug() << "Scope:" << scope;
   }
 }
