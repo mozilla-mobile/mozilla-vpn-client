@@ -61,10 +61,10 @@ AppTracker::AppTracker(uint userid, const QDBusObjectPath& path,
   }
 
   /* Monitor for changes to the user's application control groups. */
-  QDBusInterface interface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
-                           DBUS_SYSTEMD_MANAGER, connection);
-  QVariant qv = interface.property("ControlGroup");
-  if (qv.type() == QMetaType::QString) {
+  m_interface = new QDBusInterface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
+                                   DBUS_SYSTEMD_MANAGER, connection, this);
+  QVariant qv = m_interface->property("ControlGroup");
+  if (qv.type() == QVariant::String) {
     m_cgroupPath = LinuxDependencies::findCgroup2Path() + qv.toString();
     logger.debug() << "Found Control Groups v2 at:" << m_cgroupPath;
 
@@ -100,11 +100,27 @@ void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
 }
 
 void AppTracker::cgroupsChanged(const QString& directory) {
-  QDir cgroupDir(directory);
-  QStringList cgroupScopes = cgroupDir.entryList(QStringList("*.scope"));
+  QDir dir(directory);
+  QFileInfoList newScopes =
+      dir.entryInfoList(QStringList("*.scope"), QDir::Dirs);
+  QStringList oldScopes = m_cgroupScopes;
 
-  logger.debug() << "Cgroups Changed at:" << directory;
-  for (const QString& scope : cgroupScopes) {
-    logger.debug() << "Scope:" << scope;
+  // Figure out what has been added.
+  for (const QFileInfo& scope : newScopes) {
+    QString path = scope.canonicalFilePath();
+    if (oldScopes.removeAll(path) == 0) {
+      // This is a new scope, let's add it.
+      logger.debug() << "Control group created:" << path;
+      m_cgroupScopes.append(path);
+    }
+  }
+
+  // Anything left, if it shares the same root directory, has been removed.
+  for (const QString& scope : oldScopes) {
+    QFileInfo scopeInfo(scope);
+    if (scopeInfo.absolutePath() == directory) {
+      logger.debug() << "Control group removed:" << scope;
+      m_cgroupScopes.removeAll(scope);
+    }
   }
 }

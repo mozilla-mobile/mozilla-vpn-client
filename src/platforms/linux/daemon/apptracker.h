@@ -9,6 +9,8 @@
 #include <QFileSystemWatcher>
 #include <QString>
 
+class QDBusInterface;
+
 class AppTracker final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AppTracker)
@@ -31,9 +33,12 @@ class AppTracker final : public QObject {
  private:
   const uint m_userid;
   const QDBusObjectPath m_objectPath;
+  QDBusInterface* m_interface;
 
   QString m_cgroupPath;
   QFileSystemWatcher m_cgroupWatcher;
+
+  QStringList m_cgroupScopes;
 };
 
 #endif  // APPTRACKER_H
