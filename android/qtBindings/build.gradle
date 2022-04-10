@@ -9,13 +9,13 @@ plugins {
 
 dependencies {
     implementation fileTree(dir: '../libs', include: ['*.jar', '*.aar'])
-    }
+}
 
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion Config.compileSdkVersion
     defaultConfig {
-        minSdkVersion 24
+        minSdkVersion Config.minSdkVersion
     }
     sourceSets {
         main {

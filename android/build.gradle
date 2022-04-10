@@ -2,20 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import com.android.build.OutputFile
+
 buildscript {
-    ext{
-        kotlin_version = "1.4.30-M1"
-        groupName = 'org.mozilla.firefox.vpn'
-    }
     repositories {
         google()
         mavenCentral()
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+        classpath Dependencies.com_android_tools_build_gradle
+        classpath Dependencies.org_jetbrains_kotlin_kotlin_gradle_plugin
+        classpath Dependencies.org_jetbrains_kotlin_kotlin_serialization
     }
 }
 
@@ -40,37 +37,23 @@ apply plugin: 'kotlinx-serialization'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'com.android.installreferrer:installreferrer:2.2'
-    implementation 'com.android.billingclient:billing-ktx:4.0.0'
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0-alpha02"
-    implementation "androidx.security:security-crypto:1.1.0-alpha03"
-    implementation "androidx.security:security-identity-credential:1.0.0-alpha02"
-    implementation 'com.google.android.gms:play-services-ads-identifier:17.0.1'
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
     implementation project(path: ':daemon')
     implementation project(path: ':qtBindings')
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.0.10"
+
+    implementation Dependencies.androidx_core
+    implementation Dependencies.android_installreferrer
+    implementation Dependencies.android_billingclient
+    implementation Dependencies.androidx_lifecycle
+    implementation Dependencies.androidx_security_security_crypto
+    implementation Dependencies.androidx_security_security_identity_credential
+    implementation Dependencies.com_google_android_gms_play_services_ads_identifier
+    implementation Dependencies.org_jetbrains_kotlinx_kotlinx_serialization_json
+    coreLibraryDesugaring Dependencies.com_android_tools_desugar_jdk_libs
 }
 
 android {
-    /*******************************************************
-     * The following variables:
-     * - androidBuildToolsVersion,
-     * - androidCompileSdkVersion
-     * - qtAndroidDir/qt5AndroidDir 
-     *                 - holds the path to qt android files
-     *                   needed to build any Qt application
-     *                   on Android.
-     *
-     * are defined in gradle.properties file. This file is
-     * updated by QtCreator and androiddeployqt tools.
-     * Changing them manually might break the compilation!
-     *******************************************************/
-
-    compileSdkVersion androidCompileSdkVersion.toInteger()
-
-    buildToolsVersion '28.0.3'
+    compileSdkVersion Config.compileSdkVersion
+    buildToolsVersion Config.buildToolsVersion
 
     dexOptions {
        javaMaxHeapSize "3g"
@@ -88,25 +71,44 @@ android {
        }
         debug{
             try {
-                res.srcDirs =  [qtAndroidDir + '/res', 'resources/all','resources/debug','res']
+                res.srcDirs =  [
+                        qtAndroidDir + '/res',
+                        'resources/all',
+                        'resources/debug',
+                        'res'
+                ]
             }catch(Exception ignored){
-                res.srcDirs = ['resources/all','resources/debug','res']
+                res.srcDirs = [
+                        'resources/all',
+                        'resources/debug',
+                        'res'
+                ]
             }
         }
         release{
             try {
-                res.srcDirs =  [qtAndroidDir + '/res', 'resources/all','resources/release','res']
+                res.srcDirs =  [
+                        qtAndroidDir + '/res',
+                        'resources/all',
+                        'resources/release',
+                        'res'
+                ]
             }catch(Exception ignored){
-                res.srcDirs = ['resources/all','resources/release','res']
+                res.srcDirs = [
+                        'resources/all',
+                        'resources/release',
+                        'res'
+                ]
             }
         }
     }
-    // In case generate a new key anytime:
-    // $: keytool -genkey -v -keystore debug.keystore -storepass android \
-    //            -alias androiddebugkey -keypass android -keyalg RSA \ 
-    //            -keysize 2048 -validity 10000
+
     signingConfigs {
-    debug {
+        debug {
+            // In case generate a new key anytime:
+            // $: keytool -genkey -v -keystore debug.keystore -storepass android \
+            //            -alias androiddebugkey -keypass android -keyalg RSA \
+            //            -keysize 2048 -validity 10000
             storeFile rootProject.file('./debug.keystore')
             storePassword('android')
             keyAlias 'androiddebugkey'
@@ -140,8 +142,8 @@ android {
 
     defaultConfig {
         resConfig "en"
-        minSdkVersion 24
-        targetSdkVersion 30
+        minSdkVersion Config.minSdkVersion
+        targetSdkVersion Config.targetSdkVersion
         versionCode  System.getenv("VERSIONCODE")? System.getenv("VERSIONCODE")?.toInteger() : 99999
         versionName  System.getenv("SHORTVfERSION") ? System.getenv("SHORTVERSION"): ""
         buildConfigField "String", "ADJUST_SDK_TOKEN", '"' + System.getenv("ADJUST_SDK_TOKEN") + '"'
@@ -152,26 +154,18 @@ android {
         coreLibraryDesugaringEnabled = true
     }
     splits {
-                // Configures multiple APKs based on ABI.
-                abi {
-                    if(System.getenv("SPLITAPK")== "1" ){
-                        enable true
-                        // Resets the list of ABIs that Gradle should create APKs for to none.
-                        reset()
-
-                        // Specifies a list of ABIs that Gradle should create APKs for.
-                        include "x86", "armeabi-v7a", "arm64-v8a", "x86_64"
-                        // Also generate one universal apk that contains all abi's
-                        universalApk true
-                    }else{
-                        enable false
-                    }
-                }
-            }
-
+        abi {
+            enable true
+            // Resets the list of ABIs that Gradle should create APKs for to none.
+            reset()
+            // Specifies a list of ABIs that Gradle should create APKs for.
+            include "x86", "armeabi-v7a", "arm64-v8a", "x86_64"
+            // Also generate one universal apk that contains all abi's
+            universalApk false
+        }
+    }
 }
 
-import com.android.build.OutputFile
 // Map for the version code that gives each ABI a value.
 ext.abiCodes = ['armeabi-v7a':1,"arm64-v8a":2, x86:3, x86_64:4]
 android.applicationVariants.all { variant ->

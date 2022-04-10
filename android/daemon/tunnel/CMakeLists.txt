@@ -5,8 +5,6 @@
 cmake_minimum_required(VERSION 3.4.1)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
-set( CMAKE_WG_TOOLS_DIR ../../../../../3rdparty/wireguard-tools )
-
 
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
