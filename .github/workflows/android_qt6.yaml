@@ -64,7 +64,7 @@ jobs:
         if: matrix.config.sign == false
         with:
             name: ${{matrix.arch.name}}_${{ matrix.config.name }}
-            path: ${{ matrix.config.apk }}
+            path: ${{ matrix.config.apk }}/android-build-${{ matrix.arch.qmake }}-debug.apk
 
       - name: Upload Debug Symbols
         if: ${{ matrix.config.sym }} 
