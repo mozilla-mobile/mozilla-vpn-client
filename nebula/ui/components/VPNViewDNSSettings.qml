@@ -63,17 +63,25 @@ VPNFlickable {
                     onClicked: VPNSettings.dnsProvider = settingValue
                 }
 
-                Column {
+                ColumnLayout {
                     spacing: 4
                     Layout.fillWidth: true
 
                     VPNInterLabel {
+                        Layout.fillWidth: true
+
                         text: settingTitle
                         wrapMode: Text.WordWrap
                         opacity: vpnIsOff ? 1 : .5
                         horizontalAlignment: Text.AlignLeft
 
                         VPNMouseArea {
+                            anchors.fill: undefined
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.bottom: parent.bottom
+
+                            width: Math.min(parent.implicitWidth, parent.width)
                             propagateClickToParent: false
                             onClicked: VPNSettings.dnsProvider = settingValue
                         }
@@ -87,7 +95,8 @@ VPNFlickable {
 
                     VPNVerticalSpacer {
                         visible: ipInput.visible
-                        height: VPNTheme.theme.windowMargin
+                        Layout.preferredHeight: VPNTheme.theme.windowMargin
+                        width: undefined
                     }
 
                     VPNTextField {
@@ -100,8 +109,8 @@ VPNFlickable {
                         enabled: (VPNSettings.dnsProvider === VPNSettings.Custom) && vpnIsOff
                         _placeholderText: VPNSettings.placeholderUserDNS
                         text: ""
-                        width: parent.width
-                        height: 40
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 40
 
                         PropertyAnimation on opacity {
                             duration: 200
@@ -150,5 +159,4 @@ VPNFlickable {
             }
         }
     }
-
 }

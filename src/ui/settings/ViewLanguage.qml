@@ -167,8 +167,8 @@ Item {
                             //: This string is read by accessibility tools.
                             //: %1 is the language name, %2 is the localized language name.
                             accessibleName: qsTrId("vpn.settings.languageAccessibleName")
-                            .arg(language)
-                            .arg(localizedLanguage)
+                                                .arg(language)
+                                                .arg(localizedLanguage)
 
                             activeFocusOnTab: !useSystemLanguageEnabled
                             onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(del)
