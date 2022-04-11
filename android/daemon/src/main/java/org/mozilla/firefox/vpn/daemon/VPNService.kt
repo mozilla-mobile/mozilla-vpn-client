@@ -10,7 +10,11 @@ import android.os.Build
 import android.os.IBinder
 import android.system.OsConstants
 import com.wireguard.android.util.SharedLibraryLoader
-import com.wireguard.config.*
+import com.wireguard.config.Config
+import com.wireguard.config.InetEndpoint
+import com.wireguard.config.InetNetwork
+import com.wireguard.config.Interface
+import com.wireguard.config.Peer
 import com.wireguard.crypto.Key
 import org.json.JSONObject
 

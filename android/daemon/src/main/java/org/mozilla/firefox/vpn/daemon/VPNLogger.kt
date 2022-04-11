@@ -4,7 +4,6 @@
 
 package org.mozilla.firefox.vpn.daemon
 
-import org.mozilla.firefox.vpn.daemon.BuildConfig
 import android.content.Context
 import java.io.File
 import java.time.LocalDateTime

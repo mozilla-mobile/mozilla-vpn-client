@@ -179,3 +179,31 @@ android.applicationVariants.all { variant ->
     }
   }
 } 
+
+// Enable Ktlint out of the box via gradle Task
+configurations {
+    ktlint
+}
+
+dependencies {
+    ktlint("com.pinterest:ktlint:0.45.2") {
+        attributes {
+            attribute(Bundling.BUNDLING_ATTRIBUTE, getObjects().named(Bundling, Bundling.EXTERNAL))
+        }
+    }
+}
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "src/**/*.kt", "!**/build/**/*.kt", "buildSrc/**/*.kt",  "daemon/**/*.kt",  "**/*.kts"
+}
+
+
+task ktlintFormat(type: JavaExec, group: "formatting") {
+    description = "Fix Kotlin code style deviations."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "-F", "src/**/*.kt", "!**/build/**/*.kt", "buildSrc/**/*.kt",  "daemon/**/*.kt", "**/*.kts"
+}
