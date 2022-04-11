@@ -49,8 +49,8 @@ android {
             externalNativeBuild {
                 cmake {
                     arguments "-DANDROID_PACKAGE_NAME=${groupName}.debug",
-                            "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir},",
-                            "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}"
+                              "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir},",
+                              "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}"
                 }
             }
         }
@@ -59,8 +59,8 @@ android {
             externalNativeBuild {
                 cmake {
                     arguments "-DANDROID_PACKAGE_NAME=${groupName}",
-                            "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}",
-                            "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}"
+                              "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}",
+                              "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}"
                 }
             }
         }
