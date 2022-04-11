@@ -136,6 +136,20 @@ jobs:
           MVPN_API_BASE_URL: http://localhost:5000
           MVPN_BIN: ./build/mozillavpn
 
+      - name: Generate allure results
+        uses: actions/upload-artifact@master
+        with:
+          name: allure-results
+          path: allure-results
+          retention-days: 20
+
+      - name: Deploy report to github pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        env:
+          PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_DIR: allure-report
+
       - name: Generating grcov reports
         id: generateGrcov
         continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
