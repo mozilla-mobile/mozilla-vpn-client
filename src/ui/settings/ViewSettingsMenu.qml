@@ -102,8 +102,8 @@ VPNFlickable {
                                                   _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
                                               })
         }
-        VPNSettingsItem {
 
+        VPNSettingsItem {
             id: preferencesSetting
             objectName: "settingsPreferences"
             settingTitle: VPNl18n.SettingsSystemPreferences
