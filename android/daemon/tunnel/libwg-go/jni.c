@@ -39,18 +39,24 @@ JNIEXPORT void JNICALL Java_org_mozilla_firefox_vpn_daemon_VPNService_wgTurnOff(
   wgTurnOff(handle);
 }
 
-JNIEXPORT jint JNICALL Java_org_mozilla_firefox_vpn_daemon_VPNService_wgGetSocketV4(
-    JNIEnv* env, jclass c, jint handle) {
+JNIEXPORT jint JNICALL
+Java_org_mozilla_firefox_vpn_daemon_VPNService_wgGetSocketV4(JNIEnv* env,
+                                                             jclass c,
+                                                             jint handle) {
   return wgGetSocketV4(handle);
 }
 
-JNIEXPORT jint JNICALL Java_org_mozilla_firefox_vpn_daemon_VPNService_wgGetSocketV6(
-    JNIEnv* env, jclass c, jint handle) {
+JNIEXPORT jint JNICALL
+Java_org_mozilla_firefox_vpn_daemon_VPNService_wgGetSocketV6(JNIEnv* env,
+                                                             jclass c,
+                                                             jint handle) {
   return wgGetSocketV6(handle);
 }
 
-JNIEXPORT jstring JNICALL Java_org_mozilla_firefox_vpn_daemon_VPNService_wgGetConfig(
-    JNIEnv* env, jclass c, jint handle) {
+JNIEXPORT jstring JNICALL
+Java_org_mozilla_firefox_vpn_daemon_VPNService_wgGetConfig(JNIEnv* env,
+                                                           jclass c,
+                                                           jint handle) {
   jstring ret;
   char* config = wgGetConfig(handle);
   if (!config) return NULL;
@@ -60,7 +66,8 @@ JNIEXPORT jstring JNICALL Java_org_mozilla_firefox_vpn_daemon_VPNService_wgGetCo
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_mozilla_firefox_vpn_daemon_VPNService_wgVersion(JNIEnv* env, jclass c) {
+Java_org_mozilla_firefox_vpn_daemon_VPNService_wgVersion(JNIEnv* env,
+                                                         jclass c) {
   jstring ret;
   char* version = wgVersion();
   if (!version) return NULL;
