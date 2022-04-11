@@ -170,14 +170,14 @@ else
 fi
 
 print Y "Compiling apk_install_target in .tmp/"
-make -j $JOBS sub-src-apk_install_target || die "Compile of QT project failed"
+make -j $JOBS sub-src-apk_install_target
 
 # We need to run the debug bundle step in any case
 # as this is the only make target that generates the gradle 
 # project, that we can then use to generate a "real" release build
 print Y "Bundleing (debug) APK"
 cd src/
-make apk || die "Compile of QT project failed"
+make apk
 print G "All done!"
 print N "Your debug .APK is Located in .tmp/src/android-build/mozillavpn.apk"
 
