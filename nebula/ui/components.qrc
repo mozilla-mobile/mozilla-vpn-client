@@ -111,5 +111,7 @@
         <file>components/inAppAuth/VPNInAppAuthenticationLegalDisclaimer.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationCancel.qml</file>
         <file>components/forms/VPNCursorDelegate.qml</file>
+        <file>components/VPNSegmentedToggle.qml</file>
+        <file>components/VPNSegmentedNavigation.qml</file>
     </qresource>
 </RCC>

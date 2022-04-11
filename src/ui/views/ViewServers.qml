@@ -32,12 +32,12 @@ Item {
                 return;
             }
 
-            if (serversTabs.currentTab.objectName === "tabMultiHop" && multiHopStackView.depth === 1) {
+            if (segmentedNav.selectedSegment.objectName === "tabMultiHop" && multiHopStackView.depth === 1) {
                 // User clicked back button from the Multi-hop tab main view
-                VPNController.changeServer(...serversTabs.multiHopExitServer.slice(0,2), ...serversTabs.multiHopEntryServer.slice(0,2));
+                VPNController.changeServer(...segmentedNav.multiHopExitServer.slice(0,2), ...segmentedNav.multiHopEntryServer.slice(0,2));
             }
 
-            if (serversTabs.currentTab.objectName === "tabSingleHop") {
+            if (segmentedNav.selectedSegment.objectName === "tabSingleHop") {
                 // User clicked back button from the Single-hop tab view but didn't select a new server
                 VPNController.changeServer(VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName)
             }
@@ -46,30 +46,30 @@ Item {
         }
     }
 
-    ListModel {
-        id: tabButtonList
-        ListElement {
-            tabLabelStringId: "MultiHopFeatureSingleHopToggleCTA"
-            tabButtonId: "tabSingleHop"
-        }
-        ListElement {
-            tabLabelStringId: "MultiHopFeatureMultiHopToggleCTA"
-            tabButtonId: "tabMultiHop"
-        }
-    }
+    VPNSegmentedNavigation {
+        id: segmentedNav
 
-    VPNTabNavigation {
         property var multiHopEntryServer: [VPNCurrentServer.entryCountryCode, VPNCurrentServer.entryCityName, VPNCurrentServer.localizedEntryCity]
         property var multiHopExitServer: [VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName, VPNCurrentServer.localizedCityName]
 
-        id: serversTabs
+        anchors {
+            top: menu.bottom
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+            topMargin: VPNTheme.theme.vSpacingSmall
+        }
 
-        tabList: tabButtonList
-        width: root.width
-        anchors.top: menu.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: root.height - menu.height
+        segmentedToggleButtonsModel: ListModel {
+            ListElement {
+                segmentLabelStringId: "MultiHopFeatureSingleHopToggleCTA"
+                segmentButtonId: "tabSingleHop"
+            }
+            ListElement {
+                segmentLabelStringId: "MultiHopFeatureMultiHopToggleCTA"
+                segmentButtonId: "tabMultiHop"
+            }
+        }
 
         stackContent: [
             VPNServerList {
@@ -85,27 +85,29 @@ Item {
             }
         ]
 
+        handleSegmentClick: (tab) => {
+                            if (multiHopStackView && multiHopStackView.depth > 1) {
+                                // Return to the Multi-hop main view when the Multi-hop tab
+                                // is clicked from a Multi-hop entry or exit server list
+                                multiHopStackView.pop();
+                            }
+
+                            if (tab.objectName === "tabSingleHop") {
+                                // Do single hop things
+                                menu.title = menu.defaultMenuTitle;
+                                singleHopServerList.centerActiveServer();
+                                return;
+                            }
+                            else if (multiHopEntryServer[0] === "") {
+                                // Choose a random entry server when switching to multihop
+                                multiHopEntryServer = VPNServerCountryModel.pickRandom();
+                            }
+                        }
+
+
         ViewMultiHop {
             id: multiHopStackView
             visible: VPNFeatureList.get("multiHop").isSupported
-        }
-        handleTabClick: (tab) => {
-            if (multiHopStackView && multiHopStackView.depth > 1) {
-                // Return to the Multi-hop main view when the Multi-hop tab
-                // is clicked from a Multi-hop entry or exit server list
-                multiHopStackView.pop();
-            }
-
-            if (tab.objectName === "tabSingleHop") {
-                // Do single hop things
-                menu.title = menu.defaultMenuTitle;
-                singleHopServerList.centerActiveServer();
-                return;
-            }
-            else if (multiHopEntryServer[0] === "") {
-                // Choose a random entry server when switching to multihop
-                multiHopEntryServer = VPNServerCountryModel.pickRandom();
-            }
         }
     }
 
@@ -114,10 +116,10 @@ Item {
             return;
         }
 
-        serversTabs.stackContent.push(multiHopStackView);
+        segmentedNav.stackContent.push(multiHopStackView);
         if (VPNCurrentServer.entryCountryCode && VPNCurrentServer.entryCountryCode !== "") {
             // Set default tab to multi-hop
-            return serversTabs.setCurrentTabIndex(1);
+            return segmentedNav.setSelectedIndex(1);
         }
     }
 }
