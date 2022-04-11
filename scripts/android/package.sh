@@ -179,7 +179,7 @@ print Y "Bundleing (debug) APK"
 cd src/
 make apk
 print G "All done!"
-print N "Your debug .APK is Located in .tmp/src/android-build/mozillavpn.apk"
+print N "Your debug .APK is Located in .tmp/src/android-build/build/outputs/apk/debug/"
 
 # If we wanted a release build we now need to 
 # also compile the java/kotlin code in release mode
