@@ -1,0 +1,8 @@
+#!/bin/sh
+# Ensure the UI is terminated when uninstalling the daemon, otherwise
+# it might linger in a broken state.
+sockname="/tmp/mozillavpn.ui.sock"
+if [ -e "$sockname" ]; then
+  username=$(stat -c '%U' $sockname)
+  killall -u $username -TERM mozillavpn
+fi
