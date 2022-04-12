@@ -7,6 +7,7 @@ SOURCES += \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
         authenticationinapp/authenticationinapplistener.cpp \
+        authenticationinapp/authenticationinappsession.cpp \
         authenticationinapp/incrementaldecoder.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportaldetection.cpp \
@@ -110,6 +111,7 @@ SOURCES += \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
+        tasks/deleteaccount/taskdeleteaccount.cpp \
         tasks/getfeaturelist/taskgetfeaturelist.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
@@ -139,6 +141,7 @@ HEADERS += \
         authenticationlistener.h \
         authenticationinapp/authenticationinapp.h \
         authenticationinapp/authenticationinapplistener.h \
+        authenticationinapp/authenticationinappsession.h \
         authenticationinapp/incrementaldecoder.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
@@ -175,6 +178,7 @@ HEADERS += \
         dnspingsender.h \
         errorhandler.h \
         featurelist.h \
+        features/featureaccountdeletion.h \
         features/featureappreview.h \
         features/featurecaptiveportal.h \
         features/featureconnectioninfo.h \
@@ -256,6 +260,7 @@ HEADERS += \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
+        tasks/deleteaccount/taskdeleteaccount.h \
         tasks/getfeaturelist/taskgetfeaturelist.h \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/createsupportticket/taskcreatesupportticket.h \

@@ -11,7 +11,7 @@ import components.forms 0.1
 import components.inAppAuth 0.1
 
 Item {
-    id: viewAuthenticationInApp
+    id: viewDeleteAccount
 
     Loader {
         id: loader
@@ -27,19 +27,19 @@ Item {
     states: [
         State {
             name: "StateInitializing"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateInitializing || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
+            when: VPNAuthInApp.state === VPNAuthInApp.StateInitializing || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated || VPNAuthInApp.state ===VPNAuthInApp.StateCheckingAccount
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationInitializing.qml"
+                source: "../authenticationInApp/ViewAuthenticationInitializing.qml"
             }
         },
 
         State {
             name: "StateStart"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateStart || VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
+            when: VPNAuthInApp.state === VPNAuthInApp.StateStart
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationStart.qml"
+                source: "ERROR ERROR! TODO"
             }
         },
 
@@ -48,7 +48,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateSignIn || VPNAuthInApp.state === VPNAuthInApp.StateSigningIn
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationSignIn.qml"
+                source: "../authenticationInApp/ViewAuthenticationSignIn.qml"
             }
         },
 
@@ -56,7 +56,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateSignUp || VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationSignUp.qml"
+                source: "ERROR ERROR!! TODO"
             }
         },
 
@@ -65,7 +65,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingUnblockCode
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationUnblockCodeNeeded.qml"
+                source: "../authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml"
             }
         },
 
@@ -74,7 +74,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionEmailCode
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationVerificationSessionByEmailNeeded.qml"
+                source: "../authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml"
             }
         },
 
@@ -83,7 +83,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionTotpCode
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationVerificationSessionByTotpNeeded.qml"
+                source: "../authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml"
             }
         },
 
@@ -92,7 +92,16 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateFallbackInBrowser
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationFallbackInBrowser.qml"
+                source: "ERROR ERROR!! TODO"
+            }
+        },
+
+        State {
+            name: "StateAccountDeletionRequest"
+            when: VPNAuthInApp.state === VPNAuthInApp.StateAccountDeletionRequest || VPNAuthInApp.state === VPNAuthInApp.StateDeletingAccount
+            PropertyChanges {
+                target: loader
+                source: "ViewDeleteAccountRequest.qml"
             }
         }
     ]
