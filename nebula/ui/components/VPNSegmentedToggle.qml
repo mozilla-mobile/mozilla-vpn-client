@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
@@ -14,7 +18,6 @@ Rectangle {
 
     onSelectedIndexChanged: {
         selectedSegment = options.itemAt(selectedIndex)
-        console.info(selectedSegment.objectName)
     }
 
     Component.onCompleted: {
@@ -66,6 +69,7 @@ Rectangle {
 
             delegate: Item {
                 id: segment
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
@@ -76,7 +80,20 @@ Rectangle {
 
                     text: VPNl18n[segmentLabelStringId]
                     font.family: VPNTheme.theme.fontBoldFamily
-                    color: root.selectedIndex === index ? VPNTheme.colors.purple70 : VPNTheme.colors.grey40
+                    color: {
+                        if (root.selectedIndex === index) {
+                            return VPNTheme.colors.purple70
+                        }
+
+                        switch(segment.state) {
+                        case VPNTheme.theme.uiState.statePressed:
+                            return VPNTheme.colors.purple70
+                        case VPNTheme.theme.uiState.stateHovered:
+                            return VPNTheme.theme.fontColorDark
+                        default:
+                            return VPNTheme.colors.grey40
+                        }
+                    }
 
                     Behavior on color {
                         PropertyAnimation {
@@ -85,8 +102,8 @@ Rectangle {
                     }
                 }
 
-                MouseArea {
-                    anchors.fill: parent
+                VPNMouseArea {
+                    propagateClickToParent: false
                     onClicked: {
                         if(root.selectedIndex !== index) {
                             root.selectedIndex = index
