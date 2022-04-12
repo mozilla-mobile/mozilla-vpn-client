@@ -293,15 +293,14 @@ Item {
                                 }
                             }
                         }
-                        VPNLinkButton {
-                            labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText
-                            Layout.preferredHeight: VPNTheme.theme.rowHeight
-                            Layout.alignment: Qt.AlignHCenter
-                            onClicked: stackView().pop()
-                            implicitHeight: VPNTheme.theme.rowHeight
 
+                        VPNCancelButton {
+                            Layout.alignment: Qt.AlignHCenter
+                            Layout.preferredHeight: VPNTheme.theme.rowHeight
+                            onClicked: stackView().pop()
                         }
                     }
+
                     VPNVerticalSpacer {
                         Layout.fillWidth: true
                         Layout.fillHeight: true

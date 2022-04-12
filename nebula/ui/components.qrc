@@ -22,6 +22,7 @@
         <file>components/VPNButtonLoader.qml</file>
         <file>components/VPNButton.qml</file>
         <file>components/VPNCallout.qml</file>
+        <file>components/VPNCancelButton.qml</file>
         <file>components/VPNCheckBoxAlert.qml</file>
         <file>components/VPNCheckBox.qml</file>
         <file>components/VPNCheckBoxRow.qml</file>
@@ -109,7 +110,6 @@
         <file>components/inAppAuth/VPNInAppAuthenticationInputs.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationPasswordCondition.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationLegalDisclaimer.qml</file>
-        <file>components/inAppAuth/VPNInAppAuthenticationCancel.qml</file>
         <file>components/forms/VPNCursorDelegate.qml</file>
     </qresource>
 </RCC>

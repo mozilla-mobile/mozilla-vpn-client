@@ -8,10 +8,9 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 
+//VPNCancelButton
 VPNLinkButton {
     labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText // "Cancel"
     fontName: VPNTheme.theme.fontBoldFamily
-    anchors.horizontalCenter: parent.horizontalCenter
     linkColor: VPNTheme.theme.redButton
-    onClicked: VPN.cancelAuthentication()
 }
