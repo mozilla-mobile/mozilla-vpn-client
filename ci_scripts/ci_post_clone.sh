@@ -23,11 +23,19 @@ if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
   # generate qt_static_macos
   auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-  git clone https://github.com/mozilla-mobile/qt_static_macos
+  git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
   cd qt_static_macos
   cat qt6* > qt_static.tar.gz
   tar xf qt_static.tar.gz
+
+  cat > qt6/bin/qt.conf << EOF
+[Paths]
+Prefix=`pwd`/qt6
+EOF
+
+  cp qt6/bin/qt.conf qt6/libexec
   cd ..
+
   export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
   export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 else

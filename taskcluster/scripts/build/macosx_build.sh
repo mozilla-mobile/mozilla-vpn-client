@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export PATH="`pwd`/qt/bin:$PATH"
 export PATH="$HOME/Library/Python/3.6/bin:$HOME/.gem/ruby/2.6.0/bin:$PATH"
 
 # install xcodeproj which is needed by xcode_patcher.rb
@@ -18,13 +17,21 @@ git submodule update
 
 # generate qt_static_macos
 auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-git clone https://github.com/mozilla-mobile/qt_static_macos
+git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
 cd qt_static_macos
-cat x* > qt_static.tar.gz
+cat qt6* > qt_static.tar.gz
 tar xf qt_static.tar.gz
+
+cat > qt6/bin/qt.conf << EOF
+[Paths]
+Prefix=`pwd`/qt6
+EOF
+
+cp qt6/bin/qt.conf qt6/libexec
 cd ..
-export QT_MACOS_BIN=`pwd`/qt_static_macos/qt/bin
-export PATH=`pwd`/qt_static_macos/qt/bin:$PATH
+
+export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
+export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 
 # install python packages
 # use --user for permissions
@@ -33,9 +40,6 @@ pip3 install -r requirements.txt --user
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 export PYTHONIOENCODING="UTF-8"
-
-python3 scripts/utils/generate_glean.py
-python3 scripts/utils/import_languages.py -m
 
 curl -O https://dl.google.com/go/go1.17.6.darwin-amd64.tar.gz
 tar -xzf go1.17.6.darwin-amd64.tar.gz
@@ -55,8 +59,6 @@ echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
 echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
 ./scripts/macos/apple_compile.sh macos
 
-make -f Mozilla\ VPN.xcodeproj/qt_makeqmake.mak
-make -f Mozilla\ VPN.xcodeproj/qt_preprocess.mak
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -project Mozilla\ VPN.xcodeproj
 
 # Package
