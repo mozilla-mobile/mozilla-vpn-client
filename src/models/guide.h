@@ -7,6 +7,8 @@
 
 #include "guideblock.h"
 
+class QJsonObject;
+
 class Guide final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Guide)
@@ -19,6 +21,8 @@ class Guide final : public QObject {
   static Guide* create(QObject* parent, const QString& fileName);
 
   static QString pascalize(const QString& input);
+
+  static bool evaluateConditions(const QJsonObject& conditions);
 
   ~Guide();
 

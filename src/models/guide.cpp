@@ -7,6 +7,8 @@
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/feature.h"
+#include "mozillavpn.h"
 
 #include <QFile>
 #include <QJsonArray>
@@ -39,6 +41,12 @@ Guide* Guide::create(QObject* parent, const QString& fileName) {
   }
 
   QJsonObject obj = json.object();
+
+  QJsonObject conditions = obj["conditions"].toObject();
+  if (!evaluateConditions(conditions)) {
+    logger.info() << "Exclude the guide because conditions do not match";
+    return nullptr;
+  }
 
   QString guideId = obj["id"].toString();
   if (guideId.isEmpty()) {
@@ -105,4 +113,31 @@ QString Guide::pascalize(const QString& input) {
   }
 
   return output;
+}
+
+// static
+bool Guide::evaluateConditions(const QJsonObject& conditions) {
+  for (QJsonValue enabledFeature : conditions["enabledFeatures"].toArray()) {
+    // If the feature doesn't exist, we crash.
+    const Feature* feature = Feature::get(enabledFeature.toString());
+    Q_ASSERT(feature);
+
+    if (!feature->isSupported()) {
+      logger.info() << "Feature not supported";
+      return false;
+    }
+  }
+
+  QStringList platforms;
+  for (QJsonValue platform : conditions["platforms"].toArray()) {
+    platforms.append(platform.toString());
+  }
+
+  if (!platforms.isEmpty() &&
+      !platforms.contains(MozillaVPN::instance()->platform())) {
+    logger.info() << "Not supported platform";
+    return false;
+  }
+
+  return true;
 }

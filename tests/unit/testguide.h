@@ -15,4 +15,7 @@ class TestGuide final : public TestHelper {
   void createNotExisting();
 
   void model();
+
+  void conditions_data();
+  void conditions();
 };

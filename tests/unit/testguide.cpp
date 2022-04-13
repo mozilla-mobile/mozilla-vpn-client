@@ -126,6 +126,11 @@ void TestGuide::create_data() {
   QTest::addRow("with-block-type-list-with-subblock")
       << QStringList{"GuideFooTitle", "GuideFooBlockA", "GuideFooBlockASub"}
       << QJsonDocument(obj).toJson() << true;
+
+  obj["conditions"] = QJsonObject();
+  QTest::addRow("with-block-type-list-with-subblock and conditions")
+      << QStringList{"GuideFooTitle", "GuideFooBlockA", "GuideFooBlockASub"}
+      << QJsonDocument(obj).toJson() << true;
 }
 
 void TestGuide::create() {
@@ -187,6 +192,29 @@ void TestGuide::model() {
   Guide* guide =
       mg->data(mg->index(0, 0), GuideModel::GuideRole).value<Guide*>();
   QVERIFY(!!guide);
+}
+
+void TestGuide::conditions_data() {
+  QTest::addColumn<QJsonObject>("conditions");
+  QTest::addColumn<bool>("result");
+
+  QTest::addRow("empty") << QJsonObject() << true;
+
+  {
+    QJsonObject obj;
+    obj["platforms"] = QJsonArray{"foo"};
+    QTest::addRow("platforms") << obj << false;
+  }
+
+  QJsonObject obj;
+  obj["enabledFeatures"] = QJsonArray{"appReview"};
+  QTest::addRow("enabledFeatures") << obj << false;
+}
+
+void TestGuide::conditions() {
+  QFETCH(QJsonObject, conditions);
+  QFETCH(bool, result);
+  QCOMPARE(Guide::evaluateConditions(conditions), result);
 }
 
 static TestGuide s_testGuide;

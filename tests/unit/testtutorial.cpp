@@ -58,6 +58,11 @@ void TestTutorial::create_data() {
   QTest::addRow("with-step-element")
       << QStringList{"TutorialFooTitle", "TutorialFooStepS1"}
       << QJsonDocument(obj).toJson() << true;
+
+  obj["conditions"] = QJsonObject();
+  QTest::addRow("with-step-element and conditions")
+      << QStringList{"GuideFooTitle", "GuideFooBlockA", "GuideFooBlockASub"}
+      << QJsonDocument(obj).toJson() << true;
 }
 
 void TestTutorial::create() {
