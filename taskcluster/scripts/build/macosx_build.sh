@@ -21,12 +21,15 @@ export PATH=$QT_MACOS_BIN:$PATH
 
 echo "FIND QT"
 
-cat > $QT_FOLDER/qt.conf << EOF
+cat > $QT_FOLDER/bin/qt.conf << EOF
 [Paths]
 Prefix=`pwd`/../../fetches/qt_dist/
+Prefix=$QT_FOLDER
+Libraries=$QT_FOLDER/lib
 EOF
 
-cp $QT_FOLDER/qt.conf $QT_FOLDER/libexec
+
+cat $QT_FOLDER/bin/qt.conf
 
 
 
