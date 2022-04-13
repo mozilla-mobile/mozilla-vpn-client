@@ -23,4 +23,5 @@ echo "Building QT"
 echo "Build Qt- Creating dist artifact"
 ls 
 echo $PWD
-zip -r artifacts/qt6_mac.zip qt-everywhere-src-$QT_VERSION/qt_dist/*
+mv qt-everywhere-src-$QT_VERSION/qt_dist/* qt_dist
+zip -r artifacts/qt6_mac.zip qt_dist/*

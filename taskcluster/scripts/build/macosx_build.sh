@@ -15,23 +15,20 @@ export PATH="$HOME/.cargo/bin:$PATH"
 git submodule init
 git submodule update
 
-# generate qt_static_macos
-auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
-cd qt_static_macos
-cat qt6* > qt_static.tar.gz
-tar xf qt_static.tar.gz
+export QT_FOLDER=`pwd`/../../fetches/qt_dist/
+export QT_MACOS_BIN=$QT_FOLDER/bin
+export PATH=$QT_MACOS_BIN:$PATH
 
-cat > qt6/bin/qt.conf << EOF
+
+cat > $QT_FOLDER/qt.conf << EOF
 [Paths]
 Prefix=`pwd`/qt6
 EOF
 
-cp qt6/bin/qt.conf qt6/libexec
+cp $QT_FOLDER/qt.conf $QT_FOLDER/libexec
 cd ..
 
-export QT_MACOS_BIN=`pwd`/../../fetches/qt/bin
-export PATH=$QT_MACOS_BIN:$PATH
+
 
 # install python packages
 # use --user for permissions
