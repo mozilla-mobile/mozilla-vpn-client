@@ -83,9 +83,9 @@ void AndroidGlean::sendGleanPings() {
 
 void AndroidGlean::recordGleanEvent(const QString& gleanSampleName) {
   logger.debug() << " recordGleanEvent" << gleanSampleName;
-  jstring jSampleName = QJniObject::fromString(gleanSampleName).object<jstring>();
   QJniObject::callStaticMethod<void>(UTILS_CLASS, "recordGleanEvent",
-                                     "(Ljava/lang/String;)V", jSampleName);
+                                     "(Ljava/lang/String;)V", 
+                                     QJniObject::fromString(gleanSampleName).object<jstring>());
 
 }
 
