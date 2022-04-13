@@ -37,9 +37,7 @@ windows:
         qt-alias: windows
         qt-artifact: public/qt6_win.zip
     worker:
-        max-run-time: 14400
-        env: 
-            QT_VERSION: 6.2.3         
+        max-run-time: 14400      
         artifacts:
              - type: file
                name: public/build/qt6_win.zip

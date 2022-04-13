@@ -30,8 +30,8 @@ EOF
 cp qt6/bin/qt.conf qt6/libexec
 cd ..
 
-export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
-export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
+export QT_MACOS_BIN=`pwd`/../../fetches/qt/bin
+export PATH=$QT_MACOS_BIN:$PATH
 
 # install python packages
 # use --user for permissions
