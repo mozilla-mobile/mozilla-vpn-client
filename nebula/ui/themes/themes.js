@@ -124,7 +124,7 @@ theme.iconButtonLightBackground = {
   'defaultColor': theme.bgColorTransparent,
   'buttonHovered': theme.greyHovered,
   'buttonPressed': theme.greyPressed,
-  'buttonDisabled': theme.greyDisabled,
+  'buttonDisabled': theme.bgColorTransparent,
   'focusOutline': theme.bgColorTransparent,
   'focusBorder': theme.darkFocusBorder,
 };
