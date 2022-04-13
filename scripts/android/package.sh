@@ -181,6 +181,8 @@ make apk
 print G "All done!"
 print N "Your debug .APK is Located in .tmp/src/android-build/build/outputs/apk/debug/"
 
+cp -r android-build/build/outputs/apk  /mnt/android-build
+
 # If we wanted a release build we now need to 
 # also compile the java/kotlin code in release mode
 if [[ "$RELEASE" ]]; then

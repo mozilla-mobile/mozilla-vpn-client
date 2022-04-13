@@ -100,6 +100,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           [this]() { setAlert(NoAlert); });
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
+     emit MozillaVPN::instance()->recordGleanEvent(GleanSample::maxDeviceReached);
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
          new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));

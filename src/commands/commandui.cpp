@@ -50,6 +50,7 @@
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
+#  include "platforms/android/androidglean.h" 
 #endif
 
 #ifndef Q_OS_WIN
@@ -556,6 +557,10 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
                      &ServerHandler::close);
 #endif
+
+#ifdef MVPN_ANDROID
+    AndroidGlean::initialize();
+#endif 
 
     // Let's go.
     return qApp->exec();
