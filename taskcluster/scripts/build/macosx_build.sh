@@ -19,6 +19,13 @@ export QT_FOLDER=`pwd`/../../fetches/qt_dist/
 export QT_MACOS_BIN=$QT_FOLDER/bin
 export PATH=$QT_MACOS_BIN:$PATH
 
+echo "FIND QT"
+ls ../../../fetches/qt_dist/
+ls ../../fetches/qt_dist/
+ls ../fetches/qt_dist/
+ls fetches/qt_dist/
+
+
 
 cat > $QT_FOLDER/qt.conf << EOF
 [Paths]
@@ -26,7 +33,6 @@ Prefix=`pwd`/qt6
 EOF
 
 cp $QT_FOLDER/qt.conf $QT_FOLDER/libexec
-cd ..
 
 
 
