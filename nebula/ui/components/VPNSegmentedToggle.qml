@@ -75,7 +75,19 @@ Rectangle {
 
                 objectName: segmentButtonId
 
+
+                Accessible.role: Accessible.Button
+                Accessible.description: `${index + 1} of ${options.count}`
+                Accessible.name: {
+                    var name = ""
+                    if(root.selectedIndex === index) name += "selected,"
+                    name += label.text
+                    return name
+                }
+                Accessible.onPressAction: segmentClicked()
+
                 VPNMetropolisLabel {
+                    id: label
                     anchors.fill: parent
 
                     text: VPNl18n[segmentLabelStringId]
@@ -95,6 +107,8 @@ Rectangle {
                         }
                     }
 
+                    Accessible.ignored: true
+
                     Behavior on color {
                         PropertyAnimation {
                             duration: 100
@@ -104,11 +118,13 @@ Rectangle {
 
                 VPNMouseArea {
                     propagateClickToParent: false
-                    onClicked: {
-                        if(root.selectedIndex !== index) {
-                            root.selectedIndex = index
-                            root.handleSegmentClick(segment)
-                        }
+                    onClicked: segment.segmentClicked()
+                }
+
+                function segmentClicked() {
+                    if(root.selectedIndex !== index) {
+                        root.selectedIndex = index
+                        root.handleSegmentClick(segment)
                     }
                 }
             }
