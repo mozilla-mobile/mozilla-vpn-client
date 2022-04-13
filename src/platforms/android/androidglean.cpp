@@ -91,12 +91,15 @@ void AndroidGlean::recordGleanEvent(const QString& gleanSampleName) {
 
 void AndroidGlean::recordGleanEventWithExtraKeys(const QString& gleanSampleName,
                                                  const QVariantMap& extraKeys) {
-  Q_UNUSED(extraKeys)
-  Q_UNUSED(gleanSampleName)
-  // TODO: Implement this
+  QJsonDocument jsonDoc = QJsonDocument::fromVariant(extraKeys);
+  QJniObject::callStaticMethod<void>(UTILS_CLASS, "recordGleanEventWithExtraKeys",
+                                     "(Ljava/lang/String;Ljava/lang/String;)V",
+                                     QJniObject::fromString(gleanSampleName).object<jstring>(),
+                                     QJniObject::fromString(jsonDoc.toJson(QJsonDocument::Compact)).object<jstring>());
   return;
 }
 void AndroidGlean::setGleanSourceTags(const QStringList& tags) {
+  // TODO: Current no-op as glean-android does not implement this - no need to do anything
   // QString list = tags.join(",");
   // auto jList = QJniObject::fromString(list).object()
   // QJniObject::callStaticMethod<void>(UTILS_CLASS, "setGleanSourceTag",

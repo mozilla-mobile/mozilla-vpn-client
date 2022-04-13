@@ -9,6 +9,7 @@ import mozilla.telemetry.glean.net.HttpURLConnectionUploader
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.NoExtraKeys
 import mozilla.telemetry.glean.private.NoExtras
+import org.json.JSONObject
 import org.mozilla.firefox.vpn.GleanMetrics.Pings
 import org.mozilla.firefox.vpn.GleanMetrics.Sample
 import java.util.*
@@ -48,7 +49,7 @@ object GleanUtil {
         Pings.main.submit()
     }
     @JvmStatic
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST") // We're using nullable casting and check that :)
     fun recordGleanEvent(sampleName:String) {
         val sample = getSample(sampleName) as? EventMetricType<NoExtraKeys,NoExtras>;
         if(sample == null){
@@ -58,17 +59,25 @@ object GleanUtil {
         sample.record(NoExtras());
     }
     @JvmStatic
-    fun recordGleanEventWithExtraKeys(sampleName:String, extrakeys:String) {
-        val sample = Sample.iapSubscriptionFailed.record(buildMap {
-            put(NoExtraKeys.valueOf(""),"");
+    @Suppress("UNCHECKED_CAST") // We're using nullable casting and check that :)
+    fun recordGleanEventWithExtraKeys(sampleName:String, extraKeysJson:String) {
+        val extraKeys = JSONObject(extraKeysJson)
+        val sample = getSample(sampleName) as? EventMetricType<NoExtraKeys,NoExtras>;
+        if(sample == null){
+            Log.e("ANDROID-GLEAN", "Ping not found $sampleName");
+            return;
+        }
+        sample.record(buildMap {
+            extraKeys.keys().forEach {
+                put(NoExtraKeys.valueOf(it),extraKeys.get(it).toString())
+            }
         })
-        //val sample = getSample(sampleName) as? EventMetricType<String,NoExtras>;
         return;
     }
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST") // Callers check cast.
     fun getSample(sampleName: String):EventMetricType<*,*>{
         val sampleProperty =  Sample.javaClass.kotlin.members.first {
-            it.name.equals(sampleName)
+            it.name == sampleName
         } as KProperty1<Sample, EventMetricType<*,*>>
         val sampleInstance = sampleProperty.get(Sample);
         return sampleInstance;
