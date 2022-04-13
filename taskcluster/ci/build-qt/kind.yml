@@ -11,8 +11,8 @@ kind-dependencies:
 job-defaults:
     worker:
         env: 
-            QT_VERSION: 6.2.3
-            QT_MAJOR: 6.2   
+            QT_VERSION: "6.2.3"
+            QT_MAJOR: "6.2"  
 
 transforms:
     - mozillavpn_taskgraph.transforms.hashIndex:transforms
