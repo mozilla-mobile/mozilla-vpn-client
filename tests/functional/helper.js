@@ -332,15 +332,15 @@ module.exports = {
 
         // switch to the 3rd iframe where the stripe card inputs are and fill in
         await driver.switchTo()
-            .frame(3) await driver
+            .frame(3)
             .findElement(
                 By.css('[data-elements-stable-field-name="cardNumber"]'))
-            .sendKeys(ccInfo.cardNumber) await driver
+            .sendKeys(ccInfo.cardNumber)
             .findElement(
                 By.css('[data-elements-stable-field-name="cardExpiry"]'))
-            .sendKeys(ccInfo.cardExpiry) await driver
+            .sendKeys(ccInfo.cardExpiry)
             .findElement(By.css('[data-elements-stable-field-name="cardCvc"]'))
-            .sendKeys(ccInfo.cardCvc) await driver
+            .sendKeys(ccInfo.cardCvc)
             .findElement(
                 By.css('[data-elements-stable-field-name="postalCode"]'))
             .sendKeys(ccInfo.postCode)
