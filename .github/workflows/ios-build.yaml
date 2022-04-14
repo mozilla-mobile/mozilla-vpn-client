@@ -44,13 +44,6 @@ jobs:
         run: |
           pip3 install -r requirements.txt
 
-      - name: Importing translation files
-        shell: bash
-        run: |
-          export PATH=`pwd`/qt_ios/$QTVERSION/ios/bin:`pwd`/qt_ios/$QTVERSION/macos/bin:$PATH
-          git submodule update --remote --depth 1 i18n
-          python3 scripts/utils/import_languages.py -m -q "`pwd`/qt_ios/$QTVERSION/macos/bin"
-
       - name: Switch to newest go version
         shell: bash
         run: |
@@ -73,9 +66,6 @@ jobs:
           APP_ID_IOS = org.mozilla.ios.FirefoxVPN
           NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
           EOF
-          echo `which qmake`
-          echo `qmake -v`
-          echo `$QT_IOS_BIN/qmake -v`
           ./scripts/macos/apple_compile.sh ios -q "`pwd`/qt_ios/$QTVERSION/macos/bin"
 
       - name: Prebuilding Qt
