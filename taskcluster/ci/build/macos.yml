@@ -2,23 +2,26 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
-wasm/opt:
-    description: "Wasm Build"
+macos/opt:
+    description: "Mac Build"
     treeherder:
         symbol: B
         kind: build
         tier: 1
-        platform: web/opt
-    worker-type: b-linux
+        platform: macos/opt
+    worker-type: b-macos
+    scopes:
+        - project:releng:services/tooltool/api/download/public
+        - project:releng:services/tooltool/api/download/internal
     worker:
-        docker-image: {in-tree: wasm}
+        taskcluster-proxy: true
+        chain-of-trust: true
         max-run-time: 3600
         artifacts:
             - type: directory
               name: public/build
-              path: /builds/worker/artifacts
+              path: artifacts
     run:
         using: run-task
-        use-caches: true
         cwd: '{checkout}'
-        command: ./taskcluster/scripts/build/wasm.sh
+        command: ./taskcluster/scripts/build/macos_build.sh
