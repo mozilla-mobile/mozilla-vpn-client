@@ -4,6 +4,7 @@
 
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.15
 
 import Mozilla.VPN 1.0
 
@@ -67,16 +68,14 @@ Rectangle {
         Repeater {
             id: options
 
-            delegate: Item {
+            delegate: VPNButtonBase {
                 id: segment
 
-                Layout.fillWidth: true
+                Layout.preferredWidth: slider.implicitWidth
                 Layout.fillHeight: true
 
                 objectName: segmentButtonId
 
-
-                Accessible.role: Accessible.Button
                 Accessible.description: `${index + 1} of ${options.count}`
                 Accessible.name: {
                     var name = ""
@@ -84,14 +83,16 @@ Rectangle {
                     name += label.text
                     return name
                 }
-                Accessible.onPressAction: segmentClicked()
 
-                VPNMetropolisLabel {
+                contentItem: Text {
                     id: label
-                    anchors.fill: parent
 
                     text: VPNl18n[segmentLabelStringId]
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
                     font.family: VPNTheme.theme.fontBoldFamily
+                    font.pixelSize: VPNTheme.theme.fontSize
                     color: {
                         if (root.selectedIndex === index) {
                             return VPNTheme.colors.purple70
@@ -107,8 +108,6 @@ Rectangle {
                         }
                     }
 
-                    Accessible.ignored: true
-
                     Behavior on color {
                         PropertyAnimation {
                             duration: 100
@@ -116,16 +115,15 @@ Rectangle {
                     }
                 }
 
-                VPNMouseArea {
-                    propagateClickToParent: false
-                    onClicked: segment.segmentClicked()
-                }
-
-                function segmentClicked() {
+                onClicked: {
                     if(root.selectedIndex !== index) {
                         root.selectedIndex = index
                         root.handleSegmentClick(segment)
                     }
+                }
+
+                VPNMouseArea {
+                    id: mouseArea
                 }
             }
         }
