@@ -26,6 +26,9 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForGetUrl(Task* parent, const QString& url,
                                          int status = 0);
+  static NetworkRequest* createForGetHostAddress(Task* parent,
+                                                 const QString& url,
+                                                 const QHostAddress& address);
 
   static NetworkRequest* createForAuthenticationVerification(
       Task* parent, const QString& pkceCodeSuccess,

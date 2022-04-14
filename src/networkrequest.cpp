@@ -112,6 +112,32 @@ NetworkRequest* NetworkRequest::createForGetUrl(Task* parent,
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForGetHostAddress(
+    Task* parent, const QString& url, const QHostAddress& address) {
+  Q_ASSERT(parent);
+  QUrl requestUrl(url);
+  QString hostname = requestUrl.host();
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+  r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                            QNetworkRequest::NoLessSafeRedirectPolicy);
+
+  // Rewrite the request URL to use an explicit host address.
+  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+    requestUrl.setHost("[" + address.toString() + "]");
+  } else {
+    requestUrl.setHost(address.toString());
+  }
+  r->m_request.setUrl(requestUrl);
+  r->m_request.setRawHeader("Host", hostname.toLocal8Bit());
+  r->m_request.setPeerVerifyName(hostname);
+
+  r->getRequest();
+  return r;
+}
+
 // static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(
     Task* parent, const QString& pkceCodeSuccess,
