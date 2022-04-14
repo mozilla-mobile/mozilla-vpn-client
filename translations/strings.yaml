@@ -541,3 +541,12 @@ inAppAuth:
   termsOfServiceAndPrivacyDisclaimer:
     value: By continuing, you agree to the <a href="terms-of-service">Terms of Service</a> and the <a href="privacy-notice">Privacy Notice</a>.
     comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
+
+#Accessibility
+accessiblity:
+  of:
+    value: of
+    comment: Used to denote current selection of total options, eg 1 of 4
+  selected:
+    value: selected
+    comment: Used to denote that a particular item is currently selected

@@ -25,7 +25,7 @@ Rectangle {
         selectedSegment = options.itemAt(selectedIndex)
     }
 
-    implicitHeight: 40
+    implicitHeight: VPNTheme.theme.rowHeight
     color: VPNTheme.theme.input.highlight
     radius: 24
 
@@ -76,10 +76,10 @@ Rectangle {
 
                 objectName: segmentButtonId
 
-                Accessible.description: `${index + 1} of ${options.count}`
+                Accessible.description: `${index + 1} ${VPNl18n.AccessiblityOf} ${options.count}`
                 Accessible.name: {
                     var name = ""
-                    if(root.selectedIndex === index) name += "selected,"
+                    if(root.selectedIndex === index) name += `${VPNl18n.AccessiblitySelected}.`
                     name += label.text
                     return name
                 }
