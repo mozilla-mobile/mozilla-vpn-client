@@ -38,7 +38,7 @@ exports.mochaHooks = {
     })
 
     const ccInfo = {
-      email: 'rokafor7@mozilla.com',
+      email: 'rokafor8@mozilla.com',
       name: 'Test Account',
       cardNumber: '4242424242424242',
       cardExpiry: '0333',
