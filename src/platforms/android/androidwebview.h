@@ -22,7 +22,6 @@ class AndroidWebView : public QQuickItem {
   Q_PROPERTY(QUrl url READ url WRITE setUrl NOTIFY urlChanged)
   QML_ELEMENT
 
-
  public:
   AndroidWebView(QQuickItem* parent = 0);
   virtual ~AndroidWebView();
