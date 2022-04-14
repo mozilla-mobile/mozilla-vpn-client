@@ -17,7 +17,6 @@
 #include <QThread>
 #include <QWindow>
 
-
 namespace {
 Logger logger(LOG_ANDROID, "AndroidWebView");
 bool s_methodsInitialized = false;
