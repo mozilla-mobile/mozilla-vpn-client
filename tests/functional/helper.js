@@ -5,8 +5,7 @@
 const assert = require('assert');
 const websocket = require('websocket').w3cwebsocket;
 const FirefoxHelper = require('./firefox.js');
-
-const webdriver = require('selenium-webdriver'), By = webdriver.By;
+const {until, By, Key} = require('selenium-webdriver');
 
 let client;
 
@@ -288,6 +287,83 @@ module.exports = {
       await this.clickOnElement('telemetryPolicyButton');
       await this.waitForElement('controllerTitle');
     }
+  },
+
+  async startSubscription(ccInfo) {
+    const _slowType =
+        async (driver, el, text) => {
+      const textArr = text.split('')
+      textArr.forEach(text => {    
+        el.sendKeys(text)
+        driver.sleep(200)
+      });
+    }
+
+    // initialize gecko
+    const driver = await FirefoxHelper.createDriver()
+    driver.manage().setTimeouts({implicit: 10000, pageLoad: 10000});
+    await driver.get('https://www-dev.allizom.org/en-US/products/vpn/')
+
+    // go to sub page
+    const monthPlan =
+        await driver
+            .findElement(By.css('a.js-vpn-cta-link:nth-child(4)'))
+                await driver.executeScript('arguments[0].click();', monthPlan)
+
+    // enter email and confirm email
+    // using custom sendkeys because of angular issue(sometimes cannot recieve
+    // text input too fast) with selenium
+    const emailInputField =
+        driver
+            .findElement(By.css('[name="new-user-email"]'))
+                await _slowType(driver, emailInputField, ccInfo.email)
+
+                    await driver
+            .findElement(By.css('[data-testid="new-user-confirm-email"]'))
+            .sendKeys(ccInfo.email)
+
+        // click authorize checkbox
+        await driver.findElement(By.css('[data-testid="confirm"]'))
+            .click()
+
+        // enter name
+        await driver.findElement(By.css('[data-testid="name"]'))
+            .sendKeys(ccInfo.name)
+
+        // switch to the 3rd iframe where the stripe card inputs are and fill in
+        await driver.switchTo()
+            .frame(3) await driver
+            .findElement(
+                By.css('[data-elements-stable-field-name="cardNumber"]'))
+            .sendKeys(ccInfo.cardNumber) await driver
+            .findElement(
+                By.css('[data-elements-stable-field-name="cardExpiry"]'))
+            .sendKeys(ccInfo.cardExpiry) await driver
+            .findElement(By.css('[data-elements-stable-field-name="cardCvc"]'))
+            .sendKeys(ccInfo.cardCvc) await driver
+            .findElement(
+                By.css('[data-elements-stable-field-name="postalCode"]'))
+            .sendKeys(ccInfo.postCode)
+
+    // submit CC info
+    const submitButton =
+        driver
+            .findElement(
+                By.css('[data-elements-stable-field-name="postalCode"]'))
+                await submitButton.sendKeys(Key.TAB)
+                    await submitButton.sendKeys(Key.ENTER)
+                        await driver.switchTo()
+            .defaultContent()
+
+    // confirm completion
+    const subscriptionConfirmationPage =
+        driver
+            .findElement(By.css('[data-testid="payment-confirmation"]'))
+                await driver
+            .wait(until.elementIsVisible(subscriptionConfirmationPage), 10000)
+
+        // close browser
+        await driver.quit();
   },
 
   async logout() {

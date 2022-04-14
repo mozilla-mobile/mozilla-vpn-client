@@ -37,7 +37,7 @@ exports.mochaHooks = {
     }
   },
 
-  beforeAll() {
+  async beforeAll() {
     // Check VPN app exists. If not, bail.
     try {
       const stdout = execSync(`"${app}" --version`);
@@ -52,6 +52,17 @@ exports.mochaHooks = {
       const stdout = execSync(`"${authhelper}" create -j`);
       const json = JSON.parse(stdout);
       vpn.setAccount(json.account, json.emailAddress, json.password);
+
+      const ccInfo = {
+        email: json.emailAddress,
+        name: json.account,
+        cardNumber: '4242424242424242',
+        cardExpiry: '0333',
+        cardCvc: '123',
+        postCode: '90210'
+      }
+
+                     await vpn.startSubscription(ccInfo)
     } catch (e) {
       console.error(`Could not run "${authhelper}".`);
       console.error('Have you set MVPN_AUTHHELPER in .env or environment?');
