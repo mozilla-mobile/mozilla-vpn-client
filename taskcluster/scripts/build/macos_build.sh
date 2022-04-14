@@ -32,19 +32,15 @@ python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
 print Y "Installing QT..."
-# generate qt_static_macos
-export QT_FOLDER=`pwd`/../../fetches/qt_dist/
+export QT_FOLDER=$(realpath `pwd`/../../fetches/qt_dist/)
 export QT_MACOS_BIN=$QT_FOLDER/bin
+export QT_CONF=$QT_FOLDER/bin/qt.conf
 export PATH=$QT_MACOS_BIN:$PATH
 
-echo "FIND QT"
-
-cat > $QT_FOLDER/bin/qt.conf << EOF
-[Paths]
-Prefix=`pwd`/../../fetches/qt_dist/
-Prefix=$QT_FOLDER
-Libraries=$QT_FOLDER/lib
-EOF
+echo "Set qt.conf"
+echo "[Paths] \n " >> $QT_CONF
+echo "Prefix=$QT_FOLDER \n " >> $QT_CONF
+echo "Libraries=$QT_FOLDER/lib \n " >> $QT_CONF
 cat $QT_FOLDER/bin/qt.conf
 
 
