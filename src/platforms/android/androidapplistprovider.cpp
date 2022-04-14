@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidapplistprovider.h"
-#include "androidjnicompat.h"
 #include "androidutils.h"
 #include "leakdetector.h"
 
+#include <QJniObject>
+#include <QJniEnvironment>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <jni.h>

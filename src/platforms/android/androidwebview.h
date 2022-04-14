@@ -7,7 +7,8 @@
 
 #include "errorhandler.h"
 
-#include "androidjnicompat.h"
+#include <QJniObject>
+#include <QJniEnvironment>
 
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -21,9 +22,6 @@ class AndroidWebView : public QQuickItem {
   Q_PROPERTY(QUrl url READ url WRITE setUrl NOTIFY urlChanged)
   QML_ELEMENT
 
-#if QT_VERSION < 0x060000
-  typedef QAndroidJniObject QJniObject;
-#endif
 
  public:
   AndroidWebView(QQuickItem* parent = 0);
@@ -36,13 +34,8 @@ class AndroidWebView : public QQuickItem {
  protected:
   void componentComplete() override;
   void updatePolish() override;
-#if QT_VERSION < 0x060000
-  void geometryChanged(const QRectF& newGeometry,
-                       const QRectF& oldGeometry) override;
-#else
   void geometryChange(const QRectF& newGeometry,
                       const QRectF& oldGeometry) override;
-#endif
 
  signals:
   void urlChanged();
