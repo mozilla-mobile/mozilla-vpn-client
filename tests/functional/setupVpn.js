@@ -17,14 +17,14 @@ dotenv.config();
 
 const fs = require('fs');
 const {exec, spawn} = require('child_process');
-const vpn = require('./helper.js');
+const vpn = require('./helper.js'), startSubscription = vpn.startSubscription;
 
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;
 let stdErr = '';
 
 exports.mochaHooks = {
-  beforeAll() {
+  async beforeAll() {
     // Check VPN app exists. If not, bail.
     exec(`"${app}" --version`, (error, stdout, stderr) => {
       if (error) {
@@ -36,7 +36,19 @@ exports.mochaHooks = {
       }
       console.log(`VPN Version is: ${stdout}`);
     })
+
+    const ccInfo = {
+      email: 'rokafor7@mozilla.com',
+      name: 'Test Account',
+      cardNumber: '4242424242424242',
+      cardExpiry: '0333',
+      cardCvc: '123',
+      postCode: '90210'
+    }
+
+    await startSubscription(ccInfo)
   },
+
   async beforeEach() {
     // Start VPN app
     vpnProcess = spawn(app, ['ui', '--testing']);
