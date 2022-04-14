@@ -32,21 +32,17 @@ python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
 print Y "Installing QT..."
-realpath() {
-    path=`eval echo "$1"`
-    folder=$(dirname "$path")
-    echo $(cd "$folder"; pwd)/$(basename "$path"); 
-}
-export QT_FOLDER=$(realpath `pwd`/../../fetches/qt_dist/)
-export QT_MACOS_BIN=$QT_FOLDER/bin
-export QT_CONF=$QT_FOLDER/bin/qt.conf
+PROJECT_HOME=`pwd`
+cd ../../fetches/qt_dist || die
+export QT_MACOS_BIN=$`pwd`/bin
 export PATH=$QT_MACOS_BIN:$PATH
 
-echo "Set qt.conf"
-echo "[Paths] \n " >> $QT_CONF
-echo "Prefix=$QT_FOLDER \n " >> $QT_CONF
-echo "Libraries=$QT_FOLDER/lib \n " >> $QT_CONF
-cat $QT_FOLDER/bin/qt.conf
+cat > bin/qt.conf << EOF
+[Paths]
+Prefix=`pwd`
+EOF
+cp bin/qt.conf libexec || die
+cd $PROJECT_HOME
 
 
 print Y "Updating submodules..."
