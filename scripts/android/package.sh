@@ -170,26 +170,27 @@ else
 fi
 
 print Y "Compiling apk_install_target in .tmp/"
+# This compiles the client and generates a mozillavpn.so
 make -j $JOBS sub-src-apk_install_target || die 
 
-# We need to run the debug bundle step in any case
-# as this is the only make target that generates the gradle 
-# project, that we can then use to generate a "real" release build
-print Y "Bundleing (debug) APK"
+print Y "Generate Android Project"
 cd src/
-make apk || die 
-print G "All done!"
-print N "Your debug .APK is Located in .tmp/src/android-build/build/outputs/apk/debug/"
+# This will combine the qt-libs + qt-resources and the client
+# Into a single gradle project
+androiddeployqt --input android-mozillavpn-deployment-settings.json --output android-build || die
+cd android-build
 
-# If we wanted a release build we now need to 
-# also compile the java/kotlin code in release mode
 if [[ "$RELEASE" ]]; then
   print Y "Generating Release APK..."
-  export SPLITAPK=1
-  cd android-build
   ./gradlew compileReleaseSources
-  ./gradlew assemble
+  ./gradlew assemble || die
 
   print G "Done 🎉"
-  print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/android-build-universal-release-unsigned.apk"
+  print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"
+else
+  print Y "Generating Debug APK..."
+  ./gradlew compileDebugSources
+  ./gradlew assembleDebug || die
+  print G "Done 🎉"
+  print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/debug/"
 fi
