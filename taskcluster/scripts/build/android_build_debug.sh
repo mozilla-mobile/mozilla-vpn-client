@@ -25,6 +25,8 @@ mkdir -p /builds/worker/artifacts/
 cp .tmp/src/android-build/build/outputs/apk/debug/*  /builds/worker/artifacts/
 
 
+ls /builds/worker/artifacts/
+
 if test -n "$(find /builds/worker/artifacts/ -maxdepth 0 -empty)" ; then
     echo "Output File not present, maybe build error?"
     exit -1
