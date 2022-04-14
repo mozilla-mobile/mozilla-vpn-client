@@ -71,7 +71,6 @@ echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xco
 print Y "Compiling..."
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -project Mozilla\ VPN.xcodeproj || die
 
-
 print Y "Creating the final package..."
 python3 ./scripts/macos/import_pkg_resources.py || die
 
