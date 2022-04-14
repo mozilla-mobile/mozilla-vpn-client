@@ -48,8 +48,10 @@ Item {
             font.family: VPNTheme.theme.fontInterFamily
             color: VPNTheme.colors.input.default.text
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            textMargin: VPNTheme.theme.windowMargin * .75
-            padding: 0
+            leftPadding: VPNTheme.theme.windowMargin
+            rightPadding: VPNTheme.theme.windowMargin
+            bottomPadding: VPNTheme.theme.windowMargin
+            topPadding: VPNTheme.theme.windowMargin
             Keys.onTabPressed: nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason)
             onTextChanged: handleOnTextChanged(text)
             selectByMouse: true
@@ -61,12 +63,14 @@ Item {
                 z: -1
             }
 
+            cursorDelegate: VPNCursorDelegate {}
+
             VPNTextBlock {
                 id: formattedPlaceholderText
                 anchors.fill: textArea
                 anchors.leftMargin: VPNTheme.theme.windowMargin
                 anchors.rightMargin: VPNTheme.theme.windowMargin
-                anchors.topMargin: VPNTheme.theme.windowMargin * .75
+                anchors.topMargin: VPNTheme.theme.windowMargin
                 color: textAreaStates.state === "emptyHovered" ? VPNTheme.colors.input.hover.placeholder : VPNTheme.colors.input.default.placeholder
                 visible: textArea.text.length < 1
 

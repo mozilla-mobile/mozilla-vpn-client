@@ -138,7 +138,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.leftMargin: VPNTheme.theme.vSpacing
                 Layout.rightMargin: VPNTheme.theme.vSpacing
-                Layout.preferredWidth: parent.width
+                Layout.preferredWidth: parent.width - VPNTheme.theme.vSpacing * 2
                 Layout.maximumWidth: parent.width - VPNTheme.theme.vSpacing * 2
                 Layout.topMargin: VPNTheme.theme.vSpacing
                 searchBarPlaceholder: searchApps

@@ -14,11 +14,17 @@
 #  include "platforms/android/androidauthenticationlistener.h"
 #elif defined(MVPN_IOS)
 #  include "platforms/ios/iosauthenticationlistener.h"
+#elif defined(MVPN_MACOS)
+#  include "platforms/macos/macosauthenticationlistener.h"
 #elif defined(MVPN_WASM)
 #  include "platforms/wasm/wasmauthenticationlistener.h"
 #else
 #  include "tasks/authenticate/desktopauthenticationlistener.h"
 #endif
+
+#include <QCryptographicHash>
+#include <QRandomGenerator>
+#include <QUrlQuery>
 
 namespace {
 Logger logger(LOG_MAIN, "AuthenticationListener");
@@ -33,6 +39,8 @@ AuthenticationListener* AuthenticationListener::create(
       return new AndroidAuthenticationListener(parent);
 #elif defined(MVPN_IOS)
       return new IOSAuthenticationListener(parent);
+#elif defined(MVPN_MACOS)
+      return new MacosAuthenticationListener(parent);
 #elif defined(MVPN_WASM)
       return new WasmAuthenticationListener(parent);
 #else
@@ -65,8 +73,8 @@ QUrl AuthenticationListener::createAuthenticationUrl(
 #if !defined(MVPN_DUMMY)
   path.append(Constants::PLATFORM_NAME);
 #else
-  // Let's use linux here.
-  path.append("linux");
+  // Let's use ios here.
+  path.append("ios");
 #endif
 
   QUrl url(NetworkRequest::apiBaseUrl());
@@ -86,3 +94,22 @@ QUrl AuthenticationListener::createAuthenticationUrl(
 }
 
 void AuthenticationListener::aboutToFinish() { emit readyToFinish(); }
+
+// static
+void AuthenticationListener::generatePkceCodes(QByteArray& pkceCodeVerifier,
+                                               QByteArray& pkceCodeChallenge) {
+  QRandomGenerator* generator = QRandomGenerator::system();
+  Q_ASSERT(generator);
+
+  pkceCodeVerifier.clear();
+  static QByteArray range(
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~");
+  for (uint16_t i = 0; i < 128; ++i) {
+    pkceCodeVerifier.append(range.at(generator->generate() % range.length()));
+  }
+
+  pkceCodeChallenge =
+      QCryptographicHash::hash(pkceCodeVerifier, QCryptographicHash::Sha256)
+          .toBase64(QByteArray::Base64UrlEncoding);
+  Q_ASSERT(pkceCodeChallenge.length() == 44);
+}

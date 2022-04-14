@@ -31,16 +31,20 @@ TextField {
     selectByMouse: true
     Layout.preferredHeight: VPNTheme.theme.rowHeight
     Layout.alignment: Qt.AlignVCenter
-    verticalAlignment: Text.AlignVCenter
+    verticalAlignment: TextInput.AlignVCenter
     placeholderTextColor: VPNTheme.colors.grey40
     leftPadding: VPNTheme.theme.windowMargin
     rightPadding: VPNTheme.theme.windowMargin
+    topPadding: VPNTheme.theme.windowMargin / 2
+    bottomPadding: VPNTheme.theme.windowMargin / 2
+
+    cursorDelegate: VPNCursorDelegate {}
 
     Text {
         id: centeredPlaceholderText
-        verticalAlignment: textField.verticalAlignment
+        verticalAlignment: Text.AlignVCenter
         width: textField.width - (textField.leftPadding + textField.rightPadding)
-        height: textField.height
+        height: VPNTheme.theme.rowHeight
         elide: Text.ElideRight
         x: textField.leftPadding
         visible: !textField.length && !textField.preeditText

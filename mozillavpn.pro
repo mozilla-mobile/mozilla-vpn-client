@@ -27,10 +27,6 @@ QMLTEST {
     SUBDIRS += lottie/tests/qml
 }
 
-webextension {
+linux:!android|macos|win* {
     SUBDIRS += tests/nativemessaging
-}
-
-TOOLS {
-    SUBDIRS += tools/ipmonitor
 }

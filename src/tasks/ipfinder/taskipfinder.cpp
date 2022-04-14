@@ -68,12 +68,12 @@ void TaskIPFinder::dnsLookupCompleted(const QHostInfo& hostInfo) {
     if (address.isNull() || address.isBroadcast()) continue;
 
     if (address.protocol() == QAbstractSocket::IPv4Protocol) {
-      logger.debug() << "Ipv4:" << address.toString();
+      logger.debug() << "Ipv4:" << logger.sensitive(address.toString());
       createRequest(address, false);
     }
 
     if (address.protocol() == QAbstractSocket::IPv6Protocol) {
-      logger.debug() << "Ipv6:" << address.toString();
+      logger.debug() << "Ipv6:" << logger.sensitive(address.toString());
       createRequest(address, true);
     }
   }

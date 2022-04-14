@@ -1,4 +1,5 @@
 flask
-glean_parser==4.1.1
+glean_parser
 lxml
 PyYAML
+jsonschema

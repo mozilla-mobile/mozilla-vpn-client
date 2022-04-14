@@ -16,34 +16,38 @@ PRODUCTION_SIGNING_BUILD_TYPES = [
     "android-x64/release",
     "android-x86/release",
     "android-arm64/release",
-    "android-armv7/release"
+    "android-armv7/release",
+    # "macos/opt",
 ]
 
 SIGNING_BUILD_TYPES = PRODUCTION_SIGNING_BUILD_TYPES + [
-# Note: it appears we don't have infra for debug sign
-# contact releng if you need it :) 
-#    "android-debug",
-#
+    # Note: it appears we don't have infra for debug sign
+    # contact releng if you need it :)
+    #    "android-debug",
+    #
 ]
 
+
 @transforms.add
-def filter_signable(config, tasks):
+def set_run_on_tasks_for(config, tasks):
     for task in tasks:
-        if (task["attributes"]["build-type"] in SIGNING_BUILD_TYPES):
-            yield task
+        if task["attributes"]["build-type"] in SIGNING_BUILD_TYPES:
+            task["run-on-tasks-for"] = ["github-push"]
+        yield task
+
 
 @transforms.add
 def resolve_keys(config, tasks):
     for task in tasks:
-        for key in ("run-on-tasks-for",):
+        for key in ("signing-format",):
             resolve_keyed_by(
                 task,
                 key,
                 item_name=task["name"],
                 **{
-                    'build-type': task["attributes"]["build-type"],
-                    'level': config.params["level"],
-                    'tasks-for': config.params["tasks_for"],
+                    "build-type": task["attributes"]["build-type"],
+                    "level": config.params["level"],
+                    "tasks-for": config.params["tasks_for"],
                 }
             )
         yield task
@@ -66,13 +70,12 @@ def set_worker_type(config, tasks):
 def set_signing_type(config, tasks):
     for task in tasks:
         signing_type = "dep-signing"
-        if (
-            str(config.params["level"]) == "3"
-        ):
+        if str(config.params["level"]) == "3":
             if task["attributes"]["build-type"] in PRODUCTION_SIGNING_BUILD_TYPES:
                 signing_type = "release-signing"
         task.setdefault("worker", {})["signing-type"] = signing_type
         yield task
+
 
 @transforms.add
 def set_signing_attributes(config, tasks):

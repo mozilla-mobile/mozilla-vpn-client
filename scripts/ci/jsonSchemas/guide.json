@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The ID of the guide",
+      "pattern": "^[A-Za-z0-9_]+"
+    },
+    "conditions": {
+      "$ref": "conditions.json"
+    },
+    "title": {
+      "type": "string",
+      "description": "The title of the guide"
+    },
+    "comment": {
+      "type": "string",
+      "description": "A comment to describe how to translate the title"
+    },
+    "image": {
+      "type": "string",
+      "description": "The image of the guide"
+    },
+    "blocks": {
+      "type": "array",
+      "description": "The list of text blocks",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the block",
+            "pattern": "^[A-Za-z0-9_]+"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the sub block",
+                      "pattern": "^[A-Za-z0-9_]+"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "The content of this sub block"
+                    },
+                    "comment": {
+                      "type": "string",
+                      "description": "A comment to describe how to translate this sub block"
+                    }
+                  },
+                  "required": [ "id", "content" ]
+                }
+              }
+            ],
+            "description": "The content of this block"
+          },
+          "comment": {
+            "type": "string",
+            "description": "A comment to describe how to translate this block content"
+          }
+        },
+        "required": [ "id", "content" ]
+      }
+    }
+  },
+  "required": [ "id", "title", "image", "blocks" ]
+}

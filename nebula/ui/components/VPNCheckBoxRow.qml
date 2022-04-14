@@ -11,13 +11,14 @@ import Mozilla.VPN 1.0
 RowLayout {
     id: checkBoxRow
 
-    property var labelText
+    property var labelText: ""
     property var subLabelText: ""
     property bool isChecked
     property bool isEnabled: true
     property bool showDivider: true
     property var leftMargin: 18
     property bool showAppImage: false
+    property alias labelWidth: labelWrapper.width
 
     signal clicked()
 
@@ -38,9 +39,9 @@ RowLayout {
 
     Rectangle {
         visible: showAppImage
-        width: VPNTheme.theme.windowMargin * 2
-        height: VPNTheme.theme.windowMargin * 2
-        color: "transparent"
+        Layout.preferredWidth: VPNTheme.theme.windowMargin * 2
+        Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
+        color: VPNTheme.theme.transparent
         radius: 4
         Layout.alignment: Qt.AlignTop
 
@@ -73,12 +74,18 @@ RowLayout {
             text: labelText
             color: VPNTheme.theme.fontColorDark
             horizontalAlignment: Text.AlignLeft
+
+            VPNMouseArea {
+                propagateClickToParent: false
+                onClicked: checkBox.clicked()
+            }
         }
 
         VPNTextBlock {
             id: subLabel
 
             Layout.fillWidth: true
+            Layout.preferredWidth: parent.width
             text: subLabelText
             visible: !!subLabelText.length
             wrapMode: showAppImage ? Text.WrapAtWordBoundaryOrAnywhere : Text.WordWrap

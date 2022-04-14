@@ -102,8 +102,8 @@ VPNFlickable {
                                                   _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
                                               })
         }
-        VPNSettingsItem {
 
+        VPNSettingsItem {
             id: preferencesSetting
             objectName: "settingsPreferences"
             settingTitle: VPNl18n.SettingsSystemPreferences
@@ -138,10 +138,22 @@ VPNFlickable {
             onClicked: settingsStackView.push(aboutUsComponent)
         }
 
+        VPNButton {
+            text: "TODO delete account"
+            anchors.top: vpnPanel.bottom
+            anchors.topMargin: VPNTheme.theme.vSpacing
+            anchors.horizontalCenter: parent.horizontalCenter
+            visible: VPNFeatureList.get("accountDeletion").isSupported
+            onClicked: {
+             settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml")
+              VPN.deleteAccount()
+            }
+        }
+
         Rectangle {
             Layout.preferredHeight: fullscreenRequired? VPNTheme.theme.rowHeight * 1.5 : VPNTheme.theme.rowHeight
             Layout.fillWidth: true
-            color: "transparent"
+            color: VPNTheme.theme.transparent
         }
     }
 

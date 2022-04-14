@@ -50,8 +50,8 @@ VPNButtonBase {
         anchors.top: mainRow.top
         radius: VPNTheme.theme.cornerRadius
         border.width: VPNTheme.theme.focusBorderWidth
-        border.color: "transparent"
-        color: "transparent"
+        border.color: VPNTheme.theme.transparent
+        color: VPNTheme.theme.transparent
         opacity: rowVisualStates.state === VPNTheme.theme.uiState.stateFocused
             ? 1
             : 0

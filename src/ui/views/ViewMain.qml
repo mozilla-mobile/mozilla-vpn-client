@@ -58,7 +58,7 @@ VPNFlickable {
 
     MouseArea {
         anchors.fill: parent
-        enabled: box.connectionInfoVisible
+        enabled: box.connectionInfoScreenVisible
         onClicked: box.closeConnectionInfo()
     }
 
@@ -131,7 +131,7 @@ VPNFlickable {
 
             disableRowWhen: (VPNController.state !== VPNController.StateOn
                              && VPNController.state !== VPNController.StateOff)
-                            || box.connectionInfoVisible
+                            || box.connectionInfoScreenVisible
             Layout.topMargin: 12
             contentChildren: [
 
@@ -163,7 +163,7 @@ VPNFlickable {
             objectName: "deviceListButton"
             //% "My devices"
             titleText: qsTrId("vpn.devices.myDevices")
-            disableRowWhen: box.connectionInfoVisible
+            disableRowWhen: box.connectionInfoScreenVisible
             contentChildren: [
                 VPNIcon {
                     source: "qrc:/nebula/resources/devices.svg"
@@ -222,16 +222,6 @@ VPNFlickable {
                 stackview.pop(null, StackView.Immediate);
             }
             stackview.push(aboutUsComponent);
-        }
-
-        function onContactUsNeeded() {
-            if (stackview.currentItem.objectName === "contactUs") return;
-
-            while(stackview.depth > 1) {
-                stackview.pop(null, StackView.Immediate);
-            }
-
-            stackview.push("qrc:/ui/views/ViewContactUs.qml", { isMainView: false });
         }
     }
 }

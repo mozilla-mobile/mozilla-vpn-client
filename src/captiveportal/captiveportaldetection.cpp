@@ -44,8 +44,9 @@ void CaptivePortalDetection::networkChanged() {
   // on networks that never had a portal.
   captivePortalMonitor()->stop();
 
-  if (vpn->controller()->state() != Controller::StateOn &&
-      vpn->controller()->state() != Controller::StateConfirming) {
+  Controller::State state = vpn->controller()->state();
+  if (state != Controller::StateOn && state != Controller::StateConnecting &&
+      state != Controller::StateConfirming) {
     // Network Changed but we're not connected, no need to test for captive
     // portal
     return;
@@ -77,6 +78,7 @@ void CaptivePortalDetection::stateChanged() {
 
   if ((state != Controller::StateOn ||
        vpn->connectionHealth()->stability() == ConnectionHealth::Stable) &&
+      state != Controller::StateConnecting &&
       state != Controller::StateConfirming) {
     logger.warning() << "No captive portal detection required";
     m_impl.reset();
@@ -112,8 +114,9 @@ void CaptivePortalDetection::detectCaptivePortal() {
 
   // This method is called by the inspector too. Let's check the status of the
   // VPN.
-  if (vpn->controller()->state() != Controller::StateOn &&
-      vpn->controller()->state() != Controller::StateConfirming) {
+  Controller::State state = vpn->controller()->state();
+  if (state != Controller::StateOn && state != Controller::StateConnecting &&
+      state != Controller::StateConfirming) {
     logger.warning() << "The VPN is not online. Ignore request.";
     return;
   }
@@ -175,8 +178,7 @@ void CaptivePortalDetection::captivePortalDetected() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  if (vpn->controller()->state() == Controller::StateOn ||
-      vpn->controller()->state() == Controller::StateConfirming) {
+  if (vpn->controller()->state() == Controller::StateOn) {
     captivePortalNotifier()->notifyCaptivePortalBlock();
   }
 }

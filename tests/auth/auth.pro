@@ -26,9 +26,6 @@ DEFINES += MVPN_DUMMY
 TEMPLATE = app
 TARGET = tests
 
-CONFIG += link_pkgconfig
-PKGCONFIG += liboath
-
 RESOURCES += auth.qrc
 
 INCLUDEPATH += \
@@ -42,6 +39,7 @@ INCLUDEPATH += \
 HEADERS += \
     ../../src/authenticationinapp/authenticationinapp.h \
     ../../src/authenticationinapp/authenticationinapplistener.h \
+    ../../src/authenticationinapp/authenticationinappsession.h \
     ../../src/authenticationinapp/incrementaldecoder.h \
     ../../src/authenticationlistener.h \
     ../../src/constants.h \
@@ -55,6 +53,7 @@ HEADERS += \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/feature.h \
+    ../../src/models/server.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
@@ -67,6 +66,7 @@ HEADERS += \
     ../../src/task.h \
     ../../src/tasks/authenticate/desktopauthenticationlistener.h \
     ../../src/tasks/authenticate/taskauthenticate.h \
+    ../../src/tasks/deleteaccount/taskdeleteaccount.h \
     ../../src/tasks/function/taskfunction.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
@@ -81,6 +81,7 @@ SOURCES += \
     ../unit/mocinspectorhandler.cpp \
     ../../src/authenticationinapp/authenticationinapp.cpp \
     ../../src/authenticationinapp/authenticationinapplistener.cpp \
+    ../../src/authenticationinapp/authenticationinappsession.cpp \
     ../../src/authenticationinapp/incrementaldecoder.cpp \
     ../../src/authenticationlistener.cpp \
     ../../src/constants.cpp \
@@ -94,6 +95,7 @@ SOURCES += \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/server.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
     ../../src/rfc/rfc1918.cpp \
@@ -104,6 +106,7 @@ SOURCES += \
     ../../src/simplenetworkmanager.cpp \
     ../../src/tasks/authenticate/desktopauthenticationlistener.cpp \
     ../../src/tasks/authenticate/taskauthenticate.cpp \
+    ../../src/tasks/deleteaccount/taskdeleteaccount.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \

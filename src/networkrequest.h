@@ -13,7 +13,6 @@
 class QHostAddress;
 class QNetworkAccessManager;
 class QSslCertificate;
-class QurlQuery;
 class Task;
 
 class NetworkRequest final : public QObject {
@@ -27,6 +26,9 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForGetUrl(Task* parent, const QString& url,
                                          int status = 0);
+  static NetworkRequest* createForGetHostAddress(Task* parent,
+                                                 const QString& url,
+                                                 const QHostAddress& address);
 
   static NetworkRequest* createForAuthenticationVerification(
       Task* parent, const QString& pkceCodeSuccess,
@@ -79,33 +81,39 @@ class NetworkRequest final : public QObject {
   static NetworkRequest* createForFxaAccountStatus(Task* parent,
                                                    const QString& emailAddress);
 
-  static NetworkRequest* createForFxaAccountCreation(Task* parent,
-                                                     const QString& email,
-                                                     const QByteArray& authpw,
-                                                     const QUrlQuery& query);
+  static NetworkRequest* createForFxaAccountCreation(
+      Task* parent, const QString& email, const QByteArray& authpw,
+      const QString& fxaClientId, const QString& fxaDeviceId,
+      const QString& fxaFlowId, double fxaFlowBeginTime);
 
   static NetworkRequest* createForFxaLogin(Task* parent, const QString& email,
                                            const QByteArray& authpw,
                                            const QString& unblockCode,
-                                           const QUrlQuery& query);
+                                           const QString& fxaClientId,
+                                           const QString& fxaDeviceId,
+                                           const QString& fxaFlowId,
+                                           double fxaFlowBeginTime);
 
   static NetworkRequest* createForFxaSendUnblockCode(
       Task* parent, const QString& emailAddress);
 
   static NetworkRequest* createForFxaSessionVerifyByEmailCode(
       Task* parent, const QByteArray& sessionToken, const QString& code,
-      const QUrlQuery& query);
+      const QString& fxaClientId, const QString& fxaScope);
 
   static NetworkRequest* createForFxaSessionVerifyByTotpCode(
       Task* parent, const QByteArray& sessionToken, const QString& code,
-      const QUrlQuery& query);
+      const QString& fxaClientId, const QString& fxaScope);
 
   static NetworkRequest* createForFxaSessionResendCode(
       Task* parent, const QByteArray& sessionToken);
 
   static NetworkRequest* createForFxaAuthz(Task* parent,
                                            const QByteArray& sessionToken,
-                                           const QUrlQuery& query);
+                                           const QString& fxaClientId,
+                                           const QString& fxaState,
+                                           const QString& fxaScope,
+                                           const QString& fxaAccessType);
 
 #ifdef UNIT_TEST
   static NetworkRequest* createForFxaTotpCreation(
@@ -114,6 +122,13 @@ class NetworkRequest final : public QObject {
       Task* parent, const QByteArray& sessionToken, const QString& emailAddress,
       const QByteArray& authpw);
 #endif
+
+  static NetworkRequest* createForFxaAccountDeletion(
+      Task* parent, const QByteArray& sessionToken, const QString& emailAddress,
+      const QByteArray& authpw);
+
+  static NetworkRequest* createForFxaAttachedClients(
+      Task* parent, const QByteArray& sessionToken);
 
   static NetworkRequest* createForFxaSessionDestroy(
       Task* parent, const QByteArray& sessionToken);
@@ -168,6 +183,8 @@ class NetworkRequest final : public QObject {
   void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data);
   void requestRedirected(NetworkRequest* request, const QUrl& url);
   void requestCompleted(const QByteArray& data);
+  void requestUpdated(qint64 bytesReceived, qint64 bytesTotal,
+                      QNetworkReply* reply);
 
  private:
   QNetworkRequest m_request;

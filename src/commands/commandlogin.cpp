@@ -76,9 +76,9 @@ int CommandLogin::run(QStringList& tokens) {
     QEventLoop loop;
 
     if (passwordOption.m_set) {
-      AuthenticationInApp* aip = AuthenticationInApp::instance();
+      AuthenticationInApp* aia = AuthenticationInApp::instance();
 
-      QObject::connect(aip, &AuthenticationInApp::stateChanged, [&] {
+      QObject::connect(aia, &AuthenticationInApp::stateChanged, [&] {
         switch (AuthenticationInApp::instance()->state()) {
           case AuthenticationInApp::StateInitializing:
             break;
@@ -137,6 +137,14 @@ int CommandLogin::run(QStringList& tokens) {
           case AuthenticationInApp::StateVerifyingSessionTotpCode:
             break;
 
+          case AuthenticationInApp::StateAccountDeletionRequest:
+            Q_ASSERT(false);
+            break;
+
+          case AuthenticationInApp::StateDeletingAccount:
+            Q_ASSERT(false);
+            break;
+
           case AuthenticationInApp::StateFallbackInBrowser: {
             QTextStream stream(stdout);
             stream << "Unable to continue with the flow. Please, continue the "
@@ -147,15 +155,12 @@ int CommandLogin::run(QStringList& tokens) {
       });
 
       QObject::connect(
-          aip, &AuthenticationInApp::errorOccurred,
+          aia, &AuthenticationInApp::errorOccurred,
           [&](AuthenticationInApp::ErrorType error) {
             QTextStream stream(stdout);
             switch (error) {
               case AuthenticationInApp::ErrorAccountAlreadyExists:
                 [[fallthrough]];
-              case AuthenticationInApp::ErrorEmailAlreadyExists:
-                stream << "Account already exists" << Qt::endl;
-                break;
               case AuthenticationInApp::ErrorUnknownAccount:
                 stream << "Unknown account" << Qt::endl;
                 break;
@@ -191,6 +196,9 @@ int CommandLogin::run(QStringList& tokens) {
                 break;
               case AuthenticationInApp::ErrorInvalidTotpCode:
                 stream << "Invalid TOTP code" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorConnectionTimeout:
+                stream << "Request Timed Out" << Qt::endl;
                 break;
             }
           });

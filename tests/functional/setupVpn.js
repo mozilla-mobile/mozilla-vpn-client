@@ -116,6 +116,7 @@ exports.mochaHooks = {
     // then this can fail and cause the tests to hang.
     // Logging the error lets us clean-up and move on.
     try {
+      await vpn.hardReset();
       await vpn.quit();
     } catch (error) {
       console.error(error);

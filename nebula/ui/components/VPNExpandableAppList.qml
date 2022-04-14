@@ -126,10 +126,15 @@ ColumnLayout {
         }
     }
 
-    Column {
+
+
+    ColumnLayout {
+        id: col2
         spacing: VPNTheme.theme.windowMargin
         Layout.fillHeight: false
         Layout.topMargin: VPNTheme.theme.windowMargin / 2
+        Layout.fillWidth: true
+
         Repeater {
             id: applist
             model: model
@@ -154,7 +159,7 @@ ColumnLayout {
         contentItem: Text {
             // for accessibility
             text: addApplication
-            color: "transparent"
+            color: VPNTheme.theme.transparent
         }
 
         RowLayout {

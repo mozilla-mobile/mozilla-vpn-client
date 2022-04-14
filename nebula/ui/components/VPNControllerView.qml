@@ -14,8 +14,6 @@ import telemetry 0.30
 Item {
     id: box
 
-    readonly property alias connectionInfoVisible: connectionInfo.visible
-    property bool connectionInfoIsEnabled: VPNFeatureList.get("connectionInfo").isSupported
     property bool connectionInfoScreenVisible: false
 
     function formatSingle(value) {
@@ -34,7 +32,7 @@ Item {
     }
 
     function closeConnectionInfo() {
-        connectionInfo.close();
+        box.connectionInfoScreenVisible = false;
     }
 
     state: VPNController.state
@@ -53,12 +51,15 @@ Item {
 
     Rectangle {
         id: boxBackground
+
+        property int maximumBoxHeight
+
         color: VPNTheme.theme.bgColor
         radius: VPNTheme.theme.cornerRadius * 2
         antialiasing: true
 
         height: box.connectionInfoScreenVisible
-            ? window.safeContentHeight - VPNTheme.theme.windowMargin * 2
+            ? maximumBoxHeight
             : box.height
         width: box.width
 
@@ -67,6 +68,13 @@ Item {
                 duration: connectionInfoScreen.transitionDuration
                 easing.type: Easing.InOutQuad
             }
+        }
+
+        Component.onCompleted: {
+            const boxCoordinates = box.mapToItem(box.parent, 0, 0);
+            maximumBoxHeight = window.safeContentHeight
+                - VPNTheme.theme.windowMargin * 2
+                - (window.fullscreenRequired() ? boxCoordinates.y + VPNTheme.theme.windowMargin : 0);
         }
     }
 
@@ -113,17 +121,7 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
                 visible: false
             }
 
@@ -171,18 +169,8 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
+                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -236,18 +224,8 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
+                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -302,18 +280,8 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
+                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -363,13 +331,8 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: !connectionInfoIsEnabled
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: connectionInfoIsEnabled
+                visible: true
             }
 
             PropertyChanges {
@@ -420,18 +383,8 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
+                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -486,13 +439,8 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoButton
-                visible: !connectionInfoIsEnabled
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: connectionInfoIsEnabled
+                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -577,6 +525,10 @@ Item {
 
     VPNIconButton {
         id: connectionInfoToggleButton
+        objectName: "connectionInfoToggleButton"
+
+        //% "Close"
+        property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")
 
         anchors {
             left: parent.left
@@ -584,19 +536,17 @@ Item {
             top: parent.top
             topMargin: VPNTheme.theme.windowMargin / 2
         }
-        accessibleName: box.connectionInfoScreenVisible
-            //% "Close"
-            ? qsTrId("vpn.connectionInfo.close")
-            //% "Connection Information"
-            : qsTrId("vpn.controller.info")
-        Accessible.ignored: !connectionInfoToggleButton.visible
+        accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : VPNl18n.ConnectionInfoOpenButton
+        Accessible.ignored: !visible
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        enabled: connectionInfoToggleButton.visible
-        opacity: connectionInfoToggleButton.visible ? 1 : 0
+        enabled: visible
+        opacity: visible ? 1 : 0
         z: 1
 
         onClicked: {
-            Sample.connectionInfoOpened.record();
+            if (!box.connectionInfoScreenVisible) {
+                Sample.connectionInfoOpened.record();
+            }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
         }
 
@@ -621,51 +571,14 @@ Item {
     }
 
     VPNIconButton {
-        id: connectionInfoButton
-        objectName: "connectionInfoButton"
-
-        onClicked: {
-            Sample.connectionInfoOpened.record();
-            connectionInfo.open()
-        }
-
-        buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        opacity: connectionInfoButton.visible ? 1 : 0
-        anchors {
-            top: parent.top
-            left: parent.left
-            topMargin: VPNTheme.theme.windowMargin / 2
-            leftMargin: VPNTheme.theme.windowMargin / 2
-        }
-        //% "Connection Information"
-        accessibleName: qsTrId("vpn.controller.info")
-        Accessible.ignored: connectionInfoVisible
-        enabled: !connectionInfoVisible
-
-        VPNIcon {
-            id: connectionInfoImage
-
-            source: "qrc:/nebula/resources/connection-info.svg"
-            anchors.centerIn: connectionInfoButton
-            sourceSize.height: VPNTheme.theme.iconSize * 1.25
-            sourceSize.width: VPNTheme.theme.iconSize * 1.25
-            visible: connectionInfoButton.visible
-        }
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 300
-            }
-        }
-
-    }
-
-    VPNIconButton {
         id: settingsButton
         objectName: "settingsButton"
         opacity: 1
 
         onClicked: {
+            if (box.connectionInfoScreenVisible) {
+                return;
+            }
             Sample.settingsViewOpened.record();
             stackview.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate)
         }
@@ -676,8 +589,8 @@ Item {
         anchors.rightMargin: VPNTheme.theme.windowMargin / 2
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
-        Accessible.ignored: connectionInfoVisible
-        enabled: !connectionInfoVisible
+        Accessible.ignored: box.connectionInfoScreenVisible
+        enabled: !box.connectionInfoScreenVisible
 
         VPNIcon {
             id: settingsImage
@@ -773,7 +686,7 @@ Item {
             objectName: "controllerTitle"
             lineHeight: 22
             font.pixelSize: 22
-            Accessible.ignored: connectionInfoVisible
+            Accessible.ignored: connectionInfoScreenVisible
             Accessible.description: logoSubtitle.text
             width: parent.width
             onPaintedHeightChanged: if (visible) col.handleMultilineText()
@@ -822,7 +735,7 @@ Item {
 
         VPNConnectionStability {
             id: connectionStability
-            Accessible.ignored: connectionInfoVisible || !visible
+            Accessible.ignored: connectionInfoScreenVisible || !visible
             width: parent.width
             implicitHeight: childrenRect.height
         }
@@ -837,22 +750,8 @@ Item {
         anchors.bottomMargin: 48
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        Accessible.ignored: connectionInfoVisible
-        enabled: !connectionInfoVisible
-    }
-
-    VPNConnectionInfo {
-        id: connectionInfo
-        visible: false
-
-        Behavior on opacity {
-            NumberAnimation {
-                target: connectionInfo
-                property: "opacity"
-                duration: 200
-            }
-
-        }
+        Accessible.ignored: connectionInfoScreenVisible
+        enabled: !connectionInfoScreenVisible
     }
 
     VPNConnectionInfoScreen {

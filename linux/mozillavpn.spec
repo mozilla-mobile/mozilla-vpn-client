@@ -9,7 +9,6 @@ License:   MPLv2.0
 URL:       https://vpn.mozilla.org
 Packager:  Owen Kirby
 Requires:  qt5-qtbase >= 5.15
-Requires:  qt5-qtcharts >= 5.15
 Requires:  qt5-qtnetworkauth >= 5.15
 Requires:  qt5-qtquickcontrols2 >= 5.15
 Requires:  qt5-qtsvg >= 5.15
@@ -20,7 +19,6 @@ BuildRequires: polkit-devel
 BuildRequires: python3-yaml
 BuildRequires: cargo
 BuildRequires: qt5-qtbase-devel >= 5.15
-BuildRequires: qt5-qtcharts-devel >= 5.15
 BuildRequires: qt5-qtnetworkauth-devel >= 5.15
 BuildRequires: qt5-qtdeclarative-devel >= 5.15
 BuildRequires: qt5-qtsvg-devel >= 5.15

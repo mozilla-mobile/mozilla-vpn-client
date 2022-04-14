@@ -22,25 +22,28 @@ Item {
 
     VPNFlickable {
         id: vpnFlickable
-        flickContentHeight: themeListHolder.height + 100
+        flickContentHeight: themeListHolder.height
         anchors.top: menu.bottom
         height: root.height - menu.height
         anchors.left: parent.left
         anchors.right: parent.right
 
         ColumnLayout {
-            anchors.top:  parent.top
-            anchors.left:  parent.left
-            anchors.leftMargin: VPNTheme.theme.windowMargin
+            id: themeListHolder
 
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.topMargin: VPNTheme.theme.windowMargin
+            anchors.leftMargin: VPNTheme.theme.windowMargin
             spacing: VPNTheme.theme.windowMargin
-            id: themListHolder
 
             ButtonGroup {
                 id: radioButtonGroup
             }
 
             Repeater {
+                Layout.fillWidth: true
                 model: VPNTheme
                 delegate: VPNRadioDelegate {
                     radioButtonLabelText: name

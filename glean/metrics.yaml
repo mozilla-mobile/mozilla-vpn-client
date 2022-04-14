@@ -6,9 +6,8 @@
 # APIs to use these pings are automatically generated at build time using
 # the `glean_parser` PyPI package.
 
-# Metrics in this file may make use of SDK reserved ping names. See
-# https://mozilla.github.io/glean/book/dev/core/internal/reserved-ping-names.html
-# for additional information.
+# For the Metrics YAML Registry Format, see the official documentation:
+# https://mozilla.github.io/glean/book/reference/yaml/metrics.html
 
 # All the samples are stored in a single category (`sample`) to simplify the
 # C++-JS integration which is currently based on QT signals. The samples are
@@ -309,6 +308,51 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
+  authentication_inapp_step:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has advanced in the authentication flow.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      state:
+        description: |
+          The name of the authentication state, e.g. "sign-in", "sign-out",
+          "totp", etc. The list of states can be found in
+          `authenticationinapp.h`.
+        type: string
+
+  authentication_inapp_error:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The authentication in app has failed for a non-handled FxA error.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      errno:
+        description: The FxA error number.
+        type: string
+
   backend_failure_viewed:
     type: event
     lifetime: ping
@@ -523,9 +567,9 @@ sample:
     description: |
       User initiates authentication process from mobile onboarding
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/2545
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
     data_sensitivity:
       - interaction
     expires: never
@@ -603,9 +647,9 @@ sample:
       The user has viewed an error message after attempting to subscribe
       through Google Play store, but the validation could not be completed.
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/1541
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
     data_sensitivity:
       - interaction
     notification_emails:
@@ -621,9 +665,9 @@ sample:
       The user has viewed an error message after attempting to subscribe
       through Google Play store, but the billing service is not availble.
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/1541
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
     data_sensitivity:
       - interaction
     notification_emails:
@@ -638,11 +682,131 @@ sample:
     description: |
       The user has viewed the advanced DNS Settings
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/1242
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
     data_sensitivity:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
+
+  iap_subscription_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has started the subscription flow in app
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  iap_restore_sub_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has started the subscription flow in app
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  iap_subscription_failed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has completed the subscription flow in app
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      error:
+        description: |
+          The reason of the failure. It can be "billing-not-available",
+          "canceled" or "failed"
+        type: string
+
+  iap_subscription_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has completed the subscription flow in app
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  connectivity_handshake_timeout:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The connection handshake with the VPN server is taking too long, and has
+      timed out.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-1595
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      server:
+        description: |
+          The mullvad server public key and the connection latency, packet
+          loss, stddev.
+        type: string
+
+  connectivity_stable:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The connection has been stable for more than 10 seconds after the
+      activation
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-1595
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      server:
+        description: The mullvad server public key
+        type: string

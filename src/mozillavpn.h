@@ -8,11 +8,12 @@
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
-#include "connectiondataholder.h"
+#include "connectionbenchmark/connectionbenchmark.h"
 #include "connectionhealth.h"
 #include "constants.h"
 #include "controller.h"
 #include "errorhandler.h"
+#include "ipaddresslookup.h"
 #include "models/devicemodel.h"
 #include "models/feedbackcategorymodel.h"
 #include "models/helpmodel.h"
@@ -27,6 +28,7 @@
 #include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
+#include "telemetry.h"
 #include "theme.h"
 
 #include <QList>
@@ -34,6 +36,7 @@
 #include <QObject>
 #include <QStandardPaths>
 #include <QTimer>
+#include <QVariant>
 
 #ifdef MVPN_WINDOWS
 #  include "platforms/windows/windowscommons.h"
@@ -118,6 +121,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(QString versionString READ versionString CONSTANT)
   Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
   Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
+  Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
   Q_PROPERTY(QString architecture READ architecture CONSTANT)
   Q_PROPERTY(QString platform READ platform CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
@@ -129,6 +133,8 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
   Q_PROPERTY(QString currentView READ currentView WRITE setCurrentView NOTIFY
                  currentViewChanged)
+  Q_PROPERTY(
+      QString lastUrl READ lastUrl WRITE setLastUrl NOTIFY lastUrlChanged)
 
  public:
   MozillaVPN();
@@ -186,6 +192,9 @@ class MozillaVPN final : public QObject {
                                        const QString& category);
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
   Q_INVOKABLE void hardResetAndQuit();
+  Q_INVOKABLE void crashTest();
+  Q_INVOKABLE void deleteAccount();
+  Q_INVOKABLE void cancelAccountDeletion();
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
@@ -200,8 +209,8 @@ class MozillaVPN final : public QObject {
   CloseEventHandler* closeEventHandler() {
     return &m_private->m_closeEventHandler;
   }
-  ConnectionDataHolder* connectionDataHolder() {
-    return &m_private->m_connectionDataHolder;
+  ConnectionBenchmark* connectionBenchmark() {
+    return &m_private->m_connectionBenchmark;
   }
   ConnectionHealth* connectionHealth() {
     return &m_private->m_connectionHealth;
@@ -212,6 +221,7 @@ class MozillaVPN final : public QObject {
   FeedbackCategoryModel* feedbackCategoryModel() {
     return &m_private->m_feedbackCategoryModel;
   }
+  IpAddressLookup* ipAddressLookup() { return &m_private->m_ipAddressLookup; }
   SupportCategoryModel* supportCategoryModel() {
     return &m_private->m_supportCategoryModel;
   }
@@ -225,6 +235,7 @@ class MozillaVPN final : public QObject {
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
+  Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
   WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
   User* user() { return &m_private->m_user; }
@@ -259,19 +270,18 @@ class MozillaVPN final : public QObject {
 
   void silentSwitch();
 
-  const QString versionString() const { return QString(APP_VERSION); }
-  const QString buildNumber() const { return QString(BUILD_ID); }
-  const QString osVersion() const {
+  static QString versionString() { return QString(APP_VERSION); }
+  static QString buildNumber() { return QString(BUILD_ID); }
+  static QString osVersion() {
 #ifdef MVPN_WINDOWS
     return WindowsCommons::WindowsVersion();
 #else
     return QSysInfo::productVersion();
 #endif
   }
-  const QString architecture() const {
-    return QSysInfo::currentCpuArchitecture();
-  }
-  const QString platform() const { return Constants::PLATFORM_NAME; }
+  static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
+  static QString platform() { return Constants::PLATFORM_NAME; }
+  static QString devVersion();
 
   void logout();
 
@@ -313,6 +323,12 @@ class MozillaVPN final : public QObject {
   void setCurrentView(const QString& name) {
     m_currentView = name;
     emit currentViewChanged();
+  }
+
+  const QString& lastUrl() const { return m_lastUrl; }
+  void setLastUrl(const QString& url) {
+    m_lastUrl = url;
+    emit lastUrlChanged();
   }
 
   void createTicketAnswerRecieved(bool successful) {
@@ -390,6 +406,8 @@ class MozillaVPN final : public QObject {
   void initializeGlean();
   void sendGleanPings();
   void recordGleanEvent(const QString& gleanSampleName);
+  void recordGleanEventWithExtraKeys(const QString& gleanSampleName,
+                                     const QVariantMap& extraKeys);
   void setGleanSourceTags(const QStringList& tags);
 
   void aboutToQuit();
@@ -401,6 +419,7 @@ class MozillaVPN final : public QObject {
   void logsReady(const QString& logs);
 
   void currentViewChanged();
+  void lastUrlChanged();
 
   void ticketCreationAnswer(bool successful);
 
@@ -412,11 +431,12 @@ class MozillaVPN final : public QObject {
     CaptivePortal m_captivePortal;
     CaptivePortalDetection m_captivePortalDetection;
     CloseEventHandler m_closeEventHandler;
-    ConnectionDataHolder m_connectionDataHolder;
+    ConnectionBenchmark m_connectionBenchmark;
     ConnectionHealth m_connectionHealth;
     Controller m_controller;
     DeviceModel m_deviceModel;
     FeedbackCategoryModel m_feedbackCategoryModel;
+    IpAddressLookup m_ipAddressLookup;
     SupportCategoryModel m_supportCategoryModel;
     Keys m_keys;
     LicenseModel m_licenseModel;
@@ -427,6 +447,7 @@ class MozillaVPN final : public QObject {
     ServerData m_serverData;
     StatusIcon m_statusIcon;
     SurveyModel m_surveyModel;
+    Telemetry m_telemetry;
     Theme m_theme;
     WhatsNewModel m_whatsNewModel;
     User m_user;
@@ -437,6 +458,7 @@ class MozillaVPN final : public QObject {
   State m_state = StateInitialize;
   AlertType m_alert = NoAlert;
   QString m_currentView;
+  QString m_lastUrl;
 
   UserState m_userState = UserNotAuthenticated;
 

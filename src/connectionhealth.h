@@ -6,6 +6,7 @@
 #define CONNECTIONHEALTH_H
 
 #include "pinghelper.h"
+#include "dnspingsender.h"
 
 class ConnectionHealth final : public QObject {
  public:
@@ -22,8 +23,9 @@ class ConnectionHealth final : public QObject {
 
   Q_PROPERTY(ConnectionStability stability READ stability()
                  NOTIFY stabilityChanged)
-  Q_PROPERTY(uint latency READ latency NOTIFY pingChanged)
-  Q_PROPERTY(double loss READ loss NOTIFY pingChanged)
+  Q_PROPERTY(uint latency READ latency NOTIFY pingReceived)
+  Q_PROPERTY(double loss READ loss NOTIFY pingReceived)
+  Q_PROPERTY(bool unsettled READ isUnsettled NOTIFY unsettledChanged)
 
  public:
   ConnectionHealth();
@@ -33,6 +35,8 @@ class ConnectionHealth final : public QObject {
 
   uint latency() const { return m_pingHelper.latency(); }
   double loss() const { return m_pingHelper.loss(); }
+  double stddev() const { return m_pingHelper.stddev(); }
+  bool isUnsettled() const { return m_settlingTimer.isActive(); };
 
  public slots:
   void connectionStateChanged();
@@ -40,26 +44,38 @@ class ConnectionHealth final : public QObject {
 
  signals:
   void stabilityChanged();
-  void pingChanged();
+  void unsettledChanged();
+  void pingReceived();
 
  private:
   void stop();
-  void start(const QString& serverIpv4Gateway,
-             const QString& deviceIpv4Address);
+  void startActive(const QString& serverIpv4Gateway,
+                   const QString& deviceIpv4Address);
+  void startIdle();
 
   void pingSentAndReceived(qint64 msec);
+  void dnsPingReceived(quint16 sequence);
 
   void setStability(ConnectionStability stability);
 
   void healthCheckup();
+  void startUnsettledPeriod();
 
  private:
   ConnectionStability m_stability = Stable;
 
+  QTimer m_settlingTimer;
   QTimer m_noSignalTimer;
   QTimer m_healthCheckTimer;
 
   PingHelper m_pingHelper;
+
+  DnsPingSender m_dnsPingSender;
+  QTimer m_dnsPingTimer;
+  quint16 m_dnsPingSequence = 0;
+  quint64 m_dnsPingTimestamp = 0;
+  quint64 m_dnsPingLatency = 0;
+  bool m_dnsPingInitialized = false;
 
   bool m_suspended = false;
   QString m_currentGateway;

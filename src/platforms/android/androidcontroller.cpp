@@ -154,7 +154,7 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   jKeys["privateKey"] = keys->privateKey();
 
   QJsonObject jServer;
-  logger.info() << "Server" << hop.m_server.hostname();
+  logger.info() << "Server" << logger.sensitive(hop.m_server.hostname());
   jServer["ipv4AddrIn"] = hop.m_server.ipv4AddrIn();
   jServer["ipv4Gateway"] = hop.m_server.ipv4Gateway();
   jServer["ipv6AddrIn"] = hop.m_server.ipv6AddrIn();
@@ -268,9 +268,7 @@ void AndroidController::startActivityForResult(JNIEnv* env, jobject /*thiz*/,
 
     if (resultCode == ACTIVITY_RESULT_OK) {
       logger.debug() << "VPN PROMPT RESULT - Accepted";
-      AndroidUtils::dispatchToMainThread(
-          [&] { s_instance->resume_activate(); });
-
+      s_instance->resume_activate();
       return;
     }
     // If the request got rejected abort the current

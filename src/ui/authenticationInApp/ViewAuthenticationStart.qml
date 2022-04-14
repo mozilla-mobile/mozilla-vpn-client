@@ -7,7 +7,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
-import components.forms 0.1
 import components.inAppAuth 0.1
 
 VPNInAppAuthenticationBase {
@@ -25,47 +24,30 @@ VPNInAppAuthenticationBase {
 
     _menuButtonOnClick: () => {VPN.cancelAuthentication() }
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
-    _menuButtonAccessibleName: "Back"
+    _menuButtonAccessibleName:  qsTrId("vpn.main.back")
     _headlineText: "Mozilla VPN"
-    _subtitleText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut"
+    _subtitleText: VPNl18n.InAppAuthEnterEmailAddressDescription
     _imgSource: "qrc:/ui/resources/logo.svg"
-    _inputLabel: "Email address"
+    _inputLabel: VPNl18n.InAppAuthEmailInputPlaceholder
 
-    _inputs: ColumnLayout {
-        spacing: VPNTheme.theme.vSpacing * 2
-        VPNTextField {
-            id: emailInput
-            hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
-            _placeholderText: "Enter email"
-            Layout.fillWidth: true
-        }
-        VPNButton {
-            text: "Continue"
-            enabled: VPNAuthInApp.state === VPNAuthInApp.StateStart && emailInput.text.length !== 0 && !emailInput.hasError
-            loaderVisible: VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
-            onClicked: VPNAuthInApp.checkAccount(emailInput.text);
-            Layout.fillWidth: true
-        }
+    _inputs: VPNInAppAuthenticationInputs {
+        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError
+        _buttonOnClicked: (inputText) => { VPNAuthInApp.checkAccount(inputText); }
+        _buttonText: qsTrId("vpn.postAuthentication.continue")
+        _inputMethodHints: Qt.ImhEmailCharactersOnly | Qt.ImhNoAutoUppercase
+        _inputPlaceholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
     }
 
     _disclaimers: RowLayout {
         spacing: VPNTheme.theme.vSpacing / 2
-        Rectangle {
-            Layout.alignment: Qt.AlignTop
-            Layout.topMargin: 2
-            height: VPNTheme.theme.vSpacing
-            width: VPNTheme.theme.vSpacing
-            color: "transparent"
-
-            VPNIcon {
-                source: "qrc:/ui/resources/logo.svg"
-                anchors.centerIn: parent
-            }
+        VPNIcon {
+            source: "qrc:/nebula/resources/shield-green50.svg"
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         }
 
         VPNTextBlock {
             id: txt
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            text: VPNl18n.InAppAuthInformationUsageDisclaimer
             Layout.fillWidth: true
         }
     }

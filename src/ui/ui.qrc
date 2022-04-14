@@ -10,10 +10,14 @@
         <file>authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
+        <file>deleteAccount/ViewDeleteAccount.qml</file>
+        <file>deleteAccount/ViewDeleteAccountRequest.qml</file>
         <file>developerMenu/ViewAnimationsPlayground.qml</file>
         <file>developerMenu/ViewDeveloperMenu.qml</file>
         <file>developerMenu/ViewFeatureList.qml</file>
+        <file>developerMenu/ViewGuides.qml</file>
         <file>developerMenu/ViewThemeList.qml</file>
+        <file>developerMenu/ViewTutorials.qml</file>
         <file>main.qml</file>
         <file>qmldir</file>
         <file>settings/ViewAdvancedDNSSettings.qml</file>

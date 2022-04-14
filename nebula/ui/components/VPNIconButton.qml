@@ -33,6 +33,7 @@ VPNButtonBase {
 
     VPNMouseArea {
         id: mouseArea
+        hoverEnabled: iconButton.enabled
         onExited: toolTip.close()
     }
 

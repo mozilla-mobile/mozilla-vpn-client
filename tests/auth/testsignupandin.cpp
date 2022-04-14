@@ -6,6 +6,8 @@
 #include "utils.h"
 #include "../../src/authenticationinapp/authenticationinapp.h"
 #include "../../src/tasks/authenticate/taskauthenticate.h"
+#include "../../src/tasks/deleteaccount/taskdeleteaccount.h"
+#include "../../src/tasks/function/taskfunction.h"
 
 #include <QDateTime>
 #include <QDebug>
@@ -13,9 +15,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QEventLoop>
+#include <QProcess>
+#include <QProcessEnvironment>
 #include <QTest>
-
-#include <liboath/oath.h>
 
 constexpr const char* PASSWORD = "12345678";
 
@@ -110,7 +112,7 @@ void TestSignUpAndIn::signUp() {
   QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
 
   connect(aia, &AuthenticationInApp::errorOccurred,
-          [&](AuthenticationInApp::ErrorType error) {
+          [&](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error ==
                 AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode) {
               loop.exit();
@@ -128,13 +130,7 @@ void TestSignUpAndIn::signUp() {
   aia->verifySessionEmailCode(code);
   QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
 
-  QUrl finalUrl;
-  connect(aia, &AuthenticationInApp::unitTestFinalUrl,
-          [&](const QUrl& url) { finalUrl = url; });
-  connect(&task, &Task::completed, [&]() {
-    qDebug() << "Task completed";
-    loop.exit();
-  });
+  connect(&task, &Task::completed, [&]() { loop.exit(); });
 
   if (m_totpCreation) {
     waitForTotpCodes();
@@ -142,17 +138,14 @@ void TestSignUpAndIn::signUp() {
 
   loop.exec();
   disconnect(aia, nullptr, nullptr, nullptr);
-
-  // The account is not active yet. So, let's check the final URL.
-  QVERIFY(
-      (finalUrl.host() == "stage-vpn.guardian.nonprod.cloudops.mozgcp.net" &&
-       finalUrl.path() == "/vpn/client/login/success") ||
-      (finalUrl.host() == "www-dev.allizom.org" &&
-       finalUrl.path() == "/en-US/products/vpn/"));
-  qDebug() << finalUrl.path();
 }
 
-void TestSignUpAndIn::signIn() {
+void TestSignUpAndIn::signUpWithError() {
+  // This test works only for non-blocked accounts.
+  if (!m_emailAccount.startsWith("vpn")) {
+    return;
+  }
+
   AuthenticationInApp* aia = AuthenticationInApp::instance();
   QVERIFY(!!aia);
   disconnect(aia, nullptr, nullptr, nullptr);
@@ -186,13 +179,93 @@ void TestSignUpAndIn::signIn() {
       loop.exit();
     }
   });
-
   loop.exec();
   disconnect(aia, nullptr, nullptr, nullptr);
 
   QCOMPARE(aia->state(), AuthenticationInApp::StateSignIn);
 
   // Password
+  aia->setPassword(PASSWORD);
+
+  // Even if we are in SignIn, let's call the Sign-up
+  aia->signUp();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSigningUp);
+
+  connect(
+      aia, &AuthenticationInApp::errorOccurred,
+      [&](AuthenticationInApp::ErrorType error, uint32_t) {
+        if (error == AuthenticationInApp::ErrorAccountAlreadyExists) {
+          qDebug() << "The account already exist. Error correctly propagated.";
+          loop.exit();
+        }
+      });
+  loop.exec();
+
+  disconnect(aia, nullptr, nullptr, nullptr);
+}
+
+void TestSignUpAndIn::signIn() {
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QVERIFY(!!aia);
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
+
+  // Starting the authentication flow.
+  TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
+  task.run();
+
+  EventLoop loop;
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateStart) {
+      loop.exit();
+    }
+  });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateStart);
+
+  QString emailAddress(m_emailAccount);
+  emailAddress.append("@restmail.net");
+
+  // Just to make things more complex, let's pass an upper-case email address.
+  aia->allowUpperCaseEmailAddress();
+  emailAddress[0] = emailAddress[0].toUpper();
+
+  // Account
+  aia->checkAccount(emailAddress);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
+
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateSignIn) {
+      loop.exit();
+    }
+  });
+
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSignIn);
+
+  // Invalid Password
+  if (m_emailAccount.startsWith("vpn")) {
+    // We run this part only for non-blocked accounts because for them, the
+    // password doesn't really matter.
+    aia->setPassword("Invalid!");
+    connect(aia, &AuthenticationInApp::errorOccurred,
+            [&](AuthenticationInApp::ErrorType error, uint32_t) {
+              if (error == AuthenticationInApp::ErrorIncorrectPassword) {
+                qDebug() << "Incorrect password!";
+                loop.exit();
+              }
+            });
+
+    // Sign-in
+    aia->signIn();
+    loop.exec();
+  }
+
   aia->setPassword(PASSWORD);
 
   // Let's delete the account the end of the flow.
@@ -210,7 +283,7 @@ void TestSignUpAndIn::signIn() {
   bool wrongUnblockCodeSent = false;
 
   connect(aia, &AuthenticationInApp::errorOccurred,
-          [this](AuthenticationInApp::ErrorType error) {
+          [this](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error == AuthenticationInApp::ErrorInvalidUnblockCode) {
               qDebug() << "Invalid unblock code. Sending a good one";
 
@@ -225,7 +298,9 @@ void TestSignUpAndIn::signIn() {
               QVERIFY(!code.isEmpty());
               aia->verifyUnblockCode(code);
               QCOMPARE(aia->state(),
-                       AuthenticationInApp::StateVerifyingUnblockCode);
+              AuthenticationInApp::StateVerifyingUnblockCode);
+              fetchAndSendUnblockCode();
+
             }
           });
 
@@ -239,24 +314,131 @@ void TestSignUpAndIn::signIn() {
     }
   });
 
-  QUrl finalUrl;
-  connect(aia, &AuthenticationInApp::unitTestFinalUrl,
-          [&](const QUrl& url) { finalUrl = url; });
-  connect(&task, &Task::completed, [&]() {
-    qDebug() << "Task completed";
-    loop.exit();
+  connect(&task, &Task::completed, [&]() { loop.exit(); });
+
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+}
+
+void TestSignUpAndIn::signInWithError() {
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QVERIFY(!!aia);
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
+
+  // Starting the authentication flow.
+  TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
+  task.run();
+
+  EventLoop loop;
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateStart) {
+      loop.exit();
+    }
+  });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateStart);
+
+  QString emailAddress(m_emailAccount);
+  emailAddress.append("@restmail.net");
+
+  // Account
+  aia->checkAccount(emailAddress);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
+
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateSignUp) {
+      loop.exit();
+    }
   });
 
   loop.exec();
   disconnect(aia, nullptr, nullptr, nullptr);
 
-  // The account is not active yet. So, let's check the final URL.
-  QVERIFY(
-      (finalUrl.host() == "stage-vpn.guardian.nonprod.cloudops.mozgcp.net" &&
-       finalUrl.path() == "/vpn/client/login/success") ||
-      (finalUrl.host() == "www-dev.allizom.org" &&
-       finalUrl.path() == "/en-US/products/vpn/"));
-  qDebug() << finalUrl.path();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSignUp);
+
+  aia->setPassword(PASSWORD);
+
+  // Sign-in even if the account does not exist.
+  aia->signIn();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSigningIn);
+
+  connect(aia, &AuthenticationInApp::errorOccurred,
+          [&](AuthenticationInApp::ErrorType error, uint32_t) {
+            if (error == AuthenticationInApp::ErrorUnknownAccount) {
+              qDebug() << "The account does not exist yet";
+              loop.exit();
+            }
+          });
+  loop.exec();
+}
+
+void TestSignUpAndIn::deleteAccount() {
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QVERIFY(!!aia);
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
+
+  QString emailAddress(m_emailAccount);
+  emailAddress.append("@restmail.net");
+
+  // Starting the account deletion flow.
+  TaskDeleteAccount task(emailAddress);
+  task.run();
+
+  EventLoop loop;
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateCheckingAccount) {
+      loop.exit();
+    }
+  });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateSignIn) {
+      loop.exit();
+    }
+  });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSignIn);
+
+  aia->setPassword(PASSWORD);
+
+  // Sign-in
+  aia->signIn();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSigningIn);
+
+  // The next step can be tricky: totp, or unblocked code, or success
+  if (m_totpCreation) {
+    waitForTotpCodes();
+  }
+
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateUnblockCodeNeeded) {
+      fetchAndSendUnblockCode();
+    } else if (aia->state() ==
+               AuthenticationInApp::StateAccountDeletionRequest) {
+      loop.exit();
+    }
+  });
+
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QVERIFY(!aia->attachedClients().isEmpty());
+
+  aia->deleteAccount();
+
+  connect(&task, &Task::completed, [&]() { loop.exit(); });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
 }
 
 void TestSignUpAndIn::waitForTotpCodes() {
@@ -265,7 +447,7 @@ void TestSignUpAndIn::waitForTotpCodes() {
   AuthenticationInApp* aia = AuthenticationInApp::instance();
 
   connect(aia, &AuthenticationInApp::errorOccurred,
-          [this](AuthenticationInApp::ErrorType error) {
+          [this](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error == AuthenticationInApp::ErrorInvalidTotpCode) {
               qDebug() << "Invalid code. Let's send the right one";
 
@@ -274,14 +456,21 @@ void TestSignUpAndIn::waitForTotpCodes() {
                   aia->state(),
                   AuthenticationInApp::StateVerificationSessionByTotpNeeded);
 
-              QCOMPARE(oath_init(), OATH_OK);
+              QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+              QVERIFY(pe.contains("MVPN_OATHTOOL"));
+              QString oathtool = pe.value("MVPN_OATHTOOL");
 
-              char otp[/* length + 1 */ 7] = {};
-              QCOMPARE(oath_totp_generate(m_totpSecret.data(),
-                                          m_totpSecret.length(), time(nullptr),
-                                          OATH_TOTP_DEFAULT_TIME_STEP_SIZE,
-                                          OATH_TOTP_DEFAULT_START_TIME, 6, otp),
-                       OATH_OK);
+              QString otp;
+              {
+                QProcess process;
+                process.start(oathtool, QStringList{m_totpSecret});
+                QVERIFY(process.waitForStarted());
+
+                process.closeWriteChannel();
+                QVERIFY(process.waitForFinished());
+
+                otp = process.readAll().trimmed();
+              }
 
               qDebug() << "Code:" << otp;
               aia->verifySessionTotpCode(otp);
@@ -296,15 +485,7 @@ void TestSignUpAndIn::waitForTotpCodes() {
             qDebug() << "Codes received";
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
-            QByteArray totpSecret = obj["secret"].toString().toLocal8Bit();
-
-            char* secret = nullptr;
-            size_t secretLength = 0;
-            QCOMPARE(oath_base32_decode(totpSecret.data(), totpSecret.length(),
-                                        &secret, &secretLength),
-                     OATH_OK);
-
-            m_totpSecret = QByteArray(secret, secretLength);
+            m_totpSecret = obj["secret"].toString();
             QVERIFY(!m_totpSecret.isEmpty());
           });
 
@@ -322,4 +503,61 @@ void TestSignUpAndIn::waitForTotpCodes() {
                AuthenticationInApp::StateVerifyingSessionTotpCode);
     }
   });
+}
+
+QString TestSignUpAndIn::fetchCode(const QString& code) {
+  while (true) {
+    QString url = "http://restmail.net/mail/";
+    url.append(m_emailAccount);
+
+    // In theory, network requests should be executed by tasks, but for this
+    // test we do an hack.
+    TaskFunction dummyTask([] {});
+
+    NetworkRequest* nr = NetworkRequest::createForGetUrl(&dummyTask, url);
+
+    QByteArray jsonData;
+    EventLoop loop;
+    connect(nr, &NetworkRequest::requestFailed,
+            [&](QNetworkReply::NetworkError, const QByteArray&) {
+              qDebug() << "Failed to fetch the restmail.net content";
+              loop.exit();
+            });
+    connect(nr, &NetworkRequest::requestCompleted, [&](const QByteArray& data) {
+      jsonData = data;
+      loop.exit();
+    });
+    loop.exec();
+
+    QJsonDocument doc(QJsonDocument::fromJson(jsonData));
+    QJsonArray array = doc.array();
+    if (!array.isEmpty()) {
+      QJsonObject obj = array.last().toObject();
+      QJsonObject headers = obj["headers"].toObject();
+      if (headers.contains(code)) {
+        return headers[code].toString();
+      }
+    }
+
+    qDebug() << "Email not received yet";
+
+    QTimer timer;
+    connect(&timer, &QTimer::timeout, [&]() { loop.exit(); });
+    timer.setSingleShot(true);
+    timer.start(2000 /* 2 seconds */);
+    loop.exec();
+  }
+}
+
+void TestSignUpAndIn::fetchAndSendUnblockCode() {
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateUnblockCodeNeeded);
+
+  // We do not receive the email each time.
+  aia->resendUnblockCodeEmail();
+
+  QString code = fetchUnblockCode();
+  QVERIFY(!code.isEmpty());
+  aia->verifyUnblockCode(code);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingUnblockCode);
 }

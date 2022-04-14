@@ -11,6 +11,7 @@
 #  include "adjust/adjustfiltering.h"
 #endif
 
+#include "features/featureaccountdeletion.h"
 #include "features/featureappreview.h"
 #include "features/featurecaptiveportal.h"
 #include "features/featureconnectioninfo.h"
@@ -18,6 +19,9 @@
 #include "features/featureinappaccountcreate.h"
 #include "features/featureinappauth.h"
 #include "features/featureinapppurchase.h"
+#ifdef MVPN_IOS
+#  include "features/featureioskillswitch.h"
+#endif
 #include "features/featurelocalareaaccess.h"
 #include "features/featuremobileonboarding.h"
 #include "features/featuremultiaccountcontainers.h"
@@ -49,6 +53,7 @@ FeatureList* FeatureList::instance() {
 }
 
 void FeatureList::initialize() {
+  new FeatureAccountDeletion();
   new FeatureAppReview();
   new FeatureCaptivePortal();
   new FeatureConnectionInfo();
@@ -56,6 +61,9 @@ void FeatureList::initialize() {
   new FeatureInAppAccountCreate();
   new FeatureInAppAuth();
   new FeatureInAppPurchase();
+#ifdef MVPN_IOS
+  new FeatureIosKillswitch();
+#endif
   new FeatureLocalAreaAccess();
   new FeatureMobileOnboarding();
   new FeatureMultiAccountContainers();

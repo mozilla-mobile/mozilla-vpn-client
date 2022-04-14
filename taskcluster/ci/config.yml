@@ -1,9 +1,14 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 trust-domain: mozillavpn
 treeherder:
     group-names:
         'I': 'Docker images'
         'lint': 'Linting tasks'
+        'Fetch': 'Fetching Tasks'
+        'TL': 'Toolchain Tasks'
 
 task-priority:
     by-project:
@@ -18,6 +23,13 @@ taskgraph:
     cached-task-prefix: mozillavpn.v2.mozillavpn
     decision-parameters: 'mozillavpn_taskgraph.parameters:get_decision_parameters'
 
+index:
+    products:
+        - "openssl"
+        - "qt"
+# Currently unused:
+#        - "mozillavpn"
+
 workers:
     aliases:
         b-linux:
@@ -30,7 +42,7 @@ workers:
             implementation: generic-worker
             os: windows
             worker-type: b-win2012
-        b-osx:
+        b-macos:
             provisioner: 'releng-hardware'
             implementation: generic-worker
             os: macosx
@@ -56,5 +68,16 @@ workers:
                 by-level:
                     "3": mozillavpn-3-signing
                     default: mozillavpn-t-signing
-scriptworker:
-    scope-prefix: project:mozilla-vpn-client
+        push-apk:
+            provisioner: scriptworker-k8s
+            implementation: scriptworker-pushapk
+            os: scriptworker
+            worker-type: 'mozillavpn-{level}-pushapk'
+        # macos-signing:
+        #     provisioner: scriptworker-prov-v1
+        #     implementation: scriptworker-signing
+        #     os: macosx
+        #     worker-type:
+        #         by-level:
+        #             "3": mozillavpn-3-signing-mac
+        #             default: mozillavpn-t-signing-mac

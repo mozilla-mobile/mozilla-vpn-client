@@ -11,51 +11,11 @@ on:
       - 'releases/**'
 
 jobs:
-  wasm:
-    runs-on: ubuntu-20.04
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-
-      - name: Install Qt
-        shell: bash
-        run: |
-          python3 -m pip install aqtinstall
-          python3 -m aqt install-qt -O /opt linux desktop 5.15.2 wasm_32 -m qtcharts
-
-      - name: Install python dependencies
-        shell: bash
-        run: |
-          pip install -r requirements.txt
-
-      - name: Setup emsdk
-        uses: mymindstorm/setup-emsdk@v7
-        with:
-          version: 1.39.8
-
-      - name: Compiling
-        shell: bash
-        run: |
-          export PATH=/opt/5.15.2/wasm_32/bin:$PATH
-          ./scripts/wasm/compile.sh
-
-      - name: Uploading
-        uses: actions/upload-artifact@v1
-        with:
-            name: WebAssembly Build Qt5
-            path: wasm
-
   wasmQt6:
     name: Wasm Qt6
     runs-on: ubuntu-20.04
+    env:
+      QTVERSION: 6.2.4
 
     steps:
       - name: Clone repository
@@ -73,15 +33,17 @@ jobs:
         run: |
           python3 -m pip install aqtinstall
           # qt6.2.3 for wasm needs the desktop linux installation
-          python3 -m aqt install-qt -O /opt linux desktop 6.2.3
-          python3 -m aqt install-qt -O /opt linux desktop 6.2.3 wasm_32 -m qtcharts qtwebsockets qt5compat
+          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
+          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION wasm_32 -m qtcharts qtwebsockets qt5compat
 
       - name: Patching Qt
         shell: bash
         run: |
           # see: https://wiki.qt.io/Qt_6.2_Known_Issues#WebAssembly
-          sed '/sse/,+5 d' /opt/6.2.3/wasm_32/mkspecs/features/wasm/wasm.prf > /tmp/wasm.prf
-          mv /tmp/wasm.prf /opt/6.2.3/wasm_32/mkspecs/features/wasm/wasm.prf
+          sed '/sse/,+5 d' /opt/$QTVERSION/wasm_32/mkspecs/features/wasm/wasm.prf > /tmp/wasm.prf
+          mv /tmp/wasm.prf /opt/$QTVERSION/wasm_32/mkspecs/features/wasm/wasm.prf
+          ln -s /opt/$QTVERSION/gcc_64/bin/lconvert /opt/$QTVERSION/wasm_32/bin/
+          ln -s /opt/$QTVERSION/gcc_64/bin/lupdate /opt/$QTVERSION/wasm_32/bin/
 
       - name: Install python dependencies
         shell: bash
@@ -94,7 +56,7 @@ jobs:
       - name: Compiling
         shell: bash
         run: |
-          export PATH=/opt/6.2.3/wasm_32/bin:/opt/6.2.3/gcc_64/bin:$PATH
+          export PATH=/opt/$QTVERSION/wasm_32/bin:/opt/$QTVERSION/gcc_64/bin:$PATH
           ./scripts/wasm/compile.sh
 
       - name: Uploading
@@ -128,17 +90,11 @@ jobs:
 
   ghPages:
     runs-on: ubuntu-20.04
-    needs: [wasm, wasmQt6, inspector]
+    needs: [wasmQt6, inspector]
     name: Publish Wasm on Github Pages
     env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v2.0.8
-        with:
-          name: WebAssembly Build Qt5
-          # Destination path
-          path: _site/qt5
       - name: Download a Build Artifact
         uses: actions/download-artifact@v2.0.8
         with:

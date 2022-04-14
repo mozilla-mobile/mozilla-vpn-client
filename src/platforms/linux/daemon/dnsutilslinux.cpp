@@ -122,8 +122,10 @@ void DnsUtilsLinux::setLinkDomains(int ifindex,
   const char* ifname = if_indextoname(ifindex, ifnamebuf);
   if (ifname) {
     for (auto d : domains) {
-      logger.debug() << "Setting DNS domain:" << d.domain << "via" << ifname
-                     << (d.search ? "search" : "");
+      // The DNS search domains often winds up revealing user's ISP which
+      // can correlate back to their location.
+      logger.debug() << "Setting DNS domain:" << logger.sensitive(d.domain)
+                     << "via" << ifname << (d.search ? "search" : "");
     }
   }
 

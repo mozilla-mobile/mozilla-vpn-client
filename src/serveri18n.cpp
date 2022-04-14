@@ -112,6 +112,49 @@ void maybeInitialize() {
   }
 }
 
+QString translateItemWithLanguage(const QString& languageCode,
+                                  const QString& countryCode,
+                                  const QString& cityName) {
+  QString languageCodeCopy(languageCode);
+
+  QString result = s_items.value(itemKey(languageCode, countryCode, cityName));
+  if (!result.isEmpty()) {
+    return result;
+  }
+
+  // if the language code contains the 'region' part too, we check if we have
+  // translations for the whole 'primary language'. Ex: 'de-AT' vs 'de'.
+  bool trimmed = false;
+  int pos = languageCodeCopy.indexOf("-");
+  if (pos > 0) {
+    languageCodeCopy = languageCodeCopy.left(pos);
+    trimmed = true;
+  }
+
+  pos = languageCodeCopy.indexOf("_");
+  if (pos > 0) {
+    languageCodeCopy = languageCodeCopy.left(pos);
+    trimmed = true;
+  }
+
+  if (trimmed) {
+    result = s_items.value(itemKey(languageCodeCopy, countryCode, cityName));
+    if (!result.isEmpty()) {
+      return result;
+    }
+  } else {
+    // If the language code is not trimmed e.g "es" and we did not have a match
+    // so far, lets try itself as region e.g es -> es_ES, de -> de_DE
+    QString concat_code = languageCodeCopy + "_" + languageCodeCopy.toUpper();
+    result = s_items.value(itemKey(concat_code, countryCode, cityName));
+    if (!result.isEmpty()) {
+      return result;
+    }
+  }
+
+  return QString();
+}
+
 QString translateItem(const QString& countryCode, const QString& cityName,
                       const QString& fallback) {
   if (!SettingsHolder::instance()->hasLanguageCode()) {
@@ -125,40 +168,19 @@ QString translateItem(const QString& countryCode, const QString& cityName,
     languageCode = QLocale::system().bcp47Name();
   }
 
-  QString result = s_items.value(itemKey(languageCode, countryCode, cityName));
+  QString result =
+      translateItemWithLanguage(languageCode, countryCode, cityName);
   if (!result.isEmpty()) {
     return result;
   }
 
-  // if the language code contains the 'region' part too, we check if we have
-  // translations for the whole 'primary language'. Ex: 'de-AT' vs 'de'.
-  bool trimmed = false;
-  int pos = languageCode.indexOf("-");
-  if (pos > 0) {
-    languageCode = languageCode.left(pos);
-    trimmed = true;
-  }
-
-  pos = languageCode.indexOf("_");
-  if (pos > 0) {
-    languageCode = languageCode.left(pos);
-    trimmed = true;
-  }
-
-  if (trimmed) {
-    result = s_items.value(itemKey(languageCode, countryCode, cityName));
-    if (!result.isEmpty()) {
-      return result;
-    }
-  } else {
-    // If the language code is not trimmed e.g "es" and we did not have a match
-    // so far, lets try itself as region e.g es -> es_ES, de -> de_DE
-    QString concat_code = languageCode + "_" + languageCode.toUpper();
-    result = s_items.value(itemKey(concat_code, countryCode, cityName));
+  if (languageCode != "en") {
+    result = translateItemWithLanguage("en", countryCode, cityName);
     if (!result.isEmpty()) {
       return result;
     }
   }
+
   return fallback;
 }
 

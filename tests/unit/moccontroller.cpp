@@ -67,12 +67,6 @@ void Controller::getStatus(
 
 void Controller::quit() {}
 
-void Controller::connectionConfirmed() {}
-
-void Controller::connectionFailed() {}
-
-void Controller::heartbeatCompleted() {}
-
 void Controller::backendFailure() {}
 
 void Controller::captivePortalPresent() {}

@@ -11,6 +11,8 @@
 #include <QObject>
 #include <QUrl>
 
+constexpr const char* CODE_CHALLENGE_METHOD = "S256";
+
 class Task;
 
 class AuthenticationListener : public QObject {
@@ -28,6 +30,9 @@ class AuthenticationListener : public QObject {
   static QUrl createAuthenticationUrl(const QString& codeChallenge,
                                       const QString& codeChallengeMethod,
                                       const QString& emailAddress);
+
+  static void generatePkceCodes(QByteArray& pkceCodeVerifier,
+                                QByteArray& pkceCodeChallenge);
 
   virtual void aboutToFinish();
 

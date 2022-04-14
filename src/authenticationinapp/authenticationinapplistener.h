@@ -7,8 +7,7 @@
 
 #include "authenticationlistener.h"
 
-#include <QNetworkReply>
-#include <QUrlQuery>
+class AuthenticationInAppSession;
 
 class AuthenticationInAppListener final : public AuthenticationListener {
   Q_OBJECT
@@ -17,8 +16,6 @@ class AuthenticationInAppListener final : public AuthenticationListener {
  public:
   explicit AuthenticationInAppListener(QObject* parent);
   ~AuthenticationInAppListener();
-
-  void reset();
 
   void start(Task* task, const QString& codeChallenge,
              const QString& codeChallengeMethod,
@@ -62,8 +59,13 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   void createTotpCodes();
   void deleteAccount();
 #endif
+  void aboutToFinish() override;
 
  private:
+  void fallbackRequired();
+
+ private:
+  AuthenticationInAppSession* m_session = nullptr;
   Task* m_task = nullptr;
 
   QString m_codeChallenge;

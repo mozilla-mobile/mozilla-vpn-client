@@ -53,6 +53,7 @@ Popup {
             Layout.leftMargin: VPNTheme.theme.vSpacing
             Layout.rightMargin: VPNTheme.theme.vSpacing
             Layout.bottomMargin: VPNTheme.theme.vSpacing
+            Layout.alignment: Qt.AlignHCenter
         }
     }
 
@@ -109,7 +110,7 @@ Popup {
     Overlay.modal: Rectangle {
         id: overlayBackground
 
-        color: "#4D000000"
+        color: VPNTheme.theme.overlayBackground
 
         Behavior on opacity {
             NumberAnimation {

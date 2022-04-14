@@ -24,53 +24,32 @@ IF NOT EXIST src (
   EXIT 1
 )
 
-SET SHOW_HELP=F
-
-if "%1" NEQ "" (
-  if "%1" == "-h" SET SHOW_HELP=T
-  if "%1" == "--help" SET SHOW_HELP=T
-
-  if "%1" NEQ "-t" (
-    if "%1" NEQ "--test" (
-      if "%1" NEQ "-w" (
-        if "%1" NEQ "--webextension" (
-          if "%1" NEQ "--debug" (
-             SET SHOW_HELP=T
-          )
-        )
-      )
-    )
-  )
+IF "%BUILDDIR%" == "" (
+   SET BUILDDIR=C:\MozillaVPNBuild
 )
+ECHO Using Build Directory %BUILDDIR%
+
+
+SET SHOW_HELP=F
+SET DEBUG_BUILD=F
+SET PROJECT_TYPE=vc
+:: Iterate over all the args provided and set the appropriate flags
+:loop
+if "%1"== "--debug" SET DEBUG_BUILD=T
+if "%1"== "--nmake" SET PROJECT_TYPE=app
+if "%1" == "-h" SET SHOW_HELP=T
+if "%1" == "--help" SET SHOW_HELP=T
+shift
+if not "%~1"=="" goto loop
 
 if "%SHOW_HELP%" == "T" (
   ECHO "Options:"
   ECHO "  -h|--help            Help menu"
-  ECHO "  -t|--test            Test mode"
-  ECHO "  -w|--webextension    Enable the webExtension support"
   ECHO "  --debug               Build a debug version"
+  ECHO "  --nmake               Build using nmake instead of msbuild"
   EXIT 0
 )
 
-
-IF "%BUILDDIR%" == "" (
-   SET BUILDDIR=C:\MozillaVPNBuild
-)
-   ECHO Using Build Directory %BUILDDIR%
-
-
-
-SET TEST_BUILD=F
-if "%1"== "-t" SET TEST_BUILD=T
-if "%1"== "--test" SET TEST_BUILD=T
-
-SET WEBEXTENSION_BUILD=F
-if "%1"== "-w" SET WEBEXTENSION_BUILD=T
-if "%1"== "--webextension" SET WEBEXTENSION_BUILD=T
-
-SET DEBUG_BUILD=F
-if "%1"== "--debug" SET DEBUG_BUILD=T
-if "%2"== "--debug" SET DEBUG_BUILD=T
 
 SET BUILD_CONF=Release
 if %DEBUG_BUILD% ==T (
@@ -82,82 +61,38 @@ FOR /F "tokens=2* delims==" %%A IN ('FINDSTR /IC:":VERSION" version.pri') DO cal
 
 SET FLAGS=BUILD_ID=%VERSION%
 
-if "%TEST_BUILD%" == "T" (
-  ECHO Test build enabled
-  SET FLAGS=%FLAGS% CONFIG+=DUMMY
-) else (
-  SET FLAGS=%FLAGS% CONFIG+=balrog
-)
-
-if "%WEBEXTENSION_BUILD%" == "T" (
-  ECHO Web-Extension support enabled
-  SET FLAGS=%FLAGS% CONFIG+=webextension
-)
-
 ECHO Checking required commands...
 CALL :CheckCommand git
 CALL :CheckCommand python
-CALL :CheckCommand nmake
 CALL :CheckCommand cl
 CALL :CheckCommand qmake
 
-git submodule init
-git submodule update --remote --depth 1 i18n
-
 ECHO Copying the installer dependencies...
-CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\bin\libcrypto-1_1-x64.dll
-CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\bin\libssl-1_1-x64.dll
-CALL :CopyDependency libEGL.dll %BUILDDIR%\bin\libEGL.dll
-CALL :CopyDependency libGLESv2.dll %BUILDDIR%\bin\libGLESv2.dll
+CALL :CopyDependency libcrypto-1_1-x64.dll %BUILDDIR%\SSL\bin\libcrypto-1_1-x64.dll
+CALL :CopyDependency libssl-1_1-x64.dll %BUILDDIR%\SSL\bin\libssl-1_1-x64.dll
+
+ECHO "Checking vctools in %VCToolsRedistDir%"
 CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x86.msm"
 CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
-python scripts\utils/import_languages.py
+python3 scripts\utils\import_languages.py
 
 ECHO Generating glean samples...
-python scripts\utils\generate_glean.py
+python3 scripts\utils\generate_glean.py
 
 ECHO BUILD_BUILD = %DEBUG_BUILD%
-
-IF %DEBUG_BUILD%==T (
-  ECHO Generating Debug Build for the extension bridge
-  pushd extension\bridge
-
-  cargo build --debug
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO cargo failed for the extension!
-    EXIT 1
-  )
-
-  xcopy /y target\debug\mozillavpnnp.exe ..\..
-  popd
-)
-
-IF %DEBUG_BUILD%==F (
-  ECHO Generating Release Build for the extension bridge
-  pushd extension\bridge
-
-  cargo build --release
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO cargo failed for the extension!
-    EXIT 1
-  )
-
-  xcopy /y target\release\mozillavpnnp.exe ..\..
-  popd
-)
 
 ECHO Creating the project with flags: %FLAGS%
 
 if %DEBUG_BUILD% == T (
   ECHO Generating Debug Project
-  qmake -tp vc src/src.pro CONFIG+=debug %FLAGS%
+  qmake -tp %PROJECT_TYPE% src/src.pro CONFIG+=debug %FLAGS%
   xcopy /y debug\ release\
 )
 if %DEBUG_BUILD% == F (
   ECHO Generating Release Build
-  qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=force_debug_info %FLAGS%
+  qmake -tp %PROJECT_TYPE% src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=force_debug_info %FLAGS%
 )
 
 IF %ERRORLEVEL% NEQ 0 (
@@ -165,10 +100,6 @@ IF %ERRORLEVEL% NEQ 0 (
   EXIT 1
 )
 
-IF NOT EXIST MozillaVPN.vcxproj (
-  echo The VC project doesn't exist. Why?
-  EXIT 1
-)
 
 ECHO Compiling the balrog.dll...
 CALL balrog\build.cmd
@@ -193,22 +124,32 @@ IF %ERRORLEVEL% NEQ 0 (
   EXIT 1
 )
 
-ECHO Cleaning up the project...
-MSBuild -t:Clean -p:Configuration=%BUILD_CONF% MozillaVPN.vcxproj
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO Failed to clean up the project
-  EXIT 1
+
+
+if %PROJECT_TYPE% == app (
+  ECHO  Build Using nmake
+  nmake
+)
+if %PROJECT_TYPE% == vc (
+  ECHO  Build Using MSBuild
+  MSBuild -t:Build -p:Configuration=%BUILD_CONF% MozillaVPN.vcxproj
 )
 
-MSBuild -t:Build -p:Configuration=%BUILD_CONF% MozillaVPN.vcxproj
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to build the project
   EXIT 1
 )
+ECHO Moving mozillavpn.exe
 
 if %DEBUG_BUILD% == T (
   REM We need to move the exes in debug so the installer can find them
   xcopy /y debug\*.exe .\
+  xcopy /y extension\bridge\target\debug\mozillavpnnp.exe .\
+)
+
+IF %DEBUG_BUILD%==F (
+  REM We need to move the exes in release so the installer can find them
+  xcopy /y extension\bridge\target\release\mozillavpnnp.exe .
 )
 
 ECHO Creating the installer...

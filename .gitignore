@@ -28,6 +28,7 @@ linux/netfilter/vendor/
 .tmp
 .env
 .venv
+__pycache__
 
 # Node (for functional tests)
 node_modules
@@ -43,7 +44,8 @@ android/.gradle/
 android/.idea/
 android/build
 android/local.properties
-android/*/.cxx/
+android/*/.cxx/*
+android/.cxx/*
 !android/*/*/Makefile 
 xcode.xconfig
 .gradle/
@@ -53,7 +55,6 @@ xcode.xconfig
 tests/auth/tests
 tests/unit/tests
 tests/nativemessaging/tests
-tests/proxy/__pycache__/
 tests/qml/qml_tests
 tests/qml/target_wrapper.sh
 build
@@ -65,6 +66,11 @@ Debug-iphone*
 Release/
 Release-iphone*
 macos/gobridge/wireguard-go-version.h
+
+# Taskcluster/ Taskgraph
+!taskcluster/ci/build
+!taskcluster/scripts/build
+*.pyc
 
 # Editors
 *.swp
@@ -97,6 +103,9 @@ windows/tunnel/x64/
 windows/split-tunnel/*
 !windows/split-tunnel/get.ps1
 
+#Rust
+.cargo_home/
+
 
 # WASM
 mozillavpn.js
@@ -116,9 +125,6 @@ android/src/org/mozilla/firefox/vpn/glean/GleanEvents.kt
 
 # For users compiling QT per the README
 /qt/
-
-# Scripts
-scripts/__pycache__
 
 # Language files
 translations/*/*.ts
@@ -144,9 +150,7 @@ tools/inspector/node_modules
 
 *.PDB
 
-# taskcluster
-taskcluster/mozillavpn_taskgraph/__pycache__
-taskcluster/mozillavpn_taskgraph/*/__pycache__
-
 # Bridge app
 extension/bridge/target
+extension/bridge/.cargo_home
+extension/bridge/.cargo

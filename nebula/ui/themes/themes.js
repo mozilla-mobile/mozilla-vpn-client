@@ -4,6 +4,8 @@
 
 const theme = {};
 
+theme.transparent = '#00000000';
+
 theme.bgColor = '#F9F9FA';
 theme.bgColor30 = '#4DF9F9FA';
 theme.bgColor80 = '#CCF9F9FA';
@@ -21,6 +23,7 @@ theme.green = '#3FE1B0';
 theme.grey = '#CACACA';
 theme.greyHovered = '#E6E6E6';
 theme.greyPressed = '#C2C2C2';
+theme.greyDisabled = '#D8D8D8';
 theme.ink = '#321C64';
 theme.orange = '#FFA436';
 theme.orangeHovered = '#E27F2E';
@@ -32,6 +35,8 @@ theme.redHovered = '#E22850';
 theme.redPressed = '#C50042';
 theme.redfocusOutline = '#66C50042';
 theme.white = '#FFFFFF'
+
+theme.overlayBackground = '#4D000000';
 
 theme.checkBoxWarning = '#C45A27';
 
@@ -67,6 +72,12 @@ theme.menuHeight = 56;
 theme.darkFocusBorder = theme.fontColor;
 theme.lightFocusBorder = '#d5d3e0';
 
+
+theme.onBoardingGradient = {
+  'start': '#472C87',
+  'middle': '#301962',
+  'end': '#1D0942',
+};
 
 theme.blueButton = {
   'defaultColor': theme.blue,
@@ -113,6 +124,7 @@ theme.iconButtonLightBackground = {
   'defaultColor': theme.bgColorTransparent,
   'buttonHovered': theme.greyHovered,
   'buttonPressed': theme.greyPressed,
+  'buttonDisabled': theme.transparent,
   'focusOutline': theme.bgColorTransparent,
   'focusBorder': theme.darkFocusBorder,
 };
@@ -121,6 +133,7 @@ theme.iconButtonDarkBackground = {
   'defaultColor': '#00321C64',
   'buttonHovered': '#5b4983',
   'buttonPressed': '#8477a2',
+  'buttonDisabled': '#564a71',
   'focusOutline': '#005b4983',
   'focusBorder': theme.lightFocusBorder,
 };
@@ -129,6 +142,7 @@ theme.linkButton = {
   'defaultColor': theme.bgColorTransparent,
   'buttonHovered': theme.bgColorTransparent,
   'buttonPressed': theme.bgColorTransparent,
+  'buttonDisabled': theme.bgColorTransparent,
   'focusOutline': theme.bgColorTransparent,
   'focusBorder': theme.bgColorTransparent,
 };
@@ -145,6 +159,7 @@ theme.greyButton = {
   'defaultColor': '#CECECF',
   'buttonHovered': theme.greyHovered,
   'buttonPressed': theme.greyPressed,
+  'buttonDisabled': theme.greyDisabled,
   'focusOutline': theme.greyHovered,
   'focusBorder': theme.greyPressed,
 };
@@ -177,6 +192,7 @@ theme.vpnToggleDisconnected = {
   'defaultColor': '#9E9E9E',
   'buttonHovered': theme.fontColor,
   'buttonPressed': theme.fontColorDark,
+  'buttonDisabled': theme.grey,
   'focusOutline': 'transparent',
   'focusBorder': theme.darkFocusBorder,
 };

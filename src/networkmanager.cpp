@@ -4,6 +4,7 @@
 
 #include "networkmanager.h"
 #include "constants.h"
+#include "features/featureinappauth.h"
 #include "features/featureinapppurchase.h"
 #include "leakdetector.h"
 
@@ -65,22 +66,23 @@ QByteArray NetworkManager::userAgent() {
   QByteArray userAgent;
 
   {
-    QTextStream out(&userAgent);
-    out << "MozillaVPN/" << APP_VERSION << " (";
-
-    // System data
-    out << "sys:" << NetworkManager::osVersion();
+    QStringList flags;
+    flags.append(QString("sys:") + NetworkManager::osVersion());
 
     if (FeatureInAppPurchase::instance()->isSupported()) {
-      out << "; iap:true";
+      flags.append("iap:true");
+    }
+
+    if (FeatureInAppAuth::instance()->isSupported()) {
+      flags.append("aia:true");
     }
 
 #ifdef MVPN_EXTRA_USERAGENT
-    out << "; ";
-    out << MVPN_EXTRA_USERAGENT;
+    flags.append(MVPN_EXTRA_USERAGENT);
 #endif
 
-    out << ")";
+    QTextStream out(&userAgent);
+    out << "MozillaVPN/" << APP_VERSION << " (" << flags.join("; ") << ")";
   }
 
   return userAgent;

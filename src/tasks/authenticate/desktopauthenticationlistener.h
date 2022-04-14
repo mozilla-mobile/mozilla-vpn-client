@@ -9,7 +9,7 @@
 
 class QOAuthHttpServerReplyHandler;
 
-class DesktopAuthenticationListener final : public AuthenticationListener {
+class DesktopAuthenticationListener : public AuthenticationListener {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(DesktopAuthenticationListener)
 

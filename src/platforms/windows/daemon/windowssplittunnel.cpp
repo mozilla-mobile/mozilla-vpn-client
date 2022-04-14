@@ -275,7 +275,7 @@ void WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
     if (address.ip().protocol() == QAbstractSocket::IPv4Protocol) {
       auto adrr = address.ip().toString();
       std::wstring wstr = adrr.toStdWString();
-      logger.debug() << "IpV4" << adrr;
+      logger.debug() << "IpV4" << logger.sensitive(adrr);
       PCWSTR w_str_ip = wstr.c_str();
       auto ok = InetPtonW(AF_INET, w_str_ip, out_ipv4);
       if (ok != 1) {
@@ -288,7 +288,7 @@ void WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
     if (address.ip().protocol() == QAbstractSocket::IPv6Protocol) {
       auto adrr = address.ip().toString();
       std::wstring wstr = adrr.toStdWString();
-      logger.debug() << "IpV6" << adrr;
+      logger.debug() << "IpV6" << logger.sensitive(adrr);
       PCWSTR w_str_ip = wstr.c_str();
       auto ok = InetPtonW(AF_INET6, w_str_ip, out_ipv6);
       if (ok != 1) {

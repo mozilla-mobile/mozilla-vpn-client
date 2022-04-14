@@ -3,20 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "authenticationinapplistener.h"
-#include "authenticationinapp.h"
-#include "featurelist.h"
-#include "features/featureinappaccountcreate.h"
+#include "authenticationinappsession.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "hkdf.h"
-#include "mozillavpn.h"
-#include "networkrequest.h"
-
-#include <QCoreApplication>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QtNetwork>  // for qpassworddigestor.h
 
 namespace {
 Logger logger(LOG_MAIN, "AuthenticationInAppListener");
@@ -25,6 +14,16 @@ Logger logger(LOG_MAIN, "AuthenticationInAppListener");
 AuthenticationInAppListener::AuthenticationInAppListener(QObject* parent)
     : AuthenticationListener(parent) {
   MVPN_COUNT_CTOR(AuthenticationInAppListener);
+
+  m_session = new AuthenticationInAppSession(this);
+  connect(m_session, &AuthenticationInAppSession::completed, this,
+          &AuthenticationListener::completed);
+  connect(m_session, &AuthenticationInAppSession::failed, this,
+          &AuthenticationListener::failed);
+  connect(m_session, &AuthenticationInAppSession::terminated, this,
+          &AuthenticationListener::readyToFinish);
+  connect(m_session, &AuthenticationInAppSession::fallbackRequired, this,
+          &AuthenticationInAppListener::fallbackRequired);
 }
 
 AuthenticationInAppListener::~AuthenticationInAppListener() {
@@ -72,102 +71,21 @@ void AuthenticationInAppListener::start(Task* task,
   m_codeChallenge = codeChallenge;
   m_codeChallengeMethod = codeChallengeMethod;
 
-  AuthenticationInApp* aip = AuthenticationInApp::instance();
-  Q_ASSERT(aip);
-
-  aip->registerListener(this);
-
-  QUrl url(createAuthenticationUrl(codeChallenge, codeChallengeMethod,
-                                   emailAddress));
-
-  NetworkRequest* request =
-      NetworkRequest::createForGetUrl(task, url.toString());
-
-  connect(request, &NetworkRequest::requestRedirected, this,
-          [this](NetworkRequest* request, const QUrl& url) {
-            logger.debug() << "Redirect received";
-            m_urlQuery = QUrlQuery(url.query());
-
-            if (!m_urlQuery.hasQueryItem("client_id")) {
-              logger.error() << "No `client_id` token. Unable to proceed";
-              emit failed(ErrorHandler::AuthenticationError);
-              return;
-            }
-
-            if (!m_urlQuery.hasQueryItem("state")) {
-              logger.error() << "No `state` token. Unable to proceed";
-              emit failed(ErrorHandler::AuthenticationError);
-              return;
-            }
-
-            AuthenticationInApp::instance()->requestState(
-                AuthenticationInApp::StateStart, this);
-            request->abort();
-          });
-
-  connect(request, &NetworkRequest::requestFailed, this,
-          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.error() << "Failed to fetch the initial request" << error;
-            if (error != QNetworkReply::OperationCanceledError) {
-              processRequestFailure(error, data);
-            }
-          });
+  m_session->start(task, codeChallenge, codeChallengeMethod, emailAddress);
 }
 
-void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
-  logger.debug() << "Authentication starting:"
-                 << logger.sensitive(emailAddress);
-
-  m_emailAddress = emailAddress.toLower();
-
-  AuthenticationInApp* aip = AuthenticationInApp::instance();
-  Q_ASSERT(aip);
-
-  aip->requestEmailAddressChange(this);
-  aip->requestState(AuthenticationInApp::StateCheckingAccount, this);
-
-  NetworkRequest* request =
-      NetworkRequest::createForFxaAccountStatus(m_task, m_emailAddress);
-
-  connect(request, &NetworkRequest::requestFailed, this,
-          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.error() << "Failed to check the account status" << error;
-            processRequestFailure(error, data);
-          });
-
-  connect(request, &NetworkRequest::requestCompleted, this,
-          [this](const QByteArray& data) {
-            logger.debug() << "Account status checked" << data;
-
-            QJsonDocument json = QJsonDocument::fromJson(data);
-            QJsonObject obj = json.object();
-
-            accountChecked(obj["exists"].toBool());
-          });
+void AuthenticationInAppListener::aboutToFinish() {
+  logger.debug() << "About to finish";
+  m_session->terminate();
 }
 
-void AuthenticationInAppListener::accountChecked(bool exists) {
-  logger.debug() << "Account checked:" << exists;
-
-  if (exists) {
-    AuthenticationInApp::instance()->requestState(
-        AuthenticationInApp::StateSignIn, this);
-    return;
-  }
-
-  if (FeatureInAppAccountCreate::instance()->isSupported()) {
-    AuthenticationInApp::instance()->requestState(
-        AuthenticationInApp::StateSignUp, this);
-    return;
-  }
-
-  AuthenticationInApp::instance()->requestState(
-      AuthenticationInApp::StateFallbackInBrowser, this);
+void AuthenticationInAppListener::fallbackRequired() {
+  logger.debug() << "Fallback required";
 
   AuthenticationListener* fallbackListener =
       create(this, MozillaVPN::AuthenticationInBrowser);
   fallbackListener->start(m_task, m_codeChallenge, m_codeChallengeMethod,
-                          m_emailAddress);
+                          m_session->emailAddress());
 
   connect(fallbackListener, &AuthenticationListener::completed, this,
           &AuthenticationListener::completed);
