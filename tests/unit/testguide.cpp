@@ -79,17 +79,17 @@ void TestGuide::create_data() {
       << QStringList{"GuideFooTitle", "GuideFooBlockA"}
       << QJsonDocument(obj).toJson() << true;
 
-  block["type"] = "list";
+  block["type"] = "olist";
   blocks.replace(0, block);
   obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-list-without-content")
+  QTest::addRow("with-block-type-olist-without-content")
       << QStringList{"GuideFooTitle", "GuideFooBlockA"}
       << QJsonDocument(obj).toJson() << false;
 
   block["content"] = "foo";
   blocks.replace(0, block);
   obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-list-with-invalid-content")
+  QTest::addRow("with-block-type-olist-with-invalid-content")
       << QStringList{"GuideFooTitle", "GuideFooBlockA"}
       << QJsonDocument(obj).toJson() << false;
 
@@ -97,7 +97,7 @@ void TestGuide::create_data() {
   block["content"] = content;
   blocks.replace(0, block);
   obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-list-with-empty-content")
+  QTest::addRow("with-block-type-olist-with-empty-content")
       << QStringList{"GuideFooTitle", "GuideFooBlockA"}
       << QJsonDocument(obj).toJson() << true;
 
@@ -105,7 +105,7 @@ void TestGuide::create_data() {
   block["content"] = content;
   blocks.replace(0, block);
   obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-list-with-invalid-content")
+  QTest::addRow("with-block-type-olist-with-invalid-content")
       << QStringList{"GuideFooTitle", "GuideFooBlockA"}
       << QJsonDocument(obj).toJson() << false;
 
@@ -114,7 +114,7 @@ void TestGuide::create_data() {
   block["content"] = content;
   blocks.replace(0, block);
   obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-list-without-id-subblock")
+  QTest::addRow("with-block-type-olist-without-id-subblock")
       << QStringList{"GuideFooTitle", "GuideFooBlockA"}
       << QJsonDocument(obj).toJson() << false;
 
@@ -123,12 +123,19 @@ void TestGuide::create_data() {
   block["content"] = content;
   blocks.replace(0, block);
   obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-list-with-subblock")
+  QTest::addRow("with-block-type-olist-with-subblock")
       << QStringList{"GuideFooTitle", "GuideFooBlockA", "GuideFooBlockASub"}
       << QJsonDocument(obj).toJson() << true;
 
   obj["conditions"] = QJsonObject();
-  QTest::addRow("with-block-type-list-with-subblock and conditions")
+  QTest::addRow("with-block-type-olist-with-subblock and conditions")
+      << QStringList{"GuideFooTitle", "GuideFooBlockA", "GuideFooBlockASub"}
+      << QJsonDocument(obj).toJson() << true;
+
+  block["type"] = "ulist";
+  blocks.replace(0, block);
+  obj["conditions"] = QJsonObject();
+  QTest::addRow("with-block-type-ulist-with-subblock and conditions")
       << QStringList{"GuideFooTitle", "GuideFooBlockA", "GuideFooBlockASub"}
       << QJsonDocument(obj).toJson() << true;
 }
@@ -175,7 +182,8 @@ void TestGuide::model() {
   QVERIFY(!!l18nStrings);
   for (const QString& s : QStringList{
            "GuideDemoTitle", "GuideDemoBlockC1", "GuideDemoBlockC2",
-           "GuideDemoBlockC3L1", "GuideDemoBlockC3L2", "GuideDemoBlockC3L3"}) {
+           "GuideDemoBlockC3L1", "GuideDemoBlockC3L2", "GuideDemoBlockC3L3",
+           "GuideDemoBlockC4L1", "GuideDemoBlockC4L2", "GuideDemoBlockC4L3"}) {
     l18nStrings->insert(s, "WOW!");
   }
 

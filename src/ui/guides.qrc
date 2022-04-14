@@ -1,4 +1,12 @@
 <RCC>
     <qresource prefix="/">
+        <file>guides/01_how_to_vpn.json</file>
+        <file>guides/01_how_to_vpn.svg</file>
+        <file>guides/02_is_my_vpn_working_correctly.json</file>
+        <file>guides/02_is_my_vpn_working_correctly.svg</file>
+        <file>guides/03_adding_and_removing_devices.json</file>
+        <file>guides/03_adding_and_removing_devices.svg</file>
+        <file>guides/04_connecting_external_devices.json</file>
+        <file>guides/04_connecting_external_devices.svg</file>
     </qresource>
 </RCC>

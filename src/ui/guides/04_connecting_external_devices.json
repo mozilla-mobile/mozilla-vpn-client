@@ -1,0 +1,35 @@
+{
+  "id": "connecting_external_devices",
+  "title": "Connecting to devices in my local network",
+  "image": "qrc:/guides/04_connecting_external_devices.svg",
+  "blocks": [
+    { "id": "c_1",
+      "type": "text",
+      "content": "Connected to VPN and want to print documents or access files on another device? Enabling local network access will allow you to securely connect to other devices without sacrificing your VPN protection." },
+    { "id": "c_2",
+      "type": "title",
+      "content": "What’s local network access?" },
+    { "id": "c_3",
+      "type": "text",
+      "content": "When you enable “Local network access” in your Network settings, your device can openly connect to and share data with other devices signed onto the same wired or Wi-Fi internet connection." },
+    { "id": "c_4",
+      "type": "title",
+      "content": "What types of devices can I connect to?" },
+    { "id": "c_5",
+      "type": "text",
+      "content": "With “Local network access” turned on, you can connect to a variety of other devices on your local network, including:" },
+    { "id": "c_6",
+      "type": "ulist",
+      "content": [
+        { "id": "l_1",
+          "content": "Desktop computers / laptops / mobile phones" },
+        { "id": "l_2",
+          "content": "Wireless and bluetooth printers" },
+        { "id": "l_3",
+          "content": "Shared work or personal folders" },
+        { "id": "l_4",
+          "content": "Streaming sticks (Chromecast / Roku)" }
+      ]
+    }
+  ]
+}

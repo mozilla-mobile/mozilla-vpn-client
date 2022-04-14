@@ -69,9 +69,13 @@
           "comment": {
             "type": "string",
             "description": "A comment to describe how to translate this block content"
+          },
+          "type": {
+            "type": "string",
+            "description": "A type for this block: text, title, ulist, olist, etc"
           }
         },
-        "required": [ "id", "content" ]
+        "required": [ "id", "content", "type" ]
       }
     }
   },

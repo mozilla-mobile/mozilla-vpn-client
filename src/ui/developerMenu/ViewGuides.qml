@@ -55,10 +55,16 @@ Item {
                                 case VPNGuide.GuideBlockTypeText:
                                     list.push("Block text: " + VPNl18n[block.id]);
                                     break;
-                                case VPNGuide.GuideBlockTypeList:
+                                case VPNGuide.GuideBlockTypeOrderedList:
                                     list.push("Block list:");
                                     block.subBlockIds.forEach((subBlockId, pos) => {
                                         list.push(pos + ". " + VPNl18n[subBlockId]);
+                                    });
+                                    break;
+                                case VPNGuide.GuideBlockTypeUnorderedList:
+                                    list.push("Block list:");
+                                    block.subBlockIds.forEach(subBlockId => {
+                                        list.push("- " + VPNl18n[subBlockId]);
                                     });
                                     break;
                             }

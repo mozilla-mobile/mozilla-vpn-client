@@ -1,0 +1,34 @@
+{
+  "id": "how_to_vpn",
+  "title": "The top uses and benefits of using Mozilla VPN",
+  "image": "qrc:/guides/01_how_to_vpn.svg",
+  "blocks": [
+    { "id": "c_1",
+      "type": "text",
+      "content": "A VPN (or virtual private network) creates a secure and private connection by making a “tunnel” between your device and the web. Here are some of the top things you can do with Mozilla VPN." },
+    { "id": "c_2",
+      "type": "title",
+      "content": "Safeguard your Personal data and identity" },
+    { "id": "c_3",
+      "type": "ulist",
+      "content": [
+        { "id": "l_1",
+          "content": "Surf the web and use your favorite apps freely without being tracked." },
+        { "id": "l_2",
+          "content": "Even your VoIP calls (Skype, Facetime, Whatsapp) can’t be decoded or intercepted." }
+      ]
+    },
+    { "id": "c_4",
+      "type": "title",
+      "content": "Defense on the go" },
+    { "id": "c_5",
+      "type": "text",
+      "content": "Public Wi-Fi and hotspots provide one of the easiest ways for hackers to attack your device. Mozilla VPN protects you by blocking these unknown entities from seeing your private data no matter where you are." },
+    { "id": "c_6",
+      "type": "title",
+      "content": "Connect to 30+ countries" },
+    { "id": "c_7",
+      "type": "text",
+      "content": "Browse and access content from all over the world. Shop on one of our regional servers and you can get bargain deals like cheaper airfare and sale prices." }
+  ]
+}

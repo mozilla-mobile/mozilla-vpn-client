@@ -1,0 +1,33 @@
+{
+  "id": "is_my_vpn_working_correctly",
+  "title": "Is my VPN connected to the right server location?",
+  "image": "qrc:/guides/02_is_my_vpn_working_correctly.svg",
+  "blocks": [
+    { "id": "c_1",
+      "type": "text",
+      "content": "After signing on to Mozilla VPN and connecting to one of our 400+ servers in over 30 different countries, you can check if your VPN is active in your chosen geolocation in two easy ways:" },
+    { "id": "c_2",
+      "type": "title",
+      "content": "Search in your browser" },
+    { "id": "c_3",
+      "type": "text",
+      "content": "Enter a search term like “local weather” in your browser and see a real-time weather update for your current VPN location." },
+    { "id": "c_4",
+      "type": "title",
+      "content": "Sign in to your favorite app or streaming site" },
+    { "id": "c_5",
+      "type": "text",
+      "content": "Traveling abroad and need to access content from back home?" },
+    { "id": "c_6",
+      "type": "ulist",
+      "content": [
+      {
+        "id": "l_1",
+        "content": "Connect to the country server of your choice" },
+      {
+        "id": "l_2",
+        "content": "Sign on to your favorite app or streaming site" }
+      ]
+    }
+  ]
+}

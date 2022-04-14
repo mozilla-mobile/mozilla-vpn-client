@@ -132,7 +132,7 @@ def parseGuideStrings():
     for guide_filename in os.listdir(guides_path):
         if not guide_filename.endswith(".json"):
             continue
-        with open(os.path.join(guides_path, guide_filename)) as guide_file:
+        with open(os.path.join(guides_path, guide_filename), "r", encoding="utf-8") as guide_file:
             guide_json = json.load(guide_file)
         if not "id" in guide_json:
             exit(f"Guide file {guide_filename} does not have an id")
@@ -237,7 +237,7 @@ def parseTutorialStrings():
     for tutorial_filename in os.listdir(tutorials_path):
         if not tutorial_filename.endswith(".json"):
             continue
-        with open(os.path.join(tutorials_path, tutorial_filename)) as tutorial_file:
+        with open(os.path.join(tutorials_path, tutorial_filename), "r", encoding="utf-8") as tutorial_file:
             tutorial_json = json.load(tutorial_file)
         if not "id" in tutorial_json:
             exit(f"Tutorial file {tutorial_filename} does not have an id")

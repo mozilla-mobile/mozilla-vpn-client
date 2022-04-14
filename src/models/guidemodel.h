@@ -18,7 +18,8 @@ class GuideModel final : public QAbstractListModel {
   enum GuideBlockType {
     GuideBlockTypeTitle,
     GuideBlockTypeText,
-    GuideBlockTypeList,
+    GuideBlockTypeOrderedList,
+    GuideBlockTypeUnorderedList,
   };
   Q_ENUM(GuideBlockType);
 
