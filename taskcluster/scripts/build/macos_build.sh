@@ -33,21 +33,20 @@ export PYTHONIOENCODING="UTF-8"
 
 print Y "Installing QT..."
 # generate qt_static_macos
-auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1 || die
-cd qt_static_macos || die
-cat qt6* > qt_static.tar.gz
-tar xf qt_static.tar.gz || die
+export QT_FOLDER=`pwd`/../../fetches/qt_dist/
+export QT_MACOS_BIN=$QT_FOLDER/bin
+export PATH=$QT_MACOS_BIN:$PATH
 
-cat > qt6/bin/qt.conf << EOF
+echo "FIND QT"
+
+cat > $QT_FOLDER/bin/qt.conf << EOF
 [Paths]
-Prefix=`pwd`/qt6
+Prefix=`pwd`/../../fetches/qt_dist/
+Prefix=$QT_FOLDER
+Libraries=$QT_FOLDER/lib
 EOF
+cat $QT_FOLDER/bin/qt.conf
 
-cp qt6/bin/qt.conf qt6/libexec || die
-cd ..
-export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
-export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 
 print Y "Updating submodules..."
 # should already be done by XCode cloud cloning but just to make sure
