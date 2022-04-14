@@ -74,7 +74,6 @@
         <file>components/VPNPopup.qml</file>
         <file>components/VPNRadioButtonLabel.qml</file>
         <file>components/VPNRadioDelegate.qml</file>
-        <file>components/VPNRadioSublabel.qml</file>
         <file>components/VPNRecentConnections.qml</file>
         <file>components/VPNRemoveDevicePopup.qml</file>
         <file>components/VPNSemiMonoLabel.qml</file>
