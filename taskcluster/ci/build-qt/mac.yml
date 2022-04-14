@@ -30,4 +30,4 @@ mac:
              - type: file
                name: public/build/qt6_mac.zip
                path: checkouts/vcs/artifacts/qt6_mac.zip
-    worker-type: b-osx
+    worker-type: b-macos
