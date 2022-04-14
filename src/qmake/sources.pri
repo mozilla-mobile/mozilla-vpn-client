@@ -71,6 +71,9 @@ SOURCES += \
         models/devicemodel.cpp \
         models/feature.cpp \
         models/feedbackcategorymodel.cpp \
+        models/guide.cpp \
+        models/guideblock.cpp \
+        models/guidemodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
         models/licensemodel.cpp \
@@ -82,6 +85,8 @@ SOURCES += \
         models/supportcategorymodel.cpp \
         models/survey.cpp \
         models/surveymodel.cpp \
+        models/tutorial.cpp \
+        models/tutorialmodel.cpp \
         models/user.cpp \
         models/whatsnewmodel.cpp \
         mozillavpn.cpp \
@@ -129,7 +134,6 @@ SOURCES += \
         telemetry.cpp \
         theme.cpp \
         timersingleshot.cpp \
-        tutorial.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
         urlopener.cpp
@@ -218,6 +222,9 @@ HEADERS += \
         models/devicemodel.h \
         models/feature.h \
         models/feedbackcategorymodel.h \
+        models/guide.h \
+        models/guideblock.h \
+        models/guidemodel.h \
         models/helpmodel.h \
         models/keys.h \
         models/licensemodel.h \
@@ -229,6 +236,8 @@ HEADERS += \
         models/supportcategorymodel.h \
         models/survey.h \
         models/surveymodel.h \
+        models/tutorial.h \
+        models/tutorialmodel.h \
         models/user.h \
         models/whatsnewmodel.h \
         mozillavpn.h \
@@ -278,7 +287,6 @@ HEADERS += \
         telemetry.h \
         theme.h \
         timersingleshot.h \
-        tutorial.h \
         update/updater.h \
         update/versionapi.h \
         urlopener.h
@@ -293,5 +301,5 @@ RESOURCES += ui/resources.qrc
 RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
-
-
+RESOURCES += ui/guides.qrc
+RESOURCES += ui/tutorials.qrc

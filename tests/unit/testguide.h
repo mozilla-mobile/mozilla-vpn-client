@@ -4,13 +4,18 @@
 
 #include "helper.h"
 
-class TestTutorial : public TestHelper {
+class TestGuide final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void pascalize();
+
   void create_data();
   void create();
   void createNotExisting();
 
   void model();
+
+  void conditions_data();
+  void conditions();
 };

@@ -1,0 +1,18 @@
+{
+  "id": "foo",
+  "image": "foo.png",
+  "comment": "This is a comment",
+  "steps": [
+    {
+      "id": "s1",
+      "comment": "This is a comment for a step",
+      "element": "a",
+      "tooltip": "wow"
+    },
+    {
+      "id": "s2",
+      "element": "b",
+      "tooltip": "wow2"
+    }
+  ]
+}

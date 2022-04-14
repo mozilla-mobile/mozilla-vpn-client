@@ -151,6 +151,36 @@ Item {
             }
 
             VPNSettingsItem {
+                id: guideLink
+
+                Layout.topMargin: VPNTheme.theme.listSpacing
+                Layout.leftMargin: VPNTheme.theme.windowMargin/2
+                Layout.rightMargin: VPNTheme.theme.windowMargin/2
+                Layout.fillWidth: true
+
+                // Do not translate this string!
+                settingTitle: "Guide - REMOVE ME!"
+                imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: stackview.push("qrc:/ui/developerMenu/ViewGuides.qml")
+            }
+
+            VPNSettingsItem {
+                id: tutorialLink
+
+                Layout.topMargin: VPNTheme.theme.listSpacing
+                Layout.leftMargin: VPNTheme.theme.windowMargin/2
+                Layout.rightMargin: VPNTheme.theme.windowMargin/2
+                Layout.fillWidth: true
+
+                // Do not translate this string!
+                settingTitle: "Tutorial - REMOVE ME!"
+                imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: stackview.push("qrc:/ui/developerMenu/ViewTutorials.qml")
+            }
+
+            VPNSettingsItem {
                 id: animationsPlaygroundLink
                 objectName: "settingsAnimationsPlayground"
 
