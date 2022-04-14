@@ -12,9 +12,6 @@ print N ""
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 
-mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
-export PATH=$PWD/homebrew/bin:$PATH
-
 print Y "Installing ruby dependencies..."
 # use --user-install for permissions
 gem install xcodeproj --user-install || die
@@ -35,7 +32,11 @@ python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
 print Y "Installing QT..."
-brew install coreutils
+realpath() {
+    path=`eval echo "$1"`
+    folder=$(dirname "$path")
+    echo $(cd "$folder"; pwd)/$(basename "$path"); 
+}
 export QT_FOLDER=$(realpath `pwd`/../../fetches/qt_dist/)
 export QT_MACOS_BIN=$QT_FOLDER/bin
 export QT_CONF=$QT_FOLDER/bin/qt.conf
