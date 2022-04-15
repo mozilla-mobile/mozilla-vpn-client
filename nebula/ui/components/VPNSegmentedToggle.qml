@@ -76,13 +76,8 @@ Rectangle {
 
                 objectName: segmentButtonId
 
-                Accessible.description: `${index + 1} ${VPNl18n.AccessiblityOf} ${options.count}`
-                Accessible.name: {
-                    var name = ""
-                    if(root.selectedIndex === index) name += `${VPNl18n.AccessiblitySelected}.`
-                    name += label.text
-                    return name
-                }
+                Accessible.description: VPNl18n.AccessibilityCurrentIndexFocusedOfTotalItemsInGroup.arg(index + 1).arg(options.count) //`${index + 1} ${VPNl18n.AccessiblityOf} ${options.count}`
+                Accessible.name: root.selectedIndex === index ? VPNl18n.AccessibilitySelectedAndItemName.arg(label.text) : label.text
 
                 contentItem: Text {
                     id: label

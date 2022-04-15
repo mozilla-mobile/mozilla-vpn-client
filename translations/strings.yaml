@@ -543,10 +543,17 @@ inAppAuth:
     comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
 
 #Accessibility
-accessiblity:
-  of:
-    value: of
-    comment: Used to denote current selection of total options, eg 1 of 4
-  selected:
-    value: selected
-    comment: Used to denote that a particular item is currently selected
+accessibility:
+  currentIndexFocusedOfTotalItemsInGroup:
+    value: "%1 of %2"
+    comment:
+      - Used by screen readers to explain to users which item they are currently focused on, and how many items there are total in a group.
+      - For example, given a list with 15 items. If a user selects the 3rd item, we want the screen reader to read out "3 of 15".
+      - The %1 represents the index of the currently focused item by the screen reader.
+      - The %2 represents the total number of items in the group.
+  selectedAndItemName:
+    value: "Selected, %1"
+    comment: 
+      - Used by screen readers to denote that a particular item is currently selected.
+      - For example, given a segmented control with 2 items, where the first item is currently selected. We want the screen reader to read out "Selected, <item name>".
+      - The %1 represents the name of the selected item.
