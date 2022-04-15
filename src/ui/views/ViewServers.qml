@@ -85,14 +85,14 @@ Item {
             }
         ]
 
-        handleSegmentClick: (tab) => {
+        handleSegmentClick: (segment) => {
                             if (multiHopStackView && multiHopStackView.depth > 1) {
                                 // Return to the Multi-hop main view when the Multi-hop tab
                                 // is clicked from a Multi-hop entry or exit server list
                                 multiHopStackView.pop();
                             }
 
-                            if (tab.objectName === "tabSingleHop") {
+                            if (segment.objectName === "tabSingleHop") {
                                 // Do single hop things
                                 menu.title = menu.defaultMenuTitle;
                                 singleHopServerList.centerActiveServer();

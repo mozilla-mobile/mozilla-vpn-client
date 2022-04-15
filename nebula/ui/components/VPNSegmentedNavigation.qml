@@ -7,7 +7,7 @@ import QtQuick.Layouts 1.15
 
 import Mozilla.VPN 1.0
 
-Item {
+ColumnLayout {
     id: root
 
     property alias segmentedToggleButtonsModel: segmentedToggle.model
@@ -16,64 +16,61 @@ Item {
     property alias selectedSegment: segmentedToggle.selectedSegment
     property var handleSegmentClick: (()=> {});
 
+    spacing: 0
+
     function setSelectedIndex(idx) {
         segmentedToggle.selectedIndex = idx;
     }
 
-    ColumnLayout {
-        anchors.fill: parent
 
-        spacing: 0
+    VPNSegmentedToggle {
+        id: segmentedToggle
 
-        VPNSegmentedToggle {
-            id: segmentedToggle
+        Layout.leftMargin: VPNTheme.theme.windowMargin
+        Layout.rightMargin: VPNTheme.theme.windowMargin
+        Layout.fillWidth: true
 
-            Layout.leftMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin
-            Layout.fillWidth: true
+        visible: stack.children.length > 1
 
-            visible: stack.children.length > 1
+        handleSegmentClick: root.handleSegmentClick
+    }
 
-            handleSegmentClick: root.handleSegmentClick
+    Rectangle {
+        Layout.topMargin: VPNTheme.theme.vSpacingSmall
+        Layout.fillWidth: true
+
+        Layout.preferredHeight: 1
+        color: VPNTheme.colors.grey10
+        visible: stack.children.length > 1
+    }
+
+    StackLayout {
+        id: stack
+
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        currentIndex: segmentedToggle.selectedIndex
+
+        PropertyAnimation {
+            id: fadeIn
+            target: stack
+            property: "opacity"
+            from: 0
+            to: 1
+            duration: 200
         }
 
-        Rectangle {
-            Layout.topMargin: VPNTheme.theme.vSpacingSmall
-            Layout.fillWidth: true
-
-            Layout.preferredHeight: 1
-            color: VPNTheme.colors.grey10
-            visible: stack.children.length > 1
+        onCurrentIndexChanged: {
+            fadeIn.start();
         }
 
-        StackLayout {
-            id: stack
-
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            currentIndex: segmentedToggle.selectedIndex
-
-            PropertyAnimation {
-                id: fadeIn
-                target: stack
-                property: "opacity"
-                from: 0
-                to: 1
-                duration: 200
-            }
-
-            onCurrentIndexChanged: {
-                fadeIn.start();
-            }
-
-            // pass views to this component using stackContent property
-
-            /*
+        // pass views to this component using stackContent property
+        /*
                 stackContent: [
                     Item { ...},
                     Item { ...}
                 ]
            */
-        }
     }
 }
+
