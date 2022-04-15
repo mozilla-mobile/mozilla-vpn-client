@@ -552,7 +552,7 @@ accessibility:
       - The %1 represents the index of the currently focused item by the screen reader.
       - The %2 represents the total number of items in the group.
   selectedAndItemName:
-    value: "Selected, %1"
+    value: "Selected item: %1"
     comment: 
       - Used by screen readers to denote that a particular item is currently selected.
       - For example, given a segmented control with 2 items, where the first item is currently selected. We want the screen reader to read out "Selected, <item name>".
