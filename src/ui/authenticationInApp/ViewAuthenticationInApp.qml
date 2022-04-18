@@ -39,7 +39,8 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateStart || VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationStart.qml"
+                // source: "ViewAuthenticationStart.qml"
+                source: "ViewDeleteAccount.qml"
             }
         },
 

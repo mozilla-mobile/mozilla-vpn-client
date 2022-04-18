@@ -145,6 +145,7 @@ VPNFlickable {
 
             VPNBoldLabel {
                 id: inputLabel
+                visible: text
             }
 
             ColumnLayout {
