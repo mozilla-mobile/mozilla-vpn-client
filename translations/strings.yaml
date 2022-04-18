@@ -541,3 +541,14 @@ inAppAuth:
   termsOfServiceAndPrivacyDisclaimer:
     value: By continuing, you agree to the <a href="terms-of-service">Terms of Service</a> and the <a href="privacy-notice">Privacy Notice</a>.
     comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
+
+subscriptionManagement:
+  deleteAccountHeadline: Delete Firefox account
+  deleteAccountSubheadline:
+    value: "Your Firefox account (%1) is connected to Mozilla products that keep you secure and productive on the web. Please acknowledge that by deleting your account:"
+    comment: "%1 is the email address that is associated with the current account"
+  deleteAccountOptionLabelOne: Any paid subscriptions you have will be cancelled (Except Pocket)
+  deleteAccountOptionLabelTwo: You may lose saved information and features within Mozilla products
+  deleteAccountOptionLabelThree: Reactivating with this email may not restore your saved information
+  deleteAccountOptionLabelFour: Any extensions and themes that you’ve published to addons.mozilla.org will be deleted
+  deleteAccountButton: Delete account
