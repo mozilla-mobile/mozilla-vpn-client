@@ -38,7 +38,7 @@ workers:
             os: linux
             worker-type: b-linux
         b-win2012:
-            provisioner: 'mozillavpn-{level}'
+            provisioner: 'gecko-1'
             implementation: generic-worker
             os: windows
             worker-type: b-win2012
