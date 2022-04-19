@@ -164,7 +164,6 @@ SOURCES += \
     ../../src/ipaddresslookup.cpp \
     ../../src/itempicker.cpp \
     ../../src/inspector/inspectorutils.cpp \
-    ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
     ../../src/logger.cpp \

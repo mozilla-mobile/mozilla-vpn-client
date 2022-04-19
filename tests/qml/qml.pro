@@ -48,7 +48,6 @@ SOURCES += \
     ../../src/featurelist.cpp \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
-    ../../src/l18nstringsimpl.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \

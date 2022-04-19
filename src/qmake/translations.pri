@@ -6,6 +6,7 @@
 
 # TODO: move the string generation here.
 exists($$PWD/../../translations/generated/l18nstrings.h) {
+    SOURCES += $$PWD/../../translations/l18nstrings.cpp
     SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
     HEADERS += $$PWD/../../translations/generated/l18nstrings.h
 } else {
