@@ -299,10 +299,16 @@ void IOSIAPHandler::productRegistered(void* a_product) {
 
     [numberFormatter release];
   }
+  int discountDays = 0;
+  if (@available(iOS 12.2, *)) {
+    auto discount = product.discounts.firstObject;
+    discountDays = discountToDays(discount);
+  }
 
   logger.debug() << "Monthly Price:" << monthlyPriceValue;
 
   productData->m_price = priceValue;
+  productData->m_trialDays = discountDays;
   productData->m_monthlyPrice = monthlyPriceValue;
   productData->m_nonLocalizedMonthlyPrice = [monthlyPriceNS doubleValue];
   productData->m_extra = product;
@@ -385,4 +391,32 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
 void IOSIAPHandler::noSubscriptionFoundError() {
   emit subscriptionCanceled();
   ErrorHandler::instance()->noSubscriptionFoundError();
+}
+
+int IOSIAPHandler::discountToDays(SKProductDiscount* discount) {
+  if (discount == nullptr) {
+    return 0;
+  }
+  if (discount.paymentMode == SKProductDiscountPaymentMode::SKProductDiscountPaymentModeFreeTrial) {
+    return 0;
+  }
+  // Is it a week / day / month
+  auto discountPeriodUnit = discount.subscriptionPeriod.unit;
+  // How many units (i.e 3 days) per period
+  auto periodUnits = (int)discount.subscriptionPeriod.numberOfUnits;
+  // How many period's are we getting
+  auto discountAmount = (int)discount.numberOfPeriods;
+  switch (discountPeriodUnit) {
+    case SKProductPeriodUnitDay:
+      return discountAmount * periodUnits;
+    case SKProductPeriodUnitWeek:
+      return 7 * discountAmount * periodUnits;
+    case SKProductPeriodUnitMonth:
+      return 30 * discountAmount * periodUnits;
+    default:
+      Q_UNREACHABLE();
+      return 0;
+  }
+  Q_UNREACHABLE();
+  return 0;
 }
