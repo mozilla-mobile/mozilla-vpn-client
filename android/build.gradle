@@ -145,7 +145,7 @@ android {
         minSdkVersion Config.minSdkVersion
         targetSdkVersion Config.targetSdkVersion
         versionCode  System.getenv("VERSIONCODE")? System.getenv("VERSIONCODE")?.toInteger() : 99999
-        versionName  System.getenv("SHORTVfERSION") ? System.getenv("SHORTVERSION"): ""
+        versionName  System.getenv("SHORTVERSION") ? System.getenv("SHORTVERSION"): ""
         buildConfigField "String", "ADJUST_SDK_TOKEN", '"' + System.getenv("ADJUST_SDK_TOKEN") + '"'
     }
     compileOptions {
