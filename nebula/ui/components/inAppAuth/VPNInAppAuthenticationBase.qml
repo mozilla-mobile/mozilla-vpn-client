@@ -137,6 +137,7 @@ VPNFlickable {
                 VPNSubtitle {
                     id: subtitle
                     horizontalAlignment: Text.AlignHCenter
+                    visible: text
                     Layout.maximumWidth: col.width - VPNTheme.theme.vSpacing * 2
                     Layout.minimumWidth: col.width - VPNTheme.theme.vSpacing * 2
                 }

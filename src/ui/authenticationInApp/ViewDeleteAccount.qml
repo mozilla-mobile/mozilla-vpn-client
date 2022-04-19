@@ -10,7 +10,6 @@ import components 0.1
 import components.forms 0.1
 import components.inAppAuth 0.1
 
-
 VPNInAppAuthenticationBase {
     id: viewDeleteAccount
 
@@ -21,75 +20,116 @@ VPNInAppAuthenticationBase {
         VPNAuthInApp.reset();
     }
     _headlineText: "Delete Firefox account"
-    _imgSource: "qrc:/nebula/resources/avatar.svg"
-    _subtitleText: VPNl18n.SubscriptionManagementDeleteAccountSubheadline.arg(VPNAuthInApp.emailAddress)
+    _imgSource: "qrc:/nebula/resources/avatar-delete-account.svg"
 
     _inputs: ColumnLayout {
-        spacing: VPNTheme.theme.listSpacing
-
-        VPNCheckBoxRow {
-            property bool boxIsChecked: false
-
-            Layout.alignment: Qt.AlignHCenter
-            labelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelOne
-            leftMargin: 0
-            isChecked: boxIsChecked
-            showDivider: false
+        VPNTextBlock {
+            color: VPNTheme.theme.fontColor
+            horizontalAlignment: Text.AlignLeft
+            text: VPNl18n.SubscriptionManagementDeleteAccountSubheadline
+                .arg("<b style='color: "
+                    + VPNTheme.theme.fontColorDark
+                    + ";'>test@mozilla.com" + VPNAuthInApp.emailAddress
+                    + "</b>")
+            textFormat: Text.RichText
             width: parent.width - VPNTheme.theme.windowMargin * 2
 
-            onClicked: boxIsChecked = !boxIsChecked
+            Layout.fillWidth: true
+            Layout.bottomMargin: VPNTheme.theme.vSpacing
         }
 
         VPNCheckBoxRow {
-            property bool boxIsChecked: false
+            property bool _isChecked: false
+            id: optionOne
 
+            Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
-
-            labelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelTwo
+            labelText: "Paid subscriptions"
+            subLabelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelOne
             leftMargin: 0
-            isChecked: boxIsChecked
+            isChecked: _isChecked
             showDivider: false
-            width: parent.width - VPNTheme.theme.windowMargin * 2
 
-            onClicked: boxIsChecked = !boxIsChecked
+            onClicked: _isChecked = !_isChecked
         }
 
         VPNCheckBoxRow {
-            property bool boxIsChecked: false
+            property bool _isChecked: false
+            id: optionTwo
 
             Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
 
-            labelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelThree
+            labelText: "Saved information"
+            subLabelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelTwo
             leftMargin: 0
-            isChecked: boxIsChecked
+            isChecked: _isChecked
             showDivider: false
-            width: parent.width - VPNTheme.theme.windowMargin * 2
 
-            onClicked: boxIsChecked = !boxIsChecked
+            onClicked: _isChecked = !_isChecked
         }
 
         VPNCheckBoxRow {
-            property bool boxIsChecked: false
+            property bool _isChecked: false
+            id: optionThree
 
             Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
 
-            labelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelFour
+            labelText: "Reactivation"
+            subLabelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelThree
             leftMargin: 0
-            isChecked: boxIsChecked
+            isChecked: _isChecked
             showDivider: false
-            width: parent.width - VPNTheme.theme.windowMargin * 2
 
-            onClicked: boxIsChecked = !boxIsChecked
+            onClicked: _isChecked = !_isChecked
+        }
+
+        VPNCheckBoxRow {
+            property bool _isChecked: false
+            id: optionFour
+
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+
+            labelText: "Extension and themes"
+            subLabelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelFour
+            leftMargin: 0
+            isChecked: _isChecked
+            showDivider: false
+
+            onClicked: _isChecked = !_isChecked
+        }
+    }
+
+    _disclaimers: RowLayout {
+        spacing: VPNTheme.theme.vSpacing / 2
+
+        VPNIcon {
+            source: "qrc:/ui/resources/connection-info-dark.svg"
+            sourceSize.width: VPNTheme.theme.iconSize
+            sourceSize.height: VPNTheme.theme.iconSize
+
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+        }
+
+        VPNTextBlock {
+            id: text
+            text: "In order to delete your account we need your consent on the options above."
+            Layout.fillWidth: true
         }
     }
 
     _footerContent: ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
-        spacing: VPNTheme.theme.windowMargin
+
+        spacing: VPNTheme.theme.vSpacing
 
         VPNButton {
             Layout.fillWidth: true
 
+            colorScheme: VPNTheme.theme.redButton
+            enabled: optionOne.isChecked && optionTwo.isChecked && optionThree.isChecked && optionFour.isChecked
             // Delete account
             text: VPNl18n.SubscriptionManagementDeleteAccountButton
             onClicked: {
