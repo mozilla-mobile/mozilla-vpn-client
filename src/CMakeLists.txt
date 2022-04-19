@@ -1,7 +1,9 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 add_definitions(-DAPP_VERSION=\"${CMAKE_PROJECT_VERSION}\")
 add_definitions(-DBUILD_ID=\"1234\") ## TODO: FIX ME!
-add_definitions(-DQT_DEPRECATED_WARNINGS)
-add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star)
@@ -9,8 +11,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../translations/generated)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../glean)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../lottie/lib)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../nebula)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets Gui Test)
 find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
@@ -26,6 +26,8 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::WebSockets
     Qt6::Widgets
 )
+
+target_link_libraries(mozillavpn PRIVATE lottie nebula)
 
 include(cmake/sources.cmake)
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
