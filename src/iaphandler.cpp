@@ -229,6 +229,7 @@ QHash<int, QByteArray> IAPHandler::roleNames() const {
   roles[ProductIdentifierRole] = "productIdentifier";
   roles[ProductPriceRole] = "productPrice";
   roles[ProductMonthlyPriceRole] = "productMonthlyPrice";
+  roles[ProductTrialDaysRole] = "productTrialDays";
   roles[ProductTypeRole] = "productType";
   roles[ProductFeaturedRole] = "productFeatured";
   roles[ProductSavingsRole] = "productSavings";
@@ -266,6 +267,9 @@ QVariant IAPHandler::data(const QModelIndex& index, int role) const {
 
     case ProductSavingsRole:
       return QVariant(m_products.at(index.row()).m_savings);
+
+    case ProductTrialDaysRole:
+      return QVariant(m_products.at(index.row()).m_trialDays);
 
     default:
       return QVariant();

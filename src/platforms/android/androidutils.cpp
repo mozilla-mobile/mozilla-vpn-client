@@ -9,6 +9,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "settingsholder.h"
 #include "qmlengineholder.h"
 #include "jni.h"
 
@@ -67,6 +68,7 @@ AndroidUtils::AndroidUtils(QObject* parent) : QObject(parent) {
   JNINativeMethod methods[]{
       {"recordGleanEvent", "(Ljava/lang/String;)V",
        reinterpret_cast<void*>(recordGleanEvent)},
+      {"getIsDevMode", "()Z", reinterpret_cast<bool*>(getIsDevMode)},
   };
 
   env->RegisterNatives(javaClass, methods,
@@ -261,4 +263,10 @@ void AndroidUtils::recordGleanEvent(JNIEnv* env, jobject VPNUtils,
   logger.info() << "Glean Event via JNI:" << eventString;
   emit MozillaVPN::instance()->recordGleanEvent(eventString);
   env->ReleaseStringUTFChars(event, buffer);
+}
+
+bool AndroidUtils::getIsDevMode(JNIEnv* env, jobject VPNUtils) {
+  Q_UNUSED(VPNUtils);
+  Q_UNUSED(env);
+  return SettingsHolder::instance()->developerUnlock();
 }
