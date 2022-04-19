@@ -17,6 +17,25 @@ Rectangle {
     property QtObject selectedSegment
     property var handleSegmentClick: (() => {});
 
+    Keys.onLeftPressed: {
+        if(root.selectedIndex !== 0) {
+            root.selectedIndex--
+            root.handleSegmentClick(options.itemAt(root.selectedIndex))
+        }
+    }
+
+    Keys.onRightPressed: {
+        if(root.selectedIndex !== options.count - 1) {
+            root.selectedIndex++
+            root.handleSegmentClick(options.itemAt(root.selectedIndex))
+        }
+    }
+
+    implicitHeight: VPNTheme.theme.rowHeight
+    activeFocusOnTab: true
+    color: VPNTheme.theme.input.highlight
+    radius: 24
+
     onSelectedIndexChanged: {
         selectedSegment = options.itemAt(selectedIndex)
     }
@@ -24,10 +43,6 @@ Rectangle {
     Component.onCompleted: {
         selectedSegment = options.itemAt(selectedIndex)
     }
-
-    implicitHeight: VPNTheme.theme.rowHeight
-    color: VPNTheme.theme.input.highlight
-    radius: 24
 
     Rectangle {
         id: slider
@@ -49,7 +64,11 @@ Rectangle {
             PropertyAnimation {
                 duration: 100
             }
+        }
 
+        VPNFocusOutline {
+            visible: root.activeFocus
+            focusedComponent: root
         }
     }
 
@@ -75,6 +94,8 @@ Rectangle {
                 Layout.fillHeight: true
 
                 objectName: segmentButtonId
+
+                focusPolicy: Qt.NoFocus
 
                 Accessible.description: VPNl18n.AccessibilityCurrentIndexFocusedOfTotalItemsInGroup.arg(index + 1).arg(options.count) //`${index + 1} ${VPNl18n.AccessiblityOf} ${options.count}`
                 Accessible.name: root.selectedIndex === index ? VPNl18n.AccessibilitySelectedAndItemName.arg(label.text) : label.text
