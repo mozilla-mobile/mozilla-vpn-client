@@ -22,7 +22,7 @@ VPNInAppAuthenticationBase {
     }
     _headlineText: "Delete Firefox account"
     _imgSource: "qrc:/nebula/resources/avatar.svg"
-    _subtitleText: "Your Firefox account (" + VPNAuthInApp.emailAddress + ") is connected to Mozilla products that keep you secure and productive on the web. Please acknowledge that by deleting your account:"
+    _subtitleText: VPNl18n.SubscriptionManagementDeleteAccountSubheadline.arg(VPNAuthInApp.emailAddress)
 
     _inputs: ColumnLayout {
         spacing: VPNTheme.theme.listSpacing
@@ -31,7 +31,7 @@ VPNInAppAuthenticationBase {
             property bool boxIsChecked: false
 
             Layout.alignment: Qt.AlignHCenter
-            labelText: "Any paid subscriptions you have will be cancelled (Except Pocket)"
+            labelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelOne
             leftMargin: 0
             isChecked: boxIsChecked
             showDivider: false
@@ -45,7 +45,7 @@ VPNInAppAuthenticationBase {
 
             Layout.alignment: Qt.AlignHCenter
 
-            labelText: "You may lose saved information and features within Mozilla products"
+            labelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelTwo
             leftMargin: 0
             isChecked: boxIsChecked
             showDivider: false
@@ -59,7 +59,7 @@ VPNInAppAuthenticationBase {
 
             Layout.alignment: Qt.AlignHCenter
 
-            labelText: "Reactivating with this email may not restore your saved information"
+            labelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelThree
             leftMargin: 0
             isChecked: boxIsChecked
             showDivider: false
@@ -73,7 +73,7 @@ VPNInAppAuthenticationBase {
 
             Layout.alignment: Qt.AlignHCenter
 
-            labelText: "Any extensions and themes that you’ve published to addons.mozilla.org will be deleted"
+            labelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelFour
             leftMargin: 0
             isChecked: boxIsChecked
             showDivider: false
@@ -91,7 +91,7 @@ VPNInAppAuthenticationBase {
             Layout.fillWidth: true
 
             // Delete account
-            text: "Delete account"
+            text: VPNl18n.SubscriptionManagementDeleteAccountButton
             onClicked: {
             }
         }
