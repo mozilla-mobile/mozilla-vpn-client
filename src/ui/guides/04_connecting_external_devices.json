@@ -1,34 +1,36 @@
 {
   "id": "connecting_external_devices",
-  "title": "Connecting to devices in my local network",
+  "title": "Connecting to other devices while using VPN",
+  "subtitle": "Enabling local network access allows you to connect to other devices without sacrificing your VPN protection.",
   "image": "qrc:/guides/04_connecting_external_devices.svg",
   "blocks": [
     { "id": "c_1",
-      "type": "text",
-      "content": "Connected to VPN and want to print documents or access files on another device? Enabling local network access will allow you to securely connect to other devices without sacrificing your VPN protection." },
+      "type": "title",
+      "content": "How do I connect to my printer or fax?" },
     { "id": "c_2",
-      "type": "title",
-      "content": "What’s local network access?" },
+      "type": "olist",
+      "content": [
+        { "id": "l_1",
+          "content": "Enable “Local network access” in your network settings" },
+        { "id": "l_2",
+          "content": "Connect the printer or fax cable to your device’s port (wired) OR via wireless" },
+        { "id": "l_3",
+          "content": "Print or fax your documents as normalDesktop computers / laptops / mobile phones" }
+      ]
+    },
     { "id": "c_3",
-      "type": "text",
-      "content": "When you enable “Local network access” in your Network settings, your device can openly connect to and share data with other devices signed onto the same wired or Wi-Fi internet connection." },
-    { "id": "c_4",
       "type": "title",
-      "content": "What types of devices can I connect to?" },
-    { "id": "c_5",
+      "content": "What other types of devices can I connect to?" },
+    { "id": "c_4",
       "type": "text",
-      "content": "With “Local network access” turned on, you can connect to a variety of other devices on your local network, including:" },
-    { "id": "c_6",
+      "content": "With “Local network access” turned on, you can also connect to devices like:" },
+    { "id": "c_5",
       "type": "ulist",
       "content": [
         { "id": "l_1",
-          "content": "Desktop computers / laptops / mobile phones" },
+          "content": "Other computers and mobile phones" },
         { "id": "l_2",
-          "content": "Wireless and bluetooth printers" },
-        { "id": "l_3",
-          "content": "Shared work or personal folders" },
-        { "id": "l_4",
-          "content": "Streaming sticks (Chromecast / Roku)" }
+          "content": "Streaming sticks (Chromecast / Roku / Apple Airplay)" }
       ]
     }
   ]

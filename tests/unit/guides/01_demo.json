@@ -1,7 +1,9 @@
 {
   "id": "demo",
   "title": "This is a title",
-  "comment": "this is optional, but it's nice to have",
+  "title_comment": "this is optional, but it's nice to have",
+  "subtitle": "This is a subtitle",
+  "subtitle_comment": "this is optional, but it's nice to have",
   "image": "qrc:/guides/01_demo.png",
   "blocks": [
     { "id": "c_1",

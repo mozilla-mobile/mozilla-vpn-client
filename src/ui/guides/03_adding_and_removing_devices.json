@@ -1,15 +1,13 @@
 {
   "id": "adding_and_removing_devices",
   "title": "How do I add and remove devices?",
+  "subtitle": "Follow this quick and simple 3 step guide to add and remove all of your devices easily.",
   "image": "qrc:/guides/003_adding_and_removing_devices.svg",
   "blocks": [
     { "id": "c_1",
-      "type": "text",
-      "content": "Adding and removing devices in Mozilla VPN has never been easier. Follow this quick and simple 3 step guide to secure much-needed protection for all your devices." },
-    { "id": "c_2",
       "type": "title",
       "content": "How to add a device" },
-    { "id": "c_3",
+    { "id": "c_2",
       "type": "olist",
       "content": [
         { "id": "l_1",
@@ -20,10 +18,10 @@
           "content": "Voila! Your device has been automatically added to your VPN list of connected devices" }
       ]
     },
-    { "id": "c_4",
+    { "id": "c_3",
       "type": "title",
       "content": "How to remove a device" },
-    { "id": "c_5",
+    { "id": "c_4",
       "type": "olist",
       "content": [
         { "id": "l_1",

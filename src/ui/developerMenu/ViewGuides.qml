@@ -43,7 +43,8 @@ Item {
                     // I'm too lazy to create a proper view.
                     function showGuideContent(guide) {
                         const list = [];
-                        list.push("Translate title: " + VPNl18n[guide.id]);
+                        list.push("Translated title: " + VPNl18n[guide.titleId]);
+                        list.push("Translated subtitle: " + VPNl18n[guide.subtitleId]);
                         list.push("Image: " + guide.image);
                         list.push("Blocks: " + guide.blocks.length);
 
