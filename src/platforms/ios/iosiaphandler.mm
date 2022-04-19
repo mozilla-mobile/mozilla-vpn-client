@@ -20,9 +20,6 @@
 #include <QJsonValue>
 #include <QScopeGuard>
 
-#import <Foundation/Foundation.h>
-#import <StoreKit/StoreKit.h>
-
 constexpr const uint32_t GUARDIAN_ERROR_RECEIPT_NOT_VALID = 142;
 constexpr const uint32_t GUARDIAN_ERROR_RECEIPT_IN_USE = 145;
 

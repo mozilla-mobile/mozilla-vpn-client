@@ -7,7 +7,9 @@
 
 #include "iaphandler.h"
 
+#import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
+
 
 class IOSIAPHandler final : public IAPHandler {
   Q_OBJECT
