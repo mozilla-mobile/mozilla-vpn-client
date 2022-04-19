@@ -9,6 +9,8 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 
 VPNButtonBase {
+    property var colorScheme: VPNTheme.theme.blueButton
+
     id: button
 
     height: VPNTheme.theme.rowHeight
@@ -30,7 +32,7 @@ VPNButtonBase {
     }
 
     VPNUIStates {
-        colorScheme: VPNTheme.theme.blueButton
+        colorScheme: button.colorScheme
         setMargins: -5
     }
 

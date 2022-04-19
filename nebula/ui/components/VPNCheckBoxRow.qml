@@ -21,7 +21,7 @@ RowLayout {
 
     signal clicked()
 
-    spacing: VPNTheme.theme.windowMargin
+    spacing: VPNTheme.theme.windowMargin * 0.5
 
     VPNCheckBox {
         id: checkBox
