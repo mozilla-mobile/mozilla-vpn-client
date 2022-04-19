@@ -7,4 +7,7 @@
 
 constexpr auto QRC_ROOT = "qrc:///glean/";
 
-void Glean::Initialize(QQmlEngine* engine) { engine->addImportPath(QRC_ROOT); }
+void Glean::Initialize(QQmlEngine* engine) {
+  Q_INIT_RESOURCE(glean);
+  engine->addImportPath(QRC_ROOT);
+}

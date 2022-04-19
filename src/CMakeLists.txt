@@ -9,8 +9,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../translations/generated)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../glean)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets Gui Test)
 find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
@@ -27,7 +25,7 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Widgets
 )
 
-target_link_libraries(mozillavpn PRIVATE lottie nebula)
+target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)
 
 include(cmake/sources.cmake)
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

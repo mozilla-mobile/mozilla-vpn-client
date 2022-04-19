@@ -14,5 +14,8 @@ add_definitions(-DQT_DEPRECATED_WARNINGS)
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 
 add_subdirectory(src)
+add_subdirectory(glean)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
+add_subdirectory(translations)
+
