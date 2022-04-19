@@ -89,7 +89,6 @@ SOURCES += \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
     ../../src/ipaddress.cpp \
-    ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \

@@ -55,11 +55,18 @@ foreach(entry ${I18N_LISTING})
 endforeach()
 
 ## Generate translation files for each locale present
+get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../scripts ABSOLUTE)
 file(WRITE generated/translations.qrc "<RCC>\n    <qresource prefix=\"/i18n\">\n")
 foreach(LOCALE ${I18N_LOCALES})
     file(MAKE_DIRECTORY ${LOCALE})
     file(APPEND generated/translations.qrc "        <file>mozillavpn_${LOCALE}.qm</file>\n")
-    configure_file(locversion.plist.in ${LOCALE}/locversion.plist)
+
+    add_custom_command(
+        OUTPUT ${LOCALE}/locversion.plist
+        MAIN_DEPENDENCY locversion.plist.in
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMAND ${MVPN_SCRIPT_DIR}/utils/make_template.py -k __LOCALE__=${LOCALE} -o ${LOCALE}/locversion.plist locversion.plist.in
+    )
 
     add_custom_command(
         OUTPUT generated/mozillavpn_${LOCALE}.ts
