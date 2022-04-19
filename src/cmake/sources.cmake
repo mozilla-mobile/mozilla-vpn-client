@@ -58,7 +58,6 @@ target_sources(mozillavpn PRIVATE
     ipaddress.cpp
     ipaddresslookup.cpp
     itempicker.cpp
-    l18nstringsimpl.cpp
     leakdetector.cpp
     localizer.cpp
     logger.cpp

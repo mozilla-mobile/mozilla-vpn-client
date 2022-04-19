@@ -415,6 +415,7 @@ class L18nStrings final : public QQmlPropertyMap {
   };
 
   static L18nStrings* instance();
+  static void initialize();
 
   explicit L18nStrings(QObject* parent);
   ~L18nStrings();

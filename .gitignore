@@ -152,6 +152,9 @@ translations/*/locversion.plist
 translations/*.pri
 translations/generated/*.cpp
 translations/generated/*.h
+translations/generated/*.ts
+translations/generated/*.qm
+translations/generated/*.qrc
 macos/pkg/Resources/*.lproj
 
 # Adjust SDK Files
