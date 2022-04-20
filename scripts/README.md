@@ -41,15 +41,8 @@ TODO:
 
 # Windows-specific scripts
 
+- ./windows/compile.bat - compile the client
 - ./windows/utils/commons.sh - common functions for cross-platform scrips
-- ./windows_build.sh - script for taskcluster
-- ./windows_compile.bat - compile the client
-- ./openssl_compile.bat - compile openssl
-- ./Qt5_static_compile.bat - compile QT5
-
-TODO:
-1. move all the windows scripts into the `windows` folder
-2. remove/unify windows_build.sh and windows_compile.bat
 
 # Wasm-specific scripts
 
@@ -72,12 +65,8 @@ TODO:
 
 # Clang-format utils
 
-TODO: all of these needs to be moved in subfolders, removed, unified, etc.
-
 - ./apply-format - apply clang-format rules
 - ./git-pre-commit-format - configure the pre-commit git hook for clang-formatting
-
-TODO: all of these needs to be moved in subfolders, removed, unified, etc.
 
 # Others
 

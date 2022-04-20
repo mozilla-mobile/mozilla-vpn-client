@@ -21,7 +21,7 @@ git submodule update --init --force --recursive --depth=1
 $PYTHON_SCRIPTS =resolve-path "$env:APPDATA\Python\Python36\Scripts"
 $env:PATH ="$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 
-# Set Env's required for the windows_compile.bat
+# Set Env's required for the windows/compile.bat
 $env:VCToolsRedistDir=(resolve-path "$FETCHES_PATH/VisualStudio/VC/Redist/MSVC/14.30.30704/").ToString()
 $env:BUILDDIR=resolve-path $FETCHES_PATH/QT_OUT
 
@@ -34,7 +34,7 @@ Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm
 python3 ./scripts/utils/generate_glean.py
 python3 ./scripts/utils/import_languages.py
 
-./scripts/windows_compile.bat --nmake
+./scripts/windows/compile.bat --nmake
 nmake install 
 
 Write-Output "Writing Artifacts"

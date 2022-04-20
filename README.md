@@ -262,7 +262,7 @@ For Windows, there are a few extra dependencies to install:
 
 We use a script to compile the app for windows and to generate the installer.
 ```
-scripts\windows_compile.bat
+scripts\windows\compile.bat
 ```
 
 ### How to build from source code for WASM
