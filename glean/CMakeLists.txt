@@ -19,6 +19,7 @@ target_sources(glean PRIVATE
     telemetry/gleansample.h
 )
 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/telemetry)
 add_custom_command(
     OUTPUT telemetry/gleansample.h telemetry/qmldir telemetry/pings.js telemetry/sample.js telemetry/telemetry.qrc
     MAIN_DEPENDENCY metrics.yaml

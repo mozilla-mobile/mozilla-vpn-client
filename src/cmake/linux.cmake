@@ -86,6 +86,7 @@ qt6_add_dbus_adaptor(GENERATED_SOURCES
                      DBusService
                      dbus_adaptor)
 target_sources(mozillavpn PRIVATE ${GENERATED_SOURCES})
+target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 include(cmake/golang.cmake)
 add_go_library(mozillavpn ../linux/netfilter/netfilter.go)
@@ -95,7 +96,7 @@ install(FILES ../linux/extra/MozillaVPN.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
 install(FILES ../linux/extra/MozillaVPN-startup.desktop
-    DESTINATION ${CMAKE_INSTALL_SYSCONFDIR})
+    DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/xdg/autostart)
 
 install(FILES ../linux/extra/icons/16x16/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/16x16/apps)
@@ -113,7 +114,7 @@ install(FILES ../linux/extra/icons/64x64/mozillavpn.png
 install(FILES ../linux/extra/icons/128x128/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
 
-install(FILES platforms/linux/org.mozillavpn.policy
+install(FILES platforms/linux/daemon/org.mozilla.vpn.policy
     DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/actions)
 
 install(FILES platforms/linux/daemon/org.mozilla.vpn.conf
@@ -122,8 +123,12 @@ install(FILES platforms/linux/daemon/org.mozilla.vpn.conf
 install(FILES platforms/linux/daemon/org.mozilla.vpn.dbus.service
     DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/system-services)
 
-install(FILES ../linux/mozillavpn.service
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/systemd/system)
+pkg_check_modules(SYSTEMD systemd)
+if(${SYSTEMD_FOUND} EQUAL 1)
+    pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
+    install(FILES ../linux/mozillavpn.service
+        DESTINATION ${SYSTEMD_UNIT_DIR}/systemd/system)
+endif()
 
 #ORIG_MOZILLAVPN_JSON = $$PWD/../../../extension/manifests/linux/mozillavpn.json
 #manifestFile.input = ORIG_MOZILLAVPN_JSON

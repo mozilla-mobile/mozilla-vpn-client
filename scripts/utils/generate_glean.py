@@ -10,9 +10,12 @@ import subprocess
 
 ## Find the input Yaml files relative to the script location.
 rootpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
-outpath = os.path.join(os.getcwd(), 'glean', 'telemetry')
 metrics = os.path.join(rootpath, 'glean', 'metrics.yaml')
 pings = os.path.join(rootpath, 'glean', 'pings.yaml')
+
+## Create the output directory if it doesn't already exist.
+outpath = os.path.join(os.getcwd(), 'glean', 'telemetry')
+os.makedirs(outpath, exist_ok=True)
 
 print("Parsing the metrics.yaml file...")
 if not os.path.isfile(metrics):

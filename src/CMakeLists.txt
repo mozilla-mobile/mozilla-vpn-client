@@ -3,7 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 add_definitions(-DAPP_VERSION=\"${CMAKE_PROJECT_VERSION}\")
-add_definitions(-DBUILD_ID=\"1234\") ## TODO: FIX ME!
+if(DEFINED BUILD_ID)
+    add_definitions(-DBUILD_ID=\"${BUILD_ID}\")
+else()
+    add_definitions(-DBUILD_ID=\"1234\") ## TODO: FIX ME!
+endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star)

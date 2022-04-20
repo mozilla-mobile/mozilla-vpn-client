@@ -26,7 +26,9 @@ jobs:
         env:
           GITREF: ${{github.ref}}
         run: |
-          VERSION=$(grep ':VERSION' version.pri | cut -d= -f2 | tr -d '[:space:]')
+          VERSION=$(grep -oE 'project\([^\(\)]*\)' CMakeLists.txt |
+                    awk '{ for (x=1;x<NF;x++) if ($x=="VERSION") print $(x+1) }')
+
           if [[ "$GITREF" =~ ^refs/pull/([0-9]+)/merge ]]; then
             BUILDREV="~pr${BASH_REMATCH[1]}"
           elif [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
@@ -38,7 +40,7 @@ jobs:
           fi
 
           # Force the upstream package version
-          sed -i "s/:VERSION.*/:VERSION = ${VERSION}${BUILDREV}/" version.pri
+          sed -i "s|${VERSION}|${VERSION}${BUILDREV}|g" CMakeLists.txt
 
       - name: Install source dependencies
         shell: bash
@@ -50,7 +52,7 @@ jobs:
         shell: bash
         run: ./scripts/linux/script.sh --source
 
-      - name: Uploading
+      - name: Upload source bundle
         uses: actions/upload-artifact@v2
         with:
             name: Sources
