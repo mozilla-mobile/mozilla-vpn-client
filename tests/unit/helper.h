@@ -38,6 +38,8 @@ class TestHelper : public QObject {
   static Controller::State controllerState;
 
   static QVector<QObject*> testList;
+
+  static QObject* findTest(const QString& name);
 };
 
 #endif  // HELPER_H

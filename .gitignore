@@ -66,6 +66,7 @@ xcode.xconfig
 *.ts
 tests/auth/tests
 tests/unit/tests
+tests/unit/tests_autogen/
 tests/nativemessaging/tests
 tests/qml/qml_tests
 tests/qml/target_wrapper.sh
