@@ -10,12 +10,12 @@
 #include "mozillavpn.h"
 #include "networkmanager.h"
 
+#include <QJniObject>
+#include <QJniEnvironment>
 #include <QQuickRenderControl>
 #include <QQuickWindow>
 #include <QThread>
 #include <QWindow>
-
-#include "androidjnicompat.h"
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidWebView");
@@ -189,15 +189,6 @@ void AndroidWebView::updatePolish() {
   m_window->setVisible(isVisible());
 }
 
-#if QT_VERSION < 0x060000
-void AndroidWebView::geometryChanged(const QRectF& newGeometry,
-                                     const QRectF& oldGeometry) {
-  QQuickItem::geometryChanged(newGeometry, oldGeometry);
-  if (newGeometry.isValid()) {
-    polish();
-  }
-}
-#else
 void AndroidWebView::geometryChange(const QRectF& newGeometry,
                                     const QRectF& oldGeometry) {
   QQuickItem::geometryChange(newGeometry, oldGeometry);
@@ -205,7 +196,6 @@ void AndroidWebView::geometryChange(const QRectF& newGeometry,
     polish();
   }
 }
-#endif
 
 void AndroidWebView::propagateError(ErrorHandler::ErrorType error) {
   MozillaVPN::instance()->errorHandle(error);

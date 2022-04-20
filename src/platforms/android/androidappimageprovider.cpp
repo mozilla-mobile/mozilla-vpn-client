@@ -5,9 +5,10 @@
 #include "androidappimageprovider.h"
 #include "logger.h"
 #include "leakdetector.h"
-#include "androidjnicompat.h"
 #include "androidutils.h"
 
+#include <QJniObject>
+#include <QJniEnvironment>
 #include <jni.h>
 #include <android/bitmap.h>
 
@@ -61,11 +62,7 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
   QJniEnvironment env;
   AndroidBitmapInfo info;
 
-#if QT_VERSION < 0x060000
-  auto res = AndroidBitmap_getInfo(env, bitmap.object(), &info);
-#else
   auto res = AndroidBitmap_getInfo(env.jniEnv(), bitmap.object(), &info);
-#endif
 
   if (res != ANDROID_BITMAP_RESULT_SUCCESS) return QImage();
 
@@ -88,11 +85,7 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
   }
 
   void* pixels;
-#if QT_VERSION < 0x060000
-  res = AndroidBitmap_lockPixels(env, bitmap.object(), &pixels);
-#else
   res = AndroidBitmap_lockPixels(env.jniEnv(), bitmap.object(), &pixels);
-#endif
 
   if (res != ANDROID_BITMAP_RESULT_SUCCESS) return QImage();
 
@@ -107,13 +100,7 @@ QImage AndroidAppImageProvider::toImage(const QJniObject& bitmap) {
     for (unsigned y = 0; y < height; y++, bmpPtr += info.stride)
       memcpy((void*)image.constScanLine(y), bmpPtr, width);
   }
-
-#if QT_VERSION < 0x060000
-  res = AndroidBitmap_unlockPixels(env, bitmap.object());
-#else
   res = AndroidBitmap_unlockPixels(env.jniEnv(), bitmap.object());
-#endif
-
   if (res != ANDROID_BITMAP_RESULT_SUCCESS) return QImage();
 
   return image;

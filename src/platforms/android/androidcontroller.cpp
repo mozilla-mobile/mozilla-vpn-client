@@ -5,7 +5,6 @@
 #include "androidcontroller.h"
 #include "androidvpnactivity.h"
 #include "androidutils.h"
-#include "androidjnicompat.h"
 #include "errorhandler.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -18,15 +17,9 @@
 #include "settingsholder.h"
 #include "l18nstrings.h"
 
-#if QT_VERSION >= 0x060000
-#  include <QtCore/private/qandroidextras_p.h>
-#else
-#  include <QAndroidBinder>
-#  include <QAndroidIntent>
-#  include <QAndroidParcel>
-#  include <QAndroidServiceConnection>
-#  include <QtAndroid>
-#endif
+#include <QJniObject>
+#include <QJniEnvironment>
+#include <QtCore/private/qandroidextras_p.h>
 
 #include <QHostAddress>
 #include <QJsonArray>
@@ -277,11 +270,5 @@ void AndroidController::startActivityForResult(JNIEnv* env, jobject /*thiz*/,
     AndroidUtils::dispatchToMainThread(
         [&] { emit s_instance->disconnected(); });
   };
-
-#if QT_VERSION >= 0x060000
   QtAndroidPrivate::startActivity(intent, 1337, callback);
-#else
-  QtAndroid::startActivity(intent, 1337, callback);
-#endif
-  return;
 }

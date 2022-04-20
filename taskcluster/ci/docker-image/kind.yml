@@ -32,9 +32,6 @@ jobs:
     wasm:
         parent: base
         symbol: I(wasm)
-    android-build:
-        parent: base
-        symbol: I(android)
     android-build-arm64:
         parent: base
         symbol: I(android-arm64-v8a)
