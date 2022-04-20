@@ -27,12 +27,12 @@ target_link_libraries(mozillavpn PRIVATE
 
 target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)
 
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     add_definitions(-DMVPN_DEBUG)
 endif()
 
 include(cmake/sources.cmake)
-if(${CMAKE_BUILD_TYPE} STREQUAL "Dummy")
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Dummy")
     add_definitions(-DMVPN_DUMMY)
     include(cmake/dummy.cmake)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -40,6 +40,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     include(cmake/linux.cmake)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     add_definitions(-DMVPN_WINDOWS)
+    include(cmake/windows.cmake)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     add_definitions(-DMVPN_MACOS)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
@@ -47,6 +48,9 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
     add_definitions(-DMVPN_IOS)
 endif()
+
+add_subdirectory(crashreporter)
+target_link_libraries(mozillavpn PRIVATE crashreporter)
 
 set_target_properties(mozillavpn PROPERTIES
     WIN32_EXECUTABLE ON

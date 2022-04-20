@@ -6,22 +6,25 @@ add_library(translations STATIC)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Qml)
 target_link_libraries(translations PRIVATE Qt6::Core Qt6::Qml)
-target_include_directories(translations PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/generated)
+
+get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../scripts ABSOLUTE)
+get_filename_component(GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated ABSOLUTE)
+file(MAKE_DIRECTORY ${GENERATED_DIR})
+target_include_directories(translations PUBLIC ${GENERATED_DIR})
 
 target_sources(translations PRIVATE
-    generated/l18nstrings_p.cpp
-    generated/l18nstrings.h
-    generated/translations.qrc
+    ${GENERATED_DIR}/l18nstrings_p.cpp
+    ${GENERATED_DIR}/l18nstrings.h
+    ${GENERATED_DIR}/translations.qrc
     l18nstrings.cpp
     servers.qrc
 )
 
 ## Generate the string database (language agnostic)
 add_custom_command(
-    OUTPUT generated/l18nstrings_p.cpp generated/l18nstrings.h
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
-    MAIN_DEPENDENCY strings.yaml
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/utils/generate_strings.py
+    OUTPUT ${GENERATED_DIR}/l18nstrings_p.cpp ${GENERATED_DIR}/l18nstrings.h
+    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/strings.yaml
+    COMMAND python3 ${MVPN_SCRIPT_DIR}/utils/generate_strings.py -o ${GENERATED_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/strings.yaml
 )
 
 ## Lookup the path to the Qt linguist tools
@@ -45,7 +48,7 @@ find_program(QT_LRELEASE_EXECUTABLE
 
 ## Build the list of supported locales
 set(I18N_LOCALES)
-get_filename_component(I18N_DIR ../i18n ABSOLUTE)
+get_filename_component(I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../i18n ABSOLUTE)
 file(GLOB I18N_LISTING LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)
 list(FILTER I18N_LISTING EXCLUDE REGEX "^\\..+")
 foreach(entry ${I18N_LISTING})
@@ -55,11 +58,10 @@ foreach(entry ${I18N_LISTING})
 endforeach()
 
 ## Generate translation files for each locale present
-get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../scripts ABSOLUTE)
-file(WRITE generated/translations.qrc "<RCC>\n    <qresource prefix=\"/i18n\">\n")
+file(WRITE ${GENERATED_DIR}/translations.qrc "<RCC>\n    <qresource prefix=\"/i18n\">\n")
 foreach(LOCALE ${I18N_LOCALES})
     file(MAKE_DIRECTORY ${LOCALE})
-    file(APPEND generated/translations.qrc "        <file>mozillavpn_${LOCALE}.qm</file>\n")
+    file(APPEND ${GENERATED_DIR}/translations.qrc "        <file>mozillavpn_${LOCALE}.qm</file>\n")
 
     add_custom_command(
         OUTPUT ${LOCALE}/locversion.plist
@@ -69,15 +71,15 @@ foreach(LOCALE ${I18N_LOCALES})
     )
 
     add_custom_command(
-        OUTPUT generated/mozillavpn_${LOCALE}.ts
+        OUTPUT ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
         MAIN_DEPENDENCY ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
-        COMMAND ${QT_LCONVERT_EXECUTABLE} -verbose -if xlf -i ${I18N_DIR}/${LOCALE}/mozillavpn.xliff -o generated/mozillavpn_${LOCALE}.ts
+        COMMAND ${QT_LCONVERT_EXECUTABLE} -verbose -if xlf -i ${I18N_DIR}/${LOCALE}/mozillavpn.xliff -o ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
     )
 
     add_custom_command(
-        OUTPUT generated/mozillavpn_${LOCALE}.qm
-        MAIN_DEPENDENCY generated/mozillavpn_${LOCALE}.ts
-        COMMAND ${QT_LRELEASE_EXECUTABLE} -verbose -idbased generated/mozillavpn_${LOCALE}.ts
+        OUTPUT ${GENERATED_DIR}/mozillavpn_${LOCALE}.qm
+        MAIN_DEPENDENCY ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
+        COMMAND ${QT_LRELEASE_EXECUTABLE} -verbose -idbased ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
     )
 endforeach()
-file(APPEND generated/translations.qrc "    </qresource>\n</RCC>\n")
+file(APPEND ${GENERATED_DIR}/translations.qrc "    </qresource>\n</RCC>\n")

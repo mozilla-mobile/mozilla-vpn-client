@@ -2,8 +2,13 @@ cmake_minimum_required(VERSION 3.16)
 
 project(mozillavpn VERSION 2.9.0 LANGUAGES C CXX)
 
+## Toolchain Setup
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(MSVC)
+    include(src/cmake/msvc.cmake)
+endif()
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)

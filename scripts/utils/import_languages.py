@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 import os
 import sys
 import shutil
-import generate_strings
+import generate_strings as GS
 import atexit
 
 # Use the project root as the working directory
@@ -165,7 +165,10 @@ with open('translations/translations.pri', 'w') as pri_file:
 
 # Step 4
 title("Step 4", "Generate the Js/C++ string definitions...")
-generate_strings.generateStrings()
+stringdict = GS.parseTranslationStrings('translations/strings.yaml')
+stringdict.update(GS.parseGuideStrings('src/ui/guides'))
+stringdict.update(GS.parseTutorialStrings('src/ui/tutorials'))
+GS.generateStrings(stringdict, 'translations/generated')
 
 # Step 5
 title("Step 5", "Generate new ts files...")

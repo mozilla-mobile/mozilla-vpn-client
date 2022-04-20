@@ -34,7 +34,7 @@ target_link_libraries(auth_tests PRIVATE
     Qt6::Quick
 )
 
-target_link_libraries(auth_tests PRIVATE translations)
+target_link_libraries(auth_tests PRIVATE glean translations)
 
 # VPN Client source files
 target_sources(auth_tests PRIVATE
@@ -130,7 +130,3 @@ target_sources(auth_tests PRIVATE
     testpasswordvalidation.h
     testsignupandin.h
 )
-
-if(WIN32)
-    #QMAKE_CXXFLAGS += -MP -Zc:preprocessor
-endif()
