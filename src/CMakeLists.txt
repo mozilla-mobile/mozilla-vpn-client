@@ -27,8 +27,15 @@ target_link_libraries(mozillavpn PRIVATE
 
 target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)
 
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    add_definitions(-DMVPN_DEBUG)
+endif()
+
 include(cmake/sources.cmake)
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(${CMAKE_BUILD_TYPE} STREQUAL "Dummy")
+    add_definitions(-DMVPN_DUMMY)
+    include(cmake/dummy.cmake)
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     add_definitions(-DMVPN_LINUX)
     include(cmake/linux.cmake)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
