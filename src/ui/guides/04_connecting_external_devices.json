@@ -13,9 +13,9 @@
         { "id": "l_1",
           "content": "Enable “Local network access” in your network settings" },
         { "id": "l_2",
-          "content": "Connect the printer or fax cable to your device’s port (wired) OR via wireless" },
+          "content": "Connect the printer or fax cable to your device’s port (wired) or via wireless" },
         { "id": "l_3",
-          "content": "Print or fax your documents as normalDesktop computers / laptops / mobile phones" }
+          "content": "Print or fax your documents as normal Desktop computers / laptops / mobile phones" }
       ]
     },
     { "id": "c_3",
@@ -30,7 +30,7 @@
         { "id": "l_1",
           "content": "Other computers and mobile phones" },
         { "id": "l_2",
-          "content": "Streaming sticks (Chromecast / Roku / Apple Airplay)" }
+          "content": "Streaming sticks (Chromecast / Roku / Apple AirPlay)" }
       ]
     }
   ]
