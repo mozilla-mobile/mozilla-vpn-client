@@ -60,10 +60,17 @@ Guide* Guide::create(QObject* parent, const QString& fileName) {
   Guide* guide = new Guide(parent);
   auto guard = qScopeGuard([&] { guide->deleteLater(); });
 
-  guide->m_id = pascalize(QString("guide_%1_title").arg(guideId));
-  if (!l18nStrings->contains(guide->m_id)) {
+  guide->m_titleId = pascalize(QString("guide_%1_title").arg(guideId));
+  if (!l18nStrings->contains(guide->m_titleId)) {
     logger.error() << "No string ID found for the title of guide file"
-                   << fileName << "ID:" << guide->m_id;
+                   << fileName << "ID:" << guide->m_titleId;
+    return nullptr;
+  }
+
+  guide->m_subtitleId = pascalize(QString("guide_%1_subtitle").arg(guideId));
+  if (!l18nStrings->contains(guide->m_subtitleId)) {
+    logger.error() << "No string ID found for the subtitle of guide file"
+                   << fileName << "ID:" << guide->m_subtitleId;
     return nullptr;
   }
 

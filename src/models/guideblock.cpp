@@ -46,14 +46,17 @@ GuideBlock* GuideBlock::create(QObject* parent, const QString& guideId,
     block->m_type = GuideModel::GuideBlockTypeTitle;
   } else if (type == "text") {
     block->m_type = GuideModel::GuideBlockTypeText;
-  } else if (type == "list") {
-    block->m_type = GuideModel::GuideBlockTypeList;
+  } else if (type == "olist") {
+    block->m_type = GuideModel::GuideBlockTypeOrderedList;
+  } else if (type == "ulist") {
+    block->m_type = GuideModel::GuideBlockTypeUnorderedList;
   } else {
     logger.error() << "Invalid type for block for guide file" << fileName;
     return nullptr;
   }
 
-  if (block->m_type == GuideModel::GuideBlockTypeList) {
+  if (block->m_type == GuideModel::GuideBlockTypeOrderedList ||
+      block->m_type == GuideModel::GuideBlockTypeUnorderedList) {
     QJsonValue subBlockArray = blockObj["content"];
     if (!subBlockArray.isArray()) {
       logger.error() << "No content for block type list in guide file"

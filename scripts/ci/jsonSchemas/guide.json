@@ -15,9 +15,17 @@
       "type": "string",
       "description": "The title of the guide"
     },
-    "comment": {
+    "title_comment": {
       "type": "string",
       "description": "A comment to describe how to translate the title"
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "The subtitle of the guide"
+    },
+    "subtitle_comment": {
+      "type": "string",
+      "description": "A comment to describe how to translate the subtitle"
     },
     "image": {
       "type": "string",
@@ -69,11 +77,15 @@
           "comment": {
             "type": "string",
             "description": "A comment to describe how to translate this block content"
+          },
+          "type": {
+            "type": "string",
+            "description": "A type for this block: text, title, ulist, olist, etc"
           }
         },
-        "required": [ "id", "content" ]
+        "required": [ "id", "content", "type" ]
       }
     }
   },
-  "required": [ "id", "title", "image", "blocks" ]
+  "required": [ "id", "title", "subtitle", "image", "blocks" ]
 }

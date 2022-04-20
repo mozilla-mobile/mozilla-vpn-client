@@ -13,7 +13,8 @@ class Guide final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Guide)
 
-  Q_PROPERTY(QString id MEMBER m_id CONSTANT)
+  Q_PROPERTY(QString titleId MEMBER m_titleId CONSTANT)
+  Q_PROPERTY(QString subtitleId MEMBER m_subtitleId CONSTANT)
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
   Q_PROPERTY(QList<GuideBlock*> blocks MEMBER m_blocks CONSTANT)
 
@@ -30,7 +31,8 @@ class Guide final : public QObject {
   explicit Guide(QObject* parent);
 
  private:
-  QString m_id;
+  QString m_titleId;
+  QString m_subtitleId;
   QString m_image;
   QList<GuideBlock*> m_blocks;
 };

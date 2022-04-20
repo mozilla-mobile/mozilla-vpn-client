@@ -13,7 +13,8 @@ string_ids = []
 comment_types = {
     "text": f"Standard text in a guide block",
     "title": f"Title in a guide block",
-    "list": f"Bullet list item in a guide block",
+    "ulist": f"Bullet unordered list item in a guide block",
+    "olist": f"Bullet ordered list item in a guide block",
 }
 
 
@@ -132,28 +133,50 @@ def parseGuideStrings():
     for guide_filename in os.listdir(guides_path):
         if not guide_filename.endswith(".json"):
             continue
-        with open(os.path.join(guides_path, guide_filename)) as guide_file:
+        with open(os.path.join(guides_path, guide_filename), "r", encoding="utf-8") as guide_file:
             guide_json = json.load(guide_file)
         if not "id" in guide_json:
             exit(f"Guide file {guide_filename} does not have an id")
+
         if not "title" in guide_json:
             exit(f"Guide file {guide_filename} does not have a title")
 
-        enum_id = pascalize(f"guide_{guide_json['id']}_title")
-        if enum_id in guide_ids:
-            exit(f"Duplicate id {enum_id} when parsing {guide_filename}")
-        guide_ids.append(enum_id)
+        enum_title_id = pascalize(f"guide_{guide_json['id']}_title")
+        if enum_title_id in guide_ids:
+            exit(f"Duplicate id {enum_title_id} when parsing {guide_filename}")
+        guide_ids.append(enum_title_id)
 
-        comment = "Title for a guide view"
-        if "comment" in guide_json:
-            comment = guide_json["comment"]
+        title_comment = "Title for a guide view"
+        if "title_comment" in guide_json:
+            title_comment = guide_json["title_comment"]
 
         string_ids.append(
             {
-                "enum_id": enum_id,
+                "enum_id": enum_title_id,
                 "string_id": f"guide.{guide_json['id']}.title",
                 "value": [guide_json["title"]],
-                "comments": [comment],
+                "comments": [title_comment],
+            }
+        )
+
+        if not "subtitle" in guide_json:
+            exit(f"Guide file {guide_filename} does not have a subtitle")
+
+        enum_subtitle_id = pascalize(f"guide_{guide_json['id']}_subtitle")
+        if enum_subtitle_id in guide_ids:
+            exit(f"Duplicate id {enum_subtitle_id} when parsing {guide_filename}")
+        guide_ids.append(enum_subtitle_id)
+
+        subtitle_comment = "Subtitle for a guide view"
+        if "subtitle_comment" in guide_json:
+            subtitle_comment = guide_json["subtitle_comment"]
+
+        string_ids.append(
+            {
+                "enum_id": enum_subtitle_id,
+                "string_id": f"guide.{guide_json['id']}.subtitle",
+                "value": [guide_json["subtitle"]],
+                "comments": [subtitle_comment],
             }
         )
 
@@ -237,7 +260,7 @@ def parseTutorialStrings():
     for tutorial_filename in os.listdir(tutorials_path):
         if not tutorial_filename.endswith(".json"):
             continue
-        with open(os.path.join(tutorials_path, tutorial_filename)) as tutorial_file:
+        with open(os.path.join(tutorials_path, tutorial_filename), "r", encoding="utf-8") as tutorial_file:
             tutorial_json = json.load(tutorial_file)
         if not "id" in tutorial_json:
             exit(f"Tutorial file {tutorial_filename} does not have an id")
