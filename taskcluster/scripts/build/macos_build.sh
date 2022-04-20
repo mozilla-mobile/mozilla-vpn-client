@@ -31,6 +31,13 @@ print Y "Installing python dependencies..."
 python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
+
+print Y "Finding QT?..."
+ls ../fetches
+ls ../../fetches
+ls ../../../fetches
+
+
 print Y "Installing QT..."
 PROJECT_HOME=`pwd`
 cd ../../../fetches/qt_dist || die
