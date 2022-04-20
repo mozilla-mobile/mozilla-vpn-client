@@ -64,6 +64,15 @@ VPNButtonBase {
                 color: root.linkColor.defaultColor
             }
 
+        },
+        State {
+            name: uiState.stateFocused
+
+            PropertyChanges {
+                target: label
+                color: root.linkColor.defaultColor
+            }
+
         }
     ]
 

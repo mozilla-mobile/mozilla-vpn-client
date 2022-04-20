@@ -45,6 +45,9 @@ VPNInAppAuthenticationBase {
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
 
-        VPNInAppAuthenticationCancel {}
+        VPNCancelButton {
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: VPN.cancelAuthentication()
+        }
     }
 }

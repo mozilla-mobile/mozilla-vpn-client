@@ -56,7 +56,10 @@ VPNInAppAuthenticationBase {
             onClicked: VPNAuthInApp.resendVerificationSessionCodeEmail();
         }
 
-        VPNInAppAuthenticationCancel{}
+        VPNCancelButton {
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: VPN.cancelAuthentication()
+        }
 
     }
 
