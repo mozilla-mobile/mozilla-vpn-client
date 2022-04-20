@@ -7,9 +7,6 @@
 
 #include "iaphandler.h"
 
-#import <Foundation/Foundation.h>
-#import <StoreKit/StoreKit.h>
-
 
 class IOSIAPHandler final : public IAPHandler {
   Q_OBJECT
@@ -31,8 +28,7 @@ class IOSIAPHandler final : public IAPHandler {
 
  private:
   void* m_delegate = nullptr;
-
-  int discountToDays(SKProductDiscount* discount);
+  int discountToDays(void* discount);
 };
 
 #endif  // IOSIAPHANDLER_H

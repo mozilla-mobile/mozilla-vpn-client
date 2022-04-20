@@ -20,6 +20,9 @@
 #include <QJsonValue>
 #include <QScopeGuard>
 
+#import <Foundation/Foundation.h>
+#import <StoreKit/StoreKit.h>
+
 constexpr const uint32_t GUARDIAN_ERROR_RECEIPT_NOT_VALID = 142;
 constexpr const uint32_t GUARDIAN_ERROR_RECEIPT_IN_USE = 145;
 
@@ -390,7 +393,8 @@ void IOSIAPHandler::noSubscriptionFoundError() {
   ErrorHandler::instance()->noSubscriptionFoundError();
 }
 
-int IOSIAPHandler::discountToDays(SKProductDiscount* discount) {
+int IOSIAPHandler::discountToDays(void* aDiscount) {
+  SKProductDiscount* discount = static_cast<SKProductDiscount*>(aDiscount);
   if (discount == nullptr) {
     return 0;
   }
