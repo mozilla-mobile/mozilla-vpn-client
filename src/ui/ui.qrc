@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/ui">
         <file>../platforms/android/androidauthenticationview.qml</file>
+        <file>authenticationInApp/ViewAuthenticationDeleteAccount.qml</file>
         <file>authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
         <file>authenticationInApp/ViewAuthenticationInApp.qml</file>
         <file>authenticationInApp/ViewAuthenticationInitializing.qml</file>
@@ -10,7 +11,6 @@
         <file>authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
-        <file>authenticationInApp/ViewDeleteAccount.qml</file>
         <file>developerMenu/ViewAnimationsPlayground.qml</file>
         <file>developerMenu/ViewDeveloperMenu.qml</file>
         <file>developerMenu/ViewFeatureList.qml</file>
@@ -26,6 +26,7 @@
         <file>settings/ViewPrivacySecurity.qml</file>
         <file>settings/ViewSettingsMenu.qml</file>
         <file>settings/ViewWhatsNew.qml</file>
+        <file>settings/ViewDeleteAccount.qml</file>
         <file>states/StateAuthenticating.qml</file>
         <file>states/StateAuthenticationInApp.qml</file>
         <file>states/StateBackendFailure.qml</file>

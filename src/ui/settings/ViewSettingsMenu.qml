@@ -138,6 +138,14 @@ VPNFlickable {
             onClicked: settingsStackView.push(aboutUsComponent)
         }
 
+        Button {
+            text: "Delete account"
+            onClicked: {
+                // stackview.push("qrc:/ui/settings/ViewDeleteAccount.qml")
+                stackview.push("qrc:/ui/authenticationInApp/ViewAuthenticationDeleteAccount.qml")
+            }
+        }
+
         Rectangle {
             Layout.preferredHeight: fullscreenRequired? VPNTheme.theme.rowHeight * 1.5 : VPNTheme.theme.rowHeight
             Layout.fillWidth: true
@@ -150,4 +158,5 @@ VPNFlickable {
 
         objectName: "settingsLogout"
     }
+
 }

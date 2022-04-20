@@ -16,9 +16,7 @@ VPNInAppAuthenticationBase {
     _changeEmailLinkVisible: false
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
-    _menuButtonOnClick: () => {
-        VPNAuthInApp.reset();
-    }
+    _menuButtonOnClick: () => {}
     _headlineText: "Delete Firefox account"
     _imgSource: "qrc:/nebula/resources/avatar-delete-account.svg"
 
@@ -26,10 +24,10 @@ VPNInAppAuthenticationBase {
         VPNTextBlock {
             color: VPNTheme.theme.fontColor
             horizontalAlignment: Text.AlignLeft
-            text: VPNl18n.SubscriptionManagementDeleteAccountSubheadline
-                .arg("<b style='color: "
+            text: VPNl18n.DeleteAccountSubheadline
+                .arg("<b style='color:"
                     + VPNTheme.theme.fontColorDark
-                    + ";'>test@mozilla.com" + VPNAuthInApp.emailAddress
+                    + ";'>test@mozilla.com"
                     + "</b>")
             textFormat: Text.RichText
             width: parent.width - VPNTheme.theme.windowMargin * 2
@@ -45,7 +43,7 @@ VPNInAppAuthenticationBase {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
             labelText: "Paid subscriptions"
-            subLabelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelOne
+            subLabelText: VPNl18n.DeleteAccountOptionLabelOne
             leftMargin: 0
             isChecked: _isChecked
             showDivider: false
@@ -61,7 +59,7 @@ VPNInAppAuthenticationBase {
             Layout.fillWidth: true
 
             labelText: "Saved information"
-            subLabelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelTwo
+            subLabelText: VPNl18n.DeleteAccountOptionLabelTwo
             leftMargin: 0
             isChecked: _isChecked
             showDivider: false
@@ -77,7 +75,7 @@ VPNInAppAuthenticationBase {
             Layout.fillWidth: true
 
             labelText: "Reactivation"
-            subLabelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelThree
+            subLabelText: VPNl18n.DeleteAccountOptionLabelThree
             leftMargin: 0
             isChecked: _isChecked
             showDivider: false
@@ -93,7 +91,7 @@ VPNInAppAuthenticationBase {
             Layout.fillWidth: true
 
             labelText: "Extension and themes"
-            subLabelText: VPNl18n.SubscriptionManagementDeleteAccountOptionLabelFour
+            subLabelText: VPNl18n.DeleteAccountOptionLabelFour
             leftMargin: 0
             isChecked: _isChecked
             showDivider: false
@@ -103,6 +101,7 @@ VPNInAppAuthenticationBase {
     }
 
     _disclaimers: RowLayout {
+        Layout.alignment: Qt.AlignHCenter
         spacing: VPNTheme.theme.vSpacing / 2
 
         VPNIcon {
@@ -126,14 +125,18 @@ VPNInAppAuthenticationBase {
         spacing: VPNTheme.theme.vSpacing
 
         VPNButton {
+            property bool allowAccountDeletion: (optionOne.isChecked
+                && optionTwo.isChecked
+                && optionThree.isChecked
+                && optionFour.isChecked)
+
             Layout.fillWidth: true
 
             colorScheme: VPNTheme.theme.redButton
-            enabled: optionOne.isChecked && optionTwo.isChecked && optionThree.isChecked && optionFour.isChecked
+            enabled: allowAccountDeletion
             // Delete account
-            text: VPNl18n.SubscriptionManagementDeleteAccountButton
-            onClicked: {
-            }
+            text: VPNl18n.DeleteAccountButtonLabel
+            onClicked: {}
         }
 
         VPNLinkButton {
@@ -143,8 +146,7 @@ VPNInAppAuthenticationBase {
             // Cancel
             labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText
             linkColor: VPNTheme.theme.redButton
-            onClicked: {
-            }
+            onClicked: {}
         }
 
     }
