@@ -57,7 +57,7 @@ def transform(text):
         
         # Substitute the keyword and adjust the start.
         value = keywords[matchKey]
-        start = start + len(value) - len(matchKey)
+        start = matchIdx + len(value)
         text = text[0:matchIdx] + value + text[matchIdx+len(matchKey):]
 
 # Open the output file
