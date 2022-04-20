@@ -65,6 +65,8 @@ xcode.xconfig
 
 *.ts
 tests/auth/tests
+tests/auth/auth_tests
+tests/auth/auth_tests_autogen/
 tests/unit/tests
 tests/unit/tests_autogen/
 tests/nativemessaging/tests
