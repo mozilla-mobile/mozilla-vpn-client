@@ -18,6 +18,7 @@ PRODUCTION_SIGNING_BUILD_TYPES = [
     "android-arm64/release",
     "android-armv7/release",
     # "macos/opt",
+    "linux/opt",
 ]
 
 SIGNING_BUILD_TYPES = PRODUCTION_SIGNING_BUILD_TYPES + [
