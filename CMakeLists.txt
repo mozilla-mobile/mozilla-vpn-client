@@ -22,3 +22,4 @@ add_subdirectory(translations)
 
 # Testing build targets
 add_subdirectory(tests/unit)
+add_subdirectory(tests/qml)

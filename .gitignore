@@ -69,6 +69,7 @@ tests/unit/tests
 tests/unit/tests_autogen/
 tests/nativemessaging/tests
 tests/qml/qml_tests
+tests/qml/qml_tests_autogen/
 tests/qml/target_wrapper.sh
 build
 !taskcluster/ci/build
