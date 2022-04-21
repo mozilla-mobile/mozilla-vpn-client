@@ -99,10 +99,8 @@ jobs:
             CONFIG-=debug \
             CONFIG-=debug_and_release \
             CONFIG+=release \
-            CONFIG+=webextension \
             QTPLUGIN+=qsvg \
             CONFIG-=static \
-            CONFIG+=balrog \
             MVPN_MACOS=1 \
             MVPN_DEVELOPMENT_TEAM=7W87BT2W9M \
             MVPN_GROUP_ID_MACOS=group.baku.mozilla.macos.Guardian \
@@ -197,22 +195,16 @@ jobs:
           sudo mv qt6 /opt
           cd ..
 
-      - name: Generating glean samples
+      - name: Installing python dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
-
-      - name: Importing translation files
-        shell: bash
-        run: |
-          export PATH=/opt/qt6/bin:$PATH
-          python3 scripts/utils/import_languages.py -m
 
       - name: Configuring the build
         shell: bash
         run: |
           export PATH=/opt/qt6/bin:$PATH
+          export QT_MACOS_BIN=/opt/qt6/bin
           SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
           FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
           echo "$SHORTVERSION - $FULLVERSION"
@@ -221,26 +213,7 @@ jobs:
           echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
           echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
-          qmake \
-            VERSION=$SHORTVERSION \
-            BUILD_ID=$FULLVERSION \
-            -spec macx-xcode \
-            CONFIG-=debug \
-            CONFIG-=debug_and_release \
-            CONFIG+=release \
-            CONFIG+=production \
-            CONFIG+=webextension \
-            QTPLUGIN+=qsvg \
-            CONFIG-=static \
-            CONFIG+=balrog \
-            MVPN_MACOS=1 \
-            src/src.pro
-          ruby scripts/macos/utils/xcode_patcher.rb \
-            "Mozilla VPN.xcodeproj" \
-            "$SHORTVERSION" \
-            "$FULLVERSION" \
-            macos \
-            Qt6
+          ./scripts/macos/apple_compile.sh macos
 
       - name: Compiling
         shell: bash

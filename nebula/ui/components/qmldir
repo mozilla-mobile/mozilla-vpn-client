@@ -8,6 +8,7 @@ VPNButton 0.1 VPNButton.qml
 VPNButtonBase 0.1 VPNButtonBase.qml
 VPNButtonLoader 0.1 VPNButtonLoader.qml
 VPNCallout 0.1 VPNCallout.qml
+VPNCancelButton 0.1 VPNCancelButton.qml
 VPNCheckBox 0.1 VPNCheckBox.qml
 VPNCheckBoxAlert 0.1 VPNCheckBoxAlert.qml
 VPNCheckBoxRow 0.1 VPNCheckBoxRow.qml
@@ -60,7 +61,6 @@ VPNPopup 0.1 VPNPopup.qml
 VPNPopupButton 0.1 VPNPopupButton.qml
 VPNRadioButtonLabel 0.1 VPNRadioButtonLabel.qml
 VPNRadioDelegate 0.1 VPNRadioDelegate.qml
-VPNRadioSublabel 0.1 VPNRadioSublabel.qml
 VPNRecentConnections 0.1 VPNRecentConnections.qml
 VPNRemoveDevicePopup 0.1 VPNRemoveDevicePopup.qml
 VPNSemiMonoLabel 0.1 VPNSemiMonoLabel.qml

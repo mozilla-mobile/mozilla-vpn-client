@@ -65,6 +65,9 @@ HEADERS += \
     ../../src/models/devicemodel.h \
     ../../src/models/feature.h \
     ../../src/models/feedbackcategorymodel.h \
+    ../../src/models/guide.h \
+    ../../src/models/guideblock.h \
+    ../../src/models/guidemodel.h \
     ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
     ../../src/models/licensemodel.h \
@@ -76,6 +79,8 @@ HEADERS += \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
+    ../../src/models/tutorial.h \
+    ../../src/models/tutorialmodel.h \
     ../../src/models/user.h \
     ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
@@ -110,7 +115,6 @@ HEADERS += \
     ../../src/taskscheduler.h \
     ../../src/theme.h \
     ../../src/timersingleshot.h \
-    ../../src/tutorial.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
@@ -119,12 +123,13 @@ HEADERS += \
     testandroidmigration.h \
     testcommandlineparser.h \
     testfeature.h \
-    testlocalizer.h \
-    testlogger.h \
+    testguide.h \
     testipaddress.h \
     testipaddresslookup.h \
     testipfinder.h \
     testlicense.h \
+    testlocalizer.h \
+    testlogger.h \
     testmodels.h \
     testmozillavpnh.h \
     testnetworkmanager.h \
@@ -165,6 +170,9 @@ SOURCES += \
     ../../src/models/devicemodel.cpp \
     ../../src/models/feature.cpp \
     ../../src/models/feedbackcategorymodel.cpp \
+    ../../src/models/guide.cpp \
+    ../../src/models/guideblock.cpp \
+    ../../src/models/guidemodel.cpp \
     ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
     ../../src/models/licensemodel.cpp \
@@ -176,6 +184,8 @@ SOURCES += \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
+    ../../src/models/tutorial.cpp \
+    ../../src/models/tutorialmodel.cpp \
     ../../src/models/user.cpp \
     ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
@@ -205,7 +215,6 @@ SOURCES += \
     ../../src/taskscheduler.cpp \
     ../../src/theme.cpp \
     ../../src/timersingleshot.cpp \
-    ../../src/tutorial.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \
@@ -218,12 +227,13 @@ SOURCES += \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \
     testfeature.cpp \
-    testlocalizer.cpp \
-    testlogger.cpp \
+    testguide.cpp \
     testipaddress.cpp \
     testipaddresslookup.cpp \
     testipfinder.cpp \
     testlicense.cpp \
+    testlocalizer.cpp \
+    testlogger.cpp \
     testmodels.cpp \
     testmozillavpnh.cpp \
     testnetworkmanager.cpp \
@@ -286,3 +296,5 @@ UI_DIR = .ui
 RESOURCES += servers/servers.qrc
 RESOURCES += ../../src/ui/license.qrc
 RESOURCES += themes/themes.qrc
+RESOURCES += guides/guides.qrc
+RESOURCES += tutorials/tutorials.qrc

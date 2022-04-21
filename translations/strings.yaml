@@ -541,3 +541,9 @@ inAppAuth:
   termsOfServiceAndPrivacyDisclaimer:
     value: By continuing, you agree to the <a href="terms-of-service">Terms of Service</a> and the <a href="privacy-notice">Privacy Notice</a>.
     comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
+
+freeTrials:
+  startYourFreeTrial: 
+    value: Sign up to start your 7-day free trial.
+    comment: This string appears above the 'Sign up' button on mobile onboarding views
+  freeTrialLabel: 7-day free trial

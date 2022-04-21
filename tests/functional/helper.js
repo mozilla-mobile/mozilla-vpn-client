@@ -59,11 +59,20 @@ module.exports = {
     client.close();
   },
 
-  async activate() {
+  async activate(awaitConnectionOkay = false) {
     const json = await this._writeCommand('activate');
     assert(
         json.type === 'activate' && !('error' in json),
         `Command failed: ${json.error}`);
+
+    if (awaitConnectionOkay) {
+      await this.waitForCondition(async () => {
+        let title = await this.getElementProperty('controllerTitle', 'text');
+        let unsettled =
+            await this.getElementProperty('VPNConnectionHealth', 'unsettled');
+        return (title == 'VPN is on') && (unsettled == 'false');
+      });
+    }
   },
 
   async deactivate() {

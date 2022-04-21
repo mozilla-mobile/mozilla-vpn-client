@@ -3,9 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
+#include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
 #include "dnshelper.h"
 #include "featurelist.h"
+#include "features/featureaccountdeletion.h"
 #include "features/featureappreview.h"
 #include "features/featureinapppurchase.h"
 #include "features/featureinappauth.h"
@@ -26,6 +28,7 @@
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
+#include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
@@ -1727,4 +1730,15 @@ QString MozillaVPN::devVersion() {
   stream << "</b>";
 
   return out;
+}
+
+void MozillaVPN::deleteAccount() {
+  logger.debug() << "delete account";
+  Q_ASSERT(FeatureAccountDeletion::instance()->isSupported());
+  TaskScheduler::scheduleTask(new TaskDeleteAccount(m_private->m_user.email()));
+}
+
+void MozillaVPN::cancelAccountDeletion() {
+  logger.warning() << "Canceling account deletion";
+  AuthenticationInApp::instance()->terminateSession();
 }

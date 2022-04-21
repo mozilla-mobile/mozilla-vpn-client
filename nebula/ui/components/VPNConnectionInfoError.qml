@@ -50,6 +50,7 @@ ColumnLayout {
     }
 
     VPNButton {
+        objectName: "connectionInfoErrorRetryButton"
         Layout.fillWidth: true
 
         // Try again

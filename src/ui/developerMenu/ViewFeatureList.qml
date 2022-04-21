@@ -31,7 +31,6 @@ Item {
 
     VPNFlickable {
         id: vpnFlickable
-        property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
         flickContentHeight: featureListHolder.height + 100
         anchors.top: menu.bottom
         height: root.height - menu.height

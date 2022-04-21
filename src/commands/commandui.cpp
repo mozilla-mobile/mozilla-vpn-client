@@ -21,12 +21,13 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "models/guidemodel.h"
+#include "models/tutorialmodel.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "theme.h"
-#include "tutorial.h"
 
 #include <glean.h>
 #include <lottie.h>
@@ -473,7 +474,15 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNTutorial",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = Tutorial::instance();
+          QObject* obj = TutorialModel::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNGuide",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = GuideModel::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
