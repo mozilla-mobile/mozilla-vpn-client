@@ -4,7 +4,7 @@
 
 message(Platform: windows)
 
-TARGET = MozillaVPN
+TARGET = "Mozilla VPN"
 
 versionAtLeast(QT_VERSION, 6.0.0) {
     versionAtLeast(QT_VERSION, 6.3.0) {
@@ -93,7 +93,7 @@ HEADERS += \
 
 # Installs for the /unsigned folder
 
-mvpnExe.files = $$PWD/../../../mozillavpn.exe
+mvpnExe.files = $$PWD/../../../Mozilla\ VPN.exe
 mvpnExe.path = $$PWD/../../../unsigned/
 mvpnExe.CONFIG = no_check_exist executable
 INSTALLS += mvpnExe

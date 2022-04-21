@@ -74,7 +74,7 @@
 		-->
     <ComponentGroup Id="MozillaVPNComponents">
       <Component Directory="MozillaVPNFolder" Id="MozillaVPNExecutable" Guid="EF353A73-A10B-4A2D-87AC-4389BBD9313B">
-        <File Id="MozillaVPNExecutable" Source="../../MozillaVPN.exe" KeyPath="yes">
+        <File Id="MozillaVPNExecutable" Source="../../Mozilla VPN.exe" KeyPath="yes">
           <Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
         </File>
         <File Source="../../tunnel.dll" />
@@ -130,7 +130,7 @@
         <RegistryKey Root="HKLM" Key="Software\Google\Chrome\NativeMessagingHosts\mozillavpn">
           <RegistryValue Type="string" Value="[MozillaVPNFolder]\mozillavpn.json"/>
         </RegistryKey>
-        <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\MozillaVPN.exe">
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\Mozilla VPN.exe">
           <RegistryValue Type="string" Name="DumpFolder" Value="[LocalAppDataFolder]MozillaVPN\dumps" />
           <RegistryValue Type="integer" Name="DumpCount" Value="3" />
           <RegistryValue Type="integer" Name="DumpType" Value="1" />
@@ -163,6 +163,7 @@
 			Force application closed
 		-->
     <Property Id="QtExecCmdLine" Value='"[#SystemFolder]taskkill.exe" /F /IM MozillaVPN.exe'/>
+    <Property Id="QtExecCmdLine" Value='"[#SystemFolder]taskkill.exe" /F /IM "Mozilla VPN.exe"'/>
     <CustomAction Id="CloseApplication" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="immediate" Return="ignore"/>
     <InstallExecuteSequence>
       <Custom Action="CloseApplication" After="StopServices" />

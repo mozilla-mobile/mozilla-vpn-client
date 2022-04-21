@@ -132,14 +132,14 @@ if %PROJECT_TYPE% == app (
 )
 if %PROJECT_TYPE% == vc (
   ECHO  Build Using MSBuild
-  MSBuild -t:Build -p:Configuration=%BUILD_CONF% MozillaVPN.vcxproj
+  MSBuild -t:Build -p:Configuration=%BUILD_CONF% "Mozilla VPN.vcxproj"
 )
 
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to build the project
   EXIT 1
 )
-ECHO Moving mozillavpn.exe
+ECHO Moving Mozilla VPN.exe
 
 if %DEBUG_BUILD% == T (
   REM We need to move the exes in debug so the installer can find them
