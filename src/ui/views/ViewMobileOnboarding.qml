@@ -266,7 +266,8 @@ VPNFlickable {
                 Layout.alignment: Qt.AlignCenter
 
                 text: VPNl18n.FreeTrialsStartYourFreeTrial
-                color: VPNTheme.colors.white
+                color: VPNTheme.colors.white80
+                font.family: theme.fontInterSemiBoldFamily
             }
 
             PageIndicator {

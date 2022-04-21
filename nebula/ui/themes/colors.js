@@ -41,6 +41,7 @@ color.grey20 = '#CECECF';
 color.grey10 = '#E7E7E7';
 color.grey5 = '#F9F9FA';
 color.white = '#FFFFFF';
+color.white80 = '#CCFFFFFF';
 
 /**
  * Secondary palette
