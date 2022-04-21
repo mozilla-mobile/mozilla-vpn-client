@@ -68,6 +68,7 @@
         <file>components/VPNMainImage.qml</file>
         <file>components/VPNMenu.qml</file>
         <file>components/VPNMetropolisLabel.qml</file>
+        <file>components/VPNMobileStatusBarModifier.qml</file>
         <file>components/VPNMouseArea.qml</file>
         <file>components/VPNPanel.qml</file>
         <file>components/VPNPopupButton.qml</file>

@@ -195,6 +195,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void crashTest();
   Q_INVOKABLE void deleteAccount();
   Q_INVOKABLE void cancelAccountDeletion();
+  Q_INVOKABLE void setStatusBarTextColor(const quint8 color);
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif

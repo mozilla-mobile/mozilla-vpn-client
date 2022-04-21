@@ -54,5 +54,7 @@
 	<string>group.org.mozilla.ios.Guardian</string>
 	<key>ADJUST_SDK_TOKEN</key>
 	<string>$(ADJUST_SDK_TOKEN)</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>

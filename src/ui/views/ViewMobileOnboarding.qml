@@ -23,6 +23,10 @@ VPNFlickable {
     height: parent.height
     interactive: flickContentHeight > height
 
+    VPNMobileStatusBarModifier {
+        statusBarTextColor: VPNMobileStatusBarModifier.StatusBarTextColor.Light
+    }
+
     ListModel {
         id: onboardingModel
 

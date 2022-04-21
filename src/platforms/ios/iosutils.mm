@@ -113,3 +113,12 @@ int IOSUtils::compareStrings(const QString& a, const QString& b) {
       return -1;
   }
 }
+
+// static
+void IOSUtils::setStatusBarTextColor(quint8 color) {
+  if (color == 0) {
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+  } else {
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDarkContent;
+  }
+}

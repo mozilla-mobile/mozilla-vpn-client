@@ -54,6 +54,7 @@ VPNLottieAnimation 0.1 VPNLottieAnimation.qml
 VPNMainImage 0.1 VPNMainImage.qml
 VPNMenu 0.1 VPNMenu.qml
 VPNMetropolisLabel 0.1 VPNMetropolisLabel.qml
+VPNMobileStatusBarModifier 0.1 VPNMobileStatusBarModifier.qml
 VPNMouseArea 0.1 VPNMouseArea.qml
 VPNPanel 0.1 VPNPanel.qml
 VPNPopup 0.1 VPNPopup.qml

@@ -1741,3 +1741,9 @@ void MozillaVPN::cancelAccountDeletion() {
   logger.warning() << "Canceling account deletion";
   AuthenticationInApp::instance()->terminateSession();
 }
+
+void MozillaVPN::setStatusBarTextColor(const quint8 color) {
+  #ifdef MVPN_IOS
+    IOSUtils::setStatusBarTextColor(color);
+  #endif
+}

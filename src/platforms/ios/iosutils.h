@@ -18,6 +18,8 @@ class IOSUtils final {
   static void shareLogs(const QString& logs);
 
   static int compareStrings(const QString& a, const QString& b);
+
+  static void setStatusBarTextColor(const quint8 color);
 };
 
 #endif  // IOSUTILS_H
