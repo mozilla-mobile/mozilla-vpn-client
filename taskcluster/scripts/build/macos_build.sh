@@ -40,7 +40,7 @@ ls ../../../fetches
 
 print Y "Installing QT..."
 PROJECT_HOME=`pwd`
-cd ../../../fetches/qt_dist || die
+cd ../../fetches/qt_dist || die
 export QT_MACOS_BIN=$`pwd`/bin
 export PATH=$QT_MACOS_BIN:$PATH
 
