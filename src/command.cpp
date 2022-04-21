@@ -15,6 +15,7 @@
 #include "simplenetworkmanager.h"
 
 #ifdef MVPN_WINDOWS
+#  include <QQuickWindow>
 #  include <Windows.h>
 #endif
 
@@ -119,6 +120,10 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 
   logger.info() << "MozillaVPN" << APP_VERSION;
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
+
+#ifdef MVPN_WINDOWS
+  QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
+#endif
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
