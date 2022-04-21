@@ -8,6 +8,7 @@
 
 REVISION=1
 RELEASE=
+GITREF=
 QTVERSION="qt6"
 SOURCEONLY=N
 PPA_URL=
@@ -24,6 +25,7 @@ helpFunction() {
   print N ""
   print N "Build options:"
   print N "  -r, --release DIST     Build packages for distribution DIST"
+  print N "  -g, --gitref REF       Generated version suffix from REF"
   print N "  -v, --version REV      Set package revision to REV"
   print N "      --beineri          Build using Stephan Binner's Qt5.15 PPA"
   print N "      --qt5              Build using Qt5 packages"
@@ -51,6 +53,11 @@ while [[ $# -gt 0 ]]; do
   case $key in
   -r | --release)
     RELEASE+=" $2"
+    shift
+    shift
+    ;;
+  -g | --gitref)
+    GITREF="$2"
     shift
     shift
     ;;
@@ -108,9 +115,31 @@ if [ -z "$RELEASE" ]; then
 fi
 
 printn Y "Computing the version... "
-SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
-WORKDIR=mozillavpn-$SHORTVERSION
-print G "$SHORTVERSION"
+# To explain this ugly pile of regex:
+#  1. The grep statement matches a cmake project directive
+#  2. awk breaks it into tokens separated by whitespace.
+#  3. print whatever token we find after "VERSION"
+SHORTVERSION=$(grep -oE 'project\([^\(\)]*\)' CMakeLists.txt |
+               awk '{ for (x=1;x<NF;x++) if ($x=="VERSION") print $(x+1) }')
+
+# Adjust the package version if a gitref was provided:
+#  - Pull requests are suffixed with "~pr<Pull Request Number>"
+#  - Release tags force the version to match the tag.
+#  - Release branches are suffixed with "~rc<# of commits since main>"
+#  - The main branch sets a nightly date code.
+if [[ "$GITREF" =~ ^refs/pull/([0-9]+)/merge ]]; then
+  SHORTVERSION="${SHORTVERSION}~pr${BASH_REMATCH[1]}"
+elif [[ "$GITREF" =~ ^refs/tags/v([0-9a-z.]+) ]]; then
+  SHORTVERSION=${BASH_REMATCH[1]}
+elif [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
+  git fetch --unshallow
+  RCVERSION="~rc$(git rev-list --count --first-parent origin/main..HEAD)"
+  SHORTVERSION="${BASH_REMATCH[1]}${RCVERSION}"
+elif [[ "$GITREF" == "refs/heads/main" ]]; then
+  SHOFTVERSION="${SHORTVERSION}~nightly$(date +%Y%m%d)"
+fi
+WORKDIR=mozillavpn-${SHORTVERSION}
+print G "${SHORTVERSION}"
 
 rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
@@ -124,10 +153,15 @@ print G "done."
 print G "Creating the orig tarball"
 
 printn N "Creating the working directory... "
-cd .tmp
-mkdir $WORKDIR || die "Failed"
-rsync -a --exclude='.*' .. $WORKDIR || die "Failed"
+[ -e "CMakeCache.txt" ] && die "Source directory is dirty, refusing to build packages"
+RSYNC_EXCLUDE_DIRS=
+for CACHEFILE in $(find . -maxdepth 2 -name 'CMakeCache.txt' -printf '%P\n'); do
+  RSYNC_EXCLUDE_DIRS="${RSYNC_EXCLUDE_DIRS} --exclude=$(dirname ${CACHEFILE})"
+done
+mkdir -p .tmp/${WORKDIR} || die "Failed"
+rsync -a --exclude='.*' ${RSYNC_EXCLUDE_DIRS} . .tmp/${WORKDIR} || die "Failed"
 print G "done."
+cd .tmp
 
 print Y "Generating glean samples..."
 (cd $WORKDIR && python3 scripts/utils/generate_glean.py) || die "Failed to generate glean samples"

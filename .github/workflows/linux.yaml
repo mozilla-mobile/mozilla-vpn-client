@@ -21,27 +21,6 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
 
-      - name: Generate build version
-        shell: bash
-        env:
-          GITREF: ${{github.ref}}
-        run: |
-          VERSION=$(grep -oE 'project\([^\(\)]*\)' CMakeLists.txt |
-                    awk '{ for (x=1;x<NF;x++) if ($x=="VERSION") print $(x+1) }')
-
-          if [[ "$GITREF" =~ ^refs/pull/([0-9]+)/merge ]]; then
-            BUILDREV="~pr${BASH_REMATCH[1]}"
-          elif [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
-            git fetch --unshallow
-            BUILDREV="~rc$(git rev-list --count --first-parent origin/main..HEAD)"
-            VERSION=${BASH_REMATCH[1]}
-          else
-            BUILDREV="~github${{github.run_number}}"
-          fi
-
-          # Force the upstream package version
-          sed -i "s|${VERSION}|${VERSION}${BUILDREV}|g" CMakeLists.txt
-
       - name: Install source dependencies
         shell: bash
         run: |
@@ -50,7 +29,9 @@ jobs:
 
       - name: Build source bundle
         shell: bash
-        run: ./scripts/linux/script.sh --source
+        env:
+          GITREF: ${{github.ref}}
+        run: ./scripts/linux/script.sh --source --gitref ${GITREF}
 
       - name: Upload source bundle
         uses: actions/upload-artifact@v2
