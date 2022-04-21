@@ -13,6 +13,7 @@ import components.inAppAuth 0.1
 VPNInAppAuthenticationBase {
     id: viewDeleteAccount
 
+    // TODO: Localize `labelText` if we would like to keep the headers
     property var checkboxData: [
         {
             labelText: "Paid subscriptions",
@@ -51,10 +52,8 @@ VPNInAppAuthenticationBase {
             color: VPNTheme.theme.fontColor
             horizontalAlignment: Text.AlignLeft
             text: VPNl18n.DeleteAccountSubheadline
-                .arg("<b style='color:"
-                    + VPNTheme.theme.fontColorDark
-                    + ";'>test@mozilla.com"
-                    + "</b>")
+                .arg("<b style='color:" + VPNTheme.theme.fontColorDark + ";'>
+                    + VPNAuthInApp.emailAddress + "</b>")
             textFormat: Text.RichText
 
             Layout.fillWidth: true
@@ -73,25 +72,6 @@ VPNInAppAuthenticationBase {
                 onClicked: isChecked = !isChecked
                 onIsCheckedChanged: handleCheckboxChange(index, isChecked)
             }
-        }
-    }
-
-    _disclaimers: RowLayout {
-        Layout.alignment: Qt.AlignHCenter
-        spacing: VPNTheme.theme.vSpacing / 2
-
-        VPNIcon {
-            source: "qrc:/ui/resources/connection-info-dark.svg"
-            sourceSize.width: VPNTheme.theme.iconSize
-            sourceSize.height: VPNTheme.theme.iconSize
-
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-        }
-
-        VPNTextBlock {
-            id: text
-            text: "In order to delete your account we need your consent on the options above."
-            Layout.fillWidth: true
         }
     }
 

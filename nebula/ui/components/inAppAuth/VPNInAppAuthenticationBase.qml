@@ -116,11 +116,11 @@ VPNFlickable {
                     Layout.minimumWidth: col.width - VPNTheme.theme.vSpacing * 2
                     Component.onCompleted: {
                         if (
-                                VPNAuthInApp.state === VPNAuthInApp.StateSignIn ||
-                                VPNAuthInApp.state === VPNAuthInApp.StateSigningIn ||
-                                VPNAuthInApp.state === VPNAuthInApp.StateSignUp ||
-                                VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
-                                ) {
+                            VPNAuthInApp.state === VPNAuthInApp.StateSignIn ||
+                            VPNAuthInApp.state === VPNAuthInApp.StateSigningIn ||
+                            VPNAuthInApp.state === VPNAuthInApp.StateSignUp ||
+                            VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
+                        ) {
                             fontSizeMode = Text.FixedSize
                             elide = Text.ElideMiddle
                         }
