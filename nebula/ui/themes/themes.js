@@ -47,6 +47,7 @@ theme.fontColorDark = '#3D3D3D';
 theme.fontFamily = 'Metropolis';
 theme.fontBoldFamily = 'MetropolisSemiBold';
 theme.fontInterFamily = 'InterUI';
+theme.fontInterFamilySemiBold = 'InterSemiBold';
 theme.fontSize = 15;
 theme.fontSizeLarge = 22;
 theme.fontSizeSmall = 13;

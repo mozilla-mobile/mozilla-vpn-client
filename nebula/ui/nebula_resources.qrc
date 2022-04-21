@@ -295,6 +295,7 @@
         <file>resources/flags/ZM.png</file>
         <file>resources/flags/ZW.png</file>
         <file>resources/fonts/InterUI.otf</file>
+        <file>resources/fonts/InterSemiBold.otf</file>
         <file>resources/fonts/Metropolis.otf</file>
         <file>resources/fonts/Metropolis-SemiBold.otf</file>
         <file>resources/gift-dark.svg</file>
