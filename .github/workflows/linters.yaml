@@ -9,13 +9,15 @@ on:
 jobs:
   linter:
     runs-on: ubuntu-20.04
+    env:
+      QTVERSION: 6.2.4
     steps:
       - name: Install Linux packages
         run: |
-          # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
-          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
           sudo apt update
-          sudo apt install git qt515tools -y
+          sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
+          python3 -m pip install aqtinstall
+          aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
 
       - name: Clone repository
         uses: actions/checkout@v2
@@ -44,22 +46,27 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          # Manually add QT executables to path
-          export PATH=/opt/qt515/bin:$PATH
+          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           python3 scripts/utils/import_languages.py
 
       - name: Check for l10n errors
         run: |
-          # Manually add QT executables to path
-          export PATH=/opt/qt515/bin:$PATH
+          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           lupdate -version
           python .github/l10n/check_l10n_issues.py
 
       - name: Check for QRC errors
         run: |
-          # Manually add QT executables to path
-          export PATH=/opt/qt515/bin:$PATH
+          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           python scripts/ci/check_qrc.py
+
+      - name: Check for guide JSON syntax
+        run: |
+          python scripts/ci/check_jsonschema.py guide.json src/ui/guides
+
+      - name: Check for tutorial JSON syntax
+        run: |
+          python scripts/ci/check_jsonschema.py tutorial.json src/ui/tutorials
 
       - name: Check for issues with clang-format
         uses: DoozyX/clang-format-lint-action@v0.11

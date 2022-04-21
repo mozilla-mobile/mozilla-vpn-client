@@ -51,15 +51,6 @@ constexpr const char* BENCHMARK_DOWNLOAD_URL =
     }
 #endif
 
-// Let's refresh the IP address any 10 minutes (in milliseconds).
-CONSTEXPR(uint32_t, ipAddressTimerMsec, 600000, 10000, 500)
-
-// Let's check the connection status any second.
-CONSTEXPR(uint32_t, checkStatusTimerMsec, 1000, 1000, 0)
-
-// Number of points for the charts.
-CONSTEXPR(int, chartsMaxPoints, 30, 30, 30);
-
 // Any 6 hours, a new check
 CONSTEXPR(uint32_t, releaseMonitorMsec, 21600000, 4000, 0)
 

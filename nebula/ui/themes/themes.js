@@ -37,6 +37,8 @@ theme.redDisabled = '#FFBDC5';
 theme.redfocusOutline = '#66C50042';
 theme.white = '#FFFFFF'
 
+theme.overlayBackground = '#4D000000';
+
 theme.checkBoxWarning = '#C45A27';
 
 theme.errorFocusOutline = '#FFBDC5';
@@ -123,7 +125,7 @@ theme.iconButtonLightBackground = {
   'defaultColor': theme.bgColorTransparent,
   'buttonHovered': theme.greyHovered,
   'buttonPressed': theme.greyPressed,
-  'buttonDisabled': theme.greyDisabled,
+  'buttonDisabled': theme.transparent,
   'focusOutline': theme.bgColorTransparent,
   'focusBorder': theme.darkFocusBorder,
 };

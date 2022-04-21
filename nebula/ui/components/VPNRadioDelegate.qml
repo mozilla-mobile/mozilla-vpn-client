@@ -13,14 +13,14 @@ RadioDelegate {
 
     property bool isHoverable: true
     property var radioButtonLabelText
-    property var accessibleName
+    property var accessibleName: ""
     property var uiState: VPNTheme.theme.uiState
 
     signal clicked()
 
     ButtonGroup.group: radioButtonGroup
-    width: parent.width
-    height: VPNTheme.theme.rowHeight
+    implicitWidth: radioButton.implicitWidth + radioButtonLabel.implicitWidth + radioButtonLabel.anchors.leftMargin
+    implicitHeight: Math.max(radioButtonLabel.implicitHeight, radioButton.implicitHeight)
 
     Component.onCompleted: {
         state = Qt.binding(() => radioControl.enabled ? uiState.stateDefault : uiState.stateDisabled)

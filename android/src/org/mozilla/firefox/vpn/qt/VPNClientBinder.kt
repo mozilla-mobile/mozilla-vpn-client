@@ -5,7 +5,6 @@
 package org.mozilla.firefox.vpn
 import android.os.Binder
 import android.os.Parcel
-import com.wireguard.config.*
 import org.mozilla.firefox.vpn.qt.VPNActivity
 
 class VPNClientBinder() : Binder() {

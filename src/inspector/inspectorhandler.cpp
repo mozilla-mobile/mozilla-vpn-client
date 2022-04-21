@@ -11,6 +11,7 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "models/tutorial.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "notificationhandler.h"
@@ -18,7 +19,6 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "task.h"
-#include "tutorial.h"
 
 #include <functional>
 
@@ -49,7 +49,6 @@ Logger logger(LOG_INSPECTOR, "InspectorHandler");
 bool s_stealUrls = false;
 bool s_forwardNetwork = false;
 
-QUrl s_lastUrl;
 QString s_updateVersion;
 QStringList s_pickedItems;
 bool s_pickedItemsSet = false;
@@ -199,12 +198,13 @@ struct InspectorCommand {
   QString m_commandName;
   QString m_commandDescription;
   int32_t m_arguments;
-  std::function<QJsonObject(const QList<QByteArray>&)> m_callback;
+  std::function<QJsonObject(InspectorHandler*, const QList<QByteArray>&)>
+      m_callback;
 };
 
 static QList<InspectorCommand> s_commands{
     InspectorCommand{"help", "The help menu", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
 
                        QString value;
@@ -222,7 +222,7 @@ static QList<InspectorCommand> s_commands{
                      }},
 
     InspectorCommand{"reset", "Reset the app", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        MozillaVPN* vpn = MozillaVPN::instance();
                        Q_ASSERT(vpn);
 
@@ -240,23 +240,23 @@ static QList<InspectorCommand> s_commands{
                      }},
     InspectorCommand{"fetch_network", "Enables forwarding of networkRequests",
                      0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        s_forwardNetwork = true;
                        return QJsonObject();
                      }},
     InspectorCommand{"view_tree", "Sends a view tree", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        return InspectorHandler::getViewTree();
                      }},
 
     InspectorCommand{"quit", "Quit the app", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        MozillaVPN::instance()->controller()->quit();
                        return QJsonObject();
                      }},
 
     InspectorCommand{"pick", "Wait for a click to select an element", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        if (!s_itemPicker) {
                          s_itemPicker = new InspectorItemPicker(qApp);
                          qApp->installEventFilter(s_itemPicker);
@@ -266,7 +266,7 @@ static QList<InspectorCommand> s_commands{
 
     InspectorCommand{"picked", "Retrieve what has been selected with a click",
                      0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonArray array;
                        for (const QString& element : s_pickedItems) {
                          array.append(element);
@@ -282,7 +282,7 @@ static QList<InspectorCommand> s_commands{
                      }},
 
     InspectorCommand{"has", "Check if an object exists", 1,
-                     [](const QList<QByteArray>& arguments) {
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
                        obj["value"] =
                            !!InspectorUtils::findObject(arguments[1]);
@@ -290,7 +290,7 @@ static QList<InspectorCommand> s_commands{
                      }},
 
     InspectorCommand{"list", "List all properties for an object", 1,
-                     [](const QList<QByteArray>& arguments) {
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
                        QString result;
 
@@ -338,7 +338,7 @@ static QList<InspectorCommand> s_commands{
                      }},
 
     InspectorCommand{"property", "Retrieve a property value from an object", 2,
-                     [](const QList<QByteArray>& arguments) {
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
                        QObject* item = InspectorUtils::findObject(arguments[1]);
@@ -358,7 +358,7 @@ static QList<InspectorCommand> s_commands{
                      }},
 
     InspectorCommand{"set_property", "Set a property value to an object", 4,
-                     [](const QList<QByteArray>& arguments) {
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
                        QVariant value;
@@ -385,7 +385,7 @@ static QList<InspectorCommand> s_commands{
                      }},
 
     InspectorCommand{"click", "Click on an object", 1,
-                     [](const QList<QByteArray>& arguments) {
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
                        QObject* qmlobj =
@@ -412,7 +412,7 @@ static QList<InspectorCommand> s_commands{
                      }},
     InspectorCommand{
         "pushViewTo", "Push a QML View to a StackView", 2,
-        [](const QList<QByteArray>& arguments) {
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
           QJsonObject obj;
           QString stackViewName(arguments[1]);
           QUrl qrcPath(arguments[2]);
@@ -436,7 +436,7 @@ static QList<InspectorCommand> s_commands{
         }},
 
     InspectorCommand{"click_notification", "Click on a notification", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        NotificationHandler::instance()->messageClickHandle();
                        return QJsonObject();
                      }},
@@ -444,35 +444,35 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{
         "stealurls",
         "Do not open the URLs in browser and expose them via inspector", 0,
-        [](const QList<QByteArray>&) {
+        [](InspectorHandler*, const QList<QByteArray>&) {
           s_stealUrls = true;
           return QJsonObject();
         }},
 
     InspectorCommand{"lasturl", "Retrieve the last opened URL", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
-                       obj["value"] = s_lastUrl.toString();
+                       obj["value"] = MozillaVPN::instance()->lastUrl();
                        return obj;
                      }},
 
     InspectorCommand{"set_glean_source_tags",
                      "Set Glean Source Tags (supply a comma seperated list)", 1,
-                     [](const QList<QByteArray>& arguments) {
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QStringList tags = QString(arguments[1]).split(',');
                        MozillaVPN::instance()->setGleanSourceTags(tags);
                        return QJsonObject();
                      }},
 
     InspectorCommand{"force_update_check", "Force a version update check", 1,
-                     [](const QList<QByteArray>& arguments) {
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        s_updateVersion = arguments[1];
                        MozillaVPN::instance()->releaseMonitor()->runSoon();
                        return QJsonObject();
                      }},
     InspectorCommand{"force_captive_portal_check",
                      "Force a captive portal check", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        MozillaVPN::instance()
                            ->captivePortalDetection()
                            ->detectCaptivePortal();
@@ -482,7 +482,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{
         "force_captive_portal_detection", "Simulate a captive portal detection",
         0,
-        [](const QList<QByteArray>&) {
+        [](InspectorHandler*, const QList<QByteArray>&) {
           MozillaVPN::instance()
               ->captivePortalDetection()
               ->captivePortalDetected();
@@ -492,7 +492,7 @@ static QList<InspectorCommand> s_commands{
 
     InspectorCommand{
         "force_unsecured_network", "Force an unsecured network detection", 0,
-        [](const QList<QByteArray>&) {
+        [](InspectorHandler*, const QList<QByteArray>&) {
           MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
                                                                      "Dummy");
           return QJsonObject();
@@ -504,7 +504,7 @@ static QList<InspectorCommand> s_commands{
         "{countryCode} "
         "{cityCode}",
         2,
-        [](const QList<QByteArray>& arguments) {
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
           QJsonObject obj;
           if (QString(arguments[1]) != "" && QString(arguments[2]) != "") {
             MozillaVPN::instance()
@@ -520,39 +520,39 @@ static QList<InspectorCommand> s_commands{
         }},
 
     InspectorCommand{"activate", "Activate the VPN", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        MozillaVPN::instance()->activate();
                        return QJsonObject();
                      }},
 
     InspectorCommand{"deactivate", "Deactivate the VPN", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        MozillaVPN::instance()->deactivate();
                        return QJsonObject();
                      }},
 
     InspectorCommand{"force_heartbeat_failure", "Force a heartbeat failure", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        MozillaVPN::instance()->heartbeatCompleted(
                            false /* success */);
                        return QJsonObject();
                      }},
 
     InspectorCommand{"hard_reset", "Hard reset (wipe all settings).", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        MozillaVPN::instance()->hardReset();
                        return QJsonObject();
                      }},
 
     InspectorCommand{"logout", "Logout the user", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        MozillaVPN::instance()->logout();
                        return QJsonObject();
                      }},
 
     InspectorCommand{
         "set_setting", "Set a setting", 2,
-        [](const QList<QByteArray>& arguments) {
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
           QJsonObject obj;
 
           for (const InspectorSettingCommand& setting : s_settingCommands) {
@@ -599,7 +599,7 @@ static QList<InspectorCommand> s_commands{
 
     InspectorCommand{
         "setting", "Get a setting value", 1,
-        [](const QList<QByteArray>& arguments) {
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
           QJsonObject obj;
 
           for (const InspectorSettingCommand& setting : s_settingCommands) {
@@ -620,7 +620,7 @@ static QList<InspectorCommand> s_commands{
         }},
 
     InspectorCommand{"languages", "Returns a list of languages", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
 
                        Localizer* localizer = Localizer::instance();
@@ -636,14 +636,14 @@ static QList<InspectorCommand> s_commands{
                      }},
 
     InspectorCommand{"translate", "Translate a string", 1,
-                     [](const QList<QByteArray>& arguments) {
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
                        obj["value"] = qtTrId(arguments[1]);
                        return obj;
                      }},
 
     InspectorCommand{"screen_capture", "Take a screen capture", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
 
                        QWindow* window = QmlEngineHolder::instance()->window();
@@ -681,7 +681,7 @@ static QList<InspectorCommand> s_commands{
 
     InspectorCommand{
         "servers", "Returns a list of servers", 0,
-        [](const QList<QByteArray>&) {
+        [](InspectorHandler*, const QList<QByteArray>&) {
           QJsonObject obj;
 
           QJsonArray countryArray;
@@ -715,7 +715,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{
         "reset_surveys",
         "Reset the list of triggered surveys and the installation time", 0,
-        [](const QList<QByteArray>&) {
+        [](InspectorHandler*, const QList<QByteArray>&) {
           SettingsHolder* settingsHolder = SettingsHolder::instance();
           Q_ASSERT(settingsHolder);
 
@@ -726,7 +726,7 @@ static QList<InspectorCommand> s_commands{
         }},
     InspectorCommand{
         "dismiss_surveys", "Dismisses all surveys", 0,
-        [](const QList<QByteArray>&) {
+        [](InspectorHandler*, const QList<QByteArray>&) {
           SettingsHolder* settingsHolder = SettingsHolder::instance();
           Q_ASSERT(settingsHolder);
           auto surveys = MozillaVPN::instance()->surveyModel()->surveys();
@@ -741,7 +741,7 @@ static QList<InspectorCommand> s_commands{
         }},
 
     InspectorCommand{"devices", "Retrieve the list of devices", 0,
-                     [](const QList<QByteArray>&) {
+                     [](InspectorHandler*, const QList<QByteArray>&) {
                        MozillaVPN* vpn = MozillaVPN::instance();
                        Q_ASSERT(vpn);
 
@@ -766,7 +766,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{
         "reset_devices",
         "Remove all the existing devices and add the current one if needed", 0,
-        [](const QList<QByteArray>&) {
+        [](InspectorHandler*, const QList<QByteArray>&) {
           MozillaVPN* vpn = MozillaVPN::instance();
           Q_ASSERT(vpn);
 
@@ -790,11 +790,32 @@ static QList<InspectorCommand> s_commands{
           return QJsonObject();
         }},
 
-    InspectorCommand{"tutorial", "Play a tutorial", 1,
-                     [](const QList<QByteArray>& arguments) {
-                       Tutorial::instance()->play(arguments[1]);
-                       return QJsonObject();
-                     }},
+    InspectorCommand{
+        "tutorial", "Play a tutorial", 1,
+        [](InspectorHandler* handler, const QList<QByteArray>& arguments) {
+          QJsonObject obj;
+          Tutorial* tutorial = Tutorial::create(handler, arguments[1]);
+          obj["success"] = !!tutorial;
+          if (tutorial) {
+            QObject::connect(tutorial, &Tutorial::playingChanged, handler,
+                             [handler, tutorial]() {
+                               QJsonObject obj;
+                               obj["type"] = tutorial->isPlaying()
+                                                 ? "tutorialStarted"
+                                                 : "tutorialCompleted";
+                               handler->send(QJsonDocument(obj).toJson(
+                                   QJsonDocument::Compact));
+
+                               if (!tutorial->isPlaying()) {
+                                 tutorial->deleteLater();
+                               }
+                             });
+
+            tutorial->play();
+          }
+
+          return obj;
+        }},
 
 };
 
@@ -825,8 +846,6 @@ InspectorHandler::InspectorHandler(QObject* parent) : QObject(parent) {
   connect(NetworkManager::instance()->networkAccessManager(),
           &QNetworkAccessManager::finished, this,
           &InspectorHandler::networkRequestFinished);
-  connect(Tutorial::instance(), &Tutorial::playingChanged, this,
-          &InspectorHandler::tutorialChanged);
 }
 
 InspectorHandler::~InspectorHandler() { MVPN_COUNT_DTOR(InspectorHandler); }
@@ -854,7 +873,7 @@ void InspectorHandler::recv(const QByteArray& command) {
         return;
       }
 
-      QJsonObject obj = command.m_callback(parts);
+      QJsonObject obj = command.m_callback(this, parts);
       obj["type"] = command.m_commandName;
       send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
       return;
@@ -873,13 +892,6 @@ void InspectorHandler::logEntryAdded(const QByteArray& log) {
   QJsonObject obj;
   obj["type"] = "log";
   obj["value"] = QString(log).trimmed();
-  send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-}
-
-void InspectorHandler::tutorialChanged() {
-  QJsonObject obj;
-  obj["type"] = Tutorial::instance()->isPlaying() ? "tutorialStarted"
-                                                  : "tutorialCompleted";
   send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
@@ -947,9 +959,6 @@ QString InspectorHandler::getObjectClass(const QObject* target) {
   auto metaObject = target->metaObject();
   return metaObject->className();
 }
-
-// static
-void InspectorHandler::setLastUrl(const QUrl& url) { s_lastUrl = url; }
 
 // static
 bool InspectorHandler::stealUrls() { return s_stealUrls; }

@@ -10,18 +10,14 @@
 #include <QString>
 #include <QUrl>
 
-#include "androidjnicompat.h"
+#include <QJniObject>
+#include <QJniEnvironment>
 
 class AuthenticationListener;
 
 class AndroidUtils final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AndroidUtils)
-
-#if QT_VERSION < 0x060000
-  typedef QAndroidJniObject QJniObject;
-  typedef QAndroidJniEnvironment QJniEnvironment;
-#endif
 
   Q_PROPERTY(QUrl url READ url NOTIFY urlChanged)
 

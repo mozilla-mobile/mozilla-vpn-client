@@ -8,12 +8,9 @@
 #include "controllerimpl.h"
 #include "models/device.h"
 
-#if QT_VERSION >= 0x060000
-#  include <QtCore/private/qandroidextras_p.h>
-#else
-#  include <QAndroidBinder>
-#  include <QAndroidServiceConnection>
-#endif
+// We need this private header for startActivityForResult
+// As there is no polyfill yet.
+#include <QtCore/private/qandroidextras_p.h>
 
 class AndroidController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(AndroidController)

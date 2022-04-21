@@ -107,6 +107,7 @@ The client asks for the password. Then, it goes to the **Signing-in** state.
 * Errors:
     * Incorrect password
     * Too many requests
+    * Request Timeout 
     * Sign in with this email type is not currently supported -This is a
       strange FxA code. We have to investigate how to reproduce it.
     * Failed to send email - the unblock code is needed but the email sending
@@ -248,16 +249,38 @@ back to **Email validation**, otherwise, we go to **Finalize**.
 
 ### State: Finalize
 
-This is the last state if all work fine. The authentication is ready to be
+This is the last state if all works fine. The authentication is ready to be
 finalized. This step contains a few network requests to obtain the session
 code. After that, the authentication is finally completed.
 
 Implementation-wise, this state does not exist, because, instead of landing
 here, we dismiss the authentication component and we show the main VPN view.
 
-* Next states: none
+If this authentication flow requires the account deletion, the next step is the
+**Account Deletion Request**.
+
+* Next states: **Account Deletion Request**
 * Errors:
     * Authentication failure
+* Available methods: none
+
+### State: Account Deletion Request
+
+If the account deletion is requested, in this state the client asks the user to
+accept a few things. Then the account deletion can proceed.
+
+* Next Step: **Deleting account**
+* Errors: none
+* Available methods:
+    * `VPNAuthInApp.deleteAccount()`
+
+### State: Deleting account
+
+This is the final step for the account deletion. After that, you can see an
+error, or a success.
+
+* Next Step: none
+* Errors: none
 * Available methods: none
 
 ### State: fallback in the browser
@@ -283,6 +306,7 @@ The authentication continues in the browser as we used to do in v2.7.
 - Invalid TOTP code
 - Too many requests
 - Server unavailable
+- Request Timeout
 - Unknown account
 
 ### The whole flow
@@ -303,6 +327,8 @@ stateDiagram-v2
   EmailVerification: Email verification
   VerifyingSessionEmailCode: Verifying session email code
   state signing_results <<choice>>
+  AccountDeletionRequest: Account deletion request
+  DeletingAccount: Deleting account
 
   Initializing --> Start
   Start --> CheckingAccount: email address received
@@ -327,4 +353,7 @@ stateDiagram-v2
   EmailVerification --> VerifyingSessionEmailCode: email code received
   VerifyingSessionEmailCode --> Finalize: authentication completed
   VerifyingSessionEmailCode --> EmailVerification: code invalid or error
+  Finalize --> AccountDeletionRequest: account deletion is requested
+  AccountDeletionRequest --> DeletingAccount: account deleted
+  DeletingAccount --> Finalize: Operation is completed
 ```

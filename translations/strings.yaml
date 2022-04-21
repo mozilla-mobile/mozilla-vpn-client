@@ -554,3 +554,9 @@ deleteAccount:
   optionLabelThree: Reactivating with this email may not restore your saved information
   optionLabelFour: Any extensions and themes that you’ve published to addons.mozilla.org will be deleted
   buttonLabel: Delete account
+
+freeTrials:
+  startYourFreeTrial: 
+    value: Sign up to start your 7-day free trial.
+    comment: This string appears above the 'Sign up' button on mobile onboarding views
+  freeTrialLabel: 7-day free trial

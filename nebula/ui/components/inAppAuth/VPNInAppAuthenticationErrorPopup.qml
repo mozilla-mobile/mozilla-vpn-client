@@ -20,7 +20,6 @@ VPNPopup {
             id: authErrorContent
             spacing: VPNTheme.theme.vSpacing
 
-
             Image {
                 source: "qrc:/ui/resources/updateRequired.svg"
                 antialiasing: true
@@ -28,11 +27,11 @@ VPNPopup {
                 sourceSize.width: 80
                 Layout.alignment: Qt.AlignHCenter
             }
+
             VPNHeadline {
                 text: VPNl18n.InAppAuthSignInFailedPopupTitle
                 width: undefined
                 Layout.fillWidth: true
-
             }
 
             VPNTextBlock {
@@ -67,21 +66,40 @@ VPNPopup {
             return Math.ceil(retryAfterSec / 60);
         }
 
+        function showGenericAuthError() {
+            authErrorMessage.text = VPNl18n.InAppSupportWorkflowSupportErrorText
+            openErrorModalAndForceFocus();
+        }
+
         function onErrorOccurred(e, retryAfterSec) {
             switch(e) {
+            case VPNAuthInApp.ErrorAccountAlreadyExists:
+                showGenericAuthError();
+                break;
+
+            case VPNAuthInApp.ErrorAccountUnknown:
+                showGenericAuthError();
+                break;
+
             case VPNAuthInApp.ErrorEmailCanNotBeUsedToLogin:
-                authErrorMessage.text = VPNl18n.InAppAuthProblemSigningInErrorMessage;
-                openErrorModalAndForceFocus();
+                showGenericAuthError();
                 break;
 
             case VPNAuthInApp.ErrorEmailTypeNotSupported:
-                authErrorMessage.text = VPNl18n.InAppAuthInvalidEmailFormatErrorMessage
+                authErrorMessage.text = VPNl18n.InAppAuthProblemEmailTypeNotSupported
+                openErrorModalAndForceFocus();
+                break;
+            case VPNAuthInApp.ErrorConnectionTimeout:
+                authErrorMessage.text = qsTrId("vpn.alert.noInternet")
+                openErrorModalAndForceFocus();
+                break;
+            case VPNAuthInApp.ErrorFailedToSendEmail:
+                authErrorMessage.text =VPNl18n.InAppAuthProblemSendingEmailErrorMessage
                 openErrorModalAndForceFocus();
                 break;
 
-            case VPNAuthInApp.ErrorFailedToSendEmail:
-                authErrorMessage.text = "Error - failed to send email"
-                openErrorModalAndForceFocus();
+            case VPNAuthInApp.ErrorServerUnavailable:
+                showGenericAuthError();
                 break;
 
             case VPNAuthInApp.ErrorTooManyRequests:

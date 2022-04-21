@@ -29,6 +29,7 @@ linux/netfilter/vendor/
 .env
 .venv
 __pycache__
+lottie.mjs
 
 # Node (for functional tests)
 node_modules
@@ -44,8 +45,10 @@ android/.gradle/
 android/.idea/
 android/build
 android/local.properties
-android/*/.cxx/
-!android/*/*/Makefile 
+android/**/*.cxx
+android/.cxx/*
+!android/res/debug/**/*
+!android/*/**/Makefile 
 xcode.xconfig
 .gradle/
 .gradle_cache/
@@ -61,10 +64,17 @@ build
 !taskcluster/scripts/build
 Debug/
 !android/src/debug/
+!android/resources/debug/
 Debug-iphone*
 Release/
 Release-iphone*
+!android/resources/release/
 macos/gobridge/wireguard-go-version.h
+
+# Taskcluster/ Taskgraph
+!taskcluster/ci/build
+!taskcluster/scripts/build
+*.pyc
 
 # Editors
 *.swp
@@ -96,6 +106,9 @@ windows/installer/x64/
 windows/tunnel/x64/
 windows/split-tunnel/*
 !windows/split-tunnel/get.ps1
+
+#Rust
+.cargo_home/
 
 
 # WASM

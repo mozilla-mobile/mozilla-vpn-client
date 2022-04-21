@@ -3,9 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
+#include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
 #include "dnshelper.h"
 #include "featurelist.h"
+#include "features/featureaccountdeletion.h"
 #include "features/featureappreview.h"
 #include "features/featureinapppurchase.h"
 #include "features/featureinappauth.h"
@@ -26,6 +28,7 @@
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
+#include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
@@ -154,13 +157,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::settingsChanged);
 
-  connect(&m_private->m_controller, &Controller::stateChanged,
-          &m_private->m_connectionDataHolder,
-          &ConnectionDataHolder::stateChanged);
-
-  connect(this, &MozillaVPN::stateChanged, &m_private->m_connectionDataHolder,
-          &ConnectionDataHolder::stateChanged);
-
   if (FeatureInAppPurchase::instance()->isSupported()) {
     IAPHandler* iap = IAPHandler::createInstance();
     connect(iap, &IAPHandler::subscriptionStarted, this,
@@ -219,6 +215,8 @@ void MozillaVPN::initialize() {
   m_private->m_telemetry.initialize();
 
   m_private->m_connectionBenchmark.initialize();
+
+  m_private->m_ipAddressLookup.initialize();
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
@@ -1713,6 +1711,7 @@ void MozillaVPN::hardResetAndQuit() {
 }
 
 void MozillaVPN::crashTest() {
+  logger.debug() << "Crashing Application";
   char* text = new char[100];
   delete[] text;
   delete[] text;
@@ -1730,4 +1729,15 @@ QString MozillaVPN::devVersion() {
   stream << "</b>";
 
   return out;
+}
+
+void MozillaVPN::deleteAccount() {
+  logger.debug() << "delete account";
+  Q_ASSERT(FeatureAccountDeletion::instance()->isSupported());
+  TaskScheduler::scheduleTask(new TaskDeleteAccount(m_private->m_user.email()));
+}
+
+void MozillaVPN::cancelAccountDeletion() {
+  logger.warning() << "Canceling account deletion";
+  AuthenticationInApp::instance()->terminateSession();
 }

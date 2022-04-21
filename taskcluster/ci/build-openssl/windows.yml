@@ -1,0 +1,38 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+job-defaults:
+    treeherder:
+        kind: build
+        platform: toolchains/opt
+        tier: 1
+
+windows:
+    description: "Windows OpenSSL compile task"
+    fetches:
+        fetch:
+            - win-dev-env
+            - win-perl
+    index:
+        product: openssl
+        job-name: openssl-windows
+    optimization: 
+        index-search: 
+        # TODO: Question: should this maybe be a pushdate? 
+        # Otherwise we might build once and never again?
+            - mozillavpn.v2.mozilla-vpn-client.latest.openssl.openssl-windows
+    run:
+        using: run-task
+        cwd: '{checkout}'
+        command: powershell.exe -ExecutionPolicy Bypass taskcluster/scripts/build_openssl/compile_openssl.ps1     
+    treeherder:
+        symbol: TL(SSL)
+        platform: toolchains/win
+    worker:
+        max-run-time: 14400
+        artifacts:
+             - type: file
+               name: public/build/open_ssl_win.zip
+               path: build/src/ssl_out.zip
+    worker-type: b-win2012

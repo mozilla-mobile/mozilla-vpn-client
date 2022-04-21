@@ -52,70 +52,79 @@ ColumnLayout {
             Layout.fillWidth: true
             Keys.onReturnPressed: col.submitInfo(passwordInput)
             onTextChanged: if (hasError) hasError = false
+        }
 
-            ToolTip {
-                property bool _isSignUp: VPNAuthInApp.state === VPNAuthInApp.StateSignUp
-                id: toolTip
-                visible: _isSignUp && passwordInput.activeFocus
-                padding: VPNTheme.theme.windowMargin
-                x: VPNTheme.theme.vSpacing
-                width: passwordInput.width - VPNTheme.theme.vSpacing
+        ToolTip {
+            property bool _isSignUp: VPNAuthInApp.state === VPNAuthInApp.StateSignUp
+            id: toolTip
+            visible: _isSignUp && passwordInput.activeFocus
+            padding: VPNTheme.theme.windowMargin
+            x: VPNTheme.theme.vSpacing
+            y: passwordInput.y - height - 4
+            width: passwordInput.width - VPNTheme.theme.vSpacing
+            height: passwordConditions.implicitHeight + padding * 2
 
-                background: Rectangle {
-                    id: bg
-                    color: VPNTheme.colors.white
-                    radius: VPNTheme.theme.cornerRadius
+            background: Rectangle { color: VPNTheme.theme.transparent }
 
-                    VPNRectangularGlow {
-                        anchors.fill: glowVector
-                        glowRadius: 4
-                        spread: .3
-                        color: VPNTheme.theme.divider
-                        cornerRadius: glowVector.radius + glowRadius
-                        z: -2
-                    }
+            Rectangle {
+                id: bg
+                anchors.fill: passwordConditions
+                anchors.margins: VPNTheme.theme.windowMargin * -1
+                color: VPNTheme.colors.white
+                radius: VPNTheme.theme.cornerRadius
 
-                    Rectangle {
-                        id: glowVector
-                        anchors.fill: parent
-                        radius: bg.radius
-                        color: bg.color
-                    }
-
-                    Rectangle {
-                        radius: 1
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: -3
-                        anchors.right: parent.right
-                        anchors.rightMargin: VPNTheme.theme.windowMargin
-                        width: VPNTheme.theme.windowMargin / 2
-                        height: VPNTheme.theme.windowMargin / 2
-                        color: parent.color
-                        rotation: 45
-                    }
+                VPNRectangularGlow {
+                    anchors.fill: glowVector
+                    glowRadius: 4
+                    spread: .3
+                    color: VPNTheme.theme.divider
+                    cornerRadius: glowVector.radius + glowRadius
+                    z: -2
                 }
 
-                contentItem: ColumnLayout {
-                    spacing: VPNTheme.theme.windowMargin / 2
+                Rectangle {
+                    id: glowVector
+                    anchors.fill: parent
+                    radius: bg.radius
+                    color: bg.color
+                }
 
-                    VPNInAppAuthenticationPasswordCondition {
-                        id: passwordLength
-                        _iconVisible: true
-                        _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
-                        _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCharacterLength
-                    }
-                    VPNInAppAuthenticationPasswordCondition {
-                        _iconVisible: passwordLength._passwordConditionIsSatisfied
-                        _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
-                        _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintEmailAddressAsPassword
-                        opacity: passwordLength._passwordConditionIsSatisfied ? 1 : .5
-                    }
-                    VPNInAppAuthenticationPasswordCondition {
-                        _iconVisible:  passwordLength._passwordConditionIsSatisfied
-                        _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordCommons(passwordInput.text)
-                        _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCommonPassword
-                        opacity: _iconVisible ? 1 : .5
-                    }
+                Rectangle {
+                    radius: 1
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: -3
+                    anchors.right: parent.right
+                    anchors.rightMargin: VPNTheme.theme.windowMargin
+                    width: VPNTheme.theme.windowMargin / 2
+                    height: VPNTheme.theme.windowMargin / 2
+                    color: parent.color
+                    rotation: 45
+                }
+            }
+
+            ColumnLayout {
+                id: passwordConditions
+                spacing: VPNTheme.theme.windowMargin / 2
+                anchors.right: parent.right
+                width: parent.width
+
+                VPNInAppAuthenticationPasswordCondition {
+                    id: passwordLength
+                    _iconVisible: true
+                    _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
+                    _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCharacterLength
+                }
+                VPNInAppAuthenticationPasswordCondition {
+                    _iconVisible: passwordLength._passwordConditionIsSatisfied
+                    _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
+                    _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintEmailAddressAsPassword
+                    opacity: passwordLength._passwordConditionIsSatisfied ? 1 : .5
+                }
+                VPNInAppAuthenticationPasswordCondition {
+                    _iconVisible:  passwordLength._passwordConditionIsSatisfied
+                    _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordCommons(passwordInput.text)
+                    _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCommonPassword
+                    opacity: _iconVisible ? 1 : .5
                 }
             }
         }
@@ -208,6 +217,10 @@ ColumnLayout {
                 base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
+            case VPNAuthInApp.ErrorConnectionTimeout:
+                // In case of a timeout we want to exit here 
+                // to skip setting hasError - so the user can retry instantly
+                return;
             }
 
             if (!authError.visible)

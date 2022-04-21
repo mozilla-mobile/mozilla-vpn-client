@@ -2,29 +2,33 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
+windows/opt:
+    description: "Windows Build"
+    treeherder:
+        symbol: B
+        kind: build
+        tier: 1
+        platform: windows/x64
+    worker-type: b-win2012
+    fetches:
+        fetch:
+            - win-dev-env
+            - win-rustup
+        build-qt:
+            - artifact: qt6_win.zip
+              extract: true
+    dependencies:
+        build-qt: build-qt-windows
 
-
-
-#    windows/opt:
-#        description: "Windows Build"
-#        treeherder:
-#            symbol: B
-#            kind: build
-#            tier: 1
-#            platform: windows/opt
-#        worker-type: b-win2012
-#        scopes:
-#            - project:releng:services/tooltool/api/download/public
-#            - project:releng:services/tooltool/api/download/internal
-#        worker:
-#            taskcluster-proxy: true
-#            chain-of-trust: true
-#           max-run-time: 3600
-#           artifacts:
-#               - type: directory
-#                  name: public/build
-#                  path: build/src/artifacts
-#        run:
-#            using: run-task
-#            cwd: '{checkout}'
-#            command: ./scripts/windows_ci_build.sh
+    worker:
+        taskcluster-proxy: false
+        chain-of-trust: true
+        max-run-time: 3600
+        artifacts:
+            - type: directory
+              name: public/build
+              path: build/src/artifacts
+    run:
+        using: run-task
+        cwd: '{checkout}'
+        command: powershell.exe -ExecutionPolicy Bypass taskcluster/scripts/build/windows.ps1

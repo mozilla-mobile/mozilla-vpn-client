@@ -8,8 +8,6 @@
 #include "task.h"
 #include "benchmarktasksentinel.h"
 
-#include <QElapsedTimer>
-
 class BenchmarkTask : public Task {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(BenchmarkTask)
@@ -24,7 +22,6 @@ class BenchmarkTask : public Task {
   enum State { StateActive, StateInactive, StateCancelled };
 
   State state() const { return m_state; }
-  qint64 executionTime() const { return m_elapsedTimer.elapsed(); }
 
   const BenchmarkTaskSentinel* sentinel() const { return &m_sentinel; }
 
@@ -38,7 +35,6 @@ class BenchmarkTask : public Task {
   State m_state = StateInactive;
 
   const uint32_t m_maxExecutionTime;
-  QElapsedTimer m_elapsedTimer;
 
   BenchmarkTaskSentinel m_sentinel;
 };

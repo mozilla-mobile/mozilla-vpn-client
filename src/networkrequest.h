@@ -26,6 +26,9 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForGetUrl(Task* parent, const QString& url,
                                          int status = 0);
+  static NetworkRequest* createForGetHostAddress(Task* parent,
+                                                 const QString& url,
+                                                 const QHostAddress& address);
 
   static NetworkRequest* createForAuthenticationVerification(
       Task* parent, const QString& pkceCodeSuccess,
@@ -115,10 +118,14 @@ class NetworkRequest final : public QObject {
 #ifdef UNIT_TEST
   static NetworkRequest* createForFxaTotpCreation(
       Task* parent, const QByteArray& sessionToken);
+#endif
+
   static NetworkRequest* createForFxaAccountDeletion(
       Task* parent, const QByteArray& sessionToken, const QString& emailAddress,
       const QByteArray& authpw);
-#endif
+
+  static NetworkRequest* createForFxaAttachedClients(
+      Task* parent, const QByteArray& sessionToken);
 
   static NetworkRequest* createForFxaSessionDestroy(
       Task* parent, const QByteArray& sessionToken);

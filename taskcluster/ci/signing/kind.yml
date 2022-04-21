@@ -17,7 +17,7 @@ primary-dependency: build
 group-by: build-type
 
 only-for-build-types:
-    # - macosx/opt
+    # - macos/opt
     - android-x64/release
     - android-x86/release
     - android-arm64/release
@@ -29,7 +29,7 @@ job-template:
     run-on-tasks-for: []
     signing-format:
         by-build-type:
-            # macosx.*: macapp
+            # macos.*: macapp
             android.*: autograph_apk
             default: ""
 
@@ -43,4 +43,4 @@ job-template:
                 android-x86/release: android/x86
                 android-arm64/release: android/arm64-v8a
                 android-armv7/release: android/armv7
-                # macosx/opt: macosx/all
+                # macos/opt: macos/all

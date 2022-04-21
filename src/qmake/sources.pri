@@ -7,6 +7,7 @@ SOURCES += \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
         authenticationinapp/authenticationinapplistener.cpp \
+        authenticationinapp/authenticationinappsession.cpp \
         authenticationinapp/incrementaldecoder.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportaldetection.cpp \
@@ -32,7 +33,6 @@ SOURCES += \
         connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
         connectionbenchmark/connectionbenchmark.cpp \
-        connectiondataholder.cpp \
         connectionhealth.cpp \
         constants.cpp \
         controller.cpp \
@@ -58,6 +58,7 @@ SOURCES += \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
+        ipaddresslookup.cpp \
         itempicker.cpp \
         l18nstringsimpl.cpp \
         leakdetector.cpp \
@@ -70,6 +71,9 @@ SOURCES += \
         models/devicemodel.cpp \
         models/feature.cpp \
         models/feedbackcategorymodel.cpp \
+        models/guide.cpp \
+        models/guideblock.cpp \
+        models/guidemodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
         models/licensemodel.cpp \
@@ -81,6 +85,8 @@ SOURCES += \
         models/supportcategorymodel.cpp \
         models/survey.cpp \
         models/surveymodel.cpp \
+        models/tutorial.cpp \
+        models/tutorialmodel.cpp \
         models/user.cpp \
         models/whatsnewmodel.cpp \
         mozillavpn.cpp \
@@ -110,6 +116,7 @@ SOURCES += \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
+        tasks/deleteaccount/taskdeleteaccount.cpp \
         tasks/getfeaturelist/taskgetfeaturelist.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
@@ -127,7 +134,6 @@ SOURCES += \
         telemetry.cpp \
         theme.cpp \
         timersingleshot.cpp \
-        tutorial.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
         urlopener.cpp
@@ -139,6 +145,7 @@ HEADERS += \
         authenticationlistener.h \
         authenticationinapp/authenticationinapp.h \
         authenticationinapp/authenticationinapplistener.h \
+        authenticationinapp/authenticationinappsession.h \
         authenticationinapp/incrementaldecoder.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
@@ -165,7 +172,6 @@ HEADERS += \
         connectionbenchmark/benchmarktaskping.h \
         connectionbenchmark/benchmarktasksentinel.h \
         connectionbenchmark/connectionbenchmark.h \
-        connectiondataholder.h \
         connectionhealth.h \
         constants.h \
         controller.h \
@@ -176,6 +182,7 @@ HEADERS += \
         dnspingsender.h \
         errorhandler.h \
         featurelist.h \
+        features/featureaccountdeletion.h \
         features/featureappreview.h \
         features/featurecaptiveportal.h \
         features/featureconnectioninfo.h \
@@ -204,6 +211,7 @@ HEADERS += \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
+        ipaddresslookup.h \
         itempicker.h \
         leakdetector.h \
         localizer.h \
@@ -214,6 +222,9 @@ HEADERS += \
         models/devicemodel.h \
         models/feature.h \
         models/feedbackcategorymodel.h \
+        models/guide.h \
+        models/guideblock.h \
+        models/guidemodel.h \
         models/helpmodel.h \
         models/keys.h \
         models/licensemodel.h \
@@ -225,6 +236,8 @@ HEADERS += \
         models/supportcategorymodel.h \
         models/survey.h \
         models/surveymodel.h \
+        models/tutorial.h \
+        models/tutorialmodel.h \
         models/user.h \
         models/whatsnewmodel.h \
         mozillavpn.h \
@@ -256,6 +269,7 @@ HEADERS += \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
+        tasks/deleteaccount/taskdeleteaccount.h \
         tasks/getfeaturelist/taskgetfeaturelist.h \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/createsupportticket/taskcreatesupportticket.h \
@@ -273,7 +287,6 @@ HEADERS += \
         telemetry.h \
         theme.h \
         timersingleshot.h \
-        tutorial.h \
         update/updater.h \
         update/versionapi.h \
         urlopener.h
@@ -288,5 +301,5 @@ RESOURCES += ui/resources.qrc
 RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
-
-
+RESOURCES += ui/guides.qrc
+RESOURCES += ui/tutorials.qrc

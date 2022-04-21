@@ -59,11 +59,20 @@ module.exports = {
     client.close();
   },
 
-  async activate() {
+  async activate(awaitConnectionOkay = false) {
     const json = await this._writeCommand('activate');
     assert(
         json.type === 'activate' && !('error' in json),
         `Command failed: ${json.error}`);
+
+    if (awaitConnectionOkay) {
+      await this.waitForCondition(async () => {
+        let title = await this.getElementProperty('controllerTitle', 'text');
+        let unsettled =
+            await this.getElementProperty('VPNConnectionHealth', 'unsettled');
+        return (title == 'VPN is on') && (unsettled == 'false');
+      });
+    }
   },
 
   async deactivate() {
@@ -153,6 +162,24 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
+  async scrollToElement(view, id) {
+    assert(await this.hasElement(view), 'Scrolling on an non-existing view?!?');
+    assert(await this.hasElement(id), 'Requesting an non-existing element?!?');
+
+    const contentHeight =
+        parseInt(await this.getElementProperty(view, 'contentHeight'));
+    const height = parseInt(await this.getElementProperty(view, 'height'));
+    let maxScroll = (contentHeight > height) ? contentHeight - height : 0;
+    let elementY = parseInt(await this.getElementProperty(id, 'y'));
+
+    let contentY = elementY - (height / 2);
+    if (contentY < 0) contentY = 0;
+    if (contentY > maxScroll) contentY = maxScroll;
+
+    await this.setElementProperty(view, 'contentY', 'i', contentY);
+    await this.wait();
+  },
+
   async getElementProperty(id, property) {
     assert(
         await this.hasElement(id),
@@ -200,11 +227,7 @@ module.exports = {
   },
 
   async getLastUrl() {
-    const json = await this._writeCommand('lasturl');
-    assert(
-        json.type === 'lasturl' && !('error' in json),
-        `Command failed: ${json.error}`);
-    return json.value || '';
+    return await this.getElementProperty('VPN', 'lastUrl');
   },
 
   async waitForCondition(condition) {
@@ -223,6 +246,7 @@ module.exports = {
   async authenticate(clickOnPostAuthenticate = false, acceptTelemetry = false) {
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForMainView();
+    await this.setElementProperty('VPN', 'lastUrl', 's', '');
 
     // Click on get started and wait for authenticating view
     await this.clickOnElement('getStarted');
@@ -266,6 +290,7 @@ module.exports = {
         'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
 
     // Wait for VPN client screen to move from spinning wheel to next screen
+    await this.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
     await this.waitForElement('postAuthenticationButton');
     await driver.quit();
 

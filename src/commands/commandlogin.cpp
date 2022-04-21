@@ -137,6 +137,14 @@ int CommandLogin::run(QStringList& tokens) {
           case AuthenticationInApp::StateVerifyingSessionTotpCode:
             break;
 
+          case AuthenticationInApp::StateAccountDeletionRequest:
+            Q_ASSERT(false);
+            break;
+
+          case AuthenticationInApp::StateDeletingAccount:
+            Q_ASSERT(false);
+            break;
+
           case AuthenticationInApp::StateFallbackInBrowser: {
             QTextStream stream(stdout);
             stream << "Unable to continue with the flow. Please, continue the "
@@ -188,6 +196,9 @@ int CommandLogin::run(QStringList& tokens) {
                 break;
               case AuthenticationInApp::ErrorInvalidTotpCode:
                 stream << "Invalid TOTP code" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorConnectionTimeout:
+                stream << "Request Timed Out" << Qt::endl;
                 break;
             }
           });

@@ -23,20 +23,27 @@ if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
   # generate qt_static_macos
   auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-  git clone https://github.com/mozilla-mobile/qt_static_macos
+  git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
   cd qt_static_macos
   cat qt6* > qt_static.tar.gz
   tar xf qt_static.tar.gz
+
+  cat > qt6/bin/qt.conf << EOF
+[Paths]
+Prefix=`pwd`/qt6
+EOF
+
+  cp qt6/bin/qt.conf qt6/libexec
   cd ..
+
   export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
   export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 else
   pip3 install aqtinstall
-  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop $QTVERSION -m qtcharts qtwebsockets qt5compat
-  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios $QTVERSION -m qtcharts qtwebsockets qt5compat
-  mv /Volumes/workspace/repository/qt_ios/$QTVERSION/macos /Volumes/workspace/repository/qt_ios/$QTVERSION/clang_64
+  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop $QTVERSION -m qtwebsockets qt5compat
+  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios $QTVERSION -m qtwebsockets qt5compat
   export QT_IOS_BIN=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin
-  export PATH=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin:/Volumes/workspace/repository/qt_ios/$QTVERSION/clang_64/bin:$PATH
+  export PATH=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin:/Volumes/workspace/repository/qt_ios/$QTVERSION/macos/bin:$PATH
 fi
 
 # install xcodeproj which is needed by xcode_patcher.rb
@@ -59,13 +66,10 @@ GROUP_ID_IOS = group.org.mozilla.ios.Guardian
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 EOF
-which qmake
-qmake -v
-$QT_IOS_BIN/qmake -v
 
 if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
   ./scripts/macos/apple_compile.sh macos
 else
-  ./scripts/macos/apple_compile.sh ios -q /Volumes/workspace/repository/qt_ios/$QTVERSION/clang_64/bin
+  ./scripts/macos/apple_compile.sh ios -q /Volumes/workspace/repository/qt_ios/$QTVERSION/macos/bin
 fi

@@ -1,0 +1,47 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+job-defaults:
+    treeherder:
+        kind: build
+        platform: toolchains/opt
+        tier: 1
+
+windows:
+    description: "Windows QT compile Task"
+    index:
+        product: qt
+        job-name: qt-windows
+    optimization: 
+        hashIndex: 
+            # Re-Do The Job if either changes
+            - taskcluster/scripts/build_qt/compile_qt_6.ps1
+            - taskcluster/scripts/build_qt/configure_qt.ps1
+    fetches:
+        fetch:
+            - win-dev-env
+        build-openssl: 
+            - artifact: open_ssl_win.zip
+              extract: false # For some reason unzip exits with 1 even tho the file is okay
+    dependencies:   
+        build-openssl: build-openssl-windows
+    run:
+        using: run-task
+        cwd: '{checkout}'
+        command: powershell.exe -ExecutionPolicy Bypass taskcluster/scripts/build_qt/compile_qt_6.ps1
+    treeherder:
+        symbol: TL(QT)
+        platform: toolchains/win
+    attributes:
+        qt-alias: windows
+        qt-artifact: public/qt6_win.zip
+    worker:
+        max-run-time: 14400
+        env: 
+            QT_VERSION: 6.2.3         
+        artifacts:
+             - type: file
+               name: public/build/qt6_win.zip
+               path: build/src/qt6_win.zip
+    worker-type: b-win2012

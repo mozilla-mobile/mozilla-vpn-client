@@ -19,7 +19,6 @@ class InspectorHandler : public QObject {
  public:
   static void initialize();
 
-  static void setLastUrl(const QUrl& url);
   static bool stealUrls();
   static QString appVersionForUpdate();
   static QString getObjectClass(const QObject* target);
@@ -28,16 +27,14 @@ class InspectorHandler : public QObject {
   static void itemsPicked(const QStringList& objectNames);
 
   void recv(const QByteArray& buffer);
+  virtual void send(const QByteArray& buffer) = 0;
 
  protected:
   explicit InspectorHandler(QObject* parent);
   virtual ~InspectorHandler();
 
-  virtual void send(const QByteArray& buffer) = 0;
-
  private:
   void logEntryAdded(const QByteArray& log);
-  void tutorialChanged();
   void notificationShown(const QString& title, const QString& message);
   void networkRequestFinished(QNetworkReply* reply);
 };

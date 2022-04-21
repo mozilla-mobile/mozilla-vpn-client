@@ -22,6 +22,7 @@
         <file>components/VPNButtonLoader.qml</file>
         <file>components/VPNButton.qml</file>
         <file>components/VPNCallout.qml</file>
+        <file>components/VPNCancelButton.qml</file>
         <file>components/VPNCheckBoxAlert.qml</file>
         <file>components/VPNCheckBox.qml</file>
         <file>components/VPNCheckBoxRow.qml</file>
@@ -30,7 +31,6 @@
         <file>components/VPNChevron.qml</file>
         <file>components/VPNClickableRow.qml</file>
         <file>components/VPNCollapsibleCard.qml</file>
-        <file>components/VPNConnectionInfo.qml</file>
         <file>components/VPNConnectionInfoError.qml</file>
         <file>components/VPNConnectionInfoScreen.qml</file>
         <file>components/VPNConnectionInfoContent.qml</file>
@@ -75,7 +75,6 @@
         <file>components/VPNPopup.qml</file>
         <file>components/VPNRadioButtonLabel.qml</file>
         <file>components/VPNRadioDelegate.qml</file>
-        <file>components/VPNRadioSublabel.qml</file>
         <file>components/VPNRecentConnections.qml</file>
         <file>components/VPNRemoveDevicePopup.qml</file>
         <file>components/VPNSemiMonoLabel.qml</file>
@@ -110,7 +109,6 @@
         <file>components/inAppAuth/VPNInAppAuthenticationInputs.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationPasswordCondition.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationLegalDisclaimer.qml</file>
-        <file>components/inAppAuth/VPNInAppAuthenticationCancel.qml</file>
         <file>components/forms/VPNCursorDelegate.qml</file>
     </qresource>
 </RCC>

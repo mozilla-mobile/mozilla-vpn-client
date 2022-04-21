@@ -190,7 +190,7 @@ for distro in $RELEASE; do
     fedora|rpm)
       print Y "Building RPM packages for $distro"
       build_rpm_spec
-      rpmbuild --define "_topdir $(pwd)" --define "_sourcedir $(pwd)" -bs mozillavpn.spec
+      rpmbuild --define "_srcrpmdir $(pwd)" --define "_sourcedir $(pwd)" -bs mozillavpn.spec
       ;;
 
     *)

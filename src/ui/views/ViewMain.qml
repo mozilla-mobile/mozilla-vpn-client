@@ -223,15 +223,5 @@ VPNFlickable {
             }
             stackview.push(aboutUsComponent);
         }
-
-        function onContactUsNeeded() {
-            if (stackview.currentItem.objectName === "contactUs") return;
-
-            while(stackview.depth > 1) {
-                stackview.pop(null, StackView.Immediate);
-            }
-
-            stackview.push("qrc:/ui/views/ViewContactUs.qml", { isMainView: false });
-        }
     }
 }

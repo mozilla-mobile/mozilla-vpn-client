@@ -172,14 +172,6 @@ magic \
   qt515declarative_5.15.2-1basyskom1.debian.tar.xz || die
 
 magic \
-  qt515charts-no-lgpl \
-  qtcharts-everywhere-src-5.15.2 \
-  https://launchpad.net/~mozillacorp/+archive/ubuntu/mozillavpn/+sourcefiles/qt515charts-no-lgpl/5.15.2-1basyskom1/qt515charts-no-lgpl_5.15.2.orig.tar.xz \
-  qt515charts-no-lgpl_5.15.2.orig.tar.xz \
-  https://launchpad.net/~beineri/+archive/ubuntu/opt-qt-5.15.2-bionic/+sourcefiles/qt515charts-no-lgpl/5.15.2-1basyskom1/qt515charts-no-lgpl_5.15.2-1basyskom1.debian.tar.xz \
-  qt515charts-no-lgpl_5.15.2-1basyskom1.debian.tar.xz || die
-
-magic \
   qt515graphicaleffects \
   qtgraphicaleffects-everywhere-src-5.15.2 \
   https://launchpad.net/~mozillacorp/+archive/ubuntu/mozillavpn/+sourcefiles/qt515graphicaleffects/5.15.2-1basyskom1/qt515graphicaleffects_5.15.2.orig.tar.xz \

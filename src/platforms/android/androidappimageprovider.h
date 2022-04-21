@@ -6,7 +6,8 @@
 #define ANDROIDAPPIMAGEPROVIDER_H
 
 #include "appimageprovider.h"
-#include "androidjnicompat.h"
+#include <QJniObject>
+#include <QJniEnvironment>
 
 class AndroidAppImageProvider final : public AppImageProvider {
  public:
