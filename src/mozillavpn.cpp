@@ -1731,7 +1731,7 @@ QString MozillaVPN::devVersion() {
   return out;
 }
 
-void MozillaVPN::deleteAccount() {
+void MozillaVPN::requestDeleteAccount() {
   logger.debug() << "delete account";
   Q_ASSERT(FeatureAccountDeletion::instance()->isSupported());
   TaskScheduler::scheduleTask(new TaskDeleteAccount(m_private->m_user.email()));

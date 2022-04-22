@@ -543,8 +543,8 @@ inAppAuth:
     comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
 
 deleteAccount:
-  authSubheadline: "To delete your VPN account, please sign in with your Firefox account password."
-  authButtonLabel: "Continue"
+  authSubheadline: To delete your VPN account, please sign in with your Firefox account password.
+  authButtonLabel: Continue
   headline: Delete Firefox account
   subheadline:
     value: "Your Firefox account (%1) is connected to Mozilla products that keep you secure and productive on the web. Please acknowledge that by deleting your account:"
