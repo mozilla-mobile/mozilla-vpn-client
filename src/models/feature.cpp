@@ -21,7 +21,7 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
                  L18nStrings::String shortDesc_id, L18nStrings::String desc_id,
                  const QString& imgPath, const QString& iconPath,
                  const QString& linkUrl, const QString& aReleaseVersion,
-                 bool devModeWriteable)
+                 bool devModeWriteable, const QStringList& featureDependencies)
     : QObject(qApp),
       m_id(id),
       m_name(name),
@@ -32,7 +32,8 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
       m_imagePath(imgPath),
       m_iconPath(iconPath),
       m_linkUrl(linkUrl),
-      m_devModeWriteable(devModeWriteable) {
+      m_devModeWriteable(devModeWriteable),
+      m_featureDependencies(featureDependencies) {
   logger.debug() << "Initializing feature" << id;
 
   if (!s_features) {
@@ -66,12 +67,8 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
     connect(
         SettingsHolder::instance(), &SettingsHolder::devModeFeatureFlagsChanged,
         this, [this]() {
-          bool newDevModeEnabled =
-              SettingsHolder::instance()->devModeFeatureFlags().contains(m_id);
-          if (newDevModeEnabled != m_devModeEnabled) {
-            m_devModeEnabled = newDevModeEnabled;
-            emit supportedChanged();
-          }
+          maybeChangeDevMode(
+              SettingsHolder::instance()->devModeFeatureFlags().contains(m_id));
         });
   }
 }
@@ -109,10 +106,23 @@ bool Feature::isSupported() const {
     logger.debug() << "Devmode Enabled " << m_id;
     return true;
   }
+
   if (!m_released) {
     return false;
   }
-  return checkSupportCallback();
+
+  if (!checkSupportCallback()) {
+    return false;
+  }
+
+  for (const QString& featureID : m_featureDependencies) {
+    const Feature* feature = Feature::get(featureID);
+    if (!feature->isSupported()) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 QString Feature::displayName() const {
@@ -123,4 +133,51 @@ QString Feature::description() const {
 }
 QString Feature::shortDescription() const {
   return L18nStrings::instance()->t(m_shortDescription_id);
+}
+
+void Feature::maybeChangeDevMode(bool newDevModeEnabled) {
+  if (newDevModeEnabled == m_devModeEnabled) {
+    return;
+  }
+
+  if (!newDevModeEnabled) {
+    m_devModeEnabled = newDevModeEnabled;
+    emit supportedChanged();
+    return;
+  }
+
+  // Let's set it before checking other features to break cycles.
+  m_devModeEnabled = newDevModeEnabled;
+
+  QStringList devModeFeatureFlags =
+      SettingsHolder::instance()->devModeFeatureFlags();
+
+  for (const QString& featureID : m_featureDependencies) {
+    Feature* feature = s_features->value(featureID, nullptr);
+    Q_ASSERT(feature);
+
+    if (feature->isSupported()) continue;
+
+    if (!feature->m_devModeWriteable) {
+      logger.debug() << "Unable to activate feature" << id()
+                     << "because feature" << feature->id()
+                     << "cannot be enabled in dev mode";
+      m_devModeEnabled = false;
+      return;
+    }
+
+    feature->maybeChangeDevMode(true);
+    if (!feature->isSupported()) {
+      logger.debug() << "Unable to activate feature" << id()
+                     << "because feature" << feature->id()
+                     << "cannot be enabled";
+      m_devModeEnabled = false;
+      return;
+    }
+
+    devModeFeatureFlags.append(featureID);
+  }
+
+  emit supportedChanged();
+  SettingsHolder::instance()->setDevModeFeatureFlags(devModeFeatureFlags);
 }
