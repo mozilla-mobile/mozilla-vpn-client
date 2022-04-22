@@ -116,11 +116,11 @@ VPNFlickable {
                     Layout.minimumWidth: col.width - VPNTheme.theme.vSpacing * 2
                     Component.onCompleted: {
                         if (
-                            VPNAuthInApp.state === VPNAuthInApp.StateSignIn ||
-                            VPNAuthInApp.state === VPNAuthInApp.StateSigningIn ||
-                            VPNAuthInApp.state === VPNAuthInApp.StateSignUp ||
-                            VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
-                        ) {
+                                VPNAuthInApp.state === VPNAuthInApp.StateSignIn ||
+                                VPNAuthInApp.state === VPNAuthInApp.StateSigningIn ||
+                                VPNAuthInApp.state === VPNAuthInApp.StateSignUp ||
+                                VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
+                                ) {
                             fontSizeMode = Text.FixedSize
                             elide = Text.ElideMiddle
                         }
@@ -137,7 +137,6 @@ VPNFlickable {
                 VPNSubtitle {
                     id: subtitle
                     horizontalAlignment: Text.AlignHCenter
-                    visible: text
                     Layout.maximumWidth: col.width - VPNTheme.theme.vSpacing * 2
                     Layout.minimumWidth: col.width - VPNTheme.theme.vSpacing * 2
                 }
@@ -146,7 +145,6 @@ VPNFlickable {
 
             VPNBoldLabel {
                 id: inputLabel
-                visible: text
             }
 
             ColumnLayout {

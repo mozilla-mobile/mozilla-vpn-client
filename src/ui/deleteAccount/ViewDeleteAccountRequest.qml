@@ -13,25 +13,24 @@ import components.inAppAuth 0.1
 VPNInAppAuthenticationBase {
     id: viewDeleteAccount
 
-    // TODO: Localize `labelText` if we would like to keep the headers
     property var checkboxData: [
         {
-            labelText: "Paid subscriptions",
+            labelText: "Paid subscriptions", // TODO: Needs content
             subLabelText: VPNl18n.DeleteAccountOptionLabelOne,
             isSelected: false
         },
         {
-            labelText: "Saved information",
+            labelText: "Saved information", // TODO: Needs content
             subLabelText: VPNl18n.DeleteAccountOptionLabelTwo,
             isSelected: false
         },
         {
-            labelText: "Reactivation",
+            labelText: "Reactivation", // TODO: Needs content
             subLabelText: VPNl18n.DeleteAccountOptionLabelThree,
             isSelected: false
         },
         {
-            labelText: "Extensions and themes",
+            labelText: "Extensions and themes", // TODO: Needs content
             subLabelText: VPNl18n.DeleteAccountOptionLabelFour,
             isSelected: false
         }
@@ -52,7 +51,7 @@ VPNInAppAuthenticationBase {
             color: VPNTheme.theme.fontColor
             horizontalAlignment: Text.AlignLeft
             text: VPNl18n.DeleteAccountSubheadline
-                .arg("<b style='color:" + VPNTheme.theme.fontColorDark + ";'>
+                .arg("<b style='color:" + VPNTheme.theme.fontColorDark + ";'>"
                     + VPNAuthInApp.emailAddress + "</b>")
             textFormat: Text.RichText
 

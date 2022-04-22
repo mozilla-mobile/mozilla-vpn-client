@@ -138,8 +138,10 @@ VPNFlickable {
             onClicked: settingsStackView.push(aboutUsComponent)
         }
 
+        // TODO: Move to subscription management
         VPNLinkButton {
             Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: VPNTheme.theme.vSpacing
 
             fontName: VPNTheme.theme.fontBoldFamily
             labelText: VPNl18n.DeleteAccountButtonLabel + " (WIP)" 
