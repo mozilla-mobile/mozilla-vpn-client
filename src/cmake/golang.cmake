@@ -6,11 +6,6 @@ function(add_go_library TARGET SOURCE)
     string(REGEX REPLACE "[.]go$" ".a" ARCHIVE_NAME ${SRC_NAME})
     string(REGEX REPLACE "[.]go$" ".h" HEADER_NAME ${SRC_NAME})
 
-    message("SRC_NAME is ${SRC_NAME}")
-    message("DIR_NAME is ${DIR_NAME}")
-    message("ARCHIVE_NAME is ${ARCHIVE_NAME}")
-    message("HEADER_NAME is ${HEADER_NAME}")
-
     target_sources(${TARGET} PRIVATE ${HEADER_NAME})
     set_source_files_properties(${HEADER_NAME} PROPERTIES GENERATED 1)
 
