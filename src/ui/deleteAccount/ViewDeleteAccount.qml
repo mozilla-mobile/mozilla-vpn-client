@@ -26,16 +26,19 @@ Item {
             if (loader.status !== Loader.Ready) {
                 return;
             }
-
+            
             if (
                 prevState === ""
                 && viewDeleteAccount.state === "StateInitializing"
             ) {
+                // `StateInitializing` is set for the first time
                 VPN.requestDeleteAccount();
             } else if (
                 prevState !== ""
                 && viewDeleteAccount.state === "StateInitializing"
             ) {
+                // `StateInitializing` is set during the account deletion flow which,
+                // means the user aborted the operation
                 settingsStackView.pop();
             } else if (viewDeleteAccount.state === "StateSignIn") {
                 item.isDeleteAccountAuth = true;
