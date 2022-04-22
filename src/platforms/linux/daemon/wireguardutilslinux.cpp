@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 #include "../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h"
-#include "../../linux/netfilter/netfilter.h"
+#include "netfilter.h"
 #if defined(__cplusplus)
 }
 #endif
