@@ -256,10 +256,19 @@ VPNFlickable {
             Layout.minimumHeight: VPNTheme.theme.windowMargin
         }
 
-        Column {
+        ColumnLayout {
             id: panelBottomContent
             Layout.preferredWidth: parent.width
             spacing: VPNTheme.theme.windowMargin
+
+            VPNInterLabel {
+                Layout.maximumWidth: parent.width
+                Layout.alignment: Qt.AlignCenter
+
+                text: VPNl18n.FreeTrialsStartYourFreeTrial
+                color: VPNTheme.colors.white80
+                font.family: VPNTheme.theme.fontInterSemiBoldFamily
+            }
 
             PageIndicator {
                 id: progressIndicator
@@ -267,7 +276,8 @@ VPNFlickable {
                 interactive: true
                 count: swipeView.count
                 currentIndex: swipeView.currentIndex
-                anchors.horizontalCenter: parent.horizontalCenter
+                Layout.topMargin: VPNTheme.theme.rowHeight
+                Layout.alignment: Qt.AlignCenter
                 spacing: VPNTheme.theme.windowMargin / 2
 
                 delegate: Rectangle {
@@ -287,7 +297,7 @@ VPNFlickable {
             VPNButton {
                 id: signUpButton
                 objectName: "signUpButton"
-                anchors.horizontalCenter: parent.horizontalCenter
+                Layout.fillWidth: true
                 text: VPNl18n.MobileOnboardingSignUpBtn
                 width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
                 onClicked: onboardingPanel.recordGleanEvtAndStartAuth(objectName)
@@ -296,7 +306,8 @@ VPNFlickable {
             VPNLinkButton {
                 objectName: "alreadyASubscriberLink"
                 labelText: VPNl18n.MobileOnboardingAlreadyASubscriber
-                anchors.horizontalCenter: parent.horizontalCenter
+                Layout.maximumWidth: parent.width
+                Layout.alignment: Qt.AlignCenter
                 height: VPNTheme.theme.rowHeight
                 linkColor: VPNTheme.theme.whiteButton
                 onClicked: onboardingPanel.recordGleanEvtAndStartAuth(objectName)
