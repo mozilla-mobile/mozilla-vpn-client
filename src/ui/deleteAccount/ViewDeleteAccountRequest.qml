@@ -16,22 +16,22 @@ VPNInAppAuthenticationBase {
     property var checkboxData: [
         {
             labelText: "Paid subscriptions", // TODO: Needs content
-            subLabelText: VPNl18n.DeleteAccountOptionLabelOne,
+            subLabelText: VPNl18n.DeleteAccountOptionDescriptionOne,
             isSelected: false
         },
         {
             labelText: "Saved information", // TODO: Needs content
-            subLabelText: VPNl18n.DeleteAccountOptionLabelTwo,
+            subLabelText: VPNl18n.DeleteAccountOptionDescriptionTwo,
             isSelected: false
         },
         {
             labelText: "Reactivation", // TODO: Needs content
-            subLabelText: VPNl18n.DeleteAccountOptionLabelThree,
+            subLabelText: VPNl18n.DeleteAccountOptionDescriptionThree,
             isSelected: false
         },
         {
             labelText: "Extensions and themes", // TODO: Needs content
-            subLabelText: VPNl18n.DeleteAccountOptionLabelFour,
+            subLabelText: VPNl18n.DeleteAccountOptionDescriptionFour,
             isSelected: false
         }
     ]
