@@ -7,11 +7,20 @@ import os
 from taskgraph.parameters import extend_parameters_schema
 from voluptuous import All, Any, Range, Required
 
+
+def get_defaults(repo_root):
+    return {
+        "pull_request_number": None,
+        "version": "",
+    }
+
+
 extend_parameters_schema(
     {
         Required("pull_request_number"): Any(All(int, Range(min=1)), None),
         Required("version"): str,
-    }
+    },
+    defaults_fn=get_defaults
 )
 
 
