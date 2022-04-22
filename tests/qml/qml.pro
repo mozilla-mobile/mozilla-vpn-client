@@ -79,13 +79,7 @@ HEADERS += \
 LIBS += -L../../glean -lglean
 LIBS += -L../../lottie/lib -llottie
 LIBS += -L../../nebula -lnebula
-
-exists($$PWD/../../translations/generated/l18nstrings.h) {
-    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
-    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
-} else {
-    error("No l18nstrings.h. Have you generated the strings?")
-}
+LIBS += -L../../translations -ltranslations
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc

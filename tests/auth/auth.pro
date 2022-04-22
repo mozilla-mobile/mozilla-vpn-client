@@ -34,6 +34,7 @@ INCLUDEPATH += \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
             ../../src/hacl-star/kremlin/minimal \
+            ../../glean \
             ../../translations/generated
 
 HEADERS += \
@@ -114,12 +115,7 @@ SOURCES += \
     testpasswordvalidation.cpp \
     testsignupandin.cpp
 
-exists($$PWD/../../translations/generated/l18nstrings.h) {
-    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
-    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
-} else {
-    error("No l18nstrings.h. Have you generated the strings?")
-}
+LIBS += -L../../translations -ltranslations
 
 win* {
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor

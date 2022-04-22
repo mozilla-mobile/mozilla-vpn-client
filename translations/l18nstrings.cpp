@@ -29,8 +29,6 @@ L18nStrings::L18nStrings(QObject* parent) : QQmlPropertyMap(parent) {
   retranslate();
 }
 
-L18nStrings::~L18nStrings() {}
-
 QString L18nStrings::t(L18nStrings::String string) const {
   Q_ASSERT(string < __Last);
   QString id = _ids[string];

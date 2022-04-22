@@ -25,11 +25,12 @@ tests/unit.depends = glean nebula translations
 # separate flag because an extra dependency is needed: liboath
 AUTHTEST {
     SUBDIRS += tests/auth
+    tests/auth.depends = glean translations
 }
 
 QMLTEST {
     SUBDIRS += tests/qml
-    SUBDIRS += lottie/tests/qml
+    tests/qml.depends = glean lottie nebula translations
 }
 
 linux:!android|macos|win* {

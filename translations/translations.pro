@@ -10,6 +10,7 @@ QT += quick
 
 INCLUDEPATH += $$PWD/generated
 
+HEADERS += generated/l18nstrings.h
 SOURCES += l18nstrings.cpp
 RESOURCES += servers.qrc
 

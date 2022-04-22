@@ -7,7 +7,10 @@ TEMPLATE = subdirs
 SUBDIRS += bin
 SUBDIRS += lib
 SUBDIRS += tests/unit
-SUBDIRS += tests/qml
+
+QMLTEST {
+    SUBDIRS += tests/qml
+}
 
 bin.depends = lib
 tests/unit.depends = lib
