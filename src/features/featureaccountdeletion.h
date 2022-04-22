@@ -25,7 +25,13 @@ class FeatureAccountDeletion final : public Feature {
                 QStringList{"inAppAuthentication"}  // feature dependencies
         ) {}
 
-  bool checkSupportCallback() const override { return true; }
+  bool checkSupportCallback() const override {
+#if defined(MVPN_IOS)
+    return true;
+#else
+    return false;
+#endif
+  }
 
   static const FeatureAccountDeletion* instance() {
     return static_cast<const FeatureAccountDeletion*>(
