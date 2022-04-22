@@ -267,7 +267,7 @@ VPNFlickable {
 
                 text: VPNl18n.FreeTrialsStartYourFreeTrial
                 color: VPNTheme.colors.white80
-                font.family: theme.fontInterSemiBoldFamily
+                font.family: VPNTheme.theme.fontInterSemiBoldFamily
             }
 
             PageIndicator {
