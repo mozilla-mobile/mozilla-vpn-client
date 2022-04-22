@@ -20,7 +20,7 @@ Window {
     property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
     property var isWasmApp: Qt.platform.os === "wasm"
-    property bool isMobileOnboardingOnIos: VPNFeatureList.get("mobileOnboarding").isSupported
+    property bool isMobileOnboardingOnIos: VPNFeatureList.get("mobileOnboarding").isSupported && VPN.state === VPN.StateInitialize
         && Qt.platform.os === "ios"
         && VPN.state === VPN.StateInitialize
 
@@ -116,13 +116,39 @@ Window {
         }
     }
 
+    VPNRadialGradient {
+        id: mobileOnboardingBackground
+        y: 0
+        x: 0
+        height: Screen.height
+        width: Screen.width
+        gradient: Gradient {
+            GradientStop {
+                color: VPNTheme.theme.onBoardingGradient.start
+                position: 0.0
+            }
+            GradientStop {
+                color: VPNTheme.theme.onBoardingGradient.middle
+                position: 0.2
+            }
+            GradientStop {
+                color: VPNTheme.theme.onBoardingGradient.end
+                position: 0.5
+            }
+        }
+
+        z: -1
+        visible:  isMobileOnboardingOnIos && mainStackView.depth === 1
+    }
+
     Rectangle {
         id: iosSafeAreaTopMargin
 
         color: VPNTheme.theme.transparent
-        height: isMobileOnboardingOnIos ? 0 : safeAreaHeightByDevice();
+        height: safeAreaHeightByDevice();
         width: window.width
         anchors.top: parent.top
+
     }
 
     VPNWasmHeader {
@@ -141,6 +167,10 @@ Window {
         anchors.topMargin: iosSafeAreaTopMargin.height + wasmMenuHeader.height
         height: safeContentHeight
         clip: true
+
+        function getHelpViewNeeded() {
+            mainStackView.push("qrc:/ui/views/ViewGetHelp.qml")
+        }
     }
 
     Component {
@@ -283,10 +313,17 @@ Window {
             if (VPNFeatureList.get("shareLogs").isSupported)  {
                 if(VPN.viewLogs()){
                     return;
-                };
+                }
             }
             // If we can't show logs natively, open the viewer
             mainStackView.push("qrc:/ui/views/ViewLogs.qml");
+        }
+
+        function onLoadAndroidAuthenticationView() {
+            if (Qt.platform.os !== "android") {
+                console.log("Unexpected android authentication view request!");
+            }
+            mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
         }
 
         function onInitializeGlean() {
@@ -343,6 +380,17 @@ Window {
     }
 
     Connections {
+        target: VPN
+        function onContactUsNeeded() {
+            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", StackView.Immediate);
+        }
+
+        function onSettingsNeeded() {
+            mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
+        }
+    }
+
+    Connections {
         target: VPNErrorHandler
         function onSubscriptionGeneric() {
             if(VPN.state !== VPN.StateSubscriptionNeeded && VPN.state !== VPN.StateSubscriptionInProgress) {
@@ -350,8 +398,6 @@ Window {
             }
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                isMainView: true,
-
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -374,8 +420,6 @@ Window {
             }
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                isMainView: true,
-
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -399,8 +443,6 @@ Window {
             }
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                isMainView: true,
-
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -423,8 +465,6 @@ Window {
             }
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                isMainView: true,
-
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 

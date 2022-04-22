@@ -28,8 +28,6 @@ VPNFlickable {
         id: aboutUsComponent
 
         VPNAboutUs {
-            isSettingsView: true
-            isMainView: false
             licenseURL: "qrc:/ui/views/ViewLicenses.qml"
         }
     }

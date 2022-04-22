@@ -13,12 +13,20 @@ Item {
     VPNMenu {
         id: menu
         objectName: "settingsBackButton"
+
+
+        _menuOnBackClicked: () => {
+            if (settingsStackView.depth !== 1) {
+                return settingsStackView.pop();
+            }
+            mainStackView.pop()
+        }
+
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
 
         title: ""
-        isSettingsView: true
         opacity: visible ? 1 : 0
         _iconButtonSource: settingsStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
         _menuOnBackClicked: () => {
@@ -37,8 +45,10 @@ Item {
     }
 
     VPNStackView {
+        property bool _settingsView: true
         id: settingsStackView
-        anchors.top: parent.top
+        anchors.top: menu.bottom
+        anchors.topMargin: VPNTheme.theme.menuHeight
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom

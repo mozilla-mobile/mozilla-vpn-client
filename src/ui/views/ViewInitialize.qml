@@ -21,7 +21,7 @@ Item {
         labelText: qsTrId("vpn.main.getHelp2")
         onClicked: {
             Sample.getHelpClickedInitialize.record();
-            stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false});
+            getHelpViewNeeded();
         }
     }
 

@@ -580,7 +580,7 @@ Item {
                 return;
             }
             Sample.settingsViewOpened.record();
-            stackview.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate)
+            VPN.settingsNeeded();
         }
 
         anchors.top: parent.top

@@ -43,7 +43,6 @@ describe('Settings', function() {
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
 
-
     await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
@@ -247,9 +246,9 @@ describe('Settings', function() {
 
     await vpn.clickOnElement('aboutUsList/aboutUsList-license');
 
-    await vpn.waitForElement('licenseBackButton');
-    await vpn.waitForElementProperty('licenseBackButton', 'visible', 'true');
-    await vpn.clickOnElement('licenseBackButton');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('settingsBackButton');
@@ -275,8 +274,8 @@ describe('Settings', function() {
     await vpn.clickOnElement('settingsGetHelp');
     await vpn.wait();
 
-    await vpn.waitForElement('settingsBackButton');
-    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
+    await vpn.waitForElement('getHelpBack');
+    await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
 
     await vpn.waitForElement('getHelpLinks');
     await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
@@ -300,9 +299,10 @@ describe('Settings', function() {
     await vpn.clickOnElement('giveFeedbackView');
     await vpn.wait();
 
-    await vpn.waitForElement('settingsBackButton');
-    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
-    await vpn.clickOnElement('settingsBackButton');
+    await vpn.waitForElement('giveFeedbackBackButton');
+    await vpn.waitForElementProperty(
+        'giveFeedbackBackButton', 'visible', 'true');
+    await vpn.clickOnElement('giveFeedbackBackButton');
     await vpn.wait();
     console.log('  Checkpoint e');
 
@@ -349,8 +349,8 @@ describe('Settings', function() {
     */
 
     await vpn.wait();
-    await vpn.waitForElement('settingsBackButton');
-    await vpn.clickOnElement('settingsBackButton');
+    await vpn.waitForElement('getHelpBack');
+    await vpn.clickOnElement('getHelpBack');
     console.log('  Checkpoint i');
 
     await vpn.waitForElement('settingsGetHelp');

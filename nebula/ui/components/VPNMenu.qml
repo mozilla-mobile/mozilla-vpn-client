@@ -13,14 +13,11 @@ Item {
     property alias objectName: iconButton.objectName
     property alias title: title.text
     property alias rightTitle: rightTitle.text
-    property bool isSettingsView: false
-    property bool isMultiHopView: false
-    property bool isMainView: false
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
-    property var _menuOnBackClicked: () => handleMenuGoBack();
     property string _iconButtonSource: "qrc:/nebula/resources/back.svg"
+    property var _menuOnBackClicked: () => { goBack(); }
 
     width: parent.width
     height: VPNTheme.theme.menuHeight
@@ -86,30 +83,17 @@ Item {
         height: 1
     }
 
-    function handleMenuGoBack() {
-        isMultiHopView ? handleMultiHopNav() : goBack();
-    }
-
     function goBack() {
-        if (isMainView) {
-            mainStackView.pop();
-        } else if (isSettingsView) {
-            settingsStackView.pop();
-        } else if (stackview) {
+        if (typeof(stackview) !== "undefined") {
             stackview.pop();
+        } else {
+            mainStackView.pop();
         }
     }
 
     function clearViewStack() {
-        if (isMainView) {
-            mainStackView.pop();
-        } else if (isSettingsView) {
-            settingsStackView.pop();
-        }
-
-        if (stackview) {
-            // Close settings
-            stackview.pop(StackView.Immediate);
+        if (typeof(stackview) !== "undefined") {
+            stackview.pop();
         }
     }
 

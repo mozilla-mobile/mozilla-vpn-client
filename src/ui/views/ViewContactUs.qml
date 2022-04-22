@@ -12,7 +12,6 @@ import components.forms 0.1
 
 Item {
     property string _menuTitle: VPNl18n.InAppSupportWorkflowSupportNavLinkText
-    property alias isMainView: menu.isMainView
     property bool addSafeAreaMargin: false
 
     // This property is used to cache the emailAddress between the sub-views.
@@ -21,17 +20,12 @@ Item {
     id: contactUsRoot
     objectName: "contactUs"
 
-    function stackView() {
-      if (menu.isMainView) return mainStackView;
-      return stackview;
-    }
-
     function tryAgain() {
-        stackView().pop();
+        mainStackView.pop();
     }
 
     function createSupportTicket(email, subject, issueText, category) {
-        stackView().push("qrc:/nebula/components/VPNLoader.qml", {
+        mainStackView.push("qrc:/nebula/components/VPNLoader.qml", {
             footerLinkIsVisible: false
         });
         VPN.createSupportTicket(email, subject, issueText, category);
@@ -46,10 +40,7 @@ Item {
         id: menu
         objectName: "supportTicketScreen"
         title: VPNl18n.InAppSupportWorkflowSupportNavLinkText
-        y: addSafeAreaMargin ? safeAreaHeightByDevice() : 0
-
-        // this view gets pushed to stackView from backend always
-        // and so should be removed from stackView (even in settings flow) on back clicks
+        anchors.top: parent.top
     }
 
     StackView {
@@ -59,15 +50,14 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.top: menu.bottom
-        anchors.topMargin: 0
 
         Connections {
             target: VPN
             function onTicketCreationAnswer(successful) {
                 if(successful) {
-                    stackView().replace(thankYouView);
+                    mainStackView.replace(thankYouView, StackView.Immediate);
                 } else {
-                    stackView().replace("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                    mainStackView.replace("qrc:/ui/views/ViewErrorFullScreen.qml", {
                         headlineText: VPNl18n.InAppSupportWorkflowSupportErrorHeader,
                         errorMessage: VPNl18n.InAppSupportWorkflowSupportErrorText,
                         primaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorButton,
@@ -261,7 +251,9 @@ Item {
                         VPNCancelButton {
                             Layout.alignment: Qt.AlignHCenter
                             Layout.preferredHeight: VPNTheme.theme.rowHeight
-                            onClicked: stackView().pop()
+                            onClicked: mainStackView.pop()
+                            implicitHeight: VPNTheme.theme.rowHeight
+
                         }
                     }
 
@@ -300,8 +292,8 @@ Item {
                anchors.topMargin: VPNTheme.theme.vSpacing
                anchors.horizontalCenter: parent.horizontalCenter
                onClicked: {
-                   stackView().pop();
-                   stackView().pop();
+                   mainStackView.pop();
+                   mainStackView.pop();
                }
                Component.onCompleted: {
                  if (window.fullscreenRequired()) {

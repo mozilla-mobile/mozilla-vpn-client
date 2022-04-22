@@ -13,7 +13,6 @@ Item {
     property alias logoTitle: logoTitle.text
     property alias logoSubtitle: logoSubtitle.text
     property var logoSize: 76
-    property var isSettingsView: false
 
     anchors.horizontalCenter: parent.horizontalCenter
     width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
@@ -38,7 +37,7 @@ Item {
             Image {
                 id: logo
 
-                visible: !isSettingsView
+                visible: typeof(_settingsView) === "undefined"
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: logoWrapper.bottom
                 verticalAlignment: Image.AlignBottom
@@ -51,7 +50,7 @@ Item {
             VPNAvatar {
                 id: avatar
 
-                visible: isSettingsView
+                visible: !(typeof(_settingsView) === "undefined")
                 avatarUrl: logo.source
                 anchors.fill: logoWrapper
             }
@@ -65,7 +64,7 @@ Item {
             Layout.topMargin: 24
             // In Settings, the headline wrapMode is set to 'WrapAtWordBoundaryOrAnywhere' to
             // prevent very long, unbroken display names from throwing the layout
-            wrapMode: isSettingsView ? Text.WrapAtWordBoundaryOrAnywhere : Text.WordWrap
+            wrapMode: typeof(_settingsView) === "undefined" ? Text.WordWrap : Text.WrapAtWordBoundaryOrAnywhere
         }
 
         VPNSubtitle {

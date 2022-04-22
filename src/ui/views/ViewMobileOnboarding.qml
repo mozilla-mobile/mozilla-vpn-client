@@ -211,10 +211,10 @@ VPNFlickable {
                 shouldRestoreSlide = true;
                 goToNextSlide();
             }
-            stackview.push("qrc:/ui/views/ViewGetHelp.qml", { addSafeAreaMargin: true });
+            getHelpViewNeeded();
         }
 
-        anchors.topMargin: VPNTheme.theme.listSpacing * 1.5 + safeAreaHeightByDevice()
+        anchors.topMargin: VPNTheme.theme.listSpacing
     }
 
     QtObject {
@@ -324,25 +324,6 @@ VPNFlickable {
             id: spacerBottom
             Layout.preferredHeight: Math.min(window.height * 0.08, VPNTheme.theme.rowHeight)
         }
-    }
-
-    VPNRadialGradient {
-        anchors.fill: parent
-        gradient: Gradient {
-            GradientStop {
-                color: VPNTheme.theme.onBoardingGradient.start
-                position: 0.0
-            }
-            GradientStop {
-                color: VPNTheme.theme.onBoardingGradient.middle
-                position: 0.2
-            }
-            GradientStop {
-                color: VPNTheme.theme.onBoardingGradient.end
-                position: 0.5
-            }
-        }
-        z: -1
     }
 
     function goToNextSlide() {

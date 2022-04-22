@@ -130,7 +130,7 @@ Item {
 
                     labelText: qsTrId("vpn.main.getHelp2")
                     Layout.alignment: Qt.AlignHCenter
-                    onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false})
+                    onClicked: getHelpViewNeeded()
                     Layout.preferredHeight: VPNTheme.theme.rowHeight
                 }
 

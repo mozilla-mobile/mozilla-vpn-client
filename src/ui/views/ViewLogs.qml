@@ -21,7 +21,6 @@ Item {
     VPNMenu {
         id: menu
 
-        isMainView: true
         //% "View Logs"
         title: qsTrId("vpn.viewlogs.title")
     }
