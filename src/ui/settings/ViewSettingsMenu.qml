@@ -17,12 +17,7 @@ VPNFlickable {
 
     id: vpnFlickable
     objectName: "settingsView"
-
-    flickContentHeight: settingsList.implicitHeight + VPNTheme.theme.menuHeight
-    windowHeightExceedsContentHeight: !(flickContentHeight > height)
-
-    anchors.top:  parent.top
-    anchors.topMargin: VPNTheme.theme.menuHeight
+    flickContentHeight: settingsList.implicitHeight
 
     Component {
         id: aboutUsComponent
@@ -37,7 +32,7 @@ VPNFlickable {
 
         spacing: VPNTheme.theme.windowMargin
         width: parent.width - VPNTheme.theme.windowMargin
-        height: Math.max(vpnFlickable.height - VPNTheme.theme.menuHeight, settingsList.implicitHeight)
+        height: Math.max(vpnFlickable.height, settingsList.implicitHeight)
 
         anchors {
             top: parent.top
@@ -125,7 +120,7 @@ VPNFlickable {
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 onClicked: {
                     Sample.getHelpClickedViewSettings.record();
-                    settingsStackView.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: true})
+                    mainStackView.push("qrc:/ui/views/ViewGetHelp.qml")
                 }
             }
 

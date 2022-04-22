@@ -342,6 +342,34 @@ VPNFlickable {
         }
     }
 
+    VPNRadialGradient {
+        id: mobileOnboardingBackground
+        height: Screen.height
+        width: Screen.width
+        gradient: Gradient {
+            GradientStop {
+                color: VPNTheme.theme.onBoardingGradient.start
+                position: 0.0
+            }
+            GradientStop {
+                color: VPNTheme.theme.onBoardingGradient.middle
+                position: 0.2
+            }
+            GradientStop {
+                color: VPNTheme.theme.onBoardingGradient.end
+                position: 0.5
+            }
+        }
+
+        z: -1
+
+        // Hide background if 'Get help' is clicked, or another view is opened from system tray
+        visible: mainStackView.depth === 1
+    }
+
+    Component.onCompleted: fullScreenMobileBackground.data.push(mobileOnboardingBackground)
+    Component.onDestruction: fullScreenMobileBackground.data.pop()
+
     function recordGleanEvtAndStartAuth(ctaObjectName) {
         Sample.onboardingCtaClick.record({
                                               "panel_id": currentPanelValues._panelId,

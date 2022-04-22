@@ -116,30 +116,11 @@ Window {
         }
     }
 
-    VPNRadialGradient {
-        id: mobileOnboardingBackground
-        y: 0
-        x: 0
-        height: Screen.height
-        width: Screen.width
-        gradient: Gradient {
-            GradientStop {
-                color: VPNTheme.theme.onBoardingGradient.start
-                position: 0.0
-            }
-            GradientStop {
-                color: VPNTheme.theme.onBoardingGradient.middle
-                position: 0.2
-            }
-            GradientStop {
-                color: VPNTheme.theme.onBoardingGradient.end
-                position: 0.5
-            }
-        }
-
-        z: -1
-        visible:  isMobileOnboardingOnIos && mainStackView.depth === 1
+    Item {
+        // Workaround to support full-screen background gradients/colors on mobile
+        id: fullScreenMobileBackground
     }
+
 
     Rectangle {
         id: iosSafeAreaTopMargin
@@ -315,8 +296,11 @@ Window {
                     return;
                 }
             }
+
             // If we can't show logs natively, open the viewer
-            mainStackView.push("qrc:/ui/views/ViewLogs.qml");
+            if (mainStackView.currentItem.objectName !== "viewLogs") {
+                mainStackView.push("qrc:/ui/views/ViewLogs.qml");
+            }
         }
 
         function onLoadAndroidAuthenticationView() {
@@ -324,6 +308,30 @@ Window {
                 console.log("Unexpected android authentication view request!");
             }
             mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
+        }
+
+        function onContactUsNeeded() {
+            // Check if Contact Us view is already in mainStackView
+            const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
+            if (contactUsViewInStack) {
+                // Unwind mainStackView back to Contact Us
+                return mainStackView.pop(contactUsViewInStack, StackView.Immediate);
+            }
+            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", StackView.Immediate);
+        }
+
+        function onSettingsNeeded() {
+            // Check if Settings view is already in mainStackView
+            const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" })
+
+            if (settingsViewInMainStack) {
+                // Unwind settingsStackView back to menu
+                settingsViewInMainStack.unwindSettingsStackView();
+
+                // Unwind mainStackView back to Settings
+                return mainStackView.pop(settingsViewInMainStack, StackView.Immediate);
+            }
+            mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
         }
 
         function onInitializeGlean() {
@@ -376,17 +384,6 @@ Window {
         function onGleanEnabledChanged() {
             console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);
-        }
-    }
-
-    Connections {
-        target: VPN
-        function onContactUsNeeded() {
-            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", StackView.Immediate);
-        }
-
-        function onSettingsNeeded() {
-            mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
         }
     }
 

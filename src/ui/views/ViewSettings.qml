@@ -10,17 +10,18 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 Item {
+    objectName: "settings"
+    property var unwindSettingsStackView: () => { settingsStackView.pop(settingsStackView.find((view) => { return view.objectName === "viewSettings" })) }
     VPNMenu {
         id: menu
         objectName: "settingsBackButton"
-
-
         _menuOnBackClicked: () => {
             if (settingsStackView.depth !== 1) {
                 return settingsStackView.pop();
             }
             mainStackView.pop()
         }
+        _iconButtonSource: settingsStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
 
         anchors.top: parent.top
         anchors.left: parent.left
@@ -28,13 +29,6 @@ Item {
 
         title: ""
         opacity: visible ? 1 : 0
-        _iconButtonSource: settingsStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
-        _menuOnBackClicked: () => {
-            if (settingsStackView.depth !== 1) {
-                return settingsStackView.pop();
-            }
-            stackview.pop(StackView.Immediate)
-        }
 
 
         Behavior on opacity {

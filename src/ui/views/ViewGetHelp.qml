@@ -17,6 +17,11 @@ Item {
     id: getHelp
     objectName: "getHelp"
 
+    Rectangle {
+        anchors.fill: getHelp
+        color: window.color
+    }
+
     Timer {
         id: unlockTimeout
         repeat: false
