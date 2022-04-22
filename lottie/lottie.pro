@@ -3,6 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 TEMPLATE = subdirs
+
 SUBDIRS += bin
+SUBDIRS += lib
 SUBDIRS += tests/unit
 SUBDIRS += tests/qml
+
+bin.depends = lib
+tests/unit.depends = lib
+tests/unit.qml = lib

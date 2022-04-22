@@ -34,10 +34,6 @@ INCLUDEPATH += \
             ../../lottie/lib \
             ../../nebula
 
-include($$PWD/../../glean/glean.pri)
-include($$PWD/../../lottie/lottie.pri)
-include($$PWD/../../nebula/nebula.pri)
-
 SOURCES += \
     helper.cpp \
     main.cpp \
@@ -79,6 +75,10 @@ HEADERS += \
     ../../src/theme.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
+
+LIBS += -L../../glean -lglean
+LIBS += -L../../lottie/lib -llottie
+LIBS += -L../../nebula -lnebula
 
 exists($$PWD/../../translations/generated/l18nstrings.h) {
     SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp

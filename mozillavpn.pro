@@ -12,9 +12,15 @@
 
 TEMPLATE = subdirs
 
+SUBDIRS += glean
+SUBDIRS += lottie
+SUBDIRS += nebula
+SUBDIRS += translations
 SUBDIRS += src
 SUBDIRS += tests/unit
-SUBDIRS += lottie/tests/unit
+
+src.depends = glean lottie nebula translations
+tests/unit.depends = glean nebula translations
 
 # separate flag because an extra dependency is needed: liboath
 AUTHTEST {

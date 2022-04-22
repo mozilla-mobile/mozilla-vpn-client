@@ -10,6 +10,8 @@ Makefile.*
 src/mozillavpn
 src/mozillavpn.app
 src/mozillavpn.framework
+src/netfilter.a
+src/netfilter.h
 mozillavpn_wg
 mozillavpn.qmltypes
 mozillavpn_metatypes.json
@@ -22,7 +24,6 @@ dbus_adaptor.*
 dbus_interface.*
 mozillavpn-daemon
 *_plugin_import.cpp
-linux/netfilter/netfilter.[ah]
 linux/netfilter/vendor/
 .qm
 .tmp
