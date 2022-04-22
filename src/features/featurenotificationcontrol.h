@@ -21,7 +21,8 @@ class FeatureNotificationControl final : public Feature {
                 "",                  // IconPath
                 "",                  // link URL
                 "2.3",               // released
-                true                 // Can be enabled in devmode
+                true,                // Can be enabled in devmode
+                QStringList()        // feature dependencies
         ){};
 
   bool checkSupportCallback() const override { return true; }

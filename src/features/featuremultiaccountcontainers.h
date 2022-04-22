@@ -31,7 +31,8 @@ class FeatureMultiAccountContainers final : public Feature {
             "client&utm_medium=in-app-link&utm_content=whats-new-panel&utm_"
             "campaign=vpn-better-together",  // link URL
             "2.7",
-            false  // Can be enabled in devmode
+            false,         // Can be enabled in devmode
+            QStringList()  // feature dependencies
         ) {}
 
   bool checkSupportCallback() const override {
