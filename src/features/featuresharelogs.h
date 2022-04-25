@@ -22,7 +22,7 @@ constexpr const char* FEATURE_SHARE_LOGS = "shareLogs";
 class FeatureShareLogs : public Feature {
  public:
   FeatureShareLogs()
-      : Feature(FEATURE_SHARE_LOGS, "shareLogs",
+      : Feature(FEATURE_SHARE_LOGS, "Share Logs",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
@@ -31,7 +31,8 @@ class FeatureShareLogs : public Feature {
                 "",                  // IconPath
                 "",                  // link URL
                 "2.6",               // released
-                false                // Can be enabled in devmode
+                false,               // Can be enabled in devmode
+                QStringList()        // feature dependencies
         ) {}
 
   bool checkSupportCallback() const override {

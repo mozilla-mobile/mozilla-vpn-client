@@ -47,6 +47,7 @@ theme.fontColorDark = '#3D3D3D';
 theme.fontFamily = 'Metropolis';
 theme.fontBoldFamily = 'MetropolisSemiBold';
 theme.fontInterFamily = 'InterUI';
+theme.fontInterSemiBoldFamily = 'InterSemiBold';
 theme.fontSize = 15;
 theme.fontSizeLarge = 22;
 theme.fontSizeSmall = 13;
@@ -124,7 +125,7 @@ theme.iconButtonLightBackground = {
   'defaultColor': theme.bgColorTransparent,
   'buttonHovered': theme.greyHovered,
   'buttonPressed': theme.greyPressed,
-  'buttonDisabled': theme.greyDisabled,
+  'buttonDisabled': theme.transparent,
   'focusOutline': theme.bgColorTransparent,
   'focusBorder': theme.darkFocusBorder,
 };

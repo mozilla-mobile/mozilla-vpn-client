@@ -557,3 +557,9 @@ accessibility:
       - Used by screen readers to denote that a particular item is currently selected.
       - For example, given a segmented control with 2 items, where the first item is currently selected. We want the screen reader to read out "Selected, <item name>".
       - The %1 represents the name of the selected item.
+
+freeTrials:
+  startYourFreeTrial: 
+    value: Sign up to start your 7-day free trial.
+    comment: This string appears above the 'Sign up' button on mobile onboarding views
+  freeTrialLabel: 7-day free trial

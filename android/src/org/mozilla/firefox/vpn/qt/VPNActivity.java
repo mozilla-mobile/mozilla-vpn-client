@@ -17,7 +17,7 @@ import android.os.RemoteException;
 import android.view.KeyEvent;
 
 import org.mozilla.firefox.vpn.VPNClientBinder;
-import org.mozilla.firefox.vpn.VPNService;
+import org.mozilla.firefox.vpn.daemon.VPNService;
 
 import java.nio.charset.StandardCharsets;
 

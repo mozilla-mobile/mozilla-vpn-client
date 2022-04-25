@@ -18,7 +18,7 @@ jobs:
       matrix:
         config:
             - { name: Release, args: "", apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
-            - { name: Debug, args: "--debug", apk: .tmp/src/android-build/mozillavpn.apk, sym: false, sign: false}
+            - { name: Debug, args: "--debug", apk: .tmp/src/android-build/build/outputs/apk/debug/, sym: false, sign: false}
         arch: 
           # Qt6 names their arch different then what qmake expects ...
           - {name: "armv7", qmake: "armeabi-v7a"}
@@ -64,7 +64,7 @@ jobs:
         if: matrix.config.sign == false
         with:
             name: ${{matrix.arch.name}}_${{ matrix.config.name }}
-            path: ${{ matrix.config.apk }}
+            path: ${{ matrix.config.apk }}/android-build-${{ matrix.arch.qmake }}-debug.apk
 
       - name: Upload Debug Symbols
         if: ${{ matrix.config.sym }} 

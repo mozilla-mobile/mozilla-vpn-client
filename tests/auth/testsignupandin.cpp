@@ -6,6 +6,7 @@
 #include "../../src/authenticationinapp/authenticationinapp.h"
 #include "../../src/networkrequest.h"
 #include "../../src/tasks/authenticate/taskauthenticate.h"
+#include "../../src/tasks/deleteaccount/taskdeleteaccount.h"
 #include "../../src/tasks/function/taskfunction.h"
 
 #include <QDateTime>
@@ -129,12 +130,7 @@ void TestSignUpAndIn::signUp() {
   aia->verifySessionEmailCode(code);
   QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
 
-  QString authFailureDetail;
-  connect(aia, &AuthenticationInApp::unitTestAuthFailedWithDetail,
-          [&](const QString& detail) {
-            authFailureDetail = detail;
-            loop.exit();
-          });
+  connect(&task, &Task::completed, [&]() { loop.exit(); });
 
   if (m_totpCreation) {
     waitForTotpCodes();
@@ -142,8 +138,6 @@ void TestSignUpAndIn::signUp() {
 
   loop.exec();
   disconnect(aia, nullptr, nullptr, nullptr);
-
-  QCOMPARE(authFailureDetail, "no_subscription_for_user");
 }
 
 void TestSignUpAndIn::signUpWithError() {
@@ -254,9 +248,6 @@ void TestSignUpAndIn::signIn() {
 
   QCOMPARE(aia->state(), AuthenticationInApp::StateSignIn);
 
-  // Let's delete the account the end of the flow.
-  aia->enableAccountDeletion();
-
   // Invalid Password
   if (m_emailAccount.startsWith("vpn")) {
     // We run this part only for non-blocked accounts because for them, the
@@ -292,19 +283,7 @@ void TestSignUpAndIn::signIn() {
           [this](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error == AuthenticationInApp::ErrorInvalidUnblockCode) {
               qDebug() << "Invalid unblock code. Sending a good one";
-
-              AuthenticationInApp* aia = AuthenticationInApp::instance();
-              QCOMPARE(aia->state(),
-                       AuthenticationInApp::StateUnblockCodeNeeded);
-
-              // We do not receive the email each time.
-              aia->resendUnblockCodeEmail();
-
-              QString code = fetchUnblockCode();
-              QVERIFY(!code.isEmpty());
-              aia->verifyUnblockCode(code);
-              QCOMPARE(aia->state(),
-                       AuthenticationInApp::StateVerifyingUnblockCode);
+              fetchAndSendUnblockCode();
             }
           });
 
@@ -318,17 +297,10 @@ void TestSignUpAndIn::signIn() {
     }
   });
 
-  QString authFailureDetail;
-  connect(aia, &AuthenticationInApp::unitTestAuthFailedWithDetail,
-          [&](const QString& detail) {
-            authFailureDetail = detail;
-            loop.exit();
-          });
+  connect(&task, &Task::completed, [&]() { loop.exit(); });
 
   loop.exec();
   disconnect(aia, nullptr, nullptr, nullptr);
-
-  QCOMPARE(authFailureDetail, "no_subscription_for_user");
 }
 
 void TestSignUpAndIn::signInWithError() {
@@ -385,6 +357,71 @@ void TestSignUpAndIn::signInWithError() {
             }
           });
   loop.exec();
+}
+
+void TestSignUpAndIn::deleteAccount() {
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QVERIFY(!!aia);
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
+
+  QString emailAddress(m_emailAccount);
+  emailAddress.append("@restmail.net");
+
+  // Starting the account deletion flow.
+  TaskDeleteAccount task(emailAddress);
+  task.run();
+
+  EventLoop loop;
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateCheckingAccount) {
+      loop.exit();
+    }
+  });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateSignIn) {
+      loop.exit();
+    }
+  });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSignIn);
+
+  aia->setPassword(PASSWORD);
+
+  // Sign-in
+  aia->signIn();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateSigningIn);
+
+  // The next step can be tricky: totp, or unblocked code, or success
+  if (m_totpCreation) {
+    waitForTotpCodes();
+  }
+
+  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+    if (aia->state() == AuthenticationInApp::StateUnblockCodeNeeded) {
+      fetchAndSendUnblockCode();
+    } else if (aia->state() ==
+               AuthenticationInApp::StateAccountDeletionRequest) {
+      loop.exit();
+    }
+  });
+
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
+
+  QVERIFY(!aia->attachedClients().isEmpty());
+
+  aia->deleteAccount();
+
+  connect(&task, &Task::completed, [&]() { loop.exit(); });
+  loop.exec();
+  disconnect(aia, nullptr, nullptr, nullptr);
 }
 
 QString TestSignUpAndIn::fetchSessionCode() {
@@ -501,4 +538,17 @@ QString TestSignUpAndIn::fetchCode(const QString& code) {
     timer.start(2000 /* 2 seconds */);
     loop.exec();
   }
+}
+
+void TestSignUpAndIn::fetchAndSendUnblockCode() {
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QCOMPARE(aia->state(), AuthenticationInApp::StateUnblockCodeNeeded);
+
+  // We do not receive the email each time.
+  aia->resendUnblockCodeEmail();
+
+  QString code = fetchUnblockCode();
+  QVERIFY(!code.isEmpty());
+  aia->verifyUnblockCode(code);
+  QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingUnblockCode);
 }

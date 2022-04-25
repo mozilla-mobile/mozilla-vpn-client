@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidiaphandler.h"
-#include "androidjnicompat.h"
 #include "androidutils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -12,6 +11,8 @@
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
 
+#include <QJniObject>
+#include <QJniEnvironment>
 #include <QCoreApplication>
 #include <QJsonArray>
 #include <QJsonDocument>

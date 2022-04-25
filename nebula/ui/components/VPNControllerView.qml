@@ -525,6 +525,7 @@ Item {
 
     VPNIconButton {
         id: connectionInfoToggleButton
+        objectName: "connectionInfoToggleButton"
 
         //% "Close"
         property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")

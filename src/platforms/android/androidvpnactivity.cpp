@@ -10,7 +10,8 @@
 
 #include "jni.h"
 #include <QApplication>
-#include "androidjnicompat.h"
+#include <QJniObject>
+#include <QJniEnvironment>
 
 namespace {
 AndroidVPNActivity* s_instance = nullptr;

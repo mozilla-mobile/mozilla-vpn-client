@@ -6,7 +6,6 @@
 #define DEVICEMODEL_H
 
 #include <QAbstractListModel>
-#include <QPointer>
 
 #include "device.h"
 

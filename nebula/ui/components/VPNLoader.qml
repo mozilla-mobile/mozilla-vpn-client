@@ -72,13 +72,15 @@ Item {
 
     }
 
-    VPNFooterLink {
+    VPNCancelButton {
         id: footerLink
         objectName: "cancelFooterLink"
 
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: Math.min(window.safeContentHeight * .08, 60)
+
         visible: footerLinkIsVisible
-        //% "Cancel"
-        labelText: qsTrId("vpn.authenticating.cancel")
         onClicked: VPN.cancelAuthentication()
     }
 

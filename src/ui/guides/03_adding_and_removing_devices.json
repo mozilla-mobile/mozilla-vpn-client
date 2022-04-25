@@ -1,0 +1,36 @@
+{
+  "id": "adding_and_removing_devices",
+  "title": "How do I add and remove devices?",
+  "subtitle": "Follow this quick and simple 3 step guide to add and remove all of your devices easily.",
+  "image": "qrc:/guides/003_adding_and_removing_devices.svg",
+  "blocks": [
+    { "id": "c_1",
+      "type": "title",
+      "content": "How to add a device" },
+    { "id": "c_2",
+      "type": "olist",
+      "content": [
+        { "id": "l_1",
+          "content": "Open the Mozilla VPN app on your preferred device" },
+        { "id": "l_2",
+          "content": "Sign in to your account" },
+        { "id": "l_3",
+          "content": "Voila! Your device has been automatically added to your VPN list of connected devices" }
+      ]
+    },
+    { "id": "c_3",
+      "type": "title",
+      "content": "How to remove a device" },
+    { "id": "c_4",
+      "type": "olist",
+      "content": [
+        { "id": "l_1",
+          "content": "Open Mozilla VPN in your chosen desktop or mobile device" },
+        { "id": "l_2",
+          "content": "Tap on “My Devices” in your VPN homescreen" },
+        { "id": "l_3",
+          "content": "Select the “Trash” icon next to the device you want to remove from your list of connected devices" }
+      ]
+    }
+  ]
+}

@@ -60,6 +60,9 @@ VPNInAppAuthenticationBase {
             onClicked: VPN.openLink(VPN.LinkForgotPassword)
         }
 
-        VPNInAppAuthenticationCancel {}
+        VPNCancelButton {
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: VPN.cancelAuthentication()
+        }
     }
 }

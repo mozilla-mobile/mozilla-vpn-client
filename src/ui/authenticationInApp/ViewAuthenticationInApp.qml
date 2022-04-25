@@ -27,7 +27,7 @@ Item {
     states: [
         State {
             name: "StateInitializing"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateInitializing
+            when: VPNAuthInApp.state === VPNAuthInApp.StateInitializing || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
             PropertyChanges {
                 target: loader
                 source: "ViewAuthenticationInitializing.qml"

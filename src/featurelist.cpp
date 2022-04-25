@@ -11,6 +11,7 @@
 #  include "adjust/adjustfiltering.h"
 #endif
 
+#include "features/featureaccountdeletion.h"
 #include "features/featureappreview.h"
 #include "features/featurecaptiveportal.h"
 #include "features/featureconnectioninfo.h"
@@ -52,6 +53,7 @@ FeatureList* FeatureList::instance() {
 }
 
 void FeatureList::initialize() {
+  new FeatureAccountDeletion();
   new FeatureAppReview();
   new FeatureCaptivePortal();
   new FeatureConnectionInfo();
