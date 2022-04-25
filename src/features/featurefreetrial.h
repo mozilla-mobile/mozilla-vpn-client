@@ -13,7 +13,7 @@ class FeatureFreeTrial : public Feature {
  public:
   FeatureFreeTrial()
       : Feature(FEATURE_FREETRIAL, "Free trial",
-                true,                // Is Major Feature
+                false,               // Is Major Feature
                 L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
