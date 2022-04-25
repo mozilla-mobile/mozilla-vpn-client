@@ -118,7 +118,7 @@ void BenchmarkTaskDownload::downloadReady(QNetworkReply::NetworkError error,
   Q_UNUSED(data);
 
   NetworkRequest* request = qobject_cast<NetworkRequest*>(QObject::sender());
-  m_requests.removeAll(request);
+  m_requests.removeOne(request);
 
   quint64 bitsPerSec = 0;
   double msecs = static_cast<double>(m_elapsedTimer.elapsed());
