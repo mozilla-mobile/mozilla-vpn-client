@@ -262,12 +262,14 @@ VPNFlickable {
             spacing: VPNTheme.theme.windowMargin
 
             VPNInterLabel {
-                Layout.maximumWidth: parent.width
                 Layout.alignment: Qt.AlignCenter
+                Layout.bottomMargin: VPNTheme.theme.rowHeight
+                Layout.maximumWidth: parent.width
 
                 text: VPNl18n.FreeTrialsStartYourFreeTrial
                 color: VPNTheme.colors.white80
                 font.family: VPNTheme.theme.fontInterSemiBoldFamily
+                visible: VPNFeatureList.get("freeTrial").isSupported
             }
 
             PageIndicator {
@@ -276,7 +278,6 @@ VPNFlickable {
                 interactive: true
                 count: swipeView.count
                 currentIndex: swipeView.currentIndex
-                Layout.topMargin: VPNTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignCenter
                 spacing: VPNTheme.theme.windowMargin / 2
 
