@@ -15,6 +15,7 @@
 #include "features/featurecaptiveportal.h"
 #include "features/featureconnectioninfo.h"
 #include "features/featurecustomdns.h"
+#include "features/featurefreetrial.h"
 #include "features/featureinappaccountcreate.h"
 #include "features/featureinappauth.h"
 #include "features/featureinapppurchase.h"
@@ -56,6 +57,7 @@ void FeatureList::initialize() {
   new FeatureCaptivePortal();
   new FeatureConnectionInfo();
   new FeatureCustomDNS();
+  new FeatureFreeTrial();
   new FeatureInAppAccountCreate();
   new FeatureInAppAuth();
   new FeatureInAppPurchase();
