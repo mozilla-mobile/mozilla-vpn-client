@@ -20,6 +20,7 @@ Item {
         fillMode: Image.PreserveAspectFit
         smooth: true
         source: isDefaultAvatar() ? "" : avatarUrl
+        visible: false
     }
 
     Image {
@@ -39,17 +40,13 @@ Item {
     Rectangle {
         id: avatarMask
 
-        anchors.centerIn: avatar
-        height: avatar.height
+        anchors.fill: avatar
         radius: height / 2
         visible: false
-        width: height
     }
 
     VPNOpacityMask {
-        anchors.centerIn: avatar
-        height: avatar.height
-        width: height
+        anchors.fill: avatar
         source: avatar
         maskSource: avatarMask
     }
