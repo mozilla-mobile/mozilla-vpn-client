@@ -70,6 +70,7 @@ Release/
 Release-iphone*
 !android/resources/release/
 macos/gobridge/wireguard-go-version.h
+ios/gobridge/wireguard-go-version.h
 
 # Taskcluster/ Taskgraph
 !taskcluster/ci/build
@@ -81,11 +82,11 @@ macos/gobridge/wireguard-go-version.h
 .idea/
 .vscode/
 vscode-cpptools/*
-MozillaVPN.xcodeproj/
+*.xcodeproj/
 MozillaVPN.vcxproj*
 *.autosave
 
-#Windows 
+#Windows
 .deps
 lib*.dll
 balrog.dll
