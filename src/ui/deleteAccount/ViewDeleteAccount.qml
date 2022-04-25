@@ -18,6 +18,7 @@ Item {
 
     Loader {
         id: loader
+        property bool isDeleteAccountAuth: true
 
         anchors.fill: parent
 
@@ -37,11 +38,9 @@ Item {
                 prevState !== ""
                 && viewDeleteAccount.state === "StateInitializing"
             ) {
-                // `StateInitializing` is set during the account deletion flow which,
-                // means the user aborted the operation
+                // `StateInitializing` is set during the account deletion flow,
+                // which means the user aborted the operation
                 settingsStackView.pop();
-            } else if (viewDeleteAccount.state === "StateSignIn") {
-                item.isDeleteAccountAuth = true;
             }
 
             prevState = viewDeleteAccount.state;
@@ -67,15 +66,6 @@ Item {
         },
 
         State {
-            name: "StateStart"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateStart
-            PropertyChanges {
-                target: loader
-                source: "" // TODO: Error! Handle this case.
-            }
-        },
-
-        State {
             name: "StateSignIn"
             when: (
                 VPNAuthInApp.state === VPNAuthInApp.StateSignIn
@@ -84,17 +74,6 @@ Item {
             PropertyChanges {
                 target: loader
                 source: "../authenticationInApp/ViewAuthenticationSignIn.qml"
-            }
-        },
-
-        State {
-            when: (
-                VPNAuthInApp.state === VPNAuthInApp.StateSignUp
-                || VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
-            )
-            PropertyChanges {
-                target: loader
-                source: "" // TODO: Error! Handle this case.
             }
         },
 
@@ -131,15 +110,6 @@ Item {
             PropertyChanges {
                 target: loader
                 source: "../authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml"
-            }
-        },
-
-        State {
-            name: "StateFallbackInBrowser"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateFallbackInBrowser
-            PropertyChanges {
-                target: loader
-                source: "" // TODO: Error! Handle this case.
             }
         },
 

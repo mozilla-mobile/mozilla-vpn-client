@@ -10,8 +10,6 @@ import components 0.1
 import components.inAppAuth 0.1
 
 VPNInAppAuthenticationBase {
-    property bool isDeleteAccountAuth: false
-
     _changeEmailLinkVisible: !isDeleteAccountAuth
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => {
