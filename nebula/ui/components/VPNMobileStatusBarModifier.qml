@@ -5,22 +5,19 @@
 import QtQuick 2.5
 
 import Mozilla.VPN 1.0
+import components 0.1
 
 QtObject {
     id: statusBarModifier
 
-    enum StatusBarTextColor {
-        Light,
-        Dark
-    }
-    property int statusBarTextColor: VPNMobileStatusBarModifier.StatusBarTextColor.Dark
+    property int statusBarTextColor: VPNTheme.StatusBarTextColorDark
 
     function applyChanges() {
-        VPN.setStatusBarTextColor(statusBarModifier.statusBarTextColor);
+        VPNTheme.setStatusBarTextColor(statusBarModifier.statusBarTextColor);
     }
 
     function resetDefaults() {
-        VPN.setStatusBarTextColor(VPNMobileStatusBarModifier.StatusBarTextColor.Dark);
+        VPNTheme.setStatusBarTextColor(VPNTheme.StatusBarTextColorDark);
     }
 
     Component.onCompleted: applyChanges()

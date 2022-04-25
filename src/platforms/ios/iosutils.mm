@@ -4,6 +4,7 @@
 
 #include "iosutils.h"
 #include "logger.h"
+#include "theme.h"
 #include "qmlengineholder.h"
 
 #include <QDateTime>
@@ -115,8 +116,8 @@ int IOSUtils::compareStrings(const QString& a, const QString& b) {
 }
 
 // static
-void IOSUtils::setStatusBarTextColor(quint8 color) {
-  if (color == 0) {
+void IOSUtils::setStatusBarTextColor(const Theme::StatusBarTextColor color) {
+  if (color == Theme::StatusBarTextColorLight) {
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
   } else {
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDarkContent;

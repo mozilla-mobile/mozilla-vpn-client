@@ -24,7 +24,7 @@ VPNFlickable {
     interactive: flickContentHeight > height
 
     VPNMobileStatusBarModifier {
-        statusBarTextColor: VPNMobileStatusBarModifier.StatusBarTextColor.Light
+        statusBarTextColor: VPNTheme.StatusBarTextColorLight
     }
 
     ListModel {

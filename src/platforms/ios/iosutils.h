@@ -5,6 +5,8 @@
 #ifndef IOSUTILS_H
 #define IOSUTILS_H
 
+#include "theme.h"
+
 #include <QString>
 
 class IOSUtils final {
@@ -19,7 +21,7 @@ class IOSUtils final {
 
   static int compareStrings(const QString& a, const QString& b);
 
-  static void setStatusBarTextColor(const quint8 color);
+  static void setStatusBarTextColor(const Theme::StatusBarTextColor color);
 };
 
 #endif  // IOSUTILS_H
