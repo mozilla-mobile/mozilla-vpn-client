@@ -15,22 +15,18 @@ VPNInAppAuthenticationBase {
 
     property var checkboxData: [
         {
-            labelText: "Paid subscriptions", // TODO: Needs content
             subLabelText: VPNl18n.DeleteAccountOptionDescriptionOne,
             isSelected: false
         },
         {
-            labelText: "Saved information", // TODO: Needs content
             subLabelText: VPNl18n.DeleteAccountOptionDescriptionTwo,
             isSelected: false
         },
         {
-            labelText: "Reactivation", // TODO: Needs content
             subLabelText: VPNl18n.DeleteAccountOptionDescriptionThree,
             isSelected: false
         },
         {
-            labelText: "Extensions and themes", // TODO: Needs content
             subLabelText: VPNl18n.DeleteAccountOptionDescriptionFour,
             isSelected: false
         }
@@ -62,7 +58,6 @@ VPNInAppAuthenticationBase {
         Repeater {
             model: checkboxData
             delegate: VPNCheckBoxRow {
-                labelText: modelData.labelText
                 subLabelText: modelData.subLabelText
                 leftMargin: 0
                 isChecked: modelData.isSelected

@@ -24,6 +24,7 @@ Item {
 
         function cancelAccountDeletion() {
             VPN.cancelAccountDeletion();
+            VPN.cancelAuthentication();
 
             settingsStackView.pop();
         }
