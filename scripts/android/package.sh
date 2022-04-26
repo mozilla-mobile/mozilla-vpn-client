@@ -181,8 +181,6 @@ androiddeployqt --input android-mozillavpn-deployment-settings.json --output and
 cd android-build
 
 
-# If we wanted a release build we now need to 
-# also compile the java/kotlin code in release mode
 if [[ "$RELEASE" ]]; then
   print Y "Generating Release APK..."
   ./gradlew compileReleaseSources
@@ -197,5 +195,3 @@ else
   print G "Done 🎉"
   print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/debug/"
 fi
-
-cp -r build/outputs/apk  /mnt/android-build

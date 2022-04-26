@@ -286,6 +286,7 @@ Window {
             }
             // If we can't show logs natively, open the viewer
             mainStackView.push("qrc:/ui/views/ViewLogs.qml");
+
         }
 
         function onLoadAndroidAuthenticationView() {
