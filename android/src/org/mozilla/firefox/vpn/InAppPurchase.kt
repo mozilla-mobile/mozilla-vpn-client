@@ -348,14 +348,7 @@ class InAppPurchase private constructor(ctx: Context) :
         val monthlyPriceString = formatter.format(monthlyPrice)
 
         // freeTrialPeriod is a ISO 8601 duration i.e P7D == 7 days
-        val trialDays = if (monthCount == 12 && VPNUtils.isDevMode) {
-            // TODO: This is just some debugging stuff
-            // We need to be on prod so, for testing let's
-            // mock the PlayStore response for 12month if we're in isDevMode
-            // so QA can test when we go live
-            val duration = Duration.parse("P7D")
-            duration.toDays().toInt()
-        } else if (details.freeTrialPeriod.isEmpty()) {
+        val trialDays = if (details.freeTrialPeriod.isEmpty()) {
             0
         } else {
             val duration = Duration.parse(details.freeTrialPeriod)

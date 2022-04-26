@@ -66,7 +66,6 @@ class AndroidUtils final : public QObject {
 
   void resetListener() { m_listener = nullptr; }
 
-  static bool getIsDevMode(JNIEnv* env, jobject VPNUtils);
 
  private:
   QUrl m_url;

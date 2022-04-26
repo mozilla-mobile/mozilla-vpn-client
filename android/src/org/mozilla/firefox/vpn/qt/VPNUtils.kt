@@ -114,13 +114,4 @@ object VPNUtils {
     @JvmStatic
     private external fun recordGleanEvent(metricName: String)
 
-    @SuppressLint("Unused")
-    @JvmStatic
-    private external fun getIsDevMode(): Boolean
-
-    val isDevMode by lazy {
-        // "by lazy" means, we evaluate this on first
-        // get() and never again.
-        getIsDevMode()
-    }
 }
