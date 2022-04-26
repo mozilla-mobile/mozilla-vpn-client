@@ -69,37 +69,38 @@ void AndroidGlean::initializeGlean() {
   logger.debug() << "init GLEAN";
   bool upload = SettingsHolder::instance()->gleanEnabled();
   QString mode = Constants::inProduction() ? "production" : "staging";
-  QJniObject::callStaticMethod<void>(UTILS_CLASS, "initializeGlean",
-                                     "(ZLjava/lang/String;)V", upload,
-                                     QJniObject::fromString(mode).object<jstring>());
-
+  QJniObject::callStaticMethod<void>(
+      UTILS_CLASS, "initializeGlean", "(ZLjava/lang/String;)V", upload,
+      QJniObject::fromString(mode).object<jstring>());
 }
 void AndroidGlean::sendGleanPings() {
-    logger.debug() << "Send glean pings";
+  logger.debug() << "Send glean pings";
   QJniObject::callStaticMethod<void>(UTILS_CLASS, "sendGleanPings");
 }
 
 void AndroidGlean::recordGleanEvent(const QString& gleanSampleName) {
   logger.debug() << " recordGleanEvent" << gleanSampleName;
-  QJniObject::callStaticMethod<void>(UTILS_CLASS, "recordGleanEvent",
-                                     "(Ljava/lang/String;)V", 
-                                     QJniObject::fromString(gleanSampleName).object<jstring>());
-
+  QJniObject::callStaticMethod<void>(
+      UTILS_CLASS, "recordGleanEvent", "(Ljava/lang/String;)V",
+      QJniObject::fromString(gleanSampleName).object<jstring>());
 }
 
 void AndroidGlean::recordGleanEventWithExtraKeys(const QString& gleanSampleName,
                                                  const QVariantMap& extraKeys) {
   QJsonDocument jsonDoc = QJsonDocument::fromVariant(extraKeys);
-  QJniObject::callStaticMethod<void>(UTILS_CLASS, "recordGleanEventWithExtraKeys",
-                                     "(Ljava/lang/String;Ljava/lang/String;)V",
-                                     QJniObject::fromString(gleanSampleName).object<jstring>(),
-                                     QJniObject::fromString(jsonDoc.toJson(QJsonDocument::Compact)).object<jstring>());
+  logger.debug() << " recordGleanEvent" << gleanSampleName;
+  QJniObject::callStaticMethod<void>(
+      UTILS_CLASS, "recordGleanEventWithExtraKeys",
+      "(Ljava/lang/String;Ljava/lang/String;)V",
+      QJniObject::fromString(gleanSampleName).object<jstring>(),
+      QJniObject::fromString(jsonDoc.toJson(QJsonDocument::Compact))
+          .object<jstring>());
   return;
 }
 void AndroidGlean::setGleanSourceTags(const QStringList& tags) {
-  // TODO: Current no-op as glean-android does not implement this - no need to do anything
-  // QString list = tags.join(",");
-  // auto jList = QJniObject::fromString(list).object()
+  // TODO: Current no-op as glean-android does not implement this - no need to
+  // do anything QString list = tags.join(","); auto jList =
+  // QJniObject::fromString(list).object()
   // QJniObject::callStaticMethod<void>(UTILS_CLASS, "setGleanSourceTag",
   // "(ZLjava/lang/String;)",jList); return;
   Q_UNUSED(tags)

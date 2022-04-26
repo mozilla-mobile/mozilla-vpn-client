@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const val Mozilla_ANDROID_COMPONENT_VERSION ="99.0.10"
+const val Mozilla_ANDROID_COMPONENT_VERSION = "99.0.10"
 
 object Dependencies {
     const val org_jetbrains_kotlin_kotlin_serialization = "org.jetbrains.kotlin:kotlin-serialization:1.4.30-M1"
@@ -17,6 +17,6 @@ object Dependencies {
     const val com_google_android_gms_play_services_ads_identifier = "com.google.android.gms:play-services-ads-identifier:17.0.1"
     const val org_jetbrains_kotlinx_kotlinx_serialization_json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
     const val com_android_tools_desugar_jdk_libs = "com.android.tools:desugar_jdk_libs:1.0.10"
-    const val org_mozilla_components_service_glean ="org.mozilla.components:service-glean:$Mozilla_ANDROID_COMPONENT_VERSION"
-    const val org_mozilla_components_tooling_glean_gradle ="org.mozilla.components:tooling-glean-gradle:$Mozilla_ANDROID_COMPONENT_VERSION"
+    const val org_mozilla_components_service_glean = "org.mozilla.components:service-glean:$Mozilla_ANDROID_COMPONENT_VERSION"
+    const val org_mozilla_components_tooling_glean_gradle = "org.mozilla.components:tooling-glean-gradle:$Mozilla_ANDROID_COMPONENT_VERSION"
 }

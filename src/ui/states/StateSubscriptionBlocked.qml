@@ -37,6 +37,6 @@ VPNStackView {
             getHelpLinkVisible: false
             }
         );
-        Sample.subscriptionBlockedViewed.record();
+        VPN.recordGleanEvent("subscriptionBlockedViewed");
     }
 }

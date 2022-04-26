@@ -31,7 +31,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         <activity
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
             android:name="org.mozilla.firefox.vpn.qt.VPNActivity"
-            android:process=":QtOnlyProcess"
             android:label="Mozilla VPN"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Splash"
@@ -66,7 +65,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices-->
 
         <service android:name="org.mozilla.firefox.vpn.qt.VPNPermissionHelper"
-            android:process=":QtOnlyProcess"
             android:permission="android.permission.BIND_VPN_SERVICE">
         </service>
     </application>

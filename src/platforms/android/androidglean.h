@@ -9,12 +9,10 @@
 #include <QObject>
 #include <QString>
 
-
-
 class AndroidGlean final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AndroidGlean)
-public: 
+ public:
   // For Glean
   void initializeGlean();
   void sendGleanPings();
@@ -24,7 +22,8 @@ public:
                                      const QVariantMap& extraKeys);
   void setGleanSourceTags(const QStringList& tags);
 
- static void initialize();
+  static void initialize();
+
  private:
   AndroidGlean(QObject* parent);
   ~AndroidGlean();
