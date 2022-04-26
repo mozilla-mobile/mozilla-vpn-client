@@ -136,8 +136,7 @@ Rectangle {
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.preferredWidth: VPNTheme.theme.rowHeight
 
-                // TODO - Use accesibleName string
-                accessibleName: ""
+                accessibleName: expanded ? VPNl18n.GeneralCollapseCard : VPNl18n.GeneralExpandCard
 
                 VPNChevron {
                     id: chevron

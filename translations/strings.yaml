@@ -563,3 +563,11 @@ freeTrials:
     value: Sign up to start your 7-day free trial.
     comment: This string appears above the 'Sign up' button on mobile onboarding views
   freeTrialLabel: 7-day free trial
+
+general:
+  expandCard:
+    value: Expand card
+    comment: Action used in an expandable/collapsible card component
+  collapseCard:
+    value: Collapse card
+    comment: Action used in an expandable/collapsible card component
