@@ -15,8 +15,9 @@ VPNInAppAuthenticationBase {
     _menuButtonOnClick: () => {
         if (isDeleteAccountAuth) {
             cancelAccountDeletion();
+        } else {
+            VPNAuthInApp.reset();
         }
-        VPNAuthInApp.reset();
     }
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _headlineText: VPNAuthInApp.emailAddress

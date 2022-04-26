@@ -35,8 +35,9 @@ VPNInAppAuthenticationBase {
     _menuButtonOnClick: () => {
         if (isDeleteAccountAuth) {
             cancelAccountDeletion();
+        } else {
+            VPNAuthInApp.reset();
         }
-        VPNAuthInApp.reset();
     }
     _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
     _headlineText: VPNl18n.InAppAuthVerificationCodeTitle
