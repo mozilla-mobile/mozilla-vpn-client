@@ -12,7 +12,6 @@ import components.inAppAuth 0.1
 
 Item {
     property bool _menuVisible: false
-    property string prevState: ""
 
     id: viewDeleteAccount
 
@@ -22,27 +21,12 @@ Item {
 
         anchors.fill: parent
         asynchronous: true
-        onStatusChanged: {
-            if (loader.status !== Loader.Ready) {
-                return;
-            }
 
-            if (
-                prevState === ""
-                && viewDeleteAccount.state === "StateInitializing"
-            ) {
-                // `StateInitializing` is set for the first time
-                VPN.requestDeleteAccount();
-            } else if (
-                prevState !== ""
-                && viewDeleteAccount.state === "StateInitializing"
-            ) {
-                // `StateInitializing` is set during the account deletion flow,
-                // which means the user aborted the operation
-                settingsStackView.pop();
-            }
+        function cancelAccountDeletion() {
+            VPN.cancelAccountDeletion();
+            VPN.cancelAuthentication();
 
-            prevState = viewDeleteAccount.state;
+            settingsStackView.pop();
         }
     }
 
@@ -130,4 +114,8 @@ Item {
             }
         }
     ]
+
+    Component.onCompleted: {
+        VPN.requestDeleteAccount();
+    }
 }

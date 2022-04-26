@@ -41,7 +41,7 @@ VPNInAppAuthenticationBase {
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => {
-        viewDeleteAccount.cancelAccountDeletion();
+        cancelAccountDeletion();
     }
     _headlineText: VPNl18n.DeleteAccountHeadline
     _imgSource: "qrc:/nebula/resources/avatar-delete-account.svg"
@@ -99,7 +99,7 @@ VPNInAppAuthenticationBase {
             labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText
             linkColor: VPNTheme.theme.redButton
             onClicked: {
-                viewDeleteAccount.cancelAccountDeletion();
+                cancelAccountDeletion();
             }
         }
     }
@@ -108,10 +108,5 @@ VPNInAppAuthenticationBase {
         checkboxData[checkboxIndex].isSelected = isChecked;
         viewDeleteAccount.allowAccountDeletion = checkboxData.every(checkbox =>
             checkbox.isSelected);
-    }
-
-    function cancelAccountDeletion() {
-        VPN.cancelAccountDeletion();
-        VPN.cancelAuthentication();
     }
 }
