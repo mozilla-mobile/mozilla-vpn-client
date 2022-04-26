@@ -21,13 +21,12 @@ Item {
         property bool isDeleteAccountAuth: true
 
         anchors.fill: parent
-
         asynchronous: true
         onStatusChanged: {
             if (loader.status !== Loader.Ready) {
                 return;
             }
-            
+
             if (
                 prevState === ""
                 && viewDeleteAccount.state === "StateInitializing"
@@ -51,6 +50,12 @@ Item {
         id: authError
     }
 
+    // The following states are not expected to be set during the
+    // account deletion flow and thus we do not need to cover them:
+    // - StateStart
+    // - StateSignUp
+    // - StateSigningUp
+    // - StateFallbackInBrowser
     states: [
         State {
             name: "StateInitializing"
