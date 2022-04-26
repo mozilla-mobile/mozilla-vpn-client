@@ -12,6 +12,7 @@
 #include <QtGui>
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtQuick>
+#include <iostream>
 
 #import <UIKit/UIKit.h>
 
@@ -115,11 +116,16 @@ int IOSUtils::compareStrings(const QString& a, const QString& b) {
   }
 }
 
-// static
+@interface StatusBarModifierViewController : UIViewController
+@property (nonatomic, assign) UIStatusBarStyle preferredStatusBarStyle;
+@end
+
 void IOSUtils::setStatusBarTextColor(const Theme::StatusBarTextColor color) {
-  if (color == Theme::StatusBarTextColorLight) {
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-  } else {
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDarkContent;
-  }
+    StatusBarModifierViewController* rootViewController = static_cast<StatusBarModifierViewController *>([[UIApplication sharedApplication].windows[0] rootViewController]);
+    if (color == Theme::StatusBarTextColorLight) {
+        rootViewController.preferredStatusBarStyle = UIStatusBarStyleLightContent;
+    } else {
+        rootViewController.preferredStatusBarStyle = UIStatusBarStyleDarkContent;
+    }
+    [rootViewController setNeedsStatusBarAppearanceUpdate];
 }
