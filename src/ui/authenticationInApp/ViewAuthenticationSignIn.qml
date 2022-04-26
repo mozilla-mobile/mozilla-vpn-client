@@ -10,7 +10,34 @@ import components 0.1
 import components.inAppAuth 0.1
 
 VPNInAppAuthenticationBase {
-    _changeEmailLinkVisible: !isDeleteAccountAuth
+    id: authSignIn
+
+    states:[
+        State {
+            when: isDeleteAccountAuth
+
+            PropertyChanges {
+                target: authSignIn
+
+                _changeEmailLinkVisible: false
+                _subtitleText: VPNl18n.DeleteAccountAuthSubheadline
+            }
+
+            PropertyChanges {
+                target: disclaimersLoader
+
+                source: ""
+            }
+
+            PropertyChanges {
+                target: authInputs
+
+                _buttonText: VPNl18n.DeleteAccountAuthButtonLabel
+            }
+        }
+    ]
+
+    _changeEmailLinkVisible: true
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => {
         if (isDeleteAccountAuth) {
@@ -21,29 +48,26 @@ VPNInAppAuthenticationBase {
     }
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _headlineText: VPNAuthInApp.emailAddress
-    _subtitleText: !isDeleteAccountAuth
-        ? VPNl18n.InAppAuthSignInSubtitle
-        : VPNl18n.DeleteAccountAuthSubheadline
+    _subtitleText: VPNl18n.InAppAuthSignInSubtitle
     _imgSource: "qrc:/nebula/resources/avatar.svg"
     _inputLabel: VPNl18n.InAppAuthPasswordInputLabel
 
     _inputs: VPNInAppAuthenticationInputs {
+        id: authInputs
+
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateSignIn && !activeInput().hasError
         _buttonOnClicked: (inputText) => {
              VPNAuthInApp.setPassword(inputText);
              VPNAuthInApp.signIn();
          }
-        _buttonText: !isDeleteAccountAuth
-            ? VPNl18n.InAppAuthSignInButton
-            : VPNl18n.DeleteAccountAuthButtonLabel
+        _buttonText: VPNl18n.InAppAuthSignInButton
         _inputPlaceholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
     }
 
     _disclaimers: Loader {
         id: disclaimersLoader
-        source: !isDeleteAccountAuth
-            ? "qrc:/nebula/components/inAppAuth/VPNInAppAuthenticationLegalDisclaimer.qml"
-            : "";
+
+        source: "qrc:/nebula/components/inAppAuth/VPNInAppAuthenticationLegalDisclaimer.qml"
     }
 
     _footerContent: Column {
