@@ -70,9 +70,9 @@ StackView {
                         serversList: [
                             // Multi-hop TODO : What to do when there is no entry server.
                             {
-                                countryCode: typeof(serversTabs.multiHopEntryServer[0]) !== "undefined" ? serversTabs.multiHopEntryServer[0] : "",
-                                cityName: typeof(serversTabs.multiHopEntryServer[1]) !== "undefined" ? serversTabs.multiHopEntryServer[1] : "",
-                                localizedCityName: typeof(serversTabs.multiHopEntryServer[2]) !== 'undefined' ? serversTabs.multiHopEntryServer[2] : "",
+                                countryCode: typeof(segmentedNav.multiHopEntryServer[0]) !== "undefined" ? segmentedNav.multiHopEntryServer[0] : "",
+                                cityName: typeof(segmentedNav.multiHopEntryServer[1]) !== "undefined" ? segmentedNav.multiHopEntryServer[1] : "",
+                                localizedCityName: typeof(segmentedNav.multiHopEntryServer[2]) !== 'undefined' ? segmentedNav.multiHopEntryServer[2] : "",
                                 whichHop: "multiHopEntryServer"
                             }
                         ]
@@ -103,9 +103,9 @@ StackView {
                             serversList: [
 
                                 {
-                                    countryCode: serversTabs.multiHopExitServer[0],
-                                    cityName: serversTabs.multiHopExitServer[1],
-                                    localizedCityName : serversTabs.multiHopExitServer[2],
+                                    countryCode: segmentedNav.multiHopExitServer[0],
+                                    cityName: segmentedNav.multiHopExitServer[1],
+                                    localizedCityName : segmentedNav.multiHopExitServer[2],
                                     whichHop: "multiHopExitServer"
                                 }
                             ]

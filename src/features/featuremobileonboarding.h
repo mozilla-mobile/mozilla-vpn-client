@@ -21,7 +21,8 @@ class FeatureMobileOnboarding final : public Feature {
                 "",                  // IconPath
                 "",                  // link URL
                 "2.8",               // released
-                true                 // Can be enabled in devmode
+                true,                // Can be enabled in devmode
+                QStringList()        // feature dependencies
         ) {}
 
   bool checkSupportCallback() const override {

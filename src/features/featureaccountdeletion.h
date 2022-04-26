@@ -13,18 +13,25 @@ class FeatureAccountDeletion final : public Feature {
  public:
   FeatureAccountDeletion()
       : Feature(FEATURE_ACCOUNT_DELETION, "Account deletion",
-                false,               // Is Major Feature
-                L18nStrings::Empty,  // Display name
-                L18nStrings::Empty,  // Description
-                L18nStrings::Empty,  // LongDescr
-                "",                  // ImagePath
-                "",                  // IconPath
-                "",                  // link URL
-                "2.9",               // released
-                true                 // Can be enabled in devmode
+                false,                              // Is Major Feature
+                L18nStrings::Empty,                 // Display name
+                L18nStrings::Empty,                 // Description
+                L18nStrings::Empty,                 // LongDescr
+                "",                                 // ImagePath
+                "",                                 // IconPath
+                "",                                 // link URL
+                "2.9",                              // released
+                true,                               // Can be enabled in devmode
+                QStringList{"inAppAuthentication"}  // feature dependencies
         ) {}
 
-  bool checkSupportCallback() const override { return true; }
+  bool checkSupportCallback() const override {
+#if defined(MVPN_IOS)
+    return true;
+#else
+    return false;
+#endif
+  }
 
   static const FeatureAccountDeletion* instance() {
     return static_cast<const FeatureAccountDeletion*>(

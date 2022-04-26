@@ -2,17 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef FEATURE_IN_APP_PURCHASE_H
-#define FEATURE_IN_APP_PURCHASE_H
+#ifndef FEATURE_FREETRIAL_H
+#define FEATURE_FREETRIAL_H
 
 #include "models/feature.h"
 
-constexpr const char* FEATURE_IN_APP_PURCHASE = "inAppPurchase";
+constexpr const char* FEATURE_FREETRIAL = "freeTrial";
 
-class FeatureInAppPurchase final : public Feature {
+class FeatureFreeTrial : public Feature {
  public:
-  FeatureInAppPurchase()
-      : Feature(FEATURE_IN_APP_PURCHASE, "In app Purchase",
+  FeatureFreeTrial()
+      : Feature(FEATURE_FREETRIAL, "Free trial",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
@@ -20,10 +20,10 @@ class FeatureInAppPurchase final : public Feature {
                 "",                  // ImagePath
                 "",                  // IconPath
                 "",                  // link URL
-                "2.4",               // released
+                "2.8.1",             // released
                 false,               // Can be enabled in devmode
                 QStringList()        // feature dependencies
-        ){};
+        ) {}
 
   bool checkSupportCallback() const override {
 #if defined(MVPN_IOS) || defined(MVPN_ANDROID)
@@ -33,10 +33,9 @@ class FeatureInAppPurchase final : public Feature {
 #endif
   }
 
-  static const FeatureInAppPurchase* instance() {
-    return static_cast<const FeatureInAppPurchase*>(
-        get(FEATURE_IN_APP_PURCHASE));
+  static const FeatureFreeTrial* instance() {
+    return static_cast<const FeatureFreeTrial*>(get(FEATURE_FREETRIAL));
   }
 };
 
-#endif  // FEATURE_IN_APP_PURCHASE_H
+#endif  // FEATURE_FREETRIAL_H

@@ -34,7 +34,8 @@ class Feature : public QObject {
           L18nStrings::String displayName_id, L18nStrings::String shortDesc_id,
           L18nStrings::String desc_id, const QString& imgPath,
           const QString& iconPath, const QString& linkUrl,
-          const QString& releaseVersion, bool devModeWriteable = false);
+          const QString& releaseVersion, bool devModeWriteable,
+          const QStringList& otherFeatureDependencies);
 
  public:
   virtual ~Feature() = default;
@@ -82,6 +83,8 @@ class Feature : public QObject {
   // Should check if the feature could be used, if released
   virtual bool checkSupportCallback() const = 0;
 
+  void maybeChangeDevMode(bool newDevModeEnabled);
+
   // Unique Identifier of the Feature, used to Check
   // Capapbilities of the Daemon/Server or if is Force-Enabled in the Dev Menu
   const QString m_id;
@@ -107,6 +110,9 @@ class Feature : public QObject {
 
   // If true, the feature can be enabled in the Dev-Settings
   const bool m_devModeWriteable;
+
+  // List of other features to be supported in order to support this one.
+  const QStringList m_featureDependencies;
 
   // If true, the feature is enabled in the Dev-Settings. If
   // `m_devModeWriteable` is false, this will always be false.
