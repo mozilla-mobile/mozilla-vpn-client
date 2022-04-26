@@ -149,8 +149,7 @@ QVariant Theme::data(const QModelIndex& index, int role) const {
   }
 }
 
-void Theme::setStatusBarTextColor(
-    [[maybe_unused]] const StatusBarTextColor color) {
+void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
 #ifdef MVPN_IOS
   IOSUtils::setStatusBarTextColor(color);
 #endif

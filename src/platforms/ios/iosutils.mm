@@ -4,15 +4,14 @@
 
 #include "iosutils.h"
 #include "logger.h"
-#include "theme.h"
 #include "qmlengineholder.h"
+#include "theme.h"
 
 #include <QDateTime>
 #include <QString>
 #include <QtGui>
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtQuick>
-#include <iostream>
 
 #import <UIKit/UIKit.h>
 
@@ -120,7 +119,7 @@ int IOSUtils::compareStrings(const QString& a, const QString& b) {
 @property (nonatomic, assign) UIStatusBarStyle preferredStatusBarStyle;
 @end
 
-void IOSUtils::setStatusBarTextColor(const Theme::StatusBarTextColor color) {
+void IOSUtils::setStatusBarTextColor(Theme::StatusBarTextColor color) {
     StatusBarModifierViewController* rootViewController = static_cast<StatusBarModifierViewController *>([[UIApplication sharedApplication].windows[0] rootViewController]);
     if (color == Theme::StatusBarTextColorLight) {
         rootViewController.preferredStatusBarStyle = UIStatusBarStyleLightContent;

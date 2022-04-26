@@ -21,7 +21,7 @@ class IOSUtils final {
 
   static int compareStrings(const QString& a, const QString& b);
 
-  static void setStatusBarTextColor(const Theme::StatusBarTextColor color);
+  static void setStatusBarTextColor(Theme::StatusBarTextColor color);
 };
 
 #endif  // IOSUTILS_H
