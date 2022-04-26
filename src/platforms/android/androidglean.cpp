@@ -3,28 +3,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidglean.h"
-#include "androidauthenticationlistener.h"
-#include "androidjnicompat.h"
+#include "androidutils.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
-#include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "jni.h"
 #include "mozillavpn.h"
+#include "qmlengineholder.h"
 
 #include <QApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QNetworkCookieJar>
-#include <QUrlQuery>
-
-#if QT_VERSION < 0x060000
-#  include <QtAndroid>
-#  include <QAndroidIntent>
-#endif
+#include <QJniObject>
+#include <QJniEnvironment>
+#include <QQmlApplicationEngine>
+#include <QJSEngine>
 
 namespace {
 AndroidGlean* s_instance = nullptr;
@@ -46,8 +41,6 @@ AndroidGlean::AndroidGlean(QObject* parent) : QObject(parent) {
   Q_ASSERT(!s_instance);
   logger.debug() << "Connect Glean stuff";
   auto vpn = MozillaVPN::instance();
-  connect(vpn, &MozillaVPN::initializeGlean, this,
-          &AndroidGlean::initializeGlean);
   connect(vpn, &MozillaVPN::sendGleanPings, this,
           &AndroidGlean::sendGleanPings);
   connect(vpn, &MozillaVPN::recordGleanEvent, this,
@@ -58,6 +51,11 @@ AndroidGlean::AndroidGlean(QObject* parent) : QObject(parent) {
           &AndroidGlean::setGleanSourceTags);
   connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
           this, &AndroidGlean::gleanEnabledChanged);
+
+  AndroidUtils::runOnAndroidThreadSync([this]() {
+    logger.debug() << "Initialize Glean";
+    initializeGlean();
+  });
 }
 
 AndroidGlean::~AndroidGlean() {
@@ -71,9 +69,9 @@ void AndroidGlean::initializeGlean() {
   logger.debug() << "init GLEAN";
   bool upload = SettingsHolder::instance()->gleanEnabled();
   QString mode = Constants::inProduction() ? "production" : "staging";
-  auto jMode = QJniObject::fromString(mode).object<jstring>();
   QJniObject::callStaticMethod<void>(UTILS_CLASS, "initializeGlean",
-                                     "(ZLjava/lang/String;)V", upload, jMode);
+                                     "(ZLjava/lang/String;)V", upload,
+                                     QJniObject::fromString(mode).object<jstring>());
 
 }
 void AndroidGlean::sendGleanPings() {

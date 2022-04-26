@@ -51,6 +51,7 @@
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidiaphandler.h"
 #  include "platforms/android/androidutils.h"
+#  include "platforms/android/androidglean.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -103,7 +104,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           [this]() { setAlert(NoAlert); });
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
-     emit MozillaVPN::instance()->recordGleanEvent(GleanSample::maxDeviceReached);
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
          new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));
@@ -1099,6 +1099,10 @@ void MozillaVPN::mainWindowLoaded() {
 
 #ifndef MVPN_WASM
   // Initialize glean
+#ifdef MVPN_ANDROID
+    AndroidGlean::initialize();
+#endif 
+
   logger.debug() << "Initializing Glean";
   emit initializeGlean();
 

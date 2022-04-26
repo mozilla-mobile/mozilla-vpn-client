@@ -286,7 +286,6 @@ Window {
             }
             // If we can't show logs natively, open the viewer
             mainStackView.push("qrc:/ui/views/ViewLogs.qml");
-            
         }
 
         function onLoadAndroidAuthenticationView() {
@@ -296,12 +295,14 @@ Window {
 
             mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
         }
+    }
+
+    // Glean Connections
+    Connections {
+        target: VPN
+        enabled: Qt.platform.os !== "android"
 
         function onInitializeGlean() {
-            if(Qt.platform.os == "android"){
-                console.debug("Skip glean.js init cuz android");
-                return;
-            }
             if (VPN.debugMode) {
                 console.debug("Initializing glean with debug mode");
                 Glean.setLogPings(true);
@@ -319,41 +320,26 @@ Window {
         }
 
         function onSetGleanSourceTags(tags) {
-                        if(Qt.platform.os == "android"){
-                return;
-            }
             console.debug("Setting source tags to:", tags);
             Glean.setSourceTags(tags);
         }
 
         function onSendGleanPings() {
-                        if(Qt.platform.os == "android"){
-                return;
-            }
             console.debug("sending Glean pings");
             Pings.main.submit();
         }
 
         function onRecordGleanEvent(sample) {
-                        if(Qt.platform.os == "android"){
-                return;
-            }
-            console.debug("recording Glean event");
+            console.debug("recording Glean event" + sample);
             Sample[sample].record();
         }
 
         function onRecordGleanEventWithExtraKeys(sample, extraKeys) {
-                        if(Qt.platform.os == "android"){
-                return;
-            }
             console.debug("recording Glean event with extra keys");
             Sample[sample].record(extraKeys);
         }
 
         function onAboutToQuit() {
-                        if(Qt.platform.os == "android"){
-                return;
-            }
             console.debug("about to quit, shutdown Glean");
             // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
             Glean.shutdown();
@@ -362,10 +348,8 @@ Window {
 
     Connections {
         target: VPNSettings
+        enabled: Qt.platform.os != "android"
         function onGleanEnabledChanged() {
-            if(Qt.platform.os == "android"){
-                return;
-            }
             console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }

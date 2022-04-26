@@ -10,7 +10,6 @@
 #include <QString>
 
 
-#include "androidjnicompat.h"
 
 class AndroidGlean final : public QObject {
   Q_OBJECT

@@ -34,6 +34,6 @@ VPNStackView {
             getHelpLinkVisible: true
             }
         );
-        Sample.billingNotAvailableViewed.record();
+        VPN.recordGleanEvent("billingNotAvailableViewed");
     }
 }

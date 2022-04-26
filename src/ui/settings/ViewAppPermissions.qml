@@ -40,9 +40,10 @@ Item {
         Component.onCompleted: {
             console.log("Component ready");
             VPNAppPermissions.requestApplist();
-            Sample.appPermissionsViewOpened.record();
+            VPN.recordGleanEvent("appPermissionsViewOpened");
+
             if (!vpnIsOff) {
-                Sample.appPermissionsViewWarning.record();
+                VPN.recordGleanEvent("appPermissionsViewWarning");
             }
         }
 

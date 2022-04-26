@@ -10,8 +10,6 @@ import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
 
 VPNFlickable {
     id: onboardingPanel
@@ -345,11 +343,11 @@ VPNFlickable {
     }
 
     function recordGleanEvtAndStartAuth(ctaObjectName) {
-        Sample.onboardingCtaClick.record({
+        VPN.recordGleanEventWithExtraKeys("onboardingCtaClick",{
                                               "panel_id": currentPanelValues._panelId,
                                               "panel_idx": swipeView.currentIndex.toString(),
                                               "panel_cta": ctaObjectName
-                                          });
+        });
         VPN.getStarted();
     }
 }

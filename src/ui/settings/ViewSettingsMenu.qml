@@ -59,7 +59,7 @@ VPNFlickable {
         anchors.topMargin: VPNTheme.theme.vSpacing
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
-            Sample.manageAccountClicked.record();
+            VPN.recordGleanEvent("manageAccountClicked");
             VPN.openLink(VPN.LinkAccount)
         }
     }
@@ -125,7 +125,7 @@ VPNFlickable {
             imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             onClicked: {
-                Sample.getHelpClickedViewSettings.record();
+                VPN.recordGleanEvent("getHelpClickedViewSettings");
                 settingsStackView.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: true})
             }
         }

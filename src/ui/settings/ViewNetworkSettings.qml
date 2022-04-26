@@ -35,9 +35,9 @@ Item {
         interactive: flickContentHeight > height
 
         Component.onCompleted: {
-            Sample.networkSettingsViewOpened.record();
+            VPN.recordGleanEvent("networkSettingsViewOpened");
             if (!vpnIsOff) {
-                Sample.networkSettingsViewWarning.record();
+                VPN.recordGleanEvent("networkSettingsViewWarning");
             }
         }
 

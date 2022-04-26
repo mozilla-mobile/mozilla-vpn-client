@@ -5,6 +5,7 @@ import androidx.annotation.MainThread
 import mozilla.components.service.glean.BuildInfo
 import mozilla.components.service.glean.Glean
 import mozilla.components.service.glean.config.Configuration
+import mozilla.components.service.glean.private.EventExtras
 import mozilla.telemetry.glean.net.HttpURLConnectionUploader
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.NoExtraKeys
@@ -12,6 +13,7 @@ import mozilla.telemetry.glean.private.NoExtras
 import org.json.JSONObject
 import org.mozilla.firefox.vpn.GleanMetrics.Pings
 import org.mozilla.firefox.vpn.GleanMetrics.Sample
+import java.lang.UnsupportedOperationException
 import java.util.*
 import kotlin.reflect.KProperty1
 
@@ -61,18 +63,30 @@ object GleanUtil {
     @JvmStatic
     @Suppress("UNCHECKED_CAST") // We're using nullable casting and check that :)
     fun recordGleanEventWithExtraKeys(sampleName:String, extraKeysJson:String) {
-        val extraKeys = JSONObject(extraKeysJson)
-        val sample = getSample(sampleName) as? EventMetricType<NoExtraKeys,NoExtras>;
-        if(sample == null){
-            Log.e("ANDROID-GLEAN", "Ping not found $sampleName");
-            return;
-        }
-        sample.record(buildMap {
-            extraKeys.keys().forEach {
-                put(NoExtraKeys.valueOf(it),extraKeys.get(it).toString())
+
+        // TODO: Currently on any case where we rely on more then 1 Key,
+        // creating the extra is complicated. For this one case i guess this is okay.
+        // We could do a better work on getting this via reflection, or do more codegen in generate_glean.
+        when(sampleName){
+            "onboardingCtaClick" -> {
+                val extras = JSONObject(extraKeysJson)
+                val extra = Sample.OnboardingCtaClickExtra(
+                    panelCta = extras.get("panel_cta").toString(),
+                    panelIdx = extras.get("panel_idx").toString(),
+                    panelId =  extras.get("panel_id").toString()
+                )
+                Sample.onboardingCtaClick.record(extra)
             }
-        })
-        return;
+            else -> {
+                val extra = QtExtra(extraKeysJson);
+                val sample = getSample(sampleName) as? EventMetricType<*,QtExtra>;
+                if(sample == null){
+                    Log.e("ANDROID-GLEAN", "Ping not found $sampleName");
+                    return;
+                }
+                sample.record(extra);
+            }
+        }
     }
     @Suppress("UNCHECKED_CAST") // Callers check cast.
     fun getSample(sampleName: String):EventMetricType<*,*>{
@@ -82,4 +96,29 @@ object GleanUtil {
         val sampleInstance = sampleProperty.get(Sample);
         return sampleInstance;
     };
+
+    data class QtExtra(val json:String) : EventExtras{
+        override fun toFfiExtra(): Pair<IntArray, List<String>> {
+            var keys = mutableListOf<Int>()
+            var values = mutableListOf<String>()
+
+            val counter =0;
+            val extras = JSONObject(json)
+
+            extras.keys().forEach {
+                keys.add(counter)
+                values.add(extras.get(it).toString())
+            }
+            if(keys.size>1){
+                /*
+                    When a Sample has more then 1 key, we need to make sure they are passed
+                    in the right order to rust. Currently the way we setup the qt-calling, we can't be
+                    assured that even if qml is calling the right order, as we serialise to json.
+                 */
+                throw UnsupportedOperationException("You shall not pass using 2 extra-keys");
+            }
+            return Pair(IntArray(keys.size,{ keys[it] }),values);
+        }
+
+    }
 }

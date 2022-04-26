@@ -34,6 +34,6 @@ VPNStackView {
             getHelpLinkVisible: true,
             }
         );
-        Sample.subNotValidatedViewed.record();
+        VPN.recordGleanEvent("subNotValidatedViewed");
     }
 }

@@ -275,15 +275,9 @@ Item {
 
                 Layout.topMargin: VPNTheme.theme.listSpacing * 2
 
-                text: "Reset and Quit"
+                text: "Test Record Glean event"
                 onClicked: {
-                    if (clickNeeded) {
-                        text = "Reset and Quit (" + clickNeeded + ")";
-                        --clickNeeded;
-                        return;
-                    }
-
-                    VPN.hardResetAndQuit()
+                    VPN.recordGleanEvent("connectionInfoOpened");
                 }
             }
 

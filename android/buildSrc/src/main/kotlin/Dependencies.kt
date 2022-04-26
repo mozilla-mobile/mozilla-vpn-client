@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+const val Mozilla_ANDROID_COMPONENT_VERSION ="99.0.10"
+
 object Dependencies {
     const val org_jetbrains_kotlin_kotlin_serialization = "org.jetbrains.kotlin:kotlin-serialization:1.4.30-M1"
     const val org_jetbrains_kotlin_kotlin_gradle_plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"

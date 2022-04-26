@@ -20,7 +20,7 @@ Item {
 
         labelText: qsTrId("vpn.main.getHelp2")
         onClicked: {
-            Sample.getHelpClickedInitialize.record();
+            VPN.recordGleanEvent("getHelpClickedInitialize");
             stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false});
         }
     }
@@ -56,7 +56,7 @@ Item {
         //% "Learn more"
         labelText: qsTrId("vpn.main.learnMore")
         onClicked: {
-            Sample.onboardingOpened.record();
+            VPN.recordGleanEvent("onboardingOpened");
             stackview.push("ViewOnboarding.qml");
         }
 
