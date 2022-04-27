@@ -49,9 +49,7 @@ Item {
 
         onCurrentItemChanged: {
             menu.title = Qt.binding(() => currentItem._menuTitle || "");
-            menu.visible = Qt.binding(() => currentItem._menuVisible !== undefined
-                ? currentItem._menuVisible
-                : settingsStackView.depth !== 1);
+            menu.visible = Qt.binding(() => currentItem._menuTitle);
         }
     }
 }
