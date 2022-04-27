@@ -26,6 +26,6 @@ add_subdirectory(nebula)
 add_subdirectory(translations)
 
 # Testing build targets
-add_subdirectory(tests/auth)
-add_subdirectory(tests/unit)
-add_subdirectory(tests/qml)
+add_subdirectory(tests/auth EXCLUDE_FROM_ALL)
+add_subdirectory(tests/unit EXCLUDE_FROM_ALL)
+add_subdirectory(tests/qml EXCLUDE_FROM_ALL)

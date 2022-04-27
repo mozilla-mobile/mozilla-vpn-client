@@ -19,9 +19,9 @@ include_directories(${MVPN_SOURCE_DIR}/hacl-star)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
 
-add_executable(tests)
+add_executable(unit_tests)
 
-target_link_libraries(tests PRIVATE
+target_link_libraries(unit_tests PRIVATE
     Qt6::Core
     Qt6::Xml
     Qt6::Network
@@ -32,10 +32,10 @@ target_link_libraries(tests PRIVATE
     Qt6::Quick
 )
 
-target_link_libraries(tests PRIVATE glean lottie nebula translations)
+target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
 
 # VPN Client source files
-target_sources(tests PRIVATE
+target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.cpp
     ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
     ${MVPN_SOURCE_DIR}/captiveportal/captiveportal.cpp
@@ -114,7 +114,7 @@ target_sources(tests PRIVATE
 )
 
 # VPN Client header files
-target_sources(tests PRIVATE
+target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.h
     ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.h
     ${MVPN_SOURCE_DIR}/captiveportal/captiveportal.h
@@ -196,12 +196,12 @@ target_sources(tests PRIVATE
 )
 
 # VPN Client UI resources
-target_sources(tests PRIVATE
+target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/ui/license.qrc
 )
 
 # Unit test source files
-target_sources(tests PRIVATE
+target_sources(unit_tests PRIVATE
     main.cpp
     moccontroller.cpp
     mocinspectorhandler.cpp
@@ -231,7 +231,7 @@ target_sources(tests PRIVATE
 )
 
 # Unit test header files
-target_sources(tests PRIVATE
+target_sources(unit_tests PRIVATE
     helper.h
     testadjust.h
     testandroidmigration.h
@@ -257,7 +257,7 @@ target_sources(tests PRIVATE
 )
 
 # Unit test mock resources
-target_sources(tests PRIVATE
+target_sources(unit_tests PRIVATE
     guides/guides.qrc
     servers/servers.qrc
     themes/themes.qrc

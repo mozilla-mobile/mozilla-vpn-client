@@ -21,10 +21,11 @@ jobs:
       QTVERSION: 6.2.4
     name: Run Unit tests on Linux
     steps:
-      - name: Install Linux packages
+      - name: Install dependences
         run: |
           sudo apt update
           sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
+          python3 -m pip install -r requirements.txt
           python3 -m pip install aqtinstall
           aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
 
@@ -38,18 +39,6 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Generating glean samples
-        shell: bash
-        run: |
-          pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
-
-      - name: Importing translation files
-        shell: bash
-        run: |
-          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
-          python3 scripts/utils/import_languages.py
-
       - name: Installing the oathtool
         shell: bash
         run: |
@@ -60,12 +49,25 @@ jobs:
         shell: bash
         run: |
           cargo install grcov
+      
+      - name: Building tests
+        shell: bash
+        run: |
+          mkdir -p build
+          cmake -S . -B $(pwd)/build \
+            -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake/ \
+            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build $(pwd)/build --target unit_tests
 
       - name: Running tests
         shell: bash
+        env:
+          MVPN_OATHTOOL: ${{github.workspace}}/oathtool
         run: |
-          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
-          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
+          $(pwd)/build/tests/unit/unit_tests
+          grcov $(pwd)/build/tests/unit/CMakeFiles/unit_tests.dir \
+              -s $(pwd)/build/tests/unit -t lcov --branch --ignore-not-existing \
+              > ${{github.workspace}}/unit_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
