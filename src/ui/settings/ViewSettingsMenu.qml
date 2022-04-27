@@ -73,7 +73,7 @@ VPNFlickable {
                 Layout.fillWidth: true
                 Layout.leftMargin: VPNTheme.theme.windowMargin / 2
                 Layout.rightMargin: VPNTheme.theme.windowMargin / 2
-                color: "#E7E7E7"
+                color: VPNTheme.colors.grey10
             }
         }
 
