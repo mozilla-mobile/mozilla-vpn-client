@@ -451,7 +451,7 @@ static QList<InspectorCommand> s_commands{
         }},
     InspectorCommand{"mockFreeTrial",
                      "Force the UI to show 7 day trial on 1 year plan", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
+                     [](const QList<QByteArray>&) {
                        s_mockFreeTrial = true;
                        return QJsonObject();
                      }},
