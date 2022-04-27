@@ -21,6 +21,9 @@ jobs:
       QTVERSION: 6.2.4
     name: Run Unit tests on Linux
     steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
       - name: Install dependences
         run: |
           sudo apt update
@@ -28,9 +31,6 @@ jobs:
           python3 -m pip install -r requirements.txt
           python3 -m pip install aqtinstall
           aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
-
-      - name: Clone repository
-        uses: actions/checkout@v2
 
       - name: Checkout submodules
         shell: bash
