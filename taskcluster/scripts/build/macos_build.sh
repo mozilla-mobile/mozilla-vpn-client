@@ -32,16 +32,10 @@ python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
 
-print Y "Finding QT?..."
-ls ../fetches
-ls ../../fetches
-ls ../../../fetches
-
-
 print Y "Installing QT..."
 PROJECT_HOME=`pwd`
 cd ../../fetches/qt_dist || die
-export QT_MACOS_BIN=$`pwd`/bin
+export QT_MACOS_BIN=`pwd`/bin
 export PATH=$QT_MACOS_BIN:$PATH
 
 cat > bin/qt.conf << EOF
