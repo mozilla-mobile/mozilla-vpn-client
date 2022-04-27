@@ -48,6 +48,7 @@ Logger logger(LOG_INSPECTOR, "InspectorHandler");
 
 bool s_stealUrls = false;
 bool s_forwardNetwork = false;
+bool s_mockFreeTrial = false;
 
 QString s_updateVersion;
 QStringList s_pickedItems;
@@ -448,6 +449,12 @@ static QList<InspectorCommand> s_commands{
           s_stealUrls = true;
           return QJsonObject();
         }},
+    InspectorCommand{"mockFreeTrial",
+                     "Force the UI to show 7 day trial on 1 year plan", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       s_mockFreeTrial = true;
+                       return QJsonObject();
+                     }},
 
     InspectorCommand{"lasturl", "Retrieve the last opened URL", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
@@ -962,6 +969,9 @@ QString InspectorHandler::getObjectClass(const QObject* target) {
 
 // static
 bool InspectorHandler::stealUrls() { return s_stealUrls; }
+
+// static
+bool InspectorHandler::mockFreeTrial() { return s_mockFreeTrial; }
 
 // static
 QString InspectorHandler::appVersionForUpdate() {

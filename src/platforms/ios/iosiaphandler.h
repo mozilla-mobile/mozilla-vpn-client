@@ -27,6 +27,7 @@ class IOSIAPHandler final : public IAPHandler {
 
  private:
   void* m_delegate = nullptr;
+  int discountToDays(void* discount);
 };
 
 #endif  // IOSIAPHANDLER_H

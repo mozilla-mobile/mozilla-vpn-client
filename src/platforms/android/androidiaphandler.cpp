@@ -267,7 +267,7 @@ void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
     QString productIdentifier = product[QString("sku")].toString();
     Product* productData = findProduct(productIdentifier);
     Q_ASSERT(productData);
-
+    productData->m_trialDays = product[QString("trialDays")].toInt();
     productData->m_price = product[QString("totalPriceString")].toString();
     productData->m_monthlyPrice =
         product[QString("monthlyPriceString")].toString();

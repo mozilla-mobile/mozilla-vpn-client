@@ -4,6 +4,7 @@
 
 #include "iaphandler.h"
 #include "constants.h"
+#include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -229,6 +230,7 @@ QHash<int, QByteArray> IAPHandler::roleNames() const {
   roles[ProductIdentifierRole] = "productIdentifier";
   roles[ProductPriceRole] = "productPrice";
   roles[ProductMonthlyPriceRole] = "productMonthlyPrice";
+  roles[ProductTrialDaysRole] = "productTrialDays";
   roles[ProductTypeRole] = "productType";
   roles[ProductFeaturedRole] = "productFeatured";
   roles[ProductSavingsRole] = "productSavings";
@@ -266,6 +268,13 @@ QVariant IAPHandler::data(const QModelIndex& index, int role) const {
 
     case ProductSavingsRole:
       return QVariant(m_products.at(index.row()).m_savings);
+
+    case ProductTrialDaysRole:
+      if ((m_products.at(index.row()).m_type == ProductYearly) &&
+          InspectorHandler::mockFreeTrial()) {
+        return QVariant(7);
+      }
+      return QVariant(m_products.at(index.row()).m_trialDays);
 
     default:
       return QVariant();
