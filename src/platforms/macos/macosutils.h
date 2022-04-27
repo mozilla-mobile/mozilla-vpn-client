@@ -17,6 +17,7 @@ class MacOSUtils final {
   static void enableLoginItem(bool startAtBoot);
 
   static void setDockClickHandler();
+  static void setStatusBarTextColor();
 
   static void hideDockIcon();
   static void showDockIcon();
