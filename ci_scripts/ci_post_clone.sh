@@ -34,7 +34,7 @@ else
   pip3 install aqtinstall
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop $QTVERSION -m qtwebsockets qt5compat
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios $QTVERSION -m qtwebsockets qt5compat
-  mv /Volumes/workspace/repository/qt_ios/$QTVERSION/macos /Volumes/workspace/repository/qt_ios/$QTVERSION/clang_64
+  # mv /Volumes/workspace/repository/qt_ios/$QTVERSION/macos /Volumes/workspace/repository/qt_ios/$QTVERSION/clang_64
   export QT_IOS_BIN=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin
   export PATH=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin:/Volumes/workspace/repository/qt_ios/$QTVERSION/clang_64/bin:$PATH
 fi
