@@ -136,7 +136,7 @@ Rectangle {
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.preferredWidth: VPNTheme.theme.rowHeight
 
-                accessibleName: expanded ? VPNl18n.GeneralCollapseCard : VPNl18n.GeneralExpandCard
+                accessibleName: expanded ? VPNl18n.GlobalCollapse : VPNl18n.GlobalExpand
 
                 VPNChevron {
                     id: chevron

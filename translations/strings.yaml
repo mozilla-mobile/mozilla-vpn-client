@@ -564,10 +564,10 @@ freeTrials:
     comment: This string appears above the 'Sign up' button on mobile onboarding views
   freeTrialLabel: 7-day free trial
 
-general:
-  expandCard:
-    value: Expand card
-    comment: Action used in an expandable/collapsible card component
-  collapseCard:
-    value: Collapse card
-    comment: Action used in an expandable/collapsible card component
+global:
+  expand:
+    value: Expand
+    comment: Action used in the context of an expandable/collapsible card component
+  collapse:
+    value: Collapse
+    comment: Action used in the context of an expandable/collapsible card component
