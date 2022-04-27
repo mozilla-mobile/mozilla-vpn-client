@@ -1,0 +1,43 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+// This module either loads the Qt-Provided bindings, present in qtAndroid dir
+// or replaces them with it's basic android counter part form moc/ , so dev's can enjoy
+// code completeion and such in their favorite ide
+
+dependencies {
+    implementation fileTree(dir: '../libs', include: ['*.jar', '*.aar'])
+}
+
+
+android {
+    compileSdkVersion Config.compileSdkVersion
+    defaultConfig {
+        minSdkVersion Config.minSdkVersion
+    }
+    sourceSets {
+        main {
+            try {
+                java.srcDirs = [qtAndroidDir + '/src']
+                aidl.srcDirs = [qtAndroidDir + '/src']
+            } catch (Exception ignored) {
+                print("Using fake Qt-Application, this will not build a real app!")
+                print("Please invoke the build using qmake")
+                java.srcDirs = ['moc']
+                aidl.srcDirs = ['moc']
+            }
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}

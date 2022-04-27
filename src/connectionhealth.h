@@ -25,6 +25,7 @@ class ConnectionHealth final : public QObject {
                  NOTIFY stabilityChanged)
   Q_PROPERTY(uint latency READ latency NOTIFY pingReceived)
   Q_PROPERTY(double loss READ loss NOTIFY pingReceived)
+  Q_PROPERTY(bool unsettled READ isUnsettled NOTIFY unsettledChanged)
 
  public:
   ConnectionHealth();
@@ -43,6 +44,7 @@ class ConnectionHealth final : public QObject {
 
  signals:
   void stabilityChanged();
+  void unsettledChanged();
   void pingReceived();
 
  private:

@@ -54,6 +54,9 @@ VPNInAppAuthenticationBase {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: VPNAuthInApp.resendUnblockCodeEmail();
         }
-        VPNInAppAuthenticationCancel{}
+        VPNCancelButton {
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: VPN.cancelAuthentication()
+        }
     }
 }

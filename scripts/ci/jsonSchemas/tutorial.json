@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The ID of the tutorial",
+      "pattern": "^[A-Za-z0-9_]+"
+    },
+    "conditions": {
+      "$ref": "conditions.json#"
+    },
+    "title": {
+      "type": "string",
+      "description": "The title of the tutorial"
+    },
+    "comment": {
+      "type": "string",
+      "description": "A comment to describe how to translate the title"
+    },
+    "image": {
+      "type": "string",
+      "description": "The image of the tutorial"
+    },
+    "steps": {
+      "type": "array",
+      "description": "The list of text steps",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the step",
+            "pattern": "^[A-Za-z0-9_]+"
+          },
+          "comment": {
+            "type": "string",
+            "description": "A comment to describe how to translate this step content"
+          },
+          "element": {
+            "type": "string",
+            "description": "The objectName to highlight"
+          },
+          "tooltip": {
+            "type": "string",
+            "description": "The message to show near the element"
+          }
+        },
+        "required": [ "id", "element", "tooltip" ]
+      }
+    }
+  },
+  "required": [ "id", "title", "image", "steps" ]
+}

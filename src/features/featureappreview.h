@@ -21,7 +21,8 @@ class FeatureAppReview : public Feature {
                 "",                  // IconPath
                 "",                  // link URL
                 "2.5",               // released
-                false                // Can be enabled in devmode
+                false,               // Can be enabled in devmode
+                QStringList()        // feature dependencies
         ) {}
 
   bool checkSupportCallback() const override {

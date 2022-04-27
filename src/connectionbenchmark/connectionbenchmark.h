@@ -9,6 +9,7 @@
 
 #include <QList>
 #include <QObject>
+#include <QUrl>
 
 class ConnectionHealth;
 
@@ -16,6 +17,8 @@ class ConnectionBenchmark final : public QObject {
   Q_OBJECT;
   Q_DISABLE_COPY_MOVE(ConnectionBenchmark);
 
+  Q_PROPERTY(QString downloadUrl READ downloadUrl WRITE setDownloadUrl NOTIFY
+                 downloadUrlChanged)
   Q_PROPERTY(State state READ state NOTIFY stateChanged);
   Q_PROPERTY(Speed speed READ speed NOTIFY speedChanged);
   Q_PROPERTY(quint64 bitsPerSec READ bitsPerSec NOTIFY bitsPerSecChanged);
@@ -50,11 +53,18 @@ class ConnectionBenchmark final : public QObject {
   quint16 pingLatency() const { return m_pingLatency; }
   quint64 bitsPerSec() const { return m_bitsPerSec; }
 
+  QString downloadUrl() const { return m_downloadUrl.toString(); }
+  void setDownloadUrl(QString url) {
+    m_downloadUrl.setUrl(url);
+    emit downloadUrlChanged();
+  }
+
  signals:
   void bitsPerSecChanged();
   void pingLatencyChanged();
   void speedChanged();
   void stateChanged();
+  void downloadUrlChanged();
 
  private:
   void downloadBenchmarked(quint64 bitsPerSec, bool hasUnexpectedError);
@@ -67,6 +77,8 @@ class ConnectionBenchmark final : public QObject {
   void stop();
 
  private:
+  QUrl m_downloadUrl;
+
   QList<BenchmarkTask*> m_benchmarkTasks;
 
   State m_state = StateInitial;

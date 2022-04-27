@@ -2,35 +2,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import com.android.build.OutputFile
+
 buildscript {
-    ext{
-        kotlin_version = "1.4.30-M1"
-        //  for libwg
-        appcompatVersion = '1.1.0'
-        annotationsVersion = '1.0.1'
-        databindingVersion = '3.3.1'
-        jsr305Version = '3.0.2'
-        streamsupportVersion = '1.7.0'
-        threetenabpVersion = '1.1.1'
-        groupName = 'org.mozilla.firefox.vpn'
-    }
     repositories {
         google()
-        jcenter()
         mavenCentral()
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+        classpath Dependencies.com_android_tools_build_gradle
+        classpath Dependencies.org_jetbrains_kotlin_kotlin_gradle_plugin
+        classpath Dependencies.org_jetbrains_kotlin_kotlin_serialization
     }
 }
 
 repositories {
     mavenCentral()
     google()
-    jcenter()
 }
 
 
@@ -49,35 +37,23 @@ apply plugin: 'kotlinx-serialization'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation 'androidx.core:core-ktx:1.1.0'
-    implementation 'com.android.installreferrer:installreferrer:2.2'
-    implementation 'com.android.billingclient:billing-ktx:4.0.0'
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0-alpha02"
-    implementation "androidx.security:security-crypto:1.1.0-alpha03"
-    implementation "androidx.security:security-identity-credential:1.0.0-alpha02"
-    implementation 'com.google.android.gms:play-services-ads-identifier:17.0.1'
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.0.10"
+    implementation project(path: ':daemon')
+    implementation project(path: ':qtBindings')
+
+    implementation Dependencies.androidx_core
+    implementation Dependencies.android_installreferrer
+    implementation Dependencies.android_billingclient
+    implementation Dependencies.androidx_lifecycle
+    implementation Dependencies.androidx_security_security_crypto
+    implementation Dependencies.androidx_security_security_identity_credential
+    implementation Dependencies.com_google_android_gms_play_services_ads_identifier
+    implementation Dependencies.org_jetbrains_kotlinx_kotlinx_serialization_json
+    coreLibraryDesugaring Dependencies.com_android_tools_desugar_jdk_libs
 }
 
 android {
-    /*******************************************************
-     * The following variables:
-     * - androidBuildToolsVersion,
-     * - androidCompileSdkVersion
-     * - qtAndroidDir/qt5AndroidDir 
-     *                 - holds the path to qt android files
-     *                   needed to build any Qt application
-     *                   on Android.
-     *
-     * are defined in gradle.properties file. This file is
-     * updated by QtCreator and androiddeployqt tools.
-     * Changing them manually might break the compilation!
-     *******************************************************/
-
-    compileSdkVersion androidCompileSdkVersion.toInteger()
-
-    buildToolsVersion '28.0.3'
+    compileSdkVersion Config.compileSdkVersion
+    buildToolsVersion Config.buildToolsVersion
 
     dexOptions {
        javaMaxHeapSize "3g"
@@ -85,23 +61,54 @@ android {
 
     sourceSets {
         main {
-            java.srcDirs = [qtAndroidDir + '/src', 'src', 'java']
-            aidl.srcDirs = [qtAndroidDir + '/src', 'src', 'aidl']
-            res.srcDirs =  [qtAndroidDir + '/res', 'res']
+            java.srcDirs = ['src', 'java']
+            aidl.srcDirs = ['src', 'aidl']
+
             manifest.srcFile 'AndroidManifest.xml'
-            
-            resources.srcDirs = ['resources']
             renderscript.srcDirs = ['src']
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
        }
+        debug{
+            try {
+                res.srcDirs =  [
+                        qtAndroidDir + '/res',
+                        'resources/all',
+                        'resources/debug',
+                        'res'
+                ]
+            }catch(Exception ignored){
+                res.srcDirs = [
+                        'resources/all',
+                        'resources/debug',
+                        'res'
+                ]
+            }
+        }
+        release{
+            try {
+                res.srcDirs =  [
+                        qtAndroidDir + '/res',
+                        'resources/all',
+                        'resources/release',
+                        'res'
+                ]
+            }catch(Exception ignored){
+                res.srcDirs = [
+                        'resources/all',
+                        'resources/release',
+                        'res'
+                ]
+            }
+        }
     }
-    // In case generate a new key anytime:
-    // $: keytool -genkey -v -keystore debug.keystore -storepass android \
-    //            -alias androiddebugkey -keypass android -keyalg RSA \ 
-    //            -keysize 2048 -validity 10000
+
     signingConfigs {
-    debug {
+        debug {
+            // In case generate a new key anytime:
+            // $: keytool -genkey -v -keystore debug.keystore -storepass android \
+            //            -alias androiddebugkey -keypass android -keyalg RSA \
+            //            -keysize 2048 -validity 10000
             storeFile rootProject.file('./debug.keystore')
             storePassword('android')
             keyAlias 'androiddebugkey'
@@ -122,34 +129,23 @@ android {
         release {
             // That would enable treeshaking and remove java code that is just called from qt
             minifyEnabled false
-            externalNativeBuild {
-                cmake {
-                    arguments "-DANDROID_PACKAGE_NAME=${groupName}", "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}"
-                }
-            }
         }
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
-            externalNativeBuild {
-                cmake {
-                    arguments "-DANDROID_PACKAGE_NAME=${groupName}.debug", "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}"
-                }
+            packagingOptions {
+                // specify the path to your object binaries, or generally:
+                doNotStrip '**.so'
             }
-        }
-    }
-    externalNativeBuild {
-        cmake {
-            path 'tunnel/CMakeLists.txt'
         }
     }
 
     defaultConfig {
         resConfig "en"
-        minSdkVersion 24
-        targetSdkVersion 30
-        versionCode  System.getenv("VERSIONCODE")?.toInteger()
-        versionName  System.getenv("SHORTVERSION")
+        minSdkVersion Config.minSdkVersion
+        targetSdkVersion Config.targetSdkVersion
+        versionCode  System.getenv("VERSIONCODE")? System.getenv("VERSIONCODE")?.toInteger() : 99999
+        versionName  System.getenv("SHORTVERSION") ? System.getenv("SHORTVERSION"): ""
         buildConfigField "String", "ADJUST_SDK_TOKEN", '"' + System.getenv("ADJUST_SDK_TOKEN") + '"'
     }
     compileOptions {
@@ -158,26 +154,18 @@ android {
         coreLibraryDesugaringEnabled = true
     }
     splits {
-                // Configures multiple APKs based on ABI.
-                abi {
-                    if(System.getenv("SPLITAPK")== "1" ){
-                        enable true
-                        // Resets the list of ABIs that Gradle should create APKs for to none.
-                        reset()
-
-                        // Specifies a list of ABIs that Gradle should create APKs for.
-                        include "x86", "armeabi-v7a", "arm64-v8a", "x86_64"
-                        // Also generate one universal apk that contains all abi's
-                        universalApk true
-                    }else{
-                        enable false
-                    }
-                }
-            }
-
+        abi {
+            enable true
+            // Resets the list of ABIs that Gradle should create APKs for to none.
+            reset()
+            // Specifies a list of ABIs that Gradle should create APKs for.
+            include "x86", "armeabi-v7a", "arm64-v8a", "x86_64"
+            // Also generate one universal apk that contains all abi's (need this for qmake to pass)
+            universalApk true
+        }
+    }
 }
 
-import com.android.build.OutputFile
 // Map for the version code that gives each ABI a value.
 ext.abiCodes = ['armeabi-v7a':1,"arm64-v8a":2, x86:3, x86_64:4]
 android.applicationVariants.all { variant ->
@@ -191,3 +179,31 @@ android.applicationVariants.all { variant ->
     }
   }
 } 
+
+// Enable Ktlint out of the box via gradle Task
+configurations {
+    ktlint
+}
+
+dependencies {
+    ktlint("com.pinterest:ktlint:0.45.2") {
+        attributes {
+            attribute(Bundling.BUNDLING_ATTRIBUTE, getObjects().named(Bundling, Bundling.EXTERNAL))
+        }
+    }
+}
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "src/**/*.kt", "!**/build/**/*.kt", "buildSrc/**/*.kt",  "daemon/**/*.kt",  "**/*.kts"
+}
+
+
+task ktlintFormat(type: JavaExec, group: "formatting") {
+    description = "Fix Kotlin code style deviations."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "-F", "src/**/*.kt", "!**/build/**/*.kt", "buildSrc/**/*.kt",  "daemon/**/*.kt", "**/*.kts"
+}

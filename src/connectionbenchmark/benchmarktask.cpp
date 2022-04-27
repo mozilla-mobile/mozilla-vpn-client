@@ -34,7 +34,6 @@ void BenchmarkTask::run() {
   }
 
   setState(StateActive);
-  m_elapsedTimer.start();
 
   TimerSingleShot::create(this, m_maxExecutionTime, [this]() { stop(); });
 }

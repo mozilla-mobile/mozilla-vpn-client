@@ -289,23 +289,6 @@ Window {
             
         }
 
-        function onContactUsNeeded() {
-            // For the main view, the contact-us signal is handled in ViewMain
-            // because at that level we have access to the stackview.
-            if (VPN.state === VPN.StateMain) return;
-
-            if (mainStackView.currentItem.objectName === "contactUs") return;
-
-            while(mainStackView.depth > 1) {
-                mainStackView.pop(null, StackView.Immediate);
-            }
-
-            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", {
-                isMainView: true,
-                addSafeAreaMargin: true
-            });
-        }
-
         function onLoadAndroidAuthenticationView() {
             if (Qt.platform.os !== "android") {
                 console.log("Unexpected android authentication view request!");

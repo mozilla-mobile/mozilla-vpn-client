@@ -8,6 +8,9 @@ class TestTutorial : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void parser_data();
-  void parser();
+  void create_data();
+  void create();
+  void createNotExisting();
+
+  void model();
 };

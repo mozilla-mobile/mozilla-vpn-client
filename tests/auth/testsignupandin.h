@@ -16,12 +16,14 @@ class TestSignUpAndIn final : public QObject {
   void signUp();
   void signUpWithError();
   void signIn();
+  void deleteAccount();
 
  private:
   QString fetchSessionCode();
   QString fetchUnblockCode();
   QString fetchCode(const QString& code);
   void waitForTotpCodes();
+  void fetchAndSendUnblockCode();
 
   QString m_emailAccount;
   bool m_totpCreation = false;

@@ -80,7 +80,7 @@ Item {
     }
 
     Rectangle {
-        color: "#0C0C0D0A"
+        color: VPNTheme.colors.grey10
         y: 55
         width: parent.width
         height: 1

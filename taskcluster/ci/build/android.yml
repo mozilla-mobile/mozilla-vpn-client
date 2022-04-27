@@ -28,7 +28,7 @@ android-arm64/debug:
             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - mozillavpn.apk
+            - mozillavpn-arm64-v8a-debug.apk
 
 android-armv7/debug:
         description: "Android Debug (armv7)"
@@ -40,7 +40,7 @@ android-armv7/debug:
             command: ./taskcluster/scripts/build/android_build_debug.sh armeabi-v7a
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - mozillavpn.apk
+            - mozillavpn-armv7-debug.apk
 
 android-x86/debug:
         description: "Android Debug (x86)"
@@ -52,7 +52,7 @@ android-x86/debug:
             command: ./taskcluster/scripts/build/android_build_debug.sh x86
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - mozillavpn.apk
+            - mozillavpn-x86-debug.apk
 android-x64/debug:
         description: "Android Debug (x86_64)"
         treeherder:
@@ -63,7 +63,7 @@ android-x64/debug:
             command: ./taskcluster/scripts/build/android_build_debug.sh x86_64
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - mozillavpn.apk
+            - mozillavpn-x86_64-debug.apk
 
 # Release Builds
 
