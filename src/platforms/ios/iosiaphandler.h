@@ -7,7 +7,6 @@
 
 #include "iaphandler.h"
 
-
 class IOSIAPHandler final : public IAPHandler {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(IOSIAPHandler)
