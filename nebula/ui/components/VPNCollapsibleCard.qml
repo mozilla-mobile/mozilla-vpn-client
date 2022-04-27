@@ -18,9 +18,17 @@ Rectangle {
     property alias contentItem: cardContent.data
 
     color: VPNTheme.colors.white
-    implicitHeight: cardWrapper.height
+    implicitHeight: expanded ? cardWrapper.wrapperHeight : accordionHeader.headerHeight
     radius: VPNTheme.theme.cornerRadius
     width: parent.width
+    clip: true
+
+    Behavior on implicitHeight {
+        NumberAnimation {
+            duration: animationDuration
+            easing.type: Easing.OutQuad
+        }
+    }
 
     VPNDropShadowWithStates {
         anchors.fill: shadowSource
@@ -45,7 +53,6 @@ Rectangle {
 
             PropertyChanges {
                 target: cardContent
-                height: cardContent.implicitHeight
                 opacity: 1
             }
 
@@ -60,7 +67,6 @@ Rectangle {
 
             PropertyChanges {
                 target: cardContent
-                height: 0
                 opacity: 0
             }
 
@@ -74,15 +80,22 @@ Rectangle {
     ColumnLayout {
         id: cardWrapper
 
+        property int wrapperHeight: implicitHeight + anchors.topMargin + anchors.bottomMargin
+
+        anchors.top: parent.top
+        anchors.topMargin: VPNTheme.theme.listSpacing
+        anchors.bottomMargin: VPNTheme.theme.listSpacing
         spacing: 0
         width: root.width
+
 
         // Card header
         RowLayout {
             id: accordionHeader
 
+            property int headerHeight: implicitHeight + parent.anchors.topMargin + parent.anchors.bottomMargin
+
             spacing: VPNTheme.theme.listSpacing * 2
-            Layout.topMargin: VPNTheme.theme.listSpacing
             Layout.leftMargin: VPNTheme.theme.listSpacing * 2
             Layout.rightMargin: VPNTheme.theme.listSpacing * 2
             Layout.fillWidth: true
@@ -108,6 +121,9 @@ Rectangle {
                 text: root.title
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.Wrap
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
 
             VPNIconButton {
@@ -120,8 +136,7 @@ Rectangle {
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.preferredWidth: VPNTheme.theme.rowHeight
 
-                // TODO - Use accesibleName string
-                accessibleName: ""
+                accessibleName: expanded ? VPNl18n.GlobalCollapse : VPNl18n.GlobalExpand
 
                 VPNChevron {
                     id: chevron
@@ -143,9 +158,7 @@ Rectangle {
         Column {
             id: column
 
-            clip: true
             Layout.preferredWidth: accordionTitle.width
-            Layout.bottomMargin: VPNTheme.theme.listSpacing
             Layout.leftMargin: icon.width + VPNTheme.theme.listSpacing * 4
             Layout.rightMargin: VPNTheme.theme.listSpacing
 
@@ -154,18 +167,14 @@ Rectangle {
 
                 width: parent.width
 
-                Behavior on height {
-                     NumberAnimation {
-                         duration: animationDuration
-                         easing.type: Easing.OutQuad
-                     }
-                }
+                //becomes invisible so that it is no longer calculated in the implicitHeight (or picked up by screen readers)
+                visible: opacity > 0
 
                 Behavior on opacity {
-                     NumberAnimation {
-                         duration: animationDuration * 1.25
-                         easing.type: Easing.OutQuad
-                     }
+                    NumberAnimation {
+                        duration: animationDuration * 1.25
+                        easing.type: Easing.OutQuad
+                    }
                 }
             }
         }
