@@ -132,6 +132,8 @@ RadioDelegate {
             //% "%1/month"
             property string monthlyPrice: qsTrId("vpn.subscription.price").arg(productMonthlyPrice)
 
+            property int trialDays: productTrialDays
+
             spacing: VPNTheme.theme.listSpacing * 0.5
 
             VPNBoldLabel {
@@ -148,6 +150,13 @@ RadioDelegate {
             VPNLightLabel {
                 font.pixelSize: VPNTheme.theme.fontSize
                 text: col.subscriptionDuration !== -1 ? (col.subscriptionDuration > 1 ? col.monthlyPrice : col.productSingleMonth) : ""
+                wrapMode: Text.WordWrap
+
+                Layout.fillWidth: true
+            }
+            VPNLightLabel {
+                font.pixelSize: VPNTheme.theme.fontSize
+                text: col.trialDays
                 wrapMode: Text.WordWrap
 
                 Layout.fillWidth: true

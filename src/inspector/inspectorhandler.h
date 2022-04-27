@@ -21,6 +21,7 @@ class InspectorHandler : public QObject {
 
   static void setLastUrl(const QUrl& url);
   static bool stealUrls();
+  static bool mockFreeTrial();
   static QString appVersionForUpdate();
   static QString getObjectClass(const QObject* target);
   static QJsonObject getViewTree();

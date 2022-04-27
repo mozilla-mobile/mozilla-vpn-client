@@ -10,6 +10,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "settingsholder.h"
 #include "qmlengineholder.h"
 #include "jni.h"
 
