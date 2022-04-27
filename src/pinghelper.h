@@ -22,6 +22,11 @@ class PingHelper final : public QObject {
   PingHelper();
   ~PingHelper();
 
+  struct LossResult {
+    double factor;
+    double sampleSize;
+  };
+
   void start(const QString& serverIpv4Gateway,
              const QString& deviceIpv4Address);
 
@@ -29,7 +34,7 @@ class PingHelper final : public QObject {
   uint latency() const;
   uint stddev() const;
   uint maximum() const;
-  double loss() const;
+  LossResult loss() const;
 
  signals:
   void pingSentAndReceived(qint64 msec);

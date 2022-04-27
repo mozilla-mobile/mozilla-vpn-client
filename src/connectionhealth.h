@@ -34,7 +34,7 @@ class ConnectionHealth final : public QObject {
   ConnectionStability stability() const { return m_stability; }
 
   uint latency() const { return m_pingHelper.latency(); }
-  double loss() const { return m_pingHelper.loss(); }
+  double loss() const { return m_pingHelper.loss().factor; }
   double stddev() const { return m_pingHelper.stddev(); }
   bool isUnsettled() const { return m_settlingTimer.isActive(); };
 
