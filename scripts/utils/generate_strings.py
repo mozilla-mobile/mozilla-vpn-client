@@ -61,6 +61,8 @@ def parseTranslationStrings():
         if last_line == last_line.rstrip():
             exit("The yaml file must have an empty line at the end")
 
+        # Reset position after reading the whole content
+        yaml_file.seek(0)
         yaml_content = yaml.load(yaml_file, UniqueKeyLoader)
 
         if yaml_content is not None:
