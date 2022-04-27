@@ -12,6 +12,7 @@ SOURCES += \
 HEADERS += \
     $$PWD/nebula.h
 
+INCLUDEPATH += $$PWD
 RESOURCES += $$PWD/ui/components.qrc
 RESOURCES += $$PWD/ui/themes.qrc
 RESOURCES += $$PWD/ui/nebula_resources.qrc

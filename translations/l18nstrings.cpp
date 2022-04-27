@@ -21,15 +21,15 @@ L18nStrings* L18nStrings::instance() {
 
 // static
 void L18nStrings::initialize() {
+#ifndef BUILD_QMAKE
   Q_INIT_RESOURCE(servers);
   Q_INIT_RESOURCE(translations);
+#endif
 }
 
 L18nStrings::L18nStrings(QObject* parent) : QQmlPropertyMap(parent) {
   retranslate();
 }
-
-L18nStrings::~L18nStrings() {}
 
 QString L18nStrings::t(L18nStrings::String string) const {
   Q_ASSERT(string < __Last);

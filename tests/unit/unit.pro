@@ -11,6 +11,7 @@ QT += widgets
 
 DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += BUILD_ID=\\\"1234\\\"
+DEFINES += BUILD_QMAKE
 
 CONFIG += c++1z
 
@@ -31,13 +32,11 @@ INCLUDEPATH += \
             ../../src \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
-            ../../src/hacl-star/kremlin/minimal \
-            ../../translations/generated \
-            ../../glean \
-            ../../nebula
+            ../../src/hacl-star/kremlin/minimal
 
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../nebula/nebula.pri)
+include($$PWD/../../translations/translations.pri)
 
 HEADERS += \
     ../../src/adjust/adjustfiltering.h \
@@ -249,13 +248,6 @@ SOURCES += \
     testthemes.cpp \
     testtimersingleshot.cpp \
     testtutorial.cpp
-
-exists($$PWD/../../translations/generated/l18nstrings.h) {
-    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
-    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
-} else {
-    error("No l18nstrings.h. Have you generated the strings?")
-}
 
 # Platform-specific: Linux
 linux {

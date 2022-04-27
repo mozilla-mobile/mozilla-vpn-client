@@ -16,6 +16,7 @@ macos {
 
 DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += BUILD_ID=\\\"1234\\\"
+DEFINES += BUILD_QMAKE
 
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
@@ -33,8 +34,7 @@ INCLUDEPATH += \
             ../../src \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
-            ../../src/hacl-star/kremlin/minimal \
-            ../../translations/generated
+            ../../src/hacl-star/kremlin/minimal
 
 HEADERS += \
     ../../src/authenticationinapp/authenticationinapp.h \
@@ -114,12 +114,8 @@ SOURCES += \
     testpasswordvalidation.cpp \
     testsignupandin.cpp
 
-exists($$PWD/../../translations/generated/l18nstrings.h) {
-    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
-    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
-} else {
-    error("No l18nstrings.h. Have you generated the strings?")
-}
+include($$PWD/../../glean/glean.pri)
+include($$PWD/../../translations/translations.pri)
 
 win* {
     QMAKE_CXXFLAGS += -MP -Zc:preprocessor

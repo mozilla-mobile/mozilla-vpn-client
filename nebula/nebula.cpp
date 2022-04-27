@@ -7,14 +7,16 @@
 constexpr auto QRC_ROOT = "qrc:///nebula/";
 
 void Nebula::Initialize(QQmlEngine* engine) {
+#ifndef BUILD_QMAKE
   Q_INIT_RESOURCE(components);
   Q_INIT_RESOURCE(themes);
   Q_INIT_RESOURCE(nebula_resources);
-#if QT_VERSION >= 0x060000
+# if QT_VERSION >= 0x060000
   Q_INIT_RESOURCE(compatQt6);
   Q_INIT_RESOURCE(resourcesQt6);
-#else
+# else
   Q_INIT_RESOURCE(compatQt5);
+# endif
 #endif
 
   engine->addImportPath(QRC_ROOT);
