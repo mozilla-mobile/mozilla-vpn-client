@@ -138,15 +138,17 @@ VPNFlickable {
             onClicked: settingsStackView.push(aboutUsComponent)
         }
 
-        VPNButton {
-            text: "TODO delete account"
-            anchors.top: vpnPanel.bottom
-            anchors.topMargin: VPNTheme.theme.vSpacing
-            anchors.horizontalCenter: parent.horizontalCenter
+        // TODO: Move to subscription management
+        VPNLinkButton {
+            Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: VPNTheme.theme.vSpacing
+
+            fontName: VPNTheme.theme.fontBoldFamily
+            labelText: VPNl18n.DeleteAccountButtonLabel + " (WIP)" 
+            linkColor: VPNTheme.theme.redButton
             visible: VPNFeatureList.get("accountDeletion").isSupported
             onClicked: {
-             settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml")
-              VPN.deleteAccount()
+                settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
             }
         }
 

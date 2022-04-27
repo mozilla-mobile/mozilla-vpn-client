@@ -10,7 +10,6 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 Item {
-
     VPNMenu {
         id: menu
         objectName: "settingsBackButton"
@@ -45,6 +44,9 @@ Item {
 
         onCurrentItemChanged: {
             menu.title = Qt.binding(() => currentItem._menuTitle || "");
+            menu.visible = Qt.binding(() => currentItem._menuVisible !== undefined
+                ? currentItem._menuVisible
+                : settingsStackView.depth !== 1);
         }
     }
 }

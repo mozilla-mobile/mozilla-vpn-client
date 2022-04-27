@@ -81,7 +81,13 @@ Item {
         anchors.bottomMargin: Math.min(window.safeContentHeight * .08, 60)
 
         visible: footerLinkIsVisible
-        onClicked: VPN.cancelAuthentication()
+        onClicked: {
+            if (isDeleteAccountAuth) {
+                cancelAccountDeletion();
+            } else {
+                VPN.cancelAuthentication()
+            }
+        }
     }
 
     PropertyAnimation on opacity {

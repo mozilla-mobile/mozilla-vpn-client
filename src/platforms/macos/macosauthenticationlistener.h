@@ -5,7 +5,7 @@
 #ifndef MACOSAUTHENTICATIONLISTENER_H
 #define MACOSAUTHENTICATIONLISTENER_H
 
-#include "desktopauthenticationlistener.h"
+#include "tasks/authenticate/desktopauthenticationlistener.h"
 
 #include <QEvent>
 

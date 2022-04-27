@@ -31,7 +31,13 @@ VPNInAppAuthenticationBase {
     id: authSignUp
 
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
-    _menuButtonOnClick: () => { VPNAuthInApp.reset() }
+    _menuButtonOnClick: () => {
+        if (isDeleteAccountAuth) {
+            cancelAccountDeletion();
+        } else {
+            VPNAuthInApp.reset();
+        }
+    }
     _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
     _headlineText: VPNl18n.InAppAuthVerificationCodeTitle
     _subtitleText: VPNl18n.InAppAuthEmailVerificationDescription
@@ -56,7 +62,13 @@ VPNInAppAuthenticationBase {
         }
         VPNCancelButton {
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: VPN.cancelAuthentication()
+            onClicked: {
+                if (isDeleteAccountAuth) {
+                    cancelAccountDeletion();
+                } else {
+                    VPN.cancelAuthentication();
+                }
+            }
         }
     }
 }
