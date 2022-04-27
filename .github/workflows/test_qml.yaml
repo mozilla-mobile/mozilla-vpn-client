@@ -58,7 +58,7 @@ jobs:
         env:
           MVPN_OATHTOOL: ${{github.workspace}}/oathtool
         run: |
-          $(pwd)/build/tests/qml/qml_tests
+          $(pwd)/build/tests/qml/qml_tests -platform offscreen
           grcov $(pwd)/build/tests/qml/CMakeFiles/qml_tests.dir \
               -s $(pwd)/build/tests/qml -t lcov --branch --ignore-not-existing \
                   > ${{github.workspace}}/qml_lcov.info
