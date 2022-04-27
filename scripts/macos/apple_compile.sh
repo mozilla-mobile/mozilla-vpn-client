@@ -13,7 +13,6 @@ fi
 RELEASE=1
 OS=
 ADJUST_SDK_TOKEN=
-ADJUST="CONFIG-=adjust"
 QTBINPATH=
 
 helpFunction() {
@@ -140,11 +139,11 @@ if [ "$OS" = "macos" ]; then
   PLATFORM=$MACOS_FLAGS
 elif [ "$OS" = "ios" ]; then
   PLATFORM=$IOS_FLAGS
-  if [[ "$ADJUST_SDK_TOKEN"  ]]; then
-    printn Y "ADJUST_SDK_TOKEN: "
-    print G "$ADJUST_SDK_TOKEN"
-    ADJUST="CONFIG+=adjust"
-  fi
+  [[ "$ADJUST_SDK_TOKEN"  ]] || die "No adjust sdk token set"
+
+  printn Y "ADJUST_SDK_TOKEN: "
+  print G "$ADJUST_SDK_TOKEN"
+  ADJUST="MVPN_ADJUST_SDK_TOKEN=$ADJUST_SDK_TOKEN"
 else
   die "Why we are here?"
 fi
@@ -163,7 +162,7 @@ PROJECT="Mozilla VPN.xcodeproj"
 [[ "$OS" = "ios" ]] && PROJECT="MozillaVPN.xcodeproj"
 
 print Y "Patching the xcode project..."
-ruby scripts/macos/utils/xcode_patcher.rb "$PROJECT" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
+ruby scripts/macos/utils/xcode_patcher.rb "$PROJECT" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 

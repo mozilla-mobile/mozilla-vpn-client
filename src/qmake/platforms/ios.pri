@@ -12,29 +12,8 @@ isEmpty(MVPN_GROUP_ID_IOS) {
     MVPN_GROUP_ID_IOS = "group.org.mozilla.ios.Guardian"
 }
 
-adjust {
-    message(Adjust SDK enabled)
-    DEFINES += MVPN_ADJUST
-
-    SOURCES += \
-        adjust/adjustfiltering.cpp \
-        adjust/adjusthandler.cpp \
-        adjust/adjustproxy.cpp \
-        adjust/adjustproxyconnection.cpp \
-        adjust/adjustproxypackagehandler.cpp \
-        adjust/adjusttasksubmission.cpp
-
-    OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm
-
-    HEADERS += \
-        adjust/adjustfiltering.h \
-        adjust/adjusthandler.h \
-        adjust/adjustproxy.h \
-        adjust/adjustproxyconnection.h \
-        adjust/adjustproxypackagehandler.h \
-        adjust/adjusttasksubmission.h
-
-    OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h
+isEmpty(MVPN_ADJUST_SDK_TOKEN) {
+    error(Adjust SDK is required. Set MVPN_ADJUST_SDK_TOKEN)
 }
 
 TARGET = "MozillaVPN"
@@ -57,12 +36,20 @@ LIBS += -framework StoreKit
 LIBS += -framework UserNotifications
 
 DEFINES += MVPN_IOS
+DEFINES += MVPN_ADJUST
 
 SOURCES += \
+    adjust/adjustfiltering.cpp \
+    adjust/adjusthandler.cpp \
+    adjust/adjustproxy.cpp \
+    adjust/adjustproxyconnection.cpp \
+    adjust/adjustproxypackagehandler.cpp \
+    adjust/adjusttasksubmission.cpp \
     platforms/macos/macospingsender.cpp \
     tasks/purchase/taskpurchase.cpp
 
 OBJECTIVE_SOURCES += \
+    platforms/ios/iosadjusthelper.mm \
     platforms/ios/iosiaphandler.mm \
     platforms/ios/iosauthenticationlistener.mm \
     platforms/ios/ioscontroller.mm \
@@ -73,11 +60,18 @@ OBJECTIVE_SOURCES += \
     platforms/macos/macoscryptosettings.mm
 
 HEADERS += \
+    adjust/adjustfiltering.h \
+    adjust/adjusthandler.h \
+    adjust/adjustproxy.h \
+    adjust/adjustproxyconnection.h \
+    adjust/adjustproxypackagehandler.h \
+    adjust/adjusttasksubmission.h \
     features/featureioskillswitch.h \
     platforms/macos/macospingsender.h \
     tasks/purchase/taskpurchase.h
 
 OBJECTIVE_HEADERS += \
+    platforms/ios/iosadjusthelper.h \
     platforms/ios/iosiaphandler.h \
     platforms/ios/iosauthenticationlistener.h \
     platforms/ios/ioscontroller.h \
@@ -160,3 +154,7 @@ QMAKE_MAC_XCODE_SETTINGS += GROUP_ID_IOS
 DEVELOPMENT_TEAM.name = "DEVELOPMENT_TEAM"
 DEVELOPMENT_TEAM.value = "$$MVPN_DEVELOPMENT_TEAM"
 QMAKE_MAC_XCODE_SETTINGS += DEVELOPMENT_TEAM
+
+ADJUST_SDK_TOKEN.name = "ADJUST_SDK_TOKEN"
+ADJUST_SDK_TOKEN.value = "$$MVPN_ADJUST_SDK_TOKEN"
+QMAKE_MAC_XCODE_SETTINGS += ADJUST_SDK_TOKEN

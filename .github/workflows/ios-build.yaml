@@ -66,7 +66,7 @@ jobs:
           APP_ID_IOS = org.mozilla.ios.FirefoxVPN
           NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
           EOF
-          ./scripts/macos/apple_compile.sh ios -q "`pwd`/qt_ios/$QTVERSION/macos/bin"
+          ./scripts/macos/apple_compile.sh ios -q "`pwd`/qt_ios/$QTVERSION/macos/bin" -a dummySDKtoken
 
       - name: Prebuilding Qt
         shell: bash

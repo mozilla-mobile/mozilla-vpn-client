@@ -9,7 +9,7 @@ class XCodeprojPatcher
   attr :target_main
   attr :target_extension
 
-  def run(file, shortVersion, fullVersion, platform, configHash, adjust_sdk_token)
+  def run(file, shortVersion, fullVersion, platform, configHash)
     open_project file
     open_target_main platform
 
@@ -19,7 +19,7 @@ class XCodeprojPatcher
 
 
     if platform == 'ios'
-      setup_target_main configHash, adjust_sdk_token
+      setup_target_main configHash
 
       group = @project.main_group.new_group('Configuration')
       @configFile = group.new_file('xcode.xconfig')
@@ -44,7 +44,7 @@ class XCodeprojPatcher
     die 'Unable to open Mozilla VPN target'
   end
 
-  def setup_target_main(configHash, adjust_sdk_token)
+  def setup_target_main(configHash)
     @target_main.build_configurations.each do |config|
       config.base_configuration_reference = @configFile
 
@@ -54,10 +54,6 @@ class XCodeprojPatcher
       ]
 
       config.build_settings['PRODUCT_NAME'] = 'Mozilla VPN'
-
-      if adjust_sdk_token != ""
-        config.build_settings['ADJUST_SDK_TOKEN'] = adjust_sdk_token
-      end
 
       # Force xcode to not set QT_LIBRARY_SUFFIX to "_debug", which causes crash
       config.build_settings['QT_LIBRARY_SUFFIX'] = ""
@@ -102,96 +98,94 @@ class XCodeprojPatcher
       @target_main.add_file_references([file])
     }
 
-    if adjust_sdk_token != ""
-      frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }
-      frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
+    frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }
+    frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
 
-      framework_ref = frameworks_group.new_file('AdServices.framework')
-      build_file = frameworks_build_phase.add_file_reference(framework_ref)
-      build_file.settings = { 'ATTRIBUTES' => ['Weak'] }
+    framework_ref = frameworks_group.new_file('AdServices.framework')
+    build_file = frameworks_build_phase.add_file_reference(framework_ref)
+    build_file.settings = { 'ATTRIBUTES' => ['Weak'] }
 
-      framework_ref = frameworks_group.new_file('iAd.framework')
-      frameworks_build_phase.add_file_reference(framework_ref)
+    framework_ref = frameworks_group.new_file('iAd.framework')
+    frameworks_build_phase.add_file_reference(framework_ref)
 
-      # Adjust SDK
-      group = @project.main_group.new_group('AdjustSDK')
+    # Adjust SDK
+    group = @project.main_group.new_group('AdjustSDK')
 
-      [
-        '3rdparty/adjust-ios-sdk/Adjust/ADJActivityHandler.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJActivityKind.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJActivityPackage.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJActivityState.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAdjustFactory.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAdRevenue.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAttribution.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAttributionHandler.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJBackoffStrategy.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAdditions/NSData+ADJAdditions.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAdditions/NSNumber+ADJAdditions.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAdditions/NSString+ADJAdditions.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJConfig.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJEvent.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJEventFailure.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJEventSuccess.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJLinkResolution.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJLogger.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJPackageBuilder.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJPackageHandler.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJPackageParams.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJRequestHandler.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJResponseData.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJSdkClickHandler.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJSessionFailure.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJSessionParameters.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJSessionSuccess.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJSubscription.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJThirdPartySharing.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJTimerCycle.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJTimerOnce.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJUrlStrategy.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJUserDefaults.h',
-        '3rdparty/adjust-ios-sdk/Adjust/Adjust.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJUtil.h',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJActivityHandler.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJActivityKind.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJActivityPackage.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJActivityState.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAdjustFactory.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAdRevenue.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAttribution.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAttributionHandler.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJBackoffStrategy.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAdditions/NSData+ADJAdditions.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAdditions/NSNumber+ADJAdditions.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJAdditions/NSString+ADJAdditions.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJConfig.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJEvent.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJEventFailure.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJEventSuccess.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJLinkResolution.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJLogger.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJPackageBuilder.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJPackageHandler.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJPackageParams.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJRequestHandler.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJResponseData.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJSdkClickHandler.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJSessionFailure.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJSessionParameters.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJSessionSuccess.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJSubscription.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJThirdPartySharing.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJTimerCycle.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJTimerOnce.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJUrlStrategy.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJUserDefaults.m',
-        '3rdparty/adjust-ios-sdk/Adjust/Adjust.m',
-        '3rdparty/adjust-ios-sdk/Adjust/ADJUtil.m',
-      ].each { |filename|
-        file = group.new_file(filename)
-        file_reference = @target_main.add_file_references([file], '-fobjc-arc')
-      }
-    end
+    [
+      '3rdparty/adjust-ios-sdk/Adjust/ADJActivityHandler.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJActivityKind.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJActivityPackage.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJActivityState.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAdjustFactory.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAdRevenue.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAttribution.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAttributionHandler.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJBackoffStrategy.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAdditions/NSData+ADJAdditions.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAdditions/NSNumber+ADJAdditions.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAdditions/NSString+ADJAdditions.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJConfig.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJEvent.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJEventFailure.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJEventSuccess.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJLinkResolution.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJLogger.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJPackageBuilder.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJPackageHandler.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJPackageParams.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJRequestHandler.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJResponseData.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJSdkClickHandler.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJSessionFailure.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJSessionParameters.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJSessionSuccess.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJSubscription.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJThirdPartySharing.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJTimerCycle.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJTimerOnce.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJUrlStrategy.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJUserDefaults.h',
+      '3rdparty/adjust-ios-sdk/Adjust/Adjust.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJUtil.h',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJActivityHandler.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJActivityKind.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJActivityPackage.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJActivityState.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAdjustFactory.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAdRevenue.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAttribution.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAttributionHandler.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJBackoffStrategy.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAdditions/NSData+ADJAdditions.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAdditions/NSNumber+ADJAdditions.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJAdditions/NSString+ADJAdditions.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJConfig.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJEvent.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJEventFailure.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJEventSuccess.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJLinkResolution.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJLogger.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJPackageBuilder.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJPackageHandler.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJPackageParams.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJRequestHandler.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJResponseData.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJSdkClickHandler.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJSessionFailure.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJSessionParameters.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJSessionSuccess.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJSubscription.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJThirdPartySharing.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJTimerCycle.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJTimerOnce.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJUrlStrategy.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJUserDefaults.m',
+      '3rdparty/adjust-ios-sdk/Adjust/Adjust.m',
+      '3rdparty/adjust-ios-sdk/Adjust/ADJUtil.m',
+    ].each { |filename|
+      file = group.new_file(filename)
+      file_reference = @target_main.add_file_references([file], '-fobjc-arc')
+    }
   end
 
   def setup_target_extension(shortVersion, fullVersion, configHash)
@@ -423,8 +417,7 @@ configFile.each { |line|
 
 platform = "macos"
 platform = "ios" if ARGV[3] == "ios"
-adjust_sdk_token = ARGV[4]
 
 r = XCodeprojPatcher.new
-r.run ARGV[0], ARGV[1], ARGV[2], platform, config, adjust_sdk_token
+r.run ARGV[0], ARGV[1], ARGV[2], platform, config
 exit 0
