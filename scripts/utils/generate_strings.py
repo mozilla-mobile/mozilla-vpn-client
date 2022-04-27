@@ -56,6 +56,11 @@ def parseTranslationStrings():
         exit("Unable to find translations/strings.yaml")
 
     with open(yaml_path, "r", encoding="utf-8") as yaml_file:
+        # Enforce a new line at the end of the file
+        last_line = yaml_file.readlines()[-1]
+        if last_line == last_line.rstrip():
+            exit("The yaml file must have an empty line at the end")
+
         yaml_content = yaml.load(yaml_file, UniqueKeyLoader)
 
         if yaml_content is not None:
