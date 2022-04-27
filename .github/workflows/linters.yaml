@@ -111,3 +111,6 @@ jobs:
       - name: Test release-push
         run: |
           taskgraph full --p taskcluster/test/params/release-push.yml           
+      - name: Test default parameters
+        run: |
+          taskgraph full
