@@ -320,7 +320,7 @@ class L18nStrings final : public QQmlPropertyMap {
   static void initialize();
 
   explicit L18nStrings(QObject* parent);
-  ~L18nStrings() = default;
+  ~L18nStrings();
 
   void retranslate();
 

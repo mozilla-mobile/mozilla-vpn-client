@@ -3,9 +3,7 @@ bin/lottietest.qmltypes
 bin/lottietest_metatypes.json
 bin/lottietest_qmltyperegistrations.cpp
 
-lib/liblottie.a
-
-tests/unit/lottie_tests
+tests/unit/tests
 
 tests/qml/tst_lottie
 tests/qml/tst_lottie.qmltypes

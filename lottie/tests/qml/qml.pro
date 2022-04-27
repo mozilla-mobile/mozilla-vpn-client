@@ -18,7 +18,7 @@ SOURCES += main.cpp
 
 INCLUDEPATH += ../../lib
 
-LIBS += -L../../lib -llottie
+include(../../lottie.pri)
 
 RESOURCES += qml.qrc
 

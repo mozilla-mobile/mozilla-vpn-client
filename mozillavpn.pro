@@ -12,25 +12,18 @@
 
 TEMPLATE = subdirs
 
-SUBDIRS += glean
-SUBDIRS += lottie
-SUBDIRS += nebula
-SUBDIRS += translations
 SUBDIRS += src
 SUBDIRS += tests/unit
-
-src.depends = glean lottie nebula translations
-tests/unit.depends = glean nebula translations
+SUBDIRS += lottie/tests/unit
 
 # separate flag because an extra dependency is needed: liboath
 AUTHTEST {
     SUBDIRS += tests/auth
-    tests/auth.depends = glean translations
 }
 
 QMLTEST {
     SUBDIRS += tests/qml
-    tests/qml.depends = glean lottie nebula translations
+    SUBDIRS += lottie/tests/qml
 }
 
 linux:!android|macos|win* {

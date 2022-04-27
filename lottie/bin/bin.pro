@@ -10,7 +10,7 @@ SOURCES += lottietest.cpp
 
 INCLUDEPATH += ../lib
 
-LIBS += -L../lib -llottie
+include(../lottie.pri)
 
 RESOURCES += lottietest.qrc
 

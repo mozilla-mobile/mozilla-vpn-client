@@ -36,6 +36,9 @@ INCLUDEPATH += \
             ../../glean \
             ../../nebula
 
+include($$PWD/../../glean/glean.pri)
+include($$PWD/../../nebula/nebula.pri)
+
 HEADERS += \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
@@ -247,9 +250,12 @@ SOURCES += \
     testtimersingleshot.cpp \
     testtutorial.cpp
 
-LIBS += -L../../glean -lglean
-LIBS += -L../../nebula -lnebula
-LIBS += -L../../translations -ltranslations
+exists($$PWD/../../translations/generated/l18nstrings.h) {
+    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
+    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
+} else {
+    error("No l18nstrings.h. Have you generated the strings?")
+}
 
 # Platform-specific: Linux
 linux {

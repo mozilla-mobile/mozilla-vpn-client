@@ -34,6 +34,10 @@ INCLUDEPATH += \
             ../../lottie/lib \
             ../../nebula
 
+include($$PWD/../../glean/glean.pri)
+include($$PWD/../../lottie/lottie.pri)
+include($$PWD/../../nebula/nebula.pri)
+
 SOURCES += \
     helper.cpp \
     main.cpp \
@@ -76,10 +80,12 @@ HEADERS += \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
 
-LIBS += -L../../glean -lglean
-LIBS += -L../../lottie/lib -llottie
-LIBS += -L../../nebula -lnebula
-LIBS += -L../../translations -ltranslations
+exists($$PWD/../../translations/generated/l18nstrings.h) {
+    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
+    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
+} else {
+    error("No l18nstrings.h. Have you generated the strings?")
+}
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
