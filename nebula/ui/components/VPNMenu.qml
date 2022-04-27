@@ -19,6 +19,8 @@ Item {
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
+    property var _menuOnBackClicked: () => handleMenuGoBack();
+    property string _iconButtonSource: "qrc:/nebula/resources/back.svg"
 
     width: parent.width
     height: VPNTheme.theme.menuHeight
@@ -39,7 +41,7 @@ Item {
 
         skipEnsureVisible: true // prevents scrolling of lists when this is focused
 
-        onClicked: handleMenuGoBack()
+        onClicked: _menuOnBackClicked()
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: VPNTheme.theme.windowMargin / 2
@@ -52,14 +54,12 @@ Item {
         enabled: !btnDisabled
         opacity: enabled ? 1 : .4
         Image {
-            id: backImage
-
-            source: "qrc:/nebula/resources/back.svg"
+            objectName: "menuIcon"
+            source: _iconButtonSource
             sourceSize.width: VPNTheme.theme.iconSize
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton
         }
-
     }
 
     VPNBoldLabel {

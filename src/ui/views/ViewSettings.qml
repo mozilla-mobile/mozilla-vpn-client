@@ -19,8 +19,14 @@ Item {
 
         title: ""
         isSettingsView: true
-        visible: settingsStackView.depth !== 1
         opacity: visible ? 1 : 0
+        _iconButtonSource: settingsStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
+        _menuOnBackClicked: () => {
+            if (settingsStackView.depth !== 1) {
+                return settingsStackView.pop();
+            }
+            stackview.pop(StackView.Immediate)
+        }
 
 
         Behavior on opacity {
@@ -29,7 +35,6 @@ Item {
             }
         }
     }
-
 
     VPNStackView {
         id: settingsStackView
