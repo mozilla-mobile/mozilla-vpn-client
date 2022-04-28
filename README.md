@@ -101,46 +101,37 @@ what we wrote before, you also need the following dependencies:
 - wireguard-tools >= 1.0.20200513
 - resolvconf >= 1.82
 - golang >= 1.13
+- cmake >= 3.16
 
-2. Instrument the glean events:
-```bash
-./scripts/utils/generate_glean.py
-```
-
-3. Import the languages and generate the translation strings:
-```bash
-./scripts/utils/import_languages.py
-```
-
-4. **Optional**: In case you want to change the shaders, you must regenerate
+2. **Optional**: In case you want to change the shaders, you must regenerate
 them:
 ```bash
 ./scripts/utils/bake_shaders.sh
 ```
 
-5. Finally, we are able to configure the whole project using `qmake`. Usually,
-`qmake` is already in your path, but if it's not, add the Qt6 installation path
-in your `PATH` env variable.
+3. Create a build directory, and configure the project for building using `cmake`.
 ```bash
-qmake # for local dev builds use `qmake CONFIG+=debug`
-```
-If you prefer to not install at /usr or /etc, you can specify alternate
-prefixes. Using no prefixes is equivalent to:
-```bash
-qmake USRPATH=/usr ETCPATH=/etc
+mkdir build && cmake -S . -B build
 ```
 
-6. Compile the source code:
+If you are using a build of Qt that was not installed by your operating system,
+you may need to tell `cmake` where it is located by specifying the `CMAKE_PREFIX_PATH`
+during configuration:
 ```bash
-make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
+mkdir build && cmake -S . -B build -DCMAKE_PREFIX_PATH=<Qt install path>/lib/cmake/
 ```
 
-7. Installation:
+4. Compile the source code:
 ```bash
-sudo make install
+cmake --build build -j$(nproc)
 ```
 
-8.  After the installation, you can run the app simply running:
+5. Installation:
+```bash
+sudo cmake -B build install
+```
+
+6.  After the installation, you can run the app simply running:
 ```bash
 mozillavpn
 ```
