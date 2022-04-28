@@ -67,6 +67,8 @@ GROUP_ID_IOS = group.org.mozilla.ios.Guardian
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 EOF
+which qmake
+qmake -v
 
 if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
