@@ -89,8 +89,9 @@ VPNFlickable {
 
                     VPNTextBlock {
                         text: settingDescription
-                        width: parent.width
                         opacity: vpnIsOff ? 1 : .5
+
+                        Layout.fillWidth: true
                     }
 
                     VPNVerticalSpacer {
