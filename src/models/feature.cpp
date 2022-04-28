@@ -93,16 +93,20 @@ const Feature* Feature::get(const QString& featureID) {
   return feature;
 }
 
-bool Feature::isDevModeEnabled() const {
+bool Feature::isDevModeEnabled(bool ignoreCache) const {
   if (!m_devModeWriteable) {
     return false;
+  }
+
+  if (ignoreCache) {
+    return SettingsHolder::instance()->devModeFeatureFlags().contains(m_id);
   }
 
   return m_devModeEnabled;
 }
 
-bool Feature::isSupported() const {
-  if (isDevModeEnabled()) {
+bool Feature::isSupported(bool ignoreCache) const {
+  if (isDevModeEnabled(ignoreCache)) {
     logger.debug() << "Devmode Enabled " << m_id;
     return true;
   }
@@ -137,6 +141,25 @@ QString Feature::shortDescription() const {
 
 void Feature::maybeChangeDevMode(bool newDevModeEnabled) {
   if (newDevModeEnabled == m_devModeEnabled) {
+    // Something else has changed. Let's see if we have to disable this feature
+    // because one of the dependencies has changed.
+    if (newDevModeEnabled) {
+      for (const QString& featureID : m_featureDependencies) {
+        Feature* feature = s_features->value(featureID, nullptr);
+        Q_ASSERT(feature);
+
+        // Let's check the support ignoring the cache (m_devModeEnabled)
+        // because maybe this feature doesn't know yet that it has been
+        // disabled.
+        if (feature->isSupported(true)) continue;
+
+        QStringList devModeFeatureFlags =
+            SettingsHolder::instance()->devModeFeatureFlags();
+        devModeFeatureFlags.removeAll(m_id);
+        SettingsHolder::instance()->setDevModeFeatureFlags(devModeFeatureFlags);
+        break;
+      }
+    }
     return;
   }
 
