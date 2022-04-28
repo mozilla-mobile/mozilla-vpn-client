@@ -118,3 +118,16 @@ def set_mac_behavior(config, tasks):
             config.params, "taskcluster/scripts/signing/loginItems-entitlements.xml"
         )
         yield task
+
+
+@transforms.add
+def set_macos_upstream_artifact_path(config, tasks):
+    for task in tasks:
+        if task["name"] != "macos/opt":
+            yield task
+            continue
+        # Path defined in taskcluster/scripts/build/macos_build.sh
+        task["worker"]["upstream-artifacts"][0]["paths"] = [
+            "public/build/unsigned_artifact.zip"
+        ]
+        yield task
