@@ -729,7 +729,7 @@ void AuthenticationInAppListener::processErrorObject(const QJsonObject& obj) {
 
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::authenticationInappError,
-          {{"errno", "125"}, {"verificationMethod", verificationMethod}});
+          {{"errno", "125"}, {"verificationmethod", verificationMethod}});
 
       logger.error() << "Unsupported verification method:"
                      << verificationMethod;
