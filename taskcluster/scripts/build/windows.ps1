@@ -61,5 +61,6 @@ Stop-Process -Name "vctip.exe" -Force -ErrorAction SilentlyContinue
 Write-Output "Open Processes:"
 wmic process get description,executablepath 
 
-#Final Cleanup - So next tasks will fail on the pre-installed go-files
-git clean -xdff
+# Final Cleanup - So next tasks will not fail on pre-cleanup
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue windows/tunnel/.deps
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue balrog/.deps
