@@ -160,7 +160,7 @@ manifestChrome.path = $${ETCPATH}/opt/chrome/native-messaging-hosts
 manifestChrome.CONFIG = no_check_exist
 INSTALLS += manifestChrome
 
-manifestChromium.files = $${OBJECTS_DIR}/mozillavpn.json
+manifestChromium.files = $${WEBEXT_MANIFEST_JSON}
 manifestChromium.path = $${ETCPATH}/chromium/native-messaging-hosts
 manifestChromium.CONFIG = no_check_exist
 INSTALLS += manifestChromium
