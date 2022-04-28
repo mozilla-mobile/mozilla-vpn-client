@@ -1,0 +1,6 @@
+{
+    "version": 2,
+    "parameters": {
+        "tasks_for": "github-push"
+    }
+}
