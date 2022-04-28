@@ -19,7 +19,7 @@ VPNFlickable {
     property real panelHeight: window.safeContentHeight
     property bool shouldRestoreSlide: false
 
-    flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight - spacerBottom.height
+    flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight
     height: parent.height
     interactive: flickContentHeight > height
 
@@ -260,20 +260,22 @@ VPNFlickable {
             Layout.minimumHeight: VPNTheme.theme.windowMargin
         }
 
-        ColumnLayout {
+        Column {
             id: panelBottomContent
             Layout.preferredWidth: parent.width
             spacing: VPNTheme.theme.windowMargin
 
             VPNInterLabel {
-                Layout.alignment: Qt.AlignCenter
-                Layout.bottomMargin: VPNTheme.theme.rowHeight
-                Layout.maximumWidth: parent.width
-
+                anchors.horizontalCenter: parent.horizontalCenter
                 text: VPNl18n.FreeTrialsStartYourFreeTrial
                 color: VPNTheme.colors.white80
                 font.family: VPNTheme.theme.fontInterSemiBoldFamily
+                width: parent.width
                 visible: VPNFeatureList.get("freeTrial").isSupported
+            }
+
+            VPNVerticalSpacer {
+                height: 1
             }
 
             PageIndicator {
@@ -282,7 +284,7 @@ VPNFlickable {
                 interactive: true
                 count: swipeView.count
                 currentIndex: swipeView.currentIndex
-                Layout.alignment: Qt.AlignCenter
+                anchors.horizontalCenter: parent.horizontalCenter
                 spacing: VPNTheme.theme.windowMargin / 2
 
                 delegate: Rectangle {
@@ -302,7 +304,7 @@ VPNFlickable {
             VPNButton {
                 id: signUpButton
                 objectName: "signUpButton"
-                Layout.fillWidth: true
+                anchors.horizontalCenter: parent.horizontalCenter
                 text: VPNl18n.MobileOnboardingSignUpBtn
                 width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
                 onClicked: onboardingPanel.recordGleanEvtAndStartAuth(objectName)
@@ -311,8 +313,7 @@ VPNFlickable {
             VPNLinkButton {
                 objectName: "alreadyASubscriberLink"
                 labelText: VPNl18n.MobileOnboardingAlreadyASubscriber
-                Layout.maximumWidth: parent.width
-                Layout.alignment: Qt.AlignCenter
+                anchors.horizontalCenter: parent.horizontalCenter
                 height: VPNTheme.theme.rowHeight
                 linkColor: VPNTheme.theme.whiteButton
                 onClicked: onboardingPanel.recordGleanEvtAndStartAuth(objectName)
