@@ -13,6 +13,10 @@ $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 . "$REPO_ROOT_PATH/taskcluster/scripts/fetch/enable_win_rust.ps1"
 
+# Remove vctip - it's a build-telemetry thing from ms,
+# that will try to send metrics after the build, so it blocks taskcluster cleanup. 
+Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/vctip.exe  
+
 # Fetch 3rdparty stuff.
 python3 -m pip install -r requirements.txt --user
 git submodule update --init --force --recursive --depth=1
