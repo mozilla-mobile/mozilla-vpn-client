@@ -177,5 +177,6 @@ tools/inspector/node_modules
 
 # Bridge app
 extension/bridge/target
+extension/bridge/vendor
 extension/bridge/.cargo_home
 extension/bridge/.cargo

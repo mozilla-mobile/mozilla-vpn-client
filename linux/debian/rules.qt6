@@ -15,7 +15,7 @@ endif
 	dh $@ --with=systemd --warn-missing
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DBUILD_ID=$(DEB_VERSION)
+	dh_auto_configure -- -DBUILD_ID=$(DEB_VERSION) -DWEBEXT_INSTALL_LIBDIR=lib
 
 override_dh_installdocs:
 

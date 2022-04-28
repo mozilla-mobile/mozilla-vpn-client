@@ -139,28 +139,29 @@ systemd_service.files = $$PWD/../../../linux/mozillavpn.service
 systemd_service.path = $${USRPATH}/lib/systemd/system
 INSTALLS += systemd_service
 
-ORIG_MOZILLAVPN_JSON = $$PWD/../../../extension/manifests/linux/mozillavpn.json
-manifestFile.input = ORIG_MOZILLAVPN_JSON
-manifestFile.output = $${OBJECTS_DIR}/mozillavpn.json
-manifestFile.commands = @python3 -c \'with open(\"$$ORIG_MOZILLAVPN_JSON\") as fin, open(\"$$manifestFile.output\", \"w\") as fout: print(\"\".join(fin).replace(\"/usr/lib/\", \"$${LIBPATH}/\"), end=\"\", file=fout)\'
+WEBEXT_MANIFEST_TEMPLATE = $$PWD/../../../extension/manifests/linux/mozillavpn.json.in
+WEBEXT_INSTALL_LIBDIR = $$system(echo "$${LIBPATH}" | sed -e 's/^[/]*//') ## Strip leading slashes
+manifestFile.input = WEBEXT_MANIFEST_TEMPLATE
+manifestFile.output = $${OBJECTS_DIR}/${QMAKE_FILE_IN_BASE}
+manifestFile.commands = @echo Building ${QMAKE_FILE_OUT} && \
+    python3 $$PWD/../../../scripts/utils/make_template.py ${QMAKE_FILE_IN} \
+        -o ${QMAKE_FILE_OUT} -k @WEBEXT_INSTALL_LIBDIR@=$${WEBEXT_INSTALL_LIBDIR}
+manifestFile.variable_out = WEBEXT_MANIFEST_JSON
 manifestFile.CONFIG = target_predeps no_link
 QMAKE_EXTRA_COMPILERS += manifestFile
 
-manifestFirefox.files = $$manifestFile.output
+manifestFirefox.files = $${WEBEXT_MANIFEST_JSON}
 manifestFirefox.path = $${LIBPATH}/mozilla/native-messaging-hosts
-manifestFirefox.depends = $$manifestFile.output
 manifestFirefox.CONFIG = no_check_exist
 INSTALLS += manifestFirefox
 
-manifestChrome.files = $$manifestFile.output
+manifestChrome.files = $${WEBEXT_MANIFEST_JSON}
 manifestChrome.path = $${ETCPATH}/opt/chrome/native-messaging-hosts
-manifestChrome.depends = $$manifestFile.output
 manifestChrome.CONFIG = no_check_exist
 INSTALLS += manifestChrome
 
-manifestChromium.files = $$manifestFile.output
+manifestChromium.files = $${OBJECTS_DIR}/mozillavpn.json
 manifestChromium.path = $${ETCPATH}/chromium/native-messaging-hosts
-manifestChromium.depends = $$manifestFile.output
 manifestChromium.CONFIG = no_check_exist
 INSTALLS += manifestChromium
 

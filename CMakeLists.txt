@@ -29,3 +29,8 @@ add_subdirectory(translations)
 add_subdirectory(tests/auth EXCLUDE_FROM_ALL)
 add_subdirectory(tests/unit EXCLUDE_FROM_ALL)
 add_subdirectory(tests/qml EXCLUDE_FROM_ALL)
+
+# Web Extension build targets
+if(NOT CMAKE_CROSSCOMPILING)
+    add_subdirectory(extension)
+endif()

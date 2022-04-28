@@ -128,36 +128,5 @@ install(FILES platforms/linux/daemon/org.mozilla.vpn.dbus.service
 pkg_check_modules(SYSTEMD systemd)
 if("${SYSTEMD_FOUND}" EQUAL 1)
     pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
-    install(FILES ../linux/mozillavpn.service
-        DESTINATION ${SYSTEMD_UNIT_DIR}/systemd/system)
+    install(FILES ../linux/mozillavpn.service DESTINATION ${SYSTEMD_UNIT_DIR})
 endif()
-
-#ORIG_MOZILLAVPN_JSON = $$PWD/../../../extension/manifests/linux/mozillavpn.json
-#manifestFile.input = ORIG_MOZILLAVPN_JSON
-#manifestFile.output = $${OBJECTS_DIR}/mozillavpn.json
-#manifestFile.commands = @python3 -c \'with open(\"$$ORIG_MOZILLAVPN_JSON\") as fin, open(\"$$manifestFile.output\", \"w\") as fout: print(\"\".join(fin).replace(\"/usr/lib/\", \"$${LIBPATH}/\"), end=\"\", file=fout)\'
-#manifestFile.CONFIG = target_predeps no_link
-#QMAKE_EXTRA_COMPILERS += manifestFile
-
-#manifestFirefox.files = $$manifestFile.output
-#manifestFirefox.path = $${LIBPATH}/mozilla/native-messaging-hosts
-#manifestFirefox.depends = $$manifestFile.output
-#manifestFirefox.CONFIG = no_check_exist
-#INSTALLS += manifestFirefox
-
-#manifestChrome.files = $$manifestFile.output
-#manifestChrome.path = $${ETCPATH}/opt/chrome/native-messaging-hosts
-#manifestChrome.depends = $$manifestFile.output
-#manifestChrome.CONFIG = no_check_exist
-#INSTALLS += manifestChrome
-
-#manifestChromium.files = $$manifestFile.output
-#manifestChromium.path = $${ETCPATH}/chromium/native-messaging-hosts
-#manifestChromium.depends = $$manifestFile.output
-#manifestChromium.CONFIG = no_check_exist
-#INSTALLS += manifestChromium
-
-#browserBridge.files = $$PWD/../../../extension/bridge/target/release/mozillavpnnp
-#browserBridge.path = $${LIBPATH}/mozillavpn
-#browserBridge.CONFIG = no_check_exist executable
-#INSTALLS += browserBridge
