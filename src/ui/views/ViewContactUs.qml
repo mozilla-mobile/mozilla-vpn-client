@@ -160,49 +160,12 @@ Item {
                     ColumnLayout {
                         Layout.fillWidth: true
                         Layout.preferredWidth: parent.width
-                        RowLayout {
-                            visible: VPN.userState === VPN.UserAuthenticated
-                            spacing: 15
-                            Layout.fillWidth: true
-                            Layout.bottomMargin: 15
+                        spacing: 10
 
-                            Rectangle {
-                                Layout.preferredWidth: 40
-                                Layout.preferredHeight: 40
-                                color: VPNTheme.theme.transparent
-
-                                VPNAvatar {
-                                    id: avatar
-
-                                    avatarUrl: VPNUser.avatar
-                                    anchors.fill: parent
-                                }
-                            }
-
-                            ColumnLayout {
-
-                                VPNBoldLabel {
-                                    //% "VPN User"
-                                    readonly property var textVpnUser: qsTrId("vpn.settings.user")
-                                    text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
-                                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    Layout.fillWidth: true
-
-                                }
-
-
-                                VPNLightLabel {
-                                    id: serverLocation
-                                    text: VPNUser.email
-                                    Accessible.ignored: true
-                                    Layout.alignment: Qt.AlignLeft
-                                    elide: Text.ElideRight
-                                    Layout.fillWidth: true
-                                }
-                            }
+                        VPNUserProfile {
+                            Layout.bottomMargin: VPNTheme.theme.windowMargin / 2
                         }
 
-                        spacing: 10
 
                         VPNBoldLabel {
                             property string enterEmailAddress: VPNl18n.InAppSupportWorkflowSupportFieldHeader

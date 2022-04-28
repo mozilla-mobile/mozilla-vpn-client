@@ -592,3 +592,6 @@ global:
   collapse:
     value: Collapse
     comment: Action used in the context of an expandable/collapsible card component
+  vpnUser: 
+    value: VPN User
+    comment: Fallback string for users who have not specified a Display Name.
