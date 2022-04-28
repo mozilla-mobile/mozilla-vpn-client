@@ -53,10 +53,10 @@ class Feature : public QObject {
   // Checks if the feature is released
   // or force enabled by the DevMode
   // returns the features checkSupportCallback otherwise.
-  bool isSupported() const;
+  bool isSupported(bool ignoreCache = false) const;
 
   // Returns true if it was enabled via DevMode
-  Q_INVOKABLE bool isDevModeEnabled() const;
+  Q_INVOKABLE bool isDevModeEnabled(bool ignoreCache = false) const;
 
   // Returns true if this is a newly introduced feature
   bool isNew() const { return m_new; }
