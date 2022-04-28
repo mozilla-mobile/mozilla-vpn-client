@@ -83,7 +83,7 @@ else
 fi
 
 print Y "Wait..."
-./configure \
+bash ./configure \
   $* \
   --prefix=$PREFIX \
   -opensource \
