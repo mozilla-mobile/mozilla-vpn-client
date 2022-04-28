@@ -20,7 +20,6 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "loghandler.h"
 #include "models/guidemodel.h"
 #include "models/tutorialmodel.h"
 #include "mozillavpn.h"
