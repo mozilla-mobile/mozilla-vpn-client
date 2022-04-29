@@ -10,8 +10,6 @@ import Mozilla.VPN 1.0
 import compat 0.1
 
 Item {
-    property alias color: checkmarkBg.color
-
     id: checkmark
 
     height: VPNTheme.theme.iconSize * 1.5
@@ -20,8 +18,7 @@ Item {
     Rectangle {
         id: checkmarkBg
 
-        height: parent.height
-        width: parent.width
+        anchors.fill: parent
         antialiasing: true
         smooth: true
         visible: false
@@ -29,34 +26,27 @@ Item {
 
         Behavior on color {
             PropertyAnimation {
-                duration: 200
+                duration: 100
             }
         }
     }
 
     Image {
         id: checkmarkIcon
-
-        source: "qrc:/nebula/resources/checkmark.svg"
-        sourceSize.height: 13
-        sourceSize.width: 12
-        visible: false
-        anchors.centerIn: checkmark
+        source: "qrc:/nebula/resources/checkmark-blue50.svg"
+        sourceSize.height: checkmarkIcon.height
+        sourceSize.width: checkmarkIcon.width
+        opacity: checkBox.checked ? 1 : 0
+        anchors.centerIn: parent
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 100
+            }
+        }
     }
-
-    VPNOpacityMask {
-        anchors.centerIn: checkmark
-        height: checkmarkIcon.height
-        width: checkmarkIcon.width
-        source: checkmarkBg
-        maskSource: checkmarkIcon
-    }
-
     Behavior on opacity {
         PropertyAnimation {
             duration: 100
         }
-
     }
-
 }

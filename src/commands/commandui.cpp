@@ -32,6 +32,8 @@
 #include <lottie.h>
 #include <nebula.h>
 
+#include <QQmlContext>
+
 #ifdef MVPN_DEBUG
 #  include <QQmlDebuggingEnabler>
 #endif
@@ -182,6 +184,10 @@ int CommandUI::run(QStringList& tokens) {
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+
+    // TODO pending #3398
+    QQmlContext* ctx = engine->rootContext();
+    ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
     Glean::Initialize(engine);
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
