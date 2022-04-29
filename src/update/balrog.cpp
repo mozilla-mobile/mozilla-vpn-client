@@ -19,36 +19,20 @@
 #include <QSslKey>
 #include <QTemporaryDir>
 
+// Import balrog C/Go library
+extern "C" {
+#include "balrog-api.h"
+}
+
 typedef struct {
   const char* p;
   size_t n;
 } gostring_t;
 
-typedef void (*logFunc)(int level, const char* msg);
-
 #if defined(MVPN_WINDOWS)
-#  include "windows.h"
-#  include "platforms/windows/windowscommons.h"
-
 constexpr const char* BALROG_WINDOWS_UA = "WINNT_x86_64";
-
-typedef void BalrogSetLogger(logFunc func);
-typedef unsigned char BalrogValidate(gostring_t x5uData, gostring_t updateData,
-                                     gostring_t signature, gostring_t rootHash,
-                                     gostring_t leafCertSubject);
-
 #elif defined(MVPN_MACOS)
-#  define EXPORT __attribute__((visibility("default")))
-
-extern "C" {
-EXPORT void balrogSetLogger(logFunc func);
-EXPORT unsigned char balrogValidate(gostring_t x5uData, gostring_t updateData,
-                                    gostring_t signature, gostring_t rootHash,
-                                    gostring_t leafCertSubject);
-}
-
 constexpr const char* BALROG_MACOS_UA = "Darwin_x86";
-
 #else
 #  error Platform not supported yet
 #endif
@@ -223,27 +207,23 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   }
 #endif
 
-  balrogSetLogger(balrogLogger);
+  balrogSetLogger((GoUintptr)balrogLogger);
 
   QByteArray x5uDataCopy = x5uData;
-  gostring_t x5uDataGo{x5uDataCopy.constData(), (size_t)x5uDataCopy.length()};
+  GoString x5uDataGo{x5uDataCopy.constData(), x5uDataCopy.length()};
 
   QByteArray signatureCopy = signatureBlob;
-  gostring_t signatureGo{signatureCopy.constData(),
-                         (size_t)signatureCopy.length()};
+  GoString signatureGo{signatureCopy.constData(), signatureCopy.length()};
 
   QByteArray updateDataCopy = updateData;
-  gostring_t updateDataGo{updateDataCopy.constData(),
-                          (size_t)updateDataCopy.length()};
+  GoString updateDataGo{updateDataCopy.constData(), updateDataCopy.length()};
 
   QByteArray rootHashCopy = Constants::balrogRootCertFingerprint();
   rootHashCopy = rootHashCopy.toUpper();
-  gostring_t rootHashGo{rootHashCopy.constData(),
-                        (size_t)rootHashCopy.length()};
+  GoString rootHashGo{rootHashCopy.constData(), rootHashCopy.length()};
 
   QByteArray certSubjectCopy = BALROG_CERT_SUBJECT_CN;
-  gostring_t certSubjectGo{certSubjectCopy.constData(),
-                           (size_t)certSubjectCopy.length()};
+  GoString certSubjectGo{certSubjectCopy.constData(), certSubjectCopy.length()};
 
   unsigned char verify = balrogValidate(x5uDataGo, updateDataGo, signatureGo,
                                         rootHashGo, certSubjectGo);

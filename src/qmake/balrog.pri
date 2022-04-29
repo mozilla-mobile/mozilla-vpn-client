@@ -11,6 +11,6 @@ macos|win* {
 
     # TODO: remove this if-stmt
     !win* {
-        GO_MODULES = $$PWD/../../balrog/api.go
+        GO_MODULES = $$PWD/../../balrog/balrog-api.go
     }
 }
