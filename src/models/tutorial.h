@@ -13,6 +13,7 @@ class Tutorial final : public ItemPicker {
   Q_OBJECT
   Q_PROPERTY(QString titleId MEMBER m_titleId CONSTANT)
   Q_PROPERTY(QString subtitleId MEMBER m_subtitleId CONSTANT)
+  Q_PROPERTY(QString completionMessageId MEMBER m_completionMessageId CONSTANT)
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
 
  public:
@@ -27,17 +28,20 @@ class Tutorial final : public ItemPicker {
   explicit Tutorial(QObject* parent);
 
   bool itemPicked(const QStringList& list) override;
+  void itemVisibilityChanged();
 
   void processNextOp();
 
   // Return true if there are no operations left.
-  bool maybeStop();
+  bool maybeStop(bool completed = false);
 
  private:
   int32_t m_currentStep = -1;
+  bool m_elementPicked = false;
 
   QString m_titleId;
   QString m_subtitleId;
+  QString m_completionMessageId;
   QString m_image;
 
   struct Op {

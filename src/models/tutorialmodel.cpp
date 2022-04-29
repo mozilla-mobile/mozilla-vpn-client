@@ -75,11 +75,13 @@ void TutorialModel::allowItem(const QString& objectName) {
 
 void TutorialModel::play(Tutorial* tutorial) {
   Q_ASSERT(tutorial);
-  stop();
-  m_currentTutorial = tutorial;
-  tutorial->play(m_allowedItems);
 
+  stop();
+
+  m_currentTutorial = tutorial;
   emit playingChanged();
+
+  tutorial->play(m_allowedItems);
 }
 
 void TutorialModel::stop() {
@@ -99,6 +101,13 @@ void TutorialModel::requireTooltipNeeded(Tutorial* tutorial,
   Q_ASSERT(tutorial);
   Q_ASSERT(tutorial == m_currentTutorial);
   emit tooltipNeeded(tooltipText, itemRect);
+}
+
+void TutorialModel::requireTutorialCompleted(
+    Tutorial* tutorial, const QString& completionMessageText) {
+  Q_ASSERT(tutorial);
+  Q_ASSERT(tutorial == m_currentTutorial);
+  emit tutorialCompleted(completionMessageText);
 }
 
 void TutorialModel::requireTooltipShown(Tutorial* tutorial, bool shown) {

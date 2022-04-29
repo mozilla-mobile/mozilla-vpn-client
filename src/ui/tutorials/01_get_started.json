@@ -3,10 +3,11 @@
   "image": "foo.png",
   "title": "Getting started with VPN",
   "subtitle": "Follow this walkthrough to learn how to get started with using your VPN.",
+  "completion_message": "You’ve successfully changed your location, turned the VPN on and off. Would you like to learn more tips and tricks?",
   "steps": [
     {
       "id": "s1",
-      "element": "a",
+      "element": "serverListButton",
       "tooltip": "Select your location"
     },
     {
@@ -16,7 +17,7 @@
     },
     {
       "id": "s3",
-      "element": "b",
+      "element": "controllerToggle",
       "tooltip": "Toggle this switch to activate or deactivate the VPN"
     }
   ]

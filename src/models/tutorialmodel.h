@@ -33,6 +33,8 @@ class TutorialModel final : public QAbstractListModel {
 
   void requireTooltipNeeded(Tutorial* tutorial, const QString& tooltipText,
                             const QRectF& itemRect);
+  void requireTutorialCompleted(Tutorial* tutorial,
+                                const QString& completionMessageText);
   void requireTooltipShown(Tutorial* tutorial, bool shown);
 
   // QAbstractListModel methods
@@ -47,6 +49,7 @@ class TutorialModel final : public QAbstractListModel {
   void playingChanged();
   void tooltipNeeded(const QString& tooltipText, const QRectF& itemRect);
   void tooltipShownChanged();
+  void tutorialCompleted(const QString& completionMessageText);
 
  private:
   explicit TutorialModel(QObject* parent);

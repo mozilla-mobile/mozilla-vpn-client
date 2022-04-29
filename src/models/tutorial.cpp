@@ -85,6 +85,15 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
     return nullptr;
   }
 
+  tutorial->m_completionMessageId = Guide::pascalize(
+      QString("tutorial_%1_completion_message").arg(tutorialId));
+  if (!l18nStrings->contains(tutorial->m_completionMessageId)) {
+    logger.error()
+        << "No string ID found for the completion message of tutorial file"
+        << fileName << "ID:" << tutorial->m_completionMessageId;
+    return nullptr;
+  }
+
   tutorial->m_image = obj["image"].toString();
   if (tutorial->m_image.isEmpty()) {
     logger.error() << "Empty image for tutorial file" << fileName;
@@ -141,6 +150,7 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
 void Tutorial::play(const QStringList& allowedItems) {
   m_allowedItems = allowedItems;
   m_currentStep = 0;
+  m_elementPicked = false;
 
   qApp->installEventFilter(this);
 
@@ -159,10 +169,21 @@ void Tutorial::stop() {
   maybeStop();
 }
 
-bool Tutorial::maybeStop() {
+bool Tutorial::maybeStop(bool completed) {
   if (m_currentStep == m_steps.length()) {
     qApp->removeEventFilter(this);
     m_currentStep = -1;
+    m_elementPicked = false;
+
+    if (completed) {
+      TutorialModel* tutorialModel = TutorialModel::instance();
+      Q_ASSERT(tutorialModel);
+
+      tutorialModel->requireTutorialCompleted(
+          this,
+          L18nStrings::instance()->value(m_completionMessageId).toString());
+    }
+
     TutorialModel::instance()->stop();
     return true;
   }
@@ -171,7 +192,7 @@ bool Tutorial::maybeStop() {
 }
 
 void Tutorial::processNextOp() {
-  if (maybeStop()) {
+  if (maybeStop(true)) {
     return;
   }
 
@@ -186,23 +207,51 @@ void Tutorial::processNextOp() {
   QQuickItem* item = qobject_cast<QQuickItem*>(element);
   Q_ASSERT(item);
 
-  QRectF rect = item->mapRectToScene(
-      QRectF(item->x(), item->y(), item->width(), item->height()));
+  if (!item->isVisible()) {
+    m_timer.start(TIMEOUT_ITEM_TIMER_MSEC);
+    return;
+  }
+
+  qreal x = item->x();
+  qreal y = item->y();
+  for (QQuickItem* parent = item->parentItem(); parent;
+       parent = parent->parentItem()) {
+    x += parent->x();
+    y += parent->y();
+  }
 
   TutorialModel* tutorialModel = TutorialModel::instance();
   Q_ASSERT(tutorialModel);
 
   tutorialModel->requireTooltipShown(this, true);
   tutorialModel->requireTooltipNeeded(
-      this, L18nStrings::instance()->value(op.m_stringId).toString(), rect);
+      this, L18nStrings::instance()->value(op.m_stringId).toString(),
+      QRectF(x, y, item->width(), item->height()));
+
+  connect(item, &QQuickItem::visibleChanged, this,
+          &Tutorial::itemVisibilityChanged);
+}
+
+void Tutorial::itemVisibilityChanged() {
+  QQuickItem* item = qobject_cast<QQuickItem*>(sender());
+
+  if (item->isVisible()) return;
+
+  if (!m_elementPicked) return;
+
+  // The visibility has changed because the user has interacted. Let's move to
+  // the next item.
+
+  m_elementPicked = false;
+  ++m_currentStep;
+  processNextOp();
 }
 
 bool Tutorial::itemPicked(const QStringList& list) {
   Q_ASSERT(m_currentStep != -1 && m_currentStep < m_steps.length());
 
   if (list.contains(m_steps[m_currentStep].m_element)) {
-    ++m_currentStep;
-    processNextOp();
+    m_elementPicked = true;
     return false;
   }
 

@@ -458,7 +458,7 @@ Window {
     Popup {
         id: tooltip
         property alias text: text.text
-        visible: false
+        visible: VPNTutorial.tooltipShown
         x: VPNTheme.theme.windowMargin
         width: parent.width - VPNTheme.theme.windowMargin * 2
 
@@ -489,8 +489,8 @@ Window {
             tooltip.open();
         }
 
-        function onPlayingChanged() {
-            tooltip.visible = VPNTutorial.tooltipShown
+        function onTutorialCompleted(text) {
+            console.log("TODO", text);
         }
     }
 

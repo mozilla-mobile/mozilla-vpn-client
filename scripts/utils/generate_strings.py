@@ -317,6 +317,27 @@ def parseTutorialStrings():
             }
         )
 
+        if not "completion_message" in tutorial_json:
+            exit(f"Tutorial file {tutorial_filename} does not have a completion message")
+
+        enum_completion_message_id = pascalize(f"tutorial_{tutorial_json['id']}_completion_message")
+        if enum_completion_message_id in tutorial_ids:
+            exit(f"Duplicate id {enum_completion_message_id} when parsing {tutorial_filename}")
+        tutorial_ids.append(enum_completion_message_id)
+
+        completion_message_comment = "Completion message for a tutorial view"
+        if "completion_message_comment" in tutorial_json:
+            completion_message_comment = tutorial_json["completion_message_comment"]
+
+        string_ids.append(
+            {
+                "enum_id": enum_completion_message_id,
+                "string_id": f"tutorial.{tutorial_json['id']}.completion_message",
+                "value": [tutorial_json["completion_message"]],
+                "comments": [completion_message_comment],
+            }
+        )
+
         if not "steps" in tutorial_json:
             exit(f"Tutorial file {tutorial_filename} does not have a steps")
         for step in tutorial_json["steps"]:

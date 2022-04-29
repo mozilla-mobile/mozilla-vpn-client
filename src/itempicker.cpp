@@ -19,7 +19,9 @@ bool ItemPicker::eventFilter(QObject* obj, QEvent* event) {
 
   m_lastEvent = event;
 
-  if (event->type() != QEvent::MouseButtonPress) {
+  if (event->type() != QEvent::MouseButtonPress &&
+      event->type() != QEvent::MouseButtonDblClick &&
+      event->type() != QEvent::MouseButtonRelease) {
     return QObject::eventFilter(obj, event);
   }
 

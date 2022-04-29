@@ -27,6 +27,14 @@
       "type": "string",
       "description": "A comment to describe how to translate the subtitle"
     },
+    "completion_message": {
+      "type": "string",
+      "description": "The completion message of the tutorial"
+    },
+    "completion_message_comment": {
+      "type": "string",
+      "description": "A comment to describe how to translate the completion message"
+    },
     "image": {
       "type": "string",
       "description": "The image of the tutorial"
@@ -60,5 +68,5 @@
       }
     }
   },
-  "required": [ "id", "title", "image", "steps" ]
+  "required": [ "id", "title", "subtitle", "completion_message", "image", "steps" ]
 }

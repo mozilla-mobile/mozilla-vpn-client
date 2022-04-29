@@ -3,23 +3,24 @@
   "image": "foo.png",
   "title": "Connect VPN on startup",
   "subtitle": "Follow this walkthrough to learn how to activate your VPN when you start your device.",
+  "completion_message": "You’ve successfully learned how to set “Connect VPN on startup”. Would you like to learn more tips and tricks?",
   "conditions": {
     "enabledFeatures": ["startOnBoot"]
   },
   "steps": [
     {
       "id": "s1",
-      "element": "a",
+      "element": "settingsButton",
       "tooltip": "Select your account settings"
     },
     {
       "id": "s2",
-      "element": "b",
+      "element": "settingsPreferences",
       "tooltip": "Select your system preferences"
     },
     {
       "id": "s3",
-      "element": "b",
+      "element": "settingStartAtBoot",
       "tooltip": "Select or deselect this checkbox"
     }
   ]

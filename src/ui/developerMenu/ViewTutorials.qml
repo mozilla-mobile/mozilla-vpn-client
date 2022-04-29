@@ -57,6 +57,12 @@ Item {
                     // Only enable the list on features where devModeEnable has any impact
                     enabled: true
                     Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
+
+                    onClicked: {
+                       VPNTutorial.play(tutorial);
+                       stackview.pop();
+                       stackview.pop();
+                    }
                 }
             }
         }
