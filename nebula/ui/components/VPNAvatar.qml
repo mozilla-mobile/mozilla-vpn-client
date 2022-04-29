@@ -34,7 +34,7 @@ Item {
         source: "qrc:/nebula/resources/avatar-default.png"
         sourceSize.height: avatarSourceSize
         sourceSize.width: avatarSourceSize
-        visible: avatar.status !== Image.Ready
+        visible: avatar.status !== Image.Ready || window._fallbackQtQuickRenderer
     }
 
     Rectangle {
@@ -56,6 +56,10 @@ Item {
      * and assume that the user did not set a custom avatar
      */
     function isDefaultAvatar() {
+        if (window._fallbackQtQuickRenderer) {
+            return true;
+        }
+
         const avatarUrlSplitted = avatarUrl.split("/");
         const avatarID = avatarUrlSplitted[avatarUrlSplitted.length - 1];
 
