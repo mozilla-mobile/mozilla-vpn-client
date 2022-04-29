@@ -69,11 +69,19 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
   Tutorial* tutorial = new Tutorial(parent);
   auto guard = qScopeGuard([&] { tutorial->deleteLater(); });
 
-  tutorial->m_id =
+  tutorial->m_titleId =
       Guide::pascalize(QString("tutorial_%1_title").arg(tutorialId));
-  if (!l18nStrings->contains(tutorial->m_id)) {
+  if (!l18nStrings->contains(tutorial->m_titleId)) {
     logger.error() << "No string ID found for the title of tutorial file"
-                   << fileName << "ID:" << tutorial->m_id;
+                   << fileName << "ID:" << tutorial->m_titleId;
+    return nullptr;
+  }
+
+  tutorial->m_subtitleId =
+      Guide::pascalize(QString("tutorial_%1_subtitle").arg(tutorialId));
+  if (!l18nStrings->contains(tutorial->m_subtitleId)) {
+    logger.error() << "No string ID found for the subtitle of tutorial file"
+                   << fileName << "ID:" << tutorial->m_subtitleId;
     return nullptr;
   }
 

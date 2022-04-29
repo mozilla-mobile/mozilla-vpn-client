@@ -1,0 +1,23 @@
+{
+  "id": "01_get_started",
+  "image": "foo.png",
+  "title": "Getting started with VPN",
+  "subtitle": "Follow this walkthrough to learn how to get started with using your VPN.",
+  "steps": [
+    {
+      "id": "s1",
+      "element": "a",
+      "tooltip": "Select your location"
+    },
+    {
+      "id": "s2",
+      "element": "b",
+      "tooltip": "Select a different server location"
+    },
+    {
+      "id": "s3",
+      "element": "b",
+      "tooltip": "Toggle this switch to activate or deactivate the VPN"
+    }
+  ]
+}

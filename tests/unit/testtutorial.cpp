@@ -10,7 +10,8 @@
 
 void TestTutorial::model() {
   L18nStrings* l18nStrings = L18nStrings::instance();
-  l18nStrings->insert("TutorialDemoTitle", "wow0");
+  l18nStrings->insert("TutorialDemoTitle", "title");
+  l18nStrings->insert("TutorialDemoSubtitle", "subtitle");
   l18nStrings->insert("TutorialDemoStepS1", "wow1");
   l18nStrings->insert("TutorialDemoStepS2", "wow2");
 
@@ -43,41 +44,47 @@ void TestTutorial::create_data() {
   obj["id"] = "foo";
   QTest::addRow("invalid-id")
       << QStringList() << QJsonDocument(obj).toJson() << false;
-  QTest::addRow("no-image") << QStringList{"TutorialFooTitle"}
-                            << QJsonDocument(obj).toJson() << false;
+  QTest::addRow("no-image")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle"}
+      << QJsonDocument(obj).toJson() << false;
 
   obj["image"] = "foo.png";
-  QTest::addRow("no-steps") << QStringList{"TutorialFooTitle"}
-                            << QJsonDocument(obj).toJson() << false;
+  QTest::addRow("no-steps")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle"}
+      << QJsonDocument(obj).toJson() << false;
 
   QJsonArray steps;
   obj["steps"] = steps;
-  QTest::addRow("with-steps") << QStringList{"TutorialFooTitle"}
-                              << QJsonDocument(obj).toJson() << false;
+  QTest::addRow("with-steps")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle"}
+      << QJsonDocument(obj).toJson() << false;
 
   steps.append("");
   obj["steps"] = steps;
-  QTest::addRow("with-invalid-step") << QStringList{"TutorialFooTitle"}
-                                     << QJsonDocument(obj).toJson() << false;
+  QTest::addRow("with-invalid-step")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle"}
+      << QJsonDocument(obj).toJson() << false;
 
   QJsonObject step;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-without-id") << QStringList{"TutorialFooTitle"}
-                                        << QJsonDocument(obj).toJson() << false;
+  QTest::addRow("with-step-without-id")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle"}
+      << QJsonDocument(obj).toJson() << false;
 
   step["id"] = "s1";
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-without-element")
-      << QStringList{"TutorialFooTitle"} << QJsonDocument(obj).toJson()
-      << false;
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle"}
+      << QJsonDocument(obj).toJson() << false;
 
   step["element"] = "wow";
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-element")
-      << QStringList{"TutorialFooTitle", "TutorialFooStepS1"}
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
+                     "TutorialFooStepS1"}
       << QJsonDocument(obj).toJson() << true;
 
   obj["conditions"] = QJsonObject();
@@ -113,8 +120,11 @@ void TestTutorial::create() {
   QVERIFY(!!tm);
   QVERIFY(!tm->isPlaying());
 
-  QString tutorialId = tutorial->property("id").toString();
-  QVERIFY(l18nStrings->contains(tutorialId));
+  QString tutorialTitleId = tutorial->property("titleId").toString();
+  QVERIFY(l18nStrings->contains(tutorialTitleId));
+
+  QString tutorialSubtitleId = tutorial->property("subtitleId").toString();
+  QVERIFY(l18nStrings->contains(tutorialSubtitleId));
 
   QCOMPARE(tutorial->property("image").toString(), "foo.png");
 

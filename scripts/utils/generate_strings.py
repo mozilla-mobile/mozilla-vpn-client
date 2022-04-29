@@ -278,21 +278,42 @@ def parseTutorialStrings():
         if not "title" in tutorial_json:
             exit(f"Tutorial file {tutorial_filename} does not have a title")
 
-        enum_id = pascalize(f"tutorial_{tutorial_json['id']}_title")
-        if enum_id in tutorial_ids:
-            exit(f"Duplicate id {enum_id} when parsing {tutorial_filename}")
-        tutorial_ids.append(enum_id)
+        enum_title_id = pascalize(f"tutorial_{tutorial_json['id']}_title")
+        if enum_title_id in tutorial_ids:
+            exit(f"Duplicate id {enum_title_id} when parsing {tutorial_filename}")
+        tutorial_ids.append(enum_title_id)
 
-        comment = "Title for a tutorial view"
-        if "comment" in tutorial_json:
-            comment = tutorial_json["comment"]
+        title_comment = "Title for a tutorial view"
+        if "title_comment" in tutorial_json:
+            title_comment = tutorial_json["title_comment"]
 
         string_ids.append(
             {
-                "enum_id": enum_id,
+                "enum_id": enum_title_id,
                 "string_id": f"tutorial.{tutorial_json['id']}.title",
                 "value": [tutorial_json["title"]],
-                "comments": [comment],
+                "comments": [title_comment],
+            }
+        )
+
+        if not "subtitle" in tutorial_json:
+            exit(f"Tutorial file {tutorial_filename} does not have a subtitle")
+
+        enum_subtitle_id = pascalize(f"tutorial_{tutorial_json['id']}_subtitle")
+        if enum_subtitle_id in tutorial_ids:
+            exit(f"Duplicate id {enum_subtitle_id} when parsing {tutorial_filename}")
+        tutorial_ids.append(enum_subtitle_id)
+
+        subtitle_comment = "Subtitle for a tutorial view"
+        if "subtitle_comment" in tutorial_json:
+            subtitle_comment = tutorial_json["subtitle_comment"]
+
+        string_ids.append(
+            {
+                "enum_id": enum_subtitle_id,
+                "string_id": f"tutorial.{tutorial_json['id']}.subtitle",
+                "value": [tutorial_json["subtitle"]],
+                "comments": [subtitle_comment],
             }
         )
 
