@@ -10,6 +10,11 @@ if(MSVC)
     include(src/cmake/msvc.cmake)
 endif()
 
+if(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/unsigned"
+        CACHE PATH "default install path" FORCE)
+endif()
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
@@ -33,4 +38,9 @@ add_subdirectory(tests/qml EXCLUDE_FROM_ALL)
 # Web Extension build targets
 if(NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(extension)
+endif()
+
+# Extra platform stuff
+if(WIN32)
+    add_subdirectory(windows/tunnel)
 endif()

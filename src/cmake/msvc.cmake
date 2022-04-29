@@ -3,3 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 add_compile_options(/MP /Zc:preprocessor)
+
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    add_compile_options(/Z7 /ZI /DEBUG)
+    add_link_options(/DEBUG)
+endif()

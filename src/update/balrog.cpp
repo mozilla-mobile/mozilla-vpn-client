@@ -19,15 +19,15 @@
 #include <QSslKey>
 #include <QTemporaryDir>
 
+// Terrible hacking for Windows
+#if defined(MVPN_WINDOWS)
+#include "cmake/golang-msvc-types.h"
+#endif
+
 // Import balrog C/Go library
 extern "C" {
 #include "balrog-api.h"
 }
-
-typedef struct {
-  const char* p;
-  size_t n;
-} gostring_t;
 
 #if defined(MVPN_WINDOWS)
 constexpr const char* BALROG_WINDOWS_UA = "WINNT_x86_64";
@@ -173,39 +173,6 @@ bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
 bool Balrog::validateSignature(const QByteArray& x5uData,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
-#if defined(MVPN_WINDOWS)
-  static HMODULE balrogDll = nullptr;
-  static BalrogSetLogger* balrogSetLogger = nullptr;
-  static BalrogValidate* balrogValidate = nullptr;
-
-  if (!balrogDll) {
-    // This process will be used by the wireguard tunnel. No need to call
-    // FreeLibrary.
-    balrogDll = LoadLibrary(TEXT("balrog.dll"));
-    if (!balrogDll) {
-      WindowsCommons::windowsLog("Failed to load tunnel.dll");
-      return false;
-    }
-  }
-
-  if (!balrogSetLogger) {
-    balrogSetLogger =
-        (BalrogSetLogger*)GetProcAddress(balrogDll, "balrogSetLogger");
-    if (!balrogSetLogger) {
-      WindowsCommons::windowsLog("Failed to get balrogSetLogger function");
-      return false;
-    }
-  }
-
-  if (!balrogValidate) {
-    balrogValidate =
-        (BalrogValidate*)GetProcAddress(balrogDll, "balrogValidate");
-    if (!balrogValidate) {
-      WindowsCommons::windowsLog("Failed to get balrogValidate function");
-      return false;
-    }
-  }
-#endif
 
   balrogSetLogger((GoUintptr)balrogLogger);
 
