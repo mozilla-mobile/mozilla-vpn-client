@@ -8,6 +8,27 @@
 #include "../../src/qmlengineholder.h"
 #include "../../translations/generated/l18nstrings.h"
 
+void TestTutorial::model() {
+  L18nStrings* l18nStrings = L18nStrings::instance();
+  l18nStrings->insert("TutorialDemoTitle", "wow0");
+  l18nStrings->insert("TutorialDemoStepS1", "wow1");
+  l18nStrings->insert("TutorialDemoStepS2", "wow2");
+
+  TutorialModel* mg = TutorialModel::instance();
+  QVERIFY(!!mg);
+
+  QHash<int, QByteArray> rn = mg->roleNames();
+  QCOMPARE(rn.count(), 1);
+  QCOMPARE(rn[TutorialModel::TutorialRole], "tutorial");
+
+  QCOMPARE(mg->rowCount(QModelIndex()), 1);
+  QCOMPARE(mg->data(QModelIndex(), TutorialModel::TutorialRole), QVariant());
+
+  Tutorial* tutorial =
+      mg->data(mg->index(0, 0), TutorialModel::TutorialRole).value<Tutorial*>();
+  QVERIFY(!!tutorial);
+}
+
 void TestTutorial::create_data() {
   QTest::addColumn<QStringList>("l18n");
   QTest::addColumn<QByteArray>("content");
@@ -88,7 +109,9 @@ void TestTutorial::create() {
     return;
   }
 
-  QVERIFY(!tutorial->isPlaying());
+  TutorialModel* tm = TutorialModel::instance();
+  QVERIFY(!!tm);
+  QVERIFY(!tm->isPlaying());
 
   QString tutorialId = tutorial->property("id").toString();
   QVERIFY(l18nStrings->contains(tutorialId));
@@ -97,12 +120,12 @@ void TestTutorial::create() {
 
   QmlEngineHolder qml;
 
-  QSignalSpy signalSpy(tutorial, &Tutorial::playingChanged);
+  QSignalSpy signalSpy(tm, &TutorialModel::playingChanged);
 
-  tutorial->play();
+  tm->play(tutorial);
   QCOMPARE(signalSpy.count(), 1);
 
-  tutorial->stop();
+  tm->stop();
   QCOMPARE(signalSpy.count(), 2);
 
   delete tutorial;
@@ -112,25 +135,6 @@ void TestTutorial::createNotExisting() {
   Tutorial* tutorial = Tutorial::create(nullptr, "aa");
   QVERIFY(!tutorial);
   delete tutorial;
-}
-
-void TestTutorial::model() {
-  L18nStrings* l18nStrings = L18nStrings::instance();
-  l18nStrings->insert("TutorialFooStepS2", "wow2");
-
-  TutorialModel* mg = TutorialModel::instance();
-  QVERIFY(!!mg);
-
-  QHash<int, QByteArray> rn = mg->roleNames();
-  QCOMPARE(rn.count(), 1);
-  QCOMPARE(rn[TutorialModel::TutorialRole], "tutorial");
-
-  QCOMPARE(mg->rowCount(QModelIndex()), 1);
-  QCOMPARE(mg->data(QModelIndex(), TutorialModel::TutorialRole), QVariant());
-
-  Tutorial* tutorial =
-      mg->data(mg->index(0, 0), TutorialModel::TutorialRole).value<Tutorial*>();
-  QVERIFY(!!tutorial);
 }
 
 static TestTutorial s_testTutorial;

@@ -9,6 +9,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
+#include "tutorialmodel.h"
 
 #include <QCoreApplication>
 #include <QFile>
@@ -129,10 +130,9 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
   return tutorial;
 }
 
-void Tutorial::play() {
+void Tutorial::play(const QStringList& allowedItems) {
+  m_allowedItems = allowedItems;
   m_currentStep = 0;
-
-  emit playingChanged();
 
   qApp->installEventFilter(this);
 
@@ -140,7 +140,7 @@ void Tutorial::play() {
 }
 
 void Tutorial::stop() {
-  if (!isPlaying()) {
+  if (m_currentStep != -1) {
     return;
   }
 
@@ -154,9 +154,8 @@ void Tutorial::stop() {
 bool Tutorial::maybeStop() {
   if (m_currentStep == m_steps.length()) {
     qApp->removeEventFilter(this);
-    setTooltipShown(false);
     m_currentStep = -1;
-    emit playingChanged();
+    TutorialModel::instance()->stop();
     return true;
   }
 
@@ -182,9 +181,12 @@ void Tutorial::processNextOp() {
   QRectF rect = item->mapRectToScene(
       QRectF(item->x(), item->y(), item->width(), item->height()));
 
-  setTooltipShown(true);
-  emit tooltipNeeded(L18nStrings::instance()->value(op.m_stringId).toString(),
-                     rect);
+  TutorialModel* tutorialModel = TutorialModel::instance();
+  Q_ASSERT(tutorialModel);
+
+  tutorialModel->requireTooltipShown(this, true);
+  tutorialModel->requireTooltipNeeded(
+      this, L18nStrings::instance()->value(op.m_stringId).toString(), rect);
 }
 
 bool Tutorial::itemPicked(const QStringList& list) {
@@ -203,13 +205,4 @@ bool Tutorial::itemPicked(const QStringList& list) {
   }
 
   return true;
-}
-
-void Tutorial::allowItem(const QString& objectName) {
-  m_allowedItems.append(objectName);
-}
-
-void Tutorial::setTooltipShown(bool shown) {
-  m_tooltipShown = shown;
-  emit tooltipShownChanged();
 }

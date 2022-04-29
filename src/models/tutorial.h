@@ -13,19 +13,14 @@ class Tutorial final : public ItemPicker {
   Q_OBJECT
   Q_PROPERTY(QString id MEMBER m_id CONSTANT)
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
-  Q_PROPERTY(bool playing READ isPlaying NOTIFY playingChanged)
-  Q_PROPERTY(bool tooltipShown MEMBER m_tooltipShown NOTIFY tooltipShownChanged)
 
  public:
   ~Tutorial();
 
   static Tutorial* create(QObject* parent, const QString& fileName);
 
-  Q_INVOKABLE void play();
-  Q_INVOKABLE void stop();
-  Q_INVOKABLE void allowItem(const QString& objectName);
-
-  bool isPlaying() const { return m_currentStep != -1; }
+  void play(const QStringList& allowedItems);
+  void stop();
 
  private:
   explicit Tutorial(QObject* parent);
@@ -36,13 +31,6 @@ class Tutorial final : public ItemPicker {
 
   // Return true if there are no operations left.
   bool maybeStop();
-
-  void setTooltipShown(bool shown);
-
- signals:
-  void playingChanged();
-  void tooltipNeeded(const QString& tooltipText, const QRectF& itemRect);
-  void tooltipShownChanged();
 
  private:
   int32_t m_currentStep = -1;
@@ -58,7 +46,6 @@ class Tutorial final : public ItemPicker {
 
   QStringList m_allowedItems;
   QTimer m_timer;
-  bool m_tooltipShown = false;
 };
 
 #endif  // TUTORIAL_H
