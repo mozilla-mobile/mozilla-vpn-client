@@ -4,16 +4,14 @@
 
 add_definitions(-DWIN32_LEAN_AND_MEAN)
 
-set_target_properties(mozillavpn PROPERTIES OUTPUT_NAME "Mozilla VPN")
+set_target_properties(mozillavpn PROPERTIES
+    OUTPUT_NAME "Mozilla VPN"
+    VERSION ${CMAKE_PROJECT_VERSION}
+)
 
-#CONFIG(debug, debug|release) {
-#    QMAKE_CXXFLAGS += /Z7 /ZI /FdMozillaVPN.PDB /DEBUG
-#    QMAKE_LFLAGS_WINDOWS += /DEBUG
-#}
-
-#CONFIG += embed_manifest_exe
-
-#RC_ICONS = $$PWD/../../ui/resources/logo.ico
+# Generate the Windows version resource file.
+configure_file(../windows/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 
 # Windows platform source files
 target_sources(mozillavpn PRIVATE
@@ -98,11 +96,11 @@ target_sources(mozillavpn PRIVATE
     update/balrog.h
 )
 
-install(TARGETS mozillavpn DESTINATION ${CMAKE_INSTALL_PREFIX})
-install(FILES $<TARGET_PDB_FILE:mozillavpn> DESTINATION  ${CMAKE_INSTALL_PREFIX} OPTIONAL)
+install(TARGETS mozillavpn DESTINATION .)
+install(FILES $<TARGET_PDB_FILE:mozillavpn> DESTINATION . OPTIONAL)
 
 cmake_path(CONVERT "$ENV{VCToolsRedistDir}" TO_CMAKE_PATH_LIST VC_TOOLS_REDIST_PATH)
-install(FILES ${VC_TOOLS_REDIST_PATH}/MergeModules/Microsoft_VC142_CRT_x64.msm DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(FILES ${VC_TOOLS_REDIST_PATH}/MergeModules/Microsoft_VC142_CRT_x64.msm DESTINATION .)
 
 install(FILES
     ../windows/split-tunnel/mullvad-split-tunnel.cat
@@ -110,8 +108,10 @@ install(FILES
     ../windows/split-tunnel/mullvad-split-tunnel.sys
     ../windows/split-tunnel/WdfCoinstaller01011.dll
     ../extension/manifests/windows/mozillavpn.json
-    DESTINATION ${CMAKE_INSTALL_PREFIX}
+    DESTINATION .
 )
+
+install(FILES ui/resources/logo.ico DESTINATION .)
 
 ## TODO: Are these still needed? It's not clear.
 #libssl.files = $$PWD/../../../libssl-1_1-x64.dll

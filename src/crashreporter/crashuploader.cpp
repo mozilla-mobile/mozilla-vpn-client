@@ -12,7 +12,6 @@
 #include <QByteArray>
 #include <QNetworkReply>
 #include "logger.h"
-#include "version.h"
 
 using namespace std;
 

@@ -30,7 +30,7 @@ function(add_go_library TARGET SOURCE)
 
     if(MSVC AND NOT (MSVC_VERSION LESS 1900))
         # prevent error LNK2019: unresolved external symbol fprintf referenced in function ...
-        target_sources(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/golang-msvc-fixup.cpp)
+        target_sources(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/golang-msvc-fixup.cpp)
     endif()
 
     get_filename_component(DIR_ABSOLUTE ${DIR_NAME} ABSOLUTE)

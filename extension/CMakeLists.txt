@@ -27,9 +27,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/chromium/native-messaging-hosts)
 elseif(WIN32)
     install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/bridge/target/release/mozillavpnnp.exe
-        DESTINATION ${CMAKE_INSTALL_PREFIX})
+        DESTINATION .)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manifests/windows/mozillavpn.json
-        DESTINATION ${CMAKE_INSTALL_PREFIX})
+        DESTINATION .)
 endif()
 
 ## TODO: Mac

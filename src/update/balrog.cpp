@@ -21,13 +21,17 @@
 
 // Terrible hacking for Windows
 #if defined(MVPN_WINDOWS)
-#include "cmake/golang-msvc-types.h"
+#  include "windows.h"
+#  include "platforms/windows/windowscommons.h"
+#  include "platforms/windows/golang-msvc-types.h"
 #endif
 
-// Import balrog C/Go library
+// Import balrog C/Go library (unless we happen to be building on Windows with Qmake)
+#if !(defined(MVPN_WINDOWS) && defined(BUILD_QMAKE))
 extern "C" {
-#include "balrog-api.h"
+#  include "balrog-api.h"
 }
+#endif
 
 #if defined(MVPN_WINDOWS)
 constexpr const char* BALROG_WINDOWS_UA = "WINNT_x86_64";
@@ -173,6 +177,42 @@ bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
 bool Balrog::validateSignature(const QByteArray& x5uData,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
+#if defined(MVPN_WINDOWS) && defined(BUILD_QMAKE)
+  typedef void BalrogSetLogger(GoUintptr func);
+  typedef GoUint8 BalrogValidate(GoString x5uData, GoString updateData,
+                                 GoString signature, GoString rootHash,
+                                 GoString leafCertSubject);
+
+  static HMODULE balrogDll = nullptr;
+  static BalrogSetLogger* balrogSetLogger = nullptr;
+  static BalrogValidate* balrogValidate = nullptr;
+
+  if (!balrogDll) {
+    balrogDll = LoadLibrary(TEXT("balrog.dll"));
+    if (!balrogDll) {
+      WindowsCommons::windowsLog("Failed to load balrog.dll");
+      return false;
+    }
+  }
+
+  if (!balrogSetLogger) {
+    balrogSetLogger =
+        (BalrogSetLogger*)GetProcAddress(balrogDll, "balrogSetLogger");
+    if (!balrogSetLogger) {
+      WindowsCommons::windowsLog("Failed to get balrogSetLogger function");
+      return false;
+    }
+  }
+
+  if (!balrogValidate) {
+    balrogValidate =
+        (BalrogValidate*)GetProcAddress(balrogDll, "balrogValidate");
+    if (!balrogValidate) {
+      WindowsCommons::windowsLog("Failed to get balrogValidate function");
+      return false;
+    }
+  }
+#endif
 
   balrogSetLogger((GoUintptr)balrogLogger);
 
