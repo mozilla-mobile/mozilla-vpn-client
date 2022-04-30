@@ -315,3 +315,13 @@ if(UNIX)
         signalhandler.h
     )
 endif()
+
+# Sources for desktop platforms.
+if(NOT CMAKE_CROSSCOMPILING)
+    target_sources(mozillavpn PRIVATE
+        systemtraynotificationhandler.cpp
+        systemtraynotificationhandler.h
+        tasks/authenticate/desktopauthenticationlistener.cpp
+        tasks/authenticate/desktopauthenticationlistener.h
+    )
+endif()

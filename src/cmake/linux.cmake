@@ -23,8 +23,6 @@ target_sources(mozillavpn PRIVATE
     platforms/linux/linuxnetworkwatcherworker.cpp
     platforms/linux/linuxpingsender.cpp
     platforms/linux/linuxsystemtraynotificationhandler.cpp
-    systemtraynotificationhandler.cpp
-    tasks/authenticate/desktopauthenticationlistener.cpp
 )
 
 # Linux platform header files
@@ -40,8 +38,6 @@ target_sources(mozillavpn PRIVATE
     platforms/linux/linuxnetworkwatcherworker.h
     platforms/linux/linuxpingsender.h
     platforms/linux/linuxsystemtraynotificationhandler.h
-    systemtraynotificationhandler.h
-    tasks/authenticate/desktopauthenticationlistener.h
 )
 
 # Linux daemon source files
@@ -78,14 +74,14 @@ target_sources(mozillavpn PRIVATE
 
 add_definitions(-DPROTOCOL_VERSION=\"1\")
 
-set(GENERATED_SOURCES)
-qt6_add_dbus_interface(GENERATED_SOURCES platforms/linux/daemon/org.mozilla.vpn.dbus.xml dbus_interface)
-qt6_add_dbus_adaptor(GENERATED_SOURCES
+set(DBUS_GENERATED_SOURCES)
+qt6_add_dbus_interface(DBUS_GENERATED_SOURCES platforms/linux/daemon/org.mozilla.vpn.dbus.xml dbus_interface)
+qt6_add_dbus_adaptor(DBUS_GENERATED_SOURCES
                      platforms/linux/daemon/org.mozilla.vpn.dbus.xml
                      platforms/linux/daemon/dbusservice.h
-                     DBusService
+                     ""
                      dbus_adaptor)
-target_sources(mozillavpn PRIVATE ${GENERATED_SOURCES})
+target_sources(mozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
 
 include(cmake/golang.cmake)
 add_go_library(mozillavpn ../linux/netfilter/netfilter.go)

@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 3.16)
 
 project(mozillavpn VERSION 2.9.0 LANGUAGES C CXX)
 
+## Ensure the build type is set
+## TODO: Support multi-generators like XCode and Visual Studio
+message("Configuring for ${CMAKE_GENERATOR}")
+if(NOT "${CMAKE_BUILD_TYPE}")
+    set(CMAKE_BUILD_TYPE "Debug" CACHE PATH "default build type" FORCE)
+    message("Setting build type ${CMAKE_BUILD_TYPE}")
+endif()
+
 ## Toolchain Setup
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

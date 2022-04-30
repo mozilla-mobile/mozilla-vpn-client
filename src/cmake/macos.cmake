@@ -65,8 +65,6 @@ target_sources(mozillavpn PRIVATE
     platforms/macos/macosmenubar.cpp
     platforms/macos/macospingsender.cpp
     platforms/macos/macosstartatbootwatcher.cpp
-    systemtraynotificationhandler.cpp
-    tasks/authenticate/desktopauthenticationlistener.cpp
     wgquickprocess.cpp
     platforms/macos/macoscryptosettings.mm
     platforms/macos/macosnetworkwatcher.mm

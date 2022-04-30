@@ -40,8 +40,6 @@ target_sources(mozillavpn PRIVATE
     platforms/windows/windowsnetworkwatcher.cpp
     platforms/windows/windowspingsender.cpp
     platforms/windows/windowsstartatbootwatcher.cpp
-    tasks/authenticate/desktopauthenticationlistener.cpp
-    systemtraynotificationhandler.cpp
     wgquickprocess.cpp
 )
 
@@ -73,9 +71,7 @@ target_sources(mozillavpn PRIVATE
     platforms/windows/windowscommons.h
     platforms/windows/windowsnetworkwatcher.h
     platforms/windows/windowspingsender.h
-    tasks/authenticate/desktopauthenticationlistener.h
     platforms/windows/windowsstartatbootwatcher.h
-    systemtraynotificationhandler.h
     wgquickprocess.h
 )
 

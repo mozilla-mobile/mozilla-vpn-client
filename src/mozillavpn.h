@@ -271,8 +271,8 @@ class MozillaVPN final : public QObject {
 
   void silentSwitch();
 
-  static const QString& versionString() { return Constants::versionString(); }
-  static const QString& buildNumber() { return Constants::buildNumber(); }
+  static QString versionString() { return Constants::versionString(); }
+  static QString buildNumber() { return Constants::buildNumber(); }
   static QString osVersion() {
 #ifdef MVPN_WINDOWS
     return WindowsCommons::WindowsVersion();

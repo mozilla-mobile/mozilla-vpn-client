@@ -19,6 +19,7 @@ find_package(Qt6 REQUIRED COMPONENTS NetworkAuth)
 find_package(Qt6 REQUIRED COMPONENTS WebSockets)
 
 add_executable(mozillavpn)
+add_compile_definitions("$<$<CONFIG:Debug>:MVPN_DEBUG>")
 
 target_link_libraries(mozillavpn PRIVATE
     Qt6::NetworkAuth
@@ -30,11 +31,8 @@ target_link_libraries(mozillavpn PRIVATE
 
 target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)
 
-if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    add_definitions(-DMVPN_DEBUG)
-endif()
-
 include(cmake/sources.cmake)
+
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Dummy")
     add_definitions(-DMVPN_DUMMY)
     include(cmake/dummy.cmake)
