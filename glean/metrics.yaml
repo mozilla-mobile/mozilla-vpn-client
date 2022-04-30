@@ -350,7 +350,19 @@ sample:
     expires: never
     extra_keys:
       errno:
-        description: The FxA error number.
+        description: The FxA error number
+        type: string
+      validation:
+        description: Extra validation string for errno 107
+        type: string
+      verificationmethod:
+        description: Verification method to be used for errno 125
+        type: string
+      error:
+        description: Error string
+        type: string
+      message:
+        description: Extra error message
         type: string
 
   backend_failure_viewed:
@@ -809,4 +821,13 @@ sample:
     extra_keys:
       server:
         description: The mullvad server public key
+        type: string
+      latency:
+        description: Server response latency
+        type: string
+      loss:
+        description: Number of package loss
+        type: string
+      stddev:
+        description: Standard deviation of the ping responses
         type: string

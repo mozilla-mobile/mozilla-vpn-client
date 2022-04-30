@@ -67,6 +67,7 @@ VPNInAppAuthenticationBase {
     _disclaimers: Loader {
         id: disclaimersLoader
 
+        Layout.alignment: Qt.AlignHCenter
         source: "qrc:/nebula/components/inAppAuth/VPNInAppAuthenticationLegalDisclaimer.qml"
     }
 
