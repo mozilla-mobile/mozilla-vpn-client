@@ -82,7 +82,7 @@ QByteArray NetworkManager::userAgent() {
 #endif
 
     QTextStream out(&userAgent);
-    out << "MozillaVPN/" << APP_VERSION << " (" << flags.join("; ") << ")";
+    out << "MozillaVPN/" << Constants::versionString() << " (" << flags.join("; ") << ")";
   }
 
   return userAgent;

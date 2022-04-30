@@ -12,6 +12,7 @@
 #include <QByteArray>
 #include <QNetworkReply>
 #include "logger.h"
+#include "version.h"
 
 using namespace std;
 
@@ -82,7 +83,7 @@ void CrashUploader::startRequest(const QString& file) {
   QHttpPart versionPart;
   versionPart.setHeader(QNetworkRequest::ContentDispositionHeader,
                         "form-data; name=\"Version\"");
-  versionPart.setBody(APP_VERSION);
+  versionPart.setBody(Constants::versionString().toUtf8());
   multipart->append(versionPart);
   multipart->append(namePart);
   multipart->append(formPart);

@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# Generated version header file
+configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+
 # VPN Client source files
 target_sources(mozillavpn PRIVATE
     apppermission.cpp

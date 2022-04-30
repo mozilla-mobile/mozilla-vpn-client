@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-add_definitions(-DAPP_VERSION=\"QMLTest_AppVersion\")
-add_definitions(-DBUILD_ID=\"QMLTest_BuildID\")
 add_definitions(-DQUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_DUMMY)
@@ -17,7 +15,7 @@ get_filename_component(MVPN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../src ABS
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR})
 
-add_executable(qml_tests)
+add_executable(qml_tests EXCLUDE_FROM_ALL)
 
 target_link_libraries(qml_tests PRIVATE
     Qt6::Gui
@@ -86,6 +84,7 @@ target_sources(qml_tests PRIVATE
 # QML test header files
 target_sources(qml_tests PRIVATE
     helper.h
+    version.h
 )
 
 if(WIN32)

@@ -7,9 +7,6 @@ if(NOT DEFINED BUILD_ID)
     message("Generated BUILD_ID: ${BUILD_ID}")
 endif()
 
-add_definitions(-DAPP_VERSION=\"${CMAKE_PROJECT_VERSION}\")
-add_definitions(-DBUILD_ID=\"${BUILD_ID}\")
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin)

@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-add_definitions(-DAPP_VERSION=\"1234\")
-add_definitions(-DBUILD_ID=\"1234\")
 add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_DEBUG)
 add_definitions(-DMVPN_DUMMY)
@@ -21,7 +19,7 @@ include_directories(${MVPN_SOURCE_DIR}/hacl-star)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
 
-add_executable(auth_tests)
+add_executable(auth_tests EXCLUDE_FROM_ALL)
 
 target_link_libraries(auth_tests PRIVATE
     Qt6::Core
@@ -126,6 +124,7 @@ target_sources(auth_tests PRIVATE
 
 # Auth test header files
 target_sources(auth_tests PRIVATE
+    version.h
     testemailvalidation.h
     testpasswordvalidation.h
     testsignupandin.h

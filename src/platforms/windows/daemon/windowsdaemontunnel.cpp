@@ -4,6 +4,7 @@
 
 #include "windowsdaemontunnel.h"
 #include "commandlineparser.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
@@ -33,7 +34,7 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN Tunnel");
-  QCoreApplication::setApplicationVersion(APP_VERSION);
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   if (tokens.length() != 2) {
     logger.error() << "Expected 1 parameter only: the config file.";

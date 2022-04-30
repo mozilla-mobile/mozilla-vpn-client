@@ -4,6 +4,9 @@
 
 #include "constants.h"
 #include "settingsholder.h"
+#ifndef BUILD_QMAKE
+# include "version.h"
+#endif
 
 #include <QString>
 #include <QtGlobal>
@@ -23,4 +26,12 @@ void Constants::setStaging() {
   s_inProduction = false;
   s_stagingServerAddress = SettingsHolder::instance()->stagingServerAddress();
   Q_ASSERT(!s_stagingServerAddress.isEmpty());
+}
+
+QString Constants::versionString() {
+  return QStringLiteral(APP_VERSION);
+}
+
+QString Constants::buildNumber() {
+  return QStringLiteral(BUILD_ID);
 }

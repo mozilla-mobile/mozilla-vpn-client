@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "device.h"
+#include "constants.h"
 #include "keys.h"
 #include "leakdetector.h"
 
@@ -71,8 +72,8 @@ QString Device::currentDeviceReport() {
   out << "SDK Version -> " << AndroidUtils::GetSDKVersion() << Qt::endl;
 #endif
 
-  out << "APP Version -> " << APP_VERSION << Qt::endl;
-  out << "Build ID -> " << BUILD_ID << Qt::endl;
+  out << "APP Version -> " << Constants::versionString() << Qt::endl;
+  out << "Build ID -> " << Constants::buildNumber() << Qt::endl;
   out << "Device ID -> " << uniqueDeviceId() << Qt::endl;
 
 #ifdef MVPN_WINDOWS
