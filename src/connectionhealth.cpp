@@ -37,9 +37,6 @@ constexpr uint32_t PING_BASELINE_EWMA_DIVISOR = 8;
 // of network reachability problems.
 constexpr auto SETTLING_TIMEOUT_SEC = 3;
 
-// Maximum window size for ping statistics.
-constexpr int PING_STATS_WINDOW = 32;
-
 namespace {
 Logger logger(LOG_NETWORKING, "ConnectionHealth");
 }
@@ -212,14 +209,12 @@ void ConnectionHealth::dnsPingReceived(quint16 sequence) {
 }
 
 void ConnectionHealth::healthCheckup() {
-  auto packetLoss = m_pingHelper.loss();
   // If the no-signal timer has elapsed, then we probably lost the connection.
   if (!m_noSignalTimer.isActive()) {
     setStability(NoSignal);
   }
   // If there are too many lost pings, then mark the connection as unstable.
-  else if (packetLoss.factor > (PING_STATS_WINDOW / packetLoss.sampleSize) *
-                                   PING_LOSS_UNSTABLE_THRESHOLD) {
+  else if (m_pingHelper.loss() > PING_LOSS_UNSTABLE_THRESHOLD) {
     setStability(Unstable);
   }
   // If recent pings took to long, then mark the connection as unstable.

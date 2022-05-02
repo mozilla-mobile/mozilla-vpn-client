@@ -104,7 +104,7 @@ void PingHelper::pingReceived(quint16 sequence) {
 #ifdef MVPN_DEBUG
     logger.debug() << "Ping answer received seq:" << sequence
                    << "avg:" << latency()
-                   << "loss:" << QString("%1%").arg(loss().factor * 100.0)
+                   << "loss:" << QString("%1%").arg(loss() * 100.0)
                    << "stddev:" << stddev();
 #endif
   }
@@ -165,7 +165,7 @@ uint PingHelper::maximum() const {
   return maxRtt;
 }
 
-PingHelper::LossResult PingHelper::loss() const {
+double PingHelper::loss() const {
   int sendCount = 0;
   int recvCount = 0;
   // Don't count pings that are possibly still in flight as losses.
@@ -182,7 +182,7 @@ PingHelper::LossResult PingHelper::loss() const {
   }
 
   if (sendCount <= 0) {
-    return {0.0, 0.0};
+    return 0.0;
   }
-  return {(double)(sendCount - recvCount) / sendCount, (double)sendCount};
+  return (double)(sendCount - recvCount) / PING_STATS_WINDOW;
 }
