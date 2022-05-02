@@ -536,6 +536,15 @@ Window {
         function onReadyToServerUnavailable() {
             serverUnavailablePopup.open();
         }
+        function onActivationBlockedForCaptivePortal() {
+           mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
+        }
+    }
+    Connections{
+        target: VPNCaptivePortal
+        function onCaptivePortalPresent() {
+            mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
+        }
     }
 
     VPNFeatureTourPopup {
