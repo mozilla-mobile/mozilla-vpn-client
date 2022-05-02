@@ -30,7 +30,7 @@ RC_ICONS = $$PWD/../../ui/resources/logo.ico
 
 SOURCES += \
     commands/commandcrashreporter.cpp \
-    commands/commandgraphicguess.cpp \
+    commands/commandgpucheck.cpp \
     daemon/daemon.cpp \
     daemon/daemonlocalserver.cpp \
     daemon/daemonlocalserverconnection.cpp \
@@ -61,7 +61,7 @@ SOURCES += \
 
 HEADERS += \
     commands/commandcrashreporter.h \
-    commands/commandgraphicguess.h \
+    commands/commandgpucheck.h \
     daemon/interfaceconfig.h \
     daemon/daemon.h \
     daemon/daemonlocalserver.h \
@@ -158,4 +158,4 @@ mozillavpnnp.path = $$PWD/../../../unsigned/
 mozillavpnnp.CONFIG = no_check_exist executable
 INSTALLS += mozillavpnnp
 
-RESOURCES += ui/graphicguess.qrc
+RESOURCES += ui/gpucheck.qrc

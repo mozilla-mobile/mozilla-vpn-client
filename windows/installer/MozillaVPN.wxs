@@ -151,11 +151,11 @@
     <!--
       Launch after setup complete
     -->
-    <CustomAction Id="LaunchGuessGraphicApi" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="gg" Return="check" />
+    <CustomAction Id="LaunchGpuCheck" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="gpucheck" Return="check" />
     <CustomAction Id="LaunchVPN" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
     <InstallExecuteSequence>
-       <Custom Action="LaunchGuessGraphicApi" After="InstallFinalize" />
-       <Custom Action="LaunchVPN" After="LaunchGuessGraphicApi" />
+       <Custom Action="LaunchGpuCheck" After="InstallFinalize">NOT Installed OR WIX_UPGRADE_DETECTED</Custom>
+       <Custom Action="LaunchVPN" After="LaunchGpuCheck">NOT Installed OR WIX_UPGRADE_DETECTED</Custom>
     </InstallExecuteSequence>
 
     <!--

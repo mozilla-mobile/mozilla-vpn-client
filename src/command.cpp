@@ -39,16 +39,16 @@ QSGRendererInterface::GraphicsApi maybeUseCustomGraphicApi() {
       QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
   QDir appDataLocation(location);
 
-  QFile graphicCardSettings = appDataLocation.filePath("moz.vpn.graphic");
-  if (!graphicCardSettings.exists()) {
+  QFile gpuCheckSettings = appDataLocation.filePath("moz.vpn.gpucheck");
+  if (!gpuCheckSettings.exists()) {
     return QSGRendererInterface::Unknown;
   }
 
-  if (!graphicCardSettings.open(QIODevice::ReadOnly | QIODevice::Text)) {
+  if (!gpuCheckSettings.open(QIODevice::ReadOnly | QIODevice::Text)) {
     return QSGRendererInterface::Unknown;
   }
 
-  const QByteArray content = graphicCardSettings.readAll().trimmed();
+  const QByteArray content = gpuCheckSettings.readAll().trimmed();
   if (content == "software") {
     return QSGRendererInterface::Software;
   }

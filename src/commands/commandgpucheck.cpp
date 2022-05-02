@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "commandgraphicguess.h"
+#include "commandgpucheck.h"
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -15,7 +15,7 @@
 #include <QTextStream>
 
 namespace {
-Logger logger(LOG_MAIN, "CommandGraphicGuess");
+Logger logger(LOG_MAIN, "CommandGpuCheck");
 
 uint32_t s_vertexShaderErrorCount = 0;
 void messageQTHandler(QtMsgType, const QMessageLogContext&,
@@ -27,16 +27,14 @@ void messageQTHandler(QtMsgType, const QMessageLogContext&,
 
 }  // namespace
 
-CommandGraphicGuess::CommandGraphicGuess(QObject* parent)
-    : Command(parent, "gg", "Guess the graphic configuration") {
-  MVPN_COUNT_CTOR(CommandGraphicGuess);
+CommandGpuCheck::CommandGpuCheck(QObject* parent)
+    : Command(parent, "gpucheck", "GPU configuration check") {
+  MVPN_COUNT_CTOR(CommandGpuCheck);
 }
 
-CommandGraphicGuess::~CommandGraphicGuess() {
-  MVPN_COUNT_DTOR(CommandGraphicGuess);
-}
+CommandGpuCheck::~CommandGpuCheck() { MVPN_COUNT_DTOR(CommandGpuCheck); }
 
-int CommandGraphicGuess::run(QStringList& tokens) {
+int CommandGpuCheck::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
 
   // Let's take the location before creating QGuiApplication.
@@ -60,23 +58,23 @@ int CommandGraphicGuess::run(QStringList& tokens) {
       }
     }
 
-    QFile graphicCardSettings = appDataLocation.filePath("moz.vpn.graphic");
+    QFile gpuCheckSettings = appDataLocation.filePath("moz.vpn.gpucheck");
     if (s_vertexShaderErrorCount == 0) {
-      if (graphicCardSettings.exists()) {
-        graphicCardSettings.remove();
+      if (gpuCheckSettings.exists()) {
+        gpuCheckSettings.remove();
       }
       return;
     }
 
-    if (!graphicCardSettings.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    if (!gpuCheckSettings.open(QIODevice::WriteOnly | QIODevice::Text)) {
       return;
     }
 
-    graphicCardSettings.write("software");
+    gpuCheckSettings.write("software");
   });
 
   QQmlApplicationEngine engine;
-  const QUrl url("qrc:/graphicguess/main.qml");
+  const QUrl url("qrc:/gpucheck/main.qml");
   QObject::connect(
       &engine, &QQmlApplicationEngine::objectCreated, &app,
       [url](QObject* obj, const QUrl& objUrl) {
@@ -90,4 +88,4 @@ int CommandGraphicGuess::run(QStringList& tokens) {
   return app.exec();
 }
 
-static Command::RegistrationProxy<CommandGraphicGuess> s_commandGraphicGuess;
+static Command::RegistrationProxy<CommandGpuCheck> s_commandGpuCheck;

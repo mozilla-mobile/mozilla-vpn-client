@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>graphicguess/main.qml</file>
+        <file>gpucheck/main.qml</file>
     </qresource>
 </RCC>
