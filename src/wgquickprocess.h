@@ -25,6 +25,9 @@ class WgQuickProcess final {
   static bool createConfigFile(
       const QString& outputFile, const InterfaceConfig& config,
       const QMap<QString, QString>& extra = QMap<QString, QString>());
+
+  static QVariant createConfigString(const InterfaceConfig& config,
+                                     const QMap<QString, QString>& extra);
 };
 
 #endif  // WGQUICKPROCESS_H

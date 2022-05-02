@@ -39,7 +39,12 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
     logger.error() << "Expected 1 parameter only: the config file.";
     return 1;
   }
+  QString maybeConfig = tokens.at(1);
 
+  if (!maybeConfig.startsWith("[Interface]")) {
+    logger.error() << "parameter Does not seem to be a config";
+    return 1;
+  }
   // This process will be used by the wireguard tunnel. No need to call
   // FreeLibrary.
   HMODULE tunnelLib = LoadLibrary(TEXT("tunnel.dll"));
@@ -57,13 +62,7 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
     return 1;
   }
 
-  QString configFile = WindowsCommons::tunnelConfigFile();
-  if (configFile.isEmpty()) {
-    logger.error() << "Failed to retrieve the config file";
-    return 1;
-  }
-
-  if (!tunnelProc(configFile.utf16())) {
+  if (!tunnelProc(maybeConfig.utf16())) {
     logger.error() << "Failed to activate the tunnel service";
     return 1;
   }

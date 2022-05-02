@@ -11,20 +11,17 @@ import (
 	"golang.org/x/crypto/curve25519"
 	"golang.org/x/sys/windows"
 
-	"golang.zx2c4.com/wireguard/windows/conf"
 
 	"crypto/rand"
 	"log"
-	"path/filepath"
 	"unsafe"
 )
 
 //export WireGuardTunnelService
-func WireGuardTunnelService(confFile16 *uint16) bool {
-	confFile := windows.UTF16PtrToString(confFile16)
-	conf.PresetRootDirectory(filepath.Dir(confFile))
+func WireGuardTunnelService(confString16 *uint16) bool {
+	confStr := windows.UTF16PtrToString(confString16)
 	UseFixedGUIDInsteadOfDeterministic = true
-	err := Run(confFile)
+	err := Run(confStr)
 	if err != nil {
 		log.Printf("Service run error: %v", err)
 	}
