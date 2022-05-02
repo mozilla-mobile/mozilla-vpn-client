@@ -30,7 +30,8 @@ import (
 )
 
 type tunnelService struct {
-	ConfString string
+	ConfString string;
+	TunnelName string;
 }
 
 func (service *tunnelService) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (svcSpecificEC bool, exitCode uint32) {
@@ -109,7 +110,7 @@ func (service *tunnelService) Execute(args []string, r <-chan svc.ChangeRequest,
 		return
 	}
 
-	config, err = conf.FromWgQuickWithUnknownEncoding(service.ConfString,"MozillaVPN")
+	config, err = conf.FromWgQuickWithUnknownEncoding(service.ConfString,service.TunnelName)
 	if err != nil {
 		serviceError = services.ErrorLoadConfiguration
 		return
@@ -252,6 +253,6 @@ func (service *tunnelService) Execute(args []string, r <-chan svc.ChangeRequest,
 	}
 }
 
-func Run(confString string) error {
-	return svc.Run("MozillaVPN", &tunnelService{confString})
+func Run(confString string, tunnelName string) error {
+	return svc.Run(tunnelName, &tunnelService{confString,tunnelName})
 }

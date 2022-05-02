@@ -18,10 +18,11 @@ import (
 )
 
 //export WireGuardTunnelService
-func WireGuardTunnelService(confString16 *uint16) bool {
+func WireGuardTunnelService(confString16 *uint16, nameString16 *uint16) bool {
 	confStr := windows.UTF16PtrToString(confString16)
+	nameStr := windows.UTF16PtrToString(nameString16)
 	UseFixedGUIDInsteadOfDeterministic = true
-	err := Run(confStr)
+	err := Run(confStr,nameStr)
 	if err != nil {
 		log.Printf("Service run error: %v", err)
 	}

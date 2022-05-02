@@ -87,21 +87,21 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
 
   QMap<QString, QString> extraConfig;
   extraConfig["Table"] = "off";
-  QVariant configString =
+  QString configString =
       WgQuickProcess::createConfigString(config, extraConfig);
-  if (!configString.isValid()) {
+  if (configString.isEmpty()) {
     logger.error() << "Failed to create a config file";
     return false;
   }
 
-  if (!m_tunnel.start(configString.toString())) {
+  if (!m_tunnel.start(configString)) {
     logger.error() << "Failed to activate the tunnel service";
     return false;
   }
 
   // Determine the interface LUID
   NET_LUID luid;
-  QString ifAlias = "MozillaVPN";
+  QString ifAlias = interfaceName();
   DWORD result = ConvertInterfaceAliasToLuid((wchar_t*)ifAlias.utf16(), &luid);
   if (result != 0) {
     logger.error() << "Failed to lookup LUID:" << result;

@@ -21,10 +21,10 @@ Logger logger(
 }  // namespace
 
 // static
-QVariant WgQuickProcess::createConfigString(
+QString WgQuickProcess::createConfigString(
     const InterfaceConfig& config, const QMap<QString, QString>& extra) {
 #define VALIDATE(x) \
-  if (x.contains("\n")) return QVariant();
+  if (x.contains("\n")) return "";
 
   VALIDATE(config.m_privateKey);
   VALIDATE(config.m_deviceIpv4Address);
@@ -50,7 +50,7 @@ QVariant WgQuickProcess::createConfigString(
   }
   if (addresses.isEmpty()) {
     logger.error() << "Failed to create WG quick config with no addresses";
-    return QVariant();
+    return "";
   }
   out << "Address = " << addresses.join(", ") << "\n";
 
@@ -96,5 +96,5 @@ QVariant WgQuickProcess::createConfigString(
 #ifdef MVPN_DEBUG
   logger.debug() << content;
 #endif
-  return QVariant(content);
+  return content;
 }
