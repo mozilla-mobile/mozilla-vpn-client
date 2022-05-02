@@ -20,8 +20,6 @@ Logger logger(
     "WgQuickProcess");
 }  // namespace
 
-
-
 // static
 QVariant WgQuickProcess::createConfigString(
     const InterfaceConfig& config, const QMap<QString, QString>& extra) {
