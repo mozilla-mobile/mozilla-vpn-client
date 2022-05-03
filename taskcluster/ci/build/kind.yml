@@ -20,4 +20,5 @@ jobs-from:
     - android.yml
     - macos.yml
     - wasm.yml
+    - dummy.yml
 

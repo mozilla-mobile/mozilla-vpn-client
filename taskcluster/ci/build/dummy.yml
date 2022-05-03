@@ -1,0 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+linux/dummy:
+    description: "Linux Build Dummy Client"
+    treeherder:
+        symbol: B
+        kind: build
+        tier: 1
+        platform: linux/dummy
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: build}
+        max-run-time: 3600
+        chain-of-trust: true
+        artifacts:
+             - type: directory
+               name: public/build/test_dummy.zip
+               path: build/src/build
+    run:
+        using: run-task
+        use-caches: true
+        cwd: '{checkout}'
+        command: ./taskcluster/scripts/build/linux_dummy.sh
