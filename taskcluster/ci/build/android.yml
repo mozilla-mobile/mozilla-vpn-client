@@ -24,6 +24,9 @@ android-arm64/debug:
             platform: android/arm64-v8a
         worker:
             docker-image: {in-tree: android-build-arm64}
+            caches:
+                - name: "android-build-arm64"
+                  mount-point: "/builds/worker/.cache"
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
         release-artifacts:
