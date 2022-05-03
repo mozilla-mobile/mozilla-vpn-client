@@ -25,7 +25,7 @@ BEGIN
         BLOCK "040904E4"
         BEGIN
             VALUE "CompanyName",      "Mozilla Corporation"
-            VALUE "FileDescription",  "A fast, secure and easy to use VPN. Built by the makers of Firefox."
+            VALUE "FileDescription",  "@CMAKE_PROJECT_DESCRIPTION@"
             VALUE "FileVersion",      "@CMAKE_PROJECT_VERSION@"
             //VALUE "InternalName",     VER_INTERNALNAME_STR
             VALUE "LegalCopyright",   "MPL-2.0"

@@ -1,6 +1,13 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 cmake_minimum_required(VERSION 3.16)
 
-project(mozillavpn VERSION 2.9.0 LANGUAGES C CXX)
+project(mozillavpn VERSION 2.9.0 LANGUAGES C CXX
+        DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
+        HOMEPAGE_URL "https://vpn.mozilla.org"
+)
 
 ## Ensure the build type is set
 ## TODO: Support multi-generators like XCode and Visual Studio

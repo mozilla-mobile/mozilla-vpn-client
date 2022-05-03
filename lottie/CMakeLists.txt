@@ -24,11 +24,10 @@ target_sources(lottie PRIVATE
 )
 
 ## This writes into the source directory to generate lottie.mjs. Which is frowned-upon. :`(
-get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../scripts ABSOLUTE)
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/lib/lottie/lottie.mjs
     MAIN_DEPENDENCY lib/lottie/lottie_wrap.js.template
     DEPENDS lib/lottie/lottie.min.js
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/lottie
-    COMMAND python3 ${MVPN_SCRIPT_DIR}/utils/make_template.py -f __LOTTIE__=lottie.min.js -o lottie.mjs lottie_wrap.js.template
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/lib/lottie/lottie.mjs.cmake
 )
