@@ -33,7 +33,6 @@ Rectangle {
                 source: "qrc:/nebula/resources/shield-on.svg"
                 opacity: 1
             }
-
         },
         State {
             name: "stateConfirming"
@@ -64,6 +63,7 @@ Rectangle {
                 opacity: 0.55
                 showVPNOnIcon: false
             }
+
             PropertyChanges {
                 target: insetCircle
                 color: VPNTheme.colors.error.default
@@ -96,7 +96,6 @@ Rectangle {
                 target: spin
                 running: true
             }
-
         },
         State {
             name: "stateOff"
@@ -131,7 +130,6 @@ Rectangle {
                 source: "qrc:/nebula/resources/shield-off.svg"
                 opacity: 1
             }
-
         },
         State {
             name: "stateOn"
@@ -151,7 +149,6 @@ Rectangle {
                 source: "qrc:/nebula/resources/shield-on.svg"
                 opacity: 1
             }
-
         },
         State {
             name: "unstableOn"
@@ -172,7 +169,6 @@ Rectangle {
                 source: "qrc:/nebula/resources/shield-on.svg"
                 opacity: 1
             }
-
         },
         State {
             name: "noSignalOn"
@@ -193,7 +189,6 @@ Rectangle {
                 source: "qrc:/nebula/resources/shield-off.svg"
                 opacity: 1
             }
-
         }
     ]
     transitions: [
@@ -378,6 +373,14 @@ Rectangle {
         sourceSize.height: logo.height
         sourceSize.width: logo.width
         visible: false
+    }
+
+    Image {
+        id: globeFallback
+        source: logo.showVPNOnIcon ? "qrc:/ui/resources/main-img-vpn-on.svg" : "qrc:/ui/resources/main-img-vpn-off.svg"
+        sourceSize.height: globe.height
+        sourceSize.width: globe.width
+        visible: window._fallbackQtQuickRenderer
     }
 
     VPNLinearGradient {

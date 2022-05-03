@@ -327,5 +327,6 @@
         <file>resources/x-red50.svg</file>
         <file>resources/check-green70.svg</file>
         <file>resources/shield-green50.svg</file>
+        <file>resources/checkmark-blue50.svg</file>
     </qresource>
 </RCC>

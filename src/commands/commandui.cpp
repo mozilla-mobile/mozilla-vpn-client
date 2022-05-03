@@ -20,7 +20,6 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "loghandler.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
@@ -31,6 +30,8 @@
 #include <glean.h>
 #include <lottie.h>
 #include <nebula.h>
+
+#include <QQmlContext>
 
 #ifdef MVPN_DEBUG
 #  include <QQmlDebuggingEnabler>
@@ -180,6 +181,10 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+
+    // TODO pending #3398
+    QQmlContext* ctx = engine->rootContext();
+    ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
     Glean::Initialize(engine);
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
