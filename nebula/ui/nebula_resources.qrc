@@ -316,6 +316,7 @@
         <file>resources/shaders/src/animatedRings.frag</file>
         <file>resources/shield-off.svg</file>
         <file>resources/shield-on.svg</file>
+        <file>resources/sparkles.svg</file>
         <file>resources/spinner.svg</file>
         <file>resources/switching.svg</file>
         <file>resources/update-lock.svg</file>

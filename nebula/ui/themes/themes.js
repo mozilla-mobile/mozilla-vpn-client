@@ -200,6 +200,12 @@ theme.vpnToggleDisconnected = {
   'focusBorder': theme.darkFocusBorder,
 };
 
+theme.card = {
+    'defaultColor': theme.white,
+    'focusOutline': theme.bgColorTransparent,
+    'focusBorder': theme.bgColorTransparent,
+};
+
 theme.greenAlert = {
   defaultColor: '#3FE1B0',
   buttonHovered: '#3AD4B3',

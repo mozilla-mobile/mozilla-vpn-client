@@ -23,6 +23,7 @@
         <file>components/VPNButton.qml</file>
         <file>components/VPNCallout.qml</file>
         <file>components/VPNCancelButton.qml</file>
+        <file>components/VPNCard.qml</file>
         <file>components/VPNCheckBoxAlert.qml</file>
         <file>components/VPNCheckBox.qml</file>
         <file>components/VPNCheckBoxRow.qml</file>
@@ -52,6 +53,7 @@
         <file>components/VPNFooterLink.qml</file>
         <file>components/VPNGraphLegendMarker.qml</file>
         <file>components/VPNGreyLink.qml</file>
+        <file>components/VPNGuideCard.qml</file>
         <file>components/VPNHeaderLink.qml</file>
         <file>components/VPNHeadline.qml</file>
         <file>components/VPNLottieAnimation.qml</file>

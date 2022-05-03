@@ -9,6 +9,7 @@ VPNButtonBase 0.1 VPNButtonBase.qml
 VPNButtonLoader 0.1 VPNButtonLoader.qml
 VPNCallout 0.1 VPNCallout.qml
 VPNCancelButton 0.1 VPNCancelButton.qml
+VPNCard 0.1 VPNCard.qml
 VPNCheckBox 0.1 VPNCheckBox.qml
 VPNCheckBoxAlert 0.1 VPNCheckBoxAlert.qml
 VPNCheckBoxRow 0.1 VPNCheckBoxRow.qml
@@ -38,6 +39,7 @@ VPNFocusOutline 0.1 VPNFocusOutline.qml
 VPNFooterLink 0.1 VPNFooterLink.qml
 VPNGraphLegendMarker 0.1 VPNGraphLegendMarker.qml
 VPNGreyLink 0.1 VPNGreyLink.qml
+VPNGuideCard 0.1 VPNGuideCard.qml
 VPNHeaderLink 0.1 VPNHeaderLink.qml
 VPNHeadline 0.1 VPNHeadline.qml
 VPNIcon 0.1 VPNIcon.qml

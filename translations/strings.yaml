@@ -320,6 +320,7 @@ settings:
   crashOptInDescription:
     value: Allow Mozilla VPN to automatically send crash reports to help fix unexpected crashes
     comment: This is the description of a checkbox option to allow the app to send crash reports without a user prompt
+  tipsAndTricks: VPN tips and tricks
 
 aboutUs:
   licenses: Licenses
