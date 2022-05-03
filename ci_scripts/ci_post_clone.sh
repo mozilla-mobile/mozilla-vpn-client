@@ -32,9 +32,9 @@ else
   pip3 install aqtinstall
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop 6.2.3 -m qtcharts qtwebsockets qt5compat
   aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios 6.2.3 -m qtcharts qtwebsockets qt5compat
-  mv /Volumes/workspace/repository/qt_ios/6.2.3/macos /Volumes/workspace/repository/qt_ios/6.2.3/clang_64
+ # mv /Volumes/workspace/repository/qt_ios/6.2.3/macos /Volumes/workspace/repository/qt_ios/6.2.3/clang_64
   export QT_IOS_BIN=/Volumes/workspace/repository/qt_ios/6.2.3/ios/bin
-  export PATH=/Volumes/workspace/repository/qt_ios/6.2.3/ios/bin:/Volumes/workspace/repository/qt_ios/6.2.3/clang_64/bin:$PATH
+  export PATH=/Volumes/workspace/repository/qt_ios/6.2.3/ios/bin:/Volumes/workspace/repository/qt_ios/6.2.3/macos/bin:$PATH
 fi
 
 # install xcodeproj which is needed by xcode_patcher.rb
@@ -67,5 +67,5 @@ if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
   ./scripts/macos/apple_compile.sh macos
 else
-  ./scripts/macos/apple_compile.sh ios -q /Volumes/workspace/repository/qt_ios/6.2.3/clang_64/bin
+  ./scripts/macos/apple_compile.sh ios -q /Volumes/workspace/repository/qt_ios/6.2.3/macos/bin
 fi
