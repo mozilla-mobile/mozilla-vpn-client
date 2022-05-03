@@ -32,15 +32,15 @@ VPNFlickable {
         id: subscriptionSummaryModel
         
         ListElement {
-            label: "Status"
+            label: "Subscription plan"
             value: "$4.99 Monthly"
             type: "bold"
         }
-        
+
         ListElement {
             label: "Status"
-            value: "active"
-            type: "label"
+            value: "inactive"
+            type: "pill"
         }
 
         ListElement {
@@ -83,6 +83,41 @@ VPNFlickable {
 
         ColumnLayout {
             spacing: 0
+            state: "default"
+            states: [
+                State {
+                    name: "default"
+                    when: type === "default"
+
+                    PropertyChanges {
+                        target: rowPill
+                        visible: false
+                    }
+                },
+                State {
+                    name: "bold"
+                    when: type === "bold"
+
+                    PropertyChanges {
+                        target: rowLabel
+                        font.family: VPNTheme.theme.fontInterFamily
+                    }
+
+                    PropertyChanges {
+                        target: rowPill
+                        visible: false
+                    }
+                },
+                State {
+                    name: "pill"
+                    when: type === "pill"
+
+                    PropertyChanges {
+                        target: rowText
+                        visible: false
+                    }
+                }
+            ]
 
             Layout.fillWidth: true
 
@@ -96,7 +131,8 @@ VPNFlickable {
                 Layout.topMargin: VPNTheme.theme.listSpacing
 
                 VPNInterLabel {
-                    color: VPNTheme.theme.fontColor
+                    id: rowLabel
+
                     horizontalAlignment: Text.AlignLeft
                     font.pixelSize: VPNTheme.theme.fontSizeSmall
                     text: label
@@ -107,6 +143,8 @@ VPNFlickable {
                 }
 
                 VPNInterLabel {
+                    id: rowText
+
                     color: VPNTheme.theme.fontColorDark
                     horizontalAlignment: Text.AlignRight
                     font.pixelSize: VPNTheme.theme.fontSizeSmall
@@ -115,6 +153,18 @@ VPNFlickable {
 
                     Layout.alignment: Qt.AlignRight
                     Layout.fillWidth: true
+                }
+
+                VPNPill {
+                    id: rowPill
+
+                    color: value === "active"
+                        ? VPNTheme.colors.green90
+                        : VPNTheme.colors.red70
+                    background: value === "active"
+                        ? VPNTheme.colors.green5
+                        : VPNTheme.colors.red5
+                    text: value === "active" ? "Active" : "Inactive"
                 }
             }
 
