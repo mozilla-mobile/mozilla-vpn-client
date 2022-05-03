@@ -17,6 +17,7 @@ import telemetry 0.30
 Window {
     id: window
 
+    property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
     property var isWasmApp: Qt.platform.os === "wasm"
     property bool isMobileOnboardingOnIos: VPNFeatureList.get("mobileOnboarding").isSupported
