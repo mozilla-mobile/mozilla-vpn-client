@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 du -sh $XDG_CACHE_HOME
+ls -R /builds/worker/.cache
 # This script is used in the Android Debug (universal) build task
 git submodule init
 git submodule update
@@ -41,3 +42,4 @@ fi
 
 ccache -s
 du -sh $XDG_CACHE_HOME
+ls -R /builds/worker/.cache
