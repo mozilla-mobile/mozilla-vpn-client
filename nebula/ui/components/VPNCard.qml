@@ -8,7 +8,6 @@ import Mozilla.VPN 1.0
 import compat 0.1
 
 VPNButtonBase {
-
     radius: 8
 
     VPNDropShadow {

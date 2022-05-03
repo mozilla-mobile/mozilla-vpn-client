@@ -20,8 +20,8 @@ VPNCard {
 
         Rectangle {
             Layout.fillWidth: true
+            Layout.preferredHeight: 104
 
-            height: 104
             radius: root.radius
             color: VPNTheme.colors.pink90
 
@@ -39,8 +39,8 @@ VPNCard {
                 id: heroImage
 
                 anchors.centerIn: parent
-                height: 76
-                width: 172
+                sourceSize.height: 76
+                sourceSize.width: 152
             }
         }
 
