@@ -595,3 +595,31 @@ global:
   vpnUser: 
     value: VPN User
     comment: Fallback string for users who have not specified a Display Name.
+
+  subscriptionManagement:
+    menuTitle:
+      value: Profile
+      comment: Menu title for the a view with details on the users account
+    summaryHeadline:
+      value: Subscription summary
+      comment: Headline for a list with information on the subscription plan of the user
+    paymentHeadline:
+      value: Payment Information
+      comment: Headline for a list with information on the payment information the user provided for their subscription
+    planLabel:
+      value: Subscription plan
+      comment: Label for the selected subscription plan the user currently is subscribed to
+    statusLabel:
+      value: Status
+      comment: Label for the current status of the subscription
+    nextLabel:
+      value: Next billed
+      comment: Label for the upcoming date on which the user will be billed for their subscription
+    activatedLabel:
+      value: Activated
+      comment: Label for the date on which the subscription was activated
+    expiresLabel:
+      value: Expires
+      comment: Label for the upcoming date on which the subscription will expire
+    manageSubscriptionButton: Manage subscription
+      value: Label for a button that will take the user to a view where the can manage their subscription
