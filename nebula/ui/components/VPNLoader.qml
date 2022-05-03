@@ -82,7 +82,7 @@ Item {
 
         visible: footerLinkIsVisible
         onClicked: {
-            if (isDeleteAccountAuth) {
+            if (typeof(isDeleteAccountAuth) !== "undefined" && isDeleteAccountAuth) {
                 cancelAccountDeletion();
             } else {
                 VPN.cancelAuthentication()

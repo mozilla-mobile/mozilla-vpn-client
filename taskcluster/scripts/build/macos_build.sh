@@ -31,23 +31,20 @@ print Y "Installing python dependencies..."
 python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
+
 print Y "Installing QT..."
-# generate qt_static_macos
-auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1 || die
-cd qt_static_macos || die
-cat qt6* > qt_static.tar.gz
-tar xf qt_static.tar.gz || die
+PROJECT_HOME=`pwd`
+cd ../../fetches/qt_dist || die
+export QT_MACOS_BIN=`pwd`/bin
+export PATH=$QT_MACOS_BIN:$PATH
 
-cat > qt6/bin/qt.conf << EOF
+cat > bin/qt.conf << EOF
 [Paths]
-Prefix=`pwd`/qt6
+Prefix=`pwd`
 EOF
+cp bin/qt.conf libexec || die
+cd $PROJECT_HOME
 
-cp qt6/bin/qt.conf qt6/libexec || die
-cd ..
-export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
-export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 
 print Y "Updating submodules..."
 # should already be done by XCode cloud cloning but just to make sure

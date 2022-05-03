@@ -584,3 +584,14 @@ freeTrials:
     value: Sign up to start your 7-day free trial.
     comment: This string appears above the 'Sign up' button on mobile onboarding views
   freeTrialLabel: 7-day free trial
+
+global:
+  expand:
+    value: Expand
+    comment: Action used in the context of an expandable/collapsible card component
+  collapse:
+    value: Collapse
+    comment: Action used in the context of an expandable/collapsible card component
+  vpnUser: 
+    value: VPN User
+    comment: Fallback string for users who have not specified a Display Name.

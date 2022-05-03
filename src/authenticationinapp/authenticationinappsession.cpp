@@ -238,8 +238,9 @@ void AuthenticationInAppSession::signIn(const QString& unblockCode) {
 
 void AuthenticationInAppSession::signInInternal(const QString& unblockCode) {
   NetworkRequest* request = NetworkRequest::createForFxaLogin(
-      m_task, m_emailAddressCaseFix, generateAuthPw(), unblockCode,
-      m_fxaParams.m_clientId, m_fxaParams.m_deviceId, m_fxaParams.m_flowId,
+      m_task, m_emailAddressCaseFix, generateAuthPw(),
+      m_originalLoginEmailAddress, unblockCode, m_fxaParams.m_clientId,
+      m_fxaParams.m_deviceId, m_fxaParams.m_flowId,
       m_fxaParams.m_flowBeginTime);
 
   connect(request, &NetworkRequest::requestFailed, this,
@@ -266,6 +267,7 @@ void AuthenticationInAppSession::signInInternal(const QString& unblockCode) {
                   logger.error()
                       << "Failed to sign in for email case issues. New email:"
                       << logger.sensitive(email);
+                  m_originalLoginEmailAddress = m_emailAddressCaseFix;
                   m_emailAddressCaseFix = email;
                   signInInternal(unblockCode);
                   return;
@@ -757,7 +759,7 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
 
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::authenticationInappError,
-          {{"errno", "125"}, {"verificationMethod", verificationMethod}});
+          {{"errno", "125"}, {"verificationmethod", verificationMethod}});
 
       logger.error() << "Unsupported verification method:"
                      << verificationMethod;

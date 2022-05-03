@@ -113,5 +113,6 @@
         <file>components/forms/VPNCursorDelegate.qml</file>
         <file>components/VPNSegmentedToggle.qml</file>
         <file>components/VPNSegmentedNavigation.qml</file>
+        <file>components/VPNUserProfile.qml</file>
     </qresource>
 </RCC>

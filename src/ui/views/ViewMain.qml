@@ -56,12 +56,6 @@ VPNFlickable {
         }
     }
 
-    MouseArea {
-        anchors.fill: parent
-        enabled: box.connectionInfoScreenVisible
-        onClicked: box.closeConnectionInfo()
-    }
-
     GridLayout {
         id: col
 

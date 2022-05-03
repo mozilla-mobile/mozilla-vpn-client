@@ -263,12 +263,13 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
 // static
 NetworkRequest* NetworkRequest::createForFxaLogin(
     Task* parent, const QString& email, const QByteArray& authpw,
-    const QString& unblockCode, const QString& fxaClientId,
-    const QString& fxaDeviceId, const QString& fxaFlowId,
-    double fxaFlowBeginTime) {
+    const QString& originalLoginEmail, const QString& unblockCode,
+    const QString& fxaClientId, const QString& fxaDeviceId,
+    const QString& fxaFlowId, double fxaFlowBeginTime) {
   Q_ASSERT(parent);
   Q_UNUSED(email);
   Q_UNUSED(authpw);
+  Q_UNUSED(originalLoginEmail);
   Q_UNUSED(unblockCode);
   Q_UNUSED(fxaClientId);
   Q_UNUSED(fxaDeviceId);

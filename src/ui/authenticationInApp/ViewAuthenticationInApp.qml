@@ -15,6 +15,7 @@ Item {
 
     Loader {
         id: loader
+        property bool isDeleteAccountAuth: false
 
         asynchronous: true
         anchors.fill: parent

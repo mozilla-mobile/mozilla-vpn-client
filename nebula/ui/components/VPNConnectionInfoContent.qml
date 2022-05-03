@@ -35,8 +35,8 @@ Flickable {
         id: content
         
         anchors {
-            horizontalCenter: parent.horizontalCenter
-            verticalCenter: parent.verticalCenter
+            horizontalCenter: root.horizontalCenter
+            verticalCenter: root.verticalCenter
         }
         spacing: 0
         width: parent.width

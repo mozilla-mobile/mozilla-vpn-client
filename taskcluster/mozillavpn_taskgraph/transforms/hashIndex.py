@@ -84,4 +84,3 @@ def clearIndex(config, tasks):
             continue
         task.pop("index")
         yield task
-        
