@@ -348,6 +348,17 @@ void MozillaVPN::setState(State state) {
 void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
+  if (!modelsInitialized()) {
+    logger.warning() << "Models not initialized yet";
+    SettingsHolder::instance()->clear();
+    errorHandle(ErrorHandler::RemoteServiceError);
+    setUserState(UserNotAuthenticated);
+    setState(StateInitialize);
+    return;
+  }
+
+  Q_ASSERT(m_private->m_serverData.initialized());
+
   if (FeatureInAppPurchase::instance()->isSupported()) {
     if (m_state != StateSubscriptionBlocked &&
         m_private->m_user.subscriptionNeeded()) {
@@ -644,18 +655,7 @@ void MozillaVPN::completeActivation() {
   TaskScheduler::scheduleTask(new TaskSurveyData());
 
   // Finally we are able to activate the client.
-  TaskScheduler::scheduleTask(new TaskFunction([this]() {
-    if (!modelsInitialized()) {
-      logger.error() << "Failed to complete the authentication";
-      errorHandle(ErrorHandler::RemoteServiceError);
-      setUserState(UserNotAuthenticated);
-      return;
-    }
-
-    Q_ASSERT(m_private->m_serverData.initialized());
-
-    maybeStateMain();
-  }));
+  TaskScheduler::scheduleTask(new TaskFunction([this]() { maybeStateMain(); }));
 }
 
 void MozillaVPN::deviceAdded(const QString& deviceName,
@@ -742,15 +742,6 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   // Finally we are able to activate the client.
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (m_state != StateDeviceLimit) {
-      return;
-    }
-
-    if (!modelsInitialized()) {
-      logger.warning() << "Models not initialized yet";
-      errorHandle(ErrorHandler::RemoteServiceError);
-      SettingsHolder::instance()->clear();
-      setUserState(UserNotAuthenticated);
-      setState(StateInitialize);
       return;
     }
 
