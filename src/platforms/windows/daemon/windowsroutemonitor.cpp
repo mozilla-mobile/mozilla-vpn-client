@@ -6,6 +6,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 
+#include <QScopeGuard>
+
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsRouteMonitor");
 };  // namespace
@@ -75,6 +77,7 @@ void WindowsRouteMonitor::updateValidInterfaces(int family) {
     logger.warning() << "Failed to retrive interface table." << result;
     return;
   }
+  auto guard = qScopeGuard([&] { FreeMibTable(table); });
 
   // Flush the list of interfaces that are valid for routing.
   if ((family == AF_INET) || (family == AF_UNSPEC)) {
@@ -103,8 +106,6 @@ void WindowsRouteMonitor::updateValidInterfaces(int family) {
       m_validInterfacesIpv6.append(row->InterfaceLuid.Value);
     }
   }
-
-  FreeMibTable(table);
 }
 
 void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,

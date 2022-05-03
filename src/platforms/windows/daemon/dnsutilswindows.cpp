@@ -7,7 +7,6 @@
 #include "logger.h"
 
 #include <QProcess>
-#include <QScopeGuard>
 #include <QTextStream>
 
 #include <windows.h>
