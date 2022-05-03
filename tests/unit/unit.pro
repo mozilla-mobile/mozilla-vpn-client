@@ -38,6 +38,9 @@ include($$PWD/../../glean/glean.pri)
 include($$PWD/../../nebula/nebula.pri)
 include($$PWD/../../translations/translations.pri)
 
+# Remove resouce files that we intend to mock out
+RESOURCES ~= 's/.*servers.qrc//g'
+
 HEADERS += \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
