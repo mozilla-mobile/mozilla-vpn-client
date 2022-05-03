@@ -72,6 +72,7 @@
         <file>components/VPNMobileStatusBarModifier.qml</file>
         <file>components/VPNMouseArea.qml</file>
         <file>components/VPNPanel.qml</file>
+        <file>components/VPNPill.qml</file>
         <file>components/VPNPopupButton.qml</file>
         <file>components/VPNPopup.qml</file>
         <file>components/VPNRadioButtonLabel.qml</file>
