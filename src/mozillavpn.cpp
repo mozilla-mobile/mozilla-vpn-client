@@ -336,6 +336,9 @@ void MozillaVPN::setState(State state) {
   m_state = state;
   emit stateChanged();
 
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::appStep, {{"state", QVariant::fromValue(state).toString()}});
+
   // If we are activating the app, let's initialize the controller.
   if (m_state == StateMain) {
     m_private->m_controller.initialize();
