@@ -54,15 +54,16 @@ VPNFlickable {
             }
 
             VPNUserProfile {
-                _iconButtonImageSource: "qrc:/nebula/resources/chevron.svg"
-                _iconButtonOnClicked: () => {
-                    const subscriptionInAppEnabled = true;
-
-                    if (subscriptionInAppEnabled) {
-                        settingsStackView.push("qrc:/ui/settings/ViewSubscriptionManagement.qml")
+                property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
+                _iconButtonImageSource: subscriptionManagementEnabled
+                    ? "qrc:/nebula/resources/chevron.svg"
+                    : "qrc:/nebula/resources/open-in-new.svg"
+                _iconButtonOnClicked: () => {                    
+                    if (subscriptionManagementEnabled) {
+                        settingsStackView.push("qrc:/ui/settings/ViewSubscriptionManagement.qml");
                     } else {
                         Sample.manageAccountClicked.record();
-                        VPN.openLink(VPN.LinkAccount)
+                        VPN.openLink(VPN.LinkAccount);
                     }
                 }
                 Layout.leftMargin: VPNTheme.theme.windowMargin / 2
