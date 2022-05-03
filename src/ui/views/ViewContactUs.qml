@@ -164,6 +164,7 @@ Item {
 
                         VPNUserProfile {
                             Layout.bottomMargin: VPNTheme.theme.windowMargin / 2
+                            visible: VPN.userState === VPN.UserAuthenticated
                         }
 
 
