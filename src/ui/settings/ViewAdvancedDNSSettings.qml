@@ -32,12 +32,7 @@ Item {
         // "scripts" as property values through ListModel/ListElement
 
         id: tabs
-        width: root.width
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: root.height - menu.height
+        anchors.fill: parent
 
         tabList: ListModel {
             id: tabButtonList
