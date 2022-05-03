@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
+du -sh $XDG_CACHE_HOME
 # This script is used in the Android Debug (universal) build task
 git submodule init
 git submodule update
@@ -40,3 +40,4 @@ if test -n "$(find /builds/worker/artifacts/ -maxdepth 0 -empty)" ; then
 fi
 
 ccache -s
+du -sh $XDG_CACHE_HOME
