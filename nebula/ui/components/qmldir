@@ -87,6 +87,7 @@ VPNTimer 0.1 VPNTimer.qml
 VPNToggle 0.1 VPNToggle.qml
 VPNToggleCard 0.1 VPNToggleCard.qml
 VPNToolTip 0.1 VPNToolTip.qml
+VPNTutorialCard 0.1 VPNTutorialCard.qml
 VPNUIStates 0.1 VPNUIStates.qml
 VPNUserProfile 0.1 VPNUserProfile.qml
 VPNVerticalSpacer 0.1 VPNVerticalSpacer.qml

@@ -99,6 +99,7 @@
         <file>components/VPNToggleCard.qml</file>
         <file>components/VPNToggle.qml</file>
         <file>components/VPNToolTip.qml</file>
+        <file>components/VPNTutorialCard.qml</file>
         <file>components/VPNUIStates.qml</file>
         <file>components/VPNVerticalSpacer.qml</file>
         <file>components/VPNViewDNSSettings.qml</file>

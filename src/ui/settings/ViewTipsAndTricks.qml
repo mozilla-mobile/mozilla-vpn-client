@@ -30,8 +30,10 @@ Item {
 
             anchors.top: parent.top
             anchors.left: parent.left
+            anchors.right: parent.right
             anchors.topMargin: VPNTheme.theme.vSpacing
             anchors.leftMargin: VPNTheme.theme.windowMargin
+            anchors.rightMargin: VPNTheme.theme.windowMargin
         }
     }
 }
