@@ -6,5 +6,5 @@
 #pragma comment(lib, "legacy_stdio_definitions.lib")
 
 extern "C" {
-FILE __iob_func[3] = { *stdin, *stdout, *stderr };
+FILE __iob_func[3] = {*stdin, *stdout, *stderr};
 }

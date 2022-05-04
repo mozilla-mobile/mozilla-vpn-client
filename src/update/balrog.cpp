@@ -26,7 +26,7 @@
 #  include "platforms/windows/golang-msvc-types.h"
 #endif
 
-// Import balrog C/Go library (unless we happen to be building on Windows with Qmake)
+// Import balrog C/Go library (unless we are building on Windows with qmake)
 #if !(defined(MVPN_WINDOWS) && defined(BUILD_QMAKE))
 extern "C" {
 #  include "balrog-api.h"

@@ -5,7 +5,7 @@
 #include "constants.h"
 #include "settingsholder.h"
 #ifndef BUILD_QMAKE
-# include "version.h"
+#  include "version.h"
 #endif
 
 #include <QString>
@@ -28,10 +28,6 @@ void Constants::setStaging() {
   Q_ASSERT(!s_stagingServerAddress.isEmpty());
 }
 
-QString Constants::versionString() {
-  return QStringLiteral(APP_VERSION);
-}
+QString Constants::versionString() { return QStringLiteral(APP_VERSION); }
 
-QString Constants::buildNumber() {
-  return QStringLiteral(BUILD_ID);
-}
+QString Constants::buildNumber() { return QStringLiteral(BUILD_ID); }
