@@ -17,19 +17,11 @@ import telemetry 0.30
 Window {
     id: window
 
+    signal showServerList
+
     property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
     property var isWasmApp: Qt.platform.os === "wasm"
-
-    signal clearCurrentViewStack
-    signal showServersView
-
-    function goToServersView() {
-        if (VPN.state === VPN.StateMain) {
-            clearCurrentViewStack();
-            showServersView();
-        }
-    }
 
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
@@ -520,12 +512,21 @@ Window {
         }
     }
 
-
     VPNSystemAlert {
     }
 
     VPNServerUnavailablePopup {
         id: serverUnavailablePopup
+    }
+
+    function goToServersView() {
+        if (VPN.state !== VPN.StateMain) {
+            return;
+        }
+        if (mainStackView.depth > 1) {
+            mainStackView.pop(mainStackView.find(mainStackView.get(1)), StackView.Immediate);
+        }
+        showServerList();
     }
 
     Connections {
