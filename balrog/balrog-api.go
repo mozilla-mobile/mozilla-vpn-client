@@ -6,7 +6,7 @@ package main
 
 // #include <stdlib.h>
 // #include <sys/types.h>
-// static void callLogger(void *func, int level, const char *msg)
+// static inline void callLogger(void *func, int level, const char *msg)
 // {
 //   ((void(*)(int, const char *))func)(level, msg);
 // }

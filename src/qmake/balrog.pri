@@ -11,6 +11,7 @@ macos|win* {
 
     # TODO: remove this if-stmt
     !win* {
+        INCLUDEPATH += $$PWD/../../balrog
         GO_MODULES = $$PWD/../../balrog/balrog-api.go
     }
 }

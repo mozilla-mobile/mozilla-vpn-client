@@ -89,6 +89,7 @@ isEmpty(ETCPATH) {
 DBUS_ADAPTORS += platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
+INCLUDEPATH += $$PWD/../../../linux/netfilter
 GO_MODULES = $$PWD/../../../linux/netfilter/netfilter.go
 
 target.path = $${USRPATH}/bin
