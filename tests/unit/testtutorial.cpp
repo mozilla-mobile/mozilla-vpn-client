@@ -6,6 +6,7 @@
 #include "../../src/models/tutorial.h"
 #include "../../src/models/tutorialmodel.h"
 #include "../../src/qmlengineholder.h"
+#include "../../src/settingsholder.h"
 #include "../../translations/generated/l18nstrings.h"
 
 void TestTutorial::model() {
@@ -89,7 +90,88 @@ void TestTutorial::create_data() {
   step["element"] = "wow";
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-element")
+  QTest::addRow("with-step-without-next")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
+                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
+      << QJsonDocument(obj).toJson() << false;
+
+  step["next"] = "wow";
+  steps.replace(0, step);
+  obj["steps"] = steps;
+  QTest::addRow("with-step-with-invalid-next")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
+                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
+      << QJsonDocument(obj).toJson() << false;
+
+  QJsonObject nextObj;
+
+  step["next"] = nextObj;
+  steps.replace(0, step);
+  obj["steps"] = steps;
+  QTest::addRow("with-step-with-invalid-next-1")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
+                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
+      << QJsonDocument(obj).toJson() << false;
+
+  nextObj["op"] = "wow";
+  step["next"] = nextObj;
+  steps.replace(0, step);
+  obj["steps"] = steps;
+  QTest::addRow("with-step-with-invalid-next-2")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
+                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
+      << QJsonDocument(obj).toJson() << false;
+
+  nextObj["op"] = "signal";
+  step["next"] = nextObj;
+  steps.replace(0, step);
+  obj["steps"] = steps;
+  QTest::addRow("with-step-with-invalid-next-3")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
+                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
+      << QJsonDocument(obj).toJson() << false;
+
+  nextObj["signal"] = "a";
+  step["next"] = nextObj;
+  steps.replace(0, step);
+  obj["steps"] = steps;
+  QTest::addRow("with-step-with-invalid-next-4")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
+                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
+      << QJsonDocument(obj).toJson() << false;
+
+  nextObj["qml_emitter"] = "a";
+  step["next"] = nextObj;
+  steps.replace(0, step);
+  obj["steps"] = steps;
+  QTest::addRow("with-step-with-invalid-next-5")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
+                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
+      << QJsonDocument(obj).toJson() << true;
+
+  nextObj["vpn_emitter"] = "a";
+  step["next"] = nextObj;
+  steps.replace(0, step);
+  obj["steps"] = steps;
+  QTest::addRow("with-step-with-invalid-next-6")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
+                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
+      << QJsonDocument(obj).toJson() << false;
+
+  nextObj.remove("qml_emitter");
+  step["next"] = nextObj;
+  steps.replace(0, step);
+  obj["steps"] = steps;
+  QTest::addRow("with-step-with-invalid-next-7")
+      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
+                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
+      << QJsonDocument(obj).toJson() << false;
+
+  nextObj["vpn_emitter"] = "settingsHolder";
+  step["next"] = nextObj;
+  steps.replace(0, step);
+  obj["steps"] = steps;
+  QTest::addRow("with-step-with-invalid-next-8")
       << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
                      "TutorialFooCompletionMessage", "TutorialFooStepS1"}
       << QJsonDocument(obj).toJson() << true;
@@ -104,6 +186,8 @@ void TestTutorial::create() {
   QFETCH(QStringList, l18n);
   QFETCH(QByteArray, content);
   QFETCH(bool, created);
+
+  SettingsHolder settingsHolder;
 
   L18nStrings* l18nStrings = L18nStrings::instance();
   QVERIFY(!!l18nStrings);

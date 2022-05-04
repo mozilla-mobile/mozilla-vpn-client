@@ -9,6 +9,8 @@
 
 #include <QTimer>
 
+class TutorialNext;
+
 class Tutorial final : public ItemPicker {
   Q_OBJECT
   Q_PROPERTY(QString titleId MEMBER m_titleId CONSTANT)
@@ -28,7 +30,6 @@ class Tutorial final : public ItemPicker {
   explicit Tutorial(QObject* parent);
 
   bool itemPicked(const QStringList& list) override;
-  void itemVisibilityChanged();
 
   void processNextOp();
 
@@ -47,6 +48,7 @@ class Tutorial final : public ItemPicker {
   struct Op {
     QString m_element;
     QString m_stringId;
+    TutorialNext* m_next;
   };
   QList<Op> m_steps;
 

@@ -62,9 +62,21 @@
           "tooltip": {
             "type": "string",
             "description": "The message to show near the element"
+          },
+          "next": {
+            "type": "object",
+            "description": "How this step is considered as completed",
+            "additionalProperties": true,
+            "properties": {
+              "op": {
+                "type": "string",
+                "description": "The 'next' operation type. Each 'op' value has its own properties"
+              }
+            },
+            "required": [ "op" ]
           }
         },
-        "required": [ "id", "element", "tooltip" ]
+        "required": [ "id", "element", "tooltip", "next" ]
       }
     }
   },

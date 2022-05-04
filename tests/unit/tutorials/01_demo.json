@@ -12,12 +12,14 @@
       "id": "s1",
       "comment": "This is a comment for a step",
       "element": "a",
-      "tooltip": "wow"
+      "tooltip": "wow",
+      "next": { "op": "signal", "qml_emitter": "foo", "signal": "a" }
     },
     {
       "id": "s2",
       "element": "b",
-      "tooltip": "wow2"
+      "tooltip": "wow2",
+      "next": { "op": "signal", "qml_emitter": "foo", "signal": "a" }
     }
   ]
 }

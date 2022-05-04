@@ -10,6 +10,7 @@
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "tutorialmodel.h"
+#include "tutorialnext.h"
 
 #include <QCoreApplication>
 #include <QFile>
@@ -135,7 +136,13 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
       return nullptr;
     }
 
-    tutorial->m_steps.append(Op{element, stepId});
+    TutorialNext* tn = TutorialNext::create(tutorial, stepObj["next"]);
+    if (!tn) {
+      logger.error() << "Unable to parse the 'next' property" << fileName;
+      return nullptr;
+    }
+
+    tutorial->m_steps.append(Op{element, stepId, tn});
   }
 
   if (tutorial->m_steps.isEmpty()) {
@@ -158,37 +165,37 @@ void Tutorial::play(const QStringList& allowedItems) {
 }
 
 void Tutorial::stop() {
-  if (m_currentStep != -1) {
+  if (m_currentStep == -1) {
     return;
   }
 
   m_timer.stop();
 
-  // Let's jump to the last one.
-  m_currentStep = m_steps.length();
-  maybeStop();
+  if (m_currentStep < m_steps.length()) {
+    m_steps[m_currentStep].m_next->disconnect();
+    m_steps[m_currentStep].m_next->stop();
+  }
+
+  qApp->removeEventFilter(this);
+  m_currentStep = -1;
+  m_elementPicked = false;
 }
 
 bool Tutorial::maybeStop(bool completed) {
-  if (m_currentStep == m_steps.length()) {
-    qApp->removeEventFilter(this);
-    m_currentStep = -1;
-    m_elementPicked = false;
-
-    if (completed) {
-      TutorialModel* tutorialModel = TutorialModel::instance();
-      Q_ASSERT(tutorialModel);
-
-      tutorialModel->requireTutorialCompleted(
-          this,
-          L18nStrings::instance()->value(m_completionMessageId).toString());
-    }
-
-    TutorialModel::instance()->stop();
-    return true;
+  if (m_currentStep != m_steps.length()) {
+    return false;
   }
 
-  return false;
+  if (completed) {
+    TutorialModel* tutorialModel = TutorialModel::instance();
+    Q_ASSERT(tutorialModel);
+
+    tutorialModel->requireTutorialCompleted(
+        this, L18nStrings::instance()->value(m_completionMessageId).toString());
+  }
+
+  TutorialModel::instance()->stop();
+  return true;
 }
 
 void Tutorial::processNextOp() {
@@ -212,6 +219,9 @@ void Tutorial::processNextOp() {
     return;
   }
 
+  // mapRectToScene/Item do not return the correct value. Let's compute the x/y
+  // values manually.
+
   qreal x = item->x();
   qreal y = item->y();
   for (QQuickItem* parent = item->parentItem(); parent;
@@ -228,23 +238,18 @@ void Tutorial::processNextOp() {
       this, L18nStrings::instance()->value(op.m_stringId).toString(),
       QRectF(x, y, item->width(), item->height()));
 
-  connect(item, &QQuickItem::visibleChanged, this,
-          &Tutorial::itemVisibilityChanged);
-}
+  connect(op.m_next, &TutorialNext::completed, this, [this]() {
+    Q_ASSERT(m_currentStep > -1 && m_currentStep < m_steps.length());
 
-void Tutorial::itemVisibilityChanged() {
-  QQuickItem* item = qobject_cast<QQuickItem*>(sender());
+    m_steps[m_currentStep].m_next->disconnect();
+    m_steps[m_currentStep].m_next->stop();
 
-  if (item->isVisible()) return;
+    m_elementPicked = false;
+    ++m_currentStep;
+    processNextOp();
+  });
 
-  if (!m_elementPicked) return;
-
-  // The visibility has changed because the user has interacted. Let's move to
-  // the next item.
-
-  m_elementPicked = false;
-  ++m_currentStep;
-  processNextOp();
+  op.m_next->start();
 }
 
 bool Tutorial::itemPicked(const QStringList& list) {

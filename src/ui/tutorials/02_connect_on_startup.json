@@ -11,17 +11,32 @@
     {
       "id": "s1",
       "element": "settingsButton",
-      "tooltip": "Select your account settings"
+      "tooltip": "Select your account settings",
+      "next": {
+        "op": "signal",
+        "qml_emitter": "settingsButton",
+        "signal": "visibleChanged"
+      }
     },
     {
       "id": "s2",
       "element": "settingsPreferences",
-      "tooltip": "Select your system preferences"
+      "tooltip": "Select your system preferences",
+      "next": {
+        "op": "signal",
+        "qml_emitter": "settingsPreferences",
+        "signal": "visibleChanged"
+      }
     },
     {
       "id": "s3",
       "element": "settingStartAtBoot",
-      "tooltip": "Select or deselect this checkbox"
+      "tooltip": "Select or deselect this checkbox",
+      "next": {
+        "op": "signal",
+        "vpn_emitter": "settingsHolder",
+        "signal": "startAtBootChanged"
+      }
     }
   ]
 }

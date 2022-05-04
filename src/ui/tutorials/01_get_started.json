@@ -8,17 +8,32 @@
     {
       "id": "s1",
       "element": "serverListButton",
-      "tooltip": "Select your location"
+      "tooltip": "Select your location",
+      "next": {
+        "op": "signal",
+        "qml_emitter": "serverListButton",
+        "signal": "visibleChanged"
+      }
     },
     {
       "id": "s2",
       "element": "b",
-      "tooltip": "Select a different server location"
+      "tooltip": "Select a different server location",
+      "next": {
+        "op": "signal",
+        "qml_emitter": "serverListButton",
+        "signal": "visibleChanged"
+      }
     },
     {
       "id": "s3",
       "element": "controllerToggle",
-      "tooltip": "Toggle this switch to activate or deactivate the VPN"
+      "tooltip": "Toggle this switch to activate or deactivate the VPN",
+      "next": {
+        "op": "signal",
+        "qml_emitter": "serverListButton",
+        "signal": "visibleChanged"
+      }
     }
   ]
 }
