@@ -27,7 +27,7 @@ golibs.commands = @echo Building ${QMAKE_FILE_IN} \
 golibs.clean = ${QMAKE_FILE_BASE}.a
 golibs.variable_out = LIBS
 golibs.depends += ${QMAKE_FILE_PATH}/vendor/modules.txt
-golibs.CONFIG += target_predeps
+###golibs.CONFIG += target_predeps
 
 ## Dummy compiler for the library header file
 gohdr.input = GO_MODULES

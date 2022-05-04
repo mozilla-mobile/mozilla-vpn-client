@@ -10,7 +10,6 @@
 TEMPLATE  = app
 
 include($$PWD/qmake/balrog.pri)
-include($$PWD/qmake/ccache.pri)
 include($$PWD/qmake/debug.pri)
 include($$PWD/qmake/includes_and_defines.pri)
 include($$PWD/qmake/qt.pri)
@@ -22,6 +21,7 @@ include($$PWD/../translations/translations.pri)
 include($$PWD/crashreporter/crashreporter.pri)
 
 unix {
+   include($$PWD/qmake/ccache.pri)
    include($$PWD/qmake/golang.pri)
 }
 
