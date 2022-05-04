@@ -7,6 +7,8 @@ security, we will always put your privacy first._
 
 See: https://vpn.mozilla.org
 
+This is a test to trigger github concurrency!
+
 ## Getting Involved
 
 We encourage you to participate in this open source project. We love Pull
