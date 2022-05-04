@@ -70,6 +70,7 @@
 #include <QGuiApplication>
 #include <QLocale>
 #include <QQmlApplicationEngine>
+#include <QQuickWindow>
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
@@ -1091,9 +1092,10 @@ void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
 
 #ifndef MVPN_WASM
-  // Initialize glean
+  // Initialize glean with an async call because at this time, QQmlEngine does
+  // not have root objects yet to see the current graphics API in use.
   logger.debug() << "Initializing Glean";
-  emit initializeGlean();
+  QTimer::singleShot(0, this, &MozillaVPN::initializeGlean);
 
   // Setup regular glean ping sending
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
@@ -1723,6 +1725,35 @@ QString MozillaVPN::devVersion() {
   stream << "</b>";
 
   return out;
+}
+
+// static
+QString MozillaVPN::graphicsApi() {
+#if QT_VERSION < 0x060000
+  return "qt5-angle";
+#else
+  QQuickWindow* window =
+      qobject_cast<QQuickWindow*>(QmlEngineHolder::instance()->window());
+  Q_ASSERT(window);
+
+  switch (window->rendererInterface()->graphicsApi()) {
+    case QSGRendererInterface::Software:
+      return "software";
+    case QSGRendererInterface::OpenVG:
+    case QSGRendererInterface::OpenGL:
+      return "openGL/openVG";
+    case QSGRendererInterface::Direct3D11:
+      return "Direct3D11";
+    case QSGRendererInterface::Vulkan:
+      return "Vulkan";
+    case QSGRendererInterface::Metal:
+      return "Metal";
+    case QSGRendererInterface::Unknown:
+    case QSGRendererInterface::Null:
+    default:
+      return "unknown";
+  }
+#endif
 }
 
 void MozillaVPN::requestDeleteAccount() {
