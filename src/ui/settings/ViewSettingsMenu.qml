@@ -120,7 +120,7 @@ VPNFlickable {
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 onClicked: {
                     Sample.getHelpClickedViewSettings.record();
-                    mainStackView.push("qrc:/ui/views/ViewGetHelp.qml")
+                    getHelpViewNeeded();
                 }
             }
 

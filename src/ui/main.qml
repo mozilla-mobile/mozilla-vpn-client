@@ -315,7 +315,7 @@ Window {
 
             if (settingsViewInMainStack) {
                 // Unwind settingsStackView back to menu
-                settingsViewInMainStack.unwindSettingsStackView();
+                settingsViewInMainStack._unwindSettingsStackView();
 
                 // Unwind mainStackView back to Settings
                 return mainStackView.pop(settingsViewInMainStack, StackView.Immediate);
