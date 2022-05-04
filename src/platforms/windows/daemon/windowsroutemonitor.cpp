@@ -98,11 +98,13 @@ void WindowsRouteMonitor::updateValidInterfaces(int family) {
     }
 
     if (row->Family == AF_INET) {
-      logger.debug() << "Interface" << row->InterfaceIndex << "is valid for IPv4 routing";
+      logger.debug() << "Interface" << row->InterfaceIndex
+                     << "is valid for IPv4 routing";
       m_validInterfacesIpv4.append(row->InterfaceLuid.Value);
     }
     if (row->Family == AF_INET6) {
-      logger.debug() << "Interface" << row->InterfaceIndex << "is valid for IPv6 routing";
+      logger.debug() << "Interface" << row->InterfaceIndex
+                     << "is valid for IPv6 routing";
       m_validInterfacesIpv6.append(row->InterfaceLuid.Value);
     }
   }
