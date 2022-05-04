@@ -8,7 +8,7 @@ Window {
     width: 100
     height: 100
     visible: true
-    title: qsTr("Checking the graphical card")
+    title: "Mozilla VPN - Checking the graphical card"
 
     Rectangle {
         anchors.fill: parent
