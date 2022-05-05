@@ -90,19 +90,4 @@ Item {
             mainStackView.pop();
         }
     }
-
-    function clearViewStack() {
-        if (typeof(stackview) !== "undefined") {
-            stackview.pop();
-        }
-    }
-
-    Connections {
-        target: window
-
-        function onClearCurrentViewStack() {
-            menuBar.clearViewStack();
-        }
-    }
-
 }
