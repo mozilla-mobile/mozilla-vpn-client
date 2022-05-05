@@ -19,7 +19,9 @@ bool ItemPicker::eventFilter(QObject* obj, QEvent* event) {
 
   m_lastEvent = event;
 
-  if (event->type() != QEvent::MouseButtonPress) {
+  if (event->type() != QEvent::MouseButtonPress &&
+      event->type() != QEvent::MouseButtonDblClick &&
+      event->type() != QEvent::MouseButtonRelease) {
     return QObject::eventFilter(obj, event);
   }
 
@@ -35,7 +37,7 @@ bool ItemPicker::eventFilter(QObject* obj, QEvent* event) {
     return QObject::eventFilter(obj, event);
   }
 
-  QStringList list = pickItem(static_cast<QMouseEvent*>(event), item);
+  QList<QQuickItem*> list = pickItem(static_cast<QMouseEvent*>(event), item);
   if (itemPicked(list)) {
     event->setAccepted(true);
     return true;
@@ -44,11 +46,9 @@ bool ItemPicker::eventFilter(QObject* obj, QEvent* event) {
   return QObject::eventFilter(obj, event);
 }
 
-QStringList ItemPicker::pickItem(QMouseEvent* event, QQuickItem* item) {
-  QStringList list;
-  if (!item->objectName().isEmpty()) {
-    list.append(item->objectName());
-  }
+QList<QQuickItem*> ItemPicker::pickItem(QMouseEvent* event, QQuickItem* item) {
+  QList<QQuickItem*> list;
+  list.append(item);
 
   for (QQuickItem* child : item->childItems()) {
     if (!child->isVisible() || !child->isEnabled()) {

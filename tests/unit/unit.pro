@@ -81,6 +81,9 @@ HEADERS += \
     ../../src/models/surveymodel.h \
     ../../src/models/tutorial.h \
     ../../src/models/tutorialmodel.h \
+    ../../src/models/tutorialstep.h \
+    ../../src/models/tutorialstepbefore.h \
+    ../../src/models/tutorialstepnext.h \
     ../../src/models/user.h \
     ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
@@ -186,6 +189,9 @@ SOURCES += \
     ../../src/models/surveymodel.cpp \
     ../../src/models/tutorial.cpp \
     ../../src/models/tutorialmodel.cpp \
+    ../../src/models/tutorialstep.cpp \
+    ../../src/models/tutorialstepbefore.cpp \
+    ../../src/models/tutorialstepnext.cpp \
     ../../src/models/user.cpp \
     ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \

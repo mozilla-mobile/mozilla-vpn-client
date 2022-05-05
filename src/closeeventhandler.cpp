@@ -16,6 +16,38 @@ CloseEventHandler::CloseEventHandler() { MVPN_COUNT_CTOR(CloseEventHandler); }
 
 CloseEventHandler::~CloseEventHandler() { MVPN_COUNT_DTOR(CloseEventHandler); }
 
+void CloseEventHandler::removeAllStackViews() {
+  for (int i = m_layers.length() - 1; i >= 0; --i) {
+    const Layer& layer = m_layers.at(i);
+
+    if (layer.m_type == Layer::eStackView) {
+      QVariant property = layer.m_layer->property("depth");
+      if (!property.isValid()) {
+        logger.warning() << "Invalid depth property!!";
+        continue;
+      }
+
+      for (int depth = property.toInt(); depth > 1; --depth) {
+        emit goBack(layer.m_layer);
+      }
+
+      continue;
+    }
+
+    Q_ASSERT(layer.m_type == Layer::eView);
+    QVariant property = layer.m_layer->property("visible");
+    if (!property.isValid()) {
+      logger.warning() << "Invalid visible property!!";
+      continue;
+    }
+
+    bool visible = property.toBool();
+    if (visible) {
+      emit goBack(layer.m_layer);
+    }
+  }
+}
+
 bool CloseEventHandler::eventHandled() {
   logger.debug() << "Close event handled";
 
