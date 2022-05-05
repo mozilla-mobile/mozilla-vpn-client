@@ -60,8 +60,7 @@ Item {
 
                     onClicked: {
                        VPNTutorial.play(tutorial);
-                       stackview.pop();
-                       stackview.pop();
+                       VPNCloseEventHandler.removeAllStackViews();
                     }
                 }
             }
