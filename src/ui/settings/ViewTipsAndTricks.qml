@@ -43,18 +43,26 @@ Item {
                 Layout.fillWidth: true
                 spacing: VPNTheme.theme.vSpacingSmall
 
-                Repeater {
-                    model: 2
-                    delegate: VPNTutorialCard {
-                        width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
-                        height: 144
+                VPNTutorialCard {
+                    width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
+                    height: 144
 
-                        imageSrc: "qrc:/tutorials/privacy.svg"
-                        imageBgColor: VPNTheme.theme.ink
-                        cardTypeText: "Tutorial"
-                        title: "Getting started with VPN"
-                        description: "Follow this walkthrough to learn how to get started with using your VPN."
-                    }
+                    imageSrc: "qrc:/tutorials/01_get_started.svg"
+                    imageBgColor: VPNTheme.theme.ink
+                    cardTypeText: "Tutorial"
+                    title: "Getting started with VPN"
+                    description: "Follow this walkthrough to learn how to get started with using your VPN."
+                }
+
+                VPNTutorialCard {
+                    width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
+                    height: 144
+
+                    imageSrc: "qrc:/tutorials/01_get_started.svg"
+                    imageBgColor: VPNTheme.theme.ink
+                    cardTypeText: "Feature tour"
+                    title: "Getting started with VPN"
+                    description: "Follow this walkthrough to learn how to get started with using your VPN."
                 }
             }
 
@@ -106,7 +114,7 @@ Item {
                 Layout.preferredWidth: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
                 Layout.preferredHeight: 144
 
-                imageSrc: "qrc:/tutorials/privacy.svg"
+                imageSrc: "qrc:/tutorials/01_get_started.svg"
                 imageBgColor: VPNTheme.theme.ink
                 cardTypeText: "Tutorial"
                 title: "Getting started with VPN"
