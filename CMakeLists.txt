@@ -4,15 +4,16 @@
 
 cmake_minimum_required(VERSION 3.16)
 
+option(BUILD_DUMMY "Build for the dummy platform" OFF)
+
 project(mozillavpn VERSION 2.9.0 LANGUAGES C CXX
         DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
         HOMEPAGE_URL "https://vpn.mozilla.org"
 )
 
-## Ensure the build type is set
-## TODO: Support multi-generators like XCode and Visual Studio
 message("Configuring for ${CMAKE_GENERATOR}")
-if(NOT "${CMAKE_BUILD_TYPE}")
+if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES OR "${CMAKE_BUILD_TYPE}"))
+    ## Ensure the build type is set for single-config generators.
     set(CMAKE_BUILD_TYPE "Debug" CACHE PATH "default build type" FORCE)
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
