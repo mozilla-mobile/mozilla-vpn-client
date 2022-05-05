@@ -89,3 +89,42 @@ TutorialStepBefore::TutorialStepBefore(QObject* parent, Op op,
 TutorialStepBefore::~TutorialStepBefore() {
   MVPN_COUNT_DTOR(TutorialStepBefore);
 }
+
+bool TutorialStepBefore::run() {
+  switch (m_op) {
+    case PropertySet:
+      return runPropertySet();
+
+    case PropertyGet:
+      return runPropertyGet();
+
+    default:
+      Q_UNREACHABLE();
+  }
+}
+
+bool TutorialStepBefore::runPropertyGet() {
+  QObject* element = InspectorUtils::findObject(m_element);
+  if (!element) {
+    return false;
+  }
+
+  QVariant property = element->property(qPrintable(m_property));
+  if (!property.isValid()) {
+    logger.error() << "Invalid property" << m_property << " for element"
+                   << m_element;
+    return false;
+  }
+
+  return property == m_value;
+}
+
+bool TutorialStepBefore::runPropertySet() {
+  QObject* element = InspectorUtils::findObject(m_element);
+  if (!element) {
+    return false;
+  }
+
+  element->setProperty(qPrintable(m_property), m_value);
+  return true;
+}

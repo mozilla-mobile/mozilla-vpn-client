@@ -4,24 +4,19 @@
 
 #include "tutorial.h"
 #include "guide.h"
-#include "inspector/inspectorutils.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "tutorialmodel.h"
-#include "tutorialstepbefore.h"
-#include "tutorialstepnext.h"
+#include "tutorialstep.h"
 
 #include <QCoreApplication>
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QQuickItem>
 #include <QScopeGuard>
-
-constexpr int TIMEOUT_ITEM_TIMER_MSEC = 300;
 
 namespace {
 Logger logger(LOG_MAIN, "Tutorial");
@@ -29,9 +24,6 @@ Logger logger(LOG_MAIN, "Tutorial");
 
 Tutorial::Tutorial(QObject* parent) : ItemPicker(parent) {
   MVPN_COUNT_CTOR(Tutorial);
-
-  m_timer.setSingleShot(true);
-  connect(&m_timer, &QTimer::timeout, this, [this]() { processNextOp(); });
 }
 
 Tutorial::~Tutorial() { MVPN_COUNT_DTOR(Tutorial); }
@@ -115,45 +107,14 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
       return nullptr;
     }
 
-    QJsonObject stepObj = stepValue.toObject();
-
-    QString stepId = stepObj["id"].toString();
-    if (stepId.isEmpty()) {
-      logger.error() << "Empty ID step in tutorial file" << fileName;
+    TutorialStep* ts = TutorialStep::create(tutorial, tutorialId, stepValue);
+    if (!ts) {
+      logger.error() << "Unable to create a tutorial step for tutorial file"
+                     << fileName;
       return nullptr;
     }
 
-    stepId = Guide::pascalize(
-        QString("tutorial_%1_step_%2").arg(tutorialId).arg(stepId));
-    if (!l18nStrings->contains(stepId)) {
-      logger.error() << "No string ID found for the step of tutorial file"
-                     << fileName << "ID:" << stepId;
-      return nullptr;
-    }
-
-    QString element = stepObj["element"].toString();
-    if (element.isEmpty()) {
-      logger.error() << "Empty element for step in tutorial file" << fileName;
-      return nullptr;
-    }
-
-    QJsonObject conditions = stepObj["conditions"].toObject();
-
-    TutorialStepNext* tn = TutorialStepNext::create(tutorial, stepObj["next"]);
-    if (!tn) {
-      logger.error() << "Unable to parse the 'next' property" << fileName;
-      return nullptr;
-    }
-
-    // Even if there are no 'before' steps, we always have the visibility check.
-    QList<TutorialStepBefore*> tb =
-        TutorialStepBefore::create(tutorial, element, stepObj["before"]);
-    if (tb.isEmpty()) {
-      logger.error() << "Unable to parse the 'before' property" << fileName;
-      return nullptr;
-    }
-
-    tutorial->m_steps.append(Op{element, stepId, conditions, tb, tn});
+    tutorial->m_steps.append(ts);
   }
 
   if (tutorial->m_steps.isEmpty()) {
@@ -179,11 +140,8 @@ void Tutorial::stop() {
     return;
   }
 
-  m_timer.stop();
-
   if (m_currentStep < m_steps.length()) {
-    m_steps[m_currentStep].m_next->disconnect();
-    m_steps[m_currentStep].m_next->stop();
+    m_steps[m_currentStep]->stop();
   }
 
   qApp->removeEventFilter(this);
@@ -213,84 +171,19 @@ void Tutorial::processNextOp() {
   }
 
   Q_ASSERT(m_currentStep != -1 && m_currentStep < m_steps.length());
-  const Op& op = m_steps[m_currentStep];
-
-  if (!Guide::evaluateConditions(op.m_conditions)) {
-    logger.info()
-        << "Exclude the tutorial step because conditions do not match";
-    ++m_currentStep;
-    processNextOp();
-    return;
-  }
-
-  QObject* element = InspectorUtils::findObject(op.m_element);
-  if (!element) {
-    m_timer.start(TIMEOUT_ITEM_TIMER_MSEC);
-    return;
-  }
-
-  QQuickItem* item = qobject_cast<QQuickItem*>(element);
-  Q_ASSERT(item);
-
-  if (!item->isVisible()) {
-    m_timer.start(TIMEOUT_ITEM_TIMER_MSEC);
-    return;
-  }
-
-  // mapRectToScene/Item do not return the correct value. Let's compute the x/y
-  // values manually.
-
-  qreal x = item->x();
-  qreal y = item->y();
-  for (QQuickItem* parent = item->parentItem(); parent;
-       parent = parent->parentItem()) {
-    x += parent->x();
-    y += parent->y();
-  }
-
-  TutorialModel* tutorialModel = TutorialModel::instance();
-  Q_ASSERT(tutorialModel);
-
-  tutorialModel->requireTooltipShown(this, true);
-  tutorialModel->requireTooltipNeeded(
-      this, L18nStrings::instance()->value(op.m_stringId).toString(),
-      QRectF(x, y, item->width(), item->height()));
-
-  connect(op.m_next, &TutorialStepNext::completed, this, [this]() {
+  connect(m_steps[m_currentStep], &TutorialStep::completed, this, [this]() {
     Q_ASSERT(m_currentStep > -1 && m_currentStep < m_steps.length());
 
-    m_steps[m_currentStep].m_next->disconnect();
-    m_steps[m_currentStep].m_next->stop();
+    m_steps[m_currentStep]->stop();
 
     ++m_currentStep;
     processNextOp();
   });
 
-  op.m_next->start();
+  m_steps[m_currentStep]->start();
 }
 
 bool Tutorial::itemPicked(const QList<QQuickItem*>& list) {
   Q_ASSERT(m_currentStep != -1 && m_currentStep < m_steps.length());
-
-  const Op& op = m_steps[m_currentStep];
-  QObject* element = InspectorUtils::findObject(op.m_element);
-  if (element) {
-    QQuickItem* item = qobject_cast<QQuickItem*>(element);
-    Q_ASSERT(item);
-
-    if (list.contains(item)) {
-      return false;
-    }
-  }
-
-  for (QQuickItem* item : list) {
-    QString objectName = item->objectName();
-    if (objectName.isEmpty()) continue;
-
-    if (m_allowedItems.contains(objectName)) {
-      return false;
-    }
-  }
-
-  return true;
+  return m_steps[m_currentStep]->itemPicked(list);
 }

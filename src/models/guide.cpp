@@ -91,7 +91,8 @@ bool evaluateConditionsSettings(const QJsonArray& settings) {
 
       case QJsonValue::Double:
         if (valueA.type() != QVariant::Int &&
-            valueA.type() != QVariant::Double) {
+            valueA.type() != QVariant::Double &&
+            valueA.type() != QVariant::LongLong) {
           logger.info() << "Unable to compare the setting type. Int or double "
                            "expected for setting key"
                         << key;

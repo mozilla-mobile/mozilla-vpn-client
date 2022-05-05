@@ -87,6 +87,7 @@ SOURCES += \
         models/surveymodel.cpp \
         models/tutorial.cpp \
         models/tutorialmodel.cpp \
+        models/tutorialstep.cpp \
         models/tutorialstepbefore.cpp \
         models/tutorialstepnext.cpp \
         models/user.cpp \
@@ -239,9 +240,10 @@ HEADERS += \
         models/survey.h \
         models/surveymodel.h \
         models/tutorial.h \
-        models/tutorialbefore.h \
         models/tutorialmodel.h \
-        models/tutorialnext.h \
+        models/tutorialstep.h \
+        models/tutorialstepbefore.h \
+        models/tutorialstepnext.h \
         models/user.h \
         models/whatsnewmodel.h \
         mozillavpn.h \

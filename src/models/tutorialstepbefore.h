@@ -21,6 +21,8 @@ class TutorialStepBefore final : public QObject {
 
   ~TutorialStepBefore();
 
+  bool run();
+
  private:
   enum Op {
     PropertySet,
@@ -29,6 +31,9 @@ class TutorialStepBefore final : public QObject {
 
   TutorialStepBefore(QObject* parent, Op op, const QString& element,
                      const QString& property, const QVariant& value);
+
+  bool runPropertyGet();
+  bool runPropertySet();
 
  private:
   const Op m_op;

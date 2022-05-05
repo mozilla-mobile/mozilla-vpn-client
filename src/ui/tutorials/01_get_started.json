@@ -18,7 +18,7 @@
     {
       "id": "countryAU",
       "element": "serverCountryList/serverCountry-au",
-      "tooltip": "Select a different server location",
+      "tooltip": "Select a different country",
       "conditions": {
         "settings": [{
           "setting": "currentServer/countryCode",
@@ -41,7 +41,7 @@
     {
       "id": "countryAT",
       "element": "serverCountryList/serverCountry-at",
-      "tooltip": "Select a different server location",
+      "tooltip": "Select a different country",
       "conditions": {
         "settings": [{
           "setting": "currentServer/countryCode",

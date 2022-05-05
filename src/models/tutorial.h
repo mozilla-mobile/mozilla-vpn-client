@@ -7,11 +7,7 @@
 
 #include "itempicker.h"
 
-#include <QJsonObject>
-#include <QTimer>
-
-class TutorialStepBefore;
-class TutorialStepNext;
+class TutorialStep;
 
 class Tutorial final : public ItemPicker {
   Q_OBJECT
@@ -28,6 +24,8 @@ class Tutorial final : public ItemPicker {
   void play(const QStringList& allowedItems);
   void stop();
 
+  const QStringList& allowedItems() const { return m_allowedItems; }
+
  private:
   explicit Tutorial(QObject* parent);
 
@@ -39,24 +37,15 @@ class Tutorial final : public ItemPicker {
   bool maybeStop(bool completed = false);
 
  private:
-  int32_t m_currentStep = -1;
-
   QString m_titleId;
   QString m_subtitleId;
   QString m_completionMessageId;
   QString m_image;
 
-  struct Op {
-    QString m_element;
-    QString m_stringId;
-    QJsonObject m_conditions;
-    QList<TutorialStepBefore*> m_before;
-    TutorialStepNext* m_next;
-  };
-  QList<Op> m_steps;
+  QList<TutorialStep*> m_steps;
+  int32_t m_currentStep = -1;
 
   QStringList m_allowedItems;
-  QTimer m_timer;
 };
 
 #endif  // TUTORIAL_H
