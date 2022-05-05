@@ -79,13 +79,6 @@ bool evaluateConditionsSettings(const QJsonArray& settings) {
     QJsonValue valueB = obj["value"];
     switch (valueB.type()) {
       case QJsonValue::Bool:
-        if (valueA.type() != QVariant::Bool) {
-          logger.info() << "Unable to compare the setting type. Boolean "
-                           "expected for setting key"
-                        << key;
-          return false;
-        }
-
         if (!evaluateConditionsSettingsOp(op,
                                           valueA.toBool() == valueB.toBool())) {
           logger.info() << "Setting value doesn't match for key" << key;
@@ -95,15 +88,6 @@ bool evaluateConditionsSettings(const QJsonArray& settings) {
         break;
 
       case QJsonValue::Double:
-        if (valueA.type() != QVariant::Int &&
-            valueA.type() != QVariant::Double &&
-            valueA.type() != QVariant::LongLong) {
-          logger.info() << "Unable to compare the setting type. Int or double "
-                           "expected for setting key"
-                        << key;
-          return false;
-        }
-
         if (!evaluateConditionsSettingsOp(
                 op, valueA.toDouble() == valueB.toDouble())) {
           logger.info() << "Setting value doesn't match for key" << key;
@@ -114,13 +98,6 @@ bool evaluateConditionsSettings(const QJsonArray& settings) {
         break;
 
       case QJsonValue::String:
-        if (valueA.type() != QVariant::String) {
-          logger.info() << "Unable to compare the setting type. String "
-                           "expected for setting key"
-                        << key;
-          return false;
-        }
-
         if (!evaluateConditionsSettingsOp(
                 op, valueA.toString() == valueB.toString())) {
           logger.info() << "Setting value doesn't match for key" << key;

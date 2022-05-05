@@ -246,8 +246,8 @@ void TestGuide::conditions_data() {
     obj["settings"] = QJsonArray{settings};
     QTest::addRow("invalid settings") << obj << false << "" << QVariant();
 
-    QTest::addRow("invalid type settings - boolean")
-        << obj << false << "foo" << QVariant("wow");
+    QTest::addRow("string to boolean type settings - boolean")
+        << obj << true << "foo" << QVariant("wow");
 
     QTest::addRow("op=eq settings - boolean")
         << obj << true << "foo" << QVariant(true);
