@@ -33,19 +33,19 @@ QList<TutorialStepBefore*> TutorialStepBefore::create(
     } else if (opValue == "property_get") {
       op = PropertyGet;
     } else {
-      logger.error() << "Invalid 'before' operation:" << opValue;
+      logger.warning() << "Invalid 'before' operation:" << opValue;
       return QList<TutorialStepBefore*>();
     }
 
     QString element = obj["element"].toString();
     if (element.isEmpty()) {
-      logger.error() << "Empty element property for 'before' step";
+      logger.warning() << "Empty element property for 'before' step";
       return QList<TutorialStepBefore*>();
     }
 
     QString property = obj["property"].toString();
     if (property.isEmpty()) {
-      logger.error() << "Empty property property for 'before' step";
+      logger.warning() << "Empty property property for 'before' step";
       return QList<TutorialStepBefore*>();
     }
 
@@ -53,14 +53,14 @@ QList<TutorialStepBefore*> TutorialStepBefore::create(
     if (propertyValue.type() != QJsonValue::Bool &&
         propertyValue.type() != QJsonValue::String &&
         propertyValue.type() != QJsonValue::Double) {
-      logger.error() << "Only bool, string and numbers are supported for the "
-                        "'before' step value";
+      logger.warning() << "Only bool, string and numbers are supported for the "
+                          "'before' step value";
       return QList<TutorialStepBefore*>();
     }
 
     QVariant valueVariant = propertyValue.toVariant();
     if (!valueVariant.isValid()) {
-      logger.error() << "Invalid value for 'before' step";
+      logger.warning() << "Invalid value for 'before' step";
       return QList<TutorialStepBefore*>();
     }
 
@@ -111,8 +111,8 @@ bool TutorialStepBefore::runPropertyGet() {
 
   QVariant property = element->property(qPrintable(m_property));
   if (!property.isValid()) {
-    logger.error() << "Invalid property" << m_property << " for element"
-                   << m_element;
+    logger.warning() << "Invalid property" << m_property << " for element"
+                     << m_element;
     return false;
   }
 

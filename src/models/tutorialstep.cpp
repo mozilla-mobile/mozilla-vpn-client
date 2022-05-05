@@ -34,20 +34,20 @@ TutorialStep* TutorialStep::create(Tutorial* parent, const QString& tutorialId,
 
   QString stepId = obj["id"].toString();
   if (stepId.isEmpty()) {
-    logger.error() << "Empty ID step";
+    logger.warning() << "Empty ID step";
     return nullptr;
   }
 
   stepId = Guide::pascalize(
       QString("tutorial_%1_step_%2").arg(tutorialId).arg(stepId));
   if (!l18nStrings->contains(stepId)) {
-    logger.error() << "No string ID found for the tutorial step" << stepId;
+    logger.warning() << "No string ID found for the tutorial step" << stepId;
     return nullptr;
   }
 
   QString element = obj["element"].toString();
   if (element.isEmpty()) {
-    logger.error() << "Empty element for tutorial step" << stepId;
+    logger.warning() << "Empty element for tutorial step" << stepId;
     return nullptr;
   }
 
@@ -55,8 +55,8 @@ TutorialStep* TutorialStep::create(Tutorial* parent, const QString& tutorialId,
 
   TutorialStepNext* tn = TutorialStepNext::create(parent, obj["next"]);
   if (!tn) {
-    logger.error() << "Unable to parse the 'next' property for tutorial step"
-                   << stepId;
+    logger.warning() << "Unable to parse the 'next' property for tutorial step"
+                     << stepId;
     return nullptr;
   }
 
@@ -64,8 +64,8 @@ TutorialStep* TutorialStep::create(Tutorial* parent, const QString& tutorialId,
   QList<TutorialStepBefore*> tb =
       TutorialStepBefore::create(parent, element, obj["before"]);
   if (tb.isEmpty()) {
-    logger.error() << "Unable to parse the 'before' property for tutorial step"
-                   << stepId;
+    logger.warning()
+        << "Unable to parse the 'before' property for tutorial step" << stepId;
     return nullptr;
   }
 

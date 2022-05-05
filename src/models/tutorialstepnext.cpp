@@ -38,21 +38,21 @@ TutorialStepNext* TutorialStepNext::create(QObject* parent,
                                            const QJsonValue& json) {
   QJsonObject obj = json.toObject();
   if (obj["op"] != "signal") {
-    logger.error() << "Only 'signal' tutorial next are supported";
+    logger.warning() << "Only 'signal' tutorial next are supported";
     return nullptr;
   }
 
   QString qmlEmitter = obj["qml_emitter"].toString();
   QString vpnEmitter = obj["vpn_emitter"].toString();
   if ((qmlEmitter.isEmpty() ? 0 : 1) + (vpnEmitter.isEmpty() ? 0 : 1) != 1) {
-    logger.error()
+    logger.warning()
         << "Only 1 qml_emitter or 1 vpn_emitter. Not none, not both.";
     return nullptr;
   }
 
   QString signal = obj["signal"].toString();
   if (signal.isEmpty()) {
-    logger.error() << "No signal property";
+    logger.warning() << "No signal property";
     return nullptr;
   }
 
@@ -63,8 +63,9 @@ TutorialStepNext* TutorialStepNext::create(QObject* parent,
     } else if (vpnEmitter == "controller") {
       emitterType = Controller;
     } else {
-      logger.error() << "Only 'settingsHolder' and 'controller' are supported "
-                        "as vpn_emitter";
+      logger.warning()
+          << "Only 'settingsHolder' and 'controller' are supported "
+             "as vpn_emitter";
       return nullptr;
     }
   }
@@ -99,7 +100,7 @@ void TutorialStepNext::startOrStop(bool start) {
   }
 
   if (!obj) {
-    logger.error() << "Unable to find the correct object";
+    logger.warning() << "Unable to find the correct object";
     if (start) {
       emit completed();
     }
@@ -108,7 +109,7 @@ void TutorialStepNext::startOrStop(bool start) {
 
   QMetaMethod signalA = signalByName(obj->metaObject(), m_signal);
   if (!signalA.isValid()) {
-    logger.error() << "Unable to find the signal" << m_signal;
+    logger.warning() << "Unable to find the signal" << m_signal;
     if (start) {
       emit completed();
     }
