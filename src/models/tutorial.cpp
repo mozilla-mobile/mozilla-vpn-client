@@ -10,7 +10,8 @@
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "tutorialmodel.h"
-#include "tutorialnext.h"
+#include "tutorialstepbefore.h"
+#include "tutorialstepnext.h"
 
 #include <QCoreApplication>
 #include <QFile>
@@ -138,13 +139,21 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
 
     QJsonObject conditions = stepObj["conditions"].toObject();
 
-    TutorialNext* tn = TutorialNext::create(tutorial, stepObj["next"]);
+    TutorialStepNext* tn = TutorialStepNext::create(tutorial, stepObj["next"]);
     if (!tn) {
       logger.error() << "Unable to parse the 'next' property" << fileName;
       return nullptr;
     }
 
-    tutorial->m_steps.append(Op{element, stepId, conditions, tn});
+    // Even if there are no 'before' steps, we always have the visibility check.
+    QList<TutorialStepBefore*> tb =
+        TutorialStepBefore::create(tutorial, element, stepObj["before"]);
+    if (tb.isEmpty()) {
+      logger.error() << "Unable to parse the 'before' property" << fileName;
+      return nullptr;
+    }
+
+    tutorial->m_steps.append(Op{element, stepId, conditions, tb, tn});
   }
 
   if (tutorial->m_steps.isEmpty()) {
@@ -159,7 +168,6 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
 void Tutorial::play(const QStringList& allowedItems) {
   m_allowedItems = allowedItems;
   m_currentStep = 0;
-  m_elementPicked = false;
 
   qApp->installEventFilter(this);
 
@@ -180,7 +188,6 @@ void Tutorial::stop() {
 
   qApp->removeEventFilter(this);
   m_currentStep = -1;
-  m_elementPicked = false;
 }
 
 bool Tutorial::maybeStop(bool completed) {
@@ -249,13 +256,12 @@ void Tutorial::processNextOp() {
       this, L18nStrings::instance()->value(op.m_stringId).toString(),
       QRectF(x, y, item->width(), item->height()));
 
-  connect(op.m_next, &TutorialNext::completed, this, [this]() {
+  connect(op.m_next, &TutorialStepNext::completed, this, [this]() {
     Q_ASSERT(m_currentStep > -1 && m_currentStep < m_steps.length());
 
     m_steps[m_currentStep].m_next->disconnect();
     m_steps[m_currentStep].m_next->stop();
 
-    m_elementPicked = false;
     ++m_currentStep;
     processNextOp();
   });
@@ -273,7 +279,6 @@ bool Tutorial::itemPicked(const QList<QQuickItem*>& list) {
     Q_ASSERT(item);
 
     if (list.contains(item)) {
-      m_elementPicked = true;
       return false;
     }
   }

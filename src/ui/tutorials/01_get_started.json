@@ -26,6 +26,12 @@
           "op": "neq"
         }]
       },
+      "before": [{
+        "op": "property_set",
+        "element": "serverCountryView",
+        "property": "contentY",
+        "value": 0
+      }],
       "next": {
         "op": "signal",
         "qml_emitter": "serverCountryList/serverCountry-au",
@@ -43,6 +49,12 @@
           "op": "eq"
         }]
       },
+      "before": [{
+        "op": "property_set",
+        "element": "serverCountryView",
+        "property": "contentY",
+        "value": 0
+      }],
       "next": {
         "op": "signal",
         "qml_emitter": "serverCountryList/serverCountry-at",

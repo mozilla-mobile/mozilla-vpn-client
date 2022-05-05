@@ -10,7 +10,8 @@
 #include <QJsonObject>
 #include <QTimer>
 
-class TutorialNext;
+class TutorialStepBefore;
+class TutorialStepNext;
 
 class Tutorial final : public ItemPicker {
   Q_OBJECT
@@ -39,7 +40,6 @@ class Tutorial final : public ItemPicker {
 
  private:
   int32_t m_currentStep = -1;
-  bool m_elementPicked = false;
 
   QString m_titleId;
   QString m_subtitleId;
@@ -50,7 +50,8 @@ class Tutorial final : public ItemPicker {
     QString m_element;
     QString m_stringId;
     QJsonObject m_conditions;
-    TutorialNext* m_next;
+    QList<TutorialStepBefore*> m_before;
+    TutorialStepNext* m_next;
   };
   QList<Op> m_steps;
 

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "tutorialnext.h"
+#include "tutorialstepnext.h"
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -14,7 +14,7 @@
 #include <QMetaMethod>
 
 namespace {
-Logger logger(LOG_MAIN, "TutorialNext");
+Logger logger(LOG_MAIN, "TutorialStepNext");
 
 // We cannot use QMetaObject::indexOfSignal() because that wants the signal
 // signature (with params) and we do not have them.
@@ -34,7 +34,8 @@ QMetaMethod signalByName(const QMetaObject* metaObject, const QString& name) {
 }  // namespace
 
 // static
-TutorialNext* TutorialNext::create(QObject* parent, const QJsonValue& json) {
+TutorialStepNext* TutorialStepNext::create(QObject* parent,
+                                           const QJsonValue& json) {
   QJsonObject obj = json.toObject();
   if (obj["op"] != "signal") {
     logger.error() << "Only 'signal' tutorial next are supported";
@@ -68,21 +69,22 @@ TutorialNext* TutorialNext::create(QObject* parent, const QJsonValue& json) {
     }
   }
 
-  return new TutorialNext(parent, emitterType, qmlEmitter, signal);
+  return new TutorialStepNext(parent, emitterType, qmlEmitter, signal);
 }
 
-TutorialNext::TutorialNext(QObject* parent, EmitterType emitterType,
-                           const QString& emitter, const QString& signal)
+TutorialStepNext::TutorialStepNext(QObject* parent, EmitterType emitterType,
+                                   const QString& emitter,
+                                   const QString& signal)
     : QObject(parent),
       m_emitterType(emitterType),
       m_emitter(emitter),
       m_signal(signal) {
-  MVPN_COUNT_CTOR(TutorialNext);
+  MVPN_COUNT_CTOR(TutorialStepNext);
 }
 
-TutorialNext::~TutorialNext() { MVPN_COUNT_DTOR(TutorialNext); }
+TutorialStepNext::~TutorialStepNext() { MVPN_COUNT_DTOR(TutorialStepNext); }
 
-void TutorialNext::startOrStop(bool start) {
+void TutorialStepNext::startOrStop(bool start) {
   QObject* obj = nullptr;
   switch (m_emitterType) {
     case SettingsHolder:
@@ -123,6 +125,6 @@ void TutorialNext::startOrStop(bool start) {
   }
 }
 
-void TutorialNext::start() { startOrStop(true); }
+void TutorialStepNext::start() { startOrStop(true); }
 
-void TutorialNext::stop() { startOrStop(false); }
+void TutorialStepNext::stop() { startOrStop(false); }

@@ -2,20 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef TUTORIALNEXT_H
-#define TUTORIALNEXT_H
+#ifndef TUTORIALSTEPNEXT_H
+#define TUTORIALSTEPNEXT_H
 
 #include <QObject>
 
 class QJsonValue;
 
-class TutorialNext final : public QObject {
+class TutorialStepNext final : public QObject {
   Q_OBJECT
 
  public:
-  static TutorialNext* create(QObject* parent, const QJsonValue& json);
+  static TutorialStepNext* create(QObject* parent, const QJsonValue& json);
 
-  ~TutorialNext();
+  ~TutorialStepNext();
 
   void start();
   void stop();
@@ -27,8 +27,8 @@ class TutorialNext final : public QObject {
     SettingsHolder,
   };
 
-  TutorialNext(QObject* parent, EmitterType emitterType, const QString& emitter,
-               const QString& signal);
+  TutorialStepNext(QObject* parent, EmitterType emitterType,
+                   const QString& emitter, const QString& signal);
 
   void startOrStop(bool start);
 
@@ -41,4 +41,4 @@ class TutorialNext final : public QObject {
   const QString m_signal;
 };
 
-#endif  // TUTORIALNEXT_H
+#endif  // TUTORIALSTEPNEXT_H

@@ -66,6 +66,21 @@
             "type": "string",
             "description": "The message to show near the element"
           },
+          "before": {
+            "type": "array",
+            "description": "List of operations to run before showing the tooltip",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "op": {
+                  "type": "string",
+                  "description": "The operation type. Each 'op' value has its own properties"
+                }
+              },
+              "required": [ "op" ]
+            }
+          },
           "next": {
             "type": "object",
             "description": "How this step is considered as completed",
