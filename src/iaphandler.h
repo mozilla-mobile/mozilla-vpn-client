@@ -106,6 +106,7 @@ class IAPHandler : public QAbstractListModel {
 
   void addProduct(const QJsonValue& value);
   void computeSavings();
+  void sortPlans();
   static ProductType productTypeToEnum(const QString& type);
   static uint32_t productTypeToMonthCount(ProductType type);
   Product* findProduct(const QString& productIdentifier);

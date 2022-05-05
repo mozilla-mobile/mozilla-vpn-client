@@ -201,6 +201,7 @@ void IAPHandler::productsRegistrationCompleted() {
   logger.debug() << "All the products has been registered";
   beginResetModel();
   computeSavings();
+  sortPlans();
   m_productsRegistrationState = eRegistered;
   endResetModel();
   emit productsRegistered();
@@ -331,4 +332,11 @@ uint32_t IAPHandler::productTypeToMonthCount(ProductType type) {
       Q_ASSERT(false);
       return 1;
   }
+}
+
+void IAPHandler::sortPlans() {
+  std::sort(m_products.begin(), m_products.end(),
+            [](const Product& a, const Product& b) {
+              return a.m_trialDays > b.m_trialDays;
+            });
 }
