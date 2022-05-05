@@ -21,7 +21,7 @@ RadioDelegate {
     ButtonGroup.group: subscriptionOptions
 
     Layout.fillWidth: true
-    Layout.preferredHeight: 96
+    Layout.preferredHeight: chipFreeTrial.visible ? 96+headLineLabel.overflow : 96
 
     background: Rectangle {
         id: bg
@@ -140,6 +140,8 @@ RadioDelegate {
             Layout.fillHeight: true
 
             VPNBoldLabel {
+                id: headLineLabel
+                property var overflow: headLineLabel.height - headLineLabel.lineHeight
                 font.pixelSize: 16
                 lineHeight: VPNTheme.theme.labelLineHeight + 2
                 lineHeightMode: Text.FixedHeight
