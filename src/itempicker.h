@@ -18,12 +18,12 @@ class ItemPicker : public QObject {
 
  protected:
   // Return true if the event should be accepted and not propagated.
-  virtual bool itemPicked(const QStringList& list) = 0;
+  virtual bool itemPicked(const QList<QQuickItem*>& list) = 0;
 
  private:
   bool eventFilter(QObject* obj, QEvent* event) override;
 
-  QStringList pickItem(QMouseEvent* event, QQuickItem* item);
+  QList<QQuickItem*> pickItem(QMouseEvent* event, QQuickItem* item);
 
  private:
   QEvent* m_lastEvent = nullptr;

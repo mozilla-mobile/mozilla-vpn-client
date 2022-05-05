@@ -22,8 +22,9 @@ class TutorialNext final : public QObject {
 
  private:
   enum EmitterType {
-    SettingsHolder,
+    Controller,
     QML,
+    SettingsHolder,
   };
 
   TutorialNext(QObject* parent, EmitterType emitterType, const QString& emitter,

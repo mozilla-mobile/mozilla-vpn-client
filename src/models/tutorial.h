@@ -29,7 +29,7 @@ class Tutorial final : public ItemPicker {
  private:
   explicit Tutorial(QObject* parent);
 
-  bool itemPicked(const QStringList& list) override;
+  bool itemPicked(const QList<QQuickItem*>& list) override;
 
   void processNextOp();
 

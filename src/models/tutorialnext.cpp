@@ -6,6 +6,7 @@
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QJsonObject>
@@ -56,12 +57,15 @@ TutorialNext* TutorialNext::create(QObject* parent, const QJsonValue& json) {
 
   EmitterType emitterType = QML;
   if (!vpnEmitter.isEmpty()) {
-    if (vpnEmitter != "settingsHolder") {
-      logger.error() << "Only 'settingsHolder' is supported as vpn_emitter";
+    if (vpnEmitter == "settingsHolder") {
+      emitterType = SettingsHolder;
+    } else if (vpnEmitter == "controller") {
+      emitterType = Controller;
+    } else {
+      logger.error() << "Only 'settingsHolder' and 'controller' are supported "
+                        "as vpn_emitter";
       return nullptr;
     }
-
-    emitterType = SettingsHolder;
   }
 
   return new TutorialNext(parent, emitterType, qmlEmitter, signal);
@@ -83,6 +87,9 @@ void TutorialNext::startOrStop(bool start) {
   switch (m_emitterType) {
     case SettingsHolder:
       obj = ::SettingsHolder::instance();
+      break;
+    case Controller:
+      obj = MozillaVPN::instance()->controller();
       break;
     case QML:
       obj = InspectorUtils::findObject(m_emitter);

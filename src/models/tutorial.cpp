@@ -252,16 +252,26 @@ void Tutorial::processNextOp() {
   op.m_next->start();
 }
 
-bool Tutorial::itemPicked(const QStringList& list) {
+bool Tutorial::itemPicked(const QList<QQuickItem*>& list) {
   Q_ASSERT(m_currentStep != -1 && m_currentStep < m_steps.length());
 
-  if (list.contains(m_steps[m_currentStep].m_element)) {
-    m_elementPicked = true;
-    return false;
+  const Op& op = m_steps[m_currentStep];
+  QObject* element = InspectorUtils::findObject(op.m_element);
+  if (element) {
+    QQuickItem* item = qobject_cast<QQuickItem*>(element);
+    Q_ASSERT(item);
+
+    if (list.contains(item)) {
+      m_elementPicked = true;
+      return false;
+    }
   }
 
-  for (const QString& objectName : m_allowedItems) {
-    if (list.contains(objectName)) {
+  for (QQuickItem* item : list) {
+    QString objectName = item->objectName();
+    if (objectName.isEmpty()) continue;
+
+    if (m_allowedItems.contains(objectName)) {
       return false;
     }
   }

@@ -17,7 +17,17 @@
     },
     {
       "id": "s2",
-      "element": "b",
+      "element": "serverCountryList/serverCountry-au",
+      "tooltip": "Select a different server location",
+      "next": {
+        "op": "signal",
+        "qml_emitter": "serverCountryList/serverCountry-au",
+        "signal": "cityListVisibleChanged"
+      }
+    },
+    {
+      "id": "s3",
+      "element": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne",
       "tooltip": "Select a different server location",
       "next": {
         "op": "signal",
@@ -26,13 +36,13 @@
       }
     },
     {
-      "id": "s3",
+      "id": "s4",
       "element": "controllerToggle",
       "tooltip": "Toggle this switch to activate or deactivate the VPN",
       "next": {
         "op": "signal",
-        "qml_emitter": "serverListButton",
-        "signal": "visibleChanged"
+        "vpn_emitter": "controller",
+        "signal": "stateChanged"
       }
     }
   ]

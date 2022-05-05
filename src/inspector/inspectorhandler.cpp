@@ -1018,7 +1018,15 @@ QJsonObject InspectorHandler::serialize(QQuickItem* item) {
   return out;
 }
 
-void InspectorHandler::itemsPicked(const QStringList& objectNames) {
+void InspectorHandler::itemsPicked(const QList<QQuickItem*>& objects) {
+  QStringList objectNames;
+  for (QQuickItem* object : objects) {
+    QString objectName = object->objectName();
+    if (!objectName.isEmpty()) {
+      objectNames.append(objectName);
+    }
+  }
+
   s_pickedItems = objectNames;
   s_pickedItemsSet = true;
 
