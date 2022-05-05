@@ -35,4 +35,7 @@ StackView {
             }
         }
     }
+    function unwindToInitialItem() {
+        stackView.pop(stackView.find(stackView.get(1)), StackView.Immediate)
+    }
 }

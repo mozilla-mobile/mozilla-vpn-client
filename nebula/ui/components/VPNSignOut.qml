@@ -14,8 +14,6 @@ VPNFooterLink {
     linkColor: VPNTheme.theme.redButton
     onClicked: () => {
                    VPNController.logout();
-                   if (mainStackView.depth > 1) {
-                       mainStackView.pop(StackView.Immediate);
-                   }
+                   mainStackView.unwindToInitialItem();
                }
 }

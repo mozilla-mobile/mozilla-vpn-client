@@ -8,9 +8,9 @@ import QtQuick.Controls 2.14
 import components 0.1
 
 VPNStackView {
+    id: stackview
     objectName: "ViewMainStackView"
 
-    id: stackview
     Component.onCompleted: function(){
         stackview.push("qrc:/ui/views/ViewMain.qml")
     }
@@ -24,9 +24,7 @@ VPNStackView {
                 // User is already on server list view so we stay put
                 return;
             }
-            if (stackview.depth > 1) {
-                stackview.pop(stackview.get(1), StackView.Immediate);
-            }
+            stackview.unwindToInitialItem();
             stackview.push("qrc:/ui/views/ViewServers.qml", StackView.Immediate)
         }
     }

@@ -11,7 +11,7 @@ import components 0.1
 
 Item {
     objectName: "settings"
-    property var _unwindSettingsStackView: () => { settingsStackView.pop(settingsStackView.find((view) => { return view.objectName === "viewSettings" })) }
+    property var _unwindSettingsStackView: () => settingsStackView.unwindToInitialItem();
     VPNMenu {
         id: menu
         objectName: "settingsBackButton"

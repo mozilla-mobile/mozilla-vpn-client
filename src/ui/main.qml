@@ -524,7 +524,7 @@ Window {
             return;
         }
         if (mainStackView.depth > 1) {
-            mainStackView.pop(mainStackView.find(mainStackView.get(1)), StackView.Immediate);
+            mainStackView.unwindToInitialItem();
         }
         showServerList();
     }
