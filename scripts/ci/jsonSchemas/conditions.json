@@ -17,6 +17,29 @@
       "items": {
         "type": "string"
       }
+    },
+    "settings": {
+      "type": "array",
+      "description": "List of settings flags to match",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "A setting flag to match",
+        "properties": {
+          "setting": {
+            "type": "string",
+            "description": "The setting flag name"
+          },
+          "value": {
+            "description": "The setting flag value"
+          },
+          "op": {
+            "type": "string",
+            "description": "Operator: eq, neq"
+          }
+        },
+        "required": [ "setting", "value", "op" ]
+      }
     }
   }
 }

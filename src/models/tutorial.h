@@ -7,6 +7,7 @@
 
 #include "itempicker.h"
 
+#include <QJsonObject>
 #include <QTimer>
 
 class TutorialNext;
@@ -48,6 +49,7 @@ class Tutorial final : public ItemPicker {
   struct Op {
     QString m_element;
     QString m_stringId;
+    QJsonObject m_conditions;
     TutorialNext* m_next;
   };
   QList<Op> m_steps;

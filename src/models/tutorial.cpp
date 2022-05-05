@@ -54,7 +54,7 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
 
   QJsonObject conditions = obj["conditions"].toObject();
   if (!Guide::evaluateConditions(conditions)) {
-    logger.info() << "Exclude the guide because conditions do not match";
+    logger.info() << "Exclude the tutorial because conditions do not match";
     return nullptr;
   }
 
@@ -136,13 +136,15 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
       return nullptr;
     }
 
+    QJsonObject conditions = stepObj["conditions"].toObject();
+
     TutorialNext* tn = TutorialNext::create(tutorial, stepObj["next"]);
     if (!tn) {
       logger.error() << "Unable to parse the 'next' property" << fileName;
       return nullptr;
     }
 
-    tutorial->m_steps.append(Op{element, stepId, tn});
+    tutorial->m_steps.append(Op{element, stepId, conditions, tn});
   }
 
   if (tutorial->m_steps.isEmpty()) {
@@ -205,6 +207,15 @@ void Tutorial::processNextOp() {
 
   Q_ASSERT(m_currentStep != -1 && m_currentStep < m_steps.length());
   const Op& op = m_steps[m_currentStep];
+
+  if (!Guide::evaluateConditions(op.m_conditions)) {
+    logger.info()
+        << "Exclude the tutorial step because conditions do not match";
+    ++m_currentStep;
+    processNextOp();
+    return;
+  }
+
   QObject* element = InspectorUtils::findObject(op.m_element);
   if (!element) {
     m_timer.start(TIMEOUT_ITEM_TIMER_MSEC);

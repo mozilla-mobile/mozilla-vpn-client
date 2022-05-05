@@ -9,6 +9,7 @@
 #include "logger.h"
 #include "models/feature.h"
 #include "mozillavpn.h"
+#include "settingsholder.h"
 
 #include <QFile>
 #include <QJsonArray>
@@ -19,7 +20,119 @@
 namespace {
 Logger logger(LOG_MAIN, "Guide");
 
+bool evaluateConditionsEnabledFeatures(const QJsonArray& enabledFeatures) {
+  for (QJsonValue enabledFeature : enabledFeatures) {
+    // If the feature doesn't exist, we crash.
+    const Feature* feature = Feature::get(enabledFeature.toString());
+    Q_ASSERT(feature);
+
+    if (!feature->isSupported()) {
+      logger.info() << "Feature not supported";
+      return false;
+    }
+  }
+
+  return true;
 }
+
+bool evaluateConditionsPlatforms(const QJsonArray& platformArray) {
+  QStringList platforms;
+  for (QJsonValue platform : platformArray) {
+    platforms.append(platform.toString());
+  }
+
+  if (!platforms.isEmpty() &&
+      !platforms.contains(MozillaVPN::instance()->platform())) {
+    logger.info() << "Not supported platform";
+    return false;
+  }
+
+  return true;
+}
+
+bool evaluateConditionsSettingsOp(const QString& op, bool result) {
+  if (op == "eq") return result;
+
+  if (op == "neq") return !result;
+
+  logger.error() << "Invalid settings operator" << op;
+  return false;
+}
+
+bool evaluateConditionsSettings(const QJsonArray& settings) {
+  for (QJsonValue setting : settings) {
+    QJsonObject obj = setting.toObject();
+
+    QString op = obj["op"].toString();
+    QString key = obj["setting"].toString();
+    QVariant valueA = SettingsHolder::instance()->rawSetting(key);
+    if (!valueA.isValid()) {
+      logger.info() << "Unable to retrieve setting key" << key;
+      return false;
+    }
+
+    QJsonValue valueB = obj["value"];
+    switch (valueB.type()) {
+      case QJsonValue::Bool:
+        if (valueA.type() != QVariant::Bool) {
+          logger.info() << "Unable to compare the setting type. Boolean "
+                           "expected for setting key"
+                        << key;
+          return false;
+        }
+
+        if (!evaluateConditionsSettingsOp(op,
+                                          valueA.toBool() == valueB.toBool())) {
+          logger.info() << "Setting value doesn't match for key" << key;
+          return false;
+        }
+
+        break;
+
+      case QJsonValue::Double:
+        if (valueA.type() != QVariant::Int &&
+            valueA.type() != QVariant::Double) {
+          logger.info() << "Unable to compare the setting type. Int or double "
+                           "expected for setting key"
+                        << key;
+          return false;
+        }
+
+        if (!evaluateConditionsSettingsOp(
+                op, valueA.toDouble() == valueB.toDouble())) {
+          logger.info() << "Setting value doesn't match for key" << key;
+          return false;
+        }
+
+        break;
+        break;
+
+      case QJsonValue::String:
+        if (valueA.type() != QVariant::String) {
+          logger.info() << "Unable to compare the setting type. String "
+                           "expected for setting key"
+                        << key;
+          return false;
+        }
+
+        if (!evaluateConditionsSettingsOp(
+                op, valueA.toString() == valueB.toString())) {
+          logger.info() << "Setting value doesn't match for key" << key;
+          return false;
+        }
+
+        break;
+
+      default:
+        logger.error() << "Unsupporte setting value type for key" << key;
+        return false;
+    }
+  }
+
+  return true;
+}
+
+}  // namespace
 
 Guide::Guide(QObject* parent) : QObject(parent) { MVPN_COUNT_CTOR(Guide); }
 
@@ -114,7 +227,6 @@ QString Guide::pascalize(const QString& input) {
   for (QString chunk : input.split("_")) {
     if (chunk.isEmpty()) continue;
 
-    chunk = chunk.toLower();
     chunk[0] = chunk[0].toUpper();
     output.append(chunk);
   }
@@ -124,25 +236,16 @@ QString Guide::pascalize(const QString& input) {
 
 // static
 bool Guide::evaluateConditions(const QJsonObject& conditions) {
-  for (QJsonValue enabledFeature : conditions["enabledFeatures"].toArray()) {
-    // If the feature doesn't exist, we crash.
-    const Feature* feature = Feature::get(enabledFeature.toString());
-    Q_ASSERT(feature);
-
-    if (!feature->isSupported()) {
-      logger.info() << "Feature not supported";
-      return false;
-    }
+  if (!evaluateConditionsEnabledFeatures(
+          conditions["enabledFeatures"].toArray())) {
+    return false;
   }
 
-  QStringList platforms;
-  for (QJsonValue platform : conditions["platforms"].toArray()) {
-    platforms.append(platform.toString());
+  if (!evaluateConditionsPlatforms(conditions["platforms"].toArray())) {
+    return false;
   }
 
-  if (!platforms.isEmpty() &&
-      !platforms.contains(MozillaVPN::instance()->platform())) {
-    logger.info() << "Not supported platform";
+  if (!evaluateConditionsSettings(conditions["settings"].toArray())) {
     return false;
   }
 

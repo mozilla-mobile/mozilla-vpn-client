@@ -76,14 +76,6 @@ SETTING_STRING(currentServerCity,     // getter
                true                   // remove when reset
 )
 
-SETTING_STRING(currentServerCountry,     // getter
-               setCurrentServerCountry,  // setter
-               hasCurrentServerCountry,  // has
-               "currentServer/country",  // key
-               "",                       // default value
-               true                      // remove when reset
-)
-
 SETTING_STRING(currentServerCountryCode,     // getter
                setCurrentServerCountryCode,  // setter
                hasCurrentServerCountryCode,  // has

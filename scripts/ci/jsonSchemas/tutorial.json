@@ -59,6 +59,9 @@
             "type": "string",
             "description": "The objectName to highlight"
           },
+          "conditions": {
+            "$ref": "conditions.json#"
+          },
           "tooltip": {
             "type": "string",
             "description": "The message to show near the element"

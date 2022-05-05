@@ -13,7 +13,8 @@
       "comment": "This is a comment for a step",
       "element": "a",
       "tooltip": "wow",
-      "next": { "op": "signal", "qml_emitter": "foo", "signal": "a" }
+      "next": { "op": "signal", "qml_emitter": "foo", "signal": "a" },
+      "conditions": { "platforms": ["foo"] }
     },
     {
       "id": "s2",
