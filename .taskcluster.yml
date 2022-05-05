@@ -7,10 +7,6 @@ policy:
 tasks:
     - $let:
         trustDomain: mozillavpn
-        # TODO: Land patch from taskgraph-try upstream
-        taskgraph:
-              branch: taskgraph-try
-              revision: 7702e79b350c15eec769dcf4aa6374197974b01f
         # Github events have this stuff in different places...
         ownerEmail:
             $if: 'tasks_for in ["cron", "action"]'
@@ -206,7 +202,8 @@ tasks:
                         # run-task uses these to check out the source; the inputs
                         # to `mach taskgraph decision` are all on the command line.
                         $merge:
-                            - MOZILLAVPN_BASE_REPOSITORY: '${baseRepoUrl}'
+                            - PIP_DISABLE_REQUIRE_HASHES: 1
+                              MOZILLAVPN_BASE_REPOSITORY: '${baseRepoUrl}'
                               MOZILLAVPN_HEAD_REPOSITORY: '${repoUrl}'
                               MOZILLAVPN_HEAD_REF: '${head_branch}'
                               MOZILLAVPN_HEAD_REV: '${head_sha}'
@@ -233,7 +230,7 @@ tasks:
 
                     # Note: This task is built server side without the context or tooling that
                     # exist in tree so we must hard code the hash
-                    image: mozillareleases/taskgraph:decision-cf4b4b4baff57d84c1f9ec8fcd70c9839b70a7d66e6430a6c41ffe67252faa19@sha256:425e07f6813804483bc5a7258288a7684d182617ceeaa0176901ccc7702dfe28
+                    image: mozillareleases/taskgraph:decision-00097c511f412908eecd9903cbfe001d2bedd5a8df55a27982cdbb5526277f72@sha256:832136335f99cfab281fab0d69d8b62bdf6a6ee8301c8067e6183dfe457a6b19
 
                     maxRunTime: 1800
 
