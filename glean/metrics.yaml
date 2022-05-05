@@ -855,3 +855,26 @@ sample:
           "main", "subscription-needed", etc. The list can be found in
           `mozillavpn.h`.
         type: string
+
+  controller_step:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The controller state flow (off, connecting, switching, etc).
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3449
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1767028
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      state:
+        description: |
+          The name of the controller state, e.g. "off", "connecting",
+          "switching", etc. The list can be found in `controller.h`.
+        type: string
