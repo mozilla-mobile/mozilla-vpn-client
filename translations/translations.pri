@@ -9,6 +9,9 @@ exists($$PWD/generated/translations.qrc) {
 } else {
     error("No translations.qrc! Have you imported the languages?")
 }
+macos {
+   include($$PWD/generated/macos.pri)
+}
 
 INCLUDEPATH += $$PWD/generated
 RESOURCES += $$PWD/servers.qrc
