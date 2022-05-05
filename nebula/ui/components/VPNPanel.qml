@@ -37,7 +37,6 @@ Item {
             Image {
                 id: logo
 
-                visible: typeof(_settingsView) === "undefined"
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: logoWrapper.bottom
                 verticalAlignment: Image.AlignBottom
@@ -45,14 +44,6 @@ Item {
                 sourceSize.height: logoSize
                 sourceSize.width: logoSize
                 fillMode: Image.PreserveAspectFit
-            }
-
-            VPNAvatar {
-                id: avatar
-
-                visible: !(typeof(_settingsView) === "undefined")
-                avatarUrl: logo.source
-                anchors.fill: logoWrapper
             }
         }
 
@@ -64,7 +55,7 @@ Item {
             Layout.topMargin: 24
             // In Settings, the headline wrapMode is set to 'WrapAtWordBoundaryOrAnywhere' to
             // prevent very long, unbroken display names from throwing the layout
-            wrapMode: typeof(_settingsView) === "undefined" ? Text.WordWrap : Text.WrapAtWordBoundaryOrAnywhere
+            wrapMode: Text.WordWrap
         }
 
         VPNSubtitle {
