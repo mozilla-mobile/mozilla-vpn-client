@@ -13,6 +13,7 @@ import components.forms 0.1
 
 Item {
     id: root
+    objectName: "viewServers"
 
 
     VPNMenu {
