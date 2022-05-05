@@ -12,17 +12,19 @@ Item {
     id: root
 
     property string _menuTitle: VPNl18n.SettingsTipsAndTricks
+    readonly property int tabletSize: 600 //Tablets get a different layout (2 columns for tutorials, 3 columns for guides)
 
     objectName: "settingsTipsAndTricks"
 
     VPNFlickable {
         id: vpnFlickable
 
+        property int screenWidth: width
+
         anchors.fill: parent
         anchors.topMargin: VPNTheme.theme.menuHeight
-        anchors.bottomMargin: 1
 
-        flickContentHeight: layout.implicitHeight //parent.height - VPNTheme.theme.menuHeight
+        flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
         interactive: flickContentHeight > height
 
         ColumnLayout {
@@ -34,6 +36,87 @@ Item {
             anchors.topMargin: VPNTheme.theme.vSpacing
             anchors.leftMargin: VPNTheme.theme.windowMargin
             anchors.rightMargin: VPNTheme.theme.windowMargin
+
+            spacing: 0
+
+            Flow {
+                Layout.fillWidth: true
+                spacing: VPNTheme.theme.vSpacingSmall
+
+                Repeater {
+                    model: 2
+                    delegate: VPNTutorialCard {
+                        width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
+                        height: 144
+
+                        imageSrc: "qrc:/tutorials/privacy.svg"
+                        imageBgColor: VPNTheme.theme.ink
+                        cardTypeText: "Tutorial"
+                        title: "Getting started with VPN"
+                        description: "Follow this walkthrough to learn how to get started with using your VPN."
+                    }
+                }
+            }
+
+
+            VPNBoldLabel {
+                Layout.topMargin: 32
+                Layout.fillWidth: true
+
+                text: "Quick tips" //ML TODO: REPLACE WITH L10N
+                elide: Text.ElideRight
+                lineHeightMode: Text.FixedHeight
+                lineHeight: 24
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                maximumLineCount: 2
+                wrapMode: Text.WordWrap
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
+            }
+
+            VPNTextBlock {
+                Layout.topMargin: 4
+                Layout.fillWidth: true
+
+                text: "Let us help you get the most out of Mozilla VPN" //ML TODO: REPLACE WITH L10N
+            }
+
+
+            Flow {
+                Layout.topMargin: VPNTheme.theme.vSpacingSmall
+                Layout.fillWidth: true
+                spacing: 16
+
+                Repeater {
+                    model: VPNGuide
+                    delegate: VPNGuideCard {
+                        height: 172
+                        width: vpnFlickable.screenWidth < root.tabletSize ? (parent.width - parent.spacing) / 2 : (parent.width - (parent.spacing * 2)) / 3
+
+                        imageSrc: guide.image
+                        title: VPNl18n[guide.titleId]
+                    }
+                }
+            }
+
+            VPNTutorialCard {
+                Layout.topMargin: 32
+                Layout.preferredWidth: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
+                Layout.preferredHeight: 144
+
+                imageSrc: "qrc:/tutorials/privacy.svg"
+                imageBgColor: VPNTheme.theme.ink
+                cardTypeText: "Tutorial"
+                title: "Getting started with VPN"
+                description: "Follow this walkthrough to learn how to get started with using your VPN."
+            }
+
+            //padding for the bottom of the flickable
+            Item {
+                Layout.preferredHeight: 66
+            }
         }
     }
 }

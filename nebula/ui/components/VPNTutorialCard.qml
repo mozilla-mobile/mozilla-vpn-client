@@ -74,17 +74,23 @@ VPNCard {
                 Accessible.name: text
             }
 
-            VPNMetropolisLabel {
+
+            VPNBoldLabel {
                 id: titleText
 
                 Layout.topMargin: VPNTheme.theme.listSpacing
                 Layout.fillWidth: true
 
-                font.family: VPNTheme.theme.fontBoldFamily
+                elide: Text.ElideRight
+                lineHeightMode: Text.FixedHeight
                 lineHeight: 24
-                color: VPNTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
                 maximumLineCount: 2
+                wrapMode: Text.WordWrap
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
 
             Text {

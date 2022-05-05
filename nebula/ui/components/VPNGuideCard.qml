@@ -14,6 +14,7 @@ VPNCard {
     property alias title: textTitle.text
 
     ColumnLayout {
+        id: layout
         anchors.fill: parent
 
         spacing: 8
@@ -38,9 +39,12 @@ VPNCard {
             Image {
                 id: heroImage
 
-                anchors.centerIn: parent
-                sourceSize.height: 76
-                sourceSize.width: 152
+                anchors.fill: parent
+                anchors.topMargin: 14
+                anchors.leftMargin: 5.75
+                anchors.rightMargin: 5.75
+                anchors.bottomMargin: 14
+                fillMode: Image.PreserveAspectFit
             }
         }
 

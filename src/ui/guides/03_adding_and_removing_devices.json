@@ -2,7 +2,7 @@
   "id": "adding_and_removing_devices",
   "title": "How do I add and remove devices?",
   "subtitle": "Follow this quick and simple 3 step guide to add and remove all of your devices easily.",
-  "image": "qrc:/guides/003_adding_and_removing_devices.svg",
+  "image": "qrc:/guides/03_adding_and_removing_devices.svg",
   "blocks": [
     { "id": "c_1",
       "type": "title",
