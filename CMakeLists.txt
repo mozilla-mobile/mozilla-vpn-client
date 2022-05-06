@@ -21,7 +21,9 @@ endif()
 ## Toolchain Setup
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-cmake_policy(SET CMP0099 OLD)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.17)
+    cmake_policy(SET CMP0099 OLD)
+endif()
 
 if(MSVC)
     include(src/cmake/msvc.cmake)
