@@ -10,7 +10,6 @@
 #include "windowsfirewall.h"
 #include "wgquickprocess.h"
 
-#include <QScopeGuard>
 #include <QFileInfo>
 
 #include <winsock2.h>

@@ -17,7 +17,6 @@
 #include <QJsonValue>
 #include <QLocalSocket>
 #include <QNetworkInterface>
-#include <QScopeGuard>
 #include <QTextStream>
 #include <QtGlobal>
 
