@@ -8,188 +8,87 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # VPN Client source files
 target_sources(mozillavpn PRIVATE
-    apppermission.cpp
-    authenticationlistener.cpp
-    authenticationinapp/authenticationinapp.cpp
-    authenticationinapp/authenticationinapplistener.cpp
-    authenticationinapp/authenticationinappsession.cpp
-    authenticationinapp/incrementaldecoder.cpp
-    captiveportal/captiveportal.cpp
-    captiveportal/captiveportaldetection.cpp
-    captiveportal/captiveportaldetectionimpl.cpp
-    captiveportal/captiveportalmonitor.cpp
-    captiveportal/captiveportalnotifier.cpp
-    captiveportal/captiveportalrequest.cpp
-    captiveportal/captiveportalrequesttask.cpp
-    closeeventhandler.cpp
-    collator.cpp
-    command.cpp
-    commandlineparser.cpp
-    commands/commandactivate.cpp
-    commands/commanddeactivate.cpp
-    commands/commanddevice.cpp
-    commands/commandlogin.cpp
-    commands/commandlogout.cpp
-    commands/commandselect.cpp
-    commands/commandservers.cpp
-    commands/commandstatus.cpp
-    commands/commandui.cpp
-    connectionbenchmark/benchmarktask.cpp
-    connectionbenchmark/benchmarktaskdownload.cpp
-    connectionbenchmark/benchmarktaskping.cpp
-    connectionbenchmark/connectionbenchmark.cpp
-    connectionhealth.cpp
-    constants.cpp
-    controller.cpp
-    cryptosettings.cpp
-    curve25519.cpp
-    dnshelper.cpp
-    dnspingsender.cpp
-    errorhandler.cpp
-    featurelist.cpp
-    filterproxymodel.cpp
-    fontloader.cpp
-    hacl-star/Hacl_Chacha20.c
-    hacl-star/Hacl_Chacha20Poly1305_32.c
-    hacl-star/Hacl_Curve25519_51.c
-    hacl-star/Hacl_Poly1305_32.c
-    hawkauth.cpp
-    hkdf.cpp
-    iaphandler.cpp
-    imageproviderfactory.cpp
-    inspector/inspectorhandler.cpp
-    inspector/inspectoritempicker.cpp
-    inspector/inspectorutils.cpp
-    inspector/inspectorwebsocketconnection.cpp
-    inspector/inspectorwebsocketserver.cpp
-    ipaddress.cpp
-    ipaddresslookup.cpp
-    itempicker.cpp
-    leakdetector.cpp
-    localizer.cpp
-    logger.cpp
-    loghandler.cpp
-    logoutobserver.cpp
-    main.cpp
-    models/device.cpp
-    models/devicemodel.cpp
-    models/feature.cpp
-    models/feedbackcategorymodel.cpp
-    models/guide.cpp
-    models/guideblock.cpp
-    models/guidemodel.cpp
-    models/helpmodel.cpp
-    models/keys.cpp
-    models/licensemodel.cpp
-    models/server.cpp
-    models/servercity.cpp
-    models/servercountry.cpp
-    models/servercountrymodel.cpp
-    models/serverdata.cpp
-    models/supportcategorymodel.cpp
-    models/survey.cpp
-    models/surveymodel.cpp
-    models/tutorial.cpp
-    models/tutorialstep.cpp
-    models/tutorialstepbefore.cpp
-    models/tutorialstepnext.cpp
-    models/tutorialmodel.cpp
-    models/user.cpp
-    models/whatsnewmodel.cpp
-    mozillavpn.cpp
-    networkmanager.cpp
-    networkrequest.cpp
-    networkwatcher.cpp
-    notificationhandler.cpp
-    pinghelper.cpp
-    pingsender.cpp
-    pingsenderfactory.cpp
-    platforms/dummy/dummyapplistprovider.cpp
-    platforms/dummy/dummyiaphandler.cpp
-    platforms/dummy/dummynetworkwatcher.cpp
-    platforms/dummy/dummypingsender.cpp
-    qmlengineholder.cpp
-    releasemonitor.cpp
-    rfc/rfc1112.cpp
-    rfc/rfc1918.cpp
-    rfc/rfc4193.cpp
-    rfc/rfc4291.cpp
-    rfc/rfc5735.cpp
-    serveri18n.cpp
-    settingsholder.cpp
-    simplenetworkmanager.cpp
-    statusicon.cpp
-    tasks/account/taskaccount.cpp
-    tasks/adddevice/taskadddevice.cpp
-    tasks/authenticate/taskauthenticate.cpp
-    tasks/captiveportallookup/taskcaptiveportallookup.cpp
-    tasks/deleteaccount/taskdeleteaccount.cpp
-    tasks/getfeaturelist/taskgetfeaturelist.cpp
-    tasks/controlleraction/taskcontrolleraction.cpp
-    tasks/createsupportticket/taskcreatesupportticket.cpp
-    tasks/function/taskfunction.cpp
-    tasks/group/taskgroup.cpp
-    tasks/heartbeat/taskheartbeat.cpp
-    tasks/ipfinder/taskipfinder.cpp
-    tasks/products/taskproducts.cpp
-    tasks/release/taskrelease.cpp
-    tasks/removedevice/taskremovedevice.cpp
-    tasks/sendfeedback/tasksendfeedback.cpp
-    tasks/servers/taskservers.cpp
-    tasks/surveydata/tasksurveydata.cpp
-    taskscheduler.cpp
-    telemetry.cpp
-    theme.cpp
-    timersingleshot.cpp
-    update/updater.cpp
-    update/versionapi.cpp
-    urlopener.cpp
-)
-
-# VPN Client header files
-target_sources(mozillavpn PRIVATE
     appimageprovider.h
-    apppermission.h
     applistprovider.h
+    apppermission.cpp
+    apppermission.h
+    authenticationlistener.cpp
     authenticationlistener.h
+    authenticationinapp/authenticationinapp.cpp
     authenticationinapp/authenticationinapp.h
+    authenticationinapp/authenticationinapplistener.cpp
     authenticationinapp/authenticationinapplistener.h
+    authenticationinapp/authenticationinappsession.cpp
     authenticationinapp/authenticationinappsession.h
+    authenticationinapp/incrementaldecoder.cpp
     authenticationinapp/incrementaldecoder.h
+    captiveportal/captiveportal.cpp
     captiveportal/captiveportal.h
+    captiveportal/captiveportaldetection.cpp
     captiveportal/captiveportaldetection.h
+    captiveportal/captiveportaldetectionimpl.cpp
     captiveportal/captiveportaldetectionimpl.h
+    captiveportal/captiveportalmonitor.cpp
     captiveportal/captiveportalmonitor.h
+    captiveportal/captiveportalnotifier.cpp
     captiveportal/captiveportalnotifier.h
+    captiveportal/captiveportalrequest.cpp
     captiveportal/captiveportalrequest.h
+    captiveportal/captiveportalrequesttask.cpp
     captiveportal/captiveportalrequesttask.h
+    closeeventhandler.cpp
     closeeventhandler.h
+    collator.cpp
     collator.h
+    command.cpp
     command.h
+    commandlineparser.cpp
     commandlineparser.h
+    commands/commandactivate.cpp
     commands/commandactivate.h
+    commands/commanddeactivate.cpp
     commands/commanddeactivate.h
+    commands/commanddevice.cpp
     commands/commanddevice.h
+    commands/commandlogin.cpp
     commands/commandlogin.h
+    commands/commandlogout.cpp
     commands/commandlogout.h
+    commands/commandselect.cpp
     commands/commandselect.h
+    commands/commandservers.cpp
     commands/commandservers.h
+    commands/commandstatus.cpp
     commands/commandstatus.h
+    commands/commandui.cpp
     commands/commandui.h
+    connectionbenchmark/benchmarktask.cpp
     connectionbenchmark/benchmarktask.h
+    connectionbenchmark/benchmarktaskdownload.cpp
     connectionbenchmark/benchmarktaskdownload.h
+    connectionbenchmark/benchmarktaskping.cpp
     connectionbenchmark/benchmarktaskping.h
     connectionbenchmark/benchmarktasksentinel.h
+    connectionbenchmark/connectionbenchmark.cpp
     connectionbenchmark/connectionbenchmark.h
+    connectionhealth.cpp
     connectionhealth.h
+    constants.cpp
     constants.h
+    controller.cpp
     controller.h
     controllerimpl.h
+    cryptosettings.cpp
     cryptosettings.h
+    curve25519.cpp
     curve25519.h
+    dnshelper.cpp
     dnshelper.h
+    dnspingsender.cpp
     dnspingsender.h
+    errorhandler.cpp
     errorhandler.h
+    featurelist.cpp
     featurelist.h
     features/featureaccountdeletion.h
     features/featureappreview.h
@@ -208,99 +107,196 @@ target_sources(mozillavpn PRIVATE
     features/featurestartonboot.h
     features/featureunsecurednetworknotification.h
     features/featureserverunavailablenotification.h
+    filterproxymodel.cpp
     filterproxymodel.h
+    fontloader.cpp
     fontloader.h
+    hacl-star/Hacl_Chacha20.c
+    hacl-star/Hacl_Chacha20Poly1305_32.c
+    hacl-star/Hacl_Curve25519_51.c
+    hacl-star/Hacl_Poly1305_32.c
+    hawkauth.cpp
     hawkauth.h
+    hkdf.cpp
     hkdf.h
+    iaphandler.cpp
     iaphandler.h
+    imageproviderfactory.cpp
     imageproviderfactory.h
+    inspector/inspectorhandler.cpp
     inspector/inspectorhandler.h
+    inspector/inspectoritempicker.cpp
     inspector/inspectoritempicker.h
+    inspector/inspectorutils.cpp
     inspector/inspectorutils.h
+    inspector/inspectorwebsocketconnection.cpp
     inspector/inspectorwebsocketconnection.h
+    inspector/inspectorwebsocketserver.cpp
     inspector/inspectorwebsocketserver.h
+    ipaddress.cpp
     ipaddress.h
+    ipaddresslookup.cpp
     ipaddresslookup.h
+    itempicker.cpp
     itempicker.h
+    leakdetector.cpp
     leakdetector.h
+    localizer.cpp
     localizer.h
+    logger.cpp
     logger.h
+    loghandler.cpp
     loghandler.h
+    logoutobserver.cpp
     logoutobserver.h
+    main.cpp
+    models/device.cpp
     models/device.h
+    models/devicemodel.cpp
     models/devicemodel.h
+    models/feature.cpp
     models/feature.h
+    models/feedbackcategorymodel.cpp
     models/feedbackcategorymodel.h
+    models/guide.cpp
     models/guide.h
+    models/guideblock.cpp
     models/guideblock.h
+    models/guidemodel.cpp
     models/guidemodel.h
+    models/helpmodel.cpp
     models/helpmodel.h
+    models/keys.cpp
     models/keys.h
+    models/licensemodel.cpp
     models/licensemodel.h
+    models/server.cpp
     models/server.h
+    models/servercity.cpp
     models/servercity.h
+    models/servercountry.cpp
     models/servercountry.h
+    models/servercountrymodel.cpp
     models/servercountrymodel.h
+    models/serverdata.cpp
     models/serverdata.h
+    models/supportcategorymodel.cpp
     models/supportcategorymodel.h
+    models/survey.cpp
     models/survey.h
+    models/surveymodel.cpp
     models/surveymodel.h
+    models/tutorial.cpp
     models/tutorial.h
+    models/tutorialstep.cpp
     models/tutorialstep.h
+    models/tutorialstepbefore.cpp
     models/tutorialstepbefore.h
+    models/tutorialstepnext.cpp
     models/tutorialstepnext.h
+    models/tutorialmodel.cpp
     models/tutorialmodel.h
+    models/user.cpp
     models/user.h
+    models/whatsnewmodel.cpp
     models/whatsnewmodel.h
+    mozillavpn.cpp
     mozillavpn.h
+    networkmanager.cpp
     networkmanager.h
+    networkrequest.cpp
     networkrequest.h
+    networkwatcher.cpp
     networkwatcher.h
     networkwatcherimpl.h
+    notificationhandler.cpp
     notificationhandler.h
+    pinghelper.cpp
     pinghelper.h
+    pingsender.cpp
     pingsender.h
+    pingsenderfactory.cpp
     pingsenderfactory.h
+    platforms/dummy/dummyapplistprovider.cpp
     platforms/dummy/dummyapplistprovider.h
+    platforms/dummy/dummyiaphandler.cpp
     platforms/dummy/dummyiaphandler.h
+    platforms/dummy/dummynetworkwatcher.cpp
     platforms/dummy/dummynetworkwatcher.h
+    platforms/dummy/dummypingsender.cpp
     platforms/dummy/dummypingsender.h
+    qmlengineholder.cpp
     qmlengineholder.h
+    releasemonitor.cpp
     releasemonitor.h
+    rfc/rfc1112.cpp
     rfc/rfc1112.h
+    rfc/rfc1918.cpp
     rfc/rfc1918.h
+    rfc/rfc4193.cpp
     rfc/rfc4193.h
+    rfc/rfc4291.cpp
     rfc/rfc4291.h
+    rfc/rfc5735.cpp
     rfc/rfc5735.h
+    serveri18n.cpp
     serveri18n.h
+    settingsholder.cpp
     settingsholder.h
+    simplenetworkmanager.cpp
     simplenetworkmanager.h
+    statusicon.cpp
     statusicon.h
     task.h
-    tasks/account/taskaccount.h
-    tasks/adddevice/taskadddevice.h
-    tasks/authenticate/taskauthenticate.h
-    tasks/captiveportallookup/taskcaptiveportallookup.h
-    tasks/deleteaccount/taskdeleteaccount.h
-    tasks/getfeaturelist/taskgetfeaturelist.h
-    tasks/controlleraction/taskcontrolleraction.h
-    tasks/createsupportticket/taskcreatesupportticket.h
-    tasks/function/taskfunction.h
-    tasks/group/taskgroup.h
-    tasks/heartbeat/taskheartbeat.h
-    tasks/ipfinder/taskipfinder.h
-    tasks/products/taskproducts.h
-    tasks/release/taskrelease.h
-    tasks/removedevice/taskremovedevice.h
-    tasks/sendfeedback/tasksendfeedback.h
-    tasks/servers/taskservers.h
-    tasks/surveydata/tasksurveydata.h
+    taskscheduler.cpp
     taskscheduler.h
+    tasks/account/taskaccount.cpp
+    tasks/account/taskaccount.h
+    tasks/adddevice/taskadddevice.cpp
+    tasks/adddevice/taskadddevice.h
+    tasks/authenticate/taskauthenticate.cpp
+    tasks/authenticate/taskauthenticate.h
+    tasks/captiveportallookup/taskcaptiveportallookup.cpp
+    tasks/captiveportallookup/taskcaptiveportallookup.h
+    tasks/deleteaccount/taskdeleteaccount.cpp
+    tasks/deleteaccount/taskdeleteaccount.h
+    tasks/getfeaturelist/taskgetfeaturelist.cpp
+    tasks/getfeaturelist/taskgetfeaturelist.h
+    tasks/controlleraction/taskcontrolleraction.cpp
+    tasks/controlleraction/taskcontrolleraction.h
+    tasks/createsupportticket/taskcreatesupportticket.cpp
+    tasks/createsupportticket/taskcreatesupportticket.h
+    tasks/function/taskfunction.cpp
+    tasks/function/taskfunction.h
+    tasks/group/taskgroup.cpp
+    tasks/group/taskgroup.h
+    tasks/heartbeat/taskheartbeat.cpp
+    tasks/heartbeat/taskheartbeat.h
+    tasks/ipfinder/taskipfinder.cpp
+    tasks/ipfinder/taskipfinder.h
+    tasks/products/taskproducts.cpp
+    tasks/products/taskproducts.h
+    tasks/release/taskrelease.cpp
+    tasks/release/taskrelease.h
+    tasks/removedevice/taskremovedevice.cpp
+    tasks/removedevice/taskremovedevice.h
+    tasks/sendfeedback/tasksendfeedback.cpp
+    tasks/sendfeedback/tasksendfeedback.h
+    tasks/servers/taskservers.cpp
+    tasks/servers/taskservers.h
+    tasks/surveydata/tasksurveydata.cpp
+    tasks/surveydata/tasksurveydata.h
+    telemetry.cpp
     telemetry.h
+    theme.cpp
     theme.h
+    timersingleshot.cpp
     timersingleshot.h
+    update/updater.cpp
     update/updater.h
+    update/versionapi.cpp
     update/versionapi.h
+    urlopener.cpp
     urlopener.h
 )
 

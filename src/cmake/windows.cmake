@@ -17,62 +17,57 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 # Windows platform source files
 target_sources(mozillavpn PRIVATE
     commands/commandcrashreporter.cpp
-    daemon/daemon.cpp
-    daemon/daemonlocalserver.cpp
-    daemon/daemonlocalserverconnection.cpp
-    eventlistener.cpp
-    localsocketcontroller.cpp
-    platforms/windows/windowsapplistprovider.cpp 
-    platforms/windows/windowsappimageprovider.cpp
-    platforms/windows/daemon/dnsutilswindows.cpp
-    platforms/windows/daemon/windowsdaemon.cpp
-    platforms/windows/daemon/windowsdaemonserver.cpp
-    platforms/windows/daemon/windowsdaemontunnel.cpp
-    platforms/windows/daemon/windowsroutemonitor.cpp
-    platforms/windows/daemon/windowstunnellogger.cpp
-    platforms/windows/daemon/windowstunnelservice.cpp
-    platforms/windows/daemon/wireguardutilswindows.cpp
-    platforms/windows/daemon/windowsfirewall.cpp
-    platforms/windows/daemon/windowssplittunnel.cpp
-    platforms/windows/windowsservicemanager.cpp
-    platforms/windows/daemon/windowssplittunnel.cpp
-    platforms/windows/windowscommons.cpp
-    platforms/windows/windowscryptosettings.cpp
-    platforms/windows/windowsnetworkwatcher.cpp
-    platforms/windows/windowspingsender.cpp
-    platforms/windows/windowsstartatbootwatcher.cpp
-    wgquickprocess.cpp
-)
-
-# Windows platform header files
-target_sources(mozillavpn PRIVATE
     commands/commandcrashreporter.h
-    daemon/interfaceconfig.h
+    daemon/daemon.cpp
     daemon/daemon.h
+    daemon/daemonlocalserver.cpp
     daemon/daemonlocalserver.h
+    daemon/daemonlocalserverconnection.cpp
     daemon/daemonlocalserverconnection.h
     daemon/dnsutils.h
+    daemon/interfaceconfig.h
     daemon/iputils.h
     daemon/wireguardutils.h
+    eventlistener.cpp
     eventlistener.h
+    localsocketcontroller.cpp
     localsocketcontroller.h
+    platforms/windows/windowsapplistprovider.cpp 
     platforms/windows/windowsapplistprovider.h
+    platforms/windows/windowsappimageprovider.cpp
     platforms/windows/windowsappimageprovider.h
+    platforms/windows/daemon/dnsutilswindows.cpp
     platforms/windows/daemon/dnsutilswindows.h
+    platforms/windows/daemon/windowsdaemon.cpp
     platforms/windows/daemon/windowsdaemon.h
+    platforms/windows/daemon/windowsdaemonserver.cpp
     platforms/windows/daemon/windowsdaemonserver.h
+    platforms/windows/daemon/windowsdaemontunnel.cpp
     platforms/windows/daemon/windowsdaemontunnel.h
+    platforms/windows/daemon/windowsroutemonitor.cpp
     platforms/windows/daemon/windowsroutemonitor.h
+    platforms/windows/daemon/windowstunnellogger.cpp
     platforms/windows/daemon/windowstunnellogger.h
+    platforms/windows/daemon/windowstunnelservice.cpp
     platforms/windows/daemon/windowstunnelservice.h
+    platforms/windows/daemon/wireguardutilswindows.cpp
     platforms/windows/daemon/wireguardutilswindows.h
+    platforms/windows/daemon/windowsfirewall.cpp
     platforms/windows/daemon/windowsfirewall.h
+    platforms/windows/daemon/windowssplittunnel.cpp
     platforms/windows/daemon/windowssplittunnel.h
+    platforms/windows/windowsservicemanager.cpp
     platforms/windows/windowsservicemanager.h
+    platforms/windows/windowscommons.cpp
     platforms/windows/windowscommons.h
+    platforms/windows/windowscryptosettings.cpp
+    platforms/windows/windowsnetworkwatcher.cpp
     platforms/windows/windowsnetworkwatcher.h
+    platforms/windows/windowspingsender.cpp
     platforms/windows/windowspingsender.h
+    platforms/windows/windowsstartatbootwatcher.cpp
     platforms/windows/windowsstartatbootwatcher.h
+    wgquickprocess.cpp
     wgquickprocess.h
 )
 

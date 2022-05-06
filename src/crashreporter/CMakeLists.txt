@@ -20,24 +20,20 @@ target_link_libraries(crashreporter PRIVATE nebula translations)
 # Crash reporter source files
 target_sources(crashreporter PRIVATE
     crashclient.cpp
-    crashreporter.cpp
-    crashreporterapp.cpp
-    crashreporterfactory.cpp
-    crashserverclient.cpp
-    crashserverclientfactory.cpp
-    crashui.cpp
-    crashuploader.cpp
-)
-
-# Crash reporter header files
-target_sources(mozillavpn PRIVATE
     crashclient.h
+    crashreporter.cpp
     crashreporter.h
+    crashreporterapp.cpp
     crashreporterapp.h
+    crashreporterfactory.cpp
     crashreporterfactory.h
+    crashserverclient.cpp
     crashserverclient.h
+    crashserverclientfactory.cpp
     crashserverclientfactory.h
+    crashui.cpp
     crashui.h
+    crashuploader.cpp
     crashuploader.h
 )
 

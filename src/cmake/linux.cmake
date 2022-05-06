@@ -12,63 +12,55 @@ target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit)
 # Linux platform source files
 target_sources(mozillavpn PRIVATE
     eventlistener.cpp
+    eventlistener.h
     platforms/linux/backendlogsobserver.cpp
+    platforms/linux/backendlogsobserver.h
     platforms/linux/dbusclient.cpp
+    platforms/linux/dbusclient.h
     platforms/linux/linuxappimageprovider.cpp
+    platforms/linux/linuxappimageprovider.h
     platforms/linux/linuxapplistprovider.cpp
+    platforms/linux/linuxapplistprovider.h
     platforms/linux/linuxcontroller.cpp
+    platforms/linux/linuxcontroller.h
     platforms/linux/linuxcryptosettings.cpp
     platforms/linux/linuxdependencies.cpp
-    platforms/linux/linuxnetworkwatcher.cpp
-    platforms/linux/linuxnetworkwatcherworker.cpp
-    platforms/linux/linuxpingsender.cpp
-    platforms/linux/linuxsystemtraynotificationhandler.cpp
-)
-
-# Linux platform header files
-target_sources(mozillavpn PRIVATE
-    eventlistener.h
-    platforms/linux/backendlogsobserver.h
-    platforms/linux/dbusclient.h
-    platforms/linux/linuxappimageprovider.h
-    platforms/linux/linuxapplistprovider.h
-    platforms/linux/linuxcontroller.h
     platforms/linux/linuxdependencies.h
+    platforms/linux/linuxnetworkwatcher.cpp
     platforms/linux/linuxnetworkwatcher.h
+    platforms/linux/linuxnetworkwatcherworker.cpp
     platforms/linux/linuxnetworkwatcherworker.h
+    platforms/linux/linuxpingsender.cpp
     platforms/linux/linuxpingsender.h
+    platforms/linux/linuxsystemtraynotificationhandler.cpp
     platforms/linux/linuxsystemtraynotificationhandler.h
 )
 
 # Linux daemon source files
 target_sources(mozillavpn PRIVATE
     ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c
-    daemon/daemon.cpp
-    platforms/linux/daemon/apptracker.cpp
-    platforms/linux/daemon/dbusservice.cpp
-    platforms/linux/daemon/dnsutilslinux.cpp
-    platforms/linux/daemon/iputilslinux.cpp
-    platforms/linux/daemon/linuxdaemon.cpp
-    platforms/linux/daemon/pidtracker.cpp
-    platforms/linux/daemon/polkithelper.cpp
-    platforms/linux/daemon/wireguardutilslinux.cpp
-)
-
-# Linux daemon header files
-target_sources(mozillavpn PRIVATE
     ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
-    daemon/interfaceconfig.h
+    daemon/daemon.cpp
     daemon/daemon.h
     daemon/dnsutils.h
+    daemon/interfaceconfig.h
     daemon/iputils.h
     daemon/wireguardutils.h
+    platforms/linux/daemon/apptracker.cpp
     platforms/linux/daemon/apptracker.h
+    platforms/linux/daemon/dbusservice.cpp
     platforms/linux/daemon/dbusservice.h
     platforms/linux/daemon/dbustypeslinux.h
+    platforms/linux/daemon/dnsutilslinux.cpp
     platforms/linux/daemon/dnsutilslinux.h
+    platforms/linux/daemon/iputilslinux.cpp
     platforms/linux/daemon/iputilslinux.h
+    platforms/linux/daemon/linuxdaemon.cpp
+    platforms/linux/daemon/pidtracker.cpp
     platforms/linux/daemon/pidtracker.h
+    platforms/linux/daemon/polkithelper.cpp
     platforms/linux/daemon/polkithelper.h
+    platforms/linux/daemon/wireguardutilslinux.cpp
     platforms/linux/daemon/wireguardutilslinux.h
 )
 

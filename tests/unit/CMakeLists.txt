@@ -35,167 +35,163 @@ target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
 # VPN Client source files
 target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.cpp
+    ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.h
     ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
+    ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.h
     ${MVPN_SOURCE_DIR}/captiveportal/captiveportal.cpp
+    ${MVPN_SOURCE_DIR}/captiveportal/captiveportal.h
     ${MVPN_SOURCE_DIR}/collator.cpp
+    ${MVPN_SOURCE_DIR}/collator.h
     ${MVPN_SOURCE_DIR}/command.cpp
+    ${MVPN_SOURCE_DIR}/command.h
     ${MVPN_SOURCE_DIR}/commandlineparser.cpp
+    ${MVPN_SOURCE_DIR}/commandlineparser.h
     ${MVPN_SOURCE_DIR}/constants.cpp
+    ${MVPN_SOURCE_DIR}/constants.h
+    ${MVPN_SOURCE_DIR}/controller.h
     ${MVPN_SOURCE_DIR}/curve25519.cpp
+    ${MVPN_SOURCE_DIR}/curve25519.h
     ${MVPN_SOURCE_DIR}/dnspingsender.cpp
+    ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
+    ${MVPN_SOURCE_DIR}/errorhandler.h
     ${MVPN_SOURCE_DIR}/featurelist.cpp
+    ${MVPN_SOURCE_DIR}/featurelist.h
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Poly1305_32.c
     ${MVPN_SOURCE_DIR}/ipaddress.cpp
-    ${MVPN_SOURCE_DIR}/ipaddresslookup.cpp
-    ${MVPN_SOURCE_DIR}/itempicker.cpp
-    ${MVPN_SOURCE_DIR}/inspector/inspectorutils.cpp
-    ${MVPN_SOURCE_DIR}/leakdetector.cpp
-    ${MVPN_SOURCE_DIR}/localizer.cpp
-    ${MVPN_SOURCE_DIR}/logger.cpp
-    ${MVPN_SOURCE_DIR}/loghandler.cpp
-    ${MVPN_SOURCE_DIR}/models/device.cpp
-    ${MVPN_SOURCE_DIR}/models/devicemodel.cpp
-    ${MVPN_SOURCE_DIR}/models/feature.cpp
-    ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.cpp
-    ${MVPN_SOURCE_DIR}/models/guide.cpp
-    ${MVPN_SOURCE_DIR}/models/guideblock.cpp
-    ${MVPN_SOURCE_DIR}/models/guidemodel.cpp
-    ${MVPN_SOURCE_DIR}/models/helpmodel.cpp
-    ${MVPN_SOURCE_DIR}/models/keys.cpp
-    ${MVPN_SOURCE_DIR}/models/licensemodel.cpp
-    ${MVPN_SOURCE_DIR}/models/server.cpp
-    ${MVPN_SOURCE_DIR}/models/servercity.cpp
-    ${MVPN_SOURCE_DIR}/models/servercountry.cpp
-    ${MVPN_SOURCE_DIR}/models/servercountrymodel.cpp
-    ${MVPN_SOURCE_DIR}/models/serverdata.cpp
-    ${MVPN_SOURCE_DIR}/models/supportcategorymodel.cpp
-    ${MVPN_SOURCE_DIR}/models/survey.cpp
-    ${MVPN_SOURCE_DIR}/models/surveymodel.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorial.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorialmodel.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorialstep.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorialstepbefore.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorialstepnext.cpp
-    ${MVPN_SOURCE_DIR}/models/user.cpp
-    ${MVPN_SOURCE_DIR}/models/whatsnewmodel.cpp
-    ${MVPN_SOURCE_DIR}/networkmanager.cpp
-    ${MVPN_SOURCE_DIR}/networkwatcher.cpp
-    ${MVPN_SOURCE_DIR}/pinghelper.cpp
-    ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
-    ${MVPN_SOURCE_DIR}/platforms/android/androiddatamigration.cpp
-    ${MVPN_SOURCE_DIR}/platforms/android/androidsharedprefs.cpp
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.cpp
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
-    ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
-    ${MVPN_SOURCE_DIR}/releasemonitor.cpp
-    ${MVPN_SOURCE_DIR}/rfc/rfc1918.cpp
-    ${MVPN_SOURCE_DIR}/rfc/rfc4193.cpp
-    ${MVPN_SOURCE_DIR}/rfc/rfc4291.cpp
-    ${MVPN_SOURCE_DIR}/rfc/rfc5735.cpp
-    ${MVPN_SOURCE_DIR}/serveri18n.cpp
-    ${MVPN_SOURCE_DIR}/settingsholder.cpp
-    ${MVPN_SOURCE_DIR}/simplenetworkmanager.cpp
-    ${MVPN_SOURCE_DIR}/statusicon.cpp
-    ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.cpp
-    ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.cpp
-    ${MVPN_SOURCE_DIR}/tasks/ipfinder/taskipfinder.cpp
-    ${MVPN_SOURCE_DIR}/tasks/function/taskfunction.cpp
-    ${MVPN_SOURCE_DIR}/tasks/release/taskrelease.cpp
-    ${MVPN_SOURCE_DIR}/tasks/servers/taskservers.cpp
-    ${MVPN_SOURCE_DIR}/taskscheduler.cpp
-    ${MVPN_SOURCE_DIR}/theme.cpp
-    ${MVPN_SOURCE_DIR}/timersingleshot.cpp
-    ${MVPN_SOURCE_DIR}/update/updater.cpp
-    ${MVPN_SOURCE_DIR}/update/versionapi.cpp
-    ${MVPN_SOURCE_DIR}/urlopener.cpp
-)
-
-# VPN Client header files
-target_sources(unit_tests PRIVATE
-    ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.h
-    ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.h
-    ${MVPN_SOURCE_DIR}/captiveportal/captiveportal.h
-    ${MVPN_SOURCE_DIR}/collator.h
-    ${MVPN_SOURCE_DIR}/command.h
-    ${MVPN_SOURCE_DIR}/commandlineparser.h
-    ${MVPN_SOURCE_DIR}/constants.h
-    ${MVPN_SOURCE_DIR}/controller.h
-    ${MVPN_SOURCE_DIR}/curve25519.h
-    ${MVPN_SOURCE_DIR}/dnspingsender.h
-    ${MVPN_SOURCE_DIR}/errorhandler.h
-    ${MVPN_SOURCE_DIR}/featurelist.h
-    ${MVPN_SOURCE_DIR}/inspector/inspectorhandler.h
-    ${MVPN_SOURCE_DIR}/inspector/inspectorutils.h
     ${MVPN_SOURCE_DIR}/ipaddress.h
+    ${MVPN_SOURCE_DIR}/ipaddresslookup.cpp
     ${MVPN_SOURCE_DIR}/ipaddresslookup.h
+    ${MVPN_SOURCE_DIR}/itempicker.cpp
     ${MVPN_SOURCE_DIR}/itempicker.h
+    ${MVPN_SOURCE_DIR}/inspector/inspectorhandler.h
+    ${MVPN_SOURCE_DIR}/inspector/inspectorutils.cpp
+    ${MVPN_SOURCE_DIR}/inspector/inspectorutils.h
+    ${MVPN_SOURCE_DIR}/leakdetector.cpp
     ${MVPN_SOURCE_DIR}/leakdetector.h
+    ${MVPN_SOURCE_DIR}/localizer.cpp
     ${MVPN_SOURCE_DIR}/localizer.h
+    ${MVPN_SOURCE_DIR}/logger.cpp
     ${MVPN_SOURCE_DIR}/logger.h
+    ${MVPN_SOURCE_DIR}/loghandler.cpp
     ${MVPN_SOURCE_DIR}/loghandler.h
+    ${MVPN_SOURCE_DIR}/models/device.cpp
     ${MVPN_SOURCE_DIR}/models/device.h
+    ${MVPN_SOURCE_DIR}/models/devicemodel.cpp
     ${MVPN_SOURCE_DIR}/models/devicemodel.h
+    ${MVPN_SOURCE_DIR}/models/feature.cpp
     ${MVPN_SOURCE_DIR}/models/feature.h
+    ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.cpp
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.h
+    ${MVPN_SOURCE_DIR}/models/guide.cpp
     ${MVPN_SOURCE_DIR}/models/guide.h
+    ${MVPN_SOURCE_DIR}/models/guideblock.cpp
     ${MVPN_SOURCE_DIR}/models/guideblock.h
+    ${MVPN_SOURCE_DIR}/models/guidemodel.cpp
     ${MVPN_SOURCE_DIR}/models/guidemodel.h
+    ${MVPN_SOURCE_DIR}/models/helpmodel.cpp
     ${MVPN_SOURCE_DIR}/models/helpmodel.h
+    ${MVPN_SOURCE_DIR}/models/keys.cpp
     ${MVPN_SOURCE_DIR}/models/keys.h
+    ${MVPN_SOURCE_DIR}/models/licensemodel.cpp
     ${MVPN_SOURCE_DIR}/models/licensemodel.h
+    ${MVPN_SOURCE_DIR}/models/server.cpp
     ${MVPN_SOURCE_DIR}/models/server.h
+    ${MVPN_SOURCE_DIR}/models/servercity.cpp
     ${MVPN_SOURCE_DIR}/models/servercity.h
+    ${MVPN_SOURCE_DIR}/models/servercountry.cpp
     ${MVPN_SOURCE_DIR}/models/servercountry.h
+    ${MVPN_SOURCE_DIR}/models/servercountrymodel.cpp
     ${MVPN_SOURCE_DIR}/models/servercountrymodel.h
+    ${MVPN_SOURCE_DIR}/models/serverdata.cpp
     ${MVPN_SOURCE_DIR}/models/serverdata.h
+    ${MVPN_SOURCE_DIR}/models/supportcategorymodel.cpp
     ${MVPN_SOURCE_DIR}/models/supportcategorymodel.h
+    ${MVPN_SOURCE_DIR}/models/survey.cpp
     ${MVPN_SOURCE_DIR}/models/survey.h
+    ${MVPN_SOURCE_DIR}/models/surveymodel.cpp
     ${MVPN_SOURCE_DIR}/models/surveymodel.h
+    ${MVPN_SOURCE_DIR}/models/tutorial.cpp
     ${MVPN_SOURCE_DIR}/models/tutorial.h
+    ${MVPN_SOURCE_DIR}/models/tutorialmodel.cpp
     ${MVPN_SOURCE_DIR}/models/tutorialmodel.h
+    ${MVPN_SOURCE_DIR}/models/tutorialstep.cpp
     ${MVPN_SOURCE_DIR}/models/tutorialstep.h
+    ${MVPN_SOURCE_DIR}/models/tutorialstepbefore.cpp
     ${MVPN_SOURCE_DIR}/models/tutorialstepbefore.h
+    ${MVPN_SOURCE_DIR}/models/tutorialstepnext.cpp
     ${MVPN_SOURCE_DIR}/models/tutorialstepnext.h
+    ${MVPN_SOURCE_DIR}/models/user.cpp
     ${MVPN_SOURCE_DIR}/models/user.h
+    ${MVPN_SOURCE_DIR}/models/whatsnewmodel.cpp
     ${MVPN_SOURCE_DIR}/models/whatsnewmodel.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
+    ${MVPN_SOURCE_DIR}/networkmanager.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.h
     ${MVPN_SOURCE_DIR}/networkrequest.h
+    ${MVPN_SOURCE_DIR}/networkwatcher.cpp
     ${MVPN_SOURCE_DIR}/networkwatcher.h
     ${MVPN_SOURCE_DIR}/networkwatcherimpl.h
+    ${MVPN_SOURCE_DIR}/pinghelper.cpp
     ${MVPN_SOURCE_DIR}/pinghelper.h
     ${MVPN_SOURCE_DIR}/pingsender.h
+    ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
     ${MVPN_SOURCE_DIR}/pingsenderfactory.h
+    ${MVPN_SOURCE_DIR}/platforms/android/androiddatamigration.cpp
     ${MVPN_SOURCE_DIR}/platforms/android/androiddatamigration.h
+    ${MVPN_SOURCE_DIR}/platforms/android/androidsharedprefs.cpp
     ${MVPN_SOURCE_DIR}/platforms/android/androidsharedprefs.h
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
+    ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
     ${MVPN_SOURCE_DIR}/qmlengineholder.h
+    ${MVPN_SOURCE_DIR}/releasemonitor.cpp
     ${MVPN_SOURCE_DIR}/releasemonitor.h
+    ${MVPN_SOURCE_DIR}/rfc/rfc1918.cpp
     ${MVPN_SOURCE_DIR}/rfc/rfc1918.h
+    ${MVPN_SOURCE_DIR}/rfc/rfc4193.cpp
     ${MVPN_SOURCE_DIR}/rfc/rfc4193.h
+    ${MVPN_SOURCE_DIR}/rfc/rfc4291.cpp
     ${MVPN_SOURCE_DIR}/rfc/rfc4291.h
+    ${MVPN_SOURCE_DIR}/rfc/rfc5735.cpp
     ${MVPN_SOURCE_DIR}/rfc/rfc5735.h
+    ${MVPN_SOURCE_DIR}/serveri18n.cpp
     ${MVPN_SOURCE_DIR}/serveri18n.h
+    ${MVPN_SOURCE_DIR}/settingsholder.cpp
     ${MVPN_SOURCE_DIR}/settingsholder.h
+    ${MVPN_SOURCE_DIR}/simplenetworkmanager.cpp
     ${MVPN_SOURCE_DIR}/simplenetworkmanager.h
+    ${MVPN_SOURCE_DIR}/statusicon.cpp
     ${MVPN_SOURCE_DIR}/statusicon.h
     ${MVPN_SOURCE_DIR}/task.h
+    ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.cpp
     ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.h
+    ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.cpp
     ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.h
+    ${MVPN_SOURCE_DIR}/tasks/ipfinder/taskipfinder.cpp
     ${MVPN_SOURCE_DIR}/tasks/ipfinder/taskipfinder.h
+    ${MVPN_SOURCE_DIR}/tasks/function/taskfunction.cpp
     ${MVPN_SOURCE_DIR}/tasks/function/taskfunction.h
+    ${MVPN_SOURCE_DIR}/tasks/release/taskrelease.cpp
     ${MVPN_SOURCE_DIR}/tasks/release/taskrelease.h
+    ${MVPN_SOURCE_DIR}/tasks/servers/taskservers.cpp
     ${MVPN_SOURCE_DIR}/tasks/servers/taskservers.h
+    ${MVPN_SOURCE_DIR}/taskscheduler.cpp
     ${MVPN_SOURCE_DIR}/taskscheduler.h
+    ${MVPN_SOURCE_DIR}/theme.cpp
     ${MVPN_SOURCE_DIR}/theme.h
+    ${MVPN_SOURCE_DIR}/timersingleshot.cpp
     ${MVPN_SOURCE_DIR}/timersingleshot.h
+    ${MVPN_SOURCE_DIR}/update/updater.cpp
     ${MVPN_SOURCE_DIR}/update/updater.h
+    ${MVPN_SOURCE_DIR}/update/versionapi.cpp
     ${MVPN_SOURCE_DIR}/update/versionapi.h
+    ${MVPN_SOURCE_DIR}/urlopener.cpp
     ${MVPN_SOURCE_DIR}/urlopener.h
 )
 
@@ -211,54 +207,50 @@ target_sources(unit_tests PRIVATE
     mocinspectorhandler.cpp
     mocmozillavpn.cpp
     mocnetworkrequest.cpp
-    testadjust.cpp
-    testandroidmigration.cpp
-    testcommandlineparser.cpp
-    testfeature.cpp
-    testguide.cpp
-    testipaddress.cpp
-    testipaddresslookup.cpp
-    testipfinder.cpp
-    testlicense.cpp
-    testlocalizer.cpp
-    testlogger.cpp
-    testmodels.cpp
-    testmozillavpnh.cpp
-    testnetworkmanager.cpp
-    testreleasemonitor.cpp
-    testserveri18n.cpp
-    teststatusicon.cpp
-    testtasks.cpp
-    testthemes.cpp
-    testtimersingleshot.cpp
-    testtutorial.cpp
-)
-
-# Unit test header files
-target_sources(unit_tests PRIVATE
     helper.h
-    version.h
+    testadjust.cpp
     testadjust.h
+    testandroidmigration.cpp
     testandroidmigration.h
+    testcommandlineparser.cpp
     testcommandlineparser.h
+    testfeature.cpp
     testfeature.h
+    testguide.cpp
     testguide.h
+    testipaddress.cpp
     testipaddress.h
+    testipaddresslookup.cpp
     testipaddresslookup.h
+    testipfinder.cpp
     testipfinder.h
+    testlicense.cpp
     testlicense.h
+    testlocalizer.cpp
     testlocalizer.h
+    testlogger.cpp
     testlogger.h
+    testmodels.cpp
     testmodels.h
+    testmozillavpnh.cpp
     testmozillavpnh.h
+    testnetworkmanager.cpp
     testnetworkmanager.h
+    testreleasemonitor.cpp
     testreleasemonitor.h
+    testserveri18n.cpp
     testserveri18n.h
+    teststatusicon.cpp
     teststatusicon.h
+    testtasks.cpp
     testtasks.h
+    testthemes.cpp
     testthemes.h
+    testtimersingleshot.cpp
     testtimersingleshot.h
+    testtutorial.cpp
     testtutorial.h
+    version.h
 )
 
 # Unit test mock resources

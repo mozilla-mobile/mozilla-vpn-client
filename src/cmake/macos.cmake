@@ -53,49 +53,43 @@ qt6_import_qml_plugins(mozillavpn)
 # MacOS platform source files
 target_sources(mozillavpn PRIVATE
     daemon/daemon.cpp
-    daemon/daemonlocalserver.cpp
-    daemon/daemonlocalserverconnection.cpp
-    localsocketcontroller.cpp
-    platforms/macos/daemon/dnsutilsmacos.cpp
-    platforms/macos/daemon/iputilsmacos.cpp
-    platforms/macos/daemon/macosdaemon.cpp
-    platforms/macos/daemon/macosdaemonserver.cpp
-    platforms/macos/daemon/macosroutemonitor.cpp
-    platforms/macos/daemon/wireguardutilsmacos.cpp
-    platforms/macos/macosauthenticationlistener.cpp
-    platforms/macos/macosmenubar.cpp
-    platforms/macos/macospingsender.cpp
-    platforms/macos/macosstartatbootwatcher.cpp
-    wgquickprocess.cpp
-    platforms/macos/macoscryptosettings.mm
-    platforms/macos/macosnetworkwatcher.mm
-    platforms/macos/macosutils.mm
-)
-
-# MacOS platform header files
-target_sources(mozillavpn PRIVATE
-    daemon/interfaceconfig.h
     daemon/daemon.h
+    daemon/daemonlocalserver.cpp
     daemon/daemonlocalserver.h
+    daemon/daemonlocalserverconnection.cpp
     daemon/daemonlocalserverconnection.h
     daemon/dnsutils.h
+    daemon/interfaceconfig.h
     daemon/iputils.h
     daemon/wireguardutils.h
+    localsocketcontroller.cpp
     localsocketcontroller.h
+    platforms/macos/daemon/dnsutilsmacos.cpp
     platforms/macos/daemon/dnsutilsmacos.h
+    platforms/macos/daemon/iputilsmacos.cpp
     platforms/macos/daemon/iputilsmacos.h
+    platforms/macos/daemon/macosdaemon.cpp
     platforms/macos/daemon/macosdaemon.h
+    platforms/macos/daemon/macosdaemonserver.cpp
     platforms/macos/daemon/macosdaemonserver.h
+    platforms/macos/daemon/macosroutemonitor.cpp
     platforms/macos/daemon/macosroutemonitor.h
+    platforms/macos/daemon/wireguardutilsmacos.cpp
     platforms/macos/daemon/wireguardutilsmacos.h
+    platforms/macos/macosauthenticationlistener.cpp
     platforms/macos/macosauthenticationlistener.h
+    platforms/macos/macosmenubar.cpp
     platforms/macos/macosmenubar.h
+    platforms/macos/macospingsender.cpp
     platforms/macos/macospingsender.h
+    platforms/macos/macosstartatbootwatcher.cpp
     platforms/macos/macosstartatbootwatcher.h
-    systemtraynotificationhandler.h
-    tasks/authenticate/desktopauthenticationlistener.h
+    wgquickprocess.cpp
     wgquickprocess.h
+    platforms/macos/macoscryptosettings.mm
+    platforms/macos/macosnetworkwatcher.mm
     platforms/macos/macosnetworkwatcher.h
+    platforms/macos/macosutils.mm
     platforms/macos/macosutils.h
 )
 
