@@ -23,6 +23,7 @@ RadioDelegate {
     Layout.fillWidth: true
     Layout.preferredHeight: Math.max(96, row.implicitHeight + row.anchors.topMargin + row.anchors.bottomMargin)
 
+
     background: Rectangle {
         id: bg
         color: VPNTheme.theme.white
