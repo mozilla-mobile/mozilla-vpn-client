@@ -77,9 +77,9 @@ target_sources(mozillavpn PRIVATE
 )
 
 # Windows Qt6 UI workaround resources
-if(${Qt6_VERSION} VERSION_GREATER_EQUAL 6.3.0)
+if(${QT_VERSION} VERSION_GREATER_EQUAL 6.3.0)
     message(WARNING "Remove the Qt6 windows hack!")
-elif(${Qt6_VERSION} VERSION_GREATER_EQUAL 6.0.0)
+else()
     target_sources(mozillavpn PRIVATE ui/qt6winhack.qrc)
 endif()
 

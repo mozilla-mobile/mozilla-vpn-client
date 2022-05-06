@@ -17,10 +17,3 @@ target_sources(nebula PRIVATE
     ui/compatQt6.qrc
     ui/resourcesQt6.qrc
 )
-
-#versionAtLeast(QT_VERSION, 6.0.0) {
-#    RESOURCES += $$PWD/ui/compatQt6.qrc
-#    RESOURCES += $$PWD/ui/resourcesQt6.qrc
-#} else {
-#    RESOURCES += $$PWD/ui/compatQt5.qrc
-#}

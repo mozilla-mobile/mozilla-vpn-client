@@ -19,7 +19,6 @@ find_package(Qt6 REQUIRED COMPONENTS NetworkAuth)
 find_package(Qt6 REQUIRED COMPONENTS WebSockets)
 
 qt_add_executable(mozillavpn MANUAL_FINALIZATION)
-add_compile_definitions("$<$<CONFIG:Debug>:MVPN_DEBUG>")
 
 target_link_libraries(mozillavpn PRIVATE
     Qt6::NetworkAuth
@@ -47,6 +46,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
     set(MVPN_PLATFORM_NAME "ios")
 endif()
 
+add_compile_definitions("$<$<CONFIG:Debug>:MVPN_DEBUG>")
 add_compile_definitions("MVPN_$<UPPER_CASE:${MVPN_PLATFORM_NAME}>")
 include(cmake/${MVPN_PLATFORM_NAME}.cmake)
 

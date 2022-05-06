@@ -30,9 +30,9 @@ parser.add_argument(
 args = parser.parse_args()
 
 stepnum = 1
-def title(b):
+def title(text):
     global stepnum
-    print(f"\033[96m\033[1mStep {stepnum}\033[0m: \033[97m{b}\033[0m")
+    print(f"\033[96m\033[1mStep {stepnum}\033[0m: \033[97m{text}\033[0m")
     stepnum = stepnum+1
 
 # Step 0

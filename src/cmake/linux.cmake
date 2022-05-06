@@ -75,12 +75,12 @@ target_sources(mozillavpn PRIVATE
 add_definitions(-DPROTOCOL_VERSION=\"1\")
 
 set(DBUS_GENERATED_SOURCES)
-qt6_add_dbus_interface(DBUS_GENERATED_SOURCES platforms/linux/daemon/org.mozilla.vpn.dbus.xml dbus_interface)
-qt6_add_dbus_adaptor(DBUS_GENERATED_SOURCES
-                     platforms/linux/daemon/org.mozilla.vpn.dbus.xml
-                     platforms/linux/daemon/dbusservice.h
-                     ""
-                     dbus_adaptor)
+qt_add_dbus_interface(DBUS_GENERATED_SOURCES platforms/linux/daemon/org.mozilla.vpn.dbus.xml dbus_interface)
+qt_add_dbus_adaptor(DBUS_GENERATED_SOURCES
+                    platforms/linux/daemon/org.mozilla.vpn.dbus.xml
+                    platforms/linux/daemon/dbusservice.h
+                    ""
+                    dbus_adaptor)
 target_sources(mozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
 
 include(cmake/golang.cmake)

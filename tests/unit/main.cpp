@@ -54,6 +54,11 @@ int main(int argc, char* argv[]) {
     args.removeFirst();
     for (const QString& x : args) {
       QObject* obj = TestHelper::findTest(x);
+      if (obj == nullptr) {
+        qWarning() << "No such test found:" << x;
+        ++failures;
+        continue;
+      }
       int result = QTest::qExec(obj);
       if (result != 0) {
         ++failures;

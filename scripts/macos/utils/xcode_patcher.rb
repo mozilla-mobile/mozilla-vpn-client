@@ -375,7 +375,7 @@ class XCodeprojPatcher
     app_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
   end
 
-  # This works around: target.add_dependency depends failing by creating a PBXContainerItemProxy.
+  # This works around target.add_dependency failing by creating a PBXContainerItemProxy.
   def setup_target_dependency(target, depends)
     container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
     container_proxy.container_portal = @project.root_object.uuid
