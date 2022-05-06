@@ -181,9 +181,10 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Installing the oathtool
+      - name: Install depedencies
         shell: bash
         run: |
+          pip3 install -r requirements.txt
           pip3 install oathtool
           python3 -m oathtool.generate-script
 
