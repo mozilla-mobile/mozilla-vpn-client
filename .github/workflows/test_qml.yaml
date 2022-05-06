@@ -182,4 +182,4 @@ jobs:
 
       - name: Running tests
         shell: bash
-        run: build/tests/unit/Release/qml_tests.exe
+        run: build/tests/qml/Release/qml_tests.exe
