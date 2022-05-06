@@ -181,26 +181,20 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Install glean depedencies
-        shell: bash
-        run: |
-          pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
-
-      - name: Importing translation files
-        shell: bash
-        run: |
-          export PATH=/c/MozillaVPNBuild/bin:$PATH
-          python3 scripts/utils/import_languages.py -m
-
       - name: Installing the oathtool
         shell: bash
         run: |
           pip3 install oathtool
           python3 -m oathtool.generate-script
 
-      - name: Running tests
+      - name: Building tests
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          MVPN_OATHTOOL=oathtool ./scripts/tests/unit_tests.sh
+          mkdir -p build
+          cmake -S . -B $(pwd)/build
+          cmake --build $(pwd)/build --config Debug --target unit_tests
+
+      - name: Running tests
+        shell: bash
+        run: build/tests/unit/Debug/unit_tests.exe

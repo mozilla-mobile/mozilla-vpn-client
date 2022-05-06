@@ -167,20 +167,14 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Install glean depedencies
-        shell: bash
-        run: |
-          pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
-
-      - name: Importing translation files
+      - name: Building tests
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          python3 scripts/utils/import_languages.py -m
+          mkdir -p build
+          cmake -S . -B $(pwd)/build
+          cmake --build $(pwd)/build --config Debug --target qml_tests
 
       - name: Running tests
         shell: bash
-        run: |
-          export PATH=/c/MozillaVPNBuild/bin:$PATH
-          ./scripts/tests/qml_tests.sh
+        run: build/tests/unit/Debug/qml_tests.exe
