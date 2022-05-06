@@ -11,6 +11,7 @@ class TutorialStep;
 
 class Tutorial final : public ItemPicker {
   Q_OBJECT
+  Q_PROPERTY(QString id MEMBER m_id CONSTANT)
   Q_PROPERTY(QString titleId MEMBER m_titleId CONSTANT)
   Q_PROPERTY(QString subtitleId MEMBER m_subtitleId CONSTANT)
   Q_PROPERTY(QString completionMessageId MEMBER m_completionMessageId CONSTANT)
@@ -40,6 +41,7 @@ class Tutorial final : public ItemPicker {
   bool maybeStop(bool completed = false);
 
  private:
+  QString m_id;
   QString m_titleId;
   QString m_subtitleId;
   QString m_completionMessageId;

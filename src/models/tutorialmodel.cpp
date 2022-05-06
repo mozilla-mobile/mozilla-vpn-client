@@ -73,6 +73,17 @@ void TutorialModel::allowItem(const QString& objectName) {
   m_allowedItems.append(objectName);
 }
 
+QObject* TutorialModel::getTutorialById(QString& id) {
+
+    for(Tutorial* tutorial : m_tutorials) {
+        if(tutorial->id() == id) {
+            return tutorial;
+        }
+    }
+
+    return nullptr;
+}
+
 void TutorialModel::play(Tutorial* tutorial) {
   Q_ASSERT(tutorial);
 

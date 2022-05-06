@@ -51,12 +51,6 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
     return nullptr;
   }
 
-  QString tutorialId = obj["id"].toString();
-  if (tutorialId.isEmpty()) {
-    logger.warning() << "Empty ID for tutorial file" << fileName;
-    return nullptr;
-  }
-
   L18nStrings* l18nStrings = L18nStrings::instance();
   Q_ASSERT(l18nStrings);
 
@@ -66,7 +60,7 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
   tutorial->m_highlighted = obj["highlighted"].toBool();
 
   tutorial->m_titleId =
-      Guide::pascalize(QString("tutorial_%1_title").arg(tutorialId));
+      Guide::pascalize(QString("tutorial_%1_title").arg(tutorial->m_id));
   if (!l18nStrings->contains(tutorial->m_titleId)) {
     logger.warning() << "No string ID found for the title of tutorial file"
                      << fileName << "ID:" << tutorial->m_titleId;
@@ -74,7 +68,7 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
   }
 
   tutorial->m_subtitleId =
-      Guide::pascalize(QString("tutorial_%1_subtitle").arg(tutorialId));
+      Guide::pascalize(QString("tutorial_%1_subtitle").arg(tutorial->m_id));
   if (!l18nStrings->contains(tutorial->m_subtitleId)) {
     logger.warning() << "No string ID found for the subtitle of tutorial file"
                      << fileName << "ID:" << tutorial->m_subtitleId;
@@ -82,7 +76,7 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
   }
 
   tutorial->m_completionMessageId = Guide::pascalize(
-      QString("tutorial_%1_completion_message").arg(tutorialId));
+      QString("tutorial_%1_completion_message").arg(tutorial->m_id));
   if (!l18nStrings->contains(tutorial->m_completionMessageId)) {
     logger.warning()
         << "No string ID found for the completion message of tutorial file"
@@ -109,7 +103,7 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
       return nullptr;
     }
 
-    TutorialStep* ts = TutorialStep::create(tutorial, tutorialId, stepValue);
+    TutorialStep* ts = TutorialStep::create(tutorial, tutorial->m_id, stepValue);
     if (!ts) {
       logger.warning() << "Unable to create a tutorial step for tutorial file"
                        << fileName;
