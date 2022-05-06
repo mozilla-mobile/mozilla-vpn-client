@@ -90,6 +90,9 @@ target_sources(mozillavpn PRIVATE
     models/survey.cpp
     models/surveymodel.cpp
     models/tutorial.cpp
+    models/tutorialstep.cpp
+    models/tutorialstepbefore.cpp
+    models/tutorialstepnext.cpp
     models/tutorialmodel.cpp
     models/user.cpp
     models/whatsnewmodel.cpp
@@ -243,6 +246,9 @@ target_sources(mozillavpn PRIVATE
     models/survey.h
     models/surveymodel.h
     models/tutorial.h
+    models/tutorialstep.h
+    models/tutorialstepbefore.h
+    models/tutorialstepnext.h
     models/tutorialmodel.h
     models/user.h
     models/whatsnewmodel.h
