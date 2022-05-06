@@ -202,8 +202,7 @@ tasks:
                         # run-task uses these to check out the source; the inputs
                         # to `mach taskgraph decision` are all on the command line.
                         $merge:
-                            - PIP_DISABLE_REQUIRE_HASHES: 1
-                              MOZILLAVPN_BASE_REPOSITORY: '${baseRepoUrl}'
+                            - MOZILLAVPN_BASE_REPOSITORY: '${baseRepoUrl}'
                               MOZILLAVPN_HEAD_REPOSITORY: '${repoUrl}'
                               MOZILLAVPN_HEAD_REF: '${head_branch}'
                               MOZILLAVPN_HEAD_REV: '${head_sha}'
