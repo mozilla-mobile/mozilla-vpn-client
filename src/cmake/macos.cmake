@@ -9,6 +9,7 @@ set_target_properties(mozillavpn PROPERTIES OUTPUT_NAME "Mozilla VPN")
 
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
+    MACOSX_BUNDLE ON
     MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/../macos/app/Info.plist.in
     MACOSX_BUNDLE_BUNDLE_NAME "Mozilla VPN"
     MACOSX_BUNDLE_BUNDLE_VERSION "${BUILD_ID}"

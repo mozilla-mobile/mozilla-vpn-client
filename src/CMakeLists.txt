@@ -18,7 +18,7 @@ find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
 find_package(Qt6 REQUIRED COMPONENTS NetworkAuth)
 find_package(Qt6 REQUIRED COMPONENTS WebSockets)
 
-add_executable(mozillavpn)
+qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 add_compile_definitions("$<$<CONFIG:Debug>:MVPN_DEBUG>")
 
 target_link_libraries(mozillavpn PRIVATE
@@ -53,7 +53,4 @@ include(cmake/${MVPN_PLATFORM_NAME}.cmake)
 add_subdirectory(crashreporter)
 target_link_libraries(mozillavpn PRIVATE crashreporter)
 
-set_target_properties(mozillavpn PROPERTIES
-    WIN32_EXECUTABLE ON
-    MACOSX_BUNDLE ON
-)
+qt_finalize_target(mozillavpn)

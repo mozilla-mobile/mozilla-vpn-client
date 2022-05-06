@@ -7,6 +7,7 @@ add_definitions(-DWIN32_LEAN_AND_MEAN)
 set_target_properties(mozillavpn PROPERTIES
     OUTPUT_NAME "Mozilla VPN"
     VERSION ${CMAKE_PROJECT_VERSION}
+    WIN32_EXECUTABLE ON
 )
 
 # Generate the Windows version resource file.

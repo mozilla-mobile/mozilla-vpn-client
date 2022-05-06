@@ -15,7 +15,7 @@ get_filename_component(MVPN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../src ABS
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR})
 
-add_executable(qml_tests EXCLUDE_FROM_ALL)
+qt_add_executable(qml_tests EXCLUDE_FROM_ALL)
 
 target_link_libraries(qml_tests PRIVATE
     Qt6::Gui
