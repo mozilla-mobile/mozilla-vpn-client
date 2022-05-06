@@ -13,7 +13,7 @@ ls /opt/emsdk/emsdk
 ls /opt/6.2.3/wasm_32/bin
 ls /opt/6.2.3/gcc_64/bin
 
-where qmake 
+which qmake 
 qmake --version
 
 # This script is used in the Android Debug (universal) build task
