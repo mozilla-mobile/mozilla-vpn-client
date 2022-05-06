@@ -255,10 +255,10 @@ def parseTutorialJson(tutorial_json, filename):
 
         step_id = step['id']
         step_enum = pascalize(f"tutorial_{tutorial_id}_step_{step_id}")
-        if step_enum in output:
+        if step_enum in tutorial_strings:
             exit(f"Duplicate step enum {step_enum} when parsing {filename}")
 
-        output[step_enum] = {
+        tutorial_strings[step_enum] = {
             "string_id": f"tutorial.{tutorial_id}.step.{step_id}",
             "value": [step["tooltip"]],
             "comments": [step.get("comment", "A tutorial step tooltip")],

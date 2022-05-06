@@ -154,11 +154,7 @@ android/src/org/mozilla/firefox/vpn/glean/GleanEvents.kt
 translations/*/*.ts
 translations/*/*.qm
 translations/*/locversion.plist
-translations/generated/*.cpp
-translations/generated/*.h
-translations/generated/*.ts
-translations/generated/*.qm
-translations/generated/*.qrc
+translations/generated/
 macos/pkg/Resources/*.lproj
 
 # Adjust SDK Files

@@ -202,7 +202,7 @@ with open('translations/generated/dummy.pro', 'w') as dummyproj:
 # Step 5
 title("Generate translation resources...")
 for l10n_file in l10n_files:
-    os.system(f"{lconvert} -i {l10n_file['ts']} -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
+    os.system(f"{lconvert} -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
 os.system(f"{lupdate} translations/generated/dummy.pro")
 for l10n_file in l10n_files:
     os.system(f"{lrelease} -idbased {l10n_file['ts']}")
