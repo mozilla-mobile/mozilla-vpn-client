@@ -82,7 +82,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
             name: win_symbols
-            path: build/src/${BUILDCONFIG}/Mozilla VPN.pdb
+            path: unsigned/Mozilla VPN.pdb
             if-no-files-found: error 
 
       - name: Upload unsigned app
