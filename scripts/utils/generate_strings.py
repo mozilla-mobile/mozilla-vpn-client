@@ -233,14 +233,14 @@ def parseTutorialJson(tutorial_json, filename):
         "comments": [tutorial_json.get("title_comment", "Title for a tutorial view")],
     }
 
-    subtitle_enum = pascalize(f"tutorial_{tutoria_id}_subtitle")
+    subtitle_enum = pascalize(f"tutorial_{tutorial_id}_subtitle")
     tutorial_strings[subtitle_enum] = {
         "string_id": f"tutorial.{tutorial_id}.subtitle",
         "value": [tutorial_json["subtitle"]],
         "comments": [tutorial_json.get("subtitle_comment", "Subtitle for a tutorial view")],
     }
 
-    completion_enum = pascalize(f"tutorial_{tutoria_id}_completion_message")
+    completion_enum = pascalize(f"tutorial_{tutorial_id}_completion_message")
     tutorial_strings[completion_enum] = {
         "string_id": f"tutorial.{tutorial_id}.completion_message",
         "value": [tutorial_json["completion_message"]],
