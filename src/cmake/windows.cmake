@@ -111,15 +111,6 @@ cmake_path(CONVERT "$ENV{VCToolsRedistDir}" TO_CMAKE_PATH_LIST VC_TOOLS_REDIST_P
 install(FILES ${VC_TOOLS_REDIST_PATH}/MergeModules/Microsoft_VC${MSVC_TOOLSET_VERSION}_CRT_x64.msm
     DESTINATION . RENAME Microsoft_CRT_x64.msm)
 
-install(FILES
-    ../windows/split-tunnel/mullvad-split-tunnel.cat
-    ../windows/split-tunnel/mullvad-split-tunnel.inf
-    ../windows/split-tunnel/mullvad-split-tunnel.sys
-    ../windows/split-tunnel/WdfCoinstaller01011.dll
-    ../extension/manifests/windows/mozillavpn.json
-    DESTINATION .
-)
-
 install(FILES ui/resources/logo.ico DESTINATION .)
 
 ## TODO: Are these still needed? It's not clear.

@@ -24,6 +24,6 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_D
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/tunnel.dll
-    ${CMAKE_CURRENT_SOURCE_DIR}/.deps/wintun/bin/${CMAKE_SYSTEM_PROCESSOR}/wintun.dll
+    ${CMAKE_CURRENT_BINARY_DIR}/.deps/wintun/bin/${CMAKE_SYSTEM_PROCESSOR}/wintun.dll
     DESTINATION .
 )

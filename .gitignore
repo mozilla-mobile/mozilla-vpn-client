@@ -10,6 +10,7 @@ Makefile.*
 src/mozillavpn
 src/mozillavpn.app
 src/mozillavpn.framework
+src/version.h
 mozillavpn_wg
 mozillavpn.qmltypes
 mozillavpn_metatypes.json
@@ -120,8 +121,11 @@ mozillavpnnp.exe
 mozillavpnnp.vcxproj*
 windows/installer/x64/
 windows/tunnel/x64/
-windows/split-tunnel/*
-!windows/split-tunnel/get.ps1
+windows/split-tunnel/*.cat
+windows/split-tunnel/*.inf
+windows/split-tunnel/*.sys
+windows/split-tunnel/*.dll
+windows/split-tunnel/.status
 
 #Rust
 .cargo_home/

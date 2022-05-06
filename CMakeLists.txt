@@ -78,5 +78,6 @@ endif()
 # Extra platform stuff
 if(WIN32)
     add_subdirectory(windows/installer)
+    add_subdirectory(windows/split-tunnel)
     add_subdirectory(windows/tunnel)
 endif()
