@@ -84,7 +84,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_macos
+          git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
           cd qt_static_macos
           cat qt6* > qt_static.tar.gz
           tar xf qt_static.tar.gz
@@ -149,7 +149,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_windows
+          git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
           cd qt_static_windows
           cat qt6* > qt_static.tar.bz2
           tar xf qt_static.tar.bz2
@@ -178,8 +178,8 @@ jobs:
           export PATH=/c/MozillaVPNBuild/bin:$PATH
           mkdir -p build
           cmake -S . -B $(pwd)/build
-          cmake --build $(pwd)/build --config Debug --target qml_tests
+          cmake --build $(pwd)/build --config Release --target qml_tests
 
       - name: Running tests
         shell: bash
-        run: build/tests/unit/Debug/qml_tests.exe
+        run: build/tests/unit/Release/qml_tests.exe

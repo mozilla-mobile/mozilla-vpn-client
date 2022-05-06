@@ -34,7 +34,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_windows
+          git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
           cd qt_static_windows
           cat qt6* > qt_static.tar.bz2
           tar xf qt_static.tar.bz2
