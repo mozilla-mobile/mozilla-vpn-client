@@ -21,14 +21,31 @@ endif()
 ## Toolchain Setup
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+cmake_policy(SET CMP0099 OLD)
 
 if(MSVC)
     include(src/cmake/msvc.cmake)
 endif()
 
-if(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/unsigned"
-        CACHE PATH "default install path" FORCE)
+## Some workarounds for windows build quirks
+if(WIN32)
+    ## CMake v3.20 has problems with race conditions in dependency generation.
+    ## See: https://gitlab.kitware.com/cmake/cmake/-/issues/22014
+    if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_EQUAL 3.20)
+        cmake_policy(SET CMP0116 OLD)
+    endif()
+
+    ## CMake also has trouble finding OpenSSL libraries on Windows, and may
+    ## need some help.
+    if(EXISTS "C:/MozillaVPNBuild/SSL" AND NOT DEFINED OPENSSL_ROOT_DIR)
+        set(OPENSSL_ROOT_DIR "C:/MozillaVPNBuild/SSL")
+        find_package(OpenSSL REQUIRED)
+    endif()
+
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/unsigned"
+            CACHE PATH "default install path" FORCE)
+    endif()
 endif()
 
 set(CMAKE_AUTOMOC ON)
