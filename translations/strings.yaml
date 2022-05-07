@@ -320,7 +320,6 @@ settings:
   crashOptInDescription:
     value: Allow Mozilla VPN to automatically send crash reports to help fix unexpected crashes
     comment: This is the description of a checkbox option to allow the app to send crash reports without a user prompt
-  tipsAndTricks: VPN tips and tricks
 
 aboutUs:
   licenses: Licenses
@@ -585,6 +584,15 @@ freeTrials:
     value: Sign up to start your 7-day free trial.
     comment: This string appears above the 'Sign up' button on mobile onboarding views
   freeTrialLabel: 7-day free trial
+
+tipsAndTricks:
+  settingsEntryLabel: VPN tips and tricks
+  tutorialLabel: Tutorial
+  featureTourLabel: Feature tour
+  whatsNewTitle: What's new?
+  whatsNewDescription: We’ve added new features. Take a tour to get a deeper dive into what we’ve added for you!
+  quickTipsTitle: Quick tips
+  quickTipsDescription: Let us help you get the most out of Mozilla VPN
 
 global:
   expand:

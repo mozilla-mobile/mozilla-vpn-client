@@ -11,7 +11,7 @@ import components 0.1
 Item {
     id: root
 
-    property string _menuTitle: VPNl18n.SettingsTipsAndTricks
+    property string _menuTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
     readonly property int tabletSize: 600 //Tablets get a different layout (2 columns for tutorials, 3 columns for guides)
 
     objectName: "settingsTipsAndTricks"
@@ -27,7 +27,7 @@ Item {
         flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
         interactive: flickContentHeight > height
 
-        ColumnLayout {
+        Column {
             id: layout
 
             anchors.top: parent.top
@@ -39,91 +39,106 @@ Item {
 
             spacing: 0
 
-            Flow {
-                Layout.fillWidth: true
-                spacing: VPNTheme.theme.vSpacingSmall
+            //superfluous columnlayout fixes binding loop
+            ColumnLayout {
+                anchors.left: parent.left
+                anchors.right: parent.right
 
-                VPNTutorialCard {
-                    width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
-                    height: 144
+                Flow {
+                    Layout.fillWidth: true
+                    spacing: VPNTheme.theme.vSpacingSmall
 
-                    imageSrc: "qrc:/tutorials/01_get_started.svg"
-                    imageBgColor: VPNTheme.theme.ink
-                    cardTypeText: "Tutorial"
-                    title: "Getting started with VPN"
-                    description: "Follow this walkthrough to learn how to get started with using your VPN."
-                }
+                    VPNTutorialCard {
+                        property variant tutorial: VPNTutorial.getTutorialById("01_get_started")
 
-                VPNTutorialCard {
-                    width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
-                    height: 144
+                        width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
+                        height: 144
 
-                    imageSrc: "qrc:/tutorials/01_get_started.svg"
-                    imageBgColor: VPNTheme.theme.ink
-                    cardTypeText: "Feature tour"
-                    title: "Getting started with VPN"
-                    description: "Follow this walkthrough to learn how to get started with using your VPN."
-                }
-            }
+                        imageSrc: tutorial.image
+                        imageBgColor: VPNTheme.theme.ink // ML TODO: REPLACE WITH MODEL DATA
+                        title: VPNl18n[tutorial.titleId]
+                        description: VPNl18n[tutorial.subtitleId]
+                    }
 
+                    VPNTutorialCard {
+                        width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
+                        height: 144
 
-            VPNBoldLabel {
-                Layout.topMargin: 32
-                Layout.fillWidth: true
-
-                text: "Quick tips" //ML TODO: REPLACE WITH L10N
-                elide: Text.ElideRight
-                lineHeightMode: Text.FixedHeight
-                lineHeight: 24
-                horizontalAlignment: Text.AlignLeft
-                verticalAlignment: Text.AlignVCenter
-                maximumLineCount: 2
-                wrapMode: Text.WordWrap
-
-                Accessible.role: Accessible.StaticText
-                Accessible.name: text
-            }
-
-            VPNTextBlock {
-                Layout.topMargin: 4
-                Layout.fillWidth: true
-
-                text: "Let us help you get the most out of Mozilla VPN" //ML TODO: REPLACE WITH L10N
-            }
-
-
-            Flow {
-                Layout.topMargin: VPNTheme.theme.vSpacingSmall
-                Layout.fillWidth: true
-                spacing: 16
-
-                Repeater {
-                    model: VPNGuide
-                    delegate: VPNGuideCard {
-                        height: 172
-                        width: vpnFlickable.screenWidth < root.tabletSize ? (parent.width - parent.spacing) / 2 : (parent.width - (parent.spacing * 2)) / 3
-
-                        imageSrc: guide.image
-                        title: VPNl18n[guide.titleId]
+                        imageSrc: "qrc:/ui/resources/sparkling-check.svg"
+                        imageBgColor: "#2B2A33" // ML TODO: REPLACE WITH MODEL DATA
+                        cardTypeText: VPNl18n.TipsAndTricksFeatureTourLabel
+                        title: VPNl18n.TipsAndTricksWhatsNewTitle
+                        description: VPNl18n.TipsAndTricksWhatsNewDescription
                     }
                 }
-            }
 
-            VPNTutorialCard {
-                Layout.topMargin: 32
-                Layout.preferredWidth: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
-                Layout.preferredHeight: 144
 
-                imageSrc: "qrc:/tutorials/01_get_started.svg"
-                imageBgColor: VPNTheme.theme.ink
-                cardTypeText: "Tutorial"
-                title: "Getting started with VPN"
-                description: "Follow this walkthrough to learn how to get started with using your VPN."
-            }
+                VPNBoldLabel {
+                    Layout.topMargin: 32
+                    Layout.fillWidth: true
 
-            //padding for the bottom of the flickable
-            Item {
-                Layout.preferredHeight: 66
+                    text: VPNl18n.TipsAndTricksQuickTipsTitle
+                    elide: Text.ElideRight
+                    lineHeightMode: Text.FixedHeight
+                    lineHeight: 24
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    maximumLineCount: 2
+                    wrapMode: Text.WordWrap
+
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
+                }
+
+                VPNTextBlock {
+                    Layout.topMargin: 4
+                    Layout.fillWidth: true
+
+                    text: VPNl18n.TipsAndTricksQuickTipsDescription
+                }
+
+
+                Flow {
+                    Layout.topMargin: VPNTheme.theme.vSpacingSmall
+                    Layout.fillWidth: true
+                    spacing: 16
+
+                    Repeater {
+                        model: VPNGuide
+                        delegate: VPNGuideCard {
+                            height: 172
+                            width: vpnFlickable.screenWidth < root.tabletSize ? (parent.width - parent.spacing) / 2 : (parent.width - (parent.spacing * 2)) / 3
+
+                            imageSrc: guide.image
+                            title: VPNl18n[guide.titleId]
+
+                            Component.onCompleted: {
+                                console.info(guide.titleId)
+                            }
+                        }
+                    }
+                }
+
+                VPNTutorialCard {
+                    property variant tutorial: VPNTutorial.getTutorialById("02_connect_on_startup")
+
+                    Layout.topMargin: 32
+                    Layout.preferredWidth: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
+                    Layout.preferredHeight: 144
+
+                    width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
+                    height: 144
+
+                    imageSrc: tutorial.image
+                    imageBgColor: VPNTheme.theme.ink // ML TODO: REPLACE WITH MODEL DATA
+                    title: VPNl18n[tutorial.titleId]
+                    description: VPNl18n[tutorial.subtitleId]
+                }
+
+                //padding for the bottom of the flickable
+                Item {
+                    Layout.preferredHeight: 66
+                }
             }
         }
     }

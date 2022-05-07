@@ -12,9 +12,11 @@ VPNCard {
 
     property alias imageSrc: heroImage.source
     property alias imageBgColor: imageBg.color
-    property alias cardTypeText: cardTypeText.text
+    property string cardTypeText: VPNl18n.TipsAndTricksTutorialLabel //defaults card type to "tutorial"
     property alias title: titleText.text
     property alias description: descriptionText.text
+
+    Accessible.name: "" //ML TODO ADD ACCESSIBILITY
 
     RowLayout {
         anchors.fill: parent
@@ -60,6 +62,7 @@ VPNCard {
 
                 Layout.fillWidth: true
 
+                text: root.cardTypeText
                 elide: Text.ElideRight
                 font.pixelSize: VPNTheme.theme.fontSizeSmallest
                 font.family: VPNTheme.theme.fontInterSemiBoldFamily
