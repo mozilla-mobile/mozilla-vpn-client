@@ -16,7 +16,7 @@ VPNCard {
     property alias title: titleText.text
     property alias description: descriptionText.text
 
-    Accessible.name: "" //ML TODO ADD ACCESSIBILITY
+    Accessible.name: root.cardTypeText + "," + title + "," + description
 
     RowLayout {
         anchors.fill: parent
@@ -75,6 +75,7 @@ VPNCard {
 
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
+                Accessible.ignored: true
             }
 
 
@@ -94,6 +95,7 @@ VPNCard {
 
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
+                Accessible.ignored: true
             }
 
             Text {
@@ -115,6 +117,7 @@ VPNCard {
 
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
+                Accessible.ignored: true
             }
         }
     }

@@ -3,6 +3,7 @@
   "title": "Connecting to other devices while using VPN",
   "subtitle": "Enabling local network access allows you to connect to other devices without sacrificing your VPN protection.",
   "image": "qrc:/guides/04_connecting_external_devices.svg",
+  "image_bg_color": "#50134B",
   "blocks": [
     { "id": "c_1",
       "type": "title",

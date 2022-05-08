@@ -3,6 +3,7 @@
   "title": "Is my VPN connected to the right server location?",
   "subtitle": "Test your geolocation on one of our 400+ worldwide servers in two super simple ways:",
   "image": "qrc:/guides/02_is_my_vpn_working_correctly.svg",
+  "image_bg_color": "#50134B",
   "blocks": [
     { "id": "c_1",
       "type": "title",

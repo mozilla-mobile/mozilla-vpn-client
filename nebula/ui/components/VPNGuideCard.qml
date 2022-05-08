@@ -11,7 +11,10 @@ VPNCard {
     id: root
 
     property alias imageSrc: heroImage.source
+    property alias imageBgColor: imageBg.color
     property alias title: textTitle.text
+
+    Accessible.name: title
 
     ColumnLayout {
         id: layout
@@ -20,11 +23,11 @@ VPNCard {
         spacing: 8
 
         Rectangle {
+            id: imageBg
             Layout.fillWidth: true
             Layout.preferredHeight: 104
 
             radius: root.radius
-            color: VPNTheme.colors.pink90
 
             //Used to get flat edges at the bottom of hero image background
             Rectangle {
@@ -66,6 +69,7 @@ VPNCard {
 
             Accessible.role: Accessible.StaticText
             Accessible.name: text
+            Accessible.ignored: true
         }
 
         VPNVerticalSpacer {

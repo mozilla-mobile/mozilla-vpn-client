@@ -3,6 +3,7 @@
   "title": "The top uses and benefits of using Mozilla VPN",
   "subtitle": "Mozilla VPN secures the connection between your device and the web. Here’s some of the most useful features your VPN offers:",
   "image": "qrc:/guides/01_how_to_vpn.svg",
+  "image_bg_color": "#50134B",
   "blocks": [
     { "id": "c_1",
       "type": "title",
