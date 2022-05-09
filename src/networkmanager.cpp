@@ -73,10 +73,6 @@ QByteArray NetworkManager::userAgent() {
       flags.append("iap:true");
     }
 
-    if (FeatureInAppAuth::instance()->isSupported()) {
-      flags.append("aia:true");
-    }
-
 #ifdef MVPN_EXTRA_USERAGENT
     flags.append(MVPN_EXTRA_USERAGENT);
 #endif
