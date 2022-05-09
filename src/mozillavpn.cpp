@@ -352,18 +352,8 @@ void MozillaVPN::setState(State state) {
 void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
-  if (!modelsInitialized()) {
-    logger.warning() << "Models not initialized yet";
-    SettingsHolder::instance()->clear();
-    errorHandle(ErrorHandler::RemoteServiceError);
-    setUserState(UserNotAuthenticated);
-    setState(StateInitialize);
-    return;
-  }
-
-  Q_ASSERT(m_private->m_serverData.initialized());
-
-  if (FeatureInAppPurchase::instance()->isSupported()) {
+  if (m_private->m_user.initialized() &&
+      FeatureInAppPurchase::instance()->isSupported()) {
     if (m_state != StateSubscriptionBlocked &&
         m_private->m_user.subscriptionNeeded()) {
       logger.info() << "Subscription needed";
@@ -375,6 +365,17 @@ void MozillaVPN::maybeStateMain() {
       return;
     }
   }
+
+  if (!modelsInitialized()) {
+    logger.warning() << "Models not initialized yet";
+    SettingsHolder::instance()->clear();
+    errorHandle(ErrorHandler::RemoteServiceError);
+    setUserState(UserNotAuthenticated);
+    setState(StateInitialize);
+    return;
+  }
+
+  Q_ASSERT(m_private->m_serverData.initialized());
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
