@@ -398,7 +398,7 @@ int IOSIAPHandler::discountToDays(void* aDiscount) {
   if (discount == nullptr) {
     return 0;
   }
-  if (discount.paymentMode == SKProductDiscountPaymentMode::SKProductDiscountPaymentModeFreeTrial) {
+  if (discount.paymentMode != SKProductDiscountPaymentMode::SKProductDiscountPaymentModeFreeTrial) {
     return 0;
   }
   // Is it a week / day / month
