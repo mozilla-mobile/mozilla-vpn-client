@@ -40,7 +40,14 @@ class SettingsHolder final : public QObject {
   };
   Q_ENUM(DnsProvider)
 
-  QString getReport();
+  // Don't use this directly!
+  QVariant rawSetting(const QString& key) const;
+
+#ifdef UNIT_TEST
+  void setRawSetting(const QString& key, const QVariant& value);
+#endif
+
+  QString getReport() const;
 
   void clear();
 

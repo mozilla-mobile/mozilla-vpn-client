@@ -831,3 +831,27 @@ sample:
       stddev:
         description: Standard deviation of the ping responses
         type: string
+
+  app_step:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The application state flow (authenticating, subscribing, main, etc).
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3411
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1767028
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      state:
+        description: |
+          The name of the app state, e.g. "authenticating", "device-limit",
+          "main", "subscription-needed", etc. The list can be found in
+          `mozillavpn.h`.
+        type: string

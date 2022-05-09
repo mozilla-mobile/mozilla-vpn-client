@@ -9,6 +9,11 @@ on:
       - main
       - 'releases/**'
 
+# Restrict tests to the most recent commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_test_app:
     name: Build Test Client

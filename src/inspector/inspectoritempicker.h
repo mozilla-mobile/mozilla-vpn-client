@@ -12,7 +12,7 @@ class InspectorItemPicker final : public ItemPicker {
   explicit InspectorItemPicker(QObject* parent);
 
  private:
-  bool itemPicked(const QStringList& list) override;
+  bool itemPicked(const QList<QQuickItem*>& list) override;
 };
 
 #endif  // INSPECTORITEMPICKER_H

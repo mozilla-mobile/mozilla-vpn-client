@@ -11,7 +11,6 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "models/tutorial.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "notificationhandler.h"
@@ -796,34 +795,6 @@ static QList<InspectorCommand> s_commands{
 
           return QJsonObject();
         }},
-
-    InspectorCommand{
-        "tutorial", "Play a tutorial", 1,
-        [](InspectorHandler* handler, const QList<QByteArray>& arguments) {
-          QJsonObject obj;
-          Tutorial* tutorial = Tutorial::create(handler, arguments[1]);
-          obj["success"] = !!tutorial;
-          if (tutorial) {
-            QObject::connect(tutorial, &Tutorial::playingChanged, handler,
-                             [handler, tutorial]() {
-                               QJsonObject obj;
-                               obj["type"] = tutorial->isPlaying()
-                                                 ? "tutorialStarted"
-                                                 : "tutorialCompleted";
-                               handler->send(QJsonDocument(obj).toJson(
-                                   QJsonDocument::Compact));
-
-                               if (!tutorial->isPlaying()) {
-                                 tutorial->deleteLater();
-                               }
-                             });
-
-            tutorial->play();
-          }
-
-          return obj;
-        }},
-
 };
 
 // static
@@ -1047,7 +1018,15 @@ QJsonObject InspectorHandler::serialize(QQuickItem* item) {
   return out;
 }
 
-void InspectorHandler::itemsPicked(const QStringList& objectNames) {
+void InspectorHandler::itemsPicked(const QList<QQuickItem*>& objects) {
+  QStringList objectNames;
+  for (QQuickItem* object : objects) {
+    QString objectName = object->objectName();
+    if (!objectName.isEmpty()) {
+      objectNames.append(objectName);
+    }
+  }
+
   s_pickedItems = objectNames;
   s_pickedItemsSet = true;
 

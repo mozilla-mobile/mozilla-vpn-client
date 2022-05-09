@@ -25,7 +25,7 @@ class InspectorHandler : public QObject {
   static QString getObjectClass(const QObject* target);
   static QJsonObject getViewTree();
   static QJsonObject serialize(QQuickItem* item);
-  static void itemsPicked(const QStringList& objectNames);
+  static void itemsPicked(const QList<QQuickItem*>& objects);
 
   void recv(const QByteArray& buffer);
   virtual void send(const QByteArray& buffer) = 0;

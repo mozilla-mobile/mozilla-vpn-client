@@ -68,3 +68,52 @@ QVariant TutorialModel::data(const QModelIndex& index, int role) const {
       return QVariant();
   }
 }
+
+void TutorialModel::allowItem(const QString& objectName) {
+  m_allowedItems.append(objectName);
+}
+
+void TutorialModel::play(Tutorial* tutorial) {
+  Q_ASSERT(tutorial);
+
+  stop();
+
+  m_currentTutorial = tutorial;
+  emit playingChanged();
+
+  tutorial->play(m_allowedItems);
+}
+
+void TutorialModel::stop() {
+  if (m_currentTutorial) {
+    requireTooltipShown(m_currentTutorial, false);
+
+    m_currentTutorial->stop();
+    m_currentTutorial = nullptr;
+
+    emit playingChanged();
+  }
+}
+
+void TutorialModel::requireTooltipNeeded(Tutorial* tutorial,
+                                         const QString& tooltipText,
+                                         const QRectF& itemRect) {
+  Q_ASSERT(tutorial);
+  Q_ASSERT(tutorial == m_currentTutorial);
+  emit tooltipNeeded(tooltipText, itemRect);
+}
+
+void TutorialModel::requireTutorialCompleted(
+    Tutorial* tutorial, const QString& completionMessageText) {
+  Q_ASSERT(tutorial);
+  Q_ASSERT(tutorial == m_currentTutorial);
+  emit tutorialCompleted(completionMessageText);
+}
+
+void TutorialModel::requireTooltipShown(Tutorial* tutorial, bool shown) {
+  Q_ASSERT(tutorial);
+  Q_ASSERT(tutorial == m_currentTutorial);
+
+  m_tooltipShown = shown;
+  emit tooltipShownChanged();
+}

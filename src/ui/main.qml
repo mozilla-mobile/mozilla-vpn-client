@@ -287,7 +287,6 @@ Window {
             }
             // If we can't show logs natively, open the viewer
             mainStackView.push("qrc:/ui/views/ViewLogs.qml");
-            
         }
 
         function onLoadAndroidAuthenticationView() {
@@ -305,13 +304,14 @@ Window {
                 Glean.setDebugViewTag("MozillaVPN");
             }
             var channel = VPN.stagingMode ? "staging" : "production";
+
             console.debug("Initializing glean with channel set to:", channel);
             Glean.initialize("mozillavpn", VPNSettings.gleanEnabled, {
                 appBuild: "MozillaVPN/" + VPN.versionString,
                 appDisplayVersion: VPN.versionString,
                 channel: channel,
                 osVersion: VPN.osVersion,
-                architecture: VPN.architecture,
+                architecture: [VPN.architecture, VPN.graphicsApi].join(" ").trim(),
             });
         }
 
@@ -408,7 +408,7 @@ Window {
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
                 isMainView: true,
-                
+
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -432,7 +432,7 @@ Window {
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
                 isMainView: true,
-                
+
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -458,7 +458,7 @@ Window {
     Popup {
         id: tooltip
         property alias text: text.text
-        visible: false
+        visible: VPNTutorial.tooltipShown
         x: VPNTheme.theme.windowMargin
         width: parent.width - VPNTheme.theme.windowMargin * 2
 
@@ -489,8 +489,8 @@ Window {
             tooltip.open();
         }
 
-        function onPlayingChanged() {
-            tooltip.visible = VPNTutorial.tooltipShown
+        function onTutorialCompleted(text) {
+            console.log("TODO", text);
         }
     }
 
