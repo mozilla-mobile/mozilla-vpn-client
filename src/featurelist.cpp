@@ -11,10 +11,12 @@
 #  include "adjust/adjustfiltering.h"
 #endif
 
+#include "features/featureaccountdeletion.h"
 #include "features/featureappreview.h"
 #include "features/featurecaptiveportal.h"
 #include "features/featureconnectioninfo.h"
 #include "features/featurecustomdns.h"
+#include "features/featurefreetrial.h"
 #include "features/featureinappaccountcreate.h"
 #include "features/featureinappauth.h"
 #include "features/featureinapppurchase.h"
@@ -52,10 +54,12 @@ FeatureList* FeatureList::instance() {
 }
 
 void FeatureList::initialize() {
+  new FeatureAccountDeletion();
   new FeatureAppReview();
   new FeatureCaptivePortal();
   new FeatureConnectionInfo();
   new FeatureCustomDNS();
+  new FeatureFreeTrial();
   new FeatureInAppAccountCreate();
   new FeatureInAppAuth();
   new FeatureInAppPurchase();

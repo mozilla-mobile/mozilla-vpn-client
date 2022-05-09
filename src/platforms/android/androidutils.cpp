@@ -4,25 +4,22 @@
 
 #include "androidutils.h"
 #include "androidauthenticationlistener.h"
-#include "androidjnicompat.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "settingsholder.h"
 #include "qmlengineholder.h"
 #include "jni.h"
 
+#include <QJniObject>
+#include <QJniEnvironment>
 #include <QApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
-
-#if QT_VERSION < 0x060000
-#  include <QtAndroid>
-#  include <QAndroidIntent>
-#endif
 
 namespace {
 AndroidUtils* s_instance = nullptr;
@@ -234,11 +231,7 @@ void AndroidUtils::openNotificationSettings() {
 }
 
 QJniObject AndroidUtils::getActivity() {
-#if QT_VERSION >= 0x060000
   return QNativeInterface::QAndroidApplication::context();
-#else
-  return QtAndroid::androidActivity();
-#endif
 }
 
 int AndroidUtils::GetSDKVersion() {
@@ -251,12 +244,8 @@ int AndroidUtils::GetSDKVersion() {
 
 void AndroidUtils::runOnAndroidThreadSync(
     const std::function<void()> runnable) {
-#if QT_VERSION >= 0x060000
   QNativeInterface::QAndroidApplication::runOnAndroidMainThread(runnable)
       .waitForFinished();
-#else
-  QtAndroid::runOnAndroidThreadSync(runnable);
-#endif
 }
 
 void AndroidUtils::recordGleanEvent(JNIEnv* env, jobject VPNUtils,

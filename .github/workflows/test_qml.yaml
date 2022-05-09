@@ -9,6 +9,11 @@ on:
       - main
       - 'releases/**'
 
+# Restrict tests to the most recent commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   linux-qml-tests:
     runs-on: ubuntu-20.04

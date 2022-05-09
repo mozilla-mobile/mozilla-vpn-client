@@ -123,4 +123,12 @@ Item {
         }
     }
 
+    Connections {
+        target: VPN
+        function onContactUsNeeded() {
+            const sv = isSettingsView ? settingsStackView : isMainView ? mainStackView : stackview
+            if (sv.currentItem.objectName === "contactUs") return;
+            sv.push("qrc:/ui/views/ViewContactUs.qml", { isMainView: false });
+        }
+    }
 }

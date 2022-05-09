@@ -23,7 +23,7 @@ RowLayout {
 
     signal clicked()
 
-    spacing: VPNTheme.theme.windowMargin
+    spacing: VPNTheme.theme.windowMargin * 0.5
 
     VPNCheckBox {
         id: checkBox
@@ -76,6 +76,7 @@ RowLayout {
             visible: labelVisible
             color: VPNTheme.theme.fontColorDark
             horizontalAlignment: Text.AlignLeft
+            visible: !!labelText.length
 
             VPNMouseArea {
                 propagateClickToParent: false

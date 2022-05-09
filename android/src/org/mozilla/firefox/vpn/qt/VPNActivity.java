@@ -17,11 +17,11 @@ import android.os.RemoteException;
 import android.view.KeyEvent;
 
 import org.mozilla.firefox.vpn.VPNClientBinder;
-import org.mozilla.firefox.vpn.VPNService;
+import org.mozilla.firefox.vpn.daemon.VPNService;
 
 import java.nio.charset.StandardCharsets;
 
-public class VPNActivity extends org.mozilla.firefox.vpn.compat.CompatVPNActivity {
+public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

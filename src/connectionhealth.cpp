@@ -47,8 +47,10 @@ ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
   m_noSignalTimer.setSingleShot(true);
 
   m_settlingTimer.setSingleShot(true);
-  connect(&m_settlingTimer, &QTimer::timeout, this,
-          []() { logger.debug() << "Unsettled period over."; });
+  connect(&m_settlingTimer, &QTimer::timeout, this, [this]() {
+    logger.debug() << "Unsettled period over.";
+    emit unsettledChanged();
+  });
 
   connect(&m_healthCheckTimer, &QTimer::timeout, this,
           &ConnectionHealth::healthCheckup);
@@ -228,6 +230,7 @@ void ConnectionHealth::healthCheckup() {
 
 void ConnectionHealth::startUnsettledPeriod() {
   logger.debug() << "Starting unsettled period.";
+  emit unsettledChanged();
   m_settlingTimer.start(SETTLING_TIMEOUT_SEC * 1000);
 }
 

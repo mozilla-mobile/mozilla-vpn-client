@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "authenticationinapp.h"
-#include "authenticationinapplistener.h"
+#include "authenticationinappsession.h"
+#include "incrementaldecoder.h"
 #include "logger.h"
 #include "leakdetector.h"
-#include "incrementaldecoder.h"
+#include "mozillavpn.h"
 
 #include "../../glean/telemetry/gleansample.h"
 
@@ -52,41 +53,40 @@ void AuthenticationInApp::setState(State state) {
       {{"state", QVariant::fromValue(state).toString()}});
 }
 
-void AuthenticationInApp::registerListener(
-    AuthenticationInAppListener* listener) {
-  Q_ASSERT(listener);
-  Q_ASSERT(!m_listener);
+void AuthenticationInApp::registerSession(AuthenticationInAppSession* session) {
+  Q_ASSERT(session);
+  Q_ASSERT(!m_session);
 
-  m_listener = listener;
-  connect(listener, &QObject::destroyed, this, [this]() {
-    m_listener = nullptr;
+  m_session = session;
+  connect(session, &QObject::destroyed, this, [this]() {
+    m_session = nullptr;
     setState(StateInitializing);
   });
 }
 
 void AuthenticationInApp::checkAccount(const QString& emailAddress) {
   Q_ASSERT(m_state == StateStart);
-  Q_ASSERT(m_listener);
+  Q_ASSERT(m_session);
 
   logger.debug() << "Authentication starting";
 
-  m_listener->checkAccount(emailAddress);
+  m_session->checkAccount(emailAddress);
 }
 
 void AuthenticationInApp::reset() {
-  Q_ASSERT(m_listener);
+  Q_ASSERT(m_session);
   logger.debug() << "Authentication reset";
   setState(StateStart);
-  m_listener->reset();
+  m_session->reset();
 }
 
 void AuthenticationInApp::setPassword(const QString& password) {
   Q_ASSERT(m_state == StateSignIn || m_state == StateSignUp);
-  Q_ASSERT(m_listener);
+  Q_ASSERT(m_session);
 
   logger.debug() << "Setting the password";
 
-  m_listener->setPassword(password);
+  m_session->setPassword(password);
 }
 
 void AuthenticationInApp::signIn() {
@@ -97,19 +97,27 @@ void AuthenticationInApp::signIn() {
   // possible to reproduce it with one single istance of AuthenticationInApp.
   Q_ASSERT(m_state == StateSignIn);
 #endif
-  Q_ASSERT(m_listener);
+  Q_ASSERT(m_session);
 
   logger.debug() << "Sign In";
 
-  m_listener->signIn();
+  m_session->signIn();
 }
 
 const QString& AuthenticationInApp::emailAddress() const {
-  Q_ASSERT(m_listener);
+  Q_ASSERT(m_session);
 
   logger.debug() << "Get email address";
 
-  return m_listener->emailAddress();
+  return m_session->emailAddress();
+}
+
+const QStringList& AuthenticationInApp::attachedClients() const {
+  Q_ASSERT(m_session);
+
+  logger.debug() << "Get attached clients";
+
+  return m_session->attachedClients();
 }
 
 void AuthenticationInApp::signUp() {
@@ -120,84 +128,90 @@ void AuthenticationInApp::signUp() {
   // possible to reproduce it with one single istance of AuthenticationInApp.
   Q_ASSERT(m_state == StateSignUp);
 #endif
-  Q_ASSERT(m_listener);
+  Q_ASSERT(m_session);
 
   logger.debug() << "Sign Up";
 
-  m_listener->signUp();
+  m_session->signUp();
 }
 
 #ifdef UNIT_TEST
 void AuthenticationInApp::enableTotpCreation() {
   Q_ASSERT(m_state == StateSignIn || m_state == StateSignUp);
-  Q_ASSERT(m_listener);
+  Q_ASSERT(m_session);
 
-  m_listener->enableTotpCreation();
+  m_session->enableTotpCreation();
 }
 
 void AuthenticationInApp::allowUpperCaseEmailAddress() {
-  Q_ASSERT(m_listener);
-  m_listener->allowUpperCaseEmailAddress();
-}
-
-void AuthenticationInApp::enableAccountDeletion() {
-  Q_ASSERT(m_state == StateSignIn || m_state == StateSignUp);
-  Q_ASSERT(m_listener);
-
-  m_listener->enableAccountDeletion();
+  Q_ASSERT(m_session);
+  m_session->allowUpperCaseEmailAddress();
 }
 #endif
 
 void AuthenticationInApp::verifyUnblockCode(const QString& unblockCode) {
   Q_ASSERT(m_state == StateUnblockCodeNeeded);
-  Q_ASSERT(m_listener);
-  m_listener->verifyUnblockCode(unblockCode);
+  Q_ASSERT(m_session);
+  m_session->verifyUnblockCode(unblockCode);
 }
 
 void AuthenticationInApp::resendUnblockCodeEmail() {
   Q_ASSERT(m_state == StateUnblockCodeNeeded);
-  Q_ASSERT(m_listener);
-  m_listener->sendUnblockCodeEmail();
+  Q_ASSERT(m_session);
+  m_session->sendUnblockCodeEmail();
 }
 
 void AuthenticationInApp::verifySessionEmailCode(const QString& code) {
   Q_ASSERT(m_state == StateVerificationSessionByEmailNeeded);
-  Q_ASSERT(m_listener);
-  m_listener->verifySessionEmailCode(code);
+  Q_ASSERT(m_session);
+  m_session->verifySessionEmailCode(code);
 }
 
 void AuthenticationInApp::resendVerificationSessionCodeEmail() {
   Q_ASSERT(m_state == StateVerificationSessionByEmailNeeded);
-  Q_ASSERT(m_listener);
-  m_listener->resendVerificationSessionCodeEmail();
+  Q_ASSERT(m_session);
+  m_session->resendVerificationSessionCodeEmail();
 }
 
 void AuthenticationInApp::verifySessionTotpCode(const QString& code) {
   Q_ASSERT(m_state == StateVerificationSessionByTotpNeeded);
-  Q_ASSERT(m_listener);
-  m_listener->verifySessionTotpCode(code);
+  Q_ASSERT(m_session);
+  m_session->verifySessionTotpCode(code);
+}
+
+void AuthenticationInApp::deleteAccount() {
+  Q_ASSERT(m_state == StateAccountDeletionRequest);
+  Q_ASSERT(m_session);
+  m_session->deleteAccount();
 }
 
 void AuthenticationInApp::requestEmailAddressChange(
-    AuthenticationInAppListener* listener) {
-  Q_ASSERT(listener);
-  Q_ASSERT(m_listener == listener);
+    AuthenticationInAppSession* session) {
+  Q_ASSERT(session);
+  Q_ASSERT(m_session == session);
   emit emailAddressChanged();
 }
 
+void AuthenticationInApp::requestAttachedClientsChange(
+    AuthenticationInAppSession* session) {
+  Q_ASSERT(session);
+  Q_ASSERT(m_session == session);
+  emit attachedClientsChanged();
+}
+
 void AuthenticationInApp::requestState(State state,
-                                       AuthenticationInAppListener* listener) {
-  Q_ASSERT(listener);
-  Q_ASSERT(m_listener == listener);
+                                       AuthenticationInAppSession* session) {
+  Q_ASSERT(session);
+  Q_ASSERT(m_session == session);
 
   setState(state);
 }
 
 void AuthenticationInApp::requestErrorPropagation(
-    AuthenticationInAppListener* listener, ErrorType errorType,
+    AuthenticationInAppSession* session, ErrorType errorType,
     uint32_t retryAfterSec) {
-  Q_ASSERT(listener);
-  Q_ASSERT(m_listener == listener);
+  Q_ASSERT(session);
+  Q_ASSERT(m_session == session);
 
   emit errorOccurred(errorType, retryAfterSec);
 }
@@ -278,7 +292,13 @@ bool AuthenticationInApp::validatePasswordLength(const QString& password) {
 
 bool AuthenticationInApp::validatePasswordEmail(const QString& password) {
   Q_ASSERT(m_state == StateSignUp);
-  Q_ASSERT(m_listener);
+  Q_ASSERT(m_session);
 
-  return !m_listener->emailAddress().contains(password);
+  return !m_session->emailAddress().contains(password);
+}
+
+void AuthenticationInApp::terminateSession() {
+  if (m_session) {
+    m_session->terminate();
+  }
 }

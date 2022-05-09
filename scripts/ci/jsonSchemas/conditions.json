@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "Optional list of conditions to include this guide",
+  "properties": {
+    "enabledFeatures": {
+      "type": "array",
+      "description": "List of required features",
+      "items": {
+        "type": "string"
+      }
+    },
+    "platforms": {
+      "type": "array",
+      "description": "List of supported platforms",
+      "items": {
+        "type": "string"
+      }
+    },
+    "settings": {
+      "type": "array",
+      "description": "List of settings flags to match",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "A setting flag to match",
+        "properties": {
+          "setting": {
+            "type": "string",
+            "description": "The setting flag name"
+          },
+          "value": {
+            "description": "The setting flag value"
+          },
+          "op": {
+            "type": "string",
+            "description": "Operator: eq, neq"
+          }
+        },
+        "required": [ "setting", "value", "op" ]
+      }
+    }
+  }
+}

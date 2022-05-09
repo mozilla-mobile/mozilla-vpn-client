@@ -132,6 +132,7 @@ Rectangle {
 
     VPNConnectionInfoError {
         id: connectionInfoError
+        objectName: "connectionInfoError"
 
         opacity: visible && root.state !== "closing" ? 1 : 0
         visible: root.state === "open-error" || root.state === "closing"
@@ -155,7 +156,9 @@ Rectangle {
         z: 1
 
         onClicked: {
-            VPNConnectionBenchmark.start();
+            if (VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateRunning) {
+                VPNConnectionBenchmark.start();
+            }
         }
 
         Image {

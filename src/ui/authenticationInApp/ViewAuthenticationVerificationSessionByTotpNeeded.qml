@@ -27,7 +27,13 @@ VPNInAppAuthenticationBase {
     Component.onCompleted: console.log("SESSION VERIFICATION BY TOTP")
 
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
-    _menuButtonOnClick: () => { VPN.cancelAuthentication() }
+    _menuButtonOnClick: () => {
+        if (isDeleteAccountAuth) {
+            cancelAccountDeletion();
+        } else {
+            VPN.cancelAuthentication();
+        }
+    }
     _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
     _headlineText: VPNl18n.InAppAuthSecurityCodeTitle
     _subtitleText: VPNl18n.InAppAuthSecurityCodeSubtitle
@@ -45,6 +51,15 @@ VPNInAppAuthenticationBase {
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
 
-        VPNInAppAuthenticationCancel {}
+        VPNCancelButton {
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: {
+                if (isDeleteAccountAuth) {
+                    cancelAccountDeletion();
+                } else {
+                    VPN.cancelAuthentication();
+                }
+            }
+        }
     }
 }

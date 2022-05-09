@@ -25,6 +25,10 @@ adjust {
        adjust/adjusttasksubmission.h
 }
 
+versionAtMost(QT_VERSION, 6.2.0) {
+  error("Minimum Qt version is 6.2 ")
+}
+
 versionAtLeast(QT_VERSION, 5.15.1) {
   QMAKE_CXXFLAGS *= -Werror
 }

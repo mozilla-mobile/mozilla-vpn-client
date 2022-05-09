@@ -11,34 +11,14 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
-#include <QCryptographicHash>
 #include <QJSValue>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QRandomGenerator>
 #include <QUrl>
 #include <QUrlQuery>
 
-constexpr const char* CODE_CHALLENGE_METHOD = "S256";
-
 namespace {
-
 Logger logger(LOG_MAIN, "TaskAuthenticate");
-
-QByteArray generatePkceCodeVerifier() {
-  QRandomGenerator* generator = QRandomGenerator::system();
-  Q_ASSERT(generator);
-
-  QByteArray pkceCodeVerifier;
-  static QByteArray range(
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~");
-  for (uint16_t i = 0; i < 128; ++i) {
-    pkceCodeVerifier.append(range.at(generator->generate() % range.length()));
-  }
-
-  return pkceCodeVerifier;
-}
-
 }  // anonymous namespace
 
 TaskAuthenticate::TaskAuthenticate(
@@ -54,11 +34,11 @@ void TaskAuthenticate::run() {
 
   Q_ASSERT(!m_authenticationListener);
 
-  QByteArray pkceCodeVerifier = generatePkceCodeVerifier();
-  QByteArray pkceCodeChallenge =
-      QCryptographicHash::hash(pkceCodeVerifier, QCryptographicHash::Sha256)
-          .toBase64(QByteArray::Base64UrlEncoding);
-  Q_ASSERT(pkceCodeChallenge.length() == 44);
+  QByteArray pkceCodeVerifier;
+  QByteArray pkceCodeChallenge;
+  AuthenticationListener::generatePkceCodes(pkceCodeVerifier,
+                                            pkceCodeChallenge);
+  Q_ASSERT(!pkceCodeVerifier.isEmpty() && !pkceCodeChallenge.isEmpty());
 
   m_authenticationListener =
       AuthenticationListener::create(this, m_authenticationType);

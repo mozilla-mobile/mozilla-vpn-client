@@ -6,6 +6,7 @@ on:
       - main
       - 'releases/**'
     types: [ opened, synchronize, reopened ]
+
 jobs:
   linter:
     runs-on: ubuntu-20.04
@@ -60,6 +61,14 @@ jobs:
           export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           python scripts/ci/check_qrc.py
 
+      - name: Check for guide JSON syntax
+        run: |
+          python scripts/ci/check_jsonschema.py guide.json src/ui/guides
+
+      - name: Check for tutorial JSON syntax
+        run: |
+          python scripts/ci/check_jsonschema.py tutorial.json src/ui/tutorials
+
       - name: Check for issues with clang-format
         uses: DoozyX/clang-format-lint-action@v0.11
         with:
@@ -103,3 +112,6 @@ jobs:
       - name: Test release-push
         run: |
           taskgraph full --p taskcluster/test/params/release-push.yml           
+      - name: Test default parameters
+        run: |
+          taskgraph full

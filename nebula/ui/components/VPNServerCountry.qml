@@ -190,7 +190,7 @@ VPNClickableRow {
                         return stackview.pop();
                     }
 
-                    serversTabs[currentServer.whichHop] = [del._countryCode,  del._cityName, del._localizedCityName]; // [countryCode, cityName, localizedCityName]
+                    segmentedNav[currentServer.whichHop] = [del._countryCode,  del._cityName, del._localizedCityName]; // [countryCode, cityName, localizedCityName]
                     multiHopStackView.pop();
                 }
                 height: itemHeight

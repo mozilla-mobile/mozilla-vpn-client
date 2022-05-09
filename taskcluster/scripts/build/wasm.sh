@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+set -e
 
 source /opt/emsdk/emsdk_env.sh
 
@@ -12,7 +13,7 @@ ls /opt/emsdk/emsdk
 ls /opt/6.2.3/wasm_32/bin
 ls /opt/6.2.3/gcc_64/bin
 
-where qmake 
+which qmake 
 qmake --version
 
 # This script is used in the Android Debug (universal) build task

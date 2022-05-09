@@ -14,7 +14,7 @@ import android.os.Bundle;
 
 import org.mozilla.firefox.vpn.BuildConfig;
 
-public class VPNApplication extends org.mozilla.firefox.vpn.compat.CompatVPNApplication {
+public class VPNApplication extends org.qtproject.qt.android.bindings.QtApplication {
 
   private static VPNApplication instance;
 

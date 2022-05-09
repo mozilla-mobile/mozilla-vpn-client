@@ -1,0 +1,109 @@
+{
+  "id": "01_get_started",
+  "image": "foo.png",
+  "title": "Getting started with VPN",
+  "subtitle": "Follow this walkthrough to learn how to get started with using your VPN.",
+  "completion_message": "You’ve successfully changed your location, turned the VPN on and off. Would you like to learn more tips and tricks?",
+  "steps": [
+    {
+      "id": "mainScreen",
+      "element": "serverListButton",
+      "tooltip": "Select your location",
+      "next": {
+        "op": "signal",
+        "qml_emitter": "serverListButton",
+        "signal": "visibleChanged"
+      }
+    },
+    {
+      "id": "countryAU",
+      "element": "serverCountryList/serverCountry-au",
+      "tooltip": "Select a different country",
+      "conditions": {
+        "settings": [{
+          "setting": "currentServer/countryCode",
+          "value": "au",
+          "op": "neq"
+        }]
+      },
+      "before": [{
+        "op": "property_set",
+        "element": "serverCountryView",
+        "property": "contentY",
+        "value": 0
+      }],
+      "next": {
+        "op": "signal",
+        "qml_emitter": "serverCountryList/serverCountry-au",
+        "signal": "cityListVisibleChanged"
+      }
+    },
+    {
+      "id": "countryAT",
+      "element": "serverCountryList/serverCountry-at",
+      "tooltip": "Select a different country",
+      "conditions": {
+        "settings": [{
+          "setting": "currentServer/countryCode",
+          "value": "au",
+          "op": "eq"
+        }]
+      },
+      "before": [{
+        "op": "property_set",
+        "element": "serverCountryView",
+        "property": "contentY",
+        "value": 0
+      }],
+      "next": {
+        "op": "signal",
+        "qml_emitter": "serverCountryList/serverCountry-at",
+        "signal": "cityListVisibleChanged"
+      }
+    },
+    {
+      "id": "cityAU",
+      "element": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne",
+      "tooltip": "Select a different server location",
+      "conditions": {
+        "settings": [{
+          "setting": "currentServer/countryCode",
+          "value": "au",
+          "op": "neq"
+        }]
+      },
+      "next": {
+        "op": "signal",
+        "qml_emitter": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne",
+        "signal": "visibleChanged"
+      }
+    },
+    {
+      "id": "cityAT",
+      "element": "serverCountryList/serverCountry-at/serverCityList/serverCity-Vienna",
+      "tooltip": "Select a different server location",
+      "conditions": {
+        "settings": [{
+          "setting": "currentServer/countryCode",
+          "value": "au",
+          "op": "eq"
+        }]
+      },
+      "next": {
+        "op": "signal",
+        "qml_emitter": "serverCountryList/serverCountry-at/serverCityList/serverCity-Vienna",
+        "signal": "visibleChanged"
+      }
+    },
+    {
+      "id": "toggle",
+      "element": "controllerToggle",
+      "tooltip": "Toggle this switch to activate or deactivate the VPN",
+      "next": {
+        "op": "signal",
+        "vpn_emitter": "controller",
+        "signal": "stateChanged"
+      }
+    }
+  ]
+}

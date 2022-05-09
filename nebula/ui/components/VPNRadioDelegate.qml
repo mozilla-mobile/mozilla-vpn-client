@@ -19,8 +19,8 @@ RadioDelegate {
     signal clicked()
 
     ButtonGroup.group: radioButtonGroup
-    implicitWidth: parent.width
-    height: VPNTheme.theme.rowHeight
+    implicitWidth: radioButton.implicitWidth + radioButtonLabel.implicitWidth + radioButtonLabel.anchors.leftMargin
+    implicitHeight: Math.max(radioButtonLabel.implicitHeight, radioButton.implicitHeight)
 
     Component.onCompleted: {
         state = Qt.binding(() => radioControl.enabled ? uiState.stateDefault : uiState.stateDisabled)

@@ -33,9 +33,18 @@ describe('Settings', function() {
   }
 
   it('Opening and closing the settings view', async () => {
-    await vpn.waitForElement('settingsCloseButton');
-    await vpn.waitForElementProperty('settingsCloseButton', 'visible', 'true');
-    await vpn.clickOnElement('settingsCloseButton');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
+
+    await vpn.waitForElement('menuIcon');
+    await vpn.waitForElementProperty(
+        'menuIcon', 'source', 'qrc:/nebula/resources/close-dark.svg');
+
+    await vpn.waitForElement('manageAccountButton');
+    await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
+
+
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('controllerTitle');
@@ -111,6 +120,9 @@ describe('Settings', function() {
     await vpn.clickOnElement('languageList/language-it');
     await vpn.wait();
 
+
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
     await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
@@ -156,8 +168,6 @@ describe('Settings', function() {
 
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'manageAccountButton', 'text', 'Manage account');
 
     await vpn.waitForElement('settingsPreferences');
     await vpn.waitForElementProperty('settingsPreferences', 'visible', 'true');
@@ -192,8 +202,6 @@ describe('Settings', function() {
 
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'manageAccountButton', 'text', 'Manage account');
   });
 
   // TODO: app-permission

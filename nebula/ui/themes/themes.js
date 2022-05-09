@@ -33,6 +33,7 @@ theme.purple60 = '#7542E5';
 theme.red = '#FF4F5E';
 theme.redHovered = '#E22850';
 theme.redPressed = '#C50042';
+theme.redDisabled = '#FFBDC5';
 theme.redfocusOutline = '#66C50042';
 theme.white = '#FFFFFF'
 
@@ -47,6 +48,7 @@ theme.fontColorDark = '#3D3D3D';
 theme.fontFamily = 'Metropolis';
 theme.fontBoldFamily = 'MetropolisSemiBold';
 theme.fontInterFamily = 'InterUI';
+theme.fontInterSemiBoldFamily = 'InterSemiBold';
 theme.fontSize = 15;
 theme.fontSizeLarge = 22;
 theme.fontSizeSmall = 13;
@@ -124,7 +126,7 @@ theme.iconButtonLightBackground = {
   'defaultColor': theme.bgColorTransparent,
   'buttonHovered': theme.greyHovered,
   'buttonPressed': theme.greyPressed,
-  'buttonDisabled': theme.greyDisabled,
+  'buttonDisabled': theme.transparent,
   'focusOutline': theme.bgColorTransparent,
   'focusBorder': theme.darkFocusBorder,
 };
@@ -168,6 +170,7 @@ theme.redButton = {
   'defaultColor': theme.red,
   'buttonHovered': theme.redHovered,
   'buttonPressed': theme.redPressed,
+  'buttonDisabled': theme.redDisabled,
   'focusOutline': theme.redfocusOutline,
   'focusBorder': theme.redPressed,
 };

@@ -56,12 +56,6 @@ VPNFlickable {
         }
     }
 
-    MouseArea {
-        anchors.fill: parent
-        enabled: box.connectionInfoScreenVisible
-        onClicked: box.closeConnectionInfo()
-    }
-
     GridLayout {
         id: col
 
@@ -222,16 +216,6 @@ VPNFlickable {
                 stackview.pop(null, StackView.Immediate);
             }
             stackview.push(aboutUsComponent);
-        }
-
-        function onContactUsNeeded() {
-            if (stackview.currentItem.objectName === "contactUs") return;
-
-            while(stackview.depth > 1) {
-                stackview.pop(null, StackView.Immediate);
-            }
-
-            stackview.push("qrc:/ui/views/ViewContactUs.qml", { isMainView: false });
         }
     }
 }

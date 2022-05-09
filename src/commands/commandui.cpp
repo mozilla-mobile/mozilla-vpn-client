@@ -20,17 +20,19 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "loghandler.h"
+#include "models/guidemodel.h"
+#include "models/tutorialmodel.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "theme.h"
-#include "tutorial.h"
 
 #include <glean.h>
 #include <lottie.h>
 #include <nebula.h>
+
+#include <QQmlContext>
 
 #ifdef MVPN_DEBUG
 #  include <QQmlDebuggingEnabler>
@@ -182,6 +184,10 @@ int CommandUI::run(QStringList& tokens) {
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+
+    // TODO pending #3398
+    QQmlContext* ctx = engine->rootContext();
+    ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
     Glean::Initialize(engine);
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
@@ -472,7 +478,15 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNTutorial",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = Tutorial::instance();
+          QObject* obj = TutorialModel::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNGuide",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = GuideModel::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

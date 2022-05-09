@@ -15,6 +15,10 @@
 #include "simplenetworkmanager.h"
 
 #ifdef MVPN_WINDOWS
+#  include <QDir>
+#  include <QFile>
+#  include <QSGRendererInterface>
+#  include <QQuickWindow>
 #  include <Windows.h>
 #endif
 
@@ -28,7 +32,32 @@
 
 namespace {
 Logger logger(LOG_MAIN, "Command");
+
+#ifdef MVPN_WINDOWS
+QSGRendererInterface::GraphicsApi maybeUseCustomGraphicApi() {
+  QString location =
+      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+  QDir appDataLocation(location);
+
+  QFile gpuCheckSettings = appDataLocation.filePath("moz.vpn.gpucheck");
+  if (!gpuCheckSettings.exists()) {
+    return QSGRendererInterface::Unknown;
+  }
+
+  if (!gpuCheckSettings.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    return QSGRendererInterface::Unknown;
+  }
+
+  const QByteArray content = gpuCheckSettings.readAll().trimmed();
+  if (content == "software") {
+    return QSGRendererInterface::Software;
+  }
+
+  return QSGRendererInterface::Unknown;
 }
+#endif
+
+}  // namespace
 
 QVector<std::function<Command*(QObject*)>> Command::s_commandCreators;
 
@@ -167,6 +196,15 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 #ifdef MVPN_ANDROID
   QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
       Qt::HighDpiScaleFactorRoundingPolicy::Round);
+#endif
+
+#ifdef MVPN_WINDOWS
+  {
+    QSGRendererInterface::GraphicsApi api = maybeUseCustomGraphicApi();
+    if (api != QSGRendererInterface::Unknown) {
+      QQuickWindow::setGraphicsApi(api);
+    }
+  }
 #endif
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());

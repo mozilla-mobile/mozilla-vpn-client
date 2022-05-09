@@ -11,6 +11,7 @@ on:
 jobs:
   ppa-release-candidate:
     name: PPA Releases
+    if: github.repository == 'mozilla-mobile/mozilla-vpn-client'
     runs-on: ubuntu-latest
     environment: PPA Automation
     steps:
@@ -77,9 +78,8 @@ jobs:
           PPA_URL: ppa:okirby/mozilla-vpn-testing
           GNUPGHOME: ${{ runner.temp }}/gnupg-data
         run: |
-          for dist in $(find .tmp -mindepth 1 -type d); do
-            (cd $dist && ln -s ../mozillavpn_*.orig.tar.gz)
-            dput $PPA_URL $dist/mozillavpn_*_source.changes
+          for changeset in $(find .tmp -name '*_source.changes'); do
+            dput $PPA_URL $changeset
           done
 
       - name: Push to Launchpad Nightly PPA
@@ -89,7 +89,6 @@ jobs:
           PPA_URL: ppa:okirby/mozilla-vpn-nightly
           GNUPGHOME: ${{ runner.temp }}/gnupg-data
         run: |
-          for dist in $(find .tmp -mindepth 1 -type d); do
-            (cd $dist && ln -s ../mozillavpn_*.orig.tar.gz)
-            dput $PPA_URL $dist/mozillavpn_*_source.changes
+          for changeset in $(find .tmp -name '*_source.changes'); do
+            dput $PPA_URL $changeset
           done

@@ -68,34 +68,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-fetch() {
-  if command -v "wget" &>/dev/null; then
-    wget -nc -O "$2" "$1"
-    return
-  fi
-
-  if command -v "curl" &>/dev/null; then
-    curl "$1" -o "$2" -s -L
-    return
-  fi
-
-  die "You must have 'wget' or 'curl' installed."
-}
-
-sha256() {
-  if command -v "sha256sum" &>/dev/null; then
-    sha256sum "$1"
-    return 0
-  fi
-
-  if command -v "openssl" &>/dev/null; then
-    openssl dgst -sha256 "$1"
-    return 0
-  fi
-
-  die "You must have 'sha256sum' or 'openssl' installed."
-}
-
 if [[ "$OS" != "macos" ]] && [[ "$OS" != "ios" ]]; then
   helpFunction
 fi

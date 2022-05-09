@@ -187,24 +187,15 @@ Popup {
                     isCancelBtn: false
                 }
 
-                VPNPopupButton {
-                    id: cancelBtn
-                    Accessible.defaultButton: true
+                VPNCancelButton {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignCenter
 
-                    //% "Cancel"
-                    buttonText: qsTrId("vpn.devices.cancelDeviceRemoval");
-                    buttonTextColor: VPNTheme.theme.blue
-                    colorScheme: VPNTheme.theme.linkButton
-                    focus: true
                     onClicked: {
                         popup.close();
                     }
-                    isCancelBtn: true
-                    KeyNavigation.up: removeBtn
                 }
-
             }
-
         }
 
         Overlay.modal: Rectangle {

@@ -7,7 +7,10 @@
 
 #include "benchmarktask.h"
 
+#include <QDnsLookup>
+#include <QElapsedTimer>
 #include <QNetworkReply>
+#include <QUrl>
 
 class NetworkRequest;
 
@@ -16,22 +19,26 @@ class BenchmarkTaskDownload final : public BenchmarkTask {
   Q_DISABLE_COPY_MOVE(BenchmarkTaskDownload)
 
  public:
-  explicit BenchmarkTaskDownload(const QString& fileUrl);
+  explicit BenchmarkTaskDownload(const QUrl& url);
   ~BenchmarkTaskDownload();
 
  signals:
   void finished(quint64 bytesPerSecond, bool hasUnexpectedError);
 
  private:
+  void dnsLookupFinished();
   void downloadProgressed(qint64 bytesReceived, qint64 bytesTotal,
                           QNetworkReply* reply);
   void downloadReady(QNetworkReply::NetworkError error, const QByteArray& data);
   void handleState(BenchmarkTask::State state);
 
  private:
-  NetworkRequest* m_request = nullptr;
-  const QString m_fileUrl;
+  QDnsLookup m_dnsLookup;
+  QList<NetworkRequest*> m_requests;
+  const QUrl m_fileUrl;
+
   qint64 m_bytesReceived = 0;
+  QElapsedTimer m_elapsedTimer;
 };
 
 #endif  // BENCHMARKTASKDOWNLOAD_H

@@ -44,6 +44,13 @@ class Theme final : public QAbstractListModel {
 
   QVariant data(const QModelIndex& index, int role) const override;
 
+  enum StatusBarTextColor {
+    StatusBarTextColorLight,
+    StatusBarTextColorDark,
+  };
+  Q_ENUM(StatusBarTextColor)
+  Q_INVOKABLE void setStatusBarTextColor(StatusBarTextColor color);
+
  private:
   void parseTheme(QJSEngine* engine, const QString& themeName);
   bool loadTheme(const QString& themeName);

@@ -17,6 +17,7 @@ import telemetry 0.30
 Window {
     id: window
 
+    property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
     property var isWasmApp: Qt.platform.os === "wasm"
     property bool isMobileOnboardingOnIos: VPNFeatureList.get("mobileOnboarding").isSupported
@@ -286,24 +287,6 @@ Window {
             }
             // If we can't show logs natively, open the viewer
             mainStackView.push("qrc:/ui/views/ViewLogs.qml");
-            
-        }
-
-        function onContactUsNeeded() {
-            // For the main view, the contact-us signal is handled in ViewMain
-            // because at that level we have access to the stackview.
-            if (VPN.state === VPN.StateMain) return;
-
-            if (mainStackView.currentItem.objectName === "contactUs") return;
-
-            while(mainStackView.depth > 1) {
-                mainStackView.pop(null, StackView.Immediate);
-            }
-
-            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", {
-                isMainView: true,
-                addSafeAreaMargin: true
-            });
         }
 
         function onLoadAndroidAuthenticationView() {
@@ -321,13 +304,14 @@ Window {
                 Glean.setDebugViewTag("MozillaVPN");
             }
             var channel = VPN.stagingMode ? "staging" : "production";
+
             console.debug("Initializing glean with channel set to:", channel);
             Glean.initialize("mozillavpn", VPNSettings.gleanEnabled, {
                 appBuild: "MozillaVPN/" + VPN.versionString,
                 appDisplayVersion: VPN.versionString,
                 channel: channel,
                 osVersion: VPN.osVersion,
-                architecture: VPN.architecture,
+                architecture: [VPN.architecture, VPN.graphicsApi].join(" ").trim(),
             });
         }
 
@@ -424,7 +408,7 @@ Window {
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
                 isMainView: true,
-                
+
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -448,7 +432,7 @@ Window {
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
                 isMainView: true,
-                
+
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -474,7 +458,7 @@ Window {
     Popup {
         id: tooltip
         property alias text: text.text
-        visible: false
+        visible: VPNTutorial.tooltipShown
         x: VPNTheme.theme.windowMargin
         width: parent.width - VPNTheme.theme.windowMargin * 2
 
@@ -505,8 +489,8 @@ Window {
             tooltip.open();
         }
 
-        function onPlayingChanged() {
-            tooltip.visible = VPNTutorial.tooltipShown
+        function onTutorialCompleted(text) {
+            console.log("TODO", text);
         }
     }
 

@@ -112,6 +112,32 @@ NetworkRequest* NetworkRequest::createForGetUrl(Task* parent,
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForGetHostAddress(
+    Task* parent, const QString& url, const QHostAddress& address) {
+  Q_ASSERT(parent);
+  QUrl requestUrl(url);
+  QString hostname = requestUrl.host();
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+  r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                            QNetworkRequest::NoLessSafeRedirectPolicy);
+
+  // Rewrite the request URL to use an explicit host address.
+  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+    requestUrl.setHost("[" + address.toString() + "]");
+  } else {
+    requestUrl.setHost(address.toString());
+  }
+  r->m_request.setUrl(requestUrl);
+  r->m_request.setRawHeader("Host", hostname.toLocal8Bit());
+  r->m_request.setPeerVerifyName(hostname);
+
+  r->getRequest();
+  return r;
+}
+
 // static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(
     Task* parent, const QString& pkceCodeSuccess,
@@ -475,9 +501,9 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
 // static
 NetworkRequest* NetworkRequest::createForFxaLogin(
     Task* parent, const QString& email, const QByteArray& authpw,
-    const QString& unblockCode, const QString& fxaClientId,
-    const QString& fxaDeviceId, const QString& fxaFlowId,
-    double fxaFlowBeginTime) {
+    const QString& originalLoginEmail, const QString& unblockCode,
+    const QString& fxaClientId, const QString& fxaDeviceId,
+    const QString& fxaFlowId, double fxaFlowBeginTime) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaApiBaseUrl());
@@ -493,6 +519,10 @@ NetworkRequest* NetworkRequest::createForFxaLogin(
   obj.insert("service", fxaClientId);
   obj.insert("skipErrorCase", true);
   obj.insert("verificationMethod", "email-otp");
+
+  if (!originalLoginEmail.isEmpty()) {
+    obj.insert("originalLoginEmail", originalLoginEmail);
+  }
 
   if (!unblockCode.isEmpty()) {
     obj.insert("unblockCode", unblockCode);
@@ -675,6 +705,26 @@ NetworkRequest* NetworkRequest::createForFxaTotpCreation(
   r->postRequest(payload);
   return r;
 }
+#endif
+
+// static
+NetworkRequest* NetworkRequest::createForFxaAttachedClients(
+    Task* parent, const QByteArray& sessionToken) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::fxaApiBaseUrl());
+  url.setPath("/v1/account/attached_clients");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  HawkAuth hawk = HawkAuth(sessionToken);
+  QByteArray hawkHeader = hawk.generate(r->m_request, "GET", "").toUtf8();
+  r->m_request.setRawHeader("Authorization", hawkHeader);
+
+  r->getRequest();
+  return r;
+}
 
 // static
 NetworkRequest* NetworkRequest::createForFxaAccountDeletion(
@@ -701,7 +751,6 @@ NetworkRequest* NetworkRequest::createForFxaAccountDeletion(
   r->postRequest(payload);
   return r;
 }
-#endif
 
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionDestroy(

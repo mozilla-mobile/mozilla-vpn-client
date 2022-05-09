@@ -19,9 +19,13 @@ VPNFlickable {
     property real panelHeight: window.safeContentHeight
     property bool shouldRestoreSlide: false
 
-    flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight - spacerBottom.height
+    flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight
     height: parent.height
     interactive: flickContentHeight > height
+
+    VPNMobileStatusBarModifier {
+        statusBarTextColor: VPNTheme.StatusBarTextColorLight
+    }
 
     ListModel {
         id: onboardingModel
@@ -260,6 +264,19 @@ VPNFlickable {
             id: panelBottomContent
             Layout.preferredWidth: parent.width
             spacing: VPNTheme.theme.windowMargin
+
+            VPNInterLabel {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: VPNl18n.FreeTrialsStartYourFreeTrial
+                color: VPNTheme.colors.white80
+                font.family: VPNTheme.theme.fontInterSemiBoldFamily
+                width: parent.width
+                visible: VPNFeatureList.get("freeTrial").isSupported
+            }
+
+            VPNVerticalSpacer {
+                height: 1
+            }
 
             PageIndicator {
                 id: progressIndicator
