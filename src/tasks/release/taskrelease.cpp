@@ -5,13 +5,12 @@
 #include "taskrelease.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "update/updater.h"
 
 namespace {
 Logger logger(LOG_MAIN, "TaskRelease");
 }
 
-TaskRelease::TaskRelease(Op op) : Task("TaskRelease"), m_op(op) {
+TaskRelease::TaskRelease(Updater::Op op) : Task("TaskRelease"), m_op(op) {
   MVPN_COUNT_CTOR(TaskRelease);
 }
 
@@ -20,7 +19,7 @@ TaskRelease::~TaskRelease() { MVPN_COUNT_DTOR(TaskRelease); }
 void TaskRelease::run() {
   logger.debug() << "Release check started";
 
-  Updater* updater = Updater::create(this, m_op == Update);
+  Updater* updater = Updater::create(this, m_op);
   if (!updater) {
     emit updaterFailure();
     emit completed();

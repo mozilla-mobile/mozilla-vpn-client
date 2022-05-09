@@ -29,7 +29,7 @@ void ReleaseMonitor::runSoon() {
   logger.debug() << "Scheduling a release-check task";
 
   TimerSingleShot::create(this, 0, [this] {
-    TaskRelease* task = new TaskRelease(TaskRelease::Check);
+    TaskRelease* task = new TaskRelease(Updater::Check);
 
     connect(task, &TaskRelease::updaterFailure, []() {
       // This cannot happen for release checks.
@@ -71,7 +71,7 @@ void ReleaseMonitor::updateSoon() {
   logger.debug() << "Scheduling a release-update task";
 
   TimerSingleShot::create(this, 0, [] {
-    TaskRelease* task = new TaskRelease(TaskRelease::Update);
+    TaskRelease* task = new TaskRelease(Updater::Update);
     connect(task, &TaskRelease::updaterFailure, []() {
       logger.warning() << "No updater supported for this platform. Fallback";
 

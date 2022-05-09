@@ -17,7 +17,7 @@ class Balrog final : public Updater {
   Q_DISABLE_COPY_MOVE(Balrog)
 
  public:
-  Balrog(QObject* parent, bool downloadAndInstall);
+  Balrog(QObject* parent, Op operation);
   ~Balrog();
 
   void start(Task* task) override;
@@ -43,7 +43,7 @@ class Balrog final : public Updater {
 
  private:
   QTemporaryDir m_tmpDir;
-  bool m_downloadAndInstall;
+  Op m_operation;
 };
 
 #endif  // BALROG_H

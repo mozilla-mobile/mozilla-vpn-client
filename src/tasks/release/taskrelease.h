@@ -6,6 +6,7 @@
 #define TASKRELEASE_H
 
 #include "task.h"
+#include "update/updater.h"
 
 #include <QObject>
 
@@ -14,18 +15,13 @@ class TaskRelease final : public Task {
   Q_DISABLE_COPY_MOVE(TaskRelease)
 
  public:
-  enum Op {
-    Check,
-    Update,
-  };
-
-  explicit TaskRelease(Op op);
+  explicit TaskRelease(Updater::Op op);
   ~TaskRelease();
 
   void run() override;
 
   // We do not want to delete update operations, triggered by users.
-  bool deletable() const override { return m_op != Update; }
+  bool deletable() const override { return m_op != Updater::Update; }
 
  signals:
   void updaterFailure();
@@ -35,7 +31,7 @@ class TaskRelease final : public Task {
   void updateNotAvailable();
 
  private:
-  Op m_op;
+  Updater::Op m_op;
 };
 
 #endif  // TASKRELEASE_H

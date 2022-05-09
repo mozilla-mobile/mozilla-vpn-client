@@ -66,8 +66,8 @@ void balrogLogger(int level, const char* msg) {
 
 }  // namespace
 
-Balrog::Balrog(QObject* parent, bool downloadAndInstall)
-    : Updater(parent), m_downloadAndInstall(downloadAndInstall) {
+Balrog::Balrog(QObject* parent, Op operation)
+    : Updater(parent), m_operation(operation) {
   MVPN_COUNT_CTOR(Balrog);
   logger.debug() << "Balrog created";
 }
@@ -265,7 +265,7 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
   QJsonObject obj = json.object();
 
   // This is not a download operation. Let's emit signals if needed.
-  if (!m_downloadAndInstall) {
+  if (m_operation == Check) {
     bool required = obj.value("required").toBool();
     if (required) {
       // Even if we are geoip-restricted, we want to force the update when

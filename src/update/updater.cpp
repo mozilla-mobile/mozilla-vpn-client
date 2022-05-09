@@ -18,16 +18,12 @@ Logger logger(LOG_NETWORKING, "Updater");
 }
 
 // static
-Updater* Updater::create(QObject* parent, bool downloadAndInstall) {
+Updater* Updater::create(QObject* parent, Updater::Op operation) {
 #ifdef MVPN_BALROG
-  if (!downloadAndInstall) {
-    return new Balrog(parent, false);
-  }
-
-  return new Balrog(parent, true);
+  return new Balrog(parent, operation);
 #endif
 
-  if (!downloadAndInstall) {
+  if (operation == Check) {
     return new VersionApi(parent);
   }
 

@@ -14,7 +14,12 @@ class Updater : public QObject {
   Q_DISABLE_COPY_MOVE(Updater)
 
  public:
-  static Updater* create(QObject* parent, bool downloadAndInstall);
+  enum Op {
+    Check,
+    Update,
+  };
+
+  static Updater* create(QObject* parent, Op operation);
 
   Updater(QObject* parent);
   virtual ~Updater();
