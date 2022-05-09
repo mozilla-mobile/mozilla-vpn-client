@@ -66,14 +66,14 @@ def add_artifacts(config, tasks):
         # Android artifacts
         if "release-artifacts" in task:
             for path in task.pop("release-artifacts"):
-                if not os.path.isabs(path):
-                    path = f"/builds/worker/artifacts/{path}"
+                if os.path.isabs(path):
+                    raise Exception("Cannot have absolute path artifacts")
 
                 artifacts.append(
                     {
                         "type": "file",
-                        "name": f"public/build/{os.path.basename(path)}",
-                        "path": path,
+                        "name": f"public/build/{path}",
+                        "path": f"artifacts/{path}",
                     }
                 )
 

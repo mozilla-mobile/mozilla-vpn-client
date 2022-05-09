@@ -82,8 +82,8 @@ cp -r ./macos/pkg/Distribution tmp || die
 cp -r ./macos/pkg/Resources tmp || die
 cd tmp || die
 
-mkdir -p /opt/worker/artifacts
-zip -r /opt/worker/artifacts/unsigned_artifact.zip . || die
+[[ -d "$PROJECT_HOME/artifacts" ]] || mkdir -p $PROJECT_HOME/artifacts
+zip -r $PROJECT_HOME/artifacts/unsigned_artifact.zip . || die
 cd .. || die
 rm -rf tmp || die
 
