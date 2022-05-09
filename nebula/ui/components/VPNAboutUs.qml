@@ -263,7 +263,7 @@ Item {
                 text: VPNl18n.UpdateButtonActionOnUpdate
                 onClicked: {
                     updateAvailablePopup.close()
-                    stackview.push("qrc:/ui/views/ViewUpdate.qml");
+                    mainStackView.push("qrc:/ui/views/ViewUpdate.qml");
                 }
 
                 Image {
