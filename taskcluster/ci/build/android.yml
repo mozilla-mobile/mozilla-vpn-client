@@ -39,6 +39,9 @@ android-armv7/debug:
             platform: android/armv7
         worker:
             docker-image: {in-tree: android-build-armv7}
+            caches:
+                - name: "android-build-armv7"
+                  mount-point: "/builds/worker/.cache"
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh armeabi-v7a
         release-artifacts:
@@ -51,6 +54,9 @@ android-x86/debug:
             platform: android/x86
         worker:
             docker-image: {in-tree: android-build-x86}
+            caches:
+                - name: "android-build-x86"
+                  mount-point: "/builds/worker/.cache"
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh x86
         release-artifacts:
@@ -62,6 +68,9 @@ android-x64/debug:
             platform: android/x86_64
         worker:
             docker-image: {in-tree: android-build-x64}
+            caches:
+                - name: "android-build-x64"
+                  mount-point: "/builds/worker/.cache"
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh x86_64
         release-artifacts:
