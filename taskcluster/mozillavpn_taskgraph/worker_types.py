@@ -26,6 +26,12 @@ from taskgraph.transforms.task import payload_builder
                 Required("formats"): [str],
             }
         ],
+        # behavior for mac iscript
+        Optional("mac-behavior"): Any(
+            "mac_notarize_vpn",
+        ),
+        Optional("entitlementsUrl"): str,
+        Optional("loginItemsEntitlementsUrl"): str,
     },
 )
 def build_scriptworker_signing_payload(config, task, task_def):
@@ -37,6 +43,12 @@ def build_scriptworker_signing_payload(config, task, task_def):
         "maxRunTime": worker["max-run-time"],
         "upstreamArtifacts": worker["upstream-artifacts"],
     }
+
+    if worker.get("mac-behavior"):
+        task_def["payload"]["behavior"] = worker["mac-behavior"]
+        for attr in ("entitlementsUrl", "loginItemsEntitlementsUrl"):
+            if attr in worker:
+                task_def["payload"][attr] = worker[attr]
 
     formats = set()
     for artifacts in worker["upstream-artifacts"]:

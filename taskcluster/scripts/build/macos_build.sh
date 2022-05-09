@@ -75,7 +75,6 @@ python3 ./scripts/macos/import_pkg_resources.py || die
 
 set
 print Y "Exporting the artifact..."
-mkdir -p ../../artifacts || die
 mkdir -p tmp || die
 cp -r Release/Mozilla\ VPN.app tmp || die
 cp -r ./macos/pkg/scripts tmp || die
@@ -83,7 +82,8 @@ cp -r ./macos/pkg/Distribution tmp || die
 cp -r ./macos/pkg/Resources tmp || die
 cd tmp || die
 
-zip -r ../../../artifacts/unsigned_artifact.zip . || die
+mkdir -p /opt/worker/artifacts
+zip -r /opt/worker/artifacts/unsigned_artifact.zip . || die
 cd .. || die
 rm -rf tmp || die
 
