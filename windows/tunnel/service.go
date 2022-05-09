@@ -256,3 +256,4 @@ func (service *tunnelService) Execute(args []string, r <-chan svc.ChangeRequest,
 func Run(confString string, tunnelName string) error {
 	return svc.Run(tunnelName, &tunnelService{confString,tunnelName})
 }
+
