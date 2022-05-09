@@ -15,7 +15,7 @@ head_tag: ''
 level: '1'
 moz_build_date: '20220113162405'
 optimize_target_tasks: true
-owner: flozia@users.noreply.github.com
+owner: user@example.com
 project: mozilla-vpn-client
 pull_request_number: 2575
 pushdate: 0
