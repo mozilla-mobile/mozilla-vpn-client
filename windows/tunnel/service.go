@@ -30,7 +30,8 @@ import (
 )
 
 type tunnelService struct {
-	Path string
+	ConfString string;
+	TunnelName string;
 }
 
 func (service *tunnelService) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (svcSpecificEC bool, exitCode uint32) {
@@ -109,17 +110,13 @@ func (service *tunnelService) Execute(args []string, r <-chan svc.ChangeRequest,
 		return
 	}
 
-	config, err = conf.LoadFromPath(service.Path)
+	config, err = conf.FromWgQuickWithUnknownEncoding(service.ConfString,service.TunnelName)
 	if err != nil {
 		serviceError = services.ErrorLoadConfiguration
 		return
 	}
 	config.DeduplicateNetworkEntries()
-	err = CopyConfigOwnerToIPCSecurityDescriptor(service.Path)
-	if err != nil {
-		serviceError = services.ErrorLoadConfiguration
-		return
-	}
+
 
 	log.SetPrefix(fmt.Sprintf("[%s] ", config.Name))
 
@@ -256,14 +253,7 @@ func (service *tunnelService) Execute(args []string, r <-chan svc.ChangeRequest,
 	}
 }
 
-func Run(confPath string) error {
-	name, err := conf.NameFromPath(confPath)
-	if err != nil {
-		return err
-	}
-	serviceName, err := services.ServiceNameOfTunnel(name)
-	if err != nil {
-		return err
-	}
-	return svc.Run(serviceName, &tunnelService{confPath})
+func Run(confString string, tunnelName string) error {
+	return svc.Run(tunnelName, &tunnelService{confString,tunnelName})
 }
+
