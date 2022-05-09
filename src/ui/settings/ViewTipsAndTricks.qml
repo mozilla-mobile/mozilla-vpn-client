@@ -4,9 +4,11 @@
 
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.15
 
 import Mozilla.VPN 1.0
 import components 0.1
+import components.forms 0.1
 
 Item {
     id: root
@@ -50,22 +52,23 @@ Item {
                     spacing: VPNTheme.theme.vSpacingSmall
 
                     Loader {
-                        property variant tutorial: VPNTutorial.getTutorialById("01_get_started")
+                        id: firstTutorialLoader
+                        property variant firstTutorial: VPNTutorial.get(0)
 
                         height: 144
-                        width: parent.width
+                        width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
 
-                        active: tutorial
+                        active: firstTutorial
                         visible: active
 
                         sourceComponent: VPNTutorialCard {
-                            width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
+                            width: parent.width
                             height: parent.height
 
-                            imageSrc: tutorial.image
-                            imageBgColor: tutorial.imageBgColor
-                            title: VPNl18n[tutorial.titleId]
-                            description: VPNl18n[tutorial.subtitleId]
+                            imageSrc: firstTutorial.image
+                            imageBgColor: firstTutorial.imageBgColor
+                            title: VPNl18n[firstTutorial.titleId]
+                            description: VPNl18n[firstTutorial.subtitleId]
                         }
                     }
 
@@ -90,7 +93,6 @@ Item {
                     visible: active
 
                     sourceComponent: ColumnLayout {
-                        property alias modelCount: guideRepeater.count
                         spacing: 0
 
                         VPNBoldLabel {
@@ -139,23 +141,38 @@ Item {
                 }
 
                 Loader {
-                    property variant tutorial: VPNTutorial.getTutorialById("02_connect_on_startup")
-
                     Layout.topMargin: guideLoader.active ? 32 : 16
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 144
 
-                    active: tutorial
+                    active: firstTutorialLoader.active && firstTutorialExcludedModel.rowCount() > 0
                     visible: active
 
-                    sourceComponent: VPNTutorialCard {
-                        width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
-                        height: parent.height
+                    sourceComponent: Flow {
+                        spacing: 16
 
-                        imageSrc: tutorial.image
-                        imageBgColor: tutorial.imageBgColor
-                        title: VPNl18n[tutorial.titleId]
-                        description: VPNl18n[tutorial.subtitleId]
+                        Repeater {
+                            model: firstTutorialExcludedModel
+
+                            delegate: VPNTutorialCard {
+                                width: vpnFlickable.screenWidth < root.tabletSize ? parent.width : (parent.width - parent.spacing) / 2
+                                height: 144
+
+                                imageSrc: tutorial.image
+                                imageBgColor: tutorial.imageBgColor
+                                title: VPNl18n[tutorial.titleId]
+                                description: VPNl18n[tutorial.subtitleId]
+                            }
+                        }
+                    }
+
+                    //Model containing all tutorials except the first one (if there are any more)
+                    VPNFilterProxyModel {
+                        id: firstTutorialExcludedModel
+                        source: VPNTutorial
+                        // No filter
+                        filterCallback: obj => {
+                                            return obj.tutorial.id !== firstTutorialLoader.firstTutorial.id
+                                        }
                     }
                 }
 

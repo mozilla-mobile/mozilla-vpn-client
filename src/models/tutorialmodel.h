@@ -31,7 +31,7 @@ class TutorialModel final : public QAbstractListModel {
   Q_INVOKABLE void play(Tutorial* tutorial);
   Q_INVOKABLE void stop();
   Q_INVOKABLE void allowItem(const QString& objectName);
-  Q_INVOKABLE QObject* getTutorialById(QString& id);
+  Q_INVOKABLE QObject* get(int index) const;
 
   bool isPlaying() const { return !!m_currentTutorial; }
 
