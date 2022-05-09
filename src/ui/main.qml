@@ -131,6 +131,8 @@ Window {
 
     VPNStackView {
         id: mainStackView
+
+        objectName: "MainStackView"
         initialItem: mainView
         width: parent.width
         anchors.top: parent.top

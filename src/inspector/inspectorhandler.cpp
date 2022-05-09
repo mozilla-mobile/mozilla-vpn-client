@@ -795,6 +795,17 @@ static QList<InspectorCommand> s_commands{
 
           return QJsonObject();
         }},
+
+    InspectorCommand{"open_settings", "Open settings menu", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       MozillaVPN::instance()->settingsNeeded();
+                       return QJsonObject();
+                     }},
+    InspectorCommand{"open_contact_us", "Open in-app support form", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       MozillaVPN::instance()->requestContactUs();
+                       return QJsonObject();
+                     }},
 };
 
 // static
