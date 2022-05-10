@@ -207,8 +207,11 @@ theme.vpnToggleDisconnected = {
 
 theme.card = {
     'defaultColor': theme.white,
+    'buttonHovered': theme.greyHovered,
+    'buttonPressed': theme.greyPressed,
+    'buttonDisabled': theme.bgColorTransparent,
     'focusOutline': theme.bgColorTransparent,
-    'focusBorder': theme.bgColorTransparent,
+    'focusBorder': theme.darkFocusBorder,
 };
 
 theme.greenAlert = {

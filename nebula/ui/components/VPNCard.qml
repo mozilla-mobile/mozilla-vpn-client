@@ -8,6 +8,7 @@ import Mozilla.VPN 1.0
 import compat 0.1
 
 VPNButtonBase {
+    id: button
     radius: 8
 
     VPNDropShadow {
@@ -26,5 +27,10 @@ VPNButtonBase {
     VPNUIStates {
         colorScheme: VPNTheme.theme.card
         radius: parent.radius
+    }
+
+    VPNMouseArea {
+        hoverEnabled: true
+        targetEl: button
     }
 }
