@@ -36,5 +36,3 @@ elseif(WIN32)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manifests/windows/mozillavpn.json
         DESTINATION .)
 endif()
-
-## TODO: Mac

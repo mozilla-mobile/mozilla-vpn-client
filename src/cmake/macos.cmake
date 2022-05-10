@@ -103,6 +103,14 @@ target_sources(mozillavpn PRIVATE
     update/balrog.h
 )
 
+## A helper to copy files into the application bundle
+function(add_bundle_file SOURCE)
+    add_custom_command(TARGET mozillavpn POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Bundling ${SOURCE}"
+        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE} $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/utils)
+endfunction(add_bundle_file)
+
+
 # Build the Wireguard Go tunnel
 # FIXME: this builds in the source directory.
 get_filename_component(WIREGUARD_GO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go ABSOLUTE)
@@ -114,11 +122,12 @@ add_custom_command(
     DEPENDS ${WIREGUARD_GO_DEPS}
     COMMAND make
 )
-target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go/wireguard-go)
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go/wireguard-go PROPERTIES
-    HEADER_FILE_ONLY TRUE
-    MACOSX_PACKAGE_LOCATION Resources/utils
-)
+add_bundle_file(${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go/wireguard-go)
+
+# Install the native messaging extensions into the bundle.
+add_dependencies(mozillavpn mozillavpnnp)
+add_bundle_file($<TARGET_FILE:mozillavpnnp>)
+add_bundle_file(${CMAKE_CURRENT_SOURCE_DIR}/../extension/manifests/macos/mozillavpn.json)
 
 #QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
 #QMAKE_ASSET_CATALOGS = $$PWD/../../../macos/app/Images.xcassets
