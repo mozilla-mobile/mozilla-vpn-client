@@ -16,6 +16,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR})
 
 qt_add_executable(qml_tests)
+add_dependencies(build_tests qml_tests)
 
 target_link_libraries(qml_tests PRIVATE
     Qt6::Gui

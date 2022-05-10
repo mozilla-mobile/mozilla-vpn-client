@@ -69,12 +69,12 @@ add_subdirectory(translations)
 # Testing build targets
 option(BUILD_TESTING "Build the testing tree." OFF)
 include(CTest)
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
-    add_subdirectory(tests/auth)
-    add_subdirectory(tests/nativemessaging)
-    add_subdirectory(tests/unit)
-    add_subdirectory(tests/qml)
-endif()
+add_custom_target(build_tests)
+set_target_properties(build_tests PROPERTIES EXCLUDE_FROM_ALL ${BUILD_TESTING})
+add_subdirectory(tests/auth)
+add_subdirectory(tests/nativemessaging)
+add_subdirectory(tests/unit)
+add_subdirectory(tests/qml)
 
 # Web Extension build targets
 if(NOT CMAKE_CROSSCOMPILING)

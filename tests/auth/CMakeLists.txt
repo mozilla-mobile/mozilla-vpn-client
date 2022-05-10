@@ -19,7 +19,8 @@ include_directories(${MVPN_SOURCE_DIR}/hacl-star)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
 
-qt_add_executable(auth_tests)
+qt_add_executable(auth_tests EXCLUDE_FROM_ALL)
+add_dependencies(build_tests auth_tests)
 
 target_link_libraries(auth_tests PRIVATE
     Qt6::Core

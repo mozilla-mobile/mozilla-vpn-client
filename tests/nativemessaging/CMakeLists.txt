@@ -5,6 +5,7 @@
 find_package(Qt6 REQUIRED COMPONENTS Core Network Test)
 
 qt_add_executable(nativemessaging_tests)
+add_dependencies(build_tests nativemessaging_tests)
 
 target_link_libraries(nativemessaging_tests PRIVATE
     Qt6::Core
