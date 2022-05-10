@@ -176,12 +176,6 @@ Guide* Guide::create(QObject* parent, const QString& fileName) {
     return nullptr;
   }
 
-  guide->m_imageBgColor = obj["image_bg_color"].toString();
-  if (guide->m_imageBgColor.isEmpty()) {
-    logger.warning() << "Empty image background color for guide file" << fileName;
-    return nullptr;
-  }
-
   QJsonValue blocksArray = obj["blocks"];
   if (!blocksArray.isArray()) {
     logger.warning() << "No blocks for guide file" << fileName;

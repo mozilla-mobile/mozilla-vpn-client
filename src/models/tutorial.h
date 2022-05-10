@@ -46,7 +46,6 @@ class Tutorial final : public ItemPicker {
   QString m_subtitleId;
   QString m_completionMessageId;
   QString m_image;
-  QString m_imageBgColor;
 
   QList<TutorialStep*> m_steps;
   int32_t m_currentStep = -1;

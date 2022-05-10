@@ -43,6 +43,9 @@ theme.checkBoxWarning = '#C45A27';
 
 theme.errorFocusOutline = '#FFBDC5';
 
+theme.guideCardImageBgColor = "#50134B"
+theme.tutorialCardImageBgColor = "#321C64"
+
 theme.fontColor = '#6D6D6E';
 theme.fontColorDark = '#3D3D3D';
 theme.fontFamily = 'Metropolis';
@@ -69,7 +72,9 @@ theme.windowMargin = 16;
 theme.popupMargin = 24;
 theme.desktopAppHeight = 520;
 theme.desktopAppWidth = 360;
+theme.tabletMinimumWidth = 600
 theme.menuHeight = 56;
+theme.tutorialCardHeight = 144
 
 theme.darkFocusBorder = theme.fontColor;
 theme.lightFocusBorder = '#d5d3e0';

@@ -11,7 +11,7 @@ VPNCard {
     id: root
 
     property alias imageSrc: heroImage.source
-    property alias imageBgColor: imageBg.color
+    property string imageBgColor: VPNTheme.theme.tutorialCardImageBgColor
     property string cardTypeText: VPNl18n.TipsAndTricksTutorialLabel //defaults card type to "tutorial"
     property alias title: titleText.text
     property alias description: descriptionText.text
@@ -29,6 +29,7 @@ VPNCard {
             Layout.preferredWidth: 112
 
             radius: root.radius
+            color: root.imageBgColor
 
             //Used to get flat edges at the bottom of hero image background
             Rectangle {
@@ -57,24 +58,16 @@ VPNCard {
 
             spacing: 0
 
-            Text {
+            VPNBoldInterLabel {
                 id: cardTypeText
 
                 Layout.fillWidth: true
 
                 text: root.cardTypeText
                 elide: Text.ElideRight
-                font.pixelSize: VPNTheme.theme.fontSizeSmallest
-                font.family: VPNTheme.theme.fontInterSemiBoldFamily
-                lineHeightMode: Text.FixedHeight
-                lineHeight: VPNTheme.theme.controllerInterLineHeight
-                wrapMode: Text.WordWrap
-                color: VPNTheme.theme.fontColorDark
                 verticalAlignment: Text.AlignVCenter
                 maximumLineCount: 1
 
-                Accessible.role: Accessible.StaticText
-                Accessible.name: text
                 Accessible.ignored: true
             }
 

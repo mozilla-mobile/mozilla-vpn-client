@@ -90,12 +90,6 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
     return nullptr;
   }
 
-  tutorial->m_imageBgColor = obj["image_bg_color"].toString();
-  if (tutorial->m_imageBgColor.isEmpty()) {
-    logger.warning() << "Empty image background color for tutorial file" << fileName;
-    return nullptr;
-  }
-
   QJsonValue stepsArray = obj["steps"];
   if (!stepsArray.isArray()) {
     logger.warning() << "No steps for tutorial file" << fileName;

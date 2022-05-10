@@ -11,7 +11,7 @@ VPNCard {
     id: root
 
     property alias imageSrc: heroImage.source
-    property alias imageBgColor: imageBg.color
+    property string imageBgColor: VPNTheme.theme.guideCardImageBgColor
     property alias title: textTitle.text
 
     Accessible.name: title
@@ -28,6 +28,7 @@ VPNCard {
             Layout.preferredHeight: 104
 
             radius: root.radius
+            color: root.imageBgColor
 
             //Used to get flat edges at the bottom of hero image background
             Rectangle {
@@ -51,30 +52,19 @@ VPNCard {
             }
         }
 
-        Text {
+        VPNBoldInterLabel {
             id: textTitle
+
             Layout.leftMargin: VPNTheme.theme.listSpacing
             Layout.rightMargin: VPNTheme.theme.listSpacing
-            Layout.maximumHeight: lineHeight * 3
-            Layout.maximumWidth: parent.width - Layout.leftMargin - Layout.rightMargin
+            Layout.fillHeight: true
+            Layout.fillWidth: true
 
             elide: Text.ElideRight
-            font.pixelSize: VPNTheme.theme.fontSizeSmallest
-            font.family: VPNTheme.theme.fontInterSemiBoldFamily
-            lineHeightMode: Text.FixedHeight
-            lineHeight: VPNTheme.theme.controllerInterLineHeight
             verticalAlignment: Text.AlignTop
-            wrapMode: Text.WordWrap
-            color: VPNTheme.theme.fontColorDark
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
-            Accessible.role: Accessible.StaticText
-            Accessible.name: text
             Accessible.ignored: true
         }
-
-        VPNVerticalSpacer {
-            Layout.fillHeight: true
-        }
-
     }
 }

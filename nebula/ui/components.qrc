@@ -17,6 +17,7 @@
         <file>components/VPNAlerts.qml</file>
         <file>components/VPNAnimatedRings.qml</file>
         <file>components/VPNAvatar.qml</file>
+        <file>components/VPNBoldInterLabel.qml</file>
         <file>components/VPNBoldLabel.qml</file>
         <file>components/VPNButtonBase.qml</file>
         <file>components/VPNButtonLoader.qml</file>
@@ -117,5 +118,6 @@
         <file>components/VPNSegmentedToggle.qml</file>
         <file>components/VPNSegmentedNavigation.qml</file>
         <file>components/VPNUserProfile.qml</file>
+        <file>components/VPNBoldInterLabel.qml</file>
     </qresource>
 </RCC>

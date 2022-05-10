@@ -16,7 +16,6 @@ class Guide final : public QObject {
   Q_PROPERTY(QString titleId MEMBER m_titleId CONSTANT)
   Q_PROPERTY(QString subtitleId MEMBER m_subtitleId CONSTANT)
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
-  Q_PROPERTY(QString imageBgColor MEMBER m_imageBgColor CONSTANT)
   Q_PROPERTY(QList<GuideBlock*> blocks MEMBER m_blocks CONSTANT)
 
  public:
@@ -35,7 +34,6 @@ class Guide final : public QObject {
   QString m_titleId;
   QString m_subtitleId;
   QString m_image;
-  QString m_imageBgColor;
   QList<GuideBlock*> m_blocks;
 };
 
