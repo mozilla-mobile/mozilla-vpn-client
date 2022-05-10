@@ -5,6 +5,8 @@
 #ifndef TUTORIALMODEL_H
 #define TUTORIALMODEL_H
 
+#include "tutorial.h"
+
 #include <QList>
 #include <QAbstractListModel>
 
@@ -15,6 +17,7 @@ class TutorialModel final : public QAbstractListModel {
   Q_DISABLE_COPY_MOVE(TutorialModel)
   Q_PROPERTY(bool tooltipShown MEMBER m_tooltipShown NOTIFY tooltipShownChanged)
   Q_PROPERTY(bool playing READ isPlaying NOTIFY playingChanged)
+  Q_PROPERTY(Tutorial* highlightedTutorial READ highlightedTutorial CONSTANT)
 
  public:
   enum ModelRoles {
@@ -36,6 +39,8 @@ class TutorialModel final : public QAbstractListModel {
   void requireTutorialCompleted(Tutorial* tutorial,
                                 const QString& completionMessageText);
   void requireTooltipShown(Tutorial* tutorial, bool shown);
+
+  Tutorial* highlightedTutorial() const;
 
   // QAbstractListModel methods
 
