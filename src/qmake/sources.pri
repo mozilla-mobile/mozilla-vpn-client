@@ -259,6 +259,7 @@ HEADERS += \
         platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         platforms/dummy/dummypingsender.h \
+        promise.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc/rfc1112.h \

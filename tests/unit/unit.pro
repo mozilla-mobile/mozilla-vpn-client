@@ -98,6 +98,7 @@ HEADERS += \
     ../../src/platforms/android/androidsharedprefs.h \
     ../../src/platforms/dummy/dummynetworkwatcher.h \
     ../../src/platforms/dummy/dummypingsender.h \
+    ../../src/promise.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
     ../../src/rfc/rfc1918.h \
@@ -136,6 +137,7 @@ HEADERS += \
     testmodels.h \
     testmozillavpnh.h \
     testnetworkmanager.h \
+    testpromise.h \
     testreleasemonitor.h \
     testserveri18n.h \
     teststatusicon.h \
@@ -243,6 +245,7 @@ SOURCES += \
     testmodels.cpp \
     testmozillavpnh.cpp \
     testnetworkmanager.cpp \
+    testpromise.cpp \
     testreleasemonitor.cpp \
     testserveri18n.cpp \
     teststatusicon.cpp \
