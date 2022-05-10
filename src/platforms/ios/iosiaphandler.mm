@@ -301,7 +301,7 @@ void IOSIAPHandler::productRegistered(void* a_product) {
   }
   int discountDays = 0;
   if (@available(iOS 12.2, *)) {
-    auto discount = product.discounts.firstObject;
+    auto discount = product.introductoryPrice;
     discountDays = discountToDays(discount);
   }
 
