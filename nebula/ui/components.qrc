@@ -118,6 +118,5 @@
         <file>components/VPNSegmentedToggle.qml</file>
         <file>components/VPNSegmentedNavigation.qml</file>
         <file>components/VPNUserProfile.qml</file>
-        <file>components/VPNBoldInterLabel.qml</file>
     </qresource>
 </RCC>
