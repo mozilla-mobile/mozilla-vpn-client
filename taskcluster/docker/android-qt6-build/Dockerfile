@@ -66,6 +66,7 @@ ENV ANDROID_NDK_HOME="/opt/NDK/${NDK_VERSION}"
 ENV PATH="/opt/${QT_VERSION}/gcc_64/bin:${QTPATH}/bin:/opt/cmdline-tools/bin:${PATH}"
 ENV XDG_CACHE_HOME="/builds/worker/.cache/"
 ENV CCACHE_DIR="/builds/worker/.cache/"
+ENV GRADLE_CACHE_HOME="/builds/worker/.cache/"
 
 VOLUME /builds/worker/checkouts
 VOLUME /builds/worker/.cache

@@ -5,8 +5,8 @@
 buildCache {
     local {
         // This env points on taskcluster to a local cache on the worker
-        if(System.getenv("XDG_CACHE_HOME")){
-            directory = new File(System.getenv("XDG_CACHE_HOME"),"gradle_cache")
+        if(System.getenv("GRADLE_CACHE_HOME")){
+            directory = new File(System.getenv("GRADLE_CACHE_HOME"),"gradle_cache")
         } else {
             // mozilla-vpn-client/.gradle_cache
             directory = new File(rootDir.getParentFile().getParentFile().getParentFile(),'.gradle_cache')

@@ -4,11 +4,8 @@
 
 set -e
 
-du -sh $XDG_CACHE_HOME
-ccache -p
 ccache --set-config cache_dir=$XDG_CACHE_HOME
-echo "NOW"
-ccache -p
+
 # This script is used in the Android Debug (universal) build task
 git submodule init
 git submodule update
@@ -46,5 +43,3 @@ if test -n "$(find /builds/worker/artifacts/ -maxdepth 0 -empty)" ; then
 fi
 
 ccache -s
-du -sh $XDG_CACHE_HOME
-ls -R /builds/worker/.cache
