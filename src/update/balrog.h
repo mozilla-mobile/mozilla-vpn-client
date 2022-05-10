@@ -34,12 +34,19 @@ class Balrog final : public Updater {
   bool validateSignature(const QByteArray& x5uData,
                          const QByteArray& updateData,
                          const QByteArray& signatureBlob);
-  bool computeHash(const QString& url, const QByteArray& data,
-                   const QString& hashValue, const QString& hashFunction);
-  bool saveFileAndInstall(const QString& url, const QByteArray& data);
+  bool computeHash(const QByteArray& data, const QString& hashValue,
+                   const QString& hashFunction);
+  bool saveFileAndInstall(const QString& filePath, const QByteArray& data,
+                          bool required);
+  bool completeOperation(const QString& filePath, bool required);
   bool install(const QString& filePath);
   void propagateError(NetworkRequest* request,
                       QNetworkReply::NetworkError error);
+  QString cacheFolder();
+  QString fromUrlToFilePath(const QString& url);
+  bool checkCache(const QString& filePath, const QString& hashValue,
+                  const QString& hashFunction);
+  void invalidateCache();
 
  private:
   QTemporaryDir m_tmpDir;

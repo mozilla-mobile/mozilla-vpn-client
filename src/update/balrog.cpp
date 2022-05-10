@@ -264,57 +264,7 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
 
   QJsonObject obj = json.object();
 
-  // This is not a download operation. Let's emit signals if needed.
-  if (m_operation == Check) {
-    bool required = obj.value("required").toBool();
-    if (required) {
-      // Even if we are geoip-restricted, we want to force the update when
-      // required.
-      emit updateRequired();
-      deleteLater();
-      return true;
-    }
-
-    // Let's see if we can fetch the content. If we are unable to fetch the
-    // content, we don't push for a recommended update.
-    QString url = obj.value("url").toString();
-    if (url.isEmpty()) {
-      logger.error() << "Invalid URL in the JSON document";
-      return false;
-    }
-
-    NetworkRequest* request = NetworkRequest::createForGetUrl(task, url);
-
-    connect(request, &NetworkRequest::requestFailed, this,
-            [this](QNetworkReply::NetworkError error, const QByteArray&) {
-              logger.error() << "Request failed" << error;
-              deleteLater();
-            });
-
-    connect(request, &NetworkRequest::requestHeaderReceived, this,
-            [this](NetworkRequest* request) {
-              Q_ASSERT(request);
-              logger.debug() << "Request header received";
-
-              // We want to proceed only if the status code is 200. The request
-              // will be aborted, but the signal emitted.
-              if (request->statusCode() == 200) {
-                emit updateRecommended();
-              }
-
-              logger.warning()
-                  << "Abort request for status code" << request->statusCode();
-              request->abort();
-            });
-
-    connect(request, &NetworkRequest::requestCompleted, this,
-            [this](const QByteArray&) {
-              logger.debug() << "Request completed";
-              deleteLater();
-            });
-
-    return true;
-  }
+  bool required = obj.value("required").toBool();
 
   QString url = obj.value("url").toString();
   if (url.isEmpty()) {
@@ -334,6 +284,17 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
     return false;
   }
 
+  QString filePath = fromUrlToFilePath(url);
+  if (filePath.isEmpty()) {
+    return false;
+  }
+
+  if (checkCache(filePath, hashValue, hashFunction)) {
+    return completeOperation(filePath, required);
+  }
+
+  invalidateCache();
+
   NetworkRequest* request = NetworkRequest::createForGetUrl(task, url);
 
   // No timeout for this request.
@@ -348,10 +309,17 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
       });
 
   connect(request, &NetworkRequest::requestCompleted, this,
-          [this, hashValue, hashFunction, url](const QByteArray& data) {
+          [this, hashValue, hashFunction, filePath,
+           required](const QByteArray& data) {
             logger.debug() << "Request completed";
 
-            if (!computeHash(url, data, hashValue, hashFunction)) {
+            if (!computeHash(data, hashValue, hashFunction)) {
+              logger.error() << "Ignore failure.";
+              deleteLater();
+              return;
+            }
+
+            if (!saveFileAndInstall(filePath, data, required)) {
               logger.error() << "Ignore failure.";
               deleteLater();
             }
@@ -360,8 +328,7 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
   return true;
 }
 
-bool Balrog::computeHash(const QString& url, const QByteArray& data,
-                         const QString& hashValue,
+bool Balrog::computeHash(const QByteArray& data, const QString& hashValue,
                          const QString& hashFunction) {
   logger.debug() << "Compute the hash";
 
@@ -379,31 +346,12 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
     return false;
   }
 
-  return saveFileAndInstall(url, data);
+  return true;
 }
 
-bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
-  logger.debug() << "Save the file and install it";
-
-  int pos = url.lastIndexOf("/");
-  if (pos == -1) {
-    logger.error() << "The URL seems to be without /.";
-    return false;
-  }
-
-  QString fileName = url.right(url.length() - pos - 1);
-  logger.debug() << "Filename:" << fileName;
-
-  if (!m_tmpDir.isValid()) {
-    logger.error() << "Cannot create a temporary directory"
-                   << m_tmpDir.errorString();
-    return false;
-  }
-
-  QDir dir(m_tmpDir.path());
-  QString tmpFile = dir.filePath(fileName);
-
-  QFile file(tmpFile);
+bool Balrog::saveFileAndInstall(const QString& filePath, const QByteArray& data,
+                                bool required) {
+  QFile file(filePath);
   if (!file.open(QIODevice::ReadWrite)) {
     logger.error() << "Unable to create a file in the temporary folder";
     return false;
@@ -417,7 +365,21 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 
   file.close();
 
-  return install(tmpFile);
+  return completeOperation(filePath, required);
+}
+
+bool Balrog::completeOperation(const QString& filePath, bool required) {
+  if (m_operation == Check) {
+    if (required) {
+      emit updateRequired();
+      return true;
+    }
+
+    emit updateRecommended();
+    return true;
+  }
+
+  return install(filePath);
 }
 
 bool Balrog::install(const QString& filePath) {
@@ -456,7 +418,8 @@ bool Balrog::install(const QString& filePath) {
   connect(process,
           QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
           [this, process, logFile](int exitCode, QProcess::ExitStatus) {
-            logger.debug() << "Installation completed - exitCode:" << exitCode;
+            logger.debug() << "Installer execution completed - exitCode:"
+                           << exitCode;
 
             // In theory we should not be able to read anything more from
             // stdout/stderr.
@@ -496,7 +459,8 @@ bool Balrog::install(const QString& filePath) {
   connect(process,
           QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
           [this, process](int exitCode, QProcess::ExitStatus) {
-            logger.debug() << "Installation completed - exitCode:" << exitCode;
+            logger.debug() << "Installer exeuction completed - exitCode:"
+                           << exitCode;
 
             logger.debug() << "Stdout:" << Qt::endl
                            << qUtf8Printable(process->readAllStandardOutput())
@@ -535,4 +499,68 @@ void Balrog::propagateError(NetworkRequest* request,
   }
 
   vpn->errorHandle(ErrorHandler::toErrorType(error));
+}
+
+bool Balrog::checkCache(const QString& filePath, const QString& hashValue,
+                        const QString& hashFunction) {
+  QFile file(filePath);
+  if (!file.open(QFile::ReadOnly)) {
+    logger.error() << "Unable to read the cache file" << filePath;
+    return false;
+  }
+
+  QByteArray content = file.readAll();
+  return computeHash(content, hashValue, hashFunction);
+}
+
+void Balrog::invalidateCache() {
+  QString cacheDirStr = cacheFolder();
+  if (cacheDirStr.isEmpty()) {
+    logger.error() << "No cache folder to invalidate";
+    return;
+  }
+
+  QDir cacheDir(cacheDirStr);
+  for (const QString& fileName : cacheDir.entryList(QDir::Files)) {
+    cacheDir.remove(fileName);
+  }
+}
+
+QString Balrog::cacheFolder() {
+  QDir cacheDir(
+      QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+  if (!cacheDir.exists()) {
+    logger.error() << "No cache folder";
+    return QString();
+  }
+
+  if (!cacheDir.exists("update") && !cacheDir.mkdir("update")) {
+    logger.debug() << "Unable to create the cache dir folder";
+    return QString();
+  }
+
+  if (!cacheDir.cd("update")) {
+    logger.debug() << "Unable to enter in the update cache folder";
+    return QString();
+  }
+
+  return cacheDir.absolutePath();
+}
+
+QString Balrog::fromUrlToFilePath(const QString& url) {
+  int pos = url.lastIndexOf("/");
+  if (pos == -1) {
+    logger.error() << "The URL seems to be without /.";
+    return QString();
+  }
+
+  QString fileName = url.right(url.length() - pos - 1);
+  logger.debug() << "Filename:" << fileName;
+
+  QString cacheDirStr = cacheFolder();
+  if (cacheDirStr.isEmpty()) {
+    return QString();
+  }
+
+  return QDir(cacheDirStr).absoluteFilePath(fileName);
 }
