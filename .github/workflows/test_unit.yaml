@@ -183,4 +183,4 @@ jobs:
         shell: bash
         working-directory: ./build
         run: |
-          ctest --output-on-failure
+          ctest --build-config Release --output-on-failure
