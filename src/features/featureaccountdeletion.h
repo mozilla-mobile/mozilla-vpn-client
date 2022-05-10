@@ -13,16 +13,16 @@ class FeatureAccountDeletion final : public Feature {
  public:
   FeatureAccountDeletion()
       : Feature(FEATURE_ACCOUNT_DELETION, "Account deletion",
-                false,                              // Is Major Feature
-                L18nStrings::Empty,                 // Display name
-                L18nStrings::Empty,                 // Description
-                L18nStrings::Empty,                 // LongDescr
-                "",                                 // ImagePath
-                "",                                 // IconPath
-                "",                                 // link URL
-                "2.9",                              // released
-                true,                               // Can be enabled in devmode
-                QStringList{"inAppAuthentication"}  // feature dependencies
+                false,               // Is Major Feature
+                L18nStrings::Empty,  // Display name
+                L18nStrings::Empty,  // Description
+                L18nStrings::Empty,  // LongDescr
+                "",                  // ImagePath
+                "",                  // IconPath
+                "",                  // link URL
+                "2.9",               // released
+                true,                // Can be enabled in devmode
+                QStringList()        // feature dependencies
         ) {}
 
   bool checkSupportCallback() const override {

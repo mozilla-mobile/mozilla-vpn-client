@@ -7,7 +7,7 @@ job-defaults:
             symbol: BD
             kind: build
             tier: 1
-    worker-type: b-linux
+    worker-type: b-linux-large
     requires-level: 1
     worker:
           max-run-time: 3600
