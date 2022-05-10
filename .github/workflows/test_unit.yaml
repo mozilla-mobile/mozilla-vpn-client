@@ -39,12 +39,6 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Installing the oathtool
-        shell: bash
-        run: |
-          pip3 install oathtool
-          python3 -m oathtool.generate-script
-
       - name: Install Grcov
         shell: bash
         run: |
@@ -54,19 +48,18 @@ jobs:
         shell: bash
         run: |
           mkdir -p build
-          cmake -S . -B $(pwd)/build \
+          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON \
             -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake/ \
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
-          cmake --build $(pwd)/build --target unit_tests
+          cmake --build $(pwd)/build
 
       - name: Running tests
         shell: bash
-        env:
-          MVPN_OATHTOOL: ${{github.workspace}}/oathtool
+        working-directory: ./build
         run: |
-          $(pwd)/build/tests/unit/unit_tests
-          grcov $(pwd)/build/tests/unit/CMakeFiles/unit_tests.dir \
-              -s $(pwd)/build/tests/unit -t lcov --branch --ignore-not-existing \
+          ctest --output-on-failure
+          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir \
+              -s $(pwd)/tests/unit -t lcov --branch --ignore-not-existing \
                   > ${{github.workspace}}/unit_lcov.info
 
       - name: Upload coverage to Codecov
@@ -185,17 +178,17 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          pip3 install oathtool
-          python3 -m oathtool.generate-script
 
       - name: Building tests
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
           mkdir -p build
-          cmake -S . -B $(pwd)/build
-          cmake --build $(pwd)/build --config Release --target unit_tests
+          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
+          cmake --build $(pwd)/build --config Release
 
       - name: Running tests
         shell: bash
-        run: build/tests/unit/Release/unit_tests.exe
+        working-directory: ./build
+        run: |
+          ctest --output-on-failure

@@ -15,7 +15,7 @@ get_filename_component(MVPN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../src ABS
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR})
 
-qt_add_executable(qml_tests EXCLUDE_FROM_ALL)
+qt_add_executable(qml_tests)
 
 target_link_libraries(qml_tests PRIVATE
     Qt6::Gui
@@ -86,3 +86,9 @@ if(WIN32)
         target_sources(qml_tests PRIVATE qt6winhack.qrc)
     endif()
 endif()
+
+## Add the tests to be run.
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    list(APPEND QML_TEST_ARGS -platform offscreen)
+endif()
+add_test(NAME qml_tests COMMAND qml_tests ${QML_TEST_ARGS})

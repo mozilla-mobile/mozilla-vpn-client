@@ -17,7 +17,7 @@ include_directories(${MVPN_SOURCE_DIR}/hacl-star)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
 
-qt_add_executable(unit_tests EXCLUDE_FROM_ALL)
+qt_add_executable(unit_tests)
 
 target_link_libraries(unit_tests PRIVATE
     Qt6::Core
@@ -260,3 +260,20 @@ target_sources(unit_tests PRIVATE
     themes/themes.qrc
     tutorials/tutorials.qrc
 )
+
+## Add the tests to be run, one for each test class.
+get_target_property(UTEST_SOURCES unit_tests SOURCES)
+list(FILTER UTEST_SOURCES INCLUDE REGEX "test.*.h$")
+foreach(filename ${UTEST_SOURCES})
+    execute_process(
+        OUTPUT_VARIABLE UTEST_CLASS_LIST
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/tests/list_test_classes.py -p TestHelper ${filename}
+    )
+
+    foreach(UTEST_CLASS ${UTEST_CLASS_LIST})
+        add_test(NAME ${UTEST_CLASS} COMMAND unit_tests ${UTEST_CLASS})
+        set_property(TEST ${UTEST_CLASS} PROPERTY ENVIRONMENT LANG="en" LANGUAGE="en")
+    endforeach()
+endforeach()

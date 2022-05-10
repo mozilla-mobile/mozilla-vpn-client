@@ -102,6 +102,9 @@ vscode-cpptools/*
 MozillaVPN.vcxproj*
 *.autosave
 
+# Qt Creator
+CMakeLists.txt.user
+
 #Windows
 .deps
 lib*.dll

@@ -67,9 +67,14 @@ add_subdirectory(nebula)
 add_subdirectory(translations)
 
 # Testing build targets
-add_subdirectory(tests/auth)
-add_subdirectory(tests/unit)
-add_subdirectory(tests/qml)
+option(BUILD_TESTING "Build the testing tree." OFF)
+include(CTest)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+    add_subdirectory(tests/auth)
+    add_subdirectory(tests/nativemessaging)
+    add_subdirectory(tests/unit)
+    add_subdirectory(tests/qml)
+endif()
 
 # Web Extension build targets
 if(NOT CMAKE_CROSSCOMPILING)
