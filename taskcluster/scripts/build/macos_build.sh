@@ -5,6 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 set -e
+set -x
 
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
@@ -73,7 +74,6 @@ xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALL
 print Y "Creating the final package..."
 python3 ./scripts/macos/import_pkg_resources.py || die
 
-set
 print Y "Exporting the artifact..."
 mkdir -p tmp || die
 cp -r Release/Mozilla\ VPN.app tmp || die
@@ -83,7 +83,7 @@ cp -r ./macos/pkg/Resources tmp || die
 cd tmp || die
 
 [[ -d "$PROJECT_HOME/artifacts" ]] || mkdir -p $PROJECT_HOME/artifacts
-zip -r $PROJECT_HOME/artifacts/unsigned_artifact.zip . || die
+tar -czvf $PROJECT_HOME/artifacts/unsigned_artifact.tar.gz . || die
 cd .. || die
 rm -rf tmp || die
 
