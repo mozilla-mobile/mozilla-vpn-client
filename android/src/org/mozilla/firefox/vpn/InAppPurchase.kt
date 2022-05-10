@@ -30,6 +30,7 @@ import org.mozilla.firefox.vpn.glean.GleanEvent
 import org.mozilla.firefox.vpn.qt.VPNUtils
 import java.text.NumberFormat
 import java.time.Duration
+import java.time.format.DateTimeParseException
 import java.util.Currency
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -351,8 +352,19 @@ class InAppPurchase private constructor(ctx: Context) :
         val trialDays = if (details.freeTrialPeriod.isEmpty()) {
             0
         } else {
-            val duration = Duration.parse(details.freeTrialPeriod)
-            duration.toDays().toInt()
+            try {
+                val duration = Duration.parse(details.freeTrialPeriod)
+                duration.toDays().toInt()
+            } catch (e: DateTimeParseException) {
+                if (details.freeTrialPeriod == "P1W") {
+                    // Google Play store and Java seem to disagree on ISO 8601
+                    // Google will use 1W for 7 days, java.Duration however forbids using W
+                    7
+                } else {
+                    Log.e(TAG, "Failed to Parse Free Trial duration ${details.freeTrialPeriod}")
+                    0
+                }
+            }
         }
 
         return GooglePlaySubscriptionInfo(
