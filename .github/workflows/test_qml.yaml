@@ -55,8 +55,6 @@ jobs:
 
       - name: Running tests
         shell: bash
-        env:
-          MVPN_OATHTOOL: ${{github.workspace}}/oathtool
         run: |
           $(pwd)/build/tests/qml/qml_tests -platform offscreen
           grcov $(pwd)/build/tests/qml/CMakeFiles/qml_tests.dir \

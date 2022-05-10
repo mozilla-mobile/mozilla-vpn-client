@@ -114,19 +114,11 @@ jobs:
         run: |
           cargo install grcov
 
-      - name: Installing the oathtool
-        shell: bash
-        run: |
-          pip3 install oathtool
-          python3 -m oathtool.generate-script
-          # python3 by default...
-          sed -i '' "s/python/python3/g" oathtool
-
       - name: Running tests
         shell: bash
         run: |
           export PATH=/opt/qt6/bin:$PATH
-          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
+          ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2

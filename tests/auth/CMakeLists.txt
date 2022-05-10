@@ -122,17 +122,5 @@ target_sources(auth_tests PRIVATE
     ../unit/mocinspectorhandler.cpp
 )
 
-## Add a custom target to generate the oathtool for testing.
-add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/oathtool
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND python3 -m oathtool.generate-script
-)
-set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/oathtool PROPERTIES
-    HEADER_FILE_ONLY TRUE
-)
-target_sources(auth_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/oathtool)
-
 ## Add the tests to be run.
 add_test(NAME auth_tests COMMAND auth_tests)
-set_property(TEST auth_tests PROPERTY ENVIRONMENT "MVPN_OATHTOOL=${CMAKE_CURRENT_BINARY_DIR}/oathtool")
