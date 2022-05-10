@@ -21,6 +21,7 @@ class TutorialStepNext final : public QObject {
   void stop();
 
  private:
+  // NOTE: If you add new vpn_emitter, please update the documentation.
   enum EmitterType {
     Controller,
     QML,
