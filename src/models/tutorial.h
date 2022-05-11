@@ -15,6 +15,7 @@ class Tutorial final : public ItemPicker {
   Q_PROPERTY(QString subtitleId MEMBER m_subtitleId CONSTANT)
   Q_PROPERTY(QString completionMessageId MEMBER m_completionMessageId CONSTANT)
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
+  Q_PROPERTY(bool highlighted READ highlighted CONSTANT)
 
  public:
   ~Tutorial();
@@ -25,6 +26,8 @@ class Tutorial final : public ItemPicker {
   void stop();
 
   const QStringList& allowedItems() const { return m_allowedItems; }
+
+  bool highlighted() const { return m_highlighted; }
 
  private:
   explicit Tutorial(QObject* parent);
@@ -44,6 +47,7 @@ class Tutorial final : public ItemPicker {
 
   QList<TutorialStep*> m_steps;
   int32_t m_currentStep = -1;
+  bool m_highlighted = false;
 
   QStringList m_allowedItems;
 };

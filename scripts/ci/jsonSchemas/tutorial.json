@@ -11,6 +11,10 @@
     "conditions": {
       "$ref": "conditions.json#"
     },
+    "highlighted": {
+      "type": "boolean",
+      "description": "Is this tutorial highlighted?"
+    },
     "title": {
       "type": "string",
       "description": "The title of the tutorial"

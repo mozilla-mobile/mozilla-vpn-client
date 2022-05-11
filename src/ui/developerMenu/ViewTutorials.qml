@@ -46,6 +46,7 @@ Item {
                         list.push("Translate title: " + VPNl18n[tutorial.titleId]);
                         list.push("Translate subtitle: " + VPNl18n[tutorial.subtitleId]);
                         list.push("Image: " + tutorial.image);
+                        list.push("Highlighted: " + tutorial.highlighted + "(" + (tutorial === VPNTutorial.highlightedTutorial ? "true" : "false")  + ")");
 
                         return list.join("\n");
                     }

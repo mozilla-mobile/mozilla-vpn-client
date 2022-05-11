@@ -19,6 +19,7 @@ The Tutorial JSON files are JSON objects. The required properties are:
 | --- | --- | --- | --- |
 | id | Each tutorial must have an id. This is used for the localization | String | Yes |
 | conditions | A list of conditions to be checked before exposing the tutorial. See below | Condition object | No |
+| highlighted | Is this tutorial highlighted? | Boolean | No |
 | title | The title of the Tutorial | String | Yes |
 | title_comment | An optional comment to describe the meaning of the title | String | No |
 | subtitle | The subtitle of the Tutorial | String | Yes |

@@ -1,5 +1,6 @@
 {
   "id": "01_get_started",
+  "highlighted": true,
   "image": "foo.png",
   "title": "Getting started with VPN",
   "subtitle": "Follow this walkthrough to learn how to get started with using your VPN.",

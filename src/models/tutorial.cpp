@@ -63,6 +63,8 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
   Tutorial* tutorial = new Tutorial(parent);
   auto guard = qScopeGuard([&] { tutorial->deleteLater(); });
 
+  tutorial->m_highlighted = obj["highlighted"].toBool();
+
   tutorial->m_titleId =
       Guide::pascalize(QString("tutorial_%1_title").arg(tutorialId));
   if (!l18nStrings->contains(tutorial->m_titleId)) {

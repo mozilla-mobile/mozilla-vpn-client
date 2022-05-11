@@ -117,3 +117,12 @@ void TutorialModel::requireTooltipShown(Tutorial* tutorial, bool shown) {
   m_tooltipShown = shown;
   emit tooltipShownChanged();
 }
+
+Tutorial* TutorialModel::highlightedTutorial() const {
+  for (Tutorial* tutorial : m_tutorials) {
+    if (tutorial->highlighted()) {
+      return tutorial;
+    }
+  }
+  return nullptr;
+}
