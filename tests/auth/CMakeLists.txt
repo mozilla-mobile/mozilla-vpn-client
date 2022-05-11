@@ -101,6 +101,8 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/update/updater.h
     ${MVPN_SOURCE_DIR}/update/versionapi.cpp
     ${MVPN_SOURCE_DIR}/update/versionapi.h
+    ${MVPN_SOURCE_DIR}/update/webupdater.cpp
+    ${MVPN_SOURCE_DIR}/update/webupdater.h
     ${MVPN_SOURCE_DIR}/urlopener.cpp
     ${MVPN_SOURCE_DIR}/urlopener.h
 )

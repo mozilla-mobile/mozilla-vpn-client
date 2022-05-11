@@ -9,6 +9,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "telemetry/gleansample.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -77,6 +78,12 @@ QString Balrog::userAgent() {
 }
 
 void Balrog::start(Task* task) {
+  if (m_downloadAndInstall) {
+    emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::updateStep,
+        {{"state", QVariant::fromValue(UpdateProcessStarted).toString()}});
+  }
+
   QString url =
       QString(Constants::balrogUrl()).arg(appVersion()).arg(userAgent());
   logger.debug() << "URL:" << url;
@@ -366,6 +373,10 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
     return false;
   }
 
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::updateStep,
+      {{"state", QVariant::fromValue(BalrogValidationCompleted).toString()}});
+
   return saveFileAndInstall(url, data);
 }
 
@@ -404,6 +415,10 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 
   file.close();
 
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::updateStep,
+      {{"state", QVariant::fromValue(BalrogFileSaved).toString()}});
+
   return install(tmpFile);
 }
 
@@ -437,7 +452,7 @@ bool Balrog::install(const QString& filePath) {
 
   connect(process, &QProcess::errorOccurred, this,
           [this](QProcess::ProcessError error) {
-            logger.error() << "Installation failed:" << error;
+            logger.error() << "Installer execution failed:" << error;
             deleteLater();
           });
 
@@ -453,29 +468,33 @@ bool Balrog::install(const QString& filePath) {
 
   QProcess* process = new QProcess(this);
   process->start("open", arguments);
-  connect(process,
-          QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
-          [this, process](int exitCode, QProcess::ExitStatus) {
-            logger.debug() << "Installation completed - exitCode:" << exitCode;
+  connect(
+      process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+      this, [this, process](int exitCode, QProcess::ExitStatus) {
+        logger.info() << "Async installation activated - exitCode:" << exitCode;
 
-            logger.debug() << "Stdout:" << Qt::endl
-                           << qUtf8Printable(process->readAllStandardOutput())
-                           << Qt::endl;
-            logger.debug() << "Stderr:" << Qt::endl
-                           << qUtf8Printable(process->readAllStandardError())
-                           << Qt::endl;
+        logger.info() << "Stdout:" << Qt::endl
+                      << qUtf8Printable(process->readAllStandardOutput())
+                      << Qt::endl;
+        logger.info() << "Stderr:" << Qt::endl
+                      << qUtf8Printable(process->readAllStandardError())
+                      << Qt::endl;
 
-            if (exitCode != 0) {
-              deleteLater();
-              return;
-            }
+        if (exitCode != 0) {
+          deleteLater();
+          return;
+        }
 
-            // We leak the object because the installer will restart the
-            // app and we need to keep the temporary folder alive during the
-            // whole process.
-            exit(0);
-          });
+        // We leak the object because the installer will restart the
+        // app and we need to keep the temporary folder alive during the
+        // whole process.
+        exit(0);
+      });
 #endif
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::updateStep,
+      {{"state", QVariant::fromValue(InstallationProcessExecuted).toString()}});
 
   return true;
 }

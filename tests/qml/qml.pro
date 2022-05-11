@@ -57,6 +57,7 @@ SOURCES += \
     ../../src/theme.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
+    ../../src/update/webupdater.cpp
 
 HEADERS += \
     helper.h \
@@ -77,6 +78,7 @@ HEADERS += \
     ../../src/theme.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
+    ../../src/update/webupdater.h
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc

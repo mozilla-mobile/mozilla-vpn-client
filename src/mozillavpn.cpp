@@ -34,6 +34,7 @@
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"
+#include "update/updater.h"
 #include "update/versionapi.h"
 #include "urlopener.h"
 #include "websockethandler.h"
@@ -1768,4 +1769,9 @@ void MozillaVPN::requestDeleteAccount() {
 void MozillaVPN::cancelAccountDeletion() {
   logger.warning() << "Canceling account deletion";
   AuthenticationInApp::instance()->terminateSession();
+}
+
+void MozillaVPN::updateViewShown() {
+  logger.debug() << "Update view shown";
+  Updater::updateViewShown();
 }

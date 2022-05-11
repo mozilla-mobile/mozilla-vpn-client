@@ -283,6 +283,8 @@ target_sources(mozillavpn PRIVATE
     update/updater.h
     update/versionapi.cpp
     update/versionapi.h
+    update/webupdater.cpp
+    update/webupdater.h
     urlopener.cpp
     urlopener.h
     websockethandler.cpp

@@ -27,7 +27,9 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "telemetry/gleansample.h"
 #include "theme.h"
+#include "update/updater.h"
 
 #include <glean.h>
 #include <lottie.h>
@@ -100,12 +102,15 @@ int CommandUI::run(QStringList& tokens) {
         "s", "start-at-boot", "Start at boot (if configured).");
     CommandLineParser::Option testingOption("t", "testing",
                                             "Enable testing mode.");
+    CommandLineParser::Option updateOption(
+        "u", "updated", "This execution completes an update flow.");
 
     QList<CommandLineParser::Option*> options;
     options.append(&hOption);
     options.append(&minimizedOption);
     options.append(&startAtBootOption);
     options.append(&testingOption);
+    options.append(&updateOption);
 
     CommandLineParser clp;
     if (clp.parse(tokens, options, false)) {
@@ -196,6 +201,14 @@ int CommandUI::run(QStringList& tokens) {
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
+
+    if (updateOption.m_set) {
+      emit vpn.recordGleanEventWithExtraKeys(
+          GleanSample::updateStep,
+          {{"state",
+            QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
+                .toString()}});
+    }
 
 #ifndef Q_OS_WIN
     // Signal handling for a proper shutdown.

@@ -21,11 +21,7 @@ void TaskRelease::run() {
   logger.debug() << "Release check started";
 
   Updater* updater = Updater::create(this, m_op == Update);
-  if (!updater) {
-    emit updaterFailure();
-    emit completed();
-    return;
-  }
+  Q_ASSERT(updater);
 
   connect(updater, &Updater::updateRequired, this,
           &TaskRelease::updateRequired);
