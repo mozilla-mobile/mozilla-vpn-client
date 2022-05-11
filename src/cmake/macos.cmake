@@ -107,9 +107,9 @@ target_sources(mozillavpn PRIVATE
 function(add_bundle_file SOURCE)
     add_custom_command(TARGET mozillavpn POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "Bundling ${SOURCE}"
-        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE} $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/utils)
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/utils
+        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE} $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/utils/)
 endfunction(add_bundle_file)
-
 
 # Build the Wireguard Go tunnel
 # FIXME: this builds in the source directory.
@@ -128,6 +128,31 @@ add_bundle_file(${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go/wireguard-g
 add_dependencies(mozillavpn mozillavpnnp)
 add_bundle_file($<TARGET_FILE:mozillavpnnp>)
 add_bundle_file(${CMAKE_CURRENT_SOURCE_DIR}/../extension/manifests/macos/mozillavpn.json)
+
+# Install the lproj translation files into the bundle.
+get_filename_component(I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../i18n ABSOLUTE)
+file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)
+list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
+foreach(LOCALE ${I18N_LOCALES})
+    if(NOT EXISTS ${I18N_DIR}/${LOCALE}/mozillavpn.xliff)
+        continue()
+    endif()
+    execute_process(
+        RESULT_VARIABLE I18N_CHECK_RESULT
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/utils/check_language.py ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
+    )
+    if((NOT I18N_CHECK_RESULT EQUAL 0) AND (NOT LOCALE STREQUAL en))
+        continue()
+    endif()
+    
+    add_custom_command(TARGET mozillavpn POST_BUILD
+        COMMENT "Bundling locale ${LOCALE}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/utils/make_template.py -k __LOCALE__=${LOCALE} 
+                    -o $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj/locversion.plist
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../translations/locversion.plist.in
+    )
+endforeach()
 
 #QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
 #QMAKE_ASSET_CATALOGS = $$PWD/../../../macos/app/Images.xcassets
