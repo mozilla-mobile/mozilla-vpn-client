@@ -59,6 +59,12 @@ Item {
             expected = false
             actual = checkboxrow.isChecked
             verify(expected === actual, `isChecked was ${actual} not ${expected}.`);
+
+            //Simulate clicking to the right of the label of the checkbox. The last parameter (2) represents the topMargin for the VPNInterLabel in VPNCheckBoxRow
+            mouseClick(checkboxrow, checkboxrow.width + 1, 2)
+            expected = false
+            actual = checkboxrow.isChecked
+            verify(expected === actual, `isChecked was ${actual} not ${expected}.`);
         }
 
         function init() {
