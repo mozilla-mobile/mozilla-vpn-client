@@ -191,6 +191,7 @@ int CommandUI::run(QStringList& tokens) {
     Glean::Initialize(engine);
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
+    L18nStrings::initialize();
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);

@@ -21,15 +21,16 @@ jobs:
       QTVERSION: 6.2.4
     name: Run Unit tests on Linux
     steps:
-      - name: Install Linux packages
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install dependences
         run: |
           sudo apt update
           sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
+          python3 -m pip install -r requirements.txt
           python3 -m pip install aqtinstall
           aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
-
-      - name: Clone repository
-        uses: actions/checkout@v2
 
       - name: Checkout submodules
         shell: bash
@@ -38,34 +39,28 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Generating glean samples
-        shell: bash
-        run: |
-          pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
-
-      - name: Importing translation files
-        shell: bash
-        run: |
-          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
-          python3 scripts/utils/import_languages.py
-
-      - name: Installing the oathtool
-        shell: bash
-        run: |
-          pip3 install oathtool
-          python3 -m oathtool.generate-script
-
       - name: Install Grcov
         shell: bash
         run: |
           cargo install grcov
+      
+      - name: Building tests
+        shell: bash
+        run: |
+          mkdir -p build
+          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON \
+            -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake/ \
+            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build $(pwd)/build --target build_tests
 
       - name: Running tests
         shell: bash
+        working-directory: ./build
         run: |
-          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
-          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
+          ctest --output-on-failure
+          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir \
+              -s $(pwd)/tests/unit -t lcov --branch --ignore-not-existing \
+                  > ${{github.workspace}}/unit_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
@@ -95,7 +90,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_macos
+          git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
           cd qt_static_macos
           cat qt6* > qt_static.tar.gz
           tar xf qt_static.tar.gz
@@ -119,19 +114,11 @@ jobs:
         run: |
           cargo install grcov
 
-      - name: Installing the oathtool
-        shell: bash
-        run: |
-          pip3 install oathtool
-          python3 -m oathtool.generate-script
-          # python3 by default...
-          sed -i '' "s/python/python3/g" oathtool
-
       - name: Running tests
         shell: bash
         run: |
           export PATH=/opt/qt6/bin:$PATH
-          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
+          ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
@@ -161,7 +148,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_windows
+          git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
           cd qt_static_windows
           cat qt6* > qt_static.tar.bz2
           tar xf qt_static.tar.bz2
@@ -179,26 +166,21 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Install glean depedencies
+      - name: Install depedencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
 
-      - name: Importing translation files
+      - name: Building tests
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          python3 scripts/utils/import_languages.py -m
-
-      - name: Installing the oathtool
-        shell: bash
-        run: |
-          pip3 install oathtool
-          python3 -m oathtool.generate-script
+          mkdir -p build
+          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
+          cmake --build $(pwd)/build --config Release --target build_tests
 
       - name: Running tests
         shell: bash
+        working-directory: ./build
         run: |
-          export PATH=/c/MozillaVPNBuild/bin:$PATH
-          MVPN_OATHTOOL=oathtool ./scripts/tests/unit_tests.sh
+          ctest --build-config Release --output-on-failure

@@ -20,21 +20,20 @@ godeps.CONFIG = no_link
 
 ## Build the Go module into a callable C library
 golibs.input = GO_MODULES
-golibs.output = ${QMAKE_FILE_PATH}/${QMAKE_FILE_BASE}.a
+golibs.output = ${QMAKE_FILE_IN_PATH}/${QMAKE_FILE_BASE}.a
 golibs.commands = @echo Building ${QMAKE_FILE_IN} \
     && cd ${QMAKE_FILE_PATH} \
     && GOCACHE=$${GOCACHE} go build -buildmode=c-archive $${GOFLAGS} -v -o ${QMAKE_FILE_BASE}.a ${QMAKE_FILE_BASE}.go 
-golibs.clean = ${QMAKE_FILE_PATH}/${QMAKE_FILE_BASE}.a
+golibs.clean = ${QMAKE_FILE_OUT}
 golibs.variable_out = LIBS
 golibs.depends += ${QMAKE_FILE_PATH}/vendor/modules.txt
-golibs.CONFIG += target_predeps
 
 ## Dummy compiler for the library header file
 gohdr.input = GO_MODULES
-gohdr.output = ${QMAKE_FILE_PATH}/${QMAKE_FILE_BASE}.h
+gohdr.output = ${QMAKE_FILE_IN_PATH}/${QMAKE_FILE_BASE}.h
 gohdr.commands = $$escape_expand(\\n)  # force creation of rule
-gohdr.clean = ${QMAKE_FILE_PATH}/${QMAKE_FILE_BASE}.h
-gohdr.depends += ${QMAKE_FILE_PATH}/${QMAKE_FILE_BASE}.a
+gohdr.clean = ${QMAKE_FILE_OUT}
+gohdr.depends += ${QMAKE_FILE_IN_PATH}/${QMAKE_FILE_BASE}.a
 gohdr.variable_out = HEADERS
 
 ## Add Go compiler tools to qmake

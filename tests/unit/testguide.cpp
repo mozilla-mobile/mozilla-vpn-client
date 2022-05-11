@@ -312,12 +312,13 @@ void TestGuide::conditions_data() {
 }
 
 void TestGuide::conditions() {
+  SettingsHolder settingsHolder;
+  FeatureList::instance()->initialize();
+
   QFETCH(QJsonObject, conditions);
   QFETCH(bool, result);
   QFETCH(QString, settingKey);
   QFETCH(QVariant, settingValue);
-
-  SettingsHolder settingsHolder;
 
   if (!settingKey.isEmpty()) {
     settingsHolder.setRawSetting(settingKey, settingValue);

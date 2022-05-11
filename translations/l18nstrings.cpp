@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "l18nstrings.h"
-#include "leakdetector.h"
 
 #include <QCoreApplication>
 
@@ -20,12 +19,17 @@ L18nStrings* L18nStrings::instance() {
   return s_instance;
 }
 
-L18nStrings::L18nStrings(QObject* parent) : QQmlPropertyMap(parent) {
-  MVPN_COUNT_CTOR(L18nStrings);
-  retranslate();
+// static
+void L18nStrings::initialize() {
+#ifndef BUILD_QMAKE
+  Q_INIT_RESOURCE(servers);
+  Q_INIT_RESOURCE(translations);
+#endif
 }
 
-L18nStrings::~L18nStrings() { MVPN_COUNT_DTOR(L18nStrings); }
+L18nStrings::L18nStrings(QObject* parent) : QQmlPropertyMap(parent) {
+  retranslate();
+}
 
 QString L18nStrings::t(L18nStrings::String string) const {
   Q_ASSERT(string < __Last);

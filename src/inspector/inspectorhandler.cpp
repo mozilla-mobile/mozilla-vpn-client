@@ -947,7 +947,7 @@ bool InspectorHandler::mockFreeTrial() { return s_mockFreeTrial; }
 // static
 QString InspectorHandler::appVersionForUpdate() {
   if (s_updateVersion.isEmpty()) {
-    return APP_VERSION;
+    return Constants::versionString();
   }
 
   return s_updateVersion;

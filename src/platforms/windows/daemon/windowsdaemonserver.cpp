@@ -4,6 +4,7 @@
 
 #include "windowsdaemonserver.h"
 #include "commandlineparser.h"
+#include "constants.h"
 #include "daemon/daemonlocalserver.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -62,7 +63,7 @@ int WindowsDaemonServer::run(QStringList& tokens) {
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN Daemon");
-  QCoreApplication::setApplicationVersion(APP_VERSION);
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   if (tokens.length() > 1) {
     QList<CommandLineParser::Option*> options;

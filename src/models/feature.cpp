@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "feature.h"
+#include "constants.h"
 #include "l18nstrings.h"
 #include "logger.h"
 #include "settingsholder.h"
@@ -43,7 +44,7 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
   s_features->insert(m_id, this);
 
   auto releaseVersion = VersionApi::stripMinor(aReleaseVersion);
-  auto currentVersion = VersionApi::stripMinor(APP_VERSION);
+  auto currentVersion = VersionApi::stripMinor(Constants::versionString());
 
   auto cmp = VersionApi::compareVersions(releaseVersion, currentVersion);
   if (cmp == -1) {

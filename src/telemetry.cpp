@@ -7,7 +7,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 
-#include "../../glean/telemetry/gleansample.h"
+#include "telemetry/gleansample.h"
 
 constexpr int CONNECTION_STABILITY_MSEC = 45000;
 
