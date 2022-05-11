@@ -894,7 +894,8 @@ void NetworkRequest::replyFinished() {
   if (m_reply->error() != QNetworkReply::NoError) {
     QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
     logger.error() << "Network error:" << m_reply->errorString()
-                   << "status code:" << status << "- body:" << data;
+                   << "status code:" << status
+                   << "- body:" << logger.sensitive(data);
     logger.error() << "Failed to access:" << m_request.url().toString(options);
     emit requestFailed(m_reply->error(), data);
     return;
