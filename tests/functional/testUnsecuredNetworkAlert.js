@@ -123,7 +123,7 @@ describe('Unsecured network alert', function() {
       // These tests seem to need a little extra time.
       await vpn.wait();
       await vpn.wait();
-    })
+    });
 
     it('Clicking the notification activates the VPN', async () => {
       await vpn.forceUnsecuredNetworkAlert();
@@ -134,22 +134,14 @@ describe('Unsecured network alert', function() {
       assert(vpn.lastNotification().title === null);
 
       await vpn.clickOnNotification();
-
+      await vpn.waitForElement('controllerTitle');
       await vpn.waitForCondition(async () => {
-        let connectingMsg =
-            await vpn.getElementProperty('controllerTitle', 'text');
-        return connectingMsg === 'Connecting…';
+        return await vpn.getElementProperty('controllerTitle', 'text') ===
+            'VPN is on';
       });
-
       assert(
-          await vpn.getElementProperty('controllerSubTitle', 'text') ===
-          'Masking connection and location');
-
-      await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
-
-      // Notifications are not OK when connecting.
-      assert(vpn.lastNotification().title === null);
+          await vpn.getElementProperty('controllerTitle', 'text') ===
+          'VPN is on');
     });
 
     it('Unsecured network alert should not show when connected', async () => {
@@ -179,11 +171,6 @@ describe('Unsecured network alert', function() {
             'VPN is on';
       });
       await vpn.deactivate();
-
-      await vpn.waitForCondition(async () => {
-        return await vpn.getElementProperty('controllerTitle', 'text') ===
-            'Disconnecting…';
-      });
 
       await vpn.waitForCondition(() => {
         return vpn.lastNotification().title === 'VPN Disconnected';
