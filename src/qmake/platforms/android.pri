@@ -60,34 +60,28 @@ DEFINES += MVPN_ANDROID
 INCLUDEPATH += platforms/android
 
 SOURCES +=  \
-    platforms/android/androidauthenticationlistener.cpp \
     platforms/android/androidcontroller.cpp \
     platforms/android/androidiaphandler.cpp \
     platforms/android/androidnotificationhandler.cpp \
     platforms/android/androidutils.cpp \
-    platforms/android/androidwebview.cpp \
     platforms/android/androidvpnactivity.cpp \
     platforms/android/androiddatamigration.cpp \
     platforms/android/androidappimageprovider.cpp \
     platforms/android/androidapplistprovider.cpp \
     platforms/android/androidsharedprefs.cpp \
-    tasks/authenticate/desktopauthenticationlistener.cpp \
     tasks/purchase/taskpurchase.cpp
 
 HEADERS +=  \
-    platforms/android/androidauthenticationlistener.h \
     platforms/android/androidcontroller.h \
     platforms/android/androidiaphandler.h \
     platforms/android/androidnotificationhandler.h \
     platforms/android/androidutils.h \
-    platforms/android/androidwebview.h \
     platforms/android/androidvpnactivity.h \
     platforms/android/androiddatamigration.h\
     platforms/android/androidappimageprovider.h \
     platforms/android/androidapplistprovider.h \
     platforms/android/androidsharedprefs.h \
     platforms/android/androidjnicompat.h \
-    tasks/authenticate/desktopauthenticationlistener.h \
     tasks/purchase/taskpurchase.h
 
 

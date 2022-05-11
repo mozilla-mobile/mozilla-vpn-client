@@ -414,10 +414,6 @@ class MozillaVPN final : public QObject {
 
   void aboutToQuit();
 
-  // This is used only on android but, if we use #ifdef MVPN_ANDROID, qml engine
-  // complains...
-  void loadAndroidAuthenticationView();
-
   void logsReady(const QString& logs);
 
   void currentViewChanged();

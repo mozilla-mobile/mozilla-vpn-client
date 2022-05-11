@@ -51,7 +51,6 @@
 
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
-#  include "platforms/android/androidwebview.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -437,8 +436,6 @@ int CommandUI::run(QStringList& tokens) {
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
-
-    qmlRegisterType<AndroidWebView>("Mozilla.VPN", 1, 0, "VPNAndroidWebView");
 #endif
 
     if (FeatureInAppPurchase::instance()->isSupported()) {
