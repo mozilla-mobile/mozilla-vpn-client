@@ -289,14 +289,6 @@ Window {
             mainStackView.push("qrc:/ui/views/ViewLogs.qml");
         }
 
-        function onLoadAndroidAuthenticationView() {
-            if (Qt.platform.os !== "android") {
-                console.log("Unexpected android authentication view request!");
-            }
-
-            mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
-        }
-
         function onInitializeGlean() {
             if (VPN.debugMode) {
                 console.debug("Initializing glean with debug mode");
