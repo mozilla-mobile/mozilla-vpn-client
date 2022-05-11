@@ -46,29 +46,15 @@ find_program(QT_LRELEASE_EXECUTABLE
     PATHS ${QT_TOOL_PATH}
     NO_DEFAULT_PATH)
 
-## Build the list of supported locales
-set(I18N_LOCALES)
+## Build the list of supported locales and add rules to build them.
 get_filename_component(I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../i18n ABSOLUTE)
-file(GLOB I18N_LISTING LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)
-list(FILTER I18N_LISTING EXCLUDE REGEX "^\\..+")
-foreach(entry ${I18N_LISTING})
-    if(IS_DIRECTORY ${I18N_DIR}/${entry})
-        list(APPEND I18N_LOCALES ${entry})
-    endif()
-endforeach()
-
-## Generate translation files for each locale present
-file(WRITE ${GENERATED_DIR}/translations.qrc "<RCC>\n    <qresource prefix=\"/i18n\">\n")
+file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)
+list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
 foreach(LOCALE ${I18N_LOCALES})
-    file(MAKE_DIRECTORY ${LOCALE})
-    file(APPEND ${GENERATED_DIR}/translations.qrc "        <file>mozillavpn_${LOCALE}.qm</file>\n")
-
-    add_custom_command(
-        OUTPUT ${LOCALE}/locversion.plist
-        MAIN_DEPENDENCY locversion.plist.in
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMAND ${MVPN_SCRIPT_DIR}/utils/make_template.py -k __LOCALE__=${LOCALE} -o ${LOCALE}/locversion.plist locversion.plist.in
-    )
+    if(NOT EXISTS ${I18N_DIR}/${LOCALE}/mozillavpn.xliff)
+        list(REMOVE_ITEM I18N_LOCALES ${LOCALE})
+        continue()
+    endif()
 
     add_custom_command(
         OUTPUT ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
@@ -81,6 +67,22 @@ foreach(LOCALE ${I18N_LOCALES})
         MAIN_DEPENDENCY ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
         COMMAND ${QT_LRELEASE_EXECUTABLE} -verbose -idbased ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
     )
+endforeach()
+
+## Generate the translation resource file.
+## TODO: This should be a build-time command that depends on the input XLIFFs.
+file(WRITE ${GENERATED_DIR}/translations.qrc "<RCC>\n    <qresource prefix=\"/i18n\">\n")
+foreach(LOCALE ${I18N_LOCALES})
+    execute_process(
+        RESULT_VARIABLE I18N_CHECK_RESULT
+        COMMAND ${MVPN_SCRIPT_DIR}/utils/check_language.py ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
+    )
+    if((I18N_CHECK_RESULT EQUAL 0) OR (LOCALE STREQUAL en))
+        file(APPEND ${GENERATED_DIR}/translations.qrc "        <file>mozillavpn_${LOCALE}.qm</file>\n")
+        message("Importing translations: ${LOCALE}")
+    else()
+        message("Rejecting translations: ${LOCALE}")
+    endif()
 endforeach()
 file(APPEND ${GENERATED_DIR}/translations.qrc "    </qresource>\n</RCC>\n")
 
