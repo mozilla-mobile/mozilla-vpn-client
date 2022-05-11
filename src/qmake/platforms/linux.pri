@@ -147,21 +147,20 @@ manifestFile.output = $${OBJECTS_DIR}/${QMAKE_FILE_IN_BASE}
 manifestFile.commands = @echo Building ${QMAKE_FILE_OUT} && \
     python3 $$PWD/../../../scripts/utils/make_template.py ${QMAKE_FILE_IN} \
         -o ${QMAKE_FILE_OUT} -k @WEBEXT_INSTALL_LIBDIR@=$${WEBEXT_INSTALL_LIBDIR}
-manifestFile.variable_out = WEBEXT_MANIFEST_JSON
 manifestFile.CONFIG = target_predeps no_link
 QMAKE_EXTRA_COMPILERS += manifestFile
 
-manifestFirefox.files = $${WEBEXT_MANIFEST_JSON}
+manifestFirefox.files = $${OBJECTS_DIR}/mozillavpn.json
 manifestFirefox.path = $${LIBPATH}/mozilla/native-messaging-hosts
 manifestFirefox.CONFIG = no_check_exist
 INSTALLS += manifestFirefox
 
-manifestChrome.files = $${WEBEXT_MANIFEST_JSON}
+manifestChrome.files = $${OBJECTS_DIR}/mozillavpn.json
 manifestChrome.path = $${ETCPATH}/opt/chrome/native-messaging-hosts
 manifestChrome.CONFIG = no_check_exist
 INSTALLS += manifestChrome
 
-manifestChromium.files = $${WEBEXT_MANIFEST_JSON}
+manifestChromium.files = $${OBJECTS_DIR}/mozillavpn.json
 manifestChromium.path = $${ETCPATH}/chromium/native-messaging-hosts
 manifestChromium.CONFIG = no_check_exist
 INSTALLS += manifestChromium
