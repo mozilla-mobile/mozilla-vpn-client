@@ -12,8 +12,6 @@
 
 #if defined(MVPN_ANDROID)
 #  include "platforms/android/androidauthenticationlistener.h"
-#elif defined(MVPN_IOS)
-#  include "platforms/ios/iosauthenticationlistener.h"
 #elif defined(MVPN_MACOS)
 #  include "platforms/macos/macosauthenticationlistener.h"
 #elif defined(MVPN_WASM)
@@ -38,7 +36,8 @@ AuthenticationListener* AuthenticationListener::create(
 #if defined(MVPN_ANDROID)
       return new AndroidAuthenticationListener(parent);
 #elif defined(MVPN_IOS)
-      return new IOSAuthenticationListener(parent);
+      logger.log() << "Something went totally wrong";
+      Q_ASSERT(false);
 #elif defined(MVPN_MACOS)
       return new MacosAuthenticationListener(parent);
 #elif defined(MVPN_WASM)
