@@ -52,10 +52,10 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
   }
 
   QString tutorialId = obj["id"].toString();
-   if (tutorialId.isEmpty()) {
-     logger.warning() << "Empty ID for tutorial file" << fileName;
-     return nullptr;
-   }
+  if (tutorialId.isEmpty()) {
+    logger.warning() << "Empty ID for tutorial file" << fileName;
+    return nullptr;
+  }
 
   L18nStrings* l18nStrings = L18nStrings::instance();
   Q_ASSERT(l18nStrings);
