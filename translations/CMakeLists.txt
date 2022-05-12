@@ -7,7 +7,7 @@ add_library(translations STATIC)
 find_package(Qt6 REQUIRED COMPONENTS Core Qml)
 target_link_libraries(translations PRIVATE Qt6::Core Qt6::Qml)
 
-get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../scripts ABSOLUTE)
+get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_SOURCE_DIR}/scripts ABSOLUTE)
 get_filename_component(GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated ABSOLUTE)
 file(MAKE_DIRECTORY ${GENERATED_DIR})
 target_include_directories(translations PUBLIC ${GENERATED_DIR})
@@ -47,7 +47,7 @@ find_program(QT_LRELEASE_EXECUTABLE
     NO_DEFAULT_PATH)
 
 ## Build the list of supported locales and add rules to build them.
-get_filename_component(I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../i18n ABSOLUTE)
+get_filename_component(I18N_DIR ${CMAKE_SOURCE_DIR}/i18n ABSOLUTE)
 file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)
 list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
 foreach(LOCALE ${I18N_LOCALES})

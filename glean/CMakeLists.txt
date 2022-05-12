@@ -9,7 +9,7 @@ target_link_libraries(glean PRIVATE Qt6::Core Qt6::Qml Qt6::Sql)
 target_include_directories(glean PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(glean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
-get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../scripts ABSOLUTE)
+get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_SOURCE_DIR}/scripts ABSOLUTE)
 
 target_sources(glean PRIVATE
     glean.cpp
