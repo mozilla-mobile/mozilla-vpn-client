@@ -154,6 +154,14 @@ foreach(LOCALE ${I18N_LOCALES})
     )
 endforeach()
 
+## Install the LoginItems into the bundle.
+add_dependencies(mozillavpn loginitem)
+add_custom_command(TARGET mozillavpn POST_BUILD
+    COMMENT "Bundling LoginItems"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:loginitem>
+        $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/LoginItems/$<TARGET_PROPERTY:loginitem,OUTPUT_NAME>.app/
+)
+
 #QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
 #QMAKE_ASSET_CATALOGS = $$PWD/../../../macos/app/Images.xcassets
 #
