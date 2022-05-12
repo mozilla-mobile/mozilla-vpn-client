@@ -25,7 +25,7 @@ if(WIN32)
     endif()
 endif()
 if(APPLE)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14 CACHE STRING "OSX minimum supported OS version")
 endif()
 
 option(BUILD_DUMMY "Build for the dummy platform" OFF)
@@ -38,12 +38,12 @@ project("Mozilla VPN" VERSION 2.9.0 LANGUAGES C CXX
 message("Configuring for ${CMAKE_GENERATOR}")
 if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES OR "${CMAKE_BUILD_TYPE}"))
     ## Ensure the build type is set for single-config generators.
-    set(CMAKE_BUILD_TYPE "Debug" CACHE PATH "default build type" FORCE)
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "default build type" FORCE)
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
 
 if(NOT DEFINED BUILD_ID)
-    string(TIMESTAMP BUILD_ID "${mozillavpn_VERSION_MAJOR}.%Y%m%d%H%M")
+    string(TIMESTAMP BUILD_ID "${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M")
     message("Generated BUILD_ID: ${BUILD_ID}")
 endif()
 
