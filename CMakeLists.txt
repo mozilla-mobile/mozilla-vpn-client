@@ -4,32 +4,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-option(BUILD_DUMMY "Build for the dummy platform" OFF)
-
-project("Mozilla VPN" VERSION 2.9.0 LANGUAGES C CXX
-        DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
-        HOMEPAGE_URL "https://vpn.mozilla.org"
-)
-
-message("Configuring for ${CMAKE_GENERATOR}")
-if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES OR "${CMAKE_BUILD_TYPE}"))
-    ## Ensure the build type is set for single-config generators.
-    set(CMAKE_BUILD_TYPE "Debug" CACHE PATH "default build type" FORCE)
-    message("Setting build type ${CMAKE_BUILD_TYPE}")
-endif()
-
-## Toolchain Setup
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.17)
-    cmake_policy(SET CMP0099 OLD)
-endif()
-
-if(MSVC)
-    include(src/cmake/msvc.cmake)
-endif()
-
-## Some workarounds for windows build quirks
+## Some workarounds for platform build quirks
 if(WIN32)
     ## CMake v3.20 has problems with race conditions in dependency generation.
     ## See: https://gitlab.kitware.com/cmake/cmake/-/issues/22014
@@ -48,6 +23,39 @@ if(WIN32)
         set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/unsigned"
             CACHE PATH "default install path" FORCE)
     endif()
+endif()
+if(APPLE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
+endif()
+
+option(BUILD_DUMMY "Build for the dummy platform" OFF)
+
+project("Mozilla VPN" VERSION 2.9.0 LANGUAGES C CXX
+        DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
+        HOMEPAGE_URL "https://vpn.mozilla.org"
+)
+
+message("Configuring for ${CMAKE_GENERATOR}")
+if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES OR "${CMAKE_BUILD_TYPE}"))
+    ## Ensure the build type is set for single-config generators.
+    set(CMAKE_BUILD_TYPE "Debug" CACHE PATH "default build type" FORCE)
+    message("Setting build type ${CMAKE_BUILD_TYPE}")
+endif()
+
+if(NOT DEFINED BUILD_ID)
+    string(TIMESTAMP BUILD_ID "${mozillavpn_VERSION_MAJOR}.%Y%m%d%H%M")
+    message("Generated BUILD_ID: ${BUILD_ID}")
+endif()
+
+## Toolchain Setup
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.17)
+    cmake_policy(SET CMP0099 OLD)
+endif()
+
+if(MSVC)
+    include(src/cmake/msvc.cmake)
 endif()
 
 set(CMAKE_AUTOMOC ON)
@@ -81,9 +89,11 @@ if(NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(extension)
 endif()
 
-# Extra platform stuff
+# Extra platform targets
 if(WIN32)
     add_subdirectory(windows/installer)
     add_subdirectory(windows/split-tunnel)
     add_subdirectory(windows/tunnel)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    add_subdirectory(macos/loginitem)
 endif()

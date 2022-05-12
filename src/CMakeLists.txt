@@ -2,11 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-if(NOT DEFINED BUILD_ID)
-    string(TIMESTAMP BUILD_ID "${CMAKE_PROJECT_VERSION_MAJOR}.%Y%m%d%H%M")
-    message("Generated BUILD_ID: ${BUILD_ID}")
-endif()
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin)
