@@ -176,7 +176,7 @@ add_custom_command(
     BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/ac_generated_info.plist
     MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/Contents.json
     COMMAND actool --output-format human-readable-text --notices --warnings
-                --target-device mac --platform macosx --minimum-deployment-target "${CMAKE_OSX_DEPLOYMENT_TARGET}"
+                --target-device mac --platform macosx --minimum-deployment-target ${CMAKE_OSX_DEPLOYMENT_TARGET}
                 --app-icon AppIcon --output-partial-info-plist ${CMAKE_CURRENT_BINARY_DIR}/ac_generated_info.plist
                 --development-region en --enable-on-demand-resources NO
                 --compile ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets
