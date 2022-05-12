@@ -38,7 +38,8 @@ void AdjustTaskSubmission::run() {
   connect(request, &NetworkRequest::requestFailed, this,
           [this, request](QNetworkReply::NetworkError, const QByteArray& data) {
             logger.debug() << "Adjust Proxy request completed with: "
-                           << request->statusCode() << ", " << data;
+                           << request->statusCode() << ", "
+                           << logger.sensitive(data);
             emit operationCompleted(data, request->statusCode());
             emit completed();
           });
@@ -46,7 +47,8 @@ void AdjustTaskSubmission::run() {
   connect(request, &NetworkRequest::requestCompleted, this,
           [this, request](const QByteArray& data) {
             logger.debug() << "Adjust Proxy request completed with: "
-                           << request->statusCode() << ", " << data;
+                           << request->statusCode() << ", "
+                           << logger.sensitive(data);
             emit operationCompleted(data, request->statusCode());
             emit completed();
           });
