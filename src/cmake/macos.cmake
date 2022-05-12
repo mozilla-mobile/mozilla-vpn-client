@@ -105,8 +105,15 @@ target_sources(mozillavpn PRIVATE
 
 ## A helper to copy files into the application bundle
 function(add_bundle_file SOURCE)
+    if(CMAKE_COLOR_MAKEFILE)
+        set(COMMENT_ECHO_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --blue --bold)
+    else()
+        set(COMMENT_ECHO_COMMAND ${CMAKE_COMMAND} -E echo)
+    endif()
+
     add_custom_command(TARGET mozillavpn POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Bundling ${SOURCE}"
+        COMMAND_EXPAND_LISTS
+        COMMAND ${COMMENT_ECHO_COMMAND} "Bundling ${SOURCE}"
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/utils
         COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE} $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/utils/)
 endfunction(add_bundle_file)
@@ -115,13 +122,13 @@ endfunction(add_bundle_file)
 # FIXME: this builds in the source directory.
 get_filename_component(WIREGUARD_GO_DIR ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go ABSOLUTE)
 file(GLOB_RECURSE WIREGUARD_GO_DEPS ${WIREGUARD_GO_DIR}/*.go)
-add_custom_command(
-    OUTPUT ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/wireguard-go
+add_custom_target(build_wireguard_go
+    COMMENT "Building wireguard-go"
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go
-    MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/main.go
     DEPENDS ${WIREGUARD_GO_DEPS}
     COMMAND make
 )
+add_dependencies(mozillavpn build_wireguard_go)
 add_bundle_file(${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/wireguard-go)
 
 # Install the native messaging extensions into the bundle.
