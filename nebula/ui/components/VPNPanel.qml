@@ -53,8 +53,6 @@ Item {
             Layout.preferredWidth: parent.width
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 24
-            // In Settings, the headline wrapMode is set to 'WrapAtWordBoundaryOrAnywhere' to
-            // prevent very long, unbroken display names from throwing the layout
             wrapMode: Text.WordWrap
         }
 
