@@ -93,6 +93,27 @@ describe('Settings', function() {
     });
   });
 
+  it('Checking the tips and tricks settings', async () => {
+    await vpn.waitForElement('settingsTipsAndTricks');
+    await vpn.waitForElementProperty('settingsTipsAndTricks', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsTipsAndTricks', 'y')));
+    await vpn.wait();
+
+    await vpn.clickOnElement('settingsTipsAndTricks');
+    await vpn.wait();
+
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
+    await vpn.clickOnElement('settingsBackButton');
+    await vpn.wait();
+
+    await vpn.waitForElement('manageAccountButton');
+    await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
+  });
+
   it('Checking the networking settings', async () => {
     await vpn.waitForElement('settingsNetworking');
     await vpn.waitForElementProperty('settingsNetworking', 'visible', 'true');

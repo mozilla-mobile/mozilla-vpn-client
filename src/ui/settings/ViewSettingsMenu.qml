@@ -87,6 +87,14 @@ VPNFlickable {
             }
 
             VPNSettingsItem {
+                objectName: "settingsTipsAndTricks"
+                settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
+                imageLeftSrc: "qrc:/nebula/resources/sparkles.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: settingsStackView.push("qrc:/ui/settings/ViewTipsAndTricks.qml")
+            }
+
+            VPNSettingsItem {
                 objectName: "settingsNetworking"
                 settingTitle: qsTrId("vpn.settings.networking")
                 imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
