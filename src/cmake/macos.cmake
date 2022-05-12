@@ -162,9 +162,30 @@ add_custom_command(TARGET mozillavpn POST_BUILD
         $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/LoginItems/$<TARGET_PROPERTY:loginitem,OUTPUT_NAME>.app/
 )
 
-#QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
-#QMAKE_ASSET_CATALOGS = $$PWD/../../../macos/app/Images.xcassets
-#
+## Compile and install the asset catalog into the bundle.
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Assets.car
+           ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
+    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/ac_generated_info.plist
+    MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/Contents.json
+    COMMAND actool --output-format human-readable-text --notices --warnings
+                --target-device mac --platform macosx --minimum-deployment-target "${CMAKE_OSX_DEPLOYMENT_TARGET}"
+                --app-icon AppIcon --output-partial-info-plist ${CMAKE_CURRENT_BINARY_DIR}/ac_generated_info.plist
+                --development-region en --enable-on-demand-resources NO
+                --compile ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets
+)
+target_sources(mozillavpn PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/Assets.car
+    ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
+)
+set_source_files_properties(
+    ${CMAKE_CURRENT_BINARY_DIR}/Assets.car
+    ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
+    PROPERTIES
+    HEADER_FILE_ONLY TRUE
+    MACOSX_PACKAGE_LOCATION Resources
+)
+
 #LD_RUNPATH_SEARCH_PATHS.name = "LD_RUNPATH_SEARCH_PATHS"
 #LD_RUNPATH_SEARCH_PATHS.value = '"$(inherited) @executable_path/../Frameworks"'
 #QMAKE_MAC_XCODE_SETTINGS += LD_RUNPATH_SEARCH_PATHS
