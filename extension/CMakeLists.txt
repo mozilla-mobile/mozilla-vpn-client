@@ -4,6 +4,7 @@
 
 ## Custom target to build the web-extension bridge with Rust/Cargo
 add_custom_target(cargo_mozillavpnnp ALL
+    COMMENT "Building web extension crate"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bridge
     COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_CURRENT_BINARY_DIR}/.cargo_home
             cargo build --release --target-dir ${CMAKE_CURRENT_BINARY_DIR}/bridge/target
