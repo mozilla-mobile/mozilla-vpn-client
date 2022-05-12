@@ -73,14 +73,6 @@ void TutorialModel::allowItem(const QString& objectName) {
   m_allowedItems.append(objectName);
 }
 
-QObject* TutorialModel::get(int index) const {
-    if(index < 0 || m_tutorials.count() < index + 1) {
-        return nullptr;
-    }
-
-    return m_tutorials.at(index);
-}
-
 void TutorialModel::play(Tutorial* tutorial) {
   Q_ASSERT(tutorial);
 

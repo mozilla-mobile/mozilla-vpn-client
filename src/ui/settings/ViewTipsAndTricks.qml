@@ -35,7 +35,7 @@ VPNFlickable {
 
         spacing: 0
 
-        //superfluous columnlayout fixes binding loop
+        //superfluous columnlayout that fixes a binding loop
         ColumnLayout {
             anchors.left: parent.left
             anchors.right: parent.right
@@ -47,22 +47,26 @@ VPNFlickable {
                 spacing: VPNTheme.theme.vSpacingSmall
 
                 Loader {
-                    id: firstTutorialLoader
-                    property variant firstTutorial: VPNTutorial.get(0)
+                    id: highlightedTutorialLoader
+                    property variant highlightedTutorial: VPNTutorial.highlightedTutorial
+
+                    Component.onCompleted: {
+                        console.log(highlightedTutorial)
+                    }
 
                     height: VPNTheme.theme.tutorialCardHeight
                     width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
 
-                    active: firstTutorial
+                    active: highlightedTutorial
                     visible: active
 
                     sourceComponent: VPNTutorialCard {
                         width: parent.width
                         height: parent.height
 
-                        imageSrc: firstTutorial.image
-                        title: VPNl18n[firstTutorial.titleId]
-                        description: VPNl18n[firstTutorial.subtitleId]
+                        imageSrc: highlightedTutorial.image
+                        title: VPNl18n[highlightedTutorial.titleId]
+                        description: VPNl18n[highlightedTutorial.subtitleId]
                     }
                 }
 
@@ -129,7 +133,6 @@ VPNFlickable {
                             }
                         }
                     }
-
                 }
             }
 
@@ -137,14 +140,14 @@ VPNFlickable {
                 Layout.topMargin: guideLoader.active ? 32 : 16
                 Layout.fillWidth: true
 
-                active: firstTutorialLoader.active && firstTutorialExcludedModel.rowCount() > 0
+                active: highlightedTutorialExcludedModel.rowCount() > 0
                 visible: active
 
                 sourceComponent: Flow {
                     spacing: 16
 
                     Repeater {
-                        model: firstTutorialExcludedModel
+                        model: highlightedTutorialExcludedModel
 
                         delegate: VPNTutorialCard {
                             width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
@@ -159,12 +162,11 @@ VPNFlickable {
 
                 //Model containing all tutorials except the first one (if there are any more)
                 VPNFilterProxyModel {
-                    id: firstTutorialExcludedModel
+                    id: highlightedTutorialExcludedModel
                     source: VPNTutorial
-                    // No filter
                     filterCallback: obj => {
-                                        return obj.tutorial.id !== firstTutorialLoader.firstTutorial.id
-                                    }
+                       return !obj.tutorial.highlighted;
+                    }
                 }
             }
 
