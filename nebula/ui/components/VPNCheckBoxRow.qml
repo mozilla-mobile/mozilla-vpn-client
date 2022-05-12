@@ -77,6 +77,9 @@ RowLayout {
             visible: !!labelText.length
 
             VPNMouseArea {
+                anchors.fill: undefined
+                width: parent.implicitWidth
+                height: parent.implicitHeight
                 propagateClickToParent: false
                 onClicked: checkBox.clicked()
             }
