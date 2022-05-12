@@ -18,14 +18,20 @@ VPNFlickable {
 
     property real panelHeight: window.safeContentHeight
     property bool shouldRestoreSlide: false
+    property var initialMainStackViewDepth
+    property var currentMainStackViewDepth: mainStackView.depth
+    onCurrentMainStackViewDepthChanged: {
+        // Change native status bar text color as onboarding panel comes into and out of view
+        if (currentMainStackViewDepth === initialMainStackViewDepth) {
+            return statusBarModifier.statusBarTextColor = VPNTheme.StatusBarTextColorLight;
+        }
+        return statusBarModifier.resetDefaults();
+    }
+
 
     flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight
     height: parent.height
     interactive: flickContentHeight > height
-
-    VPNMobileStatusBarModifier {
-        statusBarTextColor: VPNTheme.StatusBarTextColorLight
-    }
 
     ListModel {
         id: onboardingModel
@@ -364,11 +370,22 @@ VPNFlickable {
         z: -1
 
         // Hide background if 'Get help' is clicked, or another view is opened from system tray
-        visible: mainStackView.depth === 1
+        visible: mainStackView.depth === onboardingPanel.initialMainStackViewDepth
     }
 
-    Component.onCompleted: fullScreenMobileBackground.data.push(mobileOnboardingBackground)
-    Component.onDestruction: fullScreenMobileBackground.data.pop()
+    Component.onCompleted: {
+
+        initialMainStackViewDepth = mainStackView.depth;
+        // Set fullscreen background gradient and update status bar color
+        fullScreenMobileBackground.data = mobileOnboardingBackground;
+        statusBarModifier.statusBarTextColor = VPNTheme.StatusBarTextColorLight;
+    }
+
+    Component.onDestruction: {
+        // Unset background gradient and reset status bar text color
+        fullScreenMobileBackground.data = [];
+        statusBarModifier.resetDefaults();
+    }
 
     function recordGleanEvtAndStartAuth(ctaObjectName) {
         Sample.onboardingCtaClick.record({

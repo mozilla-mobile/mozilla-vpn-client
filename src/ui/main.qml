@@ -105,6 +105,10 @@ Window {
         }
     }
 
+    VPNMobileStatusBarModifier {
+        id: statusBarModifier
+    }
+
     Item {
         // Workaround to support full-screen background gradients/colors on mobile
         id: fullScreenMobileBackground
