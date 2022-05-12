@@ -115,17 +115,9 @@ jobs:
           sudo mv qt6 /opt
           cd ..
 
-      - name: Generating glean samples
-        shell: bash
+      - name: Install dependencies
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
-
-      - name: Importing translation files
-        shell: bash
-        run: |
-          export PATH=/opt/qt6/bin:$PATH
-          python3 scripts/utils/import_languages.py -m
 
       - name: Cache grcov
         id: cache-grcov
@@ -139,12 +131,34 @@ jobs:
         shell: bash
         run: |
           cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.9
+      
+      - name: Building tests
+        shell: bash
+        run: |
+          mkdir -p build
+          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON \
+            -DCMAKE_PREFIX_PATH=/opt/qt6/lib/cmake/ \
+            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build $(pwd)/build --target build_tests
 
       - name: Running tests
         shell: bash
+        working-directory: ./build
         run: |
-          export PATH=/opt/qt6/bin:${{github.workspace}}/grcov-build/bin:$PATH
-          ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --output-on-failure
+
+          grcov $(pwd)/tests/auth/CMakeFiles/auth_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
+
+          grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
+
+          grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
+
+          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
@@ -152,7 +166,7 @@ jobs:
           directory: .
           flags: unit_tests
           name: codecov-poc
-          files: unit_lcov.info
+          files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info
           verbose: true
 
   windows-unit-tests:
