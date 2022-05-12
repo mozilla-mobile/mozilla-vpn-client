@@ -10,7 +10,7 @@ set_target_properties(mozillavpn PROPERTIES OUTPUT_NAME "Mozilla VPN")
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
     MACOSX_BUNDLE ON
-    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/../macos/app/Info.plist.in
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/macos/app/Info.plist.in
     MACOSX_BUNDLE_BUNDLE_NAME "Mozilla VPN"
     MACOSX_BUNDLE_BUNDLE_VERSION "${BUILD_ID}"
     MACOSX_BUNDLE_COPYRIGHT "MPL-2.0"
@@ -113,24 +113,24 @@ endfunction(add_bundle_file)
 
 # Build the Wireguard Go tunnel
 # FIXME: this builds in the source directory.
-get_filename_component(WIREGUARD_GO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go ABSOLUTE)
+get_filename_component(WIREGUARD_GO_DIR ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go ABSOLUTE)
 file(GLOB_RECURSE WIREGUARD_GO_DEPS ${WIREGUARD_GO_DIR}/*.go)
 add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go/wireguard-go
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go
-    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go/main.go
+    OUTPUT ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/wireguard-go
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go
+    MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/main.go
     DEPENDS ${WIREGUARD_GO_DEPS}
     COMMAND make
 )
-add_bundle_file(${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go/wireguard-go)
+add_bundle_file(${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/wireguard-go)
 
 # Install the native messaging extensions into the bundle.
 add_dependencies(mozillavpn mozillavpnnp)
 add_bundle_file($<TARGET_FILE:mozillavpnnp>)
-add_bundle_file(${CMAKE_CURRENT_SOURCE_DIR}/../extension/manifests/macos/mozillavpn.json)
+add_bundle_file(${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json)
 
 # Install the lproj translation files into the bundle.
-get_filename_component(I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../i18n ABSOLUTE)
+get_filename_component(I18N_DIR ${CMAKE_SOURCE_DIR}/i18n ABSOLUTE)
 file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)
 list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
 foreach(LOCALE ${I18N_LOCALES})
@@ -139,7 +139,7 @@ foreach(LOCALE ${I18N_LOCALES})
     endif()
     execute_process(
         RESULT_VARIABLE I18N_CHECK_RESULT
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/utils/check_language.py ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
+        COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/check_language.py ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
     )
     if((NOT I18N_CHECK_RESULT EQUAL 0) AND (NOT LOCALE STREQUAL en))
         continue()
@@ -148,9 +148,9 @@ foreach(LOCALE ${I18N_LOCALES})
     add_custom_command(TARGET mozillavpn POST_BUILD
         COMMENT "Bundling locale ${LOCALE}"
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/utils/make_template.py -k __LOCALE__=${LOCALE} 
+        COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py -k __LOCALE__=${LOCALE} 
                     -o $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj/locversion.plist
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../translations/locversion.plist.in
+                    ${CMAKE_SOURCE_DIR}/translations/locversion.plist.in
     )
 endforeach()
 

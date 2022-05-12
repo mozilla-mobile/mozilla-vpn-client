@@ -11,7 +11,7 @@ find_package(Qt6 REQUIRED COMPONENTS Network NetworkAuth)
 find_package(Qt6 REQUIRED COMPONENTS Gui Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
 
-get_filename_component(MVPN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../src ABSOLUTE)
+get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MVPN_SOURCE_DIR})
