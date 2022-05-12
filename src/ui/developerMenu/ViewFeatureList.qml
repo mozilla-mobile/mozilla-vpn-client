@@ -20,7 +20,6 @@ Item {
         id: menu
         // Do not translate this string!
         title: "Feature List"
-        isSettingsView: false
     }
 
     VPNFilterProxyModel {

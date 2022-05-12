@@ -22,13 +22,8 @@ Item {
     VPNFlickable {
         id: vpnFlickable
 
-        anchors.left: root.left
-        anchors.right: root.right
-        anchors.top: root.top
-        anchors.topMargin: VPNTheme.theme.menuHeight
-        height: root.height - menu.height
+        anchors.fill: parent
         flickContentHeight: col.y + col.childrenRect.height + ( VPNTheme.theme.rowHeight * 2 )
-        interactive: flickContentHeight > height
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
         Component.onCompleted: {

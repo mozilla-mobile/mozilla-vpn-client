@@ -490,9 +490,9 @@ describe.skip('Take screenshots for each view', function() {
     await vpn.clickOnElement('giveFeedbackBackButton');
     await vpn.wait();
 
-    await vpn.waitForElement('settingsBackButton');
-    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
-    await vpn.clickOnElement('settingsBackButton');
+    await vpn.waitForElement('getHelpBack');
+    await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
+    await vpn.clickOnElement('getHelpBack');
     await vpn.wait();
 
     await vpn.waitForElement('settingsGetHelp');

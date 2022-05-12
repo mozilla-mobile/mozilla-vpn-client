@@ -41,21 +41,6 @@ VPNFlickable {
         }
     ]
 
-    Connections {
-        target: VPNController
-        function onActivationBlockedForCaptivePortal() {
-            stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
-        }
-    }
-    Connections{
-        target: VPNCaptivePortal
-        function onCaptivePortalPresent() {
-            if (VPNController.state != VPNController.StateOff){
-                stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
-            }
-        }
-    }
-
     GridLayout {
         id: col
 
@@ -184,38 +169,5 @@ VPNFlickable {
             Layout.preferredHeight: 1
         }
 
-        Connections {
-            target: window
-
-            function onShowServersView() {
-                stackview.push("ViewServers.qml", StackView.Immediate);
-            }
-        }
-
-    }
-
-    Component {
-        id: aboutUsComponent
-
-        VPNAboutUs {
-            isSettingsView: false
-        }
-    }
-
-    Connections {
-        target: VPN
-        function onSettingsNeeded() {
-            while(stackview.depth > 1) {
-                stackview.pop(null, StackView.Immediate);
-            }
-            stackview.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
-        }
-
-        function onAboutNeeded() {
-            while(stackview.depth > 1) {
-                stackview.pop(null, StackView.Immediate);
-            }
-            stackview.push(aboutUsComponent);
-        }
     }
 }

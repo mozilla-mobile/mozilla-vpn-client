@@ -211,10 +211,10 @@ VPNFlickable {
                 shouldRestoreSlide = true;
                 goToNextSlide();
             }
-            stackview.push("qrc:/ui/views/ViewGetHelp.qml", { addSafeAreaMargin: true });
+            getHelpViewNeeded();
         }
 
-        anchors.topMargin: VPNTheme.theme.listSpacing * 1.5 + safeAreaHeightByDevice()
+        anchors.topMargin: VPNTheme.theme.listSpacing
     }
 
     QtObject {
@@ -326,25 +326,6 @@ VPNFlickable {
         }
     }
 
-    VPNRadialGradient {
-        anchors.fill: parent
-        gradient: Gradient {
-            GradientStop {
-                color: VPNTheme.theme.onBoardingGradient.start
-                position: 0.0
-            }
-            GradientStop {
-                color: VPNTheme.theme.onBoardingGradient.middle
-                position: 0.2
-            }
-            GradientStop {
-                color: VPNTheme.theme.onBoardingGradient.end
-                position: 0.5
-            }
-        }
-        z: -1
-    }
-
     function goToNextSlide() {
         if (swipeView.contentItem.currentIndex < onboardingModel.count - 1) {
             swipeView.contentItem.currentIndex += 1;
@@ -360,6 +341,34 @@ VPNFlickable {
             swipeView.contentItem.currentIndex = onboardingModel.count - 1;
         }
     }
+
+    VPNRadialGradient {
+        id: mobileOnboardingBackground
+        height: Screen.height
+        width: Screen.width
+        gradient: Gradient {
+            GradientStop {
+                color: VPNTheme.theme.onBoardingGradient.start
+                position: 0.0
+            }
+            GradientStop {
+                color: VPNTheme.theme.onBoardingGradient.middle
+                position: 0.2
+            }
+            GradientStop {
+                color: VPNTheme.theme.onBoardingGradient.end
+                position: 0.5
+            }
+        }
+
+        z: -1
+
+        // Hide background if 'Get help' is clicked, or another view is opened from system tray
+        visible: mainStackView.depth === 1
+    }
+
+    Component.onCompleted: fullScreenMobileBackground.data.push(mobileOnboardingBackground)
+    Component.onDestruction: fullScreenMobileBackground.data.pop()
 
     function recordGleanEvtAndStartAuth(ctaObjectName) {
         Sample.onboardingCtaClick.record({

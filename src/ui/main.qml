@@ -17,22 +17,11 @@ import telemetry 0.30
 Window {
     id: window
 
+    signal showServerList
+
     property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
     property var isWasmApp: Qt.platform.os === "wasm"
-    property bool isMobileOnboardingOnIos: VPNFeatureList.get("mobileOnboarding").isSupported
-        && Qt.platform.os === "ios"
-        && VPN.state === VPN.StateInitialize
-
-    signal clearCurrentViewStack
-    signal showServersView
-
-    function goToServersView() {
-        if (VPN.state === VPN.StateMain) {
-            clearCurrentViewStack();
-            showServersView();
-        }
-    }
 
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
@@ -116,13 +105,20 @@ Window {
         }
     }
 
+    Item {
+        // Workaround to support full-screen background gradients/colors on mobile
+        id: fullScreenMobileBackground
+    }
+
+
     Rectangle {
         id: iosSafeAreaTopMargin
 
         color: VPNTheme.theme.transparent
-        height: isMobileOnboardingOnIos ? 0 : safeAreaHeightByDevice();
+        height: safeAreaHeightByDevice();
         width: window.width
         anchors.top: parent.top
+
     }
 
     VPNWasmHeader {
@@ -135,12 +131,18 @@ Window {
 
     VPNStackView {
         id: mainStackView
+
+        objectName: "MainStackView"
         initialItem: mainView
         width: parent.width
         anchors.top: parent.top
         anchors.topMargin: iosSafeAreaTopMargin.height + wasmMenuHeader.height
         height: safeContentHeight
         clip: true
+
+        function getHelpViewNeeded() {
+            mainStackView.push("qrc:/ui/views/ViewGetHelp.qml")
+        }
     }
 
     Component {
@@ -283,10 +285,44 @@ Window {
             if (VPNFeatureList.get("shareLogs").isSupported)  {
                 if(VPN.viewLogs()){
                     return;
-                };
+                }
             }
+
             // If we can't show logs natively, open the viewer
-            mainStackView.push("qrc:/ui/views/ViewLogs.qml");
+            if (mainStackView.currentItem.objectName !== "viewLogs") {
+                mainStackView.push("qrc:/ui/views/ViewLogs.qml");
+            }
+        }
+
+        function onLoadAndroidAuthenticationView() {
+            if (Qt.platform.os !== "android") {
+                console.log("Unexpected android authentication view request!");
+            }
+            mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
+        }
+
+        function onContactUsNeeded() {
+            // Check if Contact Us view is already in mainStackView
+            const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
+            if (contactUsViewInStack) {
+                // Unwind mainStackView back to Contact Us
+                return mainStackView.pop(contactUsViewInStack, StackView.Immediate);
+            }
+            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", StackView.Immediate);
+        }
+
+        function onSettingsNeeded() {
+            // Check if Settings view is already in mainStackView
+            const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" })
+
+            if (settingsViewInMainStack) {
+                // Unwind settingsStackView back to menu
+                settingsViewInMainStack._unwindSettingsStackView();
+
+                // Unwind mainStackView back to Settings
+                return mainStackView.pop(settingsViewInMainStack, StackView.Immediate);
+            }
+            mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
         }
 
         function onInitializeGlean() {
@@ -350,8 +386,6 @@ Window {
             }
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                isMainView: true,
-
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -374,8 +408,6 @@ Window {
             }
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                isMainView: true,
-
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -399,8 +431,6 @@ Window {
             }
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                isMainView: true,
-
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -423,8 +453,6 @@ Window {
             }
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                isMainView: true,
-
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -486,7 +514,6 @@ Window {
         }
     }
 
-
     VPNSystemAlert {
     }
 
@@ -494,10 +521,29 @@ Window {
         id: serverUnavailablePopup
     }
 
+    function goToServersView() {
+        if (VPN.state !== VPN.StateMain) {
+            return;
+        }
+        if (mainStackView.depth > 1) {
+            mainStackView.unwindToInitialItem();
+        }
+        showServerList();
+    }
+
     Connections {
         target: VPNController
         function onReadyToServerUnavailable() {
             serverUnavailablePopup.open();
+        }
+        function onActivationBlockedForCaptivePortal() {
+           mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
+        }
+    }
+    Connections{
+        target: VPNCaptivePortal
+        function onCaptivePortalPresent() {
+            mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
         }
     }
 

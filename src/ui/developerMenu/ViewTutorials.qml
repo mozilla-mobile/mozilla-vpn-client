@@ -18,7 +18,6 @@ Item {
         id: menu
         // Do not translate this string!
         title: "Tutorials - REMOVE ME"
-        isSettingsView: false
     }
 
     VPNFlickable {

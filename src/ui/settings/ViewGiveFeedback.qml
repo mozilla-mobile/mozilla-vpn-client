@@ -12,7 +12,6 @@ import components.forms 0.1
 
 Item {
     property string _menuTitle: qsTrId("vpn.settings.giveFeedback")
-    property alias isSettingsView: menu.isSettingsView
 
     id: feedbackRoot
     objectName: "giveFeedbackView"
@@ -57,7 +56,6 @@ Item {
                 id: col
                 anchors.left: parent.left
                 anchors.right: parent.right
-
                 spacing: window.fullscreenRequired() ? VPNTheme.theme.windowMargin : VPNTheme.theme.windowMargin * 2
                 anchors.margins: VPNTheme.theme.windowMargin * 2
 
@@ -371,7 +369,7 @@ Item {
                 anchors.top: col.bottom
                 anchors.topMargin: VPNTheme.theme.vSpacing
                 anchors.horizontalCenter: parent.horizontalCenter
-                onClicked: stackview.pop()
+                onClicked: mainStackView.pop()
                 Component.onCompleted: {
                    if (window.fullscreenRequired()) {
                        anchors.top = undefined;

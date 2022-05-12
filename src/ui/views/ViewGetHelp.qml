@@ -10,15 +10,17 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 Item {
-    property alias isSettingsView: menu.isSettingsView
-    property alias isMainView: menu.isMainView
-    property bool addSafeAreaMargin: false
     //% "Get help"
     property string _menuTitle: qsTrId("vpn.main.getHelp2")
     property int unlockCounter: 0
 
     id: getHelp
     objectName: "getHelp"
+
+    Rectangle {
+        anchors.fill: getHelp
+        color: window.color
+    }
 
     Timer {
         id: unlockTimeout
@@ -34,9 +36,7 @@ Item {
 
         //% "Get help"
         title: qsTrId("vpn.main.getHelp2")
-        visible: !isSettingsView
-
-        y: addSafeAreaMargin ? safeAreaHeightByDevice() : 0
+        anchors.top: parent.top
     }
 
     VPNMouseArea {
@@ -60,7 +60,6 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.topMargin: VPNTheme.theme.windowMargin
-
         anchors.top: menu.bottom
 
         VPNExternalLinkListItem {
@@ -68,7 +67,7 @@ Item {
 
             accessibleName: title
             title: qsTrId("vpn.settings.giveFeedback")
-            onClicked: isSettingsView ? settingsStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml") : isMainView? mainStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml") : stackview.push("qrc:/ui/settings/ViewGiveFeedback.qml", {isMainView: true})
+            onClicked: mainStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml")
             iconSource: "qrc:/nebula/resources/chevron.svg"
             backgroundColor: VPNTheme.theme.iconButtonLightBackground
             width: parent.width - VPNTheme.theme.windowMargin
@@ -107,28 +106,7 @@ Item {
             imageLeftSrc: "qrc:/ui/resources/developer.svg"
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             visible: VPNSettings.developerUnlock
-            onClicked: {
-                if (isSettingsView) {
-                    settingsStackView.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml", {
-                        isSettingsView: true,
-                        addSafeAreaMargin: getHelp.addSafeAreaMargin
-                    })
-                } else {
-                    stackview.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml", {
-                        isSettingsView: false,
-                        addSafeAreaMargin: getHelp.addSafeAreaMargin
-                    })
-                }
-            }
-        }
-    }
-
-    Connections {
-        target: VPN
-        function onContactUsNeeded() {
-            const sv = isSettingsView ? settingsStackView : isMainView ? mainStackView : stackview
-            if (sv.currentItem.objectName === "contactUs") return;
-            sv.push("qrc:/ui/views/ViewContactUs.qml", { isMainView: false });
+            onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml")
         }
     }
 }
