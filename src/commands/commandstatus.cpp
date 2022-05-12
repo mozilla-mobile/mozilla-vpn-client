@@ -109,6 +109,51 @@ int CommandStatus::run(QStringList& tokens) {
       stream << "Server city: " << sd->exitCityName() << Qt::endl;
     }
 
+    Controller controller;
+
+    QEventLoop loop;
+    QObject::connect(&controller, &Controller::stateChanged, [&] {
+      if (controller.state() == Controller::StateOff ||
+          controller.state() == Controller::StateOn) {
+        loop.exit();
+      }
+    });
+    controller.initialize();
+    loop.exec();
+
+    stream << "VPN state: ";
+    switch (controller.state()) {
+      case Controller::StateInitializing:
+        stream << "initializing";
+        break;
+
+      case Controller::StateOff:
+        stream << "off";
+        break;
+
+      case Controller::StateConnecting:
+        stream << "connecting";
+        break;
+
+      case Controller::StateConfirming:
+        stream << "confirming";
+        break;
+
+      case Controller::StateOn:
+        stream << "on";
+        break;
+
+      case Controller::StateDisconnecting:
+        stream << "disconnecting";
+        break;
+
+      case Controller::StateSwitching:
+        stream << "switching";
+        break;
+    }
+
+    stream << Qt::endl;
+
     return 0;
   });
 }
