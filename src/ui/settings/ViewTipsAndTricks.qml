@@ -160,7 +160,7 @@ VPNFlickable {
                     }
                 }
 
-                //Model containing all tutorials except the first one (if there are any more)
+                //Model containing all tutorials except the highlighted one (if there are any more)
                 VPNFilterProxyModel {
                     id: highlightedTutorialExcludedModel
                     source: VPNTutorial
