@@ -127,20 +127,10 @@ describe('Backend failure', function() {
         'VPN is off');
   });
 
+
   it('BackendFailure when connecting', async () => {
     await vpn.authenticate(true, true);
     await vpn.activate();
-
-    await vpn.waitForCondition(async () => {
-      let connectingMsg =
-          await vpn.getElementProperty('controllerTitle', 'text');
-      return connectingMsg === 'Connecting…';
-    });
-
-    assert(
-        await vpn.getElementProperty('controllerSubTitle', 'text') ===
-        'Masking connection and location');
-
     await backendFailureAndRestore();
 
     await vpn.waitForElement('controllerTitle');
@@ -167,7 +157,6 @@ describe('Backend failure', function() {
         'VPN is off');
   });
 
-
   it('disconnecting', async () => {
     await vpn.authenticate(true, true);
     await vpn.activate();
@@ -175,12 +164,6 @@ describe('Backend failure', function() {
       return vpn.lastNotification().title === 'VPN Connected';
     });
     await vpn.deactivate();
-
-    await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ===
-          'Disconnecting…';
-    });
-
     await backendFailureAndRestore();
 
     await vpn.waitForElement('controllerTitle');
