@@ -4,13 +4,23 @@
 
 ## Stage 0: Generate the Resources for the installer package.
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources)
+set(XLIFFTOOL ${CMAKE_SOURCE_DIR}/scripts/utils/xlifftool.py)
 add_custom_target(pkg_resources
     COMMENT "Preparing MacOS Installer Resources"
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/Resources .
-    COMMAND ${CMAKE_COMMAND} -DLOCALE=en -P ${CMAKE_CURRENT_SOURCE_DIR}/buildlocale.cmake
 )
-## TODO: And we should now do the same for each supported locale...
+
+add_custom_target(pkg_resources_en
+    COMMENT "Translating MacOS Installer Resources for en"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources
+    DEPENDS ${CMAKE_SOURCE_DIR}/i18n/en/mozillavpn.xliff
+    COMMAND ${CMAKE_COMMAND} -E make_directory en.lproj
+    COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/welcome.html.in -o en.lproj/welcome.html ${CMAKE_SOURCE_DIR}/i18n/en/mozillavpn.xliff
+    COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/conclusion.html.in -o en.lproj/conclusion.html ${CMAKE_SOURCE_DIR}/i18n/en/mozillavpn.xliff
+    COMMAND ${XLIFFTOOL} -g macosinstaller --strip 1 -f macos -o en.lproj/Localizable.strings ${CMAKE_SOURCE_DIR}/i18n/en/mozillavpn.xliff
+)
+add_dependencies(pkg_resources pkg_resources_en)
 
 ## Stage 1: Create the staging directory, and populate it with the app.
 add_custom_command(
