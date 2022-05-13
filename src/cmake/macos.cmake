@@ -141,7 +141,7 @@ foreach(LOCALE ${I18N_LOCALES})
     endif()
     execute_process(
         RESULT_VARIABLE I18N_CHECK_RESULT
-        COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/check_language.py ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
+        COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/xlifftool.py -c ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
     )
     if((NOT I18N_CHECK_RESULT EQUAL 0) AND (NOT LOCALE STREQUAL en))
         continue()
