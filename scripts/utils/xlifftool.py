@@ -9,9 +9,13 @@ import xml.etree.ElementTree as ET
 
 ## Parse arguments to locate the input files and options.
 parser = argparse.ArgumentParser(
-    description='Check if a XLIFF translation file is suitable for import')
+    description='Inspect XLIFF translation files')
 parser.add_argument('source', metavar='SOURCE', type=str, action='store',
     help='XLIFF translation file to process')
+parser.add_argument('-c', '--check', default=False, action='store_true',
+    help='Check if the XLIFF file is ready for import')
+parser.add_argument('-g', '--get', metavar='TRID', type=str, action='append', default=[],
+    help='Get translated string for TRID')
 parser.add_argument('-t', '--threshold', metavar='VAL', type=float, default=0.7,
     help='Minimum required threshold of completed translations (0.0 to 1.0)')
 parser.add_argument('-v', '--verbose', default=False, action='store_true',
@@ -19,9 +23,9 @@ parser.add_argument('-v', '--verbose', default=False, action='store_true',
 args = parser.parse_args()
 
 ## Parse the input XLIFF file as XML and check its completeness.
-def get_completeness(rootelem):
+def get_completeness(root):
     results = {}
-    for filegroup in rootelem.iter('{urn:oasis:names:tc:xliff:document:1.2}file'):
+    for filegroup in root.iter('{urn:oasis:names:tc:xliff:document:1.2}file'):
         target = filegroup.attrib['target-language']
         sources = 0
         translations = 0
@@ -51,11 +55,35 @@ def get_completeness(rootelem):
 
     return translations / (sources * 1.0) if sources > 0 else 0.0
 
-## Return the verdict
+def get_translation(root, trid):
+    for unit in root.iter("{urn:oasis:names:tc:xliff:document:1.2}trans-unit"):
+        if unit.attrib['id'] != trid:
+            continue
+
+        string = unit.find("{urn:oasis:names:tc:xliff:document:1.2}target")
+        if string is not None:
+            return string.text
+
+        string = unit.find("{urn:oasis:names:tc:xliff:document:1.2}source")
+        if string is not None:
+            return string.text
+
+    return None
+
+# Parse the XLIFF
 tree = ET.parse(args.source)
-root = tree.getroot()
-score = get_completeness(root)
-if score < args.threshold:
-    sys.exit(1)
-else:
-    sys.exit(0)
+xliffroot = tree.getroot()
+
+# Return translations
+for trid in args.get:
+    translation = get_translation(xliffroot, trid)
+    if translation is None:
+        print(f"Translation for {trid} was not found.", file=sys.stderr)
+        sys.exit(1)
+    else:
+        print(f"{translation}")
+
+# Return the verdict
+if args.check:
+    if get_completeness(xliffroot) < args.threshold:
+        sys.exit(1)
