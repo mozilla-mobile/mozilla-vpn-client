@@ -599,27 +599,38 @@ global:
   subscriptionManagement:
     menuTitle:
       value: Profile
-      comment: Menu title for the a view with details on the users account
+      comment: Menu title for the a view with details on the users account.
     summaryHeadline:
       value: Subscription summary
-      comment: Headline for a list with information on the subscription plan of the user
+      comment: Headline for a list with information on the subscription plan of the user.
     paymentHeadline:
       value: Payment Information
-      comment: Headline for a list with information on the payment information the user provided for their subscription
+      comment: Headline for a list with information on the payment information the user provided for their subscription.
     planLabel:
       value: Subscription plan
-      comment: Label for the selected subscription plan the user currently is subscribed to
+      comment: Label for the selected subscription plan the user currently is subscribed to.
     statusLabel:
       value: Status
-      comment: Label for the current status of the subscription
+      comment: Label for the current status of the subscription.
+    statusInactive:
+      value: Inactive
+      comment: Text for a label that indicates an inactive subscription.
+    statusActive:
+      value: Active
+      comment: Text for a label that indicates an active subscription.
     nextLabel:
       value: Next billed
-      comment: Label for the upcoming date on which the user will be billed for their subscription
+      comment: Label for the upcoming date on which the user will be billed for their subscription.
     activatedLabel:
       value: Activated
-      comment: Label for the date on which the subscription was activated
+      comment: Label for the date on which the subscription was activated.
     expiresLabel:
       value: Expires
-      comment: Label for the upcoming date on which the subscription will expire
+      comment: Label for the upcoming date on which the subscription will expire.
+    paymentMethod:
+      value: "%1 subscription"
+      comment:
+        - The %1 represents the subscription platform.
+        - Values for %1 could be “Apple” or “Google” for example.
     manageSubscriptionButton: Manage subscription
-      value: Label for a button that will take the user to a view where the can manage their subscription
+      value: Label for a button that will take the user to a view where the can manage their subscription.
