@@ -21,7 +21,8 @@ class FeatureInAppAccountCreate final : public Feature {
                 "",                                 // IconPath
                 "",                                 // link URL
                 "2.6",                              // released
-                true,                               // Can be enabled in devmode
+                true,                               // Can be flipped on
+                false,                              // Can be flipped off
                 QStringList{"inAppAuthentication"}  // feature dependencies
         ) {}
 
