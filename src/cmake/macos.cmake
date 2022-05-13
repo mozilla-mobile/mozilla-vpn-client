@@ -34,10 +34,7 @@ set_target_properties(mozillavpn PROPERTIES
 #} else {
 #    QMAKE_TARGET_BUNDLE_PREFIX = $$MVPN_APP_ID_PREFIX
 #}
-#
-#QMAKE_BUNDLE = "FirefoxVPN"
 
-# For the loginitem
 find_library(FW_SYSTEMCONFIG SystemConfiguration)
 find_library(FW_SERVICEMGMT ServiceManagement)
 find_library(FW_SECURITY Security)
@@ -93,6 +90,7 @@ target_sources(mozillavpn PRIVATE
     platforms/macos/macosutils.h
 )
 
+include(cmake/osxtools.cmake)
 include(cmake/golang.cmake)
 
 # Enable Balrog for update support.
@@ -103,20 +101,8 @@ target_sources(mozillavpn PRIVATE
     update/balrog.h
 )
 
-## A helper to copy files into the application bundle
-function(add_bundle_file SOURCE)
-    if(CMAKE_COLOR_MAKEFILE)
-        set(COMMENT_ECHO_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --blue --bold)
-    else()
-        set(COMMENT_ECHO_COMMAND ${CMAKE_COMMAND} -E echo)
-    endif()
-
-    add_custom_command(TARGET mozillavpn POST_BUILD
-        COMMAND_EXPAND_LISTS
-        COMMAND ${COMMENT_ECHO_COMMAND} "Bundling ${SOURCE}"
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/utils
-        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE} $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/utils/)
-endfunction(add_bundle_file)
+# Perform codesigning.
+osx_codesign_target(mozillavpn FORCE)
 
 # Build the Wireguard Go tunnel
 # FIXME: this builds in the source directory.
@@ -129,12 +115,21 @@ add_custom_target(build_wireguard_go
     COMMAND make
 )
 add_dependencies(mozillavpn build_wireguard_go)
-add_bundle_file(${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/wireguard-go)
+osx_codesign_target(build_wireguard_go FORCE OPTIONS runtime
+    FILES ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/wireguard-go
+)
+osx_bundle_files(mozillavpn
+    FILES ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/wireguard-go
+    DESTINATION Resources/utils
+)
 
 # Install the native messaging extensions into the bundle.
 add_dependencies(mozillavpn mozillavpnnp)
-add_bundle_file($<TARGET_FILE:mozillavpnnp>)
-add_bundle_file(${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json)
+osx_bundle_files(mozillavpn FILES
+    $<TARGET_FILE:mozillavpnnp>
+    ${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json
+    DESTINATION Resources/utils
+)
 
 # Install the lproj translation files into the bundle.
 get_filename_component(I18N_DIR ${CMAKE_SOURCE_DIR}/i18n ABSOLUTE)
