@@ -21,7 +21,7 @@ class FeatureFreeTrial : public Feature {
                 "",                  // IconPath
                 "",                  // link URL
                 "2.8.1",             // released
-                false,               // Can be enabled in devmode
+                true,                // Can be enabled in devmode
                 QStringList()        // feature dependencies
         ) {}
 

@@ -11,6 +11,7 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "models/feature.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "notificationhandler.h"
@@ -806,6 +807,53 @@ static QList<InspectorCommand> s_commands{
                        MozillaVPN::instance()->requestContactUs();
                        return QJsonObject();
                      }},
+    InspectorCommand{
+        "enable_feature", "Enable a feature", 1,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QString featureName = arguments[1];
+          const Feature* feature = Feature::getOrNull(featureName);
+          if (!feature) {
+            QJsonObject obj;
+            obj["error"] = "Feature does not exist";
+            return obj;
+          }
+
+          SettingsHolder* settingsHolder = SettingsHolder::instance();
+          Q_ASSERT(settingsHolder);
+
+          QStringList devModeFeatureFlags =
+              settingsHolder->devModeFeatureFlags();
+          if (!devModeFeatureFlags.contains(featureName)) {
+            devModeFeatureFlags.append(featureName);
+            settingsHolder->setDevModeFeatureFlags(devModeFeatureFlags);
+          }
+
+          return QJsonObject();
+        }},
+
+    InspectorCommand{
+        "disable_feature", "Disable a feature", 1,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QString featureName = arguments[1];
+          const Feature* feature = Feature::getOrNull(featureName);
+          if (!feature) {
+            QJsonObject obj;
+            obj["error"] = "Feature does not exist";
+            return obj;
+          }
+
+          SettingsHolder* settingsHolder = SettingsHolder::instance();
+          Q_ASSERT(settingsHolder);
+
+          QStringList devModeFeatureFlags =
+              settingsHolder->devModeFeatureFlags();
+          if (devModeFeatureFlags.contains(featureName)) {
+            devModeFeatureFlags.removeAll(featureName);
+            settingsHolder->setDevModeFeatureFlags(devModeFeatureFlags);
+          }
+
+          return QJsonObject();
+        }},
 };
 
 // static
