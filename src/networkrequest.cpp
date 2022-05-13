@@ -444,6 +444,18 @@ NetworkRequest* NetworkRequest::createForGetFeatureList(Task* parent) {
 }
 
 // static
+NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/subscriptionDetails");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForFxaAccountStatus(
     Task* parent, const QString& emailAddress) {
   Q_ASSERT(parent);

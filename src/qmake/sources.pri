@@ -120,6 +120,7 @@ SOURCES += \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/deleteaccount/taskdeleteaccount.cpp \
         tasks/getfeaturelist/taskgetfeaturelist.cpp \
+        tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
@@ -276,6 +277,7 @@ HEADERS += \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/deleteaccount/taskdeleteaccount.h \
         tasks/getfeaturelist/taskgetfeaturelist.h \
+        tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \

@@ -30,6 +30,7 @@
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
+#include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
@@ -1766,4 +1767,9 @@ void MozillaVPN::requestDeleteAccount() {
 void MozillaVPN::cancelAccountDeletion() {
   logger.warning() << "Canceling account deletion";
   AuthenticationInApp::instance()->terminateSession();
+}
+
+void MozillaVPN::getSubscriptionDetails() {
+  logger.debug() << "Get subscription details";
+  TaskScheduler::scheduleTask(new TaskGetSubscriptionDetails(m_private->m_user.email()));
 }

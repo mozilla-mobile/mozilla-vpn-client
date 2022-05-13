@@ -262,6 +262,8 @@ target_sources(mozillavpn PRIVATE
     tasks/deleteaccount/taskdeleteaccount.h
     tasks/getfeaturelist/taskgetfeaturelist.cpp
     tasks/getfeaturelist/taskgetfeaturelist.h
+    tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp
+    tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h
     tasks/controlleraction/taskcontrolleraction.cpp
     tasks/controlleraction/taskcontrolleraction.h
     tasks/createsupportticket/taskcreatesupportticket.cpp
