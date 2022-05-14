@@ -56,6 +56,8 @@ void MozillaVPN::deviceRemovalCompleted(const QString&) {}
 
 void MozillaVPN::serversFetched(const QByteArray&) {}
 
+void MozillaVPN::subscriptionDetailsFetched(const QByteArray&) {}
+
 void MozillaVPN::removeDeviceFromPublicKey(const QString&) {}
 
 void MozillaVPN::accountChecked(const QByteArray&) {}
@@ -111,6 +113,8 @@ void MozillaVPN::requestAbout() {}
 void MozillaVPN::requestViewLogs() {}
 
 void MozillaVPN::requestContactUs() {}
+
+void MozillaVPN::requestSubscriptionManagment() {}
 
 void MozillaVPN::retrieveLogs() {}
 

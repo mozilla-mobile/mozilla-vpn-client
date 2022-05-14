@@ -254,6 +254,8 @@ class MozillaVPN final : public QObject {
 
   void serversFetched(const QByteArray& serverData);
 
+  void subscriptionDetailsFetched(const QByteArray& subscriptionDetailsData);
+
   void accountChecked(const QByteArray& json);
 
   void surveyChecked(const QByteArray& json);
@@ -392,6 +394,7 @@ class MozillaVPN final : public QObject {
   void requestAbout();
   void requestViewLogs();
   void requestContactUs();
+  void requestSubscriptionManagement();
 
  signals:
   void stateChanged();
@@ -403,6 +406,7 @@ class MozillaVPN final : public QObject {
   void aboutNeeded();
   void viewLogsNeeded();
   void contactUsNeeded();
+  void subscriptionManagementNeeded();
   void updatingChanged();
 
   // For Glean

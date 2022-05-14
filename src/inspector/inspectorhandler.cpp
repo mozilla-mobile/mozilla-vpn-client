@@ -807,6 +807,11 @@ static QList<InspectorCommand> s_commands{
                        MozillaVPN::instance()->requestContactUs();
                        return QJsonObject();
                      }},
+    InspectorCommand{"open_subscription_management", "Open subscription managment view", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       MozillaVPN::instance()->requestSubscriptionManagement();
+                       return QJsonObject();
+                     }},
     InspectorCommand{
         "enable_feature", "Enable a feature", 1,
         [](InspectorHandler*, const QList<QByteArray>& arguments) {

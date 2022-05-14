@@ -8,6 +8,7 @@
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "networkrequest.h"
 
 namespace {
@@ -40,23 +41,24 @@ void TaskGetSubscriptionDetails::run() {
             // User needs to (re)authenticate
             if (error == QNetworkReply::AuthenticationRequiredError) {
               needsAuthentication();
-            } else {
-              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
-              emit completed();
+              return;
             }
+
+            MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+            emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Get subscription details completed" << data;
 
-            // TODO: Handle subscription data and emit a signal
+            MozillaVPN::instance()->subscriptionDetailsFetched(data);
 
             if (m_authenticationInAppSession) {
               m_authenticationInAppSession->terminate();
-            } else {
-              emit completed();
+              return;
             }
+            emit completed();
           });
 }
 

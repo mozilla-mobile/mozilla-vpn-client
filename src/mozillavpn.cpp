@@ -713,6 +713,13 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
   }
 }
 
+void MozillaVPN::subscriptionDetailsFetched(const QByteArray& subscriptionDetailsData) {
+  logger.debug() << "Subscription details data fetched!";
+  Q_UNUSED(subscriptionDetailsData);
+
+  requestSubscriptionManagement();
+}
+
 void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
   logger.debug() << "Device removal task completed";
   m_private->m_deviceModel.stopDeviceRemovalFromPublicKey(publicKey, keys());
@@ -1386,6 +1393,13 @@ void MozillaVPN::requestContactUs() {
 
   QmlEngineHolder::instance()->showWindow();
   emit contactUsNeeded();
+}
+
+void MozillaVPN::requestSubscriptionManagement() {
+  logger.debug() << "Subscription management view requested";
+
+  QmlEngineHolder::instance()->showWindow();
+  emit subscriptionManagementNeeded();
 }
 
 void MozillaVPN::activate() {
