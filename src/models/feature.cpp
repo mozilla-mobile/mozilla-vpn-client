@@ -21,7 +21,8 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
                  L18nStrings::String shortDesc_id, L18nStrings::String desc_id,
                  const QString& imgPath, const QString& iconPath,
                  const QString& linkUrl, const QString& aReleaseVersion,
-                 bool devModeWriteable, const QStringList& featureDependencies)
+                 bool flippableOn, bool flippableOff,
+                 const QStringList& featureDependencies)
     : QObject(qApp),
       m_id(id),
       m_name(name),
@@ -32,7 +33,8 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
       m_imagePath(imgPath),
       m_iconPath(iconPath),
       m_linkUrl(linkUrl),
-      m_devModeWriteable(devModeWriteable),
+      m_flippableOn(flippableOn),
+      m_flippableOff(flippableOff),
       m_featureDependencies(featureDependencies) {
   logger.debug() << "Initializing feature" << id;
 
@@ -60,16 +62,26 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
     m_new = false;
   }
 
-  if (m_devModeWriteable) {
-    m_devModeEnabled =
-        SettingsHolder::instance()->devModeFeatureFlags().contains(m_id);
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
-    connect(
-        SettingsHolder::instance(), &SettingsHolder::devModeFeatureFlagsChanged,
-        this, [this]() {
-          maybeChangeDevMode(
-              SettingsHolder::instance()->devModeFeatureFlags().contains(m_id));
-        });
+  if (m_flippableOn) {
+    if (settingsHolder->featuresFlippedOn().contains(m_id)) {
+      m_state = FlippedOn;
+    }
+
+    connect(settingsHolder, &SettingsHolder::featuresFlippedOnChanged, this,
+            &Feature::maybeFlipOnOrOff);
+  }
+
+  if (m_flippableOff) {
+    if (m_state == DefaultValue &&
+        settingsHolder->featuresFlippedOff().contains(m_id)) {
+      m_state = FlippedOff;
+    }
+
+    connect(settingsHolder, &SettingsHolder::featuresFlippedOffChanged, this,
+            &Feature::maybeFlipOnOrOff);
   }
 }
 
@@ -93,24 +105,45 @@ const Feature* Feature::get(const QString& featureID) {
   return feature;
 }
 
-bool Feature::isDevModeEnabled(bool ignoreCache) const {
-  if (!m_devModeWriteable) {
+bool Feature::isFlippedOn(bool ignoreCache) const {
+  if (!m_flippableOn) {
     return false;
   }
 
   if (ignoreCache) {
-    return SettingsHolder::instance()->devModeFeatureFlags().contains(m_id);
+    return SettingsHolder::instance()->featuresFlippedOn().contains(m_id);
   }
 
-  return m_devModeEnabled;
+  return m_state == FlippedOn;
+}
+
+bool Feature::isFlippedOff(bool ignoreCache) const {
+  if (!m_flippableOff) {
+    return false;
+  }
+
+  if (ignoreCache) {
+    return SettingsHolder::instance()->featuresFlippedOff().contains(m_id);
+  }
+
+  return m_state == FlippedOff;
 }
 
 bool Feature::isSupported(bool ignoreCache) const {
-  if (isDevModeEnabled(ignoreCache)) {
-    logger.debug() << "Devmode Enabled " << m_id;
+  if (isFlippedOn(ignoreCache)) {
+    logger.debug() << "Flipped On" << m_id;
     return true;
   }
 
+  if (isFlippedOff(ignoreCache)) {
+    logger.debug() << "Flipped Off" << m_id;
+    return false;
+  }
+
+  return isSupportedIgnoringFlip();
+}
+
+bool Feature::isSupportedIgnoringFlip() const {
   if (!m_released) {
     return false;
   }
@@ -139,68 +172,89 @@ QString Feature::shortDescription() const {
   return L18nStrings::instance()->t(m_shortDescription_id);
 }
 
-void Feature::maybeChangeDevMode(bool newDevModeEnabled) {
-  if (newDevModeEnabled == m_devModeEnabled) {
+void Feature::maybeFlipOnOrOff() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  State newState = DefaultValue;
+  if (settingsHolder->featuresFlippedOn().contains(m_id)) {
+    newState = FlippedOn;
+  } else if (settingsHolder->featuresFlippedOff().contains(m_id)) {
+    newState = FlippedOff;
+  }
+
+  if (newState == m_state) {
     // Something else has changed. Let's see if we have to disable this feature
     // because one of the dependencies has changed.
-    if (newDevModeEnabled) {
+    if (newState == FlippedOn) {
       for (const QString& featureID : m_featureDependencies) {
         Feature* feature = s_features->value(featureID, nullptr);
         Q_ASSERT(feature);
 
-        // Let's check the support ignoring the cache (m_devModeEnabled)
+        // Let's check the support ignoring the cache (m_state)
         // because maybe this feature doesn't know yet that it has been
         // disabled.
         if (feature->isSupported(true)) continue;
 
-        QStringList devModeFeatureFlags =
-            SettingsHolder::instance()->devModeFeatureFlags();
-        devModeFeatureFlags.removeAll(m_id);
-        SettingsHolder::instance()->setDevModeFeatureFlags(devModeFeatureFlags);
+        QStringList featuresFlippedOn =
+            SettingsHolder::instance()->featuresFlippedOn();
+        featuresFlippedOn.removeAll(m_id);
+        SettingsHolder::instance()->setFeaturesFlippedOn(featuresFlippedOn);
         break;
       }
     }
     return;
   }
 
-  if (!newDevModeEnabled) {
-    m_devModeEnabled = newDevModeEnabled;
+  if (newState != FlippedOn) {
+    m_state = newState;
     emit supportedChanged();
     return;
   }
 
   // Let's set it before checking other features to break cycles.
-  m_devModeEnabled = newDevModeEnabled;
+  m_state = newState;
 
-  QStringList devModeFeatureFlags =
-      SettingsHolder::instance()->devModeFeatureFlags();
-
+  QList<Feature*> featuresToFlipOnAndCheck;
   for (const QString& featureID : m_featureDependencies) {
     Feature* feature = s_features->value(featureID, nullptr);
     Q_ASSERT(feature);
 
-    if (feature->isSupported()) continue;
+    if (feature->isSupported(true)) continue;
 
-    if (!feature->m_devModeWriteable) {
+    if (!feature->m_flippableOn) {
       logger.debug() << "Unable to activate feature" << id()
                      << "because feature" << feature->id()
                      << "cannot be enabled in dev mode";
-      m_devModeEnabled = false;
+      m_state = DefaultValue;
       return;
     }
 
-    feature->maybeChangeDevMode(true);
-    if (!feature->isSupported()) {
-      logger.debug() << "Unable to activate feature" << id()
-                     << "because feature" << feature->id()
-                     << "cannot be enabled";
-      m_devModeEnabled = false;
-      return;
+    featuresToFlipOnAndCheck.append(feature);
+  }
+
+  if (!featuresToFlipOnAndCheck.isEmpty()) {
+    QStringList featuresFlippedOn =
+        SettingsHolder::instance()->featuresFlippedOn();
+
+    for (Feature* feature : featuresToFlipOnAndCheck) {
+      if (!featuresFlippedOn.contains(feature->m_id)) {
+        featuresFlippedOn.append(feature->m_id);
+      }
     }
 
-    devModeFeatureFlags.append(featureID);
+    SettingsHolder::instance()->setFeaturesFlippedOn(featuresFlippedOn);
+
+    for (Feature* feature : featuresToFlipOnAndCheck) {
+      if (!feature->isSupported()) {
+        logger.debug() << "Unable to activate feature" << id()
+                       << "because feature" << feature->id()
+                       << "cannot be enabled";
+        m_state = DefaultValue;
+        return;
+      }
+    }
   }
 
   emit supportedChanged();
-  SettingsHolder::instance()->setDevModeFeatureFlags(devModeFeatureFlags);
 }

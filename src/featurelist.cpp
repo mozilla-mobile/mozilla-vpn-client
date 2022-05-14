@@ -78,11 +78,28 @@ void FeatureList::initialize() {
   m_featurelist = Feature::getAll();
 }
 
-void FeatureList::devModeFlipFeatureFlag(const QString& feature) {
-  logger.debug() << "Flipping " << feature;
+void FeatureList::toggleForcedEnable(const QString& feature) {
+  logger.debug() << "Flipping on" << feature;
+
+  const Feature* f = Feature::get(feature);
+  if (!f) {
+    logger.debug() << "Feature" << feature << "does not exist";
+    return;
+  }
+
+  if (!f->isFlippableOn()) {
+    logger.debug() << "Feature" << feature << "cannot be flipped on";
+    return;
+  }
+
+  if (f->isSupportedIgnoringFlip()) {
+    logger.debug() << "This is an internal bug. Why flipping on a pref that is "
+                      "already supported?";
+    return;
+  }
 
   auto const settings = SettingsHolder::instance();
-  QStringList flags = settings->devModeFeatureFlags();
+  QStringList flags = settings->featuresFlippedOn();
 
   logger.debug() << "Got List - size:" << flags.size();
 
@@ -94,7 +111,46 @@ void FeatureList::devModeFlipFeatureFlag(const QString& feature) {
     flags.append(feature);
   }
 
-  settings->setDevModeFeatureFlags(flags);
+  settings->setFeaturesFlippedOn(flags);
+
+  logger.debug() << "Feature Flipped! new size:" << flags.size();
+  emit dataChanged(createIndex(0, 0), createIndex(m_featurelist.size(), 0));
+}
+
+void FeatureList::toggleForcedDisable(const QString& feature) {
+  logger.debug() << "Flipping off" << feature;
+
+  const Feature* f = Feature::get(feature);
+  if (!f) {
+    logger.debug() << "Feature" << feature << "does not exist";
+    return;
+  }
+
+  if (!f->isFlippableOff()) {
+    logger.debug() << "Feature" << feature << "cannot be flipped off";
+    return;
+  }
+
+  if (!f->isSupportedIgnoringFlip()) {
+    logger.debug() << "This is an internal bug. Why flipping off a pref that "
+                      "is already supported?";
+    return;
+  }
+
+  auto const settings = SettingsHolder::instance();
+  QStringList flags = settings->featuresFlippedOff();
+
+  logger.debug() << "Got List - size:" << flags.size();
+
+  if (flags.contains(feature)) {
+    logger.debug() << "Contains yes -> remove" << flags.size();
+    flags.removeAll(feature);
+  } else {
+    logger.debug() << "Contains no -> add" << flags.size();
+    flags.append(feature);
+  }
+
+  settings->setFeaturesFlippedOff(flags);
 
   logger.debug() << "Feature Flipped! new size:" << flags.size();
   emit dataChanged(createIndex(0, 0), createIndex(m_featurelist.size(), 0));
@@ -130,43 +186,50 @@ void FeatureList::updateFeatureList(const QByteArray& data) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  bool changed = false;
-  QStringList devModeFeatureFlags = settingsHolder->devModeFeatureFlags();
-
   QJsonObject json = QJsonDocument::fromJson(data).object();
-  QJsonValue featuresValue = json["features"];
-  if (!featuresValue.isObject()) {
-    logger.error() << "Error in the json format";
-    return;
-  }
-
-  QJsonObject featuresObj = featuresValue.toObject();
-  for (const QString& key : featuresObj.keys()) {
-    QJsonValue value = featuresObj.value(key);
-    if (!value.isBool()) {
-      logger.error() << "Error in parsing feature enabling:" << key;
-      continue;
+  if (json.contains("featuresOverwrite")) {
+    QJsonValue featuresValue = json["featuresOverwrite"];
+    if (!featuresValue.isObject()) {
+      logger.error() << "Error in the json format";
+      return;
     }
 
-    const Feature* feature = Feature::getOrNull(key);
-    if (!feature) {
-      logger.error() << "No feature named" << key;
-      continue;
-    }
+    QStringList featuresFlippedOn;
+    QStringList featuresFlippedOff;
 
-    if (value.toBool() == false) {
-      if (devModeFeatureFlags.contains(key)) {
-        devModeFeatureFlags.removeAll(key);
-        changed = true;
+    QJsonObject featuresObj = featuresValue.toObject();
+    for (const QString& key : featuresObj.keys()) {
+      QJsonValue value = featuresObj.value(key);
+      if (!value.isBool()) {
+        logger.error() << "Error in parsing feature enabling:" << key;
+        continue;
       }
-    } else if (!devModeFeatureFlags.contains(key)) {
-      devModeFeatureFlags.append(key);
-      changed = true;
-    }
-  }
 
-  if (changed) {
-    settingsHolder->setDevModeFeatureFlags(devModeFeatureFlags);
+      const Feature* feature = Feature::getOrNull(key);
+      if (!feature) {
+        logger.error() << "No feature named" << key;
+        continue;
+      }
+
+      if (value.toBool()) {
+        if (!feature->isFlippableOn()) {
+          logger.error() << "Feature" << key << "cannot be flipped on";
+          continue;
+        }
+
+        featuresFlippedOn.append(key);
+      } else {
+        if (!feature->isFlippableOff()) {
+          logger.error() << "Feature" << key << "cannot be flipped off";
+          continue;
+        }
+
+        featuresFlippedOff.append(key);
+      }
+    }
+
+    settingsHolder->setFeaturesFlippedOn(featuresFlippedOn);
+    settingsHolder->setFeaturesFlippedOff(featuresFlippedOff);
   }
 
 #ifdef MVPN_ADJUST

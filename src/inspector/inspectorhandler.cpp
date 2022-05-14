@@ -802,7 +802,35 @@ static QList<InspectorCommand> s_commands{
                        Tutorial::instance()->play(arguments[1]);
                        return QJsonObject();
                      }},
+    InspectorCommand{"flip_on_feature", "Flip On a feature", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QString featureName = arguments[1];
+                       const Feature* feature = Feature::getOrNull(featureName);
+                       if (!feature) {
+                         QJsonObject obj;
+                         obj["error"] = "Feature does not exist";
+                         return obj;
+                       }
 
+                       FeatureList::instance()->toggleForcedEnable(
+                           arguments[1]);
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"flip_off_feature", "Flip Off a feature", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QString featureName = arguments[1];
+                       const Feature* feature = Feature::getOrNull(featureName);
+                       if (!feature) {
+                         QJsonObject obj;
+                         obj["error"] = "Feature does not exist";
+                         return obj;
+                       }
+
+                       FeatureList::instance()->toggleForcedDisable(
+                           arguments[1]);
+                       return QJsonObject();
+                     }},
 };
 
 // static

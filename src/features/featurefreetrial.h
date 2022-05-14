@@ -21,7 +21,9 @@ class FeatureFreeTrial : public Feature {
                 "",                  // IconPath
                 "",                  // link URL
                 "2.8.1",             // released
-                false                // Can be enabled in devmode
+                true,                // Can be flipped on
+                true,                // Can be flipped off
+                QStringList()        // feature dependencies
         ) {}
 
   bool checkSupportCallback() const override {
