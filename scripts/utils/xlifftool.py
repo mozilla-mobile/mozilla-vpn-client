@@ -177,10 +177,18 @@ def guess_locale(filename):
 if __name__ == "__main__":
     ## Parse arguments to locate the input files and options.
     parser = argparse.ArgumentParser(
-        formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=32),
-        description='Parse and transform XLIFF translation files')
+        formatter_class=lambda prog: argparse.RawDescriptionHelpFormatter(prog,max_help_position=32),
+        description='Parse and extract data from XLIFF translation files',
+        epilog="""\
+Output format can take one of the following values:
+   text      ID and string separated by colons
+   env       Environment variable format
+   macos     MacOS Localizable.strings file
+   raw       Just the translation string
+""")
+
     parser.add_argument('source', metavar='SOURCE', type=str, action='store',
-        help='XLIFF translation file to process')
+        help='XLIFF translation file to parse')
     parser.add_argument('-v', '--verbose', default=False, action='store_true',
         help='Print verbose information about the translation file')
 
@@ -199,13 +207,13 @@ if __name__ == "__main__":
         help='Write output to FILE (default: stdout)')
     outgroup.add_argument('-f', '--format', metavar='FMT', default='text',
         choices=['text', 'env', 'macos', 'raw'],
-        help='Output format to write')
+        help='Output format to write (default: text)')
     outgroup.add_argument('-g', '--get', metavar='TRID', type=str, action='append', default=[],
         help='Get translated strings matching TRID')
     outgroup.add_argument('-d', '--dump', action='append_const', dest='get', const='all',
         help='Dump all translations')
     outgroup.add_argument('-x', '--xform', metavar='FILE', type=str, action='store',
-        help='Transform an template text from FILE using substitution syntax')
+        help='Transform template text from FILE')
     outgroup.add_argument('--strip', metavar='NUM', type=int, default=0, action='store',
         help='Strip NUM segments from the translation ID when printing')
     args = parser.parse_args()
