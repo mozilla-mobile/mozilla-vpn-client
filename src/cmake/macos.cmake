@@ -95,7 +95,8 @@ include(cmake/golang.cmake)
 
 # Enable Balrog for update support.
 add_definitions(-DMVPN_BALROG)
-add_go_library(mozillavpn ../balrog/balrog-api.go)
+add_go_library(balrog ../balrog/balrog-api.go)
+target_link_libraries(mozillavpn PRIVATE balrog)
 target_sources(mozillavpn PRIVATE
     update/balrog.cpp
     update/balrog.h
