@@ -107,7 +107,7 @@ void MozillaVPN::requestViewLogs() {}
 
 void MozillaVPN::requestContactUs() {}
 
-void MozillaVPN::requestSubscriptionManagment() {}
+void MozillaVPN::requestSubscriptionManagement() {}
 
 void MozillaVPN::retrieveLogs() {}
 

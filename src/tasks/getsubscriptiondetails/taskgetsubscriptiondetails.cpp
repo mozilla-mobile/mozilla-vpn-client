@@ -15,38 +15,43 @@ namespace {
 Logger logger(LOG_MAIN, "TaskGetSubscriptionDetails");
 }  // anonymous namespace
 
-TaskGetSubscriptionDetails::TaskGetSubscriptionDetails(const QString& emailAddress)
+TaskGetSubscriptionDetails::TaskGetSubscriptionDetails(
+    const QString& emailAddress)
     : Task("TaskGetSubscriptionDetails"), m_emailAddress(emailAddress) {
   MVPN_COUNT_CTOR(TaskGetSubscriptionDetails);
 }
 
-TaskGetSubscriptionDetails::~TaskGetSubscriptionDetails() { MVPN_COUNT_DTOR(TaskGetSubscriptionDetails); }
+TaskGetSubscriptionDetails::~TaskGetSubscriptionDetails() {
+  MVPN_COUNT_DTOR(TaskGetSubscriptionDetails);
+}
 
 void TaskGetSubscriptionDetails::run() {
   logger.debug() << "run";
 
-  NetworkRequest* request = NetworkRequest::createForGetSubscriptionDetails(this);
+  NetworkRequest* request =
+      NetworkRequest::createForGetSubscriptionDetails(this);
 
-  connect(request, &NetworkRequest::requestFailed, this,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Get subscription details failed" << error;
+  connect(
+      request, &NetworkRequest::requestFailed, this,
+      [this](QNetworkReply::NetworkError error, const QByteArray&) {
+        logger.error() << "Get subscription details failed" << error;
 
-            // Network request failed after authentication for a second time
-            if (m_authenticationInAppSession) {
-              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
-              m_authenticationInAppSession->terminate();
-              return;
-            }
+        // Network request failed after authentication for a second time
+        if (m_authenticationInAppSession) {
+          MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+          m_authenticationInAppSession->terminate();
+          return;
+        }
 
-            // User needs to (re)authenticate
-            if (error == QNetworkReply::AuthenticationRequiredError) {
-              needsAuthentication();
-              return;
-            }
+        // User needs to (re)authenticate
+        if (error == QNetworkReply::AuthenticationRequiredError) {
+          needsAuthentication();
+          return;
+        }
 
-            MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
-            emit completed();
-          });
+        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        emit completed();
+      });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
@@ -76,32 +81,30 @@ void TaskGetSubscriptionDetails::needsAuthentication() {
   connect(m_authenticationInAppSession, &AuthenticationInAppSession::terminated,
           this, &Task::completed);
 
-  connect(
-      m_authenticationInAppSession, &AuthenticationInAppSession::completed,
-      this, [this, pkceCodeVerifier](const QString& pkceCodeSuccess) {
-        logger.debug() << "Authentication completed with code:"
-                       << pkceCodeSuccess;
+  connect(m_authenticationInAppSession, &AuthenticationInAppSession::completed,
+          this, [this, pkceCodeVerifier](const QString& pkceCodeSuccess) {
+            logger.debug() << "Authentication completed with code:"
+                           << pkceCodeSuccess;
 
-        NetworkRequest* request =
-            NetworkRequest::createForAuthenticationVerification(
-                this, pkceCodeSuccess, pkceCodeVerifier);
+            NetworkRequest* request =
+                NetworkRequest::createForAuthenticationVerification(
+                    this, pkceCodeSuccess, pkceCodeVerifier);
 
-        connect(request, &NetworkRequest::requestFailed, this,
+            connect(
+                request, &NetworkRequest::requestFailed, this,
                 [this](QNetworkReply::NetworkError error, const QByteArray&) {
                   logger.error()
                       << "Failed to complete the authentication" << error;
-                  MozillaVPN::instance()->errorHandle(
-                      ErrorHandler::toErrorType(error));
                   m_authenticationInAppSession->terminate();
                 });
 
-        connect(request, &NetworkRequest::requestCompleted, this,
-                [this](const QByteArray&) {
-                  logger.debug()
-                      << "Authentication completed. Attempt fetching subscription details again.";
-                  run();
-                });
-      });
+            connect(request, &NetworkRequest::requestCompleted, this,
+                    [this](const QByteArray&) {
+                      logger.debug() << "Authentication completed. Attempt "
+                                        "fetching subscription details again.";
+                      run();
+                    });
+          });
 
   connect(m_authenticationInAppSession, &AuthenticationInAppSession::failed,
           this, [this](const ErrorHandler::ErrorType error) {

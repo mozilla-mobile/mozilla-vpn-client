@@ -1785,5 +1785,6 @@ void MozillaVPN::cancelAccountDeletion() {
 
 void MozillaVPN::getSubscriptionDetails() {
   logger.debug() << "Get subscription details";
-  TaskScheduler::scheduleTask(new TaskGetSubscriptionDetails(m_private->m_user.email()));
+  TaskScheduler::scheduleTask(
+      new TaskGetSubscriptionDetails(m_private->m_user.email()));
 }
