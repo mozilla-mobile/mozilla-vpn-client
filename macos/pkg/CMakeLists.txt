@@ -4,23 +4,44 @@
 
 ## Stage 0: Generate the Resources for the installer package.
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources)
-set(XLIFFTOOL ${CMAKE_SOURCE_DIR}/scripts/utils/xlifftool.py)
 add_custom_target(pkg_resources
     COMMENT "Preparing MacOS Installer Resources"
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/Resources .
 )
 
-add_custom_target(pkg_resources_en
-    COMMENT "Translating MacOS Installer Resources for en"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources
-    DEPENDS ${CMAKE_SOURCE_DIR}/i18n/en/mozillavpn.xliff
-    COMMAND ${CMAKE_COMMAND} -E make_directory en.lproj
-    COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/welcome.html.in -o en.lproj/welcome.html ${CMAKE_SOURCE_DIR}/i18n/en/mozillavpn.xliff
-    COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/conclusion.html.in -o en.lproj/conclusion.html ${CMAKE_SOURCE_DIR}/i18n/en/mozillavpn.xliff
-    COMMAND ${XLIFFTOOL} -g macosinstaller --strip 1 -f macos -o en.lproj/Localizable.strings ${CMAKE_SOURCE_DIR}/i18n/en/mozillavpn.xliff
-)
-add_dependencies(pkg_resources pkg_resources_en)
+file(GLOB I18N_LOCALES LIST_DIRECTORIES true
+    RELATIVE ${CMAKE_SOURCE_DIR}/i18n ${CMAKE_SOURCE_DIR}/i18n/*)
+list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
+foreach(LOCALE ${I18N_LOCALES})
+    if(NOT EXISTS ${CMAKE_SOURCE_DIR}/i18n/${LOCALE}/mozillavpn.xliff)
+        list(REMOVE_ITEM I18N_LOCALES ${LOCALE})
+        continue()
+    endif()
+    set(XLIFFTOOL ${CMAKE_SOURCE_DIR}/scripts/utils/xlifftool.py ${CMAKE_SOURCE_DIR}/i18n/${LOCALE}/mozillavpn.xliff)
+    execute_process(
+        RESULT_VARIABLE XLIFF_CHECK_RESULT
+        COMMAND ${XLIFFTOOL} --locale=${LOCALE} --check
+    )
+    if(NOT XLIFF_CHECK_RESULT EQUAL 0)
+        continue()
+    endif()
+ 
+    string(REPLACE "_" "-" LOCDIR ${LOCALE})
+    add_custom_target(pkg_resources_${LOCALE}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources
+        SOURCES
+            ${CMAKE_SOURCE_DIR}/i18n/${LOCALE}/mozillavpn.xliff
+            ${CMAKE_CURRENT_SOURCE_DIR}/welcome.html.in
+            ${CMAKE_CURRENT_SOURCE_DIR}/conclusion.html.in
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${LOCDIR}.lproj
+        COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/welcome.html.in -o ${LOCDIR}.lproj/welcome.html 
+        COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/conclusion.html.in -o ${LOCDIR}.lproj/conclusion.html
+        COMMAND ${XLIFFTOOL} -g macosinstaller --strip 1 -f macos -o ${LOCDIR}.lproj/Localizable.strings
+    )
+    add_dependencies(pkg_resources pkg_resources_${LOCALE})
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/Resources/${LOCDIR}.lproj)
+endforeach()
 
 ## Stage 1: Create the staging directory, and populate it with the app.
 add_custom_command(
