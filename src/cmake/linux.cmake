@@ -77,7 +77,7 @@ target_sources(mozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
 
 include(cmake/golang.cmake)
 add_go_library(netfilter ../linux/netfilter/netfilter.go)
-target_link_libraries(mozillavpn netfilter)
+target_link_libraries(mozillavpn PRIVATE netfilter)
 
 include(GNUInstallDirs)
 install(FILES ../linux/extra/MozillaVPN.desktop
