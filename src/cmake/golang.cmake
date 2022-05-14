@@ -4,6 +4,11 @@
 
 ## Create a library target built from a golang c-archive.
 function(add_go_library GOTARGET SOURCE)
+    cmake_parse_arguments(GOLANG
+        ""
+        ""
+        "CGO_CFLAGS;CGO_LDFLAGS"
+        ${ARGN})
     get_filename_component(SRC_NAME ${SOURCE} NAME)
     get_filename_component(DIR_NAME ${SOURCE} DIRECTORY)
     get_filename_component(DIR_ABSOLUTE ${DIR_NAME} ABSOLUTE)
@@ -19,18 +24,23 @@ function(add_go_library GOTARGET SOURCE)
         set(GOFLAGS ${GOFLAGS} -mod vendor)
     endif()
 
-    get_directory_property(CGO_CFLAGS COMPILE_OPTIONS)
-    get_directory_property(CGO_LDFLAGS LINK_OPTIONS)
-    if(APPLE AND CMAKE_OSX_DEPLOYMENT_TARGET)
-        list(APPEND CGO_CFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET})
-    endif()
+    ## Add extras to the CGO compiler and linker flags.
+    execute_process(OUTPUT_VARIABLE DEFAULT_CGO_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND go env CGO_CFLAGS)
+    execute_process(OUTPUT_VARIABLE DEFAULT_CGO_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND go env CGO_LDFLAGS)
+    separate_arguments(DEFAULT_CGO_CFLAGS NATIVE_COMMAND ${DEFAULT_CGO_CFLAGS})
+    separate_arguments(DEFAULT_CGO_LDFLAGS NATIVE_COMMAND ${DEFAULT_CGO_LDFLAGS})
+    list(PREPEND GOLANG_CGO_CFLAGS ${DEFAULT_CGO_CFLAGS})
+    list(PREPEND GOLANG_CGO_LDFLAGS ${DEFAULT_CGO_LDFLAGS})
 
     ## The actual commands that do the building.
     add_custom_target(golang_${GOTARGET}
         BYPRODUCTS ${ARCHIVE_NAME} ${HEADER_NAME}
         WORKING_DIRECTORY ${DIR_ABSOLUTE}
         SOURCES ${SRC_DEPS} ${DIR_NAME}/go.mod
-        COMMAND ${CMAKE_COMMAND} -E env GOCACHE=${GOCACHE} CGO_ENABLED=1 CGO_CFLAGS="${CGO_CFLAGS}" CGO_LDFLAGS="${CGO_LDFLAGS}"
+        COMMAND ${CMAKE_COMMAND} -E env GOCACHE=${GOCACHE}
+                    CGO_ENABLED=1
+                    CGO_CFLAGS="${GOLANG_CGO_CFLAGS}"
+                    CGO_LDFLAGS="${GOLANG_CGO_LDFLAGS}"
                 go build ${GOFLAGS} -o ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME} ${SRC_NAME}
     )
 
