@@ -39,17 +39,17 @@ endif()
 
 option(BUILD_DUMMY "Build for the dummy platform" OFF)
 
-project("Mozilla VPN" VERSION 2.10.0 LANGUAGES C CXX
-        DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
-        HOMEPAGE_URL "https://vpn.mozilla.org"
-)
-
 message("Configuring for ${CMAKE_GENERATOR}")
-if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES OR "${CMAKE_BUILD_TYPE}"))
+if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES OR DEFINED CMAKE_BUILD_TYPE))
     ## Ensure the build type is set for single-config generators.
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "default build type" FORCE)
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
+
+project("Mozilla VPN" VERSION 2.10.0 LANGUAGES C CXX
+        DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
+        HOMEPAGE_URL "https://vpn.mozilla.org"
+)
 
 if(NOT DEFINED BUILD_ID)
     string(TIMESTAMP BUILD_ID "${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M")
