@@ -30,13 +30,19 @@ void TaskGetSubscriptionDetails::run() {
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Get subscription details failed" << error;
 
+            // Network request failed after authentication for a second time
             if (m_authenticationInAppSession) {
+              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               m_authenticationInAppSession->terminate();
               return;
             }
 
+            // User needs to (re)authenticate
             if (error == QNetworkReply::AuthenticationRequiredError) {
               needsAuthentication();
+            } else {
+              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+              emit completed();
             }
           });
 
@@ -44,14 +50,13 @@ void TaskGetSubscriptionDetails::run() {
           [this](const QByteArray& data) {
             logger.debug() << "Get subscription details completed" << data;
 
+            // TODO: Handle subscription data and emit a signal
+
             if (m_authenticationInAppSession) {
               m_authenticationInAppSession->terminate();
-              return;
+            } else {
+              emit completed();
             }
-
-            // TODO: Handle subscription data
-
-            emit completed();
           });
 }
 
