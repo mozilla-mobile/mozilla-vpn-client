@@ -21,6 +21,7 @@
 #include "models/licensemodel.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
+#include "models/subscriptionmodel.h"
 #include "models/supportcategorymodel.h"
 #include "models/surveymodel.h"
 #include "models/user.h"
@@ -236,6 +237,7 @@ class MozillaVPN final : public QObject {
     return &m_private->m_serverCountryModel;
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
+  SubscriptionModel* subscriptionModel() { return &m_private->m_subscriptionModel; }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
   Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
@@ -449,6 +451,7 @@ class MozillaVPN final : public QObject {
     ServerCountryModel m_serverCountryModel;
     ServerData m_serverData;
     StatusIcon m_statusIcon;
+    SubscriptionModel m_subscriptionModel;
     SurveyModel m_surveyModel;
     Telemetry m_telemetry;
     Theme m_theme;
