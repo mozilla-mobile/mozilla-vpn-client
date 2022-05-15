@@ -83,8 +83,8 @@ void TaskGetSubscriptionDetails::needsAuthentication() {
 
   connect(m_authenticationInAppSession, &AuthenticationInAppSession::completed,
           this, [this, pkceCodeVerifier](const QString& pkceCodeSuccess) {
-            logger.debug() << "Authentication completed with code:"
-                           << pkceCodeSuccess;
+            logger.sensitive() << "Authentication completed with code:"
+                               << pkceCodeSuccess;
 
             NetworkRequest* request =
                 NetworkRequest::createForAuthenticationVerification(
