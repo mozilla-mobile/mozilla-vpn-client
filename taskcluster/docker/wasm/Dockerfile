@@ -23,6 +23,9 @@ RUN apt-get -q update && apt-get install -y git ccache python3 libglib2.0-0 &&\
      sed '/sse/,+5 d' /opt/${QT_VERSION}/wasm_32/mkspecs/features/wasm/wasm.prf > /tmp/wasm.prf &&\
      mv /tmp/wasm.prf /opt/${QT_VERSION}/wasm_32/mkspecs/features/wasm/wasm.prf &&\
      cd /opt/ &&\
+     cp /opt/${QT_VERSION}/gcc_64/bin/lconvert /opt/${QT_VERSION}/wasm_32/bin/ &&\
+     cp /opt/${QT_VERSION}/gcc_64/bin/lupdate /opt/${QT_VERSION}/wasm_32/bin/ &&\
+     cp /opt/${QT_VERSION}/gcc_64/bin/lrelease /opt/${QT_VERSION}/wasm_32/bin/ &&\
      git clone https://github.com/emscripten-core/emsdk.git &&\
      cd emsdk &&\
      ./emsdk install 2.0.14 &&\
