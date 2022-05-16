@@ -543,7 +543,7 @@ inAppAuth:
     comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
   emailTokenResentAlert:
     value: We’ve resent your code to your email.
-    comment: User has requested to send a new Email containing the 6-digit pin to confirm their e-mail address.
+    comment: User has requested to send a new email containing the 6-digit pin to confirm their email address.
 
 deleteAccount:
   authSubheadline: To delete your VPN account, please sign in with your Firefox account password.
