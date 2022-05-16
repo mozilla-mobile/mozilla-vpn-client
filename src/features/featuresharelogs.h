@@ -31,7 +31,8 @@ class FeatureShareLogs : public Feature {
                 "",                  // IconPath
                 "",                  // link URL
                 "2.6",               // released
-                false,               // Can be enabled in devmode
+                false,               // Can be flipped on
+                false,               // Can be flipped off
                 QStringList()        // feature dependencies
         ) {}
 

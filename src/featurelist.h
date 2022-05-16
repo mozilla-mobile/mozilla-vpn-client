@@ -33,7 +33,8 @@ class FeatureList final : public QAbstractListModel {
   int rowCount(const QModelIndex&) const override;
   QVariant data(const QModelIndex& index, int role) const override;
 
-  Q_INVOKABLE void devModeFlipFeatureFlag(const QString& feature);
+  Q_INVOKABLE void toggleForcedEnable(const QString& feature);
+  Q_INVOKABLE void toggleForcedDisable(const QString& feature);
   Q_INVOKABLE QObject* get(const QString& feature);
 
  private:

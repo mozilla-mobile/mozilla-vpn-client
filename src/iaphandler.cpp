@@ -5,6 +5,7 @@
 #include "iaphandler.h"
 #include "constants.h"
 #include "inspector/inspectorhandler.h"
+#include "features/featurefreetrial.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -271,11 +272,14 @@ QVariant IAPHandler::data(const QModelIndex& index, int role) const {
       return QVariant(m_products.at(index.row()).m_savings);
 
     case ProductTrialDaysRole:
-      if ((m_products.at(index.row()).m_type == ProductYearly) &&
-          InspectorHandler::mockFreeTrial()) {
-        return QVariant(7);
+      if (FeatureFreeTrial::instance()->isSupported()) {
+        if ((m_products.at(index.row()).m_type == ProductYearly) &&
+            InspectorHandler::mockFreeTrial()) {
+          return QVariant(7);
+        }
+        return QVariant(m_products.at(index.row()).m_trialDays);
       }
-      return QVariant(m_products.at(index.row()).m_trialDays);
+      return QVariant(0);
 
     default:
       return QVariant();

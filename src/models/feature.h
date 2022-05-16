@@ -25,8 +25,11 @@ class Feature : public QObject {
   Q_PROPERTY(QString linkUrl READ linkUrl CONSTANT)
   Q_PROPERTY(bool isReleased MEMBER m_released CONSTANT)
   Q_PROPERTY(bool isNew READ isNew CONSTANT)
-  Q_PROPERTY(bool devModeWriteable MEMBER m_devModeWriteable CONSTANT)
+  Q_PROPERTY(bool flippableOn READ isFlippableOn CONSTANT)
+  Q_PROPERTY(bool flippableOff READ isFlippableOff CONSTANT)
   Q_PROPERTY(bool isSupported READ isSupported NOTIFY supportedChanged)
+  Q_PROPERTY(bool isSupportedIgnoringFlip READ isSupportedIgnoringFlip NOTIFY
+                 supportedChanged)
 
   // protected:
  public:
@@ -34,7 +37,7 @@ class Feature : public QObject {
           L18nStrings::String displayName_id, L18nStrings::String shortDesc_id,
           L18nStrings::String desc_id, const QString& imgPath,
           const QString& iconPath, const QString& linkUrl,
-          const QString& releaseVersion, bool devModeWriteable,
+          const QString& releaseVersion, bool flippableOn, bool flippableOff,
           const QStringList& otherFeatureDependencies);
 
  public:
@@ -51,12 +54,21 @@ class Feature : public QObject {
   static const Feature* getOrNull(const QString& featureID);
 
   // Checks if the feature is released
-  // or force enabled by the DevMode
+  // or force enabled/disable via flip flags
   // returns the features checkSupportCallback otherwise.
   bool isSupported(bool ignoreCache = false) const;
 
-  // Returns true if it was enabled via DevMode
-  Q_INVOKABLE bool isDevModeEnabled(bool ignoreCache = false) const;
+  // Checks if the feature is released ignoring the flip on/off
+  bool isSupportedIgnoringFlip() const;
+
+  bool isFlippableOn() const { return m_flippableOn; }
+  bool isFlippableOff() const { return m_flippableOff; }
+
+  // Returns true if this feature is flipped on via settings
+  Q_INVOKABLE bool isFlippedOn(bool ignoreCache = false) const;
+
+  // Returns true if this feature is flipped off via settings
+  Q_INVOKABLE bool isFlippedOff(bool ignoreCache = false) const;
 
   // Returns true if this is a newly introduced feature
   bool isNew() const { return m_new; }
@@ -73,9 +85,9 @@ class Feature : public QObject {
   QString linkUrl() const { return m_linkUrl; }
 
  signals:
-  // Is send if the underlying factors for support changed
-  // e.g Controller support level for features depending on this
-  // or if the devmode enabled a feature
+  // This signal is emitted if the underlying factors for support changed e.g
+  // Controller support level for features depending on this or if the feature
+  // has been flipped on/off somehow.
   void supportedChanged();
 
  protected:
@@ -83,10 +95,11 @@ class Feature : public QObject {
   // Should check if the feature could be used, if released
   virtual bool checkSupportCallback() const = 0;
 
-  void maybeChangeDevMode(bool newDevModeEnabled);
+  void maybeFlipOnOrOff();
 
   // Unique Identifier of the Feature, used to Check
-  // Capapbilities of the Daemon/Server or if is Force-Enabled in the Dev Menu
+  // Capapbilities of the Daemon/Server or if is Force-Enabled/Disabled in the
+  // Dev Menu
   const QString m_id;
 
   // Human Readable Name of the Feature
@@ -108,15 +121,24 @@ class Feature : public QObject {
   // Link URL to external information on the feature
   const QString m_linkUrl;
 
-  // If true, the feature can be enabled in the Dev-Settings
-  const bool m_devModeWriteable;
+  // If true, the feature can be enabled.
+  const bool m_flippableOn;
+  // If true, the feature can be disabled.
+  const bool m_flippableOff;
 
   // List of other features to be supported in order to support this one.
   const QStringList m_featureDependencies;
 
-  // If true, the feature is enabled in the Dev-Settings. If
-  // `m_devModeWriteable` is false, this will always be false.
-  bool m_devModeEnabled = false;
+  // How to compute the feature support value.
+  enum State {
+    // Just use what the `checkSupportCallback` method returns
+    DefaultValue,
+    // This pref is forced to be true
+    FlippedOn,
+    // This pref is forced to be false
+    FlippedOff,
+  };
+  State m_state = DefaultValue;
 
   // Determines if the feature should be available if possible
   // Otherwise it can only be reached via a dev-override
