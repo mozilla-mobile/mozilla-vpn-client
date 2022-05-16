@@ -5,6 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 set -e
+set -x
 
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
@@ -73,9 +74,7 @@ xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALL
 print Y "Creating the final package..."
 python3 ./scripts/macos/import_pkg_resources.py || die
 
-set
 print Y "Exporting the artifact..."
-mkdir -p ../../artifacts || die
 mkdir -p tmp || die
 cp -r Release/Mozilla\ VPN.app tmp || die
 cp -r ./macos/pkg/scripts tmp || die
@@ -83,7 +82,11 @@ cp -r ./macos/pkg/Distribution tmp || die
 cp -r ./macos/pkg/Resources tmp || die
 cd tmp || die
 
-zip -r ../../../artifacts/unsigned_artifact.zip . || die
+# From checkout dir to actual task base directory
+TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
+rm -rf "${TASK_HOME}/artifacts"
+mkdir -p "${TASK_HOME}/artifacts"
+tar -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
 cd .. || die
 rm -rf tmp || die
 
