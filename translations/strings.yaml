@@ -541,6 +541,9 @@ inAppAuth:
   termsOfServiceAndPrivacyDisclaimer:
     value: By continuing, you agree to the <a href="terms-of-service">Terms of Service</a> and the <a href="privacy-notice">Privacy Notice</a>.
     comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
+  emailTokenResentAlert:
+    value: We’ve resent your code to your email.
+    comment: User has requested to send a new Email containing the 6-digit pin to confirm their e-mail address.
 
 deleteAccount:
   authSubheadline: To delete your VPN account, please sign in with your Firefox account password.
