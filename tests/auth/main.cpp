@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
   SimpleNetworkManager snm;
   FeatureList::instance()->initialize();
 
-  settingsHolder.setFeaturesFlippedOn(QStringList{
+  settingsHolder.setFeaturesFlippedOn(
       QStringList{"inAppAccountCreate", "inAppAuthentication"});
 
   LogHandler::enableDebug();

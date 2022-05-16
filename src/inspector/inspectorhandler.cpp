@@ -11,6 +11,7 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "models/feature.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "notificationhandler.h"
@@ -803,7 +804,7 @@ static QList<InspectorCommand> s_commands{
                        return QJsonObject();
                      }},
     InspectorCommand{"flip_on_feature", "Flip On a feature", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                     [](const QList<QByteArray>& arguments) {
                        QString featureName = arguments[1];
                        const Feature* feature = Feature::getOrNull(featureName);
                        if (!feature) {
@@ -818,7 +819,7 @@ static QList<InspectorCommand> s_commands{
                      }},
 
     InspectorCommand{"flip_off_feature", "Flip Off a feature", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                     [](const QList<QByteArray>& arguments) {
                        QString featureName = arguments[1];
                        const Feature* feature = Feature::getOrNull(featureName);
                        if (!feature) {
