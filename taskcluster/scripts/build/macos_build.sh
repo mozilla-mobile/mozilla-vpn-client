@@ -86,7 +86,7 @@ cd tmp || die
 TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
 rm -rf "${TASK_HOME}/artifacts"
 mkdir -p "${TASK_HOME}/artifacts"
-tar -czvf "${TASK_HOME}/artifacts/unsigned_artifact.tar.gz" . || die
+tar -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
 cd .. || die
 rm -rf tmp || die
 

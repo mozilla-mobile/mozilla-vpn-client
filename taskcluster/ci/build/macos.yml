@@ -25,7 +25,7 @@ macos/opt:
         max-run-time: 3600
     release-artifacts:
         # release-artifacts expects file to be in /builds/worker/artifacts/
-        - unsigned_artifact.tar.gz
+        - MozillaVPN.tar.gz
     run:
         using: run-task
         cwd: '{checkout}'
