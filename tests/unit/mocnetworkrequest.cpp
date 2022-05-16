@@ -140,6 +140,11 @@ NetworkRequest* NetworkRequest::createForGetFeatureList(Task* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
+// static
+NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
+  return new NetworkRequest(parent, 1234, false);
+}
+
 void NetworkRequest::replyFinished() { QFAIL("Not called!"); }
 
 void NetworkRequest::timeout() {}

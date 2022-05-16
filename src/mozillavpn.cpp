@@ -30,6 +30,7 @@
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
+#include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
@@ -70,6 +71,7 @@
 #include <QGuiApplication>
 #include <QLocale>
 #include <QQmlApplicationEngine>
+#include <QQuickWindow>
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
@@ -336,6 +338,9 @@ void MozillaVPN::setState(State state) {
   m_state = state;
   emit stateChanged();
 
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::appStep, {{"state", QVariant::fromValue(state).toString()}});
+
   // If we are activating the app, let's initialize the controller.
   if (m_state == StateMain) {
     m_private->m_controller.initialize();
@@ -348,7 +353,8 @@ void MozillaVPN::setState(State state) {
 void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
-  if (FeatureInAppPurchase::instance()->isSupported()) {
+  if (m_private->m_user.initialized() &&
+      FeatureInAppPurchase::instance()->isSupported()) {
     if (m_state != StateSubscriptionBlocked &&
         m_private->m_user.subscriptionNeeded()) {
       logger.info() << "Subscription needed";
@@ -360,6 +366,17 @@ void MozillaVPN::maybeStateMain() {
       return;
     }
   }
+
+  if (!modelsInitialized()) {
+    logger.warning() << "Models not initialized yet";
+    SettingsHolder::instance()->clear();
+    errorHandle(ErrorHandler::RemoteServiceError);
+    setUserState(UserNotAuthenticated);
+    setState(StateInitialize);
+    return;
+  }
+
+  Q_ASSERT(m_private->m_serverData.initialized());
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
@@ -644,18 +661,7 @@ void MozillaVPN::completeActivation() {
   TaskScheduler::scheduleTask(new TaskSurveyData());
 
   // Finally we are able to activate the client.
-  TaskScheduler::scheduleTask(new TaskFunction([this]() {
-    if (!modelsInitialized()) {
-      logger.error() << "Failed to complete the authentication";
-      errorHandle(ErrorHandler::RemoteServiceError);
-      setUserState(UserNotAuthenticated);
-      return;
-    }
-
-    Q_ASSERT(m_private->m_serverData.initialized());
-
-    maybeStateMain();
-  }));
+  TaskScheduler::scheduleTask(new TaskFunction([this]() { maybeStateMain(); }));
 }
 
 void MozillaVPN::deviceAdded(const QString& deviceName,
@@ -671,7 +677,7 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   settingsHolder->setPublicKey(publicKey);
   m_private->m_keys.storeKeys(privateKey, publicKey);
 
-  settingsHolder->setDeviceKeyVersion(APP_VERSION);
+  settingsHolder->setDeviceKeyVersion(Constants::versionString());
 }
 
 void MozillaVPN::deviceRemoved(const QString& publicKey) {
@@ -705,6 +711,13 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
     Q_ASSERT(m_private->m_serverData.initialized());
     m_private->m_serverData.writeSettings();
   }
+}
+
+void MozillaVPN::subscriptionDetailsFetched(const QByteArray& subscriptionDetailsData) {
+  logger.debug() << "Subscription details data fetched!";
+  Q_UNUSED(subscriptionDetailsData);
+
+  requestSubscriptionManagement();
 }
 
 void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
@@ -742,15 +755,6 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   // Finally we are able to activate the client.
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (m_state != StateDeviceLimit) {
-      return;
-    }
-
-    if (!modelsInitialized()) {
-      logger.warning() << "Models not initialized yet";
-      errorHandle(ErrorHandler::RemoteServiceError);
-      SettingsHolder::instance()->clear();
-      setUserState(UserNotAuthenticated);
-      setState(StateInitialize);
       return;
     }
 
@@ -1097,9 +1101,10 @@ void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
 
 #ifndef MVPN_WASM
-  // Initialize glean
+  // Initialize glean with an async call because at this time, QQmlEngine does
+  // not have root objects yet to see the current graphics API in use.
   logger.debug() << "Initializing Glean";
-  emit initializeGlean();
+  QTimer::singleShot(0, this, &MozillaVPN::initializeGlean);
 
   // Setup regular glean ping sending
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
@@ -1388,6 +1393,13 @@ void MozillaVPN::requestContactUs() {
 
   QmlEngineHolder::instance()->showWindow();
   emit contactUsNeeded();
+}
+
+void MozillaVPN::requestSubscriptionManagement() {
+  logger.debug() << "Subscription management view requested";
+
+  QmlEngineHolder::instance()->showWindow();
+  emit subscriptionManagementNeeded();
 }
 
 void MozillaVPN::activate() {
@@ -1731,6 +1743,35 @@ QString MozillaVPN::devVersion() {
   return out;
 }
 
+// static
+QString MozillaVPN::graphicsApi() {
+#if QT_VERSION < 0x060000
+  return "qt5-angle";
+#else
+  QQuickWindow* window =
+      qobject_cast<QQuickWindow*>(QmlEngineHolder::instance()->window());
+  Q_ASSERT(window);
+
+  switch (window->rendererInterface()->graphicsApi()) {
+    case QSGRendererInterface::Software:
+      return "software";
+    case QSGRendererInterface::OpenVG:
+    case QSGRendererInterface::OpenGL:
+      return "openGL/openVG";
+    case QSGRendererInterface::Direct3D11:
+      return "Direct3D11";
+    case QSGRendererInterface::Vulkan:
+      return "Vulkan";
+    case QSGRendererInterface::Metal:
+      return "Metal";
+    case QSGRendererInterface::Unknown:
+    case QSGRendererInterface::Null:
+    default:
+      return "unknown";
+  }
+#endif
+}
+
 void MozillaVPN::requestDeleteAccount() {
   logger.debug() << "delete account";
   Q_ASSERT(FeatureAccountDeletion::instance()->isSupported());
@@ -1740,4 +1781,10 @@ void MozillaVPN::requestDeleteAccount() {
 void MozillaVPN::cancelAccountDeletion() {
   logger.warning() << "Canceling account deletion";
   AuthenticationInApp::instance()->terminateSession();
+}
+
+void MozillaVPN::getSubscriptionDetails() {
+  logger.debug() << "Get subscription details";
+  TaskScheduler::scheduleTask(
+      new TaskGetSubscriptionDetails(m_private->m_user.email()));
 }

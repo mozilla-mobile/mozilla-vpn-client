@@ -81,7 +81,7 @@ python3 scripts\utils\import_languages.py
 ECHO Generating glean samples...
 python3 scripts\utils\generate_glean.py
 
-ECHO BUILD_BUILD = %DEBUG_BUILD%
+ECHO DEBUG_BUILD = %DEBUG_BUILD%
 
 ECHO Creating the project with flags: %FLAGS%
 
@@ -144,13 +144,11 @@ ECHO Moving mozillavpn.exe
 if %DEBUG_BUILD% == T (
   REM We need to move the exes in debug so the installer can find them
   xcopy /y debug\*.exe .\
-  xcopy /y extension\bridge\target\debug\mozillavpnnp.exe .\
 )
 
-IF %DEBUG_BUILD%==F (
-  REM We need to move the exes in release so the installer can find them
-  xcopy /y extension\bridge\target\release\mozillavpnnp.exe .
-)
+REM We need to move the web extension bridge so the installer can find it
+REM Note that the web extension is always built in release mode
+xcopy /y extension\bridge\target\release\mozillavpnnp.exe .\
 
 ECHO Creating the installer...
 CALL windows\installer\build.cmd

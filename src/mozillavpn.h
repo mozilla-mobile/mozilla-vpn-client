@@ -21,6 +21,7 @@
 #include "models/licensemodel.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
+#include "models/subscriptionmodel.h"
 #include "models/supportcategorymodel.h"
 #include "models/surveymodel.h"
 #include "models/user.h"
@@ -123,6 +124,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
   Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
   Q_PROPERTY(QString architecture READ architecture CONSTANT)
+  Q_PROPERTY(QString graphicsApi READ graphicsApi CONSTANT)
   Q_PROPERTY(QString platform READ platform CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
                  updateRecommendedChanged)
@@ -195,6 +197,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void crashTest();
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelAccountDeletion();
+  Q_INVOKABLE void getSubscriptionDetails();
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
@@ -234,6 +237,7 @@ class MozillaVPN final : public QObject {
     return &m_private->m_serverCountryModel;
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
+  SubscriptionModel* subscriptionModel() { return &m_private->m_subscriptionModel; }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
   Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
@@ -251,6 +255,8 @@ class MozillaVPN final : public QObject {
   void deviceRemovalCompleted(const QString& publicKey);
 
   void serversFetched(const QByteArray& serverData);
+
+  void subscriptionDetailsFetched(const QByteArray& subscriptionDetailsData);
 
   void accountChecked(const QByteArray& json);
 
@@ -270,8 +276,8 @@ class MozillaVPN final : public QObject {
 
   void silentSwitch();
 
-  static QString versionString() { return QString(APP_VERSION); }
-  static QString buildNumber() { return QString(BUILD_ID); }
+  static QString versionString() { return Constants::versionString(); }
+  static QString buildNumber() { return Constants::buildNumber(); }
   static QString osVersion() {
 #ifdef MVPN_WINDOWS
     return WindowsCommons::WindowsVersion();
@@ -282,6 +288,7 @@ class MozillaVPN final : public QObject {
   static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
   static QString platform() { return Constants::PLATFORM_NAME; }
   static QString devVersion();
+  static QString graphicsApi();
 
   void logout();
 
@@ -389,6 +396,7 @@ class MozillaVPN final : public QObject {
   void requestAbout();
   void requestViewLogs();
   void requestContactUs();
+  void requestSubscriptionManagement();
 
  signals:
   void stateChanged();
@@ -400,6 +408,7 @@ class MozillaVPN final : public QObject {
   void aboutNeeded();
   void viewLogsNeeded();
   void contactUsNeeded();
+  void subscriptionManagementNeeded();
   void updatingChanged();
 
   // For Glean
@@ -411,10 +420,6 @@ class MozillaVPN final : public QObject {
   void setGleanSourceTags(const QStringList& tags);
 
   void aboutToQuit();
-
-  // This is used only on android but, if we use #ifdef MVPN_ANDROID, qml engine
-  // complains...
-  void loadAndroidAuthenticationView();
 
   void logsReady(const QString& logs);
 
@@ -446,6 +451,7 @@ class MozillaVPN final : public QObject {
     ServerCountryModel m_serverCountryModel;
     ServerData m_serverData;
     StatusIcon m_statusIcon;
+    SubscriptionModel m_subscriptionModel;
     SurveyModel m_surveyModel;
     Telemetry m_telemetry;
     Theme m_theme;

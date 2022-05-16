@@ -10,17 +10,20 @@
 TEMPLATE  = app
 
 include($$PWD/qmake/balrog.pri)
-include($$PWD/qmake/ccache.pri)
 include($$PWD/qmake/debug.pri)
-include($$PWD/qmake/golang.pri)
 include($$PWD/qmake/includes_and_defines.pri)
 include($$PWD/qmake/qt.pri)
-include($$PWD/qmake/translations.pri)
 include($$PWD/qmake/webextension.pri)
 include($$PWD/../glean/glean.pri)
 include($$PWD/../nebula/nebula.pri)
 include($$PWD/../lottie/lottie.pri)
+include($$PWD/../translations/translations.pri)
 include($$PWD/crashreporter/crashreporter.pri)
+
+unix {
+   include($$PWD/qmake/ccache.pri)
+   include($$PWD/qmake/golang.pri)
+}
 
 # Cross-platform entries go in here:
 include($$PWD/qmake/sources.pri)

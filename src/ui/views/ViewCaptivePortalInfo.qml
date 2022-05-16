@@ -93,13 +93,12 @@ VPNFlickable {
                 if(vpnFlickable.state === "post-activation"){
                     VPNCaptivePortal.deactivationRequired();
                 }
-                stackview.pop();
+                mainStackView.pop(StackView.Immediate);
             }
 
             Layout.fillWidth: true
             Layout.leftMargin: VPNTheme.theme.windowMargin * 2
             Layout.rightMargin: VPNTheme.theme.windowMargin * 2
         }
-
     }
 }

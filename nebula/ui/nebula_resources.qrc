@@ -317,6 +317,7 @@
         <file>resources/shaders/src/animatedRings.frag</file>
         <file>resources/shield-off.svg</file>
         <file>resources/shield-on.svg</file>
+        <file>resources/sparkles.svg</file>
         <file>resources/spinner.svg</file>
         <file>resources/switching.svg</file>
         <file>resources/update-lock.svg</file>
@@ -330,5 +331,6 @@
         <file>resources/x-red50.svg</file>
         <file>resources/check-green70.svg</file>
         <file>resources/shield-green50.svg</file>
+        <file>resources/checkmark-blue50.svg</file>
     </qresource>
 </RCC>

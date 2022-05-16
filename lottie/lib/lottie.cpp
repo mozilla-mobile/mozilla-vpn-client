@@ -8,6 +8,7 @@
 constexpr auto QRC_ROOT = "qrc:///lottie/";
 
 void Lottie::initialize(QQmlEngine* engine, const QString& userAgent) {
+  Q_INIT_RESOURCE(lottie);
   engine->addImportPath(QRC_ROOT);
   LottiePrivate::initialize(engine, userAgent);
 }

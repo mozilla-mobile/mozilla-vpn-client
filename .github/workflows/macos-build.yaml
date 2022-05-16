@@ -10,6 +10,10 @@ on:
       - main
       - 'releases/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   macos:
     name: MacOS packages
@@ -30,7 +34,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_macos
+          git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
           cd qt_static_macos
           cat qt6* > qt_static.tar.gz
           tar xf qt_static.tar.gz
@@ -188,7 +192,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_macos
+          git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
           cd qt_static_macos
           cat qt6* > qt_static.tar.gz
           tar xf qt_static.tar.gz

@@ -25,28 +25,14 @@ Item {
         PropertyAnimation {
             duration: 100
         }
-    }
-
-    
-    VPNMenu {
-        id: menu
-        objectName: "settingsAdvancedDNSSettingsBackButton"
-
-        title: VPNl18n.CustomDNSSettingsDnsNavItem
-        isSettingsView: true
-    }
+   }
 
     VPNTabNavigation {
         // hacks to circumvent the fact that we can't send
         // "scripts" as property values through ListModel/ListElement
 
         id: tabs
-        width: root.width
-        anchors.top: parent.top
-        anchors.topMargin: VPNTheme.theme.menuHeight
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: root.height - menu.height
+        anchors.fill: parent
 
         tabList: ListModel {
             id: tabButtonList

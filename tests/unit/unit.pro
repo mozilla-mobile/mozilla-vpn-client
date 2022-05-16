@@ -11,6 +11,7 @@ QT += widgets
 
 DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += BUILD_ID=\\\"1234\\\"
+DEFINES += BUILD_QMAKE
 
 CONFIG += c++1z
 
@@ -31,13 +32,14 @@ INCLUDEPATH += \
             ../../src \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
-            ../../src/hacl-star/kremlin/minimal \
-            ../../translations/generated \
-            ../../glean \
-            ../../nebula
+            ../../src/hacl-star/kremlin/minimal
 
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../nebula/nebula.pri)
+include($$PWD/../../translations/translations.pri)
+
+# Remove resouce files that we intend to mock out
+RESOURCES ~= 's/.*servers.qrc//g'
 
 HEADERS += \
     ../../src/adjust/adjustfiltering.h \
@@ -76,11 +78,15 @@ HEADERS += \
     ../../src/models/servercountry.h \
     ../../src/models/servercountrymodel.h \
     ../../src/models/serverdata.h \
+    ../../src/models/subscriptionmodel.h \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
     ../../src/models/tutorial.h \
     ../../src/models/tutorialmodel.h \
+    ../../src/models/tutorialstep.h \
+    ../../src/models/tutorialstepbefore.h \
+    ../../src/models/tutorialstepnext.h \
     ../../src/models/user.h \
     ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
@@ -161,7 +167,6 @@ SOURCES += \
     ../../src/ipaddresslookup.cpp \
     ../../src/itempicker.cpp \
     ../../src/inspector/inspectorutils.cpp \
-    ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
     ../../src/logger.cpp \
@@ -182,10 +187,14 @@ SOURCES += \
     ../../src/models/servercountrymodel.cpp \
     ../../src/models/serverdata.cpp \
     ../../src/models/supportcategorymodel.cpp \
+    ../../src/models/subscriptionmodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
     ../../src/models/tutorial.cpp \
     ../../src/models/tutorialmodel.cpp \
+    ../../src/models/tutorialstep.cpp \
+    ../../src/models/tutorialstepbefore.cpp \
+    ../../src/models/tutorialstepnext.cpp \
     ../../src/models/user.cpp \
     ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
@@ -244,13 +253,6 @@ SOURCES += \
     testthemes.cpp \
     testtimersingleshot.cpp \
     testtutorial.cpp
-
-exists($$PWD/../../translations/generated/l18nstrings.h) {
-    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
-    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
-} else {
-    error("No l18nstrings.h. Have you generated the strings?")
-}
 
 # Platform-specific: Linux
 linux {

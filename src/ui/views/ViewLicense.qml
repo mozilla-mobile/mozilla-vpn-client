@@ -13,23 +13,14 @@ import components.forms 0.1
 Item {
     id: root
 
-    property alias _menuTitle: menu.title
-    property alias isMainView: menu.isMainView
-    property alias isSettingsView: menu.isSettingsView
+    property string _menuTitle: licenseTitle
     property alias licenseContent: licenseText.text
-    property alias licenseTitle: menu.title
-
-    VPNMenu {
-        id: menu
-    }
 
     VPNFlickable {
         id: license
 
-        anchors.top: menu.bottom
-        height: root.height - menu.height
+        anchors.fill: parent
         flickContentHeight: licenseText.height + VPNTheme.theme.windowMargin * 4
-        width: parent.width
 
         VPNTextBlock {
             id: licenseText

@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: mozilla <vpn@mozilla.com>
 Build-Depends: debhelper (>= 9.20160709),
                cdbs,
+               cmake (>= 3.16~) | cmake-mozilla (>= 3.16~),
                quilt,
                flex,
                golang (>=2:1.13~) | golang-1.13,

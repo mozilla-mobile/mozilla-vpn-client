@@ -11,7 +11,7 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "models/tutorial.h"
+#include "models/feature.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "notificationhandler.h"
@@ -797,33 +797,68 @@ static QList<InspectorCommand> s_commands{
           return QJsonObject();
         }},
 
+    InspectorCommand{"open_settings", "Open settings menu", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       MozillaVPN::instance()->settingsNeeded();
+                       return QJsonObject();
+                     }},
+    InspectorCommand{"open_contact_us", "Open in-app support form", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       MozillaVPN::instance()->requestContactUs();
+                       return QJsonObject();
+                     }},
+    InspectorCommand{"open_subscription_management", "Open subscription managment view", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       MozillaVPN::instance()->requestSubscriptionManagement();
+                       return QJsonObject();
+                     }},
     InspectorCommand{
-        "tutorial", "Play a tutorial", 1,
-        [](InspectorHandler* handler, const QList<QByteArray>& arguments) {
-          QJsonObject obj;
-          Tutorial* tutorial = Tutorial::create(handler, arguments[1]);
-          obj["success"] = !!tutorial;
-          if (tutorial) {
-            QObject::connect(tutorial, &Tutorial::playingChanged, handler,
-                             [handler, tutorial]() {
-                               QJsonObject obj;
-                               obj["type"] = tutorial->isPlaying()
-                                                 ? "tutorialStarted"
-                                                 : "tutorialCompleted";
-                               handler->send(QJsonDocument(obj).toJson(
-                                   QJsonDocument::Compact));
-
-                               if (!tutorial->isPlaying()) {
-                                 tutorial->deleteLater();
-                               }
-                             });
-
-            tutorial->play();
+        "enable_feature", "Enable a feature", 1,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QString featureName = arguments[1];
+          const Feature* feature = Feature::getOrNull(featureName);
+          if (!feature) {
+            QJsonObject obj;
+            obj["error"] = "Feature does not exist";
+            return obj;
           }
 
-          return obj;
+          SettingsHolder* settingsHolder = SettingsHolder::instance();
+          Q_ASSERT(settingsHolder);
+
+          QStringList devModeFeatureFlags =
+              settingsHolder->devModeFeatureFlags();
+          if (!devModeFeatureFlags.contains(featureName)) {
+            devModeFeatureFlags.append(featureName);
+            settingsHolder->setDevModeFeatureFlags(devModeFeatureFlags);
+          }
+
+          return QJsonObject();
         }},
 
+    InspectorCommand{
+        "disable_feature", "Disable a feature", 1,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QString featureName = arguments[1];
+          const Feature* feature = Feature::getOrNull(featureName);
+          if (!feature) {
+            QJsonObject obj;
+            obj["error"] = "Feature does not exist";
+            return obj;
+          }
+
+          SettingsHolder* settingsHolder = SettingsHolder::instance();
+          Q_ASSERT(settingsHolder);
+
+          QStringList devModeFeatureFlags =
+              settingsHolder->devModeFeatureFlags();
+          if (devModeFeatureFlags.contains(featureName)) {
+            devModeFeatureFlags.removeAll(featureName);
+            settingsHolder->setDevModeFeatureFlags(devModeFeatureFlags);
+          }
+
+          return QJsonObject();
+        }},
 };
 
 // static
@@ -976,7 +1011,7 @@ bool InspectorHandler::mockFreeTrial() { return s_mockFreeTrial; }
 // static
 QString InspectorHandler::appVersionForUpdate() {
   if (s_updateVersion.isEmpty()) {
-    return APP_VERSION;
+    return Constants::versionString();
   }
 
   return s_updateVersion;
@@ -1047,7 +1082,15 @@ QJsonObject InspectorHandler::serialize(QQuickItem* item) {
   return out;
 }
 
-void InspectorHandler::itemsPicked(const QStringList& objectNames) {
+void InspectorHandler::itemsPicked(const QList<QQuickItem*>& objects) {
+  QStringList objectNames;
+  for (QQuickItem* object : objects) {
+    QString objectName = object->objectName();
+    if (!objectName.isEmpty()) {
+      objectNames.append(objectName);
+    }
+  }
+
   s_pickedItems = objectNames;
   s_pickedItemsSet = true;
 

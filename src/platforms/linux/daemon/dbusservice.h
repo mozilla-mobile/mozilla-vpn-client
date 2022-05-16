@@ -35,6 +35,7 @@ class DBusService final : public Daemon {
 
   QString version();
   QString getLogs();
+  void cleanupLogs() { cleanLogs(); }
 
   QString runningApps();
   bool firewallApp(const QString& appName, const QString& state);

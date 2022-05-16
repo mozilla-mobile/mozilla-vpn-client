@@ -12,8 +12,6 @@ import components.forms 0.1
 
 Item {
     property string _menuTitle: VPNl18n.SettingsDevTitle
-    property alias isSettingsView: menu.isSettingsView
-    property bool addSafeAreaMargin: false
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff) ||
                             (VPNController.state === VPNController.StateInitializing)
 
@@ -22,17 +20,17 @@ Item {
     VPNMenu {
         id: menu
         title: VPNl18n.SettingsDevTitle
-        isSettingsView: false
-        y: addSafeAreaMargin ? safeAreaHeightByDevice() : 0
+        anchors.top: parent.top
     }
 
     VPNFlickable {
         id: flickableContent
+        flickContentHeight: layout.implicitHeight
 
         anchors.top: menu.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        height: parent.height - menu.height
+        anchors.bottom: parent.bottom
 
         ColumnLayout {
             id: layout
@@ -41,10 +39,6 @@ Item {
             anchors.left: parent.left
 
             spacing: 0
-
-            onImplicitHeightChanged: {
-                flickableContent.contentHeight = layout.implicitHeight
-            }
 
             VPNCheckBoxRow {
                 id: developerUnlock
@@ -131,7 +125,7 @@ Item {
                 settingTitle: "Theme list"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: stackview.push("qrc:/ui/developerMenu/ViewThemeList.qml")
+                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewThemeList.qml")
             }
 
             VPNSettingsItem {
@@ -147,7 +141,7 @@ Item {
                 settingTitle: "Feature list"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: stackview.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
+                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
             }
 
             VPNSettingsItem {
@@ -162,7 +156,7 @@ Item {
                 settingTitle: "Guide - REMOVE ME!"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: stackview.push("qrc:/ui/developerMenu/ViewGuides.qml")
+                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewGuides.qml")
             }
 
             VPNSettingsItem {
@@ -177,7 +171,7 @@ Item {
                 settingTitle: "Tutorial - REMOVE ME!"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: stackview.push("qrc:/ui/developerMenu/ViewTutorials.qml")
+                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewTutorials.qml")
             }
 
             VPNSettingsItem {
@@ -193,7 +187,7 @@ Item {
                 settingTitle: "Animations playground"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: stackview.push("qrc:/ui/developerMenu/ViewAnimationsPlayground.qml")
+                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewAnimationsPlayground.qml")
             }
 
             //Need to wrap VPNExternalLinkListItem in an item since it is not written to work in a layout

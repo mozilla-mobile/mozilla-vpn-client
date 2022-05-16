@@ -10,6 +10,10 @@ on:
       - main
       - 'releases/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   wasmQt6:
     name: Wasm Qt6
@@ -44,6 +48,7 @@ jobs:
           mv /tmp/wasm.prf /opt/$QTVERSION/wasm_32/mkspecs/features/wasm/wasm.prf
           ln -s /opt/$QTVERSION/gcc_64/bin/lconvert /opt/$QTVERSION/wasm_32/bin/
           ln -s /opt/$QTVERSION/gcc_64/bin/lupdate /opt/$QTVERSION/wasm_32/bin/
+          ln -s /opt/$QTVERSION/gcc_64/bin/lrelease /opt/$QTVERSION/wasm_32/bin/
 
       - name: Install python dependencies
         shell: bash

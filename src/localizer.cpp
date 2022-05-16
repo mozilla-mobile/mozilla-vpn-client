@@ -214,7 +214,10 @@ QHash<int, QByteArray> Localizer::roleNames() const {
   return roles;
 }
 
-int Localizer::rowCount(const QModelIndex&) const {
+int Localizer::rowCount(const QModelIndex& index) const {
+  if (!index.isValid()) {
+    return 0;
+  }
   return m_languages.count();
 }
 

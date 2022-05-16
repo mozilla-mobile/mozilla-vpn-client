@@ -5,6 +5,7 @@
 #include "commandlineparser.h"
 #include "command.h"
 #include "commands/commandui.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -70,7 +71,7 @@ int CommandLineParser::parse(int argc, char* argv[]) {
 
   if (versionOption.m_set) {
     QTextStream stream(stdout);
-    stream << argv[0] << " " << APP_VERSION << Qt::endl;
+    stream << argv[0] << " " << Constants::versionString() << Qt::endl;
     return 0;
   }
 

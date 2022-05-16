@@ -1,18 +1,26 @@
 {
-  "id": "foo",
+  "id": "demo",
   "image": "foo.png",
-  "comment": "This is a comment",
+  "title": "title",
+  "title_comment": "This is a comment for the title",
+  "subtitle": "subtitle",
+  "subtitle_comment": "This is a comment for the subtitle",
+  "completion_message": "completion message",
+  "completion_message_comment": "This is a comment for the completion message",
   "steps": [
     {
       "id": "s1",
       "comment": "This is a comment for a step",
       "element": "a",
-      "tooltip": "wow"
+      "tooltip": "wow",
+      "next": { "op": "signal", "qml_emitter": "foo", "signal": "a" },
+      "conditions": { "platforms": ["foo"] }
     },
     {
       "id": "s2",
       "element": "b",
-      "tooltip": "wow2"
+      "tooltip": "wow2",
+      "next": { "op": "signal", "qml_emitter": "foo", "signal": "a" }
     }
   ]
 }

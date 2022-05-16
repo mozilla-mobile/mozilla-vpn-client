@@ -9,6 +9,10 @@ on:
       - main
       - 'releases/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   source-bundle:
     name: Source Bundle
@@ -16,25 +20,6 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
-
-      - name: Generate build version
-        shell: bash
-        env:
-          GITREF: ${{github.ref}}
-        run: |
-          VERSION=$(grep ':VERSION' version.pri | cut -d= -f2 | tr -d '[:space:]')
-          if [[ "$GITREF" =~ ^refs/pull/([0-9]+)/merge ]]; then
-            BUILDREV="~pr${BASH_REMATCH[1]}"
-          elif [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
-            git fetch --unshallow
-            BUILDREV="~rc$(git rev-list --count --first-parent origin/main..HEAD)"
-            VERSION=${BASH_REMATCH[1]}
-          else
-            BUILDREV="~github${{github.run_number}}"
-          fi
-
-          # Force the upstream package version
-          sed -i "s/:VERSION.*/:VERSION = ${VERSION}${BUILDREV}/" version.pri
 
       - name: Install source dependencies
         shell: bash
@@ -44,9 +29,11 @@ jobs:
 
       - name: Build source bundle
         shell: bash
-        run: ./scripts/linux/script.sh --source
+        env:
+          GITREF: ${{github.ref}}
+        run: ./scripts/linux/script.sh --source --gitref ${GITREF}
 
-      - name: Uploading
+      - name: Upload source bundle
         uses: actions/upload-artifact@v2
         with:
             name: Sources

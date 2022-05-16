@@ -60,7 +60,6 @@ SOURCES += \
         ipaddress.cpp \
         ipaddresslookup.cpp \
         itempicker.cpp \
-        l18nstringsimpl.cpp \
         leakdetector.cpp \
         localizer.cpp \
         logger.cpp \
@@ -82,11 +81,15 @@ SOURCES += \
         models/servercountry.cpp \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
+        models/subscriptionmodel.cpp \
         models/supportcategorymodel.cpp \
         models/survey.cpp \
         models/surveymodel.cpp \
         models/tutorial.cpp \
         models/tutorialmodel.cpp \
+        models/tutorialstep.cpp \
+        models/tutorialstepbefore.cpp \
+        models/tutorialstepnext.cpp \
         models/user.cpp \
         models/whatsnewmodel.cpp \
         mozillavpn.cpp \
@@ -118,6 +121,7 @@ SOURCES += \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/deleteaccount/taskdeleteaccount.cpp \
         tasks/getfeaturelist/taskgetfeaturelist.cpp \
+        tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
@@ -234,11 +238,15 @@ HEADERS += \
         models/servercountry.h \
         models/servercountrymodel.h \
         models/serverdata.h \
+        models/subscriptionmodel.h \
         models/supportcategorymodel.h \
         models/survey.h \
         models/surveymodel.h \
         models/tutorial.h \
         models/tutorialmodel.h \
+        models/tutorialstep.h \
+        models/tutorialstepbefore.h \
+        models/tutorialstepnext.h \
         models/user.h \
         models/whatsnewmodel.h \
         mozillavpn.h \
@@ -272,6 +280,7 @@ HEADERS += \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/deleteaccount/taskdeleteaccount.h \
         tasks/getfeaturelist/taskgetfeaturelist.h \
+        tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \

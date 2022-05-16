@@ -96,6 +96,7 @@ Device 3 ipv6 address: fc00:bbbb:bbbb:bb01::5:e1ed/128
 Server country code: lu
 Server country: Luxembourg
 Server city: Luxembourg
+VPN state: on
 ```
 
 ## Login

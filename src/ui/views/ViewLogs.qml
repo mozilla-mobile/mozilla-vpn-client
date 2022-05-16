@@ -14,6 +14,7 @@ import components 0.1
 Item {
     id: logs
 
+    objectName: "viewLogs"
     width: window.width
     height: window.safeContentHeight
     Component.onCompleted: VPNCloseEventHandler.addView(logs)
@@ -21,7 +22,6 @@ Item {
     VPNMenu {
         id: menu
 
-        isMainView: true
         //% "View Logs"
         title: qsTrId("vpn.viewlogs.title")
     }

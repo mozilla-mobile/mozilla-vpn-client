@@ -444,6 +444,18 @@ NetworkRequest* NetworkRequest::createForGetFeatureList(Task* parent) {
 }
 
 // static
+NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/subscriptionDetails");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForFxaAccountStatus(
     Task* parent, const QString& emailAddress) {
   Q_ASSERT(parent);
@@ -894,7 +906,8 @@ void NetworkRequest::replyFinished() {
   if (m_reply->error() != QNetworkReply::NoError) {
     QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
     logger.error() << "Network error:" << m_reply->errorString()
-                   << "status code:" << status << "- body:" << data;
+                   << "status code:" << status
+                   << "- body:" << logger.sensitive(data);
     logger.error() << "Failed to access:" << m_request.url().toString(options);
     emit requestFailed(m_reply->error(), data);
     return;

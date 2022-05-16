@@ -13,6 +13,7 @@ import components.forms 0.1
 
 Item {
     id: root
+    objectName: "viewServers"
 
 
     VPNMenu {
@@ -22,9 +23,8 @@ Item {
 
         title: defaultMenuTitle
         onActiveFocusChanged: if (focus) forceFocus = true
-        isMultiHopView: true
 
-        function handleMultiHopNav() {
+        _menuOnBackClicked: () => {
             if (multiHopStackView && multiHopStackView.depth > 1) {
                 // User clicked back from either the Multi-hop entry or exit server list
                 multiHopStackView.pop();

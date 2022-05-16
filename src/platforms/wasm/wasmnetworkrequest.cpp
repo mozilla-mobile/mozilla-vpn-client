@@ -232,6 +232,13 @@ NetworkRequest* NetworkRequest::createForGetFeatureList(Task* parent) {
 }
 
 // static
+NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForFxaAccountStatus(
     Task* parent, const QString& emailAddress) {
   Q_ASSERT(parent);

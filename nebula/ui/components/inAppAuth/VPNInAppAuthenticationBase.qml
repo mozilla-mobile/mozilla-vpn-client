@@ -71,9 +71,7 @@ VPNFlickable {
                 Layout.rightMargin: VPNTheme.theme.windowMargin
                 labelText: qsTrId("vpn.main.getHelp2")
                 horizontalPadding: VPNTheme.theme.windowMargin / 2
-                onClicked: {
-                    stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false});
-                }
+                onClicked: getHelpViewNeeded();
             }
         }
 

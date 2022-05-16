@@ -16,6 +16,10 @@ bool inProduction();
 const QString& getStagingServerAddress();
 void setStaging();
 
+// Project version and build strings.
+QString versionString();
+QString buildNumber();
+
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
 

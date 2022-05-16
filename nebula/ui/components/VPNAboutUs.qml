@@ -12,8 +12,6 @@ import components 0.1
 
 Item {
     id: viewAboutUs
-    property alias isSettingsView: menu.isSettingsView
-    property alias isMainView: menu.isMainView
     property alias releaseVersionText: releaseVersion.text
     //% "About us"
     property string _menuTitle: qsTrId("vpn.settings.aboutUs")
@@ -50,18 +48,11 @@ Item {
        });
     }
 
-    VPNMenu {
-        id: menu
-        objectName: "aboutUsBackButton"
-        title: qsTrId("vpn.settings.aboutUs")
-        visible: !isSettingsView
-    }
-
     Rectangle {
         id: aboutUsCopy
 
-        anchors.top: menu.visible ? menu.bottom : parent.top
-        anchors.topMargin: menu.visible ? 0 : VPNTheme.theme.menuHeight + VPNTheme.theme.windowMargin
+        anchors.top: parent.top
+        anchors.topMargin: VPNTheme.theme.windowMargin
         anchors.left: viewAboutUs.left
         anchors.leftMargin: VPNTheme.theme.windowMargin
         anchors.rightMargin: VPNTheme.theme.windowMargin
@@ -149,13 +140,7 @@ Item {
                     VPN.openLink(openUrl)
                 }
                 if (openView) {
-                    if (isSettingsView) {
-                        settingsStackView.push(openView, { isSettingsView, isMainView })
-                    } else if (isMainView) {
-                        mainStackView.push(openView, { isSettingsView, isMainView })
-                    } else {
-                        stackview.push(openView, { isSettingsView, isMainView })
-                    }
+                    settingsStackView.push(openView)
                 }
             }
             iconSource: openUrl ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
@@ -278,7 +263,7 @@ Item {
                 text: VPNl18n.UpdateButtonActionOnUpdate
                 onClicked: {
                     updateAvailablePopup.close()
-                    stackview.push("qrc:/ui/views/ViewUpdate.qml");
+                    mainStackView.push("qrc:/ui/views/ViewUpdate.qml");
                 }
 
                 Image {

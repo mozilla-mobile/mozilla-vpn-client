@@ -120,7 +120,7 @@ print Y "Importing translation files..."
 python3 scripts/utils/import_languages.py || die "Failed to import languages"
 
 print Y "Generating glean samples..."
-python3 scripts/utils/generate_glean.py || die "Failed to generate glean samples"
+python3 scripts/utils/generate_glean.py -j "android/src/" || die "Failed to generate glean samples"
 
 print Y "Copy and patch Adjust SDK..."
 rm -rf "android/src/com/adjust" || die "Failed to remove the adjust folder"

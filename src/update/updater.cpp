@@ -54,5 +54,5 @@ QString Updater::appVersion() {
   if (!Constants::inProduction()) {
     return InspectorHandler::appVersionForUpdate();
   }
-  return APP_VERSION;
+  return Constants::versionString();
 }

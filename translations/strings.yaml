@@ -585,6 +585,15 @@ freeTrials:
     comment: This string appears above the 'Sign up' button on mobile onboarding views
   freeTrialLabel: 7-day free trial
 
+tipsAndTricks:
+  settingsEntryLabel: VPN tips and tricks
+  tutorialLabel: Tutorial
+  featureTourLabel: Feature tour
+  whatsNewTitle: What’s new?
+  whatsNewDescription: We’ve added new features. Take a tour to get a deeper dive into what we’ve added for you!
+  quickTipsTitle: Quick tips
+  quickTipsDescription: Let us help you get the most out of Mozilla VPN
+
 global:
   expand:
     value: Expand

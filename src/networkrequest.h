@@ -78,6 +78,8 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForGetFeatureList(Task* parent);
 
+  static NetworkRequest* createForGetSubscriptionDetails(Task* parent);
+
   static NetworkRequest* createForFxaAccountStatus(Task* parent,
                                                    const QString& emailAddress);
 

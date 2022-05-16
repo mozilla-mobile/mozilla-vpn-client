@@ -24,7 +24,7 @@ Flickable {
         }
 
         const buffer = 20;
-        const itemHeight = Math.min(item.height, VPNTheme.theme.rowHeight) + buffer
+        const itemHeight = Math.max(item.height, VPNTheme.theme.rowHeight) + buffer
         let ext = item.height + yPosition;
         let destinationY;
 

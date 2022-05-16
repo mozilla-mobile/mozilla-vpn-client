@@ -21,11 +21,10 @@ Logger logger(
 }  // namespace
 
 // static
-bool WgQuickProcess::createConfigFile(const QString& outputFile,
-                                      const InterfaceConfig& config,
-                                      const QMap<QString, QString>& extra) {
+QString WgQuickProcess::createConfigString(
+    const InterfaceConfig& config, const QMap<QString, QString>& extra) {
 #define VALIDATE(x) \
-  if (x.contains("\n")) return false;
+  if (x.contains("\n")) return "";
 
   VALIDATE(config.m_privateKey);
   VALIDATE(config.m_deviceIpv4Address);
@@ -51,7 +50,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
   }
   if (addresses.isEmpty()) {
     logger.error() << "Failed to create WG quick config with no addresses";
-    return false;
+    return "";
   }
   out << "Address = " << addresses.join(", ") << "\n";
 
@@ -97,48 +96,5 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
 #ifdef MVPN_DEBUG
   logger.debug() << content;
 #endif
-
-  QFile file(outputFile);
-  if (!file.open(QIODevice::WriteOnly)) {
-    qWarning("Unable to create a file in the temporary folder");
-    return false;
-  }
-
-  qint64 written = file.write(content.toUtf8());
-  if (written != content.length()) {
-    qWarning("Unable to write the whole configuration file");
-    return false;
-  }
-
-  file.close();
-  return true;
-}
-
-// static
-bool WgQuickProcess::createConfigFile(
-    const QString& outputFile, const QString& privateKey,
-    const QString& deviceIpv4Address, const QString& deviceIpv6Address,
-    const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
-    const QString& serverPublicKey, const QString& serverIpv4AddrIn,
-    const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
-    int serverPort, const QString& dnsServer) {
-  Q_UNUSED(serverIpv6AddrIn);
-
-  InterfaceConfig config;
-  config.m_privateKey = privateKey;
-  config.m_deviceIpv4Address = deviceIpv4Address;
-  config.m_deviceIpv6Address = deviceIpv6Address;
-  config.m_serverIpv4Gateway = serverIpv4Gateway;
-  config.m_serverIpv6Gateway = serverIpv6Gateway;
-  config.m_serverPublicKey = serverPublicKey;
-  config.m_serverIpv4AddrIn = serverIpv4AddrIn;
-  config.m_serverIpv6AddrIn = serverIpv6AddrIn;
-  config.m_dnsServer = dnsServer;
-  config.m_serverPort = serverPort;
-
-  for (const QString& range : allowedIPAddressRanges.split(',')) {
-    config.m_allowedIPAddressRanges.append(IPAddress(range));
-  }
-
-  return createConfigFile(outputFile, config);
+  return content;
 }

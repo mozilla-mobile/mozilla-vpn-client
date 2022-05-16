@@ -21,7 +21,7 @@ RadioDelegate {
     ButtonGroup.group: subscriptionOptions
 
     Layout.fillWidth: true
-    Layout.preferredHeight: 96
+    Layout.preferredHeight: Math.max(96, row.implicitHeight + row.anchors.topMargin + row.anchors.bottomMargin)
 
     background: Rectangle {
         id: bg
@@ -140,6 +140,7 @@ RadioDelegate {
             Layout.fillHeight: true
 
             VPNBoldLabel {
+                id: headLineLabel
                 font.pixelSize: 16
                 lineHeight: VPNTheme.theme.labelLineHeight + 2
                 lineHeightMode: Text.FixedHeight

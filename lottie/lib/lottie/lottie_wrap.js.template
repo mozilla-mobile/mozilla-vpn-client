@@ -8,7 +8,7 @@ export function initialize(window, document, navigator) {
 
   (function() {
     try {
-      __LOTTIE__
+      @LOTTIEJS@
     } catch (e) {
       console.log(e);
     }
