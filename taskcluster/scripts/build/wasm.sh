@@ -19,6 +19,7 @@ python3 ./scripts/utils/generate_glean.py
 # translations
 python3 ./scripts/utils/import_languages.py
 
+export PATH="$QTPATH/wasm_32/bin:$PATH"
 ./scripts/wasm/compile.sh
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
