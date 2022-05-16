@@ -6,7 +6,7 @@ FROM $DOCKER_IMAGE_PARENT
 
 MAINTAINER Sebastian Streich <sstreich@mozilla.com>
 
-ARG QT_VERSION=6.2.3
+ARG QT_VERSION=6.2.4
 
 VOLUME /builds/worker/checkouts
 
