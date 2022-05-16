@@ -352,7 +352,6 @@ class MozillaVPN final : public QObject {
 
   void stopSchedulingPeriodicOperations();
 
-
   bool writeAndShowLogs(QStandardPaths::StandardLocation location);
 
   bool writeLogs(QStandardPaths::StandardLocation location,
