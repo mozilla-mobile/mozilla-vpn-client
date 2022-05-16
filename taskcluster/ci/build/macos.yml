@@ -24,7 +24,6 @@ macos/opt:
         chain-of-trust: true
         max-run-time: 3600
     release-artifacts:
-        # release-artifacts expects file to be in /builds/worker/artifacts/
         - MozillaVPN.tar.gz
     run:
         using: run-task
