@@ -48,8 +48,8 @@ void TaskAuthenticate::run() {
 
   connect(m_authenticationListener, &AuthenticationListener::completed, this,
           [this, pkceCodeVerifier](const QString& pkceCodeSucces) {
-            logger.sensitive() << "Authentication completed with code:"
-                               << pkceCodeSucces;
+            logger.debug() << "Authentication completed with code:"
+                           << logger.sensitive(pkceCodeSucces);
 
             NetworkRequest* request =
                 NetworkRequest::createForAuthenticationVerification(
