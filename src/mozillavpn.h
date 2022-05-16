@@ -95,6 +95,7 @@ class MozillaVPN final : public QObject {
     SubscriptionFailureAlert,
     GeoIpRestrictionAlert,
     UnrecoverableErrorAlert,
+    AuthCodeSentAlert,
   };
   Q_ENUM(AlertType)
 
@@ -170,6 +171,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void openLinkUrl(const QString& linkUrl);
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
+  Q_INVOKABLE void setAlert(AlertType alert);
   Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
@@ -350,7 +352,6 @@ class MozillaVPN final : public QObject {
 
   void stopSchedulingPeriodicOperations();
 
-  void setAlert(AlertType alert);
 
   bool writeAndShowLogs(QStandardPaths::StandardLocation location);
 

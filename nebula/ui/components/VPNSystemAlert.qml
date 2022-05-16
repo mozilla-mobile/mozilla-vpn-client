@@ -23,6 +23,15 @@ VPNAlert {
                     visible: false
                 }
             },
+            State{
+                name: VPN.AuthCodeSentAlert
+                PropertyChanges {
+                    target: alertBox
+                    alertType: alertTypes.success
+                    alertText: VPNl18n.InAppAuthEmailTokenResentAlert
+                    visible: true
+                }
+            },
             State {
                 name: VPN.updateRecommended
                 PropertyChanges {

@@ -61,23 +61,7 @@ VPNInAppAuthenticationBase {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 VPNAuthInApp.resendVerificationSessionCodeEmail();
-                var component = Qt.createComponent("qrc:/nebula/components/VPNAlert.qml", { updateURL: "qrc:/ui/views/ViewUpdate.qml" });
-                if(component.status !== Component.Ready){
-                    if( component.status == Component.Error ){console.debug("Error:"+ component.errorString());}
-                    return;
-                }
-                var alert = component.createObject(authSignUp, {
-                    isLayout:false,
-                    visible:true,
-                    alertText: VPNl18n.InAppAuthEmailTokenResentAlert,
-                    alertType: "success",
-                    duration:2000,
-                    destructive:true,
-                    // Pin y hight to be below the alert bar as we can't render above it
-                    setY: authSignUp.y+VPNTheme.theme.windowMargin,
-                    onActionPressed: ()=>{},
-                });
-                alert.show();
+                VPN.setAlert(VPN.AuthCodeSentAlert);
             }
         }
 
