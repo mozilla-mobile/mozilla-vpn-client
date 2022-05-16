@@ -4,8 +4,9 @@
 const vpn = require('./helper.js');
 
 describe('Devices', function() {
+  this.ctx.authenticationNeeded = true;
+
   it('Opens and closes the device list', async () => {
-    await vpn.authenticate(true, true);
     await vpn.waitForElement('deviceListButton');
     await vpn.waitForElementProperty('deviceListButton', 'visible', 'true');
     await vpn.wait();

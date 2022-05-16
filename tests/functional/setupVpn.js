@@ -16,45 +16,77 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const fs = require('fs');
-const {exec, spawn} = require('child_process');
+const {execSync, spawn} = require('child_process');
 const vpn = require('./helper.js');
 
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;
 let stdErr = '';
 
+async function startAndConnect() {
+  vpnProcess = spawn(app, ['ui', '--testing']);
+  stdErr += 'VPN Process ID: ' + vpnProcess.pid;
+  vpnProcess.stderr.on('data', (data) => {
+    stdErr += data;
+  });
+  // Connect to VPN
+  await vpn.connect();
+}
+
 exports.mochaHooks = {
-  beforeAll() {
+  async beforeAll() {
     // Check VPN app exists. If not, bail.
-    exec(`"${app}" --version`, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Could not run "${app}".`);
-        console.error('Have you set MVPN_BIN in .env or environment?');
-        console.error(`stdout: ${stdout}`);
-        console.error(`stderr: ${stderr}`);
-        process.exit(1);
-      }
+    try {
+      const stdout = execSync(`"${app}" --version`);
       console.log(`VPN Version is: ${stdout}`);
-    })
+    } catch (error) {
+      console.error(`Could not run "${app}".`);
+      console.error('Have you set MVPN_BIN in .env or environment?');
+      console.error(`stdout: ${stdout}`);
+      console.error(`stderr: ${stderr}`);
+      process.exit(1);
+    }
   },
+
   async beforeEach() {
-    // Start VPN app
-    vpnProcess = spawn(app, ['ui', '--testing']);
-    stdErr += 'VPN Process ID: ' + vpnProcess.pid;
-    vpnProcess.stderr.on('data', (data) => {
-      stdErr += data;
-    });
-    // Connect to VPN
-    await vpn.connect();
-    // NOTE - It's important that the hard reset is at the start.
-    // That way if there's any left over state from the previous test
-    // or other work it'll get cleaned up - this is most likely to happen
-    // on a dev's machine.
-    await vpn.hardReset();
+    if (this.currentTest.ctx.authenticationNeeded &&
+        !this.currentTest.ctx.vpnSettings) {
+      console.log('Retrieving the setting file...');
+      await startAndConnect();
+      await vpn.hardReset();
+      await vpn.authenticateInApp(true, true);
+
+      const fileName = await vpn.settingsFileName();
+
+      await vpn.quit();
+
+      const content = await fs.readFileSync(fileName);
+      this.currentTest.ctx.vpnSettings = {fileName, content};
+    }
+
+    if (this.currentTest.ctx.authenticationNeeded) {
+      fs.writeFileSync(
+          this.currentTest.ctx.vpnSettings.fileName,
+          this.currentTest.ctx.vpnSettings.content);
+      await startAndConnect();
+    } else {
+      if (this.currentTest.ctx.vpnSettings) {
+        // We already have the settings file, we can remove it before starting
+        // the app to have a really "hard" reset.
+        fs.unlinkSync(this.currentTest.ctx.vpnSettings.fileName);
+        this.currentTest.ctx.vpnSettings = null;
+      }
+
+      await startAndConnect();
+      await vpn.hardReset();
+    }
+
+    await startAndConnect();
     await vpn.setGleanAutomationHeader();
 
     console.log('Starting test:', this.currentTest.title);
   },
+
   async afterEach() {
     // Collect errors on failure
     if (this.currentTest.state === 'failed') {
@@ -94,5 +126,5 @@ exports.mochaHooks = {
     // Seems to help with tests that are slow to close vpn app at end.
     await vpn.wait();
     await vpn.wait();
-  }
+  },
 }

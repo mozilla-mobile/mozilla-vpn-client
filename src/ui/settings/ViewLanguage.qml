@@ -146,6 +146,7 @@ Item {
                     delegate: ColumnLayout {
 
                         spacing: 0
+                        objectName: "language-column-" + code
 
                         VPNRadioDelegate {
                             property bool isSelectedLanguage: checked

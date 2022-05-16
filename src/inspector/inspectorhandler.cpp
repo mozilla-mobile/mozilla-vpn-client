@@ -626,6 +626,14 @@ static QList<InspectorCommand> s_commands{
           return obj;
         }},
 
+    InspectorCommand{"settings_filename", "Get the setting filename", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       QJsonObject obj;
+                       obj["value"] =
+                           SettingsHolder::instance()->settingsFileName();
+                       return obj;
+                     }},
+
     InspectorCommand{"languages", "Returns a list of languages", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
@@ -807,6 +815,30 @@ static QList<InspectorCommand> s_commands{
                        MozillaVPN::instance()->requestContactUs();
                        return QJsonObject();
                      }},
+    InspectorCommand{"is_feature_flipped_on",
+                     "Check if a feature is flipped on", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QString featureName = arguments[1];
+                       auto const settings = SettingsHolder::instance();
+                       QStringList flags = settings->featuresFlippedOn();
+
+                       QJsonObject obj;
+                       obj["value"] = flags.contains(featureName);
+                       return obj;
+                     }},
+
+    InspectorCommand{"is_feature_flipped_off",
+                     "Check if a feature is flipped off", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QString featureName = arguments[1];
+                       auto const settings = SettingsHolder::instance();
+                       QStringList flags = settings->featuresFlippedOff();
+
+                       QJsonObject obj;
+                       obj["value"] = flags.contains(featureName);
+                       return obj;
+                     }},
+
     InspectorCommand{"flip_on_feature", "Flip On a feature", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QString featureName = arguments[1];

@@ -243,7 +243,8 @@ module.exports = {
 
   // TODO - The expected staging urls are hardcoded, we may want to
   // move these hardcoded urls out if testing in alternate environments.
-  async authenticate(clickOnPostAuthenticate = false, acceptTelemetry = false) {
+  async authenticateInBrowser(
+      clickOnPostAuthenticate = false, acceptTelemetry = false) {
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForMainView();
     await this.setElementProperty('VPN', 'lastUrl', 's', '');
@@ -309,10 +310,81 @@ module.exports = {
     }
   },
 
+  async authenticateInApp(
+      clickOnPostAuthenticate = false, acceptTelemetry = false) {
+    if (!(await this.isFeatureFlippedOn('inAppAuthentication'))) {
+      await this.flipFeatureOn('inAppAuthentication');
+    }
+
+    // This method must be called when the client is on the "Get Started" view.
+    await this.waitForMainView();
+
+    // Click on get started and wait for authenticating view
+    await this.clickOnElement('getStarted');
+    await this.waitForElement('authStart-textInput');
+    await this.setElementProperty(
+        'authStart-textInput', 'text', 's', process.env.ACCOUNT_EMAIL);
+    await this.waitForElement('authStart-button');
+    await this.clickOnElement('authStart-button');
+
+    await this.waitForElement('authSignIn-passwordInput');
+    await this.setElementProperty(
+        'authSignIn-passwordInput', 'text', 's', process.env.ACCOUNT_PASSWORD);
+    await this.clickOnElement('authSignIn-button');
+
+    // Wait for VPN client screen to move from spinning wheel to next screen
+    await this.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
+    await this.waitForElement('postAuthenticationButton');
+
+    // Clean-up extra devices (otherwise test account will fill up in a
+    // heartbeats)
+    await this._maybeRemoveExistingDevices();
+
+    if (clickOnPostAuthenticate) {
+      await this.clickOnElement('postAuthenticationButton');
+      await this.wait();
+    }
+    if (acceptTelemetry) {
+      await this.waitForElement('telemetryPolicyButton');
+      await this.clickOnElement('telemetryPolicyButton');
+      await this.waitForElement('controllerTitle');
+    }
+  },
+
   async logout() {
     const json = await this._writeCommand('logout');
     assert(
         json.type === 'logout' && !('error' in json),
+        `Command failed: ${json.error}`);
+  },
+
+  async isFeatureFlippedOn(key) {
+    const json = await this._writeCommand(`is_feature_flipped_on ${key}`);
+    assert(
+        json.type === 'is_feature_flipped_on' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return !!json.value;
+  },
+
+  async isFeatureFlippedOff(key) {
+    const json = await this._writeCommand(`is_feature_flipped_off ${key}`);
+    assert(
+        json.type === 'is_feature_flipped_off' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return !!json.value;
+  },
+
+  async flipFeatureOn(key) {
+    const json = await this._writeCommand(`flip_on_feature ${key}`);
+    assert(
+        json.type === 'flip_on_feature' && !('error' in json),
+        `Command failed: ${json.error}`);
+  },
+
+  async flipFeatureOff(key) {
+    const json = await this._writeCommand(`flip_off_feature ${key}`);
+    assert(
+        json.type === 'flip_off_feature' && !('error' in json),
         `Command failed: ${json.error}`);
   },
 
@@ -338,6 +410,14 @@ module.exports = {
   resetLastNotification() {
     _lastNotification.title = null;
     _lastNotification.message = null;
+  },
+
+  async settingsFileName() {
+    const json = await this._writeCommand('settings_filename');
+    assert(
+        json.type === 'settings_filename' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
   },
 
   async languages() {

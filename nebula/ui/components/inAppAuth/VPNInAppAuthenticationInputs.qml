@@ -40,6 +40,7 @@ ColumnLayout {
 
         VPNTextField {
             id: textInput
+            objectName: base.objectName + "-textInput"
             Layout.fillWidth: true
             _placeholderText: _inputPlaceholderText
             Keys.onReturnPressed: col.submitInfo(textInput)
@@ -48,6 +49,7 @@ ColumnLayout {
 
         VPNPasswordInput {
             id: passwordInput
+            objectName: base.objectName + "-passwordInput"
             _placeholderText: _inputPlaceholderText
             Layout.fillWidth: true
             Keys.onReturnPressed: col.submitInfo(passwordInput)
@@ -174,6 +176,7 @@ ColumnLayout {
 
     VPNButton {
         id: btn
+        objectName: base.objectName + "-button"
         Layout.fillWidth: true
         loaderVisible:  VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount ||
                         VPNAuthInApp.state === VPNAuthInApp.StateSigningIn ||

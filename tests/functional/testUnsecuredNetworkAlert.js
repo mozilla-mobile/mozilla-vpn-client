@@ -8,6 +8,8 @@ const vpn = require('./helper.js');
 describe('Unsecured network alert', function() {
   describe('Basic tests through the intro phases of app', function() {
     it('Enable unsecured-network-alert feature', async () => {
+      vpn.resetLastNotification();
+
       await vpn.setSetting('unsecured-network-alert', 'false');
       assert(await vpn.getSetting('unsecured-network-alert') === 'false');
 
@@ -61,7 +63,7 @@ describe('Unsecured network alert', function() {
     });
 
     it('Unsecured network alert in the Post authentication view', async () => {
-      await vpn.authenticate(false, false);
+      await vpn.authenticateInApp(false, false);
       await vpn.waitForElement('postAuthenticationButton');
 
       await vpn.forceUnsecuredNetworkAlert();
@@ -75,7 +77,7 @@ describe('Unsecured network alert', function() {
     });
 
     it('Unsecured network alert in the Telemetry policy view', async () => {
-      await vpn.authenticate(true, false);
+      await vpn.authenticateInApp(true, false);
       await vpn.waitForElement('telemetryPolicyButton');
 
       await vpn.forceUnsecuredNetworkAlert();
@@ -89,7 +91,7 @@ describe('Unsecured network alert', function() {
     });
 
     it('Unsecured network alert in the Controller view', async () => {
-      await vpn.authenticate(true, true);
+      await vpn.authenticateInApp(true, true);
       await vpn.waitForElement('controllerTitle');
       await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
       assert(
@@ -114,16 +116,7 @@ describe('Unsecured network alert', function() {
   });
 
   describe('Tests during activation / deactivation phase', function() {
-    beforeEach(async () => {
-      await vpn.authenticate(true, true);
-      await vpn.wait();
-    });
-
-    this.afterEach(async () => {
-      // These tests seem to need a little extra time.
-      await vpn.wait();
-      await vpn.wait();
-    })
+    this.ctx.authenticationNeeded = true;
 
     it('Clicking the notification activates the VPN', async () => {
       await vpn.forceUnsecuredNetworkAlert();
@@ -148,8 +141,12 @@ describe('Unsecured network alert', function() {
       await vpn.forceUnsecuredNetworkAlert();
       await vpn.wait();
 
-      // Notifications are not OK when connecting.
-      assert(vpn.lastNotification().title === null);
+      // Notifications are not OK when connecting, but because the connection
+      // is so fast recently, often at this point we are already in the connect
+      // state.
+      assert(
+          vpn.lastNotification().title === null ||
+          vpn.lastNotification().title === 'VPN Connected');
     });
 
     it('Unsecured network alert should not show when connected', async () => {
@@ -181,8 +178,8 @@ describe('Unsecured network alert', function() {
       await vpn.deactivate();
 
       await vpn.waitForCondition(async () => {
-        return await vpn.getElementProperty('controllerTitle', 'text') ===
-            'Disconnecting…';
+        const msg = await vpn.getElementProperty('controllerTitle', 'text');
+        return msg === 'Disconnecting…' || msg === 'VPN is off';
       });
 
       await vpn.waitForCondition(() => {
