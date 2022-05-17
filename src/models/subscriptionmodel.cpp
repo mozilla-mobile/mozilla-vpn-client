@@ -35,18 +35,14 @@ bool SubscriptionModel::fromJson(const QByteArray& json) {
   bool subIsCancelled = obj.value("is_cancelled").toBool();
   QString subStatus = obj.value("status").toString();
   QString subType = obj.value("type").toString();
-  // Payment
-  QJsonObject paymentData = obj.value("payment").toObject();
-  QString creditCardBrand = paymentData.value("credit_card_brand").toString();
-  int creditCardExpMonth = paymentData.value("credit_card_exp_month").toInt();
-  int creditCardExpYear = paymentData.value("credit_card_exp_year").toInt();
-  QString creditCardLast4 = paymentData.value("credit_card_last4").toString();
-  QString paymentType = paymentData.value("type").toString();
   // Plan
   QJsonObject planData = obj.value("plan").toObject();
   int planAmount = planData.value("amount").toInt();
   QString planCurrency = planData.value("currency").toString();
   int planIntervalCount = planData.value("interval_count").toInt();
+  // Payment
+  QJsonObject paymentData = obj.value("payment").toObject();
+  QString paymentType = paymentData.value("type").toString();
 
   // Populate subscription model
   beginResetModel();
@@ -65,10 +61,15 @@ bool SubscriptionModel::fromJson(const QByteArray& json) {
 
   // Payment is not handled via Google or Apple?
   if (subType == "web" && paymentType == "credit") {
-    m_subscriptionList.append(SubscriptionItem{"payment-method", { paymentType, creditCardBrand, creditCardLast4 }});
+    QString creditCardBrand = paymentData.value("credit_card_brand").toString();
+    int creditCardExpMonth = paymentData.value("credit_card_exp_month").toInt();
+    int creditCardExpYear = paymentData.value("credit_card_exp_year").toInt();
+    QString creditCardLast4 = paymentData.value("credit_card_last4").toString();
+
+    m_subscriptionList.append(SubscriptionItem{"payment-method-credit", { paymentType, creditCardBrand, creditCardLast4 }});
     m_subscriptionList.append(SubscriptionItem{"payment-expires", { QString::number(creditCardExpMonth), QString::number(creditCardExpYear) }});
   } else {
-    m_subscriptionList.append(SubscriptionItem{"payment-method", { paymentType }});
+    m_subscriptionList.append(SubscriptionItem{"payment-method-iap", { paymentType }});
   }
   endResetModel();
 

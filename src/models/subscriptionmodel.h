@@ -24,7 +24,8 @@ class SubscriptionModel final : public QAbstractListModel {
     ValuesRole,
   };
 
-  [[nodiscard]] bool fromJson(const QByteArray& json);
+  // [[nodiscard]] bool fromJson(const QByteArray& json);
+  Q_INVOKABLE bool fromJson(const QByteArray& json);
 
   bool initialized() const { return !m_rawJson.isEmpty(); }
 
