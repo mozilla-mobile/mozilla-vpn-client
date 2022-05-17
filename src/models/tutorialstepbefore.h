@@ -11,7 +11,7 @@
 
 class QJsonValue;
 
-class TutorialStepBefore final : public QObject {
+class TutorialStepBefore : public QObject {
   Q_OBJECT
 
  public:
@@ -19,27 +19,12 @@ class TutorialStepBefore final : public QObject {
                                            const QString& elementForTooltip,
                                            const QJsonValue& json);
 
-  ~TutorialStepBefore();
+  virtual ~TutorialStepBefore();
 
-  bool run();
+  virtual bool run() = 0;
 
- private:
-  enum Op {
-    PropertySet,
-    PropertyGet,
-  };
-
-  TutorialStepBefore(QObject* parent, Op op, const QString& element,
-                     const QString& property, const QVariant& value);
-
-  bool runPropertyGet();
-  bool runPropertySet();
-
- private:
-  const Op m_op;
-  const QString m_element;
-  const QString m_property;
-  const QVariant m_value;
+ protected:
+  explicit TutorialStepBefore(QObject* parent);
 };
 
 #endif  // TUTORIALSTEPBEFORE_H
