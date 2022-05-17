@@ -58,9 +58,18 @@ jobs:
         working-directory: ./build
         run: |
           ctest --output-on-failure
-          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir \
-              -s $(pwd)/tests/unit -t lcov --branch --ignore-not-existing \
-                  > ${{github.workspace}}/unit_lcov.info
+
+          grcov $(pwd)/tests/auth/CMakeFiles/auth_tests.dir -s $(pwd)/tests/auth \
+               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
+
+          grcov $(pwd)/tests/nativemessaging/CMakeFiles/unit_tests.dir -s $(pwd)/tests/nativemessaging \
+               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
+
+          grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s $(pwd)/tests/qml \
+               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
+
+          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s $(pwd)/tests/unit \
+               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
@@ -68,7 +77,11 @@ jobs:
           directory: .
           flags: unit_tests
           name: codecov-poc
-          files: unit_lcov.info
+          files:
+            auth_lcov.info
+            nativemessaging_lcov.info
+            qml_lcov.info
+            unit_lcov.info
           verbose: true
 
   macos-unit-tests:
