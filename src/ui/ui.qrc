@@ -22,6 +22,7 @@
         <file>settings/ViewAdvancedDNSSettings.qml</file>
         <file>settings/ViewAppPermissions.qml</file>
         <file>settings/ViewGiveFeedback.qml</file>
+        <file>settings/ViewGuide.qml</file>
         <file>settings/ViewLanguage.qml</file>
         <file>settings/ViewNetworkSettings.qml</file>
         <file>settings/ViewNotifications.qml</file>

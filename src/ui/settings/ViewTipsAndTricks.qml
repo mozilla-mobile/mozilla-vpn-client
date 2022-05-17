@@ -122,6 +122,8 @@ VPNFlickable {
 
                                 imageSrc: guide.image
                                 title: VPNl18n[guide.titleId]
+
+                                onClicked: mainStackView.push("qrc:/ui/settings/ViewGuide.qml", {"guide": guide, "imageBgColor": imageBgColor})
                             }
                         }
                     }

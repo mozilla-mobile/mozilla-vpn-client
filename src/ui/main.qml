@@ -118,7 +118,6 @@ Window {
         height: safeAreaHeightByDevice();
         width: window.width
         anchors.top: parent.top
-
     }
 
     VPNWasmHeader {
@@ -138,7 +137,6 @@ Window {
         anchors.top: parent.top
         anchors.topMargin: iosSafeAreaTopMargin.height + wasmMenuHeader.height
         height: safeContentHeight
-        clip: true
 
         function getHelpViewNeeded() {
             mainStackView.push("qrc:/ui/views/ViewGetHelp.qml")
