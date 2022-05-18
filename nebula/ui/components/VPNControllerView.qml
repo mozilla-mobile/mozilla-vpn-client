@@ -577,8 +577,8 @@ Item {
             if (box.connectionInfoScreenVisible) {
                 return;
             }
-            VPN.recordGleanEvent("settingsViewOpened");
-            stackview.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate)
+            Sample.settingsViewOpened.record();
+            VPN.settingsNeeded();
         }
 
         anchors.top: parent.top

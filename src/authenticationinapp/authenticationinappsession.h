@@ -92,6 +92,7 @@ class AuthenticationInAppSession final : public QObject {
   // FxA can return a different case format for the email address. Usually,
   // this is equal to `m_emailAddress`.
   QString m_emailAddressCaseFix;
+  QString m_originalLoginEmailAddress;
 
   QByteArray m_sessionToken;
 

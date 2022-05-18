@@ -4,9 +4,11 @@
 
 #include "windowsdaemontunnel.h"
 #include "commandlineparser.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
+#include "platforms/windows/daemon/wireguardutilswindows.h"
 
 #include <QCoreApplication>
 
@@ -33,13 +35,18 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN Tunnel");
-  QCoreApplication::setApplicationVersion(APP_VERSION);
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   if (tokens.length() != 2) {
     logger.error() << "Expected 1 parameter only: the config file.";
     return 1;
   }
+  QString maybeConfig = tokens.at(1);
 
+  if (!maybeConfig.startsWith("[Interface]")) {
+    logger.error() << "parameter Does not seem to be a config";
+    return 1;
+  }
   // This process will be used by the wireguard tunnel. No need to call
   // FreeLibrary.
   HMODULE tunnelLib = LoadLibrary(TEXT("tunnel.dll"));
@@ -48,7 +55,8 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
     return 1;
   }
 
-  typedef bool WireGuardTunnelService(const ushort* settings);
+  typedef bool WireGuardTunnelService(const ushort* settings,
+                                      const ushort* name);
 
   WireGuardTunnelService* tunnelProc = (WireGuardTunnelService*)GetProcAddress(
       tunnelLib, "WireGuardTunnelService");
@@ -56,14 +64,8 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
     WindowsCommons::windowsLog("Failed to get WireGuardTunnelService function");
     return 1;
   }
-
-  QString configFile = WindowsCommons::tunnelConfigFile();
-  if (configFile.isEmpty()) {
-    logger.error() << "Failed to retrieve the config file";
-    return 1;
-  }
-
-  if (!tunnelProc(configFile.utf16())) {
+  auto name = WireguardUtilsWindows::s_interfaceName();
+  if (!tunnelProc(maybeConfig.utf16(), name.utf16())) {
     logger.error() << "Failed to activate the tunnel service";
     return 1;
   }

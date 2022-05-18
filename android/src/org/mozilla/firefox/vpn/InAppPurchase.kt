@@ -29,6 +29,8 @@ import kotlinx.serialization.json.Json
 import org.mozilla.firefox.vpn.glean.GleanEvent
 import org.mozilla.firefox.vpn.qt.VPNUtils
 import java.text.NumberFormat
+import java.time.Duration
+import java.time.format.DateTimeParseException
 import java.util.Currency
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -60,6 +62,7 @@ data class GooglePlaySubscriptionInfo(
     val totalPriceString: String,
     val monthlyPriceString: String,
     val monthlyPrice: Double,
+    val trialDays: Int,
 )
 
 @Serializable
@@ -344,8 +347,29 @@ class InAppPurchase private constructor(ctx: Context) :
         formatter.maximumFractionDigits = 2
         formatter.currency = Currency.getInstance(details.priceCurrencyCode)
         val monthlyPriceString = formatter.format(monthlyPrice)
+
+        // freeTrialPeriod is a ISO 8601 duration i.e P7D == 7 days
+        val trialDays = if (details.freeTrialPeriod.isEmpty()) {
+            0
+        } else {
+            try {
+                val duration = Duration.parse(details.freeTrialPeriod)
+                duration.toDays().toInt()
+            } catch (e: DateTimeParseException) {
+                if (details.freeTrialPeriod == "P1W") {
+                    // Google Play store and Java seem to disagree on ISO 8601
+                    // Google will use 1W for 7 days, java.Duration however forbids using W
+                    7
+                } else {
+                    Log.e(TAG, "Failed to Parse Free Trial duration ${details.freeTrialPeriod}")
+                    0
+                }
+            }
+        }
+
         return GooglePlaySubscriptionInfo(
             totalPriceString = details.price,
+            trialDays = trialDays,
             monthlyPriceString = monthlyPriceString,
             monthlyPrice = monthlyPrice,
             sku = sku

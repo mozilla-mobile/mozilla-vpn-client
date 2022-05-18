@@ -18,10 +18,8 @@ windows:
         product: openssl
         job-name: openssl-windows
     optimization: 
-        index-search: 
-        # TODO: Question: should this maybe be a pushdate? 
-        # Otherwise we might build once and never again?
-            - mozillavpn.v2.mozilla-vpn-client.latest.openssl.openssl-windows
+        hashIndex: 
+            - taskcluster/scripts/build_openssl/compile_openssl.ps1
     run:
         using: run-task
         cwd: '{checkout}'

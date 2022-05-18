@@ -10,28 +10,42 @@ import components 0.1
 import components.inAppAuth 0.1
 
 VPNInAppAuthenticationBase {
+    id: authSignIn
 
-    // TODO
-    // We are completing an authentication using an existing account.
-    // There is nothing to do here, except... waiting.
-    // There 5 possible next-steps:
-    // - authentication completed (VPN.state will change, the authentication is
-    //   completed)
-    // - unblock code needed. This can happen for security reasons. We go
-    //   to UnblockCodeNeeded. The user needs to insert the 6-digit code.
-    // - The user enters the wrong password, sees error.
-    // - The user clicks "Change email" or the back arrow and goes back to start.
-    // - Some other error, goes back to start and sees error.
+    states:[
+        State {
+            when: isDeleteAccountAuth
 
-    // TODOs (likely there are more)
-    // Open forgot password flow in webview on click
-    // Form interaction polish
-    // Add password criteria tooltip
-    // Maybe add button loader
+            PropertyChanges {
+                target: authSignIn
+
+                _changeEmailLinkVisible: false
+                _subtitleText: VPNl18n.DeleteAccountAuthSubheadline
+            }
+
+            PropertyChanges {
+                target: disclaimersLoader
+
+                source: ""
+            }
+
+            PropertyChanges {
+                target: authInputs
+
+                _buttonText: VPNl18n.DeleteAccountAuthButtonLabel
+            }
+        }
+    ]
 
     _changeEmailLinkVisible: true
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
-    _menuButtonOnClick: () => { VPNAuthInApp.reset() }
+    _menuButtonOnClick: () => {
+        if (isDeleteAccountAuth) {
+            cancelAccountDeletion();
+        } else {
+            VPNAuthInApp.reset();
+        }
+    }
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _headlineText: VPNAuthInApp.emailAddress
     _subtitleText: VPNl18n.InAppAuthSignInSubtitle
@@ -39,6 +53,8 @@ VPNInAppAuthenticationBase {
     _inputLabel: VPNl18n.InAppAuthPasswordInputLabel
 
     _inputs: VPNInAppAuthenticationInputs {
+        id: authInputs
+
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateSignIn && !activeInput().hasError
         _buttonOnClicked: (inputText) => {
              VPNAuthInApp.setPassword(inputText);
@@ -48,7 +64,12 @@ VPNInAppAuthenticationBase {
         _inputPlaceholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
     }
 
-    _disclaimers: VPNInAppAuthenticationLegalDisclaimer {}
+    _disclaimers: Loader {
+        id: disclaimersLoader
+
+        Layout.alignment: Qt.AlignHCenter
+        source: "qrc:/nebula/components/inAppAuth/VPNInAppAuthenticationLegalDisclaimer.qml"
+    }
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
@@ -62,7 +83,13 @@ VPNInAppAuthenticationBase {
 
         VPNCancelButton {
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: VPN.cancelAuthentication()
+            onClicked: {
+                if (isDeleteAccountAuth) {
+                    cancelAccountDeletion();
+                } else {
+                    VPN.cancelAuthentication();
+                }
+            }
         }
     }
 }

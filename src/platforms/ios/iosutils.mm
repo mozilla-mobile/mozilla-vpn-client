@@ -5,6 +5,7 @@
 #include "iosutils.h"
 #include "logger.h"
 #include "qmlengineholder.h"
+#include "theme.h"
 
 #include <QDateTime>
 #include <QString>
@@ -112,4 +113,18 @@ int IOSUtils::compareStrings(const QString& a, const QString& b) {
       Q_ASSERT(false);
       return -1;
   }
+}
+
+@interface StatusBarModifierViewController : UIViewController
+@property (nonatomic, assign) UIStatusBarStyle preferredStatusBarStyle;
+@end
+
+void IOSUtils::setStatusBarTextColor(Theme::StatusBarTextColor color) {
+    StatusBarModifierViewController* rootViewController = static_cast<StatusBarModifierViewController *>([[UIApplication sharedApplication].windows[0] rootViewController]);
+    if (color == Theme::StatusBarTextColorLight) {
+        rootViewController.preferredStatusBarStyle = UIStatusBarStyleLightContent;
+    } else {
+        rootViewController.preferredStatusBarStyle = UIStatusBarStyleDarkContent;
+    }
+    [rootViewController setNeedsStatusBarAppearanceUpdate];
 }

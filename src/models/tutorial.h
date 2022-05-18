@@ -7,58 +7,49 @@
 
 #include "itempicker.h"
 
-#include <QTimer>
+class TutorialStep;
 
 class Tutorial final : public ItemPicker {
   Q_OBJECT
-  Q_PROPERTY(QString id MEMBER m_id CONSTANT)
+  Q_PROPERTY(QString titleId MEMBER m_titleId CONSTANT)
+  Q_PROPERTY(QString subtitleId MEMBER m_subtitleId CONSTANT)
+  Q_PROPERTY(QString completionMessageId MEMBER m_completionMessageId CONSTANT)
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
-  Q_PROPERTY(bool playing READ isPlaying NOTIFY playingChanged)
-  Q_PROPERTY(bool tooltipShown MEMBER m_tooltipShown NOTIFY tooltipShownChanged)
+  Q_PROPERTY(bool highlighted READ highlighted CONSTANT)
 
  public:
   ~Tutorial();
 
   static Tutorial* create(QObject* parent, const QString& fileName);
 
-  Q_INVOKABLE void play();
-  Q_INVOKABLE void stop();
-  Q_INVOKABLE void allowItem(const QString& objectName);
+  void play(const QStringList& allowedItems);
+  void stop();
 
-  bool isPlaying() const { return m_currentStep != -1; }
+  const QStringList& allowedItems() const { return m_allowedItems; }
+
+  bool highlighted() const { return m_highlighted; }
 
  private:
   explicit Tutorial(QObject* parent);
 
-  bool itemPicked(const QStringList& list) override;
+  bool itemPicked(const QList<QQuickItem*>& list) override;
 
   void processNextOp();
 
   // Return true if there are no operations left.
-  bool maybeStop();
-
-  void setTooltipShown(bool shown);
-
- signals:
-  void playingChanged();
-  void tooltipNeeded(const QString& tooltipText, const QRectF& itemRect);
-  void tooltipShownChanged();
+  bool maybeStop(bool completed = false);
 
  private:
-  int32_t m_currentStep = -1;
-
-  QString m_id;
+  QString m_titleId;
+  QString m_subtitleId;
+  QString m_completionMessageId;
   QString m_image;
 
-  struct Op {
-    QString m_element;
-    QString m_stringId;
-  };
-  QList<Op> m_steps;
+  QList<TutorialStep*> m_steps;
+  int32_t m_currentStep = -1;
+  bool m_highlighted = false;
 
   QStringList m_allowedItems;
-  QTimer m_timer;
-  bool m_tooltipShown = false;
 };
 
 #endif  // TUTORIAL_H

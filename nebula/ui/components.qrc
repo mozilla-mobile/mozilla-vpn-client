@@ -17,12 +17,14 @@
         <file>components/VPNAlerts.qml</file>
         <file>components/VPNAnimatedRings.qml</file>
         <file>components/VPNAvatar.qml</file>
+        <file>components/VPNBoldInterLabel.qml</file>
         <file>components/VPNBoldLabel.qml</file>
         <file>components/VPNButtonBase.qml</file>
         <file>components/VPNButtonLoader.qml</file>
         <file>components/VPNButton.qml</file>
         <file>components/VPNCallout.qml</file>
         <file>components/VPNCancelButton.qml</file>
+        <file>components/VPNCard.qml</file>
         <file>components/VPNCheckBoxAlert.qml</file>
         <file>components/VPNCheckBox.qml</file>
         <file>components/VPNCheckBoxRow.qml</file>
@@ -52,6 +54,7 @@
         <file>components/VPNFooterLink.qml</file>
         <file>components/VPNGraphLegendMarker.qml</file>
         <file>components/VPNGreyLink.qml</file>
+        <file>components/VPNGuideCard.qml</file>
         <file>components/VPNHeaderLink.qml</file>
         <file>components/VPNHeadline.qml</file>
         <file>components/VPNLottieAnimation.qml</file>
@@ -69,6 +72,7 @@
         <file>components/VPNMainImage.qml</file>
         <file>components/VPNMenu.qml</file>
         <file>components/VPNMetropolisLabel.qml</file>
+        <file>components/VPNMobileStatusBarModifier.qml</file>
         <file>components/VPNMouseArea.qml</file>
         <file>components/VPNPanel.qml</file>
         <file>components/VPNPopupButton.qml</file>
@@ -96,6 +100,7 @@
         <file>components/VPNToggleCard.qml</file>
         <file>components/VPNToggle.qml</file>
         <file>components/VPNToolTip.qml</file>
+        <file>components/VPNTutorialCard.qml</file>
         <file>components/VPNUIStates.qml</file>
         <file>components/VPNVerticalSpacer.qml</file>
         <file>components/VPNViewDNSSettings.qml</file>
@@ -110,5 +115,8 @@
         <file>components/inAppAuth/VPNInAppAuthenticationPasswordCondition.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationLegalDisclaimer.qml</file>
         <file>components/forms/VPNCursorDelegate.qml</file>
+        <file>components/VPNSegmentedToggle.qml</file>
+        <file>components/VPNSegmentedNavigation.qml</file>
+        <file>components/VPNUserProfile.qml</file>
     </qresource>
 </RCC>

@@ -29,6 +29,7 @@ class IAPHandler : public QAbstractListModel {
     ProductTypeRole,
     ProductFeaturedRole,
     ProductSavingsRole,
+    ProductTrialDaysRole,
   };
 
   static IAPHandler* createInstance();
@@ -76,6 +77,7 @@ class IAPHandler : public QAbstractListModel {
     QString m_name;
     QString m_price;
     QString m_monthlyPrice;
+    int m_trialDays = 0;
     // This is not exposed and it's not localized. It's used to compute the
     // saving %.
     double m_nonLocalizedMonthlyPrice = 0;
@@ -104,6 +106,7 @@ class IAPHandler : public QAbstractListModel {
 
   void addProduct(const QJsonValue& value);
   void computeSavings();
+  void sortPlans();
   static ProductType productTypeToEnum(const QString& type);
   static uint32_t productTypeToMonthCount(ProductType type);
   Product* findProduct(const QString& productIdentifier);

@@ -15,6 +15,10 @@
 #include "simplenetworkmanager.h"
 
 #ifdef MVPN_WINDOWS
+#  include <QDir>
+#  include <QFile>
+#  include <QSGRendererInterface>
+#  include <QQuickWindow>
 #  include <Windows.h>
 #endif
 
@@ -28,7 +32,32 @@
 
 namespace {
 Logger logger(LOG_MAIN, "Command");
+
+#ifdef MVPN_WINDOWS
+QSGRendererInterface::GraphicsApi maybeUseCustomGraphicApi() {
+  QString location =
+      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+  QDir appDataLocation(location);
+
+  QFile gpuCheckSettings = appDataLocation.filePath("moz.vpn.gpucheck");
+  if (!gpuCheckSettings.exists()) {
+    return QSGRendererInterface::Unknown;
+  }
+
+  if (!gpuCheckSettings.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    return QSGRendererInterface::Unknown;
+  }
+
+  const QByteArray content = gpuCheckSettings.readAll().trimmed();
+  if (content == "software") {
+    return QSGRendererInterface::Software;
+  }
+
+  return QSGRendererInterface::Unknown;
 }
+#endif
+
+}  // namespace
 
 QVector<std::function<Command*(QObject*)>> Command::s_commandCreators;
 
@@ -89,13 +118,13 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   FeatureList::instance()->initialize();
 
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  logger.info() << "MozillaVPN" << APP_VERSION;
+  logger.info() << "MozillaVPN" << Constants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(APP_VERSION);
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   Localizer localizer;
   SimpleNetworkManager snm;
@@ -117,13 +146,13 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << APP_VERSION;
+  logger.info() << "MozillaVPN" << Constants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(APP_VERSION);
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   Localizer localizer;
   SimpleNetworkManager snm;
@@ -152,7 +181,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << APP_VERSION;
+  logger.info() << "MozillaVPN" << Constants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
 #ifdef MVPN_WINDOWS
@@ -169,10 +198,19 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
       Qt::HighDpiScaleFactorRoundingPolicy::Round);
 #endif
 
+#ifdef MVPN_WINDOWS
+  {
+    QSGRendererInterface::GraphicsApi api = maybeUseCustomGraphicApi();
+    if (api != QSGRendererInterface::Unknown) {
+      QQuickWindow::setGraphicsApi(api);
+    }
+  }
+#endif
+
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(APP_VERSION);
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   Localizer localizer;
 

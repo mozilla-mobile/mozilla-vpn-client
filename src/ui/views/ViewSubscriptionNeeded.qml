@@ -26,7 +26,7 @@ VPNFlickable {
         id: headerLink
 
         labelText: qsTrId("vpn.main.getHelp2")
-        onClicked: stackview.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: false})
+        onClicked: getHelpViewNeeded()
     }
 
     Image {

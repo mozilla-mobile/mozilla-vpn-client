@@ -1,0 +1,63 @@
+{
+  "id": "01_get_started",
+  "highlighted": true,
+  "image": "qrc:/tutorials/01_get_started.svg",
+  "title": "Getting started with VPN",
+  "subtitle": "Follow this walkthrough to learn how to get started with using your VPN.",
+  "completion_message": "You’ve successfully changed your location, turned the VPN on and off. Would you like to learn more tips and tricks?",
+  "steps": [
+    {
+      "id": "mainScreen",
+      "element": "serverListButton",
+      "tooltip": "Select your location",
+      "before": [{
+        "op": "vpn_location_set",
+        "exitCountryCode": "at",
+        "exitCity": "Vienna",
+        "entryCountryCode": "",
+        "entryCity": ""
+      }],
+      "next": {
+        "op": "signal",
+        "qml_emitter": "serverListButton",
+        "signal": "visibleChanged"
+      }
+    },
+    {
+      "id": "countryAU",
+      "element": "serverCountryList/serverCountry-au",
+      "tooltip": "Select a different country",
+      "before": [{
+        "op": "property_set",
+        "element": "serverCountryView",
+        "property": "contentY",
+        "value": 0
+      }],
+      "next": {
+        "op": "signal",
+        "qml_emitter": "serverCountryList/serverCountry-au",
+        "signal": "cityListVisibleChanged"
+      }
+    },
+    {
+      "id": "cityAU",
+      "element": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne",
+      "tooltip": "Select a different server location",
+      "next": {
+        "op": "signal",
+        "qml_emitter": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne",
+        "signal": "visibleChanged"
+      }
+    },
+    {
+      "id": "toggle",
+      "element": "controllerToggle",
+      "tooltip": "Toggle this switch to activate or deactivate the VPN",
+      "next": {
+        "op": "signal",
+        "vpn_emitter": "controller",
+        "signal": "stateChanged"
+      }
+    }
+  ]
+}

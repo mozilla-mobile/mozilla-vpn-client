@@ -7,10 +7,6 @@ policy:
 tasks:
     - $let:
         trustDomain: mozillavpn
-        # TODO: Land patch from taskgraph-try upstream
-        taskgraph:
-              branch: taskgraph-try
-              revision: 7702e79b350c15eec769dcf4aa6374197974b01f
         # Github events have this stuff in different places...
         ownerEmail:
             $if: 'tasks_for in ["cron", "action"]'
@@ -233,7 +229,7 @@ tasks:
 
                     # Note: This task is built server side without the context or tooling that
                     # exist in tree so we must hard code the hash
-                    image: mozillareleases/taskgraph:decision-cf4b4b4baff57d84c1f9ec8fcd70c9839b70a7d66e6430a6c41ffe67252faa19@sha256:425e07f6813804483bc5a7258288a7684d182617ceeaa0176901ccc7702dfe28
+                    image: mozillareleases/taskgraph:decision-97d621201199881db8f9971d65c077419ddbc34412a8c22e21d51be8a31619a9@sha256:fdc474519fe1bf26bcb7fe4947cd53b7ef71bd985659bb476e530330c4b86910
 
                     maxRunTime: 1800
 

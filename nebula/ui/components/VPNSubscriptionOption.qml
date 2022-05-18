@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.5
+import QtQuick 2.15
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
@@ -21,8 +21,7 @@ RadioDelegate {
     ButtonGroup.group: subscriptionOptions
 
     Layout.fillWidth: true
-    Layout.minimumHeight: 68
-    Layout.preferredHeight: row.implicitHeight + VPNTheme.theme.windowMargin * 2
+    Layout.preferredHeight: Math.max(96, row.implicitHeight + row.anchors.topMargin + row.anchors.bottomMargin)
 
     background: Rectangle {
         id: bg
@@ -109,11 +108,14 @@ RadioDelegate {
 
         anchors {
             fill: parent
+            topMargin: chipFreeTrial.visible ? (VPNTheme.theme.vSpacing / 2) : VPNTheme.theme.vSpacing
             leftMargin: VPNTheme.theme.windowMargin * 1.5
             rightMargin: VPNTheme.theme.windowMargin
+            bottomMargin: chipFreeTrial.visible ? (VPNTheme.theme.vSpacing / 2) : VPNTheme.theme.vSpacing
             verticalCenter: parent.verticalCenter
         }
         spacing: VPNTheme.theme.listSpacing
+        clip: true
 
         ColumnLayout {
             id: col
@@ -132,25 +134,68 @@ RadioDelegate {
             //% "%1/month"
             property string monthlyPrice: qsTrId("vpn.subscription.price").arg(productMonthlyPrice)
 
-            spacing: VPNTheme.theme.listSpacing * 0.5
+            property int trialDays: productTrialDays
+
+            spacing: 0
+            Layout.fillHeight: true
 
             VPNBoldLabel {
-                font.pixelSize: VPNTheme.theme.fontSize * 1.1
-                lineHeight: VPNTheme.theme.labelLineHeight
+                id: headLineLabel
+                font.pixelSize: 16
+                lineHeight: VPNTheme.theme.labelLineHeight + 2
                 lineHeightMode: Text.FixedHeight
                 text: col.subscriptionDuration > 1 ? col.productMultiMonth : col.monthlyPrice
-                verticalAlignment: Text.AlignTop
+                verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.WordWrap
 
                 Layout.fillWidth: true
             }
 
+            VPNVerticalSpacer {
+                Layout.fillHeight: true
+            }
+
             VPNLightLabel {
                 font.pixelSize: VPNTheme.theme.fontSize
+                lineHeight: 17.68
+                lineHeightMode: Text.FixedHeight
                 text: col.subscriptionDuration !== -1 ? (col.subscriptionDuration > 1 ? col.monthlyPrice : col.productSingleMonth) : ""
                 wrapMode: Text.WordWrap
 
                 Layout.fillWidth: true
+            }
+
+            VPNVerticalSpacer {
+                visible: chipFreeTrial.visible
+                Layout.fillHeight: true
+            }
+
+            //Free trial chip
+            Rectangle {
+                id: chipFreeTrial
+                Layout.preferredWidth: labelFreeTrial.implicitWidth
+                Layout.preferredHeight: labelFreeTrial.implicitHeight
+
+                //hardcoding to 7 because the chip's text below is currently hardcoded for 7-day trials specifically
+                visible: col.trialDays === 7
+                color: VPNTheme.colors.green5
+
+                Text {
+                    id: labelFreeTrial
+
+                    topPadding: 3
+                    leftPadding: 8
+                    rightPadding: 8
+                    bottomPadding: 3
+
+                    text: VPNl18n.FreeTrialsFreeTrialLabel
+                    verticalAlignment: Text.AlignVCenter
+                    lineHeight: VPNTheme.theme.controllerInterLineHeight
+                    lineHeightMode: Text.FixedHeight
+                    color: VPNTheme.colors.green90
+                    font.pixelSize: VPNTheme.theme.fontSizeSmallest
+                    font.family: VPNTheme.theme.fontInterSemiBoldFamily
+                }
             }
 
             function getSubscriptionDuration(product) {
@@ -172,7 +217,6 @@ RadioDelegate {
 
             Layout.alignment: Qt.AlignTop
             Layout.fillWidth: true
-            Layout.topMargin: VPNTheme.theme.windowMargin
 
             VPNInterLabel {
                 //: Appears on the in-app purchase view beside a subscription plan. "%1" is replaced by the percentage amount saved when selecting that plan.

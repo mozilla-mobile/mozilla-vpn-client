@@ -8,16 +8,15 @@
 
 exists($$PWD/telemetry/gleansample.h) {
     HEADERS += $$PWD/telemetry/gleansample.h
+    RESOURCES += $$PWD/telemetry/telemetry.qrc
 }
 else{
     error(Glean generated files are missing. Please run `python3 ./scripts/utils/generate_glean.py`)
 }
 
-SOURCES += \
-    $$PWD/glean.cpp
-
-HEADERS += \
-    $$PWD/glean.h
+INCLUDEPATH += $$PWD
+SOURCES += $$PWD/glean.cpp
+HEADERS += $$PWD/glean.h
 
 !wasm {
     message(Include QSQlite plugin)

@@ -501,9 +501,9 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
 // static
 NetworkRequest* NetworkRequest::createForFxaLogin(
     Task* parent, const QString& email, const QByteArray& authpw,
-    const QString& unblockCode, const QString& fxaClientId,
-    const QString& fxaDeviceId, const QString& fxaFlowId,
-    double fxaFlowBeginTime) {
+    const QString& originalLoginEmail, const QString& unblockCode,
+    const QString& fxaClientId, const QString& fxaDeviceId,
+    const QString& fxaFlowId, double fxaFlowBeginTime) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaApiBaseUrl());
@@ -519,6 +519,10 @@ NetworkRequest* NetworkRequest::createForFxaLogin(
   obj.insert("service", fxaClientId);
   obj.insert("skipErrorCase", true);
   obj.insert("verificationMethod", "email-otp");
+
+  if (!originalLoginEmail.isEmpty()) {
+    obj.insert("originalLoginEmail", originalLoginEmail);
+  }
 
   if (!unblockCode.isEmpty()) {
     obj.insert("unblockCode", unblockCode);
@@ -890,7 +894,8 @@ void NetworkRequest::replyFinished() {
   if (m_reply->error() != QNetworkReply::NoError) {
     QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
     logger.error() << "Network error:" << m_reply->errorString()
-                   << "status code:" << status << "- body:" << data;
+                   << "status code:" << status
+                   << "- body:" << logger.sensitive(data);
     logger.error() << "Failed to access:" << m_request.url().toString(options);
     emit requestFailed(m_reply->error(), data);
     return;

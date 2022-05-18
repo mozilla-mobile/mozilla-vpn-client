@@ -2,6 +2,7 @@
 ./android/tunnel/*
 ./android/src/com/wireguard/*
 ./src/hacl-star/*
+./src/platforms/windows/golang-msvc-types.h
 ./extension/app/json.hpp
 ./glean/org/mozilla/Glean/glean.js
 ./glean/org/mozilla/Glean/glean.lib.js

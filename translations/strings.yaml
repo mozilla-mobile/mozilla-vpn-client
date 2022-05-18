@@ -542,8 +542,65 @@ inAppAuth:
     value: By continuing, you agree to the <a href="terms-of-service">Terms of Service</a> and the <a href="privacy-notice">Privacy Notice</a>.
     comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
 
+deleteAccount:
+  authSubheadline: To delete your VPN account, please sign in with your Firefox account password.
+  authButtonLabel: Continue
+  headline: Delete Firefox account
+  subheadline:
+    value: "Your Firefox account (%1) is connected to Mozilla products that keep you secure and productive on the web. Please acknowledge that by deleting your account:"
+    comment: "%1 is the email address that is associated with the current account"
+  optionDescriptionOne:
+    value: Any paid subscriptions you have will be cancelled (Except Pocket)
+    comment: Text that belongs to a checkbox that the user has to check in order before they can delete their account.
+  optionDescriptionTwo:
+    value: You may lose saved information and features within Mozilla products
+    comment: Text that belongs to a checkbox that the user has to check in order before they can delete their account.
+  optionDescriptionThree:
+    value: Reactivating with this email may not restore your saved information
+    comment: Text that belongs to a checkbox that the user has to check in order before they can delete their account.
+  optionDescriptionFour:
+    value: Any extensions and themes that you’ve published to addons.mozilla.org will be deleted
+    comment: Text that belongs to a checkbox that the user has to check in order before they can delete their account.
+  buttonLabel: Delete account
+
+#Accessibility
+accessibility:
+  currentIndexFocusedOfTotalItemsInGroup:
+    value: "%1 of %2"
+    comment:
+      - Used by screen readers to explain to users which item they are currently focused on, and how many items there are total in a group.
+      - For example, given a list with 15 items. If a user selects the 3rd item, we want the screen reader to read out "3 of 15".
+      - The %1 represents the index of the currently focused item by the screen reader.
+      - The %2 represents the total number of items in the group.
+  selectedAndItemName:
+    value: "Selected item: %1"
+    comment: 
+      - Used by screen readers to denote that a particular item is currently selected.
+      - For example, given a segmented control with 2 items, where the first item is currently selected. We want the screen reader to read out "Selected, <item name>".
+      - The %1 represents the name of the selected item.
+
 freeTrials:
   startYourFreeTrial: 
     value: Sign up to start your 7-day free trial.
     comment: This string appears above the 'Sign up' button on mobile onboarding views
   freeTrialLabel: 7-day free trial
+
+tipsAndTricks:
+  settingsEntryLabel: VPN tips and tricks
+  tutorialLabel: Tutorial
+  featureTourLabel: Feature tour
+  whatsNewTitle: What’s new?
+  whatsNewDescription: We’ve added new features. Take a tour to get a deeper dive into what we’ve added for you!
+  quickTipsTitle: Quick tips
+  quickTipsDescription: Let us help you get the most out of Mozilla VPN
+
+global:
+  expand:
+    value: Expand
+    comment: Action used in the context of an expandable/collapsible card component
+  collapse:
+    value: Collapse
+    comment: Action used in the context of an expandable/collapsible card component
+  vpnUser: 
+    value: VPN User
+    comment: Fallback string for users who have not specified a Display Name.

@@ -20,7 +20,6 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "loghandler.h"
 #include "models/guidemodel.h"
 #include "models/tutorialmodel.h"
 #include "mozillavpn.h"
@@ -32,6 +31,8 @@
 #include <glean.h>
 #include <lottie.h>
 #include <nebula.h>
+
+#include <QQmlContext>
 
 #ifdef MVPN_DEBUG
 #  include <QQmlDebuggingEnabler>
@@ -50,7 +51,6 @@
 
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
-#  include "platforms/android/androidwebview.h"
 #  include "platforms/android/androidglean.h" 
 #endif
 
@@ -185,9 +185,14 @@ int CommandUI::run(QStringList& tokens) {
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
 
+    // TODO pending #3398
+    QQmlContext* ctx = engine->rootContext();
+    ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
+
     Glean::Initialize(engine);
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
+    L18nStrings::initialize();
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
@@ -433,8 +438,6 @@ int CommandUI::run(QStringList& tokens) {
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
-
-    qmlRegisterType<AndroidWebView>("Mozilla.VPN", 1, 0, "VPNAndroidWebView");
 #endif
 
     if (FeatureInAppPurchase::instance()->isSupported()) {

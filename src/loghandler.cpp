@@ -189,7 +189,7 @@ void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
     prettyOutput(*m_output, log);
   }
 
-  if ((log.m_logLevel != LogLevel::Debug) || m_showDebug) {
+  if (!Constants::inProduction()) {
     QTextStream out(stderr);
     prettyOutput(out, log);
   }

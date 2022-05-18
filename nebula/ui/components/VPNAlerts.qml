@@ -31,7 +31,7 @@ ColumnLayout {
         alertActionText: qsTrId("vpn.updates.updateNow")
 
         onActionPressed: ()=>{
-            stackview.push(notifications.updateURL, stackviewMode);
+            mainStackView.push(notifications.updateURL, stackviewMode);
         }
         onClosePressed: ()=>{
              VPN.hideUpdateRecommendedAlert();

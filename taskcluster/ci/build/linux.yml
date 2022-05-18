@@ -13,10 +13,10 @@ linux/opt:
     worker:
         docker-image: {in-tree: build}
         max-run-time: 3600
-        artifacts:
-            - type: directory
-              name: public/build
-              path: /builds/worker/artifacts
+        chain-of-trust: true
+    release-artifacts:
+        # release-artifacts expects file to be in /builds/worker/artifacts/
+        - target.tar.gz
     run:
         using: run-task
         use-caches: true

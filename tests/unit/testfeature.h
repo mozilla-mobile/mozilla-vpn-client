@@ -8,5 +8,6 @@ class TestFeature final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void flipOnOff();
   void enableByAPI();
 };

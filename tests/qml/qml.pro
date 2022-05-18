@@ -22,6 +22,7 @@ DEFINES += MVPN_DUMMY
 # Sets up app and build id which we test for in test_VPNAboutUs
 DEFINES += APP_VERSION=\\\"QMLTest_AppVersion\\\"
 DEFINES += BUILD_ID=\\\"QMLTest_BuildID\\\"
+DEFINES += BUILD_QMAKE
 
 RESOURCES += \
     $$PWD/../../src/ui/ui.qrc \
@@ -29,14 +30,12 @@ RESOURCES += \
 INCLUDEPATH += \
             . \
             ../../src \
-            ../../translations/generated \
-            ../../glean \
-            ../../lottie/lib \
-            ../../nebula
+            ../../lottie/lib
 
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../lottie/lottie.pri)
 include($$PWD/../../nebula/nebula.pri)
+include($$PWD/../../translations/translations.pri)
 
 SOURCES += \
     helper.cpp \
@@ -48,7 +47,6 @@ SOURCES += \
     ../../src/featurelist.cpp \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
-    ../../src/l18nstringsimpl.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
@@ -80,13 +78,6 @@ HEADERS += \
     ../../src/theme.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
-
-exists($$PWD/../../translations/generated/l18nstrings.h) {
-    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
-    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
-} else {
-    error("No l18nstrings.h. Have you generated the strings?")
-}
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc

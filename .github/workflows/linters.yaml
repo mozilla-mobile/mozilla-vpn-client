@@ -6,6 +6,7 @@ on:
       - main
       - 'releases/**'
     types: [ opened, synchronize, reopened ]
+
 jobs:
   linter:
     runs-on: ubuntu-20.04
@@ -111,3 +112,6 @@ jobs:
       - name: Test release-push
         run: |
           taskgraph full --p taskcluster/test/params/release-push.yml           
+      - name: Test default parameters
+        run: |
+          taskgraph full

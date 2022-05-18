@@ -6,6 +6,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 
+#include <QScopeGuard>
+
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsRouteMonitor");
 };  // namespace
@@ -68,6 +70,46 @@ WindowsRouteMonitor::~WindowsRouteMonitor() {
   logger.debug() << "WindowsRouteMonitor destroyed.";
 }
 
+void WindowsRouteMonitor::updateValidInterfaces(int family) {
+  PMIB_IPINTERFACE_TABLE table;
+  DWORD result = GetIpInterfaceTable(family, &table);
+  if (result != NO_ERROR) {
+    logger.warning() << "Failed to retrive interface table." << result;
+    return;
+  }
+  auto guard = qScopeGuard([&] { FreeMibTable(table); });
+
+  // Flush the list of interfaces that are valid for routing.
+  if ((family == AF_INET) || (family == AF_UNSPEC)) {
+    m_validInterfacesIpv4.clear();
+  }
+  if ((family == AF_INET6) || (family == AF_UNSPEC)) {
+    m_validInterfacesIpv6.clear();
+  }
+
+  // Rebuild the list of interfaces that are valid for routing.
+  for (ULONG i = 0; i < table->NumEntries; i++) {
+    MIB_IPINTERFACE_ROW* row = &table->Table[i];
+    if (row->InterfaceLuid.Value == m_luid) {
+      continue;
+    }
+    if (!row->Connected) {
+      continue;
+    }
+
+    if (row->Family == AF_INET) {
+      logger.debug() << "Interface" << row->InterfaceIndex
+                     << "is valid for IPv4 routing";
+      m_validInterfacesIpv4.append(row->InterfaceLuid.Value);
+    }
+    if (row->Family == AF_INET6) {
+      logger.debug() << "Interface" << row->InterfaceIndex
+                     << "is valid for IPv6 routing";
+      m_validInterfacesIpv6.append(row->InterfaceLuid.Value);
+    }
+  }
+}
+
 void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
                                                void* ptable) {
   PMIB_IPFORWARD_TABLE2 table = reinterpret_cast<PMIB_IPFORWARD_TABLE2>(ptable);
@@ -97,6 +139,9 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
       if (row->DestinationPrefix.Prefix.Ipv6.sin6_family != AF_INET6) {
         continue;
       }
+      if (!m_validInterfacesIpv6.contains(row->InterfaceLuid.Value)) {
+        continue;
+      }
       if (prefixcmp(&data->DestinationPrefix.Prefix.Ipv6.sin6_addr,
                     &row->DestinationPrefix.Prefix.Ipv6.sin6_addr,
                     row->DestinationPrefix.PrefixLength) != 0) {
@@ -106,6 +151,9 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
       if (row->DestinationPrefix.Prefix.Ipv4.sin_family != AF_INET) {
         continue;
       }
+      if (!m_validInterfacesIpv4.contains(row->InterfaceLuid.Value)) {
+        continue;
+      }
       if (prefixcmp(&data->DestinationPrefix.Prefix.Ipv4.sin_addr,
                     &row->DestinationPrefix.Prefix.Ipv4.sin_addr,
                     row->DestinationPrefix.PrefixLength) != 0) {
@@ -113,16 +161,6 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
       }
     } else {
       // Unsupported destination address family.
-      continue;
-    }
-
-    // Ensure that the outgoing network interface is actually online and usable.
-    DWORD result;
-    NL_NETWORK_CONNECTIVITY_HINT hint;
-    result = GetNetworkConnectivityHintForInterface(row->InterfaceIndex, &hint);
-    if ((result != NO_ERROR) ||
-        (hint.ConnectivityLevel == NetworkConnectivityLevelHintHidden)) {
-      logger.debug() << "Ignoring hidden ifindex:" << row->InterfaceIndex;
       continue;
     }
 
@@ -215,6 +253,7 @@ bool WindowsRouteMonitor::addExclusionRoute(const QHostAddress& address) {
     delete data;
     return false;
   }
+  updateValidInterfaces(family);
   updateExclusionRoute(data, table);
   FreeMibTable(table);
 
@@ -268,6 +307,7 @@ void WindowsRouteMonitor::routeChanged() {
     return;
   }
 
+  updateValidInterfaces(AF_UNSPEC);
   for (MIB_IPFORWARD_ROW2* data : m_exclusionRoutes) {
     updateExclusionRoute(data, table);
   }

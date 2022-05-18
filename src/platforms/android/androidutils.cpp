@@ -3,12 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidutils.h"
-#include "androidauthenticationlistener.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "settingsholder.h"
 #include "qmlengineholder.h"
 #include "jni.h"
 
@@ -78,63 +78,6 @@ AndroidUtils::~AndroidUtils() {
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
-}
-
-void AndroidUtils::startAuthentication(AuthenticationListener* listener,
-                                       const QUrl& url) {
-  logger.debug() << "Open the authentication view";
-
-  Q_ASSERT(!m_listener);
-  m_listener = listener;
-
-  connect(listener, &QObject::destroyed, this, &AndroidUtils::resetListener);
-
-  m_url = url;
-  emit urlChanged();
-
-  emit MozillaVPN::instance()->loadAndroidAuthenticationView();
-}
-
-bool AndroidUtils::maybeCompleteAuthentication(const QString& url) {
-  logger.debug() << "Maybe complete authentication";
-
-  Q_ASSERT(m_listener);
-
-  QString apiUrl = NetworkRequest::apiBaseUrl();
-  if (!url.startsWith(apiUrl)) {
-    return false;
-  }
-
-  QUrl loadingUrl(url);
-  if (loadingUrl.path() == "/vpn/client/login/success") {
-    QUrlQuery query(loadingUrl.query());
-    if (!query.hasQueryItem("code")) {
-      emit m_listener->failed(ErrorHandler::RemoteServiceError);
-      m_listener = nullptr;
-      return true;
-    }
-
-    QString code = query.queryItemValue("code");
-    emit m_listener->completed(code);
-    m_listener = nullptr;
-    return true;
-  }
-
-  if (loadingUrl.path() == "/vpn/client/login/error") {
-    emit m_listener->failed(ErrorHandler::AuthenticationError);
-    m_listener = nullptr;
-    return true;
-  }
-
-  return false;
-}
-
-void AndroidUtils::abortAuthentication() {
-  logger.warning() << "Aborting authentication";
-
-  Q_ASSERT(m_listener);
-  emit m_listener->abortedByUser();
-  m_listener = nullptr;
 }
 
 // static

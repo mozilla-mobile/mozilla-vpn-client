@@ -123,6 +123,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
   Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
   Q_PROPERTY(QString architecture READ architecture CONSTANT)
+  Q_PROPERTY(QString graphicsApi READ graphicsApi CONSTANT)
   Q_PROPERTY(QString platform READ platform CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
                  updateRecommendedChanged)
@@ -193,7 +194,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
   Q_INVOKABLE void hardResetAndQuit();
   Q_INVOKABLE void crashTest();
-  Q_INVOKABLE void deleteAccount();
+  Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelAccountDeletion();
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
@@ -270,8 +271,8 @@ class MozillaVPN final : public QObject {
 
   void silentSwitch();
 
-  static QString versionString() { return QString(APP_VERSION); }
-  static QString buildNumber() { return QString(BUILD_ID); }
+  static QString versionString() { return Constants::versionString(); }
+  static QString buildNumber() { return Constants::buildNumber(); }
   static QString osVersion() {
 #ifdef MVPN_WINDOWS
     return WindowsCommons::WindowsVersion();
@@ -282,6 +283,7 @@ class MozillaVPN final : public QObject {
   static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
   static QString platform() { return Constants::PLATFORM_NAME; }
   static QString devVersion();
+  static QString graphicsApi();
 
   void logout();
 
@@ -411,10 +413,6 @@ class MozillaVPN final : public QObject {
   void setGleanSourceTags(const QStringList& tags);
 
   void aboutToQuit();
-
-  // This is used only on android but, if we use #ifdef MVPN_ANDROID, qml engine
-  // complains...
-  void loadAndroidAuthenticationView();
 
   void logsReady(const QString& logs);
 

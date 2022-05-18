@@ -9,7 +9,7 @@
 #include "leakdetector.h"
 #include "mozillavpn.h"
 
-#include "../../glean/telemetry/gleansample.h"
+#include "telemetry/gleansample.h"
 
 #include <QCoreApplication>
 #include <QFile>

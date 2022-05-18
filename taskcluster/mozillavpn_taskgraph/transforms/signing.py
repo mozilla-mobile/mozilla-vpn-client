@@ -17,7 +17,8 @@ PRODUCTION_SIGNING_BUILD_TYPES = [
     "android-x86/release",
     "android-arm64/release",
     "android-armv7/release",
-    # "macos/opt",
+    "linux/opt",
+    "macos/opt",
 ]
 
 SIGNING_BUILD_TYPES = PRODUCTION_SIGNING_BUILD_TYPES + [
@@ -48,7 +49,7 @@ def resolve_keys(config, tasks):
                     "build-type": task["attributes"]["build-type"],
                     "level": config.params["level"],
                     "tasks-for": config.params["tasks_for"],
-                }
+                },
             )
         yield task
 
@@ -57,11 +58,16 @@ def resolve_keys(config, tasks):
 def set_worker_type(config, tasks):
     for task in tasks:
         worker_type = "dep-signing"
+        build_type = task["attributes"]["build-type"]
         if (
             str(config.params["level"]) == "3"
-            and task["attributes"]["build-type"] in PRODUCTION_SIGNING_BUILD_TYPES
+            and build_type in PRODUCTION_SIGNING_BUILD_TYPES
         ):
             worker_type = "signing"
+
+        if build_type.startswith("macos"):
+            worker_type = f"macos-{worker_type}"
+
         task["worker-type"] = worker_type
         yield task
 
@@ -90,4 +96,25 @@ def set_signing_format(config, tasks):
         signing_format = task.pop("signing-format")
         for upstream_artifact in task["worker"]["upstream-artifacts"]:
             upstream_artifact["formats"] = [signing_format]
+        yield task
+
+
+def script_url(params, path):
+    return f"{params['head_repository']}/raw/{params['head_rev']}/{path}"
+
+
+@transforms.add
+def set_mac_behavior(config, tasks):
+    for task in tasks:
+        if not task["attributes"]["build-type"].startswith("macos"):
+            yield task
+            continue
+
+        task["worker"]["mac-behavior"] = "mac_notarize_vpn"
+        task["worker"]["entitlementsUrl"] = script_url(
+            config.params, "taskcluster/scripts/signing/entitlements.xml"
+        )
+        task["worker"]["loginItemsEntitlementsUrl"] = script_url(
+            config.params, "taskcluster/scripts/signing/loginItems-entitlements.xml"
+        )
         yield task

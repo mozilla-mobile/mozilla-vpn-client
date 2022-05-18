@@ -11,13 +11,33 @@
     "conditions": {
       "$ref": "conditions.json#"
     },
+    "highlighted": {
+      "type": "boolean",
+      "description": "Is this tutorial highlighted?"
+    },
     "title": {
       "type": "string",
       "description": "The title of the tutorial"
     },
-    "comment": {
+    "title_comment": {
       "type": "string",
       "description": "A comment to describe how to translate the title"
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "The subtitle of the tutorial"
+    },
+    "subtitle_comment": {
+      "type": "string",
+      "description": "A comment to describe how to translate the subtitle"
+    },
+    "completion_message": {
+      "type": "string",
+      "description": "The completion message of the tutorial"
+    },
+    "completion_message_comment": {
+      "type": "string",
+      "description": "A comment to describe how to translate the completion message"
     },
     "image": {
       "type": "string",
@@ -43,14 +63,44 @@
             "type": "string",
             "description": "The objectName to highlight"
           },
+          "conditions": {
+            "$ref": "conditions.json#"
+          },
           "tooltip": {
             "type": "string",
             "description": "The message to show near the element"
+          },
+          "before": {
+            "type": "array",
+            "description": "List of operations to run before showing the tooltip",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "op": {
+                  "type": "string",
+                  "description": "The operation type. Each 'op' value has its own properties"
+                }
+              },
+              "required": [ "op" ]
+            }
+          },
+          "next": {
+            "type": "object",
+            "description": "How this step is considered as completed",
+            "additionalProperties": true,
+            "properties": {
+              "op": {
+                "type": "string",
+                "description": "The 'next' operation type. Each 'op' value has its own properties"
+              }
+            },
+            "required": [ "op" ]
           }
         },
-        "required": [ "id", "element", "tooltip" ]
+        "required": [ "id", "element", "tooltip", "next" ]
       }
     }
   },
-  "required": [ "id", "title", "image", "steps" ]
+  "required": [ "id", "title", "subtitle", "completion_message", "image", "steps" ]
 }

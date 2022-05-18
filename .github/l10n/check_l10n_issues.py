@@ -12,7 +12,7 @@ script_folder = os.path.abspath(os.path.dirname(__file__))
 vpn_root_folder = os.path.join(script_folder, os.pardir, os.pardir)
 
 # Extract all strings in the .ts file
-srcFile = os.path.join(vpn_root_folder, "src", "src.pro")
+srcFile = os.path.join(vpn_root_folder, "translations", "generated", "dummy.pro")
 os.system(f"lupdate {srcFile} -ts")
 
 # Load the exceptions file. String IDs can be added to each category to
@@ -21,7 +21,7 @@ with open(os.path.join(script_folder, "exceptions.json")) as f:
     exceptions = json.load(f)
 
 # Load the .ts file
-ts_file = os.path.join(vpn_root_folder, "translations", "en", "mozillavpn_en.ts")
+ts_file = os.path.join(vpn_root_folder, "translations", "generated", "mozillavpn_en.ts")
 tree = etree.parse(ts_file)
 root = tree.getroot()
 

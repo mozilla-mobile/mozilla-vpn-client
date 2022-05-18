@@ -13,12 +13,11 @@ Item {
     property alias objectName: iconButton.objectName
     property alias title: title.text
     property alias rightTitle: rightTitle.text
-    property bool isSettingsView: false
-    property bool isMultiHopView: false
-    property bool isMainView: false
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
+    property string _iconButtonSource: "qrc:/nebula/resources/back.svg"
+    property var _menuOnBackClicked: () => { goBack(); }
 
     width: parent.width
     height: VPNTheme.theme.menuHeight
@@ -39,7 +38,7 @@ Item {
 
         skipEnsureVisible: true // prevents scrolling of lists when this is focused
 
-        onClicked: handleMenuGoBack()
+        onClicked: _menuOnBackClicked()
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: VPNTheme.theme.windowMargin / 2
@@ -52,14 +51,12 @@ Item {
         enabled: !btnDisabled
         opacity: enabled ? 1 : .4
         Image {
-            id: backImage
-
-            source: "qrc:/nebula/resources/back.svg"
+            objectName: "menuIcon"
+            source: _iconButtonSource
             sourceSize.width: VPNTheme.theme.iconSize
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton
         }
-
     }
 
     VPNBoldLabel {
@@ -80,45 +77,17 @@ Item {
     }
 
     Rectangle {
-        color: "#0C0C0D0A"
+        color: VPNTheme.colors.grey10
         y: 55
         width: parent.width
         height: 1
     }
 
-    function handleMenuGoBack() {
-        isMultiHopView ? handleMultiHopNav() : goBack();
-    }
-
     function goBack() {
-        if (isMainView) {
-            mainStackView.pop();
-        } else if (isSettingsView) {
-            settingsStackView.pop();
-        } else if (stackview) {
+        if (typeof(stackview) !== "undefined") {
             stackview.pop();
-        }
-    }
-
-    function clearViewStack() {
-        if (isMainView) {
+        } else {
             mainStackView.pop();
-        } else if (isSettingsView) {
-            settingsStackView.pop();
-        }
-
-        if (stackview) {
-            // Close settings
-            stackview.pop(StackView.Immediate);
         }
     }
-
-    Connections {
-        target: window
-
-        function onClearCurrentViewStack() {
-            menuBar.clearViewStack();
-        }
-    }
-
 }

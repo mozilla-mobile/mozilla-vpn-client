@@ -4,6 +4,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+set -e
+set -x
+
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
 print N "Taskcluster macOS compilation script"
@@ -31,23 +34,20 @@ print Y "Installing python dependencies..."
 python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
+
 print Y "Installing QT..."
-# generate qt_static_macos
-auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1 || die
-cd qt_static_macos || die
-cat qt6* > qt_static.tar.gz
-tar xf qt_static.tar.gz || die
+PROJECT_HOME=`pwd`
+cd ../../fetches/qt_dist || die
+export QT_MACOS_BIN=`pwd`/bin
+export PATH=$QT_MACOS_BIN:$PATH
 
-cat > qt6/bin/qt.conf << EOF
+cat > bin/qt.conf << EOF
 [Paths]
-Prefix=`pwd`/qt6
+Prefix=`pwd`
 EOF
+cp bin/qt.conf libexec || die
+cd $PROJECT_HOME
 
-cp qt6/bin/qt.conf qt6/libexec || die
-cd ..
-export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
-export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 
 print Y "Updating submodules..."
 # should already be done by XCode cloud cloning but just to make sure
@@ -74,9 +74,7 @@ xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALL
 print Y "Creating the final package..."
 python3 ./scripts/macos/import_pkg_resources.py || die
 
-set
 print Y "Exporting the artifact..."
-mkdir -p ../../artifacts || die
 mkdir -p tmp || die
 cp -r Release/Mozilla\ VPN.app tmp || die
 cp -r ./macos/pkg/scripts tmp || die
@@ -84,7 +82,11 @@ cp -r ./macos/pkg/Distribution tmp || die
 cp -r ./macos/pkg/Resources tmp || die
 cd tmp || die
 
-zip -r ../../../artifacts/unsigned_artifact.zip . || die
+# From checkout dir to actual task base directory
+TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
+rm -rf "${TASK_HOME}/artifacts"
+mkdir -p "${TASK_HOME}/artifacts"
+tar -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
 cd .. || die
 rm -rf tmp || die
 

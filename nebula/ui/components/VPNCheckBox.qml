@@ -80,7 +80,6 @@ CheckBox {
 
     VPNCheckmark {
         anchors.fill: checkBoxIndicator
-        color: checkBox.checked ? VPNTheme.theme.blue : VPNTheme.theme.bgColor
     }
 
     VPNMouseArea {

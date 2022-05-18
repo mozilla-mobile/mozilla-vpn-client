@@ -10,17 +10,24 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 Item {
-
+    objectName: "settings"
+    property var _unwindSettingsStackView: () => settingsStackView.unwindToInitialItem();
     VPNMenu {
         id: menu
         objectName: "settingsBackButton"
+        _menuOnBackClicked: () => {
+            if (settingsStackView.depth !== 1) {
+                return settingsStackView.pop();
+            }
+            mainStackView.pop()
+        }
+        _iconButtonSource: settingsStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
+
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
 
         title: ""
-        isSettingsView: true
-        visible: settingsStackView.depth !== 1
         opacity: visible ? 1 : 0
 
 
@@ -31,10 +38,11 @@ Item {
         }
     }
 
-
     VPNStackView {
+        property bool _settingsView: true
         id: settingsStackView
-        anchors.top: parent.top
+        anchors.top: menu.bottom
+        anchors.topMargin: VPNTheme.theme.menuHeight
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -45,6 +53,7 @@ Item {
 
         onCurrentItemChanged: {
             menu.title = Qt.binding(() => currentItem._menuTitle || "");
+            menu.visible = Qt.binding(() => currentItem._menuTitle);
         }
     }
 }

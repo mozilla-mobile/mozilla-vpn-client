@@ -17,11 +17,12 @@ primary-dependency: build
 group-by: build-type
 
 only-for-build-types:
-    # - macos/opt
     - android-x64/release
     - android-x86/release
     - android-arm64/release
     - android-armv7/release
+    - linux/opt
+    - macos/opt
 
 job-template:
     description: Sign MozillaVPN
@@ -29,8 +30,9 @@ job-template:
     run-on-tasks-for: []
     signing-format:
         by-build-type:
-            # macos.*: macapp
             android.*: autograph_apk
+            linux.*: autograph_debsign
+            macos.*: macapp
             default: ""
 
     treeherder:
@@ -43,4 +45,5 @@ job-template:
                 android-x86/release: android/x86
                 android-arm64/release: android/arm64-v8a
                 android-armv7/release: android/armv7
-                # macos/opt: macos/all
+                linux/opt: linux/all
+                macos/opt: macos/all

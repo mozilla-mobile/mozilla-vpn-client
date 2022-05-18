@@ -26,7 +26,9 @@ class FeatureConnectionInfo final : public Feature {
             "qrc:/ui/resources/features/connection-info-icon.svg",  // IconPath
             "",                                                     // link URL
             "2.8",                                                  // released
-            true  // Can be enabled in devmode
+            true,          // Can be flipped on
+            false,         // Can be flipped off
+            QStringList()  // feature dependencies
         ) {}
 
   bool checkSupportCallback() const override { return true; }

@@ -26,7 +26,9 @@ class FeatureMultiHop : public Feature {
 #else
             "2.5",  // released for desktop
 #endif
-            true  // Can be enabled in devmode
+            true,          // Can be flipped on
+            false,         // Can be flipped off
+            QStringList()  // feature dependencies
         ) {
   }
 

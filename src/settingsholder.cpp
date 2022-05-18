@@ -94,9 +94,19 @@ void SettingsHolder::hardReset() {
   m_settings.clear();
 }
 
+QVariant SettingsHolder::rawSetting(const QString& key) const {
+  return m_settings.value(key);
+}
+
+#ifdef UNIT_TEST
+void SettingsHolder::setRawSetting(const QString& key, const QVariant& value) {
+  m_settings.setValue(key, value);
+}
+#endif
+
 // Returns a Report which settings are set
 // Used to Print in LogFiles:
-QString SettingsHolder::getReport() {
+QString SettingsHolder::getReport() const {
   QString buff;
   QTextStream out(&buff);
   auto settingsKeys = m_settings.childKeys();

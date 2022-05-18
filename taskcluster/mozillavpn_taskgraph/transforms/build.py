@@ -5,6 +5,7 @@
 Apply some defaults and minor modifications to the jobs defined in the build
 kind.
 """
+import os
 
 from taskgraph.transforms.base import TransformSequence
 from taskgraph.transforms.task import task_description_schema
@@ -64,12 +65,15 @@ def add_artifacts(config, tasks):
 
         # Android artifacts
         if "release-artifacts" in task:
-            for filename in task.pop("release-artifacts"):
+            for path in task.pop("release-artifacts"):
+                if os.path.isabs(path):
+                    raise Exception("Cannot have absolute path artifacts")
+
                 artifacts.append(
                     {
                         "type": "file",
-                        "name": f"public/build/{filename}",
-                        "path": f"/builds/worker/artifacts/{filename}",
+                        "name": f"public/build/{path}",
+                        "path": f"artifacts/{path}",
                     }
                 )
 

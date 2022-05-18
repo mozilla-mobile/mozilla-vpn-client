@@ -53,9 +53,12 @@
         <file>resources/settings/preferences.svg</file>
         <file>resources/settings/questionMark.svg</file>
         <file>resources/settings/whatsnew.svg</file>
+        <file>resources/sparkling-check.svg</file>
         <file>resources/tip.svg</file>
         <file>resources/updateRecommended.svg</file>
         <file>resources/updateRequired.svg</file>
         <file>resources/warning-white.svg</file>
+        <file>resources/main-img-vpn-off.svg</file>
+        <file>resources/main-img-vpn-on.svg</file>
     </qresource>
 </RCC>

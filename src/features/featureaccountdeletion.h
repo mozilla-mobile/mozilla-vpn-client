@@ -21,10 +21,18 @@ class FeatureAccountDeletion final : public Feature {
                 "",                  // IconPath
                 "",                  // link URL
                 "2.9",               // released
-                true                 // Can be enabled in devmode
+                true,                // Can be flipped on
+                false,               // Can be flipped off
+                QStringList()        // feature dependencies
         ) {}
 
-  bool checkSupportCallback() const override { return true; }
+  bool checkSupportCallback() const override {
+#if defined(MVPN_IOS)
+    return true;
+#else
+    return false;
+#endif
+  }
 
   static const FeatureAccountDeletion* instance() {
     return static_cast<const FeatureAccountDeletion*>(

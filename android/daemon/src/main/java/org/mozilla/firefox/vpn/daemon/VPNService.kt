@@ -67,7 +67,11 @@ class VPNService : android.net.VpnService() {
         intent?.let {
             if (intent.getBooleanExtra("startOnly", false)) {
                 Log.i(tag, "Start only!")
-                return super.onStartCommand(intent, flags, startId)
+                // If this is a Start Only request, the client will soon 
+                // bind to the service anyway. 
+                // We should return START_NOT_STICKY so that after an unbind()
+                // the OS will not try to restart the service.
+                return START_NOT_STICKY
             }
         }
         // This start is from always-on

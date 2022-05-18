@@ -15,8 +15,7 @@ endif
 	dh $@ --with=systemd --warn-missing
 
 override_dh_auto_configure:
-	python3 scripts/utils/import_languages.py
-	qmake6 CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release BUILD_ID=$(DEB_VERSION)
+	dh_auto_configure -- -DBUILD_ID=$(DEB_VERSION) -DWEBEXT_INSTALL_LIBDIR=lib
 
 override_dh_installdocs:
 

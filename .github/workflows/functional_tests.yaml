@@ -9,6 +9,11 @@ on:
       - main
       - 'releases/**'
 
+# Restrict tests to the most recent commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_test_app:
     name: Build Test Client
@@ -55,15 +60,10 @@ jobs:
         run: |
           pip3 install -r requirements.txt
 
-          python3 scripts/utils/import_languages.py
-          python3 scripts/utils/generate_glean.py
-
-          # Delete unit tests, so we can get to testing faster
-          sed -i '/tests\/unit/d' mozillavpn.pro
-          qmake6 CONFIG+=DUMMY QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage CONFIG+=debug CONFIG+=inspector QT+=svg
-          make -j$(nproc)
-          cp ./src/mozillavpn build/
-          cp -r ./src/.obj build/
+          mkdir -p build/cmake
+          cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON \
+              -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build build/cmake -j$(nproc)
 
       - name: Generate tasklist
         id: testGen
@@ -111,7 +111,7 @@ jobs:
       
       - name: Check build
         shell: bash
-        run: ./build/mozillavpn -v
+        run: ./build/cmake/src/mozillavpn -v
 
       - name: Launching API proxy
         shell: bash
@@ -134,15 +134,15 @@ jobs:
           ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_API_BASE_URL: http://localhost:5000
-          MVPN_BIN: ./build/mozillavpn
+          MVPN_BIN: ./build/cmake/src/mozillavpn
 
       - name: Generating grcov reports
         id: generateGrcov
         continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
         timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic
         run: |
-          cp build/.obj/*.gcno src/.obj
-          ./build/bin/grcov src/.obj -s src -t lcov --branch --ignore-not-existing \
+          ./build/bin/grcov build/cmake/src/CMakeFiles/mozillavpn.dir \
+              -s src -t lcov --branch --ignore-not-existing \
               -o ${{runner.temp}}/artifacts/functional_lcov.info
 
       - name: Upload coverage to Codecov

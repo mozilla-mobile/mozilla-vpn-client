@@ -11,63 +11,16 @@ import components 0.1
 
 
 VPNFlickable {
+    property string _menuTitle: qsTrId("vpn.main.settings")
+
     id: vpnFlickable
     objectName: "settingsView"
-    flickContentHeight: settingsList.y + settingsList.height + signOutLink.height + signOutLink.anchors.bottomMargin
-    hideScollBarOnStackTransition: true
-
-    VPNIconButton {
-        id: iconButton
-        objectName: "settingsCloseButton"
-        onClicked: stackview.pop(StackView.Immediate)
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.topMargin: VPNTheme.theme.windowMargin / 2
-        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
-        accessibleName: qsTrId("vpn.connectionInfo.close")
-
-        Image {
-            id: backImage
-
-            source: "qrc:/nebula/resources/close-dark.svg"
-            sourceSize.width: VPNTheme.theme.iconSize
-            fillMode: Image.PreserveAspectFit
-            anchors.centerIn: iconButton
-        }
-    }
-
-    VPNPanel {
-        id: vpnPanel
-        logoSize: 80
-        logo: VPNUser.avatar
-        //% "VPN User"
-        readonly property var textVpnUser: qsTrId("vpn.settings.user")
-        logoTitle: VPNUser.displayName ? VPNUser.displayName : textVpnUser
-        logoSubtitle: VPNUser.email
-        anchors.top: parent.top
-        anchors.topMargin: (Math.max(window.safeContentHeight * .08, VPNTheme.theme.windowMargin * 2))
-        isSettingsView: true
-    }
-
-    VPNButton {
-        id: manageAccountButton
-        objectName: "manageAccountButton"
-        text: qsTrId("vpn.main.manageAccount")
-        anchors.top: vpnPanel.bottom
-        anchors.topMargin: VPNTheme.theme.vSpacing
-        anchors.horizontalCenter: parent.horizontalCenter
-        onClicked: {
-            VPN.recordGleanEvent("manageAccountClicked");
-            VPN.openLink(VPN.LinkAccount)
-        }
-    }
+    flickContentHeight: settingsList.implicitHeight
 
     Component {
         id: aboutUsComponent
 
         VPNAboutUs {
-            isSettingsView: true
-            isMainView: false
             licenseURL: "qrc:/ui/views/ViewLicenses.qml"
         }
     }
@@ -75,89 +28,151 @@ VPNFlickable {
     ColumnLayout {
         id: settingsList
 
-        spacing: VPNTheme.theme.listSpacing
-        y: VPNTheme.theme.vSpacing + manageAccountButton.y + manageAccountButton.height
+        spacing: VPNTheme.theme.windowMargin
         width: parent.width - VPNTheme.theme.windowMargin
-        anchors.horizontalCenter: parent.horizontalCenter
+        height: Math.max(vpnFlickable.height, settingsList.implicitHeight)
 
-        VPNSettingsItem {
-            objectName: "settingsWhatsNew"
-            settingTitle: VPNl18n.WhatsNewReleaseNotesTourPageHeader
-            imageLeftSrc: "qrc:/nebula/resources/gift-dark.svg"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-            onClicked: settingsStackView.push("qrc:/ui/settings/ViewWhatsNew.qml")
-            showIndicator: VPNWhatsNewModel.hasUnseenFeature
-            visible: VPNWhatsNewModel.rowCount() > 0
+        anchors {
+            top: parent.top
+            horizontalCenter: parent.horizontalCenter
         }
 
-        VPNSettingsItem {
-            objectName: "settingsNetworking"
-            settingTitle: qsTrId("vpn.settings.networking")
-            imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-            onClicked: settingsStackView.push("qrc:/ui/settings/ViewNetworkSettings.qml", {
-                                                  //% "App permissions"
-                                                  _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
-                                              })
-        }
+        ColumnLayout {
+            spacing: 0
 
-        VPNSettingsItem {
-            id: preferencesSetting
-            objectName: "settingsPreferences"
-            settingTitle: VPNl18n.SettingsSystemPreferences
-            imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-            onClicked: settingsStackView.push("qrc:/ui/settings/ViewPrivacySecurity.qml", {
-                                                _startAtBootTitle: Qt.binding(() => VPNl18n.SettingsStartAtBootTitle),
-                                                _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
-                                                _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
-                                                _menuTitle: Qt.binding(() => preferencesSetting.settingTitle)
-                                              })
-        }
+            VPNVerticalSpacer {
+                Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
+            }
 
-        VPNSettingsItem {
-            //% "Give feedback"
-            property string giveFeedbackTitle: qsTrId("vpn.settings.giveFeedback")
-            objectName: "settingsGetHelp"
-            settingTitle: qsTrId("vpn.main.getHelp2")
-            imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-            onClicked: {
-                VPN.recordGleanEvent("getHelpClickedViewSettings");
-                settingsStackView.push("qrc:/ui/views/ViewGetHelp.qml", {isSettingsView: true})
+            VPNUserProfile {
+                _iconButtonImageSource: "qrc:/nebula/resources/chevron.svg"
+                _iconButtonOnClicked: () => {
+                    Sample.manageAccountClicked.record();
+                    VPN.openLink(VPN.LinkAccount)
+                }
+                Layout.leftMargin: VPNTheme.theme.windowMargin / 2
+            }
+
+            VPNVerticalSpacer {
+                Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
+            }
+
+            Rectangle {
+                id: divider
+
+                Layout.preferredHeight: 1
+                Layout.fillWidth: true
+                Layout.leftMargin: VPNTheme.theme.windowMargin / 2
+                Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+                color: VPNTheme.colors.grey10
             }
         }
 
-        VPNSettingsItem {
-            objectName: "settingsAboutUs"
-            settingTitle: qsTrId("vpn.settings.aboutUs")
-            imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-            onClicked: settingsStackView.push(aboutUsComponent)
-        }
 
-        VPNButton {
-            text: "TODO delete account"
-            anchors.top: vpnPanel.bottom
-            anchors.topMargin: VPNTheme.theme.vSpacing
-            anchors.horizontalCenter: parent.horizontalCenter
-            visible: VPNFeatureList.get("accountDeletion").isSupported
-            onClicked: {
-             settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml")
-              VPN.deleteAccount()
-            }
-        }
-
-        Rectangle {
-            Layout.preferredHeight: fullscreenRequired? VPNTheme.theme.rowHeight * 1.5 : VPNTheme.theme.rowHeight
+        // TODO: Move to subscription management
+        ColumnLayout {
             Layout.fillWidth: true
-            color: VPNTheme.theme.transparent
+            Layout.minimumWidth: parent.width
+
+            VPNSettingsItem {
+                objectName: "settingsWhatsNew"
+                settingTitle: VPNl18n.WhatsNewReleaseNotesTourPageHeader
+                imageLeftSrc: "qrc:/nebula/resources/gift-dark.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: settingsStackView.push("qrc:/ui/settings/ViewWhatsNew.qml")
+                showIndicator: VPNWhatsNewModel.hasUnseenFeature
+                visible: VPNWhatsNewModel.rowCount() > 0
+            }
+
+            VPNSettingsItem {
+                objectName: "settingsTipsAndTricks"
+                settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
+                imageLeftSrc: "qrc:/nebula/resources/sparkles.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: settingsStackView.push("qrc:/ui/settings/ViewTipsAndTricks.qml")
+            }
+
+            VPNSettingsItem {
+                objectName: "settingsNetworking"
+                settingTitle: qsTrId("vpn.settings.networking")
+                imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: settingsStackView.push("qrc:/ui/settings/ViewNetworkSettings.qml", {
+                                                      //% "App permissions"
+                                                      _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
+                                                  })
+            }
+
+            VPNSettingsItem {
+                id: preferencesSetting
+                objectName: "settingsPreferences"
+                settingTitle: VPNl18n.SettingsSystemPreferences
+                imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: settingsStackView.push("qrc:/ui/settings/ViewPrivacySecurity.qml", {
+                                                    _startAtBootTitle: Qt.binding(() => VPNl18n.SettingsStartAtBootTitle),
+                                                    _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
+                                                    _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
+                                                    _menuTitle: Qt.binding(() => preferencesSetting.settingTitle)
+                                                  })
+            }
+
+            VPNSettingsItem {
+                //% "Give feedback"
+                property string giveFeedbackTitle: qsTrId("vpn.settings.giveFeedback")
+                objectName: "settingsGetHelp"
+                settingTitle: qsTrId("vpn.main.getHelp2")
+                imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: {
+                    Sample.getHelpClickedViewSettings.record();
+                    getHelpViewNeeded();
+                }
+            }
+
+            VPNSettingsItem {
+                objectName: "settingsAboutUs"
+                settingTitle: qsTrId("vpn.settings.aboutUs")
+                imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: settingsStackView.push(aboutUsComponent)
+            }
+
+            VPNLinkButton {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.topMargin: VPNTheme.theme.vSpacing
+
+                fontName: VPNTheme.theme.fontBoldFamily
+                labelText: VPNl18n.DeleteAccountButtonLabel + " (WIP)"
+                linkColor: VPNTheme.theme.redButton
+                visible: VPNFeatureList.get("accountDeletion").isSupported
+                onClicked: {
+                    settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
+                }
+            }
+
+            VPNVerticalSpacer {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+            }
+
+            VPNSignOut {
+                id: signOutLink
+
+                objectName: "settingsLogout"
+                anchors {
+                    horizontalCenter: undefined
+                    bottom: undefined
+                    bottomMargin: undefined
+                }
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+            }
+
+            VPNVerticalSpacer {
+                Layout.fillWidth: true
+                Layout.minimumHeight: VPNTheme.theme.rowHeight
+            }
         }
-    }
-
-    VPNSignOut {
-        id: signOutLink
-
-        objectName: "settingsLogout"
     }
 }
+

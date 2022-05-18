@@ -165,6 +165,8 @@ void MozillaVPN::crashTest() {}
 
 QString MozillaVPN::devVersion() { return qVersion(); }
 
-void MozillaVPN::deleteAccount() {}
+QString MozillaVPN::graphicsApi() { return ""; }
+
+void MozillaVPN::requestDeleteAccount() {}
 
 void MozillaVPN::cancelAccountDeletion() {}

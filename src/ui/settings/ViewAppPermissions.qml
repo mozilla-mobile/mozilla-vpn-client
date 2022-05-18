@@ -29,11 +29,7 @@ Item {
         id: vpnFlickable
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
         flickContentHeight: col.height + VPNTheme.theme.menuHeight
-        anchors.top: parent.top
-        anchors.topMargin: VPNTheme.theme.menuHeight
-        height: root.height - menu.height
-        anchors.left: parent.left
-        anchors.right: parent.right
+        anchors.fill: parent
         interactive: (VPNSettings.protectSelectedApps)
         Component.onCompleted: {
             console.log("Component ready");
@@ -120,8 +116,7 @@ Item {
                 //% "VPN protects all apps by default. Turn off to choose which apps Mozilla VPN should not protect."
                 sublabelText: qsTrId("vpn.settings.protectAllApps.description")
 
-                //% "VPN protects all apps by default. Turn off to choose which apps Mozilla VPN should not protect."
-                toolTipTitleText: qsTrId("vpn.settings.protectAllApps.description")
+                toolTipTitleText: qsTrId("vpn.settings.protectAllApps")
 
                 toggleChecked: (!VPNSettings.protectSelectedApps)
 

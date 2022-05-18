@@ -10,6 +10,10 @@
 #include <QDir>
 #include <QJSEngine>
 
+#ifdef MVPN_IOS
+#  include "platforms/ios/iosutils.h"
+#endif
+
 namespace {
 Logger logger(LOG_MAIN, "Theme");
 }
@@ -143,4 +147,10 @@ QVariant Theme::data(const QModelIndex& index, int role) const {
     default:
       return QVariant();
   }
+}
+
+void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
+#ifdef MVPN_IOS
+  IOSUtils::setStatusBarTextColor(color);
+#endif
 }

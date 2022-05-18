@@ -12,8 +12,6 @@ void TestLocalizer::basic() {
   Localizer l;
   QCOMPARE(Localizer::instance(), &l);
 
-  l.initialize();
-
   QHash<int, QByteArray> rn = l.roleNames();
   QCOMPARE(rn.count(), 3);
   QCOMPARE(rn[Localizer::LanguageRole], "language");
@@ -27,7 +25,6 @@ void TestLocalizer::basic() {
 void TestLocalizer::systemLanguage() {
   SettingsHolder settings;
   Localizer l;
-  l.initialize();
 
   l.setCode("");
   QCOMPARE(l.code(), "");
