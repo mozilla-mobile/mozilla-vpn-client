@@ -44,7 +44,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: grcov-build/
-          key: ${{github.sha}}-linux-grcov-v0.8.9
+          key: ${{runner.os}}-grcov-v0.8.9
 
       - name: Install Grcov
         if: steps.cache-grcov.outputs.cache-hit != 'true'
@@ -136,7 +136,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: grcov-build/
-          key: ${{github.sha}}-macos-grcov-v0.8.9
+          key: ${{runner.os}}-grcov-v0.8.9
 
       - name: Install Grcov
         if: steps.cache-grcov.outputs.cache-hit != 'true'
