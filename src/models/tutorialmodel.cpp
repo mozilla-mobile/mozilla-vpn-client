@@ -97,10 +97,11 @@ void TutorialModel::stop() {
 
 void TutorialModel::requireTooltipNeeded(Tutorial* tutorial,
                                          const QString& tooltipText,
-                                         const QRectF& itemRect) {
+                                         const QRectF& itemRect,
+                                         const QString& objectName) {
   Q_ASSERT(tutorial);
   Q_ASSERT(tutorial == m_currentTutorial);
-  emit tooltipNeeded(tooltipText, itemRect);
+  emit tooltipNeeded(tooltipText, itemRect, objectName);
 }
 
 void TutorialModel::requireTutorialCompleted(
