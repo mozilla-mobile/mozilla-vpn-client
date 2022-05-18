@@ -20,8 +20,6 @@ DEFINES += UNIT_TEST
 DEFINES += MVPN_DUMMY
 
 # Sets up app and build id which we test for in test_VPNAboutUs
-DEFINES += APP_VERSION=\\\"QMLTest_AppVersion\\\"
-DEFINES += BUILD_ID=\\\"QMLTest_BuildID\\\"
 DEFINES += BUILD_QMAKE
 
 RESOURCES += \
@@ -32,7 +30,6 @@ INCLUDEPATH += \
             ../../src \
             ../../lottie/lib
 
-include($$PWD/../../version.pri)
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../lottie/lottie.pri)
 include($$PWD/../../nebula/nebula.pri)
@@ -41,10 +38,10 @@ include($$PWD/../../translations/translations.pri)
 SOURCES += \
     helper.cpp \
     main.cpp \
+    mocconstants.cpp \
     mocmozillavpn.cpp \
     ../unit/mocinspectorhandler.cpp \
     ../../src/closeeventhandler.cpp \
-    ../../src/constants.cpp \
     ../../src/featurelist.cpp \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \

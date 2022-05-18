@@ -9,8 +9,6 @@ QT += quick
 QT += xml
 QT += widgets
 
-DEFINES += APP_VERSION=\\\"1234\\\"
-DEFINES += BUILD_ID=\\\"1234\\\"
 DEFINES += BUILD_QMAKE
 
 CONFIG += c++1z
