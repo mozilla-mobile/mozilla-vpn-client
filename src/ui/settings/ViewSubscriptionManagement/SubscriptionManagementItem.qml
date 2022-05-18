@@ -9,7 +9,36 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 ColumnLayout {
+    id: root
+
     spacing: 0
+
+    states: [
+        State {
+            when: type === "text"
+
+            PropertyChanges {
+                target: rowText
+                visible: true
+            }
+            PropertyChanges {
+                target: rowPill
+                visible: false
+            }
+        },
+        State {
+            when: type === "pill"
+
+            PropertyChanges {
+                target: rowText
+                visible: false
+            }
+            PropertyChanges {
+                target: rowPill
+                visible: true
+            }
+        }
+    ]
 
     RowLayout {
         spacing: VPNTheme.theme.listSpacing
@@ -25,7 +54,7 @@ ColumnLayout {
 
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: VPNTheme.theme.fontSizeSmall
-            text: getLocalizedLabel(key, values)
+            text: labelText
             wrapMode: Text.WordWrap
 
             Layout.fillWidth: true
@@ -38,7 +67,6 @@ ColumnLayout {
                 // source: "qrc:/ui/resources/logos/apple.svg"
                 sourceSize.height: VPNTheme.theme.iconSizeSmall * 1.5
                 sourceSize.width: VPNTheme.theme.iconSizeSmall * 1.5
-                visible: key == "payment-method-iap" || key == "payment-method-credit"
 
                 anchors {
                     left: parent.right
@@ -53,9 +81,8 @@ ColumnLayout {
             color: VPNTheme.theme.fontColorDark
             horizontalAlignment: Text.AlignRight
             font.pixelSize: VPNTheme.theme.fontSizeSmall
-            text: parseValue(key, values)
+            text: valueText
             wrapMode: Text.WordWrap
-            visible: key !== "status"
 
             Layout.alignment: Qt.AlignRight
             Layout.fillWidth: true
@@ -64,14 +91,15 @@ ColumnLayout {
         VPNPill {
             id: rowPill
 
-            color: values.toString() === "active"
+            color: valueText === "active"
                 ? VPNTheme.colors.green90
                 : VPNTheme.colors.red70
-            background: values.toString() === "active"
+            background: valueText === "active"
                 ? VPNTheme.colors.green5
                 : VPNTheme.colors.red5
-            text: values.toString() === "active" ? "Active" : "Inactive"
-            visible: key === "status"
+            text: valueText === "active"
+                ? VPNl18n.SubscriptionManagementStatusActive
+                : VPNl18n.SubscriptionManagementStatusInactive
 
             Layout.alignment: Qt.AlignRight
         }
@@ -87,71 +115,4 @@ ColumnLayout {
         Layout.preferredHeight: 1
         Layout.rightMargin: 0
     }
-
-    function getLocalizedLabel(itemKey, itemValues) {
-        switch (itemKey) {
-            case "sub-plan":
-                return VPNl18n.SubscriptionManagementPlanLabel;
-            case "sub-status":
-                return VPNl18n.SubscriptionManagementStatusLabel;
-            case "sub-activated":
-                return VPNl18n.SubscriptionManagementActivatedLabel;
-            case "next-billed":
-                return VPNl18n.SubscriptionManagementNextLabel;
-            case "payment-method-iap":
-                return VPNl18n.SubscriptionManagementPaymentMethod.arg(itemKey);
-            case "payment-method-credit":
-                const [paymentType, creditCardBrand, creditCardLast4] = itemValues;
-                return creditCardBrand == "visa" ? "Visa" : "MasterCard";
-            case "sub-expires":
-            case "payment-method-expires":
-                return VPNl18n.SubscriptionManagementExpiresLabel;
-            default:
-                return itemKey;
-        }
-    }
-
-    function parseValue(itemKey, itemValues) {
-        const localeCode = VPNLocalizer.code;
-
-        switch (itemKey) {
-            case "sub-plan":
-                const [currency, amount, intervalCount] = itemValues;
-                const localizedCurrency = Number(amount / 100).toLocaleCurrencyString(Qt.locale(localeCode), currency.toUpperCase());
-
-                if (intervalCount === "1") {
-                    return VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
-                } else if (intervalCount === "6") {
-                    return VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
-                } else if (intervalCount === "12") {
-                    return VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
-                }
-            case "sub-activated":
-            case "sub-expires":
-            case "sub-next-billed":
-                return new Date(itemValues * 1000).toLocaleDateString(Qt.locale(localeCode), Locale.ShortFormat);
-            case "payment-method-iap":
-                return itemValue;
-            case "payment-method-credit":
-                const [paymentType, creditCardBrand, creditCardLast4] = itemValues;
-                return "Card ending in " + creditCardLast4;
-            case "payment-method-expires":
-                const [expMonth, expYear] = itemValues;
-                return new Date(parseInt(expYear), parseInt(expMonth) - 1).toLocaleDateString(Qt.locale(localeCode), Locale.ShortFormat);
-            case "sub-status":
-            default:
-                return itemValues;
-        }
-    }
-
-    function getLocaleDateString(localeCode) {
-        const dateFormats = {
-            "de_DE": "dd.MM.yyyy",
-            "en_GB": "dd/MM/yyyy",
-            "en_US": "M/d/yyyy",
-        };
-
-        return dateFormats[localeCode] || dateFormats["en_US"];
-    }
-
 }

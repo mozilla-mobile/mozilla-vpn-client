@@ -68,7 +68,7 @@ VPNFlickable {
                 model: subscriptionModel
                 delegate: Loader {
                     Layout.fillWidth: true
-                    source: "qrc:/ui/settings/ViewSubscriptionManagement/SubscriptionManagementItemTest.qml"
+                    source: "qrc:/ui/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
                 }
             }
 
