@@ -12,6 +12,7 @@
 #include "jni.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "androidvpnactivity.h"
 
 #include <QApplication>
 #include <QJsonDocument>
@@ -67,35 +68,31 @@ AndroidGlean::~AndroidGlean() {
 
 void AndroidGlean::initializeGlean() {
   logger.debug() << "init GLEAN";
-  bool upload = SettingsHolder::instance()->gleanEnabled();
-  QString mode = Constants::inProduction() ? "production" : "staging";
-  QJniObject::callStaticMethod<void>(
-      UTILS_CLASS, "initializeGlean", "(ZLjava/lang/String;)V", upload,
-      QJniObject::fromString(mode).object<jstring>());
+  QJsonDocument args;
+  args['upload'] = SettingsHolder::instance()->gleanEnabled();;
+  args['channel']= Constants::inProduction() ? "production" : "staging";
+  AndroidVPNActivity::instance->sendToService(AndroidVPNActivity::ServiceAction::ACTION_GLEAN_INIT, args.toJson(QJsonDocument::Compact));
 }
 void AndroidGlean::sendGleanPings() {
-  logger.debug() << "Send glean pings";
-  QJniObject::callStaticMethod<void>(UTILS_CLASS, "sendGleanPings");
+  AndroidVPNActivity::instance->sendToService(AndroidVPNActivity::ServiceAction::ACTION_SEND_GLEAN_PING, "");
 }
 
 void AndroidGlean::recordGleanEvent(const QString& gleanSampleName) {
+  QJsonDocument args;
+  args['key']= gleanSampleName;
   logger.debug() << " recordGleanEvent" << gleanSampleName;
-  QJniObject::callStaticMethod<void>(
-      UTILS_CLASS, "recordGleanEvent", "(Ljava/lang/String;)V",
-      QJniObject::fromString(gleanSampleName).object<jstring>());
+  AndroidVPNActivity::instance->sendToService(AndroidVPNActivity::ServiceAction::ACTION_RECORD_EVENT, args.toJson(QJsonDocument::Compact));
 }
 
 void AndroidGlean::recordGleanEventWithExtraKeys(const QString& gleanSampleName,
                                                  const QVariantMap& extraKeys) {
-  QJsonDocument jsonDoc = QJsonDocument::fromVariant(extraKeys);
+  QJsonObject extras = QJsonObject::fromVariantMap(extraKeys);
+  QJsonDocument args;
+  args['extras'] = extras;
+  args['key']= gleanSampleName;
   logger.debug() << " recordGleanEvent" << gleanSampleName;
-  QJniObject::callStaticMethod<void>(
-      UTILS_CLASS, "recordGleanEventWithExtraKeys",
-      "(Ljava/lang/String;Ljava/lang/String;)V",
-      QJniObject::fromString(gleanSampleName).object<jstring>(),
-      QJniObject::fromString(jsonDoc.toJson(QJsonDocument::Compact))
-          .object<jstring>());
-  return;
+  AndroidVPNActivity::instance->sendToService(AndroidVPNActivity::ServiceAction::ACTION_RECORD_EVENT, args.toJson(QJsonDocument::Compact));
+
 }
 void AndroidGlean::setGleanSourceTags(const QStringList& tags) {
   // TODO: Current no-op as glean-android does not implement this - no need to
@@ -107,6 +104,8 @@ void AndroidGlean::setGleanSourceTags(const QStringList& tags) {
 }
 
 void AndroidGlean::gleanEnabledChanged(bool enabled) {
-  QJniObject::callStaticMethod<void>(UTILS_CLASS, "setGleanUploadEnabled",
-                                     "(Z)V", enabled);
+  QJsonDocument args;
+  args['enabled']=enabled;
+  logger.debug() << " gleanEnabledChanged" << enabled;
+  AndroidVPNActivity::instance->sendToService(AndroidVPNActivity::ServiceAction::ACTION_GLEAN_ENABLED_CHANGED, args.toJson(QJsonDocument::Compact));
 }

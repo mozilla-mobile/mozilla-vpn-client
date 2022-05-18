@@ -36,7 +36,16 @@ enum ServiceAction {
   ACTION_SET_NOTIFICATION_TEXT = 8,
   // Sets the fallback text if the OS triggered the VPN-Service
   // to show a notification
-  ACTION_SET_NOTIFICATION_FALLBACK = 9
+  ACTION_SET_NOTIFICATION_FALLBACK = 9,
+  // Records a Glean Event
+  ACTION_RECORD_EVENT = 10,
+  // Requests Glean to Send all pings
+  ACTION_SEND_GLEAN_PING = 11,
+  // Upload Enabled Changed
+  ACTION_GLEAN_ENABLED_CHANGED = 12,
+  // Init Glean 
+  ACTION_GLEAN_INIT = 13,
+  
 };
 typedef enum ServiceAction ServiceAction;
 // Event Types that will be Dispatched after registration

@@ -14,12 +14,6 @@ import android.os.Bundle;
 
 import org.mozilla.firefox.vpn.BuildConfig;
 
-import org.mozilla.firefox.vpn.GleanMetrics.GleanBuildInfo;
-import org.mozilla.firefox.vpn.GleanMetrics.Pings;
-import mozilla.telemetry.glean.Glean;
-
-
-
 public class VPNApplication extends org.qtproject.qt.android.bindings.QtApplication {
 
   private static VPNApplication instance;

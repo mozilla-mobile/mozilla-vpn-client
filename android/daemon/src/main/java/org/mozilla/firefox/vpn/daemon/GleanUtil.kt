@@ -1,6 +1,8 @@
-package org.mozilla.firefox.vpn.qt
+package org.mozilla.firefox.vpn.daemon
 
+import android.content.Context
 import android.util.Log
+import kotlinx.serialization.Serializable
 import mozilla.components.service.glean.BuildInfo
 import mozilla.components.service.glean.Glean
 import mozilla.components.service.glean.config.Configuration
@@ -10,33 +12,46 @@ import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.NoExtraKeys
 import mozilla.telemetry.glean.private.NoExtras
 import org.json.JSONObject
-import org.mozilla.firefox.vpn.GleanMetrics.Pings
-import org.mozilla.firefox.vpn.GleanMetrics.Sample
+import org.mozilla.firefox.vpn.daemon.GleanMetrics.Pings
+import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
 import java.lang.UnsupportedOperationException
 import java.util.*
 import kotlin.reflect.KProperty1
 
 // @MainThread
 @Suppress("UNUSED") // All the calls are via jni from the client, so we can ignore
-object GleanUtil {
-    @JvmStatic
+class GleanUtil(aParent: Context) {
+
+    @Serializable
+    data class GleanEvent(val aKey:String, val aExtras:JSONObject?) {
+        val key:String = aKey
+        val extras: JSONObject? = aExtras
+    }
+    @Serializable
+    data class InitGleanArgs(val aUpload: Boolean, val aChannel: String){
+        val upload=aUpload
+        val channel = aChannel
+    }
+
+    private val mParent: Context = aParent;
+
     fun initializeGlean(upload: Boolean = false, channel: String = "staging") {
         val conf = Configuration(HttpURLConnectionUploader(), Configuration.DEFAULT_TELEMETRY_ENDPOINT, channel, null)
         val build = BuildInfo("versionCode", "VersionName", Calendar.getInstance())
         Glean.registerPings(Pings)
         Glean.initialize(
-            applicationContext = VPNActivity.getInstance().applicationContext,
+            applicationContext = mParent.applicationContext,
             uploadEnabled = upload,
             buildInfo = build,
             configuration = conf
         )
         Log.i("Android-Glean", "Initialised android glean")
     }
-    @JvmStatic
+
     fun setGleanUploadEnabled(upload: Boolean) {
         Glean.setUploadEnabled(upload)
     }
-    @JvmStatic
+
     fun setGleanSourceTag(tags: String = "") {
         // val tag_list = tag.split(",")
         // Glean.setSourceTags(tag_list);
@@ -44,11 +59,11 @@ object GleanUtil {
         // We're using this only for functional tests, so no problem i guess c:
         return
     }
-    @JvmStatic
+
     fun sendGleanPings() {
         Pings.main.submit()
     }
-    @JvmStatic
+
     @Suppress("UNCHECKED_CAST") // We're using nullable casting and check that :)
     fun recordGleanEvent(sampleName: String) {
         val sample = getSample(sampleName) as? EventMetricType<NoExtraKeys, NoExtras>
@@ -58,7 +73,15 @@ object GleanUtil {
         }
         sample.record(NoExtras())
     }
-    @JvmStatic
+
+    fun recordEvent(event :JSONObject){
+        if(event.has("extras")){
+            recordGleanEventWithExtraKeys(event.get("key").toString(),event.get("extras").toString())
+        }else{
+            recordGleanEvent(event.get("key").toString())
+        }
+    }
+
     @Suppress("UNCHECKED_CAST") // We're using nullable casting and check that :)
     fun recordGleanEventWithExtraKeys(sampleName: String, extraKeysJson: String) {
 

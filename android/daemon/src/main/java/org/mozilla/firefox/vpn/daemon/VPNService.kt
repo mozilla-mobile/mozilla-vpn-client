@@ -21,6 +21,7 @@ import org.json.JSONObject
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
+    val mGlean = GleanUtil(this)
     private var mConfig: JSONObject? = null
     private var mConnectionTime: Long = 0
     private var mAlreadyInitialised = false
@@ -44,6 +45,7 @@ class VPNService : android.net.VpnService() {
             // we do not need to stay as a foreground service.
             stopForeground(true)
         }
+        mGlean.sendGleanPings()
         return super.onUnbind(intent)
     }
 

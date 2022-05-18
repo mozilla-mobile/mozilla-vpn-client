@@ -30,6 +30,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val resumeActivate = 7
         const val setNotificationText = 8
         const val setStrings = 9
+        const val recordEvent = 10
+        const val sendGleanPings = 11
+        const val gleanUploadEnabledChanged = 12
+        const val gleanInit = 13
+
     }
 
     /**
@@ -118,6 +123,37 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 NotificationUtil.get(mService)?.updateStrings(data, mService)
                 return true
             }
+            ACTIONS.recordEvent ->{
+                val buffer = data.createByteArray()
+                val json = buffer?.let { String(it) }
+                val event = JSONObject(json)
+                mService.mGlean.recordEvent(event)
+                return true
+            }
+            ACTIONS.sendGleanPings ->{
+                mService.mGlean.sendGleanPings();
+                return true
+            }
+            ACTIONS.gleanUploadEnabledChanged ->{
+                val buffer = data.createByteArray()
+                val json = buffer?.let { String(it) }
+                val args = JSONObject(json)
+                mService.mGlean.setGleanUploadEnabled(args.getBoolean("enabled"))
+                return true
+            }
+            ACTIONS.gleanInit -> {
+                val buffer = data.createByteArray()
+                val json = buffer?.let { String(it) }
+                val args = JSONObject(json)
+                args.apply {
+                    mService.mGlean.initializeGlean(
+                        getBoolean("upload"),
+                        getString("channel")
+                    )
+                }
+                return true
+            }
+
             IBinder.LAST_CALL_TRANSACTION -> {
                 Log.e(tag, "The OS Requested to shut down the VPN")
                 this.mService.turnOff()

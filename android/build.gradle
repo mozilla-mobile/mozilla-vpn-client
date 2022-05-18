@@ -16,24 +16,15 @@ buildscript {
         classpath Dependencies.com_android_tools_build_gradle
         classpath Dependencies.org_jetbrains_kotlin_kotlin_gradle_plugin
         classpath Dependencies.org_jetbrains_kotlin_kotlin_serialization
-        classpath Dependencies.org_mozilla_components_tooling_glean_gradle
-    }
-}
-plugins {
-    id "com.jetbrains.python.envs" version "0.0.26"
-}
-
-repositories {
-    mavenCentral()
-    google()
-    maven {
-        url "https://maven.mozilla.org/maven2"
     }
 }
 
 
 allprojects {
     repositories {
+        maven {
+            url "https://maven.mozilla.org/maven2"
+        }
         mavenCentral()
         google()
     }
@@ -44,18 +35,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlinx-serialization'
 
-// Optionally, set any parameters to send to the plugin.
-try{
-    if(qtAndroidDir){
-        ext.gleanYamlFiles = [
-                "$rootDir/../../../glean/metrics.yaml",
-                "$rootDir/../../../glean/pings.yaml"
-        ]
-    }
-}catch(Exception ignored){
-    ext.gleanYamlFiles = ["$rootDir/../glean/metrics.yaml", "$rootDir/../glean/pings.yaml"]
-}
-apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
@@ -70,9 +49,7 @@ dependencies {
     implementation Dependencies.androidx_security_security_identity_credential
     implementation Dependencies.com_google_android_gms_play_services_ads_identifier
     implementation Dependencies.org_jetbrains_kotlinx_kotlinx_serialization_json
-    implementation Dependencies.org_mozilla_components_service_glean
     coreLibraryDesugaring Dependencies.com_android_tools_desugar_jdk_libs
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
 }
 
 android {

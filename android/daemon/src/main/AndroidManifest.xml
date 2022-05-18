@@ -5,7 +5,6 @@
     <application>
         <service android:name=".VPNService"
             android:permission="android.permission.BIND_VPN_SERVICE"
-            android:process=":DaemonProcess"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.net.VpnService"/>
