@@ -10,11 +10,9 @@ class XCodeprojPatcher
   attr :target_main
   attr :target_extension
 
-  def run(file, shortVersion, fullVersion, platform, networkExtension, configHash, adjust_sdk_token)
+  def run(file, shortVersion, fullVersion, platform, configHash, adjust_sdk_token)
     open_project file
     open_target_main platform
-
-    die 'IOS requires networkExtension mode' if not networkExtension and platform == 'ios'
 
     if platform == 'macos'
       setup_target_loginitem shortVersion, fullVersion, configHash
@@ -420,9 +418,8 @@ configFile.each { |line|
 
 platform = "macos"
 platform = "ios" if ARGV[3] == "ios"
-networkExtension = true if ARGV[4] == "1"
-adjust_sdk_token = ARGV[5]
+adjust_sdk_token = ARGV[4]
 
 r = XCodeprojPatcher.new
-r.run ARGV[0], ARGV[1], ARGV[2], platform, networkExtension, config, adjust_sdk_token
+r.run ARGV[0], ARGV[1], ARGV[2], platform, config, adjust_sdk_token
 exit 0

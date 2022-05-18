@@ -12,7 +12,7 @@ constexpr const char* FEATURE_SUBSCRIPTION_MANAGEMENT = "subscriptionManagement"
 class FeatureSubscriptionManagement final : public Feature {
  public:
   FeatureSubscriptionManagement()
-      : Feature(FEATURE_SUBSCRIPTION_MANAGEMENT, "Subscription Management",
+      : Feature(FEATURE_SUBSCRIPTION_MANAGEMENT, "Subscription management",
                 false,                              // Is Major Feature
                 L18nStrings::Empty,                 // Display name
                 L18nStrings::Empty,                 // Description
@@ -21,7 +21,8 @@ class FeatureSubscriptionManagement final : public Feature {
                 "",                                 // IconPath
                 "",                                 // link URL
                 "2.9",                              // released
-                true,                               // Can be enabled in devmode
+                true,                               // Can be flipped on
+                false,                              // Can be flipped off
                 QStringList()                       // feature dependencies
         ) {}
 

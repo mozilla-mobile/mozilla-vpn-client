@@ -713,7 +713,8 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
   }
 }
 
-void MozillaVPN::subscriptionDetailsFetched(const QByteArray& subscriptionDetailsData) {
+void MozillaVPN::subscriptionDetailsFetched(
+    const QByteArray& subscriptionDetailsData) {
   logger.debug() << "Subscription details data fetched!";
   Q_UNUSED(subscriptionDetailsData);
 

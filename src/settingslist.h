@@ -108,12 +108,20 @@ SETTING_BYTEARRAY(devices,     // getter
                   true         // remove when reset
 )
 
-SETTING_STRINGLIST(devModeFeatureFlags,     // getter
-                   setDevModeFeatureFlags,  // setter
-                   hasDevModeFeatureFlags,  // has
-                   "devmodeFeatureFlags",   // key
-                   QStringList(),           // default value
-                   false                    // remove when reset
+SETTING_STRINGLIST(featuresFlippedOn,     // getter
+                   setFeaturesFlippedOn,  // setter
+                   hasFeaturesFlippedOn,  // has
+                   "featuresFlippedOn",   // key
+                   QStringList(),         // default value
+                   false                  // remove when reset
+)
+
+SETTING_STRINGLIST(featuresFlippedOff,     // getter
+                   setFeaturesFlippedOff,  // setter
+                   hasFeaturesFlippedOff,  // has
+                   "featuresFlippedOff",   // key
+                   QStringList(),          // default value
+                   false                   // remove when reset
 )
 
 SETTING_INT(dnsProvider,                           // getter

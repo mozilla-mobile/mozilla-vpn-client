@@ -21,7 +21,8 @@ class FeatureInAppAuth final : public Feature {
                 "",                  // IconPath
                 "",                  // link URL
                 "2.4",               // released
-                true,                // Can be enabled in devmode
+                true,                // Can be flipped on
+                false,               // Can be flipped off
                 QStringList()        // feature dependencies
         ) {}
 

@@ -17,10 +17,6 @@ VPNFlickable {
 
     objectName: "settingsTipsAndTricks"
 
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
-    anchors.topMargin: VPNTheme.theme.menuHeight
-
     flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
     interactive: flickContentHeight > height
 
@@ -49,10 +45,6 @@ VPNFlickable {
                 Loader {
                     id: highlightedTutorialLoader
                     property variant highlightedTutorial: VPNTutorial.highlightedTutorial
-
-                    Component.onCompleted: {
-                        console.log(highlightedTutorial)
-                    }
 
                     height: VPNTheme.theme.tutorialCardHeight
                     width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
