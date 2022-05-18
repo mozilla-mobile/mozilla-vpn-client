@@ -109,6 +109,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/servercountrymodel.h
     ${MVPN_SOURCE_DIR}/models/serverdata.cpp
     ${MVPN_SOURCE_DIR}/models/serverdata.h
+    ${MVPN_SOURCE_DIR}/models/subscriptiondata.cpp
+    ${MVPN_SOURCE_DIR}/models/subscriptiondata.h
     ${MVPN_SOURCE_DIR}/models/subscriptionmodel.cpp
     ${MVPN_SOURCE_DIR}/models/subscriptionmodel.h
     ${MVPN_SOURCE_DIR}/models/supportcategorymodel.cpp

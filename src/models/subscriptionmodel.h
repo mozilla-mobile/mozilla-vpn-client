@@ -7,8 +7,6 @@
 
 #include <QAbstractListModel>
 
-#include "subscriptionmodel.h"
-
 class SubscriptionModel final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(SubscriptionModel)

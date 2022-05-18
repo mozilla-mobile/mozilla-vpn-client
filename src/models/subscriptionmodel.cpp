@@ -48,15 +48,15 @@ bool SubscriptionModel::fromJson(const QByteArray& json) {
   beginResetModel();
   m_subscriptionList.clear();
 
-  m_subscriptionList.append(SubscriptionItem{"plan", { planCurrency, QString::number(planAmount), QString::number(planIntervalCount) }});
-  m_subscriptionList.append(SubscriptionItem{"status", { subStatus }});
-  m_subscriptionList.append(SubscriptionItem{"activated", { QString::number(subCreatedAt)} });
+  m_subscriptionList.append(SubscriptionItem{"sub-plan", { planCurrency, QString::number(planAmount), QString::number(planIntervalCount) }});
+  m_subscriptionList.append(SubscriptionItem{"sub-status", { subStatus }});
+  m_subscriptionList.append(SubscriptionItem{"sub-activated", { QString::number(subCreatedAt)} });
 
   // Subscription already is or will expire?
   if (subIsCancelled || subStatus == "inactive") {
-    m_subscriptionList.append(SubscriptionItem{"expires", { QString::number(subExpiresOn) }});  
+    m_subscriptionList.append(SubscriptionItem{"sub-expires", { QString::number(subExpiresOn) }});
   } else {
-    m_subscriptionList.append(SubscriptionItem{"next-billed", { QString::number(subExpiresOn) }});
+    m_subscriptionList.append(SubscriptionItem{"sub-next-billed", { QString::number(subExpiresOn) }});
   }
 
   // Payment is not handled via Google or Apple?
@@ -67,7 +67,7 @@ bool SubscriptionModel::fromJson(const QByteArray& json) {
     QString creditCardLast4 = paymentData.value("credit_card_last4").toString();
 
     m_subscriptionList.append(SubscriptionItem{"payment-method-credit", { paymentType, creditCardBrand, creditCardLast4 }});
-    m_subscriptionList.append(SubscriptionItem{"payment-expires", { QString::number(creditCardExpMonth), QString::number(creditCardExpYear) }});
+    m_subscriptionList.append(SubscriptionItem{"payment-method-expires", { QString::number(creditCardExpMonth), QString::number(creditCardExpYear) }});
   } else {
     m_subscriptionList.append(SubscriptionItem{"payment-method-iap", { paymentType }});
   }

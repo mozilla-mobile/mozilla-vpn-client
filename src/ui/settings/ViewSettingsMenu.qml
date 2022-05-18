@@ -53,7 +53,7 @@ VPNFlickable {
                     : "qrc:/nebula/resources/open-in-new.svg"
                 _iconButtonOnClicked: () => {                    
                     if (subscriptionManagementEnabled) {
-                        settingsStackView.push("qrc:/ui/settings/ViewSubscriptionManagement.qml");
+                        settingsStackView.push("qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
                     } else {
                         Sample.manageAccountClicked.record();
                         VPN.openLink(VPN.LinkAccount);
