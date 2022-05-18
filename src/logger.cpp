@@ -5,6 +5,7 @@
 #include "logger.h"
 #include "loghandler.h"
 
+#include <QJsonDocument>
 #include <QMetaEnum>
 
 Logger::Logger(const QString& module, const QString& className)
@@ -43,6 +44,11 @@ CREATE_LOG_OP_REF(void*);
 
 Logger::Log& Logger::Log::operator<<(const QStringList& t) {
   m_data->m_ts << '[' << t.join(",") << ']' << ' ';
+  return *this;
+}
+
+Logger::Log& Logger::Log::operator<<(const QJsonObject& t) {
+  m_data->m_ts << QJsonDocument(t).toJson(QJsonDocument::Indented) << ' ';
   return *this;
 }
 
