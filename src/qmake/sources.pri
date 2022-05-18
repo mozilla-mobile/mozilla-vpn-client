@@ -81,8 +81,6 @@ SOURCES += \
         models/servercountry.cpp \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
-        models/subscriptiondata.cpp \
-        models/subscriptionmodel.cpp \
         models/supportcategorymodel.cpp \
         models/survey.cpp \
         models/surveymodel.cpp \
@@ -116,6 +114,7 @@ SOURCES += \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
+        subscriptiondata.cpp \
         tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
@@ -239,8 +238,6 @@ HEADERS += \
         models/servercountry.h \
         models/servercountrymodel.h \
         models/serverdata.h \
-        models/subscriptiondata.h \
-        models/subscriptionmodel.h \
         models/supportcategorymodel.h \
         models/survey.h \
         models/surveymodel.h \
@@ -275,6 +272,7 @@ HEADERS += \
         settingsholder.h \
         simplenetworkmanager.h \
         statusicon.h \
+        subscriptiondata.h \
         task.h \
         tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \
