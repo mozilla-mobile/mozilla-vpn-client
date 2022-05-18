@@ -71,7 +71,7 @@ jobs:
           grcov $(pwd)/tests/auth/CMakeFiles/auth_tests.dir -s $(pwd)/tests/auth \
                -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
 
-          grcov $(pwd)/tests/nativemessaging/CMakeFiles/unit_tests.dir -s $(pwd)/tests/nativemessaging \
+          grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s $(pwd)/tests/nativemessaging \
                -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
 
           grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s $(pwd)/tests/qml \
