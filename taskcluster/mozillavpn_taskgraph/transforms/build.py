@@ -10,6 +10,7 @@ import os
 from taskgraph.transforms.base import TransformSequence
 from taskgraph.transforms.task import task_description_schema
 from taskgraph.util.schema import Schema
+from taskgraph.util.workertypes import worker_type_implementation
 from voluptuous import Optional, Required, Any
 
 
@@ -28,7 +29,7 @@ build_schema = Schema(
         Optional("requires-level"): int,
         Optional("release-artifacts"): [str],
         Optional("dependencies"): task_description_schema["dependencies"],
-        Optional("fetches"):any
+        Optional("fetches"): any,
     }
 )
 
@@ -63,6 +64,12 @@ def add_artifacts(config, tasks):
     for task in tasks:
         artifacts = task.setdefault("worker", {}).setdefault("artifacts", [])
 
+        impl, _ = worker_type_implementation(config.graph_config, task["worker-type"])
+        if impl == "generic-worker":
+            path_tmpl = "artifacts/{}"
+        else:
+            path_tmpl = "/builds/worker/artifacts/{}"
+
         # Android artifacts
         if "release-artifacts" in task:
             for path in task.pop("release-artifacts"):
@@ -73,7 +80,7 @@ def add_artifacts(config, tasks):
                     {
                         "type": "file",
                         "name": f"public/build/{path}",
-                        "path": f"artifacts/{path}",
+                        "path": path_tmpl.format(path),
                     }
                 )
 
