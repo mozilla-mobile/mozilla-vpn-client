@@ -14,7 +14,7 @@ const QString& Constants::getStagingServerAddress() {
   return stagingServerAddress;
 }
 
-void Constants::setStaging() { }
+void Constants::setStaging() {}
 
 QString Constants::versionString() {
   return QStringLiteral("QMLTest_AppVersion");
