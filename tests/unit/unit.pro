@@ -34,6 +34,7 @@ INCLUDEPATH += \
             ../../src/hacl-star/kremlin \
             ../../src/hacl-star/kremlin/minimal
 
+include($$PWD/../../version.pri)
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../nebula/nebula.pri)
 include($$PWD/../../translations/translations.pri)

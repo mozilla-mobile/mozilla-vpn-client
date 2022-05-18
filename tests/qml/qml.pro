@@ -32,6 +32,7 @@ INCLUDEPATH += \
             ../../src \
             ../../lottie/lib
 
+include($$PWD/../../version.pri)
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../lottie/lottie.pri)
 include($$PWD/../../nebula/nebula.pri)
