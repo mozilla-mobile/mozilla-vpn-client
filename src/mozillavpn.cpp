@@ -23,6 +23,7 @@
 #include "networkrequest.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "subscriptiondata.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
@@ -716,9 +717,13 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
 void MozillaVPN::subscriptionDetailsFetched(
     const QByteArray& subscriptionDetailsData) {
   logger.debug() << "Subscription details data fetched!";
-  Q_UNUSED(subscriptionDetailsData);
 
-  requestSubscriptionManagement();
+  if (!m_private->m_subscriptionData.fromJson(subscriptionDetailsData)) {
+    logger.error() << "Failed to parse the Subscription JSON data";
+
+    requestSubscriptionManagement();
+    return;
+  }
 }
 
 void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
