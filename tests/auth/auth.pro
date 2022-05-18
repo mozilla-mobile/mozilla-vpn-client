@@ -71,6 +71,7 @@ HEADERS += \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
+    ../../src/version.h \
     testemailvalidation.h \
     testpasswordvalidation.h \
     testsignupandin.h

@@ -4,4 +4,9 @@
 
 !defined(VERSION, var):VERSION = 2.9.0
 
+VERSION_MAJOR = $$section(VERSION, ., 0, 0)
+!defined(BUILD_ID) {
+    BUILD_ID = $${VERSION_MAJOR}.$$system(date +"%Y%m%d%H%M")
+}
+
 DBUS_PROTOCOL_VERSION = 1

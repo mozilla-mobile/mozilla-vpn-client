@@ -308,3 +308,14 @@ RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
 RESOURCES += ui/guides.qrc
 RESOURCES += ui/tutorials.qrc
+
+# Generate the version header file.
+VERSION_TEMPLATE = version.h.in
+genversion.input = VERSION_TEMPLATE
+genversion.output = version.h
+genversion.commands = @echo Building ${QMAKE_FILE_OUT} && \
+    python3 $$PWD/../../scripts/utils/make_template.py ${QMAKE_FILE_IN} \
+        -o ${QMAKE_FILE_OUT} -k @CMAKE_PROJECT_VERSION@=$${VERSION} -k @BUILD_ID@=$${BUILD_ID}
+genversion.CONFIG = target_predeps no_link
+genversion.variable_out = HEADERS
+QMAKE_EXTRA_COMPILERS += genversion
