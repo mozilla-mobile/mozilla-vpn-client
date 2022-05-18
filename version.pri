@@ -5,8 +5,13 @@
 !defined(VERSION, var):VERSION = 2.9.0
 
 VERSION_MAJOR = $$section(VERSION, ., 0, 0)
-!defined(BUILD_ID) {
-    BUILD_ID = $${VERSION_MAJOR}.$$system(date +"%Y%m%d%H%M")
+!defined(BUILD_ID, var) {
+    win* {
+        BUILD_ID = $${VERSION_MAJOR}.$$system(powershell Get-Date -Format yyyyMMddHHmm)
+    } else {
+        BUILD_ID = $${VERSION_MAJOR}.$$system(date +"%Y%m%d%H%M")
+    }
+    message("Generated BUILD_ID: $${BUILD_ID}")
 }
 
 DBUS_PROTOCOL_VERSION = 1

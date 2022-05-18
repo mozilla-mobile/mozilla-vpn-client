@@ -56,11 +56,6 @@ if %DEBUG_BUILD% ==T (
   SET BUILD_CONF=Debug
 )
 
-ECHO Extract version...
-FOR /F "tokens=2* delims==" %%A IN ('FINDSTR /IC:":VERSION" version.pri') DO call :SetVersion %%A
-
-SET FLAGS=BUILD_ID=%VERSION%
-
 ECHO Checking required commands...
 CALL :CheckCommand git
 CALL :CheckCommand python
@@ -80,8 +75,6 @@ python3 scripts\utils\import_languages.py
 
 ECHO Generating glean samples...
 python3 scripts\utils\generate_glean.py
-
-ECHO DEBUG_BUILD = %DEBUG_BUILD%
 
 ECHO Creating the project with flags: %FLAGS%
 
@@ -177,13 +170,3 @@ EXIT 0
     )
   )
   goto :eof
-
-:SetVersion
-  for /f "tokens=1* delims=." %%A IN ("%1") DO call :ComposeVersion %%A
-  goto :EOF
-
-:ComposeVersion
-  SET VERSION=%1
-  SET T=%TIME: =0%
-  SET VERSION=%VERSION%.%date:~-4%%date:~4,2%%date:~7,2%%T:~0,2%%T:~3,2%
-  goto :EOF
