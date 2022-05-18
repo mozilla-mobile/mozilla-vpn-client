@@ -71,7 +71,6 @@ HEADERS += \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
-    ../../src/version.h \
     testemailvalidation.h \
     testpasswordvalidation.h \
     testsignupandin.h
@@ -115,6 +114,7 @@ SOURCES += \
     testpasswordvalidation.cpp \
     testsignupandin.cpp
 
+include($$PWD/../../version.pri)
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../translations/translations.pri)
 
