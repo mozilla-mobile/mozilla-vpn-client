@@ -47,7 +47,7 @@ VPNFlickable {
             VPNUserProfile {
                 _iconButtonImageSource: "qrc:/nebula/resources/chevron.svg"
                 _iconButtonOnClicked: () => {
-                    Sample.manageAccountClicked.record();
+                    VPN.recordGleanEvent("manageAccountClicked")
                     VPN.openLink(VPN.LinkAccount)
                 }
                 Layout.leftMargin: VPNTheme.theme.windowMargin / 2
@@ -125,7 +125,7 @@ VPNFlickable {
                 imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 onClicked: {
-                    Sample.getHelpClickedViewSettings.record();
+                    VPN.recordGleanEvent(getHelpClickedViewSettings.record();
                     getHelpViewNeeded();
                 }
             }

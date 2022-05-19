@@ -23,7 +23,7 @@ VPNFlickable {
     flickContentHeight: col.childrenRect.height
 
     Component.onCompleted: {
-        Sample.networkSettingsViewOpened.record();
+        VPN.recordGleanEvent("networkSettingsViewOpened");
         if (!vpnIsOff) {
             VPN.recordGleanEvent("networkSettingsViewWarning");
         }

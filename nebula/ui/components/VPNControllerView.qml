@@ -577,7 +577,7 @@ Item {
             if (box.connectionInfoScreenVisible) {
                 return;
             }
-            Sample.settingsViewOpened.record();
+            VPN.recordGleanEvent("settingsViewOpened");
             VPN.settingsNeeded();
         }
 
