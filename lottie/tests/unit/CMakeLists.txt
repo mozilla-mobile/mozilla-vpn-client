@@ -4,8 +4,7 @@
 
 find_package(Qt6 REQUIRED COMPONENTS Core Test Qml Quick)
 
-qt_add_executable(lottie_tests EXCLUDE_FROM_ALL)
-add_dependencies(build_tests lottie_tests)
+qt_add_executable(lottie_tests)
 
 target_link_libraries(lottie_tests PRIVATE
     Qt6::Core

@@ -75,8 +75,6 @@ add_subdirectory(tests/auth)
 add_subdirectory(tests/nativemessaging)
 add_subdirectory(tests/unit)
 add_subdirectory(tests/qml)
-add_subdirectory(lottie/tests/unit)
-add_subdirectory(lottie/tests/qml)
 
 # Web Extension build targets
 if(NOT CMAKE_CROSSCOMPILING)
