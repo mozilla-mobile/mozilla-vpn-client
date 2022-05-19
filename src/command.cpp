@@ -20,6 +20,7 @@
 #  include <QSGRendererInterface>
 #  include <QQuickWindow>
 #  include <Windows.h>
+#  include "platforms/windows/windowscommons.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -35,21 +36,7 @@ Logger logger(LOG_MAIN, "Command");
 
 #ifdef MVPN_WINDOWS
 QSGRendererInterface::GraphicsApi maybeUseCustomGraphicApi() {
-  QString location =
-      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-  QDir appDataLocation(location);
-
-  QFile gpuCheckSettings = appDataLocation.filePath("moz.vpn.gpucheck");
-  if (!gpuCheckSettings.exists()) {
-    return QSGRendererInterface::Unknown;
-  }
-
-  if (!gpuCheckSettings.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    return QSGRendererInterface::Unknown;
-  }
-
-  const QByteArray content = gpuCheckSettings.readAll().trimmed();
-  if (content == "software") {
+  if (WindowsCommons::requireSoftwareRendering()) {
     return QSGRendererInterface::Software;
   }
 

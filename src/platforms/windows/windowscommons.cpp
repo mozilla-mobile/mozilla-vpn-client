@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QtEndian>
 #include <QHostAddress>
+#include <QScopeGuard>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QSysInfo>
@@ -15,6 +16,9 @@
 
 #include <Windows.h>
 #include <iphlpapi.h>
+
+#include <dxgi.h>
+#include <d3d11.h>
 
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$mozvpn"
 
@@ -175,4 +179,49 @@ QString WindowsCommons::WindowsVersion() {
     return "11";
   }
   return QSysInfo::productVersion();
+}
+
+// Static
+bool WindowsCommons::requireSoftwareRendering() {
+  IDXGIFactory1* factory;
+  HRESULT result;
+  
+  result = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)(&factory));
+  if (FAILED(result)) {
+    logger.error() << "Failed to create DXGI Factory:" << result;
+    return true;
+  }
+  auto guard = qScopeGuard([&] { factory->Release(); });
+
+  // Enumerate the graphics adapters to find the minimum D3D shader version
+  // that we can guarantee will render successfully.
+  UINT i;
+  IDXGIAdapter1* adapter;
+  D3D_FEATURE_LEVEL minFeatureLevel = D3D_FEATURE_LEVEL_11_1;
+  for (i = 0; factory->EnumAdapters1(i, &adapter) != DXGI_ERROR_NOT_FOUND; i++) {
+    auto adapterGuard([adapter] { adapter->Release(); });
+    DXGI_ADAPTER_DESC1 desc;
+    adapter->GetDesc1(&desc);
+    QString gpuName = QString::fromWCharArray(desc.Description);
+
+    // Try creating the driver to see what D3D feature level it supports.
+    D3D_FEATURE_LEVEL maxFeatureLevel = D3D_FEATURE_LEVEL_9_1;
+    result = D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr,
+                               D3D11_CREATE_DEVICE_DEBUG,
+                               nullptr, 0, D3D11_SDK_VERSION, nullptr,
+                               &maxFeatureLevel, nullptr);
+    if (FAILED(result)) {
+      logger.error() << "D3D Device creation for" << gpuName << "failed:"
+                     << QString::number((quint32)result, 16);
+    } else {
+      if (maxFeatureLevel < minFeatureLevel) {
+        minFeatureLevel = maxFeatureLevel;
+      }
+      logger.debug() << "GPU" << gpuName << "supports D3D:"
+                     << QString::number(maxFeatureLevel, 16);
+    }
+  }
+
+  // D3D version 11.0 shader level 5, is required for GPU rendering.
+  return (minFeatureLevel < D3D_FEATURE_LEVEL_11_0);
 }
