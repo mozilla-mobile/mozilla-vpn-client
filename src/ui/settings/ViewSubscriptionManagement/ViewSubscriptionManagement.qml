@@ -10,7 +10,7 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 VPNFlickable {
-    property string _menuTitle: "Profile"
+    property string _menuTitle: VPNl18n.SubscriptionManagementMenuTitle + VPNSubscriptionData.initialized ? " :)" : " :("
 
     id: vpnFlickable
     objectName: "settingsView"
@@ -21,7 +21,11 @@ VPNFlickable {
     windowHeightExceedsContentHeight: !(flickContentHeight > height)
 
     ListModel {
-        id: subscriptionModel
+        id: subscriptionInfoModel
+    }
+
+    ListModel {
+        id: subscriptionPaymentModel
     }
 
     ColumnLayout {
@@ -44,10 +48,6 @@ VPNFlickable {
             Layout.topMargin: VPNTheme.theme.windowMargin * 2
         }
 
-        Text {
-            text: VPNSubscriptionData.initialized ? ":)" : ":("
-        }
-
         ColumnLayout {
             spacing: 0
 
@@ -58,14 +58,14 @@ VPNFlickable {
                 color: VPNTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
                 font.family: VPNTheme.theme.fontBoldFamily
-                text: "Subscription summary" // TODO: Add localized strings
+                text: VPNl18n.SubscriptionManagementSummaryHeadline
 
                 Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
                 Layout.fillWidth: true
             }
 
             Repeater {
-                model: subscriptionModel
+                model: subscriptionInfoModel
                 delegate: Loader {
                     Layout.fillWidth: true
                     source: "qrc:/ui/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
@@ -76,11 +76,19 @@ VPNFlickable {
                 color: VPNTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
                 font.family: VPNTheme.theme.fontBoldFamily
-                text: "Payment information" // TODO: Add localized strings
+                text: VPNl18n.SubscriptionManagementPaymentHeadline
 
                 Layout.topMargin: VPNTheme.theme.windowMargin * 2
                 Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
                 Layout.fillWidth: true
+            }
+
+            Repeater {
+                model: subscriptionPaymentModel
+                delegate: Loader {
+                    Layout.fillWidth: true
+                    source: "qrc:/ui/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
+                }
             }
 
             VPNButton {
@@ -89,7 +97,7 @@ VPNFlickable {
                 onClicked: {
                     handleManageAccountClicked();
                 }
-                text: "Manage subscription" // TODO: Add localized strings
+                text: VPNl18n.SubscriptionManagementManageSubscriptionButton
                 width: undefined
 
                 Layout.topMargin: VPNTheme.theme.windowMargin * 2
@@ -117,9 +125,10 @@ VPNFlickable {
         VPN.openLink(VPN.LinkAccount);
     }
 
-    function populateListModel() {
-        subscriptionModel.append({
-            labelText: "Subscription plan",
+    function populateListModels() {
+        // Subscription info model
+        subscriptionInfoModel.append({
+            labelText: VPNl18n.SubscriptionManagementPlanLabel,
             valueText: getPlanText(
                 VPNSubscriptionData.planCurrency,
                 VPNSubscriptionData.planAmount,
@@ -128,29 +137,50 @@ VPNFlickable {
             type: "text",
         });
 
-        subscriptionModel.append({
-            labelText: "Status",
+        subscriptionInfoModel.append({
+            labelText: VPNl18n.SubscriptionManagementStatusLabel,
             valueText: VPNSubscriptionData.status,
             type: "pill",
         });
 
-        subscriptionModel.append({
-            labelText: "Next billed",
+        subscriptionInfoModel.append({
+            labelText: VPNl18n.SubscriptionManagementNextLabel,
             valueText: unixToDate(VPNSubscriptionData.expiresOn),
             type: "text",
         });
 
-        subscriptionModel.append({
-            labelText: "Activated",
+        subscriptionInfoModel.append({
+            labelText: VPNl18n.SubscriptionManagementActivatedLabel,
             valueText: unixToDate(VPNSubscriptionData.createdAt),
             type: "text",
         });
 
-        subscriptionModel.append({
-            labelText: "Expires/Expired",
+        subscriptionInfoModel.append({
+            labelText: VPNl18n.SubscriptionManagementExpiresLabel,
             valueText: unixToDate(VPNSubscriptionData.expiresOn),
             type: "text",
         });
+
+        // Subscription payment model
+        if (VPNSubscriptionData.paymentType === "credit") {
+            subscriptionPaymentModel.append({
+                labelText: VPNSubscriptionData.creditCardBrand,
+                valueText: VPNl18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
+                type: "creditCard",
+            });
+
+            subscriptionPaymentModel.append({
+                labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
+                valueText: "June 2026",
+                type: "text",
+            });
+        } else {
+            subscriptionPaymentModel.append({
+                labelText: VPNl18n.SubscriptionManagementSubscriptionPlatformLabel.arg("IAP Google or Apple"),
+                valueText: "",
+                type: "text",
+            });
+        }
     }
 
     function unixToDate(unixTimestamp) {
@@ -158,7 +188,8 @@ VPNFlickable {
     }
 
     function getPlanText(currency, amount, intervalCount) {
-        const localizedCurrency = Number(amount / 100).toLocaleCurrencyString(Qt.locale(VPNLocalizer.code), currency.toUpperCase());
+        const displayAmount = (amount || 0) / 100;
+        const localizedCurrency = Number(displayAmount).toLocaleCurrencyString(Qt.locale(VPNLocalizer.code), currency.toUpperCase());
 
         if (intervalCount === 12) {
             return VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
@@ -168,15 +199,34 @@ VPNFlickable {
             return VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
         }
 
-        // TODO: Check if true, but probably it’s a free trial if we made it here.
-        return "Free trial";
+        // TODO: Confirm that’s really the case: If we made it here the user hass a free trial.
+        return VPNl18n.FreeTrialsFreeTrialLabel;
     }
 
     Component.onCompleted: {
-        const data = '{"created_at":1626704467,"expires_on":1652970067,"is_cancelled":false,"payment":{"credit_card_brand":"visa","credit_card_exp_month":12,"credit_card_exp_year":2022,"credit_card_last4":"0016","provider":"stripe","type":"credit"},"plan":{"amount":499,"currency":"eur","interval_count":1,"interval":"month"},"status":"active","type":"web"}';
+        const exampleData = '{
+            "created_at":1626704467,
+            "expires_on":1652970067,
+            "is_cancelled":false,
+            "payment": {
+                "credit_card_brand":"visa",
+                "credit_card_exp_month":12,
+                "credit_card_exp_year":2022,
+                "credit_card_last4":"0016",
+                "provider":"stripe",
+                "type":"credit"
+            },
+            "plan":{
+                "amount":499,
+                "currency":"eur",
+                "interval_count":1,
+                "interval":"month"
+            },
+            "status":"active",
+            "type":"web"
+        }';
 
-        VPNSubscriptionData.fromJson(data);
-
-        populateListModel();
+        VPNSubscriptionData.fromJson(exampleData);
+        populateListModels();
     }
 }

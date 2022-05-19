@@ -634,11 +634,17 @@ subscriptionManagement:
   expiresLabel:
     value: Expires
     comment: Label for the upcoming date on which the subscription will expire.
-  paymentMethod:
+  subscriptionPlatformLabel:
     value: "%1 subscription"
     comment:
       - The %1 represents the subscription platform.
       - Values for %1 could be “Apple” or “Google” for example.
+  cardLast4:
+    value: "Card ending in %1"
+    comment: The %1 represents the last four digits of a credit card.
+  cardExpiresLabel:
+    value: Expires
+    comment: Label for the date on which the payment method expires.
   manageSubscriptionButton:
     value: Manage subscription
     comment: Label for a button that will take the user to a view where the can manage their subscription

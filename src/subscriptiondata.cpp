@@ -89,7 +89,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       return false;
     }
 
-    QJsonValue creditCardLast4 = paymentData.value("credit_card_brand");
+    QJsonValue creditCardLast4 = paymentData.value("credit_card_last4");
     if (!creditCardBrand.isString()) {
       return false;
     }

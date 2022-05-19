@@ -12,7 +12,6 @@ import telemetry 0.30
 
 import QtQuick.Layouts 1.14
 
-
 Item {
     id: viewInitialize
 

@@ -720,10 +720,11 @@ void MozillaVPN::subscriptionDetailsFetched(
 
   if (!m_private->m_subscriptionData.fromJson(subscriptionDetailsData)) {
     logger.error() << "Failed to parse the Subscription JSON data";
-
-    requestSubscriptionManagement();
+    errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
+
+  requestSubscriptionManagement();
 }
 
 void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {

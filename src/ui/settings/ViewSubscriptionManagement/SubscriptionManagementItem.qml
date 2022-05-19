@@ -18,6 +18,10 @@ ColumnLayout {
             when: type === "text"
 
             PropertyChanges {
+                target: rowLabel
+                visible: true
+            }
+            PropertyChanges {
                 target: rowText
                 visible: true
             }
@@ -25,16 +29,48 @@ ColumnLayout {
                 target: rowPill
                 visible: false
             }
+            PropertyChanges {
+                target: creditCard
+                visible: false
+            }
         },
         State {
             when: type === "pill"
 
+            PropertyChanges {
+                target: rowLabel
+                visible: true
+            }
             PropertyChanges {
                 target: rowText
                 visible: false
             }
             PropertyChanges {
                 target: rowPill
+                visible: true
+            }
+            PropertyChanges {
+                target: creditCard
+                visible: false
+            }
+        },
+        State {
+            when: type === "creditCard"
+
+            PropertyChanges {
+                target: rowLabel
+                visible: false
+            }
+            PropertyChanges {
+                target: rowText
+                visible: true
+            }
+            PropertyChanges {
+                target: rowPill
+                visible: false
+            }
+            PropertyChanges {
+                target: creditCard
                 visible: true
             }
         }
@@ -60,30 +96,9 @@ ColumnLayout {
             Layout.alignment: Qt.AlignLeft
         }
 
-        // TODO: Create credit card icon component
-        VPNIcon {
-            id: labelIcon
-            property string cardBrand: VPNSubscriptionData.creditCardBrand
-            property var availableCardIcons: [
-                "android",
-                "apple",
-                "paypal",
-                "visa",
-                "mastercard",
-                "amex",
-                "discover",
-                "diners",
-                "unionpay",
-                "jcb"
-            ]
-
-            source: availableCardIcons.includes(cardBrand)
-                ? `qrc:/ui/resources/logos/${cardBrand}.svg`
-                : "qrc:/ui/resources/logos/unbranded.svg"
-            sourceSize.height: VPNTheme.theme.iconSizeSmall * 1.5
-            sourceSize.width: VPNTheme.theme.iconSizeSmall * 1.5
-
-            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+        VPNCreditCard {
+            id: creditCard
+            brand: labelText
         }
 
         VPNInterLabel {

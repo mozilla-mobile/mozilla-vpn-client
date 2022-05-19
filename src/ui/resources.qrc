@@ -21,9 +21,6 @@
         <file>resources/features/support-form-preview.png</file>
         <file>resources/globe-warning.svg</file>
         <file>resources/heart-check.svg</file>
-        <file>resources/logos/apple.svg</file>
-        <file>resources/logos/android.svg</file>
-        <file>resources/logos/mastercard.svg</file>
         <file>resources/logo-animated1.png</file>
         <file>resources/logo-animated1.svg</file>
         <file>resources/logo-animated2.png</file>
@@ -43,6 +40,17 @@
         <file>resources/onboarding/onboarding2.svg</file>
         <file>resources/onboarding/onboarding3.svg</file>
         <file>resources/onboarding/onboarding4.svg</file>
+        <file>resources/payment/amex.svg</file>
+        <file>resources/payment/android.svg</file>
+        <file>resources/payment/apple.svg</file>
+        <file>resources/payment/diners.svg</file>
+        <file>resources/payment/discover.svg</file>
+        <file>resources/payment/jcb.svg</file>
+        <file>resources/payment/mastercard.svg</file>
+        <file>resources/payment/paypal.svg</file>
+        <file>resources/payment/unbranded.svg</file>
+        <file>resources/payment/unionpay.svg</file>
+        <file>resources/payment/visa.svg</file>
         <file>resources/quick-access.svg</file>
         <file>resources/settings/aboutUs.svg</file>
         <file>resources/settings/apps.svg</file>

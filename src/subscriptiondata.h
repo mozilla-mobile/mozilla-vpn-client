@@ -31,7 +31,7 @@ class SubscriptionData final : public QObject {
   SubscriptionData();
   ~SubscriptionData();
 
-  // [[nodiscard]] bool fromJson(const QByteArray& json);
+  // TODO: Only exposed to QML for dev
   Q_INVOKABLE bool fromJson(const QByteArray& json);
 
   bool initialized() const { return !m_rawJson.isEmpty(); }
@@ -50,10 +50,9 @@ class SubscriptionData final : public QObject {
   int creditCardExpMonth() const { return m_creditCardExpMonth; }
   int creditCardExpYear() const { return m_creditCardExpYear; }
 
-
  signals:
   void changed();
-  
+
  private:
   QByteArray m_rawJson;
 
