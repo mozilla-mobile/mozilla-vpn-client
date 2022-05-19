@@ -28,6 +28,7 @@ target_link_libraries(auth_tests PRIVATE
     Qt6::Network
     Qt6::NetworkAuth
     Qt6::Gui
+    Qt6::WebSockets
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick

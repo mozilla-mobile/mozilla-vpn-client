@@ -7,6 +7,7 @@ TARGET = qml_tests
 
 QT += quick
 QT += widgets
+QT += websockets
 
 CONFIG += warn_on qmltestcase
 CONFIG += c++1z

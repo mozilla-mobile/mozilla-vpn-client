@@ -7,6 +7,7 @@ QT += network
 QT += networkauth
 QT += qml
 QT += widgets
+QT += websockets
 
 CONFIG += c++1z
 

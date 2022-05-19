@@ -33,6 +33,10 @@ WebSocketHandler::WebSocketHandler() {
 
 // static
 QString WebSocketHandler::webSocketServerUrl() {
+  if (WebSocketHandler::m_customWebSocketServerUrl.count() > 0) {
+    return WebSocketHandler::m_customWebSocketServerUrl;
+  }
+
   QString httpServerUrl;
   if (Constants::inProduction()) {
     httpServerUrl = Constants::API_PRODUCTION_URL;
@@ -49,6 +53,22 @@ bool WebSocketHandler::isUserAuthenticated() {
   Q_ASSERT(vpn);
 
   return vpn->userState() == MozillaVPN::UserAuthenticated;
+}
+
+// static
+QString WebSocketHandler::m_customWebSocketServerUrl = "";
+
+// static
+void WebSocketHandler::testOverrideWebSocketServerUrl(QString url) {
+  WebSocketHandler::m_customWebSocketServerUrl = url;
+}
+
+void WebSocketHandler::testOverridePingInterval(int newInterval) {
+  m_pingInterval = newInterval;
+}
+
+void WebSocketHandler::testOverrideRetryInterval(int newInterval) {
+  m_retryInterval = newInterval;
 }
 
 void WebSocketHandler::initialize() {
@@ -145,9 +165,9 @@ void WebSocketHandler::onClose() {
   if (WebSocketHandler::isUserAuthenticated()) {
     logger.debug()
         << "User is authenticated. Attempting to reopen WebSocket in:"
-        << WEBSOCKET_RETRY_INTERVAL;
+        << m_retryInterval;
 
-    QTimer::singleShot(WEBSOCKET_RETRY_INTERVAL, this, &WebSocketHandler::open);
+    QTimer::singleShot(m_retryInterval, this, &WebSocketHandler::open);
   } else {
     logger.debug()
         << "User is not authenticated. Will not attempt to reopen WebSocket.";
@@ -167,7 +187,7 @@ void WebSocketHandler::sendPing() {
   m_webSocket.ping();
 
   m_pingTimer.setSingleShot(true);
-  m_pingTimer.start(WEBSOCKET_PING_INTERVAL);
+  m_pingTimer.start(m_pingInterval);
 }
 
 /**
@@ -183,8 +203,7 @@ void WebSocketHandler::onPong(quint64 elapsedTime) {
   logger.debug() << "WebSocket pong" << elapsedTime;
 
   m_pingTimer.stop();
-  QTimer::singleShot(WEBSOCKET_PING_INTERVAL, this,
-                     &WebSocketHandler::sendPing);
+  QTimer::singleShot(m_pingInterval, this, &WebSocketHandler::sendPing);
 }
 
 /**

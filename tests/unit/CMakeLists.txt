@@ -25,6 +25,7 @@ target_link_libraries(unit_tests PRIVATE
     Qt6::Xml
     Qt6::Network
     Qt6::Test
+    Qt6::WebSockets
     Qt6::Widgets
     Qt6::Gui
     Qt6::Qml

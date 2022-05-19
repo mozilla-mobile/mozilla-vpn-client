@@ -17,6 +17,11 @@ class WebSocketHandler final : public QObject {
   WebSocketHandler();
   void initialize();
 
+  // These functions are here for testing purposes.
+  static void testOverrideWebSocketServerUrl(QString url);
+  void testOverridePingInterval(int newInterval);
+  void testOverrideRetryInterval(int newInterval);
+
  signals:
   void closed();
 
@@ -39,6 +44,9 @@ class WebSocketHandler final : public QObject {
   QWebSocket m_webSocket;
   QUrl m_url;
   QTimer m_pingTimer;
+
+  int m_pingInterval = WEBSOCKET_PING_INTERVAL;
+  int m_retryInterval = WEBSOCKET_RETRY_INTERVAL;
 
   static QString m_customWebSocketServerUrl;
 };

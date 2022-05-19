@@ -20,6 +20,7 @@ add_dependencies(build_tests qml_tests)
 
 target_link_libraries(qml_tests PRIVATE
     Qt6::Gui
+    Qt6::WebSockets
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick

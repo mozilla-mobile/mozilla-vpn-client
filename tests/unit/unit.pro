@@ -8,6 +8,7 @@ QT += qml
 QT += quick
 QT += xml
 QT += widgets
+QT += websockets
 
 DEFINES += BUILD_QMAKE
 
@@ -122,6 +123,7 @@ HEADERS += \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
+    ../../src/websockethandler.h \
     helper.h \
     testadjust.h \
     testandroidmigration.h \
@@ -143,7 +145,8 @@ HEADERS += \
     testtasks.h \
     testthemes.h \
     testtimersingleshot.h \
-    testtutorial.h
+    testtutorial.h \
+    testwebsockethandler.h
 
 SOURCES += \
     ../../src/adjust/adjustfiltering.cpp \
@@ -224,6 +227,7 @@ SOURCES += \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \
+    ../../src/websockethandler.cpp \
     main.cpp \
     moccontroller.cpp \
     mocinspectorhandler.cpp \
@@ -249,7 +253,8 @@ SOURCES += \
     testtasks.cpp \
     testthemes.cpp \
     testtimersingleshot.cpp \
-    testtutorial.cpp
+    testtutorial.cpp \
+    testwebsockethandler.cpp
 
 # Platform-specific: Linux
 linux {
