@@ -11,6 +11,7 @@ target_include_directories(crashreporter PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(crashreporter PRIVATE
     Qt6::Core
     Qt6::Gui
+    Qt6::WebSockets
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick

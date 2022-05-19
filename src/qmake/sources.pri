@@ -138,7 +138,8 @@ SOURCES += \
         timersingleshot.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
-        urlopener.cpp
+        urlopener.cpp \
+        websockethandler.cpp
 
 HEADERS += \
         appimageprovider.h \
@@ -294,7 +295,8 @@ HEADERS += \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
-        urlopener.h
+        urlopener.h \
+        websockethandler.h
 
 # Signal handling for unix platforms
 unix {

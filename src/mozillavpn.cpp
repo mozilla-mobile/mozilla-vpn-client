@@ -42,6 +42,7 @@
 #include "taskscheduler.h"
 #include "update/versionapi.h"
 #include "urlopener.h"
+#include "websockethandler.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
@@ -192,6 +193,8 @@ MozillaVPN::~MozillaVPN() {
 
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
+MozillaVPN::UserState MozillaVPN::userState() const { return m_userState; }
+
 bool MozillaVPN::stagingMode() const { return !Constants::inProduction(); }
 
 bool MozillaVPN::debugMode() const {
@@ -218,6 +221,8 @@ void MozillaVPN::initialize() {
   m_private->m_connectionBenchmark.initialize();
 
   m_private->m_ipAddressLookup.initialize();
+
+  m_private->m_webSocketHandler.initialize();
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
