@@ -15,8 +15,6 @@
 #include "simplenetworkmanager.h"
 
 #ifdef MVPN_WINDOWS
-#  include <QDir>
-#  include <QFile>
 #  include <QSGRendererInterface>
 #  include <QQuickWindow>
 #  include <Windows.h>
@@ -33,17 +31,6 @@
 
 namespace {
 Logger logger(LOG_MAIN, "Command");
-
-#ifdef MVPN_WINDOWS
-QSGRendererInterface::GraphicsApi maybeUseCustomGraphicApi() {
-  if (WindowsCommons::requireSoftwareRendering()) {
-    return QSGRendererInterface::Software;
-  }
-
-  return QSGRendererInterface::Unknown;
-}
-#endif
-
 }  // namespace
 
 QVector<std::function<Command*(QObject*)>> Command::s_commandCreators;
@@ -186,11 +173,8 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 #endif
 
 #ifdef MVPN_WINDOWS
-  {
-    QSGRendererInterface::GraphicsApi api = maybeUseCustomGraphicApi();
-    if (api != QSGRendererInterface::Unknown) {
-      QQuickWindow::setGraphicsApi(api);
-    }
+  if (WindowsCommons::requireSoftwareRendering()) {
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
   }
 #endif
 

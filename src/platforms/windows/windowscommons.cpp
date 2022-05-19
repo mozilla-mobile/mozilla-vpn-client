@@ -183,9 +183,16 @@ QString WindowsCommons::WindowsVersion() {
 
 // Static
 bool WindowsCommons::requireSoftwareRendering() {
+  /* Qt6 appears to require Direct3D shader level 5, and can result in rendering
+   * failures on some platforms. To workaround the issue, try to identify if
+   * this device can reliably the shaders, and request fallback to software
+   * rendering if not.
+   *
+   * See: https://bugreports.qt.io/browse/QTBUG-100689
+   */
   IDXGIFactory1* factory;
   HRESULT result;
-  
+
   result = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)(&factory));
   if (FAILED(result)) {
     logger.error() << "Failed to create DXGI Factory:" << result;
@@ -195,10 +202,10 @@ bool WindowsCommons::requireSoftwareRendering() {
 
   // Enumerate the graphics adapters to find the minimum D3D shader version
   // that we can guarantee will render successfully.
-  UINT i;
+  UINT i = 0;
   IDXGIAdapter1* adapter;
   D3D_FEATURE_LEVEL minFeatureLevel = D3D_FEATURE_LEVEL_11_1;
-  for (i = 0; factory->EnumAdapters1(i, &adapter) != DXGI_ERROR_NOT_FOUND; i++) {
+  while (factory->EnumAdapters1(i++, &adapter) != DXGI_ERROR_NOT_FOUND) {
     auto adapterGuard([adapter] { adapter->Release(); });
     DXGI_ADAPTER_DESC1 desc;
     adapter->GetDesc1(&desc);
@@ -210,14 +217,14 @@ bool WindowsCommons::requireSoftwareRendering() {
                                nullptr, 0, D3D11_SDK_VERSION, nullptr,
                                &maxFeatureLevel, nullptr);
     if (FAILED(result)) {
-      logger.error() << "D3D Device creation for" << gpuName << "failed:"
-                     << QString::number((quint32)result, 16);
+      logger.error() << "D3D Device" << gpuName
+                     << "failed:" << QString::number((quint32)result, 16);
     } else {
       if (maxFeatureLevel < minFeatureLevel) {
         minFeatureLevel = maxFeatureLevel;
       }
-      logger.debug() << "GPU" << gpuName << "supports D3D:"
-                     << QString::number(maxFeatureLevel, 16);
+      logger.debug() << "D3D Device" << gpuName
+                     << "supports D3D:" << QString::number(maxFeatureLevel, 16);
     }
   }
 
