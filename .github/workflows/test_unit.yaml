@@ -94,11 +94,7 @@ jobs:
           directory: .
           flags: unit_tests
           name: codecov-poc
-          files:
-            auth_lcov.info
-            nativemessaging_lcov.info
-            qml_lcov.info
-            unit_lcov.info
+          files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info
           verbose: true
 
   macos-unit-tests:
