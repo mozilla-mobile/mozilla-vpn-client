@@ -15,7 +15,7 @@ VPNFlickable {
 
     property string _menuTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
 
-    objectName: "settingsTipsAndTricks"
+    objectName: "settingsTipsAndTricksPage"
 
     flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
     interactive: flickContentHeight > height
@@ -109,6 +109,7 @@ VPNFlickable {
                     }
 
                     Flow {
+                        objectName: "guideLayout"
                         Layout.topMargin: VPNTheme.theme.vSpacingSmall
                         Layout.fillWidth: true
                         spacing: 16
@@ -117,6 +118,8 @@ VPNFlickable {
                             id: guideRepeater
                             model: VPNGuide
                             delegate: VPNGuideCard {
+                                objectName: guide.titleId
+
                                 height: 172
                                 width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? (parent.width - parent.spacing) / 2 : (parent.width - (parent.spacing * 2)) / 3
 

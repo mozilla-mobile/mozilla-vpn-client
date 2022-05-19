@@ -25,6 +25,8 @@ class Guide final : public QObject {
 
   static bool evaluateConditions(const QJsonObject& conditions);
 
+  QString titleId() const;
+
   ~Guide();
 
  private:

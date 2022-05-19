@@ -19,6 +19,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "task.h"
+#include "models/guidemodel.h"
 
 #include <functional>
 
@@ -639,6 +640,22 @@ static QList<InspectorCommand> s_commands{
                        }
 
                        obj["value"] = languages;
+                       return obj;
+                     }},
+
+    InspectorCommand{"guides", "Returns a list of guide title ids", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       QJsonObject obj;
+
+                       GuideModel* guideModel = GuideModel::instance();
+                       Q_ASSERT(guideModel);
+
+                       QJsonArray guides;
+                       for (const QString& guideTitleId : guideModel->guideTitleIds()) {
+                         guides.append(guideTitleId);
+                       }
+
+                       obj["value"] = guides;
                        return obj;
                      }},
 

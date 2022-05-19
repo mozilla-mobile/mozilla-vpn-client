@@ -21,7 +21,7 @@ Item {
             id: imageBg
 
             Layout.fillWidth: true
-            Layout.preferredHeight: Screen.height * 0.33
+            Layout.preferredHeight: window.height * 0.33
             Layout.topMargin: -safeAreaHeight //we want to cover the safe area with the image background color
 
             VPNIconButton {
@@ -41,7 +41,7 @@ Item {
                 }
 
                 Image {
-                    objectName: "menuIcon"
+                    objectName: "backArrow"
 
                     anchors.centerIn: parent
 
@@ -82,7 +82,6 @@ Item {
         }
 
         VPNFlickable {
-            id: x
             Layout.fillWidth: true
             Layout.fillHeight: true
 

@@ -356,6 +356,14 @@ module.exports = {
     return json.value;
   },
 
+  async guides() {
+    const json = await this._writeCommand('guides');
+    assert(
+        json.type === 'guides' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
+  },
+
   async screenCapture() {
     const json = await this._writeCommand('screen_capture');
     assert(
