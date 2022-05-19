@@ -190,13 +190,17 @@ int CommandUI::run(QStringList& tokens) {
     ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
     Glean::Initialize(engine);
+
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
     L18nStrings::initialize();
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
-
+    
+#ifdef MVPN_ANDROID
+    AndroidGlean::initialize();
+#endif
 #ifndef Q_OS_WIN
     // Signal handling for a proper shutdown.
     SignalHandler sh;

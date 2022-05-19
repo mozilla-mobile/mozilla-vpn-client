@@ -26,7 +26,6 @@ class GleanUtil(aParent: Context) {
 
     fun initializeGlean() {
         val gleanEnabled = Prefs.get(mParent).getBoolean("glean_enabled",false) // Don't send telemetry unless explicitly asked to.
-
         val channel = if(mParent.packageName.endsWith(".debug"))
         {
                 "staging"
@@ -36,6 +35,7 @@ class GleanUtil(aParent: Context) {
         val conf = Configuration(HttpURLConnectionUploader(), Configuration.DEFAULT_TELEMETRY_ENDPOINT, channel, null)
         val build = BuildInfo("versionCode", "VersionName", Calendar.getInstance())
         Glean.registerPings(Pings)
+        Log.e("ANDROID-GLEAN", "initializeGlean on:$gleanEnabled, ch:$channel ")
         Glean.initialize(
             applicationContext = mParent.applicationContext,
             uploadEnabled = gleanEnabled,
@@ -46,6 +46,7 @@ class GleanUtil(aParent: Context) {
     }
 
     fun setGleanUploadEnabled(upload: Boolean) {
+        Log.e("ANDROID-GLEAN", "setGleanUploadEnabled  $upload")
         Prefs.get(mParent).edit().apply {
             putBoolean("glean_enabled",upload)
             apply()
@@ -62,19 +63,9 @@ class GleanUtil(aParent: Context) {
     }
 
     fun sendGleanPings() {
+        Log.e("ANDROID-GLEAN", "sendGleanPings ")
         Pings.main.submit()
     }
-
-    @Suppress("UNCHECKED_CAST") // We're using nullable casting and check that :)
-    fun recordGleanEvent(sampleName: String) {
-        val sample = getSample(sampleName) as? EventMetricType<NoExtraKeys, NoExtras>
-        if (sample == null) {
-            Log.e("ANDROID-GLEAN", "Ping not found $sampleName")
-            return
-        }
-        sample.record(NoExtras())
-    }
-
     fun recordEvent(event :JSONObject){
         if(event.has("extras")){
             recordGleanEventWithExtraKeys(event.get("key").toString(),event.get("extras").toString())
@@ -84,7 +75,18 @@ class GleanUtil(aParent: Context) {
     }
 
     @Suppress("UNCHECKED_CAST") // We're using nullable casting and check that :)
+    fun recordGleanEvent(sampleName: String) {
+        Log.e("ANDROID-GLEAN", "recordGleanEvent $sampleName")
+        val sample = getSample(sampleName) as? EventMetricType<NoExtraKeys, NoExtras>
+        if (sample == null) {
+            Log.e("ANDROID-GLEAN", "Ping not found $sampleName")
+            return
+        }
+        sample.record(NoExtras())
+    }
+    @Suppress("UNCHECKED_CAST") // We're using nullable casting and check that :)
     fun recordGleanEventWithExtraKeys(sampleName: String, extraKeysJson: String) {
+        Log.e("ANDROID-GLEAN", "recordGleanEventWithExtraKeys $sampleName / $extraKeysJson")
         val sample = getSample(sampleName) as? EventMetricType<*, EventExtras>
         val extra = getExtra(sampleName, extraKeysJson)
         if (sample == null) {

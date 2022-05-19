@@ -1097,10 +1097,6 @@ void MozillaVPN::mainWindowLoaded() {
   // Initialize glean with an async call because at this time, QQmlEngine does
   // not have root objects yet to see the current graphics API in use.
   // Initialize glean
-#ifdef MVPN_ANDROID
-    AndroidGlean::initialize();
-#endif 
-
   logger.debug() << "Initializing Glean";
   QTimer::singleShot(0, this, &MozillaVPN::initializeGlean);
 

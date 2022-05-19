@@ -35,6 +35,7 @@ class VPNService : android.net.VpnService() {
             return
         }
         Log.init(this)
+        mGlean.initializeGlean()
         SharedLibraryLoader.loadSharedLibrary(this, "wg-go")
         Log.i(tag, "loaded lib")
         Log.e(tag, "Wireguard Version ${wgVersion()}")

@@ -51,8 +51,7 @@ AndroidGlean::AndroidGlean(QObject* parent) : QObject(parent) {
           &AndroidGlean::setGleanSourceTags);
   connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
           this, &AndroidGlean::gleanEnabledChanged);
-
-  gleanEnabledChanged(SettingsHolder::instance()->gleanEnabled());
+  connect(AndroidVPNActivity::instance(), &AndroidVPNActivity::serviceConnected, this, &AndroidGlean::daemonConnected);
 }
 
 AndroidGlean::~AndroidGlean() {
@@ -100,4 +99,9 @@ void AndroidGlean::gleanEnabledChanged(bool enabled) {
   QJsonDocument doc(args);
   logger.debug() << " gleanEnabledChanged" << enabled;
   AndroidVPNActivity::instance()->sendToService(ServiceAction::ACTION_GLEAN_ENABLED_CHANGED, doc.toJson(QJsonDocument::Compact));
+}
+
+void AndroidGlean::daemonConnected(){
+   // Daemon is now ready
+  gleanEnabledChanged(SettingsHolder::instance()->gleanEnabled());
 }
