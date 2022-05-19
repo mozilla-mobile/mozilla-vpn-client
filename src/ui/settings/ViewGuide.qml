@@ -155,6 +155,7 @@ Item {
                                 text: VPNl18n[guideBlock.id]
                                 font.pixelSize: VPNTheme.theme.fontSize
                                 lineHeight: VPNTheme.theme.labelLineHeight
+                                verticalAlignment: Text.AlignVCenter
                             }
                         }
 
