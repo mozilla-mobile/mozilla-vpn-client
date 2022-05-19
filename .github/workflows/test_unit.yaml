@@ -26,6 +26,8 @@ jobs:
 
       - name: Install dependences
         run: |
+          echo "Github Runner reports $(nproc) cores"
+
           sudo apt update
           sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
           python3 -m pip install -r requirements.txt
@@ -108,6 +110,8 @@ jobs:
       - name: Checkout submodules
         shell: bash
         run: |
+          echo "Github Runner reports $(nproc) cores"
+
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
