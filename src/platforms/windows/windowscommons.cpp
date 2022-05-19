@@ -206,8 +206,7 @@ bool WindowsCommons::requireSoftwareRendering() {
 
     // Try creating the driver to see what D3D feature level it supports.
     D3D_FEATURE_LEVEL maxFeatureLevel = D3D_FEATURE_LEVEL_9_1;
-    result = D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr,
-                               D3D11_CREATE_DEVICE_DEBUG,
+    result = D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, 0,
                                nullptr, 0, D3D11_SDK_VERSION, nullptr,
                                &maxFeatureLevel, nullptr);
     if (FAILED(result)) {
