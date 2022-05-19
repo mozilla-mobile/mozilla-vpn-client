@@ -57,9 +57,8 @@ jobs:
         shell: bash
         run: |
           $(pwd)/build/tests/qml/qml_tests -platform offscreen
-          grcov $(pwd)/build/tests/qml/CMakeFiles/qml_tests.dir \
-              -s $(pwd)/build/tests/qml -t lcov --branch --ignore-not-existing \
-                  > ${{github.workspace}}/qml_lcov.info
+          grcov $(pwd)/build/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
@@ -148,16 +147,9 @@ jobs:
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
-          cd qt_static_windows
-          cat qt6* > qt_static.tar.bz2
-          tar xf qt_static.tar.bz2
-          tar xf msm.tar.gz
           mkdir /c/MozillaVPNBuild
-          cp -r * /c/MozillaVPNBuild
-          cd ..
-          cp /c/MozillaVPNBuild/SSL/bin/libssl-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/SSL/bin/libcrypto-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/*.msm .
+          cat qt_static_windows/qt6* > qt6_static.tar.bz2
+          tar xf qt6_static.tar.bz2 -C /c/MozillaVPNBuild
 
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1

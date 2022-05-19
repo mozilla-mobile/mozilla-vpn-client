@@ -32,7 +32,6 @@ target_link_libraries(qml_tests PRIVATE glean lottie nebula translations)
 target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/closeeventhandler.cpp
     ${MVPN_SOURCE_DIR}/closeeventhandler.h
-    ${MVPN_SOURCE_DIR}/constants.cpp
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/featurelist.cpp
     ${MVPN_SOURCE_DIR}/featurelist.h
@@ -75,7 +74,7 @@ target_sources(qml_tests PRIVATE
     helper.cpp
     helper.h
     main.cpp
-    version.h
+    mocconstants.cpp
     mocmozillavpn.cpp
     ../unit/mocinspectorhandler.cpp
 )

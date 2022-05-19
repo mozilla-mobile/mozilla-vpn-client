@@ -40,6 +40,8 @@ constexpr const char* LOG_IOS = "ios";
 constexpr const char* LOG_ANDROID = "android";
 #endif
 
+class QJsonObject;
+
 class Logger {
  public:
   Logger(const QString& module, const QString& className);
@@ -58,6 +60,7 @@ class Logger {
     Log& operator<<(const QString& t);
     Log& operator<<(const QStringList& t);
     Log& operator<<(const QByteArray& t);
+    Log& operator<<(const QJsonObject& t);
     Log& operator<<(QTextStreamFunction t);
     Log& operator<<(void* t);
 
