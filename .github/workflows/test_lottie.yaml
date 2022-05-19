@@ -60,9 +60,7 @@ jobs:
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
 
-          grcov $(pwd)/tests/unit/CMakeFiles/lottie_tests.dir \
-              -s ${{github.workspace}}/lottie/tests/unit \
-              -s ${{github.workspace}}/lottie/lib \
+          grcov $(pwd)/tests/unit/CMakeFiles/lottie_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/lottie_lcov.info
 
       - name: Upload coverage to Codecov
