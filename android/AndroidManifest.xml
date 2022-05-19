@@ -24,8 +24,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         android:allowBackup="false"
         android:name="org.mozilla.firefox.vpn.qt.VPNApplication"
         android:label="Mozilla VPN"
-        android:extractNativeLibs="true"
-        android:process=":QtProcess"
+        android:extractNativeLibs="true"   
         android:theme="@style/AppTheme"
         android:icon="@mipmap/vpnicon"
         android:usesCleartextTraffic="true">
@@ -33,6 +32,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
             android:name="org.mozilla.firefox.vpn.qt.VPNActivity"
             android:label="Mozilla VPN"
+            android:process=":QtProcess"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Splash"
             android:windowSoftInputMode="adjustPan"

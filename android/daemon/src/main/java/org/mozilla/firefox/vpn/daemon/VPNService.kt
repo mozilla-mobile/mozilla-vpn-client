@@ -4,10 +4,12 @@
 
 package org.mozilla.firefox.vpn.daemon
 
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.os.Process
 import android.system.OsConstants
 import com.wireguard.android.util.SharedLibraryLoader
 import com.wireguard.config.Config

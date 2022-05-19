@@ -142,15 +142,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 return true
             }
             ACTIONS.gleanInit -> {
-                val buffer = data.createByteArray()
-                val json = buffer?.let { String(it) }
-                val args = JSONObject(json)
-                args.apply {
-                    mService.mGlean.initializeGlean(
-                        getBoolean("upload"),
-                        getString("channel")
-                    )
-                }
                 return true
             }
 

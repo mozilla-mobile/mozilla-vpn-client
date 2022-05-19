@@ -43,6 +43,11 @@
 #  include <QCoreApplication>
 #endif
 
+#ifdef MVPN_ANDROID
+#  include "platforms/android/androidvpnactivity.h"
+#endif
+
+
 namespace {
 Logger logger(LOG_INSPECTOR, "InspectorHandler");
 
@@ -718,6 +723,21 @@ static QList<InspectorCommand> s_commands{
           obj["value"] = countryArray;
           return obj;
         }},
+#ifdef MVPN_ANDROID
+    InspectorCommand{
+        "dm",
+        "Send a request to the Daemon {type} {args}", 2,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          auto activity = AndroidVPNActivity::instance();
+          Q_ASSERT(activity);
+          auto type = QString(arguments[1]);
+          auto json = QString(arguments[2]);
+
+          ServiceAction a = (ServiceAction) type.toInt();
+          AndroidVPNActivity::sendToService(a,json);
+          return QJsonObject();
+        }},
+#endif
 
     InspectorCommand{
         "reset_surveys",

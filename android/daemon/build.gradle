@@ -14,14 +14,10 @@ buildscript {
                 print("Android Location for wg")
             }
             WG_TOOLS_DIR= "../../../../../3rdparty/wireguard-tools"
-            gleanYamlFiles = [
-                    "$rootDir/../../../glean/metrics.yaml",
-                    "$rootDir/../../../glean/pings.yaml"
-            ]
         }catch(Exception ignored){
             // This is checked from <proj>/android/daemon/tunnel
             WG_TOOLS_DIR= "../../../3rdparty/wireguard-tools"
-            gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml", "$rootDir/../../../glean/pings.yaml"]
+
         }
 
     }
@@ -33,11 +29,12 @@ buildscript {
 }
 
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
     id "com.jetbrains.python.envs" version "0.0.26"
-
 }
+
+
+apply plugin: "com.android.library"
+apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
 
@@ -68,7 +65,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            path 'tunnel/CMakeLists.txt'
+          path 'tunnel/CMakeLists.txt'
         }
     }
     buildTypes {
@@ -115,3 +112,5 @@ dependencies {
     coreLibraryDesugaring Dependencies.com_android_tools_desugar_jdk_libs
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
 }
+
+ext.gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml", "$rootDir/../../../glean/pings.yaml"]

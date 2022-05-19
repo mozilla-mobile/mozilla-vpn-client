@@ -26,7 +26,6 @@ namespace {
 AndroidGlean* s_instance = nullptr;
 Logger logger(LOG_ANDROID, "AndroidGlean");
 
-constexpr auto UTILS_CLASS = "org/mozilla/firefox/vpn/qt/GleanUtil";
 }  // namespace
 
 // static
@@ -53,10 +52,7 @@ AndroidGlean::AndroidGlean(QObject* parent) : QObject(parent) {
   connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
           this, &AndroidGlean::gleanEnabledChanged);
 
-  AndroidUtils::runOnAndroidThreadSync([this]() {
-    logger.debug() << "Initialize Glean";
-    initializeGlean();
-  });
+  gleanEnabledChanged(SettingsHolder::instance()->gleanEnabled());
 }
 
 AndroidGlean::~AndroidGlean() {
@@ -66,32 +62,27 @@ AndroidGlean::~AndroidGlean() {
   s_instance = nullptr;
 }
 
-void AndroidGlean::initializeGlean() {
-  logger.debug() << "init GLEAN";
-  QJsonDocument args;
-  args['upload'] = SettingsHolder::instance()->gleanEnabled();;
-  args['channel']= Constants::inProduction() ? "production" : "staging";
-  AndroidVPNActivity::instance->sendToService(AndroidVPNActivity::ServiceAction::ACTION_GLEAN_INIT, args.toJson(QJsonDocument::Compact));
-}
 void AndroidGlean::sendGleanPings() {
-  AndroidVPNActivity::instance->sendToService(AndroidVPNActivity::ServiceAction::ACTION_SEND_GLEAN_PING, "");
+  AndroidVPNActivity::instance()->sendToService(ServiceAction::ACTION_SEND_GLEAN_PING, "");
 }
 
 void AndroidGlean::recordGleanEvent(const QString& gleanSampleName) {
-  QJsonDocument args;
-  args['key']= gleanSampleName;
+  QJsonObject args;
+  args["key"]= gleanSampleName;
+  QJsonDocument doc(args);
   logger.debug() << " recordGleanEvent" << gleanSampleName;
-  AndroidVPNActivity::instance->sendToService(AndroidVPNActivity::ServiceAction::ACTION_RECORD_EVENT, args.toJson(QJsonDocument::Compact));
+  AndroidVPNActivity::instance()->sendToService(ServiceAction::ACTION_RECORD_EVENT, doc.toJson(QJsonDocument::Compact));
 }
 
 void AndroidGlean::recordGleanEventWithExtraKeys(const QString& gleanSampleName,
                                                  const QVariantMap& extraKeys) {
   QJsonObject extras = QJsonObject::fromVariantMap(extraKeys);
-  QJsonDocument args;
-  args['extras'] = extras;
-  args['key']= gleanSampleName;
+  QJsonObject args;
+  args["extras"] = extras;
+  args["key"]= gleanSampleName;
+  QJsonDocument doc(args);
   logger.debug() << " recordGleanEvent" << gleanSampleName;
-  AndroidVPNActivity::instance->sendToService(AndroidVPNActivity::ServiceAction::ACTION_RECORD_EVENT, args.toJson(QJsonDocument::Compact));
+  AndroidVPNActivity::instance()->sendToService(ServiceAction::ACTION_RECORD_EVENT, doc.toJson(QJsonDocument::Compact));
 
 }
 void AndroidGlean::setGleanSourceTags(const QStringList& tags) {
@@ -104,8 +95,9 @@ void AndroidGlean::setGleanSourceTags(const QStringList& tags) {
 }
 
 void AndroidGlean::gleanEnabledChanged(bool enabled) {
-  QJsonDocument args;
-  args['enabled']=enabled;
+  QJsonObject args;
+  args["enabled"]=enabled;
+  QJsonDocument doc(args);
   logger.debug() << " gleanEnabledChanged" << enabled;
-  AndroidVPNActivity::instance->sendToService(AndroidVPNActivity::ServiceAction::ACTION_GLEAN_ENABLED_CHANGED, args.toJson(QJsonDocument::Compact));
+  AndroidVPNActivity::instance()->sendToService(ServiceAction::ACTION_GLEAN_ENABLED_CHANGED, doc.toJson(QJsonDocument::Compact));
 }

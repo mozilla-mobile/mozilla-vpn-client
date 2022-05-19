@@ -195,3 +195,6 @@ else
   print G "Done 🎉"
   print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/debug/"
 fi
+
+cd ..
+cp -r android-build /mnt/android-build

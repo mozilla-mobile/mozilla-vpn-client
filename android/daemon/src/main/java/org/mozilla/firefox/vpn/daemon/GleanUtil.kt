@@ -14,34 +14,31 @@ import mozilla.telemetry.glean.private.NoExtras
 import org.json.JSONObject
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Pings
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
-import java.lang.UnsupportedOperationException
 import java.util.*
+import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty1
+import kotlin.reflect.full.createInstance
 
 // @MainThread
 @Suppress("UNUSED") // All the calls are via jni from the client, so we can ignore
 class GleanUtil(aParent: Context) {
-
-    @Serializable
-    data class GleanEvent(val aKey:String, val aExtras:JSONObject?) {
-        val key:String = aKey
-        val extras: JSONObject? = aExtras
-    }
-    @Serializable
-    data class InitGleanArgs(val aUpload: Boolean, val aChannel: String){
-        val upload=aUpload
-        val channel = aChannel
-    }
-
     private val mParent: Context = aParent;
 
-    fun initializeGlean(upload: Boolean = false, channel: String = "staging") {
+    fun initializeGlean() {
+        val gleanEnabled = Prefs.get(mParent).getBoolean("glean_enabled",false) // Don't send telemetry unless explicitly asked to.
+
+        val channel = if(mParent.packageName.endsWith(".debug"))
+        {
+                "staging"
+        } else{
+                "production"
+        }
         val conf = Configuration(HttpURLConnectionUploader(), Configuration.DEFAULT_TELEMETRY_ENDPOINT, channel, null)
         val build = BuildInfo("versionCode", "VersionName", Calendar.getInstance())
         Glean.registerPings(Pings)
         Glean.initialize(
             applicationContext = mParent.applicationContext,
-            uploadEnabled = upload,
+            uploadEnabled = gleanEnabled,
             buildInfo = build,
             configuration = conf
         )
@@ -49,6 +46,10 @@ class GleanUtil(aParent: Context) {
     }
 
     fun setGleanUploadEnabled(upload: Boolean) {
+        Prefs.get(mParent).edit().apply {
+            putBoolean("glean_enabled",upload)
+            apply()
+        }
         Glean.setUploadEnabled(upload)
     }
 
@@ -84,61 +85,41 @@ class GleanUtil(aParent: Context) {
 
     @Suppress("UNCHECKED_CAST") // We're using nullable casting and check that :)
     fun recordGleanEventWithExtraKeys(sampleName: String, extraKeysJson: String) {
-
-        // TODO: Currently on any case where we rely on more then 1 Key,
-        // creating the extra is complicated. For this one case i guess this is okay.
-        // We could do a better work on getting this via reflection, or do more codegen in generate_glean.
-        when (sampleName) {
-            "onboardingCtaClick" -> {
-                val extras = JSONObject(extraKeysJson)
-                val extra = Sample.OnboardingCtaClickExtra(
-                    panelCta = extras.get("panel_cta").toString(),
-                    panelIdx = extras.get("panel_idx").toString(),
-                    panelId = extras.get("panel_id").toString()
-                )
-                Sample.onboardingCtaClick.record(extra)
-            }
-            else -> {
-                val extra = QtExtra(extraKeysJson)
-                val sample = getSample(sampleName) as? EventMetricType<*, QtExtra>
-                if (sample == null) {
-                    Log.e("ANDROID-GLEAN", "Ping not found $sampleName")
-                    return
-                }
-                sample.record(extra)
-            }
+        val sample = getSample(sampleName) as? EventMetricType<*, EventExtras>
+        val extra = getExtra(sampleName, extraKeysJson)
+        if (sample == null) {
+            Log.e("ANDROID-GLEAN", "Ping not found $sampleName")
+            return
         }
+        sample.record(extra)
     }
+
     @Suppress("UNCHECKED_CAST") // Callers check cast.
     fun getSample(sampleName: String): EventMetricType<*, *> {
         val sampleProperty = Sample.javaClass.kotlin.members.first {
             it.name == sampleName
         } as KProperty1<Sample, EventMetricType<*, *>>
-        val sampleInstance = sampleProperty.get(Sample)
-        return sampleInstance
+        return sampleProperty.get(Sample)
     }
 
-    data class QtExtra(val json: String) : EventExtras {
-        override fun toFfiExtra(): Pair<IntArray, List<String>> {
-            var keys = mutableListOf<Int>()
-            var values = mutableListOf<String>()
-
-            val counter = 0
-            val extras = JSONObject(json)
-
-            extras.keys().forEach {
-                keys.add(counter)
-                values.add(extras.get(it).toString())
-            }
-            if (keys.size > 1) {
-                /*
-                    When a Sample has more then 1 key, we need to make sure they are passed
-                    in the right order to rust. Currently the way we setup the qt-calling, we can't be
-                    assured that even if qml is calling the right order, as we serialise to json.
-                 */
-                throw UnsupportedOperationException("You shall not pass using 2 extra-keys")
-            }
-            return Pair(IntArray(keys.size, { keys[it] }), values)
+    @Suppress("UNCHECKED_CAST") // Callers check cast.
+    fun getExtra(sampleName: String, extraKeysJson: String): EventExtras {
+        val extraJSON= JSONObject(extraKeysJson)
+        val extrasName = "${sampleName}Extras"
+        // Search Sample for the Dataclass of "someNameExtras"
+        val extraDataClass = Sample.javaClass.kotlin.nestedClasses.first(){
+            it.simpleName.equals(extrasName, ignoreCase = true)
         }
+        val extra: EventExtras = extraDataClass.createInstance() as EventExtras;
+        extraJSON.keys().forEach {
+            // QML js uses snake style "panel_cta" while the kotlin codegen
+            // uses camel case i.e "panelCta"
+            val queryKey = it.replace("_","").lowercase()
+            val extraSetter : KMutableProperty<String>? = extra.javaClass.kotlin.members.firstOrNull(){ prop ->
+                prop.name.equals(queryKey, ignoreCase = true)
+            } as KMutableProperty<String>?
+            extraSetter?.setter?.call(extraJSON.getString(it))
+        }
+        return extra
     }
 }
