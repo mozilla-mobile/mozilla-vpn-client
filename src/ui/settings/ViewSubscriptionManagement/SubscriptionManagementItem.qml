@@ -57,22 +57,33 @@ ColumnLayout {
             text: labelText
             wrapMode: Text.WordWrap
 
-            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignLeft
+        }
 
-            VPNIcon {
-                id: labelIcon
+        // TODO: Create credit card icon component
+        VPNIcon {
+            id: labelIcon
+            property string cardBrand: VPNSubscriptionData.creditCardBrand
+            property var availableCardIcons: [
+                "android",
+                "apple",
+                "paypal",
+                "visa",
+                "mastercard",
+                "amex",
+                "discover",
+                "diners",
+                "unionpay",
+                "jcb"
+            ]
 
-                source: "qrc:/ui/resources/logos/mastercard.svg"
-                // source: "qrc:/ui/resources/logos/android.svg"
-                // source: "qrc:/ui/resources/logos/apple.svg"
-                sourceSize.height: VPNTheme.theme.iconSizeSmall * 1.5
-                sourceSize.width: VPNTheme.theme.iconSizeSmall * 1.5
+            source: availableCardIcons.includes(cardBrand)
+                ? `qrc:/ui/resources/logos/${cardBrand}.svg`
+                : "qrc:/ui/resources/logos/unbranded.svg"
+            sourceSize.height: VPNTheme.theme.iconSizeSmall * 1.5
+            sourceSize.width: VPNTheme.theme.iconSizeSmall * 1.5
 
-                anchors {
-                    left: parent.right
-                    verticalCenter: parent.verticalCenter
-                }
-            }
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         }
 
         VPNInterLabel {
@@ -88,20 +99,28 @@ ColumnLayout {
             Layout.fillWidth: true
         }
 
-        VPNPill {
-            id: rowPill
+        Item {
+            height: rowPill.implicitHeight
+            Layout.fillWidth: true
 
-            color: valueText === "active"
-                ? VPNTheme.colors.green90
-                : VPNTheme.colors.red70
-            background: valueText === "active"
-                ? VPNTheme.colors.green5
-                : VPNTheme.colors.red5
-            text: valueText === "active"
-                ? VPNl18n.SubscriptionManagementStatusActive
-                : VPNl18n.SubscriptionManagementStatusInactive
+            VPNPill {
+                id: rowPill
 
-            Layout.alignment: Qt.AlignRight
+                color: valueText === "active"
+                    ? VPNTheme.colors.green90
+                    : VPNTheme.colors.red70
+                background: valueText === "active"
+                    ? VPNTheme.colors.green5
+                    : VPNTheme.colors.red5
+                text: valueText === "active"
+                    ? VPNl18n.SubscriptionManagementStatusActive
+                    : VPNl18n.SubscriptionManagementStatusInactive
+
+                anchors {
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
+                }
+            }
         }
     }
 
