@@ -18,6 +18,11 @@ buildscript {
         classpath Dependencies.org_jetbrains_kotlin_kotlin_serialization
     }
 }
+repositories {
+    mavenCentral()
+    google()
+}
+
 
 
 allprojects {
@@ -58,9 +63,6 @@ android {
 
     dexOptions {
        javaMaxHeapSize "3g"
-    }
-    buildFeatures {
-        buildConfig = true
     }
 
     sourceSets {

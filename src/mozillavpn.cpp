@@ -51,7 +51,6 @@
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidiaphandler.h"
 #  include "platforms/android/androidutils.h"
-#  include "platforms/android/androidglean.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -1096,7 +1095,6 @@ void MozillaVPN::mainWindowLoaded() {
 #ifndef MVPN_WASM
   // Initialize glean with an async call because at this time, QQmlEngine does
   // not have root objects yet to see the current graphics API in use.
-  // Initialize glean
   logger.debug() << "Initializing Glean";
   QTimer::singleShot(0, this, &MozillaVPN::initializeGlean);
 

@@ -85,6 +85,8 @@ class NotificationUtil {
         val channelName = content.getString("notification_group_name")
         val channelDescription = ""
         updateNotificationChannel(channelName, channelDescription)
+
+        Log.v(tag, "Saved new fallback message -> ${content.getString("title")}")
     }
 
     /*

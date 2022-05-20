@@ -46,7 +46,6 @@ class VPNService : android.net.VpnService() {
             // we do not need to stay as a foreground service.
             stopForeground(true)
         }
-        mGlean.sendGleanPings()
         return super.onUnbind(intent)
     }
 
@@ -58,11 +57,6 @@ class VPNService : android.net.VpnService() {
         Log.v(tag, "Got Bind request")
         init()
         return mBinder
-    }
-
-    override fun onDestroy() {
-        mGlean.sendGleanPings()
-        super.onDestroy()
     }
 
     /**

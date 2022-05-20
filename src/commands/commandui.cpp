@@ -51,7 +51,7 @@
 
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
-#  include "platforms/android/androidglean.h" 
+#  include "platforms/android/androidglean.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -197,7 +197,7 @@ int CommandUI::run(QStringList& tokens) {
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
-    
+
 #ifdef MVPN_ANDROID
     AndroidGlean::initialize();
 #endif
@@ -573,10 +573,6 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
                      &ServerHandler::close);
 #endif
-
-#ifdef MVPN_ANDROID
-    AndroidGlean::initialize();
-#endif 
 
     // Let's go.
     return qApp->exec();

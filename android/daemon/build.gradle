@@ -65,7 +65,7 @@ android {
 
     externalNativeBuild {
         cmake {
-          path 'tunnel/CMakeLists.txt'
+            path 'tunnel/CMakeLists.txt'
         }
     }
     buildTypes {

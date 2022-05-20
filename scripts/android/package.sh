@@ -180,7 +180,6 @@ cd src/
 androiddeployqt --input android-mozillavpn-deployment-settings.json --output android-build || die
 cd android-build
 
-
 if [[ "$RELEASE" ]]; then
   print Y "Generating Release APK..."
   ./gradlew compileReleaseSources
@@ -195,6 +194,3 @@ else
   print G "Done 🎉"
   print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/debug/"
 fi
-
-cd ..
-cp -r android-build /mnt/android-build

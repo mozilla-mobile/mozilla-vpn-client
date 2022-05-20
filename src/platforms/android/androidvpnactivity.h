@@ -39,7 +39,7 @@ enum ServiceAction {
   ACTION_SET_NOTIFICATION_FALLBACK = 9,
   // Records a Glean Event
   ACTION_RECORD_EVENT = 10,
-  // Requests Glean to Send all pings
+  // Requests Glean to Send main ping
   ACTION_SEND_GLEAN_PING = 11,
   // Upload Enabled Changed
   ACTION_GLEAN_ENABLED_CHANGED = 12,
