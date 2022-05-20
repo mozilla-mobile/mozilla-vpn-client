@@ -29,12 +29,17 @@ WebSocketHandler::WebSocketHandler() {
 
   connect(&m_pingTimer, &QTimer::timeout, this,
           &WebSocketHandler::onPingTimeout);
+
+  m_pingTimer.setSingleShot(true);
 }
 
 // static
+QString WebSocketHandler::s_customWebSocketServerUrl = "";
+
+// static
 QString WebSocketHandler::webSocketServerUrl() {
-  if (WebSocketHandler::m_customWebSocketServerUrl.count() > 0) {
-    return WebSocketHandler::m_customWebSocketServerUrl;
+  if (s_customWebSocketServerUrl.isEmpty()) {
+    return s_customWebSocketServerUrl;
   }
 
   QString httpServerUrl;
@@ -55,12 +60,10 @@ bool WebSocketHandler::isUserAuthenticated() {
   return vpn->userState() == MozillaVPN::UserAuthenticated;
 }
 
+#ifdef UNIT_TEST
 // static
-QString WebSocketHandler::m_customWebSocketServerUrl = "";
-
-// static
-void WebSocketHandler::testOverrideWebSocketServerUrl(QString url) {
-  WebSocketHandler::m_customWebSocketServerUrl = url;
+void WebSocketHandler::testOverrideWebSocketServerUrl(const QString& url) {
+  WebSocketHandler::s_customWebSocketServerUrl = url;
 }
 
 void WebSocketHandler::testOverridePingInterval(int newInterval) {
@@ -70,6 +73,7 @@ void WebSocketHandler::testOverridePingInterval(int newInterval) {
 void WebSocketHandler::testOverrideRetryInterval(int newInterval) {
   m_retryInterval = newInterval;
 }
+#endif
 
 void WebSocketHandler::initialize() {
   logger.debug() << "Initialize";
@@ -94,7 +98,7 @@ void WebSocketHandler::onUserStateChanged() {
   logger.debug() << "User state change detected:"
                  << MozillaVPN::instance()->userState();
 
-  if (WebSocketHandler::isUserAuthenticated()) {
+  if (isUserAuthenticated()) {
     open();
   } else {
     close();
@@ -115,12 +119,12 @@ void WebSocketHandler::open() {
   }
 
   logger.debug() << "Attempting to open WebSocket connection."
-                 << WebSocketHandler::webSocketServerUrl();
+                 << webSocketServerUrl();
 
   QNetworkRequest request;
   request.setRawHeader("Authorization",
                        SettingsHolder::instance()->token().toLocal8Bit());
-  request.setUrl(QUrl(WebSocketHandler::webSocketServerUrl()));
+  request.setUrl(QUrl(webSocketServerUrl()));
   m_webSocket.open(request);
 }
 
@@ -162,7 +166,7 @@ void WebSocketHandler::close() {
 void WebSocketHandler::onClose() {
   logger.debug() << "WebSocket closed";
 
-  if (WebSocketHandler::isUserAuthenticated()) {
+  if (isUserAuthenticated()) {
     logger.debug()
         << "User is authenticated. Attempting to reopen WebSocket in:"
         << m_retryInterval;
@@ -185,8 +189,6 @@ void WebSocketHandler::onClose() {
  */
 void WebSocketHandler::sendPing() {
   m_webSocket.ping();
-
-  m_pingTimer.setSingleShot(true);
   m_pingTimer.start(m_pingInterval);
 }
 
@@ -198,8 +200,6 @@ void WebSocketHandler::sendPing() {
  * out.
  */
 void WebSocketHandler::onPong(quint64 elapsedTime) {
-  qDebug() << "PONG PONG PONG";
-
   logger.debug() << "WebSocket pong" << elapsedTime;
 
   m_pingTimer.stop();

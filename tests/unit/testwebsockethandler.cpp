@@ -35,12 +35,12 @@ MockServer::~MockServer() {
 void MockServer::onNewConnection() {
   QWebSocket* pSocket = m_pWebSocketServer->nextPendingConnection();
 
+  m_clients << pSocket;
+
   emit newConnection(pSocket->request());
 
   connect(pSocket, &QWebSocket::disconnected, this,
           &MockServer::onSocketDisconnected);
-
-  m_clients << pSocket;
 }
 
 /**
@@ -153,7 +153,7 @@ void TestWebSocketHandler::tst_reconnectionAttemptsAfterUnexpectedClose() {
 
   // No need to do anything here.
   //
-  // The handler should be polling for reconnection every 10ms,
+  // The handler should be polling for reconnection every 100ms,
   // we just wait for the reconnection to actually take place.
 
   QVERIFY(newConnectionSpy.wait());
@@ -194,8 +194,9 @@ void TestWebSocketHandler::tst_reconnectionAttemptsOnPingTimeout() {
 
   // No need to do anything here.
   //
-  // The handler should be polling for reconnection every 10ms,
+  // The handler should be polling for reconnection every 100ms,
   // we just wait for the reconnection to actually take place.
+
   QVERIFY(newConnectionSpy.wait());
   QCOMPARE(newConnectionSpy.count(), 2);
 
