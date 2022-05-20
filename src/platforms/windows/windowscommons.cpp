@@ -185,7 +185,7 @@ QString WindowsCommons::WindowsVersion() {
 bool WindowsCommons::requireSoftwareRendering() {
   /* Qt6 appears to require Direct3D shader level 5, and can result in rendering
    * failures on some platforms. To workaround the issue, try to identify if
-   * this device can reliably the shaders, and request fallback to software
+   * this device can reliably run the shaders, and request fallback to software
    * rendering if not.
    *
    * See: https://bugreports.qt.io/browse/QTBUG-100689
