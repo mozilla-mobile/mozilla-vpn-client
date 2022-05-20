@@ -16,7 +16,7 @@ Logger logger(LOG_MAIN, "WebSocketHandler");
 }  // namespace
 
 WebSocketHandler::WebSocketHandler() {
-  MVPN_COUNT_CTOR(WebSocketHandler)
+  MVPN_COUNT_CTOR(WebSocketHandler);
 
   connect(&m_webSocket, &QWebSocket::connected, this,
           &WebSocketHandler::onConnected);

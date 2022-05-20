@@ -6,7 +6,7 @@ add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_DEBUG)
 add_definitions(-DMVPN_DUMMY)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Test)
+find_package(Qt6 REQUIRED COMPONENTS Core Test WebSockets)
 find_package(Qt6 REQUIRED COMPONENTS Network NetworkAuth)
 find_package(Qt6 REQUIRED COMPONENTS Gui Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
