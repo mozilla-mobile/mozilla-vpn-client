@@ -30,7 +30,6 @@
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
-#include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
@@ -713,14 +712,6 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
   }
 }
 
-void MozillaVPN::subscriptionDetailsFetched(
-    const QByteArray& subscriptionDetailsData) {
-  logger.debug() << "Subscription details data fetched!";
-  Q_UNUSED(subscriptionDetailsData);
-
-  requestSubscriptionManagement();
-}
-
 void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
   logger.debug() << "Device removal task completed";
   m_private->m_deviceModel.stopDeviceRemovalFromPublicKey(publicKey, keys());
@@ -1396,13 +1387,6 @@ void MozillaVPN::requestContactUs() {
   emit contactUsNeeded();
 }
 
-void MozillaVPN::requestSubscriptionManagement() {
-  logger.debug() << "Subscription management view requested";
-
-  QmlEngineHolder::instance()->showWindow();
-  emit subscriptionManagementNeeded();
-}
-
 void MozillaVPN::activate() {
   logger.debug() << "VPN tunnel activation";
 
@@ -1782,10 +1766,4 @@ void MozillaVPN::requestDeleteAccount() {
 void MozillaVPN::cancelAccountDeletion() {
   logger.warning() << "Canceling account deletion";
   AuthenticationInApp::instance()->terminateSession();
-}
-
-void MozillaVPN::getSubscriptionDetails() {
-  logger.debug() << "Get subscription details";
-  TaskScheduler::scheduleTask(
-      new TaskGetSubscriptionDetails(m_private->m_user.email()));
 }

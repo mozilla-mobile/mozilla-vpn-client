@@ -196,7 +196,6 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void crashTest();
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelAccountDeletion();
-  Q_INVOKABLE void getSubscriptionDetails();
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
@@ -253,8 +252,6 @@ class MozillaVPN final : public QObject {
   void deviceRemovalCompleted(const QString& publicKey);
 
   void serversFetched(const QByteArray& serverData);
-
-  void subscriptionDetailsFetched(const QByteArray& subscriptionDetailsData);
 
   void accountChecked(const QByteArray& json);
 
@@ -394,7 +391,6 @@ class MozillaVPN final : public QObject {
   void requestAbout();
   void requestViewLogs();
   void requestContactUs();
-  void requestSubscriptionManagement();
 
  signals:
   void stateChanged();
@@ -406,7 +402,6 @@ class MozillaVPN final : public QObject {
   void aboutNeeded();
   void viewLogsNeeded();
   void contactUsNeeded();
-  void subscriptionManagementNeeded();
   void updatingChanged();
 
   // For Glean
