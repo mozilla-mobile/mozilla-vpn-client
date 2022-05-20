@@ -38,7 +38,7 @@ QString WebSocketHandler::s_customWebSocketServerUrl = "";
 
 // static
 QString WebSocketHandler::webSocketServerUrl() {
-  if (s_customWebSocketServerUrl.isEmpty()) {
+  if (!s_customWebSocketServerUrl.isEmpty()) {
     return s_customWebSocketServerUrl;
   }
 
