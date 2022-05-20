@@ -908,11 +908,9 @@ else:win* {
     DEFINES += WIN32_LEAN_AND_MEAN #Solves Redifinition Errors Of Winsock
 
     RC_ICONS = ui/resources/logo.ico
-    RESOURCES += ui/gpucheck.qrc
 
     SOURCES += \
         commands/commandcrashreporter.cpp \
-        commands/commandgpucheck.cpp \
         daemon/daemon.cpp \
         daemon/daemonlocalserver.cpp \
         daemon/daemonlocalserverconnection.cpp \
@@ -943,7 +941,6 @@ else:win* {
 
     HEADERS += \
         commands/commandcrashreporter.h \
-        commands/commandgpucheck.h \
         daemon/interfaceconfig.h \
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
