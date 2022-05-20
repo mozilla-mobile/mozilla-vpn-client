@@ -51,7 +51,14 @@ AndroidGlean::AndroidGlean(QObject* parent) : QObject(parent) {
           &AndroidGlean::setGleanSourceTags);
   connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
           this, &AndroidGlean::gleanEnabledChanged);
-  connect(AndroidVPNActivity::instance(), &AndroidVPNActivity::serviceConnected, this, &AndroidGlean::daemonConnected);
+  connect(AndroidVPNActivity::instance(), &AndroidVPNActivity::serviceConnected,
+          this, &AndroidGlean::daemonConnected);
+
+  connect(qApp, &QApplication::applicationStateChanged, this,
+          &AndroidGlean::applicationStateChanged);
+  // Make sure we start the service now, so
+  // glean is ready even before login.
+  AndroidVPNActivity::connectService();
 }
 
 AndroidGlean::~AndroidGlean() {
@@ -62,15 +69,17 @@ AndroidGlean::~AndroidGlean() {
 }
 
 void AndroidGlean::sendGleanPings() {
-  AndroidVPNActivity::instance()->sendToService(ServiceAction::ACTION_SEND_GLEAN_PING, "");
+  AndroidVPNActivity::instance()->sendToService(
+      ServiceAction::ACTION_SEND_GLEAN_PING, "");
 }
 
 void AndroidGlean::recordGleanEvent(const QString& gleanSampleName) {
   QJsonObject args;
-  args["key"]= gleanSampleName;
+  args["key"] = gleanSampleName;
   QJsonDocument doc(args);
   logger.debug() << " recordGleanEvent" << gleanSampleName;
-  AndroidVPNActivity::instance()->sendToService(ServiceAction::ACTION_RECORD_EVENT, doc.toJson(QJsonDocument::Compact));
+  AndroidVPNActivity::instance()->sendToService(
+      ServiceAction::ACTION_RECORD_EVENT, doc.toJson(QJsonDocument::Compact));
 }
 
 void AndroidGlean::recordGleanEventWithExtraKeys(const QString& gleanSampleName,
@@ -78,11 +87,11 @@ void AndroidGlean::recordGleanEventWithExtraKeys(const QString& gleanSampleName,
   QJsonObject extras = QJsonObject::fromVariantMap(extraKeys);
   QJsonObject args;
   args["extras"] = extras;
-  args["key"]= gleanSampleName;
+  args["key"] = gleanSampleName;
   QJsonDocument doc(args);
   logger.debug() << " recordGleanEvent" << gleanSampleName;
-  AndroidVPNActivity::instance()->sendToService(ServiceAction::ACTION_RECORD_EVENT, doc.toJson(QJsonDocument::Compact));
-
+  AndroidVPNActivity::instance()->sendToService(
+      ServiceAction::ACTION_RECORD_EVENT, doc.toJson(QJsonDocument::Compact));
 }
 void AndroidGlean::setGleanSourceTags(const QStringList& tags) {
   // TODO: Current no-op as glean-android does not implement this - no need to
@@ -95,13 +104,30 @@ void AndroidGlean::setGleanSourceTags(const QStringList& tags) {
 
 void AndroidGlean::gleanEnabledChanged(bool enabled) {
   QJsonObject args;
-  args["enabled"]=enabled;
+  args["enabled"] = enabled;
   QJsonDocument doc(args);
   logger.debug() << " gleanEnabledChanged" << enabled;
-  AndroidVPNActivity::instance()->sendToService(ServiceAction::ACTION_GLEAN_ENABLED_CHANGED, doc.toJson(QJsonDocument::Compact));
+  AndroidVPNActivity::instance()->sendToService(
+      ServiceAction::ACTION_GLEAN_ENABLED_CHANGED,
+      doc.toJson(QJsonDocument::Compact));
 }
 
-void AndroidGlean::daemonConnected(){
-   // Daemon is now ready
+void AndroidGlean::daemonConnected() {
+  // Daemon is now ready
   gleanEnabledChanged(SettingsHolder::instance()->gleanEnabled());
+}
+
+void AndroidGlean::applicationStateChanged(Qt::ApplicationState state) {
+  switch (state) {
+    case Qt::ApplicationState::ApplicationActive:
+      break;
+
+    case Qt::ApplicationState::ApplicationSuspended:
+    case Qt::ApplicationState::ApplicationInactive:
+    case Qt::ApplicationState::ApplicationHidden:
+      logger.debug()
+          << "App Going in the Background, trigger sending due pings";
+      sendGleanPings();
+      break;
+  }
 }

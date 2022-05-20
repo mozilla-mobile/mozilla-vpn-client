@@ -2,7 +2,6 @@ package org.mozilla.firefox.vpn.daemon
 
 import android.content.Context
 import android.util.Log
-import kotlinx.serialization.Serializable
 import mozilla.components.service.glean.BuildInfo
 import mozilla.components.service.glean.Glean
 import mozilla.components.service.glean.config.Configuration
@@ -15,22 +14,21 @@ import org.json.JSONObject
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Pings
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
 import java.util.*
-import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty1
-import kotlin.reflect.full.createInstance
+import kotlin.reflect.full.primaryConstructor
 
 // @MainThread
 @Suppress("UNUSED") // All the calls are via jni from the client, so we can ignore
 class GleanUtil(aParent: Context) {
-    private val mParent: Context = aParent;
+    private val mParent: Context = aParent
 
     fun initializeGlean() {
-        val gleanEnabled = Prefs.get(mParent).getBoolean("glean_enabled",false) // Don't send telemetry unless explicitly asked to.
-        val channel = if(mParent.packageName.endsWith(".debug"))
-        {
-                "staging"
-        } else{
-                "production"
+        val gleanEnabled = Prefs.get(mParent).getBoolean("glean_enabled", false) // Don't send telemetry unless explicitly asked to.
+        val channel = if (mParent.packageName.endsWith(".debug")) {
+            "staging"
+        } else {
+            "production"
         }
         val conf = Configuration(HttpURLConnectionUploader(), Configuration.DEFAULT_TELEMETRY_ENDPOINT, channel, null)
         val build = BuildInfo("versionCode", "VersionName", Calendar.getInstance())
@@ -48,7 +46,7 @@ class GleanUtil(aParent: Context) {
     fun setGleanUploadEnabled(upload: Boolean) {
         Log.e("ANDROID-GLEAN", "setGleanUploadEnabled  $upload")
         Prefs.get(mParent).edit().apply {
-            putBoolean("glean_enabled",upload)
+            putBoolean("glean_enabled", upload)
             apply()
         }
         Glean.setUploadEnabled(upload)
@@ -66,10 +64,10 @@ class GleanUtil(aParent: Context) {
         Log.e("ANDROID-GLEAN", "sendGleanPings ")
         Pings.main.submit()
     }
-    fun recordEvent(event :JSONObject){
-        if(event.has("extras")){
-            recordGleanEventWithExtraKeys(event.get("key").toString(),event.get("extras").toString())
-        }else{
+    fun recordEvent(event: JSONObject) {
+        if (event.has("extras")) {
+            recordGleanEventWithExtraKeys(event.get("key").toString(), event.get("extras").toString())
+        } else {
             recordGleanEvent(event.get("key").toString())
         }
     }
@@ -96,32 +94,41 @@ class GleanUtil(aParent: Context) {
         sample.record(extra)
     }
 
-    @Suppress("UNCHECKED_CAST") // Callers check cast.
-    fun getSample(sampleName: String): EventMetricType<*, *> {
-        val sampleProperty = Sample.javaClass.kotlin.members.first {
-            it.name == sampleName
-        } as KProperty1<Sample, EventMetricType<*, *>>
-        return sampleProperty.get(Sample)
-    }
+    companion object {
+        @Suppress("UNCHECKED_CAST") // Callers check cast.
+        fun getSample(sampleName: String): EventMetricType<*, *> {
+            val sampleProperty = Sample.javaClass.kotlin.members.first {
+                it.name == sampleName
+            } as KProperty1<Sample, EventMetricType<*, *>>
+            return sampleProperty.get(Sample)
+        }
 
-    @Suppress("UNCHECKED_CAST") // Callers check cast.
-    fun getExtra(sampleName: String, extraKeysJson: String): EventExtras {
-        val extraJSON= JSONObject(extraKeysJson)
-        val extrasName = "${sampleName}Extras"
-        // Search Sample for the Dataclass of "someNameExtras"
-        val extraDataClass = Sample.javaClass.kotlin.nestedClasses.first(){
-            it.simpleName.equals(extrasName, ignoreCase = true)
+        @Suppress("UNCHECKED_CAST") // Callers check cast.
+        fun getExtra(sampleName: String, extraKeysJson: String): EventExtras {
+            val extraJSON = JSONObject(extraKeysJson)
+            val extrasName = "${sampleName}Extra"
+            // Search Sample for the Dataclass of "someNameExtras"
+            val extraDataClass = Sample.javaClass.kotlin.nestedClasses.first() {
+                it.simpleName.equals(extrasName, ignoreCase = true)
+            }
+            // Read the Constructor
+            val extraConstructor = extraDataClass.primaryConstructor!!
+            val paramsList = extraConstructor.parameters
+            val args: MutableMap<KParameter, String> = HashMap<KParameter, String>()
+            // Fill out the Constructor arg Map for each provided Extra key
+            extraJSON.keys().forEach { key ->
+                // QML js uses snake style "panel_cta" while the kotlin codegen
+                // uses camel case i.e "panelCta"
+                val queryKey = key.replace("_", "").lowercase()
+
+                val param: KParameter? = paramsList.firstOrNull() {
+                    it.name.equals(queryKey, ignoreCase = true)
+                }
+                if (param != null) {
+                    args[param] = extraJSON.getString(key)
+                }
+            }
+            return extraConstructor.callBy(args) as EventExtras
         }
-        val extra: EventExtras = extraDataClass.createInstance() as EventExtras;
-        extraJSON.keys().forEach {
-            // QML js uses snake style "panel_cta" while the kotlin codegen
-            // uses camel case i.e "panelCta"
-            val queryKey = it.replace("_","").lowercase()
-            val extraSetter : KMutableProperty<String>? = extra.javaClass.kotlin.members.firstOrNull(){ prop ->
-                prop.name.equals(queryKey, ignoreCase = true)
-            } as KMutableProperty<String>?
-            extraSetter?.setter?.call(extraJSON.getString(it))
-        }
-        return extra
     }
 }

@@ -33,8 +33,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val recordEvent = 10
         const val sendGleanPings = 11
         const val gleanUploadEnabledChanged = 12
-        const val gleanInit = 13
-
+        const val controllerInit = 13
     }
 
     /**
@@ -94,6 +93,9 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 // [data] contains the Binder that we need to dispatch the Events
                 val binder = data.readStrongBinder()
                 mListener = binder
+                return true
+            }
+            ACTIONS.controllerInit -> {
                 val obj = JSONObject()
                 obj.put("connected", mService.isUp)
                 obj.put("time", mService.connectionTime)
@@ -123,25 +125,22 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 NotificationUtil.get(mService)?.updateStrings(data, mService)
                 return true
             }
-            ACTIONS.recordEvent ->{
+            ACTIONS.recordEvent -> {
                 val buffer = data.createByteArray()
                 val json = buffer?.let { String(it) }
                 val event = JSONObject(json)
                 mService.mGlean.recordEvent(event)
                 return true
             }
-            ACTIONS.sendGleanPings ->{
-                mService.mGlean.sendGleanPings();
+            ACTIONS.sendGleanPings -> {
+                mService.mGlean.sendGleanPings()
                 return true
             }
-            ACTIONS.gleanUploadEnabledChanged ->{
+            ACTIONS.gleanUploadEnabledChanged -> {
                 val buffer = data.createByteArray()
                 val json = buffer?.let { String(it) }
                 val args = JSONObject(json)
                 mService.mGlean.setGleanUploadEnabled(args.getBoolean("enabled"))
-                return true
-            }
-            ACTIONS.gleanInit -> {
                 return true
             }
 

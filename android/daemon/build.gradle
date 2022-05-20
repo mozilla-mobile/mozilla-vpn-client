@@ -113,4 +113,12 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
 }
 
-ext.gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml", "$rootDir/../../../glean/pings.yaml"]
+
+try{
+    if(qtAndroidDir){}
+    // We're reunning gradle via qmake in .tmp/src/android-build
+    ext.gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml", "$rootDir/../../../glean/pings.yaml"]
+}catch(Exception ignored){
+    // We running gradle from /android
+    ext.gleanYamlFiles = ["$rootDir/../glean/metrics.yaml", "$rootDir/../glean/pings.yaml"]
+}

@@ -125,7 +125,7 @@ VPNFlickable {
                 imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 onClicked: {
-                    VPN.recordGleanEvent(getHelpClickedViewSettings.record();
+                    VPN.recordGleanEvent("getHelpClickedViewSettings");
                     getHelpViewNeeded();
                 }
             }

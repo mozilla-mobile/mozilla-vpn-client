@@ -21,6 +21,8 @@ class AndroidGlean final : public QObject {
                                      const QVariantMap& extraKeys);
   void setGleanSourceTags(const QStringList& tags);
 
+  void applicationStateChanged(Qt::ApplicationState state);
+
   void daemonConnected();
 
   static void initialize();

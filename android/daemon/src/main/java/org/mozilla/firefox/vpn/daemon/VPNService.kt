@@ -4,12 +4,10 @@
 
 package org.mozilla.firefox.vpn.daemon
 
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.os.Process
 import android.system.OsConstants
 import com.wireguard.android.util.SharedLibraryLoader
 import com.wireguard.config.Config
@@ -62,6 +60,11 @@ class VPNService : android.net.VpnService() {
         return mBinder
     }
 
+    override fun onDestroy() {
+        mGlean.sendGleanPings()
+        super.onDestroy()
+    }
+
     /**
      * Might be the entryPoint if the Service gets Started via an
      * Service Intent: Might be from Always-On-Vpn from Settings
@@ -72,8 +75,8 @@ class VPNService : android.net.VpnService() {
         intent?.let {
             if (intent.getBooleanExtra("startOnly", false)) {
                 Log.i(tag, "Start only!")
-                // If this is a Start Only request, the client will soon 
-                // bind to the service anyway. 
+                // If this is a Start Only request, the client will soon
+                // bind to the service anyway.
                 // We should return START_NOT_STICKY so that after an unbind()
                 // the OS will not try to restart the service.
                 return START_NOT_STICKY

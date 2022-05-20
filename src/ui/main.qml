@@ -293,15 +293,6 @@ Window {
                 mainStackView.push("qrc:/ui/views/ViewLogs.qml");
             }
         }
-
-        function onLoadAndroidAuthenticationView() {
-            if (Qt.platform.os !== "android") {
-                console.log("Unexpected android authentication view request!");
-            }
-            mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
-        }
-    }
-
         function onContactUsNeeded() {
             // Check if Contact Us view is already in mainStackView
             const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
@@ -325,6 +316,7 @@ Window {
             }
             mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
         }
+    }
 
     // Glean Connections
     Connections {
