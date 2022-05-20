@@ -234,7 +234,3 @@ bool Guide::evaluateConditions(const QJsonObject& conditions) {
 
   return true;
 }
-
-QString Guide::titleId() const {
-    return m_titleId;
-}

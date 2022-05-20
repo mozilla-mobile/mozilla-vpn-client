@@ -651,7 +651,8 @@ static QList<InspectorCommand> s_commands{
                        Q_ASSERT(guideModel);
 
                        QJsonArray guides;
-                       for (const QString& guideTitleId : guideModel->guideTitleIds()) {
+                       for (const QString& guideTitleId :
+                            guideModel->guideTitleIds()) {
                          guides.append(guideTitleId);
                        }
 
