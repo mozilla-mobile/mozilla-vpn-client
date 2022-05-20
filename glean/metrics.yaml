@@ -866,7 +866,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3449
     data_reviews:
-      - TBD
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1770530
     data_sensitivity:
       - interaction
     notification_emails:
