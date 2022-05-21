@@ -10,7 +10,10 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 VPNFlickable {
-    property string _menuTitle: VPNl18n.SubscriptionManagementMenuTitle + VPNSubscriptionData.initialized ? " :)" : " :("
+    property string _menuTitle: VPNl18n.SubscriptionManagementMenuTitle + (VPNSubscriptionData.initialized ? " :)" : " :(")
+    property var currentLocale: VPNLocalizer.code === ""
+        ? Qt.locale("de_DE")
+        : Qt.locale(VPNLocalizer.code)
 
     id: vpnFlickable
     objectName: "settingsView"
@@ -184,12 +187,14 @@ VPNFlickable {
     }
 
     function unixToDate(unixTimestamp) {
-        return new Date(unixTimestamp * 1000).toLocaleDateString(Qt.locale(VPNLocalizer.code), Locale.ShortFormat);
+        return new Date(unixTimestamp * 1000).toLocaleDateString(currentLocale, Locale.ShortFormat);
     }
 
-    function getPlanText(currency, amount, intervalCount) {
-        const displayAmount = (amount || 0) / 100;
-        const localizedCurrency = Number(displayAmount).toLocaleCurrencyString(Qt.locale(VPNLocalizer.code), currency.toUpperCase());
+    function getPlanText(currencyCode, amount, intervalCount) {
+        const amountDisplay = (amount || 0) / 100;
+
+        const currencySymbol = getCurrencySymbolFromCode(currencyCode);
+        const localizedCurrency = Number(amountDisplay).toLocaleCurrencyString(currentLocale, currencySymbol);
 
         if (intervalCount === 12) {
             return VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
@@ -228,5 +233,22 @@ VPNFlickable {
 
         VPNSubscriptionData.fromJson(exampleData);
         populateListModels();
+    }
+
+    // TODO: Get a list with currencies
+    function getCurrencySymbolFromCode(code) {
+        const currencies = [
+            {
+                code: "eur",
+                sign: "€"
+            },
+            {
+                code: "usd",
+                sign: "$"
+            }
+        ];
+        const selectedCurrency = currencies.find((currency) => currency.code === code);
+
+        return selectedCurrency ? selectedCurrency.sign : code.toUpperCase();
     }
 }

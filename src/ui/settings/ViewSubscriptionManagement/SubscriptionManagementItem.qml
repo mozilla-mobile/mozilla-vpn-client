@@ -115,12 +115,12 @@ ColumnLayout {
         }
 
         Item {
+            id: rowPill
+
             height: rowPill.implicitHeight
             Layout.fillWidth: true
 
             VPNPill {
-                id: rowPill
-
                 color: valueText === "active"
                     ? VPNTheme.colors.green90
                     : VPNTheme.colors.red70
