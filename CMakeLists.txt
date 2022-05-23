@@ -25,6 +25,10 @@ if(WIN32)
     endif()
 endif()
 if(APPLE)
+    if(NOT BUILD_OSX_APP_IDENTIFIER)
+        set(BUILD_OSX_APP_IDENTIFIER org.mozilla.macos.FirefoxVPN CACHE STRING "OSX Application identifier")
+    endif()
+
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14 CACHE STRING "OSX minimum supported OS version")
 endif()
 
