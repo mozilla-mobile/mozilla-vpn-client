@@ -60,7 +60,7 @@ VPNInAppAuthenticationBase {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 VPNAuthInApp.resendUnblockCodeEmail();
-                VPN.setAlert(VPN.CodeEmailSentAlert);
+                VPN.setAlert(VPN.AuthCodeSentAlert);
             
             }
         }
