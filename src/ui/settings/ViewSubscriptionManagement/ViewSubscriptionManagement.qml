@@ -10,13 +10,12 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 VPNFlickable {
-    property string _menuTitle: VPNl18n.SubscriptionManagementMenuTitle + (VPNSubscriptionData.initialized ? " :)" : " :(")
-    property var currentLocale: VPNLocalizer.code === ""
-        ? Qt.locale("de_DE")
-        : Qt.locale(VPNLocalizer.code)
-
     id: vpnFlickable
     objectName: "settingsView"
+    property string _menuTitle: VPNl18n.SubscriptionManagementMenuTitle
+    property var currentLanguageCode: VPNLocalizer.code === ""
+        ? Qt.locale(VPNLocalizer.previousCode)
+        : Qt.locale(VPNLocalizer.code)
 
     anchors.top: parent.top
     height: parent.height
@@ -174,7 +173,7 @@ VPNFlickable {
 
             subscriptionPaymentModel.append({
                 labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
-                valueText: "June 2026",
+                valueText: creditCardExpMonth + " " + creditCardExpYear, // TODO: Format and localize date
                 type: "text",
             });
         } else {
@@ -187,14 +186,14 @@ VPNFlickable {
     }
 
     function unixToDate(unixTimestamp) {
-        return new Date(unixTimestamp * 1000).toLocaleDateString(currentLocale, Locale.ShortFormat);
+        return new Date(unixTimestamp * 1000).toLocaleDateString(currentLanguageCode, Locale.ShortFormat);
     }
 
     function getPlanText(currencyCode, amount, intervalCount) {
         const amountDisplay = (amount || 0) / 100;
 
         const currencySymbol = getCurrencySymbolFromCode(currencyCode);
-        const localizedCurrency = Number(amountDisplay).toLocaleCurrencyString(currentLocale, currencySymbol);
+        const localizedCurrency = Number(amountDisplay).toLocaleCurrencyString(currentLanguageCode, currencySymbol);
 
         if (intervalCount === 12) {
             return VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
@@ -209,29 +208,6 @@ VPNFlickable {
     }
 
     Component.onCompleted: {
-        const exampleData = '{
-            "created_at":1626704467,
-            "expires_on":1652970067,
-            "is_cancelled":false,
-            "payment": {
-                "credit_card_brand":"visa",
-                "credit_card_exp_month":12,
-                "credit_card_exp_year":2022,
-                "credit_card_last4":"0016",
-                "provider":"stripe",
-                "type":"credit"
-            },
-            "plan":{
-                "amount":499,
-                "currency":"eur",
-                "interval_count":1,
-                "interval":"month"
-            },
-            "status":"active",
-            "type":"web"
-        }';
-
-        VPNSubscriptionData.fromJson(exampleData);
         populateListModels();
     }
 
