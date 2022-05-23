@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandui.h"
+#include "addonmanager.h"
 #include "apppermission.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
@@ -489,6 +490,14 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNAddonManager",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = AddonManager::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
     qmlRegisterType<FilterProxyModel>("Mozilla.VPN", 1, 0,
                                       "VPNFilterProxyModel");
 
@@ -545,6 +554,7 @@ int CommandUI::run(QStringList& tokens) {
       QmlEngineHolder::instance()->engine()->retranslate();
       NotificationHandler::instance()->retranslate();
       L18nStrings::instance()->retranslate();
+      AddonManager::instance()->retranslate();
 
 #ifdef MVPN_MACOS
       MacOSMenuBar::instance()->retranslate();

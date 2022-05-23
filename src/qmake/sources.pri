@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
+        addon.cpp \
+        addonmanager.cpp \
         apppermission.cpp \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
@@ -142,6 +144,8 @@ SOURCES += \
         websockethandler.cpp
 
 HEADERS += \
+        addon.h \
+        addonmanager.h \
         appimageprovider.h \
         apppermission.h \
         applistprovider.h \

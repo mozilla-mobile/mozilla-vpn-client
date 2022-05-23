@@ -369,6 +369,14 @@ Window {
     }
 
     Connections {
+        target: VPNAddonManager
+        function onRunAddon(addon) {
+            console.log("Loading addon", addon.name);
+            mainStackView.push("qrc:/ui/views/ViewAddon.qml", { addon })
+        }
+    }
+
+    Connections {
         target: VPNSettings
         function onGleanEnabledChanged() {
             console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
