@@ -47,18 +47,22 @@ def transform(text):
         matchKey = ""
         for key in keywords:
             x = text.find(key, start)
+            if (x < 0):
+                continue
             if (matchIdx < 0) or (x < matchIdx):
                 matchIdx = x
                 matchKey = key
-        
+
         # If there are no matches, we can return.
         if matchIdx < 0:
-            return text
-        
+            break
+
         # Substitute the keyword and adjust the start.
         value = keywords[matchKey]
         start = matchIdx + len(value)
         text = text[0:matchIdx] + value + text[matchIdx+len(matchKey):]
+
+    return text
 
 # Open the output file
 if args.output is None:

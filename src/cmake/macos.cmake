@@ -21,20 +21,6 @@ set_target_properties(mozillavpn PROPERTIES
     MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
 )
 
-#isEmpty(MVPN_DEVELOPMENT_TEAM) {
-#    MVPN_DEVELOPMENT_TEAM = "43AQ936H96"
-#}
-#
-#isEmpty(MVPN_GROUP_ID_MACOS) {
-#    MVPN_GROUP_ID_MACOS = "group.org.mozilla.macos.Guardian"
-#}
-#
-#isEmpty(MVPN_APP_ID_PREFIX) {
-#    QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
-#} else {
-#    QMAKE_TARGET_BUNDLE_PREFIX = $$MVPN_APP_ID_PREFIX
-#}
-
 find_library(FW_SYSTEMCONFIG SystemConfiguration)
 find_library(FW_SERVICEMGMT ServiceManagement)
 find_library(FW_SECURITY Security)
@@ -104,7 +90,13 @@ target_sources(mozillavpn PRIVATE
 )
 
 # Perform codesigning.
-osx_codesign_target(mozillavpn FORCE)
+execute_process(
+    COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py ${CMAKE_SOURCE_DIR}/macos/app/app.entitlements
+        -k "\$(DEVELOPMENT_TEAM)=${BUILD_OSX_DEVELOPMENT_TEAM}"
+        -k "\$(APP_ID_MACOS)=${BUILD_OSX_APP_IDENTIFIER}"
+        -o ${CMAKE_CURRENT_BINARY_DIR}/app.entitlements
+)
+osx_codesign_target(mozillavpn FORCE ENTITLEMENTS ${CMAKE_CURRENT_BINARY_DIR}/app.entitlements)
 
 # Build the Wireguard Go tunnel
 # FIXME: this builds in the source directory.
