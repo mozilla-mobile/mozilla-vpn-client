@@ -151,8 +151,8 @@ class WindowsSplitTunnel final : public QObject {
 
  private:
   HANDLE m_driver = INVALID_HANDLE_VALUE;
-  constexpr static const auto DRIVER_SYMLINK = L"\\\\.\\MULLVADSPLITTUNNEL";
-  constexpr static const auto DRIVER_FILENAME = "mullvad-split-tunnel.sys";
+  constexpr static const auto DRIVER_SYMLINK = L"\\\\.\\MOZILLASPLITTUNNEL";
+  constexpr static const auto DRIVER_FILENAME = "mozilla-split-tunnel.sys";
   constexpr static const auto DRIVER_SERVICE_NAME = L"MozillaVPNSplitTunnel";
   DRIVER_STATE getState();
 

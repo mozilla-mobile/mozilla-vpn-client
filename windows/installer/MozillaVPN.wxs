@@ -81,9 +81,9 @@
         <File Source="../../balrog/$(var.Platform)/balrog.dll" />
         <File Source="../../libcrypto-1_1-x64.dll" />
         <File Source="../../libssl-1_1-x64.dll" />
-        <File Source="../split-tunnel/mullvad-split-tunnel.cat" />
-        <File Source="../split-tunnel/mullvad-split-tunnel.inf" />
-        <File Source="../split-tunnel/mullvad-split-tunnel.sys" />
+        <File Source="../split-tunnel/mozilla-split-tunnel.cat" />
+        <File Source="../split-tunnel/mozilla-split-tunnel.inf" />
+        <File Source="../split-tunnel/mozilla-split-tunnel.sys" />
         <File Source="../split-tunnel/WdfCoinstaller01011.dll" />
 
 

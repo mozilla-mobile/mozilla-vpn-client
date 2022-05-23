@@ -132,15 +132,15 @@ balrog.path = $$PWD/../../../unsigned/
 balrog.CONFIG = no_check_exist executable
 INSTALLS += balrog
 
-splittunnelcat.files = $$PWD/../../../windows/split-tunnel/mullvad-split-tunnel.cat
+splittunnelcat.files = $$PWD/../../../windows/split-tunnel/mozilla-split-tunnel.cat
 splittunnelcat.path = $$PWD/../../../unsigned/
 INSTALLS += splittunnelcat
 
-splittunnelinf.files = $$PWD/../../../windows/split-tunnel/mullvad-split-tunnel.inf
+splittunnelinf.files = $$PWD/../../../windows/split-tunnel/mozilla-split-tunnel.inf
 splittunnelinf.path = $$PWD/../../../unsigned/
 INSTALLS += splittunnelinf
 
-splittunnelsys.files = $$PWD/../../../windows/split-tunnel/mullvad-split-tunnel.sys
+splittunnelsys.files = $$PWD/../../../windows/split-tunnel/mozilla-split-tunnel.sys
 splittunnelsys.path = $$PWD/../../../unsigned/
 INSTALLS += splittunnelsys
 

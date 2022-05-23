@@ -74,9 +74,9 @@
         </File>
         <File Source="tunnel.dll" />
         <File Source="wintun.dll" />
-        <File Source="mullvad-split-tunnel.cat" />
-        <File Source="mullvad-split-tunnel.inf" />
-        <File Source="mullvad-split-tunnel.sys" />
+        <File Source="mozilla-split-tunnel.cat" />
+        <File Source="mozilla-split-tunnel.inf" />
+        <File Source="mozilla-split-tunnel.sys" />
         <File Source="WdfCoinstaller01011.dll" />
         <File Source="mozillavpn.json" />
         <File Source="mozillavpnnp.exe" />
