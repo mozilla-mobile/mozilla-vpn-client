@@ -95,11 +95,11 @@ GO_MODULES = $$PWD/../../../linux/netfilter/netfilter.go
 target.path = $${USRPATH}/bin
 INSTALLS += target
 
-desktopFile.files = $$PWD/../../../linux/extra/MozillaVPN.desktop
+desktopFile.files = $$PWD/../../../linux/extra/mozillavpn.desktop
 desktopFile.path = $${USRPATH}/share/applications
 INSTALLS += desktopFile
 
-autostartFile.files = $$PWD/../../../linux/extra/MozillaVPN-startup.desktop
+autostartFile.files = $$PWD/../../../linux/extra/mozillavpn-startup.desktop
 autostartFile.path = $${ETCPATH}/xdg/autostart
 INSTALLS += autostartFile
 
