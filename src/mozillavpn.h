@@ -258,6 +258,8 @@ class MozillaVPN final : public QObject {
 
   void subscriptionDetailsFetched(const QByteArray& subscriptionDetailsData);
 
+  void subscriptionDetailsFetchedTest();
+
   void accountChecked(const QByteArray& json);
 
   void surveyChecked(const QByteArray& json);
@@ -396,7 +398,6 @@ class MozillaVPN final : public QObject {
   void requestAbout();
   void requestViewLogs();
   void requestContactUs();
-  void requestSubscriptionManagement();
 
  signals:
   void stateChanged();

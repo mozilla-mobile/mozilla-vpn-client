@@ -14,7 +14,7 @@ VPNInAppAuthenticationBase {
 
     states:[
         State {
-            when: isDeleteAccountAuth
+            when: isReauthFlow
 
             PropertyChanges {
                 target: authSignIn
@@ -40,8 +40,8 @@ VPNInAppAuthenticationBase {
     _changeEmailLinkVisible: true
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => {
-        if (isDeleteAccountAuth) {
-            cancelAccountDeletion();
+        if (isReauthFlow) {
+            cancelAuthenticationFlow();
         } else {
             VPNAuthInApp.reset();
         }
@@ -84,8 +84,8 @@ VPNInAppAuthenticationBase {
         VPNCancelButton {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                if (isDeleteAccountAuth) {
-                    cancelAccountDeletion();
+                if (isReauthFlow) {
+                    cancelAuthenticationFlow();
                 } else {
                     VPN.cancelAuthentication();
                 }

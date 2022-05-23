@@ -12,8 +12,7 @@ import components.inAppAuth 0.1
 
 Item {
     property bool _menuVisible: false
-
-    id: viewDeleteAccount
+    id: subscriptionManagementStates
 
     Loader {
         id: loader
@@ -23,7 +22,6 @@ Item {
         asynchronous: true
 
         function cancelAuthenticationFlow() {
-            VPN.cancelAccountDeletion();
             VPN.cancelAuthentication();
 
             settingsStackView.pop();
@@ -34,8 +32,8 @@ Item {
         id: authError
     }
 
-    // The following states are not expected to be set during the
-    // account deletion flow and thus we do not need to cover them:
+    // The following states are not expected to be set during the Subscription
+    // Management auth flow and thus we do not need to cover them:
     // - StateStart
     // - StateSignUp
     // - StateSigningUp
@@ -47,10 +45,10 @@ Item {
                 VPNAuthInApp.state === VPNAuthInApp.StateInitializing
                 || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
                 || VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
-            )
+            ) && !VPNSubscriptionData.initialized
             PropertyChanges {
                 target: loader
-                source: "../authenticationInApp/ViewAuthenticationInitializing.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationInitializing.qml"
             }
         },
 
@@ -62,7 +60,7 @@ Item {
             )
             PropertyChanges {
                 target: loader
-                source: "../authenticationInApp/ViewAuthenticationSignIn.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationSignIn.qml"
             }
         },
 
@@ -74,7 +72,7 @@ Item {
             )
             PropertyChanges {
                 target: loader
-                source: "../authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml"
             }
         },
 
@@ -86,7 +84,7 @@ Item {
             )
             PropertyChanges {
                 target: loader
-                source: "../authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml"
             }
         },
 
@@ -98,24 +96,54 @@ Item {
             )
             PropertyChanges {
                 target: loader
-                source: "../authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml"
             }
         },
 
         State {
-            name: "StateAccountDeletionRequest"
+            name: "StateSubscriptionManagement"
             when: (
-                VPNAuthInApp.state === VPNAuthInApp.StateAccountDeletionRequest
-                || VPNAuthInApp.state === VPNAuthInApp.StateDeletingAccount
-            )
+                VPNAuthInApp.state === VPNAuthInApp.StateInitializing
+                || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
+            ) && VPNSubscriptionData.initialized
             PropertyChanges {
                 target: loader
-                source: "ViewDeleteAccountRequest.qml"
+                source: "qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml"
             }
         }
     ]
 
+    Connections {
+        target: VPN
+
+        // TODO: Remove example data
+        function onSubscriptionManagementNeeded() {
+            const exampleData = '{
+                "created_at": 1626704467,
+                "expires_on": 1652970067,
+                "is_cancelled": false,
+                "payment": {
+                    "credit_card_brand": "visa",
+                    "credit_card_exp_month": 12,
+                    "credit_card_exp_year": 2022,
+                    "credit_card_last4": "0016",
+                    "provider": "stripe",
+                    "type": "credit"
+                },
+                "plan": {
+                    "amount": 499,
+                    "currency": "eur",
+                    "interval_count": 1,
+                    "interval": "month"
+                },
+                "status": "active",
+                "type": "web"
+            }';
+            VPNSubscriptionData.fromJson(exampleData);
+        }
+    }
+
     Component.onCompleted: {
-        VPN.requestDeleteAccount();
+        VPN.getSubscriptionDetails();
     }
 }

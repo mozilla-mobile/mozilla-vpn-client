@@ -724,7 +724,11 @@ void MozillaVPN::subscriptionDetailsFetched(
     return;
   }
 
-  requestSubscriptionManagement();
+  emit subscriptionManagementNeeded();
+}
+
+void MozillaVPN::subscriptionDetailsFetchedTest() {
+  emit subscriptionManagementNeeded();
 }
 
 void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
@@ -1400,13 +1404,6 @@ void MozillaVPN::requestContactUs() {
 
   QmlEngineHolder::instance()->showWindow();
   emit contactUsNeeded();
-}
-
-void MozillaVPN::requestSubscriptionManagement() {
-  logger.debug() << "Subscription management view requested";
-
-  QmlEngineHolder::instance()->showWindow();
-  emit subscriptionManagementNeeded();
 }
 
 void MozillaVPN::activate() {

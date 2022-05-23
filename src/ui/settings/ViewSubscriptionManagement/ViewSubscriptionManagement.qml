@@ -119,6 +119,11 @@ VPNFlickable {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: VPNTheme.theme.vSpacing
             }
+
+            VPNVerticalSpacer {
+                Layout.fillWidth: true
+                Layout.minimumHeight: VPNTheme.theme.rowHeight
+            }
         }
     }
 
@@ -173,7 +178,7 @@ VPNFlickable {
 
             subscriptionPaymentModel.append({
                 labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
-                valueText: creditCardExpMonth + " " + creditCardExpYear, // TODO: Format and localize date
+                valueText: VPNSubscriptionData.creditCardExpMonth + " " + VPNSubscriptionData.creditCardExpYear, // TODO: Format and localize date
                 type: "text",
             });
         } else {

@@ -38,6 +38,8 @@ void TaskGetSubscriptionDetails::run() {
 
         // Network request failed after authentication for a second time
         if (m_authenticationInAppSession) {
+          MozillaVPN::instance()->subscriptionDetailsFetchedTest(); // TODO: Remove after debugging
+
           MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
           m_authenticationInAppSession->terminate();
           return;

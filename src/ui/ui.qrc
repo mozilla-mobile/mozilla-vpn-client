@@ -29,6 +29,7 @@
         <file>settings/ViewSettingsMenu.qml</file>
         <file>settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
         <file>settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>
+        <file>settings/ViewSubscriptionManagement/ViewSubscriptionManagementStates.qml</file>
         <file>settings/ViewTipsAndTricks.qml</file>
         <file>settings/ViewWhatsNew.qml</file>
         <file>states/StateAuthenticating.qml</file>
