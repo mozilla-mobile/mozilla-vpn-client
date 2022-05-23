@@ -5,7 +5,7 @@
 add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_ADJUST)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Network Xml Test)
+find_package(Qt6 REQUIRED COMPONENTS Core Network Xml Test WebSockets)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
 find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
 
@@ -25,6 +25,7 @@ target_link_libraries(unit_tests PRIVATE
     Qt6::Xml
     Qt6::Network
     Qt6::Test
+    Qt6::WebSockets
     Qt6::Widgets
     Qt6::Gui
     Qt6::Qml
