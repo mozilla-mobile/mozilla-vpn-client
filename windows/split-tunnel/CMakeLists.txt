@@ -4,6 +4,9 @@
 set(COMMIT_SHA 375cfc52255ec3beb15cc0713988ea995cb7582e)
 set(BASE_URI https://github.com/mullvad/mullvadvpn-app-binaries/raw/${COMMIT_SHA}/x86_64-pc-windows-msvc/split-tunnel/win10/)
 
+
+# TODO: Resolve this once we have a build!
+
 # Download the prebuilt binaries from Mullvad
 file(DOWNLOAD ${BASE_URI}/mullvad-split-tunnel.cat ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.cat
     EXPECTED_HASH SHA256=385C90BE86B6C934344C6D2647887182B41D7E37803DC5EABE7E0805F6210317)
