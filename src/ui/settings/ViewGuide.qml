@@ -32,7 +32,7 @@ Item {
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.topMargin: root.safeAreaHeight + 8
-                anchors.leftMargin: 8
+                anchors.leftMargin: VPNTheme.theme.listSpacing
 
                 skipEnsureVisible: true
                 //% "Back"
@@ -123,13 +123,13 @@ Item {
 
                         text: VPNl18n[guide.titleId]
                         lineHeightMode: Text.FixedHeight
-                        lineHeight: 24
+                        lineHeight: VPNTheme.theme.vSpacing
                         wrapMode: Text.Wrap
                         verticalAlignment: Text.AlignVCenter
                     }
 
                     VPNInterLabel {
-                        Layout.topMargin: 8
+                        Layout.topMargin: VPNTheme.theme.listSpacing
                         Layout.fillWidth: true
 
                         text: VPNl18n[guide.subtitleId]
@@ -139,7 +139,7 @@ Item {
                     }
 
                     Rectangle {
-                        Layout.topMargin: 16
+                        Layout.topMargin: VPNTheme.theme.vSpacingSmall
                         Layout.fillWidth: true
                         Layout.preferredHeight: 1
 
@@ -182,14 +182,7 @@ Item {
                             VPNInterLabel {
                                 property var guideBlock
                                 property string listType
-
-                                property var tagsList: {
-                                    var list = []
-                                    guideBlock.subBlockIds.forEach(subBlockId => {
-                                        list.push("<li>" + VPNl18n[subBlockId] + "</li>")
-                                    });
-                                    return list
-                                }
+                                property var tagsList: guideBlock.subBlockIds.map(subBlockId => `<li>${VPNl18n[subBlockId]}</li>`)
 
                                 text: `<${listType} style='margin-left: -24px;-qt-list-indent:1;'>%1</${listType}>`.arg(tagsList.join(""))
                                 textFormat: Text.RichText
@@ -208,14 +201,14 @@ Item {
                             sourceComponent: {
                                 switch(modelData.type) {
                                 case VPNGuide.GuideBlockTypeTitle:
-                                    Layout.topMargin = 16
+                                    Layout.topMargin = VPNTheme.theme.vSpacingSmall
                                     return titleBlock
                                 case VPNGuide.GuideBlockTypeText:
-                                    Layout.topMargin = 4
+                                    Layout.topMargin = VPNTheme.theme.listSpacing * 0.5
                                     return textBlock
                                 case VPNGuide.GuideBlockTypeOrderedList:
                                 case VPNGuide.GuideBlockTypeUnorderedList:
-                                    Layout.topMargin = 4
+                                    Layout.topMargin = VPNTheme.theme.listSpacing * 0.5
                                     return listBlock
                                 }
                             }
