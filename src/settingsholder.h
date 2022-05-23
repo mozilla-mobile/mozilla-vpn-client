@@ -69,6 +69,8 @@ class SettingsHolder final : public QObject {
   // use.
   void hardReset();
 
+  QString settingsFileName() const;
+
  private:
   explicit SettingsHolder(QObject* parent);
 

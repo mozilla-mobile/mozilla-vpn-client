@@ -5,8 +5,12 @@
 const assert = require('assert');
 const vpn = require('./helper.js');
 
-describe('User authentication', function() {
+describe('User authentication in browser', function() {
   this.timeout(60000);
+
+  beforeEach(async () => {
+    await vpn.flipFeatureOff('inAppAuthentication');
+  })
 
   it('returns to main view on canceling authentication', async () => {
     await vpn.waitForMainView();
@@ -71,17 +75,23 @@ describe('User authentication', function() {
     await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
   });
 
-  it('Completes authentication after logout', async () => {
-    await vpn.authenticate(true, true);
+  /* See PSP-404
+    it('Completes authentication', async () => {
+      await vpn.authenticateInBrowser(true, true);
+    });
 
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    it('Completes authentication after logout', async () => {
+      await vpn.authenticateInBrowser(true, true);
 
-    await vpn.waitForElement('settingsLogout');
-    await vpn.scrollToElement('settingsView', 'settingsLogout');
-    await vpn.clickOnElement('settingsLogout');
-    await vpn.waitForMainView();
+      await vpn.waitForElement('settingsButton');
+      await vpn.clickOnElement('settingsButton');
 
-    await vpn.authenticate();
-  });
+      await vpn.waitForElement('settingsLogout');
+      await vpn.scrollToElement('settingsView', 'settingsLogout');
+      await vpn.clickOnElement('settingsLogout');
+      await vpn.waitForMainView();
+
+      await vpn.authenticateInBrowser();
+    });
+  */
 });
