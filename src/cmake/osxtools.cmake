@@ -59,7 +59,7 @@ function(osx_codesign_target TARGET)
             list(APPEND CODESIGN_ARGS "--option=${CODESIGN_OPTIONS_JOINED}")
         endif()
         if(CODESIGN_ENTITLEMENTS)
-            list(APPEND CODESIGN_ARGS)
+            list(APPEND CODESIGN_ARGS --entitlements ${CODESIGN_ENTITLEMENTS})
         endif()
 
         ## If no files were specified, sign the target itself.

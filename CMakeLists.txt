@@ -25,8 +25,12 @@ if(WIN32)
     endif()
 endif()
 if(APPLE)
+    ## Setup some defaults for code signing.
     if(NOT BUILD_OSX_APP_IDENTIFIER)
         set(BUILD_OSX_APP_IDENTIFIER org.mozilla.macos.FirefoxVPN CACHE STRING "OSX Application identifier")
+    endif()
+    if(NOT BUILD_OSX_DEVELOPMENT_TEAM)
+        set(BUILD_OSX_DEVELOPMENT_TEAM 43AQ936H96 CACHE STRING "OSX Development Team")
     endif()
 
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14 CACHE STRING "OSX minimum supported OS version")
