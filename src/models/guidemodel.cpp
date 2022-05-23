@@ -31,6 +31,15 @@ GuideModel::GuideModel(QObject* parent) : QAbstractListModel(parent) {
 
 GuideModel::~GuideModel() { MVPN_COUNT_DTOR(GuideModel); }
 
+QStringList GuideModel::guideTitleIds() const {
+  QStringList guides;
+  for (const Guide* guide : m_guides) {
+    guides.append(guide->titleId());
+  }
+
+  return guides;
+}
+
 void GuideModel::initialize() {
   QDir dir(":/guides");
   QStringList files = dir.entryList();
