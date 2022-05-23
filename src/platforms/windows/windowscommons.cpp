@@ -206,25 +206,25 @@ bool WindowsCommons::requireSoftwareRendering() {
   IDXGIAdapter1* adapter;
   D3D_FEATURE_LEVEL minFeatureLevel = D3D_FEATURE_LEVEL_11_1;
   while (factory->EnumAdapters1(i++, &adapter) != DXGI_ERROR_NOT_FOUND) {
-    auto adapterGuard([adapter] { adapter->Release(); });
+    auto adapterGuard = qScopeGuard([adapter] { adapter->Release(); });
     DXGI_ADAPTER_DESC1 desc;
     adapter->GetDesc1(&desc);
     QString gpuName = QString::fromWCharArray(desc.Description);
 
     // Try creating the driver to see what D3D feature level it supports.
-    D3D_FEATURE_LEVEL maxFeatureLevel = D3D_FEATURE_LEVEL_9_1;
+    D3D_FEATURE_LEVEL gpuFeatureLevel = D3D_FEATURE_LEVEL_9_1;
     result = D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, 0,
                                nullptr, 0, D3D11_SDK_VERSION, nullptr,
-                               &maxFeatureLevel, nullptr);
+                               &gpuFeatureLevel, nullptr);
     if (FAILED(result)) {
       logger.error() << "D3D Device" << gpuName
                      << "failed:" << QString::number((quint32)result, 16);
     } else {
-      if (maxFeatureLevel < minFeatureLevel) {
-        minFeatureLevel = maxFeatureLevel;
+      if (gpuFeatureLevel < minFeatureLevel) {
+        minFeatureLevel = gpuFeatureLevel;
       }
       logger.debug() << "D3D Device" << gpuName
-                     << "supports D3D:" << QString::number(maxFeatureLevel, 16);
+                     << "supports D3D:" << QString::number(gpuFeatureLevel, 16);
     }
   }
 
