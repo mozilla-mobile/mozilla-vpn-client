@@ -69,6 +69,7 @@ void MockServer::closeEach() {
 
 void TestWebSocketHandler::tst_connectionIsTiedToUserState() {
   SettingsHolder settingsHolder;
+  settingsHolder.setFeaturesFlippedOn(QStringList{"websocket"});
   WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
 
   MockServer server;
@@ -109,6 +110,7 @@ void TestWebSocketHandler::tst_connectionIsTiedToUserState() {
 
 void TestWebSocketHandler::tst_connectionRequestContainsRequiredHeaders() {
   SettingsHolder settingsHolder;
+  settingsHolder.setFeaturesFlippedOn(QStringList{"websocket"});
   WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
 
   MockServer server;
@@ -132,6 +134,7 @@ void TestWebSocketHandler::tst_connectionRequestContainsRequiredHeaders() {
 
 void TestWebSocketHandler::tst_reconnectionAttemptsAfterUnexpectedClose() {
   SettingsHolder settingsHolder;
+  settingsHolder.setFeaturesFlippedOn(QStringList{"websocket"});
   WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
 
   MockServer server;
@@ -162,6 +165,7 @@ void TestWebSocketHandler::tst_reconnectionAttemptsAfterUnexpectedClose() {
 
 void TestWebSocketHandler::tst_reconnectionAttemptsOnPingTimeout() {
   SettingsHolder settingsHolder;
+  settingsHolder.setFeaturesFlippedOn(QStringList{"websocket"});
   WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
 
   MockServer server;
