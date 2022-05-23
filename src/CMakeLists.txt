@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 if(NOT DEFINED BUILD_ID)
-    string(TIMESTAMP BUILD_ID "${mozillavpn_VERSION_MAJOR}.%Y%m%d%H%M")
+    string(TIMESTAMP BUILD_ID "${CMAKE_PROJECT_VERSION_MAJOR}.%Y%m%d%H%M")
     message("Generated BUILD_ID: ${BUILD_ID}")
 endif()
 
