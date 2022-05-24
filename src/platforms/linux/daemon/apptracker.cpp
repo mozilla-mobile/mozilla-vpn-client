@@ -84,6 +84,11 @@ AppTracker::~AppTracker() {
   logger.debug() << "AppTracker(" + QString::number(m_userid) + ") destroyed.";
 
   QDBusConnection::disconnectFromBus("user-" + QString::number(m_userid));
+
+  for (AppData* data : m_runningApps.values()) {
+    delete data;
+  }
+  m_runningApps.clear();
 }
 
 void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
@@ -95,15 +100,45 @@ void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
 
   QString appIdName(appid);
   if (!appIdName.isEmpty()) {
+    m_lastLaunchName = appIdName;
+    m_lastLaunchPid = pid;
     emit appLaunched(appIdName, pid);
   }
+}
+
+void AppTracker::appHeuristicMatch(AppData* data) {
+  // If this cgroup contains the last-launched PID, then we have a fairly
+  // strong indication of which application this control group is running.
+  QFile cgroupProcs(data->cgroup + "/cgroup.procs");
+  if (cgroupProcs.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    while (true) {
+      QString line = QString::fromLocal8Bit(cgroupProcs.readLine());
+      if (line.isEmpty()) {
+        break;
+      }
+      int pid = line.trimmed().toInt();
+      if ((pid == 0) || (pid != m_lastLaunchPid)) {
+        continue;
+      }
+      logger.debug() << "Matches app:" << m_lastLaunchName;
+      data->appId = m_lastLaunchName;
+      data->rootpid = m_lastLaunchPid;
+    }
+    cgroupProcs.close();
+  }
+
+  // TODO: Some comparison between the .desktop file and the directory name
+  // of the control group is also very likely to produce viable application
+  // matching, but this will have to be a fuzzy match of some sort because
+  // there's a lot of variability in how desktop environments choose to name
+  // them.
 }
 
 void AppTracker::cgroupsChanged(const QString& directory) {
   QDir dir(directory);
   QFileInfoList newScopes =
       dir.entryInfoList(QStringList("*.scope"), QDir::Dirs);
-  QStringList oldScopes = m_cgroupScopes;
+  QStringList oldScopes = m_runningApps.keys();
 
   // Figure out what has been added.
   for (const QFileInfo& scope : newScopes) {
@@ -111,7 +146,10 @@ void AppTracker::cgroupsChanged(const QString& directory) {
     if (oldScopes.removeAll(path) == 0) {
       // This is a new scope, let's add it.
       logger.debug() << "Control group created:" << path;
-      m_cgroupScopes.append(path);
+      AppData* data = new AppData(path);
+      m_runningApps[path] = new AppData(path);
+
+      appHeuristicMatch(data);
     }
   }
 
@@ -120,7 +158,9 @@ void AppTracker::cgroupsChanged(const QString& directory) {
     QFileInfo scopeInfo(scope);
     if (scopeInfo.absolutePath() == directory) {
       logger.debug() << "Control group removed:" << scope;
-      m_cgroupScopes.removeAll(scope);
+      Q_ASSERT(m_runningApps.contains(scope));
+      AppData* data = m_runningApps.take(scope);
+      delete data;
     }
   }
 }

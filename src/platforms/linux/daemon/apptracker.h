@@ -9,7 +9,21 @@
 #include <QFileSystemWatcher>
 #include <QString>
 
+#include "leakdetector.h"
+
 class QDBusInterface;
+
+class AppData {
+ public:
+  AppData(const QString& path) : cgroup(path) {
+    MVPN_COUNT_CTOR(AppData);
+  }
+  ~AppData() { MVPN_COUNT_DTOR(AppData); }
+
+  const QString cgroup;
+  QString appId;
+  int rootpid = 0;
+};
 
 class AppTracker final : public QObject {
   Q_OBJECT
@@ -31,6 +45,9 @@ class AppTracker final : public QObject {
   void cgroupsChanged(const QString& directory);
 
  private:
+  void appHeuristicMatch(AppData* data);
+
+ private:
   const uint m_userid;
   const QDBusObjectPath m_objectPath;
   QDBusInterface* m_interface;
@@ -38,7 +55,10 @@ class AppTracker final : public QObject {
   QString m_cgroupPath;
   QFileSystemWatcher m_cgroupWatcher;
 
-  QStringList m_cgroupScopes;
+  // The set of applications that we have tracked.
+  QHash<QString, AppData*> m_runningApps;
+  QString m_lastLaunchName;
+  int m_lastLaunchPid;
 };
 
 #endif  // APPTRACKER_H
