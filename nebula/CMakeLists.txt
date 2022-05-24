@@ -4,7 +4,7 @@
 
 add_library(nebula STATIC)
 
-find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
+set_target_properties(nebula PROPERTIES FOLDER "Libs")
 target_link_libraries(nebula PRIVATE Qt6::Quick)
 target_include_directories(nebula PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

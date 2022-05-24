@@ -5,10 +5,6 @@
 add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_ADJUST)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Network Xml Test WebSockets)
-find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
-find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
-
 get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -18,6 +14,7 @@ include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
 
 qt_add_executable(unit_tests EXCLUDE_FROM_ALL)
+set_target_properties(unit_tests PROPERTIES FOLDER "Tests")
 add_dependencies(build_tests unit_tests)
 
 target_link_libraries(unit_tests PRIVATE
