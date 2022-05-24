@@ -731,6 +731,7 @@ void MozillaVPN::subscriptionDetailsFetched(
   emit subscriptionManagementNeeded();
 }
 
+// TODO: Remove, only for debugging purposes.
 void MozillaVPN::subscriptionDetailsFetchedTest() {
   emit subscriptionManagementNeeded();
 }
@@ -1789,4 +1790,13 @@ void MozillaVPN::requestDeleteAccount() {
 void MozillaVPN::cancelAccountDeletion() {
   logger.warning() << "Canceling account deletion";
   AuthenticationInApp::instance()->terminateSession();
+}
+
+void MozillaVPN::getSubscriptionDetails() {
+  logger.debug() << "Get subscription details";
+
+  if (m_state == StateMain) {
+    TaskScheduler::scheduleTask(
+      new TaskGetSubscriptionDetails(m_private->m_user.email()));
+  }
 }

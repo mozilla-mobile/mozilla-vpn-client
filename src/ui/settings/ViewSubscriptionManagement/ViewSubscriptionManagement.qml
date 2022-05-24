@@ -183,7 +183,7 @@ VPNFlickable {
             });
         } else {
             subscriptionPaymentModel.append({
-                labelText: VPNl18n.SubscriptionManagementSubscriptionPlatformLabel.arg("IAP Google or Apple"),
+                labelText: VPNl18n.SubscriptionManagementSubscriptionPlatformLabel.arg("IAP Google or Apple"), // TODO: Determine and handle IAP platforms
                 valueText: "",
                 type: "text",
             });
@@ -199,16 +199,19 @@ VPNFlickable {
 
         const currencySymbol = getCurrencySymbolFromCode(currencyCode);
         const localizedCurrency = Number(amountDisplay).toLocaleCurrencyString(currentLanguageCode, currencySymbol);
-
+        
         if (intervalCount === 12) {
+            // {¤amount} yearly
             return VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
         } else if (intervalCount === 6) {
+            // {¤amount} half-yearly
             return VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
         } else if (intervalCount === 1) {
+            // {¤amount} monthly
             return VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
         }
 
-        // TODO: Confirm that’s really the case: If we made it here the user hass a free trial.
+        // TODO: Confirm that’s really the case: If we made it here the user has a free trial.
         return VPNl18n.FreeTrialsFreeTrialLabel;
     }
 
@@ -216,7 +219,7 @@ VPNFlickable {
         populateListModels();
     }
 
-    // TODO: Get a list with currencies
+    // TODO: Get a list of currencies or find another way to localize
     function getCurrencySymbolFromCode(code) {
         const currencies = [
             {
