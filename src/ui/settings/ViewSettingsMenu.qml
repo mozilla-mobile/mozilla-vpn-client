@@ -164,20 +164,6 @@ VPNFlickable {
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
             }
 
-            VPNLinkButton {
-                fontName: VPNTheme.theme.fontBoldFamily
-                labelText: VPNl18n.DeleteAccountButtonLabel
-                linkColor: VPNTheme.theme.redButton
-                visible: VPNFeatureList.get("accountDeletion").isSupported
-
-                onClicked: {
-                    settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
-                }
-
-                Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: VPNTheme.theme.vSpacing
-            }
-
             VPNVerticalSpacer {
                 Layout.fillWidth: true
                 Layout.minimumHeight: VPNTheme.theme.rowHeight
