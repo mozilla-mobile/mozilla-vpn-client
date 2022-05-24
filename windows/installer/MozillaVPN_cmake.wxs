@@ -122,7 +122,7 @@
         <RegistryKey Root="HKLM" Key="Software\Google\Chrome\NativeMessagingHosts\mozillavpn">
           <RegistryValue Type="string" Value="[MozillaVPNFolder]\mozillavpn.json"/>
         </RegistryKey>
-        <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\MozillaVPN.exe">
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\Mozilla VPN.exe">
           <RegistryValue Type="string" Name="DumpFolder" Value="[LocalAppDataFolder]MozillaVPN\dumps" />
           <RegistryValue Type="integer" Name="DumpCount" Value="3" />
           <RegistryValue Type="integer" Name="DumpType" Value="1" />
@@ -156,7 +156,7 @@
     <!--
       Force application closed
     -->
-    <Property Id="QtExecCmdLine" Value='"[#SystemFolder]taskkill.exe" /F /IM MozillaVPN.exe'/>
+    <Property Id="QtExecCmdLine" Value='"[#SystemFolder]taskkill.exe" /F /IM "Mozilla VPN.exe" /IM "MozillaVPN.exe"'/>
     <CustomAction Id="CloseApplication" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="immediate" Return="ignore"/>
     <InstallExecuteSequence>
       <Custom Action="CloseApplication" After="StopServices" />

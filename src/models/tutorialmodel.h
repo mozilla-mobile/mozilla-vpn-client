@@ -35,7 +35,7 @@ class TutorialModel final : public QAbstractListModel {
   bool isPlaying() const { return !!m_currentTutorial; }
 
   void requireTooltipNeeded(Tutorial* tutorial, const QString& tooltipText,
-                            const QRectF& itemRect);
+                            const QRectF& itemRect, const QString& objectName);
   void requireTutorialCompleted(Tutorial* tutorial,
                                 const QString& completionMessageText);
   void requireTooltipShown(Tutorial* tutorial, bool shown);
@@ -52,7 +52,8 @@ class TutorialModel final : public QAbstractListModel {
 
  signals:
   void playingChanged();
-  void tooltipNeeded(const QString& tooltipText, const QRectF& itemRect);
+  void tooltipNeeded(const QString& tooltipText, const QRectF& itemRect,
+                     const QString& objectName);
   void tooltipShownChanged();
   void tutorialCompleted(const QString& completionMessageText);
 

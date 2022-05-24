@@ -15,7 +15,7 @@ head_tag: ''
 level: '3'
 moz_build_date: '20220106184541'
 optimize_target_tasks: true
-owner: strseb@users.noreply.github.com
+owner: user@example.com
 project: mozilla-vpn-client
 pull_request_number: null
 pushdate: 0

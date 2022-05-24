@@ -26,6 +26,10 @@ MozillaVPN::~MozillaVPN() {}
 
 MozillaVPN::State MozillaVPN::state() const { return TestHelper::vpnState; }
 
+MozillaVPN::UserState MozillaVPN::userState() const {
+  return TestHelper::userState;
+}
+
 bool MozillaVPN::stagingMode() const { return true; }
 bool MozillaVPN::debugMode() const { return true; }
 

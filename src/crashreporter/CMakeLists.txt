@@ -4,13 +4,14 @@
 
 add_library(crashreporter STATIC)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets WebSockets)
 find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
 target_include_directories(crashreporter PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(crashreporter PRIVATE
     Qt6::Core
     Qt6::Gui
+    Qt6::WebSockets
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick
