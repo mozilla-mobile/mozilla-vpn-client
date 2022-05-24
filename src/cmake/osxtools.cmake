@@ -17,6 +17,7 @@ if(CODE_SIGN_IDENTITY)
     if(NOT CODESIGN_BIN)
         messsage(FATAL_ERROR "Cannot sign code, could not find 'codesign' executable")
     endif()
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY ${CODE_SIGN_IDENTITY})
 endif()
 
 ## A helper to copy files into the application bundle

@@ -11,10 +11,13 @@ project(lottie VERSION 1.0.0 LANGUAGES CXX
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
+if(NOT CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    set(CMAKE_FOLDER "Lottie")
+endif()
 
 add_library(lottie STATIC)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Qml)
+find_package(Qt6 REQUIRED COMPONENTS Core Qml Qml Quick QuickTest Test)
 target_link_libraries(lottie PUBLIC Qt6::Core Qt6::Qml)
 target_include_directories(lottie PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 

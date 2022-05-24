@@ -9,6 +9,7 @@ add_custom_target(pkg_resources
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/Resources .
 )
+set_target_properties(pkg_resources PROPERTIES FOLDER "Installer")
 
 file(GLOB I18N_LOCALES LIST_DIRECTORIES true
     RELATIVE ${CMAKE_SOURCE_DIR}/i18n ${CMAKE_SOURCE_DIR}/i18n/*)
@@ -41,6 +42,7 @@ foreach(LOCALE ${I18N_LOCALES})
     )
     add_dependencies(pkg_resources pkg_resources_${LOCALE})
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/Resources/${LOCDIR}.lproj)
+    set_target_properties(pkg_resources_${LOCALE} PROPERTIES FOLDER "Installer")
 endforeach()
 
 ## Stage 1: Create the staging directory, and populate it with the app.
@@ -81,3 +83,4 @@ if(INSTALLER_SIGN_IDENTITY)
 else()
     add_custom_target(pkg DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN-unsigned.pkg)
 endif()
+set_target_properties(pkg PROPERTIES FOLDER "Installer")

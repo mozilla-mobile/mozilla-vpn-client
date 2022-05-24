@@ -4,7 +4,7 @@
 
 add_library(translations STATIC)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Qml)
+set_target_properties(translations PROPERTIES FOLDER "Libs")
 target_link_libraries(translations PRIVATE Qt6::Core Qt6::Qml)
 
 get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_SOURCE_DIR}/scripts ABSOLUTE)

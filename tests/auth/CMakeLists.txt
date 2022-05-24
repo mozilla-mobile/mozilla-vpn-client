@@ -6,11 +6,6 @@ add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_DEBUG)
 add_definitions(-DMVPN_DUMMY)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Test WebSockets)
-find_package(Qt6 REQUIRED COMPONENTS Network NetworkAuth)
-find_package(Qt6 REQUIRED COMPONENTS Gui Widgets)
-find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
-
 get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -20,6 +15,7 @@ include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
 
 qt_add_executable(auth_tests EXCLUDE_FROM_ALL)
+set_target_properties(auth_tests PROPERTIES FOLDER "Tests")
 add_dependencies(build_tests auth_tests)
 
 target_link_libraries(auth_tests PRIVATE

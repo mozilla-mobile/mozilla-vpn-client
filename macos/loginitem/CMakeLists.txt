@@ -11,6 +11,7 @@ target_link_libraries(loginitem PRIVATE ${FW_COCOA})
 
 set_target_properties(loginitem PROPERTIES
     OUTPUT_NAME "MozillaVPNLoginItem"
+    FOLDER "MozillaVPNLoginItem"
     MACOSX_BUNDLE ON
     MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
     MACOSX_BUNDLE_BUNDLE_NAME "MozillaVPNLoginItem"
@@ -21,6 +22,7 @@ set_target_properties(loginitem PROPERTIES
     MACOSX_BUNDLE_INFO_STRING "MozillaVPNLoginItem"
     MACOSX_BUNDLE_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}-${BUILD_ID}"
     MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
+    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}.login-item"
 )
 
 target_compile_options(loginitem PRIVATE -DAPP_ID="$<TARGET_PROPERTY:mozillavpn,MACOSX_BUNDLE_GUI_IDENTIFIER>")
