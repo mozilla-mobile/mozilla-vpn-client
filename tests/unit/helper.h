@@ -35,6 +35,8 @@ class TestHelper : public QObject {
 
   static MozillaVPN::State vpnState;
 
+  static MozillaVPN::UserState userState;
+
   static Controller::State controllerState;
 
   static QVector<QObject*> testList;

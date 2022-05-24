@@ -17,12 +17,12 @@ Item {
 
     Loader {
         id: loader
-        property bool isDeleteAccountAuth: true
+        property bool isReauthFlow: true
 
         anchors.fill: parent
         asynchronous: true
 
-        function cancelAccountDeletion() {
+        function cancelAuthenticationFlow() {
             VPN.cancelAccountDeletion();
             VPN.cancelAuthentication();
 

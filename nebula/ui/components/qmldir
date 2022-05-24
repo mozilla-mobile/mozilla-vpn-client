@@ -26,6 +26,7 @@ VPNConnectionInfoItem 0.1 VPNConnectionInfoItem.qml
 VPNConnectionStability 0.1 VPNConnectionStability.qml
 VPNControllerNav 0.1 VPNControllerNav.qml
 VPNControllerView 0.1 VPNControllerView.qml
+VPNCreditCard 0.1 VPNCreditCard.qml
 VPNDeviceListItem 0.1 VPNDeviceListItem.qml
 VPNDevicesListHeader 0.1 VPNDevicesListHeader.qml
 VPNDropShadowWithStates 0.1 VPNDropShadowWithStates.qml
@@ -61,6 +62,7 @@ VPNMetropolisLabel 0.1 VPNMetropolisLabel.qml
 VPNMobileStatusBarModifier 0.1 VPNMobileStatusBarModifier.qml
 VPNMouseArea 0.1 VPNMouseArea.qml
 VPNPanel 0.1 VPNPanel.qml
+VPNPill 0.1 VPNPill.qml
 VPNPopup 0.1 VPNPopup.qml
 VPNPopupButton 0.1 VPNPopupButton.qml
 VPNRadioButtonLabel 0.1 VPNRadioButtonLabel.qml

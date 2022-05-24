@@ -4,9 +4,7 @@
 
 #include "constants.h"
 #include "settingsholder.h"
-#ifndef BUILD_QMAKE
-#  include "version.h"
-#endif
+#include "version.h"
 
 #include <QString>
 #include <QtGlobal>

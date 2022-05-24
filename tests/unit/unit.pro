@@ -8,9 +8,8 @@ QT += qml
 QT += quick
 QT += xml
 QT += widgets
+QT += websockets
 
-DEFINES += APP_VERSION=\\\"1234\\\"
-DEFINES += BUILD_ID=\\\"1234\\\"
 DEFINES += BUILD_QMAKE
 
 CONFIG += c++1z
@@ -34,6 +33,7 @@ INCLUDEPATH += \
             ../../src/hacl-star/kremlin \
             ../../src/hacl-star/kremlin/minimal
 
+include($$PWD/../../version.pri)
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../nebula/nebula.pri)
 include($$PWD/../../translations/translations.pri)
@@ -110,6 +110,7 @@ HEADERS += \
     ../../src/settingsholder.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
+    ../../src/subscriptiondata.h \
     ../../src/task.h \
     ../../src/tasks/account/taskaccount.h \
     ../../src/tasks/adddevice/taskadddevice.h \
@@ -123,6 +124,7 @@ HEADERS += \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
+    ../../src/websockethandler.h \
     helper.h \
     testadjust.h \
     testandroidmigration.h \
@@ -144,7 +146,8 @@ HEADERS += \
     testtasks.h \
     testthemes.h \
     testtimersingleshot.h \
-    testtutorial.h
+    testtutorial.h \
+    testwebsockethandler.h
 
 SOURCES += \
     ../../src/adjust/adjustfiltering.cpp \
@@ -213,6 +216,7 @@ SOURCES += \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \
+    ../../src/subscriptiondata.cpp \
     ../../src/tasks/account/taskaccount.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/ipfinder/taskipfinder.cpp \
@@ -225,6 +229,7 @@ SOURCES += \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \
+    ../../src/websockethandler.cpp \
     main.cpp \
     moccontroller.cpp \
     mocinspectorhandler.cpp \
@@ -250,7 +255,8 @@ SOURCES += \
     testtasks.cpp \
     testthemes.cpp \
     testtimersingleshot.cpp \
-    testtutorial.cpp
+    testtutorial.cpp \
+    testwebsockethandler.cpp
 
 # Platform-specific: Linux
 linux {

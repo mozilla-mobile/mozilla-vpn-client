@@ -18,7 +18,7 @@ void TestLocalizer::basic() {
   QCOMPARE(rn[Localizer::LocalizedLanguageRole], "localizedLanguage");
   QCOMPARE(rn[Localizer::CodeRole], "code");
 
-  QCOMPARE(l.rowCount(QModelIndex()), 0);
+  QVERIFY(l.rowCount(QModelIndex()) > 0);
   QCOMPARE(l.data(QModelIndex(), Localizer::LanguageRole), QVariant());
 }
 

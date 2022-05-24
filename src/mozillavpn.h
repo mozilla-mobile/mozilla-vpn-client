@@ -28,8 +28,10 @@
 #include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
+#include "subscriptiondata.h"
 #include "telemetry.h"
 #include "theme.h"
+#include "websockethandler.h"
 
 #include <QList>
 #include <QNetworkReply>
@@ -235,6 +237,7 @@ class MozillaVPN final : public QObject {
     return &m_private->m_serverCountryModel;
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
+  SubscriptionData* subscriptionData() { return &m_private->m_subscriptionData; }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
   Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
@@ -252,6 +255,10 @@ class MozillaVPN final : public QObject {
   void deviceRemovalCompleted(const QString& publicKey);
 
   void serversFetched(const QByteArray& serverData);
+
+  void subscriptionDetailsFetched(const QByteArray& subscriptionDetailsData);
+
+  void subscriptionDetailsFetchedTest();
 
   void accountChecked(const QByteArray& json);
 
@@ -291,7 +298,7 @@ class MozillaVPN final : public QObject {
 
   void setUpdateRecommended(bool value);
 
-  UserState userState() const { return m_userState; }
+  UserState userState() const;
 
   bool startMinimized() const { return m_startMinimized; }
 
@@ -444,9 +451,11 @@ class MozillaVPN final : public QObject {
     ServerCountryModel m_serverCountryModel;
     ServerData m_serverData;
     StatusIcon m_statusIcon;
+    SubscriptionData m_subscriptionData;
     SurveyModel m_surveyModel;
     Telemetry m_telemetry;
     Theme m_theme;
+    WebSocketHandler m_webSocketHandler;
     WhatsNewModel m_whatsNewModel;
     User m_user;
   };

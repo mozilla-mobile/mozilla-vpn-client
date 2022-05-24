@@ -94,6 +94,10 @@ void SettingsHolder::hardReset() {
   m_settings.clear();
 }
 
+QString SettingsHolder::settingsFileName() const {
+  return m_settings.fileName();
+}
+
 QVariant SettingsHolder::rawSetting(const QString& key) const {
   return m_settings.value(key);
 }

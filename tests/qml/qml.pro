@@ -7,6 +7,7 @@ TARGET = qml_tests
 
 QT += quick
 QT += widgets
+QT += websockets
 
 CONFIG += warn_on qmltestcase
 CONFIG += c++1z
@@ -20,8 +21,6 @@ DEFINES += UNIT_TEST
 DEFINES += MVPN_DUMMY
 
 # Sets up app and build id which we test for in test_VPNAboutUs
-DEFINES += APP_VERSION=\\\"QMLTest_AppVersion\\\"
-DEFINES += BUILD_ID=\\\"QMLTest_BuildID\\\"
 DEFINES += BUILD_QMAKE
 
 RESOURCES += \
@@ -40,10 +39,10 @@ include($$PWD/../../translations/translations.pri)
 SOURCES += \
     helper.cpp \
     main.cpp \
+    mocconstants.cpp \
     mocmozillavpn.cpp \
     ../unit/mocinspectorhandler.cpp \
     ../../src/closeeventhandler.cpp \
-    ../../src/constants.cpp \
     ../../src/featurelist.cpp \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \

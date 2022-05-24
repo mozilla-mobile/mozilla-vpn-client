@@ -47,10 +47,17 @@ VPNFlickable {
             }
 
             VPNUserProfile {
-                _iconButtonImageSource: "qrc:/nebula/resources/chevron.svg"
-                _iconButtonOnClicked: () => {
-                    Sample.manageAccountClicked.record();
-                    VPN.openLink(VPN.LinkAccount)
+                property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
+                _iconButtonImageSource: subscriptionManagementEnabled
+                    ? "qrc:/nebula/resources/chevron.svg"
+                    : "qrc:/nebula/resources/open-in-new.svg"
+                _iconButtonOnClicked: () => {                    
+                    if (subscriptionManagementEnabled) {
+                        settingsStackView.push("qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagementStates.qml");
+                    } else {
+                        Sample.manageAccountClicked.record();
+                        VPN.openLink(VPN.LinkAccount);
+                    }
                 }
                 Layout.leftMargin: VPNTheme.theme.windowMargin / 2
             }
@@ -138,19 +145,6 @@ VPNFlickable {
                 imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 onClicked: settingsStackView.push(aboutUsComponent)
-            }
-
-            VPNLinkButton {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: VPNTheme.theme.vSpacing
-
-                fontName: VPNTheme.theme.fontBoldFamily
-                labelText: VPNl18n.DeleteAccountButtonLabel + " (WIP)"
-                linkColor: VPNTheme.theme.redButton
-                visible: VPNFeatureList.get("accountDeletion").isSupported
-                onClicked: {
-                    settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
-                }
             }
 
             VPNVerticalSpacer {

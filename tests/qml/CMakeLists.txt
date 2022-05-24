@@ -6,7 +6,7 @@ add_definitions(-DQUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_DUMMY)
 
-find_package(Qt6 REQUIRED COMPONENTS Gui Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Gui Widgets WebSockets)
 find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
 find_package(Qt6 REQUIRED COMPONENTS QuickTest)
 
@@ -20,6 +20,7 @@ add_dependencies(build_tests qml_tests)
 
 target_link_libraries(qml_tests PRIVATE
     Qt6::Gui
+    Qt6::WebSockets
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick
@@ -32,7 +33,6 @@ target_link_libraries(qml_tests PRIVATE glean lottie nebula translations)
 target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/closeeventhandler.cpp
     ${MVPN_SOURCE_DIR}/closeeventhandler.h
-    ${MVPN_SOURCE_DIR}/constants.cpp
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/featurelist.cpp
     ${MVPN_SOURCE_DIR}/featurelist.h
@@ -75,7 +75,7 @@ target_sources(qml_tests PRIVATE
     helper.cpp
     helper.h
     main.cpp
-    version.h
+    mocconstants.cpp
     mocmozillavpn.cpp
     ../unit/mocinspectorhandler.cpp
 )

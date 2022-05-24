@@ -247,6 +247,8 @@ target_sources(mozillavpn PRIVATE
     simplenetworkmanager.h
     statusicon.cpp
     statusicon.h
+    subscriptiondata.cpp
+    subscriptiondata.h
     task.h
     taskscheduler.cpp
     taskscheduler.h
@@ -300,6 +302,8 @@ target_sources(mozillavpn PRIVATE
     update/versionapi.h
     urlopener.cpp
     urlopener.h
+    websockethandler.cpp
+    websockethandler.h
 )
 
 # VPN Client UI resources

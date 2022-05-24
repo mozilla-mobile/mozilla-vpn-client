@@ -23,10 +23,8 @@ macos/opt:
         taskcluster-proxy: true
         chain-of-trust: true
         max-run-time: 3600
-        artifacts:
-            - type: directory
-              name: public/build
-              path: artifacts
+    release-artifacts:
+        - MozillaVPN.tar.gz
     run:
         using: run-task
         cwd: '{checkout}'

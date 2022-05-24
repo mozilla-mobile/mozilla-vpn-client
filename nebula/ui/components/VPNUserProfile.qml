@@ -30,6 +30,8 @@ RowLayout {
     }
 
     ColumnLayout {
+      spacing: VPNTheme.theme.listSpacing
+
       Layout.alignment: Qt.AlignVCenter
 
       VPNBoldLabel {

@@ -25,6 +25,10 @@ MozillaVPN::MozillaVPN() {}
 MozillaVPN::~MozillaVPN() {}
 
 MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
+MozillaVPN::UserState MozillaVPN::userState() const {
+  return UserNotAuthenticated;
+}
+
 bool MozillaVPN::stagingMode() const {
   return TestHelper::instance()->stagingMode();
 }
@@ -113,8 +117,6 @@ void MozillaVPN::requestAbout() {}
 void MozillaVPN::requestViewLogs() {}
 
 void MozillaVPN::requestContactUs() {}
-
-void MozillaVPN::requestSubscriptionManagement() {}
 
 void MozillaVPN::retrieveLogs() {}
 

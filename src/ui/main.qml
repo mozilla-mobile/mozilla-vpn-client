@@ -499,7 +499,8 @@ Window {
 
     Connections {
         target: VPNTutorial
-        function onTooltipNeeded(text, rect) {
+        function onTooltipNeeded(text, rect, objectName) {
+            console.log("OBJECT NAME:" + objectName);
             if (tooltip.height + rect.y + rect.height <= window.height - VPNTheme.theme.windowMargin) {
               tooltip.y = rect.y + rect.height;
             } else {

@@ -12,8 +12,8 @@
 // See https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource
 // for a list of all the neat metadata we can set in this file.
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION     @CMAKE_PROJECT_VERSION@
-PRODUCTVERSION  @CMAKE_PROJECT_VERSION@
+FILEVERSION     @CMAKE_PROJECT_VERSION_MAJOR@, @CMAKE_PROJECT_VERSION_MINOR@, @CMAKE_PROJECT_VERSION_PATCH@
+PRODUCTVERSION  @CMAKE_PROJECT_VERSION_MAJOR@, @CMAKE_PROJECT_VERSION_MINOR@, @CMAKE_PROJECT_VERSION_PATCH@
 FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
 FILEFLAGS       (VER_DEBUG)
 FILEOS          VOS__WINDOWS32
@@ -32,7 +32,7 @@ BEGIN
             //VALUE "LegalTrademarks1", VER_LEGALTRADEMARKS1_STR
             //VALUE "LegalTrademarks2", VER_LEGALTRADEMARKS2_STR
             //VALUE "OriginalFilename", VER_ORIGINALFILENAME_STR
-            //VALUE "ProductName",      VER_PRODUCTNAME_STR
+            VALUE "ProductName",      "@CMAKE_PROJECT_NAME@"
             VALUE "ProductVersion",   "@CMAKE_PROJECT_VERSION@"
         END
     END

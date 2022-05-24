@@ -10,6 +10,13 @@
       "id": "mainScreen",
       "element": "serverListButton",
       "tooltip": "Select your location",
+      "before": [{
+        "op": "vpn_location_set",
+        "exitCountryCode": "at",
+        "exitCity": "Vienna",
+        "entryCountryCode": "",
+        "entryCity": ""
+      }],
       "next": {
         "op": "signal",
         "qml_emitter": "serverListButton",
@@ -20,13 +27,6 @@
       "id": "countryAU",
       "element": "serverCountryList/serverCountry-au",
       "tooltip": "Select a different country",
-      "conditions": {
-        "settings": [{
-          "setting": "currentServer/countryCode",
-          "value": "au",
-          "op": "neq"
-        }]
-      },
       "before": [{
         "op": "property_set",
         "element": "serverCountryView",
@@ -40,59 +40,12 @@
       }
     },
     {
-      "id": "countryAT",
-      "element": "serverCountryList/serverCountry-at",
-      "tooltip": "Select a different country",
-      "conditions": {
-        "settings": [{
-          "setting": "currentServer/countryCode",
-          "value": "au",
-          "op": "eq"
-        }]
-      },
-      "before": [{
-        "op": "property_set",
-        "element": "serverCountryView",
-        "property": "contentY",
-        "value": 0
-      }],
-      "next": {
-        "op": "signal",
-        "qml_emitter": "serverCountryList/serverCountry-at",
-        "signal": "cityListVisibleChanged"
-      }
-    },
-    {
       "id": "cityAU",
       "element": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne",
       "tooltip": "Select a different server location",
-      "conditions": {
-        "settings": [{
-          "setting": "currentServer/countryCode",
-          "value": "au",
-          "op": "neq"
-        }]
-      },
       "next": {
         "op": "signal",
         "qml_emitter": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne",
-        "signal": "visibleChanged"
-      }
-    },
-    {
-      "id": "cityAT",
-      "element": "serverCountryList/serverCountry-at/serverCityList/serverCity-Vienna",
-      "tooltip": "Select a different server location",
-      "conditions": {
-        "settings": [{
-          "setting": "currentServer/countryCode",
-          "value": "au",
-          "op": "eq"
-        }]
-      },
-      "next": {
-        "op": "signal",
-        "qml_emitter": "serverCountryList/serverCountry-at/serverCityList/serverCity-Vienna",
         "signal": "visibleChanged"
       }
     },

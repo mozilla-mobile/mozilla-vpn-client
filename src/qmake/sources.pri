@@ -114,6 +114,7 @@ SOURCES += \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
+        subscriptiondata.cpp \
         tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
@@ -139,7 +140,8 @@ SOURCES += \
         timersingleshot.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
-        urlopener.cpp
+        urlopener.cpp \
+        websockethandler.cpp
 
 HEADERS += \
         appimageprovider.h \
@@ -200,6 +202,7 @@ HEADERS += \
         features/featuresharelogs.h \
         features/featuresplittunnel.h \
         features/featurestartonboot.h \
+        features/featuresubscriptionmanagement.h \
         features/featureunsecurednetworknotification.h \
         features/featureserverunavailablenotification.h \
         filterproxymodel.h \
@@ -270,6 +273,7 @@ HEADERS += \
         settingsholder.h \
         simplenetworkmanager.h \
         statusicon.h \
+        subscriptiondata.h \
         task.h \
         tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \
@@ -296,7 +300,8 @@ HEADERS += \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
-        urlopener.h
+        urlopener.h \
+        websockethandler.h
 
 # Signal handling for unix platforms
 unix {

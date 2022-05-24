@@ -27,11 +27,7 @@ class FeatureAccountDeletion final : public Feature {
         ) {}
 
   bool checkSupportCallback() const override {
-#if defined(MVPN_IOS)
-    return true;
-#else
     return false;
-#endif
   }
 
   static const FeatureAccountDeletion* instance() {

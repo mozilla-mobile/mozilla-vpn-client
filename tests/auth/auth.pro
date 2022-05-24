@@ -7,6 +7,7 @@ QT += network
 QT += networkauth
 QT += qml
 QT += widgets
+QT += websockets
 
 CONFIG += c++1z
 
@@ -14,8 +15,6 @@ macos {
     CONFIG -= app_bundle
 }
 
-DEFINES += APP_VERSION=\\\"1234\\\"
-DEFINES += BUILD_ID=\\\"1234\\\"
 DEFINES += BUILD_QMAKE
 
 DEFINES += QT_DEPRECATED_WARNINGS
@@ -114,6 +113,7 @@ SOURCES += \
     testpasswordvalidation.cpp \
     testsignupandin.cpp
 
+include($$PWD/../../version.pri)
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../translations/translations.pri)
 

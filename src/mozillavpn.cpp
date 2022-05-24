@@ -23,6 +23,7 @@
 #include "networkrequest.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "subscriptiondata.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
@@ -42,6 +43,7 @@
 #include "taskscheduler.h"
 #include "update/versionapi.h"
 #include "urlopener.h"
+#include "websockethandler.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
@@ -192,6 +194,8 @@ MozillaVPN::~MozillaVPN() {
 
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
+MozillaVPN::UserState MozillaVPN::userState() const { return m_userState; }
+
 bool MozillaVPN::stagingMode() const { return !Constants::inProduction(); }
 
 bool MozillaVPN::debugMode() const {
@@ -218,6 +222,8 @@ void MozillaVPN::initialize() {
   m_private->m_connectionBenchmark.initialize();
 
   m_private->m_ipAddressLookup.initialize();
+
+  m_private->m_webSocketHandler.initialize();
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
@@ -710,6 +716,23 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
     Q_ASSERT(m_private->m_serverData.initialized());
     m_private->m_serverData.writeSettings();
   }
+}
+
+void MozillaVPN::subscriptionDetailsFetched(
+    const QByteArray& subscriptionDetailsData) {
+  logger.debug() << "Subscription details data fetched!";
+
+  if (!m_private->m_subscriptionData.fromJson(subscriptionDetailsData)) {
+    logger.error() << "Failed to parse the Subscription JSON data";
+    errorHandle(ErrorHandler::RemoteServiceError);
+    return;
+  }
+
+  emit subscriptionManagementNeeded();
+}
+
+void MozillaVPN::subscriptionDetailsFetchedTest() {
+  emit subscriptionManagementNeeded();
 }
 
 void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {

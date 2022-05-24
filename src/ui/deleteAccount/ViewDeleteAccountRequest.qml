@@ -37,7 +37,7 @@ VPNInAppAuthenticationBase {
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => {
-        cancelAccountDeletion();
+        cancelAuthenticationFlow();
     }
     _headlineText: VPNl18n.DeleteAccountHeadline
     _imgSource: "qrc:/nebula/resources/avatar-delete-account.svg"
@@ -94,7 +94,7 @@ VPNInAppAuthenticationBase {
             labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText
             linkColor: VPNTheme.theme.redButton
             onClicked: {
-                cancelAccountDeletion();
+                cancelAuthenticationFlow();
             }
         }
     }

@@ -71,6 +71,14 @@ target_sources(mozillavpn PRIVATE
     wgquickprocess.h
 )
 
+# Windows sources for the GPU check workaround
+# See: https://bugreports.qt.io/browse/QTBUG-100689
+target_sources(mozillavpn PRIVATE
+    commands/commandgpucheck.cpp
+    commands/commandgpucheck.h
+    ui/gpucheck.qrc
+)
+
 # Windows Qt6 UI workaround resources
 if(${QT_VERSION} VERSION_GREATER_EQUAL 6.3.0)
     message(WARNING "Remove the Qt6 windows hack!")
