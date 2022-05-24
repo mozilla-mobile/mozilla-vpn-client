@@ -15,11 +15,10 @@
 #include "simplenetworkmanager.h"
 
 #ifdef MVPN_WINDOWS
-#  include <QDir>
-#  include <QFile>
 #  include <QSGRendererInterface>
 #  include <QQuickWindow>
 #  include <Windows.h>
+#  include "platforms/windows/windowscommons.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -32,31 +31,6 @@
 
 namespace {
 Logger logger(LOG_MAIN, "Command");
-
-#ifdef MVPN_WINDOWS
-QSGRendererInterface::GraphicsApi maybeUseCustomGraphicApi() {
-  QString location =
-      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-  QDir appDataLocation(location);
-
-  QFile gpuCheckSettings = appDataLocation.filePath("moz.vpn.gpucheck");
-  if (!gpuCheckSettings.exists()) {
-    return QSGRendererInterface::Unknown;
-  }
-
-  if (!gpuCheckSettings.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    return QSGRendererInterface::Unknown;
-  }
-
-  const QByteArray content = gpuCheckSettings.readAll().trimmed();
-  if (content == "software") {
-    return QSGRendererInterface::Software;
-  }
-
-  return QSGRendererInterface::Unknown;
-}
-#endif
-
 }  // namespace
 
 QVector<std::function<Command*(QObject*)>> Command::s_commandCreators;
@@ -199,11 +173,8 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 #endif
 
 #ifdef MVPN_WINDOWS
-  {
-    QSGRendererInterface::GraphicsApi api = maybeUseCustomGraphicApi();
-    if (api != QSGRendererInterface::Unknown) {
-      QQuickWindow::setGraphicsApi(api);
-    }
+  if (WindowsCommons::requireSoftwareRendering()) {
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
   }
 #endif
 
