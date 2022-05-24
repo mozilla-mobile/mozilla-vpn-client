@@ -148,11 +148,9 @@
     <!--
       Launch after setup complete
     -->
-    <CustomAction Id="LaunchGpuCheck" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="gpucheck" Return="check" />
     <CustomAction Id="LaunchVPN" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
     <InstallExecuteSequence>
-       <Custom Action="LaunchGpuCheck" After="InstallFinalize">NOT Installed OR WIX_UPGRADE_DETECTED</Custom>
-       <Custom Action="LaunchVPN" After="LaunchGpuCheck">NOT Installed OR WIX_UPGRADE_DETECTED</Custom>
+       <Custom Action="LaunchVPN" After="InstallFinalize">NOT Installed OR WIX_UPGRADE_DETECTED</Custom>
     </InstallExecuteSequence>
 
     <!--

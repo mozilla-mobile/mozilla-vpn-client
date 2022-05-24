@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>gpucheck/main.qml</file>
-    </qresource>
-</RCC>
