@@ -5,19 +5,13 @@
 #include "settingsholder.h"
 #include "constants.h"
 #include "cryptosettings.h"
-#include "featurelist.h"
 #include "leakdetector.h"
 #include "logger.h"
-
-#include "features/featurecaptiveportal.h"
-#include "features/featurelocalareaaccess.h"
-#include "features/featuresplittunnel.h"
-#include "features/featurestartonboot.h"
-#include "features/featureunsecurednetworknotification.h"
-#include "features/featureserverunavailablenotification.h"
+#include "models/feature.h"
 
 #include <QSettings>
 #include <QProcessEnvironment>
+#include <QUrl>
 
 namespace {
 

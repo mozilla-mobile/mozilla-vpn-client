@@ -4,9 +4,8 @@
 
 #include "networkmanager.h"
 #include "constants.h"
-#include "features/featureinappauth.h"
-#include "features/featureinapppurchase.h"
 #include "leakdetector.h"
+#include "models/feature.h"
 
 #if MVPN_WINDOWS
 #  include "platforms/windows/windowscommons.h"
@@ -69,7 +68,7 @@ QByteArray NetworkManager::userAgent() {
     QStringList flags;
     flags.append(QString("sys:") + NetworkManager::osVersion());
 
-    if (FeatureInAppPurchase::instance()->isSupported()) {
+    if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
       flags.append("iap:true");
     }
 

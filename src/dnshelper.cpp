@@ -3,10 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dnshelper.h"
-#include "features/featurecustomdns.h"
-#include "features/featurelocalareaaccess.h"
 #include "ipaddress.h"
 #include "logger.h"
+#include "models/feature.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
 #include "rfc/rfc4291.h"
@@ -26,7 +25,7 @@ constexpr const char* MULLVAD_BLOCK_ALL_DNS = "100.64.0.3";
 
 // static
 QString DNSHelper::getDNS(const QString& fallback) {
-  if (!FeatureCustomDNS::instance()->isSupported()) {
+  if (!Feature::get(Feature::Feature_customDNS)->isSupported()) {
     return fallback;
   }
 
@@ -91,7 +90,7 @@ bool DNSHelper::validateUserDNS(const QString& dns) {
 // static
 bool DNSHelper::shouldExcludeDNS() {
   auto settings = SettingsHolder::instance();
-  if (!FeatureCustomDNS::instance()->isSupported()) {
+  if (!Feature::get(Feature::Feature_customDNS)->isSupported()) {
     return false;
   }
 
@@ -120,7 +119,7 @@ bool DNSHelper::shouldExcludeDNS() {
 
   bool isLocalDNS =
       RFC1918::contains(dnsAddress) || RFC4193::contains(dnsAddress);
-  if (!FeatureLocalAreaAccess::instance()->isSupported() && isLocalDNS) {
+  if (!Feature::get(Feature::Feature_lanAccess)->isSupported() && isLocalDNS) {
     // In case we cant use lan access, we must exclude it (the platform already
     // does the magic for us).
     return false;

@@ -6,25 +6,20 @@
 #include "controller.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
-#include "featurelist.h"
-#include "features/featurecustomdns.h"
-#include "features/featurecaptiveportal.h"
-#include "features/featurelocalareaaccess.h"
-#include "features/featuremultihop.h"
-#include "telemetry/gleansample.h"
+#include "ipaddress.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "models/feature.h"
+#include "models/server.h"
+#include "mozillavpn.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
 #include "rfc/rfc4291.h"
-
-#include "ipaddress.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "models/server.h"
-#include "mozillavpn.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "tasks/heartbeat/taskheartbeat.h"
+#include "telemetry/gleansample.h"
 #include "timersingleshot.h"
 
 #if defined(MVPN_LINUX)
@@ -222,7 +217,8 @@ void Controller::activateInternal() {
   }
 
   // For single-hop connections, exclude the entry server
-  if (!FeatureMultiHop::instance()->isSupported() || !vpn->multihop()) {
+  if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
+      !vpn->multihop()) {
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv4AddrIn());
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
@@ -691,7 +687,7 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   // routed through the VPN.
 
   // filtering out the RFC1918 local area network
-  if (FeatureLocalAreaAccess::instance()->isSupported() &&
+  if (Feature::get(Feature::Feature_lanAccess)->isSupported() &&
       SettingsHolder::instance()->localNetworkAccess()) {
     logger.debug() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());
@@ -739,7 +735,7 @@ QStringList Controller::getExcludedAddresses(const Server& exitServer) {
   QStringList list;
 
   // filtering out the captive portal endpoint
-  if (FeatureCaptivePortal::instance()->isSupported() &&
+  if (Feature::get(Feature::Feature_captivePortal)->isSupported() &&
       SettingsHolder::instance()->captivePortalAlert()) {
     CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
 

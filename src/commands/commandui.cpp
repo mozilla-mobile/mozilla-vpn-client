@@ -9,8 +9,6 @@
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
 #include "constants.h"
-#include "featurelist.h"
-#include "features/featureinapppurchase.h"
 #include "filterproxymodel.h"
 #include "fontloader.h"
 #include "iaphandler.h"
@@ -20,6 +18,8 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
+#include "models/feature.h"
+#include "models/featuremodel.h"
 #include "models/guidemodel.h"
 #include "models/tutorialmodel.h"
 #include "mozillavpn.h"
@@ -248,7 +248,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNFeatureList",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = FeatureList::instance();
+          QObject* obj = FeatureModel::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -439,7 +439,7 @@ int CommandUI::run(QStringList& tokens) {
         });
 #endif
 
-    if (FeatureInAppPurchase::instance()->isSupported()) {
+    if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
       qmlRegisterSingletonType<MozillaVPN>(
           "Mozilla.VPN", 1, 0, "VPNIAP",
           [](QQmlEngine*, QJSEngine*) -> QObject* {

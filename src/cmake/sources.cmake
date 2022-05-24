@@ -88,25 +88,6 @@ target_sources(mozillavpn PRIVATE
     dnspingsender.h
     errorhandler.cpp
     errorhandler.h
-    featurelist.cpp
-    featurelist.h
-    features/featureaccountdeletion.h
-    features/featureappreview.h
-    features/featurecaptiveportal.h
-    features/featureconnectioninfo.h
-    features/featurecustomdns.h
-    features/featureinappaccountcreate.h
-    features/featureinappauth.h
-    features/featureinapppurchase.h
-    features/featurelocalareaaccess.h
-    features/featuremultiaccountcontainers.h
-    features/featuremultihop.h
-    features/featurenotificationcontrol.h
-    features/featuresharelogs.h
-    features/featuresplittunnel.h
-    features/featurestartonboot.h
-    features/featureunsecurednetworknotification.h
-    features/featureserverunavailablenotification.h
     filterproxymodel.cpp
     filterproxymodel.h
     fontloader.cpp
@@ -156,6 +137,8 @@ target_sources(mozillavpn PRIVATE
     models/devicemodel.h
     models/feature.cpp
     models/feature.h
+    models/featuremodel.cpp
+    models/featuremodel.h
     models/feedbackcategorymodel.cpp
     models/feedbackcategorymodel.h
     models/guide.cpp

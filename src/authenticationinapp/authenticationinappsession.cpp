@@ -5,11 +5,10 @@
 #include "authenticationinappsession.h"
 #include "authenticationinapp.h"
 #include "authenticationlistener.h"
-#include "featurelist.h"
-#include "features/featureinappaccountcreate.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "hkdf.h"
+#include "models/feature.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
@@ -185,7 +184,7 @@ void AuthenticationInAppSession::accountChecked(bool exists) {
     return;
   }
 
-  if (FeatureInAppAccountCreate::instance()->isSupported()) {
+  if (Feature::get(Feature::Feature_inAppAccountCreate)->isSupported()) {
     AuthenticationInApp::instance()->requestState(
         AuthenticationInApp::StateSignUp, this);
     return;
