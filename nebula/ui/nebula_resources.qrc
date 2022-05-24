@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/nebula">
+        <file>resources/arrow-back-white.svg</file>
         <file>resources/arrow-forward.svg</file>
         <file>resources/arrow-forward-white.svg</file>
         <file>resources/arrow-toggle.svg</file>

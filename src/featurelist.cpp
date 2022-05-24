@@ -34,6 +34,7 @@
 #include "features/featureunsecurednetworknotification.h"
 #include "features/featureserverunavailablenotification.h"
 #include "features/featuresubscriptionmanagement.h"
+#include "features/featurewebsocket.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -72,12 +73,13 @@ void FeatureList::initialize() {
   new FeatureMultiAccountContainers();
   new FeatureMultiHop();
   new FeatureNotificationControl();
-  new FeatureServerUnavailableNotification();
   new FeatureShareLogs();
   new FeatureSplitTunnel();
   new FeatureStartOnBoot();
   new FeatureSubscriptionManagement();
   new FeatureUnsecuredNetworkNotification();
+  new FeatureServerUnavailableNotification();
+  new FeatureWebSocket();
 
   m_featurelist = Feature::getAll();
 }

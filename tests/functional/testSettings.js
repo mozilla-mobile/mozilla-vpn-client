@@ -104,6 +104,31 @@ describe('Settings', function() {
     await vpn.clickOnElement('settingsTipsAndTricks');
     await vpn.wait();
 
+    await vpn.waitForElement('settingsTipsAndTricksPage');
+
+    let guides = await vpn.guides();
+    let guideParent = "guideLayout"
+
+    for (var guide of guides) {
+      guide = guideParent + "/" + guide
+      
+      await vpn.setElementProperty(
+        'settingsTipsAndTricksPage', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(guide, 'y')) +
+            parseInt(await vpn.getElementProperty(guideParent, 'y')));
+      await vpn.wait()
+
+      await vpn.waitForElement(guide)
+      await vpn.clickOnElement(guide)
+      await vpn.wait()
+
+      await vpn.waitForElement('backArrow');
+      await vpn.clickOnElement('backArrow')
+      await vpn.wait()
+
+      await vpn.waitForElement('settingsTipsAndTricksPage');
+    }
+
     await vpn.waitForElement('settingsBackButton');
     await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
     await vpn.clickOnElement('settingsBackButton');

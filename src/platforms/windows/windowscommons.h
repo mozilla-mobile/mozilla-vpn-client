@@ -17,6 +17,9 @@ class WindowsCommons final {
   static QString tunnelConfigFile();
   static QString tunnelLogFile();
 
+  // Returns whether we need to fallback to software rendering.
+  static bool requireSoftwareRendering();
+
   // Returns the Interface Index of the VPN Adapter
   static int VPNAdapterIndex();
   // Returns the Interface Index that could Route to dst

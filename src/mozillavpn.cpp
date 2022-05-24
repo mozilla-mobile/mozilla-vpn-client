@@ -13,6 +13,7 @@
 #include "features/featureinappauth.h"
 #include "features/featureinappaccountcreate.h"
 #include "features/featuresharelogs.h"
+#include "features/featurewebsocket.h"
 #include <telemetry/gleansample.h>
 #include "iaphandler.h"
 #include "leakdetector.h"
@@ -223,7 +224,9 @@ void MozillaVPN::initialize() {
 
   m_private->m_ipAddressLookup.initialize();
 
-  m_private->m_webSocketHandler.initialize();
+  if (FeatureWebSocket::instance()->isSupported()) {
+    m_private->m_webSocketHandler.initialize();
+  }
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
