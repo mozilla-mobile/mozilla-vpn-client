@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QtEndian>
 #include <QHostAddress>
+#include <QScopeGuard>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QSysInfo>
@@ -15,6 +16,9 @@
 
 #include <Windows.h>
 #include <iphlpapi.h>
+
+#include <dxgi.h>
+#include <d3d11.h>
 
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$mozvpn"
 
@@ -175,4 +179,55 @@ QString WindowsCommons::WindowsVersion() {
     return "11";
   }
   return QSysInfo::productVersion();
+}
+
+// Static
+bool WindowsCommons::requireSoftwareRendering() {
+  /* Qt6 appears to require Direct3D shader level 5, and can result in rendering
+   * failures on some platforms. To workaround the issue, try to identify if
+   * this device can reliably run the shaders, and request fallback to software
+   * rendering if not.
+   *
+   * See: https://bugreports.qt.io/browse/QTBUG-100689
+   */
+  IDXGIFactory1* factory;
+  HRESULT result;
+
+  result = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)(&factory));
+  if (FAILED(result)) {
+    logger.error() << "Failed to create DXGI Factory:" << result;
+    return true;
+  }
+  auto guard = qScopeGuard([&] { factory->Release(); });
+
+  // Enumerate the graphics adapters to find the minimum D3D shader version
+  // that we can guarantee will render successfully.
+  UINT i = 0;
+  IDXGIAdapter1* adapter;
+  D3D_FEATURE_LEVEL minFeatureLevel = D3D_FEATURE_LEVEL_11_1;
+  while (factory->EnumAdapters1(i++, &adapter) != DXGI_ERROR_NOT_FOUND) {
+    auto adapterGuard = qScopeGuard([adapter] { adapter->Release(); });
+    DXGI_ADAPTER_DESC1 desc;
+    adapter->GetDesc1(&desc);
+    QString gpuName = QString::fromWCharArray(desc.Description);
+
+    // Try creating the driver to see what D3D feature level it supports.
+    D3D_FEATURE_LEVEL gpuFeatureLevel = D3D_FEATURE_LEVEL_9_1;
+    result = D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, 0,
+                               nullptr, 0, D3D11_SDK_VERSION, nullptr,
+                               &gpuFeatureLevel, nullptr);
+    if (FAILED(result)) {
+      logger.error() << "D3D Device" << gpuName
+                     << "failed:" << QString::number((quint32)result, 16);
+    } else {
+      if (gpuFeatureLevel < minFeatureLevel) {
+        minFeatureLevel = gpuFeatureLevel;
+      }
+      logger.debug() << "D3D Device" << gpuName
+                     << "supports D3D:" << QString::number(gpuFeatureLevel, 16);
+    }
+  }
+
+  // D3D version 11.0 shader level 5, is required for GPU rendering.
+  return (minFeatureLevel < D3D_FEATURE_LEVEL_11_0);
 }
