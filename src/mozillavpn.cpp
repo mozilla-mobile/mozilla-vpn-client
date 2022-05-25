@@ -1006,7 +1006,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
     } else {
       emit recordGleanEvent(GleanSample::authenticationFailure);
     }
-    setState(StateInitialize);
+    reset(true);
     return;
   }
 
