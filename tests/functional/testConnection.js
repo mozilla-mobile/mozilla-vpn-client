@@ -6,8 +6,9 @@ const assert = require('assert');
 const vpn = require('./helper.js');
 
 describe('Connectivity', function() {
+  this.ctx.authenticationNeeded = true;
+
   it('check the ui', async () => {
-    await vpn.authenticate(true, true);
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(
@@ -23,7 +24,6 @@ describe('Connectivity', function() {
   });
 
   it('Connect to VPN', async () => {
-    await vpn.authenticate(true, true);
     await vpn.waitForElement('controllerTitle');
 
     await vpn.setSetting('connection-change-notification', 'true');
@@ -58,7 +58,6 @@ describe('Connectivity', function() {
   });
 
   it('Disconnecting and disconnected', async () => {
-    await vpn.authenticate(true, true);
     await vpn.waitForElement('controllerTitle');
 
     await vpn.setSetting('connection-change-notification', 'true');
@@ -69,16 +68,7 @@ describe('Connectivity', function() {
     });
     await vpn.deactivate();
 
-    await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ===
-          'Disconnecting…';
-    });
-
-    assert(
-        await vpn.getElementProperty('controllerSubTitle', 'text') ===
-        'Unmasking connection and location');
-
-    vpn.wait();
+    // No test for disconnecting because often it's too fast to be tracked.
 
     await vpn.waitForCondition(async () => {
       return await vpn.getElementProperty('controllerTitle', 'text') ===

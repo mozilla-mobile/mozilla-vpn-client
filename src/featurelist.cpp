@@ -33,6 +33,7 @@
 #include "features/featurestartonboot.h"
 #include "features/featureunsecurednetworknotification.h"
 #include "features/featureserverunavailablenotification.h"
+#include "features/featurewebsocket.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -76,6 +77,7 @@ void FeatureList::initialize() {
   new FeatureStartOnBoot();
   new FeatureUnsecuredNetworkNotification();
   new FeatureServerUnavailableNotification();
+  new FeatureWebSocket();
 
   m_featurelist = Feature::getAll();
 }

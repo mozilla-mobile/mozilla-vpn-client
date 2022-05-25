@@ -79,6 +79,8 @@ include(cmake/golang.cmake)
 add_go_library(mozillavpn ../linux/netfilter/netfilter.go)
 
 include(GNUInstallDirs)
+install(TARGETS mozillavpn)
+
 install(FILES ../linux/extra/mozillavpn.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 

@@ -8,6 +8,8 @@ describe('Captive portal', function() {
   this.timeout(45000);
 
   beforeEach(async function() {
+    vpn.resetLastNotification();
+
     //Enable captive-portal-alert feature
     await vpn.setSetting('captive-portal-alert', 'false');
     assert(await vpn.getSetting('captive-portal-alert') === 'false');
@@ -28,6 +30,7 @@ describe('Captive portal', function() {
   it('Captive portal during the authentication', async () => {
     await vpn.waitForMainView();
 
+    await vpn.flipFeatureOff('inAppAuthentication');
     await vpn.clickOnElement('getStarted');
 
     await vpn.waitForCondition(async () => {
@@ -48,7 +51,7 @@ describe('Captive portal', function() {
   });
 
   it('Captive portal in the Post authentication view', async () => {
-    await vpn.authenticate();
+    await vpn.authenticateInApp();
     // Setup - end
 
     await vpn.forceCaptivePortalDetection();
@@ -59,7 +62,7 @@ describe('Captive portal', function() {
   });
 
   it('Captive portal in the Telemetry policy view', async () => {
-    await vpn.authenticate(true, false);
+    await vpn.authenticateInApp(true, false);
     // Setup - end
 
     await vpn.waitForElement('telemetryPolicyButton');
@@ -70,154 +73,127 @@ describe('Captive portal', function() {
     assert(vpn.lastNotification().title === null);
   });
 
-  it('Captive portal in the Controller view', async () => {
-    await vpn.authenticate(true, true);
-    await vpn.waitForElement('controllerTitle');
-    await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
-    assert(
-        await vpn.getElementProperty('controllerTitle', 'text') ===
-        'VPN is off');
+  describe('Captive portal post auth', function() {
+    this.ctx.authenticationNeeded = true;
 
-    await vpn.forceCaptivePortalDetection();
-    await vpn.wait();
+    it('Captive portal in the Controller view', async () => {
+      await vpn.waitForElement('controllerTitle');
+      await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+      assert(
+          await vpn.getElementProperty('controllerTitle', 'text') ===
+          'VPN is off');
 
-    // Notifications are not OK yet.
-    assert(vpn.lastNotification().title === null);
-  });
+      await vpn.forceCaptivePortalDetection();
+      await vpn.wait();
 
-
-  it('Activate the VPN', async () => {
-    await vpn.authenticate(true, true);
-    await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
-    assert(
-        await vpn.getElementProperty('controllerTitle', 'text') ===
-        'VPN is off');
-
-    await vpn.activate();
-    await vpn.waitForCondition(async () => {
-      let connectingMsg =
-          await vpn.getElementProperty('controllerTitle', 'text');
-      return connectingMsg === 'Connecting…';
-    });
-    await vpn.forceCaptivePortalDetection();
-    await vpn.wait();
-
-    // Notifications are not OK when connecting.
-    await vpn.waitForCondition(() => {
-      return vpn.lastNotification().title === null;
-    });
-    assert.strictEqual(vpn.lastNotification().title, null);
-
-    // Something about this test upsets the next tests,
-    // adding these waits gives everything a change to resolve.
-    await vpn.wait();
-    await vpn.wait();
-  });
-
-  it('Captive portal when connected', async () => {
-    await vpn.authenticate(true, true);
-    await vpn.waitForElement('controllerTitle');
-    await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
-    assert(
-        await vpn.getElementProperty('controllerTitle', 'text') ===
-        'VPN is off');
-    await vpn.activate();
-    await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ===
-          'VPN is on';
-    });
-    await vpn.waitForCondition(() => {
-      return vpn.lastNotification().title === 'VPN Connected';
-    });
-    vpn.resetLastNotification();
-    // Setup - end
-
-    await vpn.forceCaptivePortalDetection();
-    await vpn.wait();
-
-    // Notifications are OK now.
-    await vpn.waitForCondition(() => {
-      return vpn.lastNotification().title === 'Guest Wi-Fi portal blocked';
-    });
-    assert(vpn.lastNotification().title === 'Guest Wi-Fi portal blocked');
-  });
-
-  it('Clicking the alert and wait for recovering', async () => {
-    await vpn.authenticate(true, true);
-    await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
-    assert(
-        await vpn.getElementProperty('controllerTitle', 'text') ===
-        'VPN is off');
-    await vpn.activate();
-    await vpn.waitForCondition(() => {
-      return vpn.lastNotification().title === 'VPN Connected';
-    });
-    vpn.resetLastNotification();
-    // Setup - end
-
-    await vpn.forceCaptivePortalDetection();
-    await vpn.wait();
-
-    await vpn.waitForCondition(() => {
-      return vpn.hasElement("captivePortalAlertActionButton");
-    });
-    // Clicking on the alert should disable the vpn
-    await vpn.clickOnElement("captivePortalAlertActionButton");
-    
-    await vpn.waitForCondition(async () => {
-      let connectingMsg =
-          await vpn.getElementProperty('controllerTitle', 'text');
-      return connectingMsg === 'Disconnecting…';
-    });
-    await vpn.waitForCondition(() => {
-      return vpn.lastNotification().title === 'VPN Disconnected';
+      // Notifications are not OK yet.
+      assert(vpn.lastNotification().title === null);
     });
 
-    // 'Wait for recovering'
+    it('Captive portal when connected', async () => {
+      await vpn.waitForElement('controllerTitle');
+      await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+      assert(
+          await vpn.getElementProperty('controllerTitle', 'text') ===
+          'VPN is off');
+      await vpn.activate();
+      await vpn.waitForCondition(async () => {
+        return await vpn.getElementProperty('controllerTitle', 'text') ===
+            'VPN is on';
+      });
+      await vpn.waitForCondition(() => {
+        return vpn.lastNotification().title === 'VPN Connected';
+      });
+      vpn.resetLastNotification();
+      // Setup - end
 
-    await vpn.waitForCondition(() => {
-      return vpn.lastNotification().title === 'Guest Wi-Fi portal detected';
+      await vpn.forceCaptivePortalDetection();
+      await vpn.wait();
+
+      // Notifications are OK now.
+      await vpn.waitForCondition(() => {
+        return vpn.lastNotification().title === 'Guest Wi-Fi portal blocked';
+      });
+      assert(vpn.lastNotification().title === 'Guest Wi-Fi portal blocked');
     });
 
-    await vpn.clickOnNotification();
+    it('Clicking the alert and wait for recovering', async () => {
+      await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+      assert(
+          await vpn.getElementProperty('controllerTitle', 'text') ===
+          'VPN is off');
+      await vpn.activate();
+      await vpn.waitForCondition(() => {
+        return vpn.lastNotification().title === 'VPN Connected';
+      });
+      vpn.resetLastNotification();
+      // Setup - end
 
-    await vpn.waitForCondition(async () => {
-      let connectingMsg =
-          await vpn.getElementProperty('controllerTitle', 'text');
-      return connectingMsg === 'Connecting…';
+      await vpn.forceCaptivePortalDetection();
+      await vpn.wait();
+
+      await vpn.waitForCondition(() => {
+        return vpn.hasElement('captivePortalAlertActionButton');
+      });
+      // Clicking on the alert should disable the vpn
+      await vpn.clickOnElement('captivePortalAlertActionButton');
+
+      await vpn.waitForCondition(async () => {
+        let connectingMsg =
+            await vpn.getElementProperty('controllerTitle', 'text');
+        return connectingMsg === 'Disconnecting…' ||
+            connectingMsg === 'VPN is off';
+      });
+      await vpn.waitForCondition(() => {
+        return vpn.lastNotification().title === 'VPN Disconnected';
+      });
+
+      // 'Wait for recovering'
+
+      await vpn.waitForCondition(() => {
+        return vpn.lastNotification().title === 'Guest Wi-Fi portal detected';
+      });
+
+      await vpn.clickOnNotification();
+
+      await vpn.waitForCondition(async () => {
+        let connectingMsg =
+            await vpn.getElementProperty('controllerTitle', 'text');
+        return connectingMsg === 'Connecting…';
+      });
+
+      await vpn.waitForCondition(() => {
+        return vpn.lastNotification().title === 'VPN Connected';
+      });
     });
 
-    await vpn.waitForCondition(() => {
-      return vpn.lastNotification().title === 'VPN Connected';
-    });
-  });
+    it('Shows the prompt Before activation when a portal is detected before the activation',
+       async () => {
+         await vpn.setSetting('captive-portal-alert', 'true');
+         await vpn.forceCaptivePortalDetection();
 
-  it('Shows the prompt Before activation when a portal is detected before the activation', async () => {
+         await vpn.activate();
+         await vpn.waitForCondition(() => {
+           return vpn.hasElement('captivePortalAlertActionButton');
+         });
+         assert(true);
+       });
 
-    await vpn.authenticate(true, true);
-    await vpn.setSetting('captive-portal-alert', 'true');
-    await vpn.forceCaptivePortalDetection();
+    it('Shows the Captive Portal Info prompt when a portal is detected and the client is connected',
+       async () => {
+         await vpn.setSetting('captive-portal-alert', 'true');
 
-    await vpn.activate();
-    await vpn.waitForCondition(() => {
-      return vpn.hasElement("captivePortalAlertActionButton");
-    });
-    assert(true);
-  });
-  it('Shows the Captive Portal Info prompt when a portal is detected and the client is connected', async () => {
-    await vpn.authenticate(true, true);
-    await vpn.setSetting('captive-portal-alert', 'true');
-
-    await vpn.activate();
-    await vpn.waitForCondition(() => {
-      return vpn.lastNotification().title === 'VPN Connected';
-    });
-    await vpn.wait();
-    await vpn.forceCaptivePortalDetection();
-    await vpn.wait();
-    await vpn.waitForCondition(() => {
-      return vpn.hasElement("captivePortalAlertActionButton");
-    });
-    assert(true);
+         await vpn.activate();
+         await vpn.waitForCondition(() => {
+           return vpn.lastNotification().title === 'VPN Connected';
+         });
+         await vpn.wait();
+         await vpn.forceCaptivePortalDetection();
+         await vpn.wait();
+         await vpn.waitForCondition(() => {
+           return vpn.hasElement('captivePortalAlertActionButton');
+         });
+         assert(true);
+       });
   });
 });

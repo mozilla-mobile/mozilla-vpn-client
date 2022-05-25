@@ -6,9 +6,9 @@ const vpn = require('./helper.js');
 
 describe('Settings', function() {
   this.timeout(60000);
+  this.ctx.authenticationNeeded = true;
 
   beforeEach(async () => {
-    await vpn.authenticate(true, true);
     await vpn.waitForElement('settingsButton');
     await vpn.clickOnElement('settingsButton');
     await vpn.wait();
@@ -82,7 +82,6 @@ describe('Settings', function() {
         (parseInt(stackDepth) - 1).toString());
   });
 
-
   it('Checking settings entries', async () => {
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
@@ -104,6 +103,31 @@ describe('Settings', function() {
 
     await vpn.clickOnElement('settingsTipsAndTricks');
     await vpn.wait();
+
+    await vpn.waitForElement('settingsTipsAndTricksPage');
+
+    let guides = await vpn.guides();
+    let guideParent = "guideLayout"
+
+    for (var guide of guides) {
+      guide = guideParent + "/" + guide
+      
+      await vpn.setElementProperty(
+        'settingsTipsAndTricksPage', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(guide, 'y')) +
+            parseInt(await vpn.getElementProperty(guideParent, 'y')));
+      await vpn.wait()
+
+      await vpn.waitForElement(guide)
+      await vpn.clickOnElement(guide)
+      await vpn.wait()
+
+      await vpn.waitForElement('backArrow');
+      await vpn.clickOnElement('backArrow')
+      await vpn.wait()
+
+      await vpn.waitForElement('settingsTipsAndTricksPage');
+    }
 
     await vpn.waitForElement('settingsBackButton');
     await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
@@ -161,18 +185,19 @@ describe('Settings', function() {
     await vpn.waitForElementProperty(
         'settingsSystemLanguageToggle', 'checked', 'false');
 
+    await vpn.getElementProperty(
+        'languageList/language-column-it/language-it', 'y');
     await vpn.setElementProperty(
         'settingsLanguagesView', 'contentY', 'i',
-        parseInt(
-            await vpn.getElementProperty('languageList/language-it', 'y')));
+        parseInt(await vpn.getElementProperty(
+            'languageList/language-column-it/language-it', 'y')));
     await vpn.wait();
 
-    await vpn.waitForElement('languageList/language-it');
+    await vpn.waitForElement('languageList/language-column-it/language-it');
     await vpn.waitForElementProperty(
-        'languageList/language-it', 'visible', 'true');
-    await vpn.clickOnElement('languageList/language-it');
+        'languageList/language-column-it/language-it', 'visible', 'true');
+    await vpn.clickOnElement('languageList/language-column-it/language-it');
     await vpn.wait();
-
 
     await vpn.waitForElement('settingsBackButton');
     await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
@@ -184,7 +209,6 @@ describe('Settings', function() {
 
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
-
 
     await vpn.waitForElement('settingsPreferences');
     await vpn.waitForElementProperty('settingsPreferences', 'visible', 'true');
@@ -204,14 +228,14 @@ describe('Settings', function() {
 
     await vpn.setElementProperty(
         'settingsLanguagesView', 'contentY', 'i',
-        parseInt(
-            await vpn.getElementProperty('languageList/language-en', 'y')));
+        parseInt(await vpn.getElementProperty(
+            'languageList/language-column-en/language-en', 'y')));
     await vpn.wait();
 
-    await vpn.waitForElement('languageList/language-en');
+    await vpn.waitForElement('languageList/language-column-en/language-en');
     await vpn.waitForElementProperty(
-        'languageList/language-en', 'visible', 'true');
-    await vpn.clickOnElement('languageList/language-en');
+        'languageList/language-column-en/language-en', 'visible', 'true');
+    await vpn.clickOnElement('languageList/language-column-en/language-en');
     await vpn.wait();
 
     await vpn.clickOnElement('settingsBackButton');
@@ -315,7 +339,6 @@ describe('Settings', function() {
 
 
   it('Checking the get help', async () => {
-    console.log('  Checkpoint a');
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
 
@@ -323,7 +346,6 @@ describe('Settings', function() {
         'settingsView', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('settingsGetHelp', 'y')));
     await vpn.wait();
-    console.log('  Checkpoint b');
 
     await vpn.clickOnElement('settingsGetHelp');
     await vpn.wait();
@@ -333,7 +355,6 @@ describe('Settings', function() {
 
     await vpn.waitForElement('getHelpLinks');
     await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
-    console.log('  Checkpoint c');
 
     await vpn.waitForElement('getHelpLinks/getHelpBackList');
     await vpn.waitForElementProperty(
@@ -345,7 +366,6 @@ describe('Settings', function() {
 
     await vpn.clickOnElement('getHelpLinks/settingsGiveFeedback');
     await vpn.wait();
-    console.log('  Checkpoint d');
 
     await vpn.waitForElement('giveFeedbackView');
     await vpn.waitForElementProperty(
@@ -358,7 +378,6 @@ describe('Settings', function() {
         'giveFeedbackBackButton', 'visible', 'true');
     await vpn.clickOnElement('giveFeedbackBackButton');
     await vpn.wait();
-    console.log('  Checkpoint e');
 
     await vpn.waitForElement('getHelpLinks');
     await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
@@ -368,7 +387,6 @@ describe('Settings', function() {
     await vpn.waitForElement('getHelpLinks/getHelpBackList-2');
     await vpn.waitForElementProperty(
         'getHelpLinks/getHelpBackList-2', 'visible', 'true');
-    console.log('  Checkpoint f');
 
     await vpn.clickOnElement('getHelpLinks/getHelpBackList-2');
 
@@ -377,7 +395,6 @@ describe('Settings', function() {
       return url.startsWith('file://') && url.includes('mozillavpn') &&
           url.endsWith('.txt');
     });
-    console.log('  Checkpoint g');
 
     await vpn.waitForElement('getHelpLinks/getHelpBackList-0')
         await vpn.waitForElementProperty(
@@ -388,7 +405,6 @@ describe('Settings', function() {
       const url = await vpn.getLastUrl();
       return url.endsWith('/r/vpn/support');
     });
-    console.log('  Checkpoint h');
 
     /* TODO:  Reinstate this test correctly
         https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1638
@@ -405,7 +421,6 @@ describe('Settings', function() {
     await vpn.wait();
     await vpn.waitForElement('getHelpBack');
     await vpn.clickOnElement('getHelpBack');
-    console.log('  Checkpoint i');
 
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');

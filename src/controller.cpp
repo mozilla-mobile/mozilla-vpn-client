@@ -11,6 +11,7 @@
 #include "features/featurecaptiveportal.h"
 #include "features/featurelocalareaaccess.h"
 #include "features/featuremultihop.h"
+#include "telemetry/gleansample.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
@@ -609,6 +610,8 @@ void Controller::setState(State state) {
     return;
   }
   logger.debug() << "Setting state:" << state;
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::appStep, {{"state", QVariant::fromValue(state).toString()}});
   m_state = state;
   emit stateChanged();
 }

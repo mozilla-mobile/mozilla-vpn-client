@@ -14,7 +14,6 @@
         <file>developerMenu/ViewAnimationsPlayground.qml</file>
         <file>developerMenu/ViewDeveloperMenu.qml</file>
         <file>developerMenu/ViewFeatureList.qml</file>
-        <file>developerMenu/ViewGuides.qml</file>
         <file>developerMenu/ViewThemeList.qml</file>
         <file>developerMenu/ViewTutorials.qml</file>
         <file>main.qml</file>
@@ -22,6 +21,7 @@
         <file>settings/ViewAdvancedDNSSettings.qml</file>
         <file>settings/ViewAppPermissions.qml</file>
         <file>settings/ViewGiveFeedback.qml</file>
+        <file>settings/ViewGuide.qml</file>
         <file>settings/ViewLanguage.qml</file>
         <file>settings/ViewNetworkSettings.qml</file>
         <file>settings/ViewNotifications.qml</file>
