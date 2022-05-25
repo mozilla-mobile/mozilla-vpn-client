@@ -12,6 +12,7 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "models/feature.h"
+#include "models/featuremodel.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "notificationhandler.h"
@@ -867,7 +868,7 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       FeatureList::instance()->toggleForcedEnable(
+                       FeatureModel::instance()->toggleForcedEnable(
                            arguments[1]);
                        return QJsonObject();
                      }},
@@ -882,7 +883,7 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       FeatureList::instance()->toggleForcedDisable(
+                       FeatureModel::instance()->toggleForcedDisable(
                            arguments[1]);
                        return QJsonObject();
                      }},

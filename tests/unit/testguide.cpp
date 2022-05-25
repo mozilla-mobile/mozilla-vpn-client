@@ -313,7 +313,6 @@ void TestGuide::conditions_data() {
 
 void TestGuide::conditions() {
   SettingsHolder settingsHolder;
-  FeatureList::instance()->initialize();
 
   QFETCH(QJsonObject, conditions);
   QFETCH(bool, result);

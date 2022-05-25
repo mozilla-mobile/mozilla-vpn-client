@@ -28,12 +28,13 @@
 
 // Please! Keep the alphabetic order!
 
-SETTING_BOOL(captivePortalAlert,                               // getter
-             setCaptivePortalAlert,                            // setter
-             hasCaptivePortalAlert,                            // has
-             "captivePortalAlert",                             // key
-             FeatureCaptivePortal::instance()->isSupported(),  // default value
-             false  // remove when reset
+SETTING_BOOL(captivePortalAlert,     // getter
+             setCaptivePortalAlert,  // setter
+             hasCaptivePortalAlert,  // has
+             "captivePortalAlert",   // key
+             Feature::get(Feature::Feature_captivePortal)
+                 ->isSupported(),  // default value
+             false                 // remove when reset
 )
 
 SETTING_STRINGLIST(captivePortalIpv4Addresses,     // getter
@@ -348,7 +349,7 @@ SETTING_BOOL(unsecuredNetworkAlert,     // getter
              setUnsecuredNetworkAlert,  // setter
              hasUnsecuredNetworkAlert,  // has
              "unsecuredNetworkAlert",   // key
-             FeatureUnsecuredNetworkNotification::instance()
+             Feature::get(Feature::Feature_unsecuredNetworkNotification)
                  ->isSupported(),  // default value
              false                 // remove when reset
 )
@@ -357,7 +358,7 @@ SETTING_BOOL(serverUnavailableNotification,     // getter
              setServerUnavailableNotification,  // setter
              hasServerUnavailableNotification,  // has
              "serverUnavailableNotification",   // key
-             FeatureServerUnavailableNotification::instance()
+             Feature::get(Feature::Feature_serverUnavailableNotification)
                  ->isSupported(),  // default value
              false                 // remove when reset
 )

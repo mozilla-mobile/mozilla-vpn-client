@@ -7,7 +7,6 @@
 #include <nebula.h>
 
 TestHelper::TestHelper() {
-  FeatureList::instance()->initialize();
   m_closeEventHandler = new CloseEventHandler();
   m_whatsNewModel = new WhatsNewModel();
   m_l18nstrings = L18nStrings::instance();
