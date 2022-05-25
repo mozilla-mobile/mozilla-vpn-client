@@ -128,7 +128,7 @@ cmake --build build -j$(nproc)
 
 5. Installation:
 ```bash
-sudo cmake -B build install
+sudo cmake --install build
 ```
 
 6.  After the installation, you can run the app simply running:
