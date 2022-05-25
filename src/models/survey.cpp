@@ -31,6 +31,7 @@ Survey& Survey::operator=(const Survey& other) {
   m_url = other.m_url;
   m_triggerTimeSec = other.m_triggerTimeSec;
   m_platforms = other.m_platforms;
+  m_locales = other.m_locales;
 
   return *this;
 }
@@ -73,6 +74,20 @@ bool Survey::fromJson(const QJsonValue& json) {
     }
   }
 
+  m_locales.clear();
+  if (obj.contains("locales")) {
+    QJsonValue localeArray = obj.value("locales");
+    if (!localeArray.isArray()) {
+      return false;
+    }
+    for (auto val : localeArray.toArray()) {
+      if (!val.isString()) {
+        return false;
+      }
+      m_locales.append(val.toString().toLower());
+    }
+  }
+
   m_id = id.toString();
   m_url = url.toString();
   m_triggerTimeSec = triggerTime.toInt();
@@ -95,6 +110,21 @@ bool Survey::isTriggerable() const {
       !m_platforms.contains(Constants::PLATFORM_NAME)) {
     logger.debug() << "is not right Platform";
     return false;
+  }
+
+  if (!m_locales.isEmpty()) {
+    QString code = settingsHolder->languageCode();
+    if (code.isEmpty()) {
+      code = QLocale::system().bcp47Name();
+      if (code.isEmpty()) {
+        code = "en";
+      }
+    }
+
+    if (!m_locales.contains(code.split("_")[0].toLower())) {
+      logger.debug() << "Locale does not match:" << code << m_locales;
+      return false;
+    }
   }
 
   QDateTime now = QDateTime::currentDateTime();
