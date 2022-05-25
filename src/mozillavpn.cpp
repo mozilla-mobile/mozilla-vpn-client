@@ -13,6 +13,7 @@
 #include "features/featureinappauth.h"
 #include "features/featureinappaccountcreate.h"
 #include "features/featuresharelogs.h"
+#include "features/featuresubscriptionmanagement.h"
 #include "features/featurewebsocket.h"
 #include <telemetry/gleansample.h>
 #include "iaphandler.h"
@@ -30,8 +31,10 @@
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
+#include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
+#include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
@@ -39,7 +42,6 @@
 #include "tasks/servers/taskservers.h"
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
-#include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "taskscheduler.h"
 #include "update/versionapi.h"
@@ -1797,9 +1799,8 @@ void MozillaVPN::cancelAccountDeletion() {
 
 void MozillaVPN::getSubscriptionDetails() {
   logger.debug() << "Get subscription details";
-
-  if (m_state == StateMain) {
-    TaskScheduler::scheduleTask(
-      new TaskGetSubscriptionDetails(m_private->m_user.email()));
-  }
+  Q_ASSERT(FeatureSubscriptionManagement::instance()->isSupported()
+    && m_state == StateMain);
+  TaskScheduler::scheduleTask(
+    new TaskGetSubscriptionDetails(m_private->m_user.email()));
 }
