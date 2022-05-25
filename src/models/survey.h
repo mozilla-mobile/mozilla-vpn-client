@@ -30,6 +30,7 @@ class Survey final {
   QString m_url;
   uint32_t m_triggerTimeSec;
   QStringList m_platforms;
+  QStringList m_locales;
 };
 
 #endif  // SURVEY_H
