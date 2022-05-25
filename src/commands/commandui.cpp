@@ -199,7 +199,7 @@ int CommandUI::run(QStringList& tokens) {
     vpn.setStartMinimized(minimizedOption.m_set);
 
 #ifdef MVPN_ANDROID
-    AndroidGlean::initialize();
+    AndroidGlean::initialize(engine);
 #endif
 #ifndef Q_OS_WIN
     // Signal handling for a proper shutdown.

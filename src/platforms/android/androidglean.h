@@ -8,6 +8,7 @@
 #include <jni.h>
 #include <QObject>
 #include <QString>
+#include <QQmlEngine>
 
 class AndroidGlean final : public QObject {
   Q_OBJECT
@@ -25,7 +26,7 @@ class AndroidGlean final : public QObject {
 
   void daemonConnected();
 
-  static void initialize();
+  static void initialize(QQmlEngine* e);
 
  private:
   AndroidGlean(QObject* parent);

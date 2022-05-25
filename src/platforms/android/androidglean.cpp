@@ -21,6 +21,9 @@
 #include <QJniEnvironment>
 #include <QQmlApplicationEngine>
 #include <QJSEngine>
+#include <QQmlEngine>
+#include <QFileInfo>
+#include <QFile>
 
 namespace {
 AndroidGlean* s_instance = nullptr;
@@ -29,10 +32,16 @@ Logger logger(LOG_ANDROID, "AndroidGlean");
 }  // namespace
 
 // static
-void AndroidGlean::initialize() {
+void AndroidGlean::initialize(QQmlEngine* e) {
   if (!s_instance) {
     Q_ASSERT(qApp);
     s_instance = new AndroidGlean(qApp);
+  }
+  auto glean_db_path = e->offlineStorageDatabaseFilePath("Glean") + ".sqlite";
+  auto gleanDB = QFileInfo(glean_db_path);
+  if (gleanDB.exists()) {
+    QFile::remove(glean_db_path);
+    logger.debug() << "Removed Glean.js DB";
   }
 }
 
