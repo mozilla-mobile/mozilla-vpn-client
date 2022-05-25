@@ -7,6 +7,7 @@
 
 #include <QObject>
 
+
 class NetworkWatcherImpl : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(NetworkWatcherImpl)
@@ -23,6 +24,19 @@ class NetworkWatcherImpl : public QObject {
 
   bool isActive() const { return m_active; }
 
+  enum TransportType {
+    TransportType_Unknown = 0,
+    TransportType_Ethernet,
+    TransportType_WiFi,
+    TransportType_Cellular,
+    TransportType_Other
+  };
+
+  // Returns the current type of Network Connection
+  virtual TransportType getTransportType() const { return TransportType_Unknown; }
+  // Returns the current type of Network Connection
+  virtual void checkTransportChange(){};
+
  signals:
   // Fires when the Device Connects to an unsecured Network
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
@@ -30,6 +44,10 @@ class NetworkWatcherImpl : public QObject {
   // TODO: Only windows-networkwatcher has this, the other plattforms should
   // too.
   void networkChanged(QString newBSSID);
+
+  // Fired when the Device changed the Type of Transport
+  void transportChanged(TransportType transportType);
+
 
  private:
   bool m_active = false;

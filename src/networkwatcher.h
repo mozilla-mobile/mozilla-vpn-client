@@ -26,8 +26,14 @@ class NetworkWatcher final : public QObject {
   // public for the inspector.
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
 
+  // Manually trigger an Update whether the transport-type checked. 
+  void checkTransportChanged();
+ // TransportType getCurrentTransportType();
+  
+
  signals:
   void networkChange();
+  //void transportChanged(TransportType transportType);
 
  private:
   void settingsChanged(const bool& value);
