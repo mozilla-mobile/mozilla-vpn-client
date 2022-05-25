@@ -68,9 +68,9 @@ VPNFlickable {
 
                     imageSrc: "qrc:/ui/resources/sparkling-check.svg"
                     imageBgColor: "#2B2A33"
-                    cardTypeText: VPNl18n.TipsAndTricksFeatureTourLabel
-                    title: VPNl18n.TipsAndTricksWhatsNewTitle
-                    description: VPNl18n.TipsAndTricksWhatsNewDescription
+                    title: VPNl18n.TipsAndTricksFeatureTourCardTitle
+                    description: VPNl18n.TipsAndTricksFeatureTourCardDescription
+                    onClicked: featureTourPopup.startTour();
                 }
             }
 
@@ -162,8 +162,8 @@ VPNFlickable {
                     id: highlightedTutorialExcludedModel
                     source: VPNTutorial
                     filterCallback: obj => {
-                       return !obj.tutorial.highlighted;
-                    }
+                                        return !obj.tutorial.highlighted;
+                                    }
                 }
             }
 

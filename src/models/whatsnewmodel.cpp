@@ -53,7 +53,7 @@ void WhatsNewModel::initialize() {
 
   for (Feature* feature : allFeatures) {
     bool shouldBeInWhatsNew =
-        feature->isNew() && feature->isMajor() && feature->isSupported();
+        !feature->displayName().isEmpty() && !feature->description().isEmpty() && !feature->imagePath().isEmpty() && feature->isSupported();
 
     if (shouldBeInWhatsNew) {
       newFeatures.append(feature);
@@ -61,6 +61,13 @@ void WhatsNewModel::initialize() {
   }
 
   m_featurelist = newFeatures;
+
+  //Sort features based on release version, newest to oldest
+  std::sort(m_featurelist.begin(),
+            m_featurelist.end(),
+            [&](const Feature* a, const Feature* b) -> bool {
+              return QVersionNumber::fromString(a->releaseVersion()) > QVersionNumber::fromString(b->releaseVersion());
+            });
 }
 
 bool WhatsNewModel::hasUnseenFeature() {
