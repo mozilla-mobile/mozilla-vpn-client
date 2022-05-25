@@ -34,6 +34,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val sendGleanPings = 11
         const val gleanUploadEnabledChanged = 12
         const val controllerInit = 13
+        const val gleanSetSourceTags = 14
     }
 
     /**
@@ -133,7 +134,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 return true
             }
             ACTIONS.sendGleanPings -> {
-                mService.mGlean.sendGleanPings()
+                mService.mGlean.sendGleanMainPing()
                 return true
             }
             ACTIONS.gleanUploadEnabledChanged -> {
@@ -142,6 +143,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 val args = JSONObject(json)
                 mService.mGlean.setGleanUploadEnabled(args.getBoolean("enabled"))
                 return true
+            }
+            ACTIONS.gleanSetSourceTags -> {
+                val buffer = data.createByteArray()
+                val list = buffer?.let { String(it) }
+                mService.mGlean.setGleanSourceTag(list)
             }
 
             IBinder.LAST_CALL_TRANSACTION -> {

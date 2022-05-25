@@ -2,11 +2,11 @@ package org.mozilla.firefox.vpn.daemon
 
 import android.content.Context
 import android.util.Log
-import mozilla.components.service.glean.BuildInfo
-import mozilla.components.service.glean.Glean
-import mozilla.components.service.glean.config.Configuration
-import mozilla.components.service.glean.private.EventExtras
+import mozilla.telemetry.glean.BuildInfo
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.net.HttpURLConnectionUploader
+import mozilla.telemetry.glean.private.EventExtras
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.NoExtraKeys
 import mozilla.telemetry.glean.private.NoExtras
@@ -30,7 +30,7 @@ class GleanUtil(aParent: Context) {
         } else {
             "production"
         }
-        val conf = Configuration(HttpURLConnectionUploader(), Configuration.DEFAULT_TELEMETRY_ENDPOINT, channel, null)
+        val conf = Configuration(Configuration.DEFAULT_TELEMETRY_ENDPOINT, channel, 500, HttpURLConnectionUploader())
         val build = BuildInfo("versionCode", "VersionName", Calendar.getInstance())
         Glean.registerPings(Pings)
         Log.e("ANDROID-GLEAN", "initializeGlean on:$gleanEnabled, ch:$channel ")
@@ -52,15 +52,15 @@ class GleanUtil(aParent: Context) {
         Glean.setUploadEnabled(upload)
     }
 
-    fun setGleanSourceTag(tags: String = "") {
-        // val tag_list = tag.split(",")
-        // Glean.setSourceTags(tag_list);
-        // TODO: Glean-Android does not support this, yet.
-        // We're using this only for functional tests, so no problem i guess c:
+    fun setGleanSourceTag(tags: String? = "") {
+        if (tags == null) {
+            return
+        }
+        Glean.setSourceTags(tags.split(",").toSet())
         return
     }
 
-    fun sendGleanPings() {
+    fun sendGleanMainPing() {
         Log.e("ANDROID-GLEAN", "sendGleanPings ")
         Pings.main.submit()
     }

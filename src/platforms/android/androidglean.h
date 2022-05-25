@@ -14,9 +14,9 @@ class AndroidGlean final : public QObject {
   Q_DISABLE_COPY_MOVE(AndroidGlean)
  public:
   // For Glean
-  void sendGleanPings();
+  void sendGleanMainPings();
   void recordGleanEvent(const QString& gleanSampleName);
-  void gleanEnabledChanged(bool enabled);
+  void gleanUploadEnabledChanged(bool enabled);
   void recordGleanEventWithExtraKeys(const QString& gleanSampleName,
                                      const QVariantMap& extraKeys);
   void setGleanSourceTags(const QStringList& tags);

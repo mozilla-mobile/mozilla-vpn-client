@@ -40,11 +40,13 @@ enum ServiceAction {
   // Records a Glean Event
   ACTION_RECORD_EVENT = 10,
   // Requests Glean to Send main ping
-  ACTION_SEND_GLEAN_PING = 11,
+  ACTION_SEND_GLEAN_MAIN_PING = 11,
   // Upload Enabled Changed
   ACTION_GLEAN_ENABLED_CHANGED = 12,
   // Action Controller Init
   ACTION_CONTROLLER_INIT = 13,
+  // Set Glean Source tags
+  ACTION_GLEAN_SET_SOURCE_TAGS = 14,
 };
 typedef enum ServiceAction ServiceAction;
 // Event Types that will be Dispatched after registration

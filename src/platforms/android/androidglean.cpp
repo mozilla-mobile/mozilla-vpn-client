@@ -42,7 +42,7 @@ AndroidGlean::AndroidGlean(QObject* parent) : QObject(parent) {
   logger.debug() << "Connect Glean stuff";
   auto vpn = MozillaVPN::instance();
   connect(vpn, &MozillaVPN::sendGleanPings, this,
-          &AndroidGlean::sendGleanPings);
+          &AndroidGlean::sendGleanMainPings);
   connect(vpn, &MozillaVPN::recordGleanEvent, this,
           &AndroidGlean::recordGleanEvent);
   connect(vpn, &MozillaVPN::recordGleanEventWithExtraKeys, this,
@@ -50,7 +50,7 @@ AndroidGlean::AndroidGlean(QObject* parent) : QObject(parent) {
   connect(vpn, &MozillaVPN::setGleanSourceTags, this,
           &AndroidGlean::setGleanSourceTags);
   connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
-          this, &AndroidGlean::gleanEnabledChanged);
+          this, &AndroidGlean::gleanUploadEnabledChanged);
   connect(AndroidVPNActivity::instance(), &AndroidVPNActivity::serviceConnected,
           this, &AndroidGlean::daemonConnected);
 
@@ -68,9 +68,9 @@ AndroidGlean::~AndroidGlean() {
   s_instance = nullptr;
 }
 
-void AndroidGlean::sendGleanPings() {
+void AndroidGlean::sendGleanMainPings() {
   AndroidVPNActivity::instance()->sendToService(
-      ServiceAction::ACTION_SEND_GLEAN_PING, "");
+      ServiceAction::ACTION_SEND_GLEAN_MAIN_PING, "");
 }
 
 void AndroidGlean::recordGleanEvent(const QString& gleanSampleName) {
@@ -94,15 +94,11 @@ void AndroidGlean::recordGleanEventWithExtraKeys(const QString& gleanSampleName,
       ServiceAction::ACTION_RECORD_EVENT, doc.toJson(QJsonDocument::Compact));
 }
 void AndroidGlean::setGleanSourceTags(const QStringList& tags) {
-  // TODO: Current no-op as glean-android does not implement this - no need to
-  // do anything QString list = tags.join(","); auto jList =
-  // QJniObject::fromString(list).object()
-  // QJniObject::callStaticMethod<void>(UTILS_CLASS, "setGleanSourceTag",
-  // "(ZLjava/lang/String;)",jList); return;
-  Q_UNUSED(tags)
+  AndroidVPNActivity::instance()->sendToService(
+      ServiceAction::ACTION_GLEAN_SET_SOURCE_TAGS, tags.join(","));
 }
 
-void AndroidGlean::gleanEnabledChanged(bool enabled) {
+void AndroidGlean::gleanUploadEnabledChanged(bool enabled) {
   QJsonObject args;
   args["enabled"] = enabled;
   QJsonDocument doc(args);
@@ -114,7 +110,7 @@ void AndroidGlean::gleanEnabledChanged(bool enabled) {
 
 void AndroidGlean::daemonConnected() {
   // Daemon is now ready
-  gleanEnabledChanged(SettingsHolder::instance()->gleanEnabled());
+  gleanUploadEnabledChanged(SettingsHolder::instance()->gleanEnabled());
 }
 
 void AndroidGlean::applicationStateChanged(Qt::ApplicationState state) {
@@ -127,7 +123,7 @@ void AndroidGlean::applicationStateChanged(Qt::ApplicationState state) {
     case Qt::ApplicationState::ApplicationHidden:
       logger.debug()
           << "App Going in the Background, trigger sending due pings";
-      sendGleanPings();
+      sendGleanMainPings();
       break;
   }
 }
