@@ -112,7 +112,7 @@ jobs:
             status=$(xcrun altool --notarization-info $uuid --username andrea.marchesini.baku.vpn@gmail.com --password "${{secrets.MACOS_NOTARIZE_PP }}" | grep Status: |cut -d: -f2 | tr -d ' ')
             [ "$status" = "inprogress" ] && continue
             [ "$status" = "success" ] && break
-            echo "Unexpected status"
+            echo "Unexpected status: $status"
             xcrun altool --notarization-info $uuid --username andrea.marchesini.baku.vpn@gmail.com --password "${{secrets.MACOS_NOTARIZE_PP }}"
             exit 1
           done
