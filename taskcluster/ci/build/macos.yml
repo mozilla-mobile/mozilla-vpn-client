@@ -27,5 +27,6 @@ macos/opt:
         - MozillaVPN.tar.gz
     run:
         using: run-task
+        use-caches: false
         cwd: '{checkout}'
         command: ./taskcluster/scripts/build/macos_build.sh

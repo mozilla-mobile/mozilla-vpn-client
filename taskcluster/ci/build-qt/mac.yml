@@ -19,6 +19,7 @@ mac:
             - taskcluster/scripts/build_qt/compile_qt_6.sh
     run:
         using: run-task
+        use-caches: false
         cwd: '{checkout}'
         command: taskcluster/scripts/build_qt/compile_qt_6.sh     
     treeherder:
