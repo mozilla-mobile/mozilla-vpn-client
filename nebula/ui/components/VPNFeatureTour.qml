@@ -79,6 +79,8 @@ ColumnLayout {
 
                             Layout.bottomMargin: VPNTheme.theme.listSpacing
                             Layout.fillWidth: true
+
+                            Accessible.ignored: index !== swipeView.currentIndex
                         }
 
                         VPNTextBlock {
@@ -87,7 +89,8 @@ ColumnLayout {
                             text: feature.description
                             horizontalAlignment: Text.AlignHCenter
                             Layout.fillWidth: true
-                            Layout.preferredWidth: parent.width
+
+                            Accessible.ignored: index !== swipeView.currentIndex
                         }
                     }
                 }
@@ -185,7 +188,7 @@ ColumnLayout {
             var slideHeight = slidesRepeater.itemAt(i).implicitHeight
             if (slideHeight > tallestSlideHeight) tallestSlideHeight = slideHeight
         }
-        swipeView.Layout.preferredHeight = tallestSlideHeight
+        swipeView.Layout.preferredHeight = Qt.binding(function() { return linkButton.visible ? tallestSlideHeight - linkButton.height : tallestSlideHeight })
     }
 
     function goBack() {
