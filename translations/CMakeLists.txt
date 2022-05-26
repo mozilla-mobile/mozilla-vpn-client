@@ -24,7 +24,10 @@ target_sources(translations PRIVATE
 add_custom_command(
     OUTPUT ${GENERATED_DIR}/l18nstrings_p.cpp ${GENERATED_DIR}/l18nstrings.h
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/strings.yaml
-    COMMAND python3 ${MVPN_SCRIPT_DIR}/utils/generate_strings.py -o ${GENERATED_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/strings.yaml
+    COMMAND python3 ${MVPN_SCRIPT_DIR}/utils/generate_strings.py -o ${GENERATED_DIR}
+                -g ${CMAKE_SOURCE_DIR}/src/ui/guides
+                -t ${CMAKE_SOURCE_DIR}/src/ui/tutorials
+                ${CMAKE_CURRENT_SOURCE_DIR}/strings.yaml
 )
 
 ## Lookup the path to the Qt linguist tools
