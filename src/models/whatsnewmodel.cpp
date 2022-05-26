@@ -52,8 +52,11 @@ void WhatsNewModel::initialize() {
   QList<Feature*> newFeatures;
 
   for (Feature* feature : allFeatures) {
-    bool shouldBeInWhatsNew =
-        !feature->displayName().isEmpty() && !feature->description().isEmpty() && !feature->imagePath().isEmpty() && feature->isSupported();
+    bool shouldBeInWhatsNew = !feature->displayName().isEmpty() &&
+            !feature->description().isEmpty() &&
+            !feature->imagePath().isEmpty() &&
+            feature->isSupported() &&
+            feature->isMajor();
 
     if (shouldBeInWhatsNew) {
       newFeatures.append(feature);
@@ -63,10 +66,10 @@ void WhatsNewModel::initialize() {
   m_featurelist = newFeatures;
 
   //Sort features based on release version, newest to oldest
-  std::sort(m_featurelist.begin(),
-            m_featurelist.end(),
+  std::sort(m_featurelist.begin(), m_featurelist.end(),
             [&](const Feature* a, const Feature* b) -> bool {
-              return QVersionNumber::fromString(a->releaseVersion()) > QVersionNumber::fromString(b->releaseVersion());
+              return QVersionNumber::fromString(a->releaseVersion()) >
+                     QVersionNumber::fromString(b->releaseVersion());
             });
 }
 

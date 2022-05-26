@@ -247,7 +247,8 @@ whatsNewReleaseNotes:
   connectionInfoDisplayName: Test your speed
   connectionInfoDescription: You can now run speed tests in Mozilla VPN! Select the performance icon in the top left corner of your screen to test your connection speed while using VPN.
   connectionInfoDescriptionShort: You can now run speed tests within the VPN to check your connection speed.
-
+  easyProfileDisplayName: Easier-to-use profile
+  easyProfileDescription: Now accessible from the VPN app, users can view their personal information, subscription summary and payment information within the subscription profile page.
 
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
