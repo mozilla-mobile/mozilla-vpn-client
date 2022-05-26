@@ -291,10 +291,8 @@ target_sources(mozillavpn PRIVATE
 
 # VPN Client UI resources
 target_sources(mozillavpn PRIVATE
-    ui/guides.qrc
     ui/license.qrc
     ui/resources.qrc
-    ui/tutorials.qrc
     ui/ui.qrc
     resources/certs/certs.qrc
 )

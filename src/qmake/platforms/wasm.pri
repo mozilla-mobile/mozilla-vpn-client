@@ -44,3 +44,4 @@ HEADERS += \
 
 SOURCES -= networkrequest.cpp
 RESOURCES += platforms/wasm/networkrequests.qrc
+RESOURCES += ../addons/generated/addons/addons.qrc

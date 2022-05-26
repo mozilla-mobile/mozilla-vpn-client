@@ -96,7 +96,7 @@ install(FILES ../linux/extra/icons/32x32/mozillavpn.png
 install(FILES ../linux/extra/icons/48x48/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/48x48/apps)
 
-add_definitions(-DMVPN_ICON_PATH=\"${CMAKE_INSTALL_DATADIR}/icons/hicolor/64x64/apps/mozillavpn.png\")
+add_definitions(-DMVPN_ICON_PATH=\"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/icons/hicolor/64x64/apps/mozillavpn.png\")
 install(FILES ../linux/extra/icons/64x64/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/64x64/apps)
 
@@ -111,6 +111,8 @@ install(FILES platforms/linux/daemon/org.mozilla.vpn.conf
 
 install(FILES platforms/linux/daemon/org.mozilla.vpn.dbus.service
     DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/system-services)
+
+add_definitions(-DADDONS_PATH=\"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/mozillavpn/addons\")
 
 ## This is only really needed when building from source. Otherwise, we
 ## expect the Distro's packaging magic to sort this out.

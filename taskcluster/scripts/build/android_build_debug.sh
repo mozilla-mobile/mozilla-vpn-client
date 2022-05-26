@@ -11,6 +11,8 @@ git submodule update
 ./scripts/utils/generate_glean.py
 # translations
 ./scripts/utils/import_languages.py
+# addons
+./scripts/addon/generate_all.py
 
 # $1 should be the qmake arch. 
 # Note this is different from what aqt expects as arch: 

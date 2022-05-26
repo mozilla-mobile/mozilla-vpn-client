@@ -20,7 +20,7 @@ class GuideBlock final : public QObject {
   Q_PROPERTY(QStringList subBlockIds MEMBER m_subBlockIds CONSTANT)
 
   static GuideBlock* create(QObject* parent, const QString& guideId,
-                            const QString& fileName, const QJsonObject& json);
+                            const QJsonObject& json);
   ~GuideBlock();
 
  private:

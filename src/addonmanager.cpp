@@ -3,17 +3,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonmanager.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
 #include "models/feature.h"
+#include "models/guidemodel.h"
+#include "models/tutorialmodel.h"
 
 #include <QCoreApplication>
+#include <QDir>
 #include <QFileInfo>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QResource>
 #include <QScopeGuard>
+#include <QStandardPaths>
 
 namespace {
 
@@ -27,6 +32,7 @@ AddonManager* s_instance = nullptr;
 AddonManager* AddonManager::instance() {
   if (!s_instance) {
     s_instance = new AddonManager(qApp);
+    s_instance->loadAll();
   }
   return s_instance;
 }
@@ -37,7 +43,56 @@ AddonManager::AddonManager(QObject* parent) : QObject(parent) {
 
 AddonManager::~AddonManager() { MVPN_COUNT_DTOR(AddonManager); }
 
+void AddonManager::loadAll() {
+  if (!Feature::get(Feature::Feature_addon)->isSupported()) {
+    logger.warning() << "Addons disabled by feature flag";
+    return;
+  }
+
+  QString addonPath;
+#if defined(ADDONS_PATH)
+  addonPath = ADDONS_PATH;
+#elif defined(MVPN_WINDOWS)
+  addonPath =
+      QString("%1/addons").arg(QCoreApplication::applicationDirPath());  // TODO
+#elif defined(MVPN_MACOS)
+  addonPath = QString("%1/../Contents/Release/addons")
+                  .arg(QCoreApplication::applicationDirPath());
+#elif defined(MVPN_IOS)
+  addonPath = QString("%1/addons").arg(QCoreApplication::applicationDirPath());
+#elif defined(MVPN_ANDROID)
+  addonPath = QString("assets:/addons");
+#elif defined(MVPN_WASM)
+  addonPath = QString(":/addons");
+#endif
+
+  logger.debug() << "Loading addon from" << addonPath;
+
+  if (!addonPath.isEmpty()) {
+    QDir addonDir(addonPath);
+    addonDir.setSorting(QDir::Name);
+    loadAll(addonDir);
+  }
+
+  if (!Constants::inProduction()) {
+    QDir homePath(
+        QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
+    homePath.cd(".mozillavpn_addons");
+    homePath.setSorting(QDir::Name);
+    loadAll(homePath);
+  }
+}
+
+void AddonManager::loadAll(const QDir& path) {
+  for (const QString& file :
+       path.entryList(QStringList{"*.rcc"}, QDir::Files)) {
+    load(path.filePath(file));
+  }
+}
+
 bool AddonManager::load(const QString& fileName) {
+  logger.debug() << "Load addon" << fileName;
+
   if (!Feature::get(Feature::Feature_addon)->isSupported()) {
     logger.warning() << "Addons disabled by feature flag";
     return false;
@@ -82,6 +137,18 @@ bool AddonManager::load(const QString& fileName) {
     return false;
   }
 
+  QString id = obj["id"].toString();
+  if (id.isEmpty()) {
+    logger.warning() << "No id in the manifest" << addonId;
+    return false;
+  }
+
+  if (id != addonId) {
+    logger.warning() << "The ID does not match with the addon one" << addonId
+                     << id;
+    return false;
+  }
+
   QString name = obj["name"].toString();
   if (name.isEmpty()) {
     logger.warning() << "No name in the manifest" << addonId;
@@ -113,9 +180,28 @@ bool AddonManager::load(const QString& fileName) {
     }
   } else if (type == "i18n") {
     addonType = Addon::AddonTypeI18n;
+  } else if (type == "tutorial") {
+    addonType = Addon::AddonTypeTutorial;
+  } else if (type == "guide") {
+    addonType = Addon::AddonTypeGuide;
   } else {
     logger.warning() << "Unsupported type" << type << addonId;
     return false;
+  }
+
+  if (addonType == Addon::AddonTypeTutorial) {
+    if (!TutorialModel::instance()->createFromJson(
+            obj["tutorial"].toObject())) {
+      logger.warning() << "Unable to add the tutorial";
+      return false;
+    }
+  }
+
+  if (addonType == Addon::AddonTypeGuide) {
+    if (!GuideModel::instance()->createFromJson(obj["guide"].toObject())) {
+      logger.warning() << "Unable to add the guide";
+      return false;
+    }
   }
 
   guard.dismiss();
@@ -123,24 +209,8 @@ bool AddonManager::load(const QString& fileName) {
   Addon* addon =
       new Addon(this, addonType, fileName, addonId, name, qmlFileName);
   m_addons.insert(addonId, addon);
+
   return true;
-}
-
-void AddonManager::unload(const QString& addonId) {
-  if (!m_addons.contains(addonId)) {
-    logger.warning() << "No addon with id" << addonId;
-    return;
-  }
-
-  Addon* addon = m_addons[addonId];
-  Q_ASSERT(addon);
-
-  QResource::unregisterResource(addon->fileName(), "/addons");
-
-  emit unloadAddon(addonId);
-  m_addons.remove(addonId);
-
-  addon->deleteLater();
 }
 
 void AddonManager::run(const QString& addonId) {
@@ -164,6 +234,14 @@ void AddonManager::run(const QString& addonId) {
 
     case Addon::AddonTypeI18n:
       emit Localizer::instance()->codeChanged();
+      break;
+
+    case Addon::AddonTypeTutorial:
+      // Nothing todo for these types
+      break;
+
+    case Addon::AddonTypeGuide:
+      // Nothing todo for these types
       break;
   }
 }

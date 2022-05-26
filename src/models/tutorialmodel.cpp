@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "tutorialmodel.h"
+#include "addonmanager.h"
 #include "tutorial.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -19,30 +20,31 @@ Logger logger(LOG_MAIN, "TutorialModel");
 TutorialModel* TutorialModel::instance() {
   if (!s_instance) {
     s_instance = new TutorialModel(qApp);
+
+    // We need tutorials from the addon manager.
+    AddonManager::instance();
   }
 
   return s_instance;
 }
 
 TutorialModel::TutorialModel(QObject* parent) : QAbstractListModel(parent) {
+  logger.debug() << "create";
   MVPN_COUNT_CTOR(TutorialModel);
-  initialize();
 }
 
 TutorialModel::~TutorialModel() { MVPN_COUNT_DTOR(TutorialModel); }
 
-void TutorialModel::initialize() {
-  QDir dir(":/tutorials");
-  QStringList files = dir.entryList();
-  files.sort();
-  for (const QString& file : files) {
-    if (file.endsWith(".json")) {
-      Tutorial* tutorial = Tutorial::create(this, dir.filePath(file));
-      if (tutorial) {
-        m_tutorials.append(tutorial);
-      }
-    }
+bool TutorialModel::createFromJson(const QJsonObject& obj) {
+  logger.debug() << "Creation from json";
+
+  Tutorial* tutorial = Tutorial::create(this, obj);
+  if (tutorial) {
+    m_tutorials.append(tutorial);
+    return true;
   }
+
+  return false;
 }
 
 QHash<int, QByteArray> TutorialModel::roleNames() const {

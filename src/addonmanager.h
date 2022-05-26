@@ -10,6 +10,8 @@
 #include <QHash>
 #include <QObject>
 
+class QDir;
+
 class AddonManager final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonManager)
@@ -20,7 +22,6 @@ class AddonManager final : public QObject {
   ~AddonManager();
 
   bool load(const QString& addonFileName);
-  void unload(const QString& addonName);
   void run(const QString& addonName);
 
   void retranslate();
@@ -28,9 +29,11 @@ class AddonManager final : public QObject {
  private:
   explicit AddonManager(QObject* parent);
 
+  void loadAll();
+  void loadAll(const QDir& path);
+
  signals:
   void runAddon(Addon* addon);
-  void unloadAddon(const QString& addonId);
 
  private:
   QHash<QString, Addon*> m_addons;

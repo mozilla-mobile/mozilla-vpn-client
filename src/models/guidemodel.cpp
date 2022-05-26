@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "guidemodel.h"
+#include "addonmanager.h"
 #include "guide.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -19,6 +20,9 @@ Logger logger(LOG_MAIN, "GuideModel");
 GuideModel* GuideModel::instance() {
   if (!s_instance) {
     s_instance = new GuideModel(qApp);
+
+    // We need tutorials from the addon manager.
+    AddonManager::instance();
   }
 
   return s_instance;
@@ -26,7 +30,6 @@ GuideModel* GuideModel::instance() {
 
 GuideModel::GuideModel(QObject* parent) : QAbstractListModel(parent) {
   MVPN_COUNT_CTOR(GuideModel);
-  initialize();
 }
 
 GuideModel::~GuideModel() { MVPN_COUNT_DTOR(GuideModel); }
@@ -40,18 +43,14 @@ QStringList GuideModel::guideTitleIds() const {
   return guides;
 }
 
-void GuideModel::initialize() {
-  QDir dir(":/guides");
-  QStringList files = dir.entryList();
-  files.sort();
-  for (const QString& file : files) {
-    if (file.endsWith(".json")) {
-      Guide* guide = Guide::create(this, dir.filePath(file));
-      if (guide) {
-        m_guides.append(guide);
-      }
-    }
+bool GuideModel::createFromJson(const QJsonObject& obj) {
+  Guide* guide = Guide::create(this, obj);
+  if (guide) {
+    m_guides.append(guide);
+    return true;
   }
+
+  return false;
 }
 
 QHash<int, QByteArray> GuideModel::roleNames() const {

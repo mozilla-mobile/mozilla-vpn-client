@@ -10,6 +10,7 @@
 #include <QList>
 #include <QAbstractListModel>
 
+class QJsonObject;
 class Tutorial;
 
 class TutorialModel final : public QAbstractListModel {
@@ -42,6 +43,8 @@ class TutorialModel final : public QAbstractListModel {
 
   Tutorial* highlightedTutorial() const;
 
+  bool createFromJson(const QJsonObject& obj);
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
@@ -59,8 +62,6 @@ class TutorialModel final : public QAbstractListModel {
 
  private:
   explicit TutorialModel(QObject* parent);
-
-  void initialize();
 
   QList<Tutorial*> m_tutorials;
   Tutorial* m_currentTutorial = nullptr;

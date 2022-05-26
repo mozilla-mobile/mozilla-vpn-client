@@ -33,6 +33,7 @@ Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm
 # We need to pre-generate those resources here.
 python3 ./scripts/utils/generate_glean.py
 python3 ./scripts/utils/import_languages.py
+python3 ./scripts/addon/generate_all.py
 
 ./scripts/windows/compile.bat --nmake
 nmake install 

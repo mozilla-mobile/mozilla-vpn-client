@@ -36,6 +36,10 @@ target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
+    ${MVPN_SOURCE_DIR}/addon.cpp
+    ${MVPN_SOURCE_DIR}/addon.h
+    ${MVPN_SOURCE_DIR}/addonmanager.cpp
+    ${MVPN_SOURCE_DIR}/addonmanager.h
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.cpp
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.h
     ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp

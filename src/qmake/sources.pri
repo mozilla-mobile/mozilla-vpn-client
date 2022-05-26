@@ -295,5 +295,3 @@ RESOURCES += ui/resources.qrc
 RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
-RESOURCES += ui/guides.qrc
-RESOURCES += ui/tutorials.qrc

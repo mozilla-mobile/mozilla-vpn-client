@@ -23,14 +23,10 @@ STRING_SOURCES = $$PWD/strings.yaml
 HEADERS += $$PWD/generated/l18nstrings.h
 
 ## Perform string generation
-## FIXME: This also depends vaguely on the contents of the guide and tutorials.
-## TODO: Make translations for the guides and tutorials loaded dynamically.
 stringgen.input = STRING_SOURCES
 stringgen.output = $$PWD/generated/l18nstrings.h
 stringgen.commands = @echo Generating strings from ${QMAKE_FILE_IN} \
     && python3 $$PWD/../scripts/utils/generate_strings.py \
-        -g ${QMAKE_FILE_IN_PATH}/../src/ui/guides \
-        -t ${QMAKE_FILE_IN_PATH}/../src/ui/tutorials \
         -o ${QMAKE_FILE_OUT_PATH} ${QMAKE_FILE_IN}
 stringgen.depends += ${QMAKE_FILE_IN}
 stringgen.variable_out = HEADERS

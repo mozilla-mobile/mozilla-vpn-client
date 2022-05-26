@@ -19,7 +19,9 @@ class Addon final : public QObject {
  public:
   enum AddonType {
     AddonTypeDemo,
+    AddonTypeGuide,
     AddonTypeI18n,
+    AddonTypeTutorial,
   };
 
   Addon(QObject* parent, AddonType addonType, const QString& fileName,

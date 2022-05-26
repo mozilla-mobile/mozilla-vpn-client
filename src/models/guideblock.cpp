@@ -4,7 +4,6 @@
 
 #include "guideblock.h"
 #include "guide.h"
-#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -23,23 +22,18 @@ GuideBlock::~GuideBlock() { MVPN_COUNT_DTOR(GuideBlock); }
 
 // static
 GuideBlock* GuideBlock::create(QObject* parent, const QString& guideId,
-                               const QString& fileName,
                                const QJsonObject& blockObj) {
   Q_ASSERT(parent);
-
-  L18nStrings* l18nStrings = L18nStrings::instance();
-  Q_ASSERT(l18nStrings);
 
   GuideBlock* block = new GuideBlock(parent);
 
   QString blockId = blockObj["id"].toString();
   if (blockId.isEmpty()) {
-    logger.error() << "Empty block ID for guide file" << fileName;
+    logger.error() << "Empty block ID for guide";
     return nullptr;
   }
 
-  block->m_id =
-      Guide::pascalize(QString("guide_%1_block_%2").arg(guideId).arg(blockId));
+  block->m_id = QString("guide.%1.block.%2").arg(guideId).arg(blockId);
 
   QString type = blockObj["type"].toString();
   if (type == "title") {
@@ -51,7 +45,7 @@ GuideBlock* GuideBlock::create(QObject* parent, const QString& guideId,
   } else if (type == "ulist") {
     block->m_type = GuideModel::GuideBlockTypeUnorderedList;
   } else {
-    logger.error() << "Invalid type for block for guide file" << fileName;
+    logger.error() << "Invalid type for block for guide";
     return nullptr;
   }
 
@@ -59,43 +53,29 @@ GuideBlock* GuideBlock::create(QObject* parent, const QString& guideId,
       block->m_type == GuideModel::GuideBlockTypeUnorderedList) {
     QJsonValue subBlockArray = blockObj["content"];
     if (!subBlockArray.isArray()) {
-      logger.error() << "No content for block type list in guide file"
-                     << fileName;
+      logger.error() << "No content for block type list in guide";
       return nullptr;
     }
 
     for (QJsonValue subBlockValue : subBlockArray.toArray()) {
       if (!subBlockValue.isObject()) {
         logger.error()
-            << "Expected JSON object for block content list in guide file"
-            << fileName;
+            << "Expected JSON object for block content list in guide";
         return nullptr;
       }
 
       QJsonObject subBlockObj = subBlockValue.toObject();
       QString subBlockId = subBlockObj["id"].toString();
       if (subBlockId.isEmpty()) {
-        logger.error() << "Empty sub block ID for guide file" << fileName;
+        logger.error() << "Empty sub block ID for guide";
         return nullptr;
       }
 
-      subBlockId = Guide::pascalize(QString("guide_%1_block_%2_%3")
-                                        .arg(guideId)
-                                        .arg(blockId)
-                                        .arg(subBlockId));
-      if (!l18nStrings->contains(subBlockId)) {
-        logger.error() << "No string ID found for the block of guide file"
-                       << fileName << "ID:" << subBlockId;
-        return nullptr;
-      }
-
+      subBlockId = QString("guide.%1.block.%2.%3")
+                       .arg(guideId)
+                       .arg(blockId)
+                       .arg(subBlockId);
       block->m_subBlockIds.append(subBlockId);
-    }
-  } else {
-    if (!l18nStrings->contains(block->m_id)) {
-      logger.error() << "No string ID found for the block of guide file"
-                     << fileName << "ID:" << block->m_id;
-      return nullptr;
     }
   }
 

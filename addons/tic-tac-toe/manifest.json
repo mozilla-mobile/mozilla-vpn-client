@@ -1,4 +1,5 @@
 {
+  "id": "tic-tac-toe",
   "version": "0.1",
   "name": "Tic-Tac-Toe",
   "qml": "tic-tac-toe.qml",

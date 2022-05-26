@@ -504,19 +504,19 @@ Window {
 
     Connections {
         target: VPNTutorial
-        function onTooltipNeeded(text, rect, objectName) {
+        function onTooltipNeeded(textId, rect, objectName) {
             console.log("OBJECT NAME:" + objectName);
             if (tooltip.height + rect.y + rect.height <= window.height - VPNTheme.theme.windowMargin) {
               tooltip.y = rect.y + rect.height;
             } else {
               tooltip.y = rect.y - tooltip.height;
             }
-            tooltip.text = text
+            tooltip.text = qsTrId(textId);
             tooltip.open();
         }
 
         function onTutorialCompleted(text) {
-            console.log("TODO", text);
+            console.log("TODO", qsTrId(text));
         }
     }
 

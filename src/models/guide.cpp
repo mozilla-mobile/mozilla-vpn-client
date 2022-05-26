@@ -4,7 +4,6 @@
 
 #include "guide.h"
 #include "guideblock.h"
-#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -136,8 +135,11 @@ Guide* Guide::create(QObject* parent, const QString& fileName) {
     return nullptr;
   }
 
-  QJsonObject obj = json.object();
+  return create(parent, json.object());
+}
 
+// static
+Guide* Guide::create(QObject* parent, const QJsonObject& obj) {
   QJsonObject conditions = obj["conditions"].toObject();
   if (!evaluateConditions(conditions)) {
     logger.info() << "Exclude the guide because conditions do not match";
@@ -146,52 +148,37 @@ Guide* Guide::create(QObject* parent, const QString& fileName) {
 
   QString guideId = obj["id"].toString();
   if (guideId.isEmpty()) {
-    logger.warning() << "Empty ID for guide file" << fileName;
+    logger.warning() << "Empty ID for guide";
     return nullptr;
   }
-
-  L18nStrings* l18nStrings = L18nStrings::instance();
-  Q_ASSERT(l18nStrings);
 
   Guide* guide = new Guide(parent);
   auto guard = qScopeGuard([&] { guide->deleteLater(); });
 
-  guide->m_titleId = pascalize(QString("guide_%1_title").arg(guideId));
-  if (!l18nStrings->contains(guide->m_titleId)) {
-    logger.warning() << "No string ID found for the title of guide file"
-                     << fileName << "ID:" << guide->m_titleId;
-    return nullptr;
-  }
-
-  guide->m_subtitleId = pascalize(QString("guide_%1_subtitle").arg(guideId));
-  if (!l18nStrings->contains(guide->m_subtitleId)) {
-    logger.warning() << "No string ID found for the subtitle of guide file"
-                     << fileName << "ID:" << guide->m_subtitleId;
-    return nullptr;
-  }
+  guide->m_titleId = QString("guide.%1.title").arg(guideId);
+  guide->m_subtitleId = QString("guide.%1.subtitle").arg(guideId);
 
   guide->m_image = obj["image"].toString();
   if (guide->m_image.isEmpty()) {
-    logger.warning() << "Empty image for guide file" << fileName;
+    logger.warning() << "Empty image for guide";
     return nullptr;
   }
 
   QJsonValue blocksArray = obj["blocks"];
   if (!blocksArray.isArray()) {
-    logger.warning() << "No blocks for guide file" << fileName;
+    logger.warning() << "No blocks for guide";
     return nullptr;
   }
 
   for (QJsonValue blockValue : blocksArray.toArray()) {
     if (!blockValue.isObject()) {
-      logger.warning() << "Expected JSON objects as blocks for guide file"
-                       << fileName;
+      logger.warning() << "Expected JSON objects as blocks for guide";
       return nullptr;
     }
 
     QJsonObject blockObj = blockValue.toObject();
 
-    GuideBlock* block = GuideBlock::create(guide, guideId, fileName, blockObj);
+    GuideBlock* block = GuideBlock::create(guide, guideId, blockObj);
     if (!block) {
       return nullptr;
     }
@@ -201,20 +188,6 @@ Guide* Guide::create(QObject* parent, const QString& fileName) {
 
   guard.dismiss();
   return guide;
-}
-
-// static
-QString Guide::pascalize(const QString& input) {
-  QString output;
-
-  for (QString chunk : input.split("_")) {
-    if (chunk.isEmpty()) continue;
-
-    chunk[0] = chunk[0].toUpper();
-    output.append(chunk);
-  }
-
-  return output;
 }
 
 // static

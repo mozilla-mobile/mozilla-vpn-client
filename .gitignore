@@ -164,6 +164,9 @@ translations/*/locversion.plist
 translations/generated/
 macos/pkg/Resources/*.lproj
 
+# Addons
+addons/generated/
+
 # Adjust SDK Files
 android/src/com/adjust
 

@@ -1,5 +1,6 @@
 {
+  "id": "language-addon",
   "version": "0.1",
-  "name": "Tic-Tac-Toe",
+  "name": "language package",
   "type": "i18n"
 }
