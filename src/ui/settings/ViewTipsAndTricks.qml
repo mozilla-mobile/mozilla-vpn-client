@@ -63,6 +63,8 @@ VPNFlickable {
                 }
 
                 VPNTutorialCard {
+                    objectName: "featureTourCard"
+
                     width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
                     height: VPNTheme.theme.tutorialCardHeight
 

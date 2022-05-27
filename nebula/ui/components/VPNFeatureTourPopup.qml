@@ -33,6 +33,7 @@ Popup {
 
                 // Back button
                 VPNIconButton {
+                    objectName: "backButton"
 
                     accessibleName: qsTrId("vpn.main.back")
                     visible: featureTour.currentIndex !== 0
@@ -57,6 +58,8 @@ Popup {
 
                 // Close button
                 VPNIconButton {
+                    objectName: "closeButton"
+
                     accessibleName: qsTrId("menubar.file.close")
                     onClicked: {
                         popup.close();
@@ -163,7 +166,7 @@ Popup {
 
     function startTour() {
         featureTour.resetTour()
-        open();
+        open()
     }
 }
 

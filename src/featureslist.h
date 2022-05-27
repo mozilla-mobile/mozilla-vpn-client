@@ -84,15 +84,15 @@ FEATURE(customDNS,                                         // Feature ID
         FeatureCallback_true)
 
 FEATURE(
-    easyProfile,      // Feature ID
+    easyProfile,     // Feature ID
     "Easy Profile",  // Feature name
-    true,                        // Is Major Feature
+    true,            // Is Major Feature
     L18nStrings::WhatsNewReleaseNotesEasyProfileDisplayName,  // Display name
-    L18nStrings::Empty,  // Description
+    L18nStrings::Empty,                                       // Description
     L18nStrings::WhatsNewReleaseNotesEasyProfileDescription,  // LongDescr
-    "qrc:/ui/resources/features/easy-profile-preview",  // ImagePath
-    "",  // IconPath
-    "",  // link URL
+    "qrc:/ui/resources/features/easy-profile-preview",        // ImagePath
+    "",                                                       // IconPath
+    "",                                                       // link URL
     "2.9",
     false,          // Can be flipped on
     false,          // Can be flipped off
@@ -242,11 +242,11 @@ FEATURE_SIMPLE(startOnBoot,      // Feature ID
                FeatureCallback_startOnBoot)
 
 FEATURE_SIMPLE(tipsAndTricks,      // Feature ID
-               "Tips and tricks",    // Feature name
-               "2.9",        // released
-               false,           // Can be flipped on
-               true,           // Can be flipped off
-               QStringList(),  // feature dependencies
+               "Tips and tricks",  // Feature name
+               "2.9",              // released
+               false,              // Can be flipped on
+               true,               // Can be flipped off
+               QStringList(),      // feature dependencies
                FeatureCallback_false)
 
 FEATURE_SIMPLE(unsecuredNetworkNotification,      // Feature ID

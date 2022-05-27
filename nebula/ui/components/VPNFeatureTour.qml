@@ -30,6 +30,8 @@ ColumnLayout {
         SwipeView {
             id: swipeView
 
+            objectName: "featureSwipeView"
+
             clip: true
             currentIndex: 0
             interactive: true
@@ -132,6 +134,8 @@ ColumnLayout {
         VPNButton {
             id: resumeButton
 
+            objectName: "primaryButton"
+
             property bool isLastFeature: swipeView.currentIndex === swipeView.count - 1
 
             text: isLastFeature ? VPNl18n.WhatsNewReleaseNotesDnsModalButtonText : VPNl18n.WhatsNewReleaseNotesSupportModalButtonText
@@ -154,6 +158,8 @@ ColumnLayout {
 
         VPNLinkButton {
             id: linkButton
+
+            objectName: "secondaryButton"
 
             labelText: VPNl18n.SplittunnelInfoLinkText
             visible: hasFeatureLinkUrl()
