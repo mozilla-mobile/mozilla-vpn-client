@@ -15,8 +15,19 @@ RoundButton {
     property var uiState: VPNTheme.theme.uiState
     property var loaderVisible: false
     property var handleKeyClick: function() { clicked() }
+    property var handleTutorialTabbing: (event) => {
+                                            if (tutorialUI.visible) {
+                                                tutorialUI.forceTooltipFocus(event);
+                                            } else {
+                                                event.accepted = false;
+                                            }
+                                            visualStateItem.state = uiState.stateDefault;
+                                        }
+
+
 
     focusPolicy: Qt.StrongFocus
+
     Keys.onPressed: event => {
         if (loaderVisible) {
             return;
@@ -26,10 +37,15 @@ RoundButton {
             visualStateItem.state = uiState.statePressed;
 
     }
+
+    Keys.onBacktabPressed: event => handleTutorialTabbing(event)
+    Keys.onTabPressed: event => handleTutorialTabbing(event)
+
     Keys.onReleased: event => {
-        if (loaderVisible) {
-            return;
-        }
+         if (loaderVisible) {
+             return;
+         }
+
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space) {
             visualStateItem.state = uiState.stateDefault;
         }
@@ -56,7 +72,7 @@ RoundButton {
 
         if (typeof(ensureVisible) !== "undefined")
             ensureVisible(root);
-    }
+        }
 
     background: Rectangle {
         color: VPNTheme.theme.transparent

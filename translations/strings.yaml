@@ -599,6 +599,17 @@ tipsAndTricks:
   quickTipsGuideViewTitle: Quick tip
   introModalDescription: Here’s a great list of useful tips and tricks to get the best out of your Mozilla VPN experience. Check it out now or find it anytime in the settings.
 
+tutorialPopup:
+  tutorialCompleteHeadline: Well done!
+  tutorialCompletePrimaryButtonLabel: Let’s go!
+  tutorialCompleteSecondaryButtonLabel: Come back later
+
+  tutorialExitHeadline: Quit tutorial?
+  tutorialExitSubtitle: Looks like you haven’t finished the tutorial quite yet. Would you like to continue and finish now or quit and restart your progress later? 
+  tutorialExitPrimaryButtonLabel: Quit tutorial
+  tutorialExitSecondaryButtonLabel: Resume
+
+
 global:
   expand:
     value: Expand

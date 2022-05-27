@@ -131,24 +131,12 @@ void TutorialStep::startInternal() {
   QQuickItem* item = qobject_cast<QQuickItem*>(element);
   Q_ASSERT(item);
 
-  // mapRectToScene/Item do not return the correct value. Let's compute the x/y
-  // values manually.
-
-  qreal x = item->x();
-  qreal y = item->y();
-  for (QQuickItem* parent = item->parentItem(); parent;
-       parent = parent->parentItem()) {
-    x += parent->x();
-    y += parent->y();
-  }
-
   TutorialModel* tutorialModel = TutorialModel::instance();
   Q_ASSERT(tutorialModel);
 
   tutorialModel->requireTooltipShown(m_parent, true);
   tutorialModel->requireTooltipNeeded(
-      m_parent, m_stringId, QRectF(x, y, item->width(), item->height()),
-      m_element);
+      m_parent, m_stringId, element);
 
   connect(m_next, &TutorialStepNext::completed, this, &TutorialStep::completed);
   m_next->start();

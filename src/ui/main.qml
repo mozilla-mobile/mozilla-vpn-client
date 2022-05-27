@@ -478,46 +478,12 @@ Window {
 
     }
 
-    // This part needs UI - TODO
-    Popup {
-        id: tooltip
-        property alias text: text.text
-        visible: VPNTutorial.tooltipShown
-        closePolicy: Popup.NoAutoClose
-        x: VPNTheme.theme.windowMargin
-        width: parent.width - VPNTheme.theme.windowMargin * 2
-
-        ColumnLayout {
-            Text {
-                id: text
-                text: ""
-            }
-
-            Button {
-                objectName: "tutorialExit"
-                text: "Exit"
-                Component.onCompleted: VPNTutorial.allowItem("tutorialExit")
-                onClicked: VPNTutorial.stop()
-            }
-        }
+    function forceTutorialFocus() {
+        tutorialTooltip.forceActiveFocus();
     }
 
-    Connections {
-        target: VPNTutorial
-        function onTooltipNeeded(textId, rect, objectName) {
-            console.log("OBJECT NAME:" + objectName);
-            if (tooltip.height + rect.y + rect.height <= window.height - VPNTheme.theme.windowMargin) {
-              tooltip.y = rect.y + rect.height;
-            } else {
-              tooltip.y = rect.y - tooltip.height;
-            }
-            tooltip.text = qsTrId(textId);
-            tooltip.open();
-        }
-
-        function onTutorialCompleted(text) {
-            console.log("TODO", qsTrId(text));
-        }
+    VPNTutorialPopups {
+        id: tutorialUI
     }
 
     VPNSystemAlert {
