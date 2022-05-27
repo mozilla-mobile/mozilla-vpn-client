@@ -53,9 +53,9 @@ void WhatsNewModel::initialize() {
 
   for (Feature* feature : allFeatures) {
     bool shouldBeInWhatsNew = !feature->displayName().isEmpty() &&
-            !feature->description().isEmpty() &&
-            !feature->imagePath().isEmpty() &&
-            feature->isSupported() && feature->isMajor();
+                              !feature->description().isEmpty() &&
+                              !feature->imagePath().isEmpty() &&
+                              feature->isSupported() && feature->isMajor();
 
     if (shouldBeInWhatsNew) {
       newFeatures.append(feature);

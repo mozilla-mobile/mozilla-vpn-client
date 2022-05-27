@@ -682,22 +682,24 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{"feature_tour_features", "Returns a list of feature id's present in the feature tour", 0,
-                      [](InspectorHandler*, const QList<QByteArray>&) {
-                        QJsonObject obj;
+    InspectorCommand{
+        "feature_tour_features",
+        "Returns a list of feature id's present in the feature tour", 0,
+        [](InspectorHandler*, const QList<QByteArray>&) {
+          QJsonObject obj;
 
-                        WhatsNewModel* whatsNewModel = MozillaVPN::instance()->whatsNewModel();
-                        Q_ASSERT(whatsNewModel);
+          WhatsNewModel* whatsNewModel =
+              MozillaVPN::instance()->whatsNewModel();
+          Q_ASSERT(whatsNewModel);
 
-                        QJsonArray featureIds;
-                        for (const QString& featureId :
-                             whatsNewModel->featureIds()) {
-                          featureIds.append(featureId);
-                        }
+          QJsonArray featureIds;
+          for (const QString& featureId : whatsNewModel->featureIds()) {
+            featureIds.append(featureId);
+          }
 
-                        obj["value"] = featureIds;
-                        return obj;
-                      }},
+          obj["value"] = featureIds;
+          return obj;
+        }},
 
     InspectorCommand{"translate", "Translate a string", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
