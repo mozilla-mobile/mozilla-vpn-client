@@ -17,10 +17,12 @@ class Survey final {
   Survey& operator=(const Survey& other);
   ~Survey();
 
+  static QString replaceUrlParams(const QString& input);
+
   [[nodiscard]] bool fromJson(const QJsonValue& json);
 
   const QString& id() const { return m_id; }
-  const QString& url() const { return m_url; }
+  const QString url() const { return replaceUrlParams(m_url); }
   uint32_t triggerTime() const { return m_triggerTimeSec; }
 
   bool isTriggerable() const;
