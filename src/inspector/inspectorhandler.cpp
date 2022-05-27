@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorhandler.h"
+#include "addonmanager.h"
 #include "constants.h"
 #include "controller.h"
 #include "inspectoritempicker.h"
@@ -885,6 +886,26 @@ static QList<InspectorCommand> s_commands{
 
                        FeatureModel::instance()->toggleForcedDisable(
                            arguments[1]);
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"load_addon", "Load an addon", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       obj["value"] =
+                           AddonManager::instance()->load(arguments[1]);
+                       return obj;
+                     }},
+
+    InspectorCommand{"unload_addon", "Load an addon", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       AddonManager::instance()->unload(arguments[1]);
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"run_addon", "Load an addon", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       AddonManager::instance()->run(arguments[1]);
                        return QJsonObject();
                      }},
 };

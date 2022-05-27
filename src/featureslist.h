@@ -26,6 +26,14 @@ FEATURE_SIMPLE(accountDeletion,     // Feature ID
                QStringList(),       // feature dependencies
                FeatureCallback_accountDeletion)
 
+FEATURE_SIMPLE(addon,            // Feature ID
+               "Addon support",  // Feature name
+               "2.9.0",          // released
+               true,             // Can be flipped on
+               false,            // Can be flipped off
+               QStringList(),    // feature dependencies
+               FeatureCallback_false)
+
 FEATURE_SIMPLE(appReview,      // Feature ID
                "App Review",   // Feature name
                "2.5",          // released
