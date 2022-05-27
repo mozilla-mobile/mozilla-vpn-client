@@ -478,10 +478,6 @@ Window {
 
     }
 
-    function forceTutorialFocus() {
-        tutorialTooltip.forceActiveFocus();
-    }
-
     VPNTutorialPopups {
         id: tutorialUI
     }
