@@ -607,7 +607,8 @@ void Controller::setState(State state) {
   }
   logger.debug() << "Setting state:" << state;
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::appStep, {{"state", QVariant::fromValue(state).toString()}});
+      GleanSample::controllerStep,
+      {{"state", QVariant::fromValue(state).toString()}});
   m_state = state;
   emit stateChanged();
 }
