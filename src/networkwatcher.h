@@ -12,7 +12,6 @@
 #include <QMap>
 
 class NetworkWatcherImpl;
-enum TransportType;
 
 // This class watches for network changes to detect unsecured wifi.
 class NetworkWatcher final : public QObject {

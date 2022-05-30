@@ -26,6 +26,9 @@
 #ifdef MVPN_WASM
 #  include "platforms/wasm/wasmnetworkwatcher.h"
 #endif
+#ifdef MVPN_ANDROID
+#  include "platforms/android/androidnetworkwatcher.h"
+#endif
 
 // How often we notify the same unsecured network
 #ifndef UNIT_TEST
@@ -51,6 +54,8 @@ void NetworkWatcher::initialize() {
   m_impl = new MacOSNetworkWatcher(this);
 #elif defined(MVPN_WASM)
   m_impl = new WasmNetworkWatcher(this);
+#elif defined(MVPN_ANDROID)
+  m_impl = new AndroidNetworkWatcher(this);
 #else
   m_impl = new DummyNetworkWatcher(this);
 #endif
@@ -171,6 +176,9 @@ NetworkWatcherImpl::TransportType NetworkWatcher::getCurrentTransportType(){
     break;
   case NetworkWatcherImpl::TransportType_Other:
     logger.debug() << "TransportType_Other USED";
+    break;
+  case NetworkWatcherImpl::TransportType_None:
+    logger.debug() << "TransportType_None USED";
     break;
   default:
    logger.debug() << "TransportType_Unknown USED";

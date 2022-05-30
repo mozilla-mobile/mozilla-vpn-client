@@ -62,6 +62,7 @@ INCLUDEPATH += platforms/android
 SOURCES +=  \
     platforms/android/androidcontroller.cpp \
     platforms/android/androidiaphandler.cpp \
+    platforms/android/androidnetworkwatcher.cpp \
     platforms/android/androidnotificationhandler.cpp \
     platforms/android/androidutils.cpp \
     platforms/android/androidvpnactivity.cpp \
@@ -74,6 +75,7 @@ SOURCES +=  \
 HEADERS +=  \
     platforms/android/androidcontroller.h \
     platforms/android/androidiaphandler.h \
+    platforms/android/androidnetworkwatcher.h \
     platforms/android/androidnotificationhandler.h \
     platforms/android/androidutils.h \
     platforms/android/androidvpnactivity.h \

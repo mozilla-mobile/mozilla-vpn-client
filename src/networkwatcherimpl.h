@@ -26,10 +26,11 @@ class NetworkWatcherImpl : public QObject {
 
   enum TransportType {
     TransportType_Unknown = 0,
-    TransportType_Ethernet,
-    TransportType_WiFi,
-    TransportType_Cellular,
-    TransportType_Other
+    TransportType_Ethernet = 1,
+    TransportType_WiFi = 2,
+    TransportType_Cellular = 3 , // In Case the API does not retun the gsm type
+    TransportType_Other = 4, // I.e USB thethering
+    TransportType_None = 5 // I.e Airplane Mode or no active network device
   };
 
   // Returns the current type of Network Connection
