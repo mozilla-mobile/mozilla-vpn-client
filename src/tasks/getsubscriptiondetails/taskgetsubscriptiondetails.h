@@ -19,6 +19,10 @@ class TaskGetSubscriptionDetails final : public Task {
 
   void run() override;
 
+ signals:
+  void receivedData(const QByteArray& data);
+  void failed();
+
  private:
   void needsAuthentication();
 

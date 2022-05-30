@@ -103,6 +103,7 @@ SOURCES += \
         platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         platforms/dummy/dummypingsender.cpp \
+        profileflow.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc/rfc1112.cpp \
@@ -262,6 +263,7 @@ HEADERS += \
         platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         platforms/dummy/dummypingsender.h \
+        profileflow.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc/rfc1112.h \

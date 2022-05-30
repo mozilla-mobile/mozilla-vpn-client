@@ -80,4 +80,4 @@ class SubscriptionData final : public QObject {
   int m_creditCardExpYear;
 };
 
-#endif  // SUBCRIPTIONDATA_H
+#endif  // SUBSCRIPTIONDATA_H

@@ -150,6 +150,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
+    ${MVPN_SOURCE_DIR}/profileflow.cpp
+    ${MVPN_SOURCE_DIR}/profileflow.h
     ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
     ${MVPN_SOURCE_DIR}/qmlengineholder.h
     ${MVPN_SOURCE_DIR}/releasemonitor.cpp
@@ -181,6 +183,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/tasks/ipfinder/taskipfinder.h
     ${MVPN_SOURCE_DIR}/tasks/function/taskfunction.cpp
     ${MVPN_SOURCE_DIR}/tasks/function/taskfunction.h
+    ${MVPN_SOURCE_DIR}/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp
+    ${MVPN_SOURCE_DIR}/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h
     ${MVPN_SOURCE_DIR}/tasks/release/taskrelease.cpp
     ${MVPN_SOURCE_DIR}/tasks/release/taskrelease.h
     ${MVPN_SOURCE_DIR}/tasks/servers/taskservers.cpp

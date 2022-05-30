@@ -23,9 +23,9 @@
 #include "logoutobserver.h"
 #include "models/device.h"
 #include "networkrequest.h"
+#include "profileflow.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "subscriptiondata.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
@@ -34,7 +34,6 @@
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
-#include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
@@ -721,24 +720,6 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
     Q_ASSERT(m_private->m_serverData.initialized());
     m_private->m_serverData.writeSettings();
   }
-}
-
-void MozillaVPN::subscriptionDetailsFetched(
-    const QByteArray& subscriptionDetailsData) {
-  logger.debug() << "Subscription details data fetched!";
-
-  if (!m_private->m_subscriptionData.fromJson(subscriptionDetailsData)) {
-    logger.error() << "Failed to parse the Subscription JSON data";
-    errorHandle(ErrorHandler::RemoteServiceError);
-    return;
-  }
-
-  emit subscriptionManagementNeeded();
-}
-
-// TODO: Remove, only for debugging purposes.
-void MozillaVPN::subscriptionDetailsFetchedTest() {
-  emit subscriptionManagementNeeded();
 }
 
 void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
@@ -1795,12 +1776,4 @@ void MozillaVPN::requestDeleteAccount() {
 void MozillaVPN::cancelAccountDeletion() {
   logger.warning() << "Canceling account deletion";
   AuthenticationInApp::instance()->terminateSession();
-}
-
-void MozillaVPN::getSubscriptionDetails() {
-  logger.debug() << "Get subscription details";
-  Q_ASSERT(FeatureSubscriptionManagement::instance()->isSupported()
-    && m_state == StateMain);
-  TaskScheduler::scheduleTask(
-    new TaskGetSubscriptionDetails(m_private->m_user.email()));
 }

@@ -225,6 +225,8 @@ target_sources(mozillavpn PRIVATE
     platforms/dummy/dummynetworkwatcher.h
     platforms/dummy/dummypingsender.cpp
     platforms/dummy/dummypingsender.h
+    profileflow.h
+    profileflow.cpp
     qmlengineholder.cpp
     qmlengineholder.h
     releasemonitor.cpp

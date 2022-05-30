@@ -11,8 +11,10 @@ import components.forms 0.1
 import components.inAppAuth 0.1
 
 Item {
+    property string _menuTitle: qsTrId("vpn.main.settings")
     property bool _menuVisible: false
-    id: subscriptionManagementStates
+
+    id: reauthenticationFlow
 
     Loader {
         id: loader
@@ -32,8 +34,8 @@ Item {
         id: authError
     }
 
-    // The following states are not expected to be set during the Subscription
-    // Management auth flow and thus we do not need to cover them:
+    // The following states are not expected to be set during the reauth flow
+    // and thus we do not need to cover them:
     // - StateStart
     // - StateSignUp
     // - StateSigningUp
@@ -45,7 +47,7 @@ Item {
                 VPNAuthInApp.state === VPNAuthInApp.StateInitializing
                 || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
                 || VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
-            ) && !VPNSubscriptionData.initialized
+            ) && !targetCondition
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationInitializing.qml"
@@ -105,45 +107,11 @@ Item {
             when: (
                 VPNAuthInApp.state === VPNAuthInApp.StateInitializing
                 || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
-            ) && VPNSubscriptionData.initialized
+            ) && targetCondition
             PropertyChanges {
                 target: loader
-                source: "qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml"
+                source: targetSource || ""
             }
         }
     ]
-
-    Connections {
-        target: VPN
-
-        // TODO: Remove example data
-        function onSubscriptionManagementNeeded() {
-            const exampleData = '{
-                "created_at": 1626704467,
-                "expires_on": 1652970067,
-                "is_cancelled": false,
-                "payment": {
-                    "credit_card_brand": "visa",
-                    "credit_card_exp_month": 12,
-                    "credit_card_exp_year": 2022,
-                    "credit_card_last4": "0016",
-                    "provider": "stripe",
-                    "type": "credit"
-                },
-                "plan": {
-                    "amount": 499,
-                    "currency": "eur",
-                    "interval_count": 1,
-                    "interval": "month"
-                },
-                "status": "active",
-                "type": "web"
-            }';
-            VPNSubscriptionData.fromJson(exampleData);
-        }
-    }
-
-    Component.onCompleted: {
-        VPN.getSubscriptionDetails();
-    }
 }

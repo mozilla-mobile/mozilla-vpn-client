@@ -26,6 +26,7 @@
 #include "models/user.h"
 #include "models/whatsnewmodel.h"
 #include "networkwatcher.h"
+#include "profileflow.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
 #include "subscriptiondata.h"
@@ -198,7 +199,6 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void crashTest();
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelAccountDeletion();
-  Q_INVOKABLE void getSubscriptionDetails();
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
@@ -233,6 +233,7 @@ class MozillaVPN final : public QObject {
   LicenseModel* licenseModel() { return &m_private->m_licenseModel; }
   HelpModel* helpModel() { return &m_private->m_helpModel; }
   NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
+  ProfileFlow* profileFlow() { return &m_private->m_profileFlow; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
   ServerCountryModel* serverCountryModel() {
     return &m_private->m_serverCountryModel;
@@ -256,10 +257,6 @@ class MozillaVPN final : public QObject {
   void deviceRemovalCompleted(const QString& publicKey);
 
   void serversFetched(const QByteArray& serverData);
-
-  void subscriptionDetailsFetched(const QByteArray& subscriptionDetailsData);
-
-  void subscriptionDetailsFetchedTest();
 
   void accountChecked(const QByteArray& json);
 
@@ -411,7 +408,6 @@ class MozillaVPN final : public QObject {
   void viewLogsNeeded();
   void contactUsNeeded();
   void updatingChanged();
-  void subscriptionManagementNeeded();
 
   // For Glean
   void initializeGlean();
@@ -454,6 +450,7 @@ class MozillaVPN final : public QObject {
     ServerData m_serverData;
     StatusIcon m_statusIcon;
     SubscriptionData m_subscriptionData;
+    ProfileFlow m_profileFlow;
     SurveyModel m_surveyModel;
     Telemetry m_telemetry;
     Theme m_theme;
