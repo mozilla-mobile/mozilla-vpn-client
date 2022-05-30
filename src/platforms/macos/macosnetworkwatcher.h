@@ -18,8 +18,13 @@ class MacOSNetworkWatcher final : public NetworkWatcherImpl {
 
   void checkInterface();
 
+  NetworkWatcherImpl::TransportType getTransportType() override;
+
  private:
   void* m_delegate = nullptr;
+  NetworkWatcherImpl::TransportType mCurrentTransport =
+      NetworkWatcherImpl::TransportType_Unknown;
+  void* m_networkMonitor = nullptr;
 };
 
 #endif  // MACOSNETWORKWATCHER_H

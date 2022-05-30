@@ -31,6 +31,7 @@ LIBS += -framework SystemConfiguration
 LIBS += -framework ServiceManagement
 LIBS += -framework Security
 LIBS += -framework CoreWLAN
+LIBS += -framework Network
 
 DEFINES += MVPN_MACOS
 

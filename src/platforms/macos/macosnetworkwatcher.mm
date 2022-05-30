@@ -7,6 +7,7 @@
 #include "logger.h"
 
 #import <CoreWLAN/CoreWLAN.h>
+#import <Network/Network.h>
 
 namespace {
 Logger logger(LOG_MACOS, "MacOSNetworkWatcher");
@@ -55,10 +56,50 @@ MacOSNetworkWatcher::~MacOSNetworkWatcher() {
     [static_cast<MacOSNetworkWatcherDelegate*>(m_delegate) dealloc];
     m_delegate = nullptr;
   }
+  if (m_networkMonitor) {
+    nw_path_monitor_t mon = *((nw_path_monitor_t*)m_networkMonitor);
+    nw_path_monitor_cancel(mon);
+  }
 }
 
 void MacOSNetworkWatcher::initialize() {
-  // Nothing to do here
+  dispatch_queue_t agentQueue = dispatch_queue_create("VPNNetwork.queue", DISPATCH_QUEUE_SERIAL);
+  auto mon = nw_path_monitor_create();
+  nw_path_monitor_set_queue(mon, agentQueue);
+  logger.debug() << "nw_path_monitor_create";
+  nw_path_monitor_set_update_handler(mon, ^(nw_path_t _Nonnull path) {
+    logger.debug() << "nw_path_monitor_update_handler";
+
+    if (nw_path_get_status(path) != nw_path_status_satisfied &&
+        nw_path_get_status(path) != nw_path_status_satisfiable) {
+      // We're offline.
+      this->mCurrentTransport = NetworkWatcherImpl::TransportType_None;
+    }
+    if (nw_path_uses_interface_type(path, nw_interface_type_wifi)) {
+      this->mCurrentTransport = NetworkWatcherImpl::TransportType_WiFi;
+      return;
+    }
+    if (nw_path_uses_interface_type(path, nw_interface_type_wired)) {
+      this->mCurrentTransport = NetworkWatcherImpl::TransportType_Ethernet;
+      return;
+    }
+    if (nw_path_uses_interface_type(path, nw_interface_type_cellular)) {
+      this->mCurrentTransport = NetworkWatcherImpl::TransportType_Cellular;
+      return;
+    }
+    if (nw_path_uses_interface_type(path, nw_interface_type_other)) {
+      this->mCurrentTransport = NetworkWatcherImpl::TransportType_Other;
+      return;
+    }
+    if (nw_path_uses_interface_type(path, nw_interface_type_loopback)) {
+      this->mCurrentTransport = NetworkWatcherImpl::TransportType_Other;
+      return;
+    }
+    this->mCurrentTransport = NetworkWatcherImpl::TransportType_Unknown;
+  });
+  logger.debug() << "nw_path_monitor_start";
+  nw_path_monitor_start(mon);
+  m_networkMonitor = &mon;
 }
 
 void MacOSNetworkWatcher::start() {
@@ -128,4 +169,8 @@ void MacOSNetworkWatcher::checkInterface() {
   }
 
   logger.debug() << "Secure WiFi interface";
+}
+
+NetworkWatcherImpl::TransportType MacOSNetworkWatcher::getTransportType() {
+  return mCurrentTransport;
 }
