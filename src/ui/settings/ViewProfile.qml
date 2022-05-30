@@ -15,8 +15,11 @@ Item {
     id: subscriptionManagementStates
 
     Loader {
-        property bool targetCondition: VPNProfileFlow.StateReady
-        property string targetSource: "qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml"
+        property bool _targetViewCondition: (
+            VPNProfileFlow.state === VPNProfileFlow.StateInitial
+            || VPNProfileFlow.state === VPNProfileFlow.StateReady
+        )
+        property string _targetViewSource: "qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml"
 
         source: "qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml"
 

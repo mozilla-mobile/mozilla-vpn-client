@@ -16,6 +16,9 @@ Item {
         id: menu
         objectName: "settingsBackButton"
         _menuOnBackClicked: () => {
+            // TODO: Find a better place to cancel authentication
+            VPN.cancelAuthentication();
+
             if (settingsStackView.depth !== 1) {
                 return settingsStackView.pop();
             }
@@ -29,7 +32,6 @@ Item {
 
         title: ""
         opacity: visible ? 1 : 0
-
 
         Behavior on opacity {
             PropertyAnimation {

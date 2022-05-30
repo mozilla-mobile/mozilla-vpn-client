@@ -34,12 +34,10 @@ class ProfileFlow final : public QObject {
 
  signals:
   void stateChanged(State state);
-
   void showProfile();
 
  private:
   void setState(State state);
-
   void subscriptionDetailsFetched(const QByteArray& subscriptionData);
 
  private:

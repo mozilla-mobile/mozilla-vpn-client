@@ -12,7 +12,6 @@ import components 0.1
 VPNFlickable {
     id: vpnFlickable
     objectName: "settingsView"
-    property string _menuTitle: VPNl18n.SubscriptionManagementMenuTitle
     property var currentLanguageCode: VPNLocalizer.code === ""
         ? Qt.locale(VPNLocalizer.previousCode)
         : Qt.locale(VPNLocalizer.code)

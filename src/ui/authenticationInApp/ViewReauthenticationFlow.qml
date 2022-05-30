@@ -11,9 +11,6 @@ import components.forms 0.1
 import components.inAppAuth 0.1
 
 Item {
-    property string _menuTitle: qsTrId("vpn.main.settings")
-    property bool _menuVisible: false
-
     id: reauthenticationFlow
 
     Loader {
@@ -47,7 +44,7 @@ Item {
                 VPNAuthInApp.state === VPNAuthInApp.StateInitializing
                 || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
                 || VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
-            ) && !targetCondition
+            ) && !_targetViewCondition
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationInitializing.qml"
@@ -103,14 +100,14 @@ Item {
         },
 
         State {
-            name: "StateSubscriptionManagement"
+            name: "StateAuthenticated"
             when: (
                 VPNAuthInApp.state === VPNAuthInApp.StateInitializing
                 || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
-            ) && targetCondition
+            ) && _targetViewCondition
             PropertyChanges {
                 target: loader
-                source: targetSource || ""
+                source: _targetViewSource || ""
             }
         }
     ]

@@ -34,15 +34,12 @@ void ProfileFlow::start() {
 
   TaskGetSubscriptionDetails* task = new TaskGetSubscriptionDetails(user->email());
 
-  connect(task, &TaskGetSubscriptionDetails::receivedData, [&](const QByteArray& data) {
-    subscriptionDetailsFetched(data);
-  });
-
+  connect(task, &TaskGetSubscriptionDetails::receivedData, this,
+          &ProfileFlow::subscriptionDetailsFetched);
   connect(task, &TaskGetSubscriptionDetails::failed, [&]() {
     logger.debug() << "Task failed";
-    // TODO: Remove, only for debugging purposes.
-    emit showProfile();
-    setState(StateReady);
+
+    setState(StateInitial);
   });
 
   TaskScheduler::scheduleTask(task);
@@ -65,7 +62,7 @@ void ProfileFlow::subscriptionDetailsFetched(
     return;
   }
 
-  // TODO: Emit signal
+  // TODO: Remove, only for debugging purposes.
   emit showProfile();
   setState(StateReady);
 }
