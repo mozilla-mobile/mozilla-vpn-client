@@ -148,7 +148,7 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
 }
 
 
-NetworkWatcherImpl::TransportType WindowsNetworkWatcher::getTransportType() const {
+NetworkWatcherImpl::TransportType WindowsNetworkWatcher::getTransportType() {
   using namespace winrt::Windows::Networking::Connectivity;
   ConnectionProfile profile = NetworkInformation::GetInternetConnectionProfile();
 
@@ -163,6 +163,11 @@ NetworkWatcherImpl::TransportType WindowsNetworkWatcher::getTransportType() cons
     return TransportType_Unknown;
   }
 
-
-  return TransportType::TransportType_WiFi;
+  switch (device.IanaInterfaceType()) { 
+    case 6:
+      return TransportType_Ethernet;
+    case 71:
+      return TransportType_WiFi;
+  }
+  return TransportType_Other;
 }

@@ -6,11 +6,13 @@
 #define NETWORKWATCHER_H
 
 #include "notificationhandler.h"
+#include "networkwatcherimpl.h"
 
 #include <QElapsedTimer>
 #include <QMap>
 
 class NetworkWatcherImpl;
+enum TransportType;
 
 // This class watches for network changes to detect unsecured wifi.
 class NetworkWatcher final : public QObject {
@@ -26,15 +28,12 @@ class NetworkWatcher final : public QObject {
   // public for the inspector.
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
 
-  // Manually trigger an Update whether the transport-type checked. 
-  void checkTransportChanged();
- // TransportType getCurrentTransportType();
+  NetworkWatcherImpl::TransportType getCurrentTransportType();
   
 
  signals:
   void networkChange();
-  //void transportChanged(TransportType transportType);
-
+ 
  private:
   void settingsChanged(const bool& value);
 

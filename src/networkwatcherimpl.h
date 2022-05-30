@@ -33,9 +33,8 @@ class NetworkWatcherImpl : public QObject {
   };
 
   // Returns the current type of Network Connection
-  virtual TransportType getTransportType() const { return TransportType_Unknown; }
-  // Returns the current type of Network Connection
-  virtual void checkTransportChange(){};
+  virtual TransportType getTransportType()=0;
+
 
  signals:
   // Fires when the Device Connects to an unsecured Network
