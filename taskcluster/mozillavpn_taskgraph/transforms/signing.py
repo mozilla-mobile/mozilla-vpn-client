@@ -18,14 +18,15 @@ PRODUCTION_SIGNING_BUILD_TYPES = [
     "android-arm64/release",
     "android-armv7/release",
     "linux/opt",
-    "macos/opt",
 ]
 
 SIGNING_BUILD_TYPES = PRODUCTION_SIGNING_BUILD_TYPES + [
-    # Note: it appears we don't have infra for debug sign
-    # contact releng if you need it :)
-    #    "android-debug",
-    #
+    # TODO Move this to PRODUCTION_SIGNING_BUILD_TYPES once MacOS pool has
+    # updated CoT key.
+    "macos/opt",
+    # TODO We don't have infra for debug signing on Android. Contact releng if
+    # you need it :)
+    # "android-debug",
 ]
 
 
