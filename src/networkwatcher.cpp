@@ -30,6 +30,10 @@
 #  include "platforms/android/androidnetworkwatcher.h"
 #endif
 
+#ifdef MVPN_IOS
+#  include "platforms/ios/iosnetworkwatcher.h"
+#endif
+
 // How often we notify the same unsecured network
 #ifndef UNIT_TEST
 constexpr uint32_t NETWORK_WATCHER_TIMER_MSEC = 20000;
@@ -56,6 +60,8 @@ void NetworkWatcher::initialize() {
   m_impl = new WasmNetworkWatcher(this);
 #elif defined(MVPN_ANDROID)
   m_impl = new AndroidNetworkWatcher(this);
+#elif defined(MVPN_IOS)
+  m_impl = new IOSNetworkWatcher(this);
 #else
   m_impl = new DummyNetworkWatcher(this);
 #endif
@@ -159,32 +165,29 @@ void NetworkWatcher::notificationClicked(NotificationHandler::Message message) {
   }
 }
 
-
-NetworkWatcherImpl::TransportType NetworkWatcher::getCurrentTransportType(){
+NetworkWatcherImpl::TransportType NetworkWatcher::getCurrentTransportType() {
   auto type = m_impl->getTransportType();
 
-  switch (type)
-  {
-  case NetworkWatcherImpl::TransportType_WiFi:
-    logger.debug() << "TransportType_WiFi USED";
-    break;
-  case NetworkWatcherImpl::TransportType_Ethernet:
-    logger.debug() << "TransportType_Ethernet USED";
-    break;
-  case NetworkWatcherImpl::TransportType_Cellular:
-    logger.debug() << "TransportType_Cellular USED";
-    break;
-  case NetworkWatcherImpl::TransportType_Other:
-    logger.debug() << "TransportType_Other USED";
-    break;
-  case NetworkWatcherImpl::TransportType_None:
-    logger.debug() << "TransportType_None USED";
-    break;
-  default:
-   logger.debug() << "TransportType_Unknown USED";
-    break;
+  switch (type) {
+    case NetworkWatcherImpl::TransportType_WiFi:
+      logger.debug() << "TransportType_WiFi USED";
+      break;
+    case NetworkWatcherImpl::TransportType_Ethernet:
+      logger.debug() << "TransportType_Ethernet USED";
+      break;
+    case NetworkWatcherImpl::TransportType_Cellular:
+      logger.debug() << "TransportType_Cellular USED";
+      break;
+    case NetworkWatcherImpl::TransportType_Other:
+      logger.debug() << "TransportType_Other USED";
+      break;
+    case NetworkWatcherImpl::TransportType_None:
+      logger.debug() << "TransportType_None USED";
+      break;
+    default:
+      logger.debug() << "TransportType_Unknown USED";
+      break;
   }
-
 
   return type;
 }

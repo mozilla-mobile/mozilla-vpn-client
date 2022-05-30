@@ -28,11 +28,10 @@ class NetworkWatcher final : public QObject {
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
 
   NetworkWatcherImpl::TransportType getCurrentTransportType();
-  
 
  signals:
   void networkChange();
- 
+
  private:
   void settingsChanged(const bool& value);
 

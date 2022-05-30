@@ -7,7 +7,6 @@
 
 #include <QObject>
 
-
 class NetworkWatcherImpl : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(NetworkWatcherImpl)
@@ -28,14 +27,13 @@ class NetworkWatcherImpl : public QObject {
     TransportType_Unknown = 0,
     TransportType_Ethernet = 1,
     TransportType_WiFi = 2,
-    TransportType_Cellular = 3 , // In Case the API does not retun the gsm type
-    TransportType_Other = 4, // I.e USB thethering
-    TransportType_None = 5 // I.e Airplane Mode or no active network device
+    TransportType_Cellular = 3,  // In Case the API does not retun the gsm type
+    TransportType_Other = 4,     // I.e USB thethering
+    TransportType_None = 5  // I.e Airplane Mode or no active network device
   };
 
   // Returns the current type of Network Connection
-  virtual TransportType getTransportType()=0;
-
+  virtual TransportType getTransportType() = 0;
 
  signals:
   // Fires when the Device Connects to an unsecured Network
@@ -47,7 +45,6 @@ class NetworkWatcherImpl : public QObject {
 
   // Fired when the Device changed the Type of Transport
   void transportChanged(TransportType transportType);
-
 
  private:
   bool m_active = false;
