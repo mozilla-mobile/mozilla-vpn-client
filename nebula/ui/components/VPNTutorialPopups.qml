@@ -209,7 +209,7 @@ Item {
             function onTutorialCompleted(localizedTutorialCompletedCopy) {
                 tutorialPopup._popupImgSrc = "qrc:/ui/resources/logo-success.svg";
                 tutorialPopup._primaryButtonOnClicked = () => openTipsAndTricks();
-                tutorialPopup._primaryButtonText = VPNl18n.TutorialTutorialCompletePrimaryButtonLabel;
+                tutorialPopup._primaryButtonText = VPNl18n.TutorialPopupTutorialCompletePrimaryButtonLabel;
                 tutorialPopup._secondaryButtonText = VPNl18n.TutorialPopupTutorialCompleteSecondaryButtonLabel;
                 tutorialPopup._secondaryButtonOnClicked = () => tutorialPopup.close();
                 tutorialPopup._popupHeadline =  VPNl18n.TutorialPopupTutorialCompleteHeadline;
