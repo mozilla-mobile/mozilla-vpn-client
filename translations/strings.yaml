@@ -650,6 +650,17 @@ subscriptionManagement:
     value: Manage subscription
     comment: Label for a button that will take the user to a view where the can manage their subscription
 
+creditCardBrands:
+  amex: American Express
+  diners: Diners Club
+  discover: Discover
+  jcb: JCB
+  mastercard: Mastercard
+  paypal: PayPal
+  unionpay: UnionPay
+  visa: Visa
+  unbranded: Credit card
+
 global:
   expand:
     value: Expand
