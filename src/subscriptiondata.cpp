@@ -34,44 +34,52 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   QJsonObject obj = doc.object();
 
   // Subscription
-  QJsonValue createdAt = obj.value("created_at");
-  QJsonValue expiresOn = obj.value("expires_on");
+  m_createdAt = obj.value("created_at").toInt();
+  if (!m_createdAt) {
+    return false;
+  }
+
+  m_expiresOn = obj.value("expires_on").toInt();
+  if (!m_expiresOn) {
+    return false;
+  }
+
   QJsonValue isCancelled = obj.value("is_cancelled");
   if (!isCancelled.isBool()) {
     return false;
   }
+  m_isCancelled = isCancelled.toBool();
 
   QJsonValue status = obj.value("status");
   if (!status.isString()) {
     return false;
   }
+  m_status = status.toString();
 
   QJsonValue type = obj.value("type");
   if (!type.isString()) {
     return false;
   }
-
-  m_createdAt = createdAt.toInt();
-  m_expiresOn = expiresOn.toInt();
-  m_isCancelled = isCancelled.toBool();
-  m_status = status.toString();
   m_type = type.toString();
 
   // Plan
   QJsonObject planData = obj.value("plan").toObject();
 
-  QJsonValue planAmount = planData.value("amount");
+  m_planAmount = obj.value("amount").toInt();
+  if (!m_planAmount && m_planAmount != 0) {
+    return false;
+  }
   
   QJsonValue planCurrency = planData.value("currency");
   if (!planCurrency.isString()) {
     return false;
   }
-
-  QJsonValue planIntervalCount = planData.value("interval_count");
-
-  m_planAmount = planAmount.toInt();
   m_planCurrency = planCurrency.toString();
-  m_planIntervalCount = planIntervalCount.toInt();
+
+  m_planIntervalCount = obj.value("interval_count").toInt();
+  if (!m_planIntervalCount) {
+    return false;
+  }
 
   // Payment
   QJsonObject paymentData = obj.value("payment").toObject();
@@ -88,19 +96,23 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     if (!creditCardBrand.isString()) {
       return false;
     }
+    m_creditCardBrand = creditCardBrand.toString();
 
     QJsonValue creditCardLast4 = paymentData.value("credit_card_last4");
     if (!creditCardBrand.isString()) {
       return false;
     }
-
-    QJsonValue creditCardExpMonth = paymentData.value("credit_card_exp_month");
-    QJsonValue creditCardExpYear = paymentData.value("credit_card_exp_year");
-
-    m_creditCardBrand = creditCardBrand.toString();
     m_creditCardLast4 = creditCardLast4.toString();
-    m_creditCardExpMonth = creditCardExpMonth.toInt();
-    m_creditCardExpYear = creditCardExpYear.toInt();
+
+    m_creditCardExpMonth = obj.value("credit_card_exp_month").toInt();
+    if (!m_creditCardExpMonth) {
+      return false;
+    }
+
+    m_creditCardExpYear = obj.value("credit_card_exp_year").toInt();
+    if (!m_creditCardExpYear) {
+      return false;
+    }
   }
 
   m_rawJson = json;
