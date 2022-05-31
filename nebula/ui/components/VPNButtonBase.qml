@@ -17,13 +17,14 @@ RoundButton {
     property var handleKeyClick: function() { clicked() }
     property var handleTutorialTabbing: (event) => {
                                             if (tutorialUI.visible) {
+                                                // Catch and push focus from a tutorial targetElement
+                                                // and push it back to the tutorial tooltip
                                                 tutorialUI.forceTooltipFocus(event);
                                             } else {
                                                 event.accepted = false;
                                             }
                                             visualStateItem.state = uiState.stateDefault;
                                         }
-
 
 
     focusPolicy: Qt.StrongFocus
