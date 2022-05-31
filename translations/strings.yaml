@@ -602,12 +602,12 @@ tipsAndTricks:
 tutorialPopup:
   tutorialCompleteHeadline: Well done!
   tutorialCompletePrimaryButtonLabel: Let’s go!
-  tutorialCompleteSecondaryButtonLabel: Come back later
+  secondaryButtonLabel: Come back later
+  leaveTutorialButton: Leave tutorial
 
-  tutorialExitHeadline: Quit tutorial?
-  tutorialExitSubtitle: Looks like you haven’t finished the tutorial quite yet. Would you like to continue and finish now or quit and restart your progress later? 
-  tutorialExitPrimaryButtonLabel: Quit tutorial
-  tutorialExitSecondaryButtonLabel: Resume
+  tutorialLeaveHeadline: Leave tutorial?
+  tutorialLeaveSubtitle: Looks like you haven’t finished the tutorial quite yet. Would you like to continue and finish now or quit and come back later?
+  tutorialLeavePrimaryButtonLabel: Resume tutorial
 
 
 global:

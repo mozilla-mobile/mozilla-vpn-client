@@ -286,7 +286,7 @@ Window {
             }
 
             if (tutorialUI.visible) {
-                return tutorialUI.openTutorialInterruptedPopup(qsTrId("vpn.viewlogs.title"), VPN.viewLogsNeeded)
+                return tutorialUI.openLeaveTutorialPopup(VPN.viewLogsNeeded)
             }
 
             // If we can't show logs natively, open the viewer
@@ -304,9 +304,8 @@ Window {
 
         function onContactUsNeeded() {
             if (tutorialUI.visible) {
-                return tutorialUI.openTutorialInterruptedPopup(VPNl18n.InAppSupportWorkflowSupportNavLinkText, VPN.contactUsNeeded)
+                return tutorialUI.openLeaveTutorialPopup(VPN.contactUsNeeded)
             }
-
 
             // Check if Contact Us view is already in mainStackView
             const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
@@ -319,7 +318,7 @@ Window {
 
         function onSettingsNeeded() {
             if (tutorialUI.visible) {
-                return tutorialUI.openTutorialInterruptedPopup(qsTrId("vpn.main.settings"), VPN.settingsNeeded);
+                return tutorialUI.openLeaveTutorialPopup(VPN.settingsNeeded);
             }
 
             // Check if Settings view is already in mainStackView
@@ -513,19 +512,31 @@ Window {
         showServerList();
     }
 
+    function exitTutorialIfNeeded() {
+        if (tutorialUI.visible) {
+            tutorialUI.leaveTutorial();
+        }
+    }
+
+    function pushCaptivePortalView() {
+        exitTutorialIfNeeded();
+        mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
+    }
+
     Connections {
         target: VPNController
         function onReadyToServerUnavailable() {
+            exitTutorialIfNeeded();
             serverUnavailablePopup.open();
         }
         function onActivationBlockedForCaptivePortal() {
-           mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
+          pushCaptivePortalView();
         }
     }
     Connections{
         target: VPNCaptivePortal
         function onCaptivePortalPresent() {
-            mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
+            pushCaptivePortalView();
         }
     }
 
