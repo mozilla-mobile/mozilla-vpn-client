@@ -7,6 +7,10 @@
 
 #include "networkwatcherimpl.h"
 
+#import <Network/Network.h>
+
+class QString;
+
 class MacOSNetworkWatcher final : public NetworkWatcherImpl {
  public:
   MacOSNetworkWatcher(QObject* parent);
@@ -20,11 +24,19 @@ class MacOSNetworkWatcher final : public NetworkWatcherImpl {
 
   NetworkWatcherImpl::TransportType getTransportType() override;
 
+  void controllerStateChanged();
+
  private:
   void* m_delegate = nullptr;
-  NetworkWatcherImpl::TransportType mCurrentTransport =
+  NetworkWatcherImpl::TransportType mCurrentDefaultTransport =
+      NetworkWatcherImpl::TransportType_Unknown;
+  NetworkWatcherImpl::TransportType mVPNTunnelTransport =
       NetworkWatcherImpl::TransportType_Unknown;
   void* m_networkMonitor = nullptr;
+
+  nw_connection_t m_observableConnection = nil;
+
+  NetworkWatcherImpl::TransportType toTransportType(nw_path_t path);
 };
 
 #endif  // MACOSNETWORKWATCHER_H

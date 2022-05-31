@@ -104,7 +104,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(&m_alertTimer, &QTimer::timeout, this,
           [this]() { setAlert(NoAlert); });
 
-  connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
+  connect(&m_periodicOperationsTimer, &QTimer::timeout, [this]() {
+    m_private->m_networkWatcher.getCurrentTransportType();
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
          new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));
@@ -421,6 +422,11 @@ void MozillaVPN::maybeStateMain() {
     settingsHolder->setAdjustActivatable(false);
   }
 #endif
+}
+
+void MozillaVPN::setEntryServerPublicKey(const QString& publicKey) {
+  logger.debug() << "Set entry-server public key:" << logger.keys(publicKey);
+  m_entryServerPublicKey = publicKey;
 }
 
 void MozillaVPN::setServerPublicKey(const QString& publicKey) {
