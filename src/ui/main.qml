@@ -29,6 +29,7 @@ Window {
                 Qt.platform.os === "tvos";
     }
 
+
     function safeAreaHeightByDevice() {
         if (Qt.platform.os !== "ios") {
             return 0;
@@ -284,6 +285,10 @@ Window {
                 }
             }
 
+            if (tutorialUI.visible) {
+                return tutorialUI.openTutorialInterruptedPopup(qsTrId("vpn.viewlogs.title"), VPN.viewLogsNeeded)
+            }
+
             // If we can't show logs natively, open the viewer
             if (mainStackView.currentItem.objectName !== "viewLogs") {
                 mainStackView.push("qrc:/ui/views/ViewLogs.qml");
@@ -298,6 +303,11 @@ Window {
         }
 
         function onContactUsNeeded() {
+            if (tutorialUI.visible) {
+                return tutorialUI.openTutorialInterruptedPopup(VPNl18n.InAppSupportWorkflowSupportNavLinkText, VPN.contactUsNeeded)
+            }
+
+
             // Check if Contact Us view is already in mainStackView
             const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
             if (contactUsViewInStack) {
@@ -308,6 +318,10 @@ Window {
         }
 
         function onSettingsNeeded() {
+            if (tutorialUI.visible) {
+                return tutorialUI.openTutorialInterruptedPopup(qsTrId("vpn.main.settings"), VPN.settingsNeeded);
+            }
+
             // Check if Settings view is already in mainStackView
             const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" })
 

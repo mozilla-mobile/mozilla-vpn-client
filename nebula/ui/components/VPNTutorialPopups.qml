@@ -36,6 +36,7 @@ Item {
         - Better UI in landscape mode
 
         - Update event filter
+            - Add touch events for mobile
             - Consider restricting scrolling
             - Consider restricting key commands
 
@@ -48,13 +49,13 @@ Item {
     // targetElement is set to `parent` here to get around `Cannot call method ... of undefined` warnings
     // and is reset before the tutorial is opened in onTooltipNeeded()
     property var targetElement: parent
-    onTargetElementChanged: targetElement.forceActiveFocus()
+    onTargetElementChanged: pushFocusToEmitter()
 
     function pushFocusToEmitter() {
         targetElement.forceActiveFocus();
-        return;
     }
 
+     // Called from VPNButtonBase.qml
     function forceTooltipFocus(event) {
         if (!tutorialPopup.opened) {
             tutorialTooltip.forceActiveFocus();
@@ -65,13 +66,12 @@ Item {
     }
 
     anchors.fill: parent
-    visible: tutorialTooltip.visible || tutorialPopup.visible
+    visible: tutorialTooltip.visible || tutorialPopup.opened
 
     Popup {
         property alias tooltipText: tooltipText.text
         property int notchHeight: VPNTheme.theme.windowMargin
         property bool tooltipPositionedAboveEmitter: false
-        property int yChangeOnOpen: 10
 
         id: tutorialTooltip
 
@@ -79,6 +79,7 @@ Item {
         onClipChanged: VPNTutorial.stop();
         verticalPadding: VPNTheme.theme.windowMargin
         horizontalPadding: VPNTheme.theme.windowMargin
+        focus: true
 
         y: if (typeof(targetElement.height) !== "undefined") {
                const windowHeight = window.height;
@@ -91,7 +92,6 @@ Item {
                tooltipPositionedAboveEmitter = false;
                return targetElement.mapToItem(window.contentItem, 0, 0).y + targetElement.height + notchHeight;
            }
-
 
 
         width: root.width - VPNTheme.theme.windowMargin * 2
@@ -157,11 +157,7 @@ Item {
             }
         }
 
-        PropertyAnimation on y {
-            duration: 100
-        }
-
-       contentItem: RowLayout {
+        contentItem: RowLayout {
            spacing: VPNTheme.theme.windowMargin / 2
 
            VPNTextBlock {
@@ -204,58 +200,61 @@ Item {
 
             target: VPNTutorial
             function onTooltipNeeded(text, targetEl) {
-                tutorialTooltip.tooltipText = qsTrId(text));
+                tutorialTooltip.tooltipText = qsTrId(text);
                 root.targetElement = targetEl;
+                tutorialTooltip.tooltipText = text;
                 tutorialTooltip.open();
             }
 
-            function onTutorialCompleted(text) {
-                openTutorialCompletedPopup(text);
-            }
-
-            function quitTutorial() {
-                openQuitTutorialPopup();
+            function onTutorialCompleted(localizedTutorialCompletedCopy) {
+                tutorialPopup._popupImgSrc = "qrc:/ui/resources/logo-success.svg";
+                tutorialPopup._primaryButtonOnClicked = () => openTipsAndTricks();
+                tutorialPopup._primaryButtonText = VPNl18n.TutorialTutorialCompletePrimaryButtonLabel;
+                tutorialPopup._secondaryButtonText = VPNl18n.TutorialPopupTutorialCompleteSecondaryButtonLabel;
+                tutorialPopup._secondaryButtonOnClicked = () => tutorialPopup.close();
+                tutorialPopup._popupHeadline =  VPNl18n.TutorialPopupTutorialCompleteHeadline;
+                tutorialPopup._popupSubtitle = localizedTutorialCompletedCopy;
+                tutorialPopup._onClosed = () => {};
+                tutorialPopup.open();
             }
         }
     }
 
     function closeTutorial() {
-        tutorialPopup.close();
         VPNTutorial.stop();
+        tutorialPopup.close();
     }
 
     function openTipsAndTricks() {
-        tutorialPopup.close()
+        tutorialPopup.close();
         VPN.settingsNeeded();
         const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" });
         settingsViewInMainStack._openTipsAndTricks();
     }
 
-    function tutorialIntro() {
-        // todo
-    }
-
-    function tutorialOnSomeError() {
-        // todo
+    function openTutorialInterruptedPopup(nextView, afterPopupClose) {
+        tutorialPopup._popupImgSrc = "qrc:/ui/resources/logo-error.svg";
+        tutorialPopup._primaryButtonOnClicked = () => tutorialPopup.close();
+        tutorialPopup._primaryButtonText = "Resume tutorial";
+        tutorialPopup._secondaryButtonText = "Continue to " + nextView;
+        tutorialPopup._secondaryButtonOnClicked = () => {
+            tutorialPopup._onClosed = () => afterPopupClose();
+            closeTutorial();
+        }
+        tutorialPopup._popupHeadline = "Quit tutorial?";
+        tutorialPopup._popupSubtitle = "Leave this tutorial and go to " + nextView + "?"
+        tutorialPopup.open();
     }
 
     function openQuitTutorialPopup() {
         tutorialPopup._popupImgSrc = "qrc:/ui/resources/logo-error.svg";
-        tutorialPopup._primaryButtonOnClicked = () => { closeTutorial() };
+        tutorialPopup._primaryButtonOnClicked = () => closeTutorial();
+        tutorialPopup._secondaryButtonOnClicked = () => tutorialPopup.close();
         tutorialPopup._primaryButtonText = "Quit";
         tutorialPopup._secondaryButtonText = "Resume tutorial";
         tutorialPopup._popupHeadline = "Quit tutorial?";
         tutorialPopup._popupSubtitle = VPNl18n.TutorialPopupTutorialExitSubtitle;
-        tutorialPopup.open();
-    }
-
-    function openTutorialCompletedPopup(localizedTutorialCompletedCopy) {
-        tutorialPopup._popupImgSrc = "qrc:/ui/resources/logo-success.svg";
-        tutorialPopup._primaryButtonOnClicked = () => { openTipsAndTricks() /* TODO: Open tips and tricks */ };
-        tutorialPopup._primaryButtonText = VPNl18n.TutorialTutorialCompletePrimaryButtonLabel;
-        tutorialPopup._secondaryButtonText = VPNl18n.TutorialPopupTutorialCompleteSecondaryButtonLabel;
-        tutorialPopup._popupHeadline =  VPNl18n.TutorialPopupTutorialCompleteHeadline;
-        tutorialPopup._popupSubtitle = localizedTutorialCompletedCopy;
+        tutorialPopup._onClosed = () => {}
         tutorialPopup.open();
     }
 
@@ -264,8 +263,10 @@ Item {
         property alias _popupHeadline: popupHeadline.text
         property alias _popupSubtitle: popupSubtitle.text
         property alias _primaryButtonText: primaryButton.text
-        property var _primaryButtonOnClicked
+        property var _primaryButtonOnClicked: () => {}
         property alias _secondaryButtonText: secondaryButton.labelText
+        property var _secondaryButtonOnClicked: () => {}
+        property var _onClosed: () => {}
 
         id: tutorialPopup
 
@@ -275,11 +276,12 @@ Item {
         maxWidth: Math.min(parent.width - (VPNTheme.theme.windowMargin * 2), VPNTheme.theme.maxHorizontalContentWidth)
         modal: true
         focus: true
+        visible: false
+
+        onClosed: _onClosed();
 
         Component.onCompleted: {
-            VPNTutorial.allowItem(primaryButton.objectName);
-            VPNTutorial.allowItem(secondaryButton.objectName)
-            VPNTutorial.allowItem("vpnPopupCloseButton");
+            [primaryButton.objectName, secondaryButton.objectName, "vpnPopupCloseButton"].forEach(objName => VPNTutorial.allowItem(objName));
         }
 
         _popupContent:
@@ -323,9 +325,10 @@ Item {
                     objectName: "secondaryButton"
                     labelText: ""
                     Layout.alignment: Qt.AlignHCenter
-                    onClicked: tutorialPopup.close()
+                    onClicked: tutorialPopup._secondaryButtonOnClicked()
                 }
             }
     }
+
 }
 
