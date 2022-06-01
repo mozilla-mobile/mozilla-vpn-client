@@ -12,16 +12,14 @@
 
 #pragma comment(lib, "Wlanapi.lib")
 
-
 #include <winrt/base.h>
-// See https://github.com/microsoft/Windows.UI.Composition-Win32-Samples/issues/47
-namespace winrt::impl
-{
-    template <typename Async>
-    auto wait_for(Async const& async, Windows::Foundation::TimeSpan const& timeout);
+// See
+// https://github.com/microsoft/Windows.UI.Composition-Win32-Samples/issues/47
+namespace winrt::impl {
+template <typename Async>
+auto wait_for(Async const& async, Windows::Foundation::TimeSpan const& timeout);
 }
 #include <winrt/Windows.Networking.Connectivity.h>
-
 
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsNetworkWatcher");
@@ -147,10 +145,10 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
   emit unsecuredNetwork(ssid, bssid);
 }
 
-
 NetworkWatcherImpl::TransportType WindowsNetworkWatcher::getTransportType() {
   using namespace winrt::Windows::Networking::Connectivity;
-  ConnectionProfile profile = NetworkInformation::GetInternetConnectionProfile();
+  ConnectionProfile profile =
+      NetworkInformation::GetInternetConnectionProfile();
 
   if (profile.IsWlanConnectionProfile()) {
     return TransportType_WiFi;
@@ -163,7 +161,7 @@ NetworkWatcherImpl::TransportType WindowsNetworkWatcher::getTransportType() {
     return TransportType_Unknown;
   }
 
-  switch (device.IanaInterfaceType()) { 
+  switch (device.IanaInterfaceType()) {
     case 6:
       return TransportType_Ethernet;
     case 71:

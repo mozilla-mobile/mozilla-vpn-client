@@ -9,18 +9,16 @@
 #include "leakdetector.h"
 #include "networkwatcherimpl.h"
 
-
 #include <QJniObject>
 #include <QJniEnvironment>
 #include <QApplication>
 
-
 namespace {
 Logger logger(LOG_ANDROID, "AndroidNetworkWatcher");
 
-constexpr auto VPNNetworkWatcher_CLASS = "org/mozilla/firefox/vpn/qt/VPNNetworkWatcher";
+constexpr auto VPNNetworkWatcher_CLASS =
+    "org/mozilla/firefox/vpn/qt/VPNNetworkWatcher";
 }  // namespace
-
 
 AndroidNetworkWatcher::AndroidNetworkWatcher(QObject* parent)
     : NetworkWatcherImpl(parent) {
@@ -31,14 +29,13 @@ AndroidNetworkWatcher::~AndroidNetworkWatcher() {
   MVPN_COUNT_DTOR(AndroidNetworkWatcher);
 }
 
-void AndroidNetworkWatcher::initialize() {
-}
+void AndroidNetworkWatcher::initialize() {}
 
- NetworkWatcherImpl::TransportType AndroidNetworkWatcher::getTransportType() {
-    QJniEnvironment env;
-    QJniObject activity = AndroidUtils::getActivity();
-    int type = QJniObject::callStaticMethod<int>(
+NetworkWatcherImpl::TransportType AndroidNetworkWatcher::getTransportType() {
+  QJniEnvironment env;
+  QJniObject activity = AndroidUtils::getActivity();
+  int type = QJniObject::callStaticMethod<int>(
       VPNNetworkWatcher_CLASS, "getTransportType",
       "(Landroid/content/Context;)I", activity.object());
-    return (NetworkWatcherImpl::TransportType) type;
- };
+  return (NetworkWatcherImpl::TransportType)type;
+};
