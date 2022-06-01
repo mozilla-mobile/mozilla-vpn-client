@@ -197,6 +197,7 @@ Item {
         focus: true
         visible: false
         onClosed: _onClosed();
+        onOpened: tutorialPopup.forceActiveFocus()
 
         Component.onCompleted: {
             [primaryButton.objectName, secondaryButton.objectName, "vpnPopupCloseButton"].forEach(objName => VPNTutorial.allowItem(objName));
@@ -245,17 +246,6 @@ Item {
                     onClicked: tutorialPopup._secondaryButtonOnClicked()
                 }
             }
-    }
-
-
-     // Called from VPNButtonBase.qml
-    function forceTooltipFocus(event) {
-        if (!tutorialPopup.opened) {
-            tutorialTooltip.forceActiveFocus();
-            event.accepted = true;
-        } else {
-            event.accepted = false;
-        }
     }
 
 
@@ -311,6 +301,16 @@ Item {
             tutorialPopup._popupSubtitle = localizedTutorialCompletedCopy;
             tutorialPopup._onClosed = () => {};
             tutorialPopup.open();
+        }
+    }
+
+
+    Connections {
+        target: window
+        function onActiveFocusItemChanged() {
+            if (targetElement && !targetElement.activeFocus && !targetElement.parent.activeFocus && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
+                tutorialTooltip.forceActiveFocus();
+            }
         }
     }
 }

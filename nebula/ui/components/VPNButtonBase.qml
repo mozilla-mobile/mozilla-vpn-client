@@ -13,22 +13,11 @@ RoundButton {
 
     property var visualStateItem: root
     property var uiState: VPNTheme.theme.uiState
-    property var loaderVisible: false
+    property bool loaderVisible: false
     property var handleKeyClick: function() { clicked() }
-    property var handleTutorialTabbing: (event) => {
-                                            if (tutorialUI.visible) {
-                                                // Catch and push focus from a tutorial targetElement
-                                                // and push it back to the tutorial tooltip
-                                                tutorialUI.forceTooltipFocus(event);
-                                            } else {
-                                                event.accepted = false;
-                                            }
-                                            visualStateItem.state = uiState.stateDefault;
-                                        }
 
 
     focusPolicy: Qt.StrongFocus
-
     Keys.onPressed: event => {
         if (loaderVisible) {
             return;
@@ -39,14 +28,10 @@ RoundButton {
 
     }
 
-    Keys.onBacktabPressed: event => handleTutorialTabbing(event)
-    Keys.onTabPressed: event => handleTutorialTabbing(event)
-
     Keys.onReleased: event => {
          if (loaderVisible) {
              return;
          }
-
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space) {
             visualStateItem.state = uiState.stateDefault;
         }
