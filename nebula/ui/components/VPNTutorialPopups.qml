@@ -38,7 +38,7 @@ Item {
     // targetElement is set to `parent` here to get around `Cannot call method ... of undefined` warnings
     // and is reset before the tutorial is opened in onTooltipNeeded()
     property var targetElement: parent
-    onTargetElementChanged: pushFocusToEmitter()
+    onTargetElementChanged: pushFocusToTargetElement()
 
     id: root
 
@@ -48,7 +48,7 @@ Item {
     Popup {
         property alias tooltipText: tooltipText.text
         property int notchHeight: VPNTheme.theme.windowMargin
-        property bool tooltipPositionedAboveEmitter: false
+        property bool tooltipPositionedAboveTargetElement: false
 
         id: tutorialTooltip
 
@@ -64,12 +64,12 @@ Item {
                const targetElementDistanceFromTop = targetElement.mapToItem(window.contentItem, 0, 0).y
 
                if (targetElementDistanceFromTop + targetElement.height + tutorialTooltip.implicitHeight > windowHeight) {
-                   tooltipPositionedAboveEmitter = true;
-                   return targetElementDistanceFromTop - targetElement.height - notchHeight * 1.5;
+                   tooltipPositionedAboveTargetElement = true;
+                   return targetElementDistanceFromTop - targetElement.height - notchHeight * 2.5;
                }
 
-               tooltipPositionedAboveEmitter = false;
-               return targetElement.mapToItem(window.contentItem, 0, 0).y + targetElement.height + notchHeight;
+               tooltipPositionedAboveTargetElement = false;
+               return targetElementDistanceFromTop + targetElement.height + notchHeight;
            }
         }
 
@@ -131,7 +131,7 @@ Item {
                 width: tutorialTooltip.notchHeight
                 radius: 2
                 color: backgroundRect.color
-                y: tutorialTooltip.tooltipPositionedAboveEmitter ? tutorialTooltip.height - (tutorialTooltip.notchHeight - tooltipOffset) : tooltipOffset * -1
+                y: tutorialTooltip.tooltipPositionedAboveTargetElement ? tutorialTooltip.height - (tutorialTooltip.notchHeight - tooltipOffset) : tooltipOffset * -1
                 rotation: 45
                 anchors.left: parent.left
                 anchors.leftMargin: if (targetElement && typeof(targetElement) !== undefined) { (targetElement.mapToItem(window.contentItem, 0, 0).x + (targetElement.width / 2)) - tutorialTooltip.x - tutorialTooltip.notchHeight/2 }
@@ -157,8 +157,8 @@ Item {
                 objectName: "tutorialLeave"
                 Keys.enabled: true
 
-                Keys.onTabPressed: pushFocusToEmitter()
-                Keys.onBacktabPressed: pushFocusToEmitter()
+                Keys.onTabPressed: pushFocusToTargetElement()
+                Keys.onBacktabPressed: pushFocusToTargetElement()
 
                 accessibleName: VPNl18n.TutorialPopupLeaveTutorialButton
                 Layout.preferredWidth: VPNTheme.theme.rowHeight
@@ -278,7 +278,7 @@ Item {
     }
 
 
-    function pushFocusToEmitter() {
+    function pushFocusToTargetElement() {
         if (targetElement) {
             targetElement.forceActiveFocus();
         }
