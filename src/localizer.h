@@ -61,6 +61,9 @@ class Localizer final : public QAbstractListModel {
   Q_INVOKABLE QString localizedCityName(const QString& code,
                                         const QString& city);
 
+  Q_INVOKABLE QString localizeCurrency(double value,
+                                       const QString& currencyIso4217);
+
  signals:
   void codeChanged();
   void previousCodeChanged();
@@ -76,6 +79,9 @@ class Localizer final : public QAbstractListModel {
   // This method is not used. It exists just to add the installer strings into
   // the QT language files.
   static void macOSInstallerStrings();
+
+  static QString retrieveCurrencySymbolFallback(const QString& currencyIso4217,
+                                                const QLocale& currentLocale);
 
  private:
   QTranslator m_translator;

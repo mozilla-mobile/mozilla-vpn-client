@@ -53,6 +53,7 @@ VPNInAppAuthenticationBase {
     _inputLabel: VPNl18n.InAppAuthPasswordInputLabel
 
     _inputs: VPNInAppAuthenticationInputs {
+        objectName: "authSignIn"
         id: authInputs
 
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateSignIn && !activeInput().hasError

@@ -118,7 +118,6 @@ Window {
         height: safeAreaHeightByDevice();
         width: window.width
         anchors.top: parent.top
-
     }
 
     VPNWasmHeader {
@@ -138,7 +137,6 @@ Window {
         anchors.top: parent.top
         anchors.topMargin: iosSafeAreaTopMargin.height + wasmMenuHeader.height
         height: safeContentHeight
-        clip: true
 
         function getHelpViewNeeded() {
             mainStackView.push("qrc:/ui/views/ViewGetHelp.qml")
@@ -367,6 +365,14 @@ Window {
             console.debug("about to quit, shutdown Glean");
             // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
             Glean.shutdown();
+        }
+    }
+
+    Connections {
+        target: VPNAddonManager
+        function onRunAddon(addon) {
+            console.log("Loading addon", addon.name);
+            mainStackView.push("qrc:/ui/views/ViewAddon.qml", { addon })
         }
     }
 

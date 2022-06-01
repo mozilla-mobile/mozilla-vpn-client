@@ -3,11 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionhealth.h"
-#include <telemetry/gleansample.h>
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+#include "telemetry/gleansample.h"
 
 #include <QApplication>
 #include <QDateTime>

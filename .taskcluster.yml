@@ -245,7 +245,6 @@ tasks:
                           in:
                             $if: 'tasks_for == "action"'
                             then: >
-                                taskcluster/scripts/decision-install-sdk.sh &&
                                 ln -s /builds/worker/artifacts artifacts &&
                                 ~/.local/bin/taskgraph action-callback
                             else: >

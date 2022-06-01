@@ -7,6 +7,7 @@ TARGET = qml_tests
 
 QT += quick
 QT += widgets
+QT += websockets
 
 CONFIG += warn_on qmltestcase
 CONFIG += c++1z
@@ -42,12 +43,12 @@ SOURCES += \
     mocmozillavpn.cpp \
     ../unit/mocinspectorhandler.cpp \
     ../../src/closeeventhandler.cpp \
-    ../../src/featurelist.cpp \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/featuremodel.cpp \
     ../../src/models/server.cpp \
     ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
@@ -61,13 +62,13 @@ HEADERS += \
     helper.h \
     ../../src/closeeventhandler.h \
     ../../src/constants.h \
-    ../../src/featurelist.h \
     ../../src/hawkauth.h \
     ../../src/hkdf.h \
     ../../src/inspector/inspectorhandler.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/feature.h \
+    ../../src/models/featuremodel.h \
     ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \

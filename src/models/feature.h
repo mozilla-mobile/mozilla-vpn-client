@@ -14,6 +14,14 @@
 class Feature : public QObject {
   Q_OBJECT
 
+ public:
+#define FEATURE(id, name, isMajor, displayNameId, shortDescId, descId,   \
+                imgPath, iconPath, linkUrl, releaseVersion, flippableOn, \
+                flippableOff, otherFeatureDependencies, callback)        \
+  static constexpr const char* Feature_##id = #id;
+#include "featureslist.h"
+#undef FEATURE
+
   Q_PROPERTY(QString id MEMBER m_id CONSTANT)
   Q_PROPERTY(QString name MEMBER m_name CONSTANT)
   Q_PROPERTY(bool isMajor READ isMajor CONSTANT)
@@ -31,19 +39,22 @@ class Feature : public QObject {
   Q_PROPERTY(bool isSupportedIgnoringFlip READ isSupportedIgnoringFlip NOTIFY
                  supportedChanged)
 
-  // protected:
+#ifndef UNIT_TEST
+ private:
+#else
  public:
+#endif
   Feature(const QString& id, const QString& name, bool isMajor,
           L18nStrings::String displayName_id, L18nStrings::String shortDesc_id,
           L18nStrings::String desc_id, const QString& imgPath,
           const QString& iconPath, const QString& linkUrl,
           const QString& releaseVersion, bool flippableOn, bool flippableOff,
-          const QStringList& otherFeatureDependencies);
+          const QStringList& otherFeatureDependencies,
+          std::function<bool()>&& callback);
+  ~Feature();
 
  public:
-  virtual ~Feature() = default;
-
-  static QList<Feature*> getAll();
+  static const QList<Feature*>& getAll();
 
   // Returns a Pointer to the Feature with id, crashes client if
   // feature does not exist :)
@@ -90,13 +101,11 @@ class Feature : public QObject {
   // has been flipped on/off somehow.
   void supportedChanged();
 
- protected:
-  // Implemented by each feature.
-  // Should check if the feature could be used, if released
-  virtual bool checkSupportCallback() const = 0;
-
+ private:
+  static void maybeInitialize();
   void maybeFlipOnOrOff();
 
+ private:
   // Unique Identifier of the Feature, used to Check
   // Capapbilities of the Daemon/Server or if is Force-Enabled/Disabled in the
   // Dev Menu
@@ -128,6 +137,9 @@ class Feature : public QObject {
 
   // List of other features to be supported in order to support this one.
   const QStringList m_featureDependencies;
+
+  // The callback to see if this feature is supported or not
+  std::function<bool()> m_callback;
 
   // How to compute the feature support value.
   enum State {

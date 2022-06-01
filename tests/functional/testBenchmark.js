@@ -6,9 +6,9 @@ const assert = require('assert');
 
 describe('Benchmark', function() {
   this.timeout(120000);
+  this.ctx.authenticationNeeded = true;
 
   it('Successful benchmark', async () => {
-    await vpn.authenticate(true, true);
     await vpn.waitForElement('controllerTitle');
     await vpn.activate(true);
 
@@ -41,7 +41,6 @@ describe('Benchmark', function() {
   });
 
   it('Failed benchmark on HTTP error', async () => {
-    await vpn.authenticate(true, true);
     await vpn.waitForElement('controllerTitle');
     await vpn.activate(true);
 
@@ -78,7 +77,6 @@ describe('Benchmark', function() {
   });
 
   it('Retry failed benchmark', async () => {
-    await vpn.authenticate(true, true);
     await vpn.waitForElement('controllerTitle');
     await vpn.activate(true);
 
@@ -140,7 +138,6 @@ describe('Benchmark', function() {
   });
 
   it('Error on unexpected disconnect', async () => {
-    await vpn.authenticate(true, true);
     await vpn.waitForElement('controllerTitle');
     await vpn.activate(true);
 

@@ -5,19 +5,13 @@
 #include "settingsholder.h"
 #include "constants.h"
 #include "cryptosettings.h"
-#include "featurelist.h"
 #include "leakdetector.h"
 #include "logger.h"
-
-#include "features/featurecaptiveportal.h"
-#include "features/featurelocalareaaccess.h"
-#include "features/featuresplittunnel.h"
-#include "features/featurestartonboot.h"
-#include "features/featureunsecurednetworknotification.h"
-#include "features/featureserverunavailablenotification.h"
+#include "models/feature.h"
 
 #include <QSettings>
 #include <QProcessEnvironment>
+#include <QUrl>
 
 namespace {
 
@@ -92,6 +86,10 @@ void SettingsHolder::sync() { m_settings.sync(); }
 void SettingsHolder::hardReset() {
   logger.debug() << "Hard reset";
   m_settings.clear();
+}
+
+QString SettingsHolder::settingsFileName() const {
+  return m_settings.fileName();
 }
 
 QVariant SettingsHolder::rawSetting(const QString& key) const {

@@ -6,7 +6,7 @@ add_definitions(-DQUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_DUMMY)
 
-find_package(Qt6 REQUIRED COMPONENTS Gui Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Gui Widgets WebSockets)
 find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
 find_package(Qt6 REQUIRED COMPONENTS QuickTest)
 
@@ -20,6 +20,7 @@ add_dependencies(build_tests qml_tests)
 
 target_link_libraries(qml_tests PRIVATE
     Qt6::Gui
+    Qt6::WebSockets
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick
@@ -33,8 +34,6 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/closeeventhandler.cpp
     ${MVPN_SOURCE_DIR}/closeeventhandler.h
     ${MVPN_SOURCE_DIR}/constants.h
-    ${MVPN_SOURCE_DIR}/featurelist.cpp
-    ${MVPN_SOURCE_DIR}/featurelist.h
     ${MVPN_SOURCE_DIR}/hawkauth.cpp
     ${MVPN_SOURCE_DIR}/hawkauth.h
     ${MVPN_SOURCE_DIR}/hkdf.cpp
@@ -46,6 +45,8 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/loghandler.h
     ${MVPN_SOURCE_DIR}/models/feature.cpp
     ${MVPN_SOURCE_DIR}/models/feature.h
+    ${MVPN_SOURCE_DIR}/models/featuremodel.cpp
+    ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/server.cpp
     ${MVPN_SOURCE_DIR}/models/whatsnewmodel.cpp
     ${MVPN_SOURCE_DIR}/models/whatsnewmodel.h

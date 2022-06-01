@@ -3,14 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandui.h"
+#include "addonmanager.h"
 #include "apppermission.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
 #include "constants.h"
-#include "featurelist.h"
-#include "features/featureinapppurchase.h"
 #include "filterproxymodel.h"
 #include "fontloader.h"
 #include "iaphandler.h"
@@ -20,6 +19,8 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
+#include "models/feature.h"
+#include "models/featuremodel.h"
 #include "models/guidemodel.h"
 #include "models/tutorialmodel.h"
 #include "mozillavpn.h"
@@ -248,7 +249,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNFeatureList",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = FeatureList::instance();
+          QObject* obj = FeatureModel::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -439,7 +440,7 @@ int CommandUI::run(QStringList& tokens) {
         });
 #endif
 
-    if (FeatureInAppPurchase::instance()->isSupported()) {
+    if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
       qmlRegisterSingletonType<MozillaVPN>(
           "Mozilla.VPN", 1, 0, "VPNIAP",
           [](QQmlEngine*, QJSEngine*) -> QObject* {
@@ -485,6 +486,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNGuide",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = GuideModel::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNAddonManager",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = AddonManager::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -545,6 +554,7 @@ int CommandUI::run(QStringList& tokens) {
       QmlEngineHolder::instance()->engine()->retranslate();
       NotificationHandler::instance()->retranslate();
       L18nStrings::instance()->retranslate();
+      AddonManager::instance()->retranslate();
 
 #ifdef MVPN_MACOS
       MacOSMenuBar::instance()->retranslate();

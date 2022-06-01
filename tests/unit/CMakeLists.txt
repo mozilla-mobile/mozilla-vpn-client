@@ -5,7 +5,7 @@
 add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_ADJUST)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Network Xml Test)
+find_package(Qt6 REQUIRED COMPONENTS Core Network Xml Test WebSockets)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
 find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
 
@@ -25,6 +25,7 @@ target_link_libraries(unit_tests PRIVATE
     Qt6::Xml
     Qt6::Network
     Qt6::Test
+    Qt6::WebSockets
     Qt6::Widgets
     Qt6::Gui
     Qt6::Qml
@@ -56,8 +57,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
-    ${MVPN_SOURCE_DIR}/featurelist.cpp
-    ${MVPN_SOURCE_DIR}/featurelist.h
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
@@ -85,6 +84,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/devicemodel.h
     ${MVPN_SOURCE_DIR}/models/feature.cpp
     ${MVPN_SOURCE_DIR}/models/feature.h
+    ${MVPN_SOURCE_DIR}/models/featuremodel.cpp
+    ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.cpp
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.h
     ${MVPN_SOURCE_DIR}/models/guide.cpp

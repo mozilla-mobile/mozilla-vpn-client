@@ -7,7 +7,7 @@
 exists($$PWD/generated/translations.qrc) {
     RESOURCES += $$PWD/generated/translations.qrc
 } else {
-    error("No translations.qrc! Have you imported the languages?")
+    error("No translations.qrc! Have you imported the languages with ./scripts/utils/import_languages.py?")
 }
 macos {
    include($$PWD/generated/macos.pri)

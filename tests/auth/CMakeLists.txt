@@ -6,7 +6,7 @@ add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_DEBUG)
 add_definitions(-DMVPN_DUMMY)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Test)
+find_package(Qt6 REQUIRED COMPONENTS Core Test WebSockets)
 find_package(Qt6 REQUIRED COMPONENTS Network NetworkAuth)
 find_package(Qt6 REQUIRED COMPONENTS Gui Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
@@ -28,6 +28,7 @@ target_link_libraries(auth_tests PRIVATE
     Qt6::Network
     Qt6::NetworkAuth
     Qt6::Gui
+    Qt6::WebSockets
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick
@@ -51,8 +52,6 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
-    ${MVPN_SOURCE_DIR}/featurelist.cpp
-    ${MVPN_SOURCE_DIR}/featurelist.h
     ${MVPN_SOURCE_DIR}/hawkauth.cpp
     ${MVPN_SOURCE_DIR}/hawkauth.h
     ${MVPN_SOURCE_DIR}/hkdf.cpp
@@ -68,6 +67,8 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/loghandler.h
     ${MVPN_SOURCE_DIR}/models/feature.cpp
     ${MVPN_SOURCE_DIR}/models/feature.h
+    ${MVPN_SOURCE_DIR}/models/featuremodel.cpp
+    ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/server.cpp
     ${MVPN_SOURCE_DIR}/models/server.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h

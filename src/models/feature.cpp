@@ -4,6 +4,7 @@
 
 #include "feature.h"
 #include "constants.h"
+#include "featureslistcallback.h"
 #include "l18nstrings.h"
 #include "logger.h"
 #include "settingsholder.h"
@@ -14,8 +15,28 @@
 
 namespace {
 Logger logger(LOG_MODEL, "Feature");
-QMap<QString, Feature*>* s_features = nullptr;
+QMap<QString, Feature*>* s_featuresHashtable = nullptr;
+QList<Feature*>* s_featuresList = nullptr;
 }  // namespace
+
+// static
+void Feature::maybeInitialize() {
+  if (!s_featuresHashtable) {
+    s_featuresHashtable = new QMap<QString, Feature*>();
+
+    Q_ASSERT(!s_featuresList);
+    s_featuresList = new QList<Feature*>();
+
+#define FEATURE(id, name, isMajor, displayNameId, shortDescId, descId,         \
+                imgPath, iconPath, linkUrl, releaseVersion, flippableOn,       \
+                flippableOff, otherFeatureDependencies, callback)              \
+  new Feature(#id, name, isMajor, displayNameId, shortDescId, descId, imgPath, \
+              iconPath, linkUrl, releaseVersion, flippableOn, flippableOff,    \
+              otherFeatureDependencies, callback);
+#include "featureslist.h"
+#undef FEATURE
+  }
+}
 
 Feature::Feature(const QString& id, const QString& name, bool isMajor,
                  L18nStrings::String displayName_id,
@@ -23,7 +44,8 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
                  const QString& imgPath, const QString& iconPath,
                  const QString& linkUrl, const QString& aReleaseVersion,
                  bool flippableOn, bool flippableOff,
-                 const QStringList& featureDependencies)
+                 const QStringList& featureDependencies,
+                 std::function<bool()>&& callback)
     : QObject(qApp),
       m_id(id),
       m_name(name),
@@ -36,14 +58,14 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
       m_linkUrl(linkUrl),
       m_flippableOn(flippableOn),
       m_flippableOff(flippableOff),
-      m_featureDependencies(featureDependencies) {
+      m_featureDependencies(featureDependencies),
+      m_callback(callback) {
   logger.debug() << "Initializing feature" << id;
 
-  if (!s_features) {
-    s_features = new QMap<QString, Feature*>();
-  }
-
-  s_features->insert(m_id, this);
+  Q_ASSERT(s_featuresHashtable);
+  s_featuresHashtable->insert(m_id, this);
+  Q_ASSERT(s_featuresList);
+  s_featuresList->append(this);
 
   auto releaseVersion = VersionApi::stripMinor(aReleaseVersion);
   auto currentVersion = VersionApi::stripMinor(Constants::versionString());
@@ -86,16 +108,28 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
   }
 }
 
+Feature::~Feature() {
+  s_featuresHashtable->remove(m_id);
+  s_featuresList->removeAll(this);
+}
+
 // static
-QList<Feature*> Feature::getAll() { return s_features->values(); }
+const QList<Feature*>& Feature::getAll() {
+  maybeInitialize();
+  return *s_featuresList;
+}
 
 // static
 const Feature* Feature::getOrNull(const QString& featureID) {
-  return s_features->value(featureID, nullptr);
+  maybeInitialize();
+
+  return s_featuresHashtable->value(featureID, nullptr);
 }
 
 // static
 const Feature* Feature::get(const QString& featureID) {
+  maybeInitialize();
+
   const Feature* feature = getOrNull(featureID);
   if (!feature) {
     logger.error() << "Invalid feature" << featureID;
@@ -149,7 +183,7 @@ bool Feature::isSupportedIgnoringFlip() const {
     return false;
   }
 
-  if (!checkSupportCallback()) {
+  if (!m_callback()) {
     return false;
   }
 
@@ -189,7 +223,7 @@ void Feature::maybeFlipOnOrOff() {
     // because one of the dependencies has changed.
     if (newState == FlippedOn) {
       for (const QString& featureID : m_featureDependencies) {
-        Feature* feature = s_features->value(featureID, nullptr);
+        Feature* feature = s_featuresHashtable->value(featureID, nullptr);
         Q_ASSERT(feature);
 
         // Let's check the support ignoring the cache (m_state)
@@ -218,7 +252,7 @@ void Feature::maybeFlipOnOrOff() {
 
   QList<Feature*> featuresToFlipOnAndCheck;
   for (const QString& featureID : m_featureDependencies) {
-    Feature* feature = s_features->value(featureID, nullptr);
+    Feature* feature = s_featuresHashtable->value(featureID, nullptr);
     Q_ASSERT(feature);
 
     if (feature->isSupported(true)) continue;

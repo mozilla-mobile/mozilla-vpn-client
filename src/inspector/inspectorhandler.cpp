@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorhandler.h"
+#include "addonmanager.h"
 #include "constants.h"
 #include "controller.h"
 #include "inspectoritempicker.h"
@@ -12,6 +13,7 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "models/feature.h"
+#include "models/featuremodel.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "notificationhandler.h"
@@ -19,6 +21,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "task.h"
+#include "models/guidemodel.h"
 
 #include <functional>
 
@@ -626,6 +629,14 @@ static QList<InspectorCommand> s_commands{
           return obj;
         }},
 
+    InspectorCommand{"settings_filename", "Get the setting filename", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       QJsonObject obj;
+                       obj["value"] =
+                           SettingsHolder::instance()->settingsFileName();
+                       return obj;
+                     }},
+
     InspectorCommand{"languages", "Returns a list of languages", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
@@ -639,6 +650,23 @@ static QList<InspectorCommand> s_commands{
                        }
 
                        obj["value"] = languages;
+                       return obj;
+                     }},
+
+    InspectorCommand{"guides", "Returns a list of guide title ids", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       QJsonObject obj;
+
+                       GuideModel* guideModel = GuideModel::instance();
+                       Q_ASSERT(guideModel);
+
+                       QJsonArray guides;
+                       for (const QString& guideTitleId :
+                            guideModel->guideTitleIds()) {
+                         guides.append(guideTitleId);
+                       }
+
+                       obj["value"] = guides;
                        return obj;
                      }},
 
@@ -807,6 +835,30 @@ static QList<InspectorCommand> s_commands{
                        MozillaVPN::instance()->requestContactUs();
                        return QJsonObject();
                      }},
+    InspectorCommand{"is_feature_flipped_on",
+                     "Check if a feature is flipped on", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QString featureName = arguments[1];
+                       auto const settings = SettingsHolder::instance();
+                       QStringList flags = settings->featuresFlippedOn();
+
+                       QJsonObject obj;
+                       obj["value"] = flags.contains(featureName);
+                       return obj;
+                     }},
+
+    InspectorCommand{"is_feature_flipped_off",
+                     "Check if a feature is flipped off", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QString featureName = arguments[1];
+                       auto const settings = SettingsHolder::instance();
+                       QStringList flags = settings->featuresFlippedOff();
+
+                       QJsonObject obj;
+                       obj["value"] = flags.contains(featureName);
+                       return obj;
+                     }},
+
     InspectorCommand{"flip_on_feature", "Flip On a feature", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QString featureName = arguments[1];
@@ -817,7 +869,7 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       FeatureList::instance()->toggleForcedEnable(
+                       FeatureModel::instance()->toggleForcedEnable(
                            arguments[1]);
                        return QJsonObject();
                      }},
@@ -832,8 +884,28 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       FeatureList::instance()->toggleForcedDisable(
+                       FeatureModel::instance()->toggleForcedDisable(
                            arguments[1]);
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"load_addon", "Load an addon", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       obj["value"] =
+                           AddonManager::instance()->load(arguments[1]);
+                       return obj;
+                     }},
+
+    InspectorCommand{"unload_addon", "Load an addon", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       AddonManager::instance()->unload(arguments[1]);
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"run_addon", "Load an addon", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       AddonManager::instance()->run(arguments[1]);
                        return QJsonObject();
                      }},
 };
