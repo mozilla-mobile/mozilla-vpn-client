@@ -195,10 +195,8 @@ VPNFlickable {
 
     function getPlanText(currencyCode, amount, intervalCount) {
         const amountDisplay = (amount || 0) / 100;
+        const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode.toUpperCase());
 
-        const currencySymbol = getCurrencySymbolFromCode(currencyCode);
-        const localizedCurrency = Number(amountDisplay).toLocaleCurrencyString(currentLanguageCode, currencySymbol);
-        
         if (intervalCount === 12) {
             // {¤amount} yearly
             return VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
@@ -216,22 +214,5 @@ VPNFlickable {
 
     Component.onCompleted: {
         populateListModels();
-    }
-
-    // TODO: Get a list of currencies or find another way to localize
-    function getCurrencySymbolFromCode(code) {
-        const currencies = [
-            {
-                code: "eur",
-                sign: "€"
-            },
-            {
-                code: "usd",
-                sign: "$"
-            }
-        ];
-        const selectedCurrency = currencies.find((currency) => currency.code === code);
-
-        return selectedCurrency ? selectedCurrency.sign : code.toUpperCase();
     }
 }
