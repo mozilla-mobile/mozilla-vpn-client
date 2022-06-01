@@ -6,6 +6,7 @@
 #define IOSNETWORKWATCHER_H
 
 #include "networkwatcherimpl.h"
+#include <Network/Network.h>
 
 class IOSNetworkWatcher final : public NetworkWatcherImpl {
  public:
@@ -16,9 +17,15 @@ class IOSNetworkWatcher final : public NetworkWatcherImpl {
   NetworkWatcherImpl::TransportType getTransportType() override;
 
  private:
-  NetworkWatcherImpl::TransportType mCurrentTransport =
+  NetworkWatcherImpl::TransportType mCurrentDefaultTransport =
       NetworkWatcherImpl::TransportType_Unknown;
-  void* m_networkMonitor = nullptr;
+  NetworkWatcherImpl::TransportType mCurrentVPNTransport =
+      NetworkWatcherImpl::TransportType_Unknown;
+  nw_path_monitor_t mNetworkMonitor = nil;
+  nw_connection_t mObservableConnection = nil;
+
+  NetworkWatcherImpl::TransportType toTransportType(nw_path_t path);
+  void controllerStateChanged();
 };
 
 #endif  // IOSNETWORKWATCHER_H

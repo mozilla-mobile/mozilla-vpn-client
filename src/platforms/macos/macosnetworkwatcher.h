@@ -30,11 +30,11 @@ class MacOSNetworkWatcher final : public NetworkWatcherImpl {
   void* m_delegate = nullptr;
   NetworkWatcherImpl::TransportType mCurrentDefaultTransport =
       NetworkWatcherImpl::TransportType_Unknown;
-  NetworkWatcherImpl::TransportType mVPNTunnelTransport =
+  NetworkWatcherImpl::TransportType mCurrentVPNTransport =
       NetworkWatcherImpl::TransportType_Unknown;
-  void* m_networkMonitor = nullptr;
+  void* mNetworkMonitor = nullptr;
 
-  nw_connection_t m_observableConnection = nil;
+  nw_connection_t mObservableConnection = nil;
 
   NetworkWatcherImpl::TransportType toTransportType(nw_path_t path);
 };

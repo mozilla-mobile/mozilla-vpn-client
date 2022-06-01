@@ -69,7 +69,7 @@ void MacOSNetworkWatcher::initialize() {
     mCurrentDefaultTransport = toTransportType(path);
   });
   nw_path_monitor_start(mon);
-  m_networkMonitor = &mon;
+  mNetworkMonitor = &mon;
 }
 
 void MacOSNetworkWatcher::start() {
@@ -147,18 +147,18 @@ NetworkWatcherImpl::TransportType MacOSNetworkWatcher::getTransportType() {
     // the default-route-transport  is not the vpn-tunnel
     return mCurrentDefaultTransport;
   }
-  if (m_observableConnection != nil) {
-    return mVPNTunnelTransport;
+  if (mObservableConnection != nil) {
+    return mCurrentVPNTransport;
   }
-  // If we don't have an open tunnel-observer, mVPNTunnelTransport is probably wrong.
+  // If we don't have an open tunnel-observer, mCurrentVPNTransport is probably wrong.
   return NetworkWatcherImpl::TransportType_Unknown;
 }
 
 void MacOSNetworkWatcher::controllerStateChanged() {
   if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
-    if (m_observableConnection != nil) {
-      nw_connection_cancel(m_observableConnection);
-      m_observableConnection = nil;
+    if (mObservableConnection != nil) {
+      nw_connection_cancel(mObservableConnection);
+      mObservableConnection = nil;
     }
     return;
   }
@@ -191,11 +191,11 @@ void MacOSNetworkWatcher::controllerStateChanged() {
       logger.debug() << "Using Interface: " << name;
       return true;
     });
-    mVPNTunnelTransport = toTransportType(path);
+    mCurrentVPNTransport = toTransportType(path);
   });
   nw_connection_start(con);
   logger.info() << "Opened udp to:" << server.hostname();
-  m_observableConnection = con;
+  mObservableConnection = con;
 }
 
 NetworkWatcherImpl::TransportType MacOSNetworkWatcher::toTransportType(nw_path_t path) {
