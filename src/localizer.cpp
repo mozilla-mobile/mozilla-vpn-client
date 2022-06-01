@@ -321,6 +321,10 @@ QString Localizer::localizeCurrency(double value,
   }
 
   QString symbol = retrieveCurrencySymbolFallback(currencyIso4217, locale);
+  if (symbol.isEmpty()) {
+    return locale.toCurrencyString(value, currencyIso4217);
+  }
+
   return locale.toCurrencyString(value, symbol);
 }
 
