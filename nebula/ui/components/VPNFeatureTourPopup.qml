@@ -10,7 +10,6 @@ VPNPopup {
     id: root
 
     anchors.centerIn: parent
-    maxWidth: VPNTheme.theme.desktopAppWidth
     _popupContent: VPNFeatureTour {
         id: featureTour
 
