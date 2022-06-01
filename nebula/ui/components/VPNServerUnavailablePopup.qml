@@ -24,9 +24,4 @@ VPNSimplePopup {
                 window.goToServersView();
             }
         }]
-
-    onHeightChanged: {
-        console.log(height)
-    }
-
 }
