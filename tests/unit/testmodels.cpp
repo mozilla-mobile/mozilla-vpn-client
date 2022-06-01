@@ -1706,4 +1706,35 @@ void TestModels::surveyModelFromJson() {
   }
 }
 
+void TestModels::surveyUrlQueryReplacement_data() {
+  QTest::addColumn<QString>("input");
+  QTest::addColumn<QString>("output");
+
+  QTest::addRow("Empty string") << ""
+                                << "";
+  QTest::addRow("Invalid url") << "foobar"
+                               << "foobar";
+  QTest::addRow("No query param") << "http://example.com"
+                                  << "http://example.com";
+  QTest::addRow("No replacement query param") << "http://example.com?a=b&c=42"
+                                              << "http://example.com?a=b&c=42";
+  QTest::addRow("Replacement query param")
+      << "http://"
+         "example.com?a=__VPN_VERSION__&b=__VPN_BUILDNUMBER__&c=__VPN_OS__&d=__"
+         "VPN_PLATFORM__&e=__VPN_ARCH__&f=__VPN_GRAPHICSAPI__"
+      << QString("http://example.com?a=%1&b=%2&c=%3&d=%4&e=%5&f=%6")
+             .arg(MozillaVPN::versionString())
+             .arg(MozillaVPN::buildNumber())
+             .arg(MozillaVPN::osVersion())
+             .arg(MozillaVPN::platform())
+             .arg(MozillaVPN::architecture())
+             .arg(MozillaVPN::graphicsApi());
+}
+
+void TestModels::surveyUrlQueryReplacement() {
+  QFETCH(QString, input);
+  QFETCH(QString, output);
+  QCOMPARE(Survey::replaceUrlParams(input), output);
+}
+
 static TestModels s_testModels;
