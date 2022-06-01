@@ -485,6 +485,7 @@ Window {
         id: tooltip
         property alias text: text.text
         visible: VPNTutorial.tooltipShown
+        closePolicy: Popup.NoAutoClose
         x: VPNTheme.theme.windowMargin
         width: parent.width - VPNTheme.theme.windowMargin * 2
 
