@@ -800,6 +800,9 @@ sample:
           The mullvad server public key and the connection latency, packet
           loss, stddev.
         type: string
+      transport:
+        description: The Host network type (i.e wifi or 4g)
+        type: string
 
   connectivity_stable:
     type: event

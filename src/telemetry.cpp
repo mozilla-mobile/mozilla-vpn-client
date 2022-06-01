@@ -37,7 +37,10 @@ void Telemetry::initialize() {
 
             emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
                 GleanSample::connectivityHandshakeTimeout,
-                {{"server", publicKey}});
+                {{"server", publicKey},
+                 {"transport", MozillaVPN::instance()
+                                   ->networkWatcher()
+                                   ->getCurrentTransport()}});
           });
 
   connect(controller, &Controller::stateChanged, this, [this]() {
