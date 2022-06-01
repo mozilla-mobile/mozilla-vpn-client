@@ -11,6 +11,7 @@ import compat 0.1
 
 
 Item {
+
     /*
         TODOs
 
@@ -308,7 +309,10 @@ Item {
     Connections {
         target: window
         function onActiveFocusItemChanged() {
-            if (targetElement && !targetElement.activeFocus && !targetElement.parent.activeFocus && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
+            if (!targetElement)
+                return
+
+            if (!targetElement.activeFocus && !targetElement.parent.activeFocus && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
                 tutorialTooltip.forceActiveFocus();
             }
         }
