@@ -11,6 +11,8 @@
 #include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
 
+#include <QMetaEnum>
+
 #ifdef MVPN_WINDOWS
 #  include "platforms/windows/windowsnetworkwatcher.h"
 #endif
@@ -165,29 +167,8 @@ void NetworkWatcher::notificationClicked(NotificationHandler::Message message) {
   }
 }
 
-NetworkWatcherImpl::TransportType NetworkWatcher::getCurrentTransportType() {
+QString NetworkWatcher::getCurrentTransport() {
   auto type = m_impl->getTransportType();
-
-  switch (type) {
-    case NetworkWatcherImpl::TransportType_WiFi:
-      logger.debug() << "TransportType_WiFi USED";
-      break;
-    case NetworkWatcherImpl::TransportType_Ethernet:
-      logger.debug() << "TransportType_Ethernet USED";
-      break;
-    case NetworkWatcherImpl::TransportType_Cellular:
-      logger.debug() << "TransportType_Cellular USED";
-      break;
-    case NetworkWatcherImpl::TransportType_Other:
-      logger.debug() << "TransportType_Other USED";
-      break;
-    case NetworkWatcherImpl::TransportType_None:
-      logger.debug() << "TransportType_None USED";
-      break;
-    default:
-      logger.debug() << "TransportType_Unknown USED";
-      break;
-  }
-
-  return type;
+  QMetaEnum metaEnum = QMetaEnum::fromType<NetworkWatcherImpl::TransportType>();
+  return metaEnum.valueToKey(type);
 }

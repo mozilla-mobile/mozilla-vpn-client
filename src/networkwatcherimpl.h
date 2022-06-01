@@ -31,6 +31,7 @@ class NetworkWatcherImpl : public QObject {
     TransportType_Other = 4,     // I.e USB thethering
     TransportType_None = 5  // I.e Airplane Mode or no active network device
   };
+  Q_ENUM(TransportType);
 
   // Returns the current type of Network Connection
   virtual TransportType getTransportType() = 0;

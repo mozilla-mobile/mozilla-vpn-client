@@ -27,7 +27,7 @@ class NetworkWatcher final : public QObject {
   // public for the inspector.
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
 
-  NetworkWatcherImpl::TransportType getCurrentTransportType();
+  QString getCurrentTransport();
 
  signals:
   void networkChange();

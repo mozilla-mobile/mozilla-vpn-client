@@ -104,8 +104,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(&m_alertTimer, &QTimer::timeout, this,
           [this]() { setAlert(NoAlert); });
 
-  connect(&m_periodicOperationsTimer, &QTimer::timeout, [this]() {
-    m_private->m_networkWatcher.getCurrentTransportType();
+  connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
          new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));
