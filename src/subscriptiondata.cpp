@@ -19,7 +19,7 @@ SubscriptionData::SubscriptionData() { MVPN_COUNT_CTOR(SubscriptionData); }
 SubscriptionData::~SubscriptionData() { MVPN_COUNT_DTOR(SubscriptionData); }
 
 bool SubscriptionData::fromJson(const QByteArray& json) {
-  logger.debug() << "Subscription from JSON";
+  logger.debug() << "Subscription from JSON start";
 
   if (!json.isEmpty() && m_rawJson == json) {
     logger.debug() << "Data has not changed";
@@ -65,7 +65,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   // Plan
   QJsonObject planData = obj.value("plan").toObject();
 
-  m_planAmount = obj.value("amount").toInt();
+  m_planAmount = planData.value("amount").toInt();
   if (!m_planAmount && m_planAmount != 0) {
     return false;
   }
@@ -76,7 +76,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   }
   m_planCurrency = planCurrency.toString();
 
-  m_planIntervalCount = obj.value("interval_count").toInt();
+  m_planIntervalCount = planData.value("interval_count").toInt();
   if (!m_planIntervalCount) {
     return false;
   }
@@ -104,20 +104,21 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     }
     m_creditCardLast4 = creditCardLast4.toString();
 
-    m_creditCardExpMonth = obj.value("credit_card_exp_month").toInt();
+    m_creditCardExpMonth = paymentData.value("credit_card_exp_month").toInt();
     if (!m_creditCardExpMonth) {
       return false;
     }
 
-    m_creditCardExpYear = obj.value("credit_card_exp_year").toInt();
+    m_creditCardExpYear = paymentData.value("credit_card_exp_year").toInt();
     if (!m_creditCardExpYear) {
       return false;
     }
   }
 
+  logger.debug() << "Subscription from JSON ready";
+
   m_rawJson = json;
   emit changed();
-
 
   return true;
 }
