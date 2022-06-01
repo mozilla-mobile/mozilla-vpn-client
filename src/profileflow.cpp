@@ -38,7 +38,8 @@ void ProfileFlow::start() {
           &ProfileFlow::subscriptionDetailsFetched);
   connect(task, &TaskGetSubscriptionDetails::failed, [&]() {
     logger.debug() << "Task failed";
-
+    // TODO: Remove, only for debugging purposes.
+    emit showProfile();
     setState(StateInitial);
   });
 

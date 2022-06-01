@@ -12,7 +12,7 @@ import components 0.1
 VPNFlickable {
     id: vpnFlickable
     objectName: "settingsView"
-    property var currentLanguageCode: VPNLocalizer.code === ""
+    property var currentLocale: VPNLocalizer.code === ""
         ? Qt.locale(VPNLocalizer.previousCode)
         : Qt.locale(VPNLocalizer.code)
 
@@ -151,7 +151,8 @@ VPNFlickable {
 
         subscriptionInfoModel.append({
             labelText: VPNl18n.SubscriptionManagementNextLabel,
-            valueText: unixToDate(VPNSubscriptionData.expiresOn),
+            // TODO: Calculate next billing date if any
+            valueText: "",
             type: "text",
         });
 
@@ -177,12 +178,14 @@ VPNFlickable {
 
             subscriptionPaymentModel.append({
                 labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
-                valueText: VPNSubscriptionData.creditCardExpMonth + " " + VPNSubscriptionData.creditCardExpYear, // TODO: Format and localize date
+                // TODO: Show date w/o days
+                valueText: unixToDate(new Date(VPNSubscriptionData.creditCardExpYear, VPNSubscriptionData.creditCardExpMonth - 1).getTime() / 1000),
                 type: "text",
             });
         } else {
             subscriptionPaymentModel.append({
-                labelText: VPNl18n.SubscriptionManagementSubscriptionPlatformLabel.arg("IAP Google or Apple"), // TODO: Determine and handle IAP platforms
+                // TODO: Handle different IAP platforms
+                labelText: VPNl18n.SubscriptionManagementSubscriptionPlatformLabel.arg("IAP Google or Apple"),
                 valueText: "",
                 type: "text",
             });
@@ -190,7 +193,7 @@ VPNFlickable {
     }
 
     function unixToDate(unixTimestamp) {
-        return new Date(unixTimestamp * 1000).toLocaleDateString(currentLanguageCode, Locale.ShortFormat);
+        return new Date(unixTimestamp * 1000).toLocaleDateString(currentLocale, Locale.ShortFormat);
     }
 
     function getPlanText(currencyCode, amount, intervalCount) {
