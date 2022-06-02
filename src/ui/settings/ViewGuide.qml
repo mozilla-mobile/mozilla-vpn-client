@@ -33,7 +33,13 @@ Item {
                 anchors.left: parent.left
                 anchors.topMargin: root.safeAreaHeight + 8
                 anchors.leftMargin: VPNTheme.theme.listSpacing
-
+                buttonColorScheme: {
+                    'defaultColor': VPNTheme.theme.transparent,
+                    'buttonHovered': "#1AFFFFFF",
+                    'buttonPressed': '#33FFFFFF',
+                    'focusOutline': VPNTheme.theme.transparent,
+                    'focusBorder': VPNTheme.theme.lightFocusBorder
+                }
                 skipEnsureVisible: true
                 //% "Back"
                 //: Go back
