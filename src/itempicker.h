@@ -9,6 +9,7 @@
 
 class QMouseEvent;
 class QQuickItem;
+class QTouchEvent;
 
 class ItemPicker : public QObject {
   Q_OBJECT
@@ -24,6 +25,7 @@ class ItemPicker : public QObject {
   bool eventFilter(QObject* obj, QEvent* event) override;
 
   QList<QQuickItem*> pickItem(QMouseEvent* event, QQuickItem* item);
+  QList<QQuickItem*> pickItem(QTouchEvent* event, QQuickItem* item);
 
  private:
   QEvent* m_lastEvent = nullptr;
