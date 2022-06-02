@@ -13,9 +13,8 @@ RoundButton {
 
     property var visualStateItem: root
     property var uiState: VPNTheme.theme.uiState
-    property bool loaderVisible: false
+    property var loaderVisible: false
     property var handleKeyClick: function() { clicked() }
-
 
     focusPolicy: Qt.StrongFocus
     Keys.onPressed: event => {
@@ -27,11 +26,10 @@ RoundButton {
             visualStateItem.state = uiState.statePressed;
 
     }
-
     Keys.onReleased: event => {
-         if (loaderVisible) {
-             return;
-         }
+        if (loaderVisible) {
+            return;
+        }
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space) {
             visualStateItem.state = uiState.stateDefault;
         }
@@ -58,7 +56,7 @@ RoundButton {
 
         if (typeof(ensureVisible) !== "undefined")
             ensureVisible(root);
-        }
+    }
 
     background: Rectangle {
         color: VPNTheme.theme.transparent
