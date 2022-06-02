@@ -20,4 +20,7 @@ QtObject {
     function resetDefaults() {
         statusBarTextColor = VPNTheme.StatusBarTextColorDark;
     }
+
+    Component.onCompleted: applyChanges()
+    Component.onDestruction: resetDefaults()
 }
