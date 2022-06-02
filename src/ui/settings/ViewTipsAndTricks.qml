@@ -53,6 +53,7 @@ VPNFlickable {
                     visible: active
 
                     sourceComponent: VPNTutorialCard {
+                        objectName: "highlightedTutorial"
                         width: parent.width
                         height: parent.height
 

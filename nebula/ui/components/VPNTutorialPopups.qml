@@ -41,6 +41,7 @@ Item {
     onTargetElementChanged: pushFocusToTargetElement()
 
     id: root
+    objectName: "tutorialUiRoot"
 
     anchors.fill: parent
     visible: tutorialTooltip.visible || tutorialPopup.opened
@@ -189,6 +190,7 @@ Item {
         property var _onClosed: () => {}
 
         id: tutorialPopup
+        objectName: "tutorialPopup"
 
         anchors.centerIn: parent
         width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
@@ -219,6 +221,7 @@ Item {
 
                 VPNHeadline {
                     id: popupHeadline
+                    objectName: "tutorialPopupHeadline"
                     width: undefined
                     Layout.fillWidth: true
                     text: ""
