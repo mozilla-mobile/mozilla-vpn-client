@@ -105,11 +105,9 @@ Window {
         }
     }
 
-    Item {
-        // Workaround to support full-screen background gradients/colors on mobile
-        id: fullScreenMobileBackground
+    VPNMobileStatusBarModifier {
+        id: statusBarModifier
     }
-
 
     Rectangle {
         id: iosSafeAreaTopMargin
