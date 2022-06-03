@@ -650,7 +650,7 @@ subscriptionManagement:
     value: Manage subscription
     comment: Label for a button that will take the user to a view where the can manage their subscription
 
-creditCardBrands:
+paymentMethods:
   amex: American Express
   diners: Diners Club
   discover: Discover

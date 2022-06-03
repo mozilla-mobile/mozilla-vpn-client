@@ -40,55 +40,55 @@ RowLayout {
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/amex.svg",
-                    name: VPNl18n.creditCardBrandsAmex
+                    name: VPNl18n.paymentMethodsAmex
                 };
             case "diners":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/diners.svg",
-                    name: VPNl18n.creditCardBrandsDiners
+                    name: VPNl18n.paymentMethodsDiners
                 };
             case "discover":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/discover.svg",
-                    name: VPNl18n.creditCardBrandsDiscover
+                    name: VPNl18n.paymentMethodsDiscover
                 };
             case "jcb":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/jcb.svg",
-                    name: VPNl18n.creditCardBrandsJcb
+                    name: VPNl18n.paymentMethodsJcb
                 };
             case "mastercard":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/mastercard.svg",
-                    name: VPNl18n.creditCardBrandsMastercard
+                    name: VPNl18n.paymentMethodsMastercard
                 };
             case "paypal":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/paypal.svg",
-                    name: VPNl18n.creditCardBrandsPaypal
+                    name: VPNl18n.paymentMethodsPaypal
                 };
             case "unionpay":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/unionpay.svg",
-                    name: VPNl18n.creditCardBrandsUnionpay
+                    name: VPNl18n.paymentMethodsUnionpay
                 };
             case "visa":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/visa.svg",
-                    name: VPNl18n.creditCardBrandsVisa
+                    name: VPNl18n.paymentMethodsVisa
                 };
             default:
                 return {
                     key: "unbranded",
                     icon: "qrc:/ui/resources/payment/unbranded.svg",
-                    name: VPNl18n.creditCardBrandsUnbranded
+                    name: VPNl18n.paymentMethodsUnbranded
                 };
         }
     }
