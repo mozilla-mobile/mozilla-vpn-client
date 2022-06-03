@@ -6,45 +6,44 @@ import android.util.Log
 import mozilla.components.lib.crash.CrashReporter
 import mozilla.components.lib.crash.handler.CrashHandlerService
 
-
 class VPNCrashReporterUtil(context: Context) {
     init {
-        val reporter = CrashReporter(context,
+        val reporter = CrashReporter(
+            context,
             // Always prompt
             shouldPrompt = CrashReporter.Prompt.ALWAYS,
             services = listOf(
-            VPNTombStoneService(context)
-          )
+                VPNTombStoneService(context)
+            )
         )
         reporter.install(context)
         Log.i("BASTI", "INSTALLED REPORTER")
     }
-    companion object{
+    companion object {
 
-        const val ACTION_CRASHED = "org.mozilla.gecko.ACTION_CRASHED";
-        const val EXTRA_MINIDUMP_PATH = "minidumpPath";
-        const val EXTRA_EXTRAS_PATH = "extrasPath";
+        const val ACTION_CRASHED = "org.mozilla.gecko.ACTION_CRASHED"
+        const val EXTRA_MINIDUMP_PATH = "minidumpPath"
+        const val EXTRA_EXTRAS_PATH = "extrasPath"
         const val EXTRA_CRASH_PROCESS_TYPE = "processType"
-
 
         @JvmStatic
         @Suppress("unused", "DIVISION_BY_ZERO") // JNI caller
-        fun testUncaughtException(){
-            val oops = 10/0
+        fun testUncaughtException() {
+            val oops = 10 / 0
         }
         @JvmStatic
         @Suppress("unused") // JNI caller
-        fun testNullAccessException(){
-            val ctx : Context? = null;
-            ctx!!.openFileInput("HELLO NULL");
+        fun testNullAccessException() {
+            val ctx: Context? = null
+            ctx!!.openFileInput("HELLO NULL")
         }
 
         @JvmStatic
         @Suppress("unused") // JNI caller
-        fun nativePanic(miniDumpFilepath:String){
+        fun nativePanic(miniDumpFilepath: String) {
             // Note to self, this is undocumented ... i found this in gecko.
             val context = VPNActivity.getInstance()
-            Log.e("BASTI", miniDumpFilepath);
+            Log.e("BASTI", miniDumpFilepath)
 
             val i = Intent(ACTION_CRASHED, null, context, CrashHandlerService::class.java).apply {
                 putExtra(EXTRA_MINIDUMP_PATH, miniDumpFilepath)
