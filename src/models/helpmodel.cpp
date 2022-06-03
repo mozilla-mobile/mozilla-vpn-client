@@ -43,10 +43,10 @@ void maybeInitialize() {
   s_helpEntries.append(
       HelpEntry("help.helpCenter2", true, false, MozillaVPN::LinkHelpSupport));
 
-  //% "Contact us"
-  logger.debug() << "Adding:" << qtTrId("help.contactUs");
-  s_helpEntries.append(
-      HelpEntry("help.contactUs", false, false, MozillaVPN::LinkContact));
+  logger.debug() << "Adding:"
+                 << qtTrId("vpn.inAppSupportWorkflow.supportNavLinkText");
+  s_helpEntries.append(HelpEntry("vpn.inAppSupportWorkflow.supportNavLinkText",
+                                 false, false, MozillaVPN::LinkContact));
 
   //% "View log"
   logger.debug() << "Adding:" << qtTrId("help.viewLog");
