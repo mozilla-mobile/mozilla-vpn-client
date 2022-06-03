@@ -28,6 +28,4 @@
 [submodule "3rdparty/adjust-android-sdk"]
 	path = 3rdparty/adjust-android-sdk
 	url = https://github.com/adjust/android_sdk
-[submodule ".\\3rdparty\\breakpad"]
-	path = .\\3rdparty\\breakpad
-	url = https://chromium.googlesource.com/breakpad/breakpad
+
