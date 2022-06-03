@@ -51,8 +51,6 @@ node_modules
 
 asset_catalog_compiler.Info.plist
 
-!3rdparty/breakpad/
-
 # Ignore files that might be added by Android Studio
 # if someone opens the android/ subproject
 android/.gradle/
