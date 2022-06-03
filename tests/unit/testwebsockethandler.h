@@ -18,6 +18,8 @@ class MockServer : public QObject {
   ~MockServer();
 
   void closeEach();
+  void close();
+  void open();
 
  signals:
   void newConnection(QNetworkRequest request);
@@ -39,5 +41,6 @@ class TestWebSocketHandler : public TestHelper {
   void tst_connectionIsTiedToUserState();
   void tst_connectionRequestContainsRequiredHeaders();
   void tst_reconnectionAttemptsAfterUnexpectedClose();
+  void tst_reconnectionIsAttemptedUntilSuccessfull();
   void tst_reconnectionAttemptsOnPingTimeout();
 };

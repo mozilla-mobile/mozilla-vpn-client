@@ -18,15 +18,23 @@
 MockServer::MockServer() {
   m_pWebSocketServer = new QWebSocketServer(
       QStringLiteral("Mock Server"), QWebSocketServer::NonSecureMode, this);
+  open();
+}
+
+MockServer::~MockServer() { close(); }
+
+void MockServer::close() {
+  m_pWebSocketServer->close();
+  disconnect(m_pWebSocketServer, &QWebSocketServer::newConnection, this,
+             &MockServer::onNewConnection);
+  qDeleteAll(m_clients.begin(), m_clients.end());
+}
+
+void MockServer::open() {
   if (m_pWebSocketServer->listen(QHostAddress::Any, 5000)) {
     connect(m_pWebSocketServer, &QWebSocketServer::newConnection, this,
             &MockServer::onNewConnection);
   }
-}
-
-MockServer::~MockServer() {
-  m_pWebSocketServer->close();
-  qDeleteAll(m_clients.begin(), m_clients.end());
 }
 
 /**
@@ -159,6 +167,45 @@ void TestWebSocketHandler::tst_reconnectionAttemptsAfterUnexpectedClose() {
   // The handler should be polling for reconnection every 100ms,
   // we just wait for the reconnection to actually take place.
 
+  QVERIFY(newConnectionSpy.wait());
+  QCOMPARE(newConnectionSpy.count(), 2);
+}
+
+void TestWebSocketHandler::tst_reconnectionIsAttemptedUntilSuccessfull() {
+  SettingsHolder settingsHolder;
+  settingsHolder.setFeaturesFlippedOn(QStringList{"websocket"});
+  WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
+
+  MockServer server;
+  QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
+
+  WebSocketHandler handler;
+  // It's important that the retry value for this test is 1.
+  // It is the only interval that will not exponentially increase backoff time.
+  handler.testOverrideRetryInterval(5);
+  handler.initialize();
+
+  // Mock a user log in, this should prompt a new websocket connection.
+  TestHelper::userState = MozillaVPN::UserAuthenticated;
+  emit MozillaVPN::instance()->userStateChanged();
+
+  QVERIFY(newConnectionSpy.wait());
+  QCOMPARE(newConnectionSpy.count(), 1);
+
+  // Close the whole server. All subsequent reconnection attempts will be
+  // unsuccesfull.
+  server.close();
+
+  // No need to do anything here.
+  //
+  // The handler should be polling for reconnection every 1ms,
+  // we will let it do that a few times.
+  QTest::qWait(100);
+
+  // Reopen the server so reconnections can take place.
+  server.open();
+
+  // Wait for reconnection.
   QVERIFY(newConnectionSpy.wait());
   QCOMPARE(newConnectionSpy.count(), 2);
 }

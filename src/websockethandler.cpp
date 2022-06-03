@@ -146,13 +146,6 @@ void WebSocketHandler::onConnected() {
  * No-op in case the connection is already closed.
  */
 void WebSocketHandler::close() {
-  if (m_webSocket.state() == QAbstractSocket::UnconnectedState ||
-      m_webSocket.state() == QAbstractSocket::ClosingState) {
-    logger.debug()
-        << "Attempted to close a WebSocket, but it's already closed.";
-    return;
-  }
-
   logger.debug() << "Closing WebSocket";
   m_webSocket.close();
 }
