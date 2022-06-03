@@ -1248,6 +1248,10 @@ void MozillaVPN::serializeLogs(QTextStream* out,
         *out << SettingsHolder::instance()->getReport();
         *out << "==== DEVICE ====" << Qt::endl;
         *out << Device::currentDeviceReport();
+        #ifdef MVPN_ANDROID
+        *out << "==== CRASHES ====" << Qt::endl;
+        AndroidUtils::printCrashLogs(out);
+        #endif
         *out << Qt::endl;
 
         finalizeCallback();

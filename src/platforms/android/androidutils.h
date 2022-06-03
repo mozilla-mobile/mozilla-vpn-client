@@ -12,6 +12,7 @@
 
 #include <QJniObject>
 #include <QJniEnvironment>
+#include <QTextStream>
 
 class AuthenticationListener;
 
@@ -46,6 +47,8 @@ class AndroidUtils final : public QObject {
   static void recordGleanEvent(JNIEnv* env, jobject VPNUtils, jstring event);
 
   static void runOnAndroidThreadSync(const std::function<void()> runnable);
+
+  static void printCrashLogs(QTextStream* stream);
 
  private:
   AndroidUtils(QObject* parent);

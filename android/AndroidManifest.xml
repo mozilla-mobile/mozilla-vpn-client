@@ -69,6 +69,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
             android:process=":QtOnlyProcess"
             android:permission="android.permission.BIND_VPN_SERVICE">
         </service>
+
     </application>
 
 </manifest>

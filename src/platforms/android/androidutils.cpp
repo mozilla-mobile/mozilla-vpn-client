@@ -19,6 +19,10 @@
 #include <QJsonObject>
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
+#include <QFileInfo>
+#include <QDir>
+#include <QTextStream>
+#include <QStandardPaths>
 
 namespace {
 AndroidUtils* s_instance = nullptr;
@@ -204,4 +208,21 @@ void AndroidUtils::recordGleanEvent(JNIEnv* env, jobject VPNUtils,
   logger.info() << "Glean Event via JNI:" << eventString;
   emit MozillaVPN::instance()->recordGleanEvent(eventString);
   env->ReleaseStringUTFChars(event, buffer);
+}
+
+
+void AndroidUtils::printCrashLogs(QTextStream* stream){
+  QDir cacheFolder(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+  cacheFolder.setNameFilters(QStringList() << "*.tombstone.txt");
+
+  QFileInfoList files = cacheFolder.entryInfoList();
+  for (QFileInfo& fi : files){
+    QFile tombStone(cacheFolder.absoluteFilePath(fi.fileName()));
+    bool opened = tombStone.open(QIODevice::ReadOnly);
+    if(opened){
+        QByteArray data = tombStone.readAll();
+        tombStone.close();
+        *stream << data;
+    }
+  }
 }

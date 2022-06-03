@@ -10,6 +10,7 @@
 TEMPLATE  = app
 
 include($$PWD/qmake/balrog.pri)
+include($$PWD/qmake/breakpad.pri)
 include($$PWD/qmake/debug.pri)
 include($$PWD/qmake/includes_and_defines.pri)
 include($$PWD/qmake/qt.pri)

@@ -52,6 +52,9 @@
 
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
+#  include "client/linux/handler/exception_handler.h"
+#  include "client/linux/handler/minidump_descriptor.h"
+#  include "crashreporter/breakpad/androidbreakpad.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -78,9 +81,12 @@
 
 #include <QApplication>
 
+
 namespace {
 Logger logger(LOG_MAIN, "CommandUI");
 }
+
+
 
 CommandUI::CommandUI(QObject* parent) : Command(parent, "ui", "Start the UI.") {
   MVPN_COUNT_CTOR(CommandUI);
@@ -89,6 +95,12 @@ CommandUI::CommandUI(QObject* parent) : Command(parent, "ui", "Start the UI.") {
 CommandUI::~CommandUI() { MVPN_COUNT_DTOR(CommandUI); }
 
 int CommandUI::run(QStringList& tokens) {
+  #ifdef MVPN_ANDROID
+    // Initialize the breakpad client.
+    google_breakpad::MinidumpDescriptor descriptor(".");
+    google_breakpad::ExceptionHandler eh(descriptor, NULL, AndroidBreakpadClient::panic,
+                                        NULL, true, -1);
+  #endif
   Q_ASSERT(!tokens.isEmpty());
   return runQmlApp([&]() {
     QString appName = tokens[0];

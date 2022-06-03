@@ -17,10 +17,12 @@ import org.mozilla.firefox.vpn.BuildConfig;
 public class VPNApplication extends org.qtproject.qt.android.bindings.QtApplication {
 
   private static VPNApplication instance;
+  private VPNCrashReporterUtil reporter = null;
 
   @Override
   public void onCreate() {
       super.onCreate();
+      reporter = new VPNCrashReporterUtil(this.getApplicationContext());
       VPNApplication.instance = this;
   }
 

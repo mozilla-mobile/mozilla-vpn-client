@@ -30,7 +30,7 @@ versionAtMost(QT_VERSION, 6.2.0) {
 }
 
 versionAtLeast(QT_VERSION, 5.15.1) {
-  QMAKE_CXXFLAGS *= -Werror
+  #QMAKE_CXXFLAGS *= -Werror
 }
 
 versionAtLeast(QT_VERSION, 6.0.0) {
