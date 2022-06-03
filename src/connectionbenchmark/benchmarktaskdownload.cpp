@@ -75,7 +75,7 @@ void BenchmarkTaskDownload::handleFailedDnsLookup() {
   logger.debug() << "Handle failed DNS lookup" << m_fileUrl.toString();
 
   NetworkRequest* request =
-    NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
+      NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
   connectNetworkRequest(request);
 
   m_elapsedTimer.start();
