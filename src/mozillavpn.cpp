@@ -367,17 +367,6 @@ void MozillaVPN::maybeStateMain() {
     }
   }
 
-  if (!modelsInitialized()) {
-    logger.warning() << "Models not initialized yet";
-    SettingsHolder::instance()->clear();
-    errorHandle(ErrorHandler::RemoteServiceError);
-    setUserState(UserNotAuthenticated);
-    setState(StateInitialize);
-    return;
-  }
-
-  Q_ASSERT(m_private->m_serverData.initialized());
-
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
 #if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
@@ -399,6 +388,17 @@ void MozillaVPN::maybeStateMain() {
     setState(StateDeviceLimit);
     return;
   }
+
+  if (!modelsInitialized()) {
+    logger.warning() << "Models not initialized yet";
+    SettingsHolder::instance()->clear();
+    errorHandle(ErrorHandler::RemoteServiceError);
+    setUserState(UserNotAuthenticated);
+    setState(StateInitialize);
+    return;
+  }
+
+  Q_ASSERT(m_private->m_serverData.initialized());
 
   // For 2.5 we need to regenerate the device key to allow the the custom DNS
   // feature. We can do it in background when the main view is shown.
