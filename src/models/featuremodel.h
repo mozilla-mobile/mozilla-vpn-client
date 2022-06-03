@@ -2,29 +2,27 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef FEATURELIST_H
-#define FEATURELIST_H
+#ifndef FEATUREMODEL_H
+#define FEATUREMODEL_H
 
 #include <QObject>
 #include <QAbstractListModel>
 
 class Feature;
 
-class FeatureList final : public QAbstractListModel {
+class FeatureModel final : public QAbstractListModel {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(FeatureList)
+  Q_DISABLE_COPY_MOVE(FeatureModel)
 
  private:
-  FeatureList() = default;
+  FeatureModel() = default;
 
  public:
   enum ModelRoles {
     FeatureRole = Qt::UserRole + 1,
   };
 
-  static FeatureList* instance();
-
-  void initialize();
+  static FeatureModel* instance();
 
   void updateFeatureList(const QByteArray& data);
 
@@ -36,9 +34,6 @@ class FeatureList final : public QAbstractListModel {
   Q_INVOKABLE void toggleForcedEnable(const QString& feature);
   Q_INVOKABLE void toggleForcedDisable(const QString& feature);
   Q_INVOKABLE QObject* get(const QString& feature);
-
- private:
-  QList<Feature*> m_featurelist;
 };
 
-#endif  // FEATURELIST_H
+#endif  // FEATUREMODEL_H

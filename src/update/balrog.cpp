@@ -420,7 +420,8 @@ bool Balrog::install(const QString& filePath) {
             << QDir::toNativeSeparators(logFile);
 
   QProcess* process = new QProcess(this);
-  process->start("msiexec.exe", arguments);
+  process->setProgram("msiexec.exe");
+  process->setArguments(arguments);
 
   connect(process, &QProcess::readyReadStandardError, [process]() {
     logger.info() << "[msiexec - stderr]" << Qt::endl
@@ -440,38 +441,10 @@ bool Balrog::install(const QString& filePath) {
             deleteLater();
           });
 
-  connect(process,
-          QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
-          [this, process, logFile](int exitCode, QProcess::ExitStatus) {
-            logger.debug() << "Installation completed - exitCode:" << exitCode;
-
-            // In theory we should not be able to read anything more from
-            // stdout/stderr.
-            logger.info() << "[msiexec - stdout]" << Qt::endl
-                          << qUtf8Printable(process->readAllStandardOutput())
-                          << Qt::endl;
-            logger.info() << "[msiexec - stderr]" << Qt::endl
-                          << qUtf8Printable(process->readAllStandardError())
-                          << Qt::endl;
-
-            QFile log(logFile);
-            if (!log.open(QIODevice::ReadOnly | QIODevice::Text)) {
-              logger.warning() << "Unable to read the msiexec log file";
-            } else {
-              QTextStream logStream(&log);
-              logStream.setEncoding(QStringConverter::Encoding::Utf16);
-              logger.debug() << "Log file:" << Qt::endl << logStream.readAll();
-            }
-
-            if (exitCode != 0) {
-              deleteLater();
-              return;
-            }
-
-            // We leak the object because the installer will restart the
-            // app and we need to keep the temporary folder alive during the
-            // whole process.
-          });
+  if (!process->startDetached()) {
+    logger.error() << "Unable to run the installer";
+    deleteLater();
+  }
 #endif
 
 #if defined(MVPN_MACOS)

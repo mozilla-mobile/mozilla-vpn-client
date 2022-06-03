@@ -105,11 +105,9 @@ Window {
         }
     }
 
-    Item {
-        // Workaround to support full-screen background gradients/colors on mobile
-        id: fullScreenMobileBackground
+    VPNMobileStatusBarModifier {
+        id: statusBarModifier
     }
-
 
     Rectangle {
         id: iosSafeAreaTopMargin
@@ -369,6 +367,14 @@ Window {
     }
 
     Connections {
+        target: VPNAddonManager
+        function onRunAddon(addon) {
+            console.log("Loading addon", addon.name);
+            mainStackView.push("qrc:/ui/views/ViewAddon.qml", { addon })
+        }
+    }
+
+    Connections {
         target: VPNSettings
         function onGleanEnabledChanged() {
             console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
@@ -477,6 +483,7 @@ Window {
         id: tooltip
         property alias text: text.text
         visible: VPNTutorial.tooltipShown
+        closePolicy: Popup.NoAutoClose
         x: VPNTheme.theme.windowMargin
         width: parent.width - VPNTheme.theme.windowMargin * 2
 

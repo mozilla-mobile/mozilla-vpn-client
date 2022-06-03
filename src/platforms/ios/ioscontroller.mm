@@ -5,11 +5,11 @@
 #include "ioscontroller.h"
 #include "Mozilla_VPN-Swift.h"
 #include "device.h"
-#include "features/featureioskillswitch.h"
 #include "ipaddress.h"
 #include "keys.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/feature.h"
 #include "mozillavpn.h"
 #include "server.h"
 #include "settingsholder.h"
@@ -126,8 +126,8 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
                                             isIpv6:i.type() == QAbstractSocket::IPv6Protocol];
     [allowedIPAddressRangesNS addObject:[range autorelease]];
   }
-    
-  bool killSwitchEnabled = FeatureIosKillswitch::instance()->isSupported();
+
+  bool killSwitchEnabled = Feature::get(Feature::Feature_iosKillswitch)->isSupported();
 
   [impl connectWithDnsServer:hop.m_dnsServer.toString().toNSString()
            serverIpv6Gateway:hop.m_server.ipv6Gateway().toNSString()

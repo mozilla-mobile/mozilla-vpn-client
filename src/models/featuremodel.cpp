@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "featurelist.h"
+#include "featuremodel.h"
+#include "feature.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -10,31 +11,6 @@
 #ifdef MVPN_ADJUST
 #  include "adjust/adjustfiltering.h"
 #endif
-
-#include "features/featureaccountdeletion.h"
-#include "features/featureappreview.h"
-#include "features/featurecaptiveportal.h"
-#include "features/featureconnectioninfo.h"
-#include "features/featurecustomdns.h"
-#include "features/featurefreetrial.h"
-#include "features/featureinappaccountcreate.h"
-#include "features/featureinappauth.h"
-#include "features/featureinapppurchase.h"
-#ifdef MVPN_IOS
-#  include "features/featureioskillswitch.h"
-#endif
-#include "features/featurelocalareaaccess.h"
-#include "features/featuremobileonboarding.h"
-#include "features/featuremultiaccountcontainers.h"
-#include "features/featuremultihop.h"
-#include "features/featurenotificationcontrol.h"
-#include "features/featuresplittunnel.h"
-#include "features/featuresharelogs.h"
-#include "features/featurestartonboot.h"
-#include "features/featureunsecurednetworknotification.h"
-#include "features/featureserverunavailablenotification.h"
-#include "features/featuresubscriptionmanagement.h"
-#include "features/featurewebsocket.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -44,47 +20,18 @@
 #include <QProcessEnvironment>
 
 namespace {
-FeatureList* s_instance = nullptr;
-Logger logger(LOG_MODEL, "FeatureList");
+FeatureModel* s_instance = nullptr;
+Logger logger(LOG_MODEL, "FeatureModel");
 }  // namespace
 
-FeatureList* FeatureList::instance() {
+FeatureModel* FeatureModel::instance() {
   if (!s_instance) {
-    s_instance = new FeatureList();
+    s_instance = new FeatureModel();
   };
   return s_instance;
 }
 
-void FeatureList::initialize() {
-  new FeatureAccountDeletion();
-  new FeatureAppReview();
-  new FeatureCaptivePortal();
-  new FeatureConnectionInfo();
-  new FeatureCustomDNS();
-  new FeatureFreeTrial();
-  new FeatureInAppAccountCreate();
-  new FeatureInAppAuth();
-  new FeatureInAppPurchase();
-#ifdef MVPN_IOS
-  new FeatureIosKillswitch();
-#endif
-  new FeatureLocalAreaAccess();
-  new FeatureMobileOnboarding();
-  new FeatureMultiAccountContainers();
-  new FeatureMultiHop();
-  new FeatureNotificationControl();
-  new FeatureShareLogs();
-  new FeatureSplitTunnel();
-  new FeatureStartOnBoot();
-  new FeatureSubscriptionManagement();
-  new FeatureUnsecuredNetworkNotification();
-  new FeatureServerUnavailableNotification();
-  new FeatureWebSocket();
-
-  m_featurelist = Feature::getAll();
-}
-
-void FeatureList::toggleForcedEnable(const QString& feature) {
+void FeatureModel::toggleForcedEnable(const QString& feature) {
   logger.debug() << "Flipping on" << feature;
 
   const Feature* f = Feature::get(feature);
@@ -120,10 +67,10 @@ void FeatureList::toggleForcedEnable(const QString& feature) {
   settings->setFeaturesFlippedOn(flags);
 
   logger.debug() << "Feature Flipped! new size:" << flags.size();
-  emit dataChanged(createIndex(0, 0), createIndex(m_featurelist.size(), 0));
+  emit dataChanged(createIndex(0, 0), createIndex(Feature::getAll().size(), 0));
 }
 
-void FeatureList::toggleForcedDisable(const QString& feature) {
+void FeatureModel::toggleForcedDisable(const QString& feature) {
   logger.debug() << "Flipping off" << feature;
 
   const Feature* f = Feature::get(feature);
@@ -159,21 +106,21 @@ void FeatureList::toggleForcedDisable(const QString& feature) {
   settings->setFeaturesFlippedOff(flags);
 
   logger.debug() << "Feature Flipped! new size:" << flags.size();
-  emit dataChanged(createIndex(0, 0), createIndex(m_featurelist.size(), 0));
+  emit dataChanged(createIndex(0, 0), createIndex(Feature::getAll().size(), 0));
 }
 
-QHash<int, QByteArray> FeatureList::roleNames() const {
+QHash<int, QByteArray> FeatureModel::roleNames() const {
   QHash<int, QByteArray> roles;
   roles[FeatureRole] = "feature";
   return roles;
 }
 
-int FeatureList::rowCount(const QModelIndex&) const {
-  return m_featurelist.size();
+int FeatureModel::rowCount(const QModelIndex&) const {
+  return Feature::getAll().size();
 }
 
-QVariant FeatureList::data(const QModelIndex& index, int role) const {
-  auto feature = m_featurelist.at(index.row());
+QVariant FeatureModel::data(const QModelIndex& index, int role) const {
+  auto feature = Feature::getAll().at(index.row());
   if (feature == nullptr || role != FeatureRole) {
     return QVariant();
   }
@@ -181,14 +128,14 @@ QVariant FeatureList::data(const QModelIndex& index, int role) const {
   return QVariant::fromValue(feature);
 };
 
-QObject* FeatureList::get(const QString& feature) {
+QObject* FeatureModel::get(const QString& feature) {
   const Feature* f = Feature::get(feature);
   auto obj = (QObject*)f;
   QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
   return obj;
 }
 
-void FeatureList::updateFeatureList(const QByteArray& data) {
+void FeatureModel::updateFeatureList(const QByteArray& data) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 

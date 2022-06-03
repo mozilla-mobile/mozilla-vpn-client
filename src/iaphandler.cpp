@@ -5,9 +5,9 @@
 #include "iaphandler.h"
 #include "constants.h"
 #include "inspector/inspectorhandler.h"
-#include "features/featurefreetrial.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/feature.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -272,7 +272,7 @@ QVariant IAPHandler::data(const QModelIndex& index, int role) const {
       return QVariant(m_products.at(index.row()).m_savings);
 
     case ProductTrialDaysRole:
-      if (FeatureFreeTrial::instance()->isSupported()) {
+      if (Feature::get(Feature::Feature_freeTrial)->isSupported()) {
         if ((m_products.at(index.row()).m_type == ProductYearly) &&
             InspectorHandler::mockFreeTrial()) {
           return QVariant(7);

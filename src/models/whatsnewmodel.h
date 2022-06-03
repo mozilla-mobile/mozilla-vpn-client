@@ -6,9 +6,8 @@
 #define WHATSNEWMODEL_H
 
 #include <QAbstractListModel>
-#include <QPointer>
 
-#include "featurelist.h"
+class Feature;
 
 class WhatsNewModel final : public QAbstractListModel {
   Q_OBJECT

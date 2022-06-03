@@ -7,7 +7,6 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#include "featurelist.h"
 #include "feature.h"
 
 #include <QList>

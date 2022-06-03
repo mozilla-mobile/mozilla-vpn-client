@@ -79,10 +79,12 @@ include(cmake/golang.cmake)
 add_go_library(mozillavpn ../linux/netfilter/netfilter.go)
 
 include(GNUInstallDirs)
-install(FILES ../linux/extra/MozillaVPN.desktop
+install(TARGETS mozillavpn)
+
+install(FILES ../linux/extra/mozillavpn.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-install(FILES ../linux/extra/MozillaVPN-startup.desktop
+install(FILES ../linux/extra/mozillavpn-startup.desktop
     DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/xdg/autostart)
 
 install(FILES ../linux/extra/icons/16x16/mozillavpn.png

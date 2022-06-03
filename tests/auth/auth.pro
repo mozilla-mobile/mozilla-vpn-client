@@ -43,7 +43,6 @@ HEADERS += \
     ../../src/authenticationlistener.h \
     ../../src/constants.h \
     ../../src/errorhandler.h \
-    ../../src/featurelist.h \
     ../../src/hawkauth.h \
     ../../src/hkdf.h \
     ../../src/inspector/inspectorhandler.h \
@@ -52,6 +51,7 @@ HEADERS += \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/feature.h \
+    ../../src/models/featuremodel.h \
     ../../src/models/server.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
@@ -84,7 +84,6 @@ SOURCES += \
     ../../src/authenticationlistener.cpp \
     ../../src/constants.cpp \
     ../../src/errorhandler.cpp \
-    ../../src/featurelist.cpp \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
     ../../src/ipaddress.cpp \
@@ -92,6 +91,7 @@ SOURCES += \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/featuremodel.cpp \
     ../../src/models/server.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
