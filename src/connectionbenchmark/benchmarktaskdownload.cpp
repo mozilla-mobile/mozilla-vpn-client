@@ -55,22 +55,50 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
   }
 }
 
+void BenchmarkTaskDownload::connectNetworkRequest(NetworkRequest* request) {
+  logger.debug() << "Connect network requests";
+
+  connect(request, &NetworkRequest::requestUpdated, this,
+          &BenchmarkTaskDownload::downloadProgressed);
+  connect(request, &NetworkRequest::requestFailed, this,
+          &BenchmarkTaskDownload::downloadReady);
+  connect(request, &NetworkRequest::requestCompleted, this,
+          [&](const QByteArray& data) {
+            downloadReady(QNetworkReply::NoError, data);
+          });
+
+  logger.debug() << "Starting request:" << (void*)request;
+  m_requests.append(request);
+}
+
+void BenchmarkTaskDownload::handleFailedDnsLookup() {
+  logger.debug() << "Handle failed DNS lookup" << m_fileUrl.toString();
+
+  NetworkRequest* request =
+    NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
+  connectNetworkRequest(request);
+
+  m_elapsedTimer.start();
+}
+
 void BenchmarkTaskDownload::dnsLookupFinished() {
   auto guard = qScopeGuard([&] {
     emit finished(0, true);
     emit completed();
   });
 
-  if (m_dnsLookup.error() != QDnsLookup::NoError) {
+  if (state() != BenchmarkTask::StateActive) {
+    logger.warning() << "DNS Lookup finished after task aborted";
+    return;
+  }
+  if (m_dnsLookup.error() != QDnsLookup::NoError || true) {
     logger.error() << "DNS Lookup Failed:" << m_dnsLookup.errorString();
+    handleFailedDnsLookup();
+    guard.dismiss();
     return;
   }
   if (m_dnsLookup.hostAddressRecords().isEmpty()) {
     logger.error() << "DNS Lookup Failed: no records";
-    return;
-  }
-  if (state() != BenchmarkTask::StateActive) {
-    logger.warning() << "DNS Lookup finished after task aborted";
     return;
   }
 
@@ -80,18 +108,7 @@ void BenchmarkTaskDownload::dnsLookupFinished() {
 
     NetworkRequest* request = NetworkRequest::createForGetHostAddress(
         this, m_fileUrl.toString(), record.value());
-
-    connect(request, &NetworkRequest::requestUpdated, this,
-            &BenchmarkTaskDownload::downloadProgressed);
-    connect(request, &NetworkRequest::requestFailed, this,
-            &BenchmarkTaskDownload::downloadReady);
-    connect(request, &NetworkRequest::requestCompleted, this,
-            [&](const QByteArray& data) {
-              downloadReady(QNetworkReply::NoError, data);
-            });
-
-    logger.debug() << "Starting request:" << (void*)request;
-    m_requests.append(request);
+    connectNetworkRequest(request);
   }
 
   m_elapsedTimer.start();
