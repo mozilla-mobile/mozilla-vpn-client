@@ -8,8 +8,29 @@
 #include <QWebSocket>
 #include <QTimer>
 
-constexpr const int WEBSOCKET_PING_INTERVAL = 30 * 1000;   // 30s
-constexpr const int WEBSOCKET_RETRY_INTERVAL = 30 * 1000;  // 30s
+constexpr const int BASE_RETRY_INTERVAL = 5 * 1000;       // 5s
+constexpr const int MAX_RETRY_INTERVAL = 60 * 60 * 1000;  // 1hr
+constexpr const int WEBSOCKET_PING_INTERVAL = 30 * 1000;  // 30s
+
+class ExponentialBackoffStrategy final : public QObject {
+  Q_OBJECT
+ public:
+  ExponentialBackoffStrategy();
+  int scheduleNextAttempt(std::function<void()> action);
+  void reset();
+
+#ifdef UNIT_TEST
+  void testOverrideBaseRetryInterval(int newInterval);
+  void testOverrideMaxRetryInterval(int newInterval);
+#endif
+
+ private:
+  QTimer m_retryTimer;
+  int m_maxInterval = MAX_RETRY_INTERVAL;
+  int m_baseInterval = BASE_RETRY_INTERVAL;
+
+  int m_retryCounter = 1;
+};
 
 class WebSocketHandler final : public QObject {
   Q_OBJECT
@@ -20,7 +41,7 @@ class WebSocketHandler final : public QObject {
 #ifdef UNIT_TEST
   static void testOverrideWebSocketServerUrl(const QString& url);
   void testOverridePingInterval(int newInterval);
-  void testOverrideRetryInterval(int newInterval);
+  void testOverrideBaseRetryInterval(int newInterval);
 #endif
 
  signals:
@@ -47,7 +68,7 @@ class WebSocketHandler final : public QObject {
   QTimer m_pingTimer;
 
   int m_pingInterval = WEBSOCKET_PING_INTERVAL;
-  int m_retryInterval = WEBSOCKET_RETRY_INTERVAL;
+  ExponentialBackoffStrategy m_backoffStrategy;
 
   static QString s_customWebSocketServerUrl;
 };

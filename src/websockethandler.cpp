@@ -15,6 +15,60 @@ namespace {
 Logger logger(LOG_MAIN, "WebSocketHandler");
 }  // namespace
 
+ExponentialBackoffStrategy::ExponentialBackoffStrategy() {
+  MVPN_COUNT_CTOR(ExponentialBackoffStrategy);
+
+  m_retryTimer.setSingleShot(true);
+}
+
+#ifdef UNIT_TEST
+void ExponentialBackoffStrategy::testOverrideBaseRetryInterval(
+    int newInterval) {
+  m_baseInterval = newInterval;
+}
+
+void ExponentialBackoffStrategy::testOverrideMaxRetryInterval(int newInterval) {
+  m_maxInterval = newInterval;
+}
+#endif
+
+/**
+ * @brief Schedules the next attempt to execute a given function.
+ *
+ * Everytime a new attempt is scheduled the interval will be exponentially
+ * larger.
+ */
+int ExponentialBackoffStrategy::scheduleNextAttempt(
+    std::function<void()> action) {
+  int retryInterval = qPow(m_baseInterval, m_retryCounter);
+  if (retryInterval < m_maxInterval) {
+    m_retryCounter++;
+  }
+
+  QMetaObject::Connection* const connection = new QMetaObject::Connection;
+  *connection =
+      connect(&m_retryTimer, &QTimer::timeout, this, [action, connection]() {
+        action();
+
+        // Immediatelly disconnect after first execution.
+        QObject::disconnect(*connection);
+        delete connection;
+      });
+
+  m_retryTimer.start(retryInterval);
+
+  return retryInterval;
+}
+
+/**
+ * @brief Stops the timer for an ongoing execution attempt, if any. Resets the
+ * interval to base interval.
+ */
+void ExponentialBackoffStrategy::reset() {
+  m_retryTimer.stop();
+  m_retryCounter = 1;
+}
+
 WebSocketHandler::WebSocketHandler() {
   MVPN_COUNT_CTOR(WebSocketHandler);
 
@@ -70,8 +124,8 @@ void WebSocketHandler::testOverridePingInterval(int newInterval) {
   m_pingInterval = newInterval;
 }
 
-void WebSocketHandler::testOverrideRetryInterval(int newInterval) {
-  m_retryInterval = newInterval;
+void WebSocketHandler::testOverrideBaseRetryInterval(int newInterval) {
+  m_backoffStrategy.testOverrideBaseRetryInterval(newInterval);
 }
 #endif
 
@@ -134,6 +188,8 @@ void WebSocketHandler::open() {
 void WebSocketHandler::onConnected() {
   logger.debug() << "WebSocket connected";
 
+  m_backoffStrategy.reset();
+
   connect(&m_webSocket, &QWebSocket::textMessageReceived, this,
           &WebSocketHandler::onMessageReceived);
 
@@ -160,11 +216,11 @@ void WebSocketHandler::onClose() {
   logger.debug() << "WebSocket closed";
 
   if (isUserAuthenticated()) {
+    int nextAttemptIn =
+        m_backoffStrategy.scheduleNextAttempt([this]() { open(); });
     logger.debug()
-        << "User is authenticated. Attempting to reopen WebSocket in:"
-        << m_retryInterval;
-
-    QTimer::singleShot(m_retryInterval, this, &WebSocketHandler::open);
+        << "User is authenticated. Will attempt to reopen websocket in:"
+        << nextAttemptIn;
   } else {
     logger.debug()
         << "User is not authenticated. Will not attempt to reopen WebSocket.";

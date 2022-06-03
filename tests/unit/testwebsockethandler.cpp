@@ -149,7 +149,7 @@ void TestWebSocketHandler::tst_reconnectionAttemptsAfterUnexpectedClose() {
   QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
 
   WebSocketHandler handler;
-  handler.testOverrideRetryInterval(100);
+  handler.testOverrideBaseRetryInterval(100);
   handler.initialize();
 
   // Mock a user log in, this should prompt a new websocket connection.
@@ -171,7 +171,7 @@ void TestWebSocketHandler::tst_reconnectionAttemptsAfterUnexpectedClose() {
   QCOMPARE(newConnectionSpy.count(), 2);
 }
 
-void TestWebSocketHandler::tst_reconnectionIsAttemptedUntilSuccessfull() {
+void TestWebSocketHandler::tst_reconnectionsAreAttemptedUntilSuccessfull() {
   SettingsHolder settingsHolder;
   settingsHolder.setFeaturesFlippedOn(QStringList{"websocket"});
   WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
@@ -180,9 +180,9 @@ void TestWebSocketHandler::tst_reconnectionIsAttemptedUntilSuccessfull() {
   QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
 
   WebSocketHandler handler;
-  // It's important that the retry value for this test is 1.
-  // It is the only interval that will not exponentially increase backoff time.
-  handler.testOverrideRetryInterval(5);
+  // We don't want too high of a interval here, because intervals are
+  // exponentially increasing.
+  handler.testOverrideBaseRetryInterval(5);
   handler.initialize();
 
   // Mock a user log in, this should prompt a new websocket connection.
@@ -198,7 +198,7 @@ void TestWebSocketHandler::tst_reconnectionIsAttemptedUntilSuccessfull() {
 
   // No need to do anything here.
   //
-  // The handler should be polling for reconnection every 1ms,
+  // The handler should be polling for reconnection every 5ms,
   // we will let it do that a few times.
   QTest::qWait(100);
 
@@ -208,6 +208,133 @@ void TestWebSocketHandler::tst_reconnectionIsAttemptedUntilSuccessfull() {
   // Wait for reconnection.
   QVERIFY(newConnectionSpy.wait());
   QCOMPARE(newConnectionSpy.count(), 2);
+}
+
+void TestWebSocketHandler::tst_reconnectionBackoffTimeExponentiallyIncreases() {
+  ExponentialBackoffStrategy backoffStrategy;
+
+  int testBaseRetryInterval = 5;
+  int testMaxRetries = 3;
+  backoffStrategy.testOverrideBaseRetryInterval(testBaseRetryInterval);
+  backoffStrategy.testOverrideMaxRetryInterval(
+      qPow(testBaseRetryInterval, testMaxRetries));
+
+  int callCount = 0;
+  auto testFn = [&callCount]() { callCount++; };
+
+  for (int i = 0; i < testMaxRetries; i++) {
+    // Schedule an attempt.
+    int nextAttemptIn = backoffStrategy.scheduleNextAttempt(testFn);
+    // Verify interval is the expected value.
+    QCOMPARE(nextAttemptIn, qPow(testBaseRetryInterval, i + 1));
+    // `testFn` should only have been scheduled at this point, not called.
+    QCOMPARE(callCount, i);
+    // Wait for testFn to be executed.
+    qDebug() << callCount;
+    QVERIFY(
+        QTest::qWaitFor([&callCount, i]() { return callCount == (i + 1); }));
+    qDebug() << callCount;
+  }
+
+  // Inside the loop we have reached max retries, so we expect the interval to
+  // be the same as the last one now.
+
+  // Schedule an attempt.
+  int nextAttemptIn = backoffStrategy.scheduleNextAttempt(testFn);
+  // Verify interval is the expected value.
+  QCOMPARE(nextAttemptIn, qPow(testBaseRetryInterval, testMaxRetries));
+  // `testFn` should only have been scheduled at this point, not called.
+  QCOMPARE(callCount, testMaxRetries);
+  // Wait for testFn to be executed.
+  QVERIFY(QTest::qWaitFor([&callCount, testMaxRetries]() {
+    return callCount == testMaxRetries + 1;
+  }));
+
+  // After a reset, the interval should be back to base interval.
+  backoffStrategy.reset();
+
+  // Schedule an attempt.
+  nextAttemptIn = backoffStrategy.scheduleNextAttempt(testFn);
+  // Verify interval is the expected value.
+  QCOMPARE(nextAttemptIn, testBaseRetryInterval);
+  // `testFn` should only have been scheduled at this point, not called.
+  QCOMPARE(callCount, testMaxRetries + 1);
+  // Wait for testFn to be executed.
+  QVERIFY(QTest::qWaitFor([&callCount, testMaxRetries]() {
+    return callCount == testMaxRetries + 2;
+  }));
+}
+
+void TestWebSocketHandler::
+    tst_reconnectionBackoffIsResetOnSuccessfullConnection() {
+  SettingsHolder settingsHolder;
+  settingsHolder.setFeaturesFlippedOn(QStringList{"websocket"});
+  WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
+
+  MockServer server;
+  QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
+  QSignalSpy socketDisconnectedSpy(&server, SIGNAL(socketDisconnected()));
+
+  int testBaseRetryInterval = 5;
+  WebSocketHandler handler;
+  handler.testOverrideBaseRetryInterval(testBaseRetryInterval);
+  handler.initialize();
+
+  // Mock a user log in, this should prompt a new websocket connection.
+  TestHelper::userState = MozillaVPN::UserAuthenticated;
+  emit MozillaVPN::instance()->userStateChanged();
+
+  QVERIFY(newConnectionSpy.wait());
+  QCOMPARE(newConnectionSpy.count(), 1);
+
+  // Close the whole server. All subsequent reconnection attempts will be
+  // unsuccesfull.
+  server.close();
+
+  // No need to do anything here.
+  //
+  // The handler should be polling for reconnection every 5ms,
+  // we will let it do that at least 3 times.
+  QTest::qWait(qPow(testBaseRetryInterval, 5));
+
+  // Start a timer
+  QElapsedTimer timer;
+  timer.start();
+
+  // Reopen the server so reconnections can take place.
+  server.open();
+
+  // Wait for reconnection.
+  QVERIFY(newConnectionSpy.wait());
+
+  // We have to be very loose here with the checks.
+  //
+  // We know there were at least three retries,
+  // the new connection should have taken at least more than the third
+  // interval.
+  QVERIFY(timer.elapsed() > qPow(testBaseRetryInterval, 3));
+  QCOMPARE(newConnectionSpy.count(), 2);
+
+  // Give it just a bit of time for the `onConnected` handler to be called.
+  // The new connection spy is triggered before that and if we don't wait
+  // there is no time for the handler to reset the interval.
+  //
+  // Yes, this is a bit hacky.
+  QTest::qWait(50);
+
+  // Close the open connections to prompt a new reconnection.
+  server.closeEach();
+  timer.restart();
+
+  // Wait for reconnection.
+  QVERIFY(newConnectionSpy.wait());
+  // Again, we have to be loose with these cheks and checking if this
+  // took less than just one interval is asking for too much precision of
+  // QElapsedTimer.
+  //
+  // Backoff interval should have been reset, if this interval is smaller than
+  // the previous we should be fine.
+  QVERIFY(timer.elapsed() < qPow(testBaseRetryInterval, 2));
 }
 
 void TestWebSocketHandler::tst_reconnectionAttemptsOnPingTimeout() {
@@ -220,7 +347,7 @@ void TestWebSocketHandler::tst_reconnectionAttemptsOnPingTimeout() {
   QSignalSpy socketDisconnectedSpy(&server, SIGNAL(socketDisconnected()));
 
   WebSocketHandler handler;
-  handler.testOverrideRetryInterval(100);
+  handler.testOverrideBaseRetryInterval(100);
   // By setting an extremely low ping interval,
   // we are guaranteed to have the ping timer timeout before we get a ping
   // response.
