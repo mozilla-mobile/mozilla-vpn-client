@@ -25,27 +25,19 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+        with:
+          fetch-depth: '0'
 
       - name: Install Qt
-        shell: bash
         run: |
           python3 -m pip install aqtinstall
           python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
 
       - name: Install python dependencies
-        shell: bash
         run: |
           pip install -r requirements.txt
 
       - name: Generating translations
-        shell: bash
         run: |
           export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           ./scripts/utils/generate_ts.sh

@@ -43,7 +43,6 @@ print G "done"
 print Y "Generating the main translation file... "
 lupdate translations/generated/dummy.pro -ts translations.ts || die
 
-git branch -r
 for branch in $(git branch -r | grep origin/releases); do
   printn Y "Importing strings from $branch..."
 
