@@ -9,6 +9,7 @@ on:
     branches:
       - main
       - 'releases/**'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -50,7 +51,7 @@ jobs:
           ./scripts/utils/generate_ts.sh
 
       - name: Uploading
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v1
         with:
             name: Translation file
             path: translations.ts
