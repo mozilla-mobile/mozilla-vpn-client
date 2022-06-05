@@ -154,7 +154,7 @@ def write_en_language(filename, strings):
     ts.set("language", "en")
 
     context = ET.SubElement(ts, "context")
-    name = ET.SubElement(context, "name")
+    ET.SubElement(context, "name")
 
     for key, value in strings.items():
         message = ET.SubElement(context, "message")
