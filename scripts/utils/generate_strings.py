@@ -3,10 +3,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import re
 import os
 import yaml
-import json
 import argparse
 
 def stop(string_id):
@@ -113,7 +111,7 @@ def parseTranslationStrings(yamlfile):
         
         return yaml_strings
 
-## Render a dictionary of strings into the l18nstrings module.
+# Render a dictionary of strings into the l18nstrings module.
 def generateStrings(strings, outdir):
     os.makedirs(outdir, exist_ok=True)
     with open(os.path.join(outdir, "l18nstrings.h"), "w", encoding="utf-8") as output:
@@ -211,7 +209,7 @@ const char* const L18nStrings::_ids[] = {
 
 
 if __name__ == "__main__":
-    ## Parse arguments to locate the input and output files.
+    # Parse arguments to locate the input and output files.
     parser = argparse.ArgumentParser(
         description='Generate internationaliation strings database from a YAML source')
     parser.add_argument('source', metavar='SOURCE', type=str, action='store', nargs='?',
@@ -220,17 +218,17 @@ if __name__ == "__main__":
         help='Output directory for generated files')
     args = parser.parse_args()
 
-    ## If no source was provided, find it relative to this script file.
+    # If no source was provided, find it relative to this script file.
     if args.source is None:
         rootpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
         args.source = os.path.join('translations', 'strings.yaml')
     
-    ## If no output directory was provided, use the current directory.
+    # If no output directory was provided, use the current directory.
     if args.output is None:
         args.output = os.getcwd()
     
-    ## Parse the inputs for their sweet juicy strings.
+    # Parse the inputs for their sweet juicy strings.
     strings = parseTranslationStrings(args.source)
     
-    ## Render the strings into generated content.
+    # Render the strings into generated content.
     generateStrings(strings, args.output)

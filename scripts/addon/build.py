@@ -6,17 +6,16 @@
 import argparse
 import json
 import os
-from pathlib import Path
 import xml.etree.ElementTree as ET
 import tempfile
 import shutil
 import sys
 
 comment_types = {
-    "text": f"Standard text in a guide block",
-    "title": f"Title in a guide block",
-    "ulist": f"Bullet unordered list item in a guide block",
-    "olist": f"Bullet ordered list item in a guide block",
+    "text": "Standard text in a guide block",
+    "title": "Title in a guide block",
+    "ulist": "Bullet unordered list item in a guide block",
+    "olist": "Bullet ordered list item in a guide block",
 }
 
 
@@ -24,15 +23,15 @@ def retrieve_strings_tutorial(manifest, filename):
     tutorial_strings = {}
 
     tutorial_json = manifest["tutorial"]
-    if not "id" in tutorial_json:
+    if "id" not in tutorial_json:
         exit(f"Tutorial {filename} does not have an id")
-    if not "title" in tutorial_json:
+    if "title" not in tutorial_json:
         exit(f"Tutorial {filename} does not have a title")
-    if not "subtitle" in tutorial_json:
+    if "subtitle" not in tutorial_json:
         exit(f"Tutorial {filename} does not have a subtitle")
-    if not "completion_message" in tutorial_json:
+    if "completion_message" not in tutorial_json:
         exit(f"Tutorial {filename} does not have a completion message")
-    if not "steps" in tutorial_json:
+    if "steps" not in tutorial_json:
         exit(f"Tutorial {filename} does not have steps")
 
     tutorial_id = tutorial_json["id"]
@@ -180,12 +179,11 @@ def copy_files(path, dest_path):
         if file.startswith("."):
             continue
 
-        for ext in ["qrc", "ts", "qm", "rcc"]:
-            if file.endswith(f".{ext}"):
-                exit(f"Unexpected {ext} file found: {os.path.join(path, file)}")
-
         file_path = os.path.join(path, file)
         if os.path.isfile(file_path):
+            if file_path.endswith((".ts", ".qrc", ".rcc")):
+                exit(f"Unexpected {ext} file found: {os.path.join(path, file)}")
+
             shutil.copyfile(file_path, os.path.join(dest_path, file))
             continue
 

@@ -36,8 +36,8 @@ for file in os.listdir(addons_path):
         continue
     addon_path = os.path.join(addons_path, file, "manifest.json")
 
-    build_args = [sys.executable, build_path, addon_path, generated_path]
+    build_cmd = [sys.executable, build_path, addon_path, generated_path]
     if args.qtpath:
-        build_args.append("-q")
-        build_args.append(args.qtpath)
-    subprocess.call(build_args)
+        build_cmd.append("-q")
+        build_cmd.append(args.qtpath)
+    subprocess.call(build_cmd)
