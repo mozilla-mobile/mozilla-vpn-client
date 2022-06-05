@@ -9,157 +9,73 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import compat 0.1
 
-Popup {
+VPNPopup {
     id: popup
 
-    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-    enabled: true
-    focus: true
-    modal: true
-    //width should have the same horizontal margins from the window as the content behind it for phones. Anything bigger than 500 is probably a tablet
-    width: Math.min(window.width - (VPNTheme.theme.windowMargin * 2), 500)
-    topPadding: VPNTheme.theme.windowMargin / 2
+    startContentBeneathCloseButton: false
     bottomPadding: VPNTheme.theme.windowMargin
-    horizontalPadding: VPNTheme.theme.windowMargin / 2
 
-    contentItem: Item {
+    popupContentItem.implicitHeight: layout.implicitHeight
 
-        ColumnLayout {
-            anchors.fill: parent
-            spacing: 0
-
-            RowLayout {
-                spacing: 0
-
-                // Back button
-                VPNIconButton {
-                    objectName: "backButton"
-
-                    accessibleName: qsTrId("vpn.main.back")
-                    visible: featureTour.currentIndex !== 0
-                    onClicked: featureTour.goBack()
-
-                    Layout.preferredHeight: VPNTheme.theme.rowHeight
-                    Layout.preferredWidth: VPNTheme.theme.rowHeight
-                    Layout.alignment: Qt.AlignRight
-
-                    Image {
-                        anchors.centerIn: parent
-                        fillMode: Image.PreserveAspectFit
-                        source: "qrc:/nebula/resources/back-dark.svg"
-                        sourceSize.height: VPNTheme.theme.iconSize * 1.5
-                        sourceSize.width: VPNTheme.theme.iconSize * 1.5
-                    }
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                // Close button
-                VPNIconButton {
-                    objectName: "closeButton"
-
-                    accessibleName: qsTrId("menubar.file.close")
-                    onClicked: {
-                        popup.close();
-                    }
-
-                    Layout.preferredHeight: VPNTheme.theme.rowHeight
-                    Layout.preferredWidth: VPNTheme.theme.rowHeight
-                    Layout.alignment: Qt.AlignRight
-
-                    Image {
-                        anchors.centerIn: parent
-                        fillMode: Image.PreserveAspectFit
-                        source: "qrc:/nebula/resources/close-darker.svg"
-                        sourceSize.height: VPNTheme.theme.iconSize
-                        sourceSize.width: VPNTheme.theme.iconSize
-                    }
-                }
-
-            }
-
-            ColumnLayout {
-                id: contentLayout
-                Layout.leftMargin: VPNTheme.theme.windowMargin
-                Layout.rightMargin: VPNTheme.theme.windowMargin
-                Layout.fillHeight: true
-
-                VPNFeatureTour {
-                    id: featureTour
-
-                    slidesModel: VPNWhatsNewModel
-
-                    onFinished: {
-                        popup.close();
-                    }
-                    onStarted: {
-                        VPNWhatsNewModel.markFeaturesAsSeen();
-                    }
-                }
-            }
-        }
-    }
-
-    background: Rectangle {
-        id: popupBackground
+    ColumnLayout {
+        id: layout
 
         anchors.fill: parent
-        color: VPNTheme.theme.bgColor
-        radius: 8
 
-        Rectangle {
-            id: popUpShadowSource
-            anchors.fill: popupBackground
-            radius: popupBackground.radius
-            z: -1
+        spacing: 0
+
+        RowLayout {
+            spacing: 0
+
+            // Back button
+            VPNIconButton {
+                id: backButton
+
+                property bool showBackButton: featureTour.currentIndex !== 0
+
+                Layout.leftMargin: VPNTheme.theme.windowMargin / 2
+                Layout.topMargin: VPNTheme.theme.windowMargin / 2
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                Layout.preferredWidth: VPNTheme.theme.rowHeight
+                Layout.alignment: Qt.AlignRight
+
+                objectName: "backButton"
+
+                accessibleName: qsTrId("vpn.main.back")
+                onClicked: featureTour.goBack()
+                enabled: showBackButton
+
+                Accessible.ignored: !enabled
+
+                Image {
+                    anchors.centerIn: parent
+
+                    visible: parent.showBackButton
+                    fillMode: Image.PreserveAspectFit
+                    source: "qrc:/nebula/resources/back-dark.svg"
+                    sourceSize.height: VPNTheme.theme.iconSize * 1.5
+                    sourceSize.width: VPNTheme.theme.iconSize * 1.5
+                }
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
         }
 
-        VPNDropShadow {
-            id: popupShadow
+        VPNFeatureTour {
+            id: featureTour
 
-            anchors.fill: popUpShadowSource
-            cached: true
-            color: "black"
-            opacity: 0.2
-            radius: 16
-            source: popUpShadowSource
-            spread: 0.1
-            transparentBorder: true
-            verticalOffset: 4
-            z: -1
-        }
-    }
+            Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
+            Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
 
-    enter: Transition {
-        NumberAnimation {
-            property: "opacity"
-            duration: 120
-            from: 0.0
-            to: 1.0
-            easing.type: Easing.InOutQuad
-        }
-    }
+            slidesModel: VPNWhatsNewModel
 
-    exit: Transition {
-        NumberAnimation {
-            property: "opacity"
-            duration: 120
-            from: 1.0
-            to: 0.0
-            easing.type: Easing.InOutQuad
-        }
-    }
-
-    Overlay.modal: Rectangle {
-        id: overlayBackground
-
-        color: VPNTheme.theme.overlayBackground
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 175
+            onFinished: {
+                popup.close();
+            }
+            onStarted: {
+                VPNWhatsNewModel.markFeaturesAsSeen();
             }
         }
     }

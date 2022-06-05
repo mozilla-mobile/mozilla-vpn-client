@@ -36,7 +36,7 @@ ColumnLayout {
             currentIndex: 0
             interactive: true
 
-            Layout.fillWidth: true            
+            Layout.fillWidth: true
 
             onCurrentIndexChanged: {
                 tour.currentFeatureID = slidesRepeater.itemAt(currentIndex).featureID
@@ -94,6 +94,10 @@ ColumnLayout {
 
                             Accessible.ignored: index !== swipeView.currentIndex
                         }
+                    }
+
+                    Item {
+                        Layout.fillHeight: true
                     }
                 }
             }
