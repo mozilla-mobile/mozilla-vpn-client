@@ -22,7 +22,7 @@ cp scripts/utils/generate_strings.py cache || die
 print G "done."
 
 printn Y "Generating strings... "
-python cache/generate_strings.py -o translations/generated -g src/ui/guides -t src/ui/tutorials
+python cache/generate_strings.py -o translations/generated
 print G "done."
 
 printn Y "Generating a dummy PRO file... "
@@ -47,10 +47,7 @@ for branch in $(git branch -r | grep origin/releases); do
   printn Y "Importing strings from $branch..."
 
   git checkout $branch &>/dev/null || die
-  PARAMS=
-  [ -d src/ui/guides ] && PARAMS="$PARAMS -g src/ui/guides"
-  [ -d src/ui/tutorials ] && PARAMS="$PARAMS -t src/ui/tutorials"
-  python cache/generate_strings.py -o translations/generated $PARAMS || die
+  python cache/generate_strings.py -o translations/generated || die
   lupdate translations/generated/dummy.pro -ts branch.ts || die
   lconvert -i translations.ts branch.ts -o tmp.ts || die
   mv tmp.ts translations.ts || die
