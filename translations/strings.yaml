@@ -594,6 +594,7 @@ tipsAndTricks:
   quickTipsTitle: Quick tips
   quickTipsDescription: Let us help you get the most out of Mozilla VPN
   quickTipsGuideViewTitle: Quick tip
+  introModalDescription: Here’s a great list of useful tips and tricks to get the best out of your Mozilla VPN experience. Check it out now or find it anytime in the settings.
 
 global:
   expand:
@@ -605,3 +606,10 @@ global:
   vpnUser: 
     value: VPN User
     comment: Fallback string for users who have not specified a Display Name.
+  discoverNow: 
+    value: Discover now
+    comment: Takes the user somewhere to learn more about something
+  goBack:
+    value: Go back
+    comment: Navigates the user to the previous place they were at in the app
+    
