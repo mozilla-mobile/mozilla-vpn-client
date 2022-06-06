@@ -178,76 +178,43 @@ Item {
     }
 
 
-    VPNPopup {
-        property alias _popupImgSrc: popupImage.source
-        property alias _popupHeadline: popupHeadline.text
-        property alias _popupSubtitle: popupSubtitle.text
-        property alias _primaryButtonText: primaryButton.text
-        property var _primaryButtonOnClicked: () => {}
-        property var _secondaryButtonOnClicked: () => {}
+    VPNSimplePopup {
+        property alias primaryButtonText: primaryButton.text
+        property var primaryButtonOnClicked: () => {}
+        property var secondaryButtonOnClicked: () => {}
         property var _onClosed: () => {}
 
         id: tutorialPopup
         objectName: "tutorialPopup"
-
-        anchors.centerIn: parent
-        width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
-        height: Math.min(parent.height - VPNTheme.theme.windowMargin * 2, implicitHeight + VPNTheme.theme.windowMargin * 2)
-        maxWidth: Math.min(parent.width - (VPNTheme.theme.windowMargin * 2), VPNTheme.theme.maxHorizontalContentWidth)
         modal: true
         focus: true
         visible: false
         onClosed: _onClosed();
         onOpened: tutorialPopup.forceActiveFocus()
+        anchors.centerIn: Overlay.overlay
 
         Component.onCompleted: {
             [primaryButton.objectName, secondaryButton.objectName, "vpnPopupCloseButton"].forEach(objName => VPNTutorial.allowItem(objName));
         }
 
-        _popupContent:
-            ColumnLayout {
-                id: tutorialPopupContent
-                spacing: VPNTheme.theme.vSpacing
+        title: ""
+        description: ""
 
-                Image {
-                    id: popupImage
-                    source: ""
-                    antialiasing: true
-                    sourceSize.height: 80
-                    Layout.alignment: Qt.AlignHCenter
-                }
-
-                VPNHeadline {
-                    id: popupHeadline
-                    objectName: "tutorialPopupHeadline"
-                    width: undefined
-                    Layout.fillWidth: true
-                    text: ""
-                }
-
-                VPNTextBlock {
-                    id: popupSubtitle
-                    horizontalAlignment: Text.AlignHCenter
-                    Layout.preferredWidth: parent.width
-                    Layout.fillWidth: true
-                    text: ""
-                }
-
-                VPNButton {
-                    id: primaryButton
-                    objectName: "tutorialPopupPrimaryButton"
-                    text: ""
-                    onClicked: tutorialPopup._primaryButtonOnClicked()
-                }
-
-                VPNLinkButton {
-                    id: secondaryButton
-                    objectName: "tutorialPopupSecondaryButton"
-                    labelText: VPNl18n.TutorialPopupSecondaryButtonLabel
-                    Layout.alignment: Qt.AlignHCenter
-                    onClicked: tutorialPopup._secondaryButtonOnClicked()
-                }
+        buttons: [
+            VPNButton {
+                id: primaryButton
+                objectName: "tutorialPopupPrimaryButton"
+                text: ""
+                onClicked: tutorialPopup.primaryButtonOnClicked()
+            },
+            VPNLinkButton {
+                id: secondaryButton
+                objectName: "tutorialPopupSecondaryButton"
+                labelText: VPNl18n.TutorialPopupSecondaryButtonLabel
+                Layout.alignment: Qt.AlignHCenter
+                onClicked: tutorialPopup.secondaryButtonOnClicked()
             }
+        ]
     }
 
 
@@ -258,15 +225,15 @@ Item {
 
 
     function openLeaveTutorialPopup(callback = () => {}) {
-        tutorialPopup._popupImgSrc = "qrc:/ui/resources/logo-error.svg";
-        tutorialPopup._primaryButtonOnClicked = () => tutorialPopup.close();
-        tutorialPopup._secondaryButtonOnClicked = () => {
+        tutorialPopup.imageSrc = "qrc:/ui/resources/logo-error.svg";
+        tutorialPopup.primaryButtonOnClicked = () => tutorialPopup.close();
+        tutorialPopup.secondaryButtonOnClicked = () => {
             tutorialPopup._onClosed = () => callback()
             leaveTutorial();
         }
-        tutorialPopup._primaryButtonText = VPNl18n.TutorialPopupTutorialLeavePrimaryButtonLabel;
-        tutorialPopup._popupHeadline = VPNl18n.TutorialPopupTutorialLeaveHeadline;
-        tutorialPopup._popupSubtitle = VPNl18n.TutorialPopupTutorialLeaveSubtitle;
+        tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialLeavePrimaryButtonLabel;
+        tutorialPopup.title = VPNl18n.TutorialPopupTutorialLeaveHeadline;
+        tutorialPopup.description = VPNl18n.TutorialPopupTutorialLeaveSubtitle;
         tutorialPopup.open();
     }
 
@@ -295,12 +262,12 @@ Item {
         }
 
         function onTutorialCompleted(localizedTutorialCompletedCopy) {
-            tutorialPopup._popupImgSrc = "qrc:/ui/resources/logo-success.svg";
-            tutorialPopup._primaryButtonOnClicked = () => openTipsAndTricks();
-            tutorialPopup._primaryButtonText = VPNl18n.TutorialPopupTutorialCompletePrimaryButtonLabel;
-            tutorialPopup._secondaryButtonOnClicked = () => tutorialPopup.close();
-            tutorialPopup._popupHeadline =  VPNl18n.TutorialPopupTutorialCompleteHeadline;
-            tutorialPopup._popupSubtitle = localizedTutorialCompletedCopy;
+            tutorialPopup.imageSrc = "qrc:/ui/resources/logo-success.svg";
+            tutorialPopup.primaryButtonOnClicked = () => openTipsAndTricks();
+            tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialCompletePrimaryButtonLabel;
+            tutorialPopup.secondaryButtonOnClicked = () => tutorialPopup.close();
+            tutorialPopup.title =  VPNl18n.TutorialPopupTutorialCompleteHeadline;
+            tutorialPopup.description = localizedTutorialCompletedCopy;
             tutorialPopup._onClosed = () => {};
             tutorialPopup.open();
         }
