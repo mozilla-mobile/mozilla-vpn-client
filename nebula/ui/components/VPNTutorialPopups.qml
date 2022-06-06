@@ -58,7 +58,7 @@ Item {
         focus: true
 
         y: {
-            if (targetElement && typeof(targetElement) !== "undefined") {
+            if (targetElement) {
                const windowHeight = window.height;
                const targetElementDistanceFromTop = targetElement.mapToItem(window.contentItem, 0, 0).y
 
