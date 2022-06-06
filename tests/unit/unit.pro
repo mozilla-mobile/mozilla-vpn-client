@@ -42,8 +42,12 @@ include($$PWD/../../translations/translations.pri)
 RESOURCES ~= 's/.*servers.qrc//g'
 
 HEADERS += \
-    ../../src/addon.h \
     ../../src/addonmanager.h \
+    ../../src/addons/addon.h \
+    ../../src/addons/addondemo.h \
+    ../../src/addons/addonguide.h \
+    ../../src/addons/addoni18n.h \
+    ../../src/addons/addontutorial.h \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/captiveportal/captiveportal.h \
@@ -151,8 +155,12 @@ HEADERS += \
     testwebsockethandler.h
 
 SOURCES += \
-    ../../src/addon.cpp \
     ../../src/addonmanager.cpp \
+    ../../src/addons/addon.cpp \
+    ../../src/addons/addondemo.cpp \
+    ../../src/addons/addonguide.cpp \
+    ../../src/addons/addoni18n.cpp \
+    ../../src/addons/addontutorial.cpp \
     ../../src/adjust/adjustfiltering.cpp \
     ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \

@@ -3,21 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonmanager.h"
+#include "addons/addon.h"
 #include "constants.h"
 #include "leakdetector.h"
-#include "localizer.h"
 #include "logger.h"
 #include "models/feature.h"
-#include "models/guidemodel.h"
-#include "models/tutorialmodel.h"
 
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QResource>
-#include <QScopeGuard>
 #include <QStandardPaths>
 
 namespace {
@@ -118,98 +113,14 @@ bool AddonManager::load(const QString& fileName) {
 }
 
 bool AddonManager::loadManifest(const QString& manifestFileName) {
-  QFile file(manifestFileName);
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    logger.warning() << "Unable to read the addon manifest of"
+  Addon* addon = Addon::create(this, manifestFileName);
+  if (!addon) {
+    logger.warning() << "Unable to create an addon from manifest"
                      << manifestFileName;
     return false;
   }
 
-  QJsonDocument json = QJsonDocument::fromJson(file.readAll());
-  if (!json.isObject()) {
-    logger.warning() << "The manifest must be a JSON document"
-                     << manifestFileName;
-    return false;
-  }
-
-  QJsonObject obj = json.object();
-
-  QString version = obj["version"].toString();
-  if (version.isEmpty()) {
-    logger.warning() << "No version in the manifest" << manifestFileName;
-    return false;
-  }
-
-  if (version != "0.1") {
-    logger.warning() << "Unsupported version" << version << manifestFileName;
-    return false;
-  }
-
-  QString id = obj["id"].toString();
-  if (id.isEmpty()) {
-    logger.warning() << "No id in the manifest" << manifestFileName;
-    return false;
-  }
-
-  QString name = obj["name"].toString();
-  if (name.isEmpty()) {
-    logger.warning() << "No name in the manifest" << manifestFileName;
-    return false;
-  }
-
-  QString type = obj["type"].toString();
-  if (type.isEmpty()) {
-    logger.warning() << "No type in the manifest" << manifestFileName;
-    return false;
-  }
-
-  Addon::AddonType addonType;
-  QString qmlFileName;
-
-  if (type == "demo") {
-    addonType = Addon::AddonTypeDemo;
-    QString qml = obj["qml"].toString();
-    if (qml.isEmpty()) {
-      logger.warning() << "No qml in the manifest" << manifestFileName;
-      return false;
-    }
-
-    qmlFileName = QFileInfo(manifestFileName).dir().filePath(qml);
-    if (!QFile::exists(qmlFileName)) {
-      logger.warning() << "Unable to load the qml entry" << qmlFileName << qml
-                       << manifestFileName;
-      return false;
-    }
-  } else if (type == "i18n") {
-    addonType = Addon::AddonTypeI18n;
-  } else if (type == "tutorial") {
-    addonType = Addon::AddonTypeTutorial;
-  } else if (type == "guide") {
-    addonType = Addon::AddonTypeGuide;
-  } else {
-    logger.warning() << "Unsupported type" << type << manifestFileName;
-    return false;
-  }
-
-  if (addonType == Addon::AddonTypeTutorial) {
-    if (!TutorialModel::instance()->createFromJson(
-            obj["tutorial"].toObject())) {
-      logger.warning() << "Unable to add the tutorial";
-      return false;
-    }
-  }
-
-  if (addonType == Addon::AddonTypeGuide) {
-    if (!GuideModel::instance()->createFromJson(obj["guide"].toObject())) {
-      logger.warning() << "Unable to add the guide";
-      return false;
-    }
-  }
-
-  Addon* addon =
-      new Addon(this, addonType, manifestFileName, id, name, qmlFileName);
-  m_addons.insert(id, addon);
-
+  m_addons.insert(addon->id(), addon);
   return true;
 }
 
@@ -245,23 +156,7 @@ void AddonManager::run(const QString& addonId) {
   Addon* addon = m_addons[addonId];
   Q_ASSERT(addon);
 
-  switch (addon->type()) {
-    case Addon::AddonTypeDemo:
-      emit runAddon(addon);
-      break;
-
-    case Addon::AddonTypeI18n:
-      emit Localizer::instance()->codeChanged();
-      break;
-
-    case Addon::AddonTypeTutorial:
-      // Nothing todo for these types
-      break;
-
-    case Addon::AddonTypeGuide:
-      // Nothing todo for these types
-      break;
-  }
+  addon->run();
 }
 
 void AddonManager::retranslate() {

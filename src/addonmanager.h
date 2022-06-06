@@ -5,11 +5,10 @@
 #ifndef ADDONMANAGER_H
 #define ADDONMANAGER_H
 
-#include "addon.h"
-
 #include <QHash>
 #include <QObject>
 
+class Addon;
 class QDir;
 
 class AddonManager final : public QObject {
