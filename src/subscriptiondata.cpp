@@ -69,7 +69,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   if (!m_planAmount && m_planAmount != 0) {
     return false;
   }
-  
+
   QJsonValue planCurrency = planData.value("currency");
   if (!planCurrency.isString()) {
     return false;

@@ -239,7 +239,9 @@ class MozillaVPN final : public QObject {
     return &m_private->m_serverCountryModel;
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
-  SubscriptionData* subscriptionData() { return &m_private->m_subscriptionData; }
+  SubscriptionData* subscriptionData() {
+    return &m_private->m_subscriptionData;
+  }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
   Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }

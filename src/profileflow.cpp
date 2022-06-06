@@ -32,7 +32,8 @@ void ProfileFlow::start() {
   User* user = MozillaVPN::instance()->user();
   Q_ASSERT(user);
 
-  TaskGetSubscriptionDetails* task = new TaskGetSubscriptionDetails(user->email());
+  TaskGetSubscriptionDetails* task =
+      new TaskGetSubscriptionDetails(user->email());
   connect(task, &TaskGetSubscriptionDetails::receivedData, this,
           &ProfileFlow::subscriptionDetailsFetched);
   connect(task, &TaskGetSubscriptionDetails::needsAuthentication, this, [&] {
