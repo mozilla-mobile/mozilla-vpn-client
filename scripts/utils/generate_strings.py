@@ -221,7 +221,7 @@ if __name__ == "__main__":
     # If no source was provided, find it relative to this script file.
     if args.source is None:
         rootpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
-        args.source = os.path.join('translations', 'strings.yaml')
+        args.source = os.path.join(rootpath, 'translations', 'strings.yaml')
     
     # If no output directory was provided, use the current directory.
     if args.output is None:
