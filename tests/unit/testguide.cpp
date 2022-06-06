@@ -165,7 +165,7 @@ void TestGuide::model() {
   QVERIFY(guideFile.open(QIODevice::ReadOnly | QIODevice::Text));
   QJsonDocument json = QJsonDocument::fromJson(guideFile.readAll());
   QVERIFY(json.isObject());
-  mg->createFromJson(json.object());
+  mg->createFromJson("test", json.object());
 
   QCOMPARE(mg->rowCount(QModelIndex()), 1);
   QCOMPARE(mg->data(QModelIndex(), GuideModel::GuideRole), QVariant());

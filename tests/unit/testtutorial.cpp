@@ -24,7 +24,7 @@ void TestTutorial::model() {
   QVERIFY(tutorialFile.open(QIODevice::ReadOnly | QIODevice::Text));
   QJsonDocument json = QJsonDocument::fromJson(tutorialFile.readAll());
   QVERIFY(json.isObject());
-  mg->createFromJson(json.object());
+  mg->createFromJson("test", json.object());
 
   QCOMPARE(mg->rowCount(QModelIndex()), 1);
   QCOMPARE(mg->data(QModelIndex(), TutorialModel::TutorialRole), QVariant());
