@@ -17,7 +17,7 @@ Logger logger(LOG_MAIN, "AddonGuide");
 Addon* AddonGuide::create(QObject* parent, const QString& manifestFileName,
                           const QString& id, const QString& name,
                           const QJsonObject& obj) {
-  if (!GuideModel::instance()->createFromJson(obj["guide"].toObject())) {
+  if (!GuideModel::instance()->createFromJson(id, obj["guide"].toObject())) {
     logger.warning() << "Unable to add the guide";
     return nullptr;
   }
@@ -31,8 +31,8 @@ AddonGuide::AddonGuide(QObject* parent, const QString& manifestFileName,
   MVPN_COUNT_CTOR(AddonGuide);
 }
 
-AddonGuide::~AddonGuide() { MVPN_COUNT_DTOR(AddonGuide); }
+AddonGuide::~AddonGuide() {
+  MVPN_COUNT_DTOR(AddonGuide);
 
-void AddonGuide::run() {
-  // Nothing to do here.
+  GuideModel::instance()->remove(id());
 }

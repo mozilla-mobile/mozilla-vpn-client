@@ -5,10 +5,11 @@
 #ifndef ADDONMANAGER_H
 #define ADDONMANAGER_H
 
+#include "addons/addon.h"  // required for the signal
+
 #include <QHash>
 #include <QObject>
 
-class Addon;
 class QDir;
 
 class AddonManager final : public QObject {
@@ -24,8 +25,6 @@ class AddonManager final : public QObject {
   bool loadManifest(const QString& addonManifestFileName);
 
   void unload(const QString& addonId);
-
-  void run(const QString& addonId);
 
   void retranslate();
 

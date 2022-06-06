@@ -17,7 +17,8 @@ Logger logger(LOG_MAIN, "AddonTutorial");
 Addon* AddonTutorial::create(QObject* parent, const QString& manifestFileName,
                              const QString& id, const QString& name,
                              const QJsonObject& obj) {
-  if (!TutorialModel::instance()->createFromJson(obj["tutorial"].toObject())) {
+  if (!TutorialModel::instance()->createFromJson(id,
+                                                 obj["tutorial"].toObject())) {
     logger.warning() << "Unable to add the tutorial";
     return nullptr;
   }
@@ -31,8 +32,8 @@ AddonTutorial::AddonTutorial(QObject* parent, const QString& manifestFileName,
   MVPN_COUNT_CTOR(AddonTutorial);
 }
 
-AddonTutorial::~AddonTutorial() { MVPN_COUNT_DTOR(AddonTutorial); }
+AddonTutorial::~AddonTutorial() {
+  MVPN_COUNT_DTOR(AddonTutorial);
 
-void AddonTutorial::run() {
-  // Nothing to do here.
+  TutorialModel::instance()->remove(id());
 }

@@ -34,7 +34,9 @@ class GuideModel final : public QAbstractListModel {
 
   QStringList guideTitleIds() const;
 
-  bool createFromJson(const QJsonObject& obj);
+  bool createFromJson(const QString& addonId, const QJsonObject& obj);
+
+  void remove(const QString& addonId);
 
   // QAbstractListModel methods
 
@@ -47,7 +49,11 @@ class GuideModel final : public QAbstractListModel {
  private:
   explicit GuideModel(QObject* parent);
 
-  QList<Guide*> m_guides;
+  struct GuideData {
+    QString m_addonId;
+    Guide* m_guide;
+  };
+  QList<GuideData> m_guides;
 };
 
 #endif  // GUIDEMODEL_H

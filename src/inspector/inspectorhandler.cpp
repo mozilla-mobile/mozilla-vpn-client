@@ -910,12 +910,6 @@ static QList<InspectorCommand> s_commands{
                        AddonManager::instance()->unload(arguments[1]);
                        return QJsonObject();
                      }},
-
-    InspectorCommand{"run_addon", "Run an add-on", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       AddonManager::instance()->run(arguments[1]);
-                       return QJsonObject();
-                     }},
 };
 
 // static

@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonmanager.h"
-#include "addons/addon.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -140,23 +139,6 @@ void AddonManager::unload(const QString& addonId) {
 
   m_addons.remove(addonId);
   addon->deleteLater();
-}
-
-void AddonManager::run(const QString& addonId) {
-  if (!Feature::get(Feature::Feature_addon)->isSupported()) {
-    logger.warning() << "Addons disabled by feature flag";
-    return;
-  }
-
-  if (!m_addons.contains(addonId)) {
-    logger.warning() << "No addon with id" << addonId;
-    return;
-  }
-
-  Addon* addon = m_addons[addonId];
-  Q_ASSERT(addon);
-
-  addon->run();
 }
 
 void AddonManager::retranslate() {

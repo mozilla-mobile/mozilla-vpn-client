@@ -20,8 +20,6 @@ class AddonGuide final : public Addon {
 
   ~AddonGuide();
 
-  void run() override;
-
  private:
   AddonGuide(QObject* parent, const QString& manifestFileName,
              const QString& id, const QString& name);

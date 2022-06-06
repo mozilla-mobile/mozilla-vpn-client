@@ -18,7 +18,8 @@ class TutorialModel final : public QAbstractListModel {
   Q_DISABLE_COPY_MOVE(TutorialModel)
   Q_PROPERTY(bool tooltipShown MEMBER m_tooltipShown NOTIFY tooltipShownChanged)
   Q_PROPERTY(bool playing READ isPlaying NOTIFY playingChanged)
-  Q_PROPERTY(Tutorial* highlightedTutorial READ highlightedTutorial CONSTANT)
+  Q_PROPERTY(Tutorial* highlightedTutorial READ highlightedTutorial NOTIFY
+                 highlightedTutorialChanged)
 
  public:
   enum ModelRoles {
@@ -43,7 +44,8 @@ class TutorialModel final : public QAbstractListModel {
 
   Tutorial* highlightedTutorial() const;
 
-  bool createFromJson(const QJsonObject& obj);
+  bool createFromJson(const QString& addonId, const QJsonObject& obj);
+  void remove(const QString& addonId);
 
   // QAbstractListModel methods
 
@@ -60,10 +62,18 @@ class TutorialModel final : public QAbstractListModel {
   void tooltipShownChanged();
   void tutorialCompleted(const QString& completionMessageText);
 
+ signals:
+  void highlightedTutorialChanged();
+
  private:
   explicit TutorialModel(QObject* parent);
 
-  QList<Tutorial*> m_tutorials;
+  struct TutorialData {
+    QString m_addonId;
+    Tutorial* m_tutorial;
+  };
+
+  QList<TutorialData> m_tutorials;
   Tutorial* m_currentTutorial = nullptr;
 
   QStringList m_allowedItems;

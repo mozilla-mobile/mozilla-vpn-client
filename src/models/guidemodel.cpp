@@ -36,21 +36,35 @@ GuideModel::~GuideModel() { MVPN_COUNT_DTOR(GuideModel); }
 
 QStringList GuideModel::guideTitleIds() const {
   QStringList guides;
-  for (const Guide* guide : m_guides) {
-    guides.append(guide->titleId());
+  for (const GuideData& guideData : m_guides) {
+    guides.append(guideData.m_guide->titleId());
   }
 
   return guides;
 }
 
-bool GuideModel::createFromJson(const QJsonObject& obj) {
+bool GuideModel::createFromJson(const QString& addonId,
+                                const QJsonObject& obj) {
   Guide* guide = Guide::create(this, obj);
   if (guide) {
-    m_guides.append(guide);
+    beginResetModel();
+    m_guides.append({addonId, guide});
+    endResetModel();
     return true;
   }
 
   return false;
+}
+
+void GuideModel::remove(const QString& addonId) {
+  for (auto i = m_guides.begin(); i != m_guides.end(); ++i) {
+    if (i->m_addonId == addonId) {
+      beginResetModel();
+      m_guides.erase(i);
+      endResetModel();
+      break;
+    }
+  }
 }
 
 QHash<int, QByteArray> GuideModel::roleNames() const {
@@ -68,7 +82,7 @@ QVariant GuideModel::data(const QModelIndex& index, int role) const {
 
   switch (role) {
     case GuideRole:
-      return QVariant::fromValue(m_guides.at(index.row()));
+      return QVariant::fromValue(m_guides.at(index.row()).m_guide);
 
     default:
       return QVariant();

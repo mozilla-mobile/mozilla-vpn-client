@@ -24,8 +24,6 @@ class Addon : public QObject {
 
   void retranslate();
 
-  virtual void run() = 0;
-
  protected:
   Addon(QObject* parent, const QString& manifestFileName, const QString& id,
         const QString& name);

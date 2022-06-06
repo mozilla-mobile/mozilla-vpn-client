@@ -20,8 +20,6 @@ class AddonTutorial final : public Addon {
 
   ~AddonTutorial();
 
-  void run() override;
-
  private:
   AddonTutorial(QObject* parent, const QString& manifestFileName,
                 const QString& id, const QString& name);
