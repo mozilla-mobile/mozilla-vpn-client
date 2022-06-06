@@ -131,7 +131,7 @@ FocusScope {
                 anchors.right: parent.right
                 anchors.rightMargin: VPNTheme.theme.windowMargin / 2
                 anchors.leftMargin: anchors.rightMargin
-                visible: showRecentConnections && serverSearchInput.text.length === 0 && !tutorialUI.visible // TODO (unhide recent connections during tutorials)
+                visible: showRecentConnections && serverSearchInput.text.length === 0
                 showMultiHopRecentConnections: false
                 height: showRecentConnections ? implicitHeight : 0
             }

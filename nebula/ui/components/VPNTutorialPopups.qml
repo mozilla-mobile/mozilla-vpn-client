@@ -19,13 +19,11 @@ Item {
         - Handle conflicts with update required
 
         - Should tutorials timeout?
-        - Handle device orientation changes
         - Better UI in landscape mode
-        - Respond to targetElement position changes
+        - Respond to targetElement y position changes
         - Animation polish on tooltip open
 
         - Update event filter
-            - Add touch events for mobile
             - Restrict wheel events
             - Consider restricting key commands to allowed items
 
