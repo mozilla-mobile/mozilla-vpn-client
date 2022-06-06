@@ -22,7 +22,11 @@ class AddonManager final : public QObject {
   ~AddonManager();
 
   bool load(const QString& addonFileName);
-  void run(const QString& addonName);
+  bool loadManifest(const QString& addonManifestFileName);
+
+  void unload(const QString& addonId);
+
+  void run(const QString& addonId);
 
   void retranslate();
 

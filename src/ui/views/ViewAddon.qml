@@ -35,6 +35,6 @@ Item {
         anchors.topMargin: VPNTheme.theme.windowMargin
         anchors.top: menu.bottom
 
-        source: "qrc" + parent.addon.qml
+        source: parent.addon.qml
     }
 }

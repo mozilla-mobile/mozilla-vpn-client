@@ -8,16 +8,19 @@
 #include "settingsholder.h"
 
 #include <QCoreApplication>
+#include <QDir>
+#include <QFileInfo>
 
 namespace {
 Logger logger(LOG_MAIN, "Addon");
 }
 
-Addon::Addon(QObject* parent, AddonType addonType, const QString& fileName,
-             const QString& id, const QString& name, const QString& qml)
+Addon::Addon(QObject* parent, AddonType addonType,
+             const QString& manifestFileName, const QString& id,
+             const QString& name, const QString& qml)
     : QObject(parent),
       m_addonType(addonType),
-      m_fileName(fileName),
+      m_manifestFileName(manifestFileName),
       m_id(id),
       m_name(name),
       m_qml(qml) {
@@ -43,8 +46,17 @@ void Addon::retranslate() {
     locale = QLocale(QLocale::system().bcp47Name());
   }
 
-  if (!m_translator.load(locale, "locale", "_",
-                         QString(":/addons/%1/i18n").arg(m_id))) {
+  if (!m_translator.load(
+          locale, "locale", "_",
+          QFileInfo(m_manifestFileName).dir().filePath("i18n"))) {
     logger.error() << "Loading the locale failed. - code:" << code;
   }
+}
+
+QString Addon::qml() const {
+  if (m_qml.at(0) == ':') {
+    return QString("qrc%1").arg(m_qml);
+  }
+
+  return QString("file:%1").arg(m_qml);
 }

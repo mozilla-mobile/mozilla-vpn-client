@@ -109,18 +109,26 @@ bool AddonManager::load(const QString& fileName) {
     return false;
   }
 
-  auto guard =
-      qScopeGuard([&] { QResource::unregisterResource(fileName, "/addons"); });
+  if (!loadManifest(QString(":/addons/%1/manifest.json").arg(addonId))) {
+    QResource::unregisterResource(fileName, "/addons");
+    return false;
+  }
 
-  QFile file(QString(":/addons/%1/manifest.json").arg(addonId));
+  return true;
+}
+
+bool AddonManager::loadManifest(const QString& manifestFileName) {
+  QFile file(manifestFileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    logger.warning() << "Unable to read the addon manifest of" << addonId;
+    logger.warning() << "Unable to read the addon manifest of"
+                     << manifestFileName;
     return false;
   }
 
   QJsonDocument json = QJsonDocument::fromJson(file.readAll());
   if (!json.isObject()) {
-    logger.warning() << "The manifest must be a JSON document" << addonId;
+    logger.warning() << "The manifest must be a JSON document"
+                     << manifestFileName;
     return false;
   }
 
@@ -128,36 +136,30 @@ bool AddonManager::load(const QString& fileName) {
 
   QString version = obj["version"].toString();
   if (version.isEmpty()) {
-    logger.warning() << "No version in the manifest" << addonId;
+    logger.warning() << "No version in the manifest" << manifestFileName;
     return false;
   }
 
   if (version != "0.1") {
-    logger.warning() << "Unsupported version" << version << addonId;
+    logger.warning() << "Unsupported version" << version << manifestFileName;
     return false;
   }
 
   QString id = obj["id"].toString();
   if (id.isEmpty()) {
-    logger.warning() << "No id in the manifest" << addonId;
-    return false;
-  }
-
-  if (id != addonId) {
-    logger.warning() << "The ID does not match with the addon one" << addonId
-                     << id;
+    logger.warning() << "No id in the manifest" << manifestFileName;
     return false;
   }
 
   QString name = obj["name"].toString();
   if (name.isEmpty()) {
-    logger.warning() << "No name in the manifest" << addonId;
+    logger.warning() << "No name in the manifest" << manifestFileName;
     return false;
   }
 
   QString type = obj["type"].toString();
   if (type.isEmpty()) {
-    logger.warning() << "No type in the manifest" << addonId;
+    logger.warning() << "No type in the manifest" << manifestFileName;
     return false;
   }
 
@@ -168,14 +170,14 @@ bool AddonManager::load(const QString& fileName) {
     addonType = Addon::AddonTypeDemo;
     QString qml = obj["qml"].toString();
     if (qml.isEmpty()) {
-      logger.warning() << "No qml in the manifest" << addonId;
+      logger.warning() << "No qml in the manifest" << manifestFileName;
       return false;
     }
 
-    qmlFileName = QString(":/addons/%1/%2").arg(addonId).arg(qml);
+    qmlFileName = QFileInfo(manifestFileName).dir().filePath(qml);
     if (!QFile::exists(qmlFileName)) {
       logger.warning() << "Unable to load the qml entry" << qmlFileName << qml
-                       << addonId;
+                       << manifestFileName;
       return false;
     }
   } else if (type == "i18n") {
@@ -185,7 +187,7 @@ bool AddonManager::load(const QString& fileName) {
   } else if (type == "guide") {
     addonType = Addon::AddonTypeGuide;
   } else {
-    logger.warning() << "Unsupported type" << type << addonId;
+    logger.warning() << "Unsupported type" << type << manifestFileName;
     return false;
   }
 
@@ -204,13 +206,29 @@ bool AddonManager::load(const QString& fileName) {
     }
   }
 
-  guard.dismiss();
-
   Addon* addon =
-      new Addon(this, addonType, fileName, addonId, name, qmlFileName);
-  m_addons.insert(addonId, addon);
+      new Addon(this, addonType, manifestFileName, id, name, qmlFileName);
+  m_addons.insert(id, addon);
 
   return true;
+}
+
+void AddonManager::unload(const QString& addonId) {
+  if (!Feature::get(Feature::Feature_addon)->isSupported()) {
+    logger.warning() << "Addons disabled by feature flag";
+    return;
+  }
+
+  if (!m_addons.contains(addonId)) {
+    logger.warning() << "No addon with id" << addonId;
+    return;
+  }
+
+  Addon* addon = m_addons[addonId];
+  Q_ASSERT(addon);
+
+  m_addons.remove(addonId);
+  addon->deleteLater();
 }
 
 void AddonManager::run(const QString& addonId) {

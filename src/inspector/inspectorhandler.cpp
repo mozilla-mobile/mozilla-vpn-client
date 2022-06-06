@@ -889,7 +889,7 @@ static QList<InspectorCommand> s_commands{
                        return QJsonObject();
                      }},
 
-    InspectorCommand{"load_addon", "Load an addon", 1,
+    InspectorCommand{"load_addon", "Load an add-on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
                        obj["value"] =
@@ -897,7 +897,21 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{"run_addon", "Load an addon", 1,
+    InspectorCommand{"load_addon_manifest", "Load an add-on", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       obj["value"] =
+                           AddonManager::instance()->loadManifest(arguments[1]);
+                       return obj;
+                     }},
+
+    InspectorCommand{"unload_addon", "Unload an add-on", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       AddonManager::instance()->unload(arguments[1]);
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"run_addon", "Run an add-on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        AddonManager::instance()->run(arguments[1]);
                        return QJsonObject();
