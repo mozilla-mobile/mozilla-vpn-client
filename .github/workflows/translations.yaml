@@ -43,7 +43,9 @@ jobs:
           ./scripts/utils/generate_ts.sh
 
       - name: Uploading
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
-            name: Translation file
-            path: translations.ts
+            name: Translation files
+            path: |
+              translations.ts
+              addon_ts/*.ts

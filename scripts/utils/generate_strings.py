@@ -7,6 +7,7 @@ import os
 import yaml
 import argparse
 
+
 def stop(string_id):
     exit(
         f"Each key must be a string or a list with 1 or more items. Fix string ID `{string_id}`"
@@ -33,6 +34,7 @@ class UniqueKeyLoader(yaml.SafeLoader):
             assert key not in mapping
             mapping.append(key)
         return super().construct_mapping(node, deep)
+
 
 def parseTranslationStrings(yamlfile):
     if not os.path.isfile(yamlfile):
@@ -108,8 +110,9 @@ def parseTranslationStrings(yamlfile):
                     "value": value,
                     "comments": comments,
                 }
-        
+
         return yaml_strings
+
 
 # Render a dictionary of strings into the l18nstrings module.
 def generateStrings(strings, outdir):
@@ -162,7 +165,9 @@ class L18nStrings final : public QQmlPropertyMap {
 """
         )
 
-    with open(os.path.join(outdir, "l18nstrings_p.cpp"), "w", encoding="utf-8") as output:
+    with open(
+        os.path.join(outdir, "l18nstrings_p.cpp"), "w", encoding="utf-8"
+    ) as output:
         output.write(
             """/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -204,31 +209,46 @@ const char* const L18nStrings::_ids[] = {
         # Generate the retranslate() method.
         output.write("void L18nStrings::retranslate() {\n")
         for key in strings:
-            output.write(f"    insert(\"{key}\", qtTrId(_ids[{key}]));\n")
+            output.write(f'    insert("{key}", qtTrId(_ids[{key}]));\n')
         output.write("}")
 
 
 if __name__ == "__main__":
     # Parse arguments to locate the input and output files.
     parser = argparse.ArgumentParser(
-        description='Generate internationaliation strings database from a YAML source')
-    parser.add_argument('source', metavar='SOURCE', type=str, action='store', nargs='?',
-        help='YAML strings file to process')
-    parser.add_argument('-o', '--output', metavar='DIR', type=str, action='store',
-        help='Output directory for generated files')
+        description="Generate internationaliation strings database from a YAML source"
+    )
+    parser.add_argument(
+        "source",
+        metavar="SOURCE",
+        type=str,
+        action="store",
+        nargs="?",
+        help="YAML strings file to process",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        metavar="DIR",
+        type=str,
+        action="store",
+        help="Output directory for generated files",
+    )
     args = parser.parse_args()
 
     # If no source was provided, find it relative to this script file.
     if args.source is None:
-        rootpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
-        args.source = os.path.join(rootpath, 'translations', 'strings.yaml')
-    
+        rootpath = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+        )
+        args.source = os.path.join(rootpath, "translations", "strings.yaml")
+
     # If no output directory was provided, use the current directory.
     if args.output is None:
         args.output = os.getcwd()
-    
+
     # Parse the inputs for their sweet juicy strings.
     strings = parseTranslationStrings(args.source)
-    
+
     # Render the strings into generated content.
     generateStrings(strings, args.output)
