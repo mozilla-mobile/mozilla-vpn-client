@@ -144,7 +144,8 @@ describe('Settings', function() {
     await vpn.clickOnElement('featureTourCard');
     await vpn.wait();
 
-    await vpn.clickOnElement('closeButton')
+    await vpn.waitForElement('featureTourPopupCloseButton');
+    await vpn.clickOnElement('featureTourPopupCloseButton')
     await vpn.wait();
 
     //Test guides

@@ -12,6 +12,7 @@ import compat 0.1
 VPNPopup {
     id: popup
 
+    closeButtonObjectName: "featureTourPopupCloseButton"
     startContentBeneathCloseButton: false
     bottomPadding: VPNTheme.theme.windowMargin
 

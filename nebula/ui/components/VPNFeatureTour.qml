@@ -25,7 +25,7 @@ ColumnLayout {
 
     ColumnLayout {
         id: content
-        spacing: VPNTheme.theme.listSpacing
+        spacing: 0
 
         SwipeView {
             id: swipeView
@@ -49,6 +49,8 @@ ColumnLayout {
 
                 delegate: Loader {
 
+                    property string featureID: feature.id
+
                     active: index === swipeView.currentIndex
                     opacity: index === swipeView.currentIndex ? 1 : 0
 
@@ -60,8 +62,6 @@ ColumnLayout {
 
                     sourceComponent: ColumnLayout {
                         id: slideContent
-
-                        property string featureID: feature.id
 
                         ColumnLayout {
                             spacing: VPNTheme.theme.listSpacing
@@ -110,6 +110,9 @@ ColumnLayout {
         PageIndicator {
             id: slideIndicator
 
+            Layout.topMargin: VPNTheme.theme.vSpacingSmall
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+
             count: swipeView.count
             currentIndex: swipeView.currentIndex
             interactive: false
@@ -130,8 +133,6 @@ ColumnLayout {
                 }
             }
 
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
-
             Behavior on opacity {
                 NumberAnimation {
                     duration: 100
@@ -150,8 +151,8 @@ ColumnLayout {
             radius: VPNTheme.theme.cornerRadius
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignBottom
-            Layout.topMargin: slideIndicator.visible ? VPNTheme.theme.listSpacing : VPNTheme.theme.vSpacingSmall
-            Layout.bottomMargin: linkButton.visible ? 10 : VPNTheme.theme.windowMargin / 2
+            Layout.topMargin: slideIndicator.visible ? VPNTheme.theme.vSpacing : VPNTheme.theme.vSpacingSmall
+            Layout.bottomMargin: linkButton.visible ? VPNTheme.theme.vSpacingSmall / 2 : VPNTheme.theme.windowMargin / 2
 
             onClicked: {
                 if(isLastFeature) {
