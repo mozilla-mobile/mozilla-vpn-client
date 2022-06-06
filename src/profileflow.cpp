@@ -33,14 +33,21 @@ void ProfileFlow::start() {
   Q_ASSERT(user);
 
   TaskGetSubscriptionDetails* task = new TaskGetSubscriptionDetails(user->email());
-
   connect(task, &TaskGetSubscriptionDetails::receivedData, this,
           &ProfileFlow::subscriptionDetailsFetched);
+  connect(task, &TaskGetSubscriptionDetails::needsAuthentication, this, [&] {
+    logger.debug() << "Needs authentication";
+    setState(StateAuthenticating);
+    emit showProfile();
+  });
   connect(task, &TaskGetSubscriptionDetails::failed, [&]() {
     logger.debug() << "Task failed";
+
     // TODO: Remove, only for debugging purposes.
+    emit populateFakeData();
     emit showProfile();
-    setState(StateInitial);
+    // TODO: Should be `StateInitial`
+    setState(StateReady);
   });
 
   TaskScheduler::scheduleTask(task);
@@ -48,7 +55,6 @@ void ProfileFlow::start() {
 
 void ProfileFlow::reset() {
   logger.debug() << "Reset profile flow";
-
   setState(StateInitial);
 }
 
@@ -64,6 +70,7 @@ void ProfileFlow::subscriptionDetailsFetched(
   }
 
   // TODO: Remove, only for debugging purposes.
+  emit populateFakeData();
   emit showProfile();
   setState(StateReady);
 }

@@ -25,6 +25,7 @@ class ProfileFlow final : public QObject {
   enum State {
     StateInitial,
     StateLoading,
+    StateAuthenticating,
     StateReady,
     StateError,
   };
@@ -33,8 +34,9 @@ class ProfileFlow final : public QObject {
   State state() const { return m_state; }
 
  signals:
-  void stateChanged(State state);
   void showProfile();
+  void stateChanged(State state);
+  void populateFakeData();
 
  private:
   void setState(State state);

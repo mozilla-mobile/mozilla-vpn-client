@@ -22,9 +22,10 @@ class TaskGetSubscriptionDetails final : public Task {
  signals:
   void receivedData(const QByteArray& data);
   void failed();
+  void needsAuthentication();
 
  private:
-  void needsAuthentication();
+  void initAuthentication();
 
  private:
   AuthenticationInAppSession* m_authenticationInAppSession = nullptr;

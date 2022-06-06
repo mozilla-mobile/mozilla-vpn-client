@@ -46,7 +46,8 @@ void TaskGetSubscriptionDetails::run() {
 
         // User needs to (re)authenticate
         if (error == QNetworkReply::AuthenticationRequiredError) {
-          needsAuthentication();
+          emit needsAuthentication();
+          initAuthentication();
           return;
         }
 
@@ -69,7 +70,7 @@ void TaskGetSubscriptionDetails::run() {
           });
 }
 
-void TaskGetSubscriptionDetails::needsAuthentication() {
+void TaskGetSubscriptionDetails::initAuthentication() {
   Q_ASSERT(!m_authenticationInAppSession);
 
   QByteArray pkceCodeVerifier;
