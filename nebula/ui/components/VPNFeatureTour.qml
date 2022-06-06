@@ -47,11 +47,9 @@ ColumnLayout {
                 id: slidesRepeater
                 model: slidesModel
 
-                delegate: ColumnLayout {
-                    id: slideContent
+                delegate: Loader {
 
-                    property string featureID: feature.id
-
+                    active: index === swipeView.currentIndex
                     opacity: index === swipeView.currentIndex ? 1 : 0
 
                     Behavior on opacity {
@@ -60,44 +58,50 @@ ColumnLayout {
                         }
                     }
 
-                    ColumnLayout {
-                        spacing: VPNTheme.theme.listSpacing
+                    sourceComponent: ColumnLayout {
+                        id: slideContent
 
-                        Image {
-                            Layout.alignment: Qt.AlignHCenter
+                        property string featureID: feature.id
 
-                            source: feature.imagePath
-                            sourceSize.width: 104
-                            sourceSize.height: 120
+                        ColumnLayout {
+                            spacing: VPNTheme.theme.listSpacing
+
+                            Image {
+                                Layout.alignment: Qt.AlignHCenter
+
+                                source: feature.imagePath
+                                sourceSize.width: 104
+                                sourceSize.height: 120
+                            }
+
+                            VPNMetropolisLabel {
+                                id: popupTitle
+
+                                text: feature.displayName
+                                color: VPNTheme.theme.fontColorDark
+                                horizontalAlignment: Text.AlignHCenter
+                                font.pixelSize: VPNTheme.theme.fontSizeLarge
+
+                                Layout.bottomMargin: VPNTheme.theme.listSpacing
+                                Layout.fillWidth: true
+
+                                Accessible.ignored: index !== swipeView.currentIndex
+                            }
+
+                            VPNTextBlock {
+                                id: popupText
+
+                                text: feature.description
+                                horizontalAlignment: Text.AlignHCenter
+                                Layout.fillWidth: true
+
+                                Accessible.ignored: index !== swipeView.currentIndex
+                            }
                         }
 
-                        VPNMetropolisLabel {
-                            id: popupTitle
-
-                            text: feature.displayName
-                            color: VPNTheme.theme.fontColorDark
-                            horizontalAlignment: Text.AlignHCenter
-                            font.pixelSize: VPNTheme.theme.fontSizeLarge
-
-                            Layout.bottomMargin: VPNTheme.theme.listSpacing
-                            Layout.fillWidth: true
-
-                            Accessible.ignored: index !== swipeView.currentIndex
+                        Item {
+                            Layout.fillHeight: true
                         }
-
-                        VPNTextBlock {
-                            id: popupText
-
-                            text: feature.description
-                            horizontalAlignment: Text.AlignHCenter
-                            Layout.fillWidth: true
-
-                            Accessible.ignored: index !== swipeView.currentIndex
-                        }
-                    }
-
-                    Item {
-                        Layout.fillHeight: true
                     }
                 }
             }

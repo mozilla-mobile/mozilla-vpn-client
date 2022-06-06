@@ -45,7 +45,7 @@ VPNPopup {
                 onClicked: featureTour.goBack()
                 enabled: showBackButton
 
-                Accessible.ignored: !enabled
+                Accessible.ignored: !showBackButton
 
                 Image {
                     anchors.centerIn: parent
