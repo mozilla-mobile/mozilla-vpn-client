@@ -50,23 +50,6 @@
       }
     },
     {
-      "id": "cityAT",
-      "element": "serverCountryList/serverCountry-at/serverCityList/serverCity-Vienna/radioIndicator",
-      "tooltip": "Select a different server location",
-      "conditions": {
-        "settings": [{
-          "setting": "currentServer/countryCode",
-          "value": "au",
-          "op": "eq"
-        }]
-      },
-      "next": {
-        "op": "signal",
-        "qml_emitter": "serverCountryList/serverCountry-at/serverCityList/serverCity-Vienna/radioIndicator",
-        "signal": "visibleChanged"
-      }
-    },
-    {
       "id": "toggle",
       "element": "controllerToggle",
       "tooltip": "Toggle this switch to activate or deactivate the VPN",
