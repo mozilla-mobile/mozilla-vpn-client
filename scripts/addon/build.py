@@ -6,7 +6,7 @@
 import argparse
 import json
 import os
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 import tempfile
 import shutil
 import sys
@@ -58,9 +58,9 @@ def retrieve_strings_tutorial(manifest, filename):
     }
 
     for step in tutorial_json["steps"]:
-        if not "id" in step:
+        if "id" not in step:
             exit(f"Tutorial {filename} does not have an id for one of the steps")
-        if not "tooltip" in step:
+        if "tooltip" not in step:
             exit(
                 f"Tutorial {filename} does not have a tooltip for step id {step['id']}"
             )
@@ -81,13 +81,13 @@ def retrieve_strings_guide(manifest, filename):
     guide_strings = {}
 
     guide_json = manifest["guide"]
-    if not "id" in guide_json:
+    if "id" not in guide_json:
         exit(f"Guide {filename} does not have an id")
-    if not "title" in guide_json:
+    if "title" not in guide_json:
         exit(f"Guide {filename} does not have a title")
-    if not "subtitle" in guide_json:
+    if "subtitle" not in guide_json:
         exit(f"Guide {filename} does not have a subtitle")
-    if not "blocks" in guide_json:
+    if "blocks" not in guide_json:
         exit(f"Guide {filename} does not have a blocks")
 
     guide_id = guide_json["id"]
@@ -103,11 +103,11 @@ def retrieve_strings_guide(manifest, filename):
     }
 
     for block in guide_json["blocks"]:
-        if not "id" in block:
+        if "id" not in block:
             exit(f"Guide {filename} does not have an id for one of the blocks")
-        if not "type" in block:
+        if "type" not in block:
             exit(f"Guide {filename} does not have a type for block id {block['id']}")
-        if not "content" in block:
+        if "content" not in block:
             exit(f"Guide {filename} does not have a content for block id {block['id']}")
 
         block_id = block["id"]
@@ -124,11 +124,11 @@ def retrieve_strings_guide(manifest, filename):
             continue
 
         for subblock in block["content"]:
-            if not "id" in subblock:
+            if "id" not in subblock:
                 exit(
                     f"Guide {filename} does not have an id for one of the subblocks of block {block_id}"
                 )
-            if not "content" in subblock:
+            if "content" not in subblock:
                 exit(
                     f"Guide file {filename} does not have a content for subblock id {subblock['id']}"
                 )
@@ -160,6 +160,9 @@ def write_en_language(filename, strings):
         message = ET.SubElement(context, "message")
         message.set("id", key)
 
+        location = ET.SubElement(message, "location")
+        location.set("filename", "addon.qml")
+
         source = ET.SubElement(message, "source")
         source.text = value["value"]
 
@@ -171,7 +174,7 @@ def write_en_language(filename, strings):
             extracomment.text = value["comments"]
 
     with open(filename, "w", encoding="utf-8") as f:
-        f.write(ET.tostring(ts, encoding="unicode"))
+        f.write(ET.tostring(ts, encoding="unicode", pretty_print=True))
 
 
 def copy_files(path, dest_path):
@@ -182,7 +185,7 @@ def copy_files(path, dest_path):
         file_path = os.path.join(path, file)
         if os.path.isfile(file_path):
             if file_path.endswith((".ts", ".qrc", ".rcc")):
-                exit(f"Unexpected {ext} file found: {os.path.join(path, file)}")
+                exit(f"Unexpected extension file found: {os.path.join(path, file)}")
 
             shutil.copyfile(file_path, os.path.join(dest_path, file))
             continue
@@ -298,11 +301,11 @@ if not os.path.isfile(jsonSchema):
 with open(args.source, "r", encoding="utf-8") as file:
     manifest = json.load(file)
 
-    print(f"Copying files in a temporary folder...")
+    print("Copying files in a temporary folder...")
     tmp_path = tempfile.mkdtemp()
     copy_files(os.path.dirname(args.source), tmp_path)
 
-    print(f"Retrieving strings...")
+    print("Retrieving strings...")
     strings = {}
     if manifest["type"] == "tutorial":
         strings = retrieve_strings_tutorial(manifest, args.source)
@@ -311,7 +314,7 @@ with open(args.source, "r", encoding="utf-8") as file:
     else:
         exit(f"Unupported manifest type `{manifest['type']}`")
 
-    print(f"Create localization file...")
+    print("Create localization file...")
     os.mkdir(os.path.join(tmp_path, "i18n"))
     template_ts_file = os.path.join(args.dest, f"{manifest['id']}.ts")
     write_en_language(template_ts_file, strings)
@@ -340,7 +343,7 @@ with open(args.source, "r", encoding="utf-8") as file:
             os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
             os.system(f"{lrelease} -idbased {locale_file}")
 
-    print(f"Generate the RC file...")
+    print("Generate the RC file...")
     files = get_file_list(tmp_path, "")
 
     qrc_file = os.path.join(tmp_path, f"{manifest['id']}.qrc")
@@ -353,7 +356,7 @@ with open(args.source, "r", encoding="utf-8") as file:
             elm.text = file
         f.write(ET.tostring(rcc_elm, encoding="unicode"))
 
-    print(f"Creating the final addon...")
+    print("Creating the final addon...")
     rcc_file = os.path.join(args.dest, f"{manifest['id']}.rcc")
     os.system(f"{rcc} {qrc_file} -o {rcc_file} -binary")
     print(f"Done: {rcc_file}")
