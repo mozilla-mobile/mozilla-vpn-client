@@ -26,6 +26,7 @@ python cache/generate_strings.py -o translations/generated
 print G "done."
 
 printn Y "Generating a dummy PRO file... "
+mkdir -p translations/generated || die
 cat > translations/generated/dummy.pro << EOF
 HEADERS += l18nstrings.h
 SOURCES += l18nstrings_p.cpp
