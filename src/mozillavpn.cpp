@@ -492,11 +492,6 @@ void MozillaVPN::openLink(LinkType linkType) {
       url.append("/r/vpn/contact");
       break;
 
-    case LinkFeedback:
-      url = NetworkRequest::apiBaseUrl();
-      url.append("/r/vpn/client/feedback");
-      break;
-
     case LinkForgotPassword:
       url = Constants::fxaUrl();
       url.append("/reset_password");
