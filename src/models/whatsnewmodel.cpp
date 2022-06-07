@@ -10,6 +10,7 @@
 #include "feature.h"
 
 #include <QList>
+#include <QVersionNumber>
 
 namespace {
 Logger logger(LOG_MODEL, "WhatsNewModel");
