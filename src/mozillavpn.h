@@ -102,7 +102,6 @@ class MozillaVPN final : public QObject {
   enum LinkType {
     LinkAccount,
     LinkContact,
-    LinkFeedback,
     LinkForgotPassword,
     LinkLeaveReview,
     LinkHelpSupport,
