@@ -51,6 +51,8 @@ ColumnLayout {
 
                     property string featureID: feature.id
 
+                    asynchronous: true
+                    visible: status == Loader.Ready
                     active: index === swipeView.currentIndex
                     opacity: index === swipeView.currentIndex ? 1 : 0
 
