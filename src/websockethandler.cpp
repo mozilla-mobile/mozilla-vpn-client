@@ -18,6 +18,8 @@ Logger logger(LOG_MAIN, "WebSocketHandler");
 ExponentialBackoffStrategy::ExponentialBackoffStrategy() {
   MVPN_COUNT_CTOR(ExponentialBackoffStrategy);
 
+  connect(&m_retryTimer, &QTimer::timeout, this,
+          &ExponentialBackoffStrategy::onNextAttemptTimeout);
   m_retryTimer.setSingleShot(true);
 }
 
@@ -38,26 +40,21 @@ void ExponentialBackoffStrategy::testOverrideMaxRetryInterval(int newInterval) {
  * Everytime a new attempt is scheduled the interval will be exponentially
  * larger.
  */
-int ExponentialBackoffStrategy::scheduleNextAttempt(
-    std::function<void()> action) {
+int ExponentialBackoffStrategy::scheduleNextAttempt() {
   int retryInterval = qPow(m_baseInterval, m_retryCounter);
   if (retryInterval < m_maxInterval) {
     m_retryCounter++;
   }
-
-  QMetaObject::Connection* const connection = new QMetaObject::Connection;
-  *connection =
-      connect(&m_retryTimer, &QTimer::timeout, this, [action, connection]() {
-        action();
-
-        // Immediatelly disconnect after first execution.
-        QObject::disconnect(*connection);
-        delete connection;
-      });
-
   m_retryTimer.start(retryInterval);
-
   return retryInterval;
+}
+
+/**
+ * @brief Emits a signal for the caller to execute the next attempt once the
+ * retryTimer is timed out
+ */
+void ExponentialBackoffStrategy::onNextAttemptTimeout() {
+  emit executeNextAttempt();
 }
 
 /**
@@ -83,8 +80,10 @@ WebSocketHandler::WebSocketHandler() {
 
   connect(&m_pingTimer, &QTimer::timeout, this,
           &WebSocketHandler::onPingTimeout);
-
   m_pingTimer.setSingleShot(true);
+
+  connect(&m_backoffStrategy, &ExponentialBackoffStrategy::executeNextAttempt,
+          this, &WebSocketHandler::open);
 }
 
 // static
@@ -216,8 +215,7 @@ void WebSocketHandler::onClose() {
   logger.debug() << "WebSocket closed";
 
   if (isUserAuthenticated()) {
-    int nextAttemptIn =
-        m_backoffStrategy.scheduleNextAttempt([this]() { open(); });
+    int nextAttemptIn = m_backoffStrategy.scheduleNextAttempt();
     logger.debug()
         << "User is authenticated. Will attempt to reopen websocket in:"
         << nextAttemptIn;

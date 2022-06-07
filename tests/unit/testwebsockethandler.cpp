@@ -220,27 +220,26 @@ void TestWebSocketHandler::tst_reconnectionBackoffTimeExponentiallyIncreases() {
       qPow(testBaseRetryInterval, testMaxRetries));
 
   int callCount = 0;
-  auto testFn = [&callCount]() { callCount++; };
+  connect(&backoffStrategy, &ExponentialBackoffStrategy::executeNextAttempt,
+          [&callCount]() { callCount++; });
 
   for (int i = 0; i < testMaxRetries; i++) {
     // Schedule an attempt.
-    int nextAttemptIn = backoffStrategy.scheduleNextAttempt(testFn);
+    int nextAttemptIn = backoffStrategy.scheduleNextAttempt();
     // Verify interval is the expected value.
     QCOMPARE(nextAttemptIn, qPow(testBaseRetryInterval, i + 1));
     // `testFn` should only have been scheduled at this point, not called.
     QCOMPARE(callCount, i);
     // Wait for testFn to be executed.
-    qDebug() << callCount;
     QVERIFY(
         QTest::qWaitFor([&callCount, i]() { return callCount == (i + 1); }));
-    qDebug() << callCount;
   }
 
   // Inside the loop we have reached max retries, so we expect the interval to
   // be the same as the last one now.
 
   // Schedule an attempt.
-  int nextAttemptIn = backoffStrategy.scheduleNextAttempt(testFn);
+  int nextAttemptIn = backoffStrategy.scheduleNextAttempt();
   // Verify interval is the expected value.
   QCOMPARE(nextAttemptIn, qPow(testBaseRetryInterval, testMaxRetries));
   // `testFn` should only have been scheduled at this point, not called.
@@ -254,7 +253,7 @@ void TestWebSocketHandler::tst_reconnectionBackoffTimeExponentiallyIncreases() {
   backoffStrategy.reset();
 
   // Schedule an attempt.
-  nextAttemptIn = backoffStrategy.scheduleNextAttempt(testFn);
+  nextAttemptIn = backoffStrategy.scheduleNextAttempt();
   // Verify interval is the expected value.
   QCOMPARE(nextAttemptIn, testBaseRetryInterval);
   // `testFn` should only have been scheduled at this point, not called.

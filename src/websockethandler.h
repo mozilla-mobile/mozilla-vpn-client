@@ -16,7 +16,7 @@ class ExponentialBackoffStrategy final : public QObject {
   Q_OBJECT
  public:
   ExponentialBackoffStrategy();
-  int scheduleNextAttempt(std::function<void()> action);
+  int scheduleNextAttempt();
   void reset();
 
 #ifdef UNIT_TEST
@@ -24,12 +24,19 @@ class ExponentialBackoffStrategy final : public QObject {
   void testOverrideMaxRetryInterval(int newInterval);
 #endif
 
+ signals:
+  void executeNextAttempt();
+
  private:
+  void onNextAttemptTimeout();
+
+ private:
+  std::function<void()> m_nextAction;
+
   QTimer m_retryTimer;
+  int m_retryCounter = 1;
   int m_maxInterval = MAX_RETRY_INTERVAL;
   int m_baseInterval = BASE_RETRY_INTERVAL;
-
-  int m_retryCounter = 1;
 };
 
 class WebSocketHandler final : public QObject {
