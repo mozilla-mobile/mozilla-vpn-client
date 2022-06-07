@@ -174,16 +174,20 @@ VPNFlickable {
     Loader {
         id: tipsAndTricksIntroPopupLoader
 
+        objectName: "tipsAndTricksIntroPopupLoader"
         active: false
         sourceComponent: VPNSimplePopup {
             id: tipsAndTricksIntroPopup
+
             anchors.centerIn: Overlay.overlay
+            closeButtonObjectName: "tipsAndTricksIntroPopupCloseButton"
             imageSrc: "qrc:/ui/resources/logo-sparkles.svg"
             imageSize: Qt.size(116, 80)
             title: VPNl18n.TipsAndTricksSettingsEntryLabel
             description: VPNl18n.TipsAndTricksIntroModalDescription
             buttons: [
                 VPNButton {
+                    objectName: "tipsAndTricksIntroPopupDiscoverNowButton"
                     text: VPNl18n.GlobalDiscoverNow
                     onClicked: {
                         tipsAndTricksIntroPopup.close()
@@ -191,6 +195,7 @@ VPNFlickable {
                     }
                 },
                 VPNLinkButton {
+                    objectName: "tipsAndTricksIntroPopupGoBackButton"
                     labelText: VPNl18n.GlobalGoBack
                     onClicked: tipsAndTricksIntroPopup.close()
                 }
@@ -211,6 +216,7 @@ VPNFlickable {
 
                 VPNMenu {
                     id: menu
+                    objectName: "tipsAndTricksCloseButton"
 
                     Layout.fillWidth: true
 

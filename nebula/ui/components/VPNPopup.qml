@@ -16,6 +16,7 @@ Popup {
     property alias popupContentItem: popupContent //this is exposed so popupContent implicitHeight can (and should) be set externally
     property bool showCloseButton: true
     property bool startContentBeneathCloseButton: showCloseButton //popup content will appear under the close button
+    property string closeButtonObjectName: ""
 
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
     focus: true
@@ -38,6 +39,7 @@ Popup {
         width: VPNTheme.theme.rowHeight
         visible: showCloseButton
 
+        objectName: closeButtonObjectName
         accessibleName: qsTrId("menubar.file.close")
 
         onClicked: {
