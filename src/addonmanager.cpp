@@ -50,7 +50,7 @@ void AddonManager::loadAll() {
   addonPath =
       QString("%1/addons").arg(QCoreApplication::applicationDirPath());  // TODO
 #elif defined(MVPN_MACOS)
-  addonPath = QString("%1/../Contents/Release/addons")
+  addonPath = QString("%1/../Resources/addons")
                   .arg(QCoreApplication::applicationDirPath());
 #elif defined(MVPN_IOS)
   addonPath = QString("%1/addons").arg(QCoreApplication::applicationDirPath());
@@ -78,8 +78,8 @@ void AddonManager::loadAll() {
 }
 
 void AddonManager::loadAll(const QDir& path) {
-  for (const QString& file :
-       path.entryList(QStringList{"*.rcc"}, QDir::Files)) {
+  qDebug() << path;
+  for (const QString& file : path.entryList(QStringList{"*"}, QDir::Files)) {
     load(path.filePath(file));
   }
 }
