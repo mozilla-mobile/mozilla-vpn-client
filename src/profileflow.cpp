@@ -30,7 +30,6 @@ void ProfileFlow::setState(State state) {
 
 void ProfileFlow::start() {
   logger.debug() << "Start profile flow";
-  reset();
   setState(StateLoading);
 
   User* user = MozillaVPN::instance()->user();
@@ -56,11 +55,6 @@ void ProfileFlow::start() {
   });
 
   TaskScheduler::scheduleTask(task);
-}
-
-void ProfileFlow::reset() {
-  logger.debug() << "Reset profile flow";
-  setState(StateInitial);
 }
 
 void ProfileFlow::subscriptionDetailsFetched(
