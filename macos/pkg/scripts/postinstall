@@ -48,6 +48,11 @@ EOM
 pkill -x "Mozilla VPN" || echo "Unable to kill GUI, not running?"
 sleep 1
 
+UPDATING=
+if [ -f "$DAEMON_PLIST_PATH" ]; then
+  UPDATING=1
+fi
+
 # Load the daemon
 launchctl unload -w $DAEMON_PLIST_PATH
 echo "$DAEMON_PLIST" > $DAEMON_PLIST_PATH
@@ -68,5 +73,9 @@ if [ -f "/Applications/Mozilla VPN.app/Contents/Resources/utils/mozillavpn.json"
 fi
 
 # Run the app
-open "/Applications/Mozilla VPN.app"
+if [ "$UPDATING" ]; then
+  open -a "/Applications/Mozilla VPN.app" --args ui --updated
+else
+  open -a "/Applications/Mozilla VPN.app"
+fi
 exit 0

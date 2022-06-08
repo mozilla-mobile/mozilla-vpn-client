@@ -7,7 +7,10 @@
 #include "inspector/inspectorhandler.h"
 #include "logger.h"
 #include "leakdetector.h"
+#include "mozillavpn.h"
+#include "telemetry/gleansample.h"
 #include "versionapi.h"
+#include "webupdater.h"
 
 #ifdef MVPN_BALROG
 #  include "balrog.h"
@@ -31,16 +34,27 @@ Updater* Updater::create(QObject* parent, bool downloadAndInstall) {
     return new VersionApi(parent);
   }
 
-  logger.warning() << "No download and install supported for this platform.";
-  return nullptr;
+  return new WebUpdater(parent);
 }
 
 Updater::Updater(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(Updater);
-  connect(this, &Updater::updateRecommended,
-          [this] { m_recommendedOrRequired = true; });
-  connect(this, &Updater::updateRequired,
-          [this] { m_recommendedOrRequired = true; });
+  connect(this, &Updater::updateRecommended, [this] {
+    m_recommendedOrRequired = true;
+
+    emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::updateStep,
+        {{"state",
+          QVariant::fromValue(RecommendedUpdateAvailable).toString()}});
+  });
+
+  connect(this, &Updater::updateRequired, [this] {
+    m_recommendedOrRequired = true;
+
+    emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::updateStep,
+        {{"state", QVariant::fromValue(RequiredUpdateAvailable).toString()}});
+  });
   logger.debug() << "Updater created";
 }
 
@@ -55,4 +69,11 @@ QString Updater::appVersion() {
     return InspectorHandler::appVersionForUpdate();
   }
   return Constants::versionString();
+}
+
+// static
+void Updater::updateViewShown() {
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::updateStep,
+      {{"state", QVariant::fromValue(UpdateViewShown).toString()}});
 }
