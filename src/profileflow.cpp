@@ -26,7 +26,7 @@ void ProfileFlow::setState(State state) {
 
 void ProfileFlow::start() {
   logger.debug() << "Start profile flow";
-
+  reset();
   setState(StateLoading);
 
   User* user = MozillaVPN::instance()->user();
@@ -62,7 +62,6 @@ void ProfileFlow::reset() {
 void ProfileFlow::subscriptionDetailsFetched(
     const QByteArray& subscriptionData) {
   logger.debug() << "Subscription details data fetched";
-  Q_UNUSED(subscriptionData);
 
   if (!m_subscriptionData->fromJson(subscriptionData)) {
     logger.error() << "Failed to parse the Subscription JSON data";
