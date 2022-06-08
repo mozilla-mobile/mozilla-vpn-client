@@ -14,7 +14,7 @@ namespace {
 Logger logger(LOG_MODEL, "SubscriptionData");
 
 SubscriptionData* s_instance = nullptr;
-}
+} // namespace
 
 // static
 SubscriptionData* SubscriptionData::instance() {
