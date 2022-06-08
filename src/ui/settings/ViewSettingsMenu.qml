@@ -60,6 +60,8 @@ VPNFlickable {
                         VPN.openLink(VPN.LinkAccount);
                     }
                 }
+                _loaderVisible: VPNProfileFlow.state === VPNProfileFlow.StateLoading
+
                 Layout.leftMargin: VPNTheme.theme.windowMargin / 2
             }
 
