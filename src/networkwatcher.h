@@ -6,7 +6,6 @@
 #define NETWORKWATCHER_H
 
 #include "notificationhandler.h"
-#include "networkwatcherimpl.h"
 
 #include <QElapsedTimer>
 #include <QMap>

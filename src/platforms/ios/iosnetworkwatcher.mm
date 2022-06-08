@@ -11,7 +11,7 @@
 
 namespace {
 Logger logger(LOG_IOS, "IOSNetworkWatcher");
-dispatch_queue_t sQueue = dispatch_queue_create("VPNNetwork.queue", DISPATCH_QUEUE_SERIAL);
+dispatch_queue_t s_queue = dispatch_queue_create("VPNNetwork.queue", DISPATCH_QUEUE_SERIAL);
 }
 
 IOSNetworkWatcher::IOSNetworkWatcher(QObject* parent) : NetworkWatcherImpl(parent) {
@@ -20,20 +20,19 @@ IOSNetworkWatcher::IOSNetworkWatcher(QObject* parent) : NetworkWatcherImpl(paren
 
 IOSNetworkWatcher::~IOSNetworkWatcher() {
   MVPN_COUNT_DTOR(IOSNetworkWatcher);
-  if (mNetworkMonitor != nil) {
-    nw_path_monitor_cancel(mNetworkMonitor);
-    nw_release(mNetworkMonitor);
+  if (m_networkMonitor != nil) {
+    nw_path_monitor_cancel(m_networkMonitor);
+    nw_release(m_networkMonitor);
   }
 }
 
 void IOSNetworkWatcher::initialize() {
-  auto mon = nw_path_monitor_create();
-  nw_path_monitor_set_queue(mon, sQueue);
-  nw_path_monitor_set_update_handler(mon, ^(nw_path_t _Nonnull path) {
-    mCurrentDefaultTransport = toTransportType(path);
+  m_networkMonitor = nw_path_monitor_create();
+  nw_path_monitor_set_queue(m_networkMonitor, s_queue);
+  nw_path_monitor_set_update_handler(m_networkMonitor, ^(nw_path_t _Nonnull path) {
+    m_currentDefaultTransport = toTransportType(path);
   });
-  nw_path_monitor_start(mon);
-  mNetworkMonitor = mon;
+  nw_path_monitor_start(m_networkMonitor);
 
   connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
           &IOSNetworkWatcher::controllerStateChanged);
@@ -43,12 +42,12 @@ NetworkWatcherImpl::TransportType IOSNetworkWatcher::getTransportType() {
   if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
     // If we're not in stateON, the result from the Observer is fine, as
     // the default-route-transport  is not the vpn-tunnel
-    return mCurrentDefaultTransport;
+    return m_currentDefaultTransport;
   }
-  if (mObservableConnection != nil) {
-    return mCurrentVPNTransport;
+  if (m_observableConnection != nil) {
+    return m_currentVPNTransport;
   }
-  // If we don't have an open tunnel-observer, mCurrentVPNTransport is probably wrong.
+  // If we don't have an open tunnel-observer, m_currentVPNTransport is probably wrong.
   return NetworkWatcherImpl::TransportType_Unknown;
 }
 
@@ -81,10 +80,10 @@ NetworkWatcherImpl::TransportType IOSNetworkWatcher::toTransportType(nw_path_t p
 
 void IOSNetworkWatcher::controllerStateChanged() {
   if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
-    if (mObservableConnection != nil) {
-      nw_connection_cancel(mObservableConnection);
-      nw_release(mObservableConnection);
-      mObservableConnection = nil;
+    if (m_observableConnection != nil) {
+      nw_connection_cancel(m_observableConnection);
+      nw_release(m_observableConnection);
+      m_observableConnection = nil;
     }
     return;
   }
@@ -108,10 +107,10 @@ void IOSNetworkWatcher::controllerStateChanged() {
   auto params = nw_parameters_create_secure_udp(NW_PARAMETERS_DISABLE_PROTOCOL,
                                                 NW_PARAMETERS_DEFAULT_CONFIGURATION);
   auto con = nw_connection_create(endpoint, params);
-  nw_connection_set_queue(con, sQueue);
+  nw_connection_set_queue(con, s_queue);
   nw_connection_set_path_changed_handler(con, ^(nw_path_t _Nonnull path) {
-    mCurrentVPNTransport = toTransportType(path);
+    m_currentVPNTransport = toTransportType(path);
   });
   nw_connection_start(con);
-  mObservableConnection = con;
+  m_observableConnection = con;
 }

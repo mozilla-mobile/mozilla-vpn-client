@@ -10,22 +10,23 @@
 
 class IOSNetworkWatcher final : public NetworkWatcherImpl {
  public:
-  IOSNetworkWatcher(QObject* parent);
+  explicit IOSNetworkWatcher(QObject* parent);
   ~IOSNetworkWatcher();
 
   void initialize() override;
   NetworkWatcherImpl::TransportType getTransportType() override;
 
  private:
-  NetworkWatcherImpl::TransportType mCurrentDefaultTransport =
-      NetworkWatcherImpl::TransportType_Unknown;
-  NetworkWatcherImpl::TransportType mCurrentVPNTransport =
-      NetworkWatcherImpl::TransportType_Unknown;
-  nw_path_monitor_t mNetworkMonitor = nil;
-  nw_connection_t mObservableConnection = nil;
 
   NetworkWatcherImpl::TransportType toTransportType(nw_path_t path);
   void controllerStateChanged();
+
+  NetworkWatcherImpl::TransportType m_currentDefaultTransport =
+      NetworkWatcherImpl::TransportType_Unknown;
+  NetworkWatcherImpl::TransportType m_currentVPNTransport =
+      NetworkWatcherImpl::TransportType_Unknown;
+  nw_path_monitor_t m_networkMonitor = nil;
+  nw_connection_t m_observableConnection = nil;
 };
 
 #endif  // IOSNETWORKWATCHER_H
