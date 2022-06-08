@@ -178,7 +178,7 @@ VPNFlickable {
         function onStateChanged() {
             if (
                 VPNProfileFlow.state === VPNProfileFlow.StateReady
-                || VPNProfileFlow.state === VPNProfileFlow.StateAuthenticating
+                || VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
             ) {
                 settingsStackView.push("qrc:/ui/settings/ViewProfile.qml");
             }

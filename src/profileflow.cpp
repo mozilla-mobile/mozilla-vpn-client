@@ -41,7 +41,7 @@ void ProfileFlow::start() {
           &ProfileFlow::subscriptionDetailsFetched);
   connect(task, &TaskGetSubscriptionDetails::needsAuthentication, this, [&] {
     logger.debug() << "Needs authentication";
-    setState(StateAuthenticating);
+    setState(StateAuthenticationNeeded);
   });
   connect(task, &TaskGetSubscriptionDetails::failed, [&]() {
     logger.debug() << "Task failed";

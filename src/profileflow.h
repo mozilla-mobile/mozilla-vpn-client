@@ -24,7 +24,7 @@ class ProfileFlow final : public QObject {
   enum State {
     StateInitial,
     StateLoading,
-    StateAuthenticating,
+    StateAuthenticationNeeded,
     StateReady,
     StateError,
   };
