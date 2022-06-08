@@ -3,8 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
-$FETCHES_PATH =resolve-path "$REPO_ROOT_PATH/../../fetches"
-
+$TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
+$FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
 
 $BIN_PATH = "$REPO_ROOT_PATH/bin"
 $QT_VERSION = $env:QT_VERSION
@@ -12,7 +12,7 @@ $QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
 
 $QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
 
-Set-Location $FETCHES_PATH 
+Set-Location $FETCHES_PATH
 Write-Output "Downloading : $QT_URI"
 Invoke-WebRequest -Uri $QT_URI -OutFile qt-everywhere-src-$QT_VERSION.zip
 if($?){
@@ -23,7 +23,7 @@ if($?){
 }
 
 unzip -o -qq qt-everywhere-src-$QT_VERSION.zip
-unzip -o -qq open_ssl_win.zip # See Build-qt/windows.yml why
+unzip -o -qq open_ssl_win.zip # See toolchain/qt.yml for why
 
 # Setup Openssl Import
 $SSL_PATH = resolve-path "$FETCHES_PATH/SSL"
@@ -75,7 +75,7 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -openssl-runtime `
   -prefix $BUILD_PREFIX `
 
-  
+
 
  cmake --build . --parallel
 
@@ -86,7 +86,9 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
 Set-Location $REPO_ROOT_PATH
 Copy-Item -Path taskcluster/scripts/build_qt/configure_qt.ps1 -Destination QT_OUT/
 Copy-Item -Path $SSL_PATH -Recurse -Destination QT_OUT/
-zip -r qt6_win.zip QT_OUT
+
+New-Item -ItemType Directory -Path "$TASK_WORKDIR/public/build" -Force
+zip -r "$TASK_WORKDIR/public/build/qt6_win.zip" QT_OUT
 
 
 Write-Output "Build complete, zip created:"
@@ -98,5 +100,5 @@ Stop-Process -Name "mspdbsrv" -Force -ErrorAction SilentlyContinue
 
 Write-Output "Open Processes:"
 
-wmic process get description,executablepath 
+wmic process get description,executablepath
 
