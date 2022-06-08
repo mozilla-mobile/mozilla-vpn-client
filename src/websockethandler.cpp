@@ -11,6 +11,8 @@
 #include "settingsholder.h"
 #include "urlopener.h"
 
+#include <QtMath>
+
 namespace {
 Logger logger(LOG_MAIN, "WebSocketHandler");
 }  // namespace

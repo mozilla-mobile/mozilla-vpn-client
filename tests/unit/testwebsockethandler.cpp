@@ -9,6 +9,7 @@
 #include "helper.h"
 
 #include <QtWebSockets/QWebSocketServer>
+#include <QtMath>
 
 /**
  * @brief Construct a new Mock Server:: Mock Server object
