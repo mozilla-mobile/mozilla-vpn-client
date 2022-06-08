@@ -630,7 +630,7 @@ subscriptionManagement:
     value: Next billed
     comment: Label for the upcoming date on which the user will be billed for their subscription.
   activatedLabel:
-    value: Activated
+    value: Active since
     comment: Label for the date on which the subscription was activated.
   expiresLabel:
     value: Expires
