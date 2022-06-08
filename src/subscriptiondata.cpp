@@ -12,29 +12,11 @@
 
 namespace {
 Logger logger(LOG_MODEL, "SubscriptionData");
-
-SubscriptionData* s_instance = nullptr;
 } // namespace
 
-// static
-SubscriptionData* SubscriptionData::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
-}
+SubscriptionData::SubscriptionData() { MVPN_COUNT_CTOR(SubscriptionData); }
 
-SubscriptionData::SubscriptionData() {
-  MVPN_COUNT_CTOR(SubscriptionData);
-
-  Q_ASSERT(!s_instance);
-  s_instance = this;
-}
-
-SubscriptionData::~SubscriptionData() {
-  MVPN_COUNT_DTOR(SubscriptionData);
-
-  Q_ASSERT(s_instance == this);
-  s_instance = nullptr;
-}
+SubscriptionData::~SubscriptionData() { MVPN_COUNT_DTOR(SubscriptionData); }
 
 bool SubscriptionData::fromJson(const QByteArray& json) {
   logger.debug() << "Subscription from JSON start";

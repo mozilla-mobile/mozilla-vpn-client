@@ -36,8 +36,6 @@ class SubscriptionData final : public QObject {
   SubscriptionData();
   ~SubscriptionData();
 
-  static SubscriptionData* instance();
-
   [[nodiscard]] bool fromJson(const QByteArray& json);
 
   bool initialized() const { return !m_rawJson.isEmpty(); }

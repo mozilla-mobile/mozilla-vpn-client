@@ -47,8 +47,7 @@ void ProfileFlow::start() {
     logger.debug() << "Task failed";
 
     // TODO: Remove, only for debugging purposes.
-    SubscriptionData* subData = SubscriptionData::instance();
-    subData->populateFakeData();
+    MozillaVPN::instance()->subscriptionData()->populateFakeData();
 
     // TODO: Should be `StateInitial`
     setState(StateReady);
@@ -61,8 +60,7 @@ void ProfileFlow::subscriptionDetailsFetched(
     const QByteArray& subscriptionData) {
   logger.debug() << "Subscription details data fetched";
 
-  SubscriptionData* subData = SubscriptionData::instance();
-  if (!subData->fromJson(subscriptionData)) {
+  if (!MozillaVPN::instance()->subscriptionData()->fromJson(subscriptionData)) {
     logger.error() << "Failed to parse the Subscription JSON data";
     MozillaVPN::instance()->errorHandle(ErrorHandler::RemoteServiceError);
     return;
