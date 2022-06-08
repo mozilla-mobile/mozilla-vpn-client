@@ -610,13 +610,13 @@ subscriptionManagement:
     comment: Label for the selected subscription plan the user currently is subscribed to.
   planValueMonthly:
     value: "%1 monthly"
-    comment: The %1 represents a localized currency string
+    comment: The %1 represents a localized currency string.
   planValueHalfYearly:
     value: "%1 half-yearly"
-    comment: The %1 represents a localized currency string
+    comment: The %1 represents a localized currency string.
   planValueYearly:
     value: "%1 yearly"
-    comment: The %1 represents a localized currency string
+    comment: The %1 represents a localized currency string.
   statusLabel:
     value: Status
     comment: Label for the current status of the subscription.
