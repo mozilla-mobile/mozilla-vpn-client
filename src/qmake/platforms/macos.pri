@@ -57,6 +57,7 @@ SOURCES += \
 OBJECTIVE_SOURCES += \
     platforms/macos/macoscryptosettings.mm \
     platforms/macos/macosnetworkwatcher.mm \
+    platforms/ios/iosnetworkwatcher.mm \
     platforms/macos/macosutils.mm
 
 HEADERS += \
@@ -84,6 +85,7 @@ HEADERS += \
 
 OBJECTIVE_HEADERS += \
     platforms/macos/macosnetworkwatcher.h \
+    platforms/ios/iosnetworkwatcher.h \
     platforms/macos/macosutils.h
 
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14

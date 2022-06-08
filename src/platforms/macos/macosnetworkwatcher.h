@@ -6,37 +6,25 @@
 #define MACOSNETWORKWATCHER_H
 
 #include "networkwatcherimpl.h"
+#include "../ios/iosnetworkwatcher.h"
 
 #import <Network/Network.h>
 
 class QString;
 
-class MacOSNetworkWatcher final : public NetworkWatcherImpl {
+class MacOSNetworkWatcher final : public IOSNetworkWatcher {
  public:
   MacOSNetworkWatcher(QObject* parent);
   ~MacOSNetworkWatcher();
-
-  void initialize() override;
 
   void start() override;
 
   void checkInterface();
 
-  NetworkWatcherImpl::TransportType getTransportType() override;
-
   void controllerStateChanged();
 
  private:
   void* m_delegate = nullptr;
-  NetworkWatcherImpl::TransportType m_currentDefaultTransport =
-      NetworkWatcherImpl::TransportType_Unknown;
-  NetworkWatcherImpl::TransportType m_currentVPNTransport =
-      NetworkWatcherImpl::TransportType_Unknown;
-  void* m_networkMonitor = nullptr;
-
-  nw_connection_t m_observableConnection = nil;
-
-  NetworkWatcherImpl::TransportType toTransportType(nw_path_t path);
 };
 
 #endif  // MACOSNETWORKWATCHER_H

@@ -8,7 +8,7 @@
 #include "networkwatcherimpl.h"
 #include <Network/Network.h>
 
-class IOSNetworkWatcher final : public NetworkWatcherImpl {
+class IOSNetworkWatcher : public NetworkWatcherImpl {
  public:
   explicit IOSNetworkWatcher(QObject* parent);
   ~IOSNetworkWatcher();
