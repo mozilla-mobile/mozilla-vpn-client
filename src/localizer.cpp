@@ -139,7 +139,7 @@ bool Localizer::loadLanguageInternal(const QString& code) {
     // QLocale::system() directly because it would load the 'en' language
     // instead of the system one. Let's recreate a new QLocale object using the
     // bcp47 code.
-    locale = QLocale(QLocale::system().bcp47Name());
+    m_locale = QLocale(QLocale::system().bcp47Name());
   }
 
   QLocale::setDefault(locale);
@@ -148,6 +148,9 @@ bool Localizer::loadLanguageInternal(const QString& code) {
     logger.error() << "Loading the locale failed - code:" << code;
     return false;
   }
+
+  m_locale = locale;
+  emit localeChanged();
 
   return true;
 }
@@ -258,6 +261,17 @@ QString Localizer::previousCode() const {
 
 QString Localizer::localizedCityName(const QString& code, const QString& city) {
   return ServerI18N::translateCityName(code, city);
+}
+
+QLocale Localizer::locale() {
+  logger.debug() << "Set locale";
+
+  if (!loadLanguageInternal(SettingsHolder::instance()->languageCode())) {
+    logger.debug() << "Set fallback locale";
+    loadLanguageInternal("en");
+  }
+
+  return m_locale;
 }
 
 // static

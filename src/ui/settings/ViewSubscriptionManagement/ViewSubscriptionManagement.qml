@@ -12,9 +12,6 @@ import components 0.1
 VPNFlickable {
     id: vpnFlickable
     objectName: "settingsView"
-    property var currentLocale: VPNLocalizer.code === ""
-        ? Qt.locale(VPNLocalizer.previousCode)
-        : Qt.locale(VPNLocalizer.code)
 
     anchors.top: parent.top
     height: parent.height
@@ -193,7 +190,7 @@ VPNFlickable {
     }
 
     function unixToDate(unixTimestamp) {
-        return new Date(unixTimestamp * 1000).toLocaleDateString(currentLocale, Locale.ShortFormat);
+        return new Date(unixTimestamp * 1000).toLocaleDateString(VPNLocalizer.locale, Locale.ShortFormat);
     }
 
     function getPlanText(currencyCode, amount, intervalCount) {
