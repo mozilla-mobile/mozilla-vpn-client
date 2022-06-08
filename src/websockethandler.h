@@ -28,11 +28,6 @@ class ExponentialBackoffStrategy final : public QObject {
   void executeNextAttempt();
 
  private:
-  void onNextAttemptTimeout();
-
- private:
-  std::function<void()> m_nextAction;
-
   QTimer m_retryTimer;
   int m_retryCounter = 1;
   int m_maxInterval = MAX_RETRY_INTERVAL;

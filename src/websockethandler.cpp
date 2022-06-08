@@ -19,7 +19,7 @@ ExponentialBackoffStrategy::ExponentialBackoffStrategy() {
   MVPN_COUNT_CTOR(ExponentialBackoffStrategy);
 
   connect(&m_retryTimer, &QTimer::timeout, this,
-          &ExponentialBackoffStrategy::onNextAttemptTimeout);
+          &ExponentialBackoffStrategy::executeNextAttempt);
   m_retryTimer.setSingleShot(true);
 }
 
@@ -47,14 +47,6 @@ int ExponentialBackoffStrategy::scheduleNextAttempt() {
   }
   m_retryTimer.start(retryInterval);
   return retryInterval;
-}
-
-/**
- * @brief Emits a signal for the caller to execute the next attempt once the
- * retryTimer is timed out
- */
-void ExponentialBackoffStrategy::onNextAttemptTimeout() {
-  emit executeNextAttempt();
 }
 
 /**
