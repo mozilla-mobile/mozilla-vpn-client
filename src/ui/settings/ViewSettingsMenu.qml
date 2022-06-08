@@ -175,8 +175,13 @@ VPNFlickable {
     Connections {
         target: VPNProfileFlow
 
-        function onShowProfile() {
-            settingsStackView.push("qrc:/ui/settings/ViewProfile.qml");
+        function onStateChanged() {
+            if (
+                VPNProfileFlow.state === VPNProfileFlow.StateReady
+                || VPNProfileFlow.state === VPNProfileFlow.StateAuthenticating
+            ) {
+                settingsStackView.push("qrc:/ui/settings/ViewProfile.qml");
+            }
         }
     }
 }

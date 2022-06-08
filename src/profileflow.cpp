@@ -43,7 +43,6 @@ void ProfileFlow::start() {
   connect(task, &TaskGetSubscriptionDetails::needsAuthentication, this, [&] {
     logger.debug() << "Needs authentication";
     setState(StateAuthenticating);
-    emit showProfile();
   });
   connect(task, &TaskGetSubscriptionDetails::failed, [&]() {
     logger.debug() << "Task failed";
@@ -52,7 +51,6 @@ void ProfileFlow::start() {
     SubscriptionData* subData = SubscriptionData::instance();
     subData->populateFakeData();
 
-    emit showProfile();
     // TODO: Should be `StateInitial`
     setState(StateReady);
   });
@@ -77,6 +75,5 @@ void ProfileFlow::subscriptionDetailsFetched(
   }
 
   // TODO: Remove, only for debugging purposes.
-  emit showProfile();
   setState(StateReady);
 }

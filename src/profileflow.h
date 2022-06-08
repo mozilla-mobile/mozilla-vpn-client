@@ -34,7 +34,6 @@ class ProfileFlow final : public QObject {
   State state() const { return m_state; }
 
  signals:
-  void showProfile();
   void stateChanged(State state);
 
  private:
