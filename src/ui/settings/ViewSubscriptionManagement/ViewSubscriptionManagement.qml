@@ -197,19 +197,26 @@ VPNFlickable {
         const amountDisplay = (amount || 0) / 100;
         const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode.toUpperCase());
 
+        let labelText;
+
         if (intervalCount === 12) {
             // {¤amount} yearly
-            return VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
+            labelText = VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
         } else if (intervalCount === 6) {
             // {¤amount} half-yearly
-            return VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
+            labelText = VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
         } else if (intervalCount === 1) {
             // {¤amount} monthly
-            return VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
+            labelText = VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
+        } else if (intervalCount === 0) {
+            // TODO: Confirm that’s really the case: User is within a free trial period.
+            labelText = VPNl18n.FreeTrialsFreeTrialLabel;
+        } else {
+            // TODO: Add Glean event
+            console.warn(`Unexpected value for intervalCount: ${intervalCount}`);
         }
 
-        // TODO: Confirm that’s really the case: If we made it here the user has a free trial.
-        return VPNl18n.FreeTrialsFreeTrialLabel;
+        return labelText;
     }
 
     Component.onCompleted: {
