@@ -598,7 +598,7 @@ tipsAndTricks:
 subscriptionManagement:
   menuTitle:
     value: Profile
-    comment: Menu title for the a view with details on the users account.
+    comment: Menu title for a view with details on the users account.
   summaryHeadline:
     value: Subscription summary
     comment: Headline for a list with information on the subscription plan of the user.
