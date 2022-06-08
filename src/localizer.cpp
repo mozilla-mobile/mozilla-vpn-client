@@ -139,7 +139,7 @@ bool Localizer::loadLanguageInternal(const QString& code) {
     // QLocale::system() directly because it would load the 'en' language
     // instead of the system one. Let's recreate a new QLocale object using the
     // bcp47 code.
-    m_locale = QLocale(QLocale::system().bcp47Name());
+    locale = QLocale(QLocale::system().bcp47Name());
   }
 
   QLocale::setDefault(locale);
