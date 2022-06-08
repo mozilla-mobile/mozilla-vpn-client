@@ -73,6 +73,18 @@
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
 
+#ifdef MVPN_ANDROID
+constexpr const char* GOOGLE_PLAYSTORE_URL =
+    "https://play.google.com/store/apps/details?id=org.mozilla.firefox.vpn";
+#endif
+
+#ifdef MVPN_IOS
+constexpr const char* APPLE_STORE_URL =
+    "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
+constexpr const char* APPLE_STORE_REVIEW_URL =
+    "https://apps.apple.com/app/id1489407738?action=write-review";
+#endif
+
 namespace {
 Logger logger(LOG_MAIN, "MozillaVPN");
 MozillaVPN* s_instance = nullptr;
@@ -506,10 +518,9 @@ void MozillaVPN::openLink(LinkType linkType) {
       Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
       url =
 #if defined(MVPN_IOS)
-          "https://apps.apple.com/app/id1489407738?action=write-review";
+          APPLE_STORE_REVIEW_URL;
 #elif defined(MVPN_ANDROID)
-          "https://play.google.com/store/apps/"
-          "details?id=org.mozilla.firefox.vpn";
+          GOOGLE_PLAYSTORE_URL;
 #else
           "";
 #endif
@@ -526,9 +537,15 @@ void MozillaVPN::openLink(LinkType linkType) {
       break;
 
     case LinkUpdate:
+#if defined(MVPN_IOS)
+      url = APPLE_STORE_URL;
+#elif defined(MVPN_ANDROID)
+      url = GOOGLE_PLAYSTORE_URL;
+#else
       url = NetworkRequest::apiBaseUrl();
       url.append("/r/vpn/update/");
       url.append(Constants::PLATFORM_NAME);
+#endif
       break;
 
     case LinkSubscriptionBlocked:
