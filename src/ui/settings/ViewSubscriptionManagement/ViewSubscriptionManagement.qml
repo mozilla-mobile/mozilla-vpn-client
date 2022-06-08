@@ -212,7 +212,9 @@ VPNFlickable {
             // TODO: Confirm that’s really the case: User is within a free trial period.
             labelText = VPNl18n.FreeTrialsFreeTrialLabel;
         } else {
-            // TODO: Add Glean event
+            Sample.unhandledSubscriptionPlanInterval.record({
+                "interval_count": intervalCount
+            });
             console.warn(`Unexpected value for intervalCount: ${intervalCount}`);
         }
 
