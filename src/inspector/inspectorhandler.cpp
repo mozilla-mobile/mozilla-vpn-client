@@ -196,6 +196,18 @@ static QList<InspectorSettingCommand> s_settingCommands{
                                                                     : "false";
         }},
 
+    // tips-and-tricks-intro-shown
+    InspectorSettingCommand{
+        "tips-and-tricks-intro-shown", InspectorSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setTipsAndTricksIntroShown(value ==
+                                                                 "true");
+        },
+        []() {
+          return SettingsHolder::instance()->tipsAndTricksIntroShown()
+                     ? "true"
+                     : "false";
+        }},
 };
 
 struct InspectorCommand {
