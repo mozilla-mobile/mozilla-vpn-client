@@ -598,7 +598,7 @@ tipsAndTricks:
 subscriptionManagement:
   menuTitle:
     value: Profile
-    comment: Menu title for the a view with details on the users account.
+    comment: Menu title for a view with details on the users account.
   summaryHeadline:
     value: Subscription summary
     comment: Headline for a list with information on the subscription plan of the user.
@@ -648,7 +648,7 @@ subscriptionManagement:
     comment: Label for the date on which the payment method expires.
   manageSubscriptionButton:
     value: Manage subscription
-    comment: Label for a button that will take the user to a view where the can manage their subscription
+    comment: Label for a button that will take the user to a view where they can manage their subscription
 
 paymentMethods:
   amex: American Express
