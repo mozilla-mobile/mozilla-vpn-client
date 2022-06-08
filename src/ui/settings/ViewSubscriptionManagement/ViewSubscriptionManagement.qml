@@ -155,13 +155,13 @@ VPNFlickable {
 
         subscriptionInfoModel.append({
             labelText: VPNl18n.SubscriptionManagementActivatedLabel,
-            valueText: unixToDate(VPNSubscriptionData.createdAt),
+            valueText: epochTimeToDate(VPNSubscriptionData.createdAt),
             type: "text",
         });
 
         subscriptionInfoModel.append({
             labelText: VPNl18n.SubscriptionManagementExpiresLabel,
-            valueText: unixToDate(VPNSubscriptionData.expiresOn),
+            valueText: epochTimeToDate(VPNSubscriptionData.expiresOn),
             type: "text",
         });
 
@@ -176,7 +176,7 @@ VPNFlickable {
             subscriptionPaymentModel.append({
                 labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
                 // TODO: Show date w/o days
-                valueText: unixToDate(new Date(VPNSubscriptionData.creditCardExpYear, VPNSubscriptionData.creditCardExpMonth - 1).getTime() / 1000),
+                valueText: epochTimeToDate(new Date(VPNSubscriptionData.creditCardExpYear, VPNSubscriptionData.creditCardExpMonth - 1).getTime() / 1000),
                 type: "text",
             });
         } else {
@@ -189,7 +189,7 @@ VPNFlickable {
         }
     }
 
-    function unixToDate(unixTimestamp) {
+    function epochTimeToDate(unixTimestamp) {
         return new Date(unixTimestamp * 1000).toLocaleDateString(VPNLocalizer.locale, Locale.ShortFormat);
     }
 
