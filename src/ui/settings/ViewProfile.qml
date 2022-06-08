@@ -12,7 +12,9 @@ import components.inAppAuth 0.1
 
 Item {
     property string _menuTitle: VPNl18n.SubscriptionManagementMenuTitle
+
     id: subscriptionManagementStates
+    objectName: "viewProfile"
 
     Loader {
         property bool _targetViewCondition: VPNProfileFlow.state === VPNProfileFlow.StateReady

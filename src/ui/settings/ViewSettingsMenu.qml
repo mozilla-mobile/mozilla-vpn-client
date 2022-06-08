@@ -176,10 +176,13 @@ VPNFlickable {
         target: VPNProfileFlow
 
         function onStateChanged() {
-            if (
+            const profileViewNeeded = (
                 VPNProfileFlow.state === VPNProfileFlow.StateReady
                 || VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
-            ) {
+            );
+
+            // Only push the profile view if it’s not already in the stack
+            if (profileViewNeeded && settingsStackView.currentItem.objectName !== "viewProfile") {
                 settingsStackView.push("qrc:/ui/settings/ViewProfile.qml");
             }
         }
