@@ -19,7 +19,7 @@ class Localizer final : public QAbstractListModel {
   Q_PROPERTY(QString code READ code WRITE setCode NOTIFY codeChanged)
   Q_PROPERTY(QString previousCode READ previousCode NOTIFY previousCodeChanged)
   Q_PROPERTY(bool hasLanguages READ hasLanguages CONSTANT)
-  Q_PROPERTY(QLocale locale READ locale NOTIFY localeChanged)
+  Q_PROPERTY(QLocale locale MEMBER m_locale NOTIFY localeChanged)
 
   struct Language {
     QString m_code;
@@ -51,8 +51,6 @@ class Localizer final : public QAbstractListModel {
   QString previousCode() const;
 
   QStringList languages() const;
-
-  QLocale locale();
 
   // QAbstractListModel methods
 

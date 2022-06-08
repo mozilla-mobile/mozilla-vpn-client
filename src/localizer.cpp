@@ -263,17 +263,6 @@ QString Localizer::localizedCityName(const QString& code, const QString& city) {
   return ServerI18N::translateCityName(code, city);
 }
 
-QLocale Localizer::locale() {
-  logger.debug() << "Set locale";
-
-  if (!loadLanguageInternal(SettingsHolder::instance()->languageCode())) {
-    logger.debug() << "Set fallback locale";
-    loadLanguageInternal("en");
-  }
-
-  return m_locale;
-}
-
 // static
 void Localizer::macOSInstallerStrings() {
   //% "Mozilla VPN for macOS"
