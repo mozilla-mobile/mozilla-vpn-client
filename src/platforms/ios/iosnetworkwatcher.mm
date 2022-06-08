@@ -106,11 +106,10 @@ void IOSNetworkWatcher::controllerStateChanged() {
   auto endpoint = nw_endpoint_create_host(str.c_str(), "80");
   auto params = nw_parameters_create_secure_udp(NW_PARAMETERS_DISABLE_PROTOCOL,
                                                 NW_PARAMETERS_DEFAULT_CONFIGURATION);
-  auto con = nw_connection_create(endpoint, params);
-  nw_connection_set_queue(con, s_queue);
-  nw_connection_set_path_changed_handler(con, ^(nw_path_t _Nonnull path) {
+  m_observableConnection = nw_connection_create(endpoint, params);
+  nw_connection_set_queue(m_observableConnection, s_queue);
+  nw_connection_set_path_changed_handler(m_observableConnection, ^(nw_path_t _Nonnull path) {
     m_currentVPNTransport = toTransportType(path);
   });
-  nw_connection_start(con);
-  m_observableConnection = con;
+  nw_connection_start(m_observableConnection);
 }
