@@ -48,21 +48,21 @@ class SubscriptionData final : public QObject {
  private:
   QByteArray m_rawJson;
 
-  int m_createdAt;
-  int m_expiresOn;
-  bool m_isCancelled;
+  int m_createdAt = 0;
+  int m_expiresOn = 0;
+  bool m_isCancelled = false;
   QString m_status;
   QString m_type;
 
-  int m_planAmount;
+  int m_planAmount = 0;
   QString m_planCurrency;
-  int m_planIntervalCount;
+  int m_planIntervalCount = 0;
 
   QString m_paymentType;
   QString m_creditCardBrand;
   QString m_creditCardLast4;
-  int m_creditCardExpMonth;
-  int m_creditCardExpYear;
+  int m_creditCardExpMonth = 0;
+  int m_creditCardExpYear = 0;
 };
 
 #endif  // SUBSCRIPTIONDATA_H
