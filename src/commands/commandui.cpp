@@ -185,8 +185,11 @@ int CommandUI::run(QStringList& tokens) {
     // Currently there is a crash happening on exit with Huawei devices.
     // Until this is fixed, setting this variable is the "official" workaround.
     // We certainly should look at this once 6.4 is out.
+#  if QT_VERSION >= 0x060400
+#    error We have forgotten to remove this Huawei hack!
+#  endif
     if (AndroidUtils::GetManufacturer() == "Huawei") {
-      qputenv("QT_ANDROID_NO_EXIT_CALL", "Noxit");
+      qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
     }
 #endif
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
