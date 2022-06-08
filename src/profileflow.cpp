@@ -6,8 +6,12 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "profileflow.h"
+#include "subscriptiondata.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "taskscheduler.h"
+
+#include <QJsonDocument>
+#include <QJsonObject>
 
 namespace {
 Logger logger(LOG_MODEL, "ProfileFlow");
@@ -45,7 +49,9 @@ void ProfileFlow::start() {
     logger.debug() << "Task failed";
 
     // TODO: Remove, only for debugging purposes.
-    emit populateFakeData();
+    SubscriptionData* subData = SubscriptionData::instance();
+    subData->populateFakeData();
+
     emit showProfile();
     // TODO: Should be `StateInitial`
     setState(StateReady);
@@ -63,14 +69,14 @@ void ProfileFlow::subscriptionDetailsFetched(
     const QByteArray& subscriptionData) {
   logger.debug() << "Subscription details data fetched";
 
-  if (!m_subscriptionData->fromJson(subscriptionData)) {
+  SubscriptionData* subData = SubscriptionData::instance();
+  if (!subData->fromJson(subscriptionData)) {
     logger.error() << "Failed to parse the Subscription JSON data";
     MozillaVPN::instance()->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
   // TODO: Remove, only for debugging purposes.
-  emit populateFakeData();
   emit showProfile();
   setState(StateReady);
 }

@@ -36,16 +36,14 @@ class ProfileFlow final : public QObject {
  signals:
   void showProfile();
   void stateChanged(State state);
-  void populateFakeData();
 
  private:
+  void populateFakeData();
   void setState(State state);
   void subscriptionDetailsFetched(const QByteArray& subscriptionData);
 
  private:
   State m_state = StateInitial;
-
-  SubscriptionData* m_subscriptionData = nullptr;
 };
 
 #endif  // PROFILEFLOW_H
