@@ -66,6 +66,5 @@ void ProfileFlow::subscriptionDetailsFetched(
     return;
   }
 
-  // TODO: Remove, only for debugging purposes.
   setState(StateReady);
 }
