@@ -8,9 +8,9 @@
 #include <QWebSocket>
 #include <QTimer>
 
-constexpr const int BASE_RETRY_INTERVAL = 5;              // 5s
-constexpr const int MAX_RETRY_INTERVAL = 60 * 60 * 1000;  // 1hr
-constexpr const int WEBSOCKET_PING_INTERVAL = 30 * 1000;  // 30s
+constexpr const int BASE_RETRY_INTERVAL_SEC = 5;               // 5s
+constexpr const int MAX_RETRY_INTERVAL_MSEC = 60 * 60 * 1000;  // 1hr
+constexpr const int WEBSOCKET_PING_INTERVAL_MSEC = 30 * 1000;  // 30s
 
 class ExponentialBackoffStrategy final : public QObject {
   Q_OBJECT
@@ -30,8 +30,8 @@ class ExponentialBackoffStrategy final : public QObject {
  private:
   QTimer m_retryTimer;
   int m_retryCounter = 1;
-  int m_maxInterval = MAX_RETRY_INTERVAL;
-  int m_baseInterval = BASE_RETRY_INTERVAL;
+  int m_maxInterval = MAX_RETRY_INTERVAL_MSEC;
+  int m_baseInterval = BASE_RETRY_INTERVAL_SEC;
 };
 
 class WebSocketHandler final : public QObject {
@@ -69,7 +69,7 @@ class WebSocketHandler final : public QObject {
   QUrl m_url;
   QTimer m_pingTimer;
 
-  int m_pingInterval = WEBSOCKET_PING_INTERVAL;
+  int m_pingInterval = WEBSOCKET_PING_INTERVAL_MSEC;
   ExponentialBackoffStrategy m_backoffStrategy;
 
   static QString s_customWebSocketServerUrl;

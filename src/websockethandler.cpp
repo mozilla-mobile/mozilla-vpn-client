@@ -269,7 +269,7 @@ void WebSocketHandler::onPingTimeout() {
  * @brief Ackowledges there was a WebSocket error.
  *
  * Closes the websocket, is the user is authenticated a new connection attempt
- * will be triggered after WEBSOCKET_RETRY_INTERVAL.
+ * will be triggered after WEBSOCKET_RETRY_INTERVAL_MSEC.
  */
 void WebSocketHandler::onError(QAbstractSocket::SocketError error) {
   logger.debug() << "WebSocket error:" << error;
