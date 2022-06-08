@@ -5,8 +5,8 @@
 #include "helpmodel.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/feature.h"
 #include "mozillavpn.h"
-#include "features/featuresharelogs.h"
 
 namespace {
 bool s_initialized = false;
@@ -50,9 +50,9 @@ void maybeInitialize() {
 
   //% "View log"
   logger.debug() << "Adding:" << qtTrId("help.viewLog");
-  s_helpEntries.append(HelpEntry("help.viewLog",
-                                 FeatureShareLogs::instance()->isSupported(),
-                                 true, MozillaVPN::LinkContact));
+  s_helpEntries.append(HelpEntry(
+      "help.viewLog", Feature::get(Feature::Feature_shareLogs)->isSupported(),
+      true, MozillaVPN::LinkContact));
 }
 
 }  // namespace

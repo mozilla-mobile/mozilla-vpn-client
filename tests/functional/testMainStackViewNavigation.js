@@ -6,10 +6,6 @@ const assert = require('assert');
 const vpn = require('./helper.js');
 
 describe('mainStackView navigation', function() {
-  beforeEach(async () => {
-    await vpn.waitForMainView();
-  });
-
   async function openContactUs() {
     await vpn.wait();
     await vpn.openContactUs();
@@ -34,6 +30,7 @@ describe('mainStackView navigation', function() {
 
   it('onContactUsNeeded(): Stack history is preserved pre-authentication',
      async () => {
+       await vpn.waitForMainView();
        await vpn.wait();
        await vpn.clickOnElement('learnMoreLink');
        await vpn.waitForElement('skipOnboarding');
@@ -47,63 +44,64 @@ describe('mainStackView navigation', function() {
            'true');
      });
 
+  describe('Post-auth tests', function() {
+    this.ctx.authenticationNeeded = true;
 
-  it('onContactUsNeeded(): Stack history is preserved post-authentication',
-     async () => {
-       await vpn.authenticate(true, true);
-       await vpn.waitForElement('deviceListButton');
-       await vpn.waitForElementProperty('deviceListButton', 'visible', 'true');
-       await vpn.clickOnElement('deviceListButton');
-       await vpn.wait();
-       await openContactUs();
-       await closeContactUs();
-       await vpn.wait();
-       await vpn.waitForElement('deviceListBackButton');
-       await vpn.waitForElementProperty(
-           'deviceListBackButton', 'visible', 'true');
-       assert(
-           await vpn.getElementProperty('deviceListBackButton', 'visible') ===
-           'true');
-     });
+    it('onContactUsNeeded(): Stack history is preserved post-authentication',
+       async () => {
+         await vpn.waitForElement('deviceListButton');
+         await vpn.waitForElementProperty(
+             'deviceListButton', 'visible', 'true');
+         await vpn.clickOnElement('deviceListButton');
+         await vpn.wait();
+         await openContactUs();
+         await closeContactUs();
+         await vpn.wait();
+         await vpn.waitForElement('deviceListBackButton');
+         await vpn.waitForElementProperty(
+             'deviceListBackButton', 'visible', 'true');
+         assert(
+             await vpn.getElementProperty('deviceListBackButton', 'visible') ===
+             'true');
+       });
+
+    it('onSettingsNeeded(): Settings view is pushed to mainStackView',
+       async () => {
+         const mainStackDepth = await getMainStackViewDepth();
+         await vpn.wait();
+         await vpn.openSettings();
+         await vpn.wait();
+         await vpn.waitForElement('settingsBackButton');
+         await vpn.waitForElementProperty(
+             'settingsBackButton', 'visible', 'true');
+         assert(
+             await getMainStackViewDepth() ===
+             (parseInt(mainStackDepth) + 1).toString());
+       });
 
 
-  it('onSettingsNeeded(): Settings view is pushed to mainStackView',
-     async () => {
-       await vpn.authenticate(true, true);
-       const mainStackDepth = await getMainStackViewDepth();
-       await vpn.wait();
-       await vpn.openSettings();
-       await vpn.wait();
-       await vpn.waitForElement('settingsBackButton');
-       await vpn.waitForElementProperty(
-           'settingsBackButton', 'visible', 'true');
-       assert(
-           await getMainStackViewDepth() ===
-           (parseInt(mainStackDepth) + 1).toString());
-     });
+    it('onSettingsNeeded(): Stack history is preserved after closing Settings',
+       async () => {
+         await vpn.waitForElement('deviceListButton');
+         await vpn.waitForElementProperty(
+             'deviceListButton', 'visible', 'true');
+         await vpn.clickOnElement('deviceListButton');
 
+         await vpn.waitForElement('deviceListBackButton');
+         await vpn.waitForElementProperty(
+             'deviceListBackButton', 'visible', 'true');
+         await vpn.openSettings();
+         await vpn.waitForElement('settingsBackButton');
+         await vpn.waitForElementProperty(
+             'settingsBackButton', 'visible', 'true');
+         await vpn.clickOnElement('settingsBackButton');
 
-  it('onSettingsNeeded(): Stack history is preserved after closing Settings',
-     async () => {
-       await vpn.authenticate(true, true);
-       await vpn.waitForElement('deviceListButton');
-       await vpn.waitForElementProperty('deviceListButton', 'visible', 'true');
-       await vpn.clickOnElement('deviceListButton');
-
-       await vpn.waitForElement('deviceListBackButton');
-       await vpn.waitForElementProperty(
-           'deviceListBackButton', 'visible', 'true');
-       await vpn.openSettings();
-       await vpn.waitForElement('settingsBackButton');
-       await vpn.waitForElementProperty(
-           'settingsBackButton', 'visible', 'true');
-       await vpn.clickOnElement('settingsBackButton');
-
-       await vpn.waitForElement('deviceListBackButton');
-       await vpn.waitForElementProperty(
-           'deviceListBackButton', 'visible', 'true');
-       assert(
-           await vpn.getElementProperty('deviceListBackButton', 'visible') ===
-           'true');
-     });
+         await vpn.waitForElement('deviceListBackButton');
+         await vpn.waitForElementProperty(
+             'deviceListBackButton', 'visible', 'true');
+         assert(
+             await vpn.getElementProperty('deviceListBackButton', 'visible') ===
+             'true');
+       });
+  });
 });

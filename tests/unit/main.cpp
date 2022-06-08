@@ -12,6 +12,7 @@
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
 MozillaVPN::State TestHelper::vpnState = MozillaVPN::StateInitialize;
 Controller::State TestHelper::controllerState = Controller::StateInitializing;
+MozillaVPN::UserState TestHelper::userState = MozillaVPN::UserNotAuthenticated;
 QVector<QObject*> TestHelper::testList;
 
 QObject* TestHelper::findTest(const QString& name) {

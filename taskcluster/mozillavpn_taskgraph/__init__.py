@@ -4,6 +4,14 @@
 
 from importlib import import_module
 
+from taskgraph.util import schema
+
+schema.WHITELISTED_SCHEMA_IDENTIFIERS.append(
+    lambda path: any(
+        exc in path for exc in ("['entitlementsUrl']", "['loginItemsEntitlementsUrl']")
+    )
+)
+
 
 def register(graph_config):
     """

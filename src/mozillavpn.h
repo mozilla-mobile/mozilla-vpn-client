@@ -30,6 +30,7 @@
 #include "statusicon.h"
 #include "telemetry.h"
 #include "theme.h"
+#include "websockethandler.h"
 
 #include <QList>
 #include <QNetworkReply>
@@ -102,7 +103,6 @@ class MozillaVPN final : public QObject {
   enum LinkType {
     LinkAccount,
     LinkContact,
-    LinkFeedback,
     LinkForgotPassword,
     LinkLeaveReview,
     LinkHelpSupport,
@@ -293,7 +293,7 @@ class MozillaVPN final : public QObject {
 
   void setUpdateRecommended(bool value);
 
-  UserState userState() const { return m_userState; }
+  UserState userState() const;
 
   bool startMinimized() const { return m_startMinimized; }
 
@@ -447,6 +447,7 @@ class MozillaVPN final : public QObject {
     SurveyModel m_surveyModel;
     Telemetry m_telemetry;
     Theme m_theme;
+    WebSocketHandler m_webSocketHandler;
     WhatsNewModel m_whatsNewModel;
     User m_user;
   };

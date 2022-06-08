@@ -156,7 +156,7 @@ describe.skip('Take screenshots for each view', function() {
     await screenCapture('authenticating');
   });
 
-  it('authenticate', async () => await vpn.authenticate());
+  it('authenticate in browser', async () => await vpn.authenticateInBrowser());
 
   it('post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');

@@ -157,7 +157,7 @@ void TutorialStep::startInternal() {
   tutorialModel->requireTooltipShown(m_parent, true);
   tutorialModel->requireTooltipNeeded(
       m_parent, L18nStrings::instance()->value(m_stringId).toString(),
-      QRectF(x, y, item->width(), item->height()));
+      QRectF(x, y, item->width(), item->height()), m_element);
 
   connect(m_next, &TutorialStepNext::completed, this, &TutorialStep::completed);
   m_next->start();

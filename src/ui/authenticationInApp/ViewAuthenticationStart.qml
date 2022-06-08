@@ -31,6 +31,7 @@ VPNInAppAuthenticationBase {
     _inputLabel: VPNl18n.InAppAuthEmailInputPlaceholder
 
     _inputs: VPNInAppAuthenticationInputs {
+        objectName: "authStart"
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.checkAccount(inputText); }
         _buttonText: qsTrId("vpn.postAuthentication.continue")

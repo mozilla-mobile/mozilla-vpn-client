@@ -136,7 +136,7 @@ elif [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
   RCVERSION="~rc$(git rev-list --count --first-parent origin/main..HEAD)"
   SHORTVERSION="${BASH_REMATCH[1]}${RCVERSION}"
 elif [[ "$GITREF" == "refs/heads/main" ]]; then
-  SHOFTVERSION="${SHORTVERSION}~nightly$(date +%Y%m%d)"
+  SHORTVERSION="${SHORTVERSION}~nightly$(date +%Y%m%d)"
 fi
 WORKDIR=mozillavpn-${SHORTVERSION}
 print G "${SHORTVERSION}"

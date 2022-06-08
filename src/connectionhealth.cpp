@@ -3,11 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionhealth.h"
-#include <telemetry/gleansample.h>
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+#include "telemetry/gleansample.h"
 
 #include <QApplication>
 #include <QDateTime>
@@ -26,8 +26,8 @@ constexpr uint32_t PING_TIME_NOSIGNAL_SEC = 4;
 constexpr double PING_LOSS_UNSTABLE_THRESHOLD = 0.10;
 
 // Destination address for latency measurements when the VPN is
-// deactivated. This is the Google anycast DNS server.
-constexpr const char* PING_WELL_KNOWN_ANYCAST_DNS = "8.8.8.8";
+// deactivated. This is the doh.mullvad.net DNS server.
+constexpr const char* PING_WELL_KNOWN_ANYCAST_DNS = "194.242.2.2";
 
 // The baseline latency measurement averaged using an Exponentially Weighted
 // Moving Average (EWMA), this defines the decay rate.

@@ -596,6 +596,7 @@ tipsAndTricks:
   whatsNewDescription: We’ve added new features. Take a tour to get a deeper dive into what we’ve added for you!
   quickTipsTitle: Quick tips
   quickTipsDescription: Let us help you get the most out of Mozilla VPN
+  quickTipsGuideViewTitle: Quick tip
 
 global:
   expand:

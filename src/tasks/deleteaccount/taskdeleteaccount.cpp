@@ -41,7 +41,7 @@ void TaskDeleteAccount::run() {
       m_authenticationInAppSession, &AuthenticationInAppSession::completed,
       this, [this, pkceCodeVerifier](const QString& pkceCodeSucces) {
         logger.debug() << "Authentication completed with code:"
-                       << pkceCodeSucces;
+                       << logger.sensitive(pkceCodeSucces);
 
         NetworkRequest* request =
             NetworkRequest::createForAuthenticationVerification(

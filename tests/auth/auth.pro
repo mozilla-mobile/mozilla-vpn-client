@@ -7,6 +7,7 @@ QT += network
 QT += networkauth
 QT += qml
 QT += widgets
+QT += websockets
 
 CONFIG += c++1z
 
@@ -14,8 +15,6 @@ macos {
     CONFIG -= app_bundle
 }
 
-DEFINES += APP_VERSION=\\\"1234\\\"
-DEFINES += BUILD_ID=\\\"1234\\\"
 DEFINES += BUILD_QMAKE
 
 DEFINES += QT_DEPRECATED_WARNINGS
@@ -44,7 +43,6 @@ HEADERS += \
     ../../src/authenticationlistener.h \
     ../../src/constants.h \
     ../../src/errorhandler.h \
-    ../../src/featurelist.h \
     ../../src/hawkauth.h \
     ../../src/hkdf.h \
     ../../src/inspector/inspectorhandler.h \
@@ -53,6 +51,7 @@ HEADERS += \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/feature.h \
+    ../../src/models/featuremodel.h \
     ../../src/models/server.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
@@ -85,7 +84,6 @@ SOURCES += \
     ../../src/authenticationlistener.cpp \
     ../../src/constants.cpp \
     ../../src/errorhandler.cpp \
-    ../../src/featurelist.cpp \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
     ../../src/ipaddress.cpp \
@@ -93,6 +91,7 @@ SOURCES += \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/featuremodel.cpp \
     ../../src/models/server.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
@@ -114,6 +113,7 @@ SOURCES += \
     testpasswordvalidation.cpp \
     testsignupandin.cpp
 
+include($$PWD/../../version.pri)
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../translations/translations.pri)
 

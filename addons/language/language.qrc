@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/language">
+        <file>manifest.json</file>
+        <file>i18n/locale_en.qm</file>
+    </qresource>
+</RCC>

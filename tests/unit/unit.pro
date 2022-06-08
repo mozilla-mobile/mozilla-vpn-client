@@ -8,9 +8,8 @@ QT += qml
 QT += quick
 QT += xml
 QT += widgets
+QT += websockets
 
-DEFINES += APP_VERSION=\\\"1234\\\"
-DEFINES += BUILD_ID=\\\"1234\\\"
 DEFINES += BUILD_QMAKE
 
 CONFIG += c++1z
@@ -34,6 +33,7 @@ INCLUDEPATH += \
             ../../src/hacl-star/kremlin \
             ../../src/hacl-star/kremlin/minimal
 
+include($$PWD/../../version.pri)
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../nebula/nebula.pri)
 include($$PWD/../../translations/translations.pri)
@@ -53,7 +53,6 @@ HEADERS += \
     ../../src/curve25519.h \
     ../../src/dnspingsender.h \
     ../../src/errorhandler.h \
-    ../../src/featurelist.h \
     ../../src/inspector/inspectorhandler.h \
     ../../src/inspector/inspectorutils.h \
     ../../src/ipaddress.h \
@@ -66,6 +65,7 @@ HEADERS += \
     ../../src/models/device.h \
     ../../src/models/devicemodel.h \
     ../../src/models/feature.h \
+    ../../src/models/featuremodel.h \
     ../../src/models/feedbackcategorymodel.h \
     ../../src/models/guide.h \
     ../../src/models/guideblock.h \
@@ -123,6 +123,7 @@ HEADERS += \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
+    ../../src/websockethandler.h \
     helper.h \
     testadjust.h \
     testandroidmigration.h \
@@ -144,7 +145,8 @@ HEADERS += \
     testtasks.h \
     testthemes.h \
     testtimersingleshot.h \
-    testtutorial.h
+    testtutorial.h \
+    testwebsockethandler.h
 
 SOURCES += \
     ../../src/adjust/adjustfiltering.cpp \
@@ -157,7 +159,6 @@ SOURCES += \
     ../../src/curve25519.cpp \
     ../../src/dnspingsender.cpp \
     ../../src/errorhandler.cpp \
-    ../../src/featurelist.cpp \
     ../../src/hacl-star/Hacl_Chacha20.c \
     ../../src/hacl-star/Hacl_Chacha20Poly1305_32.c \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
@@ -173,6 +174,7 @@ SOURCES += \
     ../../src/models/device.cpp \
     ../../src/models/devicemodel.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/featuremodel.cpp \
     ../../src/models/feedbackcategorymodel.cpp \
     ../../src/models/guide.cpp \
     ../../src/models/guideblock.cpp \
@@ -225,6 +227,7 @@ SOURCES += \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \
+    ../../src/websockethandler.cpp \
     main.cpp \
     moccontroller.cpp \
     mocinspectorhandler.cpp \
@@ -250,7 +253,8 @@ SOURCES += \
     testtasks.cpp \
     testthemes.cpp \
     testtimersingleshot.cpp \
-    testtutorial.cpp
+    testtutorial.cpp \
+    testwebsockethandler.cpp
 
 # Platform-specific: Linux
 linux {

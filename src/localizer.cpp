@@ -145,8 +145,7 @@ bool Localizer::loadLanguageInternal(const QString& code) {
   QLocale::setDefault(locale);
 
   if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
-    logger.error() << "Loading the locale failed."
-                   << "code";
+    logger.error() << "Loading the locale failed - code:" << code;
     return false;
   }
 
@@ -214,10 +213,7 @@ QHash<int, QByteArray> Localizer::roleNames() const {
   return roles;
 }
 
-int Localizer::rowCount(const QModelIndex& index) const {
-  if (!index.isValid()) {
-    return 0;
-  }
+int Localizer::rowCount(const QModelIndex&) const {
   return m_languages.count();
 }
 
@@ -303,4 +299,80 @@ void Localizer::macOSInstallerStrings() {
 
   //% "Get help."
   qtTrId("macosinstaller.conclusion.message3");
+}
+
+QString Localizer::localizeCurrency(double value,
+                                    const QString& currencyIso4217) {
+  QString code = SettingsHolder::instance()->languageCode();
+  if (code.isEmpty()) {
+    code = QLocale::system().bcp47Name();
+  }
+
+  QLocale locale(code);
+
+  if (currencyIso4217.length() != 3) {
+    logger.warning() << "Invalid currency iso 4217 value:" << currencyIso4217;
+    return locale.toCurrencyString(value, currencyIso4217);
+  }
+
+  // Happy path
+  if (locale.currencySymbol(QLocale::CurrencyIsoCode) == currencyIso4217) {
+    return locale.toCurrencyString(value);
+  }
+
+  QString symbol = retrieveCurrencySymbolFallback(currencyIso4217, locale);
+  if (symbol.isEmpty()) {
+    return locale.toCurrencyString(value, currencyIso4217);
+  }
+
+  return locale.toCurrencyString(value, symbol);
+}
+
+// static
+QString Localizer::retrieveCurrencySymbolFallback(
+    const QString& currencyIso4217, const QLocale& currentLocale) {
+  // Let's find the locale that matches most of the current locale:
+  // - L: language
+  // - S: script
+  // - C: country
+  QList<QLocale> currencyLocalesLSC;
+  QList<QLocale> currencyLocalesLS;
+  QList<QLocale> currencyLocalesL;
+  for (QLocale& l : QLocale::matchingLocales(
+           QLocale::AnyLanguage, QLocale::AnyScript, QLocale::AnyCountry)) {
+    if (l.currencySymbol(QLocale::CurrencyIsoCode) != currencyIso4217) continue;
+
+    if (l.language() == currentLocale.language()) {
+      if (l.script() == currentLocale.script()) {
+        if (l.country() == currentLocale.country()) {
+          currencyLocalesLSC.append(l);
+          continue;
+        }
+        currencyLocalesLS.append(l);
+        continue;
+      }
+      currencyLocalesL.append(l);
+    }
+  }
+
+  if (!currencyLocalesLSC.isEmpty()) {
+    logger.warning() << "Fallback LSC" << currencyIso4217
+                     << currencyLocalesLSC[0].bcp47Name();
+    return currencyLocalesLSC[0].currencySymbol();
+  }
+
+  if (!currencyLocalesLS.isEmpty()) {
+    logger.warning() << "Fallback LS" << currencyIso4217
+                     << currencyLocalesLS[0].bcp47Name();
+    return currencyLocalesLS[0].currencySymbol();
+  }
+
+  if (!currencyLocalesL.isEmpty()) {
+    logger.warning() << "Fallback L" << currencyIso4217
+                     << currencyLocalesL[0].bcp47Name();
+    return currencyLocalesL[0].currencySymbol();
+  }
+
+  logger.warning() << "Fallback not found" << currencyIso4217;
+  return currencyIso4217;
 }

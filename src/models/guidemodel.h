@@ -31,6 +31,8 @@ class GuideModel final : public QAbstractListModel {
 
   ~GuideModel();
 
+  QStringList guideTitleIds() const;
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;

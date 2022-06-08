@@ -12,6 +12,7 @@ Flickable {
     id: root
 
     height: parent.height
+    contentHeight: height
     width: parent.width
     onVisibleChanged: {
         if (visible) {
@@ -33,10 +34,10 @@ Flickable {
 
     ColumnLayout {
         id: content
-        
+
         anchors {
-            horizontalCenter: root.horizontalCenter
-            verticalCenter: root.verticalCenter
+            horizontalCenter: parent.horizontalCenter
+            verticalCenter: parent.verticalCenter
         }
         spacing: 0
         width: parent.width
