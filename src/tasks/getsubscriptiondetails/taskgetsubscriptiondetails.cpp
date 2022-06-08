@@ -52,6 +52,10 @@ void TaskGetSubscriptionDetails::run() {
         }
 
         MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+
+        // We need to emit two separate signals here.
+        // `failed`: Signal for connected objects that are monitoring this Task
+        // `completed`: Notify `TaskScheduler` that this Task can be deleted
         emit failed();
         emit completed();
       });
