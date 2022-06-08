@@ -39,9 +39,17 @@ void ExponentialBackoffStrategy::testOverrideMaxRetryInterval(int newInterval) {
  *
  * Everytime a new attempt is scheduled the interval will be exponentially
  * larger.
+ *
+ * @returns The interval until the next attempt is executed, in milliseconds.
  */
 int ExponentialBackoffStrategy::scheduleNextAttempt() {
   int retryInterval = qPow(m_baseInterval, m_retryCounter);
+// Outside of tests we assume m_baseInterval is in seconds, not
+// milliseconds. In testing mode, that would make wait times too long,
+// se we assume intervals are in milliseconds and no transformation is needed.
+#ifndef UNIT_TEST
+  retryInterval *= 1000;
+#endif
   if (retryInterval < m_maxInterval) {
     m_retryCounter++;
   }

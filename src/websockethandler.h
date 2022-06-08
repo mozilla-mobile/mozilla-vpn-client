@@ -8,7 +8,7 @@
 #include <QWebSocket>
 #include <QTimer>
 
-constexpr const int BASE_RETRY_INTERVAL = 5 * 1000;       // 5s
+constexpr const int BASE_RETRY_INTERVAL = 5;              // 5s
 constexpr const int MAX_RETRY_INTERVAL = 60 * 60 * 1000;  // 1hr
 constexpr const int WEBSOCKET_PING_INTERVAL = 30 * 1000;  // 30s
 
