@@ -34,6 +34,9 @@ Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm
 python3 ./scripts/utils/generate_glean.py
 python3 ./scripts/utils/import_languages.py
 
+
+qmake -query 
+$ErrorActionPreference = "Stop"
 ./scripts/windows/compile.bat --nmake
 nmake install 
 
