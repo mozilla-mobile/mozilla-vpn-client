@@ -183,6 +183,7 @@ Item {
         property var primaryButtonOnClicked: () => {}
         property var secondaryButtonOnClicked: () => {}
         property var _onClosed: () => {}
+        closeButtonObjectName: "vpnPopupCloseButton"
 
         id: tutorialPopup
         objectName: "tutorialPopup"
