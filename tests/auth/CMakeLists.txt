@@ -6,14 +6,14 @@ add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_DEBUG)
 add_definitions(-DMVPN_DUMMY)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Test)
+find_package(Qt6 REQUIRED COMPONENTS Core Test WebSockets)
 find_package(Qt6 REQUIRED COMPONENTS Network NetworkAuth)
 find_package(Qt6 REQUIRED COMPONENTS Gui Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
 
 get_filename_component(MVPN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../src ABSOLUTE)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MVPN_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR}/hacl-star)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
@@ -28,6 +28,7 @@ target_link_libraries(auth_tests PRIVATE
     Qt6::Network
     Qt6::NetworkAuth
     Qt6::Gui
+    Qt6::WebSockets
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick
@@ -51,8 +52,6 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
-    ${MVPN_SOURCE_DIR}/featurelist.cpp
-    ${MVPN_SOURCE_DIR}/featurelist.h
     ${MVPN_SOURCE_DIR}/hawkauth.cpp
     ${MVPN_SOURCE_DIR}/hawkauth.h
     ${MVPN_SOURCE_DIR}/hkdf.cpp
@@ -68,6 +67,8 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/loghandler.h
     ${MVPN_SOURCE_DIR}/models/feature.cpp
     ${MVPN_SOURCE_DIR}/models/feature.h
+    ${MVPN_SOURCE_DIR}/models/featuremodel.cpp
+    ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/server.cpp
     ${MVPN_SOURCE_DIR}/models/server.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
@@ -100,9 +101,15 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/update/updater.h
     ${MVPN_SOURCE_DIR}/update/versionapi.cpp
     ${MVPN_SOURCE_DIR}/update/versionapi.h
+    ${MVPN_SOURCE_DIR}/update/webupdater.cpp
+    ${MVPN_SOURCE_DIR}/update/webupdater.h
     ${MVPN_SOURCE_DIR}/urlopener.cpp
     ${MVPN_SOURCE_DIR}/urlopener.h
 )
+
+# Generate the version header
+configure_file(${MVPN_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+target_sources(auth_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # Auth test mock resources
 target_sources(auth_tests PRIVATE

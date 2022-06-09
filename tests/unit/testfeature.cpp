@@ -3,9 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testfeature.h"
-#include "testfeaturelist.h"
-#include "../../src/featurelist.h"
-#include "../../src/features/featurecustomdns.h"
+#include "../../src/models/feature.h"
+#include "../../src/models/featuremodel.h"
 #include "../../src/models/feature.h"
 #include "../../src/settingsholder.h"
 #include "../../src/adjust/adjustfiltering.h"
@@ -23,66 +22,104 @@ void TestFeature::flipOnOff() {
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureC"));
 
   // Let's create a few features
-  FeatureTestA fA;
+
+  QVERIFY(!Feature::getOrNull("testFeatureA"));
+  Feature fA("testFeatureA", "Feature A",
+             false,               // Is Major Feature
+             L18nStrings::Empty,  // Display name
+             L18nStrings::Empty,  // Description
+             L18nStrings::Empty,  // LongDescr
+             "",                  // ImagePath
+             "",                  // IconPath
+             "",                  // link URL
+             "1.0",               // released
+             true,                // Can be flipped on
+             true,                // Can be flipped off
+             QStringList(),       // feature dependencies
+             []() -> bool { return true; });
   QVERIFY(!!Feature::get("testFeatureA"));
   QVERIFY(Feature::get("testFeatureA")->isSupported());
 
-  FeatureTestB fB;
+  QVERIFY(!Feature::getOrNull("testFeatureB"));
+  Feature fB("testFeatureB", "Feature B",
+             false,               // Is Major Feature
+             L18nStrings::Empty,  // Display name
+             L18nStrings::Empty,  // Description
+             L18nStrings::Empty,  // LongDescr
+             "",                  // ImagePath
+             "",                  // IconPath
+             "",                  // link URL
+             "1.0",               // released
+             true,                // Can be flipped on
+             true,                // Can be flipped off
+             QStringList(),       // feature dependencies
+             []() -> bool { return false; });
   QVERIFY(!!Feature::get("testFeatureB"));
   QVERIFY(!Feature::get("testFeatureB")->isSupported());
 
-  FeatureTestC fC;
+  QVERIFY(!Feature::getOrNull("testFeatureC"));
+  Feature fC("testFeatureC", "Feature C",
+             false,               // Is Major Feature
+             L18nStrings::Empty,  // Display name
+             L18nStrings::Empty,  // Description
+             L18nStrings::Empty,  // LongDescr
+             "",                  // ImagePath
+             "",                  // IconPath
+             "",                  // link URL
+             "1.0",               // released
+             false,               // Can be flipped on
+             false,               // Can be flipped off
+             QStringList(),       // feature dependencies
+             []() -> bool { return false; });
   QVERIFY(!!Feature::get("testFeatureC"));
   QVERIFY(!Feature::get("testFeatureC")->isSupported());
 
-  // FeatureList initialization
-  FeatureList* fl = FeatureList::instance();
-  fl->initialize();
+  FeatureModel* fm = FeatureModel::instance();
 
   // Flipping on an already-supported feature doesn't produce changes.
-  fl->toggleForcedEnable("testFeatureA");
+  fm->toggleForcedEnable("testFeatureA");
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureA"));
   QVERIFY(Feature::get("testFeatureA")->isSupported());
 
   // Flipping off a feature which was on -> it becomes off
-  fl->toggleForcedDisable("testFeatureA");
+  fm->toggleForcedDisable("testFeatureA");
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(settingsHolder.featuresFlippedOff().contains("testFeatureA"));
   QVERIFY(!Feature::get("testFeatureA")->isSupported());
 
   // Flipping off a feature which was on but disabled -> it becomes on
-  fl->toggleForcedDisable("testFeatureA");
+  fm->toggleForcedDisable("testFeatureA");
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureA"));
   QVERIFY(Feature::get("testFeatureA")->isSupported());
 
   // Flipping off an non-supported feature doesn't produce changes.
-  fl->toggleForcedDisable("testFeatureB");
+  fm->toggleForcedDisable("testFeatureB");
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureB"));
   QVERIFY(!Feature::get("testFeatureB")->isSupported());
 
   // Flipping on a feature which was off -> it becomes on
-  fl->toggleForcedEnable("testFeatureB");
+  fm->toggleForcedEnable("testFeatureB");
   QVERIFY(settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureB"));
   QVERIFY(Feature::get("testFeatureB")->isSupported());
 
   // Flipping on a feature which was off but enabled -> it becomes off
-  fl->toggleForcedEnable("testFeatureB");
+  fm->toggleForcedEnable("testFeatureB");
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureB"));
   QVERIFY(!Feature::get("testFeatureB")->isSupported());
 
   // Flipping on an unflippable feature doesn't produce changes.
-  fl->toggleForcedEnable("testFeatureC");
+  fm->toggleForcedEnable("testFeatureC");
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureC"));
   QVERIFY(!Feature::get("testFeatureC")->isSupported());
 
   // Flipping on an unflippable feature doesn't produce changes.
-  fl->toggleForcedDisable("testFeatureC");
+  fm->toggleForcedDisable("testFeatureC");
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureC"));
   QVERIFY(!Feature::get("testFeatureC")->isSupported());
@@ -99,20 +136,54 @@ void TestFeature::enableByAPI() {
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureC"));
 
   // Let's create a few features
-  // Let's create a few features
-  FeatureTestA fA;
+
+  Feature fA("testFeatureA", "Feature A",
+             false,               // Is Major Feature
+             L18nStrings::Empty,  // Display name
+             L18nStrings::Empty,  // Description
+             L18nStrings::Empty,  // LongDescr
+             "",                  // ImagePath
+             "",                  // IconPath
+             "",                  // link URL
+             "1.0",               // released
+             true,                // Can be flipped on
+             true,                // Can be flipped off
+             QStringList(),       // feature dependencies
+             []() -> bool { return true; });
   QVERIFY(!!Feature::get("testFeatureA"));
   QVERIFY(Feature::get("testFeatureA")->isSupported());
 
-  FeatureTestB fB;
+  Feature fB("testFeatureB", "Feature B",
+             false,               // Is Major Feature
+             L18nStrings::Empty,  // Display name
+             L18nStrings::Empty,  // Description
+             L18nStrings::Empty,  // LongDescr
+             "",                  // ImagePath
+             "",                  // IconPath
+             "",                  // link URL
+             "1.0",               // released
+             true,                // Can be flipped on
+             true,                // Can be flipped off
+             QStringList(),       // feature dependencies
+             []() -> bool { return false; });
   QVERIFY(!!Feature::get("testFeatureB"));
   QVERIFY(!Feature::get("testFeatureB")->isSupported());
 
-  FeatureTestC fC;
+  Feature fC("testFeatureC", "Feature C",
+             false,               // Is Major Feature
+             L18nStrings::Empty,  // Display name
+             L18nStrings::Empty,  // Description
+             L18nStrings::Empty,  // LongDescr
+             "",                  // ImagePath
+             "",                  // IconPath
+             "",                  // link URL
+             "1.0",               // released
+             false,               // Can be flipped on
+             false,               // Can be flipped off
+             QStringList(),       // feature dependencies
+             []() -> bool { return false; });
   QVERIFY(!!Feature::get("testFeatureC"));
   QVERIFY(!Feature::get("testFeatureC")->isSupported());
-
-  FeatureList::instance()->initialize();
 
   QJsonObject obj;
   obj["testFeatureA"] = true;
@@ -122,7 +193,7 @@ void TestFeature::enableByAPI() {
   QJsonObject json;
   json["featuresOverwrite"] = obj;
 
-  FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
@@ -138,7 +209,7 @@ void TestFeature::enableByAPI() {
   obj["testFeatureC"] = false;
   json["featuresOverwrite"] = obj;
 
-  FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
@@ -161,7 +232,7 @@ void TestFeature::enableByAPI() {
 
   json["adjustFields"] = obj;
 
-  FeatureList::instance()->updateFeatureList(QJsonDocument(json).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(AdjustFiltering::instance()->allowList.contains("allowTest"));
   QVERIFY(AdjustFiltering::instance()->denyList.contains("denyTest"));
   QVERIFY(AdjustFiltering::instance()->denyList.value("denyTest") == "test");

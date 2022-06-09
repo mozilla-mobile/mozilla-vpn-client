@@ -90,6 +90,7 @@
         <file>components/VPNSettingsItem.qml</file>
         <file>components/VPNSettingsToggle.qml</file>
         <file>components/VPNSignOut.qml</file>
+        <file>components/VPNSimplePopup.qml</file>
         <file>components/VPNStackView.qml</file>
         <file>components/VPNSubscriptionOption.qml</file>
         <file>components/VPNSubtitle.qml</file>

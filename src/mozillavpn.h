@@ -30,6 +30,7 @@
 #include "statusicon.h"
 #include "telemetry.h"
 #include "theme.h"
+#include "websockethandler.h"
 
 #include <QList>
 #include <QNetworkReply>
@@ -95,13 +96,13 @@ class MozillaVPN final : public QObject {
     SubscriptionFailureAlert,
     GeoIpRestrictionAlert,
     UnrecoverableErrorAlert,
+    AuthCodeSentAlert,
   };
   Q_ENUM(AlertType)
 
   enum LinkType {
     LinkAccount,
     LinkContact,
-    LinkFeedback,
     LinkForgotPassword,
     LinkLeaveReview,
     LinkHelpSupport,
@@ -170,6 +171,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void openLinkUrl(const QString& linkUrl);
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
+  Q_INVOKABLE void setAlert(AlertType alert);
   Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
@@ -196,6 +198,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void crashTest();
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelAccountDeletion();
+  Q_INVOKABLE void updateViewShown();
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
@@ -291,7 +294,7 @@ class MozillaVPN final : public QObject {
 
   void setUpdateRecommended(bool value);
 
-  UserState userState() const { return m_userState; }
+  UserState userState() const;
 
   bool startMinimized() const { return m_startMinimized; }
 
@@ -349,8 +352,6 @@ class MozillaVPN final : public QObject {
   void startSchedulingPeriodicOperations();
 
   void stopSchedulingPeriodicOperations();
-
-  void setAlert(AlertType alert);
 
   bool writeAndShowLogs(QStandardPaths::StandardLocation location);
 
@@ -447,6 +448,7 @@ class MozillaVPN final : public QObject {
     SurveyModel m_surveyModel;
     Telemetry m_telemetry;
     Theme m_theme;
+    WebSocketHandler m_webSocketHandler;
     WhatsNewModel m_whatsNewModel;
     User m_user;
   };

@@ -10,7 +10,7 @@ describe('Telemetry view', function() {
   });
 
   async function _getToTelemetryPage() {
-    await vpn.authenticate();
+    await vpn.authenticateInApp();
     await vpn.clickOnElement('postAuthenticationButton');
     await vpn.wait();
     await vpn.waitForElement('telemetryPolicyButton');

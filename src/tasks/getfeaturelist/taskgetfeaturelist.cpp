@@ -6,7 +6,7 @@
 #include "leakdetector.h"
 #include "errorhandler.h"
 #include "logger.h"
-#include "featurelist.h"
+#include "models/featuremodel.h"
 #include "networkrequest.h"
 
 #include <QJsonDocument>
@@ -36,7 +36,7 @@ void TaskGetFeatureList::run() {
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Get feature list is completed" << data;
-            FeatureList::instance()->updateFeatureList(data);
+            FeatureModel::instance()->updateFeatureList(data);
             emit completed();
           });
 }

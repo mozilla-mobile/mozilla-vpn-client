@@ -203,4 +203,6 @@ VPNFlickable {
 
     }
 
+    Component.onCompleted: VPN.updateViewShown()
+
 }

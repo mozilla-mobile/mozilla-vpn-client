@@ -105,11 +105,9 @@ Window {
         }
     }
 
-    Item {
-        // Workaround to support full-screen background gradients/colors on mobile
-        id: fullScreenMobileBackground
+    VPNMobileStatusBarModifier {
+        id: statusBarModifier
     }
-
 
     Rectangle {
         id: iosSafeAreaTopMargin
@@ -118,7 +116,6 @@ Window {
         height: safeAreaHeightByDevice();
         width: window.width
         anchors.top: parent.top
-
     }
 
     VPNWasmHeader {
@@ -138,7 +135,6 @@ Window {
         anchors.top: parent.top
         anchors.topMargin: iosSafeAreaTopMargin.height + wasmMenuHeader.height
         height: safeContentHeight
-        clip: true
 
         function getHelpViewNeeded() {
             mainStackView.push("qrc:/ui/views/ViewGetHelp.qml")
@@ -369,6 +365,14 @@ Window {
     }
 
     Connections {
+        target: VPNAddonManager
+        function onRunAddon(addon) {
+            console.log("Loading addon", addon.name);
+            mainStackView.push("qrc:/ui/views/ViewAddon.qml", { addon })
+        }
+    }
+
+    Connections {
         target: VPNSettings
         enabled: Qt.platform.os != "android"
         function onGleanEnabledChanged() {
@@ -478,6 +482,7 @@ Window {
         id: tooltip
         property alias text: text.text
         visible: VPNTutorial.tooltipShown
+        closePolicy: Popup.NoAutoClose
         x: VPNTheme.theme.windowMargin
         width: parent.width - VPNTheme.theme.windowMargin * 2
 
@@ -498,7 +503,8 @@ Window {
 
     Connections {
         target: VPNTutorial
-        function onTooltipNeeded(text, rect) {
+        function onTooltipNeeded(text, rect, objectName) {
+            console.log("OBJECT NAME:" + objectName);
             if (tooltip.height + rect.y + rect.height <= window.height - VPNTheme.theme.windowMargin) {
               tooltip.y = rect.y + rect.height;
             } else {

@@ -128,7 +128,7 @@ cmake --build build -j$(nproc)
 
 5. Installation:
 ```bash
-sudo cmake -B build install
+sudo cmake --install build
 ```
 
 6.  After the installation, you can run the app simply running:
@@ -277,8 +277,8 @@ scripts/wasm/compile.sh
 ## Testing
 
 * Run the unit tests with `./scripts/tests/unit_tests.sh`
-* Run the qml tests with `./tests/tests/qml_tests.sh`
-* Run the lottie tests with `./tests/tests/lottie_tests.sh`
+* Run the qml tests with `./scripts/tests/qml_tests.sh`
+* Run the lottie tests with `./scripts/tests/lottie_tests.sh`
 * Run the funcional tests (See below)
 
 ### Running the functional tests

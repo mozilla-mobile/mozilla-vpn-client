@@ -5,13 +5,13 @@
 add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_ADJUST)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Network Xml Test)
+find_package(Qt6 REQUIRED COMPONENTS Core Network Xml Test WebSockets)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
 find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
 
 get_filename_component(MVPN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../src ABSOLUTE)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MVPN_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR}/hacl-star)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
@@ -25,6 +25,7 @@ target_link_libraries(unit_tests PRIVATE
     Qt6::Xml
     Qt6::Network
     Qt6::Test
+    Qt6::WebSockets
     Qt6::Widgets
     Qt6::Gui
     Qt6::Qml
@@ -56,8 +57,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
-    ${MVPN_SOURCE_DIR}/featurelist.cpp
-    ${MVPN_SOURCE_DIR}/featurelist.h
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
@@ -85,6 +84,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/devicemodel.h
     ${MVPN_SOURCE_DIR}/models/feature.cpp
     ${MVPN_SOURCE_DIR}/models/feature.h
+    ${MVPN_SOURCE_DIR}/models/featuremodel.cpp
+    ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.cpp
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.h
     ${MVPN_SOURCE_DIR}/models/guide.cpp
@@ -192,6 +193,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/update/updater.h
     ${MVPN_SOURCE_DIR}/update/versionapi.cpp
     ${MVPN_SOURCE_DIR}/update/versionapi.h
+    ${MVPN_SOURCE_DIR}/update/webupdater.cpp
+    ${MVPN_SOURCE_DIR}/update/webupdater.h
     ${MVPN_SOURCE_DIR}/urlopener.cpp
     ${MVPN_SOURCE_DIR}/urlopener.h
 )
@@ -251,8 +254,11 @@ target_sources(unit_tests PRIVATE
     testtimersingleshot.h
     testtutorial.cpp
     testtutorial.h
-    version.h
 )
+
+# Generate the version header
+configure_file(${MVPN_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+target_sources(auth_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # Unit test mock resources
 target_sources(unit_tests PRIVATE

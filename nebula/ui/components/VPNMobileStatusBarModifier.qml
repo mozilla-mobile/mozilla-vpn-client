@@ -11,13 +11,14 @@ QtObject {
     id: statusBarModifier
 
     property int statusBarTextColor: VPNTheme.StatusBarTextColorDark
+    onStatusBarTextColorChanged: applyChanges();
 
     function applyChanges() {
         VPNTheme.setStatusBarTextColor(statusBarModifier.statusBarTextColor);
     }
 
     function resetDefaults() {
-        VPNTheme.setStatusBarTextColor(VPNTheme.StatusBarTextColorDark);
+        statusBarTextColor = VPNTheme.StatusBarTextColorDark;
     }
 
     Component.onCompleted: applyChanges()

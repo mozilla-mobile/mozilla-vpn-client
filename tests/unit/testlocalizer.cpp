@@ -18,7 +18,7 @@ void TestLocalizer::basic() {
   QCOMPARE(rn[Localizer::LocalizedLanguageRole], "localizedLanguage");
   QCOMPARE(rn[Localizer::CodeRole], "code");
 
-  QCOMPARE(l.rowCount(QModelIndex()), 0);
+  QVERIFY(l.rowCount(QModelIndex()) > 0);
   QCOMPARE(l.data(QModelIndex(), Localizer::LanguageRole), QVariant());
 }
 
@@ -37,6 +37,25 @@ void TestLocalizer::systemLanguage() {
   l.setCode("");
   QCOMPARE(l.code(), "");
   QCOMPARE(l.previousCode(), "en");
+}
+
+void TestLocalizer::localizeCurrency() {
+  SettingsHolder settings;
+  Localizer l;
+  l.setCode("en_GB");
+
+  // Invalid iso4217 values
+  QCOMPARE(l.localizeCurrency(123.123, "FOOBAR"), "FOOBAR123.12");
+  QCOMPARE(l.localizeCurrency(123.123, "F"), "F123.12");
+
+  // Happy path
+  QCOMPARE(l.localizeCurrency(123.123, "GBP"), "£123.12");
+
+  // Let's guess - invalid currency
+  QCOMPARE(l.localizeCurrency(123.123, "AAA"), "AAA123.12");
+
+  // Let's guess - valid currency
+  QVERIFY(l.localizeCurrency(123.123, "EUR").contains("€"));
 }
 
 static TestLocalizer s_testLocalizer;

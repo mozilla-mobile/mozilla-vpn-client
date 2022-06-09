@@ -6,12 +6,15 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QDateTime>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QJsonArray>
+#include <QUrl>
+#include <QUrlQuery>
 
 namespace {
 Logger logger(LOG_MAIN, "Survey");
@@ -31,6 +34,7 @@ Survey& Survey::operator=(const Survey& other) {
   m_url = other.m_url;
   m_triggerTimeSec = other.m_triggerTimeSec;
   m_platforms = other.m_platforms;
+  m_locales = other.m_locales;
 
   return *this;
 }
@@ -73,6 +77,20 @@ bool Survey::fromJson(const QJsonValue& json) {
     }
   }
 
+  m_locales.clear();
+  if (obj.contains("locales")) {
+    QJsonValue localeArray = obj.value("locales");
+    if (!localeArray.isArray()) {
+      return false;
+    }
+    for (auto val : localeArray.toArray()) {
+      if (!val.isString()) {
+        return false;
+      }
+      m_locales.append(val.toString().toLower());
+    }
+  }
+
   m_id = id.toString();
   m_url = url.toString();
   m_triggerTimeSec = triggerTime.toInt();
@@ -97,6 +115,21 @@ bool Survey::isTriggerable() const {
     return false;
   }
 
+  if (!m_locales.isEmpty()) {
+    QString code = settingsHolder->languageCode();
+    if (code.isEmpty()) {
+      code = QLocale::system().bcp47Name();
+      if (code.isEmpty()) {
+        code = "en";
+      }
+    }
+
+    if (!m_locales.contains(code.split("_")[0].toLower())) {
+      logger.debug() << "Locale does not match:" << code << m_locales;
+      return false;
+    }
+  }
+
   QDateTime now = QDateTime::currentDateTime();
   QDateTime installation = settingsHolder->installationTime();
 
@@ -107,4 +140,39 @@ bool Survey::isTriggerable() const {
                    << m_triggerTimeSec - installation.secsTo(now) << "s";
   }
   return ok;
+}
+
+// static
+QString Survey::replaceUrlParams(const QString& input) {
+  QUrl url(input);
+
+  if (!url.isValid()) {
+    logger.error() << "Invalid survey URL:" << input;
+    return input;
+  }
+
+  QUrlQuery currentQuery(url.query());
+  QUrlQuery newQuery;
+
+  for (QPair<QString, QString>& item : currentQuery.queryItems()) {
+    if (item.second == "__VPN_VERSION__") {
+      newQuery.addQueryItem(item.first, MozillaVPN::versionString());
+    } else if (item.second == "__VPN_BUILDNUMBER__") {
+      newQuery.addQueryItem(item.first, MozillaVPN::buildNumber());
+    } else if (item.second == "__VPN_OS__") {
+      newQuery.addQueryItem(item.first, MozillaVPN::osVersion());
+    } else if (item.second == "__VPN_PLATFORM__") {
+      newQuery.addQueryItem(item.first, MozillaVPN::platform());
+    } else if (item.second == "__VPN_ARCH__") {
+      newQuery.addQueryItem(item.first, MozillaVPN::architecture());
+    } else if (item.second == "__VPN_GRAPHICSAPI__") {
+      newQuery.addQueryItem(item.first, MozillaVPN::graphicsApi());
+    } else {
+      newQuery.addQueryItem(item.first, item.second);
+    }
+  }
+
+  url.setQuery(newQuery);
+  return url.toString();
+  ;
 }

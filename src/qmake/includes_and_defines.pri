@@ -3,8 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 include($$PWD/../../version.pri)
-DEFINES += APP_VERSION=\\\"$$VERSION\\\"
-DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
 DEFINES += BUILD_QMAKE
 
 !isEmpty(MVPN_EXTRA_USERAGENT) {

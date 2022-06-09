@@ -24,6 +24,10 @@ MozillaVPN::MozillaVPN() {}
 MozillaVPN::~MozillaVPN() {}
 
 MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
+MozillaVPN::UserState MozillaVPN::userState() const {
+  return UserNotAuthenticated;
+}
+
 bool MozillaVPN::stagingMode() const { return true; }
 bool MozillaVPN::debugMode() const { return true; }
 
@@ -163,3 +167,5 @@ QString MozillaVPN::graphicsApi() { return ""; }
 void MozillaVPN::requestDeleteAccount() {}
 
 void MozillaVPN::cancelAccountDeletion() {}
+
+void MozillaVPN::updateViewShown() {}

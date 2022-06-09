@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
+        addon.cpp \
+        addonmanager.cpp \
         apppermission.cpp \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
@@ -41,7 +43,6 @@ SOURCES += \
         dnshelper.cpp \
         dnspingsender.cpp \
         errorhandler.cpp \
-        featurelist.cpp \
         filterproxymodel.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
@@ -69,6 +70,7 @@ SOURCES += \
         models/device.cpp \
         models/devicemodel.cpp \
         models/feature.cpp \
+        models/featuremodel.cpp \
         models/feedbackcategorymodel.cpp \
         models/guide.cpp \
         models/guideblock.cpp \
@@ -138,9 +140,13 @@ SOURCES += \
         timersingleshot.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
-        urlopener.cpp
+        urlopener.cpp \
+        update/webupdater.cpp \
+        websockethandler.cpp
 
 HEADERS += \
+        addon.h \
+        addonmanager.h \
         appimageprovider.h \
         apppermission.h \
         applistprovider.h \
@@ -183,24 +189,6 @@ HEADERS += \
         dnshelper.h \
         dnspingsender.h \
         errorhandler.h \
-        featurelist.h \
-        features/featureaccountdeletion.h \
-        features/featureappreview.h \
-        features/featurecaptiveportal.h \
-        features/featureconnectioninfo.h \
-        features/featurecustomdns.h \
-        features/featureinappaccountcreate.h \
-        features/featureinappauth.h \
-        features/featureinapppurchase.h \
-        features/featurelocalareaaccess.h \
-        features/featuremultiaccountcontainers.h \
-        features/featuremultihop.h \
-        features/featurenotificationcontrol.h \
-        features/featuresharelogs.h \
-        features/featuresplittunnel.h \
-        features/featurestartonboot.h \
-        features/featureunsecurednetworknotification.h \
-        features/featureserverunavailablenotification.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
@@ -223,6 +211,7 @@ HEADERS += \
         models/device.h \
         models/devicemodel.h \
         models/feature.h \
+        models/featuremodel.h \
         models/feedbackcategorymodel.h \
         models/guide.h \
         models/guideblock.h \
@@ -294,7 +283,9 @@ HEADERS += \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
-        urlopener.h
+        update/webupdater.h \
+        urlopener.h \
+        websockethandler.h
 
 # Signal handling for unix platforms
 unix {

@@ -14,12 +14,8 @@ windows/opt:
         fetch:
             - win-dev-env
             - win-rustup
-        build-qt:
-            - artifact: qt6_win.zip
-              extract: true
-    dependencies:
-        build-qt: build-qt-windows
-
+        toolchain:
+            - qt-win
     worker:
         taskcluster-proxy: false
         chain-of-trust: true
@@ -31,4 +27,5 @@ windows/opt:
     run:
         using: run-task
         cwd: '{checkout}'
-        command: powershell.exe -ExecutionPolicy Bypass taskcluster/scripts/build/windows.ps1
+        exec-with: powershell
+        command: taskcluster/scripts/build/windows.ps1
