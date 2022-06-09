@@ -109,6 +109,7 @@ VPNFlickable {
                 visible: VPNFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {
+                    Sample.deleteAccountRequested.record();
                     settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
                 }
 
@@ -222,6 +223,7 @@ VPNFlickable {
     }
 
     Component.onCompleted: {
+        Sample.subscriptionManagementViewOpened.record();
         populateListModels();
     }
 }

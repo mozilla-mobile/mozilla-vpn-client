@@ -902,13 +902,13 @@ sample:
         type: quantity
         unit: months
 
-  account_deleted:
+  delete_account_requested:
     type: event
     lifetime: ping
     send_in_pings:
       - main
     description: |
-      FxA account deleted from the account deletion view.
+      The user has clicked “delete account” in the account deletion view.
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
     data_reviews:
@@ -926,23 +926,6 @@ sample:
       - main
     description: |
       The user has opened the subscription management view.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
-    data_reviews:
-      - TBD
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
-  manage_account_clicked:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has clicked “manage account” in the subscription management view.
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
     data_reviews:
