@@ -192,6 +192,7 @@ Item {
         onClosed: _onClosed();
         onOpened: tutorialPopup.forceActiveFocus()
         anchors.centerIn: Overlay.overlay
+        imageSize: Qt.size(116, 80)
 
         Component.onCompleted: {
             [primaryButton.objectName, secondaryButton.objectName, "vpnPopupCloseButton"].forEach(objName => VPNTutorial.allowItem(objName));
