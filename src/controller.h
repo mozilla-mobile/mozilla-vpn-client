@@ -141,7 +141,7 @@ class Controller final : public QObject {
 
  private:
   void setState(State state);
-
+  void periodicStateRecorder();
   void maybeEnableDisconnectInConfirming();
 
   bool processNextStep();
@@ -176,6 +176,7 @@ class Controller final : public QObject {
 
   QTimer m_connectingTimer;
   QTimer m_handshakeTimer;
+  QTimer m_gleanControllerUpTimer;
   bool m_enableDisconnectInConfirming = false;
 
   enum NextStep {

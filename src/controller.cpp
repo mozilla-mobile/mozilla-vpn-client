@@ -80,6 +80,13 @@ Controller::Controller() {
 
   connect(&m_handshakeTimer, &QTimer::timeout, this,
           &Controller::handshakeTimeout);
+
+  // Setup regular check for controller up state
+  connect(&m_gleanControllerUpTimer, &QTimer::timeout, this,
+          &Controller::periodicStateRecorder);
+  m_gleanControllerUpTimer.start(
+      Constants::controllerPeriodicStateRecorderMsec());
+  m_gleanControllerUpTimer.setSingleShot(false);
 }
 
 Controller::~Controller() { MVPN_COUNT_DTOR(Controller); }
@@ -609,8 +616,34 @@ void Controller::setState(State state) {
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::controllerStep,
       {{"state", QVariant::fromValue(state).toString()}});
+
+  // Specific events for on and off state to aid with analysis
+  if (m_state == StateOn) {
+    emit MozillaVPN::instance()->recordGleanEvent(
+        GleanSample::controllerStateOn);
+  }
+  if (m_state == StateOff) {
+    emit MozillaVPN::instance()->recordGleanEvent(
+        GleanSample::controllerStateOff);
+  }
+
   m_state = state;
   emit stateChanged();
+}
+
+void Controller::periodicStateRecorder() {
+// On mobile this is handled in the background process that talks to the
+// controller
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
+  if (m_state == StateOn) {
+    emit MozillaVPN::instance()->recordGleanEvent(
+        GleanSample::controllerStateOn);
+  }
+  if (m_state == StateOff) {
+    emit MozillaVPN::instance()->recordGleanEvent(
+        GleanSample::controllerStateOff);
+  }
+#endif
 }
 
 qint64 Controller::time() const {

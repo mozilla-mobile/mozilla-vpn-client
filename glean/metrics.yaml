@@ -879,6 +879,40 @@ sample:
           "switching", etc. The list can be found in `controller.h`.
         type: string
 
+  controller_state_on:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Controller state is on.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2643
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  controller_state_off:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Controller state is off.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2643
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
   update_step:
     type: event
     lifetime: ping

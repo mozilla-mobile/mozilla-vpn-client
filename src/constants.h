@@ -71,6 +71,9 @@ CONSTEXPR(uint32_t, statusIconAnimationMsec, 200, 200, 0)
 // How often glean pings are sent
 CONSTEXPR(uint32_t, gleanTimeoutMsec, 1200000, 4000, 0)
 
+// How often to check in on the controller state
+CONSTEXPR(uint32_t, controllerPeriodicStateRecorderMsec, 10800000, 600000, 0)
+
 // How often we check the surveys to be executed (no network requests are done
 // for this check)
 CONSTEXPR(uint32_t, surveyTimerMsec, 300000, 4000, 0)
