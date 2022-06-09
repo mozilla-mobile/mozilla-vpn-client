@@ -902,9 +902,9 @@ sample:
     send_in_pings:
       - main
     description: |
-      Controller state is off. It is important to note that mobile reports of this event
-      are likely to be unreliable because they come from an non-active background process
-      which is not guaranteed to be alive.
+      Controller state is off. It is important to note that mobile reports of
+      this event are likely to be unreliable because they come from an
+      non-active background process which is not guaranteed to be alive.
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2643
     data_reviews:
