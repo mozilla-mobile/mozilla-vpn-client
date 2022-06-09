@@ -61,9 +61,13 @@ def add_variant_config(config, tasks):
 
 
 @transforms.add
-def add_artifacts(config, tasks):
+def add_release_artifacts(config, tasks):
     for task in tasks:
-        artifacts = task.setdefault("worker", {}).setdefault("artifacts", [])
+        if "release-artifacts" not in task:
+            yield task
+            continue
+
+        release_artifacts = task["attributes"].setdefault("release-artifacts", [])
 
         impl, _ = worker_type_implementation(config.graph_config, task["worker-type"])
         if impl == "generic-worker":
@@ -71,19 +75,18 @@ def add_artifacts(config, tasks):
         else:
             path_tmpl = "/builds/worker/artifacts/{}"
 
-        # Android artifacts
-        if "release-artifacts" in task:
-            for path in task.pop("release-artifacts"):
-                if os.path.isabs(path):
-                    raise Exception("Cannot have absolute path artifacts")
+        for path in task.pop("release-artifacts"):
+            if os.path.isabs(path):
+                raise Exception("Cannot have absolute path artifacts")
 
-                artifacts.append(
-                    {
-                        "type": "file",
-                        "name": f"public/build/{path}",
-                        "path": path_tmpl.format(path),
-                    }
-                )
+            release_artifacts.append(
+                {
+                    "type": "file",
+                    "name": f"public/build/{path}",
+                    "path": path_tmpl.format(path),
+                }
+            )
 
-        task["attributes"]["release-artifacts"] = artifacts
+        artifacts = task.setdefault("worker", {}).setdefault("artifacts", [])
+        artifacts.extend(release_artifacts)
         yield task
