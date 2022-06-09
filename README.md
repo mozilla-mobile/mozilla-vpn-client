@@ -366,11 +366,13 @@ The data review process is described here: https://wiki.mozilla.org/Data_Collect
 In brief, specifically for VPN:
 
 * You need a bugzilla account. This is not an ldap service, but do use your ldap email address to sign-up for an account.
-* Add 2FA to bugzilla.
 * Make a new bug in Product: Mozilla, Component: General. Or clone an old data review bug e.g. https://bugzilla.mozilla.org/show_bug.cgi?id=1770530
 * See the above bug, the ticket can be simple just a link to a bug and a PR and the attachment with the data review details (see below).
 * The trick to flagging this for data review is adding the attachment and setting the flag (data review ?), as described under "Step 1: Submit Request" on https://wiki.mozilla.org/Data_Collection
 * We usually use `chutten` for VPN data reviews
+* If you cannot see the flags in the attachment area (screenshot below) make sure "Show Advanced Fields" is checked
+
+![](attachment_flag_for_datareview.png)
 
 Filling out the data review details:
 
