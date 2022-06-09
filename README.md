@@ -335,10 +335,54 @@ When the client is in staging mode, but not debug mode, pings will have the
 applicationId `MozillaVPN-staging` which allows for filtering between staging
 and production pings.
 
-#### A note on glean embedding
+### A note on glean embedding
 
 Qt only accepts `major.minor` versions for importing. So if, for example,
 you're embedding glean v0.21.2 then it will still, for Qt's purpose, be v0.21.
+
+### Working on tickets with new glean events
+
+If you are responsible for a piece of work that adds new glean events you will need to do a data review for the new events. This is the recommended process along with some pointers on doing that.
+
+The basic process is this:
+* work on your PR that adds glean events including updating glean/metrics.yaml (necessary for your code to compile)
+* in your metrics.yaml:
+  * include a link to the *github* bug that describes the work
+  * put TBD in the `data_reviews` entry
+  * think about whether the data you are collecting is technical or interaction, sometimes it's both. in that case pick interaction which is a higher category of data. (more details https://wiki.mozilla.org/Data_Collection)
+* open a **draft** PR on github
+* file a bugzilla ticket for the data review (more info below)
+* update your PR with the id of the bugzilla bug in data `data_reviews` entry
+* once you have an r+ from data review, move your PR out of draft state.
+
+It is **ok** for a reviewer to review and approve your code while you're waiting for data review.
+
+It is **not** ok to merge a PR that contains a change to metrics.yaml without a datareview r+
+
+#### Filing a bugzilla ticket for data review
+
+The data review process is described here: https://wiki.mozilla.org/Data_Collection
+
+In brief, specifically for VPN:
+
+* You need a bugzilla account. This is not an ldap service, but do use your ldap email address to sign-up for an account.
+* Add 2FA to bugzilla.
+* Make a new bug in Product: Mozilla, Component: General. Or clone an old data review bug e.g. https://bugzilla.mozilla.org/show_bug.cgi?id=1770530
+* See the above bug, the ticket can be simple just a link to a bug and a PR and the attachment with the data review details (see below).
+* The trick to flagging this for data review is adding the attachment and setting the flag (data review ?), as described under "Step 1: Submit Request" on https://wiki.mozilla.org/Data_Collection
+* We usually use `chutten` for VPN data reviews
+
+Filling out the data review details:
+
+* The data review questionnaire is here: https://github.com/mozilla/data-review/blob/main/request.md
+* It can seem quite intimidating, but don't panic. First, look at an old bug such as the one linked above. Many questions will always be the same for VPN data review bugs. There are four questions that require your attention and thought:
+  - 1. What questions will you answer with this data?
+  - 2. Why does Mozilla need to answer these questions?  Are there benefits for users? Do we need this information to address product or business requirements?
+  - 3. What alternative methods did you consider to answer these questions? Why were they not sufficient?
+  - 4. Please provide a general description of how you will analyze this data.
+* If you don't know the answers to these questions, reach out to Sarah Bird or the product manager so you can answer these with full confidence.
+
+
 
 ## Status
 
