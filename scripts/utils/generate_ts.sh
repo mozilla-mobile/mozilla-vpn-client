@@ -54,7 +54,7 @@ for branch in $(git branch -r | grep origin/releases); do
   git checkout $branch &>/dev/null || die
 
   printn Y "Importing main strings from $branch..."
-  python cache/generate_strings.py -o translations/generated || die
+  python cache/generate_strings.py -o translations/generated translations/strings.yaml || die
   lupdate translations/generated/dummy.pro -ts branch.ts || die
   lconvert -i translations.ts branch.ts -o tmp.ts || die
   mv tmp.ts translations.ts || die
