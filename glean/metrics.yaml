@@ -889,7 +889,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2643
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TBD
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1773423
     data_sensitivity:
       - interaction
     notification_emails:
@@ -906,7 +906,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2643
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TBD
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1773423
     data_sensitivity:
       - interaction
     notification_emails:
