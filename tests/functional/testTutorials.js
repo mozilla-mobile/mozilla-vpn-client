@@ -41,44 +41,48 @@ describe('Tutorials', function() {
 
     it('Clicking close button opens the "Leave tutorial?" modal', async () => {
       await clickTooltipCloseButton();
+      await vpn.wait();
+
+      await vpn.wait();
       await vpn.waitForElementProperty(
-          'tutorialPopupHeadline', 'visible', 'true');
+          'tutorialPopupPrimaryButton', 'visible', 'true');
+
       assert(
-          (await vpn.getElementProperty('tutorialPopupHeadline', 'text')) ===
-          'Leave tutorial?');
+          (await vpn.getElementProperty(
+              'tutorialPopupPrimaryButton', 'text')) === 'Resume tutorial');
     });
   });
 
   describe('"Leave tutorial?" popup', function() {
     beforeEach(async () => {
       await openHighlightedTutorial();
+      await vpn.wait();
       await clickTooltipCloseButton();
+      await vpn.wait();
     });
 
     it('Clicking primary button closes modal and resumes tutorial',
        async () => {
-         await clickTooltipCloseButton();
-         await vpn.wait();
          await vpn.waitForElementProperty(
              'tutorialPopupPrimaryButton', 'visible', 'true');
          await vpn.clickOnElement('tutorialPopupPrimaryButton');
-
-         await vpn.waitForElementProperty(
-             'tutorialPopupHeadline', 'visible', 'false');
+         await vpn.wait();
          assert(
-             (await vpn.getElementProperty('tutorialLeave', 'visible')) ===
+             (await vpn.getElementProperty(
+                 'tutorialPopupPrimaryButton', 'visible')) === 'false');
+
+         assert(
+             (await vpn.getElementProperty('tutorialUiRoot', 'visible')) ===
              'true');
        });
 
     it('Clicking secondary button closes modal and stops tutorial',
        async () => {
-         await clickTooltipCloseButton();
          await vpn.waitForElementProperty(
              'tutorialPopupSecondaryButton', 'visible', 'true');
          await vpn.clickOnElement('tutorialPopupSecondaryButton');
          await vpn.wait();
 
-         await vpn.waitForElementProperty('tutorialUiRoot', 'visible', 'false');
          assert(
              (await vpn.getElementProperty('tutorialUiRoot', 'visible')) ===
              'false');
