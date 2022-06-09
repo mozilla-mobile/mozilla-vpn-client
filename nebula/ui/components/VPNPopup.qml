@@ -30,7 +30,6 @@ Popup {
     VPNIconButton {
         id: closeButton
 
-        objectName: "vpnPopupCloseButton"
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.topMargin: VPNTheme.theme.windowMargin / 2
