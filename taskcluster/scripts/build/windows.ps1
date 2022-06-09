@@ -7,6 +7,10 @@ $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $FETCHES_PATH =resolve-path "$REPO_ROOT_PATH/../../fetches"
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 
+# The toolchain task does not seem to include the conf script,
+# thus breaking the bundle.
+Copy-Item .\taskcluster\scripts\toolchain\configure_qt.ps1 $FETCHES_PATH\QT_OUT\
+
 # Prep Env:
 # Enable qt, enable msvc, enable rust
 . "$FETCHES_PATH/VisualStudio/enter_dev_shell.ps1"
