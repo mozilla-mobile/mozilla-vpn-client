@@ -98,11 +98,6 @@ extension_manifest.files = $$PWD/../../../extension/manifests/macos/mozillavpn.j
 extension_manifest.path = 'Contents/Resources/utils'
 QMAKE_BUNDLE_DATA += extension_manifest
 
-addons.files = $$PWD/../../../addons/generated/addons
-addons.path = 'Contents/Resources'
-addons.CONFIG = no_check_exist executable
-QMAKE_BUNDLE_DATA += addons
-
 wireguardGo.input = WIREGUARDGO
 wireguardGo.output = ${QMAKE_FILE_IN}/wireguard-go
 wireguardGo.commands = @echo Compiling Wireguard GO ${QMAKE_FILE_IN} && \

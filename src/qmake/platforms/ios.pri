@@ -154,7 +154,3 @@ QMAKE_MAC_XCODE_SETTINGS += GROUP_ID_IOS
 DEVELOPMENT_TEAM.name = "DEVELOPMENT_TEAM"
 DEVELOPMENT_TEAM.value = "$$MVPN_DEVELOPMENT_TEAM"
 QMAKE_MAC_XCODE_SETTINGS += DEVELOPMENT_TEAM
-
-addons.files = $$PWD/../../../addons/generated/addons
-addons.CONFIG = no_check_exist executable
-QMAKE_BUNDLE_DATA += addons

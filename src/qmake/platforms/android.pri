@@ -118,8 +118,3 @@ DISTFILES += \
     ../android/res/values/libs.xml
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../../../android
-
-addons.files = $$PWD/../../../addons/generated/addons
-addons.path = /assets
-addons.CONFIG = no_check_exist executable
-INSTALLS += addons

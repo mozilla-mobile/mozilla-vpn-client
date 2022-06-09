@@ -43,10 +43,9 @@ if exist .deps\prepared goto :build
 :msi
 	if not exist "%~1" mkdir "%~1"
 	echo [+] Compiling %1
-	"%WIX%bin\heat" dir ..\..\addons\generated\addons -o addon.wxs -scon -sfrag -srd -sreg -gg -cg addons -dr MozillaVPNAddonFolder || exit /b %errorlevel%
-	"%WIX%bin\candle" %WIX_CANDLE_FLAGS% -dPlatform=%1 -arch %1 MozillaVPN.wxs addon.wxs || exit /b %errorlevel%
+       "%WIX%bin\candle" %WIX_CANDLE_FLAGS% -dPlatform=%1 -out "%~1\MozillaVPN.wixobj" -arch %1 MozillaVPN.wxs || exit /b %errorlevel%
 	echo [+] Linking %1
-	"%WIX%bin\light" %WIX_LIGHT_FLAGS% -out "%~1/MozillaVPN.msi" -b ..\..\addons\generated\addons MozillaVPN.wixobj addon.wixobj || exit /b %errorlevel%
+       "%WIX%bin\light" %WIX_LIGHT_FLAGS% -out "%~1/MozillaVPN.msi" "%~1\MozillaVPN.wixobj" || exit /b %errorlevel%
 	goto :eof
 
 :error

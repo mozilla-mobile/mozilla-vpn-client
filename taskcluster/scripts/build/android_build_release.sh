@@ -12,9 +12,6 @@ git submodule update
 # translations
 echo "Importing translations"
 ./scripts/utils/import_languages.py
-# addons
-echo "Generating addons..."
-./scripts/addon/generate_all.py
 
 # Get Secrets for building
 echo "Fetching Tokens!"

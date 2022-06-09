@@ -122,9 +122,6 @@ python3 scripts/utils/import_languages.py || die "Failed to import languages"
 print Y "Generating glean samples..."
 python3 scripts/utils/generate_glean.py -j "android/src/" || die "Failed to generate glean samples"
 
-print Y "Generate all the addons..."
-python3 ./scripts/addon/generate_all.py || die "Failed to generate addons"
-
 print Y "Copy and patch Adjust SDK..."
 rm -rf "android/src/com/adjust" || die "Failed to remove the adjust folder"
 cp -a "3rdparty/adjust-android-sdk/Adjust/sdk-core/src/main/java/com/." "android/src/com/" || die "Failed to copy the adjust codebase"

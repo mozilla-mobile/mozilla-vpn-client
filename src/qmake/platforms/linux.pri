@@ -172,10 +172,3 @@ INSTALLS += browserBridge
 
 CONFIG += link_pkgconfig
 PKGCONFIG += polkit-gobject-1
-
-DEFINES += ADDONS_PATH=\\\"$${USRPATH}/share/mozillavpn/addons\\\"
-
-addons.files = $$PWD/../../../addons/generated/addons
-addons.path = $${USRPATH}/share/mozillavpn
-addons.CONFIG = no_check_exist executable
-INSTALLS += addons

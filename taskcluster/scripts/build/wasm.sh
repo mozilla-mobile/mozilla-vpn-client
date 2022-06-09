@@ -18,8 +18,6 @@ pip3 install -r requirements.txt
 python3 ./scripts/utils/generate_glean.py
 # translations
 python3 ./scripts/utils/import_languages.py
-# addons
-python3 ./scripts/addon/generate_all.py
 
 # Add the Wasm qmake after import languages into the path,
 # Otherwise import_languages.py will search for lupdate 

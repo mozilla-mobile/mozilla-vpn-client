@@ -63,9 +63,7 @@
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="$(var.PlatformProgramFilesFolder)">
         <Directory Id="MozillaFolder" Name="Mozilla">
-          <Directory Id="MozillaVPNFolder" Name="Mozilla VPN">
-            <Directory Id="MozillaVPNAddonFolder" Name="addons" />
-          </Directory>
+          <Directory Id="MozillaVPNFolder" Name="Mozilla VPN" />
         </Directory>
       </Directory>
       <Directory Id="ProgramMenuFolder" />
@@ -145,7 +143,6 @@
     -->
     <Feature Id="MozillaVPNFeature" Title="Mozilla VPN" Level="1">
       <ComponentGroupRef Id="MozillaVPNComponents" />
-      <ComponentGroupRef Id="addons" />
     </Feature>
     <Feature Id="VCRedistFeature" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
       <MergeRef Id="VCRedistModule" />

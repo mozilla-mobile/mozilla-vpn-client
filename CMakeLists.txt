@@ -81,9 +81,6 @@ if(NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(extension)
 endif()
 
-# Addons
-add_subdirectory(addons)
-
 # Extra platform stuff
 if(WIN32)
     add_subdirectory(windows/installer)

@@ -155,8 +155,3 @@ mozillavpnnp.files = $$PWD/../../../mozillavpnnp.exe
 mozillavpnnp.path = $$PWD/../../../unsigned/
 mozillavpnnp.CONFIG = no_check_exist executable
 INSTALLS += mozillavpnnp
-
-addons.files = $$PWD/../../../addons/generated/addons
-addons.path = $$PWD/../../../unsigned
-addons.CONFIG = no_check_exist executable
-INSTALLS += addons
