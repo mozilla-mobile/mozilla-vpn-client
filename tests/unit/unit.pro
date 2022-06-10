@@ -119,6 +119,7 @@ HEADERS += \
     ../../src/task.h \
     ../../src/tasks/account/taskaccount.h \
     ../../src/tasks/adddevice/taskadddevice.h \
+    ../../src/tasks/addon/taskaddon.h \
     ../../src/tasks/ipfinder/taskipfinder.h \
     ../../src/tasks/function/taskfunction.h \
     ../../src/tasks/release/taskrelease.h \
@@ -229,6 +230,7 @@ SOURCES += \
     ../../src/statusicon.cpp \
     ../../src/tasks/account/taskaccount.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
+    ../../src/tasks/addon/taskaddon.cpp \
     ../../src/tasks/ipfinder/taskipfinder.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/tasks/release/taskrelease.cpp \

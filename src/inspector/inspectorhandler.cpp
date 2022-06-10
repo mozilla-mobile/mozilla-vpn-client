@@ -889,19 +889,14 @@ static QList<InspectorCommand> s_commands{
                        return QJsonObject();
                      }},
 
-    InspectorCommand{"load_addon", "Load an add-on", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       QJsonObject obj;
-                       obj["value"] =
-                           AddonManager::instance()->load(arguments[1]);
-                       return obj;
-                     }},
-
     InspectorCommand{"load_addon_manifest", "Load an add-on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
-                       obj["value"] =
-                           AddonManager::instance()->loadManifest(arguments[1]);
+                       // This is a debugging method. We don't need to compute
+                       // the hash of the addon because we will not be able to
+                       // find it in the addon index.
+                       obj["value"] = AddonManager::instance()->loadManifest(
+                           arguments[1], "INVALID SHA256");
                        return obj;
                      }},
 

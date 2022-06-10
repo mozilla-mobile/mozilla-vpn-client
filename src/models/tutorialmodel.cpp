@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "tutorialmodel.h"
-#include "addonmanager.h"
 #include "tutorial.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -20,9 +19,6 @@ Logger logger(LOG_MAIN, "TutorialModel");
 TutorialModel* TutorialModel::instance() {
   if (!s_instance) {
     s_instance = new TutorialModel(qApp);
-
-    // We need tutorials from the addon manager.
-    AddonManager::instance();
   }
 
   return s_instance;

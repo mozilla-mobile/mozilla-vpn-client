@@ -21,8 +21,13 @@ class AddonManager final : public QObject {
 
   ~AddonManager();
 
-  bool load(const QString& addonFileName);
-  bool loadManifest(const QString& addonManifestFileName);
+  void updateIndex(const QByteArray& index);
+
+  void storeAndLoadAddon(const QByteArray& addonData, const QString& addonId,
+                         const QByteArray& sha256);
+
+  bool loadManifest(const QString& addonManifestFileName,
+                    const QByteArray& sha256);
 
   void unload(const QString& addonId);
 
@@ -31,14 +36,29 @@ class AddonManager final : public QObject {
  private:
   explicit AddonManager(QObject* parent);
 
-  void loadAll();
-  void loadAll(const QDir& path);
+  void initialize();
+
+  bool validateIndex(const QByteArray& index);
+  bool validateAndLoad(const QString& addonId, const QByteArray& sha256,
+                       bool checkSha256 = true);
+
+  static bool addonDir(QDir* dir);
+  static QByteArray readIndex();
+  static void writeIndex(const QByteArray& index);
+
+  static void removeAddon(const QString& addonId);
 
  signals:
   void runAddon(Addon* addon);
 
  private:
-  QHash<QString, Addon*> m_addons;
+  struct AddonData {
+    QByteArray m_sha256;
+    QString m_addonId;
+    Addon* m_addon;
+  };
+
+  QHash<QString, AddonData> m_addons;
 };
 
 #endif  // ADDONMANAGER_H

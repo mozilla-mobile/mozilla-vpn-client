@@ -187,6 +187,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.h
     ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.cpp
     ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.h
+    ${MVPN_SOURCE_DIR}/tasks/addon/taskaddon.cpp
+    ${MVPN_SOURCE_DIR}/tasks/addon/taskaddon.h
     ${MVPN_SOURCE_DIR}/tasks/ipfinder/taskipfinder.cpp
     ${MVPN_SOURCE_DIR}/tasks/ipfinder/taskipfinder.h
     ${MVPN_SOURCE_DIR}/tasks/function/taskfunction.cpp
