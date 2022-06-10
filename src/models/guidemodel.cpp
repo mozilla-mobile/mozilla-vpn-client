@@ -26,30 +26,39 @@ GuideModel* GuideModel::instance() {
 
 GuideModel::GuideModel(QObject* parent) : QAbstractListModel(parent) {
   MVPN_COUNT_CTOR(GuideModel);
-  initialize();
 }
 
 GuideModel::~GuideModel() { MVPN_COUNT_DTOR(GuideModel); }
 
 QStringList GuideModel::guideTitleIds() const {
   QStringList guides;
-  for (const Guide* guide : m_guides) {
-    guides.append(guide->titleId());
+  for (const GuideData& guideData : m_guides) {
+    guides.append(guideData.m_guide->titleId());
   }
 
   return guides;
 }
 
-void GuideModel::initialize() {
-  QDir dir(":/guides");
-  QStringList files = dir.entryList();
-  files.sort();
-  for (const QString& file : files) {
-    if (file.endsWith(".json")) {
-      Guide* guide = Guide::create(this, dir.filePath(file));
-      if (guide) {
-        m_guides.append(guide);
-      }
+bool GuideModel::createFromJson(const QString& addonId,
+                                const QJsonObject& obj) {
+  Guide* guide = Guide::create(this, obj);
+  if (guide) {
+    beginResetModel();
+    m_guides.append({addonId, guide});
+    endResetModel();
+    return true;
+  }
+
+  return false;
+}
+
+void GuideModel::remove(const QString& addonId) {
+  for (auto i = m_guides.begin(); i != m_guides.end(); ++i) {
+    if (i->m_addonId == addonId) {
+      beginResetModel();
+      m_guides.erase(i);
+      endResetModel();
+      break;
     }
   }
 }
@@ -69,7 +78,7 @@ QVariant GuideModel::data(const QModelIndex& index, int role) const {
 
   switch (role) {
     case GuideRole:
-      return QVariant::fromValue(m_guides.at(index.row()));
+      return QVariant::fromValue(m_guides.at(index.row()).m_guide);
 
     default:
       return QVariant();

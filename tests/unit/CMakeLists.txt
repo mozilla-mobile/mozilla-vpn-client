@@ -36,6 +36,18 @@ target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
+    ${MVPN_SOURCE_DIR}/addonmanager.cpp
+    ${MVPN_SOURCE_DIR}/addonmanager.h
+    ${MVPN_SOURCE_DIR}/addons/addon.cpp
+    ${MVPN_SOURCE_DIR}/addons/addon.h
+    ${MVPN_SOURCE_DIR}/addons/addondemo.cpp
+    ${MVPN_SOURCE_DIR}/addons/addondemo.h
+    ${MVPN_SOURCE_DIR}/addons/addonguide.cpp
+    ${MVPN_SOURCE_DIR}/addons/addonguide.h
+    ${MVPN_SOURCE_DIR}/addons/addoni18n.cpp
+    ${MVPN_SOURCE_DIR}/addons/addoni18n.h
+    ${MVPN_SOURCE_DIR}/addons/addontutorial.cpp
+    ${MVPN_SOURCE_DIR}/addons/addontutorial.h
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.cpp
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.h
     ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
@@ -175,6 +187,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.h
     ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.cpp
     ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.h
+    ${MVPN_SOURCE_DIR}/tasks/addon/taskaddon.cpp
+    ${MVPN_SOURCE_DIR}/tasks/addon/taskaddon.h
     ${MVPN_SOURCE_DIR}/tasks/ipfinder/taskipfinder.cpp
     ${MVPN_SOURCE_DIR}/tasks/ipfinder/taskipfinder.h
     ${MVPN_SOURCE_DIR}/tasks/function/taskfunction.cpp

@@ -22,10 +22,11 @@ cp scripts/utils/generate_strings.py cache || die
 print G "done."
 
 printn Y "Generating strings... "
-python cache/generate_strings.py -o translations/generated -g src/ui/guides -t src/ui/tutorials
+python cache/generate_strings.py -o translations/generated
 print G "done."
 
 printn Y "Generating a dummy PRO file... "
+mkdir -p translations/generated || die
 cat > translations/generated/dummy.pro << EOF
 HEADERS += l18nstrings.h
 SOURCES += l18nstrings_p.cpp
@@ -43,18 +44,40 @@ print G "done"
 print Y "Generating the main translation file... "
 lupdate translations/generated/dummy.pro -ts translations.ts || die
 
-for branch in $(git branch -r | grep origin/releases); do
-  printn Y "Importing strings from $branch..."
+printn Y "Generating strings for addons... "
+python scripts/addon/generate_all.py
+mkdir -p addon_ts || die
+cp addons/generated/addons/*.ts addon_ts
+print G "done."
 
+for branch in $(git branch -r | grep origin/releases); do
   git checkout $branch &>/dev/null || die
-  PARAMS=
-  [ -d src/ui/guides ] && PARAMS="$PARAMS -g src/ui/guides"
-  [ -d src/ui/tutorials ] && PARAMS="$PARAMS -t src/ui/tutorials"
-  python cache/generate_strings.py -o translations/generated $PARAMS || die
+
+  printn Y "Importing main strings from $branch..."
+  python cache/generate_strings.py -o translations/generated translations/strings.yaml || die
   lupdate translations/generated/dummy.pro -ts branch.ts || die
   lconvert -i translations.ts branch.ts -o tmp.ts || die
   mv tmp.ts translations.ts || die
   rm branch.ts || die
+
+  if [ -f "scripts/addon/generate_all.py" ]; then
+    printn Y "Importing addon strings from $branch..."
+    python scripts/addon/generate_all.py
+    ts_files="addons/generated/addons/*.ts"
+    for f in $ts_files
+    do
+      ts_name=$(basename "$f")
+      if [ -f "addon_ts/${ts_name}"]; then
+        printn Y "File ${ts_name} exists, updating with branch strings..."
+        lconvert -i "cache_rs/${ts_name}" "addons/generated/addons/${ts_name}" -o tmp.ts || die
+        mv tmp.ts "addon_ts/${ts_name}"
+      else
+        printn Y "File ${ts_name} does not exist, copying over..."
+        cp "addons/generated/addons/${ts_name}" addon_ts/
+      fi
+    done
+    rm addons/generated/addons/*.ts || die
+  fi
 done
 
 printn Y "Remove cache... "
