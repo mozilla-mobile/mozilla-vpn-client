@@ -93,9 +93,52 @@ jobs:
             name: Inspector Build
             path: tools/inspector/dist
 
+  addons:
+    runs-on: ubuntu-20.04
+    env:
+      QTVERSION: 6.2.4
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          python3 -m pip install aqtinstall
+          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
+
+      - name: Install python dependencies
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
+
+      - name: Generating addons
+        shell: bash
+        run: |
+          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
+          python3 scripts/addon/generate_all.py
+
+      - name: Uploading
+        uses: actions/upload-artifact@v1
+        with:
+            name: Inspector Build
+            path: addons/generated/addons
+
   ghPages:
     runs-on: ubuntu-20.04
-    needs: [wasmQt6, inspector]
+    needs: [wasmQt6, inspector, addons]
     name: Publish Wasm on Github Pages
     env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
