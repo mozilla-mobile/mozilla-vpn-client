@@ -186,6 +186,14 @@ VPNFlickable {
             if (profileViewNeeded && settingsStackView.currentItem.objectName !== "viewProfile") {
                 settingsStackView.push("qrc:/ui/settings/ViewProfile.qml");
             }
+
+            // An error occurred during the profile flow. Let’s reset and return
+            // to the main settings view.
+            const hasError = VPNProfileFlow.state === VPNProfileFlow.StateError;
+            if (hasError) {
+                VPNProfileFlow.reset();
+                settingsStackView.pop();
+            }
         }
     }
 }
