@@ -127,8 +127,6 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
     [allowedIPAddressRangesNS addObject:[range autorelease]];
   }
 
-  bool killSwitchEnabled = Feature::get(Feature::Feature_iosKillswitch)->isSupported();
-
   [impl connectWithDnsServer:hop.m_dnsServer.toString().toNSString()
            serverIpv6Gateway:hop.m_server.ipv6Gateway().toNSString()
              serverPublicKey:hop.m_server.publicKey().toNSString()
@@ -136,7 +134,6 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
                   serverPort:hop.m_server.choosePort()
       allowedIPAddressRanges:allowedIPAddressRangesNS
                       reason:reason
-          includeAllNetworks:killSwitchEnabled
              failureCallback:^() {
                logger.error() << "IOSSWiftController - connection failed";
                emit disconnected();
