@@ -343,14 +343,14 @@ with open(args.source, "r", encoding="utf-8") as file:
             os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
             os.system(f"{lrelease} -idbased {locale_file}")
 
-    print("Generate the RC file...")
+    print("Generate the RCC file...")
     files = get_file_list(tmp_path, "")
 
     qrc_file = os.path.join(tmp_path, f"{manifest['id']}.qrc")
     with open(qrc_file, "w", encoding="utf-8") as f:
         rcc_elm = ET.Element("RCC")
         qresource = ET.SubElement(rcc_elm, "qresource")
-        qresource.set("prefix", f"/{manifest['id']}")
+        qresource.set("prefix", "/")
         for file in files:
             elm = ET.SubElement(qresource, "file")
             elm.text = file

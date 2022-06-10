@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/tic-tac-toe">
+    <qresource prefix="/">
         <file>manifest.json</file>
         <file>script.mjs</file>
         <file>tic-tac-toe.qml</file>

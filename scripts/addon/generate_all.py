@@ -54,7 +54,7 @@ for file in os.listdir(addons_path):
         addons.append({ 'id': file, 'sha256': sha256 })
 
 index = {
-  'version': '0.1',
+  'api_version': '0.1',
   'addons': addons,
 }
 

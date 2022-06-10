@@ -1,6 +1,6 @@
 {
   "id": "language-addon",
-  "version": "0.1",
+  "api_version": "0.1",
   "name": "language package",
   "type": "i18n"
 }

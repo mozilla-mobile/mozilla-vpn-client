@@ -11,7 +11,7 @@
       "type": "string",
       "description": "The name of this addon"
     },
-    "version": {
+    "api_version": {
       "type": "string",
       "description": "The addon version framework"
     },
@@ -30,6 +30,6 @@
       "description": "The QML entry point"
     }
   },
-  "required": [ "id", "name", "version", "type" ]
+  "required": [ "id", "name", "api_version", "type" ]
 }
 

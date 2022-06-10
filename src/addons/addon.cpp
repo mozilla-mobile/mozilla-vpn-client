@@ -40,14 +40,15 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
 
   QJsonObject obj = json.object();
 
-  QString version = obj["version"].toString();
+  QString version = obj["api_version"].toString();
   if (version.isEmpty()) {
-    logger.warning() << "No version in the manifest" << manifestFileName;
+    logger.warning() << "No API version in the manifest" << manifestFileName;
     return nullptr;
   }
 
   if (version != "0.1") {
-    logger.warning() << "Unsupported version" << version << manifestFileName;
+    logger.warning() << "Unsupported API version" << version
+                     << manifestFileName;
     return nullptr;
   }
 

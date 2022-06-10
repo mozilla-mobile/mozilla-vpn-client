@@ -93,8 +93,8 @@ bool AddonManager::validateIndex(const QByteArray& index) {
   }
 
   QJsonObject obj = doc.object();
-  if (obj["version"].toString() != "0.1") {
-    logger.debug() << "Invalid index file - version does not match";
+  if (obj["api_version"].toString() != "0.1") {
+    logger.debug() << "Invalid index file - api_version does not match";
     return false;
   }
 
@@ -302,7 +302,8 @@ bool AddonManager::validateAndLoad(const QString& addonId,
     }
   }
 
-  if (!QResource::registerResource(addonFileName, "/addons")) {
+  if (!QResource::registerResource(addonFileName,
+                                   QString("/addons/%1").arg(addonId))) {
     logger.warning() << "Unable to load resource from file" << addonFileName;
     return false;
   }
