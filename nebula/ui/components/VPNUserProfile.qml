@@ -77,7 +77,7 @@ RowLayout {
             id: loader
 
             color: VPNTheme.theme.bgColor
-            iconUrl: "qrc:/nebula/resources/buttonLoaderBlue.svg"
+            iconUrl: "qrc:/nebula/resources/spinner.svg"
             state: _loaderVisible ? "active" : "inactive"
         }
     }
