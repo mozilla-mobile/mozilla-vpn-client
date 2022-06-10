@@ -23,9 +23,7 @@ Item {
         asynchronous: true
 
         function cancelAuthenticationFlow() {
-            VPN.cancelAccountDeletion();
-            VPN.cancelAuthentication();
-
+            VPN.cancelReauthentication();
             settingsStackView.pop();
         }
     }

@@ -30,6 +30,11 @@ void ProfileFlow::setState(State state) {
 
 void ProfileFlow::start() {
   logger.debug() << "Start profile flow";
+
+  if (m_state != StateInitial) {
+    return;
+  }
+
   setState(StateLoading);
 
   User* user = MozillaVPN::instance()->user();
@@ -43,6 +48,9 @@ void ProfileFlow::start() {
     logger.debug() << "Needs authentication";
     setState(StateAuthenticationNeeded);
   });
+  connect(task, &TaskGetSubscriptionDetails::completed, this, [&] {
+    logger.debug() << "Completed";
+  });
   connect(task, &TaskGetSubscriptionDetails::failed, [&]() {
     logger.debug() << "Task failed";
 
@@ -54,6 +62,16 @@ void ProfileFlow::start() {
   });
 
   TaskScheduler::scheduleTask(task);
+}
+
+void ProfileFlow::reset() {
+  logger.debug() << "Reset profile flow";
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  vpn->cancelReauthentication();
+
+  setState(StateInitial);
 }
 
 void ProfileFlow::subscriptionDetailsFetched(

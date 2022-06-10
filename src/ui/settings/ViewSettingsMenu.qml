@@ -50,7 +50,6 @@ VPNFlickable {
                 property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
                 _iconButtonImageSource: subscriptionManagementEnabled
                     ? "qrc:/nebula/resources/chevron.svg"
-                    // TODO: Show a loading indicator for VPNProfileFlow.StateLoading
                     : "qrc:/nebula/resources/open-in-new.svg"
                 _iconButtonOnClicked: () => {                    
                     if (subscriptionManagementEnabled) {

@@ -166,4 +166,4 @@ QString MozillaVPN::graphicsApi() { return ""; }
 
 void MozillaVPN::requestDeleteAccount() {}
 
-void MozillaVPN::cancelAccountDeletion() {}
+void MozillaVPN::cancelReauthentication() {}

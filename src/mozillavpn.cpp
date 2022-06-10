@@ -1766,7 +1766,9 @@ void MozillaVPN::requestDeleteAccount() {
   TaskScheduler::scheduleTask(new TaskDeleteAccount(m_private->m_user.email()));
 }
 
-void MozillaVPN::cancelAccountDeletion() {
-  logger.warning() << "Canceling account deletion";
+void MozillaVPN::cancelReauthentication() {
+  logger.warning() << "Canceling reauthentication";
   AuthenticationInApp::instance()->terminateSession();
+
+  cancelAuthentication();
 }
