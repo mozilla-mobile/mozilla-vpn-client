@@ -31,11 +31,6 @@ void ReleaseMonitor::runSoon() {
   TimerSingleShot::create(this, 0, [this] {
     TaskRelease* task = new TaskRelease(TaskRelease::Check);
 
-    connect(task, &TaskRelease::updaterFailure, []() {
-      // This cannot happen for release checks.
-      Q_ASSERT(false);
-    });
-
     connect(task, &TaskRelease::updateRequired, this,
             &ReleaseMonitor::updateRequired);
     connect(task, &TaskRelease::updateRecommended, this,
@@ -72,16 +67,6 @@ void ReleaseMonitor::updateSoon() {
 
   TimerSingleShot::create(this, 0, [] {
     TaskRelease* task = new TaskRelease(TaskRelease::Update);
-    connect(task, &TaskRelease::updaterFailure, []() {
-      logger.warning() << "No updater supported for this platform. Fallback";
-
-      MozillaVPN* vpn = MozillaVPN::instance();
-      Q_ASSERT(vpn);
-
-      vpn->openLink(MozillaVPN::LinkUpdate);
-      vpn->setUpdating(false);
-    });
-
     // The updater, in download mode, is not destroyed. So, if this happens,
     // probably something went wrong.
     connect(task, &Task::completed, [] {

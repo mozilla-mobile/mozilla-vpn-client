@@ -144,6 +144,7 @@ SOURCES += \
         update/updater.cpp \
         update/versionapi.cpp \
         urlopener.cpp \
+        update/webupdater.cpp \
         websockethandler.cpp
 
 HEADERS += \
@@ -288,6 +289,7 @@ HEADERS += \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
+        update/webupdater.h \
         urlopener.h \
         websockethandler.h
 

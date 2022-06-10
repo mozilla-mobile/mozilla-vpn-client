@@ -3,7 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
-$FETCHES_PATH =resolve-path "$REPO_ROOT_PATH/../../fetches"
+$TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
+$FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
 
 # Enter the DEV Shell
 . "$FETCHES_PATH/VisualStudio/enter_dev_shell.ps1"
@@ -42,10 +43,8 @@ perl Configure  VC-WIN64A `
 $env:CL="/MP"
 
 nmake build_libs
-nmake install 
+nmake install
 Set-Location $FETCHES_PATH
 
-# 
-Compress-Archive -Path $SSL_OUT_PATH -DestinationPath $REPO_ROOT_PATH/ssl_out.zip
-
-
+New-Item -ItemType Directory -Path "$TASK_WORKDIR/public/build" -Force
+Compress-Archive -Path $SSL_OUT_PATH -DestinationPath "$TASK_WORKDIR/public/build/open_ssl_win.zip"

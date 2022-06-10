@@ -125,6 +125,7 @@ HEADERS += \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
+    ../../src/update/webupdater.h \
     ../../src/urlopener.h \
     ../../src/websockethandler.h \
     helper.h \
@@ -232,6 +233,7 @@ SOURCES += \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
+    ../../src/update/webupdater.cpp \
     ../../src/urlopener.cpp \
     ../../src/websockethandler.cpp \
     main.cpp \

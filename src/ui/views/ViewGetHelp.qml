@@ -62,18 +62,6 @@ Item {
         anchors.topMargin: VPNTheme.theme.windowMargin
         anchors.top: menu.bottom
 
-        VPNExternalLinkListItem {
-            objectName: "settingsGiveFeedback"
-
-            accessibleName: title
-            title: qsTrId("vpn.settings.giveFeedback")
-            onClicked: mainStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml")
-            iconSource: "qrc:/nebula/resources/chevron.svg"
-            backgroundColor: VPNTheme.theme.iconButtonLightBackground
-            width: parent.width - VPNTheme.theme.windowMargin
-            visible: VPN.userState === VPN.UserAuthenticated
-        }
-
         Repeater {
             id: getHelpList
             objectName: "getHelpBackList"
@@ -91,6 +79,19 @@ Item {
                     VPNHelpModel.open(id)
                 }
             }
+        }
+
+        VPNExternalLinkListItem {
+            id: gf
+            objectName: "settingsGiveFeedback"
+
+            accessibleName: title
+            title: qsTrId("vpn.settings.giveFeedback")
+            onClicked: mainStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml")
+            iconSource: "qrc:/nebula/resources/chevron.svg"
+            backgroundColor: VPNTheme.theme.iconButtonLightBackground
+            width: parent.width - VPNTheme.theme.windowMargin
+            visible: VPN.userState === VPN.UserAuthenticated
         }
 
         VPNSettingsItem {
