@@ -12,7 +12,7 @@
 
 namespace {
 Logger logger(LOG_MODEL, "SubscriptionData");
-} // namespace
+}  // namespace
 
 SubscriptionData::SubscriptionData() { MVPN_COUNT_CTOR(SubscriptionData); }
 
