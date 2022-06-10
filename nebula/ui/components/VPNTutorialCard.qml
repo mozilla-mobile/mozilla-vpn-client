@@ -51,7 +51,7 @@ VPNCard {
 
         ColumnLayout {
             Layout.topMargin: VPNTheme.theme.vSpacing * 0.5
-            Layout.rightMargin: 16
+            Layout.rightMargin: VPNTheme.theme.windowMargin
             Layout.bottomMargin: VPNTheme.theme.vSpacing * 0.5
             Layout.fillHeight: true
             Layout.fillWidth: true
@@ -86,8 +86,8 @@ VPNCard {
                 Layout.fillWidth: true
                 Layout.maximumHeight: {
                     //Max height should be all available space rounded down to the nearlest line (so there is no excess height like half of a line)
-                    var availableHeight = root.height - parent.Layout.topMargin - parent.Layout.bottomMargin - titleText.height
-                    var excessHeight = availableHeight % lineHeight
+                    const availableHeight = root.height - parent.Layout.topMargin - parent.Layout.bottomMargin - titleText.height
+                    const excessHeight = availableHeight % lineHeight
                     return root.height - parent.Layout.topMargin - parent.Layout.bottomMargin - titleText.height - excessHeight
                 }
 

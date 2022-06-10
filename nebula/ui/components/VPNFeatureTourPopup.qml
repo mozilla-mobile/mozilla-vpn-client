@@ -72,12 +72,8 @@ VPNPopup {
 
             slidesModel: VPNWhatsNewModel
 
-            onFinished: {
-                popup.close();
-            }
-            onStarted: {
-                VPNWhatsNewModel.markFeaturesAsSeen();
-            }
+            onFinished: popup.close()
+            onStarted: VPNWhatsNewModel.markFeaturesAsSeen()
         }
     }
 

@@ -145,7 +145,7 @@ ColumnLayout {
         VPNButton {
             id: resumeButton
 
-            objectName: "primaryButton"
+            objectName: "featureTourPrimaryButton"
 
             property bool isLastFeature: swipeView.currentIndex === swipeView.count - 1
 
@@ -159,18 +159,18 @@ ColumnLayout {
             onClicked: {
                 if(isLastFeature) {
                     tour.finished()
+                    return
                 }
-                else {
-                    swipeView.contentItem.highlightMoveDuration = 250;
-                    swipeView.incrementCurrentIndex();
-                }
+
+                swipeView.contentItem.highlightMoveDuration = 250;
+                swipeView.incrementCurrentIndex();
             }
         }
 
         VPNLinkButton {
             id: linkButton
 
-            objectName: "secondaryButton"
+            objectName: "featureTourSecondaryButton"
 
             labelText: VPNl18n.SplittunnelInfoLinkText
             visible: hasFeatureLinkUrl()
@@ -202,7 +202,7 @@ ColumnLayout {
         //Calculate which slide is the tallest so we can set that height to the swipe view, this way the modal does not change size
         var tallestSlideHeight = 0
         for(var i = 0; i < slidesRepeater.count; i++) {
-            var slideHeight = slidesRepeater.itemAt(i).implicitHeight
+            const slideHeight = slidesRepeater.itemAt(i).implicitHeight
             if (slideHeight > tallestSlideHeight) tallestSlideHeight = slideHeight
         }
         swipeView.Layout.preferredHeight = Qt.binding(function() { return linkButton.visible ? tallestSlideHeight - linkButton.height : tallestSlideHeight })

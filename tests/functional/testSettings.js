@@ -121,12 +121,12 @@ describe('Settings', function() {
     await vpn.waitForElement('featureSwipeView');
 
     for(var i = 0; i < featureTourFeatures.length - 1; i++) {
-      if (await vpn.getElementProperty('secondaryButton', 'visible') === 'true') {
-        await vpn.clickOnElement('secondaryButton');
+      if (await vpn.getElementProperty('featureTourSecondaryButton', 'visible') === 'true') {
+        await vpn.clickOnElement('featureTourSecondaryButton');
         await vpn.wait();
       }
 
-      await vpn.clickOnElement('primaryButton');
+      await vpn.clickOnElement('featureTourPrimaryButton');
       await vpn.wait();
     }
 
@@ -136,7 +136,7 @@ describe('Settings', function() {
     }
 
     for(var i = 0; i < featureTourFeatures.length; i++) {
-      await vpn.clickOnElement('primaryButton');
+      await vpn.clickOnElement('featureTourPrimaryButton');
       await vpn.wait();
     }
 
