@@ -218,14 +218,14 @@ def get_file_list(path, prefix):
 parser = argparse.ArgumentParser(description="Generate an addon package")
 parser.add_argument(
     "source",
-    metavar="manifest",
+    metavar="MANIFEST",
     type=str,
     action="store",
     help="The addon manifest",
 )
 parser.add_argument(
     "dest",
-    metavar="dest",
+    metavar="DEST",
     type=str,
     action="store",
     help="The destination folder",
