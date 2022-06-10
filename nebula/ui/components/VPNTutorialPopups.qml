@@ -78,7 +78,7 @@ Item {
 
         background: Rectangle {
             id: backgroundRect
-            color:  VPNTheme.colors.primary
+            color:  VPNTheme.colors.white80
             radius: 4
 
             VPNDropShadow {
@@ -107,20 +107,20 @@ Item {
                 height: tutorialTooltip.notchHeight + 2
                 width: tutorialTooltip.notchHeight + 2
                 radius: notch.radius
-                color: backgroundRect.color
+                color: notch.color
                 rotation: notch.rotation
                 anchors.centerIn: notch
-                border.width: tooltipOutline.border.width
-                border.color: tooltipOutline.border.color
+                border.width: tooltipOutline.width
+                border.color: VPNTheme.colors.white80
             }
 
             Rectangle {
                 id: tooltipOutline
-                color: parent.color
+                color: VPNTheme.colors.primary
                 radius: parent.radius
                 anchors.fill: parent
                 border.width: 1
-                border.color: VPNTheme.colors.purple80
+                border.color: VPNTheme.colors.white80
             }
 
             Rectangle {
@@ -129,7 +129,7 @@ Item {
                 height: tutorialTooltip.notchHeight
                 width: tutorialTooltip.notchHeight
                 radius: 2
-                color: backgroundRect.color
+                color: tooltipOutline.color
                 y: tutorialTooltip.tooltipPositionedAboveTargetElement ? tutorialTooltip.height - (tutorialTooltip.notchHeight - tooltipOffset) : tooltipOffset * -1
                 rotation: 45
                 anchors.left: parent.left
@@ -279,6 +279,7 @@ Item {
     Connections {
         target: window
         function onActiveFocusItemChanged() {
+            //https://bugreports.qt.io/browse/QTBUG-59744?gerritIssueType=IssueOnly
             if (!targetElement)
                 return
 
