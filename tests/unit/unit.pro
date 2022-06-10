@@ -134,7 +134,8 @@ HEADERS += \
     ../../src/update/versionapi.h \
     ../../src/update/webupdater.h \
     ../../src/urlopener.h \
-    ../../src/websockethandler.h \
+    ../../src/websocket/websockethandler.h \
+    ../../src/websocket/exponentialbackoffstrategy.h \
     helper.h \
     testaddon.h \
     testadjust.h \
@@ -156,7 +157,9 @@ HEADERS += \
     testtasks.h \
     testthemes.h \
     testtimersingleshot.h \
-    testwebsockethandler.h
+    testtutorial.h \
+    websocket/testwebsockethandler.h \
+    websocket/testexponentialbackoffstrategy.h
 
 SOURCES += \
     ../../src/addonmanager.cpp \
@@ -247,7 +250,8 @@ SOURCES += \
     ../../src/update/versionapi.cpp \
     ../../src/update/webupdater.cpp \
     ../../src/urlopener.cpp \
-    ../../src/websockethandler.cpp \
+    ../../src/websocket/exponentialbackoffstrategy.cpp \
+    ../../src/websocket/websockethandler.cpp \
     main.cpp \
     moccontroller.cpp \
     mocinspectorhandler.cpp \
@@ -273,7 +277,9 @@ SOURCES += \
     testtasks.cpp \
     testthemes.cpp \
     testtimersingleshot.cpp \
-    testwebsockethandler.cpp
+    testtutorial.cpp \
+    websocket/testwebsockethandler.cpp \
+    websocket/testexponentialbackoffstrategy.cpp
 
 # Platform-specific: Linux
 linux {

@@ -307,8 +307,10 @@ target_sources(mozillavpn PRIVATE
     update/webupdater.h
     urlopener.cpp
     urlopener.h
-    websockethandler.cpp
-    websockethandler.h
+    websocket/exponentialbackoffstrategy.cpp
+    websocket/exponentialbackoffstrategy.h
+    websocket/websockethandler.cpp
+    websocket/websockethandler.h
 )
 
 # VPN Client UI resources
