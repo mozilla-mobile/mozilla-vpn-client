@@ -109,7 +109,6 @@ VPNFlickable {
                 visible: VPNFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {
-                    Sample.deleteAccountRequested.record();
                     settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
                 }
 
@@ -213,17 +212,16 @@ VPNFlickable {
             // TODO: Confirm that’s really the case: User is within a free trial period.
             labelText = VPNl18n.FreeTrialsFreeTrialLabel;
         } else {
+            console.warn(`Unexpected value for intervalCount: ${intervalCount}`);
             Sample.unhandledSubscriptionPlanInterval.record({
                 "interval_count": intervalCount
             });
-            console.warn(`Unexpected value for intervalCount: ${intervalCount}`);
         }
 
         return labelText;
     }
 
     Component.onCompleted: {
-        Sample.subscriptionManagementViewOpened.record();
         populateListModels();
     }
 }

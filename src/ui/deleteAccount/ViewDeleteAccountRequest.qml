@@ -82,6 +82,7 @@ VPNInAppAuthenticationBase {
             // Delete account
             text: VPNl18n.DeleteAccountButtonLabel
             onClicked: if (viewDeleteAccount.allowAccountDeletion) {
+                Sample.deleteAccountClicked.record();
                 VPNAuthInApp.deleteAccount();
             }
         }

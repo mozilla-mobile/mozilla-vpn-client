@@ -907,7 +907,7 @@ sample:
     send_in_pings:
       - main
     description: |
-      Unhandled subscription plan interval in subscription management view
+      Unhandled subscription plan interval from the subscription management view.
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
     data_reviews:
@@ -924,13 +924,13 @@ sample:
         type: quantity
         unit: months
 
-  delete_account_requested:
+  delete_account_clicked:
     type: event
     lifetime: ping
     send_in_pings:
       - main
     description: |
-      The user has clicked “delete account” in the account deletion view.
+      The user has clicked “delete account” from the account deletion view.
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
     data_reviews:
