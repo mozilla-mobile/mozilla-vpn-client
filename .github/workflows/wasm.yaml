@@ -129,7 +129,7 @@ jobs:
       - name: Uploading
         uses: actions/upload-artifact@v1
         with:
-            name: Inspector Build
+            name: Addons
             path: addons/generated/addons
 
   ghPages:
@@ -145,11 +145,19 @@ jobs:
           name: WebAssembly Build Qt6
           # Destination path
           path: _site
+
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v2.0.8
+        with:
+          name: Addons
+          path: _site/addons
+
       - name: Download a Build Artifact
         uses: actions/download-artifact@v2.0.8
         with:
           name: Inspector Build
           path: _site/inspector
+
       - name: Uploading site Build
         uses: actions/upload-artifact@v1
         with:
