@@ -135,8 +135,7 @@ void TutorialStep::startInternal() {
   Q_ASSERT(tutorialModel);
 
   tutorialModel->requireTooltipShown(m_parent, true);
-  tutorialModel->requireTooltipNeeded(
-      m_parent, m_stringId, element);
+  tutorialModel->requireTooltipNeeded(m_parent, m_stringId, element);
 
   connect(m_next, &TutorialStepNext::completed, this, &TutorialStep::completed);
   m_next->start();
