@@ -30,6 +30,10 @@ void ProfileFlow::setState(State state) {
 
   m_state = state;
   emit stateChanged(m_state);
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::profileFlowStateChanged,
+      {{"state", QVariant::fromValue(state).toString()}});
 }
 
 void ProfileFlow::start() {

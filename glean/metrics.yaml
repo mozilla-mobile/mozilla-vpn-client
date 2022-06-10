@@ -941,13 +941,13 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  subscription_management_view_opened:
+  profile_flow_state_changed:
     type: event
     lifetime: ping
     send_in_pings:
       - main
     description: |
-      The user has opened the subscription management view.
+      The profile flow state changed.
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
     data_reviews:
@@ -957,3 +957,10 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
+    extra_keys:
+      interval_count:
+        description: |
+          The name of the profile flow state. The list of states can be found in
+          `authenticationinapp.h`.
+        type: state
+        unit: string
