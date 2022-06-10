@@ -75,6 +75,7 @@ void TaskGetSubscriptionDetails::run() {
 }
 
 void TaskGetSubscriptionDetails::initAuthentication() {
+  logger.debug() << "Init authentication";
   Q_ASSERT(!m_authenticationInAppSession);
 
   QByteArray pkceCodeVerifier;

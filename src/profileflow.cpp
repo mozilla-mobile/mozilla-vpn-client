@@ -24,12 +24,21 @@ ProfileFlow::~ProfileFlow() { MVPN_COUNT_DTOR(ProfileFlow); }
 void ProfileFlow::setState(State state) {
   logger.debug() << "Set state" << state;
 
+  if (state == StateError) {
+    MozillaVPN::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+  }
+
   m_state = state;
   emit stateChanged(m_state);
 }
 
 void ProfileFlow::start() {
   logger.debug() << "Start profile flow";
+
+  if (m_state != StateInitial) {
+    return;
+  }
+
   setState(StateLoading);
 
   User* user = MozillaVPN::instance()->user();
@@ -48,12 +57,20 @@ void ProfileFlow::start() {
 
     // TODO: Remove, only for debugging purposes.
     MozillaVPN::instance()->subscriptionData()->populateFakeData();
-
-    // TODO: Should be `StateInitial`
     setState(StateReady);
   });
 
   TaskScheduler::scheduleTask(task);
+}
+
+void ProfileFlow::reset() {
+  logger.debug() << "Reset profile flow";
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  vpn->cancelReauthentication();
+
+  setState(StateInitial);
 }
 
 void ProfileFlow::subscriptionDetailsFetched(
@@ -62,7 +79,7 @@ void ProfileFlow::subscriptionDetailsFetched(
 
   if (!MozillaVPN::instance()->subscriptionData()->fromJson(subscriptionData)) {
     logger.error() << "Failed to parse the Subscription JSON data";
-    MozillaVPN::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+    setState(StateError);
     return;
   }
 

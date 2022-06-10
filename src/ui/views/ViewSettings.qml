@@ -16,12 +16,14 @@ Item {
         id: menu
         objectName: "settingsBackButton"
         _menuOnBackClicked: () => {
-            // TODO: Find a better place to cancel authentication
-            VPN.cancelAuthentication();
-
             if (settingsStackView.depth !== 1) {
+                if (VPNProfileFlow.state !== VPNProfileFlow.StateInitial) {
+                    VPNProfileFlow.reset();
+                }
+
                 return settingsStackView.pop();
             }
+
             mainStackView.pop()
         }
         _iconButtonSource: settingsStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"

@@ -879,6 +879,28 @@ sample:
           "switching", etc. The list can be found in `controller.h`.
         type: string
 
+  update_step:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The update flow (update required available, installer started, etc)
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3455
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1770531
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      state:
+        description: |
+          The name of the update states. The list can be found in `updater.h`.
+        type: string
+
   unhandled_subscription_plan_interval:
     type: event
     lifetime: ping

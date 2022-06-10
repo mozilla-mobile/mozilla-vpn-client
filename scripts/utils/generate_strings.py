@@ -323,7 +323,9 @@ class L18nStrings final : public QQmlPropertyMap {
   ~L18nStrings() = default;
 
   void retranslate();
-
+  
+  const char* id(L18nStrings::String) const;
+  
   QString t(String) const;
 
  private:

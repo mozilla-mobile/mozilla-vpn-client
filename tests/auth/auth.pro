@@ -69,6 +69,7 @@ HEADERS += \
     ../../src/tasks/function/taskfunction.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
+    ../../src/update/webupdater.h \
     ../../src/urlopener.h \
     testemailvalidation.h \
     testpasswordvalidation.h \
@@ -107,6 +108,7 @@ SOURCES += \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
+    ../../src/update/webupdater.cpp \
     ../../src/urlopener.cpp \
     main.cpp \
     testemailvalidation.cpp \

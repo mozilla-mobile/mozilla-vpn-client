@@ -80,6 +80,7 @@ VPNServerUnavailablePopup 0.1 VPNServerUnavailablePopup.qml
 VPNSettingsItem 0.1 VPNSettingsItem.qml
 VPNSettingsToggle 0.1 VPNSettingsToggle.qml
 VPNSignOut 0.1 VPNSignOut.qml
+VPNSimplePopup 0.1 VPNSimplePopup.qml
 VPNStackView 0.1 VPNStackView.qml
 VPNSubscriptionOption 0.1 VPNSubscriptionOption.qml
 VPNSubtitle 0.1 VPNSubtitle.qml

@@ -115,16 +115,6 @@ FEATURE_SIMPLE(inAppPurchase,      // Feature ID
                QStringList(),      // feature dependencies
                FeatureCallback_iosOrAndroid)
 
-#ifdef MVPN_IOS
-FEATURE_SIMPLE(iosKillswitch,      // Feature ID
-               "iOS Kill Switch",  // Feature name
-               "2.8",              // released
-               true,               // Can be flipped on
-               false,              // Can be flipped off
-               QStringList(),      // feature dependencies
-               FeatureCallback_true)
-#endif
-
 FEATURE_SIMPLE(lanAccess,                    // Feature ID
                "Local area network access",  // Feature name
                "2.2",                        // released

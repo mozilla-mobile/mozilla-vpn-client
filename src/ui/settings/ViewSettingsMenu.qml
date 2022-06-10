@@ -50,7 +50,6 @@ VPNFlickable {
                 property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
                 _iconButtonImageSource: subscriptionManagementEnabled
                     ? "qrc:/nebula/resources/chevron.svg"
-                    // TODO: Show a loading indicator for VPNProfileFlow.StateLoading
                     : "qrc:/nebula/resources/open-in-new.svg"
                 _iconButtonOnClicked: () => {                    
                     if (subscriptionManagementEnabled) {
@@ -186,6 +185,14 @@ VPNFlickable {
             // Only push the profile view if it’s not already in the stack
             if (profileViewNeeded && settingsStackView.currentItem.objectName !== "viewProfile") {
                 settingsStackView.push("qrc:/ui/settings/ViewProfile.qml");
+            }
+
+            // An error occurred during the profile flow. Let’s reset and return
+            // to the main settings view.
+            const hasError = VPNProfileFlow.state === VPNProfileFlow.StateError;
+            if (hasError) {
+                VPNProfileFlow.reset();
+                settingsStackView.pop();
             }
         }
     }

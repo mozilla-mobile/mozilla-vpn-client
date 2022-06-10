@@ -11,9 +11,62 @@
 #include "settingsholder.h"
 #include "urlopener.h"
 
+#include <QtMath>
+
 namespace {
 Logger logger(LOG_MAIN, "WebSocketHandler");
 }  // namespace
+
+ExponentialBackoffStrategy::ExponentialBackoffStrategy() {
+  MVPN_COUNT_CTOR(ExponentialBackoffStrategy);
+
+  connect(&m_retryTimer, &QTimer::timeout, this,
+          &ExponentialBackoffStrategy::executeNextAttempt);
+  m_retryTimer.setSingleShot(true);
+}
+
+#ifdef UNIT_TEST
+void ExponentialBackoffStrategy::testOverrideBaseRetryInterval(
+    int newInterval) {
+  m_baseInterval = newInterval;
+}
+
+void ExponentialBackoffStrategy::testOverrideMaxRetryInterval(int newInterval) {
+  m_maxInterval = newInterval;
+}
+#endif
+
+/**
+ * @brief Schedules the next attempt to execute a given function.
+ *
+ * Everytime a new attempt is scheduled the interval will be exponentially
+ * larger.
+ *
+ * @returns The interval until the next attempt is executed, in milliseconds.
+ */
+int ExponentialBackoffStrategy::scheduleNextAttempt() {
+  int retryInterval = qPow(m_baseInterval, m_retryCounter);
+// Outside of tests we assume m_baseInterval is in seconds, not
+// milliseconds. In testing mode, that would make wait times too long,
+// se we assume intervals are in milliseconds and no transformation is needed.
+#ifndef UNIT_TEST
+  retryInterval *= 1000;
+#endif
+  if (retryInterval < m_maxInterval) {
+    m_retryCounter++;
+  }
+  m_retryTimer.start(retryInterval);
+  return retryInterval;
+}
+
+/**
+ * @brief Stops the timer for an ongoing execution attempt, if any. Resets the
+ * interval to base interval.
+ */
+void ExponentialBackoffStrategy::reset() {
+  m_retryTimer.stop();
+  m_retryCounter = 1;
+}
 
 WebSocketHandler::WebSocketHandler() {
   MVPN_COUNT_CTOR(WebSocketHandler);
@@ -29,8 +82,10 @@ WebSocketHandler::WebSocketHandler() {
 
   connect(&m_pingTimer, &QTimer::timeout, this,
           &WebSocketHandler::onPingTimeout);
-
   m_pingTimer.setSingleShot(true);
+
+  connect(&m_backoffStrategy, &ExponentialBackoffStrategy::executeNextAttempt,
+          this, &WebSocketHandler::open);
 }
 
 // static
@@ -70,8 +125,8 @@ void WebSocketHandler::testOverridePingInterval(int newInterval) {
   m_pingInterval = newInterval;
 }
 
-void WebSocketHandler::testOverrideRetryInterval(int newInterval) {
-  m_retryInterval = newInterval;
+void WebSocketHandler::testOverrideBaseRetryInterval(int newInterval) {
+  m_backoffStrategy.testOverrideBaseRetryInterval(newInterval);
 }
 #endif
 
@@ -134,6 +189,8 @@ void WebSocketHandler::open() {
 void WebSocketHandler::onConnected() {
   logger.debug() << "WebSocket connected";
 
+  m_backoffStrategy.reset();
+
   connect(&m_webSocket, &QWebSocket::textMessageReceived, this,
           &WebSocketHandler::onMessageReceived);
 
@@ -146,13 +203,6 @@ void WebSocketHandler::onConnected() {
  * No-op in case the connection is already closed.
  */
 void WebSocketHandler::close() {
-  if (m_webSocket.state() == QAbstractSocket::UnconnectedState ||
-      m_webSocket.state() == QAbstractSocket::ClosingState) {
-    logger.debug()
-        << "Attempted to close a WebSocket, but it's already closed.";
-    return;
-  }
-
   logger.debug() << "Closing WebSocket";
   m_webSocket.close();
 }
@@ -167,11 +217,10 @@ void WebSocketHandler::onClose() {
   logger.debug() << "WebSocket closed";
 
   if (isUserAuthenticated()) {
+    int nextAttemptIn = m_backoffStrategy.scheduleNextAttempt();
     logger.debug()
-        << "User is authenticated. Attempting to reopen WebSocket in:"
-        << m_retryInterval;
-
-    QTimer::singleShot(m_retryInterval, this, &WebSocketHandler::open);
+        << "User is authenticated. Will attempt to reopen websocket in:"
+        << nextAttemptIn;
   } else {
     logger.debug()
         << "User is not authenticated. Will not attempt to reopen WebSocket.";
@@ -222,7 +271,7 @@ void WebSocketHandler::onPingTimeout() {
  * @brief Ackowledges there was a WebSocket error.
  *
  * Closes the websocket, is the user is authenticated a new connection attempt
- * will be triggered after WEBSOCKET_RETRY_INTERVAL.
+ * will be triggered after WEBSOCKET_RETRY_INTERVAL_MSEC.
  */
 void WebSocketHandler::onError(QAbstractSocket::SocketError error) {
   logger.debug() << "WebSocket error:" << error;
