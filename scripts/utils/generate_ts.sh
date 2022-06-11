@@ -22,7 +22,7 @@ cp scripts/utils/generate_strings.py cache || die
 print G "done."
 
 printn Y "Generating strings... "
-python cache/generate_strings.py -o translations/generated
+python cache/generate_strings.py translations/strings.yaml -o translations/generated
 print G "done."
 
 printn Y "Generating a dummy PRO file... "

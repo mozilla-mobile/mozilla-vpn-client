@@ -154,9 +154,9 @@ class L18nStrings final : public QQmlPropertyMap {
   ~L18nStrings() = default;
 
   void retranslate();
-  
+
   const char* id(L18nStrings::String) const;
-  
+
   QString t(String) const;
 
  private:
@@ -218,7 +218,7 @@ const char* const L18nStrings::_ids[] = {
 if __name__ == "__main__":
     # Parse arguments to locate the input and output files.
     parser = argparse.ArgumentParser(
-        description="Generate internationaliation strings database from a YAML source"
+        description="Generate internationalization strings database from a YAML source"
     )
     parser.add_argument(
         "source",
