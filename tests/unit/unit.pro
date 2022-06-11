@@ -133,6 +133,7 @@ HEADERS += \
     ../../src/urlopener.h \
     ../../src/websockethandler.h \
     helper.h \
+    testaddon.h \
     testadjust.h \
     testandroidmigration.h \
     testcommandlineparser.h \
@@ -249,6 +250,7 @@ SOURCES += \
     mocinspectorhandler.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
+    testaddon.cpp \
     testadjust.cpp \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \
