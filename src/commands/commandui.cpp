@@ -196,7 +196,6 @@ int CommandUI::run(QStringList& tokens) {
     ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
     Glean::Initialize(engine);
-
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
     L18nStrings::initialize();

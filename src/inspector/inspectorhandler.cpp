@@ -763,7 +763,8 @@ static QList<InspectorCommand> s_commands{
           return obj;
         }},
 #ifdef MVPN_ANDROID
-    InspectorCommand{"dm", "Send a request to the Daemon {type} {args}", 2,
+    InspectorCommand{"android_daemon",
+                     "Send a request to the Daemon {type} {args}", 2,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        auto activity = AndroidVPNActivity::instance();
                        Q_ASSERT(activity);

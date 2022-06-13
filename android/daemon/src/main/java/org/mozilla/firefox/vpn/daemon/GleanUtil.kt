@@ -1,7 +1,10 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 package org.mozilla.firefox.vpn.daemon
 
 import android.content.Context
-import android.util.Log
 import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
@@ -33,7 +36,6 @@ class GleanUtil(aParent: Context) {
         val conf = Configuration(Configuration.DEFAULT_TELEMETRY_ENDPOINT, channel, 500, HttpURLConnectionUploader())
         val build = BuildInfo("versionCode", "VersionName", Calendar.getInstance())
         Glean.registerPings(Pings)
-        Log.e("ANDROID-GLEAN", "initializeGlean on:$gleanEnabled, ch:$channel ")
         Glean.initialize(
             applicationContext = mParent.applicationContext,
             uploadEnabled = gleanEnabled,
@@ -44,7 +46,6 @@ class GleanUtil(aParent: Context) {
     }
 
     fun setGleanUploadEnabled(upload: Boolean) {
-        Log.e("ANDROID-GLEAN", "setGleanUploadEnabled  $upload")
         Prefs.get(mParent).edit().apply {
             putBoolean("glean_enabled", upload)
             apply()
@@ -61,7 +62,6 @@ class GleanUtil(aParent: Context) {
     }
 
     fun sendGleanMainPing() {
-        Log.e("ANDROID-GLEAN", "sendGleanPings ")
         Pings.main.submit()
     }
     fun recordEvent(event: JSONObject) {
@@ -74,17 +74,14 @@ class GleanUtil(aParent: Context) {
 
     @Suppress("UNCHECKED_CAST") // We're using nullable casting and check that :)
     fun recordGleanEvent(sampleName: String) {
-        Log.e("ANDROID-GLEAN", "recordGleanEvent $sampleName")
         val sample = getSample(sampleName) as? EventMetricType<NoExtraKeys, NoExtras>
         if (sample == null) {
-            Log.e("ANDROID-GLEAN", "Ping not found $sampleName")
             return
         }
         sample.record(NoExtras())
     }
     @Suppress("UNCHECKED_CAST") // We're using nullable casting and check that :)
     fun recordGleanEventWithExtraKeys(sampleName: String, extraKeysJson: String) {
-        Log.e("ANDROID-GLEAN", "recordGleanEventWithExtraKeys $sampleName / $extraKeysJson")
         val sample = getSample(sampleName) as? EventMetricType<*, EventExtras>
         val extra = getExtra(sampleName, extraKeysJson)
         if (sample == null) {

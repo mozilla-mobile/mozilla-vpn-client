@@ -26,10 +26,10 @@ class AndroidGlean final : public QObject {
 
   void daemonConnected();
 
-  static void initialize(QQmlEngine* e);
+  static void initialize(QQmlEngine* engine);
 
  private:
-  AndroidGlean(QObject* parent);
+  explicit AndroidGlean(QObject* parent);
   ~AndroidGlean();
 };
 

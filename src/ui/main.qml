@@ -348,7 +348,7 @@ Window {
         }
 
         function onRecordGleanEvent(sample) {
-            console.debug("recording Glean event" + sample);
+            console.debug("recording Glean event");
             Sample[sample].record();
         }
 

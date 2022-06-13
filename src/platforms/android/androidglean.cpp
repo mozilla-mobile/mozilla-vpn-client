@@ -32,12 +32,13 @@ Logger logger(LOG_ANDROID, "AndroidGlean");
 }  // namespace
 
 // static
-void AndroidGlean::initialize(QQmlEngine* e) {
+void AndroidGlean::initialize(QQmlEngine* engine) {
   if (!s_instance) {
     Q_ASSERT(qApp);
     s_instance = new AndroidGlean(qApp);
   }
-  auto glean_db_path = e->offlineStorageDatabaseFilePath("Glean") + ".sqlite";
+  auto glean_db_path =
+      engine->offlineStorageDatabaseFilePath("Glean") + ".sqlite";
   auto gleanDB = QFileInfo(glean_db_path);
   if (gleanDB.exists()) {
     QFile::remove(glean_db_path);
