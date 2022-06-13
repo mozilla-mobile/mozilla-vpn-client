@@ -19,6 +19,9 @@ const fs = require('fs');
 const {execSync, spawn} = require('child_process');
 const vpn = require('./helper.js');
 
+const fxa = require('./fxa.js');
+const guardian = require('./guardian.js');
+
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;
 let stdErr = '';
@@ -46,6 +49,17 @@ exports.mochaHooks = {
       console.error(`stderr: ${stderr}`);
       process.exit(1);
     }
+
+    process.env['MVPN_API_BASE_URL'] = `http://localhost:${guardian.start()}`;
+    process.env['MVPN_FXA_API_BASE_URL'] = `http://localhost:${fxa.start()}`;
+  },
+
+  async afterAll() {
+    guardian.stop();
+    fxa.stop();
+
+    guardian.throwExceptionsIfAny();
+    fxa.throwExceptionsIfAny();
   },
 
   async beforeEach() {
