@@ -49,12 +49,6 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
 
 // static
 Tutorial* Tutorial::create(QObject* parent, const QJsonObject& obj) {
-  QJsonObject conditions = obj["conditions"].toObject();
-  if (!Guide::evaluateConditions(conditions)) {
-    logger.info() << "Exclude the tutorial because conditions do not match";
-    return nullptr;
-  }
-
   QString tutorialId = obj["id"].toString();
   if (tutorialId.isEmpty()) {
     logger.warning() << "Empty ID for tutorial";

@@ -19,6 +19,9 @@
       "type": "string",
       "description": "The type of the addon: tutorial, guide, i18n"
     },
+    "conditions": {
+      "$ref": "conditions.json"
+    },
     "tutorial": {
       "$ref": "tutorial.json#"
     },
