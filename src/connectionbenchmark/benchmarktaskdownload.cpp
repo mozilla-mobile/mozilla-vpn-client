@@ -50,12 +50,13 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
 #error Check if QT added support for QDnsLookup::lookup() on Android
 #  endif
 
-// Since QDnsLookup::lookup() is not supported on Android we expect it to fail
-// and can save us calling the method
 #ifdef MVPN_ANDROID
-  handleFailedDnsLookup();
+    NetworkRequest* request =
+        NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
+    connectNetworkRequest(request);
+    m_elapsedTimer.start();
 #else
-  m_dnsLookup.lookup();
+    m_dnsLookup.lookup();
 #endif
   } else if (state == BenchmarkTask::StateInactive) {
     for (NetworkRequest* request : m_requests) {
@@ -82,16 +83,6 @@ void BenchmarkTaskDownload::connectNetworkRequest(NetworkRequest* request) {
   m_requests.append(request);
 }
 
-void BenchmarkTaskDownload::handleFailedDnsLookup() {
-  logger.debug() << "Handle failed DNS lookup" << m_fileUrl.toString();
-
-  NetworkRequest* request =
-      NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
-  connectNetworkRequest(request);
-
-  m_elapsedTimer.start();
-}
-
 void BenchmarkTaskDownload::dnsLookupFinished() {
   auto guard = qScopeGuard([&] {
     emit finished(0, true);
@@ -104,7 +95,6 @@ void BenchmarkTaskDownload::dnsLookupFinished() {
   }
   if (m_dnsLookup.error() != QDnsLookup::NoError) {
     logger.error() << "DNS Lookup Failed:" << m_dnsLookup.errorString();
-    handleFailedDnsLookup();
     guard.dismiss();
     return;
   }

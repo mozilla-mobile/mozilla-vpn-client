@@ -31,7 +31,6 @@ class BenchmarkTaskDownload final : public BenchmarkTask {
   void downloadProgressed(qint64 bytesReceived, qint64 bytesTotal,
                           QNetworkReply* reply);
   void downloadReady(QNetworkReply::NetworkError error, const QByteArray& data);
-  void handleFailedDnsLookup();
   void handleState(BenchmarkTask::State state);
 
  private:
