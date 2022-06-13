@@ -67,7 +67,7 @@ void BenchmarkTaskDownload::connectNetworkRequest(NetworkRequest* request) {
             downloadReady(QNetworkReply::NoError, data);
           });
 
-  logger.debug() << "Starting request:" << (void*)request;
+  logger.debug() << "Starting request";
   m_requests.append(request);
 }
 
