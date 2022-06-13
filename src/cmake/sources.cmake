@@ -8,10 +8,18 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # VPN Client source files
 target_sources(mozillavpn PRIVATE
-    addon.cpp
-    addon.h
     addonmanager.cpp
     addonmanager.h
+    addons/addon.cpp
+    addons/addon.h
+    addons/addondemo.cpp
+    addons/addondemo.h
+    addons/addonguide.cpp
+    addons/addonguide.h
+    addons/addoni18n.cpp
+    addons/addoni18n.h
+    addons/addontutorial.cpp
+    addons/addontutorial.h
     appimageprovider.h
     applistprovider.h
     apppermission.cpp
@@ -241,6 +249,10 @@ target_sources(mozillavpn PRIVATE
     tasks/account/taskaccount.h
     tasks/adddevice/taskadddevice.cpp
     tasks/adddevice/taskadddevice.h
+    tasks/addon/taskaddon.cpp
+    tasks/addon/taskaddon.h
+    tasks/addonindex/taskaddonindex.cpp
+    tasks/addonindex/taskaddonindex.h
     tasks/authenticate/taskauthenticate.cpp
     tasks/authenticate/taskauthenticate.h
     tasks/captiveportallookup/taskcaptiveportallookup.cpp
@@ -283,6 +295,8 @@ target_sources(mozillavpn PRIVATE
     update/updater.h
     update/versionapi.cpp
     update/versionapi.h
+    update/webupdater.cpp
+    update/webupdater.h
     urlopener.cpp
     urlopener.h
     websockethandler.cpp
@@ -291,10 +305,8 @@ target_sources(mozillavpn PRIVATE
 
 # VPN Client UI resources
 target_sources(mozillavpn PRIVATE
-    ui/guides.qrc
     ui/license.qrc
     ui/resources.qrc
-    ui/tutorials.qrc
     ui/ui.qrc
     resources/certs/certs.qrc
 )

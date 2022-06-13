@@ -9,6 +9,7 @@
 #include <QAbstractListModel>
 
 class Guide;
+class QJsonObject;
 
 class GuideModel final : public QAbstractListModel {
   Q_OBJECT
@@ -33,6 +34,10 @@ class GuideModel final : public QAbstractListModel {
 
   QStringList guideTitleIds() const;
 
+  bool createFromJson(const QString& addonId, const QJsonObject& obj);
+
+  void remove(const QString& addonId);
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
@@ -44,9 +49,11 @@ class GuideModel final : public QAbstractListModel {
  private:
   explicit GuideModel(QObject* parent);
 
-  void initialize();
-
-  QList<Guide*> m_guides;
+  struct GuideData {
+    QString m_addonId;
+    Guide* m_guide;
+  };
+  QList<GuideData> m_guides;
 };
 
 #endif  // GUIDEMODEL_H

@@ -329,6 +329,14 @@ SETTING_BOOL(telemetryPolicyShown,     // getter
              false                     // remove when reset
 )
 
+SETTING_BOOL(tipsAndTricksIntroShown,     // getter
+             setTipsAndTricksIntroShown,  // setter
+             hasTipsAndTricksIntroShown,  // has
+             "tipsAndTricksIntroShown",   // key
+             false,                       // default value
+             false                        // remove when reset
+)
+
 SETTING_STRING(token,     // getter
                setToken,  // setter
                hasToken,  // has

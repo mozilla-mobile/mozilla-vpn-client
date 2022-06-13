@@ -247,7 +247,8 @@ whatsNewReleaseNotes:
   connectionInfoDisplayName: Test your speed
   connectionInfoDescription: You can now run speed tests in Mozilla VPN! Select the performance icon in the top left corner of your screen to test your connection speed while using VPN.
   connectionInfoDescriptionShort: You can now run speed tests within the VPN to check your connection speed.
-
+  easyProfileDisplayName: Easier-to-use profile
+  easyProfileDescription: Now accessible from the VPN app, users can view their personal information, subscription summary and payment information within the subscription profile page.
 
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
@@ -541,6 +542,9 @@ inAppAuth:
   termsOfServiceAndPrivacyDisclaimer:
     value: By continuing, you agree to the <a href="terms-of-service">Terms of Service</a> and the <a href="privacy-notice">Privacy Notice</a>.
     comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
+  emailTokenResentAlert:
+    value: We’ve resent your code to your email.
+    comment: User has requested to send a new email containing the 6-digit pin to confirm their email address.
 
 deleteAccount:
   authSubheadline: To delete your VPN account, please sign in with your Firefox account password.
@@ -587,13 +591,12 @@ freeTrials:
 
 tipsAndTricks:
   settingsEntryLabel: VPN tips and tricks
-  tutorialLabel: Tutorial
-  featureTourLabel: Feature tour
-  whatsNewTitle: What’s new?
-  whatsNewDescription: We’ve added new features. Take a tour to get a deeper dive into what we’ve added for you!
+  featureTourCardTitle: Tour the VPN
+  featureTourCardDescription: Take a tour of Mozilla VPN to learn how the latest features help you protect your online privacy.
   quickTipsTitle: Quick tips
   quickTipsDescription: Let us help you get the most out of Mozilla VPN
   quickTipsGuideViewTitle: Quick tip
+  introModalDescription: Here’s a great list of useful tips and tricks to get the best out of your Mozilla VPN experience. Check it out now or find it anytime in the settings.
 
 global:
   expand:
@@ -605,3 +608,10 @@ global:
   vpnUser: 
     value: VPN User
     comment: Fallback string for users who have not specified a Display Name.
+  discoverNow: 
+    value: Discover now
+    comment: Label for button used in intro modals to discover new features.
+  goBack:
+    value: Go back
+    comment: Label for button used in intro modals to return to the app.
+    

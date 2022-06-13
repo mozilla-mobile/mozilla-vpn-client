@@ -61,13 +61,9 @@ jobs:
           export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           python scripts/ci/check_qrc.py
 
-      - name: Check for guide JSON syntax
+      - name: Check for addons JSON syntax
         run: |
-          python scripts/ci/check_jsonschema.py guide.json src/ui/guides
-
-      - name: Check for tutorial JSON syntax
-        run: |
-          python scripts/ci/check_jsonschema.py tutorial.json src/ui/tutorials
+          python scripts/ci/check_jsonschema.py addon.json addons/*/manifest.json
 
       - name: Check for issues with clang-format
         uses: DoozyX/clang-format-lint-action@v0.11
@@ -94,6 +90,8 @@ jobs:
   taskgraph:
     name: Test Taskgraph Definition
     runs-on: ubuntu-latest
+    env:
+      TASKCLUSTER_ROOT_URL: https://firefox-ci-tc.services.mozilla.com/
     steps:
       - name: Clone repo
         uses: actions/checkout@master
@@ -102,16 +100,16 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip3 install -r requirements.txt
-          pip3 install taskcluster-taskgraph==1.1.7 
+          pip3 install -r taskcluster/requirements.txt
       - name: Test main-push
         run: |
-          taskgraph full --p taskcluster/test/params/main-push.yml 
+          taskgraph full --p taskcluster/test/params/main-push.yml
       - name: Test pull-request
         run: |
           taskgraph full --p taskcluster/test/params/pull-request.yml
       - name: Test release-push
         run: |
-          taskgraph full --p taskcluster/test/params/release-push.yml           
+          taskgraph full --p taskcluster/test/params/release-push.yml
       - name: Test default parameters
         run: |
           taskgraph full

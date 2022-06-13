@@ -42,6 +42,12 @@ include($$PWD/../../translations/translations.pri)
 RESOURCES ~= 's/.*servers.qrc//g'
 
 HEADERS += \
+    ../../src/addonmanager.h \
+    ../../src/addons/addon.h \
+    ../../src/addons/addondemo.h \
+    ../../src/addons/addonguide.h \
+    ../../src/addons/addoni18n.h \
+    ../../src/addons/addontutorial.h \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/captiveportal/captiveportal.h \
@@ -113,6 +119,7 @@ HEADERS += \
     ../../src/task.h \
     ../../src/tasks/account/taskaccount.h \
     ../../src/tasks/adddevice/taskadddevice.h \
+    ../../src/tasks/addon/taskaddon.h \
     ../../src/tasks/ipfinder/taskipfinder.h \
     ../../src/tasks/function/taskfunction.h \
     ../../src/tasks/release/taskrelease.h \
@@ -122,6 +129,7 @@ HEADERS += \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
+    ../../src/update/webupdater.h \
     ../../src/urlopener.h \
     ../../src/websockethandler.h \
     helper.h \
@@ -149,6 +157,12 @@ HEADERS += \
     testwebsockethandler.h
 
 SOURCES += \
+    ../../src/addonmanager.cpp \
+    ../../src/addons/addon.cpp \
+    ../../src/addons/addondemo.cpp \
+    ../../src/addons/addonguide.cpp \
+    ../../src/addons/addoni18n.cpp \
+    ../../src/addons/addontutorial.cpp \
     ../../src/adjust/adjustfiltering.cpp \
     ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
@@ -217,6 +231,7 @@ SOURCES += \
     ../../src/statusicon.cpp \
     ../../src/tasks/account/taskaccount.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
+    ../../src/tasks/addon/taskaddon.cpp \
     ../../src/tasks/ipfinder/taskipfinder.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/tasks/release/taskrelease.cpp \
@@ -226,6 +241,7 @@ SOURCES += \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
+    ../../src/update/webupdater.cpp \
     ../../src/urlopener.cpp \
     ../../src/websockethandler.cpp \
     main.cpp \

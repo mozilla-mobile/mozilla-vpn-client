@@ -57,20 +57,22 @@ VPNFlickable {
                         height: parent.height
 
                         imageSrc: highlightedTutorial.image
-                        title: VPNl18n[highlightedTutorial.titleId]
-                        description: VPNl18n[highlightedTutorial.subtitleId]
+                        title: qsTrId(highlightedTutorial.titleId)
+                        description: qsTrId(highlightedTutorial.subtitleId)
                     }
                 }
 
                 VPNTutorialCard {
+                    objectName: "featureTourCard"
+
                     width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
                     height: VPNTheme.theme.tutorialCardHeight
 
                     imageSrc: "qrc:/ui/resources/sparkling-check.svg"
                     imageBgColor: "#2B2A33"
-                    cardTypeText: VPNl18n.TipsAndTricksFeatureTourLabel
-                    title: VPNl18n.TipsAndTricksWhatsNewTitle
-                    description: VPNl18n.TipsAndTricksWhatsNewDescription
+                    title: VPNl18n.TipsAndTricksFeatureTourCardTitle
+                    description: VPNl18n.TipsAndTricksFeatureTourCardDescription
+                    onClicked: featureTourPopup.startTour();
                 }
             }
 
@@ -124,7 +126,7 @@ VPNFlickable {
                                 width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? (parent.width - parent.spacing) / 2 : (parent.width - (parent.spacing * 2)) / 3
 
                                 imageSrc: guide.image
-                                title: VPNl18n[guide.titleId]
+                                title: qsTrId(guide.titleId)
 
                                 onClicked: mainStackView.push("qrc:/ui/settings/ViewGuide.qml", {"guide": guide, "imageBgColor": imageBgColor})
                             }
@@ -151,8 +153,8 @@ VPNFlickable {
                             height: VPNTheme.theme.tutorialCardHeight
 
                             imageSrc: tutorial.image
-                            title: VPNl18n[tutorial.titleId]
-                            description: VPNl18n[tutorial.subtitleId]
+                            title: qsTrId(tutorial.titleId)
+                            description: qsTrId(tutorial.subtitleId)
                         }
                     }
                 }
@@ -162,8 +164,8 @@ VPNFlickable {
                     id: highlightedTutorialExcludedModel
                     source: VPNTutorial
                     filterCallback: obj => {
-                       return !obj.tutorial.highlighted;
-                    }
+                                        return !obj.tutorial.highlighted;
+                                    }
                 }
             }
 

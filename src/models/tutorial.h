@@ -7,6 +7,7 @@
 
 #include "itempicker.h"
 
+class QJsonObject;
 class TutorialStep;
 
 class Tutorial final : public ItemPicker {
@@ -21,6 +22,7 @@ class Tutorial final : public ItemPicker {
   ~Tutorial();
 
   static Tutorial* create(QObject* parent, const QString& fileName);
+  static Tutorial* create(QObject* parent, const QJsonObject& obj);
 
   void play(const QStringList& allowedItems);
   void stop();

@@ -54,6 +54,7 @@ exports.mochaHooks = {
       console.log('Retrieving the setting file...');
       await startAndConnect();
       await vpn.hardReset();
+      await vpn.setSetting('tips-and-tricks-intro-shown', 'true')
       await vpn.authenticateInApp(true, true);
 
       const fileName = await vpn.settingsFileName();
@@ -79,6 +80,7 @@ exports.mochaHooks = {
 
       await startAndConnect();
       await vpn.hardReset();
+      await vpn.setSetting('tips-and-tricks-intro-shown', 'true')
     }
 
     await startAndConnect();

@@ -196,6 +196,18 @@ static QList<InspectorSettingCommand> s_settingCommands{
                                                                     : "false";
         }},
 
+    // tips-and-tricks-intro-shown
+    InspectorSettingCommand{
+        "tips-and-tricks-intro-shown", InspectorSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setTipsAndTricksIntroShown(value ==
+                                                                 "true");
+        },
+        []() {
+          return SettingsHolder::instance()->tipsAndTricksIntroShown()
+                     ? "true"
+                     : "false";
+        }},
 };
 
 struct InspectorCommand {
@@ -670,6 +682,25 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
+    InspectorCommand{
+        "feature_tour_features",
+        "Returns a list of feature id's present in the feature tour", 0,
+        [](InspectorHandler*, const QList<QByteArray>&) {
+          QJsonObject obj;
+
+          WhatsNewModel* whatsNewModel =
+              MozillaVPN::instance()->whatsNewModel();
+          Q_ASSERT(whatsNewModel);
+
+          QJsonArray featureIds;
+          for (const QString& featureId : whatsNewModel->featureIds()) {
+            featureIds.append(featureId);
+          }
+
+          obj["value"] = featureIds;
+          return obj;
+        }},
+
     InspectorCommand{"translate", "Translate a string", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
@@ -889,23 +920,20 @@ static QList<InspectorCommand> s_commands{
                        return QJsonObject();
                      }},
 
-    InspectorCommand{"load_addon", "Load an addon", 1,
+    InspectorCommand{"load_addon_manifest", "Load an add-on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
-                       obj["value"] =
-                           AddonManager::instance()->load(arguments[1]);
+                       // This is a debugging method. We don't need to compute
+                       // the hash of the addon because we will not be able to
+                       // find it in the addon index.
+                       obj["value"] = AddonManager::instance()->loadManifest(
+                           arguments[1], "INVALID SHA256");
                        return obj;
                      }},
 
-    InspectorCommand{"unload_addon", "Load an addon", 1,
+    InspectorCommand{"unload_addon", "Unload an add-on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        AddonManager::instance()->unload(arguments[1]);
-                       return QJsonObject();
-                     }},
-
-    InspectorCommand{"run_addon", "Load an addon", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       AddonManager::instance()->run(arguments[1]);
                        return QJsonObject();
                      }},
 };

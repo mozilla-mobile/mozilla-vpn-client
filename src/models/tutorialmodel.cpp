@@ -25,22 +25,44 @@ TutorialModel* TutorialModel::instance() {
 }
 
 TutorialModel::TutorialModel(QObject* parent) : QAbstractListModel(parent) {
+  logger.debug() << "create";
   MVPN_COUNT_CTOR(TutorialModel);
-  initialize();
 }
 
 TutorialModel::~TutorialModel() { MVPN_COUNT_DTOR(TutorialModel); }
 
-void TutorialModel::initialize() {
-  QDir dir(":/tutorials");
-  QStringList files = dir.entryList();
-  files.sort();
-  for (const QString& file : files) {
-    if (file.endsWith(".json")) {
-      Tutorial* tutorial = Tutorial::create(this, dir.filePath(file));
-      if (tutorial) {
-        m_tutorials.append(tutorial);
+bool TutorialModel::createFromJson(const QString& addonId,
+                                   const QJsonObject& obj) {
+  logger.debug() << "Creation from json";
+
+  Tutorial* tutorial = Tutorial::create(this, obj);
+  if (tutorial) {
+    beginResetModel();
+    m_tutorials.append({addonId, tutorial});
+    endResetModel();
+
+    if (tutorial->highlighted()) {
+      emit highlightedTutorialChanged();
+    }
+    return true;
+  }
+
+  return false;
+}
+
+void TutorialModel::remove(const QString& addonId) {
+  for (auto i = m_tutorials.begin(); i != m_tutorials.end(); ++i) {
+    if (i->m_addonId == addonId) {
+      bool wasHighlighted = i->m_tutorial->highlighted();
+
+      beginResetModel();
+      m_tutorials.erase(i);
+      endResetModel();
+
+      if (wasHighlighted) {
+        emit highlightedTutorialChanged();
       }
+      break;
     }
   }
 }
@@ -62,7 +84,7 @@ QVariant TutorialModel::data(const QModelIndex& index, int role) const {
 
   switch (role) {
     case TutorialRole:
-      return QVariant::fromValue(m_tutorials.at(index.row()));
+      return QVariant::fromValue(m_tutorials.at(index.row()).m_tutorial);
 
     default:
       return QVariant();
@@ -120,9 +142,9 @@ void TutorialModel::requireTooltipShown(Tutorial* tutorial, bool shown) {
 }
 
 Tutorial* TutorialModel::highlightedTutorial() const {
-  for (Tutorial* tutorial : m_tutorials) {
-    if (tutorial->highlighted()) {
-      return tutorial;
+  for (const TutorialData& tutorialData : m_tutorials) {
+    if (tutorialData.m_tutorial->highlighted()) {
+      return tutorialData.m_tutorial;
     }
   }
   return nullptr;
