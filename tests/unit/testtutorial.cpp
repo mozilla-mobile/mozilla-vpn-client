@@ -7,15 +7,9 @@
 #include "../../src/models/tutorialmodel.h"
 #include "../../src/qmlengineholder.h"
 #include "../../src/settingsholder.h"
-#include "../../translations/generated/l18nstrings.h"
 
 void TestTutorial::model() {
-  L18nStrings* l18nStrings = L18nStrings::instance();
-  l18nStrings->insert("TutorialDemoTitle", "title");
-  l18nStrings->insert("TutorialDemoSubtitle", "subtitle");
-  l18nStrings->insert("TutorialDemoCompletionMessage", "completion_message");
-  l18nStrings->insert("TutorialDemoStepS1", "wow1");
-  l18nStrings->insert("TutorialDemoStepS2", "wow2");
+  SettingsHolder settingsHolder;
 
   TutorialModel* mg = TutorialModel::instance();
   QVERIFY(!!mg);
@@ -23,6 +17,14 @@ void TestTutorial::model() {
   QHash<int, QByteArray> rn = mg->roleNames();
   QCOMPARE(rn.count(), 1);
   QCOMPARE(rn[TutorialModel::TutorialRole], "tutorial");
+
+  QCOMPARE(mg->rowCount(QModelIndex()), 0);
+
+  QFile tutorialFile(":/tutorials/01_demo.json");
+  QVERIFY(tutorialFile.open(QIODevice::ReadOnly | QIODevice::Text));
+  QJsonDocument json = QJsonDocument::fromJson(tutorialFile.readAll());
+  QVERIFY(json.isObject());
+  mg->createFromJson("test", json.object());
 
   QCOMPARE(mg->rowCount(QModelIndex()), 1);
   QCOMPARE(mg->data(QModelIndex(), TutorialModel::TutorialRole), QVariant());
@@ -33,75 +35,54 @@ void TestTutorial::model() {
 }
 
 void TestTutorial::create_data() {
-  QTest::addColumn<QStringList>("l18n");
+  QTest::addColumn<QString>("id");
   QTest::addColumn<QByteArray>("content");
   QTest::addColumn<bool>("created");
 
-  QTest::addRow("empty") << QStringList() << QByteArray("") << false;
-  QTest::addRow("non-object") << QStringList() << QByteArray("[]") << false;
-  QTest::addRow("object-without-id")
-      << QStringList() << QByteArray("{}") << false;
+  QTest::addRow("empty") << "" << QByteArray("") << false;
+  QTest::addRow("non-object") << "" << QByteArray("[]") << false;
+  QTest::addRow("object-without-id") << "" << QByteArray("{}") << false;
 
   QJsonObject obj;
   obj["id"] = "foo";
-  QTest::addRow("invalid-id")
-      << QStringList() << QJsonDocument(obj).toJson() << false;
-  QTest::addRow("no-image")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage"}
-      << QJsonDocument(obj).toJson() << false;
+  QTest::addRow("invalid-id") << "foo" << QJsonDocument(obj).toJson() << false;
+  QTest::addRow("no-image") << "foo" << QJsonDocument(obj).toJson() << false;
 
   obj["image"] = "foo.png";
-  QTest::addRow("no-steps")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage"}
-      << QJsonDocument(obj).toJson() << false;
+  QTest::addRow("no-steps") << "foo" << QJsonDocument(obj).toJson() << false;
 
   QJsonArray steps;
   obj["steps"] = steps;
-  QTest::addRow("with-steps")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage"}
-      << QJsonDocument(obj).toJson() << false;
+  QTest::addRow("with-steps") << "foo" << QJsonDocument(obj).toJson() << false;
 
   steps.append("");
   obj["steps"] = steps;
   QTest::addRow("with-invalid-step")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage"}
-      << QJsonDocument(obj).toJson() << false;
+      << "foo" << QJsonDocument(obj).toJson() << false;
 
   QJsonObject step;
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-without-id")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage"}
-      << QJsonDocument(obj).toJson() << false;
+      << "foo" << QJsonDocument(obj).toJson() << false;
 
   step["id"] = "s1";
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-without-element")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage"}
-      << QJsonDocument(obj).toJson() << false;
+      << "foo" << QJsonDocument(obj).toJson() << false;
 
   step["element"] = "wow";
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-without-next")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
-      << QJsonDocument(obj).toJson() << false;
+      << "foo" << QJsonDocument(obj).toJson() << false;
 
   step["next"] = "wow";
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-with-invalid-next")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
-      << QJsonDocument(obj).toJson() << false;
+      << "foo" << QJsonDocument(obj).toJson() << false;
 
   QJsonObject nextObj;
 
@@ -109,91 +90,68 @@ void TestTutorial::create_data() {
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-with-invalid-next-1")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
-      << QJsonDocument(obj).toJson() << false;
+      << "foo" << QJsonDocument(obj).toJson() << false;
 
   nextObj["op"] = "wow";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-with-invalid-next-2")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
-      << QJsonDocument(obj).toJson() << false;
+      << "foo" << QJsonDocument(obj).toJson() << false;
 
   nextObj["op"] = "signal";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-with-invalid-next-3")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
-      << QJsonDocument(obj).toJson() << false;
+      << "foo" << QJsonDocument(obj).toJson() << false;
 
   nextObj["signal"] = "a";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-with-invalid-next-4")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
-      << QJsonDocument(obj).toJson() << false;
+      << "foo" << QJsonDocument(obj).toJson() << false;
 
   nextObj["qml_emitter"] = "a";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-with-invalid-next-5")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
-      << QJsonDocument(obj).toJson() << true;
+      << "foo" << QJsonDocument(obj).toJson() << true;
 
   nextObj["vpn_emitter"] = "a";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-with-invalid-next-6")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
-      << QJsonDocument(obj).toJson() << false;
+      << "foo" << QJsonDocument(obj).toJson() << false;
 
   nextObj.remove("qml_emitter");
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-with-invalid-next-7")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
-      << QJsonDocument(obj).toJson() << false;
+      << "foo" << QJsonDocument(obj).toJson() << false;
 
   nextObj["vpn_emitter"] = "settingsHolder";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-with-invalid-next-8")
-      << QStringList{"TutorialFooTitle", "TutorialFooSubtitle",
-                     "TutorialFooCompletionMessage", "TutorialFooStepS1"}
-      << QJsonDocument(obj).toJson() << true;
+      << "foo" << QJsonDocument(obj).toJson() << true;
 
   obj["conditions"] = QJsonObject();
   QTest::addRow("with-step-element and conditions")
-      << QStringList{"GuideFooTitle", "GuideFooBlockA", "GuideFooBlockASub"}
-      << QJsonDocument(obj).toJson() << true;
+      << "foo" << QJsonDocument(obj).toJson() << true;
 }
 
 void TestTutorial::create() {
-  QFETCH(QStringList, l18n);
+  QFETCH(QString, id);
   QFETCH(QByteArray, content);
   QFETCH(bool, created);
 
   SettingsHolder settingsHolder;
-
-  L18nStrings* l18nStrings = L18nStrings::instance();
-  QVERIFY(!!l18nStrings);
-  for (const QString& s : l18n) {
-    l18nStrings->insert(s, "WOW!");
-  }
 
   QTemporaryFile file;
   QVERIFY(file.open());
@@ -212,14 +170,15 @@ void TestTutorial::create() {
   QVERIFY(!tm->isPlaying());
 
   QString tutorialTitleId = tutorial->property("titleId").toString();
-  QVERIFY(l18nStrings->contains(tutorialTitleId));
+  QCOMPARE(tutorialTitleId, QString("tutorial.%1.title").arg(id));
 
   QString tutorialSubtitleId = tutorial->property("subtitleId").toString();
-  QVERIFY(l18nStrings->contains(tutorialSubtitleId));
+  QCOMPARE(tutorialSubtitleId, QString("tutorial.%1.subtitle").arg(id));
 
   QString tutorialCompletionMessageId =
       tutorial->property("completionMessageId").toString();
-  QVERIFY(l18nStrings->contains(tutorialCompletionMessageId));
+  QCOMPARE(tutorialCompletionMessageId,
+           QString("tutorial.%1.completion_message").arg(id));
 
   QCOMPARE(tutorial->property("image").toString(), "foo.png");
 

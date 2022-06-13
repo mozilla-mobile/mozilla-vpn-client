@@ -30,9 +30,9 @@ FEATURE_SIMPLE(addon,            // Feature ID
                "Addon support",  // Feature name
                "2.9.0",          // released
                true,             // Can be flipped on
-               false,            // Can be flipped off
+               true,             // Can be flipped off
                QStringList(),    // feature dependencies
-               FeatureCallback_false)
+               FeatureCallback_true)
 
 FEATURE_SIMPLE(appReview,      // Feature ID
                "App Review",   // Feature name
@@ -114,16 +114,6 @@ FEATURE_SIMPLE(inAppPurchase,      // Feature ID
                false,              // Can be flipped off
                QStringList(),      // feature dependencies
                FeatureCallback_iosOrAndroid)
-
-#ifdef MVPN_IOS
-FEATURE_SIMPLE(iosKillswitch,      // Feature ID
-               "iOS Kill Switch",  // Feature name
-               "2.8",              // released
-               true,               // Can be flipped on
-               false,              // Can be flipped off
-               QStringList(),      // feature dependencies
-               FeatureCallback_true)
-#endif
 
 FEATURE_SIMPLE(lanAccess,                    // Feature ID
                "Local area network access",  // Feature name

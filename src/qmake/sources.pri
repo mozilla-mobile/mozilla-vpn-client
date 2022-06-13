@@ -3,8 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
-        addon.cpp \
         addonmanager.cpp \
+        addons/addon.cpp \
+        addons/addondemo.cpp \
+        addons/addonguide.cpp \
+        addons/addoni18n.cpp \
+        addons/addontutorial.cpp \
         apppermission.cpp \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
@@ -118,6 +122,8 @@ SOURCES += \
         statusicon.cpp \
         tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
+        tasks/addon/taskaddon.cpp \
+        tasks/addonindex/taskaddonindex.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/deleteaccount/taskdeleteaccount.cpp \
@@ -141,11 +147,16 @@ SOURCES += \
         update/updater.cpp \
         update/versionapi.cpp \
         urlopener.cpp \
+        update/webupdater.cpp \
         websockethandler.cpp
 
 HEADERS += \
-        addon.h \
         addonmanager.h \
+        addons/addon.h \
+        addons/addondemo.h \
+        addons/addonguide.h \
+        addons/addoni18n.h \
+        addons/addontutorial.h \
         appimageprovider.h \
         apppermission.h \
         applistprovider.h \
@@ -260,6 +271,8 @@ HEADERS += \
         task.h \
         tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \
+        tasks/addon/taskaddon.h \
+        tasks/addonindex/taskaddonindex.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/deleteaccount/taskdeleteaccount.h \
@@ -282,6 +295,7 @@ HEADERS += \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
+        update/webupdater.h \
         urlopener.h \
         websockethandler.h
 
@@ -295,5 +309,3 @@ RESOURCES += ui/resources.qrc
 RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
-RESOURCES += ui/guides.qrc
-RESOURCES += ui/tutorials.qrc

@@ -1,0 +1,51 @@
+name: Translations
+
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+  pull_request:
+    branches:
+      - main
+      - 'releases/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  translations:
+    name: Translations
+    runs-on: ubuntu-latest
+    env:
+      QTVERSION: 6.2.4
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+
+      - name: Install Qt
+        run: |
+          python3 -m pip install aqtinstall
+          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
+
+      - name: Install python dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Generating translations
+        run: |
+          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
+          ./scripts/utils/generate_ts.sh
+
+      - name: Uploading
+        uses: actions/upload-artifact@v3
+        with:
+            name: Translation files
+            path: |
+              translations.ts
+              addon_ts/*.ts

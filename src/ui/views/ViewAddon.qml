@@ -35,15 +35,6 @@ Item {
         anchors.topMargin: VPNTheme.theme.windowMargin
         anchors.top: menu.bottom
 
-        source: "qrc" + parent.addon.qml
-    }
-
-    Connections {
-        target: VPNAddonManager
-        function onUnloadAddon(addonId) {
-            if (addonId === addon.id) {
-                return mainStackView.pop(addonWrapper, StackView.Immediate);
-            }
-        }
+        source: parent.addon.qml
     }
 }

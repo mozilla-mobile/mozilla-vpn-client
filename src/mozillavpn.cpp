@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
+#include "addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
 #include "dnshelper.h"
@@ -18,11 +19,13 @@
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
+#include "tasks/addonindex/taskaddonindex.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
+#include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
@@ -31,9 +34,9 @@
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
-#include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"
+#include "update/updater.h"
 #include "update/versionapi.h"
 #include "urlopener.h"
 #include "websockethandler.h"
@@ -72,6 +75,18 @@
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
+
+#ifdef MVPN_ANDROID
+constexpr const char* GOOGLE_PLAYSTORE_URL =
+    "https://play.google.com/store/apps/details?id=org.mozilla.firefox.vpn";
+#endif
+
+#ifdef MVPN_IOS
+constexpr const char* APPLE_STORE_URL =
+    "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
+constexpr const char* APPLE_STORE_REVIEW_URL =
+    "https://apps.apple.com/app/id1489407738?action=write-review";
+#endif
 
 namespace {
 Logger logger(LOG_MAIN, "MozillaVPN");
@@ -220,6 +235,9 @@ void MozillaVPN::initialize() {
     m_private->m_webSocketHandler.initialize();
   }
 
+  AddonManager::instance();
+  TaskScheduler::scheduleTask(new TaskAddonIndex());
+
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
 #ifdef MVPN_ADJUST
@@ -367,17 +385,6 @@ void MozillaVPN::maybeStateMain() {
     }
   }
 
-  if (!modelsInitialized()) {
-    logger.warning() << "Models not initialized yet";
-    SettingsHolder::instance()->clear();
-    errorHandle(ErrorHandler::RemoteServiceError);
-    setUserState(UserNotAuthenticated);
-    setState(StateInitialize);
-    return;
-  }
-
-  Q_ASSERT(m_private->m_serverData.initialized());
-
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
 #if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
@@ -399,6 +406,17 @@ void MozillaVPN::maybeStateMain() {
     setState(StateDeviceLimit);
     return;
   }
+
+  if (!modelsInitialized()) {
+    logger.warning() << "Models not initialized yet";
+    SettingsHolder::instance()->clear();
+    errorHandle(ErrorHandler::RemoteServiceError);
+    setUserState(UserNotAuthenticated);
+    setState(StateInitialize);
+    return;
+  }
+
+  Q_ASSERT(m_private->m_serverData.initialized());
 
   // For 2.5 we need to regenerate the device key to allow the the custom DNS
   // feature. We can do it in background when the main view is shown.
@@ -492,11 +510,6 @@ void MozillaVPN::openLink(LinkType linkType) {
       url.append("/r/vpn/contact");
       break;
 
-    case LinkFeedback:
-      url = NetworkRequest::apiBaseUrl();
-      url.append("/r/vpn/client/feedback");
-      break;
-
     case LinkForgotPassword:
       url = Constants::fxaUrl();
       url.append("/reset_password");
@@ -511,10 +524,9 @@ void MozillaVPN::openLink(LinkType linkType) {
       Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
       url =
 #if defined(MVPN_IOS)
-          "https://apps.apple.com/app/id1489407738?action=write-review";
+          APPLE_STORE_REVIEW_URL;
 #elif defined(MVPN_ANDROID)
-          "https://play.google.com/store/apps/"
-          "details?id=org.mozilla.firefox.vpn";
+          GOOGLE_PLAYSTORE_URL;
 #else
           "";
 #endif
@@ -531,9 +543,15 @@ void MozillaVPN::openLink(LinkType linkType) {
       break;
 
     case LinkUpdate:
+#if defined(MVPN_IOS)
+      url = APPLE_STORE_URL;
+#elif defined(MVPN_ANDROID)
+      url = GOOGLE_PLAYSTORE_URL;
+#else
       url = NetworkRequest::apiBaseUrl();
       url.append("/r/vpn/update/");
       url.append(Constants::PLATFORM_NAME);
+#endif
       break;
 
     case LinkSubscriptionBlocked:
@@ -1768,4 +1786,9 @@ void MozillaVPN::requestDeleteAccount() {
 void MozillaVPN::cancelAccountDeletion() {
   logger.warning() << "Canceling account deletion";
   AuthenticationInApp::instance()->terminateSession();
+}
+
+void MozillaVPN::updateViewShown() {
+  logger.debug() << "Update view shown";
+  Updater::updateViewShown();
 }

@@ -28,7 +28,6 @@ class TaskRelease final : public Task {
   bool deletable() const override { return m_op != Update; }
 
  signals:
-  void updaterFailure();
   void updateRequired();
   void updateRecommended();
   void updateRequiredOrRecommended();

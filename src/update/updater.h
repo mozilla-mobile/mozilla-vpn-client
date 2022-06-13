@@ -14,7 +14,22 @@ class Updater : public QObject {
   Q_DISABLE_COPY_MOVE(Updater)
 
  public:
+  enum Step {
+    RecommendedUpdateAvailable,
+    RequiredUpdateAvailable,
+    UpdateViewShown,
+    UpdateProcessStarted,
+    FallbackInBrowser,
+    BalrogValidationCompleted,
+    BalrogFileSaved,
+    InstallationProcessExecuted,
+    ApplicationRestartedAfterUpdate,
+  };
+  Q_ENUM(Step);
+
   static Updater* create(QObject* parent, bool downloadAndInstall);
+
+  static void updateViewShown();
 
   Updater(QObject* parent);
   virtual ~Updater();

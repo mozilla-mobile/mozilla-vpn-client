@@ -68,6 +68,11 @@ TODO:
 - ./apply-format - apply clang-format rules
 - ./git-pre-commit-format - configure the pre-commit git hook for clang-formatting
 
+# Addons
+
+- ./addon/build.py - generate a single addon
+- ./addon/generate_all.py generate all the addons
+
 # Others
 
 - ./tooltool.py - utility used in taskcluster

@@ -1,0 +1,50 @@
+{
+  "api_version": "0.1",
+  "id": "guide_01_how_to_vpn",
+  "name": "Guide: how to vpn",
+  "type": "guide",
+  "guide": {
+    "id": "how_to_vpn",
+    "title": "The top uses and benefits of using Mozilla VPN",
+    "subtitle": "Mozilla VPN secures the connection between your device and the web. Here’s some of the most useful features your VPN offers:",
+    "image": "qrc:/addons/guide_01_how_to_vpn/image.svg",
+    "blocks": [
+      { "id": "c_1",
+        "type": "title",
+        "content": "Safeguard your personal data and identity" },
+      { "id": "c_2",
+        "type": "ulist",
+        "content": [
+          { "id": "l_1",
+            "content": "Surf the web and use your favorite apps freely without being tracked" },
+          { "id": "l_2",
+            "content": "Keep confidential materials safe via our premium data encryption" }
+        ]
+      },
+      { "id": "c_3",
+        "type": "title",
+        "content": "Defense on the go" },
+      { "id": "c_4",
+        "type": "ulist",
+        "content": [
+          { "id": "l_1",
+            "content": "Blocks unknown entities from seeing your private data on risky public Wi-Fi and hotspots" },
+          { "id": "l_2",
+            "content": "Protection wherever you are, from restaurants to vacation rentals" }
+        ]
+      },
+      { "id": "c_5",
+        "type": "title",
+        "content": "Connect to 30+ countries" },
+      { "id": "c_6",
+        "type": "ulist",
+        "content": [
+          { "id": "l_1",
+            "content": "Browse and access content from all over the world" },
+          { "id": "l_2",
+            "content": "Shop on a regional server to get localized deals like cheaper airfare" }
+        ]
+      }
+    ]
+  }
+}

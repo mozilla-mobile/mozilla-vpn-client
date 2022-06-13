@@ -4,7 +4,6 @@
 
 #include "tutorial.h"
 #include "guide.h"
-#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
@@ -30,6 +29,8 @@ Tutorial::~Tutorial() { MVPN_COUNT_DTOR(Tutorial); }
 
 // static
 Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
+  logger.debug() << "Tutorial create" << fileName;
+
   QFile file(fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     logger.warning() << "Unable to read the tutorial file" << fileName;
@@ -43,8 +44,11 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
     return nullptr;
   }
 
-  QJsonObject obj = json.object();
+  return create(parent, json.object());
+}
 
+// static
+Tutorial* Tutorial::create(QObject* parent, const QJsonObject& obj) {
   QJsonObject conditions = obj["conditions"].toObject();
   if (!Guide::evaluateConditions(conditions)) {
     logger.info() << "Exclude the tutorial because conditions do not match";
@@ -53,66 +57,41 @@ Tutorial* Tutorial::create(QObject* parent, const QString& fileName) {
 
   QString tutorialId = obj["id"].toString();
   if (tutorialId.isEmpty()) {
-    logger.warning() << "Empty ID for tutorial file" << fileName;
+    logger.warning() << "Empty ID for tutorial";
     return nullptr;
   }
-
-  L18nStrings* l18nStrings = L18nStrings::instance();
-  Q_ASSERT(l18nStrings);
 
   Tutorial* tutorial = new Tutorial(parent);
   auto guard = qScopeGuard([&] { tutorial->deleteLater(); });
 
   tutorial->m_highlighted = obj["highlighted"].toBool();
 
-  tutorial->m_titleId =
-      Guide::pascalize(QString("tutorial_%1_title").arg(tutorialId));
-  if (!l18nStrings->contains(tutorial->m_titleId)) {
-    logger.warning() << "No string ID found for the title of tutorial file"
-                     << fileName << "ID:" << tutorial->m_titleId;
-    return nullptr;
-  }
-
-  tutorial->m_subtitleId =
-      Guide::pascalize(QString("tutorial_%1_subtitle").arg(tutorialId));
-  if (!l18nStrings->contains(tutorial->m_subtitleId)) {
-    logger.warning() << "No string ID found for the subtitle of tutorial file"
-                     << fileName << "ID:" << tutorial->m_subtitleId;
-    return nullptr;
-  }
-
-  tutorial->m_completionMessageId = Guide::pascalize(
-      QString("tutorial_%1_completion_message").arg(tutorialId));
-  if (!l18nStrings->contains(tutorial->m_completionMessageId)) {
-    logger.warning()
-        << "No string ID found for the completion message of tutorial file"
-        << fileName << "ID:" << tutorial->m_completionMessageId;
-    return nullptr;
-  }
+  tutorial->m_titleId = QString("tutorial.%1.title").arg(tutorialId);
+  tutorial->m_subtitleId = QString("tutorial.%1.subtitle").arg(tutorialId);
+  tutorial->m_completionMessageId =
+      QString("tutorial.%1.completion_message").arg(tutorialId);
 
   tutorial->m_image = obj["image"].toString();
   if (tutorial->m_image.isEmpty()) {
-    logger.warning() << "Empty image for tutorial file" << fileName;
+    logger.warning() << "Empty image for tutorial";
     return nullptr;
   }
 
   QJsonValue stepsArray = obj["steps"];
   if (!stepsArray.isArray()) {
-    logger.warning() << "No steps for tutorial file" << fileName;
+    logger.warning() << "No steps for tutorial";
     return nullptr;
   }
 
   for (QJsonValue stepValue : stepsArray.toArray()) {
     if (!stepValue.isObject()) {
-      logger.warning() << "Expected JSON objects as steps for tutorial file"
-                       << fileName;
+      logger.warning() << "Expected JSON objects as steps for tutorial";
       return nullptr;
     }
 
     TutorialStep* ts = TutorialStep::create(tutorial, tutorialId, stepValue);
     if (!ts) {
-      logger.warning() << "Unable to create a tutorial step for tutorial file"
-                       << fileName;
+      logger.warning() << "Unable to create a tutorial step for tutorial";
       return nullptr;
     }
 
@@ -159,8 +138,7 @@ bool Tutorial::maybeStop(bool completed) {
     TutorialModel* tutorialModel = TutorialModel::instance();
     Q_ASSERT(tutorialModel);
 
-    tutorialModel->requireTutorialCompleted(
-        this, L18nStrings::instance()->value(m_completionMessageId).toString());
+    tutorialModel->requireTutorialCompleted(this, m_completionMessageId);
   }
 
   TutorialModel::instance()->stop();

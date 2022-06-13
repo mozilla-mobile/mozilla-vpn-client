@@ -96,7 +96,7 @@ install(FILES ../linux/extra/icons/32x32/mozillavpn.png
 install(FILES ../linux/extra/icons/48x48/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/48x48/apps)
 
-add_definitions(-DMVPN_ICON_PATH=\"${CMAKE_INSTALL_DATADIR}/icons/hicolor/64x64/apps/mozillavpn.png\")
+add_definitions(-DMVPN_ICON_PATH=\"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/icons/hicolor/64x64/apps/mozillavpn.png\")
 install(FILES ../linux/extra/icons/64x64/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/64x64/apps)
 

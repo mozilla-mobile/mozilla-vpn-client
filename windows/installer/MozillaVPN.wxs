@@ -76,8 +76,8 @@
         <File Id="MozillaVPNExecutable" Source="../../MozillaVPN.exe" KeyPath="yes">
           <Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
         </File>
-        <File Source="../../tunnel/$(var.Platform)/tunnel.dll" />
-        <File Source="../../tunnel/.deps/wintun/bin/$(var.WintunPlatform)/wintun.dll" />
+        <File Source="../tunnel/$(var.Platform)/tunnel.dll" />
+        <File Source="../tunnel/.deps/wintun/bin/$(var.WintunPlatform)/wintun.dll" />
         <File Source="../../balrog/$(var.Platform)/balrog.dll" />
         <File Source="../../libcrypto-1_1-x64.dll" />
         <File Source="../../libssl-1_1-x64.dll" />
@@ -155,9 +155,11 @@
     <!--
       Launch after setup complete
     -->
-    <CustomAction Id="LaunchVPN" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
+    <CustomAction Id="LaunchVPNFirstExecution" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
+    <CustomAction Id="LaunchVPNAfterUpdate" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="ui --updated" Return="asyncNoWait" />
     <InstallExecuteSequence>
-       <Custom Action="LaunchVPN" After="InstallFinalize">NOT Installed OR WIX_UPGRADE_DETECTED</Custom>
+       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize">NOT Installed</Custom>
+       <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize">WIX_UPGRADE_DETECTED</Custom>
     </InstallExecuteSequence>
 
     <!--

@@ -5,7 +5,6 @@
 #include "tutorialstep.h"
 #include "guide.h"
 #include "inspector/inspectorutils.h"
-#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "tutorial.h"
@@ -27,9 +26,6 @@ constexpr int TIMEOUT_ITEM_TIMER_MSEC = 300;
 // static
 TutorialStep* TutorialStep::create(Tutorial* parent, const QString& tutorialId,
                                    const QJsonValue& json) {
-  L18nStrings* l18nStrings = L18nStrings::instance();
-  Q_ASSERT(l18nStrings);
-
   QJsonObject obj = json.toObject();
 
   QString stepId = obj["id"].toString();
@@ -38,12 +34,7 @@ TutorialStep* TutorialStep::create(Tutorial* parent, const QString& tutorialId,
     return nullptr;
   }
 
-  stepId = Guide::pascalize(
-      QString("tutorial_%1_step_%2").arg(tutorialId).arg(stepId));
-  if (!l18nStrings->contains(stepId)) {
-    logger.warning() << "No string ID found for the tutorial step" << stepId;
-    return nullptr;
-  }
+  stepId = QString("tutorial.%1.step.%2").arg(tutorialId).arg(stepId);
 
   QString element = obj["element"].toString();
   if (element.isEmpty()) {
@@ -156,8 +147,8 @@ void TutorialStep::startInternal() {
 
   tutorialModel->requireTooltipShown(m_parent, true);
   tutorialModel->requireTooltipNeeded(
-      m_parent, L18nStrings::instance()->value(m_stringId).toString(),
-      QRectF(x, y, item->width(), item->height()), m_element);
+      m_parent, m_stringId, QRectF(x, y, item->width(), item->height()),
+      m_element);
 
   connect(m_next, &TutorialStepNext::completed, this, &TutorialStep::completed);
   m_next->start();
