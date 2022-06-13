@@ -35,7 +35,7 @@
       },
       {
         "id": "s3",
-        "element": "settingStartAtBoot",
+        "element": "settingStartAtBoot/checkbox",
         "tooltip": "Select or deselect this checkbox",
         "next": {
           "op": "signal",

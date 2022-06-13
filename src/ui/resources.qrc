@@ -62,5 +62,7 @@
         <file>resources/warning-white.svg</file>
         <file>resources/main-img-vpn-off.svg</file>
         <file>resources/main-img-vpn-on.svg</file>
+        <file>resources/logo-success.svg</file>
+        <file>resources/logo-error.svg</file>
     </qresource>
 </RCC>

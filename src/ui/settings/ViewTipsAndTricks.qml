@@ -53,12 +53,18 @@ VPNFlickable {
                     visible: active
 
                     sourceComponent: VPNTutorialCard {
+                        objectName: "highlightedTutorial"
                         width: parent.width
                         height: parent.height
 
                         imageSrc: highlightedTutorial.image
                         title: qsTrId(highlightedTutorial.titleId)
                         description: qsTrId(highlightedTutorial.subtitleId)
+
+                        onClicked: {
+                            VPNTutorial.play(VPNTutorial.highlightedTutorial);
+                            VPNCloseEventHandler.removeAllStackViews();
+                        }
                     }
                 }
 
@@ -155,6 +161,10 @@ VPNFlickable {
                             imageSrc: tutorial.image
                             title: qsTrId(tutorial.titleId)
                             description: qsTrId(tutorial.subtitleId)
+                            onClicked: {
+                                VPNTutorial.play(tutorial);
+                                VPNCloseEventHandler.removeAllStackViews();
+                            }
                         }
                     }
                 }

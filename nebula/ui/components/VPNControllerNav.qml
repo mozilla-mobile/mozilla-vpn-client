@@ -13,6 +13,7 @@ ColumnLayout {
     property var titleText
     property string subtitleText: ""
     property alias disableRowWhen: btn.rowShouldBeDisabled
+    property alias btnObjectName: btn.objectName
     property string descriptionText
     default property alias contentChildren: controllerContent.children
     spacing: 4
@@ -31,6 +32,7 @@ ColumnLayout {
 
     VPNClickableRow {
         id: btn
+
         accessibleName: titleText + ": " + descriptionText
         Accessible.ignored: rowShouldBeDisabled
         activeFocusOnTab: true

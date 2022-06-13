@@ -13,6 +13,8 @@ import compat 0.1
 VPNFlickable {
     id: vpnFlickable
 
+    objectName: "viewMainFlickable"
+
     flickContentHeight: col.height + VPNTheme.theme.windowMargin / 2
     anchors.left: parent.left
     anchors.right: parent.right
@@ -95,7 +97,9 @@ VPNFlickable {
             }
 
             id: serverInfo
+
             objectName: "serverListButton"
+            btnObjectName: "serverListButton-btn"
 
             //% "Select location"
             //: Select the Location of the VPN server
@@ -140,6 +144,7 @@ VPNFlickable {
             Layout.topMargin: 6
 
             objectName: "deviceListButton"
+            btnObjectName: "deviceListButton-btn"
             //% "My devices"
             titleText: qsTrId("vpn.devices.myDevices")
             disableRowWhen: box.connectionInfoScreenVisible
