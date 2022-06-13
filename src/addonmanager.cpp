@@ -29,6 +29,15 @@ Logger logger(LOG_MAIN, "AddonManager");
 
 AddonManager* s_instance = nullptr;
 
+QString rootAppFolder() {
+#ifdef MVPN_WASM
+  // https://wiki.qt.io/Qt_for_WebAssembly#Files_and_local_file_system_access
+  return "/";
+#else
+  return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+#endif
+}
+
 }  // namespace
 
 // static
@@ -54,8 +63,7 @@ void AddonManager::initialize() {
 
   // Initialization of the addon folder.
   {
-    QDir addonDir(
-        QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+    QDir addonDir(rootAppFolder());
     if (!addonDir.exists(ADDON_FOLDER) && !addonDir.mkdir(ADDON_FOLDER)) {
       logger.info() << "Unable to create the addon folder";
       return;
@@ -205,8 +213,7 @@ void AddonManager::retranslate() {
 bool AddonManager::addonDir(QDir* dir) {
   Q_ASSERT(dir);
 
-  QDir addonDir(
-      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+  QDir addonDir(rootAppFolder());
   if (!addonDir.exists(ADDON_FOLDER)) {
     return false;
   }
