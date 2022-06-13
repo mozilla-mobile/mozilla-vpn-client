@@ -83,6 +83,22 @@ FEATURE(customDNS,                                         // Feature ID
         QStringList(),  // feature dependencies
         FeatureCallback_true)
 
+FEATURE(
+    easyProfile,     // Feature ID
+    "Easy Profile",  // Feature name
+    true,            // Is Major Feature
+    L18nStrings::WhatsNewReleaseNotesEasyProfileDisplayName,  // Display name
+    L18nStrings::Empty,                                       // Description
+    L18nStrings::WhatsNewReleaseNotesEasyProfileDescription,  // LongDescr
+    "qrc:/ui/resources/features/easy-profile-preview",        // ImagePath
+    "",                                                       // IconPath
+    "",                                                       // link URL
+    "2.9",
+    false,          // Can be flipped on
+    false,          // Can be flipped off
+    QStringList(),  // feature dependencies
+    FeatureCallback_true)
+
 FEATURE_SIMPLE(freeTrial,      // Feature ID
                "Free trial",   // Feature name
                "2.8.1",        // released
@@ -214,6 +230,14 @@ FEATURE_SIMPLE(startOnBoot,      // Feature ID
                false,            // Can be flipped off
                QStringList(),    // feature dependencies
                FeatureCallback_startOnBoot)
+
+FEATURE_SIMPLE(tipsAndTricks,      // Feature ID
+               "Tips and tricks",  // Feature name
+               "2.9",              // released
+               false,              // Can be flipped on
+               true,               // Can be flipped off
+               QStringList(),      // feature dependencies
+               FeatureCallback_false)
 
 FEATURE_SIMPLE(unsecuredNetworkNotification,      // Feature ID
                "Unsecured network notification",  // Feature name

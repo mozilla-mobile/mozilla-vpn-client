@@ -556,17 +556,6 @@ Window {
     VPNFeatureTourPopup {
         id: featureTourPopup
 
-        Component.onCompleted: {
-            featureTourPopup.handleShowTour();
-        }
-
-        function handleShowTour() {
-            if(VPN.state === VPN.StateMain
-                && !VPNSettings.featuresTourShown
-                && VPNWhatsNewModel.hasUnseenFeature
-            ) {
-                featureTourPopup.openTour();
-            }
-        }
+        anchors.centerIn: parent
     }
 }
