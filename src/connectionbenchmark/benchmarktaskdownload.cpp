@@ -45,7 +45,18 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
 #if !defined(MVPN_DUMMY)
     m_dnsLookup.setNameserver(QHostAddress(MULLVAD_DEFAULT_DNS));
 #endif
-    m_dnsLookup.lookup();
+
+#  if QT_VERSION >= 0x060400
+#error Check if QT added support for QDnsLookup::lookup() on Android
+#  endif
+
+// Since QDnsLookup::lookup() is not supported on Android we expect it to fail
+// and can save us calling the method
+#ifdef MVPN_ANDROID
+  handleFailedDnsLookup();
+#else
+  m_dnsLookup.lookup();
+#endif
   } else if (state == BenchmarkTask::StateInactive) {
     for (NetworkRequest* request : m_requests) {
       request->abort();
@@ -91,7 +102,7 @@ void BenchmarkTaskDownload::dnsLookupFinished() {
     logger.warning() << "DNS Lookup finished after task aborted";
     return;
   }
-  if (m_dnsLookup.error() != QDnsLookup::NoError || true) {
+  if (m_dnsLookup.error() != QDnsLookup::NoError) {
     logger.error() << "DNS Lookup Failed:" << m_dnsLookup.errorString();
     handleFailedDnsLookup();
     guard.dismiss();
