@@ -1,6 +1,6 @@
-flask
-glean_parser
-lxml
-PyYAML
-jsonschema
-oathtool
+glean-parser==5.1.0
+lxml==4.8.0
+PyYAML==5.4.1
+jsonschema==4.0.0
+oathtool==2.3.1
+requests==2.25.1

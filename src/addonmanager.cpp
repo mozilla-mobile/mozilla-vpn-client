@@ -76,6 +76,11 @@ void AddonManager::initialize() {
 }
 
 void AddonManager::updateIndex(const QByteArray& index) {
+  // No update allowed when the index is hard-coded.
+  if (Feature::get(Feature::Feature_addonIndexQRC)->isSupported()) {
+    return;
+  }
+
   QByteArray currentIndex = readIndex();
 
   if (currentIndex == index) {
@@ -234,7 +239,10 @@ QByteArray AddonManager::readIndex() {
     return "";
   }
 
-  QFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
+  QFile indexFile(Feature::get(Feature::Feature_addonIndexQRC)->isSupported()
+                      ? ":/addons/manifest.json"
+                      : dir.filePath(ADDON_INDEX_FILENAME));
+
   if (!indexFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
     logger.warning() << "Unable to open the addon index";
     return "";

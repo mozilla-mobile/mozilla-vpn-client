@@ -328,3 +328,12 @@ if(NOT CMAKE_CROSSCOMPILING)
         tasks/authenticate/desktopauthenticationlistener.h
     )
 endif()
+
+target_sources(mozillavpn PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/addons/manifest.qrc
+)
+
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/addons/manifest.qrc
+    COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/addon/fetch_manifest.py -o ${CMAKE_CURRENT_BINARY_DIR}
+)

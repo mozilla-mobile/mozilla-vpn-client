@@ -34,6 +34,14 @@ FEATURE_SIMPLE(addon,            // Feature ID
                QStringList(),    // feature dependencies
                FeatureCallback_true)
 
+FEATURE_SIMPLE(addonIndexQRC,                  // Feature ID
+               "Addon index as QRC resource",  // Feature name
+               "2.9.0",                        // released
+               true,                           // Can be flipped on
+               true,                           // Can be flipped off
+               QStringList{"addon"},           // feature dependencies
+               FeatureCallback_true)
+
 FEATURE_SIMPLE(appReview,      // Feature ID
                "App Review",   // Feature name
                "2.5",          // released
