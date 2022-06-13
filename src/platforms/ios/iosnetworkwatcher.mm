@@ -94,8 +94,8 @@ void IOSNetworkWatcher::controllerStateChanged() {
   auto vpn = MozillaVPN::instance();
   // When multihop is used, we need to connect to the entry server,
   // otherwise the exit server is the target
-  auto key = vpn->multihop() ? vpn->entryServerPublicKey() : vpn->serverPublicKey();
-  auto serverlist = vpn->multihop() ? vpn->entryServers() : vpn->exitServers();
+  auto key = vpn->entryServerPublicKey();
+  auto serverlist = vpn->entryServers();
   auto index = serverlist.indexOf(key);
   // No such server
   if (index == -1) {
