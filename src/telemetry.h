@@ -17,9 +17,11 @@ class Telemetry final : public QObject {
 
  private:
   void connectionStabilityEvent();
+  void periodicStateRecorder();
 
  private:
   QTimer m_connectionStabilityTimer;
+  QTimer m_gleanControllerUpTimer;
 };
 
 #endif  // TELEMETRY_H

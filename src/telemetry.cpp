@@ -21,6 +21,12 @@ Telemetry::Telemetry() {
   m_connectionStabilityTimer.setSingleShot(true);
   connect(&m_connectionStabilityTimer, &QTimer::timeout, this,
           &Telemetry::connectionStabilityEvent);
+
+  connect(&m_gleanControllerUpTimer, &QTimer::timeout, this,
+          &Telemetry::periodicStateRecorder);
+  m_gleanControllerUpTimer.start(
+      Constants::controllerPeriodicStateRecorderMsec());
+  m_gleanControllerUpTimer.setSingleShot(false);
 }
 
 Telemetry::~Telemetry() { MVPN_COUNT_DTOR(Telemetry); }
@@ -67,4 +73,25 @@ void Telemetry::connectionStabilityEvent() {
           {"loss", QString::number(vpn->connectionHealth()->loss())},
           {"stddev", QString::number(vpn->connectionHealth()->stddev())},
       });
+}
+
+void Telemetry::periodicStateRecorder() {
+// On mobile this is handled seperately in a background process
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  Controller* controller = vpn->controller();
+  Q_ASSERT(controller);
+
+  Controller::State controllerState = controller->state();
+
+  if (controllerState == Controller::StateOn) {
+    emit MozillaVPN::instance()->recordGleanEvent(
+        GleanSample::controllerStateOn);
+  }
+  if (controllerState == Controller::StateOff) {
+    emit MozillaVPN::instance()->recordGleanEvent(
+        GleanSample::controllerStateOff);
+  }
+#endif
 }
