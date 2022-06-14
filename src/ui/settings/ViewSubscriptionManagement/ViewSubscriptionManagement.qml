@@ -147,20 +147,15 @@ VPNFlickable {
         });
 
         subscriptionInfoModel.append({
-            labelText: VPNl18n.SubscriptionManagementNextLabel,
-            // TODO: Calculate next billing date if any
-            valueText: "",
-            type: "text",
-        });
-
-        subscriptionInfoModel.append({
             labelText: VPNl18n.SubscriptionManagementActivatedLabel,
             valueText: epochTimeToDate(VPNSubscriptionData.createdAt),
             type: "text",
         });
 
         subscriptionInfoModel.append({
-            labelText: VPNl18n.SubscriptionManagementExpiresLabel,
+            labelText: VPNSubscriptionData.status === "active"
+                ? VPNl18n.SubscriptionManagementNextLabel
+                : VPNl18n.SubscriptionManagementExpiresLabel,
             valueText: epochTimeToDate(VPNSubscriptionData.expiresOn),
             type: "text",
         });
@@ -170,13 +165,12 @@ VPNFlickable {
             subscriptionPaymentModel.append({
                 labelText: VPNSubscriptionData.creditCardBrand,
                 valueText: VPNl18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
-                type: "paymentMethod",
+                type: "payment",
             });
 
             subscriptionPaymentModel.append({
                 labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
-                // TODO: Show date w/o days
-                valueText: epochTimeToDate(new Date(VPNSubscriptionData.creditCardExpYear, VPNSubscriptionData.creditCardExpMonth - 1).getTime() / 1000),
+                valueText: getPaymentExpiration(),
                 type: "text",
             });
         } else {
@@ -190,6 +184,14 @@ VPNFlickable {
 
     function epochTimeToDate(unixTimestamp) {
         return new Date(unixTimestamp * 1000).toLocaleDateString(VPNLocalizer.locale, Locale.ShortFormat);
+    }
+
+    function getPaymentExpiration() {
+        return (
+            VPNLocalizer.locale.monthName(VPNSubscriptionData.creditCardExpMonth - 1)
+            + " "
+            + VPNSubscriptionData.creditCardExpYear
+        );
     }
 
     function getPlanText(currencyCode, amount, intervalCount) {
