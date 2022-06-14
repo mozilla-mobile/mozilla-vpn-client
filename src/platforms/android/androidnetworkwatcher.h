@@ -6,6 +6,7 @@
 #define ANDROIDNETWORKWATCHER_H
 
 #include "networkwatcherimpl.h"
+#include "jni.h"
 
 class AndroidNetworkWatcher final : public NetworkWatcherImpl {
  public:
@@ -13,6 +14,8 @@ class AndroidNetworkWatcher final : public NetworkWatcherImpl {
   ~AndroidNetworkWatcher();
 
   void initialize() override;
+
+  static void onNetworkChange(JNIEnv* env, jobject thiz);
 
   NetworkWatcherImpl::TransportType getTransportType() override;
 };

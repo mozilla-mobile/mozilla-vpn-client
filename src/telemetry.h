@@ -18,6 +18,8 @@ class Telemetry final : public QObject {
  private:
   void connectionStabilityEvent();
 
+  void networkChangeEvent();
+
  private:
   QTimer m_connectionStabilityTimer;
 };

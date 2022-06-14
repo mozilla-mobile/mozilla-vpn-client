@@ -29,6 +29,8 @@ class NetworkWatcher final : public QObject {
   QString getCurrentTransport();
 
  signals:
+  // Is fired when something related to the network changes.
+  // i.e connected to a new wifi, enabled airplane mode, etc.
   void networkChange();
 
  private:

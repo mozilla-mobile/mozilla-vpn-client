@@ -861,3 +861,21 @@ sample:
           "main", "subscription-needed", etc. The list can be found in
           `mozillavpn.h`.
         type: string
+
+  device_connectivity_change:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The network connectivity of the pc changed  for example
+      the wifi network changed, enabled/disabled airplane mode
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2625
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never

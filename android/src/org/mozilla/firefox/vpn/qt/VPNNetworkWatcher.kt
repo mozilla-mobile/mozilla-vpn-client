@@ -6,6 +6,7 @@ package org.mozilla.firefox.vpn.qt
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.provider.Settings
@@ -51,4 +52,19 @@ object VPNNetworkWatcher {
         }
         return TransportTypes.Unknown
     }
+
+    @JvmStatic
+    @Suppress("unused") // JNI-Called
+    fun initListener(context: Context){
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                networkChanged();
+            }
+            override fun onLost(network: Network) {
+                networkChanged();
+            }
+        })
+    }
+    external fun networkChanged()
 }

@@ -30,6 +30,7 @@ void IOSNetworkWatcher::initialize() {
   m_networkMonitor = nw_path_monitor_create();
   nw_path_monitor_set_queue(m_networkMonitor, s_queue);
   nw_path_monitor_set_update_handler(m_networkMonitor, ^(nw_path_t _Nonnull path) {
+    emit networkStatusChanged();
     m_currentDefaultTransport = toTransportType(path);
   });
   nw_path_monitor_start(m_networkMonitor);

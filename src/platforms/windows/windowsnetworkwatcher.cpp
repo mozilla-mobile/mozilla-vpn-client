@@ -20,6 +20,7 @@ template <typename Async>
 auto wait_for(Async const& async, Windows::Foundation::TimeSpan const& timeout);
 }
 #include <winrt/Windows.Networking.Connectivity.h>
+using namespace winrt::Windows::Networking::Connectivity;
 
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsNetworkWatcher");
@@ -56,6 +57,8 @@ void WindowsNetworkWatcher::initialize() {
     WindowsCommons::windowsLog("Failed to register a wlan callback");
     return;
   }
+  m_NetworkChangedToken = NetworkInformation::NetworkStatusChanged(
+      [this](auto&&) { emit onNetworkStatusChange(); });
 
   logger.debug() << "callback registered";
 }
@@ -146,7 +149,6 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
 }
 
 NetworkWatcherImpl::TransportType WindowsNetworkWatcher::getTransportType() {
-  using namespace winrt::Windows::Networking::Connectivity;
   ConnectionProfile profile =
       NetworkInformation::GetInternetConnectionProfile();
 
@@ -168,4 +170,9 @@ NetworkWatcherImpl::TransportType WindowsNetworkWatcher::getTransportType() {
       return TransportType_WiFi;
   }
   return TransportType_Other;
+}
+
+void WindowsNetworkWatcher::onNetworkStatusChange() {
+  logger.debug() << "Network Change Notification: " << getTransportType();
+  emit networkStatusChanged();
 }

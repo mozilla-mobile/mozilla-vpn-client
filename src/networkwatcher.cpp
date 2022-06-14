@@ -70,7 +70,9 @@ void NetworkWatcher::initialize() {
 
   connect(m_impl, &NetworkWatcherImpl::unsecuredNetwork, this,
           &NetworkWatcher::unsecuredNetwork);
-  connect(m_impl, &NetworkWatcherImpl::networkChanged, this,
+  connect(m_impl, &NetworkWatcherImpl::networkSSIDChanged, this,
+          &NetworkWatcher::networkChange);
+  connect(m_impl, &NetworkWatcherImpl::networkStatusChanged, this,
           &NetworkWatcher::networkChange);
 
   m_impl->initialize();

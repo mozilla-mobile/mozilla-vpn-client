@@ -42,10 +42,11 @@ class NetworkWatcherImpl : public QObject {
   // Fires on when the connected WIFI Changes
   // TODO: Only windows-networkwatcher has this, the other plattforms should
   // too.
-  void networkChanged(QString newBSSID);
+  void networkSSIDChanged(QString newBSSID);
 
-  // Fired when the Device changed the Type of Transport
-  void transportChanged(TransportType transportType);
+  // Fired when the status changes:
+  // connection lost, entered airplane mode, changed from wifi to ethernet, etc.
+  void networkStatusChanged();
 
  private:
   bool m_active = false;

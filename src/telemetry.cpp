@@ -50,6 +50,8 @@ void Telemetry::initialize() {
       m_connectionStabilityTimer.start(CONNECTION_STABILITY_MSEC);
     }
   });
+  connect(MozillaVPN::instance()->networkWatcher(),
+          &NetworkWatcher::networkChange, this, &Telemetry::networkChangeEvent);
 }
 
 void Telemetry::connectionStabilityEvent() {
@@ -69,4 +71,11 @@ void Telemetry::connectionStabilityEvent() {
        {"loss", QString::number(vpn->connectionHealth()->loss())},
        {"stddev", QString::number(vpn->connectionHealth()->stddev())},
        {"transport", vpn->networkWatcher()->getCurrentTransport()}});
+}
+
+void Telemetry::networkChangeEvent() {
+  logger.info() << "Send a networkChangeEvent";
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  emit vpn->recordGleanEvent(GleanSample::deviceConnectivityChange);
 }

@@ -9,6 +9,7 @@
 
 #include <windows.h>
 #include <wlanapi.h>
+#include <winrt/base.h>
 
 class WindowsNetworkWatcher final : public NetworkWatcherImpl {
  public:
@@ -20,6 +21,7 @@ class WindowsNetworkWatcher final : public NetworkWatcherImpl {
   NetworkWatcherImpl::TransportType getTransportType() override;
 
  private:
+  void onNetworkStatusChange();
   static void wlanCallback(PWLAN_NOTIFICATION_DATA data, PVOID context);
 
   void processWlan(PWLAN_NOTIFICATION_DATA data);
@@ -28,6 +30,7 @@ class WindowsNetworkWatcher final : public NetworkWatcherImpl {
   // The handle is set during the initialization. Windows calls processWlan()
   // to inform about network changes.
   HANDLE m_wlanHandle = nullptr;
+  winrt::event_token m_NetworkChangedToken;
   QString m_lastBSSID;
 };
 
