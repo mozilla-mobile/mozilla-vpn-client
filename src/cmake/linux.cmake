@@ -66,6 +66,8 @@ target_sources(mozillavpn PRIVATE
 
 add_definitions(-DPROTOCOL_VERSION=\"1\")
 
+include(cmake/signature.cmake)
+
 set(DBUS_GENERATED_SOURCES)
 qt_add_dbus_interface(DBUS_GENERATED_SOURCES platforms/linux/daemon/org.mozilla.vpn.dbus.xml dbus_interface)
 qt_add_dbus_adaptor(DBUS_GENERATED_SOURCES

@@ -10,8 +10,6 @@
 #include "models/feature.h"
 
 #include <QSettings>
-#include <QProcessEnvironment>
-#include <QUrl>
 
 namespace {
 
@@ -153,24 +151,4 @@ QString SettingsHolder::placeholderUserDNS() const {
 void SettingsHolder::removeEntryServer() {
   m_settings.remove("entryServer/countryCode");
   m_settings.remove("entryServer/city");
-}
-
-QString SettingsHolder::envOrDefault(const QString& name,
-                                     const QString& defaultValue) const {
-  QString env;
-
-  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  if (pe.contains(name)) {
-    env = pe.value(name);
-  }
-
-  if (env.isEmpty()) {
-    return defaultValue;
-  }
-
-  if (!QUrl(env).isValid()) {
-    return defaultValue;
-  }
-
-  return env;
 }

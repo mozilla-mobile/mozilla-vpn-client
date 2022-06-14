@@ -240,6 +240,8 @@ target_sources(mozillavpn PRIVATE
     serveri18n.h
     settingsholder.cpp
     settingsholder.h
+    signature.h
+    signature.cpp
     simplenetworkmanager.cpp
     simplenetworkmanager.h
     statusicon.cpp
@@ -315,6 +317,7 @@ target_sources(mozillavpn PRIVATE
     ui/resources.qrc
     ui/ui.qrc
     resources/certs/certs.qrc
+    resources/public_keys/public_keys.qrc
 )
 
 # Signal handling for unix platforms
