@@ -663,7 +663,6 @@ paymentMethods:
   paypal: PayPal
   unionpay: UnionPay
   visa: Visa
-  unbranded: Credit card
 
 global:
   expand:

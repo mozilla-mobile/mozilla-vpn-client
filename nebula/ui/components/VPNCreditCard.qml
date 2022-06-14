@@ -88,7 +88,7 @@ RowLayout {
                 return {
                     key: "unbranded",
                     icon: "qrc:/ui/resources/payment/unbranded.svg",
-                    name: VPNl18n.paymentMethodsUnbranded
+                    name: ""
                 };
         }
     }
