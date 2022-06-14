@@ -61,6 +61,18 @@ RowLayout {
                     icon: "qrc:/ui/resources/payment/jcb.svg",
                     name: VPNl18n.PaymentMethodsJcb
                 };
+            case "iap_apple":
+                return {
+                    key: cardBrand,
+                    icon: "qrc:/ui/resources/payment/apple.svg",
+                    name: VPNl18n.PaymentMethodsIapApple
+                };
+            case "iap_google":
+                return {
+                    key: cardBrand,
+                    icon: "qrc:/ui/resources/payment/android.svg",
+                    name: VPNl18n.PaymentMethodsIapGoogle
+                };
             case "mastercard":
                 return {
                     key: cardBrand,

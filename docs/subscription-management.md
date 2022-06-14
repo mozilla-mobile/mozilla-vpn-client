@@ -118,7 +118,7 @@ Detail info on the payment method.
 | product_id | ID for the VPN product. | String | Yes |
 | provider | Provider that is used for payment. | String | Yes |
 | status | Status of the current VPN subscription. | String | Yes |
-| type | Type of the payment method. | String | Yes |
+| type | Type of the payment method. `web`, `iap_google` or `iap_apple` | String | Yes |
 | credit_card_brand | Brand of the credit card. Empty if no credit card is used for payment. | String | No |
 | credit_card_exp_month | Expiration month of the credit card. Empty if no credit card is used for payment. | Number | No |
 | credit_card_exp_year | Expiration year of the credit card. Empty if no credit card is used for payment. | Number | No |

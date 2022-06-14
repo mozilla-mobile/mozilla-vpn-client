@@ -170,7 +170,7 @@ VPNFlickable {
             subscriptionPaymentModel.append({
                 labelText: VPNSubscriptionData.creditCardBrand,
                 valueText: VPNl18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
-                type: "creditCard",
+                type: "paymentMethod",
             });
 
             subscriptionPaymentModel.append({
@@ -181,10 +181,9 @@ VPNFlickable {
             });
         } else {
             subscriptionPaymentModel.append({
-                // TODO: Handle different IAP platforms
-                labelText: VPNl18n.SubscriptionManagementSubscriptionPlatformLabel.arg("IAP Google or Apple"),
+                labelText: VPNSubscriptionData.paymentType,
                 valueText: "",
-                type: "text",
+                type: "payment",
             });
         }
     }

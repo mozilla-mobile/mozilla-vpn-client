@@ -659,6 +659,8 @@ paymentMethods:
   diners: Diners Club
   discover: Discover
   jcb: JCB
+  iapApple: Apple subscription
+  iapGoogle: Google subscription
   mastercard: Mastercard
   paypal: PayPal
   unionpay: UnionPay

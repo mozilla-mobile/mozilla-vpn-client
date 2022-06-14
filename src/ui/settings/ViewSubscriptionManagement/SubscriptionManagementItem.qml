@@ -30,7 +30,7 @@ ColumnLayout {
                 visible: false
             }
             PropertyChanges {
-                target: creditCard
+                target: paymentMethod
                 visible: false
             }
         },
@@ -50,12 +50,12 @@ ColumnLayout {
                 visible: true
             }
             PropertyChanges {
-                target: creditCard
+                target: paymentMethod
                 visible: false
             }
         },
         State {
-            when: type === "creditCard"
+            when: type === "payment"
 
             PropertyChanges {
                 target: rowLabel
@@ -70,7 +70,7 @@ ColumnLayout {
                 visible: false
             }
             PropertyChanges {
-                target: creditCard
+                target: paymentMethod
                 visible: true
             }
         }
@@ -96,8 +96,8 @@ ColumnLayout {
             Layout.alignment: Qt.AlignLeft
         }
 
-        VPNCreditCard {
-            id: creditCard
+        VPNPaymentMethod {
+            id: paymentMethod
             brand: labelText
         }
 
