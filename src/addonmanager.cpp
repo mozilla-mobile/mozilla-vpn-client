@@ -211,8 +211,6 @@ bool AddonManager::addonDir(QDir* dir) {
   addonPath = QString(":/addons");
 #endif
 
-  logger.debug() << "Loading addon from" << addonPath;
-
   *dir = addonPath;
   return true;
 }
