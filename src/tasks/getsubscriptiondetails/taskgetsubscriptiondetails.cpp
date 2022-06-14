@@ -34,7 +34,7 @@ void TaskGetSubscriptionDetails::run() {
   connect(
       request, &NetworkRequest::requestFailed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Get subscription details failed" << error.code;
+        logger.error() << "Get subscription details failed" << error;
 
         // Network request failed after authentication for a second time
         if (m_authenticationInAppSession) {
