@@ -195,7 +195,7 @@ VPNFlickable {
 
     function getPlanText(currencyCode, amount, intervalCount) {
         const amountDisplay = (amount || 0) / 100;
-        const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode.toUpperCase());
+        const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode);
 
         let labelText;
 
