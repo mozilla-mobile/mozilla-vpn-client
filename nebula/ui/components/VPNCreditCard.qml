@@ -21,6 +21,7 @@ RowLayout {
         horizontalAlignment: Text.AlignLeft
         font.pixelSize: VPNTheme.theme.fontSizeSmall
         text: selectedCreditCard.name
+        visible: typeof(text) !== "undefined" && text.length > 0
         wrapMode: Text.WordWrap
     }
 
@@ -40,49 +41,49 @@ RowLayout {
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/amex.svg",
-                    name: VPNl18n.paymentMethodsAmex
+                    name: VPNl18n.PaymentMethodsAmex
                 };
             case "diners":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/diners.svg",
-                    name: VPNl18n.paymentMethodsDiners
+                    name: VPNl18n.PaymentMethodsDiners
                 };
             case "discover":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/discover.svg",
-                    name: VPNl18n.paymentMethodsDiscover
+                    name: VPNl18n.PaymentMethodsDiscover
                 };
             case "jcb":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/jcb.svg",
-                    name: VPNl18n.paymentMethodsJcb
+                    name: VPNl18n.PaymentMethodsJcb
                 };
             case "mastercard":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/mastercard.svg",
-                    name: VPNl18n.paymentMethodsMastercard
+                    name: VPNl18n.PaymentMethodsMastercard
                 };
             case "paypal":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/paypal.svg",
-                    name: VPNl18n.paymentMethodsPaypal
+                    name: VPNl18n.PaymentMethodsPaypal
                 };
             case "unionpay":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/unionpay.svg",
-                    name: VPNl18n.paymentMethodsUnionpay
+                    name: VPNl18n.PaymentMethodsUnionpay
                 };
             case "visa":
                 return {
                     key: cardBrand,
                     icon: "qrc:/ui/resources/payment/visa.svg",
-                    name: VPNl18n.paymentMethodsVisa
+                    name: VPNl18n.PaymentMethodsVisa
                 };
             default:
                 return {
