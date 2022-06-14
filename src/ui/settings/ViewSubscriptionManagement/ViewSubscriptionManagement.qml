@@ -40,7 +40,10 @@ VPNFlickable {
 
         VPNUserProfile {
             _iconButtonImageSource: "qrc:/nebula/resources/open-in-new.svg"
-            _iconButtonOnClicked: () => handleManageAccountClicked()
+            _iconButtonOnClicked: () => {
+                Sample.manageAccountClicked.record();
+                VPN.openLink(VPN.LinkAccount);
+            }
 
             Layout.leftMargin: VPNTheme.theme.windowMargin / 2
             Layout.topMargin: VPNTheme.theme.windowMargin * 2
@@ -124,7 +127,7 @@ VPNFlickable {
     }
 
     function handleManageAccountClicked() {
-        Sample.manageAccountClicked.record();
+        // TODO: Add Glean event
         VPN.openLink(VPN.LinkAccount);
     }
 
