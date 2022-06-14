@@ -106,7 +106,6 @@ HEADERS += \
     ../../src/platforms/android/androidsharedprefs.h \
     ../../src/platforms/dummy/dummynetworkwatcher.h \
     ../../src/platforms/dummy/dummypingsender.h \
-    ../../src/profileflow.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
     ../../src/rfc/rfc1918.h \
@@ -123,7 +122,6 @@ HEADERS += \
     ../../src/tasks/adddevice/taskadddevice.h \
     ../../src/tasks/addon/taskaddon.h \
     ../../src/tasks/function/taskfunction.h \
-    ../../src/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
     ../../src/tasks/ipfinder/taskipfinder.h \
     ../../src/tasks/release/taskrelease.h \
     ../../src/tasks/servers/taskservers.h \
@@ -223,7 +221,6 @@ SOURCES += \
     ../../src/platforms/android/androidsharedprefs.cpp \
     ../../src/platforms/dummy/dummynetworkwatcher.cpp \
     ../../src/platforms/dummy/dummypingsender.cpp \
-    ../../src/profileflow.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \
     ../../src/rfc/rfc1918.cpp \
@@ -240,7 +237,6 @@ SOURCES += \
     ../../src/tasks/addon/taskaddon.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/tasks/release/taskrelease.cpp \
-    ../../src/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
     ../../src/tasks/ipfinder/taskipfinder.cpp \
     ../../src/tasks/servers/taskservers.cpp \
     ../../src/taskscheduler.cpp \
