@@ -54,10 +54,7 @@ void ProfileFlow::start() {
   });
   connect(task, &TaskGetSubscriptionDetails::failed, [&]() {
     logger.debug() << "Task failed";
-
-    // TODO: Remove, only for debugging purposes.
-    MozillaVPN::instance()->subscriptionData()->populateFakeData();
-    setState(StateReady);
+    setState(StateError);
   });
 
   TaskScheduler::scheduleTask(task);
@@ -83,5 +80,14 @@ void ProfileFlow::subscriptionDetailsFetched(
     return;
   }
 
+  setState(StateReady);
+}
+
+// Only used for testing
+void ProfileFlow::showFakeData() {
+  logger.debug() << "Show fake data";
+  Q_ASSERT(!Constants::inProduction());
+
+  MozillaVPN::instance()->subscriptionData()->populateFakeData();
   setState(StateReady);
 }
