@@ -305,6 +305,19 @@ NetworkRequest* NetworkRequest::createForAccount(Task* parent) {
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/subscriptionDetails");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
 NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
                                                 const QHostAddress& address) {
   Q_ASSERT(parent);
@@ -437,18 +450,6 @@ NetworkRequest* NetworkRequest::createForGetFeatureList(Task* parent) {
 
   QUrl url(apiBaseUrl());
   url.setPath("/api/v1/vpn/featurelist");
-  r->m_request.setUrl(url);
-
-  r->getRequest();
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-
-  QUrl url(apiBaseUrl());
-  url.setPath("/api/v1/vpn/subscriptionDetails");
   r->m_request.setUrl(url);
 
   r->getRequest();
