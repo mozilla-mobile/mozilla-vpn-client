@@ -105,4 +105,8 @@ VPNInAppAuthenticationBase {
         viewDeleteAccount.allowAccountDeletion = checkboxData.every(checkbox =>
             checkbox.isSelected);
     }
+
+    Component.onCompleted: {
+        Sample.deleteAccountOpened.record();
+    }
 }

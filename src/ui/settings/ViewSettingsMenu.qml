@@ -53,6 +53,7 @@ VPNFlickable {
                     : "qrc:/nebula/resources/open-in-new.svg"
                 _iconButtonOnClicked: () => {                    
                     if (subscriptionManagementEnabled) {
+                        Sample.viewProfileClicked.record();
                         VPNProfileFlow.start();
                     } else {
                         Sample.manageAccountClicked.record();

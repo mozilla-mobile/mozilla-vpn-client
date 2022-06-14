@@ -924,23 +924,6 @@ sample:
         type: quantity
         unit: months
 
-  delete_account_clicked:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has clicked “delete account” from the account deletion view.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
-    data_reviews:
-      - TBD
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
   profile_flow_state_changed:
     type: event
     lifetime: ping
@@ -961,6 +944,110 @@ sample:
       interval_count:
         description: |
           The name of the profile flow state. The list of states can be found in
-          `authenticationinapp.h`.
+          `profileflow.h`.
         type: state
         unit: string
+
+  view_profile_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the profile view button from the settings view.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  view_profile_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the profile view.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  manage_subscription_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the “manage subscription” button from the
+      profile view.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  delete_account_requested:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the “delete account” button from the profile view.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  delete_account_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the account deletion view.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  delete_account_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the “delete account” button from the
+      account deletion view.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never

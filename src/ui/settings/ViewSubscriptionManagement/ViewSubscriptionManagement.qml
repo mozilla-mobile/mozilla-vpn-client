@@ -95,6 +95,7 @@ VPNFlickable {
                 id: manageSubscriptionButton
 
                 onClicked: {
+                    Sample.manageSubscriptionClicked.record();
                     handleManageAccountClicked();
                 }
                 text: VPNl18n.SubscriptionManagementManageSubscriptionButton
@@ -111,6 +112,7 @@ VPNFlickable {
                 visible: VPNFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {
+                    Sample.deleteAccountRequested.record();
                     settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
                 }
 
@@ -126,7 +128,6 @@ VPNFlickable {
     }
 
     function handleManageAccountClicked() {
-        // TODO: Add Glean event
         VPN.openLink(VPN.LinkAccount);
     }
 
