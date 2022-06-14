@@ -20,7 +20,6 @@
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
-#include "tasks/addonindex/taskaddonindex.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
@@ -238,7 +237,6 @@ void MozillaVPN::initialize() {
   }
 
   AddonManager::instance();
-  TaskScheduler::scheduleTask(new TaskAddonIndex());
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 

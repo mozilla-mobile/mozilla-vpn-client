@@ -253,10 +253,6 @@ target_sources(mozillavpn PRIVATE
     tasks/account/taskaccount.h
     tasks/adddevice/taskadddevice.cpp
     tasks/adddevice/taskadddevice.h
-    tasks/addon/taskaddon.cpp
-    tasks/addon/taskaddon.h
-    tasks/addonindex/taskaddonindex.cpp
-    tasks/addonindex/taskaddonindex.h
     tasks/authenticate/taskauthenticate.cpp
     tasks/authenticate/taskauthenticate.h
     tasks/captiveportallookup/taskcaptiveportallookup.cpp

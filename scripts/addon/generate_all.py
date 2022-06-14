@@ -61,3 +61,10 @@ index = {
 
 with open(os.path.join(generated_path, "manifest.json"), "w") as f:
   f.write(json.dumps(index, indent=2))
+
+with open(os.path.join(generated_path, "manifest.qrc"), "w") as f:
+  f.write('''
+<RCC><qresource prefix="/addons">
+  <file>manifest.json</file>
+</qresource></RCC>
+''')

@@ -31,6 +31,7 @@
 #include "theme.h"
 #include "update/updater.h"
 
+#include <addons.h>
 #include <glean.h>
 #include <lottie.h>
 #include <nebula.h>
@@ -205,6 +206,7 @@ int CommandUI::run(QStringList& tokens) {
     QQmlContext* ctx = engine->rootContext();
     ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
+    Addons::Initialize(engine);
     Glean::Initialize(engine);
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);

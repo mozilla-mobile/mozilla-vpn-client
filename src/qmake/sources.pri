@@ -124,8 +124,6 @@ SOURCES += \
         subscriptiondata.cpp \
         tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
-        tasks/addon/taskaddon.cpp \
-        tasks/addonindex/taskaddonindex.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/deleteaccount/taskdeleteaccount.cpp \
@@ -276,8 +274,6 @@ HEADERS += \
         task.h \
         tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \
-        tasks/addon/taskaddon.h \
-        tasks/addonindex/taskaddonindex.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/deleteaccount/taskdeleteaccount.h \

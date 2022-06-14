@@ -7,3 +7,5 @@ target_sources(mozillavpn PRIVATE
     platforms/dummy/dummycontroller.h
     platforms/dummy/dummycryptosettings.cpp
 )
+
+add_definitions(-DADDONS_PATH=\"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/mozillavpn/addons\")
