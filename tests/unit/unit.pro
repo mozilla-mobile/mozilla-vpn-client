@@ -42,6 +42,12 @@ include($$PWD/../../translations/translations.pri)
 RESOURCES ~= 's/.*servers.qrc//g'
 
 HEADERS += \
+    ../../src/addonmanager.h \
+    ../../src/addons/addon.h \
+    ../../src/addons/addondemo.h \
+    ../../src/addons/addonguide.h \
+    ../../src/addons/addoni18n.h \
+    ../../src/addons/addontutorial.h \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/captiveportal/captiveportal.h \
@@ -100,7 +106,6 @@ HEADERS += \
     ../../src/platforms/android/androidsharedprefs.h \
     ../../src/platforms/dummy/dummynetworkwatcher.h \
     ../../src/platforms/dummy/dummypingsender.h \
-    ../../src/profileflow.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
     ../../src/rfc/rfc1918.h \
@@ -115,8 +120,8 @@ HEADERS += \
     ../../src/task.h \
     ../../src/tasks/account/taskaccount.h \
     ../../src/tasks/adddevice/taskadddevice.h \
+    ../../src/tasks/addon/taskaddon.h \
     ../../src/tasks/function/taskfunction.h \
-    ../../src/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
     ../../src/tasks/ipfinder/taskipfinder.h \
     ../../src/tasks/release/taskrelease.h \
     ../../src/tasks/servers/taskservers.h \
@@ -129,6 +134,7 @@ HEADERS += \
     ../../src/urlopener.h \
     ../../src/websockethandler.h \
     helper.h \
+    testaddon.h \
     testadjust.h \
     testandroidmigration.h \
     testcommandlineparser.h \
@@ -153,6 +159,12 @@ HEADERS += \
     testwebsockethandler.h
 
 SOURCES += \
+    ../../src/addonmanager.cpp \
+    ../../src/addons/addon.cpp \
+    ../../src/addons/addondemo.cpp \
+    ../../src/addons/addonguide.cpp \
+    ../../src/addons/addoni18n.cpp \
+    ../../src/addons/addontutorial.cpp \
     ../../src/adjust/adjustfiltering.cpp \
     ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
@@ -209,7 +221,6 @@ SOURCES += \
     ../../src/platforms/android/androidsharedprefs.cpp \
     ../../src/platforms/dummy/dummynetworkwatcher.cpp \
     ../../src/platforms/dummy/dummypingsender.cpp \
-    ../../src/profileflow.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \
     ../../src/rfc/rfc1918.cpp \
@@ -223,9 +234,9 @@ SOURCES += \
     ../../src/subscriptiondata.cpp \
     ../../src/tasks/account/taskaccount.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
+    ../../src/tasks/addon/taskaddon.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/tasks/release/taskrelease.cpp \
-    ../../src/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
     ../../src/tasks/ipfinder/taskipfinder.cpp \
     ../../src/tasks/servers/taskservers.cpp \
     ../../src/taskscheduler.cpp \
@@ -241,6 +252,7 @@ SOURCES += \
     mocinspectorhandler.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
+    testaddon.cpp \
     testadjust.cpp \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \

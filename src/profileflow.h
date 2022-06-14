@@ -39,6 +39,7 @@ class ProfileFlow final : public QObject {
  private:
   void populateFakeData();
   void setState(State state);
+  void showFakeData();
   void subscriptionDetailsFetched(const QByteArray& subscriptionData);
 
  private:

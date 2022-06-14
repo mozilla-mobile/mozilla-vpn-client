@@ -127,7 +127,7 @@ Item {
                         Layout.topMargin: VPNTheme.theme.vSpacingSmall
                         Layout.fillWidth: true
 
-                        text: VPNl18n[guide.titleId]
+                        text: qsTrId(guide.titleId)
                         lineHeightMode: Text.FixedHeight
                         lineHeight: VPNTheme.theme.vSpacing
                         wrapMode: Text.Wrap
@@ -138,7 +138,7 @@ Item {
                         Layout.topMargin: VPNTheme.theme.listSpacing
                         Layout.fillWidth: true
 
-                        text: VPNl18n[guide.subtitleId]
+                        text: qsTrId(guide.subtitleId)
                         font.pixelSize: VPNTheme.theme.fontSizeSmall
                         color: VPNTheme.theme.fontColor
                         horizontalAlignment: Text.AlignLeft
@@ -162,7 +162,7 @@ Item {
                             VPNBoldInterLabel {
                                 property var guideBlock
 
-                                text: VPNl18n[guideBlock.id]
+                                text: qsTrId(guideBlock.id)
                                 font.pixelSize: VPNTheme.theme.fontSize
                                 lineHeight: VPNTheme.theme.labelLineHeight
                                 verticalAlignment: Text.AlignVCenter
@@ -175,7 +175,7 @@ Item {
                             VPNInterLabel {
                                 property var guideBlock
 
-                                text: VPNl18n[guideBlock.id]
+                                text: qsTrId(guideBlock.id)
                                 font.pixelSize: VPNTheme.theme.fontSizeSmall
                                 color: VPNTheme.theme.fontColor
                                 horizontalAlignment: Text.AlignLeft
@@ -188,7 +188,7 @@ Item {
                             VPNInterLabel {
                                 property var guideBlock
                                 property string listType
-                                property var tagsList: guideBlock.subBlockIds.map(subBlockId => `<li>${VPNl18n[subBlockId]}</li>`)
+                                property var tagsList: guideBlock.subBlockIds.map(subBlockId => `<li>${qsTrId(subBlockId)}</li>`)
 
                                 text: `<${listType} style='margin-left: -24px;-qt-list-indent:1;'>%1</${listType}>`.arg(tagsList.join(""))
                                 textFormat: Text.RichText

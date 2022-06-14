@@ -40,7 +40,6 @@
         <file>components/VPNConnectionStability.qml</file>
         <file>components/VPNControllerNav.qml</file>
         <file>components/VPNControllerView.qml</file>
-        <file>components/VPNCreditCard.qml</file>
         <file>components/VPNDeviceListItem.qml</file>
         <file>components/VPNDevicesListHeader.qml</file>
         <file>components/VPNDropShadowWithStates.qml</file>
@@ -76,6 +75,7 @@
         <file>components/VPNMobileStatusBarModifier.qml</file>
         <file>components/VPNMouseArea.qml</file>
         <file>components/VPNPanel.qml</file>
+        <file>components/VPNPaymentMethod.qml</file>
         <file>components/VPNPill.qml</file>
         <file>components/VPNPopupButton.qml</file>
         <file>components/VPNPopup.qml</file>
@@ -121,5 +121,6 @@
         <file>components/VPNSegmentedToggle.qml</file>
         <file>components/VPNSegmentedNavigation.qml</file>
         <file>components/VPNUserProfile.qml</file>
+        <file>components/VPNTutorialPopups.qml</file>
     </qresource>
 </RCC>

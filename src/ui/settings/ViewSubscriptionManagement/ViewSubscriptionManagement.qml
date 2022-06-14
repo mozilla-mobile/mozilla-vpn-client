@@ -16,7 +16,6 @@ VPNFlickable {
     anchors.top: parent.top
     height: parent.height
     flickContentHeight: contentColumn.implicitHeight + VPNTheme.theme.rowHeight
-    windowHeightExceedsContentHeight: !(flickContentHeight > height)
 
     ListModel {
         id: subscriptionInfoModel
@@ -40,7 +39,10 @@ VPNFlickable {
 
         VPNUserProfile {
             _iconButtonImageSource: "qrc:/nebula/resources/open-in-new.svg"
-            _iconButtonOnClicked: () => handleManageAccountClicked()
+            _iconButtonOnClicked: () => {
+                Sample.manageAccountClicked.record();
+                VPN.openLink(VPN.LinkAccount);
+            }
 
             Layout.leftMargin: VPNTheme.theme.windowMargin / 2
             Layout.topMargin: VPNTheme.theme.windowMargin * 2
@@ -124,7 +126,7 @@ VPNFlickable {
     }
 
     function handleManageAccountClicked() {
-        Sample.manageAccountClicked.record();
+        // TODO: Add Glean event
         VPN.openLink(VPN.LinkAccount);
     }
 
@@ -147,20 +149,15 @@ VPNFlickable {
         });
 
         subscriptionInfoModel.append({
-            labelText: VPNl18n.SubscriptionManagementNextLabel,
-            // TODO: Calculate next billing date if any
-            valueText: "",
-            type: "text",
-        });
-
-        subscriptionInfoModel.append({
             labelText: VPNl18n.SubscriptionManagementActivatedLabel,
             valueText: epochTimeToDate(VPNSubscriptionData.createdAt),
             type: "text",
         });
 
         subscriptionInfoModel.append({
-            labelText: VPNl18n.SubscriptionManagementExpiresLabel,
+            labelText: VPNSubscriptionData.status === "active"
+                ? VPNl18n.SubscriptionManagementNextLabel
+                : VPNl18n.SubscriptionManagementExpiresLabel,
             valueText: epochTimeToDate(VPNSubscriptionData.expiresOn),
             type: "text",
         });
@@ -170,21 +167,19 @@ VPNFlickable {
             subscriptionPaymentModel.append({
                 labelText: VPNSubscriptionData.creditCardBrand,
                 valueText: VPNl18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
-                type: "creditCard",
+                type: "payment",
             });
 
             subscriptionPaymentModel.append({
                 labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
-                // TODO: Show date w/o days
-                valueText: epochTimeToDate(new Date(VPNSubscriptionData.creditCardExpYear, VPNSubscriptionData.creditCardExpMonth - 1).getTime() / 1000),
+                valueText: getPaymentExpiration(),
                 type: "text",
             });
         } else {
             subscriptionPaymentModel.append({
-                // TODO: Handle different IAP platforms
-                labelText: VPNl18n.SubscriptionManagementSubscriptionPlatformLabel.arg("IAP Google or Apple"),
+                labelText: VPNSubscriptionData.paymentType,
                 valueText: "",
-                type: "text",
+                type: "payment",
             });
         }
     }
@@ -193,9 +188,17 @@ VPNFlickable {
         return new Date(unixTimestamp * 1000).toLocaleDateString(VPNLocalizer.locale, Locale.ShortFormat);
     }
 
+    function getPaymentExpiration() {
+        return (
+            VPNLocalizer.locale.monthName(VPNSubscriptionData.creditCardExpMonth - 1)
+            + " "
+            + VPNSubscriptionData.creditCardExpYear
+        );
+    }
+
     function getPlanText(currencyCode, amount, intervalCount) {
         const amountDisplay = (amount || 0) / 100;
-        const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode.toUpperCase());
+        const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode);
 
         let labelText;
 

@@ -13,153 +13,48 @@ ColumnLayout {
 
     signal started()
     signal finished()
-    signal close()
 
-    property variant slidesModel: ({})
+    property variant slidesModel
     property string currentFeatureID: ""
+    readonly property int currentIndex: swipeView.currentIndex
 
-    states: [
-        State {
-            name: "tour-default"
-            when: swipeView.currentIndex > 0 && swipeView.currentIndex < swipeView.count - 1
-
-            PropertyChanges {
-                target: resumeButton
-                text: VPNl18n.WhatsNewReleaseNotesSupportModalButtonText
-            }
-
-            PropertyChanges {
-                target: slideIndicator
-                opacity: 1.0
-            }
-        },
-        State {
-            name: "tour-start"
-            when: swipeView.currentIndex === 0
-
-            PropertyChanges {
-                target: resumeButton
-                text: VPNl18n.WhatsNewReleaseNotesTourModalButtonText
-            }
-
-            PropertyChanges {
-                target: slideIndicator
-                opacity: 0
-            }
-
-            PropertyChanges {
-                target: buttonIcon
-                visible: true
-            }
-        },
-        State {
-            name: "tour-end"
-            when: swipeView.currentIndex === swipeView.count - 1
-
-            PropertyChanges {
-                target: resumeButton
-                text: VPNl18n.WhatsNewReleaseNotesDnsModalButtonText
-            }
-
-            PropertyChanges {
-                target: slideIndicator
-                opacity: 1.0
-            }
-        }
-    ]
-
-    VPNIconButton {
-        id: backButton
-
-        Layout.alignment: Qt.AlignTop
-        Layout.preferredHeight: VPNTheme.theme.rowHeight
-        Layout.preferredWidth: VPNTheme.theme.rowHeight
-        Layout.margins: -VPNTheme.theme.windowMargin
-        visible: true
-        accessibleName: qsTrId("vpn.main.back")
-        enabled: swipeView.currentIndex > 1
-        onClicked: {
-            swipeView.decrementCurrentIndex();
-        }
-        opacity: swipeView.currentIndex > 1 ? 1 : 0
-        z: 1
-
-        Image {
-            id: backImage
-
-            anchors.centerIn: backButton
-            fillMode: Image.PreserveAspectFit
-            source: "qrc:/nebula/resources/back-dark.svg"
-            sourceSize.height: VPNTheme.theme.iconSize * 1.5
-            sourceSize.width: VPNTheme.theme.iconSize * 1.5
-        }
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 100
-            }
-        }
+    onStarted: {
+        //set the feature ID (specifically for getting the link if the feature has one)
+        if(slidesModel.rowCount() > 0) currentFeatureID = slidesRepeater.itemAt(0).featureID
     }
 
     ColumnLayout {
         id: content
-        spacing: VPNTheme.theme.listSpacing
+        spacing: 0
 
         SwipeView {
             id: swipeView
+
+            objectName: "featureSwipeView"
 
             clip: true
             currentIndex: 0
             interactive: true
 
-            Layout.fillHeight: true
             Layout.fillWidth: true
 
-            Component {
-                id: slide
+            onCurrentIndexChanged: {
+                tour.currentFeatureID = slidesRepeater.itemAt(currentIndex).featureID
+            }
 
-                ColumnLayout {
-                    id: slideContent
 
-                    opacity: isCurrentSlide() ? 1 : 0
+            Repeater {
+                id: slidesRepeater
+                model: slidesModel
 
-                    ColumnLayout {
-                        spacing: VPNTheme.theme.listSpacing
-                        Item {
-                            Layout.alignment: Qt.AlignHCenter
-                            Layout.preferredHeight: 120
-                            Layout.preferredWidth: 120
+                delegate: Loader {
 
-                            Image {
-                                anchors.fill: parent
-                                source: featureImagePath
-                                fillMode: Image.PreserveAspectFit
+                    property string featureID: feature.id
 
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.bottom: parent.bottom
-                                anchors.bottomMargin: tour.state === "tour-start" ? VPNTheme.theme.listSpacing * 0.5 : VPNTheme.theme.listSpacing * 0.25
-                            }
-                        }
-
-                        VPNMetropolisLabel {
-                            id: popupTitle
-
-                            color: VPNTheme.theme.fontColorDark
-                            horizontalAlignment: Text.AlignHCenter
-                            font.pixelSize: VPNTheme.theme.fontSizeLarge
-
-                            Layout.bottomMargin: VPNTheme.theme.listSpacing
-                            Layout.fillWidth: true
-                        }
-
-                        VPNTextBlock {
-                            id: popupText
-
-                            horizontalAlignment: Text.AlignHCenter
-                            Layout.fillWidth: true
-                            Layout.preferredWidth: parent.width
-                        }
-                    }
+                    asynchronous: true
+                    visible: status == Loader.Ready
+                    active: index === swipeView.currentIndex
+                    opacity: index === swipeView.currentIndex ? 1 : 0
 
                     Behavior on opacity {
                         NumberAnimation {
@@ -167,78 +62,49 @@ ColumnLayout {
                         }
                     }
 
-                    function isCurrentSlide() {
-                        return slideIndex === swipeView.currentIndex;
-                    }
+                    sourceComponent: ColumnLayout {
+                        id: slideContent
 
-                    function updateSlideContent() {
-                        popupTitle.text = featureID !== ""
-                            ? VPNFeatureList.get(featureID).displayName
-                            : VPNl18n.WhatsNewReleaseNotesTourModalHeader;
-                        popupText.text = featureID !== ""
-                            ? VPNFeatureList.get(featureID).description
-                            : VPNl18n.WhatsNewReleaseNotesTourModalBodyText;
-                    }
+                        ColumnLayout {
+                            spacing: VPNTheme.theme.listSpacing
 
-                    Connections {
-                        target: tour
-                        function onStarted() {
-                            if (isCurrentSlide()) {
-                                updateSlideContent();
+                            Image {
+                                Layout.alignment: Qt.AlignHCenter
+
+                                source: feature.imagePath
+                                sourceSize.width: 104
+                                sourceSize.height: 120
+                            }
+
+                            VPNMetropolisLabel {
+                                id: popupTitle
+
+                                text: feature.displayName
+                                color: VPNTheme.theme.fontColorDark
+                                horizontalAlignment: Text.AlignHCenter
+                                font.pixelSize: VPNTheme.theme.fontSizeLarge
+
+                                Layout.bottomMargin: VPNTheme.theme.listSpacing
+                                Layout.fillWidth: true
+
+                                Accessible.ignored: index !== swipeView.currentIndex
+                            }
+
+                            VPNTextBlock {
+                                id: popupText
+
+                                text: feature.description
+                                horizontalAlignment: Text.AlignHCenter
+                                Layout.fillWidth: true
+
+                                Accessible.ignored: index !== swipeView.currentIndex
                             }
                         }
-                    }
 
-                    Connections {
-                        target: swipeView
-
-                        function onCurrentIndexChanged() {
-                            if (!isCurrentSlide()) {
-                                return;
-                            }
-
-                            const featureIdChanged = tour.currentFeatureID !== featureID;
-                            if (featureIdChanged) {
-                                tour.currentFeatureID = featureID;
-                                updateSlideContent();
-                            }
+                        Item {
+                            Layout.fillHeight: true
                         }
                     }
-                }
-            }
-
-            Loader {
-                id: initialSlideLoader
-
-                property int slideIndex: 0
-                property string featureID: ""
-                property string featureName: VPNl18n.WhatsNewReleaseNotesTourModalHeader
-                property string featureDescription: VPNl18n.WhatsNewReleaseNotesTourModalBodyText
-                property string featureImagePath: "qrc:/nebula/resources/features/features-tour-hero.png"
-
-                active: SwipeView.isCurrentItem | SwipeView.isPreviousItem | SwipeView.isNextItem
-                asynchronous: true
-                sourceComponent: slide
-                visible: initialSlideLoader.status === Loader.Ready
-            }
-
-            Repeater {
-                id: slidesRepeater
-                model: slidesModel
-
-                Loader {
-                    id: featureSlidesLoader
-
-                    property int slideIndex: index + 1
-                    property string featureID: feature.id
-                    property string featureName: feature.displayName
-                    property string featureDescription: feature.description
-                    property string featureImagePath: feature.imagePath
-
-                    active: SwipeView.isCurrentItem | SwipeView.isPreviousItem | SwipeView.isNextItem
-                    asynchronous: true
-                    sourceComponent: slide
-                    visible: featureSlidesLoader.status === Loader.Ready
                 }
             }
         }
@@ -246,11 +112,14 @@ ColumnLayout {
         PageIndicator {
             id: slideIndicator
 
-            count: swipeView.count - 1
-            currentIndex: swipeView.currentIndex - 1
+            Layout.topMargin: VPNTheme.theme.vSpacingSmall
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+
+            count: swipeView.count
+            currentIndex: swipeView.currentIndex
             interactive: false
             spacing: VPNTheme.theme.windowMargin / 2
-            visible: swipeView.currentIndex >= 1 && count > 1
+            visible: count > 1
             delegate: Rectangle {
                 id: circle
 
@@ -266,8 +135,6 @@ ColumnLayout {
                 }
             }
 
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
-
             Behavior on opacity {
                 NumberAnimation {
                     duration: 100
@@ -278,46 +145,36 @@ ColumnLayout {
         VPNButton {
             id: resumeButton
 
+            objectName: "featureTourPrimaryButton"
+
+            property bool isLastFeature: swipeView.currentIndex === swipeView.count - 1
+
+            text: isLastFeature ? VPNl18n.WhatsNewReleaseNotesDnsModalButtonText : VPNl18n.WhatsNewReleaseNotesSupportModalButtonText
             radius: VPNTheme.theme.cornerRadius
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignBottom
-            Layout.topMargin: slideIndicator.visible ? VPNTheme.theme.listSpacing : VPNTheme.theme.vSpacingSmall
+            Layout.topMargin: slideIndicator.visible ? VPNTheme.theme.vSpacing : VPNTheme.theme.vSpacingSmall
+            Layout.bottomMargin: linkButton.visible ? VPNTheme.theme.vSpacingSmall / 2 : VPNTheme.theme.windowMargin / 2
 
             onClicked: {
-                if (tour.state === "tour-start") {
-                    tour.started();
-                } else if (tour.state === "tour-end") {
-                    tour.finished();
-                    return;
+                if(isLastFeature) {
+                    tour.finished()
+                    return
                 }
 
                 swipeView.contentItem.highlightMoveDuration = 250;
                 swipeView.incrementCurrentIndex();
-            }
-
-            Image {
-                id: buttonIcon
-
-                anchors {
-                    right: resumeButton.contentItem.right
-                    rightMargin: VPNTheme.theme.windowMargin
-                    verticalCenter: resumeButton.verticalCenter
-                }
-                fillMode: Image.PreserveAspectFit
-                source: "qrc:/nebula/resources/arrow-forward-white.svg"
-                sourceSize.height: VPNTheme.theme.iconSize * 1.5
-                sourceSize.width: VPNTheme.theme.iconSize * 1.5
-                visible: false
             }
         }
 
         VPNLinkButton {
             id: linkButton
 
+            objectName: "featureTourSecondaryButton"
+
             labelText: VPNl18n.SplittunnelInfoLinkText
             visible: hasFeatureLinkUrl()
             Layout.fillWidth: true
-            Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
 
             onClicked: {
                 const featureLinkUrl = VPNFeatureList.get(currentFeatureID).linkUrl
@@ -336,15 +193,23 @@ ColumnLayout {
         }
     }
 
-    function skipStart() {
-        swipeView.contentItem.highlightMoveDuration = 0;
-        swipeView.setCurrentIndex(1);
-
-        tour.started();
-    }
-
     function resetTour() {
         swipeView.contentItem.highlightMoveDuration = 0;
         swipeView.setCurrentIndex(0);
+
+        tour.started();
+
+        //Calculate which slide is the tallest so we can set that height to the swipe view, this way the modal does not change size
+        var tallestSlideHeight = 0
+        for(var i = 0; i < slidesRepeater.count; i++) {
+            const slideHeight = slidesRepeater.itemAt(i).implicitHeight
+            if (slideHeight > tallestSlideHeight) tallestSlideHeight = slideHeight
+        }
+        swipeView.Layout.preferredHeight = Qt.binding(function() { return linkButton.visible ? tallestSlideHeight - linkButton.height : tallestSlideHeight })
+    }
+
+    function goBack() {
+        swipeView.contentItem.highlightMoveDuration = 250;
+        swipeView.decrementCurrentIndex();
     }
 }

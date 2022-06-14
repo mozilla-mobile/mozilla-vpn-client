@@ -1,0 +1,37 @@
+{
+  "api_version": "0.1",
+  "id": "guide_02_is_my_vpn_working_correctly",
+  "name": "Guide: is my VPN working correctly",
+  "type": "guide",
+  "guide": {
+    "id": "is_my_vpn_working_correctly",
+    "title": "Is my VPN connected to the right server location?",
+    "subtitle": "Test your geolocation on one of our 400+ worldwide servers in two super simple ways:",
+    "image": "qrc:/addons/guide_02_is_my_vpn_working_correctly/image.svg",
+    "blocks": [
+      { "id": "c_1",
+        "type": "title",
+        "content": "Search in your browser" },
+      { "id": "c_2",
+        "type": "text",
+        "content": "Enter a search term like “local weather” in your browser and see a real-time weather update for your current VPN location." },
+      { "id": "c_3",
+        "type": "title",
+        "content": "Sign in to your favorite app or streaming site" },
+      { "id": "c_4",
+        "type": "text",
+        "content": "Traveling abroad and need to access content from back home?" },
+      { "id": "c_5",
+        "type": "olist",
+        "content": [
+        {
+          "id": "l_1",
+          "content": "Connect to the country server of your choice" },
+        {
+          "id": "l_2",
+          "content": "Sign on to your favorite app or streaming site" }
+        ]
+      }
+    ]
+  }
+}

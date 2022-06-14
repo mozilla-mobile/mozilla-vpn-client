@@ -42,8 +42,8 @@ Item {
                     // I'm too lazy to create a proper view.
                     function showTutorialContent(tutorial) {
                         const list = [];
-                        list.push("Translate title: " + VPNl18n[tutorial.titleId]);
-                        list.push("Translate subtitle: " + VPNl18n[tutorial.subtitleId]);
+                        list.push("Translate title: " + qsTrId(tutorial.titleId));
+                        list.push("Translate subtitle: " + qsTrId(tutorial.subtitleId));
                         list.push("Image: " + tutorial.image);
                         list.push("Highlighted: " + tutorial.highlighted + "(" + (tutorial === VPNTutorial.highlightedTutorial ? "true" : "false")  + ")");
 

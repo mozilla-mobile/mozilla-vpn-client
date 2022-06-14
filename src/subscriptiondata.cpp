@@ -74,7 +74,10 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   if (!planCurrency.isString()) {
     return false;
   }
-  m_planCurrency = planCurrency.toString();
+  // We transform currency code to uppercase in order to be compliant with
+  // ISO 4216. FxA passes the lowercase currency code values without
+  // transformation from Stripe.
+  m_planCurrency = planCurrency.toString().toUpper();
 
   m_planIntervalCount = planData.value("interval_count").toInt();
   if (!m_planIntervalCount) {

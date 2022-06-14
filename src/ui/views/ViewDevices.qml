@@ -149,6 +149,17 @@ Item {
     VPNRemoveDevicePopup {
         id: removePopup
 
+        Connections {
+            target: VPN
+            function onDeviceRemoving(devPublicKey) {
+                if(VPN.state === VPN.StateDeviceLimit) {
+                    for(var i = 0; i < deviceList.count; i++) {
+                        deviceList.itemAt(i).enabled = false
+                    }
+                }
+            }
+        }
+
         function initializeAndOpen(name, publicKey) {
             removePopup.deviceName = name;
             removePopup.devicePublicKey = publicKey;

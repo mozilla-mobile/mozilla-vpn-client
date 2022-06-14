@@ -247,7 +247,8 @@ whatsNewReleaseNotes:
   connectionInfoDisplayName: Test your speed
   connectionInfoDescription: You can now run speed tests in Mozilla VPN! Select the performance icon in the top left corner of your screen to test your connection speed while using VPN.
   connectionInfoDescriptionShort: You can now run speed tests within the VPN to check your connection speed.
-
+  easyProfileDisplayName: Easier-to-use profile
+  easyProfileDescription: Now accessible from the VPN app, users can view their personal information, subscription summary and payment information within the subscription profile page.
 
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
@@ -590,10 +591,8 @@ freeTrials:
 
 tipsAndTricks:
   settingsEntryLabel: VPN tips and tricks
-  tutorialLabel: Tutorial
-  featureTourLabel: Feature tour
-  whatsNewTitle: What’s new?
-  whatsNewDescription: We’ve added new features. Take a tour to get a deeper dive into what we’ve added for you!
+  featureTourCardTitle: Tour the VPN
+  featureTourCardDescription: Take a tour of Mozilla VPN to learn how the latest features help you protect your online privacy.
   quickTipsTitle: Quick tips
   quickTipsDescription: Let us help you get the most out of Mozilla VPN
   quickTipsGuideViewTitle: Quick tip
@@ -652,18 +651,29 @@ subscriptionManagement:
     comment: Label for the date on which the payment method expires.
   manageSubscriptionButton:
     value: Manage subscription
-    comment: Label for a button that will take the user to a view where they can manage their subscription
+    comment: Label for a button that will take the user to a view where they can manage their subscription.
 
 paymentMethods:
   amex: American Express
   diners: Diners Club
   discover: Discover
   jcb: JCB
+  iapApple: Apple subscription
+  iapGoogle: Google subscription
   mastercard: Mastercard
   paypal: PayPal
   unionpay: UnionPay
   visa: Visa
-  unbranded: Credit card
+
+tutorialPopup:
+  tutorialCompleteHeadline: Well done!
+  tutorialCompletePrimaryButtonLabel: Let’s go!
+  secondaryButtonLabel: Come back later
+  leaveTutorialButton: Leave tutorial
+
+  tutorialLeaveHeadline: Leave tutorial?
+  tutorialLeaveSubtitle: Looks like you haven’t finished the tutorial quite yet. Would you like to continue and finish now or quit and come back later?
+  tutorialLeavePrimaryButtonLabel: Resume tutorial
 
 global:
   expand:

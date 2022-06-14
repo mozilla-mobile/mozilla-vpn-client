@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
+#include "addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
 #include "dnshelper.h"
@@ -19,12 +20,14 @@
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
+#include "tasks/addonindex/taskaddonindex.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
+#include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
@@ -115,7 +118,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
-         new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));
+         new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList(),
+         new TaskAddonIndex()}));
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -233,6 +237,9 @@ void MozillaVPN::initialize() {
   if (Feature::get(Feature::Feature_websocket)->isSupported()) {
     m_private->m_webSocketHandler.initialize();
   }
+
+  AddonManager::instance();
+  TaskScheduler::scheduleTask(new TaskAddonIndex());
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
