@@ -109,6 +109,9 @@ python3 scripts/utils/import_languages.py $([[ $QTBINPATH ]] && echo "-q $QTBINP
 print Y "Generating glean samples..."
 python3 scripts/utils/generate_glean.py || die "Failed to generate glean samples"
 
+print Y "Generating addons..."
+python3 scripts/addon/generate_all.py $([[ $QTBINPATH ]] && echo "-q $QTBINPATH") || die "Failed to generate addons"
+
 printn Y "Extract the project version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
 FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")

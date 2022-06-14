@@ -112,6 +112,8 @@ install(FILES platforms/linux/daemon/org.mozilla.vpn.conf
 install(FILES platforms/linux/daemon/org.mozilla.vpn.dbus.service
     DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/system-services)
 
+add_definitions(-DADDONS_PATH=\"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/mozillavpn/addons\")
+
 ## This is only really needed when building from source. Otherwise, we
 ## expect the Distro's packaging magic to sort this out.
 pkg_check_modules(SYSTEMD systemd)
