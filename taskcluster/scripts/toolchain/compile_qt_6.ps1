@@ -84,7 +84,7 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
 
 
 Set-Location $REPO_ROOT_PATH
-Copy-Item -Path taskcluster/scripts/build_qt/configure_qt.ps1 -Destination QT_OUT/
+Copy-Item -Path taskcluster/scripts/toolchain/configure_qt.ps1 -Destination QT_OUT/
 Copy-Item -Path $SSL_PATH -Recurse -Destination QT_OUT/
 
 New-Item -ItemType Directory -Path "$TASK_WORKDIR/public/build" -Force

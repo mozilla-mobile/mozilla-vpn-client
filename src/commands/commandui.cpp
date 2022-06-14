@@ -127,7 +127,11 @@ int CommandUI::run(QStringList& tokens) {
       return 0;
     }
 
-    if (testingOption.m_set) {
+    if (testingOption.m_set
+#ifdef MVPN_WASM
+        || true
+#endif
+    ) {
       Constants::setStaging();
     }
 

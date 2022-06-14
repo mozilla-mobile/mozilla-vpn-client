@@ -31,6 +31,7 @@ class Feature : public QObject {
   Q_PROPERTY(QString imagePath READ imagePath CONSTANT)
   Q_PROPERTY(QString iconPath READ iconPath CONSTANT)
   Q_PROPERTY(QString linkUrl READ linkUrl CONSTANT)
+  Q_PROPERTY(QString releaseVersion READ releaseVersion CONSTANT)
   Q_PROPERTY(bool isReleased MEMBER m_released CONSTANT)
   Q_PROPERTY(bool isNew READ isNew CONSTANT)
   Q_PROPERTY(bool flippableOn READ isFlippableOn CONSTANT)
@@ -94,6 +95,7 @@ class Feature : public QObject {
   QString imagePath() const { return m_imagePath; }
   QString iconPath() const { return m_iconPath; }
   QString linkUrl() const { return m_linkUrl; }
+  QString releaseVersion() const { return m_releaseVersion; }
 
  signals:
   // This signal is emitted if the underlying factors for support changed e.g
@@ -129,6 +131,8 @@ class Feature : public QObject {
   const QString m_iconPath;
   // Link URL to external information on the feature
   const QString m_linkUrl;
+  // Version that the feature was released in
+  const QString m_releaseVersion;
 
   // If true, the feature can be enabled.
   const bool m_flippableOn;

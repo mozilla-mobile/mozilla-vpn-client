@@ -184,6 +184,7 @@ theme.removeDeviceBtn = {
   'defaultColor': theme.bgColorTransparent,
   'buttonHovered': '#FFDFE7',
   'buttonPressed': '#FFBDC5',
+  'buttonDisabled': theme.bgColorTransparent,
   'focusOutline': theme.bgColorTransparent,
   'focusBorder': theme.red,
 };

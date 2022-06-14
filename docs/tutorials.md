@@ -3,8 +3,7 @@
 Tutorials are part of the "Tips & Tricks" page and they are a way to teach how
 to use the Mozilla VPN features with an interactive system.
 
-Technically, they are implemented as JSON files, stored in the `qrc://tutorials`
-folder.
+Technically, they are implemented as add-ons (see the add-on documentation).
 
 The JSON files are validated via [JSON Schema](https://json-schema.org/) files:
 https://github.com/mozilla-mobile/mozilla-vpn-client/tree/main/scripts/ci/jsonSchemas
@@ -13,12 +12,12 @@ On this page, we want to describe how to write new tutorials.
 
 ## JSON format
 
-The Tutorial JSON files are JSON objects. The required properties are:
+The Tutorial JSON files are add-on JSON objects, with type "tutorial" and a "tutorial"
+property object with the following properties:
 
 | Property | Description | Type | Required |
 | --- | --- | --- | --- |
 | id | Each tutorial must have an id. This is used for the localization | String | Yes |
-| conditions | A list of conditions to be checked before exposing the tutorial. See below | Condition object | No |
 | highlighted | Is this tutorial highlighted? | Boolean | No |
 | title | The title of the Tutorial | String | Yes |
 | title_comment | An optional comment to describe the meaning of the title | String | No |
@@ -47,7 +46,7 @@ A step is a JSON object composed of the following properties:
 
 ### Condition object
 
-The condition object is similar to the Guide one. See the Guide documentation.
+The condition object is similar to the add-on one. See the Add-on documentation.
 
 ### Before object
 

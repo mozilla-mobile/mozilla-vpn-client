@@ -10,6 +10,7 @@
 #include "feature.h"
 
 #include <QList>
+#include <QVersionNumber>
 
 namespace {
 Logger logger(LOG_MODEL, "WhatsNewModel");
@@ -52,8 +53,10 @@ void WhatsNewModel::initialize() {
   QList<Feature*> newFeatures;
 
   for (Feature* feature : allFeatures) {
-    bool shouldBeInWhatsNew =
-        feature->isNew() && feature->isMajor() && feature->isSupported();
+    bool shouldBeInWhatsNew = !feature->displayName().isEmpty() &&
+                              !feature->description().isEmpty() &&
+                              !feature->imagePath().isEmpty() &&
+                              feature->isSupported() && feature->isMajor();
 
     if (shouldBeInWhatsNew) {
       newFeatures.append(feature);
@@ -61,6 +64,22 @@ void WhatsNewModel::initialize() {
   }
 
   m_featurelist = newFeatures;
+
+  // Sort features based on release version, newest to oldest
+  std::sort(m_featurelist.begin(), m_featurelist.end(),
+            [&](const Feature* a, const Feature* b) -> bool {
+              return QVersionNumber::fromString(a->releaseVersion()) >
+                     QVersionNumber::fromString(b->releaseVersion());
+            });
+}
+
+QStringList WhatsNewModel::featureIds() const {
+  QStringList featureIds;
+  for (const Feature* feature : m_featurelist) {
+    featureIds.append(feature->id());
+  }
+
+  return featureIds;
 }
 
 bool WhatsNewModel::hasUnseenFeature() {

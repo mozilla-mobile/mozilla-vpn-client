@@ -12,6 +12,7 @@ import components 0.1
 Item {
     objectName: "settings"
     property var _unwindSettingsStackView: () => settingsStackView.unwindToInitialItem();
+    property var _openTipsAndTricks: () => settingsStackView.push("qrc:/ui/settings/ViewTipsAndTricks.qml", StackView.Immediate)
     VPNMenu {
         id: menu
         objectName: "settingsBackButton"

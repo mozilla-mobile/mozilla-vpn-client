@@ -132,7 +132,7 @@ public class IOSControllerImpl : NSObject {
         return true
     }
 
-    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, includeAllNetworks: Bool, failureCallback: @escaping () -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
@@ -168,20 +168,18 @@ public class IOSControllerImpl : NSObject {
 
         let config = TunnelConfiguration(name: vpnName, interface: interface, peers: peerConfigurations)
 
-        self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", includeAllNetworks: includeAllNetworks, failureCallback: failureCallback)
+        self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", failureCallback: failureCallback)
     }
 
-    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, includeAllNetworks: Bool, failureCallback: @escaping () -> Void) {
+    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, failureCallback: @escaping () -> Void) {
         let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
         proto!.providerBundleIdentifier = vpnBundleID
         proto!.disconnectOnSleep = false
         proto!.serverAddress = serverName;
 
         if #available(iOS 15.1, *) {
-            if includeAllNetworks {
-                Logger.global?.log(message: "Activating includeAllNetworks")
-                proto!.includeAllNetworks = true
-            }
+            Logger.global?.log(message: "Activating includeAllNetworks")
+            proto!.includeAllNetworks = true
         }
 
         tunnel!.protocolConfiguration = proto

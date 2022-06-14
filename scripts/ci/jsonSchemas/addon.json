@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The id of this addon"
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of this addon"
+    },
+    "api_version": {
+      "type": "string",
+      "description": "The addon version framework"
+    },
+    "type": {
+      "type": "string",
+      "description": "The type of the addon: tutorial, guide, i18n"
+    },
+    "conditions": {
+      "$ref": "conditions.json"
+    },
+    "tutorial": {
+      "$ref": "tutorial.json#"
+    },
+    "guide": {
+      "$ref": "guide.json#"
+    },
+    "qml": {
+      "type": "string",
+      "description": "The QML entry point"
+    }
+  },
+  "required": [ "id", "name", "api_version", "type" ]
+}
+

@@ -12,7 +12,7 @@ from pathlib import Path
 parser = argparse.ArgumentParser()
 parser.add_argument('jsonSchema', metavar='JSONSchema', type=str, nargs=1,
                     help='the JSON Schema file to be used. The file must be stored in `scripts/ci/jsonSchemas`')
-parser.add_argument('path', metavar='path', type=str, nargs=1,
+parser.add_argument('path', metavar='path', type=str, nargs='+',
                     help='the path containing the JSON files to be validated.')
 args = parser.parse_args()
 
@@ -26,14 +26,9 @@ jsonSchema = os.path.join(os.getcwd(), "scripts", "ci", "jsonSchemas", args.json
 if not os.path.isfile(jsonSchema):
   exit(f"The JSONSchema {jsonSchema} does not exist")
 
-if not os.path.isdir(args.path[0]):
-  exit(f"`{args.path[0]}` is not a directory")
-
 with open(jsonSchema, "r", encoding="utf-8") as schema:
   schema = json.load(schema)
   resolver = RefResolver(Path(jsonSchema).as_uri(), "")
 
-  for root,d_names,f_names in os.walk(args.path[0]):
-    for f in f_names:
-      if f.endswith(".json"):
-        validateFile(os.path.join(args.path[0], f), schema, resolver)
+  for path in args.path:
+    validateFile(path, schema, resolver)

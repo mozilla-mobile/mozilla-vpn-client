@@ -171,8 +171,6 @@ with open('translations/generated/translations.qrc', 'w') as qrcfile:
 title("Generate the Js/C++ string definitions...")
 try:
     subprocess.call([sys.executable, os.path.join('scripts', 'utils', 'generate_strings.py'),
-                     '-g', os.path.join('src', 'ui', 'guides'),
-                     '-t', os.path.join('src', 'ui', 'tutorials'),
                      '-o', os.path.join('translations', 'generated'),
                      os.path.join('translations', 'strings.yaml')])
 except Exception as e:

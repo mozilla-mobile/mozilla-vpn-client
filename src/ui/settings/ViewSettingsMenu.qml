@@ -75,16 +75,6 @@ VPNFlickable {
             Layout.minimumWidth: parent.width
 
             VPNSettingsItem {
-                objectName: "settingsWhatsNew"
-                settingTitle: VPNl18n.WhatsNewReleaseNotesTourPageHeader
-                imageLeftSrc: "qrc:/nebula/resources/gift-dark.svg"
-                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/settings/ViewWhatsNew.qml")
-                showIndicator: VPNWhatsNewModel.hasUnseenFeature
-                visible: VPNWhatsNewModel.rowCount() > 0
-            }
-
-            VPNSettingsItem {
                 objectName: "settingsTipsAndTricks"
                 settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
                 imageLeftSrc: "qrc:/nebula/resources/sparkles.svg"
