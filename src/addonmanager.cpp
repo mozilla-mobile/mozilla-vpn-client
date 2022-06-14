@@ -29,15 +29,6 @@ Logger logger(LOG_MAIN, "AddonManager");
 
 AddonManager* s_instance = nullptr;
 
-QString rootAppFolder() {
-#ifdef MVPN_WASM
-  // https://wiki.qt.io/Qt_for_WebAssembly#Files_and_local_file_system_access
-  return "/";
-#else
-  return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-#endif
-}
-
 }  // namespace
 
 // static
@@ -59,15 +50,6 @@ void AddonManager::initialize() {
   if (!Feature::get(Feature::Feature_addon)->isSupported()) {
     logger.warning() << "Addons disabled by feature flag";
     return;
-  }
-
-  // Initialization of the addon folder.
-  {
-    QDir addonDir(rootAppFolder());
-    if (!addonDir.exists(ADDON_FOLDER) && !addonDir.mkdir(ADDON_FOLDER)) {
-      logger.info() << "Unable to create the addon folder";
-      return;
-    }
   }
 
   if (!validateIndex(readIndex())) {
@@ -213,17 +195,25 @@ void AddonManager::retranslate() {
 bool AddonManager::addonDir(QDir* dir) {
   Q_ASSERT(dir);
 
-  QDir addonDir(rootAppFolder());
-  if (!addonDir.exists(ADDON_FOLDER)) {
-    return false;
-  }
+  QString addonPath;
+#if defined(ADDONS_PATH)
+  addonPath = ADDONS_PATH;
+#elif defined(MVPN_WINDOWS)
+  addonPath = QString("%1/addons").arg(QCoreApplication::applicationDirPath());
+#elif defined(MVPN_MACOS)
+  addonPath = QString("%1/../Resources/addons")
+                  .arg(QCoreApplication::applicationDirPath());
+#elif defined(MVPN_IOS)
+  addonPath = QString("%1/addons").arg(QCoreApplication::applicationDirPath());
+#elif defined(MVPN_ANDROID)
+  addonPath = QString("assets:/addons");
+#elif defined(MVPN_WASM)
+  addonPath = QString(":/addons");
+#endif
 
-  if (!addonDir.cd(ADDON_FOLDER)) {
-    logger.warning() << "Unable to open the addons folder";
-    return false;
-  }
+  logger.debug() << "Loading addon from" << addonPath;
 
-  *dir = addonDir;
+  *dir = addonPath;
   return true;
 }
 

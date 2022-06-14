@@ -38,7 +38,9 @@ add_custom_target(generate_all_addons
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     include(GNUInstallDirs)
+    install(FILES "${GENERATED_DIR}/manifest.json" DESTINATION ${CMAKE_INSTALL_DATADIR}/mozillavpn/addons)
     install(FILES ${list_addons} DESTINATION ${CMAKE_INSTALL_DATADIR}/mozillavpn/addons)
 elseif(WIN32)
+    install(FILES "${GENERATED_DIR}/manifest.json" DESTINATION addons)
     install(FILES ${list_addons} DESTINATION addons)
 endif()
