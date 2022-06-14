@@ -121,5 +121,6 @@
         <file>components/VPNSegmentedToggle.qml</file>
         <file>components/VPNSegmentedNavigation.qml</file>
         <file>components/VPNUserProfile.qml</file>
+        <file>components/VPNTutorialPopups.qml</file>
     </qresource>
 </RCC>

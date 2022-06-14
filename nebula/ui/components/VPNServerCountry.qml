@@ -101,7 +101,7 @@ VPNClickableRow {
             PropertyAnimation {
                 target: serverCountry
                 property: "height"
-                to: serverCountryRow.height + cityList.height
+                to: serverCountryRow.height + cityList.implicitHeight
                 duration: animationDuration
             }
             PropertyAnimation {
@@ -151,8 +151,8 @@ VPNClickableRow {
         objectName: "serverCityList"
 
         anchors.top: serverCountryRow.bottom
-        anchors.topMargin: 22
-        anchors.left: serverCountry.left
+        anchors.topMargin: 0
+        anchors.left: parent.left
         anchors.leftMargin: VPNTheme.theme.hSpacing + VPNTheme.theme.vSpacing + 6
         width: serverCountry.width - anchors.leftMargin
 
@@ -164,6 +164,7 @@ VPNClickableRow {
         Repeater {
             id: citiesRepeater
             model: cities
+
             delegate: VPNRadioDelegate {
                 property string _cityName: modelData[0]
                 property string _localizedCityName: modelData[1]
@@ -180,6 +181,8 @@ VPNClickableRow {
                 onActiveFocusChanged: vpnFlickable.ensureVisible(del)
                 radioButtonLabelText: modelData[1]
                 accessibleName: modelData[1]
+                implicitWidth: parent.width
+
                 onClicked: {
                     if (!isAvailable) {
                         return;
@@ -211,7 +214,7 @@ VPNClickableRow {
                         right: del.right
                         rightMargin: VPNTheme.theme.hSpacing
                         top: del.top
-                        topMargin: VPNTheme.theme.listSpacing / 4
+                        verticalCenter: del.verticalCenter
                     }
                     source: "qrc:/nebula/resources/warning.svg"
                     sourceSize {
@@ -222,9 +225,10 @@ VPNClickableRow {
                 }
 
             }
-
         }
 
     }
 
 }
+
+

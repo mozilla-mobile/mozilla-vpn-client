@@ -1,0 +1,43 @@
+{
+  "api_version": "0.1",
+  "id": "guide_04_connecting_external_devices",
+  "name": "Guide: connecting external devices",
+  "type": "guide",
+  "guide": {
+    "id": "connecting_external_devices",
+    "title": "Connecting to other devices while using VPN",
+    "subtitle": "Enabling local network access allows you to connect to other devices without sacrificing your VPN protection.",
+    "image": "qrc:/addons/guide_04_connecting_external_devices/image.svg",
+    "blocks": [
+      { "id": "c_1",
+        "type": "title",
+        "content": "How do I connect to my printer or fax?" },
+      { "id": "c_2",
+        "type": "olist",
+        "content": [
+          { "id": "l_1",
+            "content": "Enable “Local network access” in your network settings" },
+          { "id": "l_2",
+            "content": "Connect the printer or fax cable to your device’s port (wired) or via wireless" },
+          { "id": "l_4",
+            "content": "Print or fax your documents as normal" }
+        ]
+      },
+      { "id": "c_3",
+        "type": "title",
+        "content": "What other types of devices can I connect to?" },
+      { "id": "c_4",
+        "type": "text",
+        "content": "With “Local network access” turned on, you can also connect to devices like:" },
+      { "id": "c_5",
+        "type": "ulist",
+        "content": [
+          { "id": "l_1",
+            "content": "Other computers and mobile phones" },
+          { "id": "l_2",
+            "content": "Streaming sticks (Chromecast / Roku / Apple AirPlay)" }
+        ]
+      }
+    ]
+  }
+}
