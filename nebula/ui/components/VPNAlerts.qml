@@ -47,7 +47,7 @@ ColumnLayout {
         alertText: qsTrId("vpn.systray.survey.wouldLoveYourFeedback")
         //% "Take Survey"
         alertActionText: qsTrId("vpn.systray.survey.takeSurvey")
-        visible: VPNSurveyModel.hasSurvey || isWasmViewer
+        visible: VPNSurveyModel.hasSurvey && !interceptSurveyAlert.visible /* TODO: && VPNSurveyModel.currentSurveyId === ""someUniqueInterceptSurveyId" */ || isWasmViewer
 
         onActionPressed: ()=>{
             VPNSurveyModel.openCurrentSurvey();
@@ -57,4 +57,20 @@ ColumnLayout {
         }
     }
 
+    VPNAlert {
+        // This survey will be shown in English only for X number of days in
+        // the 2.9 release cycle.
+
+        // TODO: Remove in 2.10
+
+        id: interceptSurveyAlert
+
+        isLayout: true
+        alertType: alertTypes.success
+        visible: /* TODO: && VPNSurveyModel.id === "someUniqueInterceptSurveyId" */ VPNSurveyModel.hasSurvey
+        alertText: "Share your VPN experience with us. Research participants receive $100."
+        alertActionText: "Learn more"
+        onActionPressed: ()=>VPNSurveyModel.openCurrentSurvey()
+        onClosePressed: ()=>VPNSurveyModel.dismissCurrentSurvey()
+    }
 }

@@ -129,6 +129,13 @@ void SurveyModel::openCurrentSurvey() {
   }
 }
 
+QString SurveyModel::getCurrentSurveyId() {
+  if (m_currentSurveyId.isEmpty()) {
+    return "";
+  }
+  return m_currentSurveyId;
+}
+
 void SurveyModel::dismissCurrentSurvey() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);

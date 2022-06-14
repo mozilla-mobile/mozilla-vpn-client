@@ -33,6 +33,7 @@ class SurveyModel final : public QObject {
 
   Q_INVOKABLE void openCurrentSurvey();
   Q_INVOKABLE void dismissCurrentSurvey();
+  Q_INVOKABLE QString getCurrentSurveyId();
 
  signals:
   void hasSurveyChanged();
