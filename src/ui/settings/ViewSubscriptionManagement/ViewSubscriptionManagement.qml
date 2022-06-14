@@ -16,7 +16,6 @@ VPNFlickable {
     anchors.top: parent.top
     height: parent.height
     flickContentHeight: contentColumn.implicitHeight + VPNTheme.theme.rowHeight
-    windowHeightExceedsContentHeight: !(flickContentHeight > height)
 
     ListModel {
         id: subscriptionInfoModel
