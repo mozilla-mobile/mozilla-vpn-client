@@ -19,7 +19,7 @@ Flickable {
 
     function ensureVisible(item) {
         let yPosition = item.mapToItem(contentItem, 0, 0).y;
-        if (!   contentExceedsHeight || item.skipEnsureVisible || yPosition < 0) {
+        if (!contentExceedsHeight || item.skipEnsureVisible || yPosition < 0) {
             return;
         }
 
