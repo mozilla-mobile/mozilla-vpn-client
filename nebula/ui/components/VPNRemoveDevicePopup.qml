@@ -35,13 +35,6 @@ VPNSimplePopup {
             colorScheme: VPNTheme.theme.redButton
             onClicked: {
                 VPN.removeDeviceFromPublicKey(popup.devicePublicKey);
-                if (vpnFlickable.state === "deviceLimit") {
-                    // there is no further action the user can take on the deviceList
-                    // so leave the modal open until the user is redirected back to the main view
-                    col.opacity = .5
-                    return;
-                }
-
                 popup.close();
             }
             isCancelBtn: false
