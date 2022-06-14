@@ -652,7 +652,7 @@ subscriptionManagement:
     comment: Label for the date on which the payment method expires.
   manageSubscriptionButton:
     value: Manage subscription
-    comment: Label for a button that will take the user to a view where they can manage their subscription
+    comment: Label for a button that will take the user to a view where they can manage their subscription.
 
 paymentMethods:
   amex: American Express
