@@ -57,9 +57,6 @@ python3 scripts/utils/import_languages.py || die "Failed to import languages"
 print Y "Generating glean samples..."
 python3 scripts/utils/generate_glean.py || die "Failed to generate glean samples"
 
-print Y "Generating addons..."
-python3 ./scripts/addon/generate_all.py || die "Failed to generate addons"
-
 print Y "Merge addons..."
 (
   cd addons/generated/addons

@@ -55,6 +55,12 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Generating addons
+        shell: bash
+        run: |
+          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
+          python3 ./scripts/addon/generate_all.py
+
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v7
 
@@ -106,12 +112,6 @@ jobs:
           name: WebAssembly Build Qt6
           # Destination path
           path: _site
-
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v2.0.8
-        with:
-          name: Addons
-          path: _site/addons
 
       - name: Download a Build Artifact
         uses: actions/download-artifact@v2.0.8
