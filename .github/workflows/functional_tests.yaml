@@ -64,7 +64,6 @@ jobs:
           cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON \
               -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build build/cmake -j$(nproc)
-          cmake --install build
 
       - name: Generate tasklist
         id: testGen
