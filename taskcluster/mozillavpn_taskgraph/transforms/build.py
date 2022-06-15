@@ -30,6 +30,7 @@ build_schema = Schema(
         Optional("release-artifacts"): [str],
         Optional("dependencies"): task_description_schema["dependencies"],
         Optional("fetches"): any,
+        Optional("routes"): [any],      
     }
 )
 
