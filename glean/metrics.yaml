@@ -991,7 +991,7 @@ sample:
       - amarchesini@mozilla.com
     expires: never
     extra_keys:
-      interval_count:
+      state:
         description: |
           The name of the profile flow state. The list of states can be found in
           `profileflow.h`.
