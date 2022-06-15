@@ -82,12 +82,3 @@ void ProfileFlow::subscriptionDetailsFetched(
 
   setState(StateReady);
 }
-
-// Only used for testing
-void ProfileFlow::showFakeData() {
-  logger.debug() << "Show fake data";
-  Q_ASSERT(!Constants::inProduction());
-
-  MozillaVPN::instance()->subscriptionData()->populateFakeData();
-  setState(StateReady);
-}
