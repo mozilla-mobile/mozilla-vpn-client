@@ -19,11 +19,15 @@ import (
   "errors"
   "unsafe"
 
+  "encoding/hex"
+
   "C"
 
   "github.com/google/nftables"
+  "github.com/google/nftables/alignedbuff"
   "github.com/google/nftables/binaryutil"
   "github.com/google/nftables/expr"
+  "github.com/google/nftables/xt"
   linux "golang.org/x/sys/unix"
 )
 
@@ -79,6 +83,10 @@ func nftIfname(n string) []byte {
 // The value is not important, so long as it's constant, unique,
 // and non-zero.
 const ctzone_external = 0x9e4c
+
+// A firewall mark is used to flag packets that need to be NAT-ed
+// for re-routing after they have passed through connection tracking.
+const fwmark_needs_nat = 0xe253
 
 func nftIfup(ctx *nftCtx, ifname string, fwmark uint32) {
   var immctzone = expr.Immediate{
@@ -151,6 +159,99 @@ func nftIfup(ctx *nftCtx, ifname string, fwmark uint32) {
       // Set the conntrack zone
       &immctzone,
       &setctzone,
+    },
+  })
+
+  // Masquerade outgoing packets from split tunnelling to trigger rerouting.
+  mozvpn_conn.AddRule(&nftables.Rule{
+    Table: ctx.table_inet,
+    Chain: ctx.nat,
+    Exprs: []expr.Any{
+      // Match marked packets
+      &expr.Meta{
+        Key:        expr.MetaKeyMARK,
+        Register:   1,
+      },
+      &expr.Cmp{
+        Op:         expr.CmpOpEq,
+        Register:   1,
+        Data:       binaryutil.NativeEndian.PutUint32(fwmark_needs_nat),
+      },
+      // Set the firewall mark for external routing
+      &expr.Immediate{
+        Register:   1,
+        Data:       binaryutil.NativeEndian.PutUint32(fwmark),
+      },
+      &expr.Meta{
+        Key:        expr.MetaKeyMARK,
+        Register:   1,
+        SourceRegister: true,
+      },
+      // Masquerade
+      &expr.Masq{},
+    },
+  })
+}
+
+func nftMarkCgroup2xt(ctx *nftCtx, cgroup string, fwmark uint32, logger *log.Logger) {
+  // struct xt_cgroup_info_v2 only supports a maximum path of 512 bytes
+  if len(cgroup) >= 512 {
+    cgroup = cgroup[:511]
+  }
+
+  // Build struct xt_cgroup_info_v2 to match the cgroup path.
+  xtcgroup := alignedbuff.New()
+  xtcgroup.PutUint8(1) // has_path
+  xtcgroup.PutUint8(0) // has_classid
+  xtcgroup.PutUint8(0) // invert_path
+  xtcgroup.PutUint8(0) // invert_classid
+  xtcgroup.PutBytesAligned32([]byte(cgroup + "\x00"), 512) // Cgroup path.
+  //xtcgroup.PutBytesAligned32([]byte("/system.slice\x00"), 512)
+  xtcgroup.PutUint64(0) // kernel padding
+  var xtinfo = xt.Unknown(xtcgroup.Data())
+
+  logger.Println("DEBUG xtinfo:", hex.EncodeToString(xtcgroup.Data()))
+  
+  mozvpn_conn.AddRule(&nftables.Rule{
+    Table: ctx.table_inet,
+    Chain: ctx.mangle,
+    Exprs: []expr.Any{
+      // Match the cgroup v2 path for originated packets.
+      &expr.Match{
+        Name:     "cgroup",
+        Rev:      2,
+        Info:     &xtinfo,
+      },
+      // Match packets that have not already been marked
+      &expr.Meta{
+        Key:        expr.MetaKeyMARK,
+        Register:   1,
+      },
+      &expr.Cmp{
+        Op:         expr.CmpOpNeq,
+        Register:   1,
+        Data:       binaryutil.NativeEndian.PutUint32(fwmark),
+      },
+      // Do not match packets sent to localhost interfaces
+      &expr.Meta{
+        Key:      expr.MetaKeyOIFTYPE,
+        Register: 1,
+      },
+      &expr.Cmp{
+        Op:       expr.CmpOpNeq,
+        Register: 1,
+        Data:     binaryutil.NativeEndian.PutUint16(linux.ARPHRD_LOOPBACK),
+      },
+      // Set the firewall mark to request NAT
+      &expr.Immediate{
+        Register:   1,
+        Data:       binaryutil.NativeEndian.PutUint32(fwmark_needs_nat),
+      },
+      &expr.Meta{
+        Key:        expr.MetaKeyMARK,
+        Register:   1,
+        SourceRegister: true,
+      },
     },
   })
 }
@@ -338,6 +439,8 @@ func NetfilterClearTables() int32 {
   mozvpn_conn.FlushChain(mozvpn_ctx.preroute)
   mozvpn_conn.FlushChain(mozvpn_ctx.preroute_v6)
 
+  // TODO: Delete everything in mozvpn_ctx.cgroup_map
+
   logger.Println("Clearing netfilter tables")
   return nftCommit(logger)
 }
@@ -352,7 +455,6 @@ func NetfilterIfup(ifname string, fwmark uint32) int32 {
 
   logger.Println("Starting netfilter tables for", ifname)
   return nftCommit(logger)
-  return 0
 }
 
 //export NetfilterIsolateIpv6
@@ -427,6 +529,23 @@ func NetfilterBlockCgroup(cgroup uint32) int32 {
 
   logger.Println("Blocking traffic from cgroup", cgroup)
   return nftCommit(logger)
+}
+
+//export NetfilterMarkCgroup2
+func NetfilterMarkCgroup2(cgroup string, fwmark uint32) int32 {
+  logger := log.New(&CLogger{level: 0}, "", 0)
+
+  logger.Println("Marking traffic from cgroup", cgroup)
+  nftMarkCgroup2xt(&mozvpn_ctx, cgroup, fwmark, logger)
+
+  return nftCommit(logger)
+}
+
+//export NetfilterClearCgroup2
+func NetfilterClearCgroup2(cgroup string) int32 {
+  logger := log.New(&CLogger{level: 0}, "", 0)
+  logger.Println("TODO: Clear traffic marks from cgroup", cgroup)
+  return 0
 }
 
 func main() {}
