@@ -203,17 +203,14 @@ VPNFlickable {
         let labelText;
 
         if (intervalCount === 12) {
-            // {¤amount} yearly
+            // {¤amount} Yearly
             labelText = VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
         } else if (intervalCount === 6) {
-            // {¤amount} half-yearly
+            // {¤amount} Half-yearly
             labelText = VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
         } else if (intervalCount === 1) {
-            // {¤amount} monthly
+            // {¤amount} Monthly
             labelText = VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
-        } else if (intervalCount === 0) {
-            // TODO: Confirm that’s really the case: User is within a free trial period.
-            labelText = VPNl18n.FreeTrialsFreeTrialLabel;
         } else {
             // TODO: Add Glean event
             console.warn(`Unexpected value for intervalCount: ${intervalCount}`);
