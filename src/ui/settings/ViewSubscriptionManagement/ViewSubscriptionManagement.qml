@@ -11,7 +11,7 @@ import components 0.1
 
 VPNFlickable {
     id: vpnFlickable
-    objectName: "settingsView"
+    objectName: "subscriptionManagmentView"
 
     anchors.top: parent.top
     height: parent.height
