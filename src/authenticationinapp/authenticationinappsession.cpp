@@ -24,20 +24,14 @@ namespace {
 Logger logger(LOG_MAIN, "AuthenticationInAppSession");
 }  // anonymous namespace
 
-AuthenticationInAppSession::AuthenticationInAppSession(QObject* parent)
-    : QObject(parent) {
+AuthenticationInAppSession::AuthenticationInAppSession(QObject* parent,
+                                                       AuthenticationType type)
+    : QObject(parent), m_authenticationType(type) {
   MVPN_COUNT_CTOR(AuthenticationInAppSession);
 }
 
 AuthenticationInAppSession::~AuthenticationInAppSession() {
   MVPN_COUNT_DTOR(AuthenticationInAppSession);
-}
-
-void AuthenticationInAppSession::setType(AuthenticationType type) {
-  Q_ASSERT(!m_task);
-  logger.debug() << "Authentication type:" << type;
-
-  m_authenticationType = type;
 }
 
 void AuthenticationInAppSession::terminate() {

@@ -17,9 +17,6 @@ class AuthenticationInAppSession final : public QObject {
   Q_DISABLE_COPY_MOVE(AuthenticationInAppSession)
 
  public:
-  AuthenticationInAppSession(QObject* parent);
-  ~AuthenticationInAppSession();
-
   enum AuthenticationType {
     // Initial authentication
     TypeDefault,
@@ -29,6 +26,9 @@ class AuthenticationInAppSession final : public QObject {
     TypeSubscriptionManagement,
   };
   Q_ENUM(AuthenticationType);
+
+  AuthenticationInAppSession(QObject* parent, AuthenticationType type);
+  ~AuthenticationInAppSession();
 
   AuthenticationType type() const { return m_authenticationType; }
 
@@ -67,8 +67,6 @@ class AuthenticationInAppSession final : public QObject {
   void terminated();
 
  private:
-  void setType(AuthenticationType type);
-
   void signInInternal(const QString& unblockCode);
 
   void processErrorObject(const QJsonObject& obj);
