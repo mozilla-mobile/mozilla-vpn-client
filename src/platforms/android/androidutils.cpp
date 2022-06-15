@@ -184,6 +184,25 @@ int AndroidUtils::GetSDKVersion() {
   return sdk;
 }
 
+QString AndroidUtils::GetManufacturer() {
+  QJniEnvironment env;
+  jclass buildClass = env->FindClass("android/os/Build");
+  jfieldID manuFacturerField =
+      env->GetStaticFieldID(buildClass, "MANUFACTURER", "Ljava/lang/String;");
+  jstring value =
+      (jstring)env->GetStaticObjectField(buildClass, manuFacturerField);
+
+  const char* buffer = env->GetStringUTFChars(value, nullptr);
+  if (!buffer) {
+    logger.error() << "Failed to fetch MANUFACTURER";
+    return QByteArray();
+  }
+  QString res(buffer);
+  logger.info() << "MANUFACTURER: " << res;
+  env->ReleaseStringUTFChars(value, buffer);
+  return res;
+}
+
 void AndroidUtils::runOnAndroidThreadSync(
     const std::function<void()> runnable) {
   QNativeInterface::QAndroidApplication::runOnAndroidMainThread(runnable)
