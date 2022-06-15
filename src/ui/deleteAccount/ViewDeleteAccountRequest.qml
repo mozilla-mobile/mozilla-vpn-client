@@ -82,7 +82,6 @@ VPNInAppAuthenticationBase {
             // Delete account
             text: VPNl18n.DeleteAccountButtonLabel
             onClicked: if (viewDeleteAccount.allowAccountDeletion) {
-                Sample.deleteAccountClicked.record();
                 VPNAuthInApp.deleteAccount();
             }
         }
@@ -104,9 +103,5 @@ VPNInAppAuthenticationBase {
         checkboxData[checkboxIndex].isSelected = isChecked;
         viewDeleteAccount.allowAccountDeletion = checkboxData.every(checkbox =>
             checkbox.isSelected);
-    }
-
-    Component.onCompleted: {
-        Sample.deleteAccountOpened.record();
     }
 }

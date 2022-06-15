@@ -567,6 +567,9 @@ void AuthenticationInAppSession::deleteAccount() {
             logger.debug() << "Account deleted" << logger.sensitive(data);
             emit accountDeleted();
           });
+
+  emit MozillaVPN::instance()->recordGleanEvent(
+      GleanSample::deleteAccountClicked);
 }
 
 void AuthenticationInAppSession::finalizeSignInOrUp() {

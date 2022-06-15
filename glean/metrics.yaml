@@ -983,23 +983,6 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  delete_account_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened the account deletion view.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
-    data_reviews:
-      - TBD
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
   delete_account_clicked:
     type: event
     lifetime: ping
