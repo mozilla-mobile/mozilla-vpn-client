@@ -226,6 +226,8 @@ target_sources(unit_tests PRIVATE
     mocmozillavpn.cpp
     mocnetworkrequest.cpp
     helper.h
+    testaddon.cpp
+    testaddon.h
     testadjust.cpp
     testadjust.h
     testandroidmigration.cpp

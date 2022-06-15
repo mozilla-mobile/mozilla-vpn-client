@@ -8,6 +8,8 @@
 #include <QObject>
 #include <QTranslator>
 
+class QJsonObject;
+
 class Addon : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Addon)
@@ -17,6 +19,8 @@ class Addon : public QObject {
 
  public:
   static Addon* create(QObject* parent, const QString& manifestFileName);
+
+  static bool evaluateConditions(const QJsonObject& conditions);
 
   ~Addon();
 

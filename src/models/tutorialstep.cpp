@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "tutorialstep.h"
-#include "guide.h"
+#include "addons/addon.h"
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -106,7 +106,7 @@ void TutorialStep::start() {
 void TutorialStep::startInternal() {
   Q_ASSERT(m_started);
 
-  if (!Guide::evaluateConditions(m_conditions)) {
+  if (!Addon::evaluateConditions(m_conditions)) {
     logger.info()
         << "Exclude the tutorial step because conditions do not match";
     emit completed();
@@ -131,24 +131,11 @@ void TutorialStep::startInternal() {
   QQuickItem* item = qobject_cast<QQuickItem*>(element);
   Q_ASSERT(item);
 
-  // mapRectToScene/Item do not return the correct value. Let's compute the x/y
-  // values manually.
-
-  qreal x = item->x();
-  qreal y = item->y();
-  for (QQuickItem* parent = item->parentItem(); parent;
-       parent = parent->parentItem()) {
-    x += parent->x();
-    y += parent->y();
-  }
-
   TutorialModel* tutorialModel = TutorialModel::instance();
   Q_ASSERT(tutorialModel);
 
   tutorialModel->requireTooltipShown(m_parent, true);
-  tutorialModel->requireTooltipNeeded(
-      m_parent, m_stringId, QRectF(x, y, item->width(), item->height()),
-      m_element);
+  tutorialModel->requireTooltipNeeded(m_parent, m_stringId, element);
 
   connect(m_next, &TutorialStepNext::completed, this, &TutorialStep::completed);
   m_next->start();

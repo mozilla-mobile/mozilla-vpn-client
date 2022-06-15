@@ -35,9 +35,10 @@ if not os.path.isdir(generated_path):
 
 addons = []
 for file in os.listdir(addons_path):
-    if not file.startswith("tutorial_") and not file.startswith("guide_"):
-        continue
     addon_path = os.path.join(addons_path, file, "manifest.json")
+    if not os.path.exists(addon_path):
+       print(f"Ignoring path {file}.")
+       continue
 
     build_cmd = [sys.executable, build_path, addon_path, generated_path]
     if args.qtpath:

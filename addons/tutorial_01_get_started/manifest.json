@@ -13,7 +13,7 @@
     "steps": [
       {
         "id": "mainScreen",
-        "element": "serverListButton",
+        "element": "serverListButton-btn",
         "tooltip": "Select your location",
         "before": [{
           "op": "vpn_location_set",
@@ -24,7 +24,7 @@
         }],
         "next": {
           "op": "signal",
-          "qml_emitter": "serverListButton",
+          "qml_emitter": "serverListButton-btn",
           "signal": "visibleChanged"
         }
       },
@@ -46,11 +46,11 @@
       },
       {
         "id": "cityAU",
-        "element": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne",
+        "element": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne/radioIndicator",
         "tooltip": "Select a different server location",
         "next": {
           "op": "signal",
-          "qml_emitter": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne",
+          "qml_emitter": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne/radioIndicator",
           "signal": "visibleChanged"
         }
       },

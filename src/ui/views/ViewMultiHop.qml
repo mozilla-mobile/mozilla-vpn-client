@@ -17,7 +17,6 @@ StackView {
         id: vpnFlickable
 
         flickContentHeight: col.implicitHeight + col.y + VPNTheme.theme.windowMargin
-        windowHeightExceedsContentHeight: parent.height > flickContentHeight
         contentHeight: flickContentHeight
 
         ColumnLayout {

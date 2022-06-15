@@ -22,8 +22,6 @@ class Guide final : public QObject {
   static Guide* create(QObject* parent, const QString& fileName);
   static Guide* create(QObject* parent, const QJsonObject& obj);
 
-  static bool evaluateConditions(const QJsonObject& conditions);
-
   const QString& titleId() const { return m_titleId; }
 
   ~Guide();

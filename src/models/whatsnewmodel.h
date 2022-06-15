@@ -30,6 +30,8 @@ class WhatsNewModel final : public QAbstractListModel {
 
   QVariant data(const QModelIndex& index, int role) const override;
 
+  QStringList featureIds() const;
+
   bool hasUnseenFeature();
 
   Q_INVOKABLE void markFeaturesAsSeen();

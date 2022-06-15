@@ -8,9 +8,6 @@
       "description": "The ID of the tutorial",
       "pattern": "^[A-Za-z0-9_]+"
     },
-    "conditions": {
-      "$ref": "conditions.json#"
-    },
     "highlighted": {
       "type": "boolean",
       "description": "Is this tutorial highlighted?"

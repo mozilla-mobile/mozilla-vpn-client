@@ -162,7 +162,7 @@ Item {
                             VPNBoldInterLabel {
                                 property var guideBlock
 
-                                text: qstrId(guideBlock.id)
+                                text: qsTrId(guideBlock.id)
                                 font.pixelSize: VPNTheme.theme.fontSize
                                 lineHeight: VPNTheme.theme.labelLineHeight
                                 verticalAlignment: Text.AlignVCenter

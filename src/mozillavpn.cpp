@@ -116,7 +116,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
-         new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));
+         new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList(),
+         new TaskAddonIndex()}));
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {

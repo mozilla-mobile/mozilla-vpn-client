@@ -113,10 +113,6 @@ jobs:
         shell: bash
         run: ./build/cmake/src/mozillavpn -v
 
-      - name: Launching API proxy
-        shell: bash
-        run: ./tests/proxy/wsgi.py --mock-devices > /dev/null &
-
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
         uses: nick-invision/retry@v2
@@ -133,7 +129,6 @@ jobs:
           ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
           ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_API_BASE_URL: http://localhost:5000
           MVPN_BIN: ./build/cmake/src/mozillavpn
 
       - name: Generating grcov reports
