@@ -33,6 +33,13 @@ AuthenticationInAppSession::~AuthenticationInAppSession() {
   MVPN_COUNT_DTOR(AuthenticationInAppSession);
 }
 
+void AuthenticationInAppSession::setType(AuthenticationType type) {
+  Q_ASSERT(!m_task);
+  logger.debug() << "Authentication type:" << type;
+
+  m_authenticationType = type;
+}
+
 void AuthenticationInAppSession::terminate() {
   if (m_sessionToken.isEmpty()) {
     emit terminated();

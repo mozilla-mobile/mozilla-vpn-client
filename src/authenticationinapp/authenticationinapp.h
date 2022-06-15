@@ -160,6 +160,7 @@ class AuthenticationInApp final : public QObject {
 
   void terminateSession();
 
+
  signals:
   void stateChanged();
 

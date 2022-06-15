@@ -9,6 +9,7 @@
 #include "subscriptiondata.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "taskscheduler.h"
+#include "telemetry/gleansample.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>

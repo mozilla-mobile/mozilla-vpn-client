@@ -20,6 +20,18 @@ class AuthenticationInAppSession final : public QObject {
   AuthenticationInAppSession(QObject* parent);
   ~AuthenticationInAppSession();
 
+  enum AuthenticationType {
+    // Initial authentication
+    TypeDefault,
+    // Re-authentication for account deletion
+    TypeAccountDeletion,
+    // Re-authentication for subscription management
+    TypeSubscriptionManagement,
+  };
+  Q_ENUM(AuthenticationType);
+
+  AuthenticationType type() const { return m_authenticationType; }
+
   void reset();
 
   void start(Task* task, const QString& codeChallenge,
@@ -55,6 +67,8 @@ class AuthenticationInAppSession final : public QObject {
   void terminated();
 
  private:
+  void setType(AuthenticationType type);
+
   void signInInternal(const QString& unblockCode);
 
   void processErrorObject(const QJsonObject& obj);
@@ -75,6 +89,8 @@ class AuthenticationInAppSession final : public QObject {
 
  private:
   Task* m_task = nullptr;
+
+  AuthenticationType m_authenticationType = TypeDefault;
 
   struct {
     QString m_clientId;

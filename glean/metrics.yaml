@@ -332,6 +332,34 @@ sample:
           `authenticationinapp.h`.
         type: string
 
+  reauthentication_inapp_step:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has advanced in the re-authentication flow.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      state:
+        description: |
+          The name of the authentication state, e.g. "sign-in", "sign-out",
+          "totp", etc. The list of states can be found in
+          `authenticationinapp.h`.
+        type: string
+      type:
+        description: |
+          The type of the re-authentication flow.
+        type: string
+
   authentication_inapp_error:
     type: event
     lifetime: ping
@@ -907,7 +935,8 @@ sample:
     send_in_pings:
       - main
     description: |
-      Unhandled subscription plan interval from the subscription management view.
+      Unhandled subscription plan interval from the
+      subscription management view.
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
     data_reviews:

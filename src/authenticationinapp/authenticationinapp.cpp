@@ -48,9 +48,16 @@ void AuthenticationInApp::setState(State state) {
   m_state = state;
   emit stateChanged();
 
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::authenticationInappStep,
-      {{"state", QVariant::fromValue(state).toString()}});
+  if (m_session->type() == AuthenticationInAppSession::TypeDefault) {
+    emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::authenticationInappStep,
+        {{"state", QVariant::fromValue(state).toString()}});
+  } else {
+    emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::reauthenticationInappStep,
+        {{"state", QVariant::fromValue(state).toString()},
+        {"type", QVariant::fromValue(m_session->type()).toString()}});
+  }
 }
 
 void AuthenticationInApp::registerSession(AuthenticationInAppSession* session) {
