@@ -88,7 +88,8 @@ void TaskGetSubscriptionDetails::initAuthentication() {
                                             pkceCodeChallenge);
   Q_ASSERT(!pkceCodeVerifier.isEmpty() && !pkceCodeChallenge.isEmpty());
 
-  m_authenticationInAppSession = new AuthenticationInAppSession(this, AuthenticationInAppSession::TypeSubscriptionManagement);
+  m_authenticationInAppSession = new AuthenticationInAppSession(
+      this, AuthenticationInAppSession::TypeSubscriptionManagement);
 
   connect(m_authenticationInAppSession, &AuthenticationInAppSession::terminated,
           this, &Task::completed);

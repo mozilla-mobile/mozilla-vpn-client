@@ -32,7 +32,8 @@ void TaskDeleteAccount::run() {
                                             pkceCodeChallenge);
   Q_ASSERT(!pkceCodeVerifier.isEmpty() && !pkceCodeChallenge.isEmpty());
 
-  m_authenticationInAppSession = new AuthenticationInAppSession(this, AuthenticationInAppSession::TypeAccountDeletion);
+  m_authenticationInAppSession = new AuthenticationInAppSession(
+      this, AuthenticationInAppSession::TypeAccountDeletion);
 
   connect(m_authenticationInAppSession, &AuthenticationInAppSession::terminated,
           this, &Task::completed);
