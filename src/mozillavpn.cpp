@@ -1483,7 +1483,8 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
   iap->startSubscription(productIdentifier);
 
-  emit recordGleanEvent(GleanSample::iapSubscriptionStarted);
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionStarted,
+                                     {{"sku", productIdentifier}});
 }
 
 void MozillaVPN::restoreSubscriptionStarted() {
@@ -1516,7 +1517,9 @@ void MozillaVPN::subscriptionCompleted() {
   AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
 
-  emit recordGleanEvent(GleanSample::iapSubscriptionCompleted);
+  emit recordGleanEventWithExtraKeys(
+      GleanSample::iapSubscriptionCompleted,
+      {{"sku", IAPHandler::instance()->currentSKU()}});
 
   completeActivation();
 }
@@ -1531,20 +1534,24 @@ void MozillaVPN::billingNotAvailable() {
 
 void MozillaVPN::subscriptionNotValidated() {
   setState(StateSubscriptionNotValidated);
-  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
-                                     {{"error", "not-validated"}});
+  emit recordGleanEventWithExtraKeys(
+      GleanSample::iapSubscriptionFailed,
+      {{"error", "not-validated"},
+       {"sku", IAPHandler::instance()->currentSKU()}});
 }
 
 void MozillaVPN::subscriptionFailed() {
   subscriptionFailedInternal(false /* canceled by user */);
-  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
-                                     {{"error", "failed"}});
+  emit recordGleanEventWithExtraKeys(
+      GleanSample::iapSubscriptionFailed,
+      {{"error", "failed"}, {"sku", IAPHandler::instance()->currentSKU()}});
 }
 
 void MozillaVPN::subscriptionCanceled() {
   subscriptionFailedInternal(true /* canceled by user */);
-  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
-                                     {{"error", "canceled"}});
+  emit recordGleanEventWithExtraKeys(
+      GleanSample::iapSubscriptionFailed,
+      {{"error", "canceled"}, {"sku", IAPHandler::instance()->currentSKU()}});
 }
 
 void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {

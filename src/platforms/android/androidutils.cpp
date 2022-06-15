@@ -67,6 +67,9 @@ AndroidUtils::AndroidUtils(QObject* parent) : QObject(parent) {
   JNINativeMethod methods[]{
       {"recordGleanEvent", "(Ljava/lang/String;)V",
        reinterpret_cast<void*>(recordGleanEvent)},
+      {"recordGleanEventWithExtraKeys",
+       "(Ljava/lang/String;Ljava/lang/String;)V",
+       reinterpret_cast<void*>(recordGleanEventWithExtraKeys)},
   };
 
   env->RegisterNatives(javaClass, methods,
@@ -124,8 +127,7 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
   if (QJsonParseError::NoError != jsonError.error) {
     logger.error() << "getQJsonObjectFromJstring - error parsing json. Code: "
                    << jsonError.error << "Offset: " << jsonError.offset
-                   << "Message: " << jsonError.errorString()
-                   << "Data: " << logger.sensitive(raw);
+                   << "Message: " << jsonError.errorString() << "Data: " << raw;
     return QJsonObject();
   }
   if (!json.isObject()) {
@@ -223,4 +225,18 @@ void AndroidUtils::recordGleanEvent(JNIEnv* env, jobject VPNUtils,
   logger.info() << "Glean Event via JNI:" << eventString;
   emit MozillaVPN::instance()->recordGleanEvent(eventString);
   env->ReleaseStringUTFChars(event, buffer);
+}
+
+void AndroidUtils::recordGleanEventWithExtraKeys(JNIEnv* env, jobject VPNUtils,
+                                                 jstring jevent,
+                                                 jstring jextras) {
+  if (!MozillaVPN::instance()) {
+    return;
+  }
+  Q_UNUSED(VPNUtils);
+  auto event = getQStringFromJString(env, jevent);
+  QJsonObject extras = getQJsonObjectFromJString(env, jextras);
+  logger.info() << "Glean Event via JNI:" << event;
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      event, extras.toVariantMap());
 }

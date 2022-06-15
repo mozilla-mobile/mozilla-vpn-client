@@ -37,6 +37,12 @@ class IAPHandler : public QAbstractListModel {
   bool hasProductsRegistered() const {
     return m_productsRegistrationState == eRegistered;
   }
+
+  // Returns the latest SKU the started to Subcribe.
+  // Is empty if the user already had a subscription or never started the
+  // subscription flow.
+  const QString& currentSKU() const { return m_currentSKU; }
+
   Q_INVOKABLE void subscribe(const QString& productIdentifier);
   Q_INVOKABLE void restore();
 
@@ -111,6 +117,7 @@ class IAPHandler : public QAbstractListModel {
   static uint32_t productTypeToMonthCount(ProductType type);
   Product* findProduct(const QString& productIdentifier);
   QList<Product> m_products;
+  QString m_currentSKU;
 };
 
 #endif  // IAPHANDLER_H
