@@ -81,6 +81,10 @@ NetworkRequest* NetworkRequest::createForAccount(Task* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
+NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
+  return new NetworkRequest(parent, 1234, false);
+}
+
 NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
                                                 const QHostAddress&) {
   return new NetworkRequest(parent, 1234, false);

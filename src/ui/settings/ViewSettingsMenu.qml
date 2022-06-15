@@ -47,11 +47,20 @@ VPNFlickable {
             }
 
             VPNUserProfile {
-                _iconButtonImageSource: "qrc:/nebula/resources/chevron.svg"
-                _iconButtonOnClicked: () => {
-                    Sample.manageAccountClicked.record();
-                    VPN.openLink(VPN.LinkAccount)
+                property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
+                _iconButtonImageSource: subscriptionManagementEnabled
+                    ? "qrc:/nebula/resources/chevron.svg"
+                    : "qrc:/nebula/resources/open-in-new.svg"
+                _iconButtonOnClicked: () => {                    
+                    if (subscriptionManagementEnabled) {
+                        VPNProfileFlow.start();
+                    } else {
+                        Sample.manageAccountClicked.record();
+                        VPN.openLink(VPN.LinkAccount);
+                    }
                 }
+                _loaderVisible: VPNProfileFlow.state === VPNProfileFlow.StateLoading
+
                 Layout.leftMargin: VPNTheme.theme.windowMargin / 2
             }
 
@@ -130,19 +139,6 @@ VPNFlickable {
                 onClicked: settingsStackView.push(aboutUsComponent)
             }
 
-            VPNLinkButton {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: VPNTheme.theme.vSpacing
-
-                fontName: VPNTheme.theme.fontBoldFamily
-                labelText: VPNl18n.DeleteAccountButtonLabel + " (WIP)"
-                linkColor: VPNTheme.theme.redButton
-                visible: VPNFeatureList.get("accountDeletion").isSupported
-                onClicked: {
-                    settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
-                }
-            }
-
             VPNVerticalSpacer {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -166,5 +162,28 @@ VPNFlickable {
             }
         }
     }
-}
 
+    Connections {
+        target: VPNProfileFlow
+
+        function onStateChanged() {
+            const profileViewNeeded = (
+                VPNProfileFlow.state === VPNProfileFlow.StateReady
+                || VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
+            );
+
+            // Only push the profile view if it’s not already in the stack
+            if (profileViewNeeded && settingsStackView.currentItem.objectName !== "viewProfile") {
+                settingsStackView.push("qrc:/ui/settings/ViewProfile.qml");
+            }
+
+            // An error occurred during the profile flow. Let’s reset and return
+            // to the main settings view.
+            const hasError = VPNProfileFlow.state === VPNProfileFlow.StateError;
+            if (hasError) {
+                VPNProfileFlow.reset();
+                settingsStackView.pop();
+            }
+        }
+    }
+}

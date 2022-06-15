@@ -32,8 +32,8 @@ VPNInAppAuthenticationBase {
 
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
     _menuButtonOnClick: () => {
-        if (isDeleteAccountAuth) {
-            cancelAccountDeletion();
+        if (isReauthFlow) {
+            cancelAuthenticationFlow();
         } else {
             VPNAuthInApp.reset();
         }
@@ -67,8 +67,8 @@ VPNInAppAuthenticationBase {
         VPNCancelButton {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                if (isDeleteAccountAuth) {
-                    cancelAccountDeletion();
+                if (isReauthFlow) {
+                    cancelAuthenticationFlow();
                 } else {
                     VPN.cancelAuthentication();
                 }

@@ -109,6 +109,7 @@ SOURCES += \
         platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         platforms/dummy/dummypingsender.cpp \
+        profileflow.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc/rfc1112.cpp \
@@ -120,6 +121,7 @@ SOURCES += \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
+        subscriptiondata.cpp \
         tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/addon/taskaddon.cpp \
@@ -128,6 +130,7 @@ SOURCES += \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/deleteaccount/taskdeleteaccount.cpp \
         tasks/getfeaturelist/taskgetfeaturelist.cpp \
+        tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
@@ -257,6 +260,7 @@ HEADERS += \
         platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         platforms/dummy/dummypingsender.h \
+        profileflow.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc/rfc1112.h \
@@ -268,6 +272,7 @@ HEADERS += \
         settingsholder.h \
         simplenetworkmanager.h \
         statusicon.h \
+        subscriptiondata.h \
         task.h \
         tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \
@@ -277,6 +282,7 @@ HEADERS += \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/deleteaccount/taskdeleteaccount.h \
         tasks/getfeaturelist/taskgetfeaturelist.h \
+        tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \

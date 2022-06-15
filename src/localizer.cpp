@@ -149,6 +149,9 @@ bool Localizer::loadLanguageInternal(const QString& code) {
     return false;
   }
 
+  m_locale = locale;
+  emit localeChanged();
+
   return true;
 }
 

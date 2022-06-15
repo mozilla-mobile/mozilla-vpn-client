@@ -10,7 +10,6 @@ import components 0.1
 import org.mozilla.Glean 0.30
 import telemetry 0.30
 
-
 Item {
     id: viewInitialize
 

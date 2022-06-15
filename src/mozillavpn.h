@@ -26,8 +26,10 @@
 #include "models/user.h"
 #include "models/whatsnewmodel.h"
 #include "networkwatcher.h"
+#include "profileflow.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
+#include "subscriptiondata.h"
 #include "telemetry.h"
 #include "theme.h"
 #include "websockethandler.h"
@@ -197,7 +199,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void hardResetAndQuit();
   Q_INVOKABLE void crashTest();
   Q_INVOKABLE void requestDeleteAccount();
-  Q_INVOKABLE void cancelAccountDeletion();
+  Q_INVOKABLE void cancelReauthentication();
   Q_INVOKABLE void updateViewShown();
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
@@ -233,11 +235,15 @@ class MozillaVPN final : public QObject {
   LicenseModel* licenseModel() { return &m_private->m_licenseModel; }
   HelpModel* helpModel() { return &m_private->m_helpModel; }
   NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
+  ProfileFlow* profileFlow() { return &m_private->m_profileFlow; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
   ServerCountryModel* serverCountryModel() {
     return &m_private->m_serverCountryModel;
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
+  SubscriptionData* subscriptionData() {
+    return &m_private->m_subscriptionData;
+  }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
   Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
@@ -445,6 +451,8 @@ class MozillaVPN final : public QObject {
     ServerCountryModel m_serverCountryModel;
     ServerData m_serverData;
     StatusIcon m_statusIcon;
+    SubscriptionData m_subscriptionData;
+    ProfileFlow m_profileFlow;
     SurveyModel m_surveyModel;
     Telemetry m_telemetry;
     Theme m_theme;
