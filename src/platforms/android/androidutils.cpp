@@ -127,7 +127,7 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
   if (QJsonParseError::NoError != jsonError.error) {
     logger.error() << "getQJsonObjectFromJstring - error parsing json. Code: "
                    << jsonError.error << "Offset: " << jsonError.offset
-                   << "Message: " << jsonError.errorString() << "Data: " << raw;
+                   << "Message: " << jsonError.errorString() << "Data: " << logger.sensitive(raw);
     return QJsonObject();
   }
   if (!json.isObject()) {
