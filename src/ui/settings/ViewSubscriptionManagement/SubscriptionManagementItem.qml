@@ -98,7 +98,7 @@ ColumnLayout {
 
         VPNPaymentMethod {
             id: paymentMethod
-            brand: labelText
+            paymentMethod: labelText
         }
 
         VPNInterLabel {
