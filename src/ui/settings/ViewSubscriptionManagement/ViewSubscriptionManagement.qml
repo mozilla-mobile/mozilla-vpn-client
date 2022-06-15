@@ -95,7 +95,6 @@ VPNFlickable {
                 id: manageSubscriptionButton
 
                 onClicked: {
-                    Sample.manageSubscriptionClicked.record();
                     handleManageAccountClicked();
                 }
                 text: VPNl18n.SubscriptionManagementManageSubscriptionButton
@@ -128,6 +127,7 @@ VPNFlickable {
     }
 
     function handleManageAccountClicked() {
+        Sample.manageSubscriptionClicked.record();
         VPN.openLink(VPN.LinkAccount);
     }
 

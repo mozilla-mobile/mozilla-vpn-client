@@ -23,8 +23,4 @@ Item {
         source: "qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml"
         anchors.fill: parent
     }
-
-    Component.onCompleted: {
-        Sample.viewProfileOpened.record();
-    }
 }
