@@ -16,6 +16,8 @@ class SurveyModel final : public QObject {
   Q_DISABLE_COPY_MOVE(SurveyModel)
 
   Q_PROPERTY(bool hasSurvey READ hasSurvey NOTIFY hasSurveyChanged)
+  Q_PROPERTY(
+      QString currentSurveyId MEMBER m_currentSurveyId NOTIFY hasSurveyChanged)
 
  public:
   SurveyModel();
@@ -33,7 +35,6 @@ class SurveyModel final : public QObject {
 
   Q_INVOKABLE void openCurrentSurvey();
   Q_INVOKABLE void dismissCurrentSurvey();
-  Q_INVOKABLE QString getCurrentSurveyId();
 
  signals:
   void hasSurveyChanged();

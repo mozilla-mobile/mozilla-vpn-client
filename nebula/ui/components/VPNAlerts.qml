@@ -47,7 +47,7 @@ ColumnLayout {
         alertText: qsTrId("vpn.systray.survey.wouldLoveYourFeedback")
         //% "Take Survey"
         alertActionText: qsTrId("vpn.systray.survey.takeSurvey")
-        visible: VPNSurveyModel.hasSurvey && !interceptSurveyAlert.visible /* TODO: && VPNSurveyModel.currentSurveyId === ""someUniqueInterceptSurveyId" */ || isWasmViewer
+        visible: (VPNSurveyModel.hasSurvey && VPNSurveyModel.id !== "mozilla-vpn-survey-2022-05") /* TODO: Remove after 2.9 */ || isWasmViewer
 
         onActionPressed: ()=>{
             VPNSurveyModel.openCurrentSurvey();
@@ -67,7 +67,7 @@ ColumnLayout {
 
         isLayout: true
         alertType: alertTypes.success
-        visible: /* TODO: && VPNSurveyModel.id === "someUniqueInterceptSurveyId" */ VPNSurveyModel.hasSurvey
+        visible: VPNSurveyModel.id === "mozilla-vpn-survey-2022-05" &&  VPNSurveyModel.hasSurvey
         alertText: "Share your VPN experience with us. Research participants receive $100."
         alertActionText: "Learn more"
         onActionPressed: ()=>VPNSurveyModel.openCurrentSurvey()
