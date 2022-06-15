@@ -10,8 +10,8 @@ import Mozilla.VPN 1.0
 
 RowLayout {
     id: root
-    property string brand: "unbranded"
-    property var selectedCreditCard: getCreditCard(brand)
+    property string paymentMethod: "unbranded"
+    property var selectedPaymentMethod: getPaymentMethod()
 
     visible: true
 
@@ -20,7 +20,7 @@ RowLayout {
 
         horizontalAlignment: Text.AlignLeft
         font.pixelSize: VPNTheme.theme.fontSizeSmall
-        text: selectedCreditCard.name
+        text: selectedPaymentMethod.name
         visible: typeof(text) !== "undefined" && text.length > 0
         wrapMode: Text.WordWrap
     }
@@ -28,78 +28,67 @@ RowLayout {
     VPNIcon {
         id: icon
 
-        source: selectedCreditCard.icon
+        source: selectedPaymentMethod.icon
         sourceSize.height: VPNTheme.theme.iconSizeSmall * 1.5
         sourceSize.width: VPNTheme.theme.iconSizeSmall * 1.5
 
         Layout.alignment: Qt.AlignVCenter
     }
 
-    function getCreditCard(cardBrand) {
-        switch(cardBrand) {
+    function getPaymentMethod() {
+        switch(paymentMethod) {
             case "amex":
                 return {
-                    key: cardBrand,
                     icon: "qrc:/ui/resources/payment/amex.svg",
                     name: VPNl18n.PaymentMethodsAmex
                 };
             case "diners":
                 return {
-                    key: cardBrand,
                     icon: "qrc:/ui/resources/payment/diners.svg",
                     name: VPNl18n.PaymentMethodsDiners
                 };
             case "discover":
                 return {
-                    key: cardBrand,
                     icon: "qrc:/ui/resources/payment/discover.svg",
                     name: VPNl18n.PaymentMethodsDiscover
                 };
             case "jcb":
                 return {
-                    key: cardBrand,
                     icon: "qrc:/ui/resources/payment/jcb.svg",
                     name: VPNl18n.PaymentMethodsJcb
                 };
             case "iap_apple":
                 return {
-                    key: cardBrand,
                     icon: "qrc:/ui/resources/payment/apple.svg",
                     name: VPNl18n.PaymentMethodsIapApple
                 };
             case "iap_google":
                 return {
-                    key: cardBrand,
                     icon: "qrc:/ui/resources/payment/android.svg",
                     name: VPNl18n.PaymentMethodsIapGoogle
                 };
             case "mastercard":
                 return {
-                    key: cardBrand,
                     icon: "qrc:/ui/resources/payment/mastercard.svg",
                     name: VPNl18n.PaymentMethodsMastercard
                 };
             case "paypal":
                 return {
-                    key: cardBrand,
                     icon: "qrc:/ui/resources/payment/paypal.svg",
                     name: VPNl18n.PaymentMethodsPaypal
                 };
             case "unionpay":
                 return {
-                    key: cardBrand,
                     icon: "qrc:/ui/resources/payment/unionpay.svg",
                     name: VPNl18n.PaymentMethodsUnionpay
                 };
             case "visa":
                 return {
-                    key: cardBrand,
                     icon: "qrc:/ui/resources/payment/visa.svg",
                     name: VPNl18n.PaymentMethodsVisa
                 };
             default:
                 return {
-                    key: "unbranded",
                     icon: "qrc:/ui/resources/payment/unbranded.svg",
                     name: ""
                 };

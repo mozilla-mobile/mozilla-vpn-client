@@ -125,36 +125,3 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
 
   return true;
 }
-
-void SubscriptionData::populateFakeData() {
-  logger.debug() << "Populate fake data";
-
-  QJsonObject exampleData;
-  exampleData.insert("created_at", QJsonValue::fromVariant(1626704467));
-  exampleData.insert("expires_on", QJsonValue::fromVariant(1626704467));
-  exampleData.insert("is_cancelled", QJsonValue::fromVariant(false));
-  exampleData.insert("status", QJsonValue::fromVariant("active"));
-  exampleData.insert("type", QJsonValue::fromVariant("web"));
-
-  QJsonObject paymentData;
-  paymentData.insert("credit_card_brand", QJsonValue::fromVariant("visa"));
-  paymentData.insert("credit_card_exp_month", QJsonValue::fromVariant(12));
-  paymentData.insert("credit_card_exp_year", QJsonValue::fromVariant(2022));
-  paymentData.insert("credit_card_last4", QJsonValue::fromVariant("0016"));
-  paymentData.insert("provider", QJsonValue::fromVariant("stripe"));
-  paymentData.insert("type", QJsonValue::fromVariant("credit"));
-  exampleData.insert("payment", paymentData);
-
-  QJsonObject planData;
-  planData.insert("amount", QJsonValue::fromVariant(499));
-  planData.insert("currency", QJsonValue::fromVariant("eur"));
-  planData.insert("interval_count", QJsonValue::fromVariant(1));
-  planData.insert("interval", QJsonValue::fromVariant("month"));
-  exampleData.insert("plan", planData);
-
-  QJsonDocument doc(exampleData);
-
-  if (!fromJson(doc.toJson())) {
-    logger.error() << "Populating fake data failed";
-  }
-}

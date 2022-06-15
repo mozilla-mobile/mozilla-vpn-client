@@ -18,9 +18,7 @@ Item {
         objectName: "settingsBackButton"
         _menuOnBackClicked: () => {
             if (settingsStackView.depth !== 1) {
-                if (VPNProfileFlow.state !== VPNProfileFlow.StateInitial) {
-                    VPNProfileFlow.reset();
-                }
+                VPNProfileFlow.reset();
 
                 return settingsStackView.pop();
             }

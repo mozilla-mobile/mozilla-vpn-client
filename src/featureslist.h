@@ -237,7 +237,7 @@ FEATURE_SIMPLE(subscriptionManagement,     // Feature ID
                true,                       // Can be flipped on
                false,                      // Can be flipped off
                QStringList(),              // feature dependencies
-               FeatureCallback_true)
+               FeatureCallback_false)
 
 FEATURE_SIMPLE(tipsAndTricks,      // Feature ID
                "Tips and tricks",  // Feature name

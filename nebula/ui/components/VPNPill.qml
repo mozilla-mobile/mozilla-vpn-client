@@ -16,6 +16,13 @@ Item {
     height: label.implicitHeight
     width: label.implicitWidth + label.font.pixelSize * 1.5
 
+    Rectangle {
+        color: pill.background
+        radius: VPNTheme.theme.cornerRadius
+
+        anchors.fill: parent
+    }
+
     VPNInterLabel {
         id: label
 
@@ -24,19 +31,11 @@ Item {
         font.family: VPNTheme.theme.fontInterSemiBoldFamily
         lineHeight: VPNTheme.theme.labelLineHeight * 1.1
         text: pill.text
-        z: 1
 
         anchors {
             horizontalCenter: parent.horizontalCenter
             verticalCenter: parent.verticalCenter
             verticalCenterOffset: 1
         }
-    }
-
-    Rectangle {
-        color: pill.background
-        radius: VPNTheme.theme.cornerRadius
-
-        anchors.fill: parent
     }
 }
