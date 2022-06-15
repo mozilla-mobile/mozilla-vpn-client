@@ -146,7 +146,7 @@ sample:
       Encountered an error while processing incoming purchase updates
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1620
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3752
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3754
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1746457
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1774433
@@ -721,7 +721,7 @@ sample:
       The user has started the subscription flow in app
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3752
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3754
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1774433
@@ -762,7 +762,7 @@ sample:
       The user has completed the subscription flow in app
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3752
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3754
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1774433
@@ -791,7 +791,7 @@ sample:
       The user has completed the subscription flow in app
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3752
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3754
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1774433
