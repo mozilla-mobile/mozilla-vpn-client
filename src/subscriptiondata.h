@@ -40,8 +40,6 @@ class SubscriptionData final : public QObject {
 
   bool initialized() const { return !m_rawJson.isEmpty(); }
 
-  void populateFakeData();
-
  signals:
   void changed();
 
