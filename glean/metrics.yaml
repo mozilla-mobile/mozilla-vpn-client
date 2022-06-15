@@ -332,7 +332,7 @@ sample:
           `authenticationinapp.h`.
         type: string
 
-  auth_account_deletion_step:
+  authentication_acnt_del_step:
     type: event
     lifetime: ping
     send_in_pings:
@@ -356,7 +356,7 @@ sample:
           `authenticationinapp.h`.
         type: string
 
-  auth_subscription_mgmt_step:
+  authentication_sub_manage_step:
     type: event
     lifetime: ping
     send_in_pings:
