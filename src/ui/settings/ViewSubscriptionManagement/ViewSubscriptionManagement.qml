@@ -111,6 +111,7 @@ VPNFlickable {
                 visible: VPNFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {
+                    Sample.deleteAccountRequested.record();
                     settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
                 }
 
@@ -126,7 +127,7 @@ VPNFlickable {
     }
 
     function handleManageAccountClicked() {
-        // TODO: Add Glean event
+        Sample.manageSubscriptionClicked.record();
         VPN.openLink(VPN.LinkAccount);
     }
 
@@ -212,8 +213,10 @@ VPNFlickable {
             // {¤amount} Monthly
             labelText = VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
         } else {
-            // TODO: Add Glean event
             console.warn(`Unexpected value for intervalCount: ${intervalCount}`);
+            Sample.unhandledSubscriptionPlanInterval.record({
+                "interval_count": intervalCount
+            });
         }
 
         return labelText;
