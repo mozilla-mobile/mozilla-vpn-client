@@ -45,6 +45,7 @@ AuthenticationInApp::~AuthenticationInApp() {
 }
 
 void AuthenticationInApp::setState(State state) {
+  Q_ASSERT(m_session);
   m_state = state;
   emit stateChanged();
 
@@ -66,8 +67,8 @@ void AuthenticationInApp::registerSession(AuthenticationInAppSession* session) {
 
   m_session = session;
   connect(session, &QObject::destroyed, this, [this]() {
-    m_session = nullptr;
     setState(StateInitializing);
+    m_session = nullptr;
   });
 }
 
