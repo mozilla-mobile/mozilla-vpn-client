@@ -17,7 +17,7 @@ class AuthenticationInAppSession final : public QObject {
   Q_DISABLE_COPY_MOVE(AuthenticationInAppSession)
 
  public:
-  enum AuthenticationType {
+  enum TypeAuthentication {
     // Initial authentication
     TypeDefault,
     // Re-authentication for account deletion
@@ -25,12 +25,12 @@ class AuthenticationInAppSession final : public QObject {
     // Re-authentication for subscription management
     TypeSubscriptionManagement,
   };
-  Q_ENUM(AuthenticationType);
+  Q_ENUM(TypeAuthentication);
 
-  AuthenticationInAppSession(QObject* parent, AuthenticationType type);
+  AuthenticationInAppSession(QObject* parent, TypeAuthentication type);
   ~AuthenticationInAppSession();
 
-  AuthenticationType type() const { return m_authenticationType; }
+  TypeAuthentication type() const { return m_typeAuthentication; }
 
   void reset();
 
@@ -88,7 +88,7 @@ class AuthenticationInAppSession final : public QObject {
  private:
   Task* m_task = nullptr;
 
-  AuthenticationType m_authenticationType = TypeDefault;
+  TypeAuthentication m_typeAuthentication = TypeDefault;
 
   struct {
     QString m_clientId;

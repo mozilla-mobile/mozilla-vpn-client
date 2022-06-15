@@ -25,8 +25,8 @@ Logger logger(LOG_MAIN, "AuthenticationInAppSession");
 }  // anonymous namespace
 
 AuthenticationInAppSession::AuthenticationInAppSession(QObject* parent,
-                                                       AuthenticationType type)
-    : QObject(parent), m_authenticationType(type) {
+                                                       TypeAuthentication type)
+    : QObject(parent), m_typeAuthentication(type) {
   MVPN_COUNT_CTOR(AuthenticationInAppSession);
 }
 
