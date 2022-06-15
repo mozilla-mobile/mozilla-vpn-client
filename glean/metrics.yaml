@@ -332,7 +332,7 @@ sample:
           `authenticationinapp.h`.
         type: string
 
-  authentication_inapp_step_account_deletion:
+  auth_account_deletion_step:
     type: event
     lifetime: ping
     send_in_pings:
@@ -356,7 +356,7 @@ sample:
           `authenticationinapp.h`.
         type: string
 
-  authentication_inapp_step_subscription_management:
+  auth_subscription_mgmt_step:
     type: event
     lifetime: ping
     send_in_pings:
@@ -950,7 +950,7 @@ sample:
           The name of the update states. The list can be found in `updater.h`.
         type: string
 
-  unhandled_subscription_plan_interval:
+  unhandled_sub_plan_interval:
     type: event
     lifetime: ping
     send_in_pings:
@@ -995,8 +995,7 @@ sample:
         description: |
           The name of the profile flow state. The list of states can be found in
           `profileflow.h`.
-        type: state
-        unit: string
+        type: string
 
   manage_subscription_clicked:
     type: event

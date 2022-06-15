@@ -56,13 +56,13 @@ void AuthenticationInApp::setState(State state) {
 
   if (m_session && m_session->type() == AuthenticationInAppSession::TypeAccountDeletion) {
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::authenticationInappStepAccountDeletion,
+        GleanSample::authAccountDeletionStep,
         {{"state", QVariant::fromValue(state).toString()}});
   }
 
   if (m_session && m_session->type() == AuthenticationInAppSession::TypeSubscriptionManagement) {
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::authenticationInappStepSubscriptionManagement,
+        GleanSample::authSubscriptionMgmtStep,
         {{"state", QVariant::fromValue(state).toString()}});
   }
 }

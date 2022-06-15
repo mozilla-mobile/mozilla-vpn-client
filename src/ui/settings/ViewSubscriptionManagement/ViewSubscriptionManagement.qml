@@ -214,7 +214,7 @@ VPNFlickable {
             labelText = VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
         } else {
             console.warn(`Unexpected value for intervalCount: ${intervalCount}`);
-            Sample.unhandledSubscriptionPlanInterval.record({
+            Sample.unhandledSubPlanInterval.record({
                 "interval_count": intervalCount
             });
         }
