@@ -8,4 +8,5 @@ target_sources(mozillavpn PRIVATE
     platforms/dummy/dummycryptosettings.cpp
 )
 
+include(GNUInstallDirs)
 add_definitions(-DADDONS_PATH=\"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/mozillavpn/addons\")
