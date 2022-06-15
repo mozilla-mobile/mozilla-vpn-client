@@ -789,6 +789,7 @@ sample:
       - https://mozilla-hub.atlassian.net/browse/VPN-1595
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774439
     data_sensitivity:
       - technical
     notification_emails:
@@ -816,6 +817,7 @@ sample:
       - https://mozilla-hub.atlassian.net/browse/VPN-1595
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774439
     data_sensitivity:
       - technical
     notification_emails:
