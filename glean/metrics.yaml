@@ -787,6 +787,7 @@ sample:
       timed out.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-1595
+      - https://mozilla-hub.atlassian.net/browse/VPN-2279
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1774439
@@ -815,6 +816,7 @@ sample:
       activation
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-1595
+      - https://mozilla-hub.atlassian.net/browse/VPN-2279
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1774439
