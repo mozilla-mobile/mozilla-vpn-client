@@ -342,7 +342,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+      - TBD
     data_sensitivity:
       - interaction
     notification_emails:
@@ -367,7 +367,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+      - TBD
     data_sensitivity:
       - interaction
     notification_emails:
