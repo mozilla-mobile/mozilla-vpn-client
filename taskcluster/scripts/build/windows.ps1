@@ -13,6 +13,12 @@ $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 . "$REPO_ROOT_PATH/taskcluster/scripts/fetch/enable_win_rust.ps1"
 
+# Remove Long lasting debugging service: 
+# This will sometimes live longer then our compile
+# and __sometimes__ taskcluster will fail to do cleanup once the task is done
+Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/VCTIP.EXE  
+
+
 # Fetch 3rdparty stuff.
 python3 -m pip install -r requirements.txt --user
 git submodule update --init --force --recursive --depth=1
@@ -34,12 +40,24 @@ Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm
 python3 ./scripts/utils/generate_glean.py
 python3 ./scripts/utils/import_languages.py
 
+#Do not continune from this point on when we encounter an error
+$ErrorActionPreference = "Stop"
+
+# Actually compile!
 ./scripts/windows/compile.bat --nmake
+# Copies all relevant files into unsigned/
 nmake install 
 
-Write-Output "Writing Artifacts"
-
+# This should not be a thing, yet that's happening..
+# If we happen to already have an artifacts folder
+# we should not risk sending some old stuff.  
+if (Test-Path $REPO_ROOT_PATH/artifacts) {
+    Write-Output "Deleting old Artifacts folder?!"
+    Remove-Item $REPO_ROOT_PATH/artifacts
+}
 New-Item -Path $REPO_ROOT_PATH/artifacts -ItemType "directory"
+
+Write-Output "Writing Artifacts"
 Copy-Item -Path windows/installer/x64/MozillaVPN.msi -Destination ./artifacts/MozillaVPN.msi
 Copy-Item -Path MozillaVPN.pdb -Destination ./artifacts/MozillaVPN.pdb
 
