@@ -89,17 +89,16 @@ void BenchmarkTaskDownload::dnsLookupFinished() {
     emit completed();
   });
 
-  if (state() != BenchmarkTask::StateActive) {
-    logger.warning() << "DNS Lookup finished after task aborted";
-    return;
-  }
   if (m_dnsLookup.error() != QDnsLookup::NoError) {
     logger.error() << "DNS Lookup Failed:" << m_dnsLookup.errorString();
-    guard.dismiss();
     return;
   }
   if (m_dnsLookup.hostAddressRecords().isEmpty()) {
     logger.error() << "DNS Lookup Failed: no records";
+    return;
+  }
+  if (state() != BenchmarkTask::StateActive) {
+    logger.warning() << "DNS Lookup finished after task aborted";
     return;
   }
 
