@@ -283,7 +283,63 @@ describe('User authentication', function() {
     });
   });
 
+  describe('Authentication with unblock code', function() {
+    this.ctx.fxaOverrideEndpoints = {
+      GETs: {},
+      POSTs: {
+        '/v1/account/status': {
+          status: 400,
+          body: {errno: 107, validation: {keys: ['unblockCode']}}
+        },
+      },
+      DELETEs: {},
+    };
+
+    it('Authentication with unblock code', async () => {
+      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
+        await vpn.flipFeatureOn('inAppAuthentication');
+        await vpn.flipFeatureOn('inAppAccountCreate');
+      }
+
+      await vpn.waitForMainView();
+
+      await vpn.clickOnElement('getStarted');
+      await vpn.waitForElement('authStart-textInput');
+      await vpn.waitForElementProperty(
+          'authStart-textInput', 'visible', 'true');
+      await vpn.setElementProperty(
+          'authStart-textInput', 'text', 's', 'test@test');
+      await vpn.waitForElement('authStart-button');
+      await vpn.clickOnElement('authStart-button');
+
+      await vpn.waitForElement('authUnblockCodeNeeded-textInput');
+      await vpn.waitForElementProperty(
+          'authUnblockCodeNeeded-textInput', 'visible', 'true');
+      await vpn.waitForElementProperty(
+          'authUnblockCodeNeeded-button', 'enabled', 'false');
+      await vpn.setElementProperty(
+          'authUnblockCodeNeeded-textInput', 'text', 's', '1234567');
+      await vpn.waitForElementProperty(
+          'authUnblockCodeNeeded-button', 'enabled', 'false');
+      await vpn.setElementProperty(
+          'authUnblockCodeNeeded-textInput', 'text', 's', '12345678');
+      await vpn.waitForElementProperty(
+          'authUnblockCodeNeeded-button', 'enabled', 'true');
+      await vpn.waitForElement('authUnblockCodeNeeded-button');
+      await vpn.clickOnElement('authUnblockCodeNeeded-button');
+
+      await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
+      await vpn.waitForElement('postAuthenticationButton');
+
+      await vpn.clickOnElement('postAuthenticationButton');
+      await vpn.wait();
+
+      await vpn.waitForElement('telemetryPolicyButton');
+      await vpn.clickOnElement('telemetryPolicyButton');
+      await vpn.waitForElement('controllerTitle');
+    });
+  });
+
   // TODO:
-  // - unblock code
   // - errors
 });
