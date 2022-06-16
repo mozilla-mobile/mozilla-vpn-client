@@ -13,7 +13,7 @@ $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 . "$REPO_ROOT_PATH/taskcluster/scripts/fetch/enable_win_rust.ps1"
 
-# Remove Long lasting debugging service: 
+# Remove Long lasting ms-compiler-telemetry service: 
 # This will sometimes live longer then our compile
 # and __sometimes__ taskcluster will fail to do cleanup once the task is done
 Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/VCTIP.EXE  
