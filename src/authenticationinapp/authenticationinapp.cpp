@@ -44,25 +44,25 @@ AuthenticationInApp::~AuthenticationInApp() {
   s_instance = nullptr;
 }
 
-void AuthenticationInApp::setState(State state) {
+void AuthenticationInApp::setState(State state,
+                                   AuthenticationInAppSession* session) {
   m_state = state;
   emit stateChanged();
 
-  if (m_session &&
-      m_session->type() == AuthenticationInAppSession::TypeDefault) {
+  if (session && session->type() == AuthenticationInAppSession::TypeDefault) {
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::authenticationInappStep,
         {{"state", QVariant::fromValue(state).toString()}});
   }
 
-  if (m_session &&
-      m_session->type() == AuthenticationInAppSession::TypeAccountDeletion) {
+  if (session &&
+      session->type() == AuthenticationInAppSession::TypeAccountDeletion) {
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::authenticationAcntDelStep,
         {{"state", QVariant::fromValue(state).toString()}});
   }
 
-  if (m_session && m_session->type() ==
+  if (session && session->type() ==
                        AuthenticationInAppSession::TypeSubscriptionManagement) {
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::authenticationSubManageStep,
@@ -76,8 +76,9 @@ void AuthenticationInApp::registerSession(AuthenticationInAppSession* session) {
 
   m_session = session;
   connect(session, &QObject::destroyed, this, [this]() {
+    AuthenticationInAppSession* session = m_session;
     m_session = nullptr;
-    setState(StateInitializing);
+    setState(StateInitializing, session);
   });
 }
 
@@ -93,7 +94,7 @@ void AuthenticationInApp::checkAccount(const QString& emailAddress) {
 void AuthenticationInApp::reset() {
   Q_ASSERT(m_session);
   logger.debug() << "Authentication reset";
-  setState(StateStart);
+  setState(StateStart, m_session);
   m_session->reset();
 }
 
@@ -221,7 +222,7 @@ void AuthenticationInApp::requestState(State state,
   Q_ASSERT(session);
   Q_ASSERT(m_session == session);
 
-  setState(state);
+  setState(state, m_session);
 }
 
 void AuthenticationInApp::requestErrorPropagation(
