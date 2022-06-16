@@ -16,14 +16,13 @@ def get_defaults(repo_root):
     }
 
 def getAppVersion():
-    f = open("CMakeLists.txt","r")
-    lines = f.readlines()
-    f.close()
-    isVersionLine = lambda x: "project(\"Mozilla VPN\" VERSION" in x
-    version_line = next(filter(isVersionLine,lines))
-    tokens = version_line.split(" ")
-    version = tokens[tokens.index("VERSION")+1]
-    return version
+    with open("CMakeLists.txt") as f:
+        lines = f.readlines()
+        isVersionLine = lambda x: "project(\"Mozilla VPN\" VERSION" in x
+        version_line = next(filter(isVersionLine,lines))
+        tokens = version_line.split(" ")
+        version = tokens[tokens.index("VERSION")+1]
+        return version
 
 
 extend_parameters_schema(

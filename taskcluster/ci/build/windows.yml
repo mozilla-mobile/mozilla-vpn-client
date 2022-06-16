@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 windows/opt:
-    push-to-release-index: true
+    add-release-index: true
     description: "Windows Build"
     treeherder:
         symbol: B
