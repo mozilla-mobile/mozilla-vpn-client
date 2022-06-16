@@ -24,13 +24,29 @@ constexpr const char* DBUS_SYSTEMD_MANAGER = "org.freedesktop.systemd1.Manager";
 
 namespace {
 Logger logger(LOG_LINUX, "AppTracker");
+QString s_cgroupMount;
 }
 
-AppTracker::AppTracker(uint userid, const QDBusObjectPath& path,
-                       QObject* parent)
-    : QObject(parent), m_userid(userid), m_objectPath(path) {
+AppTracker::AppTracker(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(AppTracker);
-  logger.debug() << "AppTracker(" + QString::number(m_userid) + ") created.";
+  logger.debug() << "AppTracker created.";
+
+  /* Monitor for changes to the user's application control groups. */
+  s_cgroupMount = LinuxDependencies::findCgroup2Path();
+}
+
+AppTracker::~AppTracker() {
+  MVPN_COUNT_DTOR(AppTracker);
+  logger.debug() << "AppTracker destroyed.";
+
+  for (AppData* data : m_runningApps.values()) {
+    delete data;
+  }
+  m_runningApps.clear();
+}
+
+void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
+  logger.debug() << "User created uid:" << userid << "at:" << path.path();
 
   /* Acquire the effective UID of the user to connect to their session bus. */
   uid_t realuid = getuid();
@@ -39,17 +55,17 @@ AppTracker::AppTracker(uint userid, const QDBusObjectPath& path,
       logger.warning() << "Failed to restore effective UID";
     }
   });
-  if (realuid == m_userid) {
+  if (realuid == userid) {
     guard.dismiss();
-  } else if (seteuid(m_userid) < 0) {
+  } else if (seteuid(userid) < 0) {
     logger.warning() << "Failed to set effective UID";
   }
 
   /* For correctness we should ask systemd for the user's runtime directory. */
-  QString busPath = "unix:path=/run/user/" + QString::number(m_userid) + "/bus";
+  QString busPath = "unix:path=/run/user/" + QString::number(userid) + "/bus";
   logger.debug() << "Connection to" << busPath;
   QDBusConnection connection = QDBusConnection::connectToBus(
-      busPath, "user-" + QString::number(m_userid));
+      busPath, "user-" + QString::number(userid));
 
   /* Connect to the user's GTK launch event. */
   bool gtkConnected = connection.connect(
@@ -60,35 +76,30 @@ AppTracker::AppTracker(uint userid, const QDBusObjectPath& path,
     logger.warning() << "Failed to connect to GTK Launched signal";
   }
 
-  /* Monitor for changes to the user's application control groups. */
-  m_interface = new QDBusInterface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
-                                   DBUS_SYSTEMD_MANAGER, connection, this);
-  QVariant qv = m_interface->property("ControlGroup");
-  if (qv.type() == QVariant::String) {
-    m_cgroupPath = LinuxDependencies::findCgroup2Path() + qv.toString();
-    logger.debug() << "Found Control Groups v2 at:" << m_cgroupPath;
+  // Watch the user's control groups for new application scopes.
+  auto interface = new QDBusInterface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
+                                      DBUS_SYSTEMD_MANAGER, connection, this);
+  QVariant qv = interface->property("ControlGroup");
+  auto dbusguard = qScopeGuard([&] { delete interface; });
+  if (!s_cgroupMount.isEmpty() && qv.type() == QVariant::String) {
+    QString userCgroupPath = s_cgroupMount + qv.toString();
+    logger.debug() << "Monitoring Control Groups v2 at:" << userCgroupPath;
 
     connect(&m_cgroupWatcher, SIGNAL(directoryChanged(const QString&)), this,
             SLOT(cgroupsChanged(const QString&)));
 
-    m_cgroupWatcher.addPath(m_cgroupPath);
-    m_cgroupWatcher.addPath(m_cgroupPath + "/app.slice");
+    m_cgroupWatcher.addPath(userCgroupPath);
+    m_cgroupWatcher.addPath(userCgroupPath + "/app.slice");
 
-    cgroupsChanged(m_cgroupPath);
-    cgroupsChanged(m_cgroupPath + "/app.slice");
+    cgroupsChanged(userCgroupPath);
+    cgroupsChanged(userCgroupPath + "/app.slice");
   }
 }
 
-AppTracker::~AppTracker() {
-  MVPN_COUNT_DTOR(AppTracker);
-  logger.debug() << "AppTracker(" + QString::number(m_userid) + ") destroyed.";
+void AppTracker::userRemoved(uint userid, const QDBusObjectPath& path) {
+  logger.debug() << "User removed uid:" << userid << "at:" << path.path();
 
-  QDBusConnection::disconnectFromBus("user-" + QString::number(m_userid));
-
-  for (AppData* data : m_runningApps.values()) {
-    delete data;
-  }
-  m_runningApps.clear();
+  QDBusConnection::disconnectFromBus("user-" + QString::number(userid));
 }
 
 void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
@@ -99,32 +110,25 @@ void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
   Q_UNUSED(extra);
 
   QString appIdName(appid);
+  while (appIdName.endsWith('\0')) {
+    appIdName.chop(1);
+  }
   if (!appIdName.isEmpty()) {
     m_lastLaunchName = appIdName;
     m_lastLaunchPid = pid;
-    emit appLaunched(appIdName, pid);
   }
 }
 
 void AppTracker::appHeuristicMatch(AppData* data) {
   // If this cgroup contains the last-launched PID, then we have a fairly
   // strong indication of which application this control group is running.
-  QFile cgroupProcs(data->cgroup + "/cgroup.procs");
-  if (cgroupProcs.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    while (true) {
-      QString line = QString::fromLocal8Bit(cgroupProcs.readLine());
-      if (line.isEmpty()) {
-        break;
-      }
-      int pid = line.trimmed().toInt();
-      if ((pid == 0) || (pid != m_lastLaunchPid)) {
-        continue;
-      }
-      logger.debug() << "Matches app:" << m_lastLaunchName;
+  for (int pid : data->pids()) {
+    if ((pid != 0) && (pid == m_lastLaunchPid)) {
+      logger.debug() << data->cgroup << "matches app:" << m_lastLaunchName;
       data->appId = m_lastLaunchName;
       data->rootpid = m_lastLaunchPid;
+      break;
     }
-    cgroupProcs.close();
   }
 
   // TODO: Some comparison between the .desktop file and the directory name
@@ -136,13 +140,19 @@ void AppTracker::appHeuristicMatch(AppData* data) {
 
 void AppTracker::cgroupsChanged(const QString& directory) {
   QDir dir(directory);
+  QDir mountpoint(s_cgroupMount);
   QFileInfoList newScopes =
       dir.entryInfoList(QStringList("*.scope"), QDir::Dirs);
   QStringList oldScopes = m_runningApps.keys();
 
   // Figure out what has been added.
   for (const QFileInfo& scope : newScopes) {
-    QString path = scope.canonicalFilePath();
+    // We need the path starting from the Cgroupv2 mount point.
+    QString path = mountpoint.relativeFilePath(scope.canonicalFilePath());
+    if (!path.startsWith('/')) {
+      path.prepend('/');
+    }
+
     if (oldScopes.removeAll(path) == 0) {
       // This is a new scope, let's add it.
       logger.debug() << "Control group created:" << path;
@@ -150,17 +160,41 @@ void AppTracker::cgroupsChanged(const QString& directory) {
       m_runningApps[path] = new AppData(path);
 
       appHeuristicMatch(data);
+      emit appLaunched(data->cgroup, data->appId, data->rootpid);
     }
   }
 
   // Anything left, if it shares the same root directory, has been removed.
   for (const QString& scope : oldScopes) {
-    QFileInfo scopeInfo(scope);
+    QFileInfo scopeInfo(s_cgroupMount + scope);
     if (scopeInfo.absolutePath() == directory) {
       logger.debug() << "Control group removed:" << scope;
       Q_ASSERT(m_runningApps.contains(scope));
       AppData* data = m_runningApps.take(scope);
+
+      emit appTerminated(data->cgroup, data->appId);
       delete data;
     }
   }
+}
+
+QList<int> AppData::pids() const {
+  QList<int> results;
+  QFile cgroupProcs(s_cgroupMount + cgroup + "/cgroup.procs");
+
+  if (cgroupProcs.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    while (true) {
+      QString line = QString::fromLocal8Bit(cgroupProcs.readLine());
+      if (line.isEmpty()) {
+        break;
+      }
+      int pid = line.trimmed().toInt();
+      if (pid != 0) {
+        results.append(pid);
+      }
+    }
+    cgroupProcs.close();
+  }
+
+  return results;
 }

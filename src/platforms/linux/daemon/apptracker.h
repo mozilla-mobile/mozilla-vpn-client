@@ -20,6 +20,8 @@ class AppData {
   }
   ~AppData() { MVPN_COUNT_DTOR(AppData); }
 
+  QList<int> pids() const;
+
   const QString cgroup;
   QString appId;
   int rootpid = 0;
@@ -30,12 +32,19 @@ class AppTracker final : public QObject {
   Q_DISABLE_COPY_MOVE(AppTracker)
 
  public:
-  explicit AppTracker(uint userid, const QDBusObjectPath& path,
-                      QObject* parent = nullptr);
+  explicit AppTracker(QObject* parent = nullptr);
   ~AppTracker();
 
+  void userCreated(uint userid, const QDBusObjectPath& path);
+  void userRemoved(uint userid, const QDBusObjectPath& path);
+
+  QHash<QString, AppData*>::iterator begin() { return m_runningApps.begin(); }
+  QHash<QString, AppData*>::iterator end() { return m_runningApps.end(); }
+  AppData* find(const QString& cgroup) { return m_runningApps.value(cgroup); }
+
  signals:
-  void appLaunched(const QString& name, int rootpid);
+  void appLaunched(const QString& cgroup, const QString& appId, int rootpid);
+  void appTerminated(const QString& cgroup, const QString& appId);
 
  private slots:
   void gtkLaunchEvent(const QByteArray& appid, const QString& display,
@@ -48,11 +57,8 @@ class AppTracker final : public QObject {
   void appHeuristicMatch(AppData* data);
 
  private:
-  const uint m_userid;
-  const QDBusObjectPath m_objectPath;
-  QDBusInterface* m_interface;
-
-  QString m_cgroupPath;
+  // Monitoring of the user's control groups.
+  QString m_cgroupMount;
   QFileSystemWatcher m_cgroupWatcher;
 
   // The set of applications that we have tracked.

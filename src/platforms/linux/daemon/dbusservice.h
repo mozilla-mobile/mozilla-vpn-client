@@ -51,11 +51,10 @@ class DBusService final : public Daemon {
 
  private:
   bool removeInterfaceIfExists();
-  QString getAppStateCgroup(const QString& state);
 
  private slots:
-  void appLaunched(const QString& name, int rootpid);
-  void appTerminated(const QString& name, int rootpid);
+  void appLaunched(const QString& cgroup, const QString& appId, int rootpid);
+  void appTerminated(const QString& cgroup, const QString& appId);
 
   void userListCompleted(QDBusPendingCallWatcher* call);
   void userCreated(uint uid, const QDBusObjectPath& path);
@@ -67,9 +66,8 @@ class DBusService final : public Daemon {
   IPUtilsLinux* m_iputils = nullptr;
   DnsUtilsLinux* m_dnsutils = nullptr;
 
-  PidTracker* m_pidtracker = nullptr;
-  QMap<uint, AppTracker*> m_appTrackers;
-  QMap<QString, QString> m_firewallApps;
+  AppTracker* m_appTracker = nullptr;
+  QList<QString> m_excludedApps;
 };
 
 #endif  // DBUSSERVICE_H
