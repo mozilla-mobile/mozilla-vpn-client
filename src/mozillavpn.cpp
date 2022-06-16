@@ -15,6 +15,7 @@
 #include "models/device.h"
 #include "models/feature.h"
 #include "networkrequest.h"
+#include "profileflow.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
@@ -23,6 +24,7 @@
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
+#include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
@@ -33,7 +35,7 @@
 #include "tasks/servers/taskservers.h"
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
-#include "tasks/createsupportticket/taskcreatesupportticket.h"
+#include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"
 #include "update/updater.h"
@@ -1784,9 +1786,11 @@ void MozillaVPN::requestDeleteAccount() {
   TaskScheduler::scheduleTask(new TaskDeleteAccount(m_private->m_user.email()));
 }
 
-void MozillaVPN::cancelAccountDeletion() {
-  logger.warning() << "Canceling account deletion";
+void MozillaVPN::cancelReauthentication() {
+  logger.warning() << "Canceling reauthentication";
   AuthenticationInApp::instance()->terminateSession();
+
+  cancelAuthentication();
 }
 
 void MozillaVPN::updateViewShown() {

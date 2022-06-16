@@ -190,7 +190,18 @@ int CommandUI::run(QStringList& tokens) {
       logger.error() << "Failed to start QML Debugging";
     }
 #endif
-
+#ifdef MVPN_ANDROID
+    // https://bugreports.qt.io/browse/QTBUG-82617
+    // Currently there is a crash happening on exit with Huawei devices.
+    // Until this is fixed, setting this variable is the "official" workaround.
+    // We certainly should look at this once 6.4 is out.
+#  if QT_VERSION >= 0x060400
+#    error We have forgotten to remove this Huawei hack!
+#  endif
+    if (AndroidUtils::GetManufacturer() == "Huawei") {
+      qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
+    }
+#endif
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
@@ -342,6 +353,22 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNServerCountryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->serverCountryModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNSubscriptionData",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->subscriptionData();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNProfileFlow",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->profileFlow();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

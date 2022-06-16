@@ -17,15 +17,13 @@ Item {
 
     Loader {
         id: loader
-        property bool isDeleteAccountAuth: true
+        property bool isReauthFlow: true
 
         anchors.fill: parent
         asynchronous: true
 
-        function cancelAccountDeletion() {
-            VPN.cancelAccountDeletion();
-            VPN.cancelAuthentication();
-
+        function cancelAuthenticationFlow() {
+            VPN.cancelReauthentication();
             settingsStackView.pop();
         }
     }

@@ -182,6 +182,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/simplenetworkmanager.h
     ${MVPN_SOURCE_DIR}/statusicon.cpp
     ${MVPN_SOURCE_DIR}/statusicon.h
+    ${MVPN_SOURCE_DIR}/subscriptiondata.cpp
+    ${MVPN_SOURCE_DIR}/subscriptiondata.h
     ${MVPN_SOURCE_DIR}/task.h
     ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.cpp
     ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.h

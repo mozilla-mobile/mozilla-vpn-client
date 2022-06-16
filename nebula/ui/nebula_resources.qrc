@@ -307,6 +307,7 @@
         <file>resources/logo-dock.png</file>
         <file>resources/logo.ico</file>
         <file>resources/magic-dark.svg</file>
+        <file>resources/open-in-new.svg</file>
         <file>resources/plus.svg</file>
         <file>resources/refresh.svg</file>
         <file>resources/search.svg</file>

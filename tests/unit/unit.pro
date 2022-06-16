@@ -116,12 +116,13 @@ HEADERS += \
     ../../src/settingsholder.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
+    ../../src/subscriptiondata.h \
     ../../src/task.h \
     ../../src/tasks/account/taskaccount.h \
     ../../src/tasks/adddevice/taskadddevice.h \
     ../../src/tasks/addon/taskaddon.h \
-    ../../src/tasks/ipfinder/taskipfinder.h \
     ../../src/tasks/function/taskfunction.h \
+    ../../src/tasks/ipfinder/taskipfinder.h \
     ../../src/tasks/release/taskrelease.h \
     ../../src/tasks/servers/taskservers.h \
     ../../src/taskscheduler.h \
@@ -230,12 +231,13 @@ SOURCES += \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \
+    ../../src/subscriptiondata.cpp \
     ../../src/tasks/account/taskaccount.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/addon/taskaddon.cpp \
-    ../../src/tasks/ipfinder/taskipfinder.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/tasks/release/taskrelease.cpp \
+    ../../src/tasks/ipfinder/taskipfinder.cpp \
     ../../src/tasks/servers/taskservers.cpp \
     ../../src/taskscheduler.cpp \
     ../../src/theme.cpp \

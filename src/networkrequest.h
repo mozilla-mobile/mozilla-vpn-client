@@ -52,6 +52,8 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForAccount(Task* parent);
 
+  static NetworkRequest* createForGetSubscriptionDetails(Task* parent);
+
   static NetworkRequest* createForVersions(Task* parent);
 
   static NetworkRequest* createForIpInfo(Task* parent,

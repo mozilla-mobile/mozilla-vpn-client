@@ -23,6 +23,7 @@ class AndroidUtils final : public QObject {
   static QString GetDeviceName();
 
   static int GetSDKVersion();
+  static QString GetManufacturer();
 
   // Creates a "share" intent to Open/Send Plaintext
   static bool ShareText(const QString& plainText);

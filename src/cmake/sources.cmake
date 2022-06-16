@@ -220,6 +220,8 @@ target_sources(mozillavpn PRIVATE
     platforms/dummy/dummynetworkwatcher.h
     platforms/dummy/dummypingsender.cpp
     platforms/dummy/dummypingsender.h
+    profileflow.h
+    profileflow.cpp
     qmlengineholder.cpp
     qmlengineholder.h
     releasemonitor.cpp
@@ -242,6 +244,8 @@ target_sources(mozillavpn PRIVATE
     simplenetworkmanager.h
     statusicon.cpp
     statusicon.h
+    subscriptiondata.cpp
+    subscriptiondata.h
     task.h
     taskscheduler.cpp
     taskscheduler.h
@@ -261,6 +265,8 @@ target_sources(mozillavpn PRIVATE
     tasks/deleteaccount/taskdeleteaccount.h
     tasks/getfeaturelist/taskgetfeaturelist.cpp
     tasks/getfeaturelist/taskgetfeaturelist.h
+    tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp
+    tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h
     tasks/controlleraction/taskcontrolleraction.cpp
     tasks/controlleraction/taskcontrolleraction.h
     tasks/createsupportticket/taskcreatesupportticket.cpp
