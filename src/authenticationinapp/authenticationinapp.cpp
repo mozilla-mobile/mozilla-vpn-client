@@ -63,7 +63,7 @@ void AuthenticationInApp::setState(State state,
   }
 
   if (session && session->type() ==
-                       AuthenticationInAppSession::TypeSubscriptionManagement) {
+                     AuthenticationInAppSession::TypeSubscriptionManagement) {
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::authenticationSubManageStep,
         {{"state", QVariant::fromValue(state).toString()}});
