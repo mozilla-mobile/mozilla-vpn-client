@@ -82,7 +82,6 @@ done
 
 printn Y "Remove cache... "
 rm -rf cache || die
-rm -rf addon_ts || die
 print G "done."
 
 if [ "$BRANCHNAME" ]; then
