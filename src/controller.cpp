@@ -606,20 +606,6 @@ void Controller::setState(State state) {
     return;
   }
   logger.debug() << "Setting state:" << state;
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::controllerStep,
-      {{"state", QVariant::fromValue(state).toString()}});
-
-  // Specific events for on and off state to aid with analysis
-  if (state == StateOn) {
-    emit MozillaVPN::instance()->recordGleanEvent(
-        GleanSample::controllerStateOn);
-  }
-  if (state == StateOff) {
-    emit MozillaVPN::instance()->recordGleanEvent(
-        GleanSample::controllerStateOff);
-  }
-
   m_state = state;
   emit stateChanged();
 }

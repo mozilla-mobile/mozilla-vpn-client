@@ -47,10 +47,27 @@ void Telemetry::initialize() {
           });
 
   connect(controller, &Controller::stateChanged, this, [this]() {
-    if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+    MozillaVPN* vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
+    Controller* controller = vpn->controller();
+    Q_ASSERT(controller);
+    Controller::State state = controller->state();
+
+    if (state != Controller::StateOn) {
       m_connectionStabilityTimer.stop();
     } else {
       m_connectionStabilityTimer.start(CONNECTION_STABILITY_MSEC);
+    }
+
+    emit vpn->recordGleanEventWithExtraKeys(
+        GleanSample::controllerStep,
+        {{"state", QVariant::fromValue(state).toString()}});
+    // Specific events for on and off state to aid with analysis
+    if (state == Controller::StateOn) {
+      emit vpn->recordGleanEvent(GleanSample::controllerStateOn);
+    }
+    if (state == Controller::StateOff) {
+      emit vpn->recordGleanEvent(GleanSample::controllerStateOff);
     }
   });
 }
@@ -75,9 +92,9 @@ void Telemetry::connectionStabilityEvent() {
       });
 }
 
-void Telemetry::periodicStateRecorder() {
-// On mobile this is handled seperately in a background process
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
+void Telemetry::periodicStateRecorder() {
+  // On mobile this is handled seperately in a background process
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
   Controller* controller = vpn->controller();
@@ -93,5 +110,5 @@ void Telemetry::periodicStateRecorder() {
     emit MozillaVPN::instance()->recordGleanEvent(
         GleanSample::controllerStateOff);
   }
-#endif
 }
+#endif
