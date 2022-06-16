@@ -22,11 +22,13 @@ Telemetry::Telemetry() {
   connect(&m_connectionStabilityTimer, &QTimer::timeout, this,
           &Telemetry::connectionStabilityEvent);
 
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
   connect(&m_gleanControllerUpTimer, &QTimer::timeout, this,
           &Telemetry::periodicStateRecorder);
   m_gleanControllerUpTimer.start(
       Constants::controllerPeriodicStateRecorderMsec());
   m_gleanControllerUpTimer.setSingleShot(false);
+#endif
 }
 
 Telemetry::~Telemetry() { MVPN_COUNT_DTOR(Telemetry); }
