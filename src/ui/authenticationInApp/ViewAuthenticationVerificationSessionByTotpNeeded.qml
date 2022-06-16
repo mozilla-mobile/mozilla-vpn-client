@@ -41,6 +41,8 @@ VPNInAppAuthenticationBase {
     _inputLabel: VPNl18n.InAppAuthSecurityCodeLabel
 
     _inputs: VPNInAppAuthenticationInputs {
+        objectName: "authVerificationSessionByTotpNeeded"
+
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded && activeInput().text.length === VPNAuthInApp.totpCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionTotpCode(inputText) }
         _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton

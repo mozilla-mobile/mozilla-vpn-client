@@ -177,7 +177,7 @@ for the 6-digit code.  From here, we go to **Verifying session TOTP code**.
 * Available methods:
     * `VPNAuthInApp.verifySessionTotpCode(code)`
 
-## State: Verifying session TOTP code
+### State: Verifying session TOTP code
 
 The client is sending the TOTP code to FxA. We are waiting for the result of
 the validation.  From here, we can go to **Finalize** or back to **TOTP
