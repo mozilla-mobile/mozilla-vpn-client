@@ -112,17 +112,20 @@ ColumnLayout {
 
                 VPNInAppAuthenticationPasswordCondition {
                     id: passwordLength
+                    objectName: "passwordConditionLength"
                     _iconVisible: true
                     _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
                     _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCharacterLength
                 }
                 VPNInAppAuthenticationPasswordCondition {
+                    objectName: "passwordConditionEmailAddress"
                     _iconVisible: passwordLength._passwordConditionIsSatisfied
                     _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
                     _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintEmailAddressAsPassword
                     opacity: passwordLength._passwordConditionIsSatisfied ? 1 : .5
                 }
                 VPNInAppAuthenticationPasswordCondition {
+                    objectName: "passwordConditionCommon"
                     _iconVisible:  passwordLength._passwordConditionIsSatisfied
                     _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordCommons(passwordInput.text)
                     _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCommonPassword
