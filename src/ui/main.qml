@@ -64,6 +64,7 @@ Window {
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
+    onVisibilityChanged: console.log("visibility changed")
     onClosing: close => {
         console.log("Closing request handling");
 

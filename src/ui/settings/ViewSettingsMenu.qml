@@ -172,9 +172,15 @@ VPNFlickable {
                 || VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
             );
 
+            if (profileViewNeeded && settingsStackView.currentItem.objectName !== "subscriptionManagmentView" && VPNAuthInApp.state === VPNAuthInApp.StateInitializing || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated) {
+                return settingsStackView.push("qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml")
+            }
+
             // Only push the profile view if it’s not already in the stack
-            if (profileViewNeeded && settingsStackView.currentItem.objectName !== "viewProfile") {
-                settingsStackView.push("qrc:/ui/settings/ViewProfile.qml");
+            if (profileViewNeeded && mainStackView.currentItem.objectName !== "viewProfile") {
+               return mainStackView.push("qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml", {
+                                       _targetViewCondition: VPNProfileFlow.state === VPNProfileFlow.StateReady,
+                                    });
             }
 
             // An error occurred during the profile flow. Let’s reset and return
@@ -182,7 +188,6 @@ VPNFlickable {
             const hasError = VPNProfileFlow.state === VPNProfileFlow.StateError;
             if (hasError) {
                 VPNProfileFlow.reset();
-                settingsStackView.pop();
             }
         }
     }

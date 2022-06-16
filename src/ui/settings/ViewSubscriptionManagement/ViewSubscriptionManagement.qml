@@ -10,6 +10,7 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 VPNFlickable {
+    property string _menuTitle: "Sub Manage"
     id: vpnFlickable
     objectName: "subscriptionManagmentView"
 
@@ -111,7 +112,7 @@ VPNFlickable {
                 visible: VPNFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {
-                    settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
+                    mainStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
                 }
 
                 Layout.alignment: Qt.AlignHCenter
