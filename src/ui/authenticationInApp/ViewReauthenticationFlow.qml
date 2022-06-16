@@ -13,6 +13,7 @@ import components.inAppAuth 0.1
 Item {
     id: reauthenticationFlow
     property bool _targetViewCondition: true
+    objectName: "reauthenticationFlow"
 
     function closeReauthenticationFlow() {
         mainStackView.pop();

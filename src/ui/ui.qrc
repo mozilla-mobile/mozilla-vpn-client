@@ -27,7 +27,6 @@
         <file>settings/ViewNetworkSettings.qml</file>
         <file>settings/ViewNotifications.qml</file>
         <file>settings/ViewPrivacySecurity.qml</file>
-        <file>settings/ViewProfile.qml</file>
         <file>settings/ViewSettingsMenu.qml</file>
         <file>settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
         <file>settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>

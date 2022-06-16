@@ -172,12 +172,20 @@ VPNFlickable {
                 || VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
             );
 
-            if (profileViewNeeded && settingsStackView.currentItem.objectName !== "subscriptionManagmentView" && VPNAuthInApp.state === VPNAuthInApp.StateInitializing || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated) {
+            if (
+                profileViewNeeded
+                && settingsStackView.currentItem.objectName !== "subscriptionManagmentView"
+                && VPNAuthInApp.state === VPNAuthInApp.StateInitializing
+                || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
+            ) {
                 return settingsStackView.push("qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml")
             }
 
             // Only push the profile view if it’s not already in the stack
-            if (profileViewNeeded && mainStackView.currentItem.objectName !== "viewProfile") {
+            if (
+                profileViewNeeded
+                && mainStackView.currentItem.objectName !== "reauthenticationFlow"
+            ) {
                return mainStackView.push("qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml", {
                                        _targetViewCondition: VPNProfileFlow.state === VPNProfileFlow.StateReady,
                                     });
