@@ -541,6 +541,13 @@ static QList<InspectorCommand> s_commands{
           return QJsonObject();
         }},
 
+    InspectorCommand{
+        "force_subscription_management_reauthentication",
+        "Force re-authentication for the subscription management view", 0,
+        [](InspectorHandler*, const QList<QByteArray>&) {
+          return QJsonObject();
+        }},
+
     InspectorCommand{"activate", "Activate the VPN", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        MozillaVPN::instance()->activate();
