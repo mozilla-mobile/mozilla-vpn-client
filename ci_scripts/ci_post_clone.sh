@@ -18,6 +18,7 @@ git submodule update
 export PATH=/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
 
 python3 -m pip install --upgrade pip
+python3 -m pip install --upgrade setuptools
 
 if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
