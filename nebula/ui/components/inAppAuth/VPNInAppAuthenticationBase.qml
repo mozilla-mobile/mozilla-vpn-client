@@ -45,7 +45,6 @@ VPNFlickable {
 
         RowLayout {
             id: authHeader
-            visible: !isReauthFlow 
             Layout.preferredHeight: VPNTheme.theme.rowHeight * 1.2
             Layout.preferredWidth: parent.width
             Layout.topMargin: VPNTheme.theme.windowMargin / 2

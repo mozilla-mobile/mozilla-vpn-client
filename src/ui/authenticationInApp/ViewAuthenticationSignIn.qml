@@ -20,7 +20,7 @@ VPNInAppAuthenticationBase {
                 target: authSignIn
 
                 _changeEmailLinkVisible: false
-                _subtitleText: VPNl18n.DeleteAccountAuthSubheadline
+                _subtitleText: VPNl18n.InAppAuthReauthSignInSubtitle
             }
 
             PropertyChanges {
