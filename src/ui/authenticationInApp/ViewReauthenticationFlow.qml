@@ -12,6 +12,9 @@ import components.inAppAuth 0.1
 
 Item {
     id: reauthenticationFlow
+    property bool _targetViewCondition: false
+    property var _onClose: () => {}
+    objectName: "reauthenticationFlow"
 
     Loader {
         id: loader
@@ -22,8 +25,7 @@ Item {
 
         function cancelAuthenticationFlow() {
             VPN.cancelAuthentication();
-
-            settingsStackView.pop();
+            _onClose();
         }
     }
 
@@ -105,9 +107,11 @@ Item {
                 VPNAuthInApp.state === VPNAuthInApp.StateInitializing
                 || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
             ) && _targetViewCondition
-            PropertyChanges {
-                target: loader
-                source: _targetViewSource || ""
+            StateChangeScript {
+                name: "closeReAuth"
+                script: {
+                    _onClose();
+                }
             }
         }
     ]

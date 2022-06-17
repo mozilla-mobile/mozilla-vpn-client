@@ -11,7 +11,6 @@ import components.forms 0.1
 import components.inAppAuth 0.1
 
 Item {
-    property bool _menuVisible: false
 
     id: viewDeleteAccount
 
@@ -24,7 +23,7 @@ Item {
 
         function cancelAuthenticationFlow() {
             VPN.cancelReauthentication();
-            settingsStackView.pop();
+            mainStackView.pop();
         }
     }
 

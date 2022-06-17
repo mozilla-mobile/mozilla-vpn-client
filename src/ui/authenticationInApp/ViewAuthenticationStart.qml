@@ -22,7 +22,7 @@ VPNInAppAuthenticationBase {
     // Form interaction polish
     // Show form error messages
 
-    _menuButtonOnClick: () => {VPN.cancelAuthentication() }
+    _menuButtonOnClick: () => { VPN.cancelAuthentication() }
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonAccessibleName:  qsTrId("vpn.main.back")
     _headlineText: "Mozilla VPN"
