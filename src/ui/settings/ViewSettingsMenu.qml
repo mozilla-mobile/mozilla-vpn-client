@@ -167,28 +167,25 @@ VPNFlickable {
         target: VPNProfileFlow
 
         function onStateChanged() {
-            const profileViewNeeded = (
-                VPNProfileFlow.state === VPNProfileFlow.StateReady
-                || VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
-            );
-
             if (
-                profileViewNeeded
+                VPNProfileFlow.state === VPNProfileFlow.StateReady
                 && settingsStackView.currentItem.objectName !== "subscriptionManagmentView"
-                && VPNAuthInApp.state === VPNAuthInApp.StateInitializing
-                || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
             ) {
-                return settingsStackView.push("qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml")
+                return settingsStackView.push("qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
             }
 
             // Only push the profile view if it’s not already in the stack
             if (
-                profileViewNeeded
+                VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
                 && mainStackView.currentItem.objectName !== "reauthenticationFlow"
             ) {
-               return mainStackView.push("qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml", {
-                                       _targetViewCondition: VPNProfileFlow.state === VPNProfileFlow.StateReady,
-                                    });
+                return mainStackView.push("qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml", {
+                    _targetViewCondition: Qt.binding(() => VPNProfileFlow.state === VPNProfileFlow.StateReady),
+                    _onClose: () => {
+                        VPNProfileFlow.reset();
+                        mainStackView.pop();
+                    }
+                });
             }
 
             // An error occurred during the profile flow. Let’s reset and return
