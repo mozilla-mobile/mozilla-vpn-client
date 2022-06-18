@@ -85,6 +85,8 @@ Item {
 
         Column {
             id: content
+            objectName: "deviceList"
+
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: maxDevicesReached.bottom
@@ -97,7 +99,7 @@ Item {
                 model: VPNDeviceModel
                 anchors.left: parent.left
                 anchors.right: parent.right
-                delegate: VPNDeviceListItem {}
+                delegate: VPNDeviceListItem { objectName: "device-" + name }
             }
 
 
