@@ -10,18 +10,7 @@ import components 0.1
 import components.inAppAuth 0.1
 
 VPNInAppAuthenticationBase {
-
-    // TODO
-    // This is step 1 in the authentication/account creation flow.
-    // We need to collect an email address.
-    // At this point we do not know if we are going to sign-in or sign-up.
-    // On submit, user is routed to password entry or creation based on account status
-
-    // TODOs (likely there are more)
-    // Add final content when available and images
-    // Form interaction polish
-    // Show form error messages
-
+    _viewObjectName: "authStart"
     _menuButtonOnClick: () => { VPN.cancelAuthentication() }
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonAccessibleName:  qsTrId("vpn.main.back")

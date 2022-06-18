@@ -12,6 +12,7 @@ import components.forms 0.1
 VPNFlickable {
     property var _menuButtonOnClick
     property bool _changeEmailLinkVisible: false
+    property string _viewObjectName: ""
 
     property alias _menuButtonImageSource: menuButtonImage.source
     property alias _menuButtonAccessibleName: menuButton.accessibleName
@@ -50,6 +51,7 @@ VPNFlickable {
 
             VPNIconButton {
                 id: menuButton
+                objectName: _viewObjectName + "-backButton"
                 onClicked: _menuButtonOnClick()
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.preferredWidth: VPNTheme.theme.rowHeight
@@ -65,7 +67,7 @@ VPNFlickable {
 
             VPNLinkButton {
                 id: headerLink
-                objectName: "getHelpLink"
+                objectName: _viewObjectName + "-getHelpLink"
                 Layout.preferredHeight: menuButton.height
                 Layout.alignment: Qt.AlignRight
                 Layout.rightMargin: VPNTheme.theme.windowMargin

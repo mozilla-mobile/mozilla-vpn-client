@@ -415,7 +415,7 @@ void AuthenticationInAppSession::verifySessionTotpCode(const QString& code) {
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.error() << "Failed to verify the session code" << error;
+            logger.error() << "Failed to verify the Totp code" << error;
             processRequestFailure(error, data);
           });
 

@@ -10,22 +10,7 @@ import components 0.1
 import components.inAppAuth 0.1
 
 VPNInAppAuthenticationBase {
-    // TODO
-    // we are here if the user is completing the session activation flow.
-    // The TOTP code is required.
-    //
-    // After this step we can go to:
-    // - all done \o/
-    // - error
-    //
-    // Note that "all done" means IAP! So, more likely, you will receive
-    // errors, crashes, a lot of fun things... nothing will work, and more
-    // likely the app will implode.
-    // In theory, this part should be tested on iOS or on Android when we will
-    // have IAP there too.
-
-    Component.onCompleted: console.log("SESSION VERIFICATION BY TOTP")
-
+    _viewObjectName: "authVerificationSessionByTotpNeeded"
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
