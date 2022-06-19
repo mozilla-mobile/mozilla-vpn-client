@@ -45,6 +45,7 @@ VPNInAppAuthenticationBase {
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
 
     _inputs: VPNInAppAuthenticationInputs {
+        objectName: "authVerificationSessionByEmailNeeded"
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded && activeInput().text && activeInput().text.length === VPNAuthInApp.sessionEmailCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionEmailCode(inputText) }
         _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton

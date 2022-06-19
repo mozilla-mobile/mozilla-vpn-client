@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 
 option(BUILD_DUMMY "Build for the dummy platform" OFF)
 
-project("Mozilla VPN" VERSION 2.9.0 LANGUAGES C CXX
+project("Mozilla VPN" VERSION 2.10.0 LANGUAGES C CXX
         DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
         HOMEPAGE_URL "https://vpn.mozilla.org"
 )

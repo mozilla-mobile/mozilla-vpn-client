@@ -28,6 +28,8 @@ VPNSimplePopup {
     description: qsTrId("vpn.devices.deviceRemovalConfirm").replace("\n", " ").arg(popup.deviceName)
     buttons: [
         VPNPopupButton {
+            objectName: "confirmRemoveDeviceButton"
+
             //: This is the “remove” device button.
             //% "Remove"
             buttonText: qsTrId("vpn.devices.removeDeviceButton")

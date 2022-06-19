@@ -67,6 +67,7 @@ Item {
 
     VPNPanel {
         id: vpnPanel
+        objectName: "deviceLimitPanel"
 
         anchors.top: spacer.bottom
         logoSize: 80

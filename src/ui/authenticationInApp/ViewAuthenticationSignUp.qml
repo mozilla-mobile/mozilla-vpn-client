@@ -32,6 +32,8 @@ VPNInAppAuthenticationBase {
     _inputLabel: VPNl18n.InAppAuthCreatePasswordLabel
 
     _inputs: VPNInAppAuthenticationInputs {
+        objectName: "authSignUp"
+
         function validatePassword(passwordString) {
             return VPNAuthInApp.validatePasswordCommons(passwordString)
                 && VPNAuthInApp.validatePasswordLength(passwordString)
