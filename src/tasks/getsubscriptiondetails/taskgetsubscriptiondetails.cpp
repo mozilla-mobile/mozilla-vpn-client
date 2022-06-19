@@ -17,8 +17,9 @@ Logger logger(LOG_MAIN, "TaskGetSubscriptionDetails");
 
 TaskGetSubscriptionDetails::TaskGetSubscriptionDetails(
     const QString& emailAddress, const bool forceReauth)
-    : Task("TaskGetSubscriptionDetails"), m_emailAddress(emailAddress),
-        m_forceReauth(forceReauth) {
+    : Task("TaskGetSubscriptionDetails"),
+      m_emailAddress(emailAddress),
+      m_forceReauth(forceReauth) {
   MVPN_COUNT_CTOR(TaskGetSubscriptionDetails);
 }
 

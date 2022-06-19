@@ -123,7 +123,7 @@ module.exports = {
     const json = await this._writeCommand(
         'force_subscription_management_reauthentication');
     assert(
-        json.type === 'force_server_unavailable' && !('error' in json),
+        json.type === 'force_subscription_management_reauthentication' && !('error' in json),
         `Command failed: ${json.error}`);
   },
 
