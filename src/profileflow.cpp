@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -32,6 +33,12 @@ void ProfileFlow::setState(State state) {
   emit stateChanged(m_state);
 }
 
+// Only used for testing and debugging the re-authentication flow
+void ProfileFlow::setForceReauthFlow(const bool forceReauthFlow) {
+  logger.debug() << "Set force re-authentication:" << forceReauthFlow;
+  m_forceReauthFlow = forceReauthFlow;
+}
+
 void ProfileFlow::start() {
   logger.debug() << "Start profile flow";
 
@@ -45,7 +52,12 @@ void ProfileFlow::start() {
   Q_ASSERT(user);
 
   TaskGetSubscriptionDetails* task =
-      new TaskGetSubscriptionDetails(user->email());
+      new TaskGetSubscriptionDetails(user->email(), m_forceReauthFlow);
+
+  if (m_forceReauthFlow) {
+    setForceReauthFlow(false);
+  }
+
   connect(task, &TaskGetSubscriptionDetails::receivedData, this,
           &ProfileFlow::subscriptionDetailsFetched);
   connect(task, &TaskGetSubscriptionDetails::needsAuthentication, this, [&] {

@@ -17,6 +17,7 @@
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "notificationhandler.h"
+#include "profileflow.h"
 #include "qmlengineholder.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
@@ -545,6 +546,7 @@ static QList<InspectorCommand> s_commands{
         "force_subscription_management_reauthentication",
         "Force re-authentication for the subscription management view", 0,
         [](InspectorHandler*, const QList<QByteArray>&) {
+          MozillaVPN::instance()->profileFlow()->setForceReauthFlow(true);
           return QJsonObject();
         }},
 
