@@ -23,6 +23,7 @@ Item {
 
     VPNInAppAuthenticationErrorPopup {
         id: authError
+        objectName: "authErrorPopup"
     }
 
     states: [

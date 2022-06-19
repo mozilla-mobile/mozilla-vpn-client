@@ -19,6 +19,7 @@ VPNSimplePopup {
     description: ""
     buttons: [
         VPNButton {
+            objectName: authError.objectName + "-button";
             text: VPNl18n.CaptivePortalAlertButtonTextPreActivation
             onClicked: {
                 authError.close()
@@ -50,7 +51,7 @@ VPNSimplePopup {
                 showGenericAuthError();
                 break;
 
-            case VPNAuthInApp.ErrorAccountUnknown:
+            case VPNAuthInApp.ErrorUnknownAccount:
                 showGenericAuthError();
                 break;
 

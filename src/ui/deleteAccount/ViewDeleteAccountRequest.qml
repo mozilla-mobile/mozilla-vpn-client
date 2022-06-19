@@ -34,6 +34,7 @@ VPNInAppAuthenticationBase {
     property bool allowAccountDeletion: false
 
     _changeEmailLinkVisible: false
+    _viewObjectName: "authDeleteAccountRequest"
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => {

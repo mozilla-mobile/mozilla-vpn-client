@@ -112,20 +112,20 @@ ColumnLayout {
 
                 VPNInAppAuthenticationPasswordCondition {
                     id: passwordLength
-                    objectName: "passwordConditionLength"
+                    objectName: base.objectName + "-passwordConditionLength"
                     _iconVisible: true
                     _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
                     _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCharacterLength
                 }
                 VPNInAppAuthenticationPasswordCondition {
-                    objectName: "passwordConditionEmailAddress"
+                    objectName: base.objectName + "-passwordConditionEmailAddress"
                     _iconVisible: passwordLength._passwordConditionIsSatisfied
                     _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
                     _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintEmailAddressAsPassword
                     opacity: passwordLength._passwordConditionIsSatisfied ? 1 : .5
                 }
                 VPNInAppAuthenticationPasswordCondition {
-                    objectName: "passwordConditionCommon"
+                    objectName: base.objectName + "-passwordConditionCommon"
                     _iconVisible:  passwordLength._passwordConditionIsSatisfied
                     _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordCommons(passwordInput.text)
                     _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCommonPassword
@@ -204,13 +204,8 @@ ColumnLayout {
                 base._inputErrorMessage =  VPNl18n.InAppAuthInvalidEmailErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
-            case VPNAuthInApp.ErrorInvalidEmailCode:
-                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage;
-                activeInput().forceActiveFocus();
-                break;
-
             case VPNAuthInApp.ErrorInvalidOrExpiredVerificationCode:
-                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage
+                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
 

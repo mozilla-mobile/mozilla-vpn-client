@@ -38,6 +38,7 @@ VPNInAppAuthenticationBase {
     ]
 
     _changeEmailLinkVisible: true
+    _viewObjectName: "authSignIn"
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
