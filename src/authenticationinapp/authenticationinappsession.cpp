@@ -24,8 +24,9 @@ namespace {
 Logger logger(LOG_MAIN, "AuthenticationInAppSession");
 }  // anonymous namespace
 
-AuthenticationInAppSession::AuthenticationInAppSession(QObject* parent)
-    : QObject(parent) {
+AuthenticationInAppSession::AuthenticationInAppSession(QObject* parent,
+                                                       TypeAuthentication type)
+    : QObject(parent), m_typeAuthentication(type) {
   MVPN_COUNT_CTOR(AuthenticationInAppSession);
 }
 
@@ -567,6 +568,9 @@ void AuthenticationInAppSession::deleteAccount() {
             logger.debug() << "Account deleted" << logger.sensitive(data);
             emit accountDeleted();
           });
+
+  emit MozillaVPN::instance()->recordGleanEvent(
+      GleanSample::deleteAccountClicked);
 }
 
 void AuthenticationInAppSession::finalizeSignInOrUp() {
