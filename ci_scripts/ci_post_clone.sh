@@ -4,7 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-QTVERSION=6.2.4
 
 # switch to repository directory for setup
 cd /Volumes/workspace/repository
@@ -18,8 +17,6 @@ git submodule update
 export PATH=/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
 
 python3 -m pip install --upgrade pip
-python3 -m pip install --upgrade setuptools
-python3 -m pip install py7zr==0.18.7
 
 if [ $CI_PRODUCT_PLATFORM == 'macOS' ]
 then
@@ -41,9 +38,12 @@ EOF
   export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
   export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 else
-  python3 -m pip  install aqtinstall --ignore-installed py7zr
-  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop $QTVERSION -m qtwebsockets qt5compat
-  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios $QTVERSION -m qtwebsockets qt5compat
+  curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-1.toolchains.v3.qt-ios.latest/artifacts/public%2Fbuild%2Fqt6_ios.zip --output qt_ios.zip
+  unzip qt_ios.zip
+  ls
+  QTVERSION=$(ls qt_ios)
+  echo "Using QT:$QTVERSION"
+
   export QT_IOS_BIN=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin
   export PATH=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin:/Volumes/workspace/repository/qt_ios/$QTVERSION/macos/bin:$PATH
 fi
