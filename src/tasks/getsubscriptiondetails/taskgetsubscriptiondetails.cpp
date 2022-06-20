@@ -16,8 +16,10 @@ Logger logger(LOG_MAIN, "TaskGetSubscriptionDetails");
 }  // anonymous namespace
 
 TaskGetSubscriptionDetails::TaskGetSubscriptionDetails(
-    const QString& emailAddress)
-    : Task("TaskGetSubscriptionDetails"), m_emailAddress(emailAddress) {
+    const QString& emailAddress, const bool forceReauth)
+    : Task("TaskGetSubscriptionDetails"),
+      m_emailAddress(emailAddress),
+      m_forceReauth(forceReauth) {
   MVPN_COUNT_CTOR(TaskGetSubscriptionDetails);
 }
 
@@ -27,6 +29,16 @@ TaskGetSubscriptionDetails::~TaskGetSubscriptionDetails() {
 
 void TaskGetSubscriptionDetails::run() {
   logger.debug() << "run";
+
+  // If this Task is created with `forceReauth = true`,
+  // we are forcing the user to authenticate.
+  if (m_forceReauth) {
+    logger.error() << "Force authentication";
+    initAuthentication();
+    // Reset the flag so we can run the Task after successful authentication.
+    m_forceReauth = false;
+    return;
+  }
 
   NetworkRequest* request =
       NetworkRequest::createForGetSubscriptionDetails(this);
@@ -49,8 +61,6 @@ void TaskGetSubscriptionDetails::run() {
         // User needs to (re)authenticate
         if (error == QNetworkReply::AuthenticationRequiredError) {
           logger.error() << "Needs authentication";
-
-          emit needsAuthentication();
           initAuthentication();
           return;
         }
@@ -81,6 +91,8 @@ void TaskGetSubscriptionDetails::run() {
 void TaskGetSubscriptionDetails::initAuthentication() {
   logger.debug() << "Init authentication";
   Q_ASSERT(!m_authenticationInAppSession);
+
+  emit needsAuthentication();
 
   QByteArray pkceCodeVerifier;
   QByteArray pkceCodeChallenge;

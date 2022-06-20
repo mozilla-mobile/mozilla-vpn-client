@@ -32,6 +32,12 @@ void ProfileFlow::setState(State state) {
   emit stateChanged(m_state);
 }
 
+// Only used for testing and debugging the re-authentication flow
+void ProfileFlow::setForceReauthFlow(const bool forceReauthFlow) {
+  logger.debug() << "Set force re-authentication:" << forceReauthFlow;
+  m_forceReauthFlow = forceReauthFlow;
+}
+
 void ProfileFlow::start() {
   logger.debug() << "Start profile flow";
 
@@ -45,7 +51,11 @@ void ProfileFlow::start() {
   Q_ASSERT(user);
 
   TaskGetSubscriptionDetails* task =
-      new TaskGetSubscriptionDetails(user->email());
+      new TaskGetSubscriptionDetails(user->email(), m_forceReauthFlow);
+
+  // Reset forcing the re-auth flow
+  setForceReauthFlow(false);
+
   connect(task, &TaskGetSubscriptionDetails::receivedData, this,
           &ProfileFlow::subscriptionDetailsFetched);
   connect(task, &TaskGetSubscriptionDetails::needsAuthentication, this, [&] {
