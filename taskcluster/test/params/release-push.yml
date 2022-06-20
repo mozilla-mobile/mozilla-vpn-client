@@ -24,4 +24,3 @@ repository_type: git
 target_tasks_method: default
 tasks_for: github-push
 version: ''
-app_version: '2.9.0'

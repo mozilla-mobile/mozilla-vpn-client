@@ -12,25 +12,13 @@ def get_defaults(repo_root):
     return {
         "pull_request_number": None,
         "version": "",
-        "app_version":"0.0.0"
     }
-
-def getAppVersion():
-    with open("CMakeLists.txt") as f:
-        lines = f.readlines()
-        isVersionLine = lambda x: "project(\"Mozilla VPN\" VERSION" in x
-        version_line = next(filter(isVersionLine,lines))
-        tokens = version_line.split(" ")
-        version = tokens[tokens.index("VERSION")+1]
-        return version
 
 
 extend_parameters_schema(
     {
         Required("pull_request_number"): Any(All(int, Range(min=1)), None),
         Required("version"): str,
-        Required("app_version"): str,
-        
     },
     defaults_fn=get_defaults
 )
@@ -39,7 +27,6 @@ extend_parameters_schema(
 def get_decision_parameters(graph_config, parameters):
     head_tag = parameters["head_tag"]
     parameters["version"] = head_tag[1:] if head_tag else ""
-    parameters["app_version"] = getAppVersion()
 
     pr_number = os.environ.get("MOZILLAVPN_PULL_REQUEST_NUMBER", None)
     parameters["pull_request_number"] = None if pr_number is None else int(pr_number)
