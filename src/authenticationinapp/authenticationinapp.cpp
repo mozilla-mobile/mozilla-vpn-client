@@ -49,25 +49,29 @@ void AuthenticationInApp::setState(State state,
   m_state = state;
   emit stateChanged();
 
-  if (session && session->type() == AuthenticationInAppSession::TypeDefault) {
-    emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::authenticationInappStep,
-        {{"state", QVariant::fromValue(state).toString()}});
+  Q_ASSERT(session);
+  const char* gleanSample = nullptr;
+  switch (session->type()) {
+    case AuthenticationInAppSession::TypeDefault:
+      logger.debug() << "TypeDefault";
+      gleanSample = GleanSample::authenticationInappStep;
+      break;
+    case AuthenticationInAppSession::TypeAccountDeletion:
+      logger.debug() << "TypeAccountDeletion";
+      gleanSample = GleanSample::authenticationAcntDelStep;
+      break;
+    case AuthenticationInAppSession::TypeSubscriptionManagement:
+      logger.debug() << "TypeSubscriptionManagement";
+      gleanSample = GleanSample::authenticationSubManageStep;
+      break;
+    default:
+      logger.error()
+          << "Glean samples and Auth-in-app session types are out of sync";
   }
 
-  if (session &&
-      session->type() == AuthenticationInAppSession::TypeAccountDeletion) {
-    emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::authenticationAcntDelStep,
-        {{"state", QVariant::fromValue(state).toString()}});
-  }
-
-  if (session && session->type() ==
-                     AuthenticationInAppSession::TypeSubscriptionManagement) {
-    emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::authenticationSubManageStep,
-        {{"state", QVariant::fromValue(state).toString()}});
-  }
+  Q_ASSERT(gleanSample);
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      gleanSample, {{"state", QVariant::fromValue(state).toString()}});
 }
 
 void AuthenticationInApp::registerSession(AuthenticationInAppSession* session) {
