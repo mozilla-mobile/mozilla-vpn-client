@@ -292,7 +292,7 @@ scripts/wasm/compile.sh
  * `MVPN_BIN` (location of compiled mvpn binary)
  * `ARTIFACT_DIR` (directory to put screenshots from test failures)
 * (Optional) In one window run `./tests/proxy/wsgi.py --mock-devices`
-* To run, say, the authentication tests: `./scripts/tests/functional_test.sh
+* Run a test from the root of the project: `./scripts/tests/functional_tests.sh {test_file}.js`. To run, say, the authentication tests: `./scripts/tests/functional_tests.sh
   tests/functional/testAuthentication.js`.
 
 ## Developer Options and staging environment
