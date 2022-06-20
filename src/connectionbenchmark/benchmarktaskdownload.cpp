@@ -45,7 +45,19 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
 #if !defined(MVPN_DUMMY)
     m_dnsLookup.setNameserver(QHostAddress(MULLVAD_DEFAULT_DNS));
 #endif
+
+#if QT_VERSION >= 0x060400
+#  error Check if QT added support for QDnsLookup::lookup() on Android
+#endif
+
+#ifdef MVPN_ANDROID
+    NetworkRequest* request =
+        NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
+    connectNetworkRequest(request);
+    m_elapsedTimer.start();
+#else
     m_dnsLookup.lookup();
+#endif
   } else if (state == BenchmarkTask::StateInactive) {
     for (NetworkRequest* request : m_requests) {
       request->abort();
@@ -53,6 +65,22 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
     m_requests.clear();
     m_dnsLookup.abort();
   }
+}
+
+void BenchmarkTaskDownload::connectNetworkRequest(NetworkRequest* request) {
+  logger.debug() << "Connect network requests";
+
+  connect(request, &NetworkRequest::requestUpdated, this,
+          &BenchmarkTaskDownload::downloadProgressed);
+  connect(request, &NetworkRequest::requestFailed, this,
+          &BenchmarkTaskDownload::downloadReady);
+  connect(request, &NetworkRequest::requestCompleted, this,
+          [&](const QByteArray& data) {
+            downloadReady(QNetworkReply::NoError, data);
+          });
+
+  logger.debug() << "Starting request";
+  m_requests.append(request);
 }
 
 void BenchmarkTaskDownload::dnsLookupFinished() {
@@ -80,18 +108,7 @@ void BenchmarkTaskDownload::dnsLookupFinished() {
 
     NetworkRequest* request = NetworkRequest::createForGetHostAddress(
         this, m_fileUrl.toString(), record.value());
-
-    connect(request, &NetworkRequest::requestUpdated, this,
-            &BenchmarkTaskDownload::downloadProgressed);
-    connect(request, &NetworkRequest::requestFailed, this,
-            &BenchmarkTaskDownload::downloadReady);
-    connect(request, &NetworkRequest::requestCompleted, this,
-            [&](const QByteArray& data) {
-              downloadReady(QNetworkReply::NoError, data);
-            });
-
-    logger.debug() << "Starting request:" << (void*)request;
-    m_requests.append(request);
+    connectNetworkRequest(request);
   }
 
   m_elapsedTimer.start();

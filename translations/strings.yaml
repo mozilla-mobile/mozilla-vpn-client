@@ -457,6 +457,7 @@ inAppAuth:
   changeEmailLink: Change email
   signInButton: Sign in
   signInSubtitle: Continue to Mozilla VPN by signing in with your Firefox account
+  reauthSignInSubtitle: To continue, please confirm with your Firefox account password.
   createPasswordLabel:
     value: Create password
     comment: This is a label displayed on the password creation screen.

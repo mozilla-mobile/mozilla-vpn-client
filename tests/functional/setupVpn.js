@@ -66,6 +66,10 @@ exports.mochaHooks = {
     if (this.currentTest.ctx.authenticationNeeded &&
         !this.currentTest.ctx.vpnSettings) {
       console.log('Retrieving the setting file...');
+
+      guardian.overrideEndpoints = null;
+      fxa.overrideEndpoints = null;
+
       await startAndConnect();
       await vpn.hardReset();
       await vpn.setSetting('tips-and-tricks-intro-shown', 'true')
@@ -78,6 +82,10 @@ exports.mochaHooks = {
       const content = await fs.readFileSync(fileName);
       this.currentTest.ctx.vpnSettings = {fileName, content};
     }
+
+    guardian.overrideEndpoints =
+        this.currentTest.ctx.guardianOverrideEndpoints || null;
+    fxa.overrideEndpoints = this.currentTest.ctx.fxaOverrideEndpoints || null;
 
     if (this.currentTest.ctx.authenticationNeeded) {
       fs.writeFileSync(

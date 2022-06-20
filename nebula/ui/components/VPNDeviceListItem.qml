@@ -38,6 +38,7 @@ Item {
 
     RowLayout {
         property var deviceName: name
+        objectName: "deviceLayout"
 
         id: deviceRow
 
@@ -173,6 +174,7 @@ Item {
 
         VPNIconButton {
             id: iconButton
+            objectName: "deviceRemoveButton"
 
             property var iconSource: "qrc:/nebula/resources/delete.svg"
             property real iconHeightWidth: 22

@@ -217,6 +217,14 @@ module.exports = {
     server.stop();
   },
 
+  get overrideEndpoints() {
+    return server.overrideEndpoints;
+  },
+
+  set overrideEndpoints(value) {
+    server.overrideEndpoints = value;
+  },
+
   throwExceptionsIfAny() {
     server.throwExceptionsIfAny();
   },
