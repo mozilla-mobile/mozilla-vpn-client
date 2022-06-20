@@ -11,26 +11,9 @@ import components.inAppAuth 0.1
 
 
 VPNInAppAuthenticationBase {
-    // TODO
-    // we are here if the user is completing the session activation flow.
-    // FxA has sent an email with a 6-digit code. The code must be received by
-    // this view and then passed to the C++ layer using:
-    // `verifySessionEmailCode(code)`.
-    // The code expires after 5 minutes. If the user needs a new code, call:
-    // `resendVerificationSessionCodeEmail()`.
-    //
-    // After this step we can go to:
-    // - all done \o/
-    // - error
-    //
-    // Note that "all done" means IAP! So, more likely, you will receive
-    // errors, crashes, a lot of fun things... nothing will work, and more
-    // likely the app will implode.
-    // In theory, this part should be tested on iOS or on Android when we will
-    // have IAP there too.
-
     id: authSignUp
 
+    _viewObjectName: "authVerificationSessionByEmailNeeded"
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
