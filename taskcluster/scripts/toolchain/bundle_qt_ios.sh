@@ -16,6 +16,5 @@ python3 -m pip install --upgrade aqtinstall
 aqt install-qt -O qt_ios mac desktop $QT_VERSION -m qtwebsockets qt5compat
 aqt install-qt -O qt_ios mac ios $QT_VERSION -m qtwebsockets qt5compat
 
-mkdir -p ../../public/build
-zip -qr ../../public/build/qt6_ios.zip qt_ios/*
+zip -qr $UPLOAD_DIR/qt6_ios.zip qt_ios/*
 
