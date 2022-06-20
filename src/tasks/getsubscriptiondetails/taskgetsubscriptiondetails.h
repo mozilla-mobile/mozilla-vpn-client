@@ -14,7 +14,8 @@ class TaskGetSubscriptionDetails final : public Task {
   Q_DISABLE_COPY_MOVE(TaskGetSubscriptionDetails)
 
  public:
-  explicit TaskGetSubscriptionDetails(const QString& emailAddress);
+  explicit TaskGetSubscriptionDetails(const QString& emailAddress,
+                                      const bool forceReauth);
   ~TaskGetSubscriptionDetails();
 
   void run() override;
@@ -30,6 +31,7 @@ class TaskGetSubscriptionDetails final : public Task {
  private:
   AuthenticationInAppSession* m_authenticationInAppSession = nullptr;
   const QString m_emailAddress;
+  bool m_forceReauth;
 };
 
 #endif  // TASKGETSUBSCRIPTIONDETAILS_H

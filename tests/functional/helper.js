@@ -119,6 +119,14 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
+  async forceSubscriptionManagementReauth() {
+    const json = await this._writeCommand(
+        'force_subscription_management_reauthentication');
+    assert(
+        json.type === 'force_subscription_management_reauthentication' && !('error' in json),
+        `Command failed: ${json.error}`);
+  },
+
   async forceCaptivePortalDetection() {
     const json = await this._writeCommand('force_captive_portal_detection');
     assert(
