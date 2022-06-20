@@ -17,6 +17,7 @@ Requires:  wireguard-tools
 BuildRequires: golang >= 1.13
 BuildRequires: polkit-devel
 BuildRequires: python3-yaml
+BuildRequires: python3-lxml
 BuildRequires: cargo
 BuildRequires: qt5-qtbase-devel >= 5.15
 BuildRequires: qt5-qtnetworkauth-devel >= 5.15
@@ -35,6 +36,7 @@ Read more on https://vpn.mozilla.org
 
 %build
 %{_srcdir}/scripts/utils/import_languages.py
+%{_srcdir}/scripts/addon/generate_all.py
 %{qmake_qt5} %{_srcdir}/mozillavpn.pro QT+=svg
 make %{?_smp_mflags}
 
@@ -61,3 +63,4 @@ install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 %{_datadir}/icons/hicolor/48x48/apps/mozillavpn.png
 %{_datadir}/icons/hicolor/64x64/apps/mozillavpn.png
 %{_datadir}/polkit-1/actions/org.mozilla.vpn.policy
+%dir %{_datadir}/mozillavpn

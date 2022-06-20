@@ -28,7 +28,7 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Widgets
 )
 
-target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)
+target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations addons)
 
 include(cmake/sources.cmake)
 

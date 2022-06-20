@@ -76,6 +76,9 @@ python3 scripts\utils\import_languages.py
 ECHO Generating glean samples...
 python3 scripts\utils\generate_glean.py
 
+ECHO Generating addons...
+python3 scripts\addon\generate_all.py
+
 ECHO Creating the project with flags: %FLAGS%
 
 if %DEBUG_BUILD% == T (

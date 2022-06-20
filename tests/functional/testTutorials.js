@@ -4,7 +4,7 @@
 const assert = require('assert');
 const vpn = require('./helper.js');
 
-describe('Tutorials', function() {
+describe.skip('Tutorials', function() {
   this.timeout(60000);
   this.ctx.authenticationNeeded = true;
 

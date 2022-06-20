@@ -21,11 +21,6 @@ class AddonManager final : public QObject {
 
   ~AddonManager();
 
-  void updateIndex(const QByteArray& index);
-
-  void storeAndLoadAddon(const QByteArray& addonData, const QString& addonId,
-                         const QByteArray& sha256);
-
   bool loadManifest(const QString& addonManifestFileName,
                     const QByteArray& sha256);
 
@@ -44,7 +39,6 @@ class AddonManager final : public QObject {
 
   static bool addonDir(QDir* dir);
   static QByteArray readIndex();
-  static void writeIndex(const QByteArray& index);
 
   static void removeAddon(const QString& addonId);
 

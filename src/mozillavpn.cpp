@@ -20,7 +20,6 @@
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
-#include "tasks/addonindex/taskaddonindex.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
@@ -118,8 +117,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
-         new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList(),
-         new TaskAddonIndex()}));
+         new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -239,7 +237,6 @@ void MozillaVPN::initialize() {
   }
 
   AddonManager::instance();
-  TaskScheduler::scheduleTask(new TaskAddonIndex());
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
