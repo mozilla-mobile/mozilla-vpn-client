@@ -30,9 +30,12 @@ TaskGetSubscriptionDetails::~TaskGetSubscriptionDetails() {
 void TaskGetSubscriptionDetails::run() {
   logger.debug() << "run";
 
+  // If this Task is created with `forceReauth = true`,
+  // we are forcing the user to authenticate.
   if (m_forceReauth) {
     logger.error() << "Force authentication";
     initAuthentication();
+    // Reset the flag so we can run the Task after successful authentication.
     m_forceReauth = false;
     return;
   }
