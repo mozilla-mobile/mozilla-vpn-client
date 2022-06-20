@@ -53,9 +53,8 @@ void ProfileFlow::start() {
   TaskGetSubscriptionDetails* task =
       new TaskGetSubscriptionDetails(user->email(), m_forceReauthFlow);
 
-  if (m_forceReauthFlow) {
-    setForceReauthFlow(false);
-  }
+  // Reset forcing the re-auth flow
+  setForceReauthFlow(false);
 
   connect(task, &TaskGetSubscriptionDetails::receivedData, this,
           &ProfileFlow::subscriptionDetailsFetched);
