@@ -4,7 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-QTVERSION=6.2.4
 
 # switch to repository directory for setup
 cd /Volumes/workspace/repository
@@ -39,9 +38,12 @@ EOF
   export QT_MACOS_BIN=`pwd`/qt_static_macos/qt6/bin
   export PATH=`pwd`/qt_static_macos/qt6/bin:$PATH
 else
-  pip3 install aqtinstall
-  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac desktop $QTVERSION -m qtwebsockets qt5compat
-  aqt install-qt -O /Volumes/workspace/repository/qt_ios mac ios $QTVERSION -m qtwebsockets qt5compat
+  curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-ios.latest/artifacts/public%2Fbuild%2Fqt6_ios.zip --output qt_ios.zip
+  unzip qt_ios.zip
+  ls
+  QTVERSION=$(ls qt_ios)
+  echo "Using QT:$QTVERSION"
+
   export QT_IOS_BIN=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin
   export PATH=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin:/Volumes/workspace/repository/qt_ios/$QTVERSION/macos/bin:$PATH
 fi
