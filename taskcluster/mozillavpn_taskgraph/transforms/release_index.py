@@ -19,6 +19,7 @@ def add_branch_index(config, tasks):
                 git_branch = config.params["head_ref"]
                 if git_branch.startswith(_GIT_REFS_HEADS_PREFIX):
                     git_branch = git_branch[len(_GIT_REFS_HEADS_PREFIX):]
+                git_branch = git_branch.replace("/",".") # We can't have "/" in the index -> so releases/2.9.0 needs to be releases.2.9.0
                 route = f"index.mozillavpn.v2.mozilla-vpn-client.branch.{git_branch}.latest.{name}"
                 task.setdefault("routes", []).append(route)
         yield task
