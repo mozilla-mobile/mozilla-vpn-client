@@ -164,24 +164,26 @@ VPNFlickable {
         });
 
         // Subscription payment model
-        if (VPNSubscriptionData.paymentType === "credit") {
-            subscriptionPaymentModel.append({
-                labelText: VPNSubscriptionData.creditCardBrand,
-                valueText: VPNl18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
-                type: "payment",
-            });
+        if (VPNSubscriptionData.paymentProvider) {
+            if (VPNSubscriptionData.paymentType === "credit") {
+                subscriptionPaymentModel.append({
+                    labelText: VPNSubscriptionData.creditCardBrand,
+                    valueText: VPNl18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
+                    type: "payment",
+                });
 
-            subscriptionPaymentModel.append({
-                labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
-                valueText: getPaymentExpiration(),
-                type: "text",
-            });
-        } else {
-            subscriptionPaymentModel.append({
-                labelText: VPNSubscriptionData.paymentType,
-                valueText: "",
-                type: "payment",
-            });
+                subscriptionPaymentModel.append({
+                    labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
+                    valueText: getPaymentExpiration(),
+                    type: "text",
+                });
+            } else {
+                subscriptionPaymentModel.append({
+                    labelText: VPNSubscriptionData.paymentType || VPNSubscriptionData.paymentProvider,
+                    valueText: "",
+                    type: "payment",
+                });
+            }
         }
     }
 
