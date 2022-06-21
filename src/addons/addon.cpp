@@ -174,7 +174,7 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
     return nullptr;
   }
 
-  if (type == "demo") {
+  if (!Constants::inProduction() && type == "demo") {
     return AddonDemo::create(parent, manifestFileName, id, name, obj);
   }
 
