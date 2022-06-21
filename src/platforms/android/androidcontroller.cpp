@@ -43,6 +43,13 @@ AndroidController::AndroidController() {
   auto activity = AndroidVPNActivity::instance();
 
   connect(
+      activity, &AndroidVPNActivity::serviceConnected, this,
+      []() {
+        AndroidVPNActivity::sendToService(ServiceAction::ACTION_CONTROLLER_INIT,
+                                          "");
+      },
+      Qt::QueuedConnection);
+  connect(
       activity, &AndroidVPNActivity::eventInitialized, this,
       [this](const QString& parcelBody) {
         auto doc = QJsonDocument::fromJson(parcelBody.toUtf8());
@@ -117,7 +124,7 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
                        sizeof(methods) / sizeof(methods[0]));
   env->DeleteLocalRef(objectClass);
 
-  AndroidVPNActivity::instance()->connectService();
+  AndroidVPNActivity::connectService();
 }
 
 void AndroidController::activate(const HopConnection& hop, const Device* device,

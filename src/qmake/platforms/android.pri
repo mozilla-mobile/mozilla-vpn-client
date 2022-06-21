@@ -61,6 +61,7 @@ INCLUDEPATH += platforms/android
 
 SOURCES +=  \
     platforms/android/androidcontroller.cpp \
+    platforms/android/androidglean.cpp \
     platforms/android/androidiaphandler.cpp \
     platforms/android/androidnotificationhandler.cpp \
     platforms/android/androidutils.cpp \
@@ -73,6 +74,7 @@ SOURCES +=  \
 
 HEADERS +=  \
     platforms/android/androidcontroller.h \
+    platforms/android/androidglean.h \
     platforms/android/androidiaphandler.h \
     platforms/android/androidnotificationhandler.h \
     platforms/android/androidutils.h \

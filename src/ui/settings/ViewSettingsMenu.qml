@@ -9,8 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
 
 VPNFlickable {
     property string _menuTitle: qsTrId("vpn.main.settings")
@@ -55,7 +53,7 @@ VPNFlickable {
                     if (subscriptionManagementEnabled) {
                         VPNProfileFlow.start();
                     } else {
-                        Sample.manageAccountClicked.record();
+                        VPN.recordGleanEvent("manageAccountClicked")
                         VPN.openLink(VPN.LinkAccount);
                     }
                 }
@@ -126,7 +124,7 @@ VPNFlickable {
                 imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 onClicked: {
-                    Sample.getHelpClickedViewSettings.record();
+                    VPN.recordGleanEvent("getHelpClickedViewSettings");
                     getHelpViewNeeded();
                 }
             }
