@@ -339,7 +339,7 @@ with open(args.source, "r", encoding="utf-8") as file:
             continue
 
         xliff_path = os.path.join(
-            i18n_path, locale, "addons", manifest["id"], "locale.xliff"
+            i18n_path, locale, "addons", manifest["id"], "strings.xliff"
         )
 
         if os.path.isfile(xliff_path):
