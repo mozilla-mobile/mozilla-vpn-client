@@ -16,14 +16,6 @@ class GuideModel final : public QAbstractListModel {
   Q_DISABLE_COPY_MOVE(GuideModel)
 
  public:
-  enum GuideBlockType {
-    GuideBlockTypeTitle,
-    GuideBlockTypeText,
-    GuideBlockTypeOrderedList,
-    GuideBlockTypeUnorderedList,
-  };
-  Q_ENUM(GuideBlockType);
-
   enum ModelRoles {
     GuideRole = Qt::UserRole + 1,
   };

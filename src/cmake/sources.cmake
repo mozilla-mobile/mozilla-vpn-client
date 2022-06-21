@@ -74,6 +74,10 @@ target_sources(mozillavpn PRIVATE
     commands/commandstatus.h
     commands/commandui.cpp
     commands/commandui.h
+    composerblock.cpp
+    composerblock.h
+    composer.cpp
+    composer.h
     connectionbenchmark/benchmarktask.cpp
     connectionbenchmark/benchmarktask.h
     connectionbenchmark/benchmarktaskdownload.cpp
@@ -155,8 +159,6 @@ target_sources(mozillavpn PRIVATE
     models/feedbackcategorymodel.h
     models/guide.cpp
     models/guide.h
-    models/guideblock.cpp
-    models/guideblock.h
     models/guidemodel.cpp
     models/guidemodel.h
     models/helpmodel.cpp
@@ -337,3 +339,8 @@ if(NOT CMAKE_CROSSCOMPILING)
         tasks/authenticate/desktopauthenticationlistener.h
     )
 endif()
+
+qt6_add_qml_module(mozillavpn
+  URI Mozilla.VPN.qmlcomponents
+  VERSION 1.0
+)

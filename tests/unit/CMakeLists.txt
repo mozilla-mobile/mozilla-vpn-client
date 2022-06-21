@@ -60,6 +60,10 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/command.h
     ${MVPN_SOURCE_DIR}/commandlineparser.cpp
     ${MVPN_SOURCE_DIR}/commandlineparser.h
+    ${MVPN_SOURCE_DIR}/composer.cpp
+    ${MVPN_SOURCE_DIR}/composer.h
+    ${MVPN_SOURCE_DIR}/composerblock.cpp
+    ${MVPN_SOURCE_DIR}/composerblock.h
     ${MVPN_SOURCE_DIR}/constants.cpp
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/controller.h
@@ -102,8 +106,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.h
     ${MVPN_SOURCE_DIR}/models/guide.cpp
     ${MVPN_SOURCE_DIR}/models/guide.h
-    ${MVPN_SOURCE_DIR}/models/guideblock.cpp
-    ${MVPN_SOURCE_DIR}/models/guideblock.h
     ${MVPN_SOURCE_DIR}/models/guidemodel.cpp
     ${MVPN_SOURCE_DIR}/models/guidemodel.h
     ${MVPN_SOURCE_DIR}/models/helpmodel.cpp

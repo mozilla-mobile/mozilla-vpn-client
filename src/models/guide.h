@@ -5,7 +5,7 @@
 #ifndef GUIDE_H
 #define GUIDE_H
 
-#include "guideblock.h"
+#include "composer.h"
 
 class QJsonObject;
 
@@ -16,7 +16,7 @@ class Guide final : public QObject {
   Q_PROPERTY(QString titleId MEMBER m_titleId CONSTANT)
   Q_PROPERTY(QString subtitleId MEMBER m_subtitleId CONSTANT)
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
-  Q_PROPERTY(QList<GuideBlock*> blocks MEMBER m_blocks CONSTANT)
+  Q_PROPERTY(Composer* composer MEMBER m_composer CONSTANT)
 
  public:
   static Guide* create(QObject* parent, const QString& fileName);
@@ -33,7 +33,7 @@ class Guide final : public QObject {
   QString m_titleId;
   QString m_subtitleId;
   QString m_image;
-  QList<GuideBlock*> m_blocks;
+  Composer* m_composer = nullptr;
 };
 
 #endif  // GUIDE_H

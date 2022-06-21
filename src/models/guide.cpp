@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "guide.h"
-#include "guideblock.h"
+#include "composer.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -60,26 +60,11 @@ Guide* Guide::create(QObject* parent, const QJsonObject& obj) {
     return nullptr;
   }
 
-  QJsonValue blocksArray = obj["blocks"];
-  if (!blocksArray.isArray()) {
-    logger.warning() << "No blocks for guide";
+  guide->m_composer =
+      Composer::create(guide, QString("guide.%1").arg(guideId), obj);
+  if (!guide->m_composer) {
+    logger.warning() << "Composer failed";
     return nullptr;
-  }
-
-  for (QJsonValue blockValue : blocksArray.toArray()) {
-    if (!blockValue.isObject()) {
-      logger.warning() << "Expected JSON objects as blocks for guide";
-      return nullptr;
-    }
-
-    QJsonObject blockObj = blockValue.toObject();
-
-    GuideBlock* block = GuideBlock::create(guide, guideId, blockObj);
-    if (!block) {
-      return nullptr;
-    }
-
-    guide->m_blocks.append(block);
   }
 
   guard.dismiss();

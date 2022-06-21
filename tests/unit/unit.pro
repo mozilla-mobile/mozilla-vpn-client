@@ -55,6 +55,8 @@ HEADERS += \
     ../../src/collator.h \
     ../../src/command.h \
     ../../src/commandlineparser.h \
+    ../../src/composer.h \
+    ../../src/composerblock.h \
     ../../src/constants.h \
     ../../src/controller.h \
     ../../src/curve25519.h \
@@ -75,7 +77,6 @@ HEADERS += \
     ../../src/models/featuremodel.h \
     ../../src/models/feedbackcategorymodel.h \
     ../../src/models/guide.h \
-    ../../src/models/guideblock.h \
     ../../src/models/guidemodel.h \
     ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
@@ -173,6 +174,8 @@ SOURCES += \
     ../../src/collator.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
+    ../../src/composer.cpp \
+    ../../src/composerblock.cpp \
     ../../src/constants.cpp \
     ../../src/curve25519.cpp \
     ../../src/dnspingsender.cpp \
@@ -195,7 +198,6 @@ SOURCES += \
     ../../src/models/featuremodel.cpp \
     ../../src/models/feedbackcategorymodel.cpp \
     ../../src/models/guide.cpp \
-    ../../src/models/guideblock.cpp \
     ../../src/models/guidemodel.cpp \
     ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
