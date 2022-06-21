@@ -87,34 +87,47 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   // Payment
   QJsonObject paymentData = obj.value("payment").toObject();
 
-  QJsonValue paymentType = paymentData.value("type");
-  if (!paymentType.isString()) {
-    return false;
-  }
-
-  m_paymentType = paymentType.toString();
-
-  if (m_paymentType == "credit") {
-    QJsonValue creditCardBrand = paymentData.value("credit_card_brand");
-    if (!creditCardBrand.isString()) {
+  // If we do not receive payment data from FxA we don’t show it instead of
+  // throwing an error. There is a known bug with FxA which causes FxA to not
+  // show payment info: https://mozilla-hub.atlassian.net/browse/FXA-3856.
+  if (!paymentData.isEmpty()) {
+    // Payment provider
+    QJsonValue paymentProvider = paymentData.value("provider");
+    // We should always get a payment provider if there is payment data
+    if (!paymentProvider.isString()) {
       return false;
     }
-    m_creditCardBrand = creditCardBrand.toString();
+    m_paymentProvider = paymentProvider.toString();
 
-    QJsonValue creditCardLast4 = paymentData.value("credit_card_last4");
-    if (!creditCardBrand.isString()) {
-      return false;
-    }
-    m_creditCardLast4 = creditCardLast4.toString();
+    // Payment type
+    QJsonValue paymentType = paymentData.value("type");
+    if (paymentType.isString()) {
+      m_paymentType = paymentType.toString();
 
-    m_creditCardExpMonth = paymentData.value("credit_card_exp_month").toInt();
-    if (!m_creditCardExpMonth) {
-      return false;
-    }
+      // For credit cards we also show card details
+      if (m_paymentType == "credit") {
+        QJsonValue creditCardBrand = paymentData.value("credit_card_brand");
+        if (!creditCardBrand.isString()) {
+          return false;
+        }
+        m_creditCardBrand = creditCardBrand.toString();
 
-    m_creditCardExpYear = paymentData.value("credit_card_exp_year").toInt();
-    if (!m_creditCardExpYear) {
-      return false;
+        QJsonValue creditCardLast4 = paymentData.value("credit_card_last4");
+        if (!creditCardBrand.isString()) {
+          return false;
+        }
+        m_creditCardLast4 = creditCardLast4.toString();
+
+        m_creditCardExpMonth = paymentData.value("credit_card_exp_month").toInt();
+        if (!m_creditCardExpMonth) {
+          return false;
+        }
+
+        m_creditCardExpYear = paymentData.value("credit_card_exp_year").toInt();
+        if (!m_creditCardExpYear) {
+          return false;
+        }
+      }
     }
   }
 

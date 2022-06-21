@@ -26,6 +26,7 @@ class SubscriptionData final : public QObject {
   Q_PROPERTY(int planIntervalCount MEMBER m_planIntervalCount CONSTANT)
 
   // Payment
+  Q_PROPERTY(QString paymentProvider MEMBER m_paymentProvider CONSTANT)
   Q_PROPERTY(QString paymentType MEMBER m_paymentType CONSTANT)
   Q_PROPERTY(QString creditCardBrand MEMBER m_creditCardBrand CONSTANT)
   Q_PROPERTY(QString creditCardLast4 MEMBER m_creditCardLast4 CONSTANT)
@@ -56,6 +57,7 @@ class SubscriptionData final : public QObject {
   QString m_planCurrency;
   int m_planIntervalCount = 0;
 
+  QString m_paymentProvider;
   QString m_paymentType;
   QString m_creditCardBrand;
   QString m_creditCardLast4;
