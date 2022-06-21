@@ -118,7 +118,8 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
         }
         m_creditCardLast4 = creditCardLast4.toString();
 
-        m_creditCardExpMonth = paymentData.value("credit_card_exp_month").toInt();
+        m_creditCardExpMonth =
+            paymentData.value("credit_card_exp_month").toInt();
         if (!m_creditCardExpMonth) {
           return false;
         }
