@@ -54,6 +54,7 @@
 
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
+#  include "platforms/android/androidglean.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -217,6 +218,9 @@ int CommandUI::run(QStringList& tokens) {
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
 
+#ifdef MVPN_ANDROID
+    AndroidGlean::initialize(engine);
+#endif
     if (updateOption.m_set) {
       emit vpn.recordGleanEventWithExtraKeys(
           GleanSample::updateStep,

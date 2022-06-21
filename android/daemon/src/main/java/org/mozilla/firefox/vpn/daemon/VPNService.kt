@@ -21,6 +21,7 @@ import org.json.JSONObject
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
+    val mGlean = GleanUtil(this)
     private var mConfig: JSONObject? = null
     private var mConnectionTime: Long = 0
     private var mAlreadyInitialised = false
@@ -32,6 +33,7 @@ class VPNService : android.net.VpnService() {
             return
         }
         Log.init(this)
+        mGlean.initializeGlean()
         SharedLibraryLoader.loadSharedLibrary(this, "wg-go")
         Log.i(tag, "loaded lib")
         Log.e(tag, "Wireguard Version ${wgVersion()}")
@@ -67,8 +69,8 @@ class VPNService : android.net.VpnService() {
         intent?.let {
             if (intent.getBooleanExtra("startOnly", false)) {
                 Log.i(tag, "Start only!")
-                // If this is a Start Only request, the client will soon 
-                // bind to the service anyway. 
+                // If this is a Start Only request, the client will soon
+                // bind to the service anyway.
                 // We should return START_NOT_STICKY so that after an unbind()
                 // the OS will not try to restart the service.
                 return START_NOT_STICKY

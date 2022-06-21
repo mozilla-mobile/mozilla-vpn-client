@@ -294,14 +294,6 @@ Window {
                 mainStackView.push("qrc:/ui/views/ViewLogs.qml");
             }
         }
-
-        function onLoadAndroidAuthenticationView() {
-            if (Qt.platform.os !== "android") {
-                console.log("Unexpected android authentication view request!");
-            }
-            mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
-        }
-
         function onContactUsNeeded() {
             if (tutorialUI.visible) {
                 return tutorialUI.openLeaveTutorialPopup(VPN.contactUsNeeded)
@@ -333,6 +325,12 @@ Window {
             }
             mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
         }
+    }
+
+    // Glean Connections
+    Connections {
+        target: VPN
+        enabled: Qt.platform.os !== "android"
 
         function onInitializeGlean() {
             if (VPN.debugMode) {
@@ -389,6 +387,7 @@ Window {
 
     Connections {
         target: VPNSettings
+        enabled: Qt.platform.os != "android"
         function onGleanEnabledChanged() {
             console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);

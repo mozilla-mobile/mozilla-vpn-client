@@ -8,8 +8,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
 
 VPNStackView {
     id: stackview
@@ -37,6 +35,6 @@ VPNStackView {
             getHelpLinkVisible: false
             }
         );
-        Sample.subscriptionBlockedViewed.record();
+        VPN.recordGleanEvent("subscriptionBlockedViewed");
     }
 }
