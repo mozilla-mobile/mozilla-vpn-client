@@ -51,7 +51,7 @@ AddonManager* AddonManager::instance() {
   return s_instance;
 }
 
-AddonManager::AddonManager(QObject* parent) : QObject(parent) {
+AddonManager::AddonManager(QObject* parent) : QAbstractListModel(parent) {
   MVPN_COUNT_CTOR(AddonManager);
 }
 
@@ -155,7 +155,7 @@ bool AddonManager::validateIndex(const QByteArray& index,
 
   // Remove unknown addons
   QStringList addonsToBeRemoved;
-  for (QHash<QString, AddonData>::const_iterator i(m_addons.constBegin());
+  for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
        i != m_addons.constEnd(); ++i) {
     bool found = false;
     for (const AddonData& addonData : addons) {
@@ -202,7 +202,9 @@ bool AddonManager::loadManifest(const QString& manifestFileName,
     return false;
   }
 
+  beginResetModel();
   m_addons.insert(addon->id(), {sha256, addon->id(), addon});
+  endResetModel();
   return true;
 }
 
@@ -220,7 +222,10 @@ void AddonManager::unload(const QString& addonId) {
   Addon* addon = m_addons[addonId].m_addon;
   Q_ASSERT(addon);
 
+  beginResetModel();
   m_addons.remove(addonId);
+  endResetModel();
+
   addon->deleteLater();
 }
 
@@ -413,5 +418,38 @@ void AddonManager::storeAndLoadAddon(const QByteArray& addonData,
 
   if (!validateAndLoad(addonId, sha256, false)) {
     logger.warning() << "Unable to load the addon";
+  }
+}
+
+QHash<int, QByteArray> AddonManager::roleNames() const {
+  QHash<int, QByteArray> roles;
+  roles[AddonRole] = "addon";
+  return roles;
+}
+
+int AddonManager::rowCount(const QModelIndex&) const {
+  return m_addons.count();
+}
+
+QVariant AddonManager::data(const QModelIndex& index, int role) const {
+  if (!index.isValid()) {
+    return QVariant();
+  }
+
+  switch (role) {
+    case AddonRole:
+      return QVariant::fromValue(
+          m_addons[m_addons.keys().at(index.row())].m_addon);
+
+    default:
+      return QVariant();
+  }
+}
+
+void AddonManager::forEach(std::function<void(Addon*)>&& a_callback) {
+  std::function<void(Addon*)> callback = std::move(a_callback);
+  for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
+       i != m_addons.constEnd(); ++i) {
+    callback(i.value().m_addon);
   }
 }

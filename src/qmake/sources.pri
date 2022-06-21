@@ -78,8 +78,6 @@ SOURCES += \
         models/feature.cpp \
         models/featuremodel.cpp \
         models/feedbackcategorymodel.cpp \
-        models/guide.cpp \
-        models/guidemodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
         models/licensemodel.cpp \
@@ -230,8 +228,6 @@ HEADERS += \
         models/feature.h \
         models/featuremodel.h \
         models/feedbackcategorymodel.h \
-        models/guide.h \
-        models/guidemodel.h \
         models/helpmodel.h \
         models/keys.h \
         models/licensemodel.h \

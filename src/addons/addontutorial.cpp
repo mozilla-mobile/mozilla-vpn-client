@@ -28,7 +28,7 @@ Addon* AddonTutorial::create(QObject* parent, const QString& manifestFileName,
 
 AddonTutorial::AddonTutorial(QObject* parent, const QString& manifestFileName,
                              const QString& id, const QString& name)
-    : Addon(parent, manifestFileName, id, name) {
+    : Addon(parent, manifestFileName, id, name, "tutorial") {
   MVPN_COUNT_CTOR(AddonTutorial);
 }
 

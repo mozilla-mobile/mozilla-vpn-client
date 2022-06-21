@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 
 import Mozilla.VPN 1.0
+import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 import components.forms 0.1
 
@@ -19,6 +20,13 @@ VPNFlickable {
 
     flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
     interactive: flickContentHeight > height
+
+    // The list of add-on guides
+    VPNFilterProxyModel {
+        id: guideModel
+        source: VPNAddonManager
+        filterCallback: obj => obj.addon.type === "guide"
+    }
 
     Column {
         id: layout
@@ -87,7 +95,7 @@ VPNFlickable {
                 Layout.topMargin: 32
                 Layout.fillWidth: true
 
-                active: VPNGuide.rowCount() > 0
+                active: true
                 visible: active
 
                 sourceComponent: ColumnLayout {
@@ -124,17 +132,17 @@ VPNFlickable {
 
                         Repeater {
                             id: guideRepeater
-                            model: VPNGuide
+                            model: guideModel
                             delegate: VPNGuideCard {
-                                objectName: guide.titleId
+                                objectName: addon.titleId
 
                                 height: 172
                                 width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? (parent.width - parent.spacing) / 2 : (parent.width - (parent.spacing * 2)) / 3
 
-                                imageSrc: guide.image
-                                title: qsTrId(guide.titleId)
+                                imageSrc: addon.image
+                                title: qsTrId(addon.titleId)
 
-                                onClicked: mainStackView.push("qrc:/ui/settings/ViewGuide.qml", {"guide": guide, "imageBgColor": imageBgColor})
+                                onClicked: mainStackView.push("qrc:/ui/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
                             }
                         }
                     }

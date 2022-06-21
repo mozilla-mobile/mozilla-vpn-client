@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 import QtQml.Models 2.2
 
 import Mozilla.VPN 1.0
+import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 import components.forms 0.1
 

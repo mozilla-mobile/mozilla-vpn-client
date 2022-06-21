@@ -104,10 +104,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.cpp
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.h
-    ${MVPN_SOURCE_DIR}/models/guide.cpp
-    ${MVPN_SOURCE_DIR}/models/guide.h
-    ${MVPN_SOURCE_DIR}/models/guidemodel.cpp
-    ${MVPN_SOURCE_DIR}/models/guidemodel.h
     ${MVPN_SOURCE_DIR}/models/helpmodel.cpp
     ${MVPN_SOURCE_DIR}/models/helpmodel.h
     ${MVPN_SOURCE_DIR}/models/keys.cpp
@@ -242,8 +238,6 @@ target_sources(unit_tests PRIVATE
     testcommandlineparser.h
     testfeature.cpp
     testfeature.h
-    testguide.cpp
-    testguide.h
     testipaddress.cpp
     testipaddress.h
     testipaddresslookup.cpp

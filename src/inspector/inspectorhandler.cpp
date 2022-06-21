@@ -22,7 +22,6 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "task.h"
-#include "models/guidemodel.h"
 
 #include <functional>
 
@@ -682,14 +681,15 @@ static QList<InspectorCommand> s_commands{
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
 
-                       GuideModel* guideModel = GuideModel::instance();
-                       Q_ASSERT(guideModel);
+                       AddonManager* am = AddonManager::instance();
+                       Q_ASSERT(am);
 
                        QJsonArray guides;
-                       for (const QString& guideTitleId :
-                            guideModel->guideTitleIds()) {
-                         guides.append(guideTitleId);
-                       }
+                       am->forEach([&](Addon* addon) {
+                         if (addon->type() == "guide") {
+                           guides.append(addon->id());
+                         }
+                       });
 
                        obj["value"] = guides;
                        return obj;

@@ -21,7 +21,6 @@
 #include "logger.h"
 #include "models/feature.h"
 #include "models/featuremodel.h"
-#include "models/guidemodel.h"
 #include "models/tutorialmodel.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
@@ -531,23 +530,12 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNGuide",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = GuideModel::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNAddonManager",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = AddonManager::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
-
-    qmlRegisterType<FilterProxyModel>("Mozilla.VPN", 1, 0,
-                                      "VPNFilterProxyModel");
 
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::aboutToQuit);

@@ -8,7 +8,7 @@
 
 AddonI18n::AddonI18n(QObject* parent, const QString& manifestFileName,
                      const QString& id, const QString& name)
-    : Addon(parent, manifestFileName, id, name) {
+    : Addon(parent, manifestFileName, id, name, "i18n") {
   MVPN_COUNT_CTOR(AddonI18n);
 
   emit Localizer::instance()->codeChanged();

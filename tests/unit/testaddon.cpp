@@ -4,6 +4,7 @@
 
 #include "testaddon.h"
 #include "../../src/addons/addon.h"
+#include "../../src/addons/addonguide.h"
 #include "../../src/settingsholder.h"
 #include "helper.h"
 
@@ -117,6 +118,122 @@ void TestAddon::conditions() {
   }
 
   QCOMPARE(Addon::evaluateConditions(conditions), result);
+}
+
+void TestAddon::guide_create_data() {
+  QTest::addColumn<QString>("id");
+  QTest::addColumn<QJsonObject>("content");
+  QTest::addColumn<bool>("created");
+
+  QTest::addRow("object-without-id") << "" << QJsonObject() << false;
+
+  QJsonObject obj;
+  obj["id"] = "foo";
+  QTest::addRow("no-image") << "foo" << obj << false;
+
+  obj["image"] = "foo.png";
+  QTest::addRow("no-blocks") << "foo" << obj << false;
+
+  QJsonArray blocks;
+  obj["blocks"] = blocks;
+  QTest::addRow("with-blocks") << "foo" << obj << true;
+
+  blocks.append("");
+  obj["blocks"] = blocks;
+  QTest::addRow("with-invalid-block") << "foo" << obj << false;
+
+  QJsonObject block;
+  blocks.replace(0, block);
+  obj["blocks"] = blocks;
+  QTest::addRow("with-block-without-id") << "foo" << obj << false;
+
+  block["id"] = "A";
+  blocks.replace(0, block);
+  obj["blocks"] = blocks;
+  QTest::addRow("with-block-without-type") << "foo" << obj << false;
+
+  block["type"] = "wow";
+  blocks.replace(0, block);
+  obj["blocks"] = blocks;
+  QTest::addRow("with-block-with-invalid-type") << "foo" << obj << false;
+
+  block["type"] = "title";
+  blocks.replace(0, block);
+  obj["blocks"] = blocks;
+  QTest::addRow("with-block-type-title") << "foo" << obj << true;
+
+  block["type"] = "text";
+  blocks.replace(0, block);
+  obj["blocks"] = blocks;
+  QTest::addRow("with-block-type-text") << "foo" << obj << true;
+
+  block["type"] = "olist";
+  blocks.replace(0, block);
+  obj["blocks"] = blocks;
+  QTest::addRow("with-block-type-olist-without-content")
+      << "foo" << obj << false;
+
+  block["content"] = "foo";
+  blocks.replace(0, block);
+  obj["blocks"] = blocks;
+  QTest::addRow("with-block-type-olist-with-invalid-content")
+      << "foo" << obj << false;
+
+  QJsonArray content;
+  block["content"] = content;
+  blocks.replace(0, block);
+  obj["blocks"] = blocks;
+  QTest::addRow("with-block-type-olist-with-empty-content")
+      << "foo" << obj << true;
+
+  content.append("foo");
+  block["content"] = content;
+  blocks.replace(0, block);
+  obj["blocks"] = blocks;
+  QTest::addRow("with-block-type-olist-with-invalid-content")
+      << "foo" << obj << false;
+
+  QJsonObject subBlock;
+  content.replace(0, subBlock);
+  block["content"] = content;
+  blocks.replace(0, block);
+  obj["blocks"] = blocks;
+  QTest::addRow("with-block-type-olist-without-id-subblock")
+      << "foo" << obj << false;
+
+  subBlock["id"] = "sub";
+  content.replace(0, subBlock);
+  block["content"] = content;
+  blocks.replace(0, block);
+  obj["blocks"] = blocks;
+  QTest::addRow("with-block-type-olist-with-subblock") << "foo" << obj << true;
+}
+
+void TestAddon::guide_create() {
+  QFETCH(QString, id);
+  QFETCH(QJsonObject, content);
+  QFETCH(bool, created);
+
+  SettingsHolder settingsHolder;
+
+  QJsonObject obj;
+  obj["guide"] = content;
+
+  Addon* guide = AddonGuide::create(nullptr, "foo", "bar", "name", obj);
+  QCOMPARE(!!guide, created);
+
+  if (!guide) {
+    return;
+  }
+
+  QString guideTitleId = guide->property("titleId").toString();
+  QCOMPARE(guideTitleId, QString("guide.%1.title").arg(id));
+  QString guideSubTitleId = guide->property("subtitleId").toString();
+  QCOMPARE(guideSubTitleId, QString("guide.%1.subtitle").arg(id));
+
+  QCOMPARE(guide->property("image").toString(), "foo.png");
+
+  delete guide;
 }
 
 static TestAddon s_testAddon;

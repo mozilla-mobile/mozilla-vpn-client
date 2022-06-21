@@ -195,11 +195,12 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
 }
 
 Addon::Addon(QObject* parent, const QString& manifestFileName,
-             const QString& id, const QString& name)
+             const QString& id, const QString& name, const QString& type)
     : QObject(parent),
       m_manifestFileName(manifestFileName),
       m_id(id),
-      m_name(name) {
+      m_name(name),
+      m_type(type) {
   MVPN_COUNT_CTOR(Addon);
 
   QCoreApplication::installTranslator(&m_translator);
