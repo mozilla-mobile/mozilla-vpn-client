@@ -40,7 +40,7 @@ VPNFlickable {
         VPNUserProfile {
             _iconButtonImageSource: "qrc:/nebula/resources/open-in-new.svg"
             _iconButtonOnClicked: () => {
-                Sample.manageAccountClicked.record();
+                VPN.recordGleanEvent("manageAccountClicked");
                 VPN.openLink(VPN.LinkAccount);
             }
 

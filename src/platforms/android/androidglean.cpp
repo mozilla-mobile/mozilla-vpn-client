@@ -37,6 +37,9 @@ void AndroidGlean::initialize(QQmlEngine* engine) {
     Q_ASSERT(qApp);
     s_instance = new AndroidGlean(qApp);
   }
+  // We might encounter a Glean Database from
+  // the glean.js instance. As there is no use for it
+  // we should remove it :)
   auto glean_db_path =
       engine->offlineStorageDatabaseFilePath("Glean") + ".sqlite";
   auto gleanDB = QFileInfo(glean_db_path);
@@ -127,9 +130,10 @@ void AndroidGlean::applicationStateChanged(Qt::ApplicationState state) {
   switch (state) {
     case Qt::ApplicationState::ApplicationActive:
       break;
-
     case Qt::ApplicationState::ApplicationSuspended:
+      [[fallthrough]];
     case Qt::ApplicationState::ApplicationInactive:
+      [[fallthrough]];
     case Qt::ApplicationState::ApplicationHidden:
       logger.debug()
           << "App Going in the Background, trigger sending due pings";
