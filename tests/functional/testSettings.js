@@ -85,11 +85,14 @@ describe('Settings', function() {
   it('Checking settings entries', async () => {
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
-    await vpn.clickOnElement('manageAccountButton');
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
-      return url.includes('/r/vpn/account');
-    });
+
+    if (!(await vpn.isFeatureFlippedOn('subscriptionManagement'))) {
+      await vpn.clickOnElement('manageAccountButton');
+      await vpn.waitForCondition(async () => {
+        const url = await vpn.getLastUrl();
+        return url.includes('/r/vpn/account');
+      });
+    }
   });
 
   it('Checking the tips and tricks settings', async () => {
