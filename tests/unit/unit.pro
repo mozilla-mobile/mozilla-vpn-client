@@ -87,11 +87,6 @@ HEADERS += \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
-    ../../src/models/tutorial.h \
-    ../../src/models/tutorialmodel.h \
-    ../../src/models/tutorialstep.h \
-    ../../src/models/tutorialstepbefore.h \
-    ../../src/models/tutorialstepnext.h \
     ../../src/models/user.h \
     ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
@@ -129,6 +124,10 @@ HEADERS += \
     ../../src/taskscheduler.h \
     ../../src/theme.h \
     ../../src/timersingleshot.h \
+    ../../src/tutorial/tutorial.h \
+    ../../src/tutorial/tutorialstep.h \
+    ../../src/tutorial/tutorialstepbefore.h \
+    ../../src/tutorial/tutorialstepnext.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/update/webupdater.h \
@@ -155,7 +154,6 @@ HEADERS += \
     testtasks.h \
     testthemes.h \
     testtimersingleshot.h \
-    testtutorial.h \
     testwebsockethandler.h
 
 SOURCES += \
@@ -205,11 +203,6 @@ SOURCES += \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
-    ../../src/models/tutorial.cpp \
-    ../../src/models/tutorialmodel.cpp \
-    ../../src/models/tutorialstep.cpp \
-    ../../src/models/tutorialstepbefore.cpp \
-    ../../src/models/tutorialstepnext.cpp \
     ../../src/models/user.cpp \
     ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
@@ -242,6 +235,10 @@ SOURCES += \
     ../../src/taskscheduler.cpp \
     ../../src/theme.cpp \
     ../../src/timersingleshot.cpp \
+    ../../src/tutorial/tutorial.cpp \
+    ../../src/tutorial/tutorialstep.cpp \
+    ../../src/tutorial/tutorialstepbefore.cpp \
+    ../../src/tutorial/tutorialstepnext.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/update/webupdater.cpp \
@@ -272,7 +269,6 @@ SOURCES += \
     testtasks.cpp \
     testthemes.cpp \
     testtimersingleshot.cpp \
-    testtutorial.cpp \
     testwebsockethandler.cpp
 
 # Platform-specific: Linux

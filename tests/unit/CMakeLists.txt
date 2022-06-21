@@ -126,16 +126,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/survey.h
     ${MVPN_SOURCE_DIR}/models/surveymodel.cpp
     ${MVPN_SOURCE_DIR}/models/surveymodel.h
-    ${MVPN_SOURCE_DIR}/models/tutorial.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorial.h
-    ${MVPN_SOURCE_DIR}/models/tutorialmodel.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorialmodel.h
-    ${MVPN_SOURCE_DIR}/models/tutorialstep.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorialstep.h
-    ${MVPN_SOURCE_DIR}/models/tutorialstepbefore.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorialstepbefore.h
-    ${MVPN_SOURCE_DIR}/models/tutorialstepnext.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorialstepnext.h
     ${MVPN_SOURCE_DIR}/models/user.cpp
     ${MVPN_SOURCE_DIR}/models/user.h
     ${MVPN_SOURCE_DIR}/models/whatsnewmodel.cpp
@@ -205,6 +195,14 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/theme.h
     ${MVPN_SOURCE_DIR}/timersingleshot.cpp
     ${MVPN_SOURCE_DIR}/timersingleshot.h
+    ${MVPN_SOURCE_DIR}/tutorial/tutorial.cpp
+    ${MVPN_SOURCE_DIR}/tutorial/tutorial.h
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstep.cpp
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstep.h
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstepbefore.cpp
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstepbefore.h
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstepnext.cpp
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstepnext.h
     ${MVPN_SOURCE_DIR}/update/updater.cpp
     ${MVPN_SOURCE_DIR}/update/updater.h
     ${MVPN_SOURCE_DIR}/update/versionapi.cpp
@@ -268,8 +266,6 @@ target_sources(unit_tests PRIVATE
     testthemes.h
     testtimersingleshot.cpp
     testtimersingleshot.h
-    testtutorial.cpp
-    testtutorial.h
 )
 
 # Generate the version header

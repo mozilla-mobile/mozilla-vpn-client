@@ -89,11 +89,6 @@ SOURCES += \
         models/supportcategorymodel.cpp \
         models/survey.cpp \
         models/surveymodel.cpp \
-        models/tutorial.cpp \
-        models/tutorialmodel.cpp \
-        models/tutorialstep.cpp \
-        models/tutorialstepbefore.cpp \
-        models/tutorialstepnext.cpp \
         models/user.cpp \
         models/whatsnewmodel.cpp \
         mozillavpn.cpp \
@@ -147,6 +142,10 @@ SOURCES += \
         telemetry.cpp \
         theme.cpp \
         timersingleshot.cpp \
+        tutorial/tutorial.cpp \
+        tutorial/tutorialstep.cpp \
+        tutorial/tutorialstepbefore.cpp \
+        tutorial/tutorialstepnext.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
         urlopener.cpp \
@@ -239,11 +238,6 @@ HEADERS += \
         models/supportcategorymodel.h \
         models/survey.h \
         models/surveymodel.h \
-        models/tutorial.h \
-        models/tutorialmodel.h \
-        models/tutorialstep.h \
-        models/tutorialstepbefore.h \
-        models/tutorialstepnext.h \
         models/user.h \
         models/whatsnewmodel.h \
         mozillavpn.h \
@@ -298,6 +292,10 @@ HEADERS += \
         taskscheduler.h \
         telemetry.h \
         theme.h \
+        tutorial/tutorial.h \
+        tutorial/tutorialstep.h \
+        tutorial/tutorialstepbefore.h \
+        tutorial/tutorialstepnext.h \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \

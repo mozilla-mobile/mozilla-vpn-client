@@ -179,16 +179,6 @@ target_sources(mozillavpn PRIVATE
     models/survey.h
     models/surveymodel.cpp
     models/surveymodel.h
-    models/tutorial.cpp
-    models/tutorial.h
-    models/tutorialstep.cpp
-    models/tutorialstep.h
-    models/tutorialstepbefore.cpp
-    models/tutorialstepbefore.h
-    models/tutorialstepnext.cpp
-    models/tutorialstepnext.h
-    models/tutorialmodel.cpp
-    models/tutorialmodel.h
     models/user.cpp
     models/user.h
     models/whatsnewmodel.cpp
@@ -297,6 +287,14 @@ target_sources(mozillavpn PRIVATE
     theme.h
     timersingleshot.cpp
     timersingleshot.h
+    tutorial/tutorialstep.cpp
+    tutorial/tutorialstep.h
+    tutorial/tutorialstepbefore.cpp
+    tutorial/tutorialstepbefore.h
+    tutorial/tutorialstepnext.cpp
+    tutorial/tutorialstepnext.h
+    tutorial/tutorial.cpp
+    tutorial/tutorial.h
     update/updater.cpp
     update/updater.h
     update/versionapi.cpp

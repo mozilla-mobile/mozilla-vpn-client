@@ -28,6 +28,13 @@ VPNFlickable {
         filterCallback: obj => obj.addon.type === "guide"
     }
 
+   //Model containing all tutorials except the highlighted one (if there are any more)
+   VPNFilterProxyModel {
+       id: highlightedTutorialExcludedModel
+       source: VPNAddonManager
+       filterCallback: obj => obj.addon.type === "tutorial" && !obj.addon.highlighted;
+   }
+
     Column {
         id: layout
         anchors.top: parent.top
@@ -52,7 +59,7 @@ VPNFlickable {
 
                 Loader {
                     id: highlightedTutorialLoader
-                    property variant highlightedTutorial: VPNTutorial.highlightedTutorial
+                    property variant highlightedTutorial: VPNAddonManager.pick(addon => addon.type === "tutorial" && addon.highlighted)
 
                     height: VPNTheme.theme.tutorialCardHeight
                     width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
@@ -70,7 +77,7 @@ VPNFlickable {
                         description: qsTrId(highlightedTutorial.subtitleId)
 
                         onClicked: {
-                            VPNTutorial.play(VPNTutorial.highlightedTutorial);
+                            VPNTutorial.play(highlightedTutorial);
                             VPNCloseEventHandler.removeAllStackViews();
                         }
                     }
@@ -95,7 +102,7 @@ VPNFlickable {
                 Layout.topMargin: 32
                 Layout.fillWidth: true
 
-                active: true
+                active: VPNAddonManager.pick(addon => addon.type === "guide")
                 visible: active
 
                 sourceComponent: ColumnLayout {
@@ -134,7 +141,7 @@ VPNFlickable {
                             id: guideRepeater
                             model: guideModel
                             delegate: VPNGuideCard {
-                                objectName: addon.titleId
+                                objectName: addon.id
 
                                 height: 172
                                 width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? (parent.width - parent.spacing) / 2 : (parent.width - (parent.spacing * 2)) / 3
@@ -153,7 +160,7 @@ VPNFlickable {
                 Layout.topMargin: guideLoader.active ? 32 : 16
                 Layout.fillWidth: true
 
-                active: highlightedTutorialExcludedModel.rowCount() > 0
+                active: VPNAddonManager.pick(addon => addon.type === "tutorial" && !addon.highlighted)
                 visible: active
 
                 sourceComponent: Flow {
@@ -166,24 +173,15 @@ VPNFlickable {
                             width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
                             height: VPNTheme.theme.tutorialCardHeight
 
-                            imageSrc: tutorial.image
-                            title: qsTrId(tutorial.titleId)
-                            description: qsTrId(tutorial.subtitleId)
+                            imageSrc: addon.image
+                            title: qsTrId(addon.titleId)
+                            description: qsTrId(addon.subtitleId)
                             onClicked: {
-                                VPNTutorial.play(tutorial);
+                                VPNTutorial.play(addon);
                                 VPNCloseEventHandler.removeAllStackViews();
                             }
                         }
                     }
-                }
-
-                //Model containing all tutorials except the highlighted one (if there are any more)
-                VPNFilterProxyModel {
-                    id: highlightedTutorialExcludedModel
-                    source: VPNTutorial
-                    filterCallback: obj => {
-                                        return !obj.tutorial.highlighted;
-                                    }
                 }
             }
 

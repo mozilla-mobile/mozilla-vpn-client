@@ -13,4 +13,7 @@ class TestAddon final : public TestHelper {
 
   void guide_create_data();
   void guide_create();
+
+  void tutorial_create_data();
+  void tutorial_create();
 };

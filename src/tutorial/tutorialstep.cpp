@@ -3,13 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "tutorialstep.h"
-#include "addons/addon.h"
+#include "addons/addontutorial.h"
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "tutorial.h"
 #include "tutorialstep.h"
-#include "tutorialmodel.h"
+#include "tutorial.h"
 #include "tutorialstepbefore.h"
 #include "tutorialstepnext.h"
 
@@ -24,7 +23,8 @@ Logger logger(LOG_MAIN, "TutorialStep");
 constexpr int TIMEOUT_ITEM_TIMER_MSEC = 300;
 
 // static
-TutorialStep* TutorialStep::create(Tutorial* parent, const QString& tutorialId,
+TutorialStep* TutorialStep::create(AddonTutorial* parent,
+                                   const QString& tutorialId,
                                    const QJsonValue& json) {
   QJsonObject obj = json.toObject();
 
@@ -63,7 +63,7 @@ TutorialStep* TutorialStep::create(Tutorial* parent, const QString& tutorialId,
   return new TutorialStep(parent, element, stepId, conditions, tb, tn);
 }
 
-TutorialStep::TutorialStep(Tutorial* parent, const QString& element,
+TutorialStep::TutorialStep(AddonTutorial* parent, const QString& element,
                            const QString& stringId,
                            const QJsonObject& conditions,
                            const QList<TutorialStepBefore*>& before,
@@ -131,11 +131,11 @@ void TutorialStep::startInternal() {
   QQuickItem* item = qobject_cast<QQuickItem*>(element);
   Q_ASSERT(item);
 
-  TutorialModel* tutorialModel = TutorialModel::instance();
-  Q_ASSERT(tutorialModel);
+  Tutorial* tutorial = Tutorial::instance();
+  Q_ASSERT(tutorial);
 
-  tutorialModel->requireTooltipShown(m_parent, true);
-  tutorialModel->requireTooltipNeeded(m_parent, m_stringId, element);
+  tutorial->requireTooltipShown(m_parent, true);
+  tutorial->requireTooltipNeeded(m_parent, m_stringId, element);
 
   connect(m_next, &TutorialStepNext::completed, this, &TutorialStep::completed);
   m_next->start();

@@ -7,6 +7,7 @@
 
 #include "addons/addon.h"  // required for the signal
 
+#include <QJSValue>
 #include <QMap>
 #include <QAbstractListModel>
 
@@ -17,6 +18,8 @@ class AddonManager final : public QAbstractListModel {
   Q_DISABLE_COPY_MOVE(AddonManager)
 
  public:
+  Q_INVOKABLE Addon* pick(QJSValue filterCallback) const;
+
   enum ModelRoles {
     AddonRole = Qt::UserRole + 1,
   };

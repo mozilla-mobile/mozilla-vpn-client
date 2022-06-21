@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
+#include "qmlengineholder.h"
 #include "signature.h"
 #include "taskscheduler.h"
 #include "tasks/addon/taskaddon.h"
@@ -452,4 +453,26 @@ void AddonManager::forEach(std::function<void(Addon*)>&& a_callback) {
        i != m_addons.constEnd(); ++i) {
     callback(i.value().m_addon);
   }
+}
+
+Addon* AddonManager::pick(QJSValue filterCallback) const {
+  if (!filterCallback.isCallable()) {
+    logger.error() << "AddonManager.pick must receive a callable JS value";
+    return nullptr;
+  }
+
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+  Q_ASSERT(engine);
+
+  for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
+       i != m_addons.constEnd(); ++i) {
+    QJSValueList arguments;
+    arguments.append(engine->toScriptValue(i.value().m_addon));
+    QJSValue retValue = filterCallback.call(arguments);
+    if (retValue.toBool()) {
+      return i.value().m_addon;
+    }
+  }
+
+  return nullptr;
 }
