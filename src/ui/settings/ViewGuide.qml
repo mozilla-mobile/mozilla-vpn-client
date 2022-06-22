@@ -239,4 +239,16 @@ Item {
             }
         }
     }
+
+    Connections {
+        function onGoBack(item) {
+            if (item === root)
+                mainStackView.pop();
+
+        }
+
+        target: VPNCloseEventHandler
+    }
+
+    Component.onCompleted: VPNCloseEventHandler.addView(root)
 }
