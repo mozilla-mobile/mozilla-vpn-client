@@ -44,7 +44,7 @@ ColumnLayout {
             Layout.fillWidth: true
             _placeholderText: _inputPlaceholderText
             Keys.onReturnPressed: col.submitInfo(textInput)
-            onTextChanged: if (hasError) hasError = false
+            onDisplayTextChanged: if (hasError) hasError = false
         }
 
         VPNPasswordInput {
