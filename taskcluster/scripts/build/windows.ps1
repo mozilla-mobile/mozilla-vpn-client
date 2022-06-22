@@ -5,6 +5,7 @@
 
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $FETCHES_PATH =resolve-path "$REPO_ROOT_PATH/../../fetches"
+$TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 
 # Prep Env:
@@ -12,6 +13,12 @@ $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 . "$FETCHES_PATH/VisualStudio/enter_dev_shell.ps1"
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 . "$REPO_ROOT_PATH/taskcluster/scripts/fetch/enable_win_rust.ps1"
+
+# Remove Long lasting ms-compiler-telemetry service: 
+# This will sometimes live longer then our compile
+# and __sometimes__ taskcluster will fail to do cleanup once the task is done
+Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/VCTIP.EXE  
+
 
 # Fetch 3rdparty stuff.
 python3 -m pip install -r requirements.txt --user
@@ -34,19 +41,30 @@ Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm
 python3 ./scripts/utils/generate_glean.py
 python3 ./scripts/utils/import_languages.py
 
+#Do not continune from this point on when we encounter an error
+$ErrorActionPreference = "Stop"
+
+# Actually compile!
 ./scripts/windows/compile.bat --nmake
+# Copies all relevant files into unsigned/
 nmake install 
 
+# For some reason qmake does ignore split-tunnel stuff
+# But we are switching to cmake, which handles this fine
+# so consider this a temporary fix :) 
+Copy-Item -Path windows/split-tunnel/* -Destination unsigned -Exclude "*.ps1","*.txt",".status"
+
+New-Item -ItemType Directory -Path "$TASK_WORKDIR/artifacts" -Force
+$ARTIFACTS_PATH =resolve-path "$TASK_WORKDIR/artifacts"
+
 Write-Output "Writing Artifacts"
+Copy-Item -Path windows/installer/x64/MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
+Copy-Item -Path MozillaVPN.pdb -Destination $ARTIFACTS_PATH/MozillaVPN.pdb
 
-New-Item -Path $REPO_ROOT_PATH/artifacts -ItemType "directory"
-Copy-Item -Path windows/installer/x64/MozillaVPN.msi -Destination ./artifacts/MozillaVPN.msi
-Copy-Item -Path MozillaVPN.pdb -Destination ./artifacts/MozillaVPN.pdb
+Compress-Archive -Path unsigned/* -Destination $TASK_WORKDIR/artifacts/unsigned.zip
 
-Compress-Archive -Path unsigned/* -Destination $REPO_ROOT_PATH/artifacts/unsigned.zip
-
-Write-Output "Artifacts Location: $REPO_ROOT_PATH/artifacts"
-Get-ChildItem -Path $REPO_ROOT_PATH/artifacts
+Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
+Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
 
 # mspdbsrv might be stil running after the build, so we need to kill it
