@@ -228,7 +228,12 @@ Item {
 
     function openLeaveTutorialPopup(callback = () => {}) {
         tutorialPopup.imageSrc = "qrc:/ui/resources/logo-error.svg";
-        tutorialPopup.primaryButtonOnClicked = () => tutorialPopup.close();
+
+        tutorialPopup.primaryButtonOnClicked = () => {
+            tutorialPopup._onClosed = () => {};
+            tutorialPopup.close();
+        }
+
         tutorialPopup.secondaryButtonOnClicked = () => {
             tutorialPopup._onClosed = () => callback()
             leaveTutorial();
