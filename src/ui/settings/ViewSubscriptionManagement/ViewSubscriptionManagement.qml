@@ -128,8 +128,21 @@ VPNFlickable {
     }
 
     function handleManageAccountClicked() {
+        switch(VPNSubscriptionData.type) {
+            case "web":
+                VPN.openLink(VPN.LinkSubscriptionFxa);
+                break;
+            case "iap_google":
+                VPN.openLink(VPN.LinkSubscriptionIapGoogle);
+                break;
+            case "iap_apple":
+                VPN.openLink(VPN.LinkSubscriptionIapApple);
+                break;
+            default:
+                VPN.openLink(VPN.LinkAccount);
+        }
+
         Sample.manageSubscriptionClicked.record();
-        VPN.openLink(VPN.LinkAccount);
     }
 
     function populateListModels() {
