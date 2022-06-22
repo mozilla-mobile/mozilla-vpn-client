@@ -836,8 +836,10 @@ sample:
       timed out.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-1595
+      - https://mozilla-hub.atlassian.net/browse/VPN-2279
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774439
     data_sensitivity:
       - technical
     notification_emails:
@@ -848,6 +850,9 @@ sample:
         description: |
           The mullvad server public key and the connection latency, packet
           loss, stddev.
+        type: string
+      transport:
+        description: The Host network type (i.e wifi or 4g)
         type: string
 
   connectivity_stable:
@@ -860,8 +865,10 @@ sample:
       activation
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-1595
+      - https://mozilla-hub.atlassian.net/browse/VPN-2279
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774439
     data_sensitivity:
       - technical
     notification_emails:
@@ -879,6 +886,9 @@ sample:
         type: string
       stddev:
         description: Standard deviation of the ping responses
+        type: string
+      transport:
+        description: The Host network type (i.e wifi or 4g)
         type: string
 
   app_step:

@@ -11,6 +11,8 @@
 #include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
 
+#include <QMetaEnum>
+
 #ifdef MVPN_WINDOWS
 #  include "platforms/windows/windowsnetworkwatcher.h"
 #endif
@@ -25,6 +27,13 @@
 
 #ifdef MVPN_WASM
 #  include "platforms/wasm/wasmnetworkwatcher.h"
+#endif
+#ifdef MVPN_ANDROID
+#  include "platforms/android/androidnetworkwatcher.h"
+#endif
+
+#ifdef MVPN_IOS
+#  include "platforms/ios/iosnetworkwatcher.h"
 #endif
 
 // How often we notify the same unsecured network
@@ -51,6 +60,10 @@ void NetworkWatcher::initialize() {
   m_impl = new MacOSNetworkWatcher(this);
 #elif defined(MVPN_WASM)
   m_impl = new WasmNetworkWatcher(this);
+#elif defined(MVPN_ANDROID)
+  m_impl = new AndroidNetworkWatcher(this);
+#elif defined(MVPN_IOS)
+  m_impl = new IOSNetworkWatcher(this);
 #else
   m_impl = new DummyNetworkWatcher(this);
 #endif
@@ -152,4 +165,11 @@ void NetworkWatcher::notificationClicked(NotificationHandler::Message message) {
   if (message == NotificationHandler::UnsecuredNetwork) {
     MozillaVPN::instance()->activate();
   }
+}
+
+QString NetworkWatcher::getCurrentTransport() {
+  auto type = m_impl->getTransportType();
+  QMetaEnum metaEnum = QMetaEnum::fromType<NetworkWatcherImpl::TransportType>();
+  return QString(metaEnum.valueToKey(type))
+      .remove("TransportType_", Qt::CaseSensitive);
 }

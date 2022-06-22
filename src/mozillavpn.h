@@ -155,7 +155,8 @@ class MozillaVPN final : public QObject {
   State state() const;
   AlertType alert() const { return m_alert; }
 
-  const QString& serverPublicKey() const { return m_serverPublicKey; }
+  const QString& exitServerPublicKey() const { return m_exitServerPublicKey; }
+  const QString& entryServerPublicKey() const { return m_entryServerPublicKey; }
 
   bool stagingMode() const;
   bool debugMode() const;
@@ -323,7 +324,8 @@ class MozillaVPN final : public QObject {
 
   void heartbeatCompleted(bool success);
 
-  void setServerPublicKey(const QString& publicKey);
+  void setEntryServerPublicKey(const QString& publicKey);
+  void setExitServerPublicKey(const QString& publicKey);
   void setServerCooldown(const QString& publicKey);
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode);
@@ -470,7 +472,8 @@ class MozillaVPN final : public QObject {
 
   UserState m_userState = UserNotAuthenticated;
 
-  QString m_serverPublicKey;
+  QString m_exitServerPublicKey;
+  QString m_entryServerPublicKey;
 
   QTimer m_alertTimer;
   QTimer m_periodicOperationsTimer;

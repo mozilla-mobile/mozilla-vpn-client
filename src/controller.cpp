@@ -199,7 +199,7 @@ void Controller::activateInternal() {
     return;
   }
 
-  vpn->setServerPublicKey(exitServer.publicKey());
+  vpn->setExitServerPublicKey(exitServer.publicKey());
 
   // Prepare the exit server's connection data.
   HopConnection exitHop;
@@ -226,12 +226,15 @@ void Controller::activateInternal() {
     if (settingsHolder->tunnelPort53()) {
       exitHop.m_server.forcePort(53);
     }
+    // For single-hop, they are the same
+    vpn->setEntryServerPublicKey(exitServer.publicKey());
   }
   // For controllers that support multiple hops, create a queue of connections.
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
     HopConnection hop;
     hop.m_server = Server::weightChooser(vpn->entryServers());
+    vpn->setEntryServerPublicKey(hop.m_server.publicKey());
     if (!hop.m_server.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
@@ -253,6 +256,7 @@ void Controller::activateInternal() {
   // connection to the exit server via the multihop port.
   else {
     Server entryServer = Server::weightChooser(vpn->entryServers());
+    vpn->setEntryServerPublicKey(entryServer.publicKey());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
@@ -308,7 +312,7 @@ bool Controller::silentSwitchServers() {
         << "Cannot silent switch servers because there is only one available";
     return false;
   }
-  vpn->setServerCooldown(vpn->serverPublicKey());
+  vpn->setServerCooldown(vpn->exitServerPublicKey());
 
   // Activate the first connection to kick off the server switch.
   activateInternal();
