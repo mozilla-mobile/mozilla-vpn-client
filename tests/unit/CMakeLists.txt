@@ -178,6 +178,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/serveri18n.h
     ${MVPN_SOURCE_DIR}/settingsholder.cpp
     ${MVPN_SOURCE_DIR}/settingsholder.h
+    ${MVPN_SOURCE_DIR}/signature.cpp
+    ${MVPN_SOURCE_DIR}/signature.h
     ${MVPN_SOURCE_DIR}/simplenetworkmanager.cpp
     ${MVPN_SOURCE_DIR}/simplenetworkmanager.h
     ${MVPN_SOURCE_DIR}/statusicon.cpp

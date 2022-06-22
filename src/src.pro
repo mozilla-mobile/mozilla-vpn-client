@@ -7,12 +7,13 @@
 # Because this is a complex project, with dependencies, extra compilers,
 # modules, etc, each logical block is included as a separate PRI file.
 
-TEMPLATE  = app
+TEMPLATE = app
 
 include($$PWD/qmake/balrog.pri)
 include($$PWD/qmake/debug.pri)
 include($$PWD/qmake/includes_and_defines.pri)
 include($$PWD/qmake/qt.pri)
+include($$PWD/qmake/signature.pri)
 include($$PWD/qmake/webextension.pri)
 include($$PWD/../glean/glean.pri)
 include($$PWD/../nebula/nebula.pri)

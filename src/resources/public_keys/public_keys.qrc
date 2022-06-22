@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/addons_signature">
+        <file>staging.der</file>
+        <file>production.der</file>
+    </qresource>
+</RCC>

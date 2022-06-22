@@ -21,7 +21,7 @@ class AddonManager final : public QObject {
 
   ~AddonManager();
 
-  void updateIndex(const QByteArray& index);
+  void updateIndex(const QByteArray& index, const QByteArray& indexSignature);
 
   void storeAndLoadAddon(const QByteArray& addonData, const QString& addonId,
                          const QByteArray& sha256);
@@ -38,13 +38,14 @@ class AddonManager final : public QObject {
 
   void initialize();
 
-  bool validateIndex(const QByteArray& index);
+  bool validateIndex(const QByteArray& index, const QByteArray& indexSignature);
   bool validateAndLoad(const QString& addonId, const QByteArray& sha256,
                        bool checkSha256 = true);
 
   static bool addonDir(QDir* dir);
-  static QByteArray readIndex();
-  static void writeIndex(const QByteArray& index);
+  static bool readIndex(QByteArray& index, QByteArray& indexSignature);
+  static void writeIndex(const QByteArray& index,
+                         const QByteArray& indexSignature);
 
   static void removeAddon(const QString& addonId);
 

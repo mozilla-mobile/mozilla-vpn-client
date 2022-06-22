@@ -6,8 +6,10 @@
 #include "settingsholder.h"
 #include "version.h"
 
+#include <QProcessEnvironment>
 #include <QString>
 #include <QtGlobal>
+#include <QUrl>
 
 namespace {
 bool s_inProduction = true;
@@ -29,3 +31,23 @@ void Constants::setStaging() {
 QString Constants::versionString() { return QStringLiteral(APP_VERSION); }
 
 QString Constants::buildNumber() { return QStringLiteral(BUILD_ID); }
+
+QString Constants::envOrDefault(const QString& name,
+                                const QString& defaultValue) {
+  QString env;
+
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (pe.contains(name)) {
+    env = pe.value(name);
+  }
+
+  if (env.isEmpty()) {
+    return defaultValue;
+  }
+
+  if (!QUrl(env).isValid()) {
+    return defaultValue;
+  }
+
+  return env;
+}

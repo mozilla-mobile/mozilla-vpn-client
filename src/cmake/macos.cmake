@@ -103,6 +103,8 @@ target_sources(mozillavpn PRIVATE
     update/balrog.h
 )
 
+include(cmake/signature.cmake)
+
 ## A helper to copy files into the application bundle
 function(add_bundle_file SOURCE)
     add_custom_command(TARGET mozillavpn POST_BUILD

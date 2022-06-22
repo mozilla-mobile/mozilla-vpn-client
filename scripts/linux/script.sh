@@ -170,8 +170,12 @@ printn Y "Downloading Go dependencies..."
 (cd $WORKDIR/linux/netfilter && go mod vendor)
 print G "done."
 
-printn Y "Downloading Rust dependencies..."
+printn Y "Downloading Rust dependencies (extension)..."
 (cd $WORKDIR/extension/bridge && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
+print G "done."
+
+printn Y "Downloading Rust dependencies (signature)..."
+(cd $WORKDIR/signature && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
 print G "done."
 
 printn Y "Removing the packaging templates... "
