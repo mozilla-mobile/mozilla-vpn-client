@@ -53,7 +53,6 @@ ColumnLayout {
 
                     asynchronous: true
                     visible: status == Loader.Ready
-                    active: index === swipeView.currentIndex
                     opacity: index === swipeView.currentIndex ? 1 : 0
 
                     Behavior on opacity {
@@ -199,9 +198,15 @@ ColumnLayout {
 
         tour.started();
 
-        //Calculate which slide is the tallest so we can set that height to the swipe view, this way the modal does not change size
+        calculateTallestSlideHeight()
+    }
+
+    //Calculate which slide is the tallest so we can set that height to the swipe view, this way the modal does not change size
+    function calculateTallestSlideHeight() {
         var tallestSlideHeight = 0
         for(var i = 0; i < slidesRepeater.count; i++) {
+            slidesRepeater.itemAt(i).active = false
+            slidesRepeater.itemAt(i).active = true
             const slideHeight = slidesRepeater.itemAt(i).implicitHeight
             if (slideHeight > tallestSlideHeight) tallestSlideHeight = slideHeight
         }
@@ -212,4 +217,20 @@ ColumnLayout {
         swipeView.contentItem.highlightMoveDuration = 250;
         swipeView.decrementCurrentIndex();
     }
+
+    //Hacky workaround to recalculate tallest slide height after a language change
+    Timer {
+        id: calculateTallestSlideTimer
+        interval: 50
+        repeat: false
+        onTriggered: {
+            for(var i = 0; i < slidesRepeater.count; i++) {
+                slidesRepeater.itemAt(i).active = false
+                slidesRepeater.itemAt(i).active = true
+            }
+            calculateTallestSlideHeight()
+        }
+    }
+
+    onVisibleChanged: if(visible) calculateTallestSlideTimer.start()
 }

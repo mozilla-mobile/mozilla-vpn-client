@@ -166,6 +166,7 @@ Item {
                                 font.pixelSize: VPNTheme.theme.fontSize
                                 lineHeight: VPNTheme.theme.labelLineHeight
                                 verticalAlignment: Text.AlignVCenter
+                                wrapMode: Text.Wrap
                             }
                         }
 
