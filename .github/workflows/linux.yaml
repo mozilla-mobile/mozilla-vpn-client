@@ -85,33 +85,3 @@ jobs:
         with:
             name: ${{matrix.config.name}} Build
             path: packages
-
-  rpmbuild:
-    name: RPM Packages
-    needs: source-bundle
-    runs-on: ubuntu-latest
-    container:
-      image: fedora:33
-
-    steps:
-      - name: Download Source Package
-        uses: actions/download-artifact@v2
-        with:
-            name: Sources
-
-      - name: Install Build Dependencies
-        run: |
-          yum -y install rpm-build rpmdevtools yum-utils
-          yum-builddep -y mozillavpn.spec
-
-      - name: Building package
-        shell: bash 
-        run: rpmbuild -D "_topdir $(pwd)" -D "_sourcedir $(pwd)" -ba mozillavpn.spec
-
-      - name: Uploading
-        uses: actions/upload-artifact@v2
-        with:
-            name: RPM Build
-            path: |
-              RPMS/
-              SRPMS/
