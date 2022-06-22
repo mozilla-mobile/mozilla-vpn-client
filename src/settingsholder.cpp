@@ -113,7 +113,7 @@ QString SettingsHolder::getReport() const {
     }
     out << setting << " -> ";
     QVariant value = m_settings.value(setting);
-    switch (value.type()) {
+    switch (value.typeId()) {
       case QVariant::List:
       case QVariant::StringList:
         out << '[' << value.toStringList().join(",") << ']' << ' ';

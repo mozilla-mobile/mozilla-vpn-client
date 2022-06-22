@@ -338,7 +338,7 @@ static QList<InspectorCommand> s_commands{
                          QVariant value = mp.read(item);
                          QString name = mp.name() + QString(padding, ' ');
 
-                         if (value.type() == QVariant::StringList) {
+                         if (value.typeId() == QVariant::StringList) {
                            QStringList list = value.value<QStringList>();
                            if (list.isEmpty()) {
                              result += name + " =\n";
