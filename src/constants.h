@@ -105,7 +105,8 @@ PRODBETAEXPR(
     "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
     "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745");
 PRODBETAEXPR(
-    QString, addonSourceUrl, "TODO",
+    QString, addonSourceUrl,
+    "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/",  // TODO
     envOrDefault("MVPN_ADDON_URL",
                  "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
 
