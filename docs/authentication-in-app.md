@@ -12,6 +12,8 @@ stateDiagram-v2
   VerifyingSessionEmailCode: Verifying session email code (/v1/session/verify_code)
   Finalize: 
   Subscribe: Subscribe (via calls to guardian) 
+  Admitted: Admitted to VPN
+
  
   Start --> CheckingAccount: email address received
   CheckingAccount --> SignIn: the account already exists
@@ -23,13 +25,14 @@ stateDiagram-v2
   EmailVerification --> VerifyingSessionEmailCode: email code received
   VerifyingSessionEmailCode --> Finalize: authentication completed
   Finalize --> Subscribe: Complete admin with guardian, so auth is now handled via guardian
+  Subscribe --> Admitted
 ```
 
 ### Proposed sign-in / sign-up flow (simplified)
 
 ```mermaid
 stateDiagram-v2
-  Start: Current flow
+  Start: Proposed flow
   CheckingAccount: Checking Account (/v1/account/status)
   SignIn: Sign In
   StubAccount: Get stub account token (/v1/??)
