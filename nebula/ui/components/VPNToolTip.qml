@@ -11,7 +11,7 @@ import compat 0.1
 ToolTip {
     id: toolTip
 
-    visible: mouseArea.containsMouse || parent.activeFocus
+    visible: mouseArea.containsMouse || (parent.activeFocus && !tutorialUI.visible)
     onVisibleChanged: if (visible) fadeDown.start()
     leftMargin: VPNTheme.theme.windowMargin * 1.5
     rightMargin: VPNTheme.theme.windowMargin * 1.5
