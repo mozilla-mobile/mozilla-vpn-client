@@ -13,6 +13,10 @@ class DummyNetworkWatcher final : public NetworkWatcherImpl {
   ~DummyNetworkWatcher();
 
   void initialize() override;
+
+  NetworkWatcherImpl::TransportType getTransportType() override {
+    return TransportType_Other;
+  };
 };
 
 #endif  // DUMMYNETWORKWATCHER_H

@@ -440,9 +440,14 @@ void MozillaVPN::maybeStateMain() {
 #endif
 }
 
-void MozillaVPN::setServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set server public key:" << logger.keys(publicKey);
-  m_serverPublicKey = publicKey;
+void MozillaVPN::setEntryServerPublicKey(const QString& publicKey) {
+  logger.debug() << "Set entry-server public key:" << logger.keys(publicKey);
+  m_entryServerPublicKey = publicKey;
+}
+
+void MozillaVPN::setExitServerPublicKey(const QString& publicKey) {
+  logger.debug() << "Set exit-server public key:" << logger.keys(publicKey);
+  m_exitServerPublicKey = publicKey;
 }
 
 void MozillaVPN::getStarted() {
@@ -1075,7 +1080,7 @@ const QList<Server> MozillaVPN::exitServers() const {
 
 const QList<Server> MozillaVPN::entryServers() const {
   if (!m_private->m_serverData.multihop()) {
-    return QList<Server>();
+    return exitServers();
   }
   ServerData sd;
   sd.update(m_private->m_serverData.entryCountryCode(),
