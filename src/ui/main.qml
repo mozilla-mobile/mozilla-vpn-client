@@ -63,7 +63,7 @@ Window {
 
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
-    color: "#F9F9FA"
+    color: VPNTheme.theme.bgColor
     onClosing: close => {
         console.log("Closing request handling");
 
