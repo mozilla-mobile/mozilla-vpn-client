@@ -23,12 +23,14 @@ class ItemPicker : public QObject {
 
  private:
   bool eventFilter(QObject* obj, QEvent* event) override;
+  bool eventFilterInternal(QObject* obj, QEvent* event);
 
   QList<QQuickItem*> pickItem(QMouseEvent* event, QQuickItem* item);
   QList<QQuickItem*> pickItem(QTouchEvent* event, QQuickItem* item);
 
  private:
   QEvent* m_lastEvent = nullptr;
+  bool m_lastResponse = false;
 };
 
 #endif  // ITEMPICKER_H
