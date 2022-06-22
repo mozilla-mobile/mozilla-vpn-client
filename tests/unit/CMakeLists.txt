@@ -43,6 +43,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/addonguide.h
     ${MVPN_SOURCE_DIR}/addons/addoni18n.cpp
     ${MVPN_SOURCE_DIR}/addons/addoni18n.h
+    ${MVPN_SOURCE_DIR}/addons/addonmessage.cpp
+    ${MVPN_SOURCE_DIR}/addons/addonmessage.h
     ${MVPN_SOURCE_DIR}/addons/addontutorial.cpp
     ${MVPN_SOURCE_DIR}/addons/addontutorial.h
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.cpp

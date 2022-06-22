@@ -5,6 +5,7 @@
 #include "testaddon.h"
 #include "../../src/addons/addon.h"
 #include "../../src/addons/addonguide.h"
+#include "../../src/addons/addonmessage.h"
 #include "../../src/addons/addontutorial.h"
 #include "../../src/settingsholder.h"
 #include "../../src/qmlengineholder.h"
@@ -380,6 +381,41 @@ void TestAddon::tutorial_create() {
   QCOMPARE(signalSpy.count(), 2);
 
   delete tutorial;
+}
+
+void TestAddon::message_create_data() {
+  QTest::addColumn<QString>("id");
+  QTest::addColumn<QJsonObject>("content");
+  QTest::addColumn<bool>("created");
+
+  QTest::addRow("object-without-id") << "" << QJsonObject() << false;
+
+  QJsonObject obj;
+  obj["id"] = "foo";
+  QTest::addRow("invalid-id") << "foo" << obj << false;
+}
+
+void TestAddon::message_create() {
+  QFETCH(QString, id);
+  QFETCH(QJsonObject, content);
+  QFETCH(bool, created);
+
+  SettingsHolder settingsHolder;
+
+  QJsonObject obj;
+  obj["message"] = content;
+
+  Addon* message = AddonMessage::create(nullptr, "foo", "bar", "name", obj);
+  QCOMPARE(!!message, created);
+
+  if (!message) {
+    return;
+  }
+
+  QString messageTitleId = message->property("titleId").toString();
+  QCOMPARE(messageTitleId, QString("message.%1.title").arg(id));
+
+  delete message;
 }
 
 static TestAddon s_testAddon;
