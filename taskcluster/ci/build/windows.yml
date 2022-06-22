@@ -23,7 +23,7 @@ windows/opt:
         artifacts:
             - type: directory
               name: public/build
-              path: build/src/artifacts
+              path: artifacts/
     run:
         using: run-task
         cwd: '{checkout}'

@@ -5,6 +5,7 @@
 
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $FETCHES_PATH =resolve-path "$REPO_ROOT_PATH/../../fetches"
+$TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 
 # Prep Env:
@@ -48,23 +49,22 @@ $ErrorActionPreference = "Stop"
 # Copies all relevant files into unsigned/
 nmake install 
 
-# This should not be a thing, yet that's happening..
-# If we happen to already have an artifacts folder
-# we should not risk sending some old stuff.  
-if (Test-Path $REPO_ROOT_PATH/artifacts) {
-    Write-Output "Deleting old Artifacts folder?!"
-    Remove-Item $REPO_ROOT_PATH/artifacts
-}
-New-Item -Path $REPO_ROOT_PATH/artifacts -ItemType "directory"
+# For some reason qmake does ignore split-tunnel stuff
+# But we are switching to cmake, which handles this fine
+# so consider this a temporary fix :) 
+Copy-Item -Path windows/split-tunnel/* -Destination unsigned -Exclude "*.ps1","*.txt",".status"
+
+New-Item -ItemType Directory -Path "$TASK_WORKDIR/artifacts" -Force
+$ARTIFACTS_PATH =resolve-path "$TASK_WORKDIR/artifacts"
 
 Write-Output "Writing Artifacts"
-Copy-Item -Path windows/installer/x64/MozillaVPN.msi -Destination ./artifacts/MozillaVPN.msi
-Copy-Item -Path MozillaVPN.pdb -Destination ./artifacts/MozillaVPN.pdb
+Copy-Item -Path windows/installer/x64/MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
+Copy-Item -Path MozillaVPN.pdb -Destination $ARTIFACTS_PATH/MozillaVPN.pdb
 
-Compress-Archive -Path unsigned/* -Destination $REPO_ROOT_PATH/artifacts/unsigned.zip
+Compress-Archive -Path unsigned/* -Destination $TASK_WORKDIR/artifacts/unsigned.zip
 
-Write-Output "Artifacts Location: $REPO_ROOT_PATH/artifacts"
-Get-ChildItem -Path $REPO_ROOT_PATH/artifacts
+Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
+Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
 
 # mspdbsrv might be stil running after the build, so we need to kill it
