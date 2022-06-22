@@ -580,6 +580,19 @@ void MozillaVPN::openLink(LinkType linkType) {
                          .first());
       break;
 
+    case LinkSubscriptionFxa:
+      url = Constants::fxaUrl();
+      url.append("/subscriptions");
+      break;
+
+    case LinkSubscriptionIapApple:
+      url = Constants::APPLE_SUBSCRIPTIONS_URL;
+      break;
+
+    case LinkSubscriptionIapGoogle:
+      url = Constants::GOOGLE_SUBSCRIPTIONS_URL;
+      break;
+
     default:
       qFatal("Unsupported link type!");
       return;

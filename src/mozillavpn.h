@@ -114,7 +114,10 @@ class MozillaVPN final : public QObject {
     LinkInspector,
     LinkSubscriptionBlocked,
     LinkSplitTunnelHelp,
-    LinkCaptivePortal
+    LinkCaptivePortal,
+    LinkSubscriptionIapApple,
+    LinkSubscriptionFxa,
+    LinkSubscriptionIapGoogle,
   };
   Q_ENUM(LinkType)
 
