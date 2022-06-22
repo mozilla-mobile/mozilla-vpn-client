@@ -119,6 +119,7 @@ SOURCES += \
         rfc/rfc5735.cpp \
         serveri18n.cpp \
         settingsholder.cpp \
+        signature.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
         subscriptiondata.cpp \
@@ -270,6 +271,7 @@ HEADERS += \
         rfc/rfc5735.h \
         serveri18n.h \
         settingsholder.h \
+        signature.h \
         simplenetworkmanager.h \
         statusicon.h \
         subscriptiondata.h \
@@ -315,3 +317,4 @@ RESOURCES += ui/resources.qrc
 RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
+RESOURCES += resources/public_keys/public_keys.qrc

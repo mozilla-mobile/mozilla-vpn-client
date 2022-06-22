@@ -63,8 +63,6 @@ class SettingsHolder final : public QObject {
 
   void removeEntryServer();
 
-  QString envOrDefault(const QString& name, const QString& defaultValue) const;
-
   // Delete _ALL_ the settings. Probably this method is not what you want to
   // use.
   void hardReset();

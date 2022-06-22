@@ -13,6 +13,10 @@
 ItemPicker::ItemPicker(QObject* parent) : QObject(parent) {}
 
 bool ItemPicker::eventFilter(QObject* obj, QEvent* event) {
+  if (event->type() == QEvent::Wheel) {
+    return true;
+  }
+
   if (m_lastEvent == event) {
     return QObject::eventFilter(obj, event);
   }

@@ -17,6 +17,13 @@ class TaskAddonIndex final : public Task {
   ~TaskAddonIndex();
 
   void run() override;
+
+ private:
+  void maybeComplete();
+
+ private:
+  QByteArray m_indexData;
+  QByteArray m_indexSignData;
 };
 
 #endif  // TASKADDONINDEX_H

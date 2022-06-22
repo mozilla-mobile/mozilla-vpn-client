@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
+#include "signature.h"
 #include "taskscheduler.h"
 #include "tasks/addon/taskaddon.h"
 
@@ -22,6 +23,7 @@
 
 constexpr const char* ADDON_FOLDER = "addons";
 constexpr const char* ADDON_INDEX_FILENAME = "manifest.json";
+constexpr const char* ADDON_INDEX_SIGNATURE_FILENAME = "manifest.json.sign";
 
 namespace {
 
@@ -70,29 +72,49 @@ void AddonManager::initialize() {
     }
   }
 
-  if (!validateIndex(readIndex())) {
+  QByteArray index;
+  QByteArray indexSignature;
+  if (!readIndex(index, indexSignature)) {
+    logger.info() << "Unable to read the addon index";
+    return;
+  }
+
+  if (!validateIndex(index, indexSignature)) {
     logger.debug() << "Unable to validate the index";
   }
 }
 
-void AddonManager::updateIndex(const QByteArray& index) {
-  QByteArray currentIndex = readIndex();
-
-  if (currentIndex == index) {
+void AddonManager::updateIndex(const QByteArray& index,
+                               const QByteArray& indexSignature) {
+  QByteArray currentIndex;
+  QByteArray currentIndexSignature;
+  if (readIndex(currentIndex, currentIndexSignature) && currentIndex == index &&
+      currentIndexSignature == indexSignature) {
     logger.debug() << "The index has not changed";
     return;
   }
 
-  if (!validateIndex(index)) {
+  if (!validateIndex(index, indexSignature)) {
     logger.debug() << "Unable to validate the index";
     return;
   }
 
-  writeIndex(index);
+  writeIndex(index, indexSignature);
 }
 
-bool AddonManager::validateIndex(const QByteArray& index) {
-  // TODO: signature validation
+bool AddonManager::validateIndex(const QByteArray& index,
+                                 const QByteArray& indexSignature) {
+  QFile publicKeyFile(Constants::addonPublicKeyFile());
+  if (!publicKeyFile.open(QIODevice::ReadOnly)) {
+    logger.warning() << "Unable to open the addon public key file";
+    return false;
+  }
+
+  QByteArray publicKey = publicKeyFile.readAll();
+  if (!Signature::verify(publicKey, index, indexSignature)) {
+    logger.warning() << "Unable to verify the signature of the addon index";
+    return false;
+  }
 
   QJsonDocument doc = QJsonDocument::fromJson(index);
   if (!doc.isObject()) {
@@ -228,36 +250,69 @@ bool AddonManager::addonDir(QDir* dir) {
 }
 
 // static
-QByteArray AddonManager::readIndex() {
+bool AddonManager::readIndex(QByteArray& index, QByteArray& indexSignature) {
   QDir dir;
   if (!addonDir(&dir)) {
-    return "";
+    return false;
   }
 
-  QFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
-  if (!indexFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    logger.warning() << "Unable to open the addon index";
-    return "";
+  // Index file
+  {
+    QFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
+    if (!indexFile.open(QIODevice::ReadOnly)) {
+      logger.warning() << "Unable to open the addon index";
+      return false;
+    }
+
+    index = indexFile.readAll();
   }
 
-  return indexFile.readAll();
+  // Index signature file
+  {
+    QFile indexSignatureFile(dir.filePath(ADDON_INDEX_SIGNATURE_FILENAME));
+    if (!indexSignatureFile.open(QIODevice::ReadOnly)) {
+      logger.warning() << "Unable to open the addon index signature";
+      return false;
+    }
+
+    indexSignature = indexSignatureFile.readAll();
+  }
+
+  return true;
 }
 
 // static
-void AddonManager::writeIndex(const QByteArray& index) {
+void AddonManager::writeIndex(const QByteArray& index,
+                              const QByteArray& indexSignature) {
   QDir dir;
   if (!addonDir(&dir)) {
     return;
   }
 
-  QFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
-  if (!indexFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    logger.warning() << "Unable to open the addon index";
-    return;
+  // Index file
+  {
+    QFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
+    if (!indexFile.open(QIODevice::WriteOnly)) {
+      logger.warning() << "Unable to open the addon index file";
+      return;
+    }
+
+    if (!indexFile.write(index)) {
+      logger.warning() << "Unable to write the addon index file";
+    }
   }
 
-  if (!indexFile.write(index)) {
-    logger.warning() << "Unable to write the addon file";
+  // Index signature file
+  {
+    QFile indexSignatureFile(dir.filePath(ADDON_INDEX_SIGNATURE_FILENAME));
+    if (!indexSignatureFile.open(QIODevice::WriteOnly)) {
+      logger.warning() << "Unable to open the addon index signature file";
+      return;
+    }
+
+    if (!indexSignatureFile.write(indexSignature)) {
+      logger.warning() << "Unable to write the addon index signature file";
+    }
   }
 }
 

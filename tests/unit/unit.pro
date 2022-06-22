@@ -37,6 +37,7 @@ include($$PWD/../../version.pri)
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../nebula/nebula.pri)
 include($$PWD/../../translations/translations.pri)
+include($$PWD/../../src/qmake/signature.pri)
 
 # Remove resouce files that we intend to mock out
 RESOURCES ~= 's/.*servers.qrc//g'
@@ -114,6 +115,7 @@ HEADERS += \
     ../../src/rfc/rfc5735.h \
     ../../src/serveri18n.h \
     ../../src/settingsholder.h \
+    ../../src/signature.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
     ../../src/subscriptiondata.h \
@@ -229,6 +231,7 @@ SOURCES += \
     ../../src/rfc/rfc5735.cpp \
     ../../src/serveri18n.cpp \
     ../../src/settingsholder.cpp \
+    ../../src/signature.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \
     ../../src/subscriptiondata.cpp \

@@ -6,8 +6,7 @@
 #define CONSTANTS_H
 
 #include <stdint.h>
-
-class QString;
+#include <QString>
 
 namespace Constants {
 
@@ -19,6 +18,7 @@ void setStaging();
 // Project version and build strings.
 QString versionString();
 QString buildNumber();
+QString envOrDefault(const QString& name, const QString& defaultValue);
 
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
@@ -99,8 +99,9 @@ constexpr const char* APPLE_SUBSCRIPTIONS_URL =
 constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
     "https://play.google.com/store/account/subscriptions";
 
-PRODBETAEXPR(const char*, fxaApiBaseUrl, "https://api.accounts.firefox.com",
-             "https://api-accounts.stage.mozaws.net")
+PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
+             envOrDefault("MVPN_FXA_API_BASE_URL",
+                          "https://api-accounts.stage.mozaws.net"))
 PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
              "https://accounts.stage.mozaws.net")
 PRODBETAEXPR(
@@ -112,8 +113,15 @@ PRODBETAEXPR(
     const char*, balrogRootCertFingerprint,
     "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
     "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745");
-PRODBETAEXPR(const char*, addonSourceUrl, "TODO",
-             "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/")
+PRODBETAEXPR(
+    QString, addonSourceUrl,
+    "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/",  // TODO
+    envOrDefault("MVPN_ADDON_URL",
+                 "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
+
+PRODBETAEXPR(const char*, addonPublicKeyFile,
+             ":/addons_signature/production.der",
+             ":/addons_signature/staging.der");
 
 #undef PRODBETAEXPR
 
