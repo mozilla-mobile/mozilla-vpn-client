@@ -93,6 +93,12 @@ constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
 
 constexpr const char* LOGO_URL = ":/nebula/resources/logo-dock.png";
 
+constexpr const char* APPLE_SUBSCRIPTIONS_URL =
+    "https://apps.apple.com/account/subscriptions";
+
+constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
+    "https://play.google.com/store/account/subscriptions";
+
 PRODBETAEXPR(const char*, fxaApiBaseUrl, "https://api.accounts.firefox.com",
              "https://api-accounts.stage.mozaws.net")
 PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
