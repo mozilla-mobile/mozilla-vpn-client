@@ -30,6 +30,8 @@ stateDiagram-v2
 
 ### Proposed sign-in / sign-up flow (simplified)
 
+Note that no emails should be generated on the FxA side other than the verify code email.
+
 ```mermaid
 stateDiagram-v2
   Start: Proposed flow
@@ -37,7 +39,7 @@ stateDiagram-v2
   SignIn: Sign In
   StubAccount: Get stub account token (/v1/??)
   SigningIn: Signing In
-  SigningUp: Signing Up (/v1/account/create - with stub token)
+  SigningUp: Signing Up (/v1/account/create OR password-set?? - with stub token)
   EmailVerification: Email verification
   VerifyingSessionEmailCode: Verifying session email code (/v1/session/verify_code - with stub token)
   Subscribe: Subscribe (via calls to guardian) 
