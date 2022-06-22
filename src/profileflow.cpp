@@ -46,8 +46,12 @@ void ProfileFlow::setForceReauthFlow(const bool forceReauthFlow) {
 void ProfileFlow::start() {
   logger.debug() << "Start profile flow";
 
-  if (m_state != StateInitial) {
+  if (m_state == StateLoading) {
     return;
+  }
+
+  if (m_state != StateInitial) {
+    reset();
   }
 
   setState(StateLoading);

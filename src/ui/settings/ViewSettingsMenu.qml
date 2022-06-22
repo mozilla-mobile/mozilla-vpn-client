@@ -51,7 +51,6 @@ VPNFlickable {
                     : "qrc:/nebula/resources/open-in-new.svg"
                 _iconButtonOnClicked: () => {                    
                     if (subscriptionManagementEnabled) {
-                        VPNProfileFlow.reset();
                         VPNProfileFlow.start();
                     } else {
                         VPN.recordGleanEvent("manageAccountClicked")
