@@ -254,7 +254,7 @@ Item {
 
                 Layout.topMargin: VPNTheme.theme.listSpacing * 2
 
-                text: "Reset and Quit"
+               text: "Reset and Quit"
                 onClicked: {
                     if (clickNeeded) {
                         text = "Reset and Quit (" + clickNeeded + ")";

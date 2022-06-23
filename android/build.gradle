@@ -8,6 +8,9 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url "https://maven.mozilla.org/maven2"
+        }
     }
     dependencies {
         classpath Dependencies.com_android_tools_build_gradle
@@ -15,15 +18,18 @@ buildscript {
         classpath Dependencies.org_jetbrains_kotlin_kotlin_serialization
     }
 }
-
 repositories {
     mavenCentral()
     google()
 }
 
 
+
 allprojects {
     repositories {
+        maven {
+            url "https://maven.mozilla.org/maven2"
+        }
         mavenCentral()
         google()
     }

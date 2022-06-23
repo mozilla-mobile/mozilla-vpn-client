@@ -7,6 +7,8 @@ import QtQuick 2.5
 import Mozilla.VPN 1.0
 
 Rectangle {
+    property string iconUrl: "qrc:/nebula/resources/buttonLoader.svg"
+
     id: loader
     anchors.fill: parent
     anchors.margins: -1
@@ -78,7 +80,7 @@ Rectangle {
     VPNIcon {
         id: loadingIcon
 
-        source: "qrc:/nebula/resources/buttonLoader.svg"
+        source: iconUrl
         anchors.centerIn: loader
         sourceSize.height: 28
         sourceSize.width: 28

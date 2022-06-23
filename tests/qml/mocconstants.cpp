@@ -21,3 +21,9 @@ QString Constants::versionString() {
 }
 
 QString Constants::buildNumber() { return QStringLiteral("QMLTest_BuildID"); }
+
+QString Constants::envOrDefault(const QString& name,
+                                const QString& defaultValue) {
+  Q_UNUSED(name);
+  return defaultValue;
+}

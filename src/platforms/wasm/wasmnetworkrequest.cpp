@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "networkmanager.h"
 #include "task.h"
 #include "timersingleshot.h"
 
@@ -72,6 +73,17 @@ NetworkRequest* NetworkRequest::createForGetUrl(Task* parent,
   Q_UNUSED(url);
 
   NetworkRequest* r = new NetworkRequest(parent, status, false);
+
+  if (url.startsWith(Constants::addonSourceUrl())) {
+    r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                              QNetworkRequest::SameOriginRedirectPolicy);
+    r->m_request.setUrl(url);
+    QNetworkAccessManager* manager =
+        NetworkManager::instance()->networkAccessManager();
+    r->handleReply(manager->get(r->m_request));
+    return r;
+  }
+
   createDummyRequest(r);
   return r;
 }
@@ -145,6 +157,15 @@ NetworkRequest* NetworkRequest::createForAccount(Task* parent) {
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r, ":/networkrequests/account.json");
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
   return r;
 }
 
@@ -395,7 +416,39 @@ NetworkRequest* NetworkRequest::createForProducts(Task* parent) {
   return r;
 }
 
-void NetworkRequest::replyFinished() {}
+void NetworkRequest::replyFinished() {
+  Q_ASSERT(m_reply);
+  Q_ASSERT(m_reply->isFinished());
+
+  int status = statusCode();
+
+  QString expect = m_status ? QString::number(m_status) : "any";
+  logger.debug() << "Network reply received - status:" << status
+                 << "- expected:" << expect;
+
+  QByteArray data = m_reply->readAll();
+
+  if (m_reply->error() != QNetworkReply::NoError) {
+    QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
+    logger.error() << "Network error:" << m_reply->errorString()
+                   << "status code:" << status
+                   << "- body:" << logger.sensitive(data);
+    logger.error() << "Failed to access:" << m_request.url().toString(options);
+    emit requestFailed(m_reply->error(), data);
+    return;
+  }
+
+  // This is an extra check for succeeded requests (status code 200 vs 201, for
+  // instance). The real network status check is done in the previous if-stmt.
+  if (m_status && status != m_status) {
+    logger.error() << "Status code unexpected - status code:" << status
+                   << "- expected:" << m_status;
+    emit requestFailed(QNetworkReply::ConnectionRefusedError, data);
+    return;
+  }
+
+  emit requestCompleted(data);
+}
 
 void NetworkRequest::timeout() {}
 
@@ -405,7 +458,17 @@ void NetworkRequest::deleteRequest() {}
 
 void NetworkRequest::postRequest(const QByteArray&) {}
 
-void NetworkRequest::handleReply(QNetworkReply*) {}
+void NetworkRequest::handleReply(QNetworkReply* reply) {
+  Q_ASSERT(reply);
+  Q_ASSERT(!m_reply);
+
+  m_reply = reply;
+  m_reply->setParent(this);
+
+  connect(m_reply, &QNetworkReply::finished, this,
+          &NetworkRequest::replyFinished);
+  connect(m_reply, &QNetworkReply::finished, this, &QObject::deleteLater);
+}
 
 int NetworkRequest::statusCode() const { return 200; }
 

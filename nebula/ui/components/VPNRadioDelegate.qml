@@ -116,6 +116,7 @@ RadioDelegate {
         id: radioButtonLabel
 
         text: radioButtonLabelText
+        anchors.verticalCenter: parent.verticalCenter
     }
 
     background: Rectangle {
@@ -131,7 +132,9 @@ RadioDelegate {
     indicator: Rectangle {
         id: radioButton
 
+        objectName: "radioIndicator"
         anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
         implicitWidth: 20
         implicitHeight: 20
         radius: implicitWidth * 0.5
@@ -139,6 +142,7 @@ RadioDelegate {
         color: VPNTheme.theme.bgColor
         antialiasing: true
         smooth: true
+        onActiveFocusChanged: if (activeFocus) parent.forceActiveFocus()
 
         Rectangle {
             id: radioButtonInsetCircle

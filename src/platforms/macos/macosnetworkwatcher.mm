@@ -5,8 +5,10 @@
 #include "macosnetworkwatcher.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 
 #import <CoreWLAN/CoreWLAN.h>
+#import <Network/Network.h>
 
 namespace {
 Logger logger(LOG_MACOS, "MacOSNetworkWatcher");
@@ -37,13 +39,12 @@ Logger logger(LOG_MACOS, "MacOSNetworkWatcher");
 
 @end
 
-MacOSNetworkWatcher::MacOSNetworkWatcher(QObject* parent) : NetworkWatcherImpl(parent) {
+MacOSNetworkWatcher::MacOSNetworkWatcher(QObject* parent) : IOSNetworkWatcher(parent) {
   MVPN_COUNT_CTOR(MacOSNetworkWatcher);
 }
 
 MacOSNetworkWatcher::~MacOSNetworkWatcher() {
   MVPN_COUNT_DTOR(MacOSNetworkWatcher);
-
   if (m_delegate) {
     CWWiFiClient* client = CWWiFiClient.sharedWiFiClient;
     if (!client) {
@@ -55,10 +56,6 @@ MacOSNetworkWatcher::~MacOSNetworkWatcher() {
     [static_cast<MacOSNetworkWatcherDelegate*>(m_delegate) dealloc];
     m_delegate = nullptr;
   }
-}
-
-void MacOSNetworkWatcher::initialize() {
-  // Nothing to do here
 }
 
 void MacOSNetworkWatcher::start() {
@@ -129,3 +126,4 @@ void MacOSNetworkWatcher::checkInterface() {
 
   logger.debug() << "Secure WiFi interface";
 }
+

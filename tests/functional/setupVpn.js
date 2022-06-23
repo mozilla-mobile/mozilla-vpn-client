@@ -19,6 +19,9 @@ const fs = require('fs');
 const {execSync, spawn} = require('child_process');
 const vpn = require('./helper.js');
 
+const fxa = require('./fxa.js');
+const guardian = require('./guardian.js');
+
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;
 let stdErr = '';
@@ -46,12 +49,27 @@ exports.mochaHooks = {
       console.error(`stderr: ${stderr}`);
       process.exit(1);
     }
+
+    process.env['MVPN_API_BASE_URL'] = `http://localhost:${guardian.start()}`;
+    process.env['MVPN_FXA_API_BASE_URL'] = `http://localhost:${fxa.start()}`;
+  },
+
+  async afterAll() {
+    guardian.stop();
+    fxa.stop();
+
+    guardian.throwExceptionsIfAny();
+    fxa.throwExceptionsIfAny();
   },
 
   async beforeEach() {
     if (this.currentTest.ctx.authenticationNeeded &&
         !this.currentTest.ctx.vpnSettings) {
       console.log('Retrieving the setting file...');
+
+      guardian.overrideEndpoints = null;
+      fxa.overrideEndpoints = null;
+
       await startAndConnect();
       await vpn.hardReset();
       await vpn.setSetting('tips-and-tricks-intro-shown', 'true')
@@ -64,6 +82,10 @@ exports.mochaHooks = {
       const content = await fs.readFileSync(fileName);
       this.currentTest.ctx.vpnSettings = {fileName, content};
     }
+
+    guardian.overrideEndpoints =
+        this.currentTest.ctx.guardianOverrideEndpoints || null;
+    fxa.overrideEndpoints = this.currentTest.ctx.fxaOverrideEndpoints || null;
 
     if (this.currentTest.ctx.authenticationNeeded) {
       fs.writeFileSync(

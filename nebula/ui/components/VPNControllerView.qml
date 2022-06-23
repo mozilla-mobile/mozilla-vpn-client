@@ -8,8 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
 
 Item {
     id: box
@@ -545,7 +543,7 @@ Item {
 
         onClicked: {
             if (!box.connectionInfoScreenVisible) {
-                Sample.connectionInfoOpened.record();
+                VPN.recordGleanEvent("connectionInfoOpened");
             }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
         }
@@ -579,8 +577,10 @@ Item {
             if (box.connectionInfoScreenVisible) {
                 return;
             }
-            Sample.settingsViewOpened.record();
-            VPN.settingsNeeded();
+
+            VPN.recordGleanEvent("settingsViewOpened");
+            mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate)
+
         }
 
         anchors.top: parent.top
@@ -596,52 +596,6 @@ Item {
             id: settingsImage
 
             anchors.centerIn: settingsButton
-
-            Rectangle {
-                id: unseenFeaturesIndicator
-
-                states: [
-                    State {
-                        when: settingsButton.state === VPNTheme.theme.uiState.stateHovered
-
-                        PropertyChanges {
-                            target: unseenFeaturesIndicator
-                            border.color: settingsButton.buttonColorScheme.buttonHovered
-                        }
-                    },
-                    State {
-                        when: settingsButton.state === VPNTheme.theme.uiState.statePressed
-
-                        PropertyChanges {
-                            target: unseenFeaturesIndicator
-                            border.color: settingsButton.buttonColorScheme.buttonPressed
-                        }
-                    }
-                ]
-
-                transitions: [
-                    Transition {
-                        ColorAnimation {
-                            target: unseenFeaturesIndicator
-                            duration: 200
-                        }
-                    }
-                ]
-
-                anchors.top: parent.top
-                anchors.right: parent.right
-                anchors.topMargin: 1
-                anchors.rightMargin: 1
-                border {
-                    color: boxBackground.color
-                    width: 1
-                }
-                color: VPNTheme.colors.error.default
-                height: VPNTheme.theme.listSpacing + border.width * 2
-                radius: width / 2
-                visible: VPNWhatsNewModel.hasUnseenFeature
-                width: VPNTheme.theme.listSpacing + border.width * 2
-            }
         }
     }
 

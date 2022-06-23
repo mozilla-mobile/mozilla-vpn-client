@@ -35,6 +35,7 @@ RUN apt-get update -qq \
                           locales \
                           git \
                           wget \
+                          zip \
     && apt-get clean
 
 RUN pip install --upgrade pip

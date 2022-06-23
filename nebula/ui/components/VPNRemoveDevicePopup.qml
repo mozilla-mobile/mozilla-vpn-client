@@ -28,6 +28,8 @@ VPNSimplePopup {
     description: qsTrId("vpn.devices.deviceRemovalConfirm").replace("\n", " ").arg(popup.deviceName)
     buttons: [
         VPNPopupButton {
+            objectName: "confirmRemoveDeviceButton"
+
             //: This is the “remove” device button.
             //% "Remove"
             buttonText: qsTrId("vpn.devices.removeDeviceButton")
@@ -35,13 +37,6 @@ VPNSimplePopup {
             colorScheme: VPNTheme.theme.redButton
             onClicked: {
                 VPN.removeDeviceFromPublicKey(popup.devicePublicKey);
-                if (vpnFlickable.state === "deviceLimit") {
-                    // there is no further action the user can take on the deviceList
-                    // so leave the modal open until the user is redirected back to the main view
-                    col.opacity = .5
-                    return;
-                }
-
                 popup.close();
             }
             isCancelBtn: false

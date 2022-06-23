@@ -24,8 +24,9 @@ namespace {
 Logger logger(LOG_MAIN, "AuthenticationInAppSession");
 }  // anonymous namespace
 
-AuthenticationInAppSession::AuthenticationInAppSession(QObject* parent)
-    : QObject(parent) {
+AuthenticationInAppSession::AuthenticationInAppSession(QObject* parent,
+                                                       TypeAuthentication type)
+    : QObject(parent), m_typeAuthentication(type) {
   MVPN_COUNT_CTOR(AuthenticationInAppSession);
 }
 
@@ -415,7 +416,7 @@ void AuthenticationInAppSession::verifySessionTotpCode(const QString& code) {
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.error() << "Failed to verify the session code" << error;
+            logger.error() << "Failed to verify the Totp code" << error;
             processRequestFailure(error, data);
           });
 
@@ -567,6 +568,9 @@ void AuthenticationInAppSession::deleteAccount() {
             logger.debug() << "Account deleted" << logger.sensitive(data);
             emit accountDeleted();
           });
+
+  emit MozillaVPN::instance()->recordGleanEvent(
+      GleanSample::deleteAccountClicked);
 }
 
 void AuthenticationInAppSession::finalizeSignInOrUp() {

@@ -113,5 +113,4 @@ object VPNUtils {
     @SuppressLint("Unused")
     @JvmStatic
     private external fun recordGleanEvent(metricName: String)
-
 }

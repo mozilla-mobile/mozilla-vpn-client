@@ -8,9 +8,6 @@
       "description": "The ID of the guide",
       "pattern": "^[A-Za-z0-9_]+"
     },
-    "conditions": {
-      "$ref": "conditions.json"
-    },
     "title": {
       "type": "string",
       "description": "The title of the guide"

@@ -11,22 +11,19 @@ import components.forms 0.1
 import components.inAppAuth 0.1
 
 Item {
-    property bool _menuVisible: false
 
     id: viewDeleteAccount
 
     Loader {
         id: loader
-        property bool isDeleteAccountAuth: true
+        property bool isReauthFlow: true
 
         anchors.fill: parent
         asynchronous: true
 
-        function cancelAccountDeletion() {
-            VPN.cancelAccountDeletion();
-            VPN.cancelAuthentication();
-
-            settingsStackView.pop();
+        function cancelAuthenticationFlow() {
+            VPN.cancelReauthentication();
+            mainStackView.pop();
         }
     }
 

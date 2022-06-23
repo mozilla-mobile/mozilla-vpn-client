@@ -12,15 +12,8 @@ import components.inAppAuth 0.1
 
 
 VPNInAppAuthenticationBase {
-    // TODO
-    // We show this view when the user is creating an account.
-    // Things are happening in background. The next steps are:
-    // - Verification by email needed
-    // - errors
-
-    id: authSignUp
-
     _changeEmailLinkVisible: true
+    _viewObjectName: "authSignUp"
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => {
         VPNAuthInApp.reset();
@@ -32,6 +25,8 @@ VPNInAppAuthenticationBase {
     _inputLabel: VPNl18n.InAppAuthCreatePasswordLabel
 
     _inputs: VPNInAppAuthenticationInputs {
+        objectName: "authSignUp"
+
         function validatePassword(passwordString) {
             return VPNAuthInApp.validatePasswordCommons(passwordString)
                 && VPNAuthInApp.validatePasswordLength(passwordString)

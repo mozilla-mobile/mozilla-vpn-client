@@ -6,6 +6,7 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
 import Mozilla.VPN 1.0
+import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 
 Item {
@@ -162,7 +163,7 @@ Item {
                             VPNBoldInterLabel {
                                 property var guideBlock
 
-                                text: qstrId(guideBlock.id)
+                                text: qsTrId(guideBlock.id)
                                 font.pixelSize: VPNTheme.theme.fontSize
                                 lineHeight: VPNTheme.theme.labelLineHeight
                                 verticalAlignment: Text.AlignVCenter
@@ -199,21 +200,21 @@ Item {
                             }
                         }
 
-                        model: guide.blocks
+                        model: guide.composer.blocks
                         delegate: Loader {
 
                             Layout.fillWidth: true
 
                             sourceComponent: {
                                 switch(modelData.type) {
-                                case VPNGuide.GuideBlockTypeTitle:
+                                case VPNComposerBlock.ComposerBlockTypeTitle:
                                     Layout.topMargin = VPNTheme.theme.vSpacingSmall
                                     return titleBlock
-                                case VPNGuide.GuideBlockTypeText:
+                                case VPNComposerBlock.ComposerBlockTypeText:
                                     Layout.topMargin = VPNTheme.theme.listSpacing * 0.5
                                     return textBlock
-                                case VPNGuide.GuideBlockTypeOrderedList:
-                                case VPNGuide.GuideBlockTypeUnorderedList:
+                                case VPNComposerBlock.ComposerBlockTypeOrderedList:
+                                case VPNComposerBlock.ComposerBlockTypeUnorderedList:
                                     Layout.topMargin = VPNTheme.theme.listSpacing * 0.5
                                     return listBlock
                                 }
@@ -221,10 +222,10 @@ Item {
 
                             onLoaded: {
                                 item.guideBlock = modelData
-                                if(modelData.type === VPNGuide.GuideBlockTypeOrderedList) {
+                                if(modelData.type === VPNComposerBlock.ComposerBlockTypeOrderedList) {
                                     item.listType = "ol"
                                 }
-                                else if(modelData.type === VPNGuide.GuideBlockTypeUnorderedList) {
+                                else if(modelData.type === VPNComposerBlock.ComposerBlockTypeUnorderedList) {
                                     item.listType = "ul"
                                 }
                             }
@@ -239,4 +240,16 @@ Item {
             }
         }
     }
+
+    Connections {
+        function onGoBack(item) {
+            if (item === root)
+                mainStackView.pop();
+
+        }
+
+        target: VPNCloseEventHandler
+    }
+
+    Component.onCompleted: VPNCloseEventHandler.addView(root)
 }

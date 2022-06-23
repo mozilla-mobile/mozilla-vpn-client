@@ -85,6 +85,8 @@ Item {
 
         Column {
             id: content
+            objectName: "deviceList"
+
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: maxDevicesReached.bottom
@@ -97,7 +99,7 @@ Item {
                 model: VPNDeviceModel
                 anchors.left: parent.left
                 anchors.right: parent.right
-                delegate: VPNDeviceListItem {}
+                delegate: VPNDeviceListItem { objectName: "device-" + name }
             }
 
 
@@ -148,6 +150,17 @@ Item {
 
     VPNRemoveDevicePopup {
         id: removePopup
+
+        Connections {
+            target: VPN
+            function onDeviceRemoving(devPublicKey) {
+                if(VPN.state === VPN.StateDeviceLimit) {
+                    for(var i = 0; i < deviceList.count; i++) {
+                        deviceList.itemAt(i).enabled = false
+                    }
+                }
+            }
+        }
 
         function initializeAndOpen(name, publicKey) {
             removePopup.deviceName = name;

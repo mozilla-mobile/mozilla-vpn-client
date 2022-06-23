@@ -7,9 +7,6 @@ import QtQuick 2.5
 import Mozilla.VPN 1.0
 import components 0.1
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
-
 
 Item {
     id: viewInitialize
@@ -20,7 +17,7 @@ Item {
 
         labelText: qsTrId("vpn.main.getHelp2")
         onClicked: {
-            Sample.getHelpClickedInitialize.record();
+            VPN.recordGleanEvent("getHelpClickedInitialize")
             getHelpViewNeeded();
         }
     }
@@ -56,7 +53,7 @@ Item {
         //% "Learn more"
         labelText: qsTrId("vpn.main.learnMore")
         onClicked: {
-            Sample.onboardingOpened.record();
+            VPN.recordGleanEvent("onboardingOpened");
             stackview.push("ViewOnboarding.qml");
         }
 

@@ -1,0 +1,12 @@
+[package]
+name = "signature"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ring = "0.16.20"
+
+[lib]
+name = "signature"
+path = "src/lib.rs"
+crate-type = ["staticlib"]

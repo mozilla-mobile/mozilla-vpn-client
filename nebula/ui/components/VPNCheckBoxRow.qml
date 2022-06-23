@@ -26,6 +26,8 @@ RowLayout {
 
     VPNCheckBox {
         id: checkBox
+
+        objectName: "checkbox"
         onClicked: checkBoxRow.clicked()
         checked: isChecked
         enabled: isEnabled

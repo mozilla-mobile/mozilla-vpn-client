@@ -63,8 +63,8 @@ foreach(LOCALE ${I18N_LOCALES})
         DEPENDS ${GENERATED_DIR}/l18nstrings_p.cpp
         COMMAND ${QT_LUPDATE_EXECUTABLE} -target-language ${LOCALE} ${GENERATED_DIR}/l18nstrings_p.cpp -ts ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
         COMMAND ${QT_LCONVERT_EXECUTABLE} -verbose -o ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
-                      -if xlf -i ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
                       -if ts -i ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
+                      -if xlf -i ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
     )
 
     add_custom_command(

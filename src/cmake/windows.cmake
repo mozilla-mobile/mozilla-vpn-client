@@ -89,6 +89,8 @@ target_sources(mozillavpn PRIVATE
     update/balrog.h
 )
 
+include(cmake/signature.cmake)
+
 install(TARGETS mozillavpn DESTINATION .)
 install(FILES $<TARGET_PDB_FILE:mozillavpn> DESTINATION . OPTIONAL)
 

@@ -10,8 +10,6 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
 
 
 Item {
@@ -36,9 +34,10 @@ Item {
         Component.onCompleted: {
             console.log("Component ready");
             VPNAppPermissions.requestApplist();
-            Sample.appPermissionsViewOpened.record();
+            VPN.recordGleanEvent("appPermissionsViewOpened");
+
             if (!vpnIsOff) {
-                Sample.appPermissionsViewWarning.record();
+                VPN.recordGleanEvent("appPermissionsViewWarning");
             }
         }
 

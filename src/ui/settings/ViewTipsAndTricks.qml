@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 
 import Mozilla.VPN 1.0
+import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 import components.forms 0.1
 
@@ -19,6 +20,20 @@ VPNFlickable {
 
     flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
     interactive: flickContentHeight > height
+
+    // The list of add-on guides
+    VPNFilterProxyModel {
+        id: guideModel
+        source: VPNAddonManager
+        filterCallback: obj => obj.addon.type === "guide"
+    }
+
+   //Model containing all tutorials except the highlighted one (if there are any more)
+   VPNFilterProxyModel {
+       id: highlightedTutorialExcludedModel
+       source: VPNAddonManager
+       filterCallback: obj => obj.addon.type === "tutorial" && !obj.addon.highlighted;
+   }
 
     Column {
         id: layout
@@ -44,7 +59,7 @@ VPNFlickable {
 
                 Loader {
                     id: highlightedTutorialLoader
-                    property variant highlightedTutorial: VPNTutorial.highlightedTutorial
+                    property variant highlightedTutorial: VPNAddonManager.pick(addon => addon.type === "tutorial" && addon.highlighted)
 
                     height: VPNTheme.theme.tutorialCardHeight
                     width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
@@ -53,24 +68,32 @@ VPNFlickable {
                     visible: active
 
                     sourceComponent: VPNTutorialCard {
+                        objectName: "highlightedTutorial"
                         width: parent.width
                         height: parent.height
 
                         imageSrc: highlightedTutorial.image
                         title: qsTrId(highlightedTutorial.titleId)
                         description: qsTrId(highlightedTutorial.subtitleId)
+
+                        onClicked: {
+                            VPNTutorial.play(highlightedTutorial);
+                            VPNCloseEventHandler.removeAllStackViews();
+                        }
                     }
                 }
 
                 VPNTutorialCard {
+                    objectName: "featureTourCard"
+
                     width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
                     height: VPNTheme.theme.tutorialCardHeight
 
                     imageSrc: "qrc:/ui/resources/sparkling-check.svg"
                     imageBgColor: "#2B2A33"
-                    cardTypeText: VPNl18n.TipsAndTricksFeatureTourLabel
-                    title: VPNl18n.TipsAndTricksWhatsNewTitle
-                    description: VPNl18n.TipsAndTricksWhatsNewDescription
+                    title: VPNl18n.TipsAndTricksFeatureTourCardTitle
+                    description: VPNl18n.TipsAndTricksFeatureTourCardDescription
+                    onClicked: featureTourPopup.startTour();
                 }
             }
 
@@ -79,7 +102,7 @@ VPNFlickable {
                 Layout.topMargin: 32
                 Layout.fillWidth: true
 
-                active: VPNGuide.rowCount() > 0
+                active: VPNAddonManager.pick(addon => addon.type === "guide")
                 visible: active
 
                 sourceComponent: ColumnLayout {
@@ -116,17 +139,17 @@ VPNFlickable {
 
                         Repeater {
                             id: guideRepeater
-                            model: VPNGuide
+                            model: guideModel
                             delegate: VPNGuideCard {
-                                objectName: guide.titleId
+                                objectName: addon.id
 
                                 height: 172
                                 width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? (parent.width - parent.spacing) / 2 : (parent.width - (parent.spacing * 2)) / 3
 
-                                imageSrc: guide.image
-                                title: qsTrId(guide.titleId)
+                                imageSrc: addon.image
+                                title: qsTrId(addon.titleId)
 
-                                onClicked: mainStackView.push("qrc:/ui/settings/ViewGuide.qml", {"guide": guide, "imageBgColor": imageBgColor})
+                                onClicked: mainStackView.push("qrc:/ui/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
                             }
                         }
                     }
@@ -137,7 +160,7 @@ VPNFlickable {
                 Layout.topMargin: guideLoader.active ? 32 : 16
                 Layout.fillWidth: true
 
-                active: highlightedTutorialExcludedModel.rowCount() > 0
+                active: VPNAddonManager.pick(addon => addon.type === "tutorial" && !addon.highlighted)
                 visible: active
 
                 sourceComponent: Flow {
@@ -150,19 +173,14 @@ VPNFlickable {
                             width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
                             height: VPNTheme.theme.tutorialCardHeight
 
-                            imageSrc: tutorial.image
-                            title: qsTrId(tutorial.titleId)
-                            description: qsTrId(tutorial.subtitleId)
+                            imageSrc: addon.image
+                            title: qsTrId(addon.titleId)
+                            description: qsTrId(addon.subtitleId)
+                            onClicked: {
+                                VPNTutorial.play(addon);
+                                VPNCloseEventHandler.removeAllStackViews();
+                            }
                         }
-                    }
-                }
-
-                //Model containing all tutorials except the highlighted one (if there are any more)
-                VPNFilterProxyModel {
-                    id: highlightedTutorialExcludedModel
-                    source: VPNTutorial
-                    filterCallback: obj => {
-                       return !obj.tutorial.highlighted;
                     }
                 }
             }

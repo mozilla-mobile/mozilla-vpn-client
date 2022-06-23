@@ -22,7 +22,7 @@ cp scripts/utils/generate_strings.py cache || die
 print G "done."
 
 printn Y "Generating strings... "
-python cache/generate_strings.py -o translations/generated
+python cache/generate_strings.py translations/strings.yaml -o translations/generated
 print G "done."
 
 printn Y "Generating a dummy PRO file... "
@@ -67,9 +67,9 @@ for branch in $(git branch -r | grep origin/releases); do
     for f in $ts_files
     do
       ts_name=$(basename "$f")
-      if [ -f "addon_ts/${ts_name}"]; then
+      if [ -f "addon_ts/${ts_name}" ]; then
         printn Y "File ${ts_name} exists, updating with branch strings..."
-        lconvert -i "cache_rs/${ts_name}" "addons/generated/addons/${ts_name}" -o tmp.ts || die
+        lconvert -i "addon_ts/${ts_name}" "addons/generated/addons/${ts_name}" -o tmp.ts || die
         mv tmp.ts "addon_ts/${ts_name}"
       else
         printn Y "File ${ts_name} does not exist, copying over..."

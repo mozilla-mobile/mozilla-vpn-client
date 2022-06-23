@@ -41,7 +41,8 @@ Addon* AddonDemo::create(QObject* parent, const QString& manifestFileName,
 AddonDemo::AddonDemo(QObject* parent, const QString& manifestFileName,
                      const QString& id, const QString& name,
                      const QString& qmlFileName)
-    : Addon(parent, manifestFileName, id, name), m_qmlFileName(qmlFileName) {
+    : Addon(parent, manifestFileName, id, name, "demo"),
+      m_qmlFileName(qmlFileName) {
   MVPN_COUNT_CTOR(AddonDemo);
 }
 

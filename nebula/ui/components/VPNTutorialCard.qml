@@ -12,11 +12,10 @@ VPNCard {
 
     property alias imageSrc: heroImage.source
     property string imageBgColor: VPNTheme.theme.tutorialCardImageBgColor
-    property string cardTypeText: VPNl18n.TipsAndTricksTutorialLabel //defaults card type to "tutorial"
     property alias title: titleText.text
     property alias description: descriptionText.text
 
-    Accessible.name: root.cardTypeText + "," + title + "," + description
+    Accessible.name: title + "," + description
 
     RowLayout {
         anchors.fill: parent
@@ -50,39 +49,29 @@ VPNCard {
             }
         }
 
-
         ColumnLayout {
-            Layout.topMargin: 16
-            Layout.rightMargin: 16
-            Layout.bottomMargin: 8
+            Layout.topMargin: VPNTheme.theme.vSpacing * 0.5
+            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.bottomMargin: VPNTheme.theme.vSpacing * 0.5
+            Layout.fillHeight: true
+            Layout.fillWidth: true
 
             spacing: 0
 
-            VPNBoldInterLabel {
-                id: cardTypeText
-
-                Layout.fillWidth: true
-
-                text: root.cardTypeText
-                elide: Text.ElideRight
-                verticalAlignment: Text.AlignVCenter
-                maximumLineCount: 1
-
-                Accessible.ignored: true
+            Item {
+                Layout.fillHeight: true
             }
-
 
             VPNBoldLabel {
                 id: titleText
 
-                Layout.topMargin: VPNTheme.theme.listSpacing
                 Layout.fillWidth: true
 
                 elide: Text.ElideRight
                 lineHeightMode: Text.FixedHeight
-                lineHeight: 24
-                horizontalAlignment: Text.AlignLeft
+                lineHeight: VPNTheme.theme.vSpacing
                 verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignLeft
                 maximumLineCount: 2
                 wrapMode: Text.WordWrap
 
@@ -95,22 +84,30 @@ VPNCard {
                 id: descriptionText
 
                 Layout.fillWidth: true
-                Layout.fillHeight: true
+                Layout.maximumHeight: {
+                    //Max height should be all available space rounded down to the nearlest line (so there is no excess height like half of a line)
+                    const availableHeight = root.height - parent.Layout.topMargin - parent.Layout.bottomMargin - titleText.height
+                    const excessHeight = availableHeight % lineHeight
+                    return root.height - parent.Layout.topMargin - parent.Layout.bottomMargin - titleText.height - excessHeight
+                }
 
-                topPadding: 4
                 elide: Text.ElideRight
-                verticalAlignment: Text.AlignTop
-                horizontalAlignment: Text.AlignLeft
                 font.pixelSize: VPNTheme.theme.fontSizeSmallest
                 font.family: VPNTheme.theme.fontInterFamily
                 lineHeightMode: Text.FixedHeight
                 lineHeight: VPNTheme.theme.controllerInterLineHeight
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignLeft
                 wrapMode: Text.WordWrap
                 color: VPNTheme.theme.fontColor
 
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
                 Accessible.ignored: true
+            }
+
+            Item {
+                Layout.fillHeight: true
             }
         }
     }

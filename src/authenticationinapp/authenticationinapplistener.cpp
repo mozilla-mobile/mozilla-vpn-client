@@ -15,7 +15,8 @@ AuthenticationInAppListener::AuthenticationInAppListener(QObject* parent)
     : AuthenticationListener(parent) {
   MVPN_COUNT_CTOR(AuthenticationInAppListener);
 
-  m_session = new AuthenticationInAppSession(this);
+  m_session = new AuthenticationInAppSession(
+      this, AuthenticationInAppSession::TypeDefault);
   connect(m_session, &AuthenticationInAppSession::completed, this,
           &AuthenticationListener::completed);
   connect(m_session, &AuthenticationInAppSession::failed, this,

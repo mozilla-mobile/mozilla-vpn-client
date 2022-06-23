@@ -29,6 +29,7 @@ Window {
                 Qt.platform.os === "tvos";
     }
 
+
     function safeAreaHeightByDevice() {
         if (Qt.platform.os !== "ios") {
             return 0;
@@ -284,20 +285,20 @@ Window {
                 }
             }
 
+            if (tutorialUI.visible) {
+                return tutorialUI.openLeaveTutorialPopup(VPN.viewLogsNeeded)
+            }
+
             // If we can't show logs natively, open the viewer
             if (mainStackView.currentItem.objectName !== "viewLogs") {
                 mainStackView.push("qrc:/ui/views/ViewLogs.qml");
             }
         }
-
-        function onLoadAndroidAuthenticationView() {
-            if (Qt.platform.os !== "android") {
-                console.log("Unexpected android authentication view request!");
-            }
-            mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
-        }
-
         function onContactUsNeeded() {
+            if (tutorialUI.visible) {
+                return tutorialUI.openLeaveTutorialPopup(VPN.contactUsNeeded)
+            }
+
             // Check if Contact Us view is already in mainStackView
             const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
             if (contactUsViewInStack) {
@@ -308,6 +309,10 @@ Window {
         }
 
         function onSettingsNeeded() {
+            if (tutorialUI.visible) {
+                return tutorialUI.openLeaveTutorialPopup(VPN.settingsNeeded);
+            }
+
             // Check if Settings view is already in mainStackView
             const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" })
 
@@ -320,6 +325,12 @@ Window {
             }
             mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
         }
+    }
+
+    // Glean Connections
+    Connections {
+        target: VPN
+        enabled: Qt.platform.os !== "android"
 
         function onInitializeGlean() {
             if (VPN.debugMode) {
@@ -376,6 +387,7 @@ Window {
 
     Connections {
         target: VPNSettings
+        enabled: Qt.platform.os != "android"
         function onGleanEnabledChanged() {
             console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);
@@ -478,46 +490,8 @@ Window {
 
     }
 
-    // This part needs UI - TODO
-    Popup {
-        id: tooltip
-        property alias text: text.text
-        visible: VPNTutorial.tooltipShown
-        closePolicy: Popup.NoAutoClose
-        x: VPNTheme.theme.windowMargin
-        width: parent.width - VPNTheme.theme.windowMargin * 2
-
-        ColumnLayout {
-            Text {
-                id: text
-                text: ""
-            }
-
-            Button {
-                objectName: "tutorialExit"
-                text: "Exit"
-                Component.onCompleted: VPNTutorial.allowItem("tutorialExit")
-                onClicked: VPNTutorial.stop()
-            }
-        }
-    }
-
-    Connections {
-        target: VPNTutorial
-        function onTooltipNeeded(textId, rect, objectName) {
-            console.log("OBJECT NAME:" + objectName);
-            if (tooltip.height + rect.y + rect.height <= window.height - VPNTheme.theme.windowMargin) {
-              tooltip.y = rect.y + rect.height;
-            } else {
-              tooltip.y = rect.y - tooltip.height;
-            }
-            tooltip.text = qsTrId(textId);
-            tooltip.open();
-        }
-
-        function onTutorialCompleted(text) {
-            console.log("TODO", qsTrId(text));
-        }
+    VPNTutorialPopups {
+        id: tutorialUI
     }
 
     VPNSystemAlert {
@@ -537,36 +511,37 @@ Window {
         showServerList();
     }
 
+    function exitTutorialIfNeeded() {
+        if (tutorialUI.visible) {
+            tutorialUI.leaveTutorial();
+        }
+    }
+
+    function pushCaptivePortalView() {
+        exitTutorialIfNeeded();
+        mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
+    }
+
     Connections {
         target: VPNController
         function onReadyToServerUnavailable() {
+            exitTutorialIfNeeded();
             serverUnavailablePopup.open();
         }
         function onActivationBlockedForCaptivePortal() {
-           mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
+          pushCaptivePortalView();
         }
     }
     Connections{
         target: VPNCaptivePortal
         function onCaptivePortalPresent() {
-            mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
+            pushCaptivePortalView();
         }
     }
 
     VPNFeatureTourPopup {
         id: featureTourPopup
 
-        Component.onCompleted: {
-            featureTourPopup.handleShowTour();
-        }
-
-        function handleShowTour() {
-            if(VPN.state === VPN.StateMain
-                && !VPNSettings.featuresTourShown
-                && VPNWhatsNewModel.hasUnseenFeature
-            ) {
-                featureTourPopup.openTour();
-            }
-        }
+        anchors.centerIn: parent
     }
 }

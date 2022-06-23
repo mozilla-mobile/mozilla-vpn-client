@@ -42,9 +42,7 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
   MVPN_COUNT_CTOR(NetworkRequest);
   logger.debug() << "Network request created by" << parent->name();
 
-#ifndef MVPN_WASM
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
-#endif
   m_request.setMaximumRedirectsAllowed(REQUEST_MAX_REDIRECTS);
   m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
                          QNetworkRequest::SameOriginRedirectPolicy);
@@ -299,6 +297,19 @@ NetworkRequest* NetworkRequest::createForAccount(Task* parent) {
 
   QUrl url(apiBaseUrl());
   url.setPath("/api/v1/vpn/account");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
+NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/subscriptionDetails");
   r->m_request.setUrl(url);
 
   r->getRequest();
