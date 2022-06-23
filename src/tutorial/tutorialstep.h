@@ -10,9 +10,9 @@
 #include <QJsonObject>
 #include <QTimer>
 
+class AddonTutorial;
 class QJsonValue;
 class QQuickItem;
-class Tutorial;
 class TutorialStepBefore;
 class TutorialStepNext;
 
@@ -20,7 +20,7 @@ class TutorialStep final : public QObject {
   Q_OBJECT
 
  public:
-  static TutorialStep* create(Tutorial* parent, const QString& tutorialId,
+  static TutorialStep* create(AddonTutorial* parent, const QString& tutorialId,
                               const QJsonValue& json);
 
   ~TutorialStep();
@@ -34,7 +34,7 @@ class TutorialStep final : public QObject {
   void completed();
 
  private:
-  TutorialStep(Tutorial* parent, const QString& element,
+  TutorialStep(AddonTutorial* parent, const QString& element,
                const QString& stringId, const QJsonObject& conditions,
                const QList<TutorialStepBefore*>& before,
                TutorialStepNext* next);
@@ -42,7 +42,7 @@ class TutorialStep final : public QObject {
   void startInternal();
 
  private:
-  Tutorial* m_parent = nullptr;
+  AddonTutorial* m_parent = nullptr;
   const QString m_element;
   const QString m_stringId;
   const QJsonObject m_conditions;

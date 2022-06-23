@@ -55,6 +55,8 @@ HEADERS += \
     ../../src/collator.h \
     ../../src/command.h \
     ../../src/commandlineparser.h \
+    ../../src/composer.h \
+    ../../src/composerblock.h \
     ../../src/constants.h \
     ../../src/controller.h \
     ../../src/curve25519.h \
@@ -74,9 +76,6 @@ HEADERS += \
     ../../src/models/feature.h \
     ../../src/models/featuremodel.h \
     ../../src/models/feedbackcategorymodel.h \
-    ../../src/models/guide.h \
-    ../../src/models/guideblock.h \
-    ../../src/models/guidemodel.h \
     ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
     ../../src/models/licensemodel.h \
@@ -88,11 +87,6 @@ HEADERS += \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
-    ../../src/models/tutorial.h \
-    ../../src/models/tutorialmodel.h \
-    ../../src/models/tutorialstep.h \
-    ../../src/models/tutorialstepbefore.h \
-    ../../src/models/tutorialstepnext.h \
     ../../src/models/user.h \
     ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
@@ -130,6 +124,10 @@ HEADERS += \
     ../../src/taskscheduler.h \
     ../../src/theme.h \
     ../../src/timersingleshot.h \
+    ../../src/tutorial/tutorial.h \
+    ../../src/tutorial/tutorialstep.h \
+    ../../src/tutorial/tutorialstepbefore.h \
+    ../../src/tutorial/tutorialstepnext.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/update/webupdater.h \
@@ -141,7 +139,6 @@ HEADERS += \
     testandroidmigration.h \
     testcommandlineparser.h \
     testfeature.h \
-    testguide.h \
     testipaddress.h \
     testipaddresslookup.h \
     testipfinder.h \
@@ -157,7 +154,6 @@ HEADERS += \
     testtasks.h \
     testthemes.h \
     testtimersingleshot.h \
-    testtutorial.h \
     testwebsockethandler.h
 
 SOURCES += \
@@ -173,6 +169,8 @@ SOURCES += \
     ../../src/collator.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
+    ../../src/composer.cpp \
+    ../../src/composerblock.cpp \
     ../../src/constants.cpp \
     ../../src/curve25519.cpp \
     ../../src/dnspingsender.cpp \
@@ -194,9 +192,6 @@ SOURCES += \
     ../../src/models/feature.cpp \
     ../../src/models/featuremodel.cpp \
     ../../src/models/feedbackcategorymodel.cpp \
-    ../../src/models/guide.cpp \
-    ../../src/models/guideblock.cpp \
-    ../../src/models/guidemodel.cpp \
     ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
     ../../src/models/licensemodel.cpp \
@@ -208,11 +203,6 @@ SOURCES += \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
-    ../../src/models/tutorial.cpp \
-    ../../src/models/tutorialmodel.cpp \
-    ../../src/models/tutorialstep.cpp \
-    ../../src/models/tutorialstepbefore.cpp \
-    ../../src/models/tutorialstepnext.cpp \
     ../../src/models/user.cpp \
     ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
@@ -245,6 +235,10 @@ SOURCES += \
     ../../src/taskscheduler.cpp \
     ../../src/theme.cpp \
     ../../src/timersingleshot.cpp \
+    ../../src/tutorial/tutorial.cpp \
+    ../../src/tutorial/tutorialstep.cpp \
+    ../../src/tutorial/tutorialstepbefore.cpp \
+    ../../src/tutorial/tutorialstepnext.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/update/webupdater.cpp \
@@ -260,7 +254,6 @@ SOURCES += \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \
     testfeature.cpp \
-    testguide.cpp \
     testipaddress.cpp \
     testipaddresslookup.cpp \
     testipfinder.cpp \
@@ -276,7 +269,6 @@ SOURCES += \
     testtasks.cpp \
     testthemes.cpp \
     testtimersingleshot.cpp \
-    testtutorial.cpp \
     testwebsockethandler.cpp
 
 # Platform-specific: Linux

@@ -7,16 +7,23 @@
 
 #include "addons/addon.h"  // required for the signal
 
-#include <QHash>
-#include <QObject>
+#include <QJSValue>
+#include <QMap>
+#include <QAbstractListModel>
 
 class QDir;
 
-class AddonManager final : public QObject {
+class AddonManager final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonManager)
 
  public:
+  Q_INVOKABLE Addon* pick(QJSValue filterCallback) const;
+
+  enum ModelRoles {
+    AddonRole = Qt::UserRole + 1,
+  };
+
   static AddonManager* instance();
 
   ~AddonManager();
@@ -32,6 +39,8 @@ class AddonManager final : public QObject {
   void unload(const QString& addonId);
 
   void retranslate();
+
+  void forEach(std::function<void(Addon* addon)>&& callback);
 
  private:
   explicit AddonManager(QObject* parent);
@@ -49,6 +58,14 @@ class AddonManager final : public QObject {
 
   static void removeAddon(const QString& addonId);
 
+  // QAbstractListModel methods
+
+  QHash<int, QByteArray> roleNames() const override;
+
+  int rowCount(const QModelIndex&) const override;
+
+  QVariant data(const QModelIndex& index, int role) const override;
+
  signals:
   void runAddon(Addon* addon);
 
@@ -59,7 +76,7 @@ class AddonManager final : public QObject {
     Addon* m_addon;
   };
 
-  QHash<QString, AddonData> m_addons;
+  QMap<QString, AddonData> m_addons;
 };
 
 #endif  // ADDONMANAGER_H

@@ -10,4 +10,10 @@ class TestAddon final : public TestHelper {
  private slots:
   void conditions_data();
   void conditions();
+
+  void guide_create_data();
+  void guide_create();
+
+  void tutorial_create_data();
+  void tutorial_create();
 };
