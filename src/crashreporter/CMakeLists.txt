@@ -4,8 +4,7 @@
 
 add_library(crashreporter STATIC)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets WebSockets)
-find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
+set_target_properties(crashreporter PROPERTIES FOLDER "Libs")
 target_include_directories(crashreporter PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(crashreporter PRIVATE

@@ -2,9 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-find_package(Qt6 REQUIRED COMPONENTS Core Network Test)
-
 qt_add_executable(nativemessaging_tests EXCLUDE_FROM_ALL)
+set_target_properties(nativemessaging_tests PROPERTIES FOLDER "Tests")
 add_dependencies(build_tests nativemessaging_tests)
 
 target_link_libraries(nativemessaging_tests PRIVATE

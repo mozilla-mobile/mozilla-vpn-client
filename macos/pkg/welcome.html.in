@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body style="color: #1a1919; line-height: 1.5; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica', sans-serif; font-size: 13px; ">
+    <br />
+    <p style="margin: 5px;">@MACOSINSTALLER_WELCOME_MESSAGE1@</p>
+    <br />
+    <p style="margin: 5px;">@MACOSINSTALLER_WELCOME_MESSAGE2@</p>
+  </body>
+</html>

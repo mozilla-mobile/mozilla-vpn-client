@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body style="color: #1a1919; line-height: 1.5; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica', sans-serif; font-size: 13px;">
+    <br />
+      <h3 style="margin-left: 5px; margin-right: 5px;">@MACOSINSTALLER_CONCLUSION_TITLE@</h3>
+      <p style="margin: 5px;">@MACOSINSTALLER_CONCLUSION_MESSAGE1_V2@</p>
+    <br />
+    <p style="margin: 5px;">@MACOSINSTALLER_CONCLUSION_MESSAGE2@
+    <a rel="noopener noreferrer" href="https://support.mozilla.org/products/firefox-private-network-vpn?utm_source=mozilla-vpn&utm_medium=mozilla-vpn-installer&utm_campaign=mac-installer" style="color: #0a84ff;">@MACOSINSTALLER_CONCLUSION_MESSAGE3@</a>
+    </p>
+  </body>
+</html>

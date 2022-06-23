@@ -4,6 +4,7 @@
 
 ## Custom target to build the web-extension bridge with Rust/Cargo
 add_custom_target(cargo_mozillavpnnp ALL
+    COMMENT "Building web extension crate"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bridge
     COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_CURRENT_BINARY_DIR}/.cargo_home
             cargo build --release --target-dir ${CMAKE_CURRENT_BINARY_DIR}/bridge/target
@@ -35,4 +36,8 @@ elseif(WIN32)
     install(PROGRAMS $<TARGET_FILE:mozillavpnnp> DESTINATION .)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manifests/windows/mozillavpn.json
         DESTINATION .)
+elseif(APPLE)
+    include(${CMAKE_SOURCE_DIR}/src/cmake/osxtools.cmake)
+    osx_codesign_target(cargo_mozillavpnnp OPTIONS runtime FORCE FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/bridge/target/release/mozillavpnnp)
 endif()

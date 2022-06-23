@@ -78,7 +78,8 @@ qt_add_dbus_adaptor(DBUS_GENERATED_SOURCES
 target_sources(mozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
 
 include(cmake/golang.cmake)
-add_go_library(mozillavpn ../linux/netfilter/netfilter.go)
+add_go_library(netfilter ../linux/netfilter/netfilter.go)
+target_link_libraries(mozillavpn PRIVATE netfilter)
 
 include(GNUInstallDirs)
 install(TARGETS mozillavpn)
