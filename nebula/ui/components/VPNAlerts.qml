@@ -67,7 +67,7 @@ ColumnLayout {
 
         isLayout: true
         alertType: alertTypes.success
-        visible: VPNSurveyModel.id === "mozilla-vpn-survey-2022-05" &&  VPNSurveyModel.hasSurvey
+        visible: VPNSurveyModel.currentSurveyId === "mozilla-vpn-survey-2022-05" &&  VPNSurveyModel.hasSurvey
         alertText: "Share your VPN experience with us. Research participants receive $100."
         alertActionText: "Learn more"
         onActionPressed: ()=>VPNSurveyModel.openCurrentSurvey()
