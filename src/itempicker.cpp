@@ -24,7 +24,6 @@ bool ItemPicker::eventFilter(QObject* obj, QEvent* event) {
 }
 
 bool ItemPicker::eventFilterInternal(QObject* obj, QEvent* event) {
-  qDebug() << event->type();
   if (event->type() == QEvent::Wheel) {
     return true;
   }
