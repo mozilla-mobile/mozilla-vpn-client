@@ -114,10 +114,10 @@ install(FILES platforms/linux/daemon/org.mozilla.vpn.conf
 install(FILES platforms/linux/daemon/org.mozilla.vpn.dbus.service
     DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/system-services)
 
-## This is only really needed when building from source. Otherwise, we
-## expect the Distro's packaging magic to sort this out.
 pkg_check_modules(SYSTEMD systemd)
 if("${SYSTEMD_FOUND}" EQUAL 1)
     pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
     install(FILES ../linux/mozillavpn.service DESTINATION ${SYSTEMD_UNIT_DIR})
+else()
+    install(FILES ../linux/mozillavpn.service DESTINATION /lib/systemd/system)
 endif()
