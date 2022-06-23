@@ -6,9 +6,8 @@
 #define WHATSNEWMODEL_H
 
 #include <QAbstractListModel>
-#include <QPointer>
 
-#include "featurelist.h"
+class Feature;
 
 class WhatsNewModel final : public QAbstractListModel {
   Q_OBJECT
@@ -30,6 +29,8 @@ class WhatsNewModel final : public QAbstractListModel {
   int rowCount(const QModelIndex&) const override;
 
   QVariant data(const QModelIndex& index, int role) const override;
+
+  QStringList featureIds() const;
 
   bool hasUnseenFeature();
 

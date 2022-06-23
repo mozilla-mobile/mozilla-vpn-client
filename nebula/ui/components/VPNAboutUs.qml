@@ -12,8 +12,6 @@ import components 0.1
 
 Item {
     id: viewAboutUs
-    property alias isSettingsView: menu.isSettingsView
-    property alias isMainView: menu.isMainView
     property alias releaseVersionText: releaseVersion.text
     //% "About us"
     property string _menuTitle: qsTrId("vpn.settings.aboutUs")
@@ -50,18 +48,11 @@ Item {
        });
     }
 
-    VPNMenu {
-        id: menu
-        objectName: "aboutUsBackButton"
-        title: qsTrId("vpn.settings.aboutUs")
-        visible: !isSettingsView
-    }
-
     Rectangle {
         id: aboutUsCopy
 
-        anchors.top: menu.visible ? menu.bottom : parent.top
-        anchors.topMargin: menu.visible ? 0 : VPNTheme.theme.menuHeight + VPNTheme.theme.windowMargin
+        anchors.top: parent.top
+        anchors.topMargin: VPNTheme.theme.windowMargin
         anchors.left: viewAboutUs.left
         anchors.leftMargin: VPNTheme.theme.windowMargin
         anchors.rightMargin: VPNTheme.theme.windowMargin
@@ -149,13 +140,7 @@ Item {
                     VPN.openLink(openUrl)
                 }
                 if (openView) {
-                    if (isSettingsView) {
-                        settingsStackView.push(openView, { isSettingsView, isMainView })
-                    } else if (isMainView) {
-                        mainStackView.push(openView, { isSettingsView, isMainView })
-                    } else {
-                        stackview.push(openView, { isSettingsView, isMainView })
-                    }
+                    settingsStackView.push(openView)
                 }
             }
             iconSource: openUrl ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
@@ -228,146 +213,41 @@ Item {
             listenForUpdateEvents=false;
         }
     }
-    VPNPopup {
+
+    VPNSimplePopup {
         id: updateAvailablePopup
-        anchors.centerIn: parent
-        maxWidth: VPNTheme.theme.desktopAppWidth
-        _popupContent: ColumnLayout {
 
-            Item {
-                // Main Image
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredHeight: 90
-                Layout.preferredWidth: 90
-                Layout.bottomMargin: VPNTheme.theme.listSpacing
-
-                Image {
-                    anchors.fill: parent
-                    source:  "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
-                    sourceSize.height: parent.height * Screen.devicePixelRatio
-                    sourceSize.width: parent.width * Screen.devicePixelRatio
-                    fillMode: Image.PreserveAspectFit
-
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: VPNTheme.theme.listSpacing * 0.5
-                }
-            }
-
-            VPNMetropolisLabel {
-                color: VPNTheme.theme.fontColorDark
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: VPNTheme.theme.fontSizeLarge
-                text: VPNl18n.UpdateButtonTitleOnUpdate
-                Layout.bottomMargin: VPNTheme.theme.listSpacing
-                Layout.fillWidth: true
-            }
-
-            VPNTextBlock {
-                horizontalAlignment: Text.AlignHCenter
-                text: VPNl18n.UpdateButtonDescriptionOnUpdate
-                Layout.fillWidth: true
-                Layout.preferredWidth: parent.width
-            }
-
+        anchors.centerIn: Overlay.overlay
+        imageSrc: "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
+        imageSize: Qt.size(80, 80)
+        title: VPNl18n.UpdateButtonTitleOnUpdate
+        description: VPNl18n.UpdateButtonDescriptionOnUpdate
+        buttons: [
             VPNButton {
-                radius: VPNTheme.theme.cornerRadius
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignBottom
-                Layout.topMargin: VPNTheme.theme.vSpacing
                 text: VPNl18n.UpdateButtonActionOnUpdate
                 onClicked: {
                     updateAvailablePopup.close()
-                    stackview.push("qrc:/ui/views/ViewUpdate.qml");
-                }
-
-                Image {
-                    anchors {
-                        right: parent.contentItem.right
-                        rightMargin: VPNTheme.theme.windowMargin
-                        verticalCenter: parent.verticalCenter
-                    }
-                    fillMode: Image.PreserveAspectFit
-                    source: "qrc:/nebula/resources/arrow-forward-white.svg"
-                    sourceSize.height: VPNTheme.theme.iconSize * 1.5
-                    sourceSize.width: VPNTheme.theme.iconSize * 1.5
-                    visible: false
+                    mainStackView.push("qrc:/ui/views/ViewUpdate.qml");
                 }
             }
-
-        }
+        ]
     }
 
-
-    VPNPopup {
+    VPNSimplePopup {
         id: noUpdateAvailablePopup
-        anchors.centerIn: parent
-        maxWidth: VPNTheme.theme.desktopAppWidth
-        _popupContent: ColumnLayout {
 
-            Item {
-                // Main Image
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredHeight: 90
-                Layout.preferredWidth: 90
-                Layout.bottomMargin: VPNTheme.theme.listSpacing
-
-                Image {
-                    anchors.fill: parent
-                    source: "qrc:/nebula/resources/updateStatusUpToDate.svg"
-                    sourceSize.height: parent.height * Screen.devicePixelRatio
-                    sourceSize.width: parent.width * Screen.devicePixelRatio
-                    fillMode: Image.PreserveAspectFit
-
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: VPNTheme.theme.listSpacing * 0.5
-                }
-            }
-
-            VPNMetropolisLabel {
-                color: VPNTheme.theme.fontColorDark
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: VPNTheme.theme.fontSizeLarge
-                text: VPNl18n.UpdateButtonTitleNoUpdate
-
-                Layout.bottomMargin: VPNTheme.theme.listSpacing
-                Layout.fillWidth: true
-            }
-
-            VPNTextBlock {
-                horizontalAlignment: Text.AlignHCenter
-                text: VPNl18n.UpdateButtonDescriptionNoUpdate2
-                Layout.fillWidth: true
-                Layout.preferredWidth: parent.width
-            }
-
+        anchors.centerIn: Overlay.overlay
+        imageSrc: "qrc:/nebula/resources/updateStatusUpToDate.svg"
+        imageSize: Qt.size(80, 80)
+        title: VPNl18n.UpdateButtonTitleNoUpdate
+        description: VPNl18n.UpdateButtonDescriptionNoUpdate2
+        buttons: [
             VPNButton {
-                radius: VPNTheme.theme.cornerRadius
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignBottom
-                Layout.topMargin: VPNTheme.theme.vSpacing
                 text: VPNl18n.UpdateButtonActionNoUpdate
                 onClicked: {
                     noUpdateAvailablePopup.close();
                 }
-
-                Image {
-                    anchors {
-                        right: parent.contentItem.right
-                        rightMargin: VPNTheme.theme.windowMargin
-                        verticalCenter: parent.verticalCenter
-                    }
-                    fillMode: Image.PreserveAspectFit
-                    source: "qrc:/nebula/resources/arrow-forward-white.svg"
-                    sourceSize.height: VPNTheme.theme.iconSize * 1.5
-                    sourceSize.width: VPNTheme.theme.iconSize * 1.5
-                    visible: false
-                }
             }
-
-        }
+        ]
     }
-
-
 }

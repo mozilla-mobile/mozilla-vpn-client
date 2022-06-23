@@ -40,7 +40,14 @@ class SettingsHolder final : public QObject {
   };
   Q_ENUM(DnsProvider)
 
-  QString getReport();
+  // Don't use this directly!
+  QVariant rawSetting(const QString& key) const;
+
+#ifdef UNIT_TEST
+  void setRawSetting(const QString& key, const QVariant& value);
+#endif
+
+  QString getReport() const;
 
   void clear();
 
@@ -56,11 +63,11 @@ class SettingsHolder final : public QObject {
 
   void removeEntryServer();
 
-  QString envOrDefault(const QString& name, const QString& defaultValue) const;
-
   // Delete _ALL_ the settings. Probably this method is not what you want to
   // use.
   void hardReset();
+
+  QString settingsFileName() const;
 
  private:
   explicit SettingsHolder(QObject* parent);

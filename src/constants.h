@@ -6,8 +6,7 @@
 #define CONSTANTS_H
 
 #include <stdint.h>
-
-class QString;
+#include <QString>
 
 namespace Constants {
 
@@ -15,6 +14,11 @@ namespace Constants {
 bool inProduction();
 const QString& getStagingServerAddress();
 void setStaging();
+
+// Project version and build strings.
+QString versionString();
+QString buildNumber();
+QString envOrDefault(const QString& name, const QString& defaultValue);
 
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
@@ -67,6 +71,9 @@ CONSTEXPR(uint32_t, statusIconAnimationMsec, 200, 200, 0)
 // How often glean pings are sent
 CONSTEXPR(uint32_t, gleanTimeoutMsec, 1200000, 4000, 0)
 
+// How often to check in on the controller state
+CONSTEXPR(uint32_t, controllerPeriodicStateRecorderMsec, 10800000, 60000, 0)
+
 // How often we check the surveys to be executed (no network requests are done
 // for this check)
 CONSTEXPR(uint32_t, surveyTimerMsec, 300000, 4000, 0)
@@ -86,8 +93,15 @@ constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
 
 constexpr const char* LOGO_URL = ":/nebula/resources/logo-dock.png";
 
-PRODBETAEXPR(const char*, fxaApiBaseUrl, "https://api.accounts.firefox.com",
-             "https://api-accounts.stage.mozaws.net")
+constexpr const char* APPLE_SUBSCRIPTIONS_URL =
+    "https://apps.apple.com/account/subscriptions";
+
+constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
+    "https://play.google.com/store/account/subscriptions";
+
+PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
+             envOrDefault("MVPN_FXA_API_BASE_URL",
+                          "https://api-accounts.stage.mozaws.net"))
 PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
              "https://accounts.stage.mozaws.net")
 PRODBETAEXPR(
@@ -99,6 +113,15 @@ PRODBETAEXPR(
     const char*, balrogRootCertFingerprint,
     "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
     "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745");
+PRODBETAEXPR(
+    QString, addonSourceUrl,
+    "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/",  // TODO
+    envOrDefault("MVPN_ADDON_URL",
+                 "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
+
+PRODBETAEXPR(const char*, addonPublicKeyFile,
+             ":/addons_signature/production.der",
+             ":/addons_signature/staging.der");
 
 #undef PRODBETAEXPR
 

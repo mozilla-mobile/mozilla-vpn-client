@@ -19,11 +19,7 @@ Item {
     FocusScope {
         id: focusScope
 
-        height: parent.height - menu.height
-        anchors.top: parent.top
-        anchors.topMargin: VPNTheme.theme.menuHeight
-        anchors.left: parent.left
-        anchors.right: parent.right
+        anchors.fill: parent
         width: parent.width
         Accessible.name: menu.title
         Accessible.role: Accessible.List
@@ -150,6 +146,7 @@ Item {
                     delegate: ColumnLayout {
 
                         spacing: 0
+                        objectName: "language-column-" + code
 
                         VPNRadioDelegate {
                             property bool isSelectedLanguage: checked

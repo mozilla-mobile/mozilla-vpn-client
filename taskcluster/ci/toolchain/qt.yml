@@ -1,0 +1,54 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+job-defaults:
+    worker:
+        env:
+            QT_VERSION: "6.2.3"
+            QT_MAJOR: "6.2"
+        max-run-time: 14400
+
+qt-mac:
+    description: "Mac QT compile Task"
+    run:
+        script: compile_qt_6_mac.sh
+        toolchain-alias: qt-mac
+        toolchain-artifact: public/build/qt6_mac.zip
+    treeherder:
+        symbol: TL(qt-mac)
+    worker-type: b-macos
+
+qt-win:
+    description: "Windows QT compile Task"
+    fetches:
+        fetch:
+            - win-dev-env
+        openssl:
+            - artifact: open_ssl_win.zip
+              extract: false  # For some reason unzip exits with 1 even tho the file is okay
+    dependencies:
+        openssl: toolchain-openssl-win
+    run:
+        script: compile_qt_6.ps1
+        resources:
+            - taskcluster/scripts/toolchain/configure_qt.ps1
+        toolchain-alias: qt-win
+        toolchain-artifact: public/build/qt6_win.zip
+    treeherder:
+        symbol: TL(qt-win)
+    worker-type: b-win2012
+
+qt-ios:
+    description: "QT ios bundle Task"
+    run:
+        script: bundle_qt_ios.sh
+        resources:
+            - taskcluster/scripts/toolchain/bundle_qt_ios.sh
+        toolchain-alias: qt-ios
+        toolchain-artifact: public/build/qt6_ios.zip
+    treeherder:
+        symbol: TL(qt-ios)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: base}

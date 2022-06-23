@@ -10,10 +10,16 @@ on:
       - main
       - 'releases/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   windows:
     name: Windows build
     runs-on: windows-latest
+    env:
+      BUILDCONFIG: RelWithDebInfo
 
     steps:
       - name: Clone repository
@@ -30,17 +36,10 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_windows
-          cd qt_static_windows
-          cat qt6* > qt_static.tar.bz2
-          tar xf qt_static.tar.bz2
-          tar xf msm.tar.gz
+          git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
           mkdir /c/MozillaVPNBuild
-          cp -r * /c/MozillaVPNBuild
-          cd ..
-          cp /c/MozillaVPNBuild/SSL/bin/libssl-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/SSL/bin/libcrypto-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/*.msm .
+          cat qt_static_windows/qt6* > qt6_static.tar.bz2
+          tar xf qt6_static.tar.bz2 -C /c/MozillaVPNBuild
 
       - name: Install glean depedencies
         shell: bash
@@ -50,41 +49,35 @@ jobs:
       - name: Adding msbuild to PATH
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Compilation script
+      - name: Build VPN client
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          ./scripts/windows/compile.bat
+          mkdir -p build
+          cmake -S . -B $(pwd)/build
+          cmake --build $(pwd)/build --config ${BUILDCONFIG}
+          cmake --build $(pwd)/build --config ${BUILDCONFIG} --target msi
 
       - name: Create the zip package for signature
         shell: bash
         run: |
-          mkdir unsigned
-          cp /c/MozillaVPNBuild/SSL/bin/libssl-1_1-x64.dll unsigned
-          cp /c/MozillaVPNBuild/SSL/bin/libcrypto-1_1-x64.dll unsigned
-          cp /c/MozillaVPNBuild/*.msm unsigned
-          cp windows/tunnel/x64/tunnel.dll unsigned
-          cp windows/tunnel/.deps/wintun/bin/amd64/wintun.dll unsigned
-          cp balrog/x64/balrog.dll unsigned
-          cp windows/split-tunnel/mullvad-split-tunnel.cat unsigned
-          cp windows/split-tunnel/mullvad-split-tunnel.inf unsigned
-          cp windows/split-tunnel/mullvad-split-tunnel.sys unsigned
-          cp windows/split-tunnel/WdfCoinstaller01011.dll unsigned
-          cp extension/manifests/windows/mozillavpn.json unsigned
-          cp *.exe unsigned
+          mkdir -p unsigned
+          cmake --install $(pwd)/build --prefix $(pwd)/unsigned --config ${BUILDCONFIG}
 
-      - name: Upload app
+      - name: Upload installer
         uses: actions/upload-artifact@v2
         with:
             name: build
-            path: windows/installer/x64/MozillaVPN.msi
+            path: build/windows/installer/MozillaVPN.msi
             if-no-files-found: error
+
       - name: Upload Symbols
         uses: actions/upload-artifact@v2
         with:
             name: win_symbols
-            path: MozillaVPN.pdb
+            path: unsigned/Mozilla VPN.pdb
             if-no-files-found: error 
+
       - name: Upload unsigned app
         uses: actions/upload-artifact@v2
         with:

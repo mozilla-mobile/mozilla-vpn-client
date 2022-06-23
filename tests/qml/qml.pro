@@ -7,6 +7,7 @@ TARGET = qml_tests
 
 QT += quick
 QT += widgets
+QT += websockets
 
 CONFIG += warn_on qmltestcase
 CONFIG += c++1z
@@ -20,8 +21,7 @@ DEFINES += UNIT_TEST
 DEFINES += MVPN_DUMMY
 
 # Sets up app and build id which we test for in test_VPNAboutUs
-DEFINES += APP_VERSION=\\\"QMLTest_AppVersion\\\"
-DEFINES += BUILD_ID=\\\"QMLTest_BuildID\\\"
+DEFINES += BUILD_QMAKE
 
 RESOURCES += \
     $$PWD/../../src/ui/ui.qrc \
@@ -29,29 +29,26 @@ RESOURCES += \
 INCLUDEPATH += \
             . \
             ../../src \
-            ../../translations/generated \
-            ../../glean \
-            ../../lottie/lib \
-            ../../nebula
+            ../../lottie/lib
 
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../lottie/lottie.pri)
 include($$PWD/../../nebula/nebula.pri)
+include($$PWD/../../translations/translations.pri)
 
 SOURCES += \
     helper.cpp \
     main.cpp \
+    mocconstants.cpp \
     mocmozillavpn.cpp \
     ../unit/mocinspectorhandler.cpp \
     ../../src/closeeventhandler.cpp \
-    ../../src/constants.cpp \
-    ../../src/featurelist.cpp \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
-    ../../src/l18nstringsimpl.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/featuremodel.cpp \
     ../../src/models/server.cpp \
     ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
@@ -60,18 +57,19 @@ SOURCES += \
     ../../src/theme.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
+    ../../src/update/webupdater.cpp
 
 HEADERS += \
     helper.h \
     ../../src/closeeventhandler.h \
     ../../src/constants.h \
-    ../../src/featurelist.h \
     ../../src/hawkauth.h \
     ../../src/hkdf.h \
     ../../src/inspector/inspectorhandler.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/feature.h \
+    ../../src/models/featuremodel.h \
     ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
@@ -80,13 +78,7 @@ HEADERS += \
     ../../src/theme.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
-
-exists($$PWD/../../translations/generated/l18nstrings.h) {
-    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
-    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
-} else {
-    error("No l18nstrings.h. Have you generated the strings?")
-}
+    ../../src/update/webupdater.h
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc

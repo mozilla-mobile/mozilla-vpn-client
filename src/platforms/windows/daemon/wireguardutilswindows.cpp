@@ -10,7 +10,6 @@
 #include "windowsfirewall.h"
 #include "wgquickprocess.h"
 
-#include <QScopeGuard>
 #include <QFileInfo>
 
 #include <winsock2.h>
@@ -80,12 +79,6 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsWindows::getPeerStatus() {
 }
 
 bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
-  QString tunnelFile = WindowsCommons::tunnelConfigFile();
-  if (tunnelFile.isEmpty()) {
-    logger.error() << "Failed to choose the tunnel config file";
-    return false;
-  }
-
   QStringList addresses;
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     addresses.append(ip.toString());
@@ -93,19 +86,21 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
 
   QMap<QString, QString> extraConfig;
   extraConfig["Table"] = "off";
-  if (!WgQuickProcess::createConfigFile(tunnelFile, config, extraConfig)) {
+  QString configString =
+      WgQuickProcess::createConfigString(config, extraConfig);
+  if (configString.isEmpty()) {
     logger.error() << "Failed to create a config file";
     return false;
   }
 
-  if (!m_tunnel.start(tunnelFile)) {
+  if (!m_tunnel.start(configString)) {
     logger.error() << "Failed to activate the tunnel service";
     return false;
   }
 
   // Determine the interface LUID
   NET_LUID luid;
-  QString ifAlias = QFileInfo(tunnelFile).baseName();
+  QString ifAlias = interfaceName();
   DWORD result = ConvertInterfaceAliasToLuid((wchar_t*)ifAlias.utf16(), &luid);
   if (result != 0) {
     logger.error() << "Failed to lookup LUID:" << result;

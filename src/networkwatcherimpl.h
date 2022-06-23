@@ -23,6 +23,19 @@ class NetworkWatcherImpl : public QObject {
 
   bool isActive() const { return m_active; }
 
+  enum TransportType {
+    TransportType_Unknown = 0,
+    TransportType_Ethernet = 1,
+    TransportType_WiFi = 2,
+    TransportType_Cellular = 3,  // In Case the API does not retun the gsm type
+    TransportType_Other = 4,     // I.e USB thethering
+    TransportType_None = 5  // I.e Airplane Mode or no active network device
+  };
+  Q_ENUM(TransportType);
+
+  // Returns the current type of Network Connection
+  virtual TransportType getTransportType() = 0;
+
  signals:
   // Fires when the Device Connects to an unsecured Network
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
@@ -30,6 +43,9 @@ class NetworkWatcherImpl : public QObject {
   // TODO: Only windows-networkwatcher has this, the other plattforms should
   // too.
   void networkChanged(QString newBSSID);
+
+  // Fired when the Device changed the Type of Transport
+  void transportChanged(TransportType transportType);
 
  private:
   bool m_active = false;

@@ -3,33 +3,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
+#include "addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
 #include "dnshelper.h"
-#include "featurelist.h"
-#include "features/featureaccountdeletion.h"
-#include "features/featureappreview.h"
-#include "features/featureinapppurchase.h"
-#include "features/featureinappauth.h"
-#include "features/featureinappaccountcreate.h"
-#include "features/featuresharelogs.h"
-#include <telemetry/gleansample.h>
 #include "iaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "logoutobserver.h"
 #include "models/device.h"
+#include "models/feature.h"
 #include "networkrequest.h"
+#include "profileflow.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
+#include "tasks/addonindex/taskaddonindex.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
+#include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
+#include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
@@ -37,11 +35,13 @@
 #include "tasks/servers/taskservers.h"
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
-#include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "taskscheduler.h"
+#include "telemetry/gleansample.h"
+#include "update/updater.h"
 #include "update/versionapi.h"
 #include "urlopener.h"
+#include "websockethandler.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
@@ -70,12 +70,25 @@
 #include <QGuiApplication>
 #include <QLocale>
 #include <QQmlApplicationEngine>
+#include <QQuickWindow>
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
+
+#ifdef MVPN_ANDROID
+constexpr const char* GOOGLE_PLAYSTORE_URL =
+    "https://play.google.com/store/apps/details?id=org.mozilla.firefox.vpn";
+#endif
+
+#ifdef MVPN_IOS
+constexpr const char* APPLE_STORE_URL =
+    "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
+constexpr const char* APPLE_STORE_REVIEW_URL =
+    "https://apps.apple.com/app/id1489407738?action=write-review";
+#endif
 
 namespace {
 Logger logger(LOG_MAIN, "MozillaVPN");
@@ -105,7 +118,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
-         new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList()}));
+         new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList(),
+         new TaskAddonIndex()}));
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -157,7 +171,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::settingsChanged);
 
-  if (FeatureInAppPurchase::instance()->isSupported()) {
+  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     IAPHandler* iap = IAPHandler::createInstance();
     connect(iap, &IAPHandler::subscriptionStarted, this,
             &MozillaVPN::subscriptionStarted);
@@ -191,6 +205,8 @@ MozillaVPN::~MozillaVPN() {
 
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
+MozillaVPN::UserState MozillaVPN::userState() const { return m_userState; }
+
 bool MozillaVPN::stagingMode() const { return !Constants::inProduction(); }
 
 bool MozillaVPN::debugMode() const {
@@ -217,6 +233,13 @@ void MozillaVPN::initialize() {
   m_private->m_connectionBenchmark.initialize();
 
   m_private->m_ipAddressLookup.initialize();
+
+  if (Feature::get(Feature::Feature_websocket)->isSupported()) {
+    m_private->m_webSocketHandler.initialize();
+  }
+
+  AddonManager::instance();
+  TaskScheduler::scheduleTask(new TaskAddonIndex());
 
   TaskScheduler::scheduleTask(new TaskGetFeatureList());
 
@@ -262,7 +285,7 @@ void MozillaVPN::initialize() {
   // subscription. This will fix some of the edge cases for iOS IAP. We do this
   // here as after this point only settings are checked that are set after a
   // successfull subscription.
-  if (FeatureInAppPurchase::instance()->isSupported()) {
+  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     if (m_private->m_user.subscriptionNeeded()) {
       setUserState(UserAuthenticated);
       setState(StateAuthenticating);
@@ -322,7 +345,7 @@ void MozillaVPN::initialize() {
       new TaskGroup({new TaskAccount(), new TaskServers(),
                      new TaskCaptivePortalLookup(), new TaskSurveyData()}));
 
-  if (FeatureInAppPurchase::instance()->isSupported()) {
+  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     TaskScheduler::scheduleTask(new TaskProducts());
   }
 
@@ -336,6 +359,9 @@ void MozillaVPN::setState(State state) {
   m_state = state;
   emit stateChanged();
 
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::appStep, {{"state", QVariant::fromValue(state).toString()}});
+
   // If we are activating the app, let's initialize the controller.
   if (m_state == StateMain) {
     m_private->m_controller.initialize();
@@ -348,7 +374,8 @@ void MozillaVPN::setState(State state) {
 void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
-  if (FeatureInAppPurchase::instance()->isSupported()) {
+  if (m_private->m_user.initialized() &&
+      Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     if (m_state != StateSubscriptionBlocked &&
         m_private->m_user.subscriptionNeeded()) {
       logger.info() << "Subscription needed";
@@ -383,6 +410,17 @@ void MozillaVPN::maybeStateMain() {
     return;
   }
 
+  if (!modelsInitialized()) {
+    logger.warning() << "Models not initialized yet";
+    SettingsHolder::instance()->clear();
+    errorHandle(ErrorHandler::RemoteServiceError);
+    setUserState(UserNotAuthenticated);
+    setState(StateInitialize);
+    return;
+  }
+
+  Q_ASSERT(m_private->m_serverData.initialized());
+
   // For 2.5 we need to regenerate the device key to allow the the custom DNS
   // feature. We can do it in background when the main view is shown.
   maybeRegenerateDeviceKey();
@@ -402,9 +440,14 @@ void MozillaVPN::maybeStateMain() {
 #endif
 }
 
-void MozillaVPN::setServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set server public key:" << logger.keys(publicKey);
-  m_serverPublicKey = publicKey;
+void MozillaVPN::setEntryServerPublicKey(const QString& publicKey) {
+  logger.debug() << "Set entry-server public key:" << logger.keys(publicKey);
+  m_entryServerPublicKey = publicKey;
+}
+
+void MozillaVPN::setExitServerPublicKey(const QString& publicKey) {
+  logger.debug() << "Set exit-server public key:" << logger.keys(publicKey);
+  m_exitServerPublicKey = publicKey;
 }
 
 void MozillaVPN::getStarted() {
@@ -413,9 +456,10 @@ void MozillaVPN::getStarted() {
 }
 
 void MozillaVPN::authenticate() {
-  return authenticateWithType(FeatureInAppAuth::instance()->isSupported()
-                                  ? AuthenticationInApp
-                                  : AuthenticationInBrowser);
+  return authenticateWithType(
+      Feature::get(Feature::Feature_inAppAuthentication)->isSupported()
+          ? AuthenticationInApp
+          : AuthenticationInBrowser);
 }
 
 void MozillaVPN::authenticateWithType(
@@ -474,11 +518,6 @@ void MozillaVPN::openLink(LinkType linkType) {
       url.append("/r/vpn/contact");
       break;
 
-    case LinkFeedback:
-      url = NetworkRequest::apiBaseUrl();
-      url.append("/r/vpn/client/feedback");
-      break;
-
     case LinkForgotPassword:
       url = Constants::fxaUrl();
       url.append("/reset_password");
@@ -490,13 +529,12 @@ void MozillaVPN::openLink(LinkType linkType) {
       break;
 
     case LinkLeaveReview:
-      Q_ASSERT(FeatureAppReview::instance()->isSupported());
+      Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
       url =
 #if defined(MVPN_IOS)
-          "https://apps.apple.com/app/id1489407738?action=write-review";
+          APPLE_STORE_REVIEW_URL;
 #elif defined(MVPN_ANDROID)
-          "https://play.google.com/store/apps/"
-          "details?id=org.mozilla.firefox.vpn";
+          GOOGLE_PLAYSTORE_URL;
 #else
           "";
 #endif
@@ -513,9 +551,15 @@ void MozillaVPN::openLink(LinkType linkType) {
       break;
 
     case LinkUpdate:
+#if defined(MVPN_IOS)
+      url = APPLE_STORE_URL;
+#elif defined(MVPN_ANDROID)
+      url = GOOGLE_PLAYSTORE_URL;
+#else
       url = NetworkRequest::apiBaseUrl();
       url.append("/r/vpn/update/");
       url.append(Constants::PLATFORM_NAME);
+#endif
       break;
 
     case LinkSubscriptionBlocked:
@@ -537,6 +581,19 @@ void MozillaVPN::openLink(LinkType linkType) {
                 .arg(SettingsHolder::instance()
                          ->captivePortalIpv4Addresses()
                          .first());
+      break;
+
+    case LinkSubscriptionFxa:
+      url = Constants::fxaUrl();
+      url.append("/subscriptions");
+      break;
+
+    case LinkSubscriptionIapApple:
+      url = Constants::APPLE_SUBSCRIPTIONS_URL;
+      break;
+
+    case LinkSubscriptionIapGoogle:
+      url = Constants::GOOGLE_SUBSCRIPTIONS_URL;
       break;
 
     default:
@@ -580,7 +637,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   setToken(token);
   setUserState(UserAuthenticated);
 
-  if (FeatureInAppPurchase::instance()->isSupported()) {
+  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     if (m_private->m_user.subscriptionNeeded()) {
       TaskScheduler::scheduleTask(new TaskProducts());
       TaskScheduler::scheduleTask(
@@ -637,25 +694,14 @@ void MozillaVPN::completeActivation() {
         new TaskGroup({new TaskAccount(), new TaskServers()}));
   }
 
-  if (FeatureInAppPurchase::instance()->isSupported()) {
+  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     TaskScheduler::scheduleTask(new TaskProducts());
   }
 
   TaskScheduler::scheduleTask(new TaskSurveyData());
 
   // Finally we are able to activate the client.
-  TaskScheduler::scheduleTask(new TaskFunction([this]() {
-    if (!modelsInitialized()) {
-      logger.error() << "Failed to complete the authentication";
-      errorHandle(ErrorHandler::RemoteServiceError);
-      setUserState(UserNotAuthenticated);
-      return;
-    }
-
-    Q_ASSERT(m_private->m_serverData.initialized());
-
-    maybeStateMain();
-  }));
+  TaskScheduler::scheduleTask(new TaskFunction([this]() { maybeStateMain(); }));
 }
 
 void MozillaVPN::deviceAdded(const QString& deviceName,
@@ -671,7 +717,7 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   settingsHolder->setPublicKey(publicKey);
   m_private->m_keys.storeKeys(privateKey, publicKey);
 
-  settingsHolder->setDeviceKeyVersion(APP_VERSION);
+  settingsHolder->setDeviceKeyVersion(Constants::versionString());
 }
 
 void MozillaVPN::deviceRemoved(const QString& publicKey) {
@@ -742,15 +788,6 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   // Finally we are able to activate the client.
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (m_state != StateDeviceLimit) {
-      return;
-    }
-
-    if (!modelsInitialized()) {
-      logger.warning() << "Models not initialized yet";
-      errorHandle(ErrorHandler::RemoteServiceError);
-      SettingsHolder::instance()->clear();
-      setUserState(UserNotAuthenticated);
-      setState(StateInitialize);
       return;
     }
 
@@ -833,7 +870,7 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
-  if (FeatureInAppPurchase::instance()->isSupported()) {
+  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
       maybeStateMain();
       return;
@@ -876,7 +913,7 @@ void MozillaVPN::logout() {
 
   TaskScheduler::deleteTasks();
 
-  if (FeatureInAppPurchase::instance()->isSupported()) {
+  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     IAPHandler* iap = IAPHandler::instance();
     iap->stopSubscription();
     iap->stopProductsRegistration();
@@ -903,7 +940,7 @@ void MozillaVPN::reset(bool forceInitialState) {
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
-  if (FeatureInAppPurchase::instance()->isSupported()) {
+  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     IAPHandler* iap = IAPHandler::instance();
     iap->stopSubscription();
     iap->stopProductsRegistration();
@@ -1002,7 +1039,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
     } else {
       emit recordGleanEvent(GleanSample::authenticationFailure);
     }
-    setState(StateInitialize);
+    reset(true);
     return;
   }
 
@@ -1043,7 +1080,7 @@ const QList<Server> MozillaVPN::exitServers() const {
 
 const QList<Server> MozillaVPN::entryServers() const {
   if (!m_private->m_serverData.multihop()) {
-    return QList<Server>();
+    return exitServers();
   }
   ServerData sd;
   sd.update(m_private->m_serverData.entryCountryCode(),
@@ -1097,9 +1134,10 @@ void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
 
 #ifndef MVPN_WASM
-  // Initialize glean
+  // Initialize glean with an async call because at this time, QQmlEngine does
+  // not have root objects yet to see the current graphics API in use.
   logger.debug() << "Initializing Glean";
-  emit initializeGlean();
+  QTimer::singleShot(0, this, &MozillaVPN::initializeGlean);
 
   // Setup regular glean ping sending
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
@@ -1258,7 +1296,7 @@ void MozillaVPN::serializeLogs(QTextStream* out,
 bool MozillaVPN::viewLogs() {
   logger.debug() << "View logs";
 
-  if (!FeatureShareLogs::instance()->isSupported()) {
+  if (!Feature::get(Feature::Feature_shareLogs)->isSupported()) {
     logger.error() << "ViewLogs Called on unsupported OS or version!";
     return false;
   }
@@ -1657,7 +1695,7 @@ void MozillaVPN::addCurrentDeviceAndRefreshData() {
 }
 
 void MozillaVPN::openAppStoreReviewLink() {
-  Q_ASSERT(FeatureAppReview::instance()->isSupported());
+  Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
   openLink(LinkType::LinkLeaveReview);
 }
 
@@ -1731,13 +1769,49 @@ QString MozillaVPN::devVersion() {
   return out;
 }
 
+// static
+QString MozillaVPN::graphicsApi() {
+#if QT_VERSION < 0x060000
+  return "qt5-angle";
+#else
+  QQuickWindow* window =
+      qobject_cast<QQuickWindow*>(QmlEngineHolder::instance()->window());
+  Q_ASSERT(window);
+
+  switch (window->rendererInterface()->graphicsApi()) {
+    case QSGRendererInterface::Software:
+      return "software";
+    case QSGRendererInterface::OpenVG:
+    case QSGRendererInterface::OpenGL:
+      return "openGL/openVG";
+    case QSGRendererInterface::Direct3D11:
+      return "Direct3D11";
+    case QSGRendererInterface::Vulkan:
+      return "Vulkan";
+    case QSGRendererInterface::Metal:
+      return "Metal";
+    case QSGRendererInterface::Unknown:
+    case QSGRendererInterface::Null:
+    default:
+      return "unknown";
+  }
+#endif
+}
+
 void MozillaVPN::requestDeleteAccount() {
   logger.debug() << "delete account";
-  Q_ASSERT(FeatureAccountDeletion::instance()->isSupported());
+  Q_ASSERT(Feature::get(Feature::Feature_accountDeletion)->isSupported());
   TaskScheduler::scheduleTask(new TaskDeleteAccount(m_private->m_user.email()));
 }
 
-void MozillaVPN::cancelAccountDeletion() {
-  logger.warning() << "Canceling account deletion";
+void MozillaVPN::cancelReauthentication() {
+  logger.warning() << "Canceling reauthentication";
   AuthenticationInApp::instance()->terminateSession();
+
+  cancelAuthentication();
+}
+
+void MozillaVPN::updateViewShown() {
+  logger.debug() << "Update view shown";
+  Updater::updateViewShown();
 }

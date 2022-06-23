@@ -15,6 +15,7 @@ Item {
 
     Loader {
         id: loader
+        property bool isReauthFlow: false
 
         asynchronous: true
         anchors.fill: parent
@@ -22,6 +23,7 @@ Item {
 
     VPNInAppAuthenticationErrorPopup {
         id: authError
+        objectName: "authErrorPopup"
     }
 
     states: [

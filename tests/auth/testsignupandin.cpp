@@ -447,18 +447,17 @@ void TestSignUpAndIn::waitForTotpCodes() {
                   aia->state(),
                   AuthenticationInApp::StateVerificationSessionByTotpNeeded);
 
-              QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-              QVERIFY(pe.contains("MVPN_OATHTOOL"));
-              QString oathtool = pe.value("MVPN_OATHTOOL");
-
               QString otp;
               {
                 QProcess process;
-                process.start(oathtool, QStringList{m_totpSecret});
+                process.start("python3",
+                              QStringList{"-m", "oathtool", m_totpSecret});
                 QVERIFY(process.waitForStarted());
 
                 process.closeWriteChannel();
                 QVERIFY(process.waitForFinished());
+                QCOMPARE(process.exitStatus(), QProcess::NormalExit);
+                QCOMPARE(process.exitCode(), 0);
 
                 otp = process.readAll().trimmed();
               }

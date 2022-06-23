@@ -5,19 +5,11 @@
 #include "settingsholder.h"
 #include "constants.h"
 #include "cryptosettings.h"
-#include "featurelist.h"
 #include "leakdetector.h"
 #include "logger.h"
-
-#include "features/featurecaptiveportal.h"
-#include "features/featurelocalareaaccess.h"
-#include "features/featuresplittunnel.h"
-#include "features/featurestartonboot.h"
-#include "features/featureunsecurednetworknotification.h"
-#include "features/featureserverunavailablenotification.h"
+#include "models/feature.h"
 
 #include <QSettings>
-#include <QProcessEnvironment>
 
 namespace {
 
@@ -94,9 +86,23 @@ void SettingsHolder::hardReset() {
   m_settings.clear();
 }
 
+QString SettingsHolder::settingsFileName() const {
+  return m_settings.fileName();
+}
+
+QVariant SettingsHolder::rawSetting(const QString& key) const {
+  return m_settings.value(key);
+}
+
+#ifdef UNIT_TEST
+void SettingsHolder::setRawSetting(const QString& key, const QVariant& value) {
+  m_settings.setValue(key, value);
+}
+#endif
+
 // Returns a Report which settings are set
 // Used to Print in LogFiles:
-QString SettingsHolder::getReport() {
+QString SettingsHolder::getReport() const {
   QString buff;
   QTextStream out(&buff);
   auto settingsKeys = m_settings.childKeys();
@@ -107,7 +113,7 @@ QString SettingsHolder::getReport() {
     }
     out << setting << " -> ";
     QVariant value = m_settings.value(setting);
-    switch (value.type()) {
+    switch (value.typeId()) {
       case QVariant::List:
       case QVariant::StringList:
         out << '[' << value.toStringList().join(",") << ']' << ' ';
@@ -145,24 +151,4 @@ QString SettingsHolder::placeholderUserDNS() const {
 void SettingsHolder::removeEntryServer() {
   m_settings.remove("entryServer/countryCode");
   m_settings.remove("entryServer/city");
-}
-
-QString SettingsHolder::envOrDefault(const QString& name,
-                                     const QString& defaultValue) const {
-  QString env;
-
-  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  if (pe.contains(name)) {
-    env = pe.value(name);
-  }
-
-  if (env.isEmpty()) {
-    return defaultValue;
-  }
-
-  if (!QUrl(env).isValid()) {
-    return defaultValue;
-  }
-
-  return env;
 }

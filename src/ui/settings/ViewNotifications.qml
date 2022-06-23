@@ -10,8 +10,6 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
 
 Item {
     id: root
@@ -22,19 +20,14 @@ Item {
     VPNFlickable {
         id: vpnFlickable
 
-        anchors.left: root.left
-        anchors.right: root.right
-        anchors.top: root.top
-        anchors.topMargin: VPNTheme.theme.menuHeight
-        height: root.height - menu.height
+        anchors.fill: parent
         flickContentHeight: col.y + col.childrenRect.height + ( VPNTheme.theme.rowHeight * 2 )
-        interactive: flickContentHeight > height
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
         Component.onCompleted: {
-            Sample.notificationsViewOpened.record();
+            VPN.recordGleanEvent("notificationsViewOpened");
             if (!vpnIsOff) {
-                Sample.notificationsViewWarning.record();
+                VPN.recordGleanEvent("notificationsViewWarning");
             }
         }
 

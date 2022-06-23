@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-	SPDX-License-Identifier: MIT
+  SPDX-License-Identifier: MIT
 
-	Copyright (C) 2019 WireGuard LLC. All Rights Reserved.
-	Copyright (C) 2019 Edge Security LLC. All Rights Reserved.
+  Copyright (C) 2019 WireGuard LLC. All Rights Reserved.
+  Copyright (C) 2019 Edge Security LLC. All Rights Reserved.
 -->
 
 <?define UpgradeCode = "abd1aa2b-11d7-4c4d-85ee-cc987d82a443"?>
@@ -12,18 +12,18 @@
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Product
-		Id="*"
-		Name="Mozilla VPN"
-		Language="1033"
-		Version="!(bind.FileVersion.MozillaVPNExecutable)"
-		Manufacturer="Mozilla Corporation"
-		UpgradeCode="$(var.UpgradeCode)">
+    Id="*"
+    Name="Mozilla VPN"
+    Language="1033"
+    Version="!(bind.FileVersion.MozillaVPNExecutable)"
+    Manufacturer="Mozilla Corporation"
+    UpgradeCode="$(var.UpgradeCode)">
     <Package
-			InstallerVersion="400"
-			Compressed="yes"
-			InstallScope="perMachine"
-			Description="Mozilla VPN"
-			ReadOnly="yes" />
+      InstallerVersion="400"
+      Compressed="yes"
+      InstallScope="perMachine"
+      Description="Mozilla VPN"
+      ReadOnly="yes" />
 
     <Condition Message="This application is only supported on Windows 10 or higher.">
       <![CDATA[Installed OR (VersionNT >= 603)]]>
@@ -32,8 +32,8 @@
 
     <Upgrade Id="$(var.UpgradeCode)">
       <UpgradeVersion OnlyDetect='no' Property='PREVIOUSFOUND'
-				Minimum='0.0.0.0' IncludeMinimum='yes'
-				Maximum='1.0.0.0' IncludeMaximum='no' />
+        Minimum='0.0.0.0' IncludeMinimum='yes'
+        Maximum='1.0.0.0' IncludeMaximum='no' />
     </Upgrade>
 
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
@@ -49,17 +49,17 @@
     <Property Id="MSIRMSHUTDOWN" Value="1" />
 
     <!--
-			Upgrading
-		-->
+      Upgrading
+    -->
     <MajorUpgrade
-			AllowDowngrades="no"
-			AllowSameVersionUpgrades="yes"
-			DowngradeErrorMessage="A newer version of [ProductName] is already installed."
-			Schedule="afterInstallExecute" />
+      AllowDowngrades="no"
+      AllowSameVersionUpgrades="yes"
+      DowngradeErrorMessage="A newer version of [ProductName] is already installed."
+      Schedule="afterInstallExecute" />
 
     <!--
-			Folders
-		-->
+      Folders
+    -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="$(var.PlatformProgramFilesFolder)">
         <Directory Id="MozillaFolder" Name="Mozilla">
@@ -70,8 +70,8 @@
     </Directory>
 
     <!--
-			Components
-		-->
+      Components
+    -->
     <ComponentGroup Id="MozillaVPNComponents">
       <Component Directory="MozillaVPNFolder" Id="MozillaVPNExecutable" Guid="EF353A73-A10B-4A2D-87AC-4389BBD9313B">
         <File Id="MozillaVPNExecutable" Source="../../MozillaVPN.exe" KeyPath="yes">
@@ -91,22 +91,22 @@
 
         <!-- Broker Service -->
         <ServiceInstall
-					Type="ownProcess"
-					Name="MozillaVPNBroker"
-					DisplayName="Mozilla VPN (broker)"
-					Description="Provides connectivity between the Mozilla VPN client and any applicable tunnel interfaces."
-					Start="auto"
-					Arguments="windowsdaemon"
-					ErrorControl="normal"
-					Vital="yes" />
+          Type="ownProcess"
+          Name="MozillaVPNBroker"
+          DisplayName="Mozilla VPN (broker)"
+          Description="Provides connectivity between the Mozilla VPN client and any applicable tunnel interfaces."
+          Start="auto"
+          Arguments="windowsdaemon"
+          ErrorControl="normal"
+          Vital="yes" />
 
         <util:ServiceConfig
-					ServiceName="MozillaVPNBroker"
-					FirstFailureActionType="restart"
-					SecondFailureActionType="restart"
-					ThirdFailureActionType="none"
-					ResetPeriodInDays="1"
-					RestartServiceDelayInSeconds="5" />
+          ServiceName="MozillaVPNBroker"
+          FirstFailureActionType="restart"
+          SecondFailureActionType="restart"
+          ThirdFailureActionType="none"
+          ResetPeriodInDays="1"
+          RestartServiceDelayInSeconds="5" />
 
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="both" Name="MozillaVPNBroker" Wait="yes" />
 
@@ -116,8 +116,8 @@
     </ComponentGroup>
 
     <!--
-			Merge modules
-		-->
+      Merge modules
+    -->
     <DirectoryRef Id="MozillaVPNFolder">
       <Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
     </DirectoryRef>
@@ -137,9 +137,10 @@
         </RegistryKey>
       </Component>
     </DirectoryRef>
+
     <!--
-			Features
-		-->
+      Features
+    -->
     <Feature Id="MozillaVPNFeature" Title="Mozilla VPN" Level="1">
       <ComponentGroupRef Id="MozillaVPNComponents" />
     </Feature>
@@ -151,17 +152,18 @@
     </Feature>
 
     <!--
-			Launch after setup complete
-		-->
-    <Property Id="WixShellExecTarget" Value="[#MozillaVPNExecutable]" />
-    <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+      Launch after setup complete
+    -->
+    <CustomAction Id="LaunchVPNFirstExecution" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
+    <CustomAction Id="LaunchVPNAfterUpdate" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="ui --updated" Return="asyncNoWait" />
     <InstallExecuteSequence>
-      <Custom Action="LaunchApplication" After="InstallFinalize">(&amp;MozillaVPNFeature = 3) OR (&amp;MozillaVPNFeature = -1)</Custom>
+       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize">NOT Installed</Custom>
+       <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize">WIX_UPGRADE_DETECTED</Custom>
     </InstallExecuteSequence>
 
     <!--
-			Force application closed
-		-->
+      Force application closed
+    -->
     <Property Id="QtExecCmdLine" Value='"[#SystemFolder]taskkill.exe" /F /IM MozillaVPN.exe'/>
     <CustomAction Id="CloseApplication" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="immediate" Return="ignore"/>
     <InstallExecuteSequence>

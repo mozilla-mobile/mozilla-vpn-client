@@ -9,6 +9,11 @@ on:
       - main
       - 'releases/**'
 
+# Restrict tests to the most recent commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   linux-qml-tests:
     runs-on: ubuntu-20.04
@@ -16,15 +21,16 @@ jobs:
     env:
       QTVERSION: 6.2.4
     steps:
-      - name: Install Linux packages
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
+          python3 -m pip install -r requirements.txt
           python3 -m pip install aqtinstall
           aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
-
-      - name: Clone repository
-        uses: actions/checkout@v2
 
       - name: Checkout submodules
         shell: bash
@@ -33,28 +39,26 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Generating glean samples
-        shell: bash
-        run: |
-          pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
-
-      - name: Importing translation files
-        shell: bash
-        run: |
-          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
-          python3 scripts/utils/import_languages.py
-
       - name: Install Grcov
         shell: bash
         run: |
           cargo install grcov
+      
+      - name: Building tests
+        shell: bash
+        run: |
+          mkdir -p build
+          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON \
+            -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake/ \
+            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build $(pwd)/build --target qml_tests
 
       - name: Running tests
         shell: bash
         run: |
-          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
-          xvfb-run -a ./scripts/tests/qml_tests.sh --grcov qml_lcov.info
+          $(pwd)/build/tests/qml/qml_tests -platform offscreen
+          grcov $(pwd)/build/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
@@ -77,7 +81,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_macos
+          git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
           cd qt_static_macos
           cat qt6* > qt_static.tar.gz
           tar xf qt_static.tar.gz
@@ -142,17 +146,10 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_windows
-          cd qt_static_windows
-          cat qt6* > qt_static.tar.bz2
-          tar xf qt_static.tar.bz2
-          tar xf msm.tar.gz
+          git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
           mkdir /c/MozillaVPNBuild
-          cp -r * /c/MozillaVPNBuild
-          cd ..
-          cp /c/MozillaVPNBuild/SSL/bin/libssl-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/SSL/bin/libcrypto-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/*.msm .
+          cat qt_static_windows/qt6* > qt6_static.tar.bz2
+          tar xf qt6_static.tar.bz2 -C /c/MozillaVPNBuild
 
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
@@ -160,20 +157,19 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Install glean depedencies
+      - name: Install depedencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
 
-      - name: Importing translation files
+      - name: Building tests
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          python3 scripts/utils/import_languages.py -m
+          mkdir -p build
+          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
+          cmake --build $(pwd)/build --config Release --target qml_tests
 
       - name: Running tests
         shell: bash
-        run: |
-          export PATH=/c/MozillaVPNBuild/bin:$PATH
-          ./scripts/tests/qml_tests.sh
+        run: build/tests/qml/Release/qml_tests.exe

@@ -26,10 +26,13 @@
 #include "models/user.h"
 #include "models/whatsnewmodel.h"
 #include "networkwatcher.h"
+#include "profileflow.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
+#include "subscriptiondata.h"
 #include "telemetry.h"
 #include "theme.h"
+#include "websockethandler.h"
 
 #include <QList>
 #include <QNetworkReply>
@@ -95,13 +98,13 @@ class MozillaVPN final : public QObject {
     SubscriptionFailureAlert,
     GeoIpRestrictionAlert,
     UnrecoverableErrorAlert,
+    AuthCodeSentAlert,
   };
   Q_ENUM(AlertType)
 
   enum LinkType {
     LinkAccount,
     LinkContact,
-    LinkFeedback,
     LinkForgotPassword,
     LinkLeaveReview,
     LinkHelpSupport,
@@ -111,7 +114,10 @@ class MozillaVPN final : public QObject {
     LinkInspector,
     LinkSubscriptionBlocked,
     LinkSplitTunnelHelp,
-    LinkCaptivePortal
+    LinkCaptivePortal,
+    LinkSubscriptionIapApple,
+    LinkSubscriptionFxa,
+    LinkSubscriptionIapGoogle,
   };
   Q_ENUM(LinkType)
 
@@ -123,6 +129,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
   Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
   Q_PROPERTY(QString architecture READ architecture CONSTANT)
+  Q_PROPERTY(QString graphicsApi READ graphicsApi CONSTANT)
   Q_PROPERTY(QString platform READ platform CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
                  updateRecommendedChanged)
@@ -151,7 +158,8 @@ class MozillaVPN final : public QObject {
   State state() const;
   AlertType alert() const { return m_alert; }
 
-  const QString& serverPublicKey() const { return m_serverPublicKey; }
+  const QString& exitServerPublicKey() const { return m_exitServerPublicKey; }
+  const QString& entryServerPublicKey() const { return m_entryServerPublicKey; }
 
   bool stagingMode() const;
   bool debugMode() const;
@@ -169,6 +177,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void openLinkUrl(const QString& linkUrl);
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
+  Q_INVOKABLE void setAlert(AlertType alert);
   Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
@@ -194,7 +203,8 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void hardResetAndQuit();
   Q_INVOKABLE void crashTest();
   Q_INVOKABLE void requestDeleteAccount();
-  Q_INVOKABLE void cancelAccountDeletion();
+  Q_INVOKABLE void cancelReauthentication();
+  Q_INVOKABLE void updateViewShown();
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
@@ -229,11 +239,15 @@ class MozillaVPN final : public QObject {
   LicenseModel* licenseModel() { return &m_private->m_licenseModel; }
   HelpModel* helpModel() { return &m_private->m_helpModel; }
   NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
+  ProfileFlow* profileFlow() { return &m_private->m_profileFlow; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
   ServerCountryModel* serverCountryModel() {
     return &m_private->m_serverCountryModel;
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
+  SubscriptionData* subscriptionData() {
+    return &m_private->m_subscriptionData;
+  }
   SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
   Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
@@ -270,8 +284,8 @@ class MozillaVPN final : public QObject {
 
   void silentSwitch();
 
-  static QString versionString() { return QString(APP_VERSION); }
-  static QString buildNumber() { return QString(BUILD_ID); }
+  static QString versionString() { return Constants::versionString(); }
+  static QString buildNumber() { return Constants::buildNumber(); }
   static QString osVersion() {
 #ifdef MVPN_WINDOWS
     return WindowsCommons::WindowsVersion();
@@ -282,6 +296,7 @@ class MozillaVPN final : public QObject {
   static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
   static QString platform() { return Constants::PLATFORM_NAME; }
   static QString devVersion();
+  static QString graphicsApi();
 
   void logout();
 
@@ -289,7 +304,7 @@ class MozillaVPN final : public QObject {
 
   void setUpdateRecommended(bool value);
 
-  UserState userState() const { return m_userState; }
+  UserState userState() const;
 
   bool startMinimized() const { return m_startMinimized; }
 
@@ -312,7 +327,8 @@ class MozillaVPN final : public QObject {
 
   void heartbeatCompleted(bool success);
 
-  void setServerPublicKey(const QString& publicKey);
+  void setEntryServerPublicKey(const QString& publicKey);
+  void setExitServerPublicKey(const QString& publicKey);
   void setServerCooldown(const QString& publicKey);
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode);
@@ -347,8 +363,6 @@ class MozillaVPN final : public QObject {
   void startSchedulingPeriodicOperations();
 
   void stopSchedulingPeriodicOperations();
-
-  void setAlert(AlertType alert);
 
   bool writeAndShowLogs(QStandardPaths::StandardLocation location);
 
@@ -412,10 +426,6 @@ class MozillaVPN final : public QObject {
 
   void aboutToQuit();
 
-  // This is used only on android but, if we use #ifdef MVPN_ANDROID, qml engine
-  // complains...
-  void loadAndroidAuthenticationView();
-
   void logsReady(const QString& logs);
 
   void currentViewChanged();
@@ -446,9 +456,12 @@ class MozillaVPN final : public QObject {
     ServerCountryModel m_serverCountryModel;
     ServerData m_serverData;
     StatusIcon m_statusIcon;
+    SubscriptionData m_subscriptionData;
+    ProfileFlow m_profileFlow;
     SurveyModel m_surveyModel;
     Telemetry m_telemetry;
     Theme m_theme;
+    WebSocketHandler m_webSocketHandler;
     WhatsNewModel m_whatsNewModel;
     User m_user;
   };
@@ -462,7 +475,8 @@ class MozillaVPN final : public QObject {
 
   UserState m_userState = UserNotAuthenticated;
 
-  QString m_serverPublicKey;
+  QString m_exitServerPublicKey;
+  QString m_entryServerPublicKey;
 
   QTimer m_alertTimer;
   QTimer m_periodicOperationsTimer;

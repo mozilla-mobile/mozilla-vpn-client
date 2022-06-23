@@ -38,7 +38,7 @@ VPNFlickable {
                     // Let's hide the alert.
                     VPN.hideUpdateRecommendedAlert();
 
-                    stackview.pop();
+                    mainStackView.pop();
                 }
             }
 
@@ -202,5 +202,7 @@ VPNFlickable {
         }
 
     }
+
+    Component.onCompleted: VPN.updateViewShown()
 
 }

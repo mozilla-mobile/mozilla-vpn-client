@@ -3,19 +3,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import re
 import os
 import yaml
-import json
-
-string_ids = []
-
-comment_types = {
-    "text": f"Standard text in a guide block",
-    "title": f"Title in a guide block",
-    "ulist": f"Bullet unordered list item in a guide block",
-    "olist": f"Bullet ordered list item in a guide block",
-}
+import argparse
 
 
 def stop(string_id):
@@ -46,286 +36,88 @@ class UniqueKeyLoader(yaml.SafeLoader):
         return super().construct_mapping(node, deep)
 
 
-def parseTranslationStrings():
-    translations_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "translations")
-    )
-    yaml_path = os.path.join(translations_path, "strings.yaml")
+def parseTranslationStrings(yamlfile):
+    if not os.path.isfile(yamlfile):
+        exit(f"Unable to find {yamlfile}")
 
-    if not os.path.isfile(yaml_path):
-        exit("Unable to find translations/strings.yaml")
+    yaml_strings = {}
+    with open(yamlfile, "r", encoding="utf-8") as yaml_file:
+        # Enforce a new line at the end of the file
+        last_line = yaml_file.readlines()[-1]
+        if last_line == last_line.rstrip():
+            exit("The yaml file must have an empty line at the end")
 
-    with open(yaml_path, "r", encoding="utf-8") as yaml_file:
+        # Reset position after reading the whole content
+        yaml_file.seek(0)
         yaml_content = yaml.load(yaml_file, UniqueKeyLoader)
+        if yaml_content is None:
+            return yaml_strings
 
-        if yaml_content is not None:
-            if type(yaml_content) is not dict:
-                exit("The yaml file must contain collections only")
+        if type(yaml_content) is not dict:
+            exit(f"The {yamlfile} file must contain collections only")
 
-            for category in yaml_content:
-                for key in yaml_content[category]:
-                    string_id = f"vpn.{category}.{key}"
-                    obj = yaml_content[category][key]
-                    value = []
-                    comments = []
+        for category in yaml_content:
+            for key in yaml_content[category]:
+                string_id = f"vpn.{category}.{key}"
+                obj = yaml_content[category][key]
+                value = []
+                comments = []
 
-                    if type(obj) is str:
-                        if len(obj) == 0:
-                            stop(string_id)
-                        value = [obj]
+                if type(obj) is str:
+                    if len(obj) == 0:
+                        stop(string_id)
+                    value = [obj]
 
-                    elif type(obj) is dict:
-                        if not ("value" in obj):
-                            exit(
-                                f"The key {string_id} must contain a `value` string or an array of strings"
-                            )
+                elif type(obj) is dict:
+                    if not ("value" in obj):
+                        exit(
+                            f"The key {string_id} must contain a `value` string or an array of strings"
+                        )
 
-                        if type(obj["value"]) is str:
-                            value = [obj["value"]]
+                    if type(obj["value"]) is str:
+                        value = [obj["value"]]
 
-                        elif type(obj["value"]) is list:
-                            for x in range(0, len(obj["value"])):
-                                value.append(obj["value"][x])
+                    elif type(obj["value"]) is list:
+                        for x in range(0, len(obj["value"])):
+                            value.append(obj["value"][x])
+
+                    else:
+                        exit(
+                            f"The value of {string_id} must be a string or an array of strings"
+                        )
+
+                    if "comment" in obj:
+                        if type(obj["comment"]) is str:
+                            comments = [obj["comment"]]
+
+                        elif type(obj["comment"]) is list:
+                            for x in range(0, len(obj["comment"])):
+                                comments.append(obj["comment"][x])
 
                         else:
                             exit(
-                                f"The value of {string_id} must be a string or an array of strings"
+                                f"The comment of {string_id} must be a string or an array of strings"
                             )
 
-                        if "comment" in obj:
-                            if type(obj["comment"]) is str:
-                                comments = [obj["comment"]]
-
-                            elif type(obj["comment"]) is list:
-                                for x in range(0, len(obj["comment"])):
-                                    comments.append(obj["comment"][x])
-
-                            else:
-                                exit(
-                                    f"The comment of {string_id} must be a string or an array of strings"
-                                )
-
-                        if len(value) == 0:
-                            stop(string_id)
-
-                    else:
+                    if len(value) == 0:
                         stop(string_id)
 
-                    string_ids.append(
-                        {
-                            "enum_id": pascalize(f"{category}_{key}"),
-                            "string_id": string_id,
-                            "value": value,
-                            "comments": comments,
-                        }
-                    )
+                else:
+                    stop(string_id)
 
-
-def parseGuideStrings():
-    guides_path = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__), os.pardir, os.pardir, "src", "ui", "guides"
-        )
-    )
-
-    guide_ids = []
-
-    for guide_filename in os.listdir(guides_path):
-        if not guide_filename.endswith(".json"):
-            continue
-        with open(os.path.join(guides_path, guide_filename), "r", encoding="utf-8") as guide_file:
-            guide_json = json.load(guide_file)
-        if not "id" in guide_json:
-            exit(f"Guide file {guide_filename} does not have an id")
-
-        if not "title" in guide_json:
-            exit(f"Guide file {guide_filename} does not have a title")
-
-        enum_title_id = pascalize(f"guide_{guide_json['id']}_title")
-        if enum_title_id in guide_ids:
-            exit(f"Duplicate id {enum_title_id} when parsing {guide_filename}")
-        guide_ids.append(enum_title_id)
-
-        title_comment = "Title for a guide view"
-        if "title_comment" in guide_json:
-            title_comment = guide_json["title_comment"]
-
-        string_ids.append(
-            {
-                "enum_id": enum_title_id,
-                "string_id": f"guide.{guide_json['id']}.title",
-                "value": [guide_json["title"]],
-                "comments": [title_comment],
-            }
-        )
-
-        if not "subtitle" in guide_json:
-            exit(f"Guide file {guide_filename} does not have a subtitle")
-
-        enum_subtitle_id = pascalize(f"guide_{guide_json['id']}_subtitle")
-        if enum_subtitle_id in guide_ids:
-            exit(f"Duplicate id {enum_subtitle_id} when parsing {guide_filename}")
-        guide_ids.append(enum_subtitle_id)
-
-        subtitle_comment = "Subtitle for a guide view"
-        if "subtitle_comment" in guide_json:
-            subtitle_comment = guide_json["subtitle_comment"]
-
-        string_ids.append(
-            {
-                "enum_id": enum_subtitle_id,
-                "string_id": f"guide.{guide_json['id']}.subtitle",
-                "value": [guide_json["subtitle"]],
-                "comments": [subtitle_comment],
-            }
-        )
-
-        if not "blocks" in guide_json:
-            exit(f"Guide file {guide_filename} does not have a blocks")
-        for block in guide_json["blocks"]:
-            if not "id" in block:
-                exit(
-                    f"Guide file {guide_filename} does not have an id for one of the blocks"
-                )
-            if not "type" in block:
-                exit(
-                    f"Guide file {guide_filename} does not have a type for block id {block['id']}"
-                )
-            if not "content" in block:
-                exit(
-                    f"Guide file {guide_filename} does not have a content for block id {block['id']}"
-                )
-            enum_id = pascalize(f"guide_{guide_json['id']}_block_{block['id']}")
-            if enum_id in guide_ids:
-                exit(
-                    f"Duplicate id {enum_id} when parsing {guide_filename} - block {block['id']}"
-                )
-            guide_ids.append(enum_id)
-
-            if isinstance(block["content"], list):
-                for subblock in block["content"]:
-                    if not "id" in subblock:
-                        exit(
-                            f"Guide file {guide_filename} does not have an id for one of the subblocks of block {block['id']}"
-                        )
-                    if not "content" in subblock:
-                        exit(
-                            f"Guide file {guide_filename} does not have a content for subblock id {subblock['id']}"
-                        )
-                    enum_id = pascalize(
-                        f"guide_{guide_json['id']}_block_{block['id']}_{subblock['id']}"
-                    )
-                    if enum_id in guide_ids:
-                        exit(
-                            f"Duplicate id {enum_id} when parsing {guide_filename} - subblock {subblock['id']}"
-                        )
-                    guide_ids.append(enum_id)
-
-                    comment = comment_types.get(block["type"], "")
-                    if "comment" in subblock:
-                        comment = subblock["comment"]
-
-                    string_ids.append(
-                        {
-                            "enum_id": enum_id,
-                            "string_id": f"guide.{guide_json['id']}.block.{block['id']}.{subblock['id']}",
-                            "value": [subblock["content"]],
-                            "comments": [comment],
-                        }
-                    )
-            else:
-                comment = comment_types.get(block["type"], "")
-                if "comment" in block:
-                    comment = block["comment"]
-
-                string_ids.append(
-                    {
-                        "enum_id": enum_id,
-                        "string_id": f"guide.{guide_json['id']}.block.{block['id']}",
-                        "value": [block["content"]],
-                        "comments": [comment],
-                    }
-                )
-
-
-def parseTutorialStrings():
-    tutorials_path = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__), os.pardir, os.pardir, "src", "ui", "tutorials"
-        )
-    )
-
-    tutorial_ids = []
-
-    for tutorial_filename in os.listdir(tutorials_path):
-        if not tutorial_filename.endswith(".json"):
-            continue
-        with open(os.path.join(tutorials_path, tutorial_filename), "r", encoding="utf-8") as tutorial_file:
-            tutorial_json = json.load(tutorial_file)
-        if not "id" in tutorial_json:
-            exit(f"Tutorial file {tutorial_filename} does not have an id")
-        if not "title" in tutorial_json:
-            exit(f"Tutorial file {tutorial_filename} does not have a title")
-
-        enum_id = pascalize(f"tutorial_{tutorial_json['id']}_title")
-        if enum_id in tutorial_ids:
-            exit(f"Duplicate id {enum_id} when parsing {tutorial_filename}")
-        tutorial_ids.append(enum_id)
-
-        comment = "Title for a tutorial view"
-        if "comment" in tutorial_json:
-            comment = tutorial_json["comment"]
-
-        string_ids.append(
-            {
-                "enum_id": enum_id,
-                "string_id": f"tutorial.{tutorial_json['id']}.title",
-                "value": [tutorial_json["title"]],
-                "comments": [comment],
-            }
-        )
-
-        if not "steps" in tutorial_json:
-            exit(f"Tutorial file {tutorial_filename} does not have a steps")
-        for step in tutorial_json["steps"]:
-            if not "id" in step:
-                exit(
-                    f"Tutorial file {tutorial_filename} does not have an id for one of the steps"
-                )
-            if not "tooltip" in step:
-                exit(
-                    f"Tutorial file {tutorial_filename} does not have a tooltip for step id {step['id']}"
-                )
-            enum_id = pascalize(f"tutorial_{tutorial_json['id']}_step_{step['id']}")
-            if enum_id in tutorial_ids:
-                exit(
-                    f"Duplicate id {enum_id} when parsing {tutorial_filename} - step {step['id']}"
-                )
-            tutorial_ids.append(enum_id)
-
-            comment = "A tutorial step tooltip"
-            if "comment" in step:
-                comment = step["comment"]
-
-            string_ids.append(
-                {
-                    "enum_id": enum_id,
-                    "string_id": f"tutorial.{tutorial_json['id']}.step.{step['id']}",
-                    "value": [step["tooltip"]],
-                    "comments": [comment],
+                yaml_strings[pascalize(f"{category}_{key}")] = {
+                    "string_id": string_id,
+                    "value": value,
+                    "comments": comments,
                 }
-            )
+
+        return yaml_strings
 
 
-def writeOutputFiles():
-    translations_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "translations")
-    )
-    with open(
-        os.path.join(translations_path, "generated", "l18nstrings.h"),
-        "w",
-        encoding="utf-8",
-    ) as output:
+# Render a dictionary of strings into the l18nstrings module.
+def generateStrings(strings, outdir):
+    os.makedirs(outdir, exist_ok=True)
+    with open(os.path.join(outdir, "l18nstrings.h"), "w", encoding="utf-8") as output:
         output.write(
             """/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -348,19 +140,22 @@ class L18nStrings final : public QQmlPropertyMap {
 """
         )
 
-        for string in string_ids:
-            output.write(f"    {string['enum_id']},\n")
+        for key in strings:
+            output.write(f"    {key},\n")
 
         output.write(
             """    __Last,
   };
 
   static L18nStrings* instance();
+  static void initialize();
 
   explicit L18nStrings(QObject* parent);
-  ~L18nStrings();
+  ~L18nStrings() = default;
 
   void retranslate();
+
+  const char* id(L18nStrings::String) const;
 
   QString t(String) const;
 
@@ -373,9 +168,7 @@ class L18nStrings final : public QQmlPropertyMap {
         )
 
     with open(
-        os.path.join(translations_path, "generated", "l18nstrings_p.cpp"),
-        "w",
-        encoding="utf-8",
+        os.path.join(outdir, "l18nstrings_p.cpp"), "w", encoding="utf-8"
     ) as output:
         output.write(
             """/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -398,37 +191,66 @@ const char* const L18nStrings::_ids[] = {
             ret = "\\n".join(string)
             return ret.replace('"', '\\"')
 
-        for string in string_ids:
-            output.write(f"    //% \"{serialize(string['value'])}\"\n")
-            for comment in string["comments"]:
+        for key, data in strings.items():
+            output.write(f"    //% \"{serialize(data['value'])}\"\n")
+            for comment in data["comments"]:
                 output.write(f"    //: {comment}\n")
-            output.write(f"    QT_TRID_NOOP(\"{string['string_id']}\"),\n\n")
+            output.write(f"    QT_TRID_NOOP(\"{data['string_id']}\"),\n\n")
 
         # This is done to make windows compiler happy
-        if len(string_ids) == 0:
+        if len(strings) == 0:
             output.write(f'    "vpn.dummy.ignore",\n\n')
 
         output.write(
             """
 };
 
-void L18nStrings::retranslate() {
 """
         )
 
-        for string in string_ids:
-            output.write(
-                f"    insert(\"{string['enum_id']}\", qtTrId(_ids[{string['enum_id']}]));\n"
-            )
+        # Generate the retranslate() method.
+        output.write("void L18nStrings::retranslate() {\n")
+        for key in strings:
+            output.write(f'    insert("{key}", qtTrId(_ids[{key}]));\n')
         output.write("}")
 
 
-def generateStrings():
-    parseTranslationStrings()
-    parseGuideStrings()
-    parseTutorialStrings()
-    writeOutputFiles()
-
-
 if __name__ == "__main__":
-    generateStrings()
+    # Parse arguments to locate the input and output files.
+    parser = argparse.ArgumentParser(
+        description="Generate internationalization strings database from a YAML source"
+    )
+    parser.add_argument(
+        "source",
+        metavar="SOURCE",
+        type=str,
+        action="store",
+        nargs="?",
+        help="YAML strings file to process",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        metavar="DIR",
+        type=str,
+        action="store",
+        help="Output directory for generated files",
+    )
+    args = parser.parse_args()
+
+    # If no source was provided, find it relative to this script file.
+    if args.source is None:
+        rootpath = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+        )
+        args.source = os.path.join(rootpath, "translations", "strings.yaml")
+
+    # If no output directory was provided, use the current directory.
+    if args.output is None:
+        args.output = os.getcwd()
+
+    # Parse the inputs for their sweet juicy strings.
+    strings = parseTranslationStrings(args.source)
+
+    # Render the strings into generated content.
+    generateStrings(strings, args.output)

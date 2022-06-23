@@ -247,7 +247,8 @@ whatsNewReleaseNotes:
   connectionInfoDisplayName: Test your speed
   connectionInfoDescription: You can now run speed tests in Mozilla VPN! Select the performance icon in the top left corner of your screen to test your connection speed while using VPN.
   connectionInfoDescriptionShort: You can now run speed tests within the VPN to check your connection speed.
-
+  easyProfileDisplayName: Easier-to-use profile
+  easyProfileDescription: Now accessible from the VPN app, users can view their personal information, subscription summary and payment information within the subscription profile page.
 
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
@@ -456,6 +457,7 @@ inAppAuth:
   changeEmailLink: Change email
   signInButton: Sign in
   signInSubtitle: Continue to Mozilla VPN by signing in with your Firefox account
+  reauthSignInSubtitle: To continue, please confirm with your Firefox account password.
   createPasswordLabel:
     value: Create password
     comment: This is a label displayed on the password creation screen.
@@ -541,6 +543,9 @@ inAppAuth:
   termsOfServiceAndPrivacyDisclaimer:
     value: By continuing, you agree to the <a href="terms-of-service">Terms of Service</a> and the <a href="privacy-notice">Privacy Notice</a>.
     comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
+  emailTokenResentAlert:
+    value: We’ve resent your code to your email.
+    comment: User has requested to send a new email containing the 6-digit pin to confirm their email address.
 
 deleteAccount:
   authSubheadline: To delete your VPN account, please sign in with your Firefox account password.
@@ -584,3 +589,107 @@ freeTrials:
     value: Sign up to start your 7-day free trial.
     comment: This string appears above the 'Sign up' button on mobile onboarding views
   freeTrialLabel: 7-day free trial
+
+tipsAndTricks:
+  settingsEntryLabel: VPN tips and tricks
+  featureTourCardTitle: Tour the VPN
+  featureTourCardDescription: Take a tour of Mozilla VPN to learn how the latest features help you protect your online privacy.
+  quickTipsTitle: Quick tips
+  quickTipsDescription: Let us help you get the most out of Mozilla VPN
+  quickTipsGuideViewTitle: Quick tip
+  introModalDescription: Here’s a great list of useful tips and tricks to get the best out of your Mozilla VPN experience. Check it out now or find it anytime in the settings.
+
+subscriptionManagement:
+  menuTitle:
+    value: Profile
+    comment: Menu title for a view with details on the users account.
+  summaryHeadline:
+    value: Subscription summary
+    comment: Headline for a list with information on the subscription plan of the user.
+  paymentHeadline:
+    value: Payment Information
+    comment: Headline for a list with information on the payment information the user provided for their subscription.
+  planLabel:
+    value: Subscription plan
+    comment: Label for the selected subscription plan the user currently is subscribed to.
+  planValueMonthly:
+    value: "%1 Monthly"
+    comment: The %1 represents a localized currency string.
+  planValueHalfYearly:
+    value: "%1 Half-yearly"
+    comment: The %1 represents a localized currency string.
+  planValueYearly:
+    value: "%1 Yearly"
+    comment: The %1 represents a localized currency string.
+  statusLabel:
+    value: Status
+    comment: Label for the current status of the subscription.
+  statusInactive:
+    value: Inactive
+    comment: Text for a label that indicates an inactive subscription.
+  statusActive:
+    value: Active
+    comment: Text for a label that indicates an active subscription.
+  nextLabel:
+    value: Next billed
+    comment: Label for the upcoming date on which the user will be billed for their subscription.
+  activatedLabel:
+    value: Active since
+    comment: Label for the date on which the subscription was activated.
+  expiresLabel:
+    value: Expires
+    comment: Label for the upcoming date on which the subscription will expire.
+  subscriptionPlatformLabel:
+    value: "%1 subscription"
+    comment:
+      - The %1 represents the subscription platform.
+      - Values for %1 could be “Apple” or “Google” for example.
+  cardLast4:
+    value: "Card ending in %1"
+    comment: The %1 represents the last four digits of a credit card.
+  cardExpiresLabel:
+    value: Expires
+    comment: Label for the date on which the payment method expires.
+  manageSubscriptionButton:
+    value: Manage subscription
+    comment: Label for a button that will take the user to a view where they can manage their subscription.
+
+paymentMethods:
+  amex: American Express
+  diners: Diners Club
+  discover: Discover
+  jcb: JCB
+  iapApple: Apple subscription
+  iapGoogle: Google subscription
+  mastercard: Mastercard
+  paypal: PayPal
+  unionpay: UnionPay
+  visa: Visa
+
+tutorialPopup:
+  tutorialCompleteHeadline: Well done!
+  tutorialCompletePrimaryButtonLabel: Let’s go!
+  secondaryButtonLabel: Come back later
+  leaveTutorialButton: Leave tutorial
+
+  tutorialLeaveHeadline: Leave tutorial?
+  tutorialLeaveSubtitle: Looks like you haven’t finished the tutorial quite yet. Would you like to continue and finish now or quit and come back later?
+  tutorialLeavePrimaryButtonLabel: Resume tutorial
+
+global:
+  expand:
+    value: Expand
+    comment: Action used in the context of an expandable/collapsible card component
+  collapse:
+    value: Collapse
+    comment: Action used in the context of an expandable/collapsible card component
+  vpnUser: 
+    value: VPN User
+    comment: Fallback string for users who have not specified a Display Name.
+  discoverNow: 
+    value: Discover now
+    comment: Label for button used in intro modals to discover new features.
+  goBack:
+    value: Go back
+    comment: Label for button used in intro modals to return to the app.
+    

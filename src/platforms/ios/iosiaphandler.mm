@@ -301,7 +301,7 @@ void IOSIAPHandler::productRegistered(void* a_product) {
   }
   int discountDays = 0;
   if (@available(iOS 12.2, *)) {
-    auto discount = product.discounts.firstObject;
+    auto discount = product.introductoryPrice;
     discountDays = discountToDays(discount);
   }
 
@@ -398,7 +398,7 @@ int IOSIAPHandler::discountToDays(void* aDiscount) {
   if (discount == nullptr) {
     return 0;
   }
-  if (discount.paymentMode == SKProductDiscountPaymentMode::SKProductDiscountPaymentModeFreeTrial) {
+  if (discount.paymentMode != SKProductDiscountPaymentMode::SKProductDiscountPaymentModeFreeTrial) {
     return 0;
   }
   // Is it a week / day / month

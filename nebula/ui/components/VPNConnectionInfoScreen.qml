@@ -156,7 +156,9 @@ Rectangle {
         z: 1
 
         onClicked: {
-            VPNConnectionBenchmark.start();
+            if (VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateRunning) {
+                VPNConnectionBenchmark.start();
+            }
         }
 
         Image {

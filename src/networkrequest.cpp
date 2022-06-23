@@ -42,9 +42,7 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
   MVPN_COUNT_CTOR(NetworkRequest);
   logger.debug() << "Network request created by" << parent->name();
 
-#ifndef MVPN_WASM
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
-#endif
   m_request.setMaximumRedirectsAllowed(REQUEST_MAX_REDIRECTS);
   m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
                          QNetworkRequest::SameOriginRedirectPolicy);
@@ -305,6 +303,19 @@ NetworkRequest* NetworkRequest::createForAccount(Task* parent) {
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/subscriptionDetails");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
 NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
                                                 const QHostAddress& address) {
   Q_ASSERT(parent);
@@ -501,9 +512,9 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
 // static
 NetworkRequest* NetworkRequest::createForFxaLogin(
     Task* parent, const QString& email, const QByteArray& authpw,
-    const QString& unblockCode, const QString& fxaClientId,
-    const QString& fxaDeviceId, const QString& fxaFlowId,
-    double fxaFlowBeginTime) {
+    const QString& originalLoginEmail, const QString& unblockCode,
+    const QString& fxaClientId, const QString& fxaDeviceId,
+    const QString& fxaFlowId, double fxaFlowBeginTime) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaApiBaseUrl());
@@ -519,6 +530,10 @@ NetworkRequest* NetworkRequest::createForFxaLogin(
   obj.insert("service", fxaClientId);
   obj.insert("skipErrorCase", true);
   obj.insert("verificationMethod", "email-otp");
+
+  if (!originalLoginEmail.isEmpty()) {
+    obj.insert("originalLoginEmail", originalLoginEmail);
+  }
 
   if (!unblockCode.isEmpty()) {
     obj.insert("unblockCode", unblockCode);
@@ -890,7 +905,8 @@ void NetworkRequest::replyFinished() {
   if (m_reply->error() != QNetworkReply::NoError) {
     QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
     logger.error() << "Network error:" << m_reply->errorString()
-                   << "status code:" << status << "- body:" << data;
+                   << "status code:" << status
+                   << "- body:" << logger.sensitive(data);
     logger.error() << "Failed to access:" << m_request.url().toString(options);
     emit requestFailed(m_reply->error(), data);
     return;

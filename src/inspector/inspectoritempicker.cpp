@@ -8,7 +8,7 @@
 InspectorItemPicker::InspectorItemPicker(QObject* parent)
     : ItemPicker(parent) {}
 
-bool InspectorItemPicker::itemPicked(const QStringList& list) {
+bool InspectorItemPicker::itemPicked(const QList<QQuickItem*>& list) {
   InspectorHandler::itemsPicked(list);
   return true;
 }

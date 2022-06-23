@@ -6,14 +6,13 @@ require 'xcodeproj'
 
 class XCodeprojPatcher
   attr :project
+  attr :qt_preprocess
   attr :target_main
   attr :target_extension
 
-  def run(file, shortVersion, fullVersion, platform, networkExtension, configHash, adjust_sdk_token)
+  def run(file, shortVersion, fullVersion, platform, configHash, adjust_sdk_token)
     open_project file
     open_target_main platform
-
-    die 'IOS requires networkExtension mode' if not networkExtension and platform == 'ios'
 
     if platform == 'macos'
       setup_target_loginitem shortVersion, fullVersion, configHash
@@ -35,6 +34,7 @@ class XCodeprojPatcher
 
   def open_project(file)
     @project = Xcodeproj::Project.open(file)
+    @qt_preprocess = @project.targets.find { |target| target.to_s == 'Qt Preprocess' }
     die 'Failed to open the project file: ' + file if @project.nil?
   end
 
@@ -300,19 +300,7 @@ class XCodeprojPatcher
     framework_ref = frameworks_group.new_file('NetworkExtension.framework')
     frameworks_build_phase.add_file_reference(framework_ref)
 
-    # This fails: @target_main.add_dependency @target_extension
-    container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
-    container_proxy.container_portal = @project.root_object.uuid
-    container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
-    container_proxy.remote_global_id_string = @target_extension.uuid
-    container_proxy.remote_info = @target_extension.name
-
-    dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
-    dependency.name = @target_extension.name
-    dependency.target = @target_main
-    dependency.target_proxy = container_proxy
-
-    @target_main.dependencies << dependency
+    setup_target_dependency @target_main, @target_extension
 
     copy_appex = @target_main.new_copy_files_build_phase
     copy_appex.name = 'Copy Network-Extension plugin'
@@ -373,19 +361,8 @@ class XCodeprojPatcher
       @target_loginitem.add_file_references([file])
     }
 
-    # This fails: @target_main.add_dependency @target_loginitem
-    container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
-    container_proxy.container_portal = @project.root_object.uuid
-    container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
-    container_proxy.remote_global_id_string = @target_loginitem.uuid
-    container_proxy.remote_info = @target_loginitem.name
-
-    dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
-    dependency.name = @target_loginitem.name
-    dependency.target = @target_main
-    dependency.target_proxy = container_proxy
-
-    @target_main.dependencies << dependency
+    setup_target_dependency @target_loginitem, @qt_preprocess
+    setup_target_dependency @target_main, @target_loginitem
 
     copy_app = @target_main.new_copy_files_build_phase
     copy_app.name = 'Copy LoginItem'
@@ -394,6 +371,22 @@ class XCodeprojPatcher
 
     app_file = copy_app.add_file_reference @target_loginitem.product_reference
     app_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
+  end
+
+  # This works around target.add_dependency failing by creating a PBXContainerItemProxy.
+  def setup_target_dependency(target, depends)
+    container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
+    container_proxy.container_portal = @project.root_object.uuid
+    container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
+    container_proxy.remote_global_id_string = depends.uuid
+    container_proxy.remote_info = depends.name
+
+    target_dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
+    target_dependency.name = depends.name
+    target_dependency.target = target
+    target_dependency.target_proxy = container_proxy
+
+    target.dependencies << target_dependency
   end
 
   def die(msg)
@@ -425,9 +418,8 @@ configFile.each { |line|
 
 platform = "macos"
 platform = "ios" if ARGV[3] == "ios"
-networkExtension = true if ARGV[4] == "1"
-adjust_sdk_token = ARGV[5]
+adjust_sdk_token = ARGV[4]
 
 r = XCodeprojPatcher.new
-r.run ARGV[0], ARGV[1], ARGV[2], platform, networkExtension, config, adjust_sdk_token
+r.run ARGV[0], ARGV[1], ARGV[2], platform, config, adjust_sdk_token
 exit 0

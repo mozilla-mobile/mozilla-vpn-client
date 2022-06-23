@@ -3,8 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 include($$PWD/../../version.pri)
-DEFINES += APP_VERSION=\\\"$$VERSION\\\"
-DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
+DEFINES += BUILD_QMAKE
 
 !isEmpty(MVPN_EXTRA_USERAGENT) {
     DEFINES += MVPN_EXTRA_USERAGENT=\\\"$$MVPN_EXTRA_USERAGENT\\\"
@@ -17,10 +16,6 @@ INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
-            ../translations/generated \
-            ../glean \
-            ../lottie/lib \
-            ../nebula
+            ../lottie/lib
 
-INCLUDEPATH += ../lottie/lib
 DEPENDPATH  += $${INCLUDEPATH}

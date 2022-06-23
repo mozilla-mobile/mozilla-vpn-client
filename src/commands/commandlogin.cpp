@@ -173,9 +173,6 @@ int CommandLogin::run(QStringList& tokens) {
               case AuthenticationInApp::ErrorInvalidEmailAddress:
                 stream << "Invalid email address" << Qt::endl;
                 break;
-              case AuthenticationInApp::ErrorInvalidEmailCode:
-                stream << "Invalid email code!" << Qt::endl;
-                break;
               case AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode:
                 stream << "Invalid or expired verification code!" << Qt::endl;
                 break;

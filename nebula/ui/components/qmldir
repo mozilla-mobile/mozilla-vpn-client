@@ -3,12 +3,14 @@ VPNAlert 0.1 VPNAlert.qml
 VPNAlerts 0.1 VPNAlerts.qml
 VPNAnimatedRings 0.1 VPNAnimatedRings.qml
 VPNAvatar 0.1 VPNAvatar.qml
+VPNBoldInterLabel 0.1 VPNBoldInterLabel.qml
 VPNBoldLabel 0.1 VPNBoldLabel.qml
 VPNButton 0.1 VPNButton.qml
 VPNButtonBase 0.1 VPNButtonBase.qml
 VPNButtonLoader 0.1 VPNButtonLoader.qml
 VPNCallout 0.1 VPNCallout.qml
 VPNCancelButton 0.1 VPNCancelButton.qml
+VPNCard 0.1 VPNCard.qml
 VPNCheckBox 0.1 VPNCheckBox.qml
 VPNCheckBoxAlert 0.1 VPNCheckBoxAlert.qml
 VPNCheckBoxRow 0.1 VPNCheckBoxRow.qml
@@ -38,6 +40,7 @@ VPNFocusOutline 0.1 VPNFocusOutline.qml
 VPNFooterLink 0.1 VPNFooterLink.qml
 VPNGraphLegendMarker 0.1 VPNGraphLegendMarker.qml
 VPNGreyLink 0.1 VPNGreyLink.qml
+VPNGuideCard 0.1 VPNGuideCard.qml
 VPNHeaderLink 0.1 VPNHeaderLink.qml
 VPNHeadline 0.1 VPNHeadline.qml
 VPNIcon 0.1 VPNIcon.qml
@@ -58,6 +61,8 @@ VPNMetropolisLabel 0.1 VPNMetropolisLabel.qml
 VPNMobileStatusBarModifier 0.1 VPNMobileStatusBarModifier.qml
 VPNMouseArea 0.1 VPNMouseArea.qml
 VPNPanel 0.1 VPNPanel.qml
+VPNPaymentMethod 0.1 VPNPaymentMethod.qml
+VPNPill 0.1 VPNPill.qml
 VPNPopup 0.1 VPNPopup.qml
 VPNPopupButton 0.1 VPNPopupButton.qml
 VPNRadioButtonLabel 0.1 VPNRadioButtonLabel.qml
@@ -75,6 +80,7 @@ VPNServerUnavailablePopup 0.1 VPNServerUnavailablePopup.qml
 VPNSettingsItem 0.1 VPNSettingsItem.qml
 VPNSettingsToggle 0.1 VPNSettingsToggle.qml
 VPNSignOut 0.1 VPNSignOut.qml
+VPNSimplePopup 0.1 VPNSimplePopup.qml
 VPNStackView 0.1 VPNStackView.qml
 VPNSubscriptionOption 0.1 VPNSubscriptionOption.qml
 VPNSubtitle 0.1 VPNSubtitle.qml
@@ -85,7 +91,10 @@ VPNTimer 0.1 VPNTimer.qml
 VPNToggle 0.1 VPNToggle.qml
 VPNToggleCard 0.1 VPNToggleCard.qml
 VPNToolTip 0.1 VPNToolTip.qml
+VPNTutorialCard 0.1 VPNTutorialCard.qml
+VPNTutorialPopups 0.1 VPNTutorialPopups.qml
 VPNUIStates 0.1 VPNUIStates.qml
+VPNUserProfile 0.1 VPNUserProfile.qml
 VPNVerticalSpacer 0.1 VPNVerticalSpacer.qml
 VPNViewDNSSettings 0.1 VPNViewDNSSettings.qml
 VPNWasmAlerts 0.1 VPNWasmAlerts.qml

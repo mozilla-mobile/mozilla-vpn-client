@@ -9,6 +9,10 @@ on:
       - main
       - 'releases/**'
 
+# Restrict tests to the most recent commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   linux-unit-tests:
@@ -17,15 +21,16 @@ jobs:
       QTVERSION: 6.2.4
     name: Run Unit tests on Linux
     steps:
-      - name: Install Linux packages
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install dependences
         run: |
           sudo apt update
           sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
+          python3 -m pip install -r requirements.txt
           python3 -m pip install aqtinstall
           aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
-
-      - name: Clone repository
-        uses: actions/checkout@v2
 
       - name: Checkout submodules
         shell: bash
@@ -34,34 +39,46 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Generating glean samples
-        shell: bash
-        run: |
-          pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
-
-      - name: Importing translation files
-        shell: bash
-        run: |
-          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
-          python3 scripts/utils/import_languages.py
-
-      - name: Installing the oathtool
-        shell: bash
-        run: |
-          pip3 install oathtool
-          python3 -m oathtool.generate-script
+      - name: Cache grcov
+        id: cache-grcov
+        uses: actions/cache@v2
+        with:
+          path: grcov-build/
+          key: ${{runner.os}}-grcov-v0.8.9
 
       - name: Install Grcov
+        if: steps.cache-grcov.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          cargo install grcov
+          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.9
+
+      - name: Building tests
+        shell: bash
+        run: |
+          mkdir -p build
+          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON \
+            -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake/ \
+            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build $(pwd)/build --target build_tests -j$(nproc)
 
       - name: Running tests
         shell: bash
+        working-directory: ./build
         run: |
-          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
-          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --output-on-failure
+
+          grcov $(pwd)/tests/auth/CMakeFiles/auth_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
+
+          grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
+
+          grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
+
+          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
@@ -69,7 +86,7 @@ jobs:
           directory: .
           flags: unit_tests
           name: codecov-poc
-          files: unit_lcov.info
+          files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info
           verbose: true
 
   macos-unit-tests:
@@ -91,7 +108,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_macos
+          git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
           cd qt_static_macos
           cat qt6* > qt_static.tar.gz
           tar xf qt_static.tar.gz
@@ -110,24 +127,24 @@ jobs:
           export PATH=/opt/qt6/bin:$PATH
           python3 scripts/utils/import_languages.py -m
 
-      - name: Install Grcov
-        shell: bash
-        run: |
-          cargo install grcov
+      - name: Cache grcov
+        id: cache-grcov
+        uses: actions/cache@v2
+        with:
+          path: grcov-build/
+          key: ${{runner.os}}-grcov-v0.8.9
 
-      - name: Installing the oathtool
+      - name: Install Grcov
+        if: steps.cache-grcov.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          pip3 install oathtool
-          python3 -m oathtool.generate-script
-          # python3 by default...
-          sed -i '' "s/python/python3/g" oathtool
+          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.9
 
       - name: Running tests
         shell: bash
         run: |
-          export PATH=/opt/qt6/bin:$PATH
-          MVPN_OATHTOOL=./oathtool ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
+          export PATH=/opt/qt6/bin:${{github.workspace}}/grcov-build/bin:$PATH
+          ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
@@ -157,17 +174,10 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_windows
-          cd qt_static_windows
-          cat qt6* > qt_static.tar.bz2
-          tar xf qt_static.tar.bz2
-          tar xf msm.tar.gz
+          git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
           mkdir /c/MozillaVPNBuild
-          cp -r * /c/MozillaVPNBuild
-          cd ..
-          cp /c/MozillaVPNBuild/SSL/bin/libssl-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/SSL/bin/libcrypto-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/*.msm .
+          cat qt_static_windows/qt6* > qt6_static.tar.bz2
+          tar xf qt6_static.tar.bz2 -C /c/MozillaVPNBuild
 
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
@@ -175,26 +185,21 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Install glean depedencies
+      - name: Install depedencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
 
-      - name: Importing translation files
+      - name: Building tests
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          python3 scripts/utils/import_languages.py -m
-
-      - name: Installing the oathtool
-        shell: bash
-        run: |
-          pip3 install oathtool
-          python3 -m oathtool.generate-script
+          mkdir -p build
+          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
+          cmake --build $(pwd)/build --config Release --target build_tests
 
       - name: Running tests
         shell: bash
+        working-directory: ./build
         run: |
-          export PATH=/c/MozillaVPNBuild/bin:$PATH
-          MVPN_OATHTOOL=oathtool ./scripts/tests/unit_tests.sh
+          ctest --build-config Release --output-on-failure

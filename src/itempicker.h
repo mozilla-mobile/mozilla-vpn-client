@@ -9,6 +9,7 @@
 
 class QMouseEvent;
 class QQuickItem;
+class QTouchEvent;
 
 class ItemPicker : public QObject {
   Q_OBJECT
@@ -18,15 +19,18 @@ class ItemPicker : public QObject {
 
  protected:
   // Return true if the event should be accepted and not propagated.
-  virtual bool itemPicked(const QStringList& list) = 0;
+  virtual bool itemPicked(const QList<QQuickItem*>& list) = 0;
 
  private:
   bool eventFilter(QObject* obj, QEvent* event) override;
+  bool eventFilterInternal(QObject* obj, QEvent* event);
 
-  QStringList pickItem(QMouseEvent* event, QQuickItem* item);
+  QList<QQuickItem*> pickItem(QMouseEvent* event, QQuickItem* item);
+  QList<QQuickItem*> pickItem(QTouchEvent* event, QQuickItem* item);
 
  private:
   QEvent* m_lastEvent = nullptr;
+  bool m_lastResponse = false;
 };
 
 #endif  // ITEMPICKER_H

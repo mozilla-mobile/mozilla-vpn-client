@@ -3,6 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
+        addonmanager.cpp \
+        addons/addon.cpp \
+        addons/addondemo.cpp \
+        addons/addonguide.cpp \
+        addons/addoni18n.cpp \
+        addons/addontutorial.cpp \
         apppermission.cpp \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
@@ -41,7 +47,6 @@ SOURCES += \
         dnshelper.cpp \
         dnspingsender.cpp \
         errorhandler.cpp \
-        featurelist.cpp \
         filterproxymodel.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
@@ -60,7 +65,6 @@ SOURCES += \
         ipaddress.cpp \
         ipaddresslookup.cpp \
         itempicker.cpp \
-        l18nstringsimpl.cpp \
         leakdetector.cpp \
         localizer.cpp \
         logger.cpp \
@@ -70,6 +74,7 @@ SOURCES += \
         models/device.cpp \
         models/devicemodel.cpp \
         models/feature.cpp \
+        models/featuremodel.cpp \
         models/feedbackcategorymodel.cpp \
         models/guide.cpp \
         models/guideblock.cpp \
@@ -87,6 +92,9 @@ SOURCES += \
         models/surveymodel.cpp \
         models/tutorial.cpp \
         models/tutorialmodel.cpp \
+        models/tutorialstep.cpp \
+        models/tutorialstepbefore.cpp \
+        models/tutorialstepnext.cpp \
         models/user.cpp \
         models/whatsnewmodel.cpp \
         mozillavpn.cpp \
@@ -101,6 +109,7 @@ SOURCES += \
         platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         platforms/dummy/dummypingsender.cpp \
+        profileflow.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc/rfc1112.cpp \
@@ -110,14 +119,19 @@ SOURCES += \
         rfc/rfc5735.cpp \
         serveri18n.cpp \
         settingsholder.cpp \
+        signature.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
+        subscriptiondata.cpp \
         tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
+        tasks/addon/taskaddon.cpp \
+        tasks/addonindex/taskaddonindex.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/deleteaccount/taskdeleteaccount.cpp \
         tasks/getfeaturelist/taskgetfeaturelist.cpp \
+        tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
@@ -136,9 +150,17 @@ SOURCES += \
         timersingleshot.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
-        urlopener.cpp
+        urlopener.cpp \
+        update/webupdater.cpp \
+        websockethandler.cpp
 
 HEADERS += \
+        addonmanager.h \
+        addons/addon.h \
+        addons/addondemo.h \
+        addons/addonguide.h \
+        addons/addoni18n.h \
+        addons/addontutorial.h \
         appimageprovider.h \
         apppermission.h \
         applistprovider.h \
@@ -181,24 +203,6 @@ HEADERS += \
         dnshelper.h \
         dnspingsender.h \
         errorhandler.h \
-        featurelist.h \
-        features/featureaccountdeletion.h \
-        features/featureappreview.h \
-        features/featurecaptiveportal.h \
-        features/featureconnectioninfo.h \
-        features/featurecustomdns.h \
-        features/featureinappaccountcreate.h \
-        features/featureinappauth.h \
-        features/featureinapppurchase.h \
-        features/featurelocalareaaccess.h \
-        features/featuremultiaccountcontainers.h \
-        features/featuremultihop.h \
-        features/featurenotificationcontrol.h \
-        features/featuresharelogs.h \
-        features/featuresplittunnel.h \
-        features/featurestartonboot.h \
-        features/featureunsecurednetworknotification.h \
-        features/featureserverunavailablenotification.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
@@ -221,6 +225,7 @@ HEADERS += \
         models/device.h \
         models/devicemodel.h \
         models/feature.h \
+        models/featuremodel.h \
         models/feedbackcategorymodel.h \
         models/guide.h \
         models/guideblock.h \
@@ -238,6 +243,9 @@ HEADERS += \
         models/surveymodel.h \
         models/tutorial.h \
         models/tutorialmodel.h \
+        models/tutorialstep.h \
+        models/tutorialstepbefore.h \
+        models/tutorialstepnext.h \
         models/user.h \
         models/whatsnewmodel.h \
         mozillavpn.h \
@@ -253,6 +261,7 @@ HEADERS += \
         platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         platforms/dummy/dummypingsender.h \
+        profileflow.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc/rfc1112.h \
@@ -262,15 +271,20 @@ HEADERS += \
         rfc/rfc5735.h \
         serveri18n.h \
         settingsholder.h \
+        signature.h \
         simplenetworkmanager.h \
         statusicon.h \
+        subscriptiondata.h \
         task.h \
         tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \
+        tasks/addon/taskaddon.h \
+        tasks/addonindex/taskaddonindex.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/deleteaccount/taskdeleteaccount.h \
         tasks/getfeaturelist/taskgetfeaturelist.h \
+        tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \
@@ -289,7 +303,9 @@ HEADERS += \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
-        urlopener.h
+        update/webupdater.h \
+        urlopener.h \
+        websockethandler.h
 
 # Signal handling for unix platforms
 unix {
@@ -301,5 +317,4 @@ RESOURCES += ui/resources.qrc
 RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
-RESOURCES += ui/guides.qrc
-RESOURCES += ui/tutorials.qrc
+RESOURCES += resources/public_keys/public_keys.qrc

@@ -19,12 +19,11 @@ class AndroidUtils final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AndroidUtils)
 
-  Q_PROPERTY(QUrl url READ url NOTIFY urlChanged)
-
  public:
   static QString GetDeviceName();
 
   static int GetSDKVersion();
+  static QString GetManufacturer();
 
   // Creates a "share" intent to Open/Send Plaintext
   static bool ShareText(const QString& plainText);
@@ -32,14 +31,6 @@ class AndroidUtils final : public QObject {
   static QByteArray DeviceId();
 
   static AndroidUtils* instance();
-
-  void startAuthentication(AuthenticationListener* listener, const QUrl& url);
-
-  const QUrl& url() const { return m_url; }
-
-  Q_INVOKABLE void abortAuthentication();
-
-  Q_INVOKABLE bool maybeCompleteAuthentication(const QString& url);
 
   Q_INVOKABLE void openNotificationSettings();
 
@@ -57,18 +48,9 @@ class AndroidUtils final : public QObject {
 
   static void runOnAndroidThreadSync(const std::function<void()> runnable);
 
- signals:
-  void urlChanged();
-
  private:
   AndroidUtils(QObject* parent);
   ~AndroidUtils();
-
-  void resetListener() { m_listener = nullptr; }
-
- private:
-  QUrl m_url;
-  AuthenticationListener* m_listener = nullptr;
 };
 
 #endif  // ANDROIDUTILS_H

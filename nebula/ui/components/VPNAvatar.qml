@@ -20,6 +20,7 @@ Item {
         fillMode: Image.PreserveAspectFit
         smooth: true
         source: isDefaultAvatar() ? "" : avatarUrl
+        visible: false
     }
 
     Image {
@@ -33,23 +34,19 @@ Item {
         source: "qrc:/nebula/resources/avatar-default.png"
         sourceSize.height: avatarSourceSize
         sourceSize.width: avatarSourceSize
-        visible: avatar.status !== Image.Ready
+        visible: avatar.status !== Image.Ready || window._fallbackQtQuickRenderer
     }
 
     Rectangle {
         id: avatarMask
 
-        anchors.centerIn: avatar
-        height: avatar.height
+        anchors.fill: avatar
         radius: height / 2
         visible: false
-        width: height
     }
 
     VPNOpacityMask {
-        anchors.centerIn: avatar
-        height: avatar.height
-        width: height
+        anchors.fill: avatar
         source: avatar
         maskSource: avatarMask
     }
@@ -59,6 +56,10 @@ Item {
      * and assume that the user did not set a custom avatar
      */
     function isDefaultAvatar() {
+        if (window._fallbackQtQuickRenderer) {
+            return true;
+        }
+
         const avatarUrlSplitted = avatarUrl.split("/");
         const avatarID = avatarUrlSplitted[avatarUrlSplitted.length - 1];
 

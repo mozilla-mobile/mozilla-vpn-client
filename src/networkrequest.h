@@ -52,6 +52,8 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForAccount(Task* parent);
 
+  static NetworkRequest* createForGetSubscriptionDetails(Task* parent);
+
   static NetworkRequest* createForVersions(Task* parent);
 
   static NetworkRequest* createForIpInfo(Task* parent,
@@ -86,13 +88,11 @@ class NetworkRequest final : public QObject {
       const QString& fxaClientId, const QString& fxaDeviceId,
       const QString& fxaFlowId, double fxaFlowBeginTime);
 
-  static NetworkRequest* createForFxaLogin(Task* parent, const QString& email,
-                                           const QByteArray& authpw,
-                                           const QString& unblockCode,
-                                           const QString& fxaClientId,
-                                           const QString& fxaDeviceId,
-                                           const QString& fxaFlowId,
-                                           double fxaFlowBeginTime);
+  static NetworkRequest* createForFxaLogin(
+      Task* parent, const QString& email, const QByteArray& authpw,
+      const QString& originalLoginEmail, const QString& unblockCode,
+      const QString& fxaClientId, const QString& fxaDeviceId,
+      const QString& fxaFlowId, double fxaFlowBeginTime);
 
   static NetworkRequest* createForFxaSendUnblockCode(
       Task* parent, const QString& emailAddress);

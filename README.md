@@ -101,46 +101,37 @@ what we wrote before, you also need the following dependencies:
 - wireguard-tools >= 1.0.20200513
 - resolvconf >= 1.82
 - golang >= 1.13
+- cmake >= 3.16
 
-2. Instrument the glean events:
-```bash
-./scripts/utils/generate_glean.py
-```
-
-3. Import the languages and generate the translation strings:
-```bash
-./scripts/utils/import_languages.py
-```
-
-4. **Optional**: In case you want to change the shaders, you must regenerate
+2. **Optional**: In case you want to change the shaders, you must regenerate
 them:
 ```bash
 ./scripts/utils/bake_shaders.sh
 ```
 
-5. Finally, we are able to configure the whole project using `qmake`. Usually,
-`qmake` is already in your path, but if it's not, add the Qt6 installation path
-in your `PATH` env variable.
+3. Create a build directory, and configure the project for building using `cmake`.
 ```bash
-qmake # for local dev builds use `qmake CONFIG+=debug`
-```
-If you prefer to not install at /usr or /etc, you can specify alternate
-prefixes. Using no prefixes is equivalent to:
-```bash
-qmake USRPATH=/usr ETCPATH=/etc
+mkdir build && cmake -S . -B build
 ```
 
-6. Compile the source code:
+If you are using a build of Qt that was not installed by your operating system,
+you may need to tell `cmake` where it is located by specifying the `CMAKE_PREFIX_PATH`
+during configuration:
 ```bash
-make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
+mkdir build && cmake -S . -B build -DCMAKE_PREFIX_PATH=<Qt install path>/lib/cmake/
 ```
 
-7. Installation:
+4. Compile the source code:
 ```bash
-sudo make install
+cmake --build build -j$(nproc)
 ```
 
-8.  After the installation, you can run the app simply running:
+5. Installation:
+```bash
+sudo cmake --install build
+```
+
+6.  After the installation, you can run the app simply running:
 ```bash
 mozillavpn
 ```
@@ -286,8 +277,8 @@ scripts/wasm/compile.sh
 ## Testing
 
 * Run the unit tests with `./scripts/tests/unit_tests.sh`
-* Run the qml tests with `./tests/tests/qml_tests.sh`
-* Run the lottie tests with `./tests/tests/lottie_tests.sh`
+* Run the qml tests with `./scripts/tests/qml_tests.sh`
+* Run the lottie tests with `./scripts/tests/lottie_tests.sh`
 * Run the funcional tests (See below)
 
 ### Running the functional tests
@@ -297,13 +288,11 @@ scripts/wasm/compile.sh
 * Install geckodriver and ensure it's on your path.
   [Docs](https://www.selenium.dev/documentation/getting_started/installing_browser_drivers/)
 * Make a .env file with:
- * `ACCOUNT_EMAIL` and `ACCOUNT_PASSWORD` (the account should have an active
-   subscription on staging).
  * `MVPN_API_BASE_URL` (where proxy runs, most likely http://localhost:5000)
  * `MVPN_BIN` (location of compiled mvpn binary)
  * `ARTIFACT_DIR` (directory to put screenshots from test failures)
 * (Optional) In one window run `./tests/proxy/wsgi.py --mock-devices`
-* To run, say, the authentication tests: `./scripts/tests/functional_test.sh
+* Run a test from the root of the project: `./scripts/tests/functional_tests.sh {test_file}.js`. To run, say, the authentication tests: `./scripts/tests/functional_tests.sh
   tests/functional/testAuthentication.js`.
 
 ## Developer Options and staging environment
@@ -344,10 +333,56 @@ When the client is in staging mode, but not debug mode, pings will have the
 applicationId `MozillaVPN-staging` which allows for filtering between staging
 and production pings.
 
-#### A note on glean embedding
+### A note on glean embedding
 
 Qt only accepts `major.minor` versions for importing. So if, for example,
 you're embedding glean v0.21.2 then it will still, for Qt's purpose, be v0.21.
+
+### Working on tickets with new glean events
+
+If you are responsible for a piece of work that adds new glean events you will need to do a data review for the new events. This is the recommended process along with some pointers on doing that.
+
+The basic process is this:
+* work on your PR that adds glean events including updating glean/metrics.yaml (necessary for your code to compile)
+* in your metrics.yaml:
+  * include a link to the *github* bug that describes the work
+  * put TBD in the `data_reviews` entry
+  * think about whether the data you are collecting is technical or interaction, sometimes it's both. in that case pick interaction which is a higher category of data. (more details https://wiki.mozilla.org/Data_Collection)
+* open a **draft** PR on github
+* file a bugzilla ticket for the data review (more info below)
+* update your PR with the id of the bugzilla bug in data `data_reviews` entry
+* once you have an r+ from data review, move your PR out of draft state.
+
+It is **ok** for a reviewer to review and approve your code while you're waiting for data review.
+
+It is **not** ok to merge a PR that contains a change to metrics.yaml without a datareview r+
+
+#### Filing a bugzilla ticket for data review
+
+The data review process is described here: https://wiki.mozilla.org/Data_Collection
+
+In brief, specifically for VPN:
+
+* You need a bugzilla account. This is not an ldap service, but do use your ldap email address to sign-up for an account.
+* Make a new bug in Product: Mozilla, Component: General. Or clone an old data review bug e.g. https://bugzilla.mozilla.org/show_bug.cgi?id=1770530
+* See the above bug, the ticket can be simple just a link to a bug and a PR and the attachment with the data review details (see below).
+* The trick to flagging this for data review is adding the attachment and setting the flag (data review ?), as described under "Step 1: Submit Request" on https://wiki.mozilla.org/Data_Collection
+* We usually use `chutten` for VPN data reviews
+* If you cannot see the flags in the attachment area (screenshot below) make sure "Show Advanced Fields" is checked
+
+![](attachment_flag_for_datareview.png)
+
+Filling out the data review details:
+
+* The data review questionnaire is here: https://github.com/mozilla/data-review/blob/main/request.md
+* It can seem quite intimidating, but don't panic. First, look at an old bug such as the one linked above. Many questions will always be the same for VPN data review bugs. There are four questions that require your attention and thought:
+  - 1. What questions will you answer with this data?
+  - 2. Why does Mozilla need to answer these questions?  Are there benefits for users? Do we need this information to address product or business requirements?
+  - 3. What alternative methods did you consider to answer these questions? Why were they not sufficient?
+  - 4. Please provide a general description of how you will analyze this data.
+* If you don't know the answers to these questions, reach out to Sarah Bird or the product manager so you can answer these with full confidence.
+
+
 
 ## Status
 

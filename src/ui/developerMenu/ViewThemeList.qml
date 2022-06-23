@@ -17,7 +17,6 @@ Item {
         id: menu
         // Do not translate this string!
         title: "Theme List"
-        isSettingsView: false
     }
 
     VPNFlickable {

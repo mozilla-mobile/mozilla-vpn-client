@@ -10,19 +10,21 @@ Makefile.*
 src/mozillavpn
 src/mozillavpn.app
 src/mozillavpn.framework
+src/version.h
 mozillavpn_wg
 mozillavpn.qmltypes
 mozillavpn_metatypes.json
 mozillavpn_qmltyperegistrations.cpp
-balrog/balrog.a
-balrog/balrog.h
+balrog/balrog-api.a
+balrog/balrog-api.h
+balrog/vendor/
 qrc_qml.cpp
 .qmake.stash
 dbus_adaptor.*
 dbus_interface.*
 mozillavpn-daemon
 *_plugin_import.cpp
-linux/netfilter/netfilter.[ah]
+src/netfilter.[ah]
 linux/netfilter/vendor/
 .qm
 .tmp
@@ -31,11 +33,24 @@ linux/netfilter/vendor/
 __pycache__
 lottie.mjs
 
+# Translation pipeline
+addon_ts/
+
+# CMake build artifacts
+cmake_install.cmake
+CMakeCache.txt
+CMakeFiles/
+lottie/lottie_autogen/
+lottie/liblottie.a
+nebula/nebula_autogen/
+nebula/libnebula.a
+src/mozillavpn_autogen/
+
 # Node (for functional tests)
 node_modules
 
 #Github Codespaces
-.venv 
+.venv
 
 asset_catalog_compiler.Info.plist
 
@@ -48,16 +63,20 @@ android/local.properties
 android/**/*.cxx
 android/.cxx/*
 !android/res/debug/**/*
-!android/*/**/Makefile 
+!android/*/**/Makefile
 xcode.xconfig
 .gradle/
 .gradle_cache/
 
 *.ts
 tests/auth/tests
+tests/auth/auth_tests
+tests/auth/auth_tests_autogen/
 tests/unit/tests
+tests/unit/tests_autogen/
 tests/nativemessaging/tests
 tests/qml/qml_tests
+tests/qml/qml_tests_autogen/
 tests/qml/target_wrapper.sh
 build
 !taskcluster/ci/build
@@ -86,6 +105,9 @@ vscode-cpptools/*
 MozillaVPN.vcxproj*
 *.autosave
 
+# Qt Creator
+CMakeLists.txt.user
+
 #Windows
 .deps
 lib*.dll
@@ -105,10 +127,13 @@ mozillavpnnp.exe
 mozillavpnnp.vcxproj*
 windows/installer/x64/
 windows/tunnel/x64/
-windows/split-tunnel/*
-!windows/split-tunnel/get.ps1
+windows/split-tunnel/*.cat
+windows/split-tunnel/*.inf
+windows/split-tunnel/*.sys
+windows/split-tunnel/*.dll
+windows/split-tunnel/.status
 
-#Rust
+# Rust
 .cargo_home/
 
 
@@ -124,6 +149,8 @@ mozillavpnnp.exe
 mozillavpnnp.vcxproj*
 
 # glean
+/glean/libglean.a
+/glean/glean_autogen/
 /glean/telemetry/*
 !/glean/telemetry/.keepme
 android/src/org/mozilla/firefox/vpn/glean/GleanEvents.kt
@@ -132,13 +159,16 @@ android/src/org/mozilla/firefox/vpn/glean/GleanEvents.kt
 /qt/
 
 # Language files
+/translations/libtranslations.a
+/translations/translations_autogen/
 translations/*/*.ts
 translations/*/*.qm
 translations/*/locversion.plist
-translations/*.pri
-translations/generated/*.cpp
-translations/generated/*.h
+translations/generated/
 macos/pkg/Resources/*.lproj
+
+# Addons
+addons/generated/
 
 # Adjust SDK Files
 android/src/com/adjust
@@ -157,5 +187,6 @@ tools/inspector/node_modules
 
 # Bridge app
 extension/bridge/target
+extension/bridge/vendor
 extension/bridge/.cargo_home
 extension/bridge/.cargo

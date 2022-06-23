@@ -3,35 +3,83 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.0
+import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
+import compat 0.1
 
 VPNPopup {
-    id: root
+    id: popup
 
-    anchors.centerIn: parent
-    maxWidth: VPNTheme.theme.desktopAppWidth
-    _popupContent: VPNFeatureTour {
-        id: featureTour
+    closeButtonObjectName: "featureTourPopupCloseButton"
+    startContentBeneathCloseButton: false
+    bottomPadding: VPNTheme.theme.windowMargin
 
-        slidesModel: VPNWhatsNewModel
-        onFinished: {
-            root.close();
+    popupContentItem.implicitHeight: layout.implicitHeight
+
+    ColumnLayout {
+        id: layout
+
+        anchors.fill: parent
+
+        spacing: 0
+
+        RowLayout {
+            spacing: 0
+
+            // Back button
+            VPNIconButton {
+                id: backButton
+
+                property bool showBackButton: featureTour.currentIndex !== 0
+
+                Layout.leftMargin: VPNTheme.theme.windowMargin / 2
+                Layout.topMargin: VPNTheme.theme.windowMargin / 2
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                Layout.preferredWidth: VPNTheme.theme.rowHeight
+                Layout.alignment: Qt.AlignRight
+
+                objectName: "backButton"
+
+                accessibleName: qsTrId("vpn.main.back")
+                onClicked: featureTour.goBack()
+                enabled: showBackButton
+
+                Accessible.ignored: !showBackButton
+
+                Image {
+                    anchors.centerIn: parent
+
+                    visible: parent.showBackButton
+                    fillMode: Image.PreserveAspectFit
+                    source: "qrc:/nebula/resources/back-dark.svg"
+                    sourceSize.height: VPNTheme.theme.iconSize * 1.5
+                    sourceSize.width: VPNTheme.theme.iconSize * 1.5
+                }
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
         }
-        onStarted: {
-            VPNWhatsNewModel.markFeaturesAsSeen();
+
+        VPNFeatureTour {
+            id: featureTour
+
+            Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
+            Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
+
+            slidesModel: VPNWhatsNewModel
+
+            onFinished: popup.close()
+            onStarted: VPNWhatsNewModel.markFeaturesAsSeen()
         }
-    }
-
-    function openTour() {
-        featureTour.resetTour();
-        root.open();
-
-        VPNSettings.featuresTourShown = true;
     }
 
     function startTour() {
-        featureTour.skipStart();
-        root.open();
+        featureTour.resetTour()
+        open()
     }
 }
+

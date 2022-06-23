@@ -6,6 +6,7 @@
 #define LOCALIZER_H
 
 #include <QAbstractListModel>
+#include <QLocale>
 #include <QTranslator>
 
 class Collator;
@@ -18,6 +19,7 @@ class Localizer final : public QAbstractListModel {
   Q_PROPERTY(QString code READ code WRITE setCode NOTIFY codeChanged)
   Q_PROPERTY(QString previousCode READ previousCode NOTIFY previousCodeChanged)
   Q_PROPERTY(bool hasLanguages READ hasLanguages CONSTANT)
+  Q_PROPERTY(QLocale locale MEMBER m_locale NOTIFY localeChanged)
 
   struct Language {
     QString m_code;
@@ -61,9 +63,13 @@ class Localizer final : public QAbstractListModel {
   Q_INVOKABLE QString localizedCityName(const QString& code,
                                         const QString& city);
 
+  Q_INVOKABLE QString localizeCurrency(double value,
+                                       const QString& currencyIso4217);
+
  signals:
   void codeChanged();
   void previousCodeChanged();
+  void localeChanged();
 
  private:
   static QString languageName(const QString& code);
@@ -77,10 +83,15 @@ class Localizer final : public QAbstractListModel {
   // the QT language files.
   static void macOSInstallerStrings();
 
+  static QString retrieveCurrencySymbolFallback(const QString& currencyIso4217,
+                                                const QLocale& currentLocale);
+
  private:
   QTranslator m_translator;
 
   QString m_code;
+
+  QLocale m_locale;
 
   QList<Language> m_languages;
 };

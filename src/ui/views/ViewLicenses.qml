@@ -12,25 +12,12 @@ import components 0.1
 Item {
     id: root
 
-    property alias isSettingsView: menu.isSettingsView
-    property alias isMainView: menu.isMainView
     property string _menuTitle: VPNl18n.AboutUsLicenses
-
-    VPNMenu {
-        id: menu
-        objectName: "licenseBackButton"
-        title: VPNl18n.AboutUsLicenses
-    }
 
     VPNFlickable {
         id: licenses
 
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: menu.bottom
-        }
-        height: root.height - menu.height
+        anchors.fill: parent
         flickContentHeight: body.height + VPNTheme.theme.windowMargin * 2
         width: root.width
 
@@ -39,10 +26,8 @@ Item {
 
             spacing: VPNTheme.theme.listSpacing
             width: licenses.width
-
-            VPNVerticalSpacer {
-                height: VPNTheme.theme.listSpacing
-            }
+            anchors.top: parent.top
+            anchors.topMargin: VPNTheme.theme.windowMargin
 
             VPNTextBlock {
                 id: mainLicense
@@ -66,16 +51,8 @@ Item {
                     accessibleName: licenseTitle
                     title: licenseTitle
                     iconSource: "qrc:/nebula/resources/chevron.svg"
+                    onClicked: settingsStackView.push("qrc:/ui/views/ViewLicense.qml", { _menuTitle: licenseTitle, licenseContent })
 
-                    onClicked: {
-                        if (isSettingsView) {
-                            settingsStackView.push("qrc:/ui/views/ViewLicense.qml", { isSettingsView, isMainView, licenseTitle, licenseContent })
-                        } else if (isMainView) {
-                            mainStackView.push("qrc:/ui/views/ViewLicense.qml", { isSettingsView, isMainView, licenseTitle, licenseContent })
-                        } else {
-                            stackview.push("qrc:/ui/views/ViewLicense.qml", { isSettingsView, isMainView, licenseTitle, licenseContent })
-                        }
-                    }
                 }
             }
         }

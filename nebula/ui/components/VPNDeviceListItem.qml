@@ -38,6 +38,7 @@ Item {
 
     RowLayout {
         property var deviceName: name
+        objectName: "deviceLayout"
 
         id: deviceRow
 
@@ -82,6 +83,8 @@ Item {
                 value: "qrc:/nebula/resources/spinner.svg"
             }
 
+            ScriptAction { script: icon.rotating = true; }
+
             ParallelAnimation {
                 PropertyAnimation {
                     target: iconButton
@@ -90,13 +93,6 @@ Item {
                     to: 1
                     duration: 300
                 }
-
-                PropertyAction {
-                    target: iconButton
-                    property: "startRotation"
-                    value: true
-                }
-
             }
         }
 
@@ -118,6 +114,7 @@ Item {
             Layout.leftMargin: VPNTheme.theme.windowMargin
             Layout.rightMargin: VPNTheme.theme.windowMargin
             Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+            opacity: enabled ? 1 : 0.6
         }
 
         Column {
@@ -135,6 +132,7 @@ Item {
                 anchors.left: parent.left
                 horizontalAlignment: Text.AlignLeft
                 anchors.right: parent.right
+                opacity: enabled ? 1 : 0.6
                 Accessible.ignored: root.isModalDialogOpened
             }
 
@@ -169,19 +167,21 @@ Item {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 verticalAlignment: Text.AlignVCenter
+                opacity: enabled ? 1 : 0.6
 
             }
         }
 
         VPNIconButton {
             id: iconButton
+            objectName: "deviceRemoveButton"
 
             property var iconSource: "qrc:/nebula/resources/delete.svg"
             property real iconHeightWidth: 22
-            property bool startRotation: false
 
             buttonColorScheme: VPNTheme.theme.removeDeviceBtn
             visible: !currentOne
+            opacity: enabled || (!enabled && iconSource === "qrc:/nebula/resources/spinner.svg") ? 1 : 0.6
             Layout.topMargin: -8
             Layout.alignment: Qt.AlignTop | Qt.AlignRight
             Layout.preferredHeight: VPNTheme.theme.rowHeight
@@ -195,18 +195,23 @@ Item {
             Accessible.ignored: root.isModalDialogOpened
 
             VPNIcon {
+                id: icon
+
+                property bool rotating: false
+
                 source: iconButton.iconSource
                 anchors.centerIn: iconButton
                 sourceSize.height: iconButton.iconHeightWidth
                 sourceSize.width: iconButton.iconHeightWidth
-                rotation: iconButton.startRotation ? 360 : 0
 
-                Behavior on rotation {
-                    PropertyAnimation {
-                        duration: 5000
-                        loops: Animation.Infinite
-                    }
-
+                PropertyAnimation {
+                    target: icon
+                    running: icon.rotating
+                    property: "rotation"
+                    from: 0
+                    to: 360
+                    duration: 5000
+                    loops: Animation.Infinite
                 }
 
             }

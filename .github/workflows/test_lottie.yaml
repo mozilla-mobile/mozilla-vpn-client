@@ -9,6 +9,10 @@ on:
       - main
       - 'releases/**'
 
+# Restrict tests to the most recent commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   linux-lottie-tests:
@@ -27,11 +31,46 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v2
 
-      - name: Running tests
+      - name: Cache grcov
+        id: cache-grcov
+        uses: actions/cache@v2
+        with:
+          path: grcov-build/
+          key: ${{runner.os}}-grcov-v0.8.9
+
+      - name: Install Grcov
+        if: steps.cache-grcov.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
-          xvfb-run -a ./scripts/tests/lottie_tests.sh
+          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.9
+
+      - name: Building tests
+        shell: bash
+        run: |
+          mkdir -p build
+          cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON \
+            -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake/ \
+            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build $(pwd)/build -j$(nproc)
+
+      - name: Running tests
+        shell: bash
+        working-directory: ./build
+        run: |
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --output-on-failure
+
+          grcov $(pwd)/tests/unit/CMakeFiles/lottie_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/lottie_lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          directory: .
+          flags: lottie_tests
+          name: codecov-poc
+          files: lottie_lcov.info
+          verbose: true
 
   macos-lottie-tests:
     runs-on: macos-latest
@@ -45,22 +84,30 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_macos
+          git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
           cd qt_static_macos
           cat qt6* > qt_static.tar.gz
           tar xf qt_static.tar.gz
           sudo mv qt6 /opt
           cd ..
 
+      - name: Cache grcov
+        id: cache-grcov
+        uses: actions/cache@v2
+        with:
+          path: grcov-build/
+          key: ${{runner.os}}-grcov-v0.8.9
+
       - name: Install Grcov
+        if: steps.cache-grcov.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          cargo install grcov
+          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.9
 
       - name: Running tests
         shell: bash
         run: |
-          export PATH=/opt/qt6/bin:$PATH
+          export PATH=/opt/qt6/bin:${{github.workspace}}/grcov-build/bin:$PATH
           ./scripts/tests/lottie_tests.sh --grcov lottie_lcov.info
 
       - name: Upload coverage to Codecov
@@ -84,17 +131,10 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_windows
-          cd qt_static_windows
-          cat qt6* > qt_static.tar.bz2
-          tar xf qt_static.tar.bz2
-          tar xf msm.tar.gz
+          git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
           mkdir /c/MozillaVPNBuild
-          cp -r * /c/MozillaVPNBuild
-          cd ..
-          cp /c/MozillaVPNBuild/SSL/bin/libssl-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/SSL/bin/libcrypto-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/*.msm .
+          cat qt_static_windows/qt6* > qt6_static.tar.bz2
+          tar xf qt6_static.tar.bz2 -C /c/MozillaVPNBuild
 
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
@@ -102,8 +142,16 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Running tests
+      - name: Building tests
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          ./scripts/tests/lottie_tests.sh
+          mkdir -p build
+          cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON
+          cmake --build $(pwd)/build --config Release
+
+      - name: Running tests
+        shell: bash
+        working-directory: ./build
+        run: |
+          ctest --build-config Release --output-on-failure

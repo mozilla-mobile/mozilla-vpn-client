@@ -18,7 +18,7 @@ HEADERS += $$PWD/lib/lottie.h \
 # wrap lottie in a single file before using it as resource.
 LOTTIEWRAP = $$cat($$PWD/lib/lottie/lottie_wrap.js.template, blob)
 LOTTIEJS = $$cat($$PWD/lib/lottie/lottie.min.js, blob)
-LOTTIERC = $$replace(LOTTIEWRAP, __LOTTIE__, $$LOTTIEJS)
+LOTTIERC = $$replace(LOTTIEWRAP, @LOTTIEJS@, $$LOTTIEJS)
 write_file($$PWD/lib/lottie/lottie.mjs, LOTTIERC)
 
 RESOURCES += $$PWD/lib/lottie.qrc

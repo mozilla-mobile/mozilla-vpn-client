@@ -17,8 +17,20 @@ class AuthenticationInAppSession final : public QObject {
   Q_DISABLE_COPY_MOVE(AuthenticationInAppSession)
 
  public:
-  AuthenticationInAppSession(QObject* parent);
+  enum TypeAuthentication {
+    // Initial authentication
+    TypeDefault,
+    // Re-authentication for account deletion
+    TypeAccountDeletion,
+    // Re-authentication for subscription management
+    TypeSubscriptionManagement,
+  };
+  Q_ENUM(TypeAuthentication);
+
+  AuthenticationInAppSession(QObject* parent, TypeAuthentication type);
   ~AuthenticationInAppSession();
+
+  TypeAuthentication type() const { return m_typeAuthentication; }
 
   void reset();
 
@@ -76,6 +88,8 @@ class AuthenticationInAppSession final : public QObject {
  private:
   Task* m_task = nullptr;
 
+  TypeAuthentication m_typeAuthentication = TypeDefault;
+
   struct {
     QString m_clientId;
     QString m_deviceId;
@@ -92,6 +106,7 @@ class AuthenticationInAppSession final : public QObject {
   // FxA can return a different case format for the email address. Usually,
   // this is equal to `m_emailAddress`.
   QString m_emailAddressCaseFix;
+  QString m_originalLoginEmailAddress;
 
   QByteArray m_sessionToken;
 

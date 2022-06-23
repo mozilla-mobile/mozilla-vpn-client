@@ -82,8 +82,8 @@ Item {
 
         visible: footerLinkIsVisible
         onClicked: {
-            if (isDeleteAccountAuth) {
-                cancelAccountDeletion();
+            if (typeof(isReauthFlow) !== "undefined" && isReauthFlow) {
+                cancelAuthenticationFlow();
             } else {
                 VPN.cancelAuthentication()
             }

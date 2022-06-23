@@ -20,10 +20,9 @@ class Guide final : public QObject {
 
  public:
   static Guide* create(QObject* parent, const QString& fileName);
+  static Guide* create(QObject* parent, const QJsonObject& obj);
 
-  static QString pascalize(const QString& input);
-
-  static bool evaluateConditions(const QJsonObject& conditions);
+  const QString& titleId() const { return m_titleId; }
 
   ~Guide();
 

@@ -20,13 +20,18 @@ Item {
         id: menu
         // Do not translate this string!
         title: "Feature List"
-        isSettingsView: false
     }
 
     VPNFilterProxyModel {
-        id: editableFeatureModel
+        id: flippableOnFeatureModel
         source: VPNFeatureList
-        filterCallback: entry => entry.feature.devModeWriteable
+        filterCallback: entry => entry.feature.flippableOn && !entry.feature.isSupportedIgnoringFlip
+    }
+
+    VPNFilterProxyModel {
+        id: flippableOffFeatureModel
+        source: VPNFeatureList
+        filterCallback: entry => entry.feature.flippableOff && entry.feature.isSupportedIgnoringFlip
     }
 
     VPNFlickable {
@@ -47,20 +52,38 @@ Item {
 
             VPNBoldLabel{
                 // Do not translate this string!
-                text: "Features that can be toggled"
+                text: "Features that can be flipped on"
             }
 
             Repeater {
-                model: editableFeatureModel
+                model: flippableOnFeatureModel
                 delegate: VPNCheckBoxRow {
                     showDivider: false
                     labelText: feature.name
                     subLabelText: feature.id
                     showAppImage: false
-                    onClicked: VPNFeatureList.devModeFlipFeatureFlag(feature.id)
-                    // Only enable the list on features where devModeEnable has any impact
+                    onClicked: VPNFeatureList.toggleForcedEnable(feature.id)
                     enabled: true
-                    isChecked: feature.isDevModeEnabled()
+                    isChecked: feature.isFlippedOn()
+                    Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
+                }
+            }
+
+            VPNBoldLabel{
+                // Do not translate this string!
+                text: "Features that can be flipped off"
+            }
+
+            Repeater {
+                model: flippableOffFeatureModel
+                delegate: VPNCheckBoxRow {
+                    showDivider: false
+                    labelText: feature.name
+                    subLabelText: feature.id
+                    showAppImage: false
+                    onClicked: VPNFeatureList.toggleForcedDisable(feature.id)
+                    enabled: true
+                    isChecked: feature.isFlippedOff()
                     Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
                 }
             }

@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/nebula">
+        <file>resources/arrow-back-white.svg</file>
         <file>resources/arrow-forward.svg</file>
         <file>resources/arrow-forward-white.svg</file>
         <file>resources/arrow-toggle.svg</file>
@@ -306,6 +307,7 @@
         <file>resources/logo-dock.png</file>
         <file>resources/logo.ico</file>
         <file>resources/magic-dark.svg</file>
+        <file>resources/open-in-new.svg</file>
         <file>resources/plus.svg</file>
         <file>resources/refresh.svg</file>
         <file>resources/search.svg</file>
@@ -316,6 +318,7 @@
         <file>resources/shaders/src/animatedRings.frag</file>
         <file>resources/shield-off.svg</file>
         <file>resources/shield-on.svg</file>
+        <file>resources/sparkles.svg</file>
         <file>resources/spinner.svg</file>
         <file>resources/switching.svg</file>
         <file>resources/update-lock.svg</file>
@@ -329,5 +332,6 @@
         <file>resources/x-red50.svg</file>
         <file>resources/check-green70.svg</file>
         <file>resources/shield-green50.svg</file>
+        <file>resources/checkmark-blue50.svg</file>
     </qresource>
 </RCC>

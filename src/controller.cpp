@@ -6,24 +6,20 @@
 #include "controller.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
-#include "featurelist.h"
-#include "features/featurecustomdns.h"
-#include "features/featurecaptiveportal.h"
-#include "features/featurelocalareaaccess.h"
-#include "features/featuremultihop.h"
+#include "ipaddress.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "models/feature.h"
+#include "models/server.h"
+#include "mozillavpn.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
 #include "rfc/rfc4291.h"
-
-#include "ipaddress.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "models/server.h"
-#include "mozillavpn.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "tasks/heartbeat/taskheartbeat.h"
+#include "telemetry/gleansample.h"
 #include "timersingleshot.h"
 
 #if defined(MVPN_LINUX)
@@ -203,7 +199,7 @@ void Controller::activateInternal() {
     return;
   }
 
-  vpn->setServerPublicKey(exitServer.publicKey());
+  vpn->setExitServerPublicKey(exitServer.publicKey());
 
   // Prepare the exit server's connection data.
   HopConnection exitHop;
@@ -221,7 +217,8 @@ void Controller::activateInternal() {
   }
 
   // For single-hop connections, exclude the entry server
-  if (!FeatureMultiHop::instance()->isSupported() || !vpn->multihop()) {
+  if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
+      !vpn->multihop()) {
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv4AddrIn());
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
@@ -229,12 +226,15 @@ void Controller::activateInternal() {
     if (settingsHolder->tunnelPort53()) {
       exitHop.m_server.forcePort(53);
     }
+    // For single-hop, they are the same
+    vpn->setEntryServerPublicKey(exitServer.publicKey());
   }
   // For controllers that support multiple hops, create a queue of connections.
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
     HopConnection hop;
     hop.m_server = Server::weightChooser(vpn->entryServers());
+    vpn->setEntryServerPublicKey(hop.m_server.publicKey());
     if (!hop.m_server.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
@@ -256,6 +256,7 @@ void Controller::activateInternal() {
   // connection to the exit server via the multihop port.
   else {
     Server entryServer = Server::weightChooser(vpn->entryServers());
+    vpn->setEntryServerPublicKey(entryServer.publicKey());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
@@ -311,7 +312,7 @@ bool Controller::silentSwitchServers() {
         << "Cannot silent switch servers because there is only one available";
     return false;
   }
-  vpn->setServerCooldown(vpn->serverPublicKey());
+  vpn->setServerCooldown(vpn->exitServerPublicKey());
 
   // Activate the first connection to kick off the server switch.
   activateInternal();
@@ -688,7 +689,7 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   // routed through the VPN.
 
   // filtering out the RFC1918 local area network
-  if (FeatureLocalAreaAccess::instance()->isSupported() &&
+  if (Feature::get(Feature::Feature_lanAccess)->isSupported() &&
       SettingsHolder::instance()->localNetworkAccess()) {
     logger.debug() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());
@@ -736,7 +737,7 @@ QStringList Controller::getExcludedAddresses(const Server& exitServer) {
   QStringList list;
 
   // filtering out the captive portal endpoint
-  if (FeatureCaptivePortal::instance()->isSupported() &&
+  if (Feature::get(Feature::Feature_captivePortal)->isSupported() &&
       SettingsHolder::instance()->captivePortalAlert()) {
     CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
 

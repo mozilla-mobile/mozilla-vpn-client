@@ -1,0 +1,52 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#include <winresrc.h>
+
+#ifndef DEBUG
+#define VER_DEBUG                   0
+#else
+#define VER_DEBUG                   VS_FF_DEBUG
+#endif
+
+// See https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource
+// for a list of all the neat metadata we can set in this file.
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     @CMAKE_PROJECT_VERSION_MAJOR@, @CMAKE_PROJECT_VERSION_MINOR@, @CMAKE_PROJECT_VERSION_PATCH@
+PRODUCTVERSION  @CMAKE_PROJECT_VERSION_MAJOR@, @CMAKE_PROJECT_VERSION_MINOR@, @CMAKE_PROJECT_VERSION_PATCH@
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+FILEFLAGS       (VER_DEBUG)
+FILEOS          VOS__WINDOWS32
+FILETYPE        VFT_APP
+FILESUBTYPE     VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      "Mozilla Corporation"
+            VALUE "FileDescription",  "@CMAKE_PROJECT_DESCRIPTION@"
+            VALUE "FileVersion",      "@CMAKE_PROJECT_VERSION@"
+            //VALUE "InternalName",     VER_INTERNALNAME_STR
+            VALUE "LegalCopyright",   "MPL-2.0"
+            //VALUE "LegalTrademarks1", VER_LEGALTRADEMARKS1_STR
+            //VALUE "LegalTrademarks2", VER_LEGALTRADEMARKS2_STR
+            //VALUE "OriginalFilename", VER_ORIGINALFILENAME_STR
+            VALUE "ProductName",      "@CMAKE_PROJECT_NAME@"
+            VALUE "ProductVersion",   "@CMAKE_PROJECT_VERSION@"
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        /* The following line should only be modified for localized versions.     */
+        /* It consists of any number of WORD,WORD pairs, with each pair           */
+        /* describing a language,codepage combination supported by the file.      */
+        /*                                                                        */
+        /* For example, a file might have values "0x409,1252" indicating that it  */
+        /* supports English language (0x409) in the Windows ANSI codepage (1252). */
+
+        VALUE "Translation", 0x409, 1252
+
+    END
+END

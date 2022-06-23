@@ -3,3 +3,4 @@ glean_parser
 lxml
 PyYAML
 jsonschema
+oathtool

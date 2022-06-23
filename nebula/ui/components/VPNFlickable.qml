@@ -12,19 +12,19 @@ Flickable {
     id: vpnFlickable
 
     property var flickContentHeight
-    property var windowHeightExceedsContentHeight: (window.safeContentHeight > flickContentHeight)
+    property bool contentExceedsHeight: height < flickContentHeight
     property bool hideScollBarOnStackTransition: false
 
     clip: true
 
     function ensureVisible(item) {
         let yPosition = item.mapToItem(contentItem, 0, 0).y;
-        if (windowHeightExceedsContentHeight || item.skipEnsureVisible || yPosition < 0) {
+        if (!contentExceedsHeight || item.skipEnsureVisible || yPosition < 0) {
             return;
         }
 
         const buffer = 20;
-        const itemHeight = Math.min(item.height, VPNTheme.theme.rowHeight) + buffer
+        const itemHeight = Math.max(item.height, VPNTheme.theme.rowHeight) + buffer
         let ext = item.height + yPosition;
         let destinationY;
 
@@ -106,7 +106,7 @@ Flickable {
         minimumSize: 0
 
         opacity: hideScollBarOnStackTransition && (vpnFlickable.StackView.status !== StackView.Active) ? 0 : 1
-        visible: !windowHeightExceedsContentHeight
+        visible: contentExceedsHeight
 
         Behavior on opacity {
             PropertyAnimation {

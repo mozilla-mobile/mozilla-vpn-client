@@ -4,9 +4,8 @@
 
 const assert = require('assert');
 const websocket = require('websocket').w3cwebsocket;
-const FirefoxHelper = require('./firefox.js');
-
-const webdriver = require('selenium-webdriver'), By = webdriver.By;
+const {URL} = require('node:url');
+const http = require('http')
 
 let client;
 
@@ -116,6 +115,14 @@ module.exports = {
     const json = await this._writeCommand('force_server_unavailable');
     assert(
         json.type === 'force_server_unavailable' && !('error' in json),
+        `Command failed: ${json.error}`);
+  },
+
+  async forceSubscriptionManagementReauth() {
+    const json = await this._writeCommand(
+        'force_subscription_management_reauthentication');
+    assert(
+        json.type === 'force_subscription_management_reauthentication' && !('error' in json),
         `Command failed: ${json.error}`);
   },
 
@@ -243,7 +250,8 @@ module.exports = {
 
   // TODO - The expected staging urls are hardcoded, we may want to
   // move these hardcoded urls out if testing in alternate environments.
-  async authenticate(clickOnPostAuthenticate = false, acceptTelemetry = false) {
+  async authenticateInBrowser(
+      clickOnPostAuthenticate = false, acceptTelemetry = false) {
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForMainView();
     await this.setElementProperty('VPN', 'lastUrl', 's', '');
@@ -256,43 +264,73 @@ module.exports = {
     });
     await this.wait();
 
-    await this.waitForElement('authenticatingView');
-    await this.waitForElementProperty('authenticatingView', 'visible', 'true');
-
-    // Slight deviation from real-world authentication, we manually
-    // open and verify the login.
+    // We don't really want to go through the authentication flow because we are
+    // mocking everything.
     const url = await this.getLastUrl();
-    let driver = await FirefoxHelper.createDriver();
-    await driver.setContext('content');
-    await driver.navigate().to(url);
-    await FirefoxHelper.waitForURL(
-        driver, 'https://accounts.stage.mozaws.net/oauth/');
+    const urlObj = new URL(url);
 
-    // Perform login based on stored credentials in environment
-    const emailField = await driver.findElement(By.className('email'));
-    assert.ok(!!emailField);
-    await emailField.sendKeys(process.env.ACCOUNT_EMAIL);
-    let buttonElm = await driver.findElement(By.id('submit-btn'));
-    assert.ok(!!buttonElm);
-    buttonElm.click();
-    await FirefoxHelper.waitForURL(
-        driver, 'https://accounts.stage.mozaws.net/oauth/signin');
-    const passwordField = await driver.findElement(By.id('password'));
-    assert.ok(!!passwordField);
-    passwordField.sendKeys(process.env.ACCOUNT_PASSWORD);
-    buttonElm = await driver.findElement(By.id('submit-btn'));
-    assert.ok(!!buttonElm);
-    await buttonElm.click();
+    const options = {
+      hostname: urlObj.hostname,
+      port: parseInt(urlObj.searchParams.get('port'), 10),
+      path: '/?code=the_code',
+      method: 'GET',
+    };
 
-    // Verify that we've been redirected to guardian success page
-    await FirefoxHelper.waitForURL(
-        driver,
-        'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
+    await new Promise(resolve => {
+      const req = http.request(options, res => {});
+      req.on('close', resolve);
+      req.on('error', error => {
+        throw new error(
+            `Unable to connect to ${urlObj.hostname} to complete the auth`);
+      });
+      req.end();
+    });
 
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
     await this.waitForElement('postAuthenticationButton');
-    await driver.quit();
+
+    // Clean-up extra devices (otherwise test account will fill up in a
+    // heartbeats)
+    await this._maybeRemoveExistingDevices();
+
+    if (clickOnPostAuthenticate) {
+      await this.clickOnElement('postAuthenticationButton');
+      await this.wait();
+    }
+    if (acceptTelemetry) {
+      await this.waitForElement('telemetryPolicyButton');
+      await this.clickOnElement('telemetryPolicyButton');
+      await this.waitForElement('controllerTitle');
+    }
+  },
+
+  async authenticateInApp(
+      clickOnPostAuthenticate = false, acceptTelemetry = false) {
+    if (!(await this.isFeatureFlippedOn('inAppAuthentication'))) {
+      await this.flipFeatureOn('inAppAuthentication');
+    }
+
+    // This method must be called when the client is on the "Get Started" view.
+    await this.waitForMainView();
+
+    // Click on get started and wait for authenticating view
+    await this.clickOnElement('getStarted');
+    await this.waitForElement('authStart-textInput');
+    await this.setElementProperty(
+        'authStart-textInput', 'text', 's', 'test@test');
+    await this.waitForElement('authStart-button');
+    await this.clickOnElement('authStart-button');
+
+    await this.waitForElement('authSignIn-passwordInput');
+    await this.setElementProperty(
+        'authSignIn-passwordInput', 'text', 's', 'password');
+
+    await this.clickOnElement('authSignIn-button');
+
+    // Wait for VPN client screen to move from spinning wheel to next screen
+    await this.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
+    await this.waitForElement('postAuthenticationButton');
 
     // Clean-up extra devices (otherwise test account will fill up in a
     // heartbeats)
@@ -313,6 +351,36 @@ module.exports = {
     const json = await this._writeCommand('logout');
     assert(
         json.type === 'logout' && !('error' in json),
+        `Command failed: ${json.error}`);
+  },
+
+  async isFeatureFlippedOn(key) {
+    const json = await this._writeCommand(`is_feature_flipped_on ${key}`);
+    assert(
+        json.type === 'is_feature_flipped_on' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return !!json.value;
+  },
+
+  async isFeatureFlippedOff(key) {
+    const json = await this._writeCommand(`is_feature_flipped_off ${key}`);
+    assert(
+        json.type === 'is_feature_flipped_off' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return !!json.value;
+  },
+
+  async flipFeatureOn(key) {
+    const json = await this._writeCommand(`flip_on_feature ${key}`);
+    assert(
+        json.type === 'flip_on_feature' && !('error' in json),
+        `Command failed: ${json.error}`);
+  },
+
+  async flipFeatureOff(key) {
+    const json = await this._writeCommand(`flip_off_feature ${key}`);
+    assert(
+        json.type === 'flip_off_feature' && !('error' in json),
         `Command failed: ${json.error}`);
   },
 
@@ -340,6 +408,14 @@ module.exports = {
     _lastNotification.message = null;
   },
 
+  async settingsFileName() {
+    const json = await this._writeCommand('settings_filename');
+    assert(
+        json.type === 'settings_filename' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
+  },
+
   async languages() {
     const json = await this._writeCommand('languages');
     assert(
@@ -356,10 +432,42 @@ module.exports = {
     return json.value;
   },
 
+  async guides() {
+    const json = await this._writeCommand('guides');
+    assert(
+        json.type === 'guides' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
+  },
+
+  async featureTourFeatures() {
+    const json = await this._writeCommand('feature_tour_features');
+    assert(
+        json.type === 'feature_tour_features' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
+  },
+
   async screenCapture() {
     const json = await this._writeCommand('screen_capture');
     assert(
         json.type === 'screen_capture' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
+  },
+
+  async openContactUs() {
+    const json = await this._writeCommand('open_contact_us');
+    assert(
+        json.type === 'open_contact_us' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
+  },
+
+  async openSettings() {
+    const json = await this._writeCommand('open_settings');
+    assert(
+        json.type === 'open_settings' && !('error' in json),
         `Command failed: ${json.error}`);
     return json.value;
   },

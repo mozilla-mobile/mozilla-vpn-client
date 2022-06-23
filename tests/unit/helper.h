@@ -35,9 +35,13 @@ class TestHelper : public QObject {
 
   static MozillaVPN::State vpnState;
 
+  static MozillaVPN::UserState userState;
+
   static Controller::State controllerState;
 
   static QVector<QObject*> testList;
+
+  static QObject* findTest(const QString& name);
 };
 
 #endif  // HELPER_H

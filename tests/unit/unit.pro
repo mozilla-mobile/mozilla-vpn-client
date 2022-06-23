@@ -8,9 +8,9 @@ QT += qml
 QT += quick
 QT += xml
 QT += widgets
+QT += websockets
 
-DEFINES += APP_VERSION=\\\"1234\\\"
-DEFINES += BUILD_ID=\\\"1234\\\"
+DEFINES += BUILD_QMAKE
 
 CONFIG += c++1z
 
@@ -31,15 +31,24 @@ INCLUDEPATH += \
             ../../src \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
-            ../../src/hacl-star/kremlin/minimal \
-            ../../translations/generated \
-            ../../glean \
-            ../../nebula
+            ../../src/hacl-star/kremlin/minimal
 
+include($$PWD/../../version.pri)
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../nebula/nebula.pri)
+include($$PWD/../../translations/translations.pri)
+include($$PWD/../../src/qmake/signature.pri)
+
+# Remove resouce files that we intend to mock out
+RESOURCES ~= 's/.*servers.qrc//g'
 
 HEADERS += \
+    ../../src/addonmanager.h \
+    ../../src/addons/addon.h \
+    ../../src/addons/addondemo.h \
+    ../../src/addons/addonguide.h \
+    ../../src/addons/addoni18n.h \
+    ../../src/addons/addontutorial.h \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/captiveportal/captiveportal.h \
@@ -51,7 +60,6 @@ HEADERS += \
     ../../src/curve25519.h \
     ../../src/dnspingsender.h \
     ../../src/errorhandler.h \
-    ../../src/featurelist.h \
     ../../src/inspector/inspectorhandler.h \
     ../../src/inspector/inspectorutils.h \
     ../../src/ipaddress.h \
@@ -64,6 +72,7 @@ HEADERS += \
     ../../src/models/device.h \
     ../../src/models/devicemodel.h \
     ../../src/models/feature.h \
+    ../../src/models/featuremodel.h \
     ../../src/models/feedbackcategorymodel.h \
     ../../src/models/guide.h \
     ../../src/models/guideblock.h \
@@ -81,6 +90,9 @@ HEADERS += \
     ../../src/models/surveymodel.h \
     ../../src/models/tutorial.h \
     ../../src/models/tutorialmodel.h \
+    ../../src/models/tutorialstep.h \
+    ../../src/models/tutorialstepbefore.h \
+    ../../src/models/tutorialstepnext.h \
     ../../src/models/user.h \
     ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
@@ -103,13 +115,16 @@ HEADERS += \
     ../../src/rfc/rfc5735.h \
     ../../src/serveri18n.h \
     ../../src/settingsholder.h \
+    ../../src/signature.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
+    ../../src/subscriptiondata.h \
     ../../src/task.h \
     ../../src/tasks/account/taskaccount.h \
     ../../src/tasks/adddevice/taskadddevice.h \
-    ../../src/tasks/ipfinder/taskipfinder.h \
+    ../../src/tasks/addon/taskaddon.h \
     ../../src/tasks/function/taskfunction.h \
+    ../../src/tasks/ipfinder/taskipfinder.h \
     ../../src/tasks/release/taskrelease.h \
     ../../src/tasks/servers/taskservers.h \
     ../../src/taskscheduler.h \
@@ -117,8 +132,11 @@ HEADERS += \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
+    ../../src/update/webupdater.h \
     ../../src/urlopener.h \
+    ../../src/websockethandler.h \
     helper.h \
+    testaddon.h \
     testadjust.h \
     testandroidmigration.h \
     testcommandlineparser.h \
@@ -139,9 +157,16 @@ HEADERS += \
     testtasks.h \
     testthemes.h \
     testtimersingleshot.h \
-    testtutorial.h
+    testtutorial.h \
+    testwebsockethandler.h
 
 SOURCES += \
+    ../../src/addonmanager.cpp \
+    ../../src/addons/addon.cpp \
+    ../../src/addons/addondemo.cpp \
+    ../../src/addons/addonguide.cpp \
+    ../../src/addons/addoni18n.cpp \
+    ../../src/addons/addontutorial.cpp \
     ../../src/adjust/adjustfiltering.cpp \
     ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
@@ -152,7 +177,6 @@ SOURCES += \
     ../../src/curve25519.cpp \
     ../../src/dnspingsender.cpp \
     ../../src/errorhandler.cpp \
-    ../../src/featurelist.cpp \
     ../../src/hacl-star/Hacl_Chacha20.c \
     ../../src/hacl-star/Hacl_Chacha20Poly1305_32.c \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
@@ -161,7 +185,6 @@ SOURCES += \
     ../../src/ipaddresslookup.cpp \
     ../../src/itempicker.cpp \
     ../../src/inspector/inspectorutils.cpp \
-    ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
     ../../src/logger.cpp \
@@ -169,6 +192,7 @@ SOURCES += \
     ../../src/models/device.cpp \
     ../../src/models/devicemodel.cpp \
     ../../src/models/feature.cpp \
+    ../../src/models/featuremodel.cpp \
     ../../src/models/feedbackcategorymodel.cpp \
     ../../src/models/guide.cpp \
     ../../src/models/guideblock.cpp \
@@ -186,6 +210,9 @@ SOURCES += \
     ../../src/models/surveymodel.cpp \
     ../../src/models/tutorial.cpp \
     ../../src/models/tutorialmodel.cpp \
+    ../../src/models/tutorialstep.cpp \
+    ../../src/models/tutorialstepbefore.cpp \
+    ../../src/models/tutorialstepnext.cpp \
     ../../src/models/user.cpp \
     ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
@@ -204,25 +231,31 @@ SOURCES += \
     ../../src/rfc/rfc5735.cpp \
     ../../src/serveri18n.cpp \
     ../../src/settingsholder.cpp \
+    ../../src/signature.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \
+    ../../src/subscriptiondata.cpp \
     ../../src/tasks/account/taskaccount.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
-    ../../src/tasks/ipfinder/taskipfinder.cpp \
+    ../../src/tasks/addon/taskaddon.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/tasks/release/taskrelease.cpp \
+    ../../src/tasks/ipfinder/taskipfinder.cpp \
     ../../src/tasks/servers/taskservers.cpp \
     ../../src/taskscheduler.cpp \
     ../../src/theme.cpp \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
+    ../../src/update/webupdater.cpp \
     ../../src/urlopener.cpp \
+    ../../src/websockethandler.cpp \
     main.cpp \
     moccontroller.cpp \
     mocinspectorhandler.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
+    testaddon.cpp \
     testadjust.cpp \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \
@@ -243,14 +276,8 @@ SOURCES += \
     testtasks.cpp \
     testthemes.cpp \
     testtimersingleshot.cpp \
-    testtutorial.cpp
-
-exists($$PWD/../../translations/generated/l18nstrings.h) {
-    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
-    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
-} else {
-    error("No l18nstrings.h. Have you generated the strings?")
-}
+    testtutorial.cpp \
+    testwebsockethandler.cpp
 
 # Platform-specific: Linux
 linux {

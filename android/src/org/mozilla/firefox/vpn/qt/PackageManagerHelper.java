@@ -18,7 +18,6 @@ import android.Manifest.permission;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-import android.webkit.WebView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,10 +30,6 @@ import java.util.regex.Pattern;
 // Gets used by /platforms/android/androidAppListProvider.cpp
 public class PackageManagerHelper {
   final static String TAG = "PackageManagerHelper";
-  final static int MIN_CHROME_VERSION = 65;
-
-  final static List<String> CHROME_BROWSERS = Arrays.asList(
-      new String[] {"com.google.android.webview", "com.android.webview", "com.google.chrome"});
 
   private static String getAllAppNames(Context ctx) {
     JSONObject output = new JSONObject();
@@ -125,65 +120,5 @@ public class PackageManagerHelper {
       browsers.add(browserID);
     }
     return browsers;
-  }
-
-  // Gets called in AndroidAuthenticationListener;
-  public static boolean isWebViewSupported(Context ctx) {
-    Log.v(TAG, "Checking if installed Webview is compatible with FxA");
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      // The default Webview is able do to FXA
-      return true;
-    }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      PackageInfo pi = WebView.getCurrentWebViewPackage();
-      if (CHROME_BROWSERS.contains(pi.packageName)) {
-        return isSupportedChromeBrowser(pi);
-      }
-      return isNotAncientBrowser(pi);
-    }
-
-    // Before O the webview is hardcoded, but we dont know which package it is.
-    // Check if com.google.android.webview is installed
-    PackageManager pm = ctx.getPackageManager();
-    try {
-      PackageInfo pi = pm.getPackageInfo("com.google.android.webview", 0);
-      return isSupportedChromeBrowser(pi);
-    } catch (PackageManager.NameNotFoundException e) {
-    }
-    // Otherwise check com.android.webview
-    try {
-      PackageInfo pi = pm.getPackageInfo("com.android.webview", 0);
-      return isSupportedChromeBrowser(pi);
-    } catch (PackageManager.NameNotFoundException e) {
-    }
-    Log.e(TAG, "Android System WebView is not found");
-    // Giving up :(
-    return false;
-  }
-
-  private static boolean isSupportedChromeBrowser(PackageInfo pi) {
-    Log.d(TAG, "Checking Chrome Based Browser: " + pi.packageName);
-    Log.d(TAG, "version name: " + pi.versionName);
-    Log.d(TAG, "version code: " + pi.versionCode);
-    try {
-      String versionCode = pi.versionName.split(Pattern.quote(" "))[0];
-      String majorVersion = versionCode.split(Pattern.quote("."))[0];
-      int version = Integer.parseInt(majorVersion);
-      return version >= MIN_CHROME_VERSION;
-    } catch (Exception e) {
-      Log.e(TAG, "Failed to check Chrome Version Code " + pi.versionName);
-      return false;
-    }
-  }
-
-  private static boolean isNotAncientBrowser(PackageInfo pi) {
-    // Not a google chrome - So the version name is worthless
-    // Lets just make sure the WebView
-    // used is not ancient ==> Was updated in at least the last 365 days
-    Log.d(TAG, "Checking Chrome Based Browser: " + pi.packageName);
-    Log.d(TAG, "version name: " + pi.versionName);
-    Log.d(TAG, "version code: " + pi.versionCode);
-    double oneYearInMillis = 31536000000L;
-    return pi.lastUpdateTime > (System.currentTimeMillis() - oneYearInMillis);
   }
 }

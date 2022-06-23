@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/ui">
-        <file>../platforms/android/androidauthenticationview.qml</file>
         <file>authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
         <file>authenticationInApp/ViewAuthenticationInApp.qml</file>
         <file>authenticationInApp/ViewAuthenticationInitializing.qml</file>
@@ -10,12 +9,12 @@
         <file>authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
+        <file>authenticationInApp/ViewReauthenticationFlow.qml</file>
         <file>deleteAccount/ViewDeleteAccount.qml</file>
         <file>deleteAccount/ViewDeleteAccountRequest.qml</file>
         <file>developerMenu/ViewAnimationsPlayground.qml</file>
         <file>developerMenu/ViewDeveloperMenu.qml</file>
         <file>developerMenu/ViewFeatureList.qml</file>
-        <file>developerMenu/ViewGuides.qml</file>
         <file>developerMenu/ViewThemeList.qml</file>
         <file>developerMenu/ViewTutorials.qml</file>
         <file>main.qml</file>
@@ -23,11 +22,15 @@
         <file>settings/ViewAdvancedDNSSettings.qml</file>
         <file>settings/ViewAppPermissions.qml</file>
         <file>settings/ViewGiveFeedback.qml</file>
+        <file>settings/ViewGuide.qml</file>
         <file>settings/ViewLanguage.qml</file>
         <file>settings/ViewNetworkSettings.qml</file>
         <file>settings/ViewNotifications.qml</file>
         <file>settings/ViewPrivacySecurity.qml</file>
         <file>settings/ViewSettingsMenu.qml</file>
+        <file>settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
+        <file>settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>
+        <file>settings/ViewTipsAndTricks.qml</file>
         <file>settings/ViewWhatsNew.qml</file>
         <file>states/StateAuthenticating.qml</file>
         <file>states/StateAuthenticationInApp.qml</file>
@@ -43,6 +46,7 @@
         <file>states/StateSubscriptionNotValidated.qml</file>
         <file>states/StateTelemetryPolicy.qml</file>
         <file>states/StateUpdateRequired.qml</file>
+        <file>views/ViewAddon.qml</file>
         <file>views/ViewCaptivePortalInfo.qml</file>
         <file>views/ViewContactUs.qml</file>
         <file>views/ViewDevices.qml</file>

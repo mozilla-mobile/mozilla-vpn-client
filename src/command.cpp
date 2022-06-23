@@ -5,7 +5,6 @@
 #include "command.h"
 #include "commandlineparser.h"
 #include "constants.h"
-#include "featurelist.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -15,7 +14,10 @@
 #include "simplenetworkmanager.h"
 
 #ifdef MVPN_WINDOWS
+#  include <QSGRendererInterface>
+#  include <QQuickWindow>
 #  include <Windows.h>
+#  include "platforms/windows/windowscommons.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -28,7 +30,7 @@
 
 namespace {
 Logger logger(LOG_MAIN, "Command");
-}
+}  // namespace
 
 QVector<std::function<Command*(QObject*)>> Command::s_commandCreators;
 
@@ -86,16 +88,14 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
     LogHandler::enableDebug();
   }
 
-  FeatureList::instance()->initialize();
-
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  logger.info() << "MozillaVPN" << APP_VERSION;
+  logger.info() << "MozillaVPN" << Constants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(APP_VERSION);
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   Localizer localizer;
   SimpleNetworkManager snm;
@@ -113,17 +113,15 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
     LogHandler::enableDebug();
   }
 
-  FeatureList::instance()->initialize();
-
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << APP_VERSION;
+  logger.info() << "MozillaVPN" << Constants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(APP_VERSION);
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   Localizer localizer;
   SimpleNetworkManager snm;
@@ -148,11 +146,12 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
     LogHandler::enableDebug();
   }
 
-  FeatureList::instance()->initialize();
-
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << APP_VERSION;
+  // Ensure that external styling hints are disabled.
+  qunsetenv("QT_STYLE_OVERRIDE");
+
+  logger.info() << "MozillaVPN" << Constants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
 #ifdef MVPN_WINDOWS
@@ -169,10 +168,16 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
       Qt::HighDpiScaleFactorRoundingPolicy::Round);
 #endif
 
+#ifdef MVPN_WINDOWS
+  if (WindowsCommons::requireSoftwareRendering()) {
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
+  }
+#endif
+
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(APP_VERSION);
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   Localizer localizer;
 

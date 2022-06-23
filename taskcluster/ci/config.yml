@@ -37,6 +37,11 @@ workers:
             implementation: docker-worker
             os: linux
             worker-type: b-linux
+        b-linux-large:
+            provisioner: 'mozillavpn-{level}'
+            implementation: docker-worker
+            os: linux
+            worker-type: b-linux-large
         b-win2012:
             provisioner: 'mozillavpn-{level}'
             implementation: generic-worker
@@ -68,16 +73,21 @@ workers:
                 by-level:
                     "3": mozillavpn-3-signing
                     default: mozillavpn-t-signing
+        macos-dep-signing:
+            provisioner: scriptworker-prov-v1
+            implementation: scriptworker-signing
+            os: macosx
+            worker-type: mozillavpn-t-signing-mac
+        macos-signing:
+            provisioner: scriptworker-prov-v1
+            implementation: scriptworker-signing
+            os: macosx
+            worker-type:
+                by-level:
+                    "3": mozillavpn-3-signing-mac
+                    default: mozillavpn-t-signing-mac
         push-apk:
             provisioner: scriptworker-k8s
             implementation: scriptworker-pushapk
             os: scriptworker
             worker-type: 'mozillavpn-{level}-pushapk'
-        # macos-signing:
-        #     provisioner: scriptworker-prov-v1
-        #     implementation: scriptworker-signing
-        #     os: macosx
-        #     worker-type:
-        #         by-level:
-        #             "3": mozillavpn-3-signing-mac
-        #             default: mozillavpn-t-signing-mac

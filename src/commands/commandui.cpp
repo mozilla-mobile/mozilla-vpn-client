@@ -3,14 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandui.h"
+#include "addonmanager.h"
 #include "apppermission.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
 #include "constants.h"
-#include "featurelist.h"
-#include "features/featureinapppurchase.h"
 #include "filterproxymodel.h"
 #include "fontloader.h"
 #include "iaphandler.h"
@@ -20,18 +19,23 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "loghandler.h"
+#include "models/feature.h"
+#include "models/featuremodel.h"
 #include "models/guidemodel.h"
 #include "models/tutorialmodel.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "telemetry/gleansample.h"
 #include "theme.h"
+#include "update/updater.h"
 
 #include <glean.h>
 #include <lottie.h>
 #include <nebula.h>
+
+#include <QQmlContext>
 
 #ifdef MVPN_DEBUG
 #  include <QQmlDebuggingEnabler>
@@ -50,7 +54,7 @@
 
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
-#  include "platforms/android/androidwebview.h"
+#  include "platforms/android/androidglean.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -99,12 +103,15 @@ int CommandUI::run(QStringList& tokens) {
         "s", "start-at-boot", "Start at boot (if configured).");
     CommandLineParser::Option testingOption("t", "testing",
                                             "Enable testing mode.");
+    CommandLineParser::Option updateOption(
+        "u", "updated", "This execution completes an update flow.");
 
     QList<CommandLineParser::Option*> options;
     options.append(&hOption);
     options.append(&minimizedOption);
     options.append(&startAtBootOption);
     options.append(&testingOption);
+    options.append(&updateOption);
 
     CommandLineParser clp;
     if (clp.parse(tokens, options, false)) {
@@ -120,7 +127,11 @@ int CommandUI::run(QStringList& tokens) {
       return 0;
     }
 
-    if (testingOption.m_set) {
+    if (testingOption.m_set
+#ifdef MVPN_WASM
+        || true
+#endif
+    ) {
       Constants::setStaging();
     }
 
@@ -179,17 +190,44 @@ int CommandUI::run(QStringList& tokens) {
       logger.error() << "Failed to start QML Debugging";
     }
 #endif
-
+#ifdef MVPN_ANDROID
+    // https://bugreports.qt.io/browse/QTBUG-82617
+    // Currently there is a crash happening on exit with Huawei devices.
+    // Until this is fixed, setting this variable is the "official" workaround.
+    // We certainly should look at this once 6.4 is out.
+#  if QT_VERSION >= 0x060400
+#    error We have forgotten to remove this Huawei hack!
+#  endif
+    if (AndroidUtils::GetManufacturer() == "Huawei") {
+      qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
+    }
+#endif
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
 
+    // TODO pending #3398
+    QQmlContext* ctx = engine->rootContext();
+    ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
+
     Glean::Initialize(engine);
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
+    L18nStrings::initialize();
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
+
+#ifdef MVPN_ANDROID
+    AndroidGlean::initialize(engine);
+#endif
+    if (updateOption.m_set) {
+      emit vpn.recordGleanEventWithExtraKeys(
+          GleanSample::updateStep,
+          {{"state",
+            QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
+                .toString()}});
+    }
 
 #ifndef Q_OS_WIN
     // Signal handling for a proper shutdown.
@@ -243,7 +281,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNFeatureList",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = FeatureList::instance();
+          QObject* obj = FeatureModel::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -315,6 +353,22 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNServerCountryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->serverCountryModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNSubscriptionData",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->subscriptionData();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNProfileFlow",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->profileFlow();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -432,11 +486,9 @@ int CommandUI::run(QStringList& tokens) {
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
-
-    qmlRegisterType<AndroidWebView>("Mozilla.VPN", 1, 0, "VPNAndroidWebView");
 #endif
 
-    if (FeatureInAppPurchase::instance()->isSupported()) {
+    if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
       qmlRegisterSingletonType<MozillaVPN>(
           "Mozilla.VPN", 1, 0, "VPNIAP",
           [](QQmlEngine*, QJSEngine*) -> QObject* {
@@ -482,6 +534,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNGuide",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = GuideModel::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNAddonManager",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = AddonManager::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -542,6 +602,7 @@ int CommandUI::run(QStringList& tokens) {
       QmlEngineHolder::instance()->engine()->retranslate();
       NotificationHandler::instance()->retranslate();
       L18nStrings::instance()->retranslate();
+      AddonManager::instance()->retranslate();
 
 #ifdef MVPN_MACOS
       MacOSMenuBar::instance()->retranslate();

@@ -13,6 +13,8 @@ import compat 0.1
 VPNFlickable {
     id: vpnFlickable
 
+    objectName: "viewMainFlickable"
+
     flickContentHeight: col.height + VPNTheme.theme.windowMargin / 2
     anchors.left: parent.left
     anchors.right: parent.right
@@ -40,27 +42,6 @@ VPNFlickable {
             }
         }
     ]
-
-    Connections {
-        target: VPNController
-        function onActivationBlockedForCaptivePortal() {
-            stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
-        }
-    }
-    Connections{
-        target: VPNCaptivePortal
-        function onCaptivePortalPresent() {
-            if (VPNController.state != VPNController.StateOff){
-                stackview.push("qrc:/ui/views/ViewCaptivePortalInfo.qml");
-            }
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        enabled: box.connectionInfoScreenVisible
-        onClicked: box.closeConnectionInfo()
-    }
 
     GridLayout {
         id: col
@@ -116,7 +97,9 @@ VPNFlickable {
             }
 
             id: serverInfo
+
             objectName: "serverListButton"
+            btnObjectName: "serverListButton-btn"
 
             //% "Select location"
             //: Select the Location of the VPN server
@@ -161,6 +144,7 @@ VPNFlickable {
             Layout.topMargin: 6
 
             objectName: "deviceListButton"
+            btnObjectName: "deviceListButton-btn"
             //% "My devices"
             titleText: qsTrId("vpn.devices.myDevices")
             disableRowWhen: box.connectionInfoScreenVisible
@@ -189,39 +173,75 @@ VPNFlickable {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
         }
-
-        Connections {
-            target: window
-
-            function onShowServersView() {
-                stackview.push("ViewServers.qml", StackView.Immediate);
-            }
-        }
-
     }
 
-    Component {
-        id: aboutUsComponent
+    //Tips and tricks popup
+    Loader {
+        id: tipsAndTricksIntroPopupLoader
 
-        VPNAboutUs {
-            isSettingsView: false
+        objectName: "tipsAndTricksIntroPopupLoader"
+        active: false
+        sourceComponent: VPNSimplePopup {
+            id: tipsAndTricksIntroPopup
+
+            anchors.centerIn: Overlay.overlay
+            closeButtonObjectName: "tipsAndTricksIntroPopupCloseButton"
+            imageSrc: "qrc:/ui/resources/logo-sparkles.svg"
+            imageSize: Qt.size(116, 80)
+            title: VPNl18n.TipsAndTricksSettingsEntryLabel
+            description: VPNl18n.TipsAndTricksIntroModalDescription
+            buttons: [
+                VPNButton {
+                    objectName: "tipsAndTricksIntroPopupDiscoverNowButton"
+                    text: VPNl18n.GlobalDiscoverNow
+                    onClicked: {
+                        tipsAndTricksIntroPopup.close()
+                        mainStackView.push(tipsAndTricksDeepLinkView)
+                    }
+                },
+                VPNLinkButton {
+                    objectName: "tipsAndTricksIntroPopupGoBackButton"
+                    labelText: VPNl18n.GlobalGoBack
+                    onClicked: tipsAndTricksIntroPopup.close()
+                }
+            ]
+
+            onOpened: VPNSettings.tipsAndTricksIntroShown = true
+            onClosed: tipsAndTricksIntroPopupLoader.active = false
+        }
+
+        onActiveChanged: if (active) { item.open() }
+
+        Component {
+            id: tipsAndTricksDeepLinkView
+
+            ColumnLayout {
+
+                spacing: 0
+
+                VPNMenu {
+                    id: menu
+                    objectName: "tipsAndTricksCloseButton"
+
+                    Layout.fillWidth: true
+
+                    _iconButtonSource:"qrc:/nebula/resources/close-dark.svg"
+                    title: VPNl18n.TipsAndTricksSettingsEntryLabel
+                    _menuOnBackClicked: () => { mainStackView.pop() }
+                }
+
+                Loader {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    source: "qrc:/ui/settings/ViewTipsAndTricks.qml"
+                }
+            }
         }
     }
 
-    Connections {
-        target: VPN
-        function onSettingsNeeded() {
-            while(stackview.depth > 1) {
-                stackview.pop(null, StackView.Immediate);
-            }
-            stackview.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
-        }
-
-        function onAboutNeeded() {
-            while(stackview.depth > 1) {
-                stackview.pop(null, StackView.Immediate);
-            }
-            stackview.push(aboutUsComponent);
+    Component.onCompleted: {
+        if (!VPNSettings.tipsAndTricksIntroShown) {
+            tipsAndTricksIntroPopupLoader.active = true
         }
     }
 }

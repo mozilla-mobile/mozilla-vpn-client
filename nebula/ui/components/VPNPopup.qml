@@ -12,55 +12,63 @@ import compat 0.1
 Popup {
     id: popup
 
-    property int maxWidth: ({})
-    property alias _popupContent: popupContent.data
+    default property alias _popupContent: popupContent.data
+    property alias popupContentItem: popupContent //this is exposed so popupContent implicitHeight can (and should) be set externally
+    property bool showCloseButton: true
+    property bool startContentBeneathCloseButton: showCloseButton //popup content will appear under the close button
+    property string closeButtonObjectName: ""
 
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-    enabled: true
     focus: true
     modal: true
-    width: Math.min(window.width - VPNTheme.theme.vSpacing, maxWidth)
-    horizontalPadding: VPNTheme.theme.popupMargin
+    width: Math.min(window.width - (VPNTheme.theme.windowMargin * 2), 500)
+    contentHeight: startContentBeneathCloseButton ? closeButton.height + closeButton.anchors.topMargin + popupContent.implicitHeight + popupContent.anchors.topMargin: popupContent.implicitHeight
+    horizontalPadding: 0
+    verticalPadding: 0
 
-    contentItem: ColumnLayout {
-        spacing: 0
-        // Close button
-        VPNIconButton {
-            id: closeButton
+    // Close button
+    VPNIconButton {
+        id: closeButton
 
-            accessibleName: qsTrId("menubar.file.close")
-            onClicked: {
-                popup.close();
-            }
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.topMargin: VPNTheme.theme.windowMargin / 2
+        anchors.rightMargin: VPNTheme.theme.windowMargin / 2
 
-            Layout.preferredHeight: VPNTheme.theme.rowHeight
-            Layout.preferredWidth: VPNTheme.theme.rowHeight
-            Layout.margins: VPNTheme.theme.windowMargin / 2
-            Layout.alignment: Qt.AlignRight
+        height: VPNTheme.theme.rowHeight
+        width: VPNTheme.theme.rowHeight
+        visible: showCloseButton
 
-            Image {
-                id: closeImage
-                anchors.centerIn: closeButton
-                fillMode: Image.PreserveAspectFit
-                source: "qrc:/nebula/resources/close-darker.svg"
-                sourceSize.height: VPNTheme.theme.iconSize
-                sourceSize.width: VPNTheme.theme.iconSize
-            }
+        objectName: closeButtonObjectName
+        accessibleName: qsTrId("menubar.file.close")
+
+        onClicked: {
+            popup.close();
         }
 
-        ColumnLayout {
-            id: popupContent
-            Layout.leftMargin: VPNTheme.theme.vSpacing
-            Layout.rightMargin: VPNTheme.theme.vSpacing
-            Layout.bottomMargin: VPNTheme.theme.vSpacing
-            Layout.alignment: Qt.AlignHCenter
+        Image {
+            anchors.centerIn: closeButton
+
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/nebula/resources/close-darker.svg"
+            sourceSize.height: VPNTheme.theme.iconSize
+            sourceSize.width: VPNTheme.theme.iconSize
         }
+    }
+
+    Item {
+        id: popupContent
+
+        anchors.top: startContentBeneathCloseButton ? closeButton.bottom : undefined
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.topMargin: startContentBeneathCloseButton ? VPNTheme.theme.windowMargin / 2 : 0
     }
 
     background: Rectangle {
         id: popupBackground
 
-        anchors.fill: contentItem
+        anchors.fill: parent
         color: VPNTheme.theme.bgColor
         radius: 8
 

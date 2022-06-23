@@ -1,4 +1,12 @@
 buildscript {
+    repositories {
+        maven {
+            url "https://maven.mozilla.org/maven2"
+        }
+        google()
+        mavenCentral()
+
+    }
     ext{
         groupName = 'org.mozilla.firefox.vpn'
         try{
@@ -9,14 +17,26 @@ buildscript {
         }catch(Exception ignored){
             // This is checked from <proj>/android/daemon/tunnel
             WG_TOOLS_DIR= "../../../3rdparty/wireguard-tools"
+
         }
+
+    }
+
+    dependencies {
+        classpath Dependencies.com_android_tools_build_gradle
+        classpath Dependencies.org_mozilla_components_tooling_glean_gradle
     }
 }
 
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    id "com.jetbrains.python.envs" version "0.0.26"
 }
+
+
+apply plugin: "com.android.library"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
+
 
 android {
     compileSdkVersion Config.compileSdkVersion
@@ -88,5 +108,17 @@ dependencies {
     implementation Dependencies.androidx_security_security_identity_credential
     implementation Dependencies.com_google_android_gms_play_services_ads_identifier
     implementation Dependencies.org_jetbrains_kotlinx_kotlinx_serialization_json
+    implementation Dependencies.org_mozilla_telemetry_glean
     coreLibraryDesugaring Dependencies.com_android_tools_desugar_jdk_libs
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
+}
+
+ext.gleanNamespace = "mozilla.telemetry.glean"
+try{
+    if(qtAndroidDir){}
+    // We're reunning gradle via qmake in .tmp/src/android-build
+    ext.gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml", "$rootDir/../../../glean/pings.yaml"]
+}catch(Exception ignored){
+    // We running gradle from /android
+    ext.gleanYamlFiles = ["$rootDir/../glean/metrics.yaml", "$rootDir/../glean/pings.yaml"]
 }

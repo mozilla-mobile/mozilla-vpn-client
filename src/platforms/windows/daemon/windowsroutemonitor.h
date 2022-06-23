@@ -33,8 +33,11 @@ class WindowsRouteMonitor final : public QObject {
 
  private:
   void updateExclusionRoute(MIB_IPFORWARD_ROW2* data, void* table);
+  void updateValidInterfaces(int family);
 
   QHash<QHostAddress, MIB_IPFORWARD_ROW2*> m_exclusionRoutes;
+  QList<quint64> m_validInterfacesIpv4;
+  QList<quint64> m_validInterfacesIpv6;
 
   quint64 m_luid = 0;
   HANDLE m_routeHandle = INVALID_HANDLE_VALUE;

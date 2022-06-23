@@ -17,23 +17,11 @@ import components.inAppAuth 0.1
 
 
 VPNInAppAuthenticationBase {
-    // TODO
-    // If we are here, we were trying to complete the authentication flow using
-    // an existing account. That account has not been verified yet. The user
-    // needs to insert the 6-digit code. The code expires after 5 minutes. Use
-    // `resendUnblockCodeEmail` if needed.
-    // After this step, call `verifyUnblockCode()` with the code. If the code is
-    // not valid, an error will be signaled.
-    // The next steps are:
-    // - Sign-in again.
-    // - errors.
-
-    id: authSignUp
-
+    _viewObjectName: "authUnblockCodeNeeded"
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
     _menuButtonOnClick: () => {
-        if (isDeleteAccountAuth) {
-            cancelAccountDeletion();
+        if (isReauthFlow) {
+            cancelAuthenticationFlow();
         } else {
             VPNAuthInApp.reset();
         }
@@ -44,6 +32,7 @@ VPNInAppAuthenticationBase {
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
 
     _inputs: VPNInAppAuthenticationInputs {
+        objectName: "authUnblockCodeNeeded"
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded && activeInput().text.length === VPNAuthInApp.unblockCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifyUnblockCode(inputText) }
         _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton
@@ -58,13 +47,17 @@ VPNInAppAuthenticationBase {
         VPNLinkButton {
             labelText: VPNl18n.InAppAuthResendCodeLink
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: VPNAuthInApp.resendUnblockCodeEmail();
+            onClicked: {
+                VPNAuthInApp.resendUnblockCodeEmail();
+                VPN.setAlert(VPN.AuthCodeSentAlert);
+            
+            }
         }
         VPNCancelButton {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                if (isDeleteAccountAuth) {
-                    cancelAccountDeletion();
+                if (isReauthFlow) {
+                    cancelAuthenticationFlow();
                 } else {
                     VPN.cancelAuthentication();
                 }

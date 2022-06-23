@@ -49,4 +49,6 @@ class TestModels final : public TestHelper {
 
   void surveyModelFromJson_data();
   void surveyModelFromJson();
+  void surveyUrlQueryReplacement_data();
+  void surveyUrlQueryReplacement();
 };

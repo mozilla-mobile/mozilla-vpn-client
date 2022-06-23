@@ -7,6 +7,7 @@
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/feature.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -201,6 +202,7 @@ void IAPHandler::productsRegistrationCompleted() {
   logger.debug() << "All the products has been registered";
   beginResetModel();
   computeSavings();
+  sortPlans();
   m_productsRegistrationState = eRegistered;
   endResetModel();
   emit productsRegistered();
@@ -270,11 +272,14 @@ QVariant IAPHandler::data(const QModelIndex& index, int role) const {
       return QVariant(m_products.at(index.row()).m_savings);
 
     case ProductTrialDaysRole:
-      if ((m_products.at(index.row()).m_type == ProductYearly) &&
-          InspectorHandler::mockFreeTrial()) {
-        return QVariant(7);
+      if (Feature::get(Feature::Feature_freeTrial)->isSupported()) {
+        if ((m_products.at(index.row()).m_type == ProductYearly) &&
+            InspectorHandler::mockFreeTrial()) {
+          return QVariant(7);
+        }
+        return QVariant(m_products.at(index.row()).m_trialDays);
       }
-      return QVariant(m_products.at(index.row()).m_trialDays);
+      return QVariant(0);
 
     default:
       return QVariant();
@@ -331,4 +336,11 @@ uint32_t IAPHandler::productTypeToMonthCount(ProductType type) {
       Q_ASSERT(false);
       return 1;
   }
+}
+
+void IAPHandler::sortPlans() {
+  std::sort(m_products.begin(), m_products.end(),
+            [](const Product& a, const Product& b) {
+              return a.m_trialDays > b.m_trialDays;
+            });
 }

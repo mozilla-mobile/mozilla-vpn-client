@@ -1,0 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+kind-dependencies:
+    - fetch
+    - toolchain-openssl
+
+transforms:
+    - taskgraph.transforms.job:transforms
+    - taskgraph.transforms.cached_tasks:transforms
+    - taskgraph.transforms.task:transforms
+
+job-defaults:
+    run:
+        using: toolchain-script
+    treeherder:
+        kind: build
+        platform: toolchains/opt
+        tier: 1
+
+jobs-from:
+    - qt.yml

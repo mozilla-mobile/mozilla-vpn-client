@@ -40,14 +40,16 @@ ColumnLayout {
 
         VPNTextField {
             id: textInput
+            objectName: base.objectName + "-textInput"
             Layout.fillWidth: true
             _placeholderText: _inputPlaceholderText
             Keys.onReturnPressed: col.submitInfo(textInput)
-            onTextChanged: if (hasError) hasError = false
+            onDisplayTextChanged: if (hasError) hasError = false
         }
 
         VPNPasswordInput {
             id: passwordInput
+            objectName: base.objectName + "-passwordInput"
             _placeholderText: _inputPlaceholderText
             Layout.fillWidth: true
             Keys.onReturnPressed: col.submitInfo(passwordInput)
@@ -110,17 +112,20 @@ ColumnLayout {
 
                 VPNInAppAuthenticationPasswordCondition {
                     id: passwordLength
+                    objectName: base.objectName + "-passwordConditionLength"
                     _iconVisible: true
                     _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
                     _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCharacterLength
                 }
                 VPNInAppAuthenticationPasswordCondition {
+                    objectName: base.objectName + "-passwordConditionEmailAddress"
                     _iconVisible: passwordLength._passwordConditionIsSatisfied
                     _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
                     _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintEmailAddressAsPassword
                     opacity: passwordLength._passwordConditionIsSatisfied ? 1 : .5
                 }
                 VPNInAppAuthenticationPasswordCondition {
+                    objectName: base.objectName + "-passwordConditionCommon"
                     _iconVisible:  passwordLength._passwordConditionIsSatisfied
                     _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordCommons(passwordInput.text)
                     _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCommonPassword
@@ -174,6 +179,7 @@ ColumnLayout {
 
     VPNButton {
         id: btn
+        objectName: base.objectName + "-button"
         Layout.fillWidth: true
         loaderVisible:  VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount ||
                         VPNAuthInApp.state === VPNAuthInApp.StateSigningIn ||
@@ -198,13 +204,8 @@ ColumnLayout {
                 base._inputErrorMessage =  VPNl18n.InAppAuthInvalidEmailErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
-            case VPNAuthInApp.ErrorInvalidEmailCode:
-                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage;
-                activeInput().forceActiveFocus();
-                break;
-
             case VPNAuthInApp.ErrorInvalidOrExpiredVerificationCode:
-                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage
+                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
 

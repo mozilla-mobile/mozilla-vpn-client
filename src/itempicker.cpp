@@ -14,12 +14,34 @@ ItemPicker::ItemPicker(QObject* parent) : QObject(parent) {}
 
 bool ItemPicker::eventFilter(QObject* obj, QEvent* event) {
   if (m_lastEvent == event) {
-    return QObject::eventFilter(obj, event);
+    return m_lastResponse;
   }
 
   m_lastEvent = event;
+  m_lastResponse = eventFilterInternal(obj, event);
 
-  if (event->type() != QEvent::MouseButtonPress) {
+  return m_lastResponse;
+}
+
+bool ItemPicker::eventFilterInternal(QObject* obj, QEvent* event) {
+  if (event->type() == QEvent::Wheel) {
+    return true;
+  }
+
+  bool isMouseEvent = event->type() == QEvent::MouseButtonPress ||
+                      event->type() == QEvent::MouseButtonDblClick ||
+                      event->type() == QEvent::MouseButtonRelease;
+  bool isTouchEvent =
+      event->type() == QEvent::TouchBegin &&
+      !!qobject_cast<QQuickWindow*>(static_cast<QTouchEvent*>(event)->target());
+
+  if (
+#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
+      !isTouchEvent
+#else
+      !isMouseEvent
+#endif
+  ) {
     return QObject::eventFilter(obj, event);
   }
 
@@ -35,8 +57,20 @@ bool ItemPicker::eventFilter(QObject* obj, QEvent* event) {
     return QObject::eventFilter(obj, event);
   }
 
-  QStringList list = pickItem(static_cast<QMouseEvent*>(event), item);
+  QList<QQuickItem*> list;
+
+  if (isMouseEvent) {
+    list = pickItem(static_cast<QMouseEvent*>(event), item);
+  }
+
+  if (isTouchEvent) {
+    list = pickItem(static_cast<QTouchEvent*>(event), item);
+  }
+
   if (itemPicked(list)) {
+    if (isTouchEvent) {
+      static_cast<QTouchEvent*>(event)->ignore();
+    }
     event->setAccepted(true);
     return true;
   }
@@ -44,11 +78,9 @@ bool ItemPicker::eventFilter(QObject* obj, QEvent* event) {
   return QObject::eventFilter(obj, event);
 }
 
-QStringList ItemPicker::pickItem(QMouseEvent* event, QQuickItem* item) {
-  QStringList list;
-  if (!item->objectName().isEmpty()) {
-    list.append(item->objectName());
-  }
+QList<QQuickItem*> ItemPicker::pickItem(QMouseEvent* event, QQuickItem* item) {
+  QList<QQuickItem*> list;
+  list.append(item);
 
   for (QQuickItem* child : item->childItems()) {
     if (!child->isVisible() || !child->isEnabled()) {
@@ -75,6 +107,46 @@ QStringList ItemPicker::pickItem(QMouseEvent* event, QQuickItem* item) {
         continue;
       }
 
+      list.append(pickItem(event, child));
+    }
+  }
+
+  return list;
+}
+
+QList<QQuickItem*> ItemPicker::pickItem(QTouchEvent* event, QQuickItem* item) {
+  QList<QQuickItem*> list;
+
+  if (event->touchPoints().length() != 1) {
+    return list;
+  }
+
+  list.append(item);
+
+  QTouchEvent::TouchPoint point = event->touchPoints()[0];
+  QPointF pos = point.pos();
+
+  for (QQuickItem* child : item->childItems()) {
+    if (!child->isVisible() || !child->isEnabled()) {
+      continue;
+    }
+
+    QPointF gpos = child->mapFromGlobal(pos);
+    if (!child->contains(gpos)) {
+      continue;
+    }
+
+    list.append(pickItem(event, child));
+  }
+
+  QQuickItem* contentItem = item->property("contentItem").value<QQuickItem*>();
+  if (contentItem) {
+    for (QQuickItem* child : contentItem->childItems()) {
+      if (!child->isVisible() || !child->isEnabled()) {
+        continue;
+      }
+
+      QPointF gpos = child->mapFromGlobal(pos);
       if (!child->contains(gpos)) {
         continue;
       }

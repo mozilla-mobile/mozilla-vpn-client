@@ -17,27 +17,18 @@ import telemetry 0.30
 Window {
     id: window
 
+    signal showServerList
+
+    property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
     property var isWasmApp: Qt.platform.os === "wasm"
-    property bool isMobileOnboardingOnIos: VPNFeatureList.get("mobileOnboarding").isSupported
-        && Qt.platform.os === "ios"
-        && VPN.state === VPN.StateInitialize
-
-    signal clearCurrentViewStack
-    signal showServersView
-
-    function goToServersView() {
-        if (VPN.state === VPN.StateMain) {
-            clearCurrentViewStack();
-            showServersView();
-        }
-    }
 
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
     }
+
 
     function safeAreaHeightByDevice() {
         if (Qt.platform.os !== "ios") {
@@ -115,11 +106,15 @@ Window {
         }
     }
 
+    VPNMobileStatusBarModifier {
+        id: statusBarModifier
+    }
+
     Rectangle {
         id: iosSafeAreaTopMargin
 
         color: VPNTheme.theme.transparent
-        height: isMobileOnboardingOnIos ? 0 : safeAreaHeightByDevice();
+        height: safeAreaHeightByDevice();
         width: window.width
         anchors.top: parent.top
     }
@@ -134,12 +129,17 @@ Window {
 
     VPNStackView {
         id: mainStackView
+
+        objectName: "MainStackView"
         initialItem: mainView
         width: parent.width
         anchors.top: parent.top
         anchors.topMargin: iosSafeAreaTopMargin.height + wasmMenuHeader.height
         height: safeContentHeight
-        clip: true
+
+        function getHelpViewNeeded() {
+            mainStackView.push("qrc:/ui/views/ViewGetHelp.qml")
+        }
     }
 
     Component {
@@ -282,20 +282,55 @@ Window {
             if (VPNFeatureList.get("shareLogs").isSupported)  {
                 if(VPN.viewLogs()){
                     return;
-                };
+                }
             }
+
+            if (tutorialUI.visible) {
+                return tutorialUI.openLeaveTutorialPopup(VPN.viewLogsNeeded)
+            }
+
             // If we can't show logs natively, open the viewer
-            mainStackView.push("qrc:/ui/views/ViewLogs.qml");
-            
+            if (mainStackView.currentItem.objectName !== "viewLogs") {
+                mainStackView.push("qrc:/ui/views/ViewLogs.qml");
+            }
         }
-
-        function onLoadAndroidAuthenticationView() {
-            if (Qt.platform.os !== "android") {
-                console.log("Unexpected android authentication view request!");
+        function onContactUsNeeded() {
+            if (tutorialUI.visible) {
+                return tutorialUI.openLeaveTutorialPopup(VPN.contactUsNeeded)
             }
 
-            mainStackView.push("qrc:/ui/platforms/android/androidauthenticationview.qml", StackView.Immediate)
+            // Check if Contact Us view is already in mainStackView
+            const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
+            if (contactUsViewInStack) {
+                // Unwind mainStackView back to Contact Us
+                return mainStackView.pop(contactUsViewInStack, StackView.Immediate);
+            }
+            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", StackView.Immediate);
         }
+
+        function onSettingsNeeded() {
+            if (tutorialUI.visible) {
+                return tutorialUI.openLeaveTutorialPopup(VPN.settingsNeeded);
+            }
+
+            // Check if Settings view is already in mainStackView
+            const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" })
+
+            if (settingsViewInMainStack) {
+                // Unwind settingsStackView back to menu
+                settingsViewInMainStack._unwindSettingsStackView();
+
+                // Unwind mainStackView back to Settings
+                return mainStackView.pop(settingsViewInMainStack, StackView.Immediate);
+            }
+            mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
+        }
+    }
+
+    // Glean Connections
+    Connections {
+        target: VPN
+        enabled: Qt.platform.os !== "android"
 
         function onInitializeGlean() {
             if (VPN.debugMode) {
@@ -304,13 +339,14 @@ Window {
                 Glean.setDebugViewTag("MozillaVPN");
             }
             var channel = VPN.stagingMode ? "staging" : "production";
+
             console.debug("Initializing glean with channel set to:", channel);
             Glean.initialize("mozillavpn", VPNSettings.gleanEnabled, {
                 appBuild: "MozillaVPN/" + VPN.versionString,
                 appDisplayVersion: VPN.versionString,
                 channel: channel,
                 osVersion: VPN.osVersion,
-                architecture: VPN.architecture,
+                architecture: [VPN.architecture, VPN.graphicsApi].join(" ").trim(),
             });
         }
 
@@ -342,7 +378,16 @@ Window {
     }
 
     Connections {
+        target: VPNAddonManager
+        function onRunAddon(addon) {
+            console.log("Loading addon", addon.name);
+            mainStackView.push("qrc:/ui/views/ViewAddon.qml", { addon })
+        }
+    }
+
+    Connections {
         target: VPNSettings
+        enabled: Qt.platform.os != "android"
         function onGleanEnabledChanged() {
             console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);
@@ -357,8 +402,6 @@ Window {
             }
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                isMainView: true,
-
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -381,8 +424,6 @@ Window {
             }
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                isMainView: true,
-
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -406,8 +447,6 @@ Window {
             }
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                isMainView: true,
-                
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -430,8 +469,6 @@ Window {
             }
 
             mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                isMainView: true,
-                
                 // Problem confirming subscription...
                 headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
@@ -453,46 +490,9 @@ Window {
 
     }
 
-    // This part needs UI - TODO
-    Popup {
-        id: tooltip
-        property alias text: text.text
-        visible: false
-        x: VPNTheme.theme.windowMargin
-        width: parent.width - VPNTheme.theme.windowMargin * 2
-
-        ColumnLayout {
-            Text {
-                id: text
-                text: ""
-            }
-
-            Button {
-                objectName: "tutorialExit"
-                text: "Exit"
-                Component.onCompleted: VPNTutorial.allowItem("tutorialExit")
-                onClicked: VPNTutorial.stop()
-            }
-        }
+    VPNTutorialPopups {
+        id: tutorialUI
     }
-
-    Connections {
-        target: VPNTutorial
-        function onTooltipNeeded(text, rect) {
-            if (tooltip.height + rect.y + rect.height <= window.height - VPNTheme.theme.windowMargin) {
-              tooltip.y = rect.y + rect.height;
-            } else {
-              tooltip.y = rect.y - tooltip.height;
-            }
-            tooltip.text = text
-            tooltip.open();
-        }
-
-        function onPlayingChanged() {
-            tooltip.visible = VPNTutorial.tooltipShown
-        }
-    }
-
 
     VPNSystemAlert {
     }
@@ -501,27 +501,47 @@ Window {
         id: serverUnavailablePopup
     }
 
+    function goToServersView() {
+        if (VPN.state !== VPN.StateMain) {
+            return;
+        }
+        if (mainStackView.depth > 1) {
+            mainStackView.unwindToInitialItem();
+        }
+        showServerList();
+    }
+
+    function exitTutorialIfNeeded() {
+        if (tutorialUI.visible) {
+            tutorialUI.leaveTutorial();
+        }
+    }
+
+    function pushCaptivePortalView() {
+        exitTutorialIfNeeded();
+        mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
+    }
+
     Connections {
         target: VPNController
         function onReadyToServerUnavailable() {
+            exitTutorialIfNeeded();
             serverUnavailablePopup.open();
+        }
+        function onActivationBlockedForCaptivePortal() {
+          pushCaptivePortalView();
+        }
+    }
+    Connections{
+        target: VPNCaptivePortal
+        function onCaptivePortalPresent() {
+            pushCaptivePortalView();
         }
     }
 
     VPNFeatureTourPopup {
         id: featureTourPopup
 
-        Component.onCompleted: {
-            featureTourPopup.handleShowTour();
-        }
-
-        function handleShowTour() {
-            if(VPN.state === VPN.StateMain
-                && !VPNSettings.featuresTourShown
-                && VPNWhatsNewModel.hasUnseenFeature
-            ) {
-                featureTourPopup.openTour();
-            }
-        }
+        anchors.centerIn: parent
     }
 }

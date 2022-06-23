@@ -47,14 +47,12 @@ QT -= networkauth
 
 CONFIG += c++1z
 
-# For the authentication
-LIBS += -framework AuthenticationServices
-
 # For notifications
 LIBS += -framework UIKit
 LIBS += -framework Foundation
 LIBS += -framework StoreKit
 LIBS += -framework UserNotifications
+LIBS += -framework Network
 
 DEFINES += MVPN_IOS
 
@@ -64,24 +62,23 @@ SOURCES += \
 
 OBJECTIVE_SOURCES += \
     platforms/ios/iosiaphandler.mm \
-    platforms/ios/iosauthenticationlistener.mm \
     platforms/ios/ioscontroller.mm \
     platforms/ios/iosdatamigration.mm \
     platforms/ios/iosglue.mm \
+    platforms/ios/iosnetworkwatcher.mm \
     platforms/ios/iosnotificationhandler.mm \
     platforms/ios/iosutils.mm \
     platforms/macos/macoscryptosettings.mm
 
 HEADERS += \
-    features/featureioskillswitch.h \
     platforms/macos/macospingsender.h \
     tasks/purchase/taskpurchase.h
 
 OBJECTIVE_HEADERS += \
     platforms/ios/iosiaphandler.h \
-    platforms/ios/iosauthenticationlistener.h \
     platforms/ios/ioscontroller.h \
     platforms/ios/iosdatamigration.h \
+    platforms/ios/iosnetworkwatcher.h \
     platforms/ios/iosnotificationhandler.h \
     platforms/ios/iosutils.h
 

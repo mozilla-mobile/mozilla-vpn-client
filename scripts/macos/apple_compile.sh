@@ -12,7 +12,6 @@ fi
 
 RELEASE=1
 OS=
-NETWORKEXTENSION=
 ADJUST_SDK_TOKEN=
 ADJUST="CONFIG-=adjust"
 QTBINPATH=
@@ -75,11 +74,6 @@ fi
 if ! [[ "$ADJUST_SDK_TOKEN" ]] && [[ "$MVPN_IOS_ADJUST_TOKEN" ]]; then
   print Y "Using the MVPN_IOS_ADJUST_TOKEN value for the adjust token"
   ADJUST_SDK_TOKEN=$MVPN_IOS_ADJUST_TOKEN
-fi
-
-if [[ "$OS" == "ios" ]]; then
-  # Network-extension is the default for IOS
-  NETWORKEXTENSION=1
 fi
 
 if ! [ -d "src" ] || ! [ -d "ios" ] || ! [ -d "macos" ]; then
@@ -169,7 +163,7 @@ PROJECT="Mozilla VPN.xcodeproj"
 [[ "$OS" = "ios" ]] && PROJECT="MozillaVPN.xcodeproj"
 
 print Y "Patching the xcode project..."
-ruby scripts/macos/utils/xcode_patcher.rb "$PROJECT" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
+ruby scripts/macos/utils/xcode_patcher.rb "$PROJECT" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 
