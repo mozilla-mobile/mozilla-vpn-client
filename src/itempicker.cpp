@@ -24,6 +24,7 @@ bool ItemPicker::eventFilter(QObject* obj, QEvent* event) {
 }
 
 bool ItemPicker::eventFilterInternal(QObject* obj, QEvent* event) {
+  qDebug() << event->type();
   if (event->type() == QEvent::Wheel) {
     return true;
   }
@@ -32,7 +33,8 @@ bool ItemPicker::eventFilterInternal(QObject* obj, QEvent* event) {
                       event->type() == QEvent::MouseButtonDblClick ||
                       event->type() == QEvent::MouseButtonRelease;
   bool isTouchEvent =
-      event->type() == QEvent::TouchBegin &&
+      (event->type() == QEvent::TouchEnd ||
+       event->type() == QEvent::TouchBegin) &&
       !!qobject_cast<QQuickWindow*>(static_cast<QTouchEvent*>(event)->target());
 
   if (
