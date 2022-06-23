@@ -12,6 +12,8 @@ describe('Settings', function() {
     await vpn.waitForElement('settingsButton');
     await vpn.clickOnElement('settingsButton');
     await vpn.wait();
+
+    await vpn.flipFeatureOff('subscriptionManagement');
   });
 
   async function getMainStackViewDepth() {
