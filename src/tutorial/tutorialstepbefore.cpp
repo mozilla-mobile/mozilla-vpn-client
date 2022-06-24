@@ -205,6 +205,31 @@ class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
   const QString m_entryCity;
 };
 
+class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
+ public:
+  static TutorialStepBefore* create(QObject* parent, const QJsonObject&) {
+    return new TutorialStepBeforeVpnOff(parent);
+  };
+
+  TutorialStepBeforeVpnOff(QObject* parent) : TutorialStepBefore(parent) {
+    MVPN_COUNT_CTOR(TutorialStepBeforeVpnOff);
+  }
+
+  ~TutorialStepBeforeVpnOff() { MVPN_COUNT_DTOR(TutorialStepBeforeVpnOff); }
+
+  bool run() override {
+    Controller* controller = MozillaVPN::instance()->controller();
+    Q_ASSERT(controller);
+
+    if (controller->state() == Controller::StateOff) {
+      return true;
+    }
+
+    controller->deactivate();
+    return false;
+  }
+};
+
 // static
 QList<TutorialStepBefore*> TutorialStepBefore::create(
     QObject* parent, const QString& elementForTooltip, const QJsonValue& json) {
@@ -221,6 +246,8 @@ QList<TutorialStepBefore*> TutorialStepBefore::create(
       tsb = TutorialStepBeforePropertyGet::create(parent, obj);
     } else if (opValue == "vpn_location_set") {
       tsb = TutorialStepBeforeVpnLocationSet::create(parent, obj);
+    } else if (opValue == "vpn_off") {
+      tsb = TutorialStepBeforeVpnOff::create(parent, obj);
     } else {
       logger.warning() << "Invalid 'before' operation:" << opValue;
       return QList<TutorialStepBefore*>();
