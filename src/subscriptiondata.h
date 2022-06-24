@@ -14,11 +14,11 @@ class SubscriptionData final : public QObject {
   Q_PROPERTY(bool initialized READ initialized NOTIFY changed)
 
   // Subscription
+  Q_PROPERTY(TypeSubscription type MEMBER m_type CONSTANT)
   Q_PROPERTY(int createdAt MEMBER m_createdAt CONSTANT)
   Q_PROPERTY(int expiresOn MEMBER m_expiresOn CONSTANT)
   Q_PROPERTY(bool isCancelled MEMBER m_isCancelled CONSTANT)
   Q_PROPERTY(QString status MEMBER m_status CONSTANT)
-  Q_PROPERTY(QString type MEMBER m_type CONSTANT)
 
   // Plan
   Q_PROPERTY(int planAmount MEMBER m_planAmount CONSTANT)
@@ -37,6 +37,13 @@ class SubscriptionData final : public QObject {
   SubscriptionData();
   ~SubscriptionData();
 
+  enum TypeSubscription {
+    iap_apple,
+    iap_google,
+    web,
+  };
+  Q_ENUM(TypeSubscription)
+
   [[nodiscard]] bool fromJson(const QByteArray& json);
 
   bool initialized() const { return !m_rawJson.isEmpty(); }
@@ -51,11 +58,11 @@ class SubscriptionData final : public QObject {
  private:
   QByteArray m_rawJson;
 
+  TypeSubscription m_type;
   int m_createdAt = 0;
   int m_expiresOn = 0;
   bool m_isCancelled = false;
   QString m_status;
-  QString m_type;
 
   int m_planAmount = 0;
   QString m_planCurrency;

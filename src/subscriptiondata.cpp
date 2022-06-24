@@ -9,6 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QMetaEnum>
 
 namespace {
 Logger logger(LOG_MODEL, "SubscriptionData");
@@ -92,8 +93,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
         }
         m_creditCardLast4 = creditCardLast4.toString();
 
-        m_creditCardExpMonth =
-            paymentData.value("exp_month").toInt();
+        m_creditCardExpMonth = paymentData.value("exp_month").toInt();
         if (!m_creditCardExpMonth) {
           return false;
         }
@@ -115,16 +115,28 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   if (!type.isString()) {
     return false;
   }
-  m_type = type.toString();
+
+  // Enum from string
+  m_type = static_cast<TypeSubscription>(
+    QMetaEnum::fromType<TypeSubscription>().keyToValue(type.toString().toUtf8())
+  );
 
   // Parse subscription data depending on subscription platform
-  if (m_type == "web") {
-    if(!parseSubscriptionDataWeb(subscriptionData)) { return false; }
-  } else if (m_type == "iap_apple" || m_type == "iap_google") {
-    if(!parseSubscriptionDataIap(subscriptionData)) { return false; }
-  } else {
-    logger.error() << "No matching subscription type" << m_type;
-    return false;
+  switch (m_type) {
+    case web:
+      if(!parseSubscriptionDataWeb(subscriptionData)) {
+        return false;
+      }
+      break;
+    case iap_apple:
+    case iap_google:
+      if(!parseSubscriptionDataIap(subscriptionData)) {
+        return false;
+      }
+      break;
+    default:
+      logger.error() << "No matching subscription type" << m_type;
+      return false;
   }
   logger.debug() << "Parse subscription ready";
 

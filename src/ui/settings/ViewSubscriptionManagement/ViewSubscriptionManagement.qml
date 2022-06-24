@@ -112,7 +112,7 @@ VPNFlickable {
                 visible: VPNFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {
-                    Sample.deleteAccountRequested.record();
+                    VPN.recordGleanEvent("deleteAccountRequested");
                     mainStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
                 }
 
@@ -128,21 +128,22 @@ VPNFlickable {
     }
 
     function handleManageAccountClicked() {
+        console.log("lel", VPNSubscriptionData.type);
         switch(VPNSubscriptionData.type) {
-            case "web":
+            case VPNSubscriptionData.web:
                 VPN.openLink(VPN.LinkSubscriptionFxa);
                 break;
-            case "iap_google":
+            case VPNSubscriptionData.iap_google:
                 VPN.openLink(VPN.LinkSubscriptionIapGoogle);
                 break;
-            case "iap_apple":
+            case VPNSubscriptionData.iap_apple:
                 VPN.openLink(VPN.LinkSubscriptionIapApple);
                 break;
             default:
-                VPN.openLink(VPN.LinkAccount);
+                // VPN.openLink(VPN.LinkAccount);
         }
 
-        Sample.manageSubscriptionClicked.record();
+        VPN.recordGleanEvent("manageSubscriptionClicked");
     }
 
     function populateListModels() {
