@@ -21,8 +21,6 @@ SubscriptionData::~SubscriptionData() { MVPN_COUNT_DTOR(SubscriptionData); }
 bool SubscriptionData::fromJson(const QByteArray& json) {
   logger.debug() << "Subscription data from JSON start";
 
-  logger.debug() << json;
-
   if (!json.isEmpty() && m_rawJson == json) {
     logger.debug() << "Data has not changed";
     return true;
@@ -36,7 +34,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   QJsonObject obj = doc.object();
 
   // Plan
-  logger.debug() << "Plan data start";
+  logger.debug() << "Parse plan start";
   QJsonObject planData = obj.value("plan").toObject();
 
   m_planAmount = planData.value("amount").toInt();
@@ -57,10 +55,10 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   if (!m_planIntervalCount) {
     return false;
   }
-  logger.debug() << "Plan data end";
+  logger.debug() << "Parse plan ready";
 
   // Payment
-  logger.debug() << "Payment data start";
+  logger.debug() << "Parse payment start";
   QJsonObject paymentData = obj.value("payment").toObject();
 
   // If we do not receive payment data from FxA we don’t show it instead of
@@ -107,10 +105,10 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       }
     }
   }
-  logger.debug() << "Payment data end";
+  logger.debug() << "Parse payment ready";
 
   // Subscription
-  logger.debug() << "Subscription data start";
+  logger.debug() << "Parse subscription start";
   QJsonObject subscriptionData = obj.value("subscription").toObject();
 
   QJsonValue type = subscriptionData.value("_subscription_type");
@@ -120,40 +118,43 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   m_type = type.toString();
 
   // Parse subscription data depending on subscription platform
-  if (m_type == "iap_apple") {
-    if(!parseSubscriptionDataIapApple(subscriptionData)) { return false; }
-  } else if (m_type == "iap_google") {
-    if(!parseSubscriptionDataIapGoogle(subscriptionData)) { return false; }
-  } else if (m_type == "web") {
+  if (m_type == "web") {
     if(!parseSubscriptionDataWeb(subscriptionData)) { return false; }
+  } else if (m_type == "iap_apple" || m_type == "iap_google") {
+    if(!parseSubscriptionDataIap(subscriptionData)) { return false; }
   } else {
     logger.error() << "No matching subscription type" << m_type;
     return false;
   }
-  logger.debug() << "Subscription data end";
-
-  logger.debug() << "Subscription data from JSON ready";
+  logger.debug() << "Parse subscription ready";
 
   m_rawJson = json;
   emit changed();
+  logger.debug() << "Subscription data from JSON ready";
 
   return true;
 }
 
-bool SubscriptionData::parseSubscriptionDataIapApple(const QJsonObject& obj) {
+bool SubscriptionData::parseSubscriptionDataIap(const QJsonObject& obj) {
   Q_UNUSED(obj);
-  logger.debug() << "Parse IAP Apple";
-  return false;
-}
+  logger.debug() << "Parse IAP start" << m_type;
 
-bool SubscriptionData::parseSubscriptionDataIapGoogle(const QJsonObject& obj) {
-  Q_UNUSED(obj);
-  logger.debug() << "Parse IAP Google";
+  m_expiresOn = obj.value("expiry_time_millis").toInt();
+  if (!m_expiresOn) {
+    return false;
+  }
+  QJsonValue autoRenewing = obj.value("auto_renewing");
+  if (!autoRenewing.isBool()) {
+    return false;
+  }
+  m_isCancelled = !autoRenewing.toBool();
+
+  logger.debug() << "Parse IAP ready";
   return false;
 }
 
 bool SubscriptionData::parseSubscriptionDataWeb(const QJsonObject& obj) {
-  logger.debug() << "Parse web";
+  logger.debug() << "Parse web start";
 
   m_createdAt = obj.value("created").toInt();
   if (!m_createdAt) {
@@ -174,5 +175,6 @@ bool SubscriptionData::parseSubscriptionDataWeb(const QJsonObject& obj) {
   }
   m_status = status.toString();
 
+  logger.debug() << "Parse web ready";
   return true;
 }
