@@ -25,6 +25,8 @@ class Tutorial final : public QObject {
   Q_INVOKABLE void play(AddonTutorial* tutorial);
   Q_INVOKABLE void stop();
   Q_INVOKABLE void allowItem(const QString& objectName);
+  Q_INVOKABLE QString currentTutorialId();
+
 
   bool isPlaying() const { return !!m_currentTutorial; }
 

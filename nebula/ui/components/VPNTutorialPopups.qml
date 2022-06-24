@@ -235,6 +235,9 @@ Item {
         }
 
         tutorialPopup.secondaryButtonOnClicked = () => {
+            VPN.recordGleanEventWithExtraKeys("tutorialAborted",{
+                                          "id": VPNTutorial.currentTutorialId()
+                                      });
             tutorialPopup._onClosed = () => callback()
             leaveTutorial();
         }
@@ -266,6 +269,11 @@ Item {
             root.targetElement = targetEl;
             tutorialTooltip.tooltipText = qsTrId(text);
             tutorialTooltip.open();
+            VPN.recordGleanEventWithExtraKeys("tutorialStepViewed",{
+                                              "tutorial_id": VPNTutorial.currentTutorialId(),
+                                              "step_id": text
+
+            });
         }
 
         function onTutorialCompleted(tutorialCompletedStringId) {
@@ -277,6 +285,9 @@ Item {
             tutorialPopup.description = qsTrId(tutorialCompletedStringId);
             tutorialPopup._onClosed = () => {};
             tutorialPopup.open();
+            VPN.recordGleanEventWithExtraKeys("tutorialCompleted",{
+                                              "id": VPNTutorial.currentTutorialId()
+            });
         }
     }
 

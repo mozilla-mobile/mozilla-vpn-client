@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
+import telemetry 0.30
 
 VPNFlickable {
     id: vpnFlickable
@@ -206,8 +207,15 @@ VPNFlickable {
                 }
             ]
 
-            onOpened: VPNSettings.tipsAndTricksIntroShown = true
-            onClosed: tipsAndTricksIntroPopupLoader.active = false
+            onOpened: {
+                VPNSettings.tipsAndTricksIntroShown = true
+                Sample.tipsAndTricksModalShown.record();
+            }
+
+            onClosed: {
+                tipsAndTricksIntroPopupLoader.active = false
+                Sample.tipsAndTricksModalClosed.record();
+            }
         }
 
         onActiveChanged: if (active) { item.open() }

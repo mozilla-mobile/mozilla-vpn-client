@@ -35,6 +35,10 @@ void Tutorial::allowItem(const QString& objectName) {
   m_allowedItems.append(objectName);
 }
 
+QString Tutorial::currentTutorialId() {
+    return m_currentTutorial->id();
+}
+
 void Tutorial::play(AddonTutorial* tutorial) {
   Q_ASSERT(tutorial);
 
