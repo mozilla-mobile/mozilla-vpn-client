@@ -122,19 +122,19 @@ tasks:
                           source: '${repoUrl}/raw/${head_sha}/.taskcluster.yml'
                         - $if: 'tasks_for in ["github-push", "github-pull-request", "github-release"]'
                           then:
-                            name: "Decision Task"
+                            name: "Decision Task (${tasks_for[7:]})"  # strip out "github-" from tasks_for
                             description: 'The task that creates all of the other tasks in the task graph'
-                          else:
-                            $if: 'tasks_for == "action"'
-                            then:
-                                name: "Action: ${action.title}"
-                                description: |
-                                    ${action.description}
+                        - $if: 'tasks_for == "action"'
+                          then:
+                            name: "Action: ${action.title}"
+                            description: |
+                                ${action.description}
 
-                                    Action triggered by clientID `${clientId}`
-                            else:
-                                name: "Decision Task for cron job ${cron.job_name}"
-                                description: 'Created by a [cron task](https://firefox-ci-tc.services.mozilla.com/tasks/${cron.task_id})'
+                                Action triggered by clientID `${clientId}`
+                        - $if: 'tasks_for == "cron"'
+                          then:
+                            name: "Decision Task for cron job ${cron.job_name}"
+                            description: 'Created by a [cron task](https://firefox-ci-tc.services.mozilla.com/tasks/${cron.task_id})'
                 provisionerId: "mozillavpn-${level}"
                 workerType: "decision"
 
@@ -164,6 +164,9 @@ tasks:
                                 - index.mozillavpn.v2.${project}.branch.${short_head_branch}.latest.taskgraph.decision
                                 - index.mozillavpn.v2.${project}.branch.${short_head_branch}.revision.${head_sha}.taskgraph.decision
                                 - index.mozillavpn.v2.${project}.revision.${head_sha}.taskgraph.decision
+                            - $if: 'tasks_for == "github-release"'
+                              then:
+                                - index.mozillavpn.v2.${project}.release.${head_tag}.taskgraph.decision
                             - $if: 'tasks_for == "cron"'
                               then:
                                 # cron context provides ${head_branch} as a short one
@@ -220,9 +223,6 @@ tasks:
                                 ACTION_TASK_ID: {$json: {$eval: 'taskId'}}  # taskId of the target task (JSON-encoded)
                                 ACTION_INPUT: {$json: {$eval: 'input'}}
                                 ACTION_CALLBACK: '${action.cb_name}'
-                            - $if: 'tasks_for == "github-release"'
-                              then:
-                                MOZILLAVPN_HEAD_TAG: '${event.release.tag_name}'
                     features:
                         taskclusterProxy: true
                         chainOfTrust: true
