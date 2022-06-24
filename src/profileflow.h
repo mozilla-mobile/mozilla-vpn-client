@@ -9,6 +9,8 @@
 
 #include <QObject>
 
+class Task;
+
 class ProfileFlow final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ProfileFlow)
@@ -46,6 +48,7 @@ class ProfileFlow final : public QObject {
   State m_state = StateInitial;
 
   bool m_forceReauthFlow = false;
+  Task* m_currentTask = nullptr;
 };
 
 #endif  // PROFILEFLOW_H
