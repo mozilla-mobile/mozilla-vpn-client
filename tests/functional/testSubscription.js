@@ -29,7 +29,14 @@ describe('Subscription view', function() {
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
           .body = {
         plan: {amount: 123, currency: 'foo', interval_count: 12},
-        payment: {},
+        payment: {
+          payment_provider: 'stripe',
+          payment_type: 'credit',
+          last4: '0016',
+          exp_month: 12,
+          exp_year: 2022,
+          brand: 'visa',
+        },
         subscription: {
           _subscription_type: 'web',
           created: 1,
@@ -84,13 +91,28 @@ describe('Subscription view', function() {
             'subscriptionItem/subscriptionItem-activated/subscriptionItem-activated-parent/subscriptionItem-activated-container/subscriptionItem-activated-valueText',
             'text') === '1/1/70');
 
-    // TODO   await
-    // vpn.waitForElement('subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText');
-    // TODO   await
-    // vpn.waitForElement('subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText');
-    // TODO   await
-    // vpn.waitForElement('subscriptionItem/subscriptionItem-expires/subscriptionItem-expires-parent/subscriptionItem-expires-container/subscriptionItem-expires-valueText');
-    // TODO   await
-    // vpn.waitForElement('subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-valueText');
+    vpn.waitForElement('subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText');
+    assert(
+      await vpn.getElementProperty(
+        'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText',
+          'text') === 'visa');
+
+    vpn.waitForElement('subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText');
+    assert(
+      await vpn.getElementProperty(
+          'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText',
+          'text') === 'visa');
+
+    vpn.waitForElement('subscriptionItem/subscriptionItem-expires/subscriptionItem-expires-parent/subscriptionItem-expires-container/subscriptionItem-expires-valueText');
+    assert(
+      await vpn.getElementProperty(
+        'subscriptionItem/subscriptionItem-expires/subscriptionItem-expires-parent/subscriptionItem-expires-container/subscriptionItem-expires-valueText',
+          'text') === 'June 2022');
+
+    vpn.waitForElement('subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-valueText');
+    assert(
+      await vpn.getElementProperty(
+          'subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-valueText',
+          'paymentMethod') === 'credit');
   });
 });
