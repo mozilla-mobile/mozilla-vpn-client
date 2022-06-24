@@ -158,7 +158,7 @@ bool SubscriptionData::parseSubscriptionDataIap(
   }
   m_isCancelled = !autoRenewing.toBool();
 
-  return false;
+  return true;
 }
 
 bool SubscriptionData::parseSubscriptionDataWeb(
