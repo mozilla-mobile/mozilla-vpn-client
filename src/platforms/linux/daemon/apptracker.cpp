@@ -157,9 +157,10 @@ void AppTracker::cgroupsChanged(const QString& directory) {
       // This is a new scope, let's add it.
       logger.debug() << "Control group created:" << path;
       AppData* data = new AppData(path);
-      m_runningApps[path] = new AppData(path);
 
+      m_runningApps[path] = data;
       appHeuristicMatch(data);
+    
       emit appLaunched(data->cgroup, data->appId, data->rootpid);
     }
   }

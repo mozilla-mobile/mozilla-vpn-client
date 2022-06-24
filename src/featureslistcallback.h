@@ -105,9 +105,9 @@ bool FeatureCallback_splitTunnel() {
   }
   initDone = true;
 
-  /* Control groups v1 must be mounted for traffic classification
+  /* Control groups v2 must be mounted for app/traffic classification
    */
-  if (LinuxDependencies::findCgroupPath("net_cls").isNull()) {
+  if (LinuxDependencies::findCgroup2Path().isNull()) {
     return false;
   }
 

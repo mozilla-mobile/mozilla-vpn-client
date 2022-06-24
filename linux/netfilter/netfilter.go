@@ -16,6 +16,7 @@ import "C"
 import (
   "log"
   "net"
+  "bytes"
   "errors"
   "unsafe"
 
@@ -504,9 +505,17 @@ func NetfilterResetCgroupV2(cgroup string) int32 {
 
   // Search for a mangle rule starting with a cgroup match.
   xtcgroup := nftXtCgroupMatch(cgroup)
+  cgdata, _ := xt.Marshal(0, xtcgroup.Rev, xtcgroup.Info)
   for _, r := range rules {
-    rr, _ := r.Exprs[0].(*expr.Match)
-    if *rr == xtcgroup {
+    rr := r.Exprs[0].(*expr.Match)
+    if rr.Name != xtcgroup.Name || rr.Rev != xtcgroup.Rev {
+      continue
+    }
+    rrdata, err := xt.Marshal(0, rr.Rev, rr.Info)
+    if err != nil {
+      continue
+    }
+    if bytes.Compare(rrdata, cgdata) == 0 {
       logger.Println("Deleting inet/mangle rule", r.Handle)
       mozvpn_conn.DelRule(r);
     }
