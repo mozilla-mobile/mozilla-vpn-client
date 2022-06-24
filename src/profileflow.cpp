@@ -46,9 +46,7 @@ void ProfileFlow::setForceReauthFlow(const bool forceReauthFlow) {
 void ProfileFlow::start() {
   logger.debug() << "Start profile flow";
 
-  if (m_state != StateInitial) {
-    return;
-  }
+  reset();
 
   setState(StateLoading);
 
@@ -62,27 +60,42 @@ void ProfileFlow::start() {
   setForceReauthFlow(false);
 
   connect(task, &TaskGetSubscriptionDetails::receivedData, this,
-          &ProfileFlow::subscriptionDetailsFetched);
-  connect(task, &TaskGetSubscriptionDetails::needsAuthentication, this, [&] {
-    logger.debug() << "Needs authentication";
-    setState(StateAuthenticationNeeded);
-  });
-  connect(task, &TaskGetSubscriptionDetails::failed, [&]() {
-    logger.debug() << "Task failed";
-    setState(StateError);
+          [this, task](const QByteArray& data) {
+            if (task == m_currentTask) {
+              m_currentTask = nullptr;
+              subscriptionDetailsFetched(data);
+            }
+          });
+  connect(task, &TaskGetSubscriptionDetails::needsAuthentication, this,
+          [this, task] {
+            if (task == m_currentTask) {
+              logger.debug() << "Needs authentication";
+              setState(StateAuthenticationNeeded);
+            }
+          });
+  connect(task, &TaskGetSubscriptionDetails::failed, this, [this, task]() {
+    if (task == m_currentTask) {
+      logger.debug() << "Task failed";
+      m_currentTask = nullptr;
+      setState(StateError);
+    }
   });
 
   TaskScheduler::scheduleTask(task);
+  m_currentTask = task;
 }
 
 void ProfileFlow::reset() {
   logger.debug() << "Reset profile flow";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-  vpn->cancelReauthentication();
+  if (m_state != StateInitial) {
+    MozillaVPN* vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
+    vpn->cancelReauthentication();
 
-  setState(StateInitial);
+    m_currentTask = nullptr;
+    setState(StateInitial);
+  }
 }
 
 void ProfileFlow::subscriptionDetailsFetched(
