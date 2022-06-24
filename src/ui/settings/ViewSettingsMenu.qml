@@ -179,6 +179,9 @@ VPNFlickable {
             // to the main settings view.
             const hasError = VPNProfileFlow.state === VPNProfileFlow.StateError;
             if (hasError) {
+                if (mainStackView.currentItem.objectName === "reauthenticationFlow") {
+                    mainStackView.pop();
+                }
                 VPNProfileFlow.reset();
                 settingsStackView.pop();
             }
