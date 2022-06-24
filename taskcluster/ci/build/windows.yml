@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 windows/opt:
-    add-branch-index: build
+    add-index-routes: build
     description: "Windows Build"
     treeherder:
         symbol: B

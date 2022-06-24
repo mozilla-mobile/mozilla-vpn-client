@@ -29,7 +29,7 @@ job-template:
     description: Sign MozillaVPN
     worker: {} # Will be configured by signing:transforms
     run-on-tasks-for: []
-    add-branch-index: build
+    add-index-routes: build
     signing-format:
         by-build-type:
             android.*: autograph_apk
