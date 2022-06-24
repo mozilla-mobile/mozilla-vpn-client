@@ -36,6 +36,7 @@ RowLayout {
         Layout.alignment: Qt.AlignVCenter
 
         VPNBoldLabel {
+            objectName: "profileDisplayName"
             readonly property var textVpnUser: VPNl18n.GlobalVpnUser
             text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
@@ -44,6 +45,7 @@ RowLayout {
 
         VPNTextBlock {
             id: serverLocation
+            objectName: "profileEmailAddress"
             text: VPNUser.email
             Accessible.ignored: true
             Layout.alignment: Qt.AlignLeft

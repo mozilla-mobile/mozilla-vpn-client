@@ -173,6 +173,8 @@ target_sources(mozillavpn PRIVATE
     models/servercountrymodel.h
     models/serverdata.cpp
     models/serverdata.h
+    models/subscriptiondata.cpp
+    models/subscriptiondata.h
     models/supportcategorymodel.cpp
     models/supportcategorymodel.h
     models/survey.cpp
@@ -234,8 +236,6 @@ target_sources(mozillavpn PRIVATE
     simplenetworkmanager.h
     statusicon.cpp
     statusicon.h
-    subscriptiondata.cpp
-    subscriptiondata.h
     task.h
     taskscheduler.cpp
     taskscheduler.h

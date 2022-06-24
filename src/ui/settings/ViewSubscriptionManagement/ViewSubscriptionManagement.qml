@@ -51,6 +51,7 @@ VPNFlickable {
 
         ColumnLayout {
             spacing: 0
+            objectName: "subscriptionItem"
 
             Layout.leftMargin: VPNTheme.theme.windowMargin / 2
             Layout.rightMargin: VPNTheme.theme.windowMargin / 2
@@ -68,6 +69,7 @@ VPNFlickable {
             Repeater {
                 model: subscriptionInfoModel
                 delegate: Loader {
+                    objectName: _objectName
                     Layout.fillWidth: true
                     source: "qrc:/ui/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
                 }
@@ -88,6 +90,7 @@ VPNFlickable {
                 model: subscriptionPaymentModel
                 delegate: Loader {
                     Layout.fillWidth: true
+                    objectName: _objectName
                     source: "qrc:/ui/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
                 }
             }
@@ -149,6 +152,7 @@ VPNFlickable {
         // Subscription info model
         // Subscription plan
         subscriptionInfoModel.append({
+            _objectName: "subscriptionItem-plan",
             labelText: VPNl18n.SubscriptionManagementPlanLabel,
             valueText: getPlanText(
                 VPNSubscriptionData.planCurrency,
@@ -160,6 +164,7 @@ VPNFlickable {
 
         // Status
         subscriptionInfoModel.append({
+            _objectName: "subscriptionItem-status",
             labelText: VPNl18n.SubscriptionManagementStatusLabel,
             valueText: VPNSubscriptionData.status,
             type: "pill",
@@ -168,6 +173,7 @@ VPNFlickable {
         // Created at
         if (VPNSubscriptionData.createdAt) {
             subscriptionInfoModel.append({
+                _objectName: "subscriptionItem-activated",
                 labelText: VPNl18n.SubscriptionManagementActivatedLabel,
                 valueText: epochTimeToDate(VPNSubscriptionData.createdAt),
                 type: "text",
@@ -176,6 +182,7 @@ VPNFlickable {
 
         // Expires or next billed
         subscriptionInfoModel.append({
+            _objectName: "subscriptionItem-cancelled",
             labelText: VPNSubscriptionData.isCancelled
                 ? VPNl18n.SubscriptionManagementExpiresLabel
                 : VPNl18n.SubscriptionManagementNextLabel,
@@ -188,6 +195,7 @@ VPNFlickable {
             if (VPNSubscriptionData.paymentType === "credit") {
                 // Credit card brand
                 subscriptionPaymentModel.append({
+                    _objectName: "subscriptionItem-brand",
                     labelText: VPNSubscriptionData.creditCardBrand,
                     valueText: VPNl18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
                     type: "payment",
@@ -195,6 +203,7 @@ VPNFlickable {
 
                 // Credit card expires
                 subscriptionPaymentModel.append({
+                    _objectName: "subscriptionItem-expires",
                     labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
                     valueText: getPaymentExpiration(),
                     type: "text",
@@ -202,6 +211,7 @@ VPNFlickable {
             } else {
                 // Payment type or provider
                 subscriptionPaymentModel.append({
+                    _objectName: "subscriptionItem-payment",
                     labelText: VPNSubscriptionData.paymentType || VPNSubscriptionData.paymentProvider,
                     valueText: "",
                     type: "payment",
