@@ -147,6 +147,7 @@ VPNFlickable {
 
     function populateListModels() {
         // Subscription info model
+        // Subscription plan
         subscriptionInfoModel.append({
             labelText: VPNl18n.SubscriptionManagementPlanLabel,
             valueText: getPlanText(
@@ -157,22 +158,27 @@ VPNFlickable {
             type: "text",
         });
 
+        // Status
         subscriptionInfoModel.append({
             labelText: VPNl18n.SubscriptionManagementStatusLabel,
             valueText: VPNSubscriptionData.status,
             type: "pill",
         });
 
-        subscriptionInfoModel.append({
-            labelText: VPNl18n.SubscriptionManagementActivatedLabel,
-            valueText: epochTimeToDate(VPNSubscriptionData.createdAt),
-            type: "text",
-        });
+        // Created at
+        if (VPNSubscriptionData.createdAt) {
+            subscriptionInfoModel.append({
+                labelText: VPNl18n.SubscriptionManagementActivatedLabel,
+                valueText: epochTimeToDate(VPNSubscriptionData.createdAt),
+                type: "text",
+            });
+        }
 
+        // Expires or next billed
         subscriptionInfoModel.append({
-            labelText: VPNSubscriptionData.status === "active"
-                ? VPNl18n.SubscriptionManagementNextLabel
-                : VPNl18n.SubscriptionManagementExpiresLabel,
+            labelText: VPNSubscriptionData.isCancelled
+                ? VPNl18n.SubscriptionManagementExpiresLabel
+                : VPNl18n.SubscriptionManagementNextLabel,
             valueText: epochTimeToDate(VPNSubscriptionData.expiresOn),
             type: "text",
         });
@@ -180,18 +186,21 @@ VPNFlickable {
         // Subscription payment model
         if (VPNSubscriptionData.paymentProvider) {
             if (VPNSubscriptionData.paymentType === "credit") {
+                // Credit card brand
                 subscriptionPaymentModel.append({
                     labelText: VPNSubscriptionData.creditCardBrand,
                     valueText: VPNl18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
                     type: "payment",
                 });
 
+                // Credit card expires
                 subscriptionPaymentModel.append({
                     labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
                     valueText: getPaymentExpiration(),
                     type: "text",
                 });
             } else {
+                // Payment type or provider
                 subscriptionPaymentModel.append({
                     labelText: VPNSubscriptionData.paymentType || VPNSubscriptionData.paymentProvider,
                     valueText: "",
