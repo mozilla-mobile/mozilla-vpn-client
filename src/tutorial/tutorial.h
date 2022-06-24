@@ -28,7 +28,6 @@ class Tutorial final : public QObject {
   Q_INVOKABLE void allowItem(const QString& objectName);
   Q_INVOKABLE QString currentTutorialId();
 
-
   bool isPlaying() const { return !!m_currentTutorial; }
 
   void requireTooltipNeeded(AddonTutorial* tutorial, const QString& tooltipText,
