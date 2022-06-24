@@ -135,15 +135,15 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   return true;
 }
 
-bool SubscriptionData::parseSubscriptionDataIap(const QJsonObject& obj) {
-  Q_UNUSED(obj);
+bool SubscriptionData::parseSubscriptionDataIap(
+    const QJsonObject& subscriptionData) {
   logger.debug() << "Parse IAP start" << m_type;
 
-  m_expiresOn = obj.value("expiry_time_millis").toInt();
+  m_expiresOn = subscriptionData.value("expiry_time_millis").toInt();
   if (!m_expiresOn) {
     return false;
   }
-  QJsonValue autoRenewing = obj.value("auto_renewing");
+  QJsonValue autoRenewing = subscriptionData.value("auto_renewing");
   if (!autoRenewing.isBool()) {
     return false;
   }
@@ -153,23 +153,24 @@ bool SubscriptionData::parseSubscriptionDataIap(const QJsonObject& obj) {
   return false;
 }
 
-bool SubscriptionData::parseSubscriptionDataWeb(const QJsonObject& obj) {
+bool SubscriptionData::parseSubscriptionDataWeb(
+    const QJsonObject& subscriptionData) {
   logger.debug() << "Parse web start";
 
-  m_createdAt = obj.value("created").toInt();
+  m_createdAt = subscriptionData.value("created").toInt();
   if (!m_createdAt) {
     return false;
   }
-  m_expiresOn = obj.value("current_period_end").toInt();
+  m_expiresOn = subscriptionData.value("current_period_end").toInt();
   if (!m_expiresOn) {
     return false;
   }
-  QJsonValue isCancelled = obj.value("cancel_at_period_end");
+  QJsonValue isCancelled = subscriptionData.value("cancel_at_period_end");
   if (!isCancelled.isBool()) {
     return false;
   }
   m_isCancelled = isCancelled.toBool();
-  QJsonValue status = obj.value("status");
+  QJsonValue status = subscriptionData.value("status");
   if (!status.isString()) {
     return false;
   }

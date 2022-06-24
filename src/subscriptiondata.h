@@ -45,8 +45,8 @@ class SubscriptionData final : public QObject {
   void changed();
 
  private:
-  bool parseSubscriptionDataIap(const QJsonObject& obj);
-  bool parseSubscriptionDataWeb(const QJsonObject& obj);
+  bool parseSubscriptionDataIap(const QJsonObject& subscriptionData);
+  bool parseSubscriptionDataWeb(const QJsonObject& subscriptionData);
 
  private:
   QByteArray m_rawJson;
