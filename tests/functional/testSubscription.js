@@ -24,6 +24,98 @@ describe('Subscription view', function() {
     }
   });
 
+  async function getToProfileView() {
+    await vpn.waitForElement('settingsButton');
+    await vpn.clickOnElement('settingsButton');
+
+    await vpn.waitForElement('settingsUserProfile');
+    await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
+
+    await vpn.waitForElement('profileDisplayName');
+    await vpn.waitForElementProperty('profileDisplayName', 'visible', 'true');
+    await vpn.waitForElementProperty('profileDisplayName', 'text', 'Test test');
+
+    await vpn.waitForElement('profileEmailAddress');
+    await vpn.waitForElementProperty('profileEmailAddress', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'profileEmailAddress', 'text', 'test@mozilla.com');
+
+    await vpn.waitForElement('manageAccountButton');
+    await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
+    await vpn.clickOnElement('manageAccountButton');
+
+    await vpn.waitForElement('subscriptionManagmentView');
+    await vpn.waitForElementProperty(
+        'subscriptionManagmentView', 'visible', 'true');
+    await vpn.wait();
+  }
+
+  it('opening the subscription view (iap apple)', async () => {
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = {
+        plan: {amount: 123, currency: 'foo', interval_count: 12},
+        payment: {
+          payment_provider: 'iap_apple',
+          payment_type: 'credit',
+          last4: '0016',
+          exp_month: 12,
+          exp_year: 2022,
+          brand: 'visa',
+        },
+        subscription: {
+          _subscription_type: 'iap_apple',
+          auto_renewing: true,
+        }
+      }
+    };
+
+    await getToProfileView();
+
+    await vpn.waitForElement(
+        'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText');
+    await vpn.waitForElementProperty(
+        'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
+        'visible', 'true');
+    assert(
+        await vpn.getElementProperty(
+            'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
+            'text') === 'FOO1.23 Yearly');
+  });
+
+  it('opening the subscription view (iap google)', async () => {
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = {
+        plan: {amount: 123, currency: 'foo', interval_count: 12},
+        payment: {
+          payment_provider: 'iap_google',
+          payment_type: 'credit',
+          last4: '0016',
+          exp_month: 12,
+          exp_year: 2022,
+          brand: 'visa',
+        },
+        subscription: {
+          _subscription_type: 'iap_google',
+          auto_renewing: true,
+        }
+      }
+    };
+
+    await getToProfileView();
+
+    await vpn.waitForElement(
+        'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText');
+    await vpn.waitForElementProperty(
+        'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
+        'visible', 'true');
+    assert(
+        await vpn.getElementProperty(
+            'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
+            'text') === 'FOO1.23 Yearly');
+  });
+
   it('opening the subscription view (web)', async () => {
     this.ctx.guardianSubscriptionDetailsCallback = req => {
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
@@ -47,28 +139,7 @@ describe('Subscription view', function() {
       }
     };
 
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
-
-    await vpn.waitForElement('settingsUserProfile');
-    await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
-
-    await vpn.waitForElement('profileDisplayName');
-    await vpn.waitForElementProperty('profileDisplayName', 'visible', 'true');
-    await vpn.waitForElementProperty('profileDisplayName', 'text', 'Test test');
-
-    await vpn.waitForElement('profileEmailAddress');
-    await vpn.waitForElementProperty('profileEmailAddress', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'profileEmailAddress', 'text', 'test@mozilla.com');
-
-    await vpn.waitForElement('manageAccountButton');
-    await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
-    await vpn.clickOnElement('manageAccountButton');
-
-    await vpn.waitForElement('subscriptionManagmentView');
-    await vpn.waitForElementProperty(
-        'subscriptionManagmentView', 'visible', 'true');
+    await getToProfileView();
 
     await vpn.waitForElement(
         'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText');
@@ -95,7 +166,7 @@ describe('Subscription view', function() {
     assert(
       await vpn.getElementProperty(
         'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText',
-          'text') === 'visa');
+          'text') === '1/1/70');
 
     vpn.waitForElement('subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText');
     assert(
