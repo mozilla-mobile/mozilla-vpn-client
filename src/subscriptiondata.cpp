@@ -36,14 +36,14 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
 
   // Plan
   logger.debug() << "Parse plan start";
-  QJsonObject planData = obj.value("plan").toObject();
+  QJsonObject planData = obj["plan"].toObject();
 
-  m_planAmount = planData.value("amount").toInt();
+  m_planAmount = planData["amount"].toInt();
   if (!m_planAmount && m_planAmount != 0) {
     return false;
   }
 
-  QJsonValue planCurrency = planData.value("currency");
+  QJsonValue planCurrency = planData["currency"];
   if (!planCurrency.isString()) {
     return false;
   }
@@ -52,22 +52,21 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   // transformation from Stripe.
   m_planCurrency = planCurrency.toString().toUpper();
 
-  m_planIntervalCount = planData.value("interval_count").toInt();
+  m_planIntervalCount = planData["interval_count"].toInt();
   if (!m_planIntervalCount) {
     return false;
   }
   logger.debug() << "Parse plan ready";
 
   // Payment
-  logger.debug() << "Parse payment start";
-  QJsonObject paymentData = obj.value("payment").toObject();
+  QJsonObject paymentData = obj["payment"].toObject();
 
   // If we do not receive payment data from FxA we don’t show it instead of
   // throwing an error. There is a known bug with FxA which causes FxA to not
   // show payment info: https://mozilla-hub.atlassian.net/browse/FXA-3856.
   if (!paymentData.isEmpty()) {
     // Payment provider
-    QJsonValue paymentProvider = paymentData.value("payment_provider");
+    QJsonValue paymentProvider = paymentData["payment_provider"];
     // We should always get a payment provider if there is payment data
     if (!paymentProvider.isString()) {
       return false;
@@ -75,43 +74,41 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     m_paymentProvider = paymentProvider.toString();
 
     // Payment type
-    QJsonValue paymentType = paymentData.value("payment_type");
+    QJsonValue paymentType = paymentData["payment_type"];
     if (paymentType.isString()) {
       m_paymentType = paymentType.toString();
 
       // For credit cards we also show card details
       if (m_paymentType == "credit") {
-        QJsonValue creditCardBrand = paymentData.value("brand");
+        QJsonValue creditCardBrand = paymentData["brand"];
         if (!creditCardBrand.isString()) {
           return false;
         }
         m_creditCardBrand = creditCardBrand.toString();
 
-        QJsonValue creditCardLast4 = paymentData.value("last4");
+        QJsonValue creditCardLast4 = paymentData["last4"];
         if (!creditCardBrand.isString()) {
           return false;
         }
         m_creditCardLast4 = creditCardLast4.toString();
 
-        m_creditCardExpMonth = paymentData.value("exp_month").toInt();
+        m_creditCardExpMonth = paymentData["exp_month"].toInt();
         if (!m_creditCardExpMonth) {
           return false;
         }
 
-        m_creditCardExpYear = paymentData.value("exp_year").toInt();
+        m_creditCardExpYear = paymentData["exp_year"].toInt();
         if (!m_creditCardExpYear) {
           return false;
         }
       }
     }
   }
-  logger.debug() << "Parse payment ready";
 
   // Subscription
-  logger.debug() << "Parse subscription start";
-  QJsonObject subscriptionData = obj.value("subscription").toObject();
+  QJsonObject subscriptionData = obj["subscription"].toObject();
 
-  QJsonValue type = subscriptionData.value("_subscription_type");
+  QJsonValue type = subscriptionData["_subscription_type"];
   if (!type.isString()) {
     return false;
   }
@@ -129,6 +126,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       }
       break;
     case iap_apple:
+      [[fallthrough]];
     case iap_google:
       if (!parseSubscriptionDataIap(subscriptionData)) {
         return false;
@@ -138,7 +136,6 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       logger.error() << "No matching subscription type" << type.toString();
       return false;
   }
-  logger.debug() << "Parse subscription ready";
 
   m_rawJson = json;
   emit changed();
@@ -151,17 +148,16 @@ bool SubscriptionData::parseSubscriptionDataIap(
     const QJsonObject& subscriptionData) {
   logger.debug() << "Parse IAP start" << m_type;
 
-  m_expiresOn = subscriptionData.value("expiry_time_millis").toInt();
+  m_expiresOn = subscriptionData["expiry_time_millis"].toInt();
   if (!m_expiresOn) {
     return false;
   }
-  QJsonValue autoRenewing = subscriptionData.value("auto_renewing");
+  QJsonValue autoRenewing = subscriptionData["auto_renewing"];
   if (!autoRenewing.isBool()) {
     return false;
   }
   m_isCancelled = !autoRenewing.toBool();
 
-  logger.debug() << "Parse IAP ready";
   return false;
 }
 
@@ -169,25 +165,25 @@ bool SubscriptionData::parseSubscriptionDataWeb(
     const QJsonObject& subscriptionData) {
   logger.debug() << "Parse web start";
 
-  m_createdAt = subscriptionData.value("created").toInt();
+  m_createdAt = subscriptionData["created"].toInt();
   if (!m_createdAt) {
     return false;
   }
-  m_expiresOn = subscriptionData.value("current_period_end").toInt();
+  m_expiresOn = subscriptionData["current_period_end"].toInt();
   if (!m_expiresOn) {
     return false;
   }
-  QJsonValue isCancelled = subscriptionData.value("cancel_at_period_end");
+  QJsonValue isCancelled = subscriptionData["cancel_at_period_end"];
   if (!isCancelled.isBool()) {
     return false;
   }
   m_isCancelled = isCancelled.toBool();
-  QJsonValue status = subscriptionData.value("status");
-  if (!status.isString()) {
+  QJsonValue status = subscriptionData["status"];
+  m_status = subscriptionData["status"].toString();
+  if (m_status.isEmpty()) {
     return false;
   }
   m_status = status.toString();
 
-  logger.debug() << "Parse web ready";
   return true;
 }
