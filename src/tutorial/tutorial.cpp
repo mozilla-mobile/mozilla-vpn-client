@@ -35,15 +35,21 @@ void Tutorial::allowItem(const QString& objectName) {
   m_allowedItems.append(objectName);
 }
 
-void Tutorial::play(AddonTutorial* tutorial) {
+void Tutorial::play(Addon* tutorial) {
   Q_ASSERT(tutorial);
+  Q_ASSERT(tutorial->type() == "tutorial");
 
   stop();
 
-  m_currentTutorial = tutorial;
+  m_currentTutorial = qobject_cast<AddonTutorial*>(tutorial);
+  if (!m_currentTutorial) {
+    logger.error() << "Tutorial::play works only with AddonTutorial";
+    return;
+  }
+
   emit playingChanged();
 
-  tutorial->play(m_allowedItems);
+  m_currentTutorial->play(m_allowedItems);
 }
 
 void Tutorial::stop() {
