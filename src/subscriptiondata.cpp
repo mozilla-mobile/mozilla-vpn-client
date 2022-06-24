@@ -118,24 +118,24 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
 
   // Enum from string
   m_type = static_cast<TypeSubscription>(
-    QMetaEnum::fromType<TypeSubscription>().keyToValue(type.toString().toUtf8())
-  );
+      QMetaEnum::fromType<TypeSubscription>().keyToValue(
+          type.toString().toUtf8()));
 
   // Parse subscription data depending on subscription platform
   switch (m_type) {
     case web:
-      if(!parseSubscriptionDataWeb(subscriptionData)) {
+      if (!parseSubscriptionDataWeb(subscriptionData)) {
         return false;
       }
       break;
     case iap_apple:
     case iap_google:
-      if(!parseSubscriptionDataIap(subscriptionData)) {
+      if (!parseSubscriptionDataIap(subscriptionData)) {
         return false;
       }
       break;
     default:
-      logger.error() << "No matching subscription type" << m_type;
+      logger.error() << "No matching subscription type" << type.toString();
       return false;
   }
   logger.debug() << "Parse subscription ready";

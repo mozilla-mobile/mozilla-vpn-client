@@ -128,7 +128,6 @@ VPNFlickable {
     }
 
     function handleManageAccountClicked() {
-        console.log("lel", VPNSubscriptionData.type);
         switch(VPNSubscriptionData.type) {
             case VPNSubscriptionData.web:
                 VPN.openLink(VPN.LinkSubscriptionFxa);
@@ -140,7 +139,7 @@ VPNFlickable {
                 VPN.openLink(VPN.LinkSubscriptionIapApple);
                 break;
             default:
-                // VPN.openLink(VPN.LinkAccount);
+                VPN.openLink(VPN.LinkAccount);
         }
 
         VPN.recordGleanEvent("manageSubscriptionClicked");
