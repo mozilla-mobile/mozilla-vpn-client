@@ -121,11 +121,14 @@ ColumnLayout {
 
         Item {
             id: rowPill
+            objectName: _objectName + "-pillWrapper"
 
             height: rowPill.implicitHeight
             Layout.fillWidth: true
 
             VPNPill {
+                objectName: _objectName + "-pill"
+
                 color: valueText === "active"
                     ? VPNTheme.colors.green90
                     : VPNTheme.colors.red70

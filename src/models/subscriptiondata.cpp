@@ -66,41 +66,35 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   // show payment info: https://mozilla-hub.atlassian.net/browse/FXA-3856.
   if (!paymentData.isEmpty()) {
     // Payment provider
-    QJsonValue paymentProvider = paymentData["payment_provider"];
+    m_paymentProvider = paymentData["payment_provider"].toString();
     // We should always get a payment provider if there is payment data
-    if (!paymentProvider.isString()) {
+    if (m_paymentProvider.isEmpty()) {
       return false;
     }
-    m_paymentProvider = paymentProvider.toString();
 
     // Payment type
-    QJsonValue paymentType = paymentData["payment_type"];
-    if (paymentType.isString()) {
-      m_paymentType = paymentType.toString();
+    m_paymentType = paymentData["payment_type"].toString();
 
-      // For credit cards we also show card details
-      if (m_paymentType == "credit") {
-        QJsonValue creditCardBrand = paymentData["brand"];
-        if (!creditCardBrand.isString()) {
-          return false;
-        }
-        m_creditCardBrand = creditCardBrand.toString();
+    // For credit cards we also show card details
+    if (m_paymentType == "credit") {
+      m_creditCardBrand = paymentData["brand"].toString();
+      if (m_creditCardBrand.isEmpty()) {
+        return false;
+      }
 
-        QJsonValue creditCardLast4 = paymentData["last4"];
-        if (!creditCardBrand.isString()) {
-          return false;
-        }
-        m_creditCardLast4 = creditCardLast4.toString();
+      m_creditCardLast4 = paymentData["last4"].toString();
+      if (m_creditCardLast4.isEmpty()) {
+        return false;
+      }
 
-        m_creditCardExpMonth = paymentData["exp_month"].toInt();
-        if (!m_creditCardExpMonth) {
-          return false;
-        }
+      m_creditCardExpMonth = paymentData["exp_month"].toInt();
+      if (!m_creditCardExpMonth) {
+        return false;
+      }
 
-        m_creditCardExpYear = paymentData["exp_year"].toInt();
-        if (!m_creditCardExpYear) {
-          return false;
-        }
+      m_creditCardExpYear = paymentData["exp_year"].toInt();
+      if (!m_creditCardExpYear) {
+        return false;
       }
     }
   }
@@ -173,17 +167,11 @@ bool SubscriptionData::parseSubscriptionDataWeb(
   if (!m_expiresOn) {
     return false;
   }
-  QJsonValue isCancelled = subscriptionData["cancel_at_period_end"];
-  if (!isCancelled.isBool()) {
-    return false;
-  }
-  m_isCancelled = isCancelled.toBool();
-  QJsonValue status = subscriptionData["status"];
+  m_isCancelled = subscriptionData["cancel_at_period_end"].toBool();
   m_status = subscriptionData["status"].toString();
   if (m_status.isEmpty()) {
     return false;
   }
-  m_status = status.toString();
 
   return true;
 }
