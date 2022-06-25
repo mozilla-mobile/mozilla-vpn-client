@@ -177,7 +177,7 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
     return false;
   }
   if (m_cgroupVersion == 1) {
-    NetfilterMarkCgroupV1(VPN_EXCLUDE_CLASS_ID, device->fwmark);
+    NetfilterMarkCgroupV1(VPN_EXCLUDE_CLASS_ID);
   }
 
   int slashPos = config.m_deviceIpv6Address.indexOf('/');
