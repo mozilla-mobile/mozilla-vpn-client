@@ -39,21 +39,21 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   QJsonObject planData = obj["plan"].toObject();
 
   m_planAmount = planData["amount"].toInt();
-  if (!m_planAmount && m_planAmount != 0) {
+  if (!m_planAmount) {
     return false;
   }
-
-  QJsonValue planCurrency = planData["currency"];
-  if (!planCurrency.isString()) {
-    return false;
-  }
-  // We transform currency code to uppercase in order to be compliant with
-  // ISO 4216. FxA passes the lowercase currency code values without
-  // transformation from Stripe.
-  m_planCurrency = planCurrency.toString().toUpper();
 
   m_planIntervalCount = planData["interval_count"].toInt();
+  logger.debug() << "m_planIntervalCount" << m_planIntervalCount;
   if (!m_planIntervalCount) {
+    return false;
+  }
+
+  // We transform the currency code to uppercase in order to be compliant with
+  // ISO 4216. FxA passes the lowercase currency code values without
+  // transformation from Stripe.
+  m_planCurrency = planData["currency"].toString().toUpper();
+  if (m_planCurrency.isEmpty()) {
     return false;
   }
   logger.debug() << "Parse plan ready";
@@ -102,15 +102,19 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   // Subscription
   QJsonObject subscriptionData = obj["subscription"].toObject();
 
-  QJsonValue type = subscriptionData["_subscription_type"];
-  if (!type.isString()) {
+  QString type = subscriptionData["_subscription_type"].toString();
+  if (type.isEmpty()) {
     return false;
   }
 
   // Enum from string
+  bool ok = false;
   m_type = static_cast<TypeSubscription>(
-      QMetaEnum::fromType<TypeSubscription>().keyToValue(
-          type.toString().toUtf8()));
+      QMetaEnum::fromType<TypeSubscription>().keyToValue(type.toUtf8(), &ok));
+  if (!ok) {
+    logger.error() << "Unsupported subscription type:" << type;
+    return false;
+  }
 
   // Parse subscription data depending on subscription platform
   switch (m_type) {
@@ -127,7 +131,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       }
       break;
     default:
-      logger.error() << "No matching subscription type" << type.toString();
+      logger.error() << "No matching subscription type" << type;
       return false;
   }
 
@@ -146,11 +150,8 @@ bool SubscriptionData::parseSubscriptionDataIap(
   if (!m_expiresOn) {
     return false;
   }
-  QJsonValue autoRenewing = subscriptionData["auto_renewing"];
-  if (!autoRenewing.isBool()) {
-    return false;
-  }
-  m_isCancelled = !autoRenewing.toBool();
+
+  m_isCancelled = !subscriptionData["auto_renewing"].toBool();
 
   return true;
 }
