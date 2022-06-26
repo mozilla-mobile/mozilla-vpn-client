@@ -201,9 +201,9 @@ describe('Subscription view', function() {
             auto_renewing: true,
           },
           expected: {
-            cancelled: '1/19/38',
+            cancelled: '1/25/70',
             label: 'Next billed',
-            status: 'Inactive'  // TODO why?!?
+            status: 'Inactive'
           }
         }
       },
@@ -216,9 +216,9 @@ describe('Subscription view', function() {
             auto_renewing: false,
           },
           expected: {
-            cancelled: '1/19/38',
+            cancelled: '1/25/70',
             label: 'Expires',
-            status: 'Inactive'  // TODO why?!?
+            status: 'Inactive'
           }
         }
       },
@@ -227,13 +227,13 @@ describe('Subscription view', function() {
         subscription: {
           value: {
             _subscription_type: 'iap_google',
-            expiry_time_millis: 2147483647,
+            expiry_time_millis: 2147483647000,
             auto_renewing: true,
           },
           expected: {
             cancelled: '1/19/38',
             label: 'Next billed',
-            status: 'Inactive'  // TODO why?!?
+            status: 'Active'
           }
         }
       },
@@ -242,13 +242,13 @@ describe('Subscription view', function() {
         subscription: {
           value: {
             _subscription_type: 'iap_google',
-            expiry_time_millis: 2147483647,
+            expiry_time_millis: 2147483647000,
             auto_renewing: false,
           },
           expected: {
             cancelled: '1/19/38',
             label: 'Expires',
-            status: 'Inactive'  // TODO why?!?
+            status: 'Active'
           }
         }
       },
@@ -346,7 +346,6 @@ describe('Subscription view', function() {
           await vpn.getElementProperty(
               'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
               'text') === data.plan.expected);
-
       assert(
           await vpn.getElementProperty(
               'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-container/subscriptionItem-status-pillWrapper/subscriptionItem-status-pill',
@@ -367,7 +366,6 @@ describe('Subscription view', function() {
           await vpn.getElementProperty(
               'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText',
               'text') === data.subscription.expected.cancelled);
-
       assert(
           await vpn.getElementProperty(
               'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-labelText',
