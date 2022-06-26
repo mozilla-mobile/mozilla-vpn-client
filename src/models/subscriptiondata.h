@@ -15,8 +15,8 @@ class SubscriptionData final : public QObject {
 
   // Subscription
   Q_PROPERTY(TypeSubscription type MEMBER m_type CONSTANT)
-  Q_PROPERTY(int createdAt MEMBER m_createdAt CONSTANT)
-  Q_PROPERTY(int expiresOn MEMBER m_expiresOn CONSTANT)
+  Q_PROPERTY(quint64 createdAt MEMBER m_createdAt CONSTANT)
+  Q_PROPERTY(quint64 expiresOn MEMBER m_expiresOn CONSTANT)
   Q_PROPERTY(bool isCancelled MEMBER m_isCancelled CONSTANT)
   Q_PROPERTY(QString status MEMBER m_status CONSTANT)
 
@@ -59,8 +59,8 @@ class SubscriptionData final : public QObject {
   QByteArray m_rawJson;
 
   TypeSubscription m_type;
-  int m_createdAt = 0;
-  int m_expiresOn = 0;
+  quint64 m_createdAt = 0;
+  quint64 m_expiresOn = 0;
   bool m_isCancelled = false;
   QString m_status;
 

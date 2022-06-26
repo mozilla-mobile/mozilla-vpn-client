@@ -6,6 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 
+#include <QDateTime>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -146,12 +147,18 @@ bool SubscriptionData::parseSubscriptionDataIap(
     const QJsonObject& subscriptionData) {
   logger.debug() << "Parse IAP start" << m_type;
 
-  m_expiresOn = subscriptionData["expiry_time_millis"].toInt();
+  m_expiresOn = subscriptionData["expiry_time_millis"].toVariant().toLongLong();
   if (!m_expiresOn) {
     return false;
   }
-
   m_isCancelled = !subscriptionData["auto_renewing"].toBool();
+
+  quint64 now = QDateTime::currentMSecsSinceEpoch();
+  if (now <= m_expiresOn) {
+    m_status = "active";
+  } else {
+    m_status = "inactive";
+  }
 
   return true;
 }
@@ -160,14 +167,17 @@ bool SubscriptionData::parseSubscriptionDataWeb(
     const QJsonObject& subscriptionData) {
   logger.debug() << "Parse web start";
 
-  m_createdAt = subscriptionData["created"].toInt();
+  // We receive the values for `created` and `current_period_end in seconds.
+  m_createdAt = subscriptionData["created"].toInt() * 1000;
+
   if (!m_createdAt) {
     return false;
   }
-  m_expiresOn = subscriptionData["current_period_end"].toInt();
+  m_expiresOn = subscriptionData["current_period_end"].toInt() * 1000;
   if (!m_expiresOn) {
     return false;
   }
+
   m_isCancelled = subscriptionData["cancel_at_period_end"].toBool();
   m_status = subscriptionData["status"].toString();
   if (m_status.isEmpty()) {
