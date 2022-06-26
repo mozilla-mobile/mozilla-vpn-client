@@ -221,7 +221,7 @@ VPNFlickable {
     }
 
     function epochTimeToDate(unixTimestamp) {
-        return new Date(unixTimestamp * 1000).toLocaleDateString(VPNLocalizer.locale, Locale.ShortFormat);
+        return new Date(unixTimestamp).toLocaleDateString(VPNLocalizer.locale, Locale.ShortFormat);
     }
 
     function getPaymentExpiration() {
