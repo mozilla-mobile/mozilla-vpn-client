@@ -168,12 +168,13 @@ bool SubscriptionData::parseSubscriptionDataWeb(
   logger.debug() << "Parse web start";
 
   // We receive the values for `created` and `current_period_end in seconds.
-  m_createdAt = subscriptionData["created"].toInt() * 1000;
+  m_createdAt = subscriptionData["created"].toVariant().toLongLong() * 1000;
 
   if (!m_createdAt) {
     return false;
   }
-  m_expiresOn = subscriptionData["current_period_end"].toInt() * 1000;
+  m_expiresOn =
+      subscriptionData["current_period_end"].toVariant().toLongLong() * 1000;
   if (!m_expiresOn) {
     return false;
   }
