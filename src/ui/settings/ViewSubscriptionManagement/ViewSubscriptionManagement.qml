@@ -192,7 +192,7 @@ VPNFlickable {
 
         // Subscription payment model
         if (VPNSubscriptionData.paymentProvider) {
-            if (VPNSubscriptionData.paymentType === "credit") {
+            if (VPNSubscriptionData.paymentType && VPNSubscriptionData.paymentType != "") {
                 // Credit card brand
                 subscriptionPaymentModel.append({
                     _objectName: "subscriptionItem-brand",
@@ -212,7 +212,7 @@ VPNFlickable {
                 // Payment type or provider
                 subscriptionPaymentModel.append({
                     _objectName: "subscriptionItem-payment",
-                    labelText: VPNSubscriptionData.paymentType || VPNSubscriptionData.paymentProvider,
+                    labelText: VPNSubscriptionData.paymentProvider,
                     valueText: "",
                     type: "payment",
                 });
