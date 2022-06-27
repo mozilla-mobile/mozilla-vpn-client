@@ -5,8 +5,6 @@
 #ifndef PROFILEFLOW_H
 #define PROFILEFLOW_H
 
-#include "subscriptiondata.h"
-
 #include <QObject>
 
 class Task;

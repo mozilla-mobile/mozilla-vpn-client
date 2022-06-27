@@ -10,6 +10,7 @@ import components 0.1
 
 ColumnLayout {
     id: root
+    objectName: _objectName + "-parent"
 
     spacing: 0
 
@@ -77,6 +78,7 @@ ColumnLayout {
     ]
 
     RowLayout {
+        objectName: _objectName + "-container"
         spacing: VPNTheme.theme.listSpacing
 
         Layout.alignment: Qt.AlignVCenter
@@ -87,6 +89,7 @@ ColumnLayout {
 
         VPNInterLabel {
             id: rowLabel
+            objectName: _objectName + "-labelText"
 
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: VPNTheme.theme.fontSizeSmall
@@ -98,11 +101,13 @@ ColumnLayout {
 
         VPNPaymentMethod {
             id: paymentMethod
+            objectName: _objectName + "-paymentMethod"
             paymentMethod: labelText
         }
 
         VPNInterLabel {
             id: rowText
+            objectName: _objectName + "-valueText"
 
             color: VPNTheme.theme.fontColorDark
             horizontalAlignment: Text.AlignRight
@@ -116,11 +121,14 @@ ColumnLayout {
 
         Item {
             id: rowPill
+            objectName: _objectName + "-pillWrapper"
 
             height: rowPill.implicitHeight
             Layout.fillWidth: true
 
             VPNPill {
+                objectName: _objectName + "-pill"
+
                 color: valueText === "active"
                     ? VPNTheme.colors.green90
                     : VPNTheme.colors.red70

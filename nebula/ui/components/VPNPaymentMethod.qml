@@ -17,6 +17,7 @@ RowLayout {
 
     VPNInterLabel {
         id: label
+        objectName: "paymentLabel"
 
         horizontalAlignment: Text.AlignLeft
         font.pixelSize: VPNTheme.theme.fontSizeSmall

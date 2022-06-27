@@ -117,6 +117,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/servercountrymodel.h
     ${MVPN_SOURCE_DIR}/models/serverdata.cpp
     ${MVPN_SOURCE_DIR}/models/serverdata.h
+    ${MVPN_SOURCE_DIR}/models/subscriptiondata.cpp
+    ${MVPN_SOURCE_DIR}/models/subscriptiondata.h
     ${MVPN_SOURCE_DIR}/models/supportcategorymodel.cpp
     ${MVPN_SOURCE_DIR}/models/supportcategorymodel.h
     ${MVPN_SOURCE_DIR}/models/survey.cpp
@@ -169,8 +171,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/simplenetworkmanager.h
     ${MVPN_SOURCE_DIR}/statusicon.cpp
     ${MVPN_SOURCE_DIR}/statusicon.h
-    ${MVPN_SOURCE_DIR}/subscriptiondata.cpp
-    ${MVPN_SOURCE_DIR}/subscriptiondata.h
     ${MVPN_SOURCE_DIR}/task.h
     ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.cpp
     ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.h
