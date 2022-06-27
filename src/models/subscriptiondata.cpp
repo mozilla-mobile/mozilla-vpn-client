@@ -45,7 +45,6 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   }
 
   m_planInterval = planData["interval"].toString();
-  logger.debug() << "m_planInterval" << m_planInterval;
   if (m_planInterval.isEmpty()) {
     return false;
   }
