@@ -72,8 +72,10 @@ void TaskDeleteAccount::run() {
           });
 
   connect(m_authenticationInAppSession,
-          &AuthenticationInAppSession::accountDeleted, this,
-          [this]() { m_authenticationInAppSession->terminate(); });
+          &AuthenticationInAppSession::accountDeleted, this, [this]() {
+            m_authenticationInAppSession->terminate();
+            emit MozillaVPN::instance()->accountDeleted();
+          });
 
   m_authenticationInAppSession->start(this, pkceCodeChallenge,
                                       CODE_CHALLENGE_METHOD, m_emailAddress);

@@ -415,6 +415,7 @@ class MozillaVPN final : public QObject {
   void viewLogsNeeded();
   void contactUsNeeded();
   void updatingChanged();
+  void accountDeleted();
 
   // For Glean
   void initializeGlean();
