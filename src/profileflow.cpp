@@ -6,7 +6,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "profileflow.h"
-#include "subscriptiondata.h"
+#include "models/subscriptiondata.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"

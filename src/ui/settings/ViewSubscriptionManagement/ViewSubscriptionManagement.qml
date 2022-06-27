@@ -50,6 +50,7 @@ VPNFlickable {
 
         ColumnLayout {
             spacing: 0
+            objectName: "subscriptionItem"
 
             Layout.leftMargin: VPNTheme.theme.windowMargin / 2
             Layout.rightMargin: VPNTheme.theme.windowMargin / 2
@@ -67,6 +68,7 @@ VPNFlickable {
             Repeater {
                 model: subscriptionInfoModel
                 delegate: Loader {
+                    objectName: _objectName
                     Layout.fillWidth: true
                     source: "qrc:/ui/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
                 }
@@ -87,6 +89,7 @@ VPNFlickable {
                 model: subscriptionPaymentModel
                 delegate: Loader {
                     Layout.fillWidth: true
+                    objectName: _objectName
                     source: "qrc:/ui/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
                 }
             }
@@ -112,7 +115,7 @@ VPNFlickable {
 
                 onClicked: {
                     settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
-                    Sample.deleteAccountRequested.record();
+                    VPN.recordGleanEvent("deleteAccountRequested");
                 }
 
                 Layout.alignment: Qt.AlignHCenter
@@ -127,13 +130,28 @@ VPNFlickable {
     }
 
     function handleManageAccountClicked() {
-        Sample.manageSubscriptionClicked.record();
-        VPN.openLink(VPN.LinkAccount);
+        switch(VPNSubscriptionData.type) {
+            case VPNSubscriptionData.web:
+                VPN.openLink(VPN.LinkSubscriptionFxa);
+                break;
+            case VPNSubscriptionData.iap_google:
+                VPN.openLink(VPN.LinkSubscriptionIapGoogle);
+                break;
+            case VPNSubscriptionData.iap_apple:
+                VPN.openLink(VPN.LinkSubscriptionIapApple);
+                break;
+            default:
+                VPN.openLink(VPN.LinkAccount);
+        }
+
+        VPN.recordGleanEvent("manageSubscriptionClicked");
     }
 
     function populateListModels() {
         // Subscription info model
+        // Subscription plan
         subscriptionInfoModel.append({
+            _objectName: "subscriptionItem-plan",
             labelText: VPNl18n.SubscriptionManagementPlanLabel,
             valueText: getPlanText(
                 VPNSubscriptionData.planCurrency,
@@ -143,22 +161,30 @@ VPNFlickable {
             type: "text",
         });
 
+        // Status
         subscriptionInfoModel.append({
+            _objectName: "subscriptionItem-status",
             labelText: VPNl18n.SubscriptionManagementStatusLabel,
             valueText: VPNSubscriptionData.status,
             type: "pill",
         });
 
-        subscriptionInfoModel.append({
-            labelText: VPNl18n.SubscriptionManagementActivatedLabel,
-            valueText: epochTimeToDate(VPNSubscriptionData.createdAt),
-            type: "text",
-        });
+        // Created at
+        if (VPNSubscriptionData.createdAt) {
+            subscriptionInfoModel.append({
+                _objectName: "subscriptionItem-activated",
+                labelText: VPNl18n.SubscriptionManagementActivatedLabel,
+                valueText: epochTimeToDate(VPNSubscriptionData.createdAt),
+                type: "text",
+            });
+        }
 
+        // Expires or next billed
         subscriptionInfoModel.append({
-            labelText: VPNSubscriptionData.status === "active"
-                ? VPNl18n.SubscriptionManagementNextLabel
-                : VPNl18n.SubscriptionManagementExpiresLabel,
+            _objectName: "subscriptionItem-cancelled",
+            labelText: VPNSubscriptionData.isCancelled
+                ? VPNl18n.SubscriptionManagementExpiresLabel
+                : VPNl18n.SubscriptionManagementNextLabel,
             valueText: epochTimeToDate(VPNSubscriptionData.expiresOn),
             type: "text",
         });
@@ -166,19 +192,25 @@ VPNFlickable {
         // Subscription payment model
         if (VPNSubscriptionData.paymentProvider) {
             if (VPNSubscriptionData.paymentType === "credit") {
+                // Credit card brand
                 subscriptionPaymentModel.append({
+                    _objectName: "subscriptionItem-brand",
                     labelText: VPNSubscriptionData.creditCardBrand,
                     valueText: VPNl18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
                     type: "payment",
                 });
 
+                // Credit card expires
                 subscriptionPaymentModel.append({
+                    _objectName: "subscriptionItem-expires",
                     labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
                     valueText: getPaymentExpiration(),
                     type: "text",
                 });
             } else {
+                // Payment type or provider
                 subscriptionPaymentModel.append({
+                    _objectName: "subscriptionItem-payment",
                     labelText: VPNSubscriptionData.paymentType || VPNSubscriptionData.paymentProvider,
                     valueText: "",
                     type: "payment",
@@ -188,7 +220,7 @@ VPNFlickable {
     }
 
     function epochTimeToDate(unixTimestamp) {
-        return new Date(unixTimestamp * 1000).toLocaleDateString(VPNLocalizer.locale, Locale.ShortFormat);
+        return new Date(unixTimestamp).toLocaleDateString(VPNLocalizer.locale, Locale.ShortFormat);
     }
 
     function getPaymentExpiration() {
@@ -216,8 +248,8 @@ VPNFlickable {
             labelText = VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
         } else {
             console.warn(`Unexpected value for intervalCount: ${intervalCount}`);
-            Sample.unhandledSubPlanInterval.record({
-                "interval_count": intervalCount
+            VPN.recordGleanEventWithExtraKeys("unhandledSubPlanInterval", {
+                "interval_count": intervalCount,
             });
         }
 
