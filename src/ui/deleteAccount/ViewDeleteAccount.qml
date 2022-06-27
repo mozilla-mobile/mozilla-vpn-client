@@ -115,7 +115,8 @@ Item {
         target: VPNAuthInApp
 
         function onAccountDeleted() {
-            mainStackView.pop();
+            VPNController.logout();
+            mainStackView.unwindToInitialItem();
         }
     }
 
