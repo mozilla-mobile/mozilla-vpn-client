@@ -111,15 +111,6 @@ Item {
         }
     ]
 
-    Connections {
-        target: VPNAuthInApp
-
-        function onAccountDeleted() {
-            VPNController.logout();
-            mainStackView.unwindToInitialItem();
-        }
-    }
-
     Component.onCompleted: {
         VPN.requestDeleteAccount();
     }

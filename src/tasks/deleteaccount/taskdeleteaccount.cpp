@@ -4,7 +4,6 @@
 
 #include "taskdeleteaccount.h"
 #include "authenticationlistener.h"
-#include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -73,9 +72,8 @@ void TaskDeleteAccount::run() {
           });
 
   connect(m_authenticationInAppSession,
-          &AuthenticationInAppSession::accountDeleted, this,
-          [this]() {
-            emit AuthenticationInApp::instance()->accountDeleted();
+          &AuthenticationInAppSession::accountDeleted, this, [this]() {
+            emit MozillaVPN::instance()->accountDeleted();
             m_authenticationInAppSession->terminate();
           });
 
