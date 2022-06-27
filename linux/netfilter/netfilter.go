@@ -64,13 +64,13 @@ type nftCtx struct {
   preroute    *nftables.Chain
   preroute_v6 *nftables.Chain
   fwmark      uint32
+  conn        nftables.Conn
 }
 
-var mozvpn_conn = nftables.Conn{}
 var mozvpn_ctx = nftCtx{}
 
-func nftCommit() int32 {
-  if err := mozvpn_conn.Flush(); err != nil {
+func (ctx* nftCtx) nftCommit() int32 {
+  if err := ctx.conn.Flush(); err != nil {
     log.Println("Netfiler commit failed:", err)
     return -1
   }
@@ -88,7 +88,7 @@ func nftIfname(n string) []byte {
 // and non-zero.
 const ctzone_external = 0x9e4c
 
-func nftIfup(ctx *nftCtx, ifname string) {
+func (ctx* nftCtx) nftIfup(ifname string) {
   var immctzone = expr.Immediate{
     Register:   1,
     Data:       binaryutil.NativeEndian.PutUint32(ctzone_external),
@@ -100,7 +100,7 @@ func nftIfup(ctx *nftCtx, ifname string) {
   }
 
   // Move all marked packets into their own conntrack zone
-  mozvpn_conn.AddRule(&nftables.Rule{
+  ctx.conn.AddRule(&nftables.Rule{
     Table: ctx.table_inet,
     Chain: ctx.conntrack,
     Exprs: []expr.Any{
@@ -122,7 +122,7 @@ func nftIfup(ctx *nftCtx, ifname string) {
 
   // Inbound packets from outside the tunnel should be marked for RPF
   // and moved into the external conntrack zone.
-  mozvpn_conn.AddRule(&nftables.Rule{
+  ctx.conn.AddRule(&nftables.Rule{
     Table: ctx.table_inet,
     Chain: ctx.preroute,
     Exprs: []expr.Any{
@@ -186,10 +186,10 @@ func nftXtCgroupMatch(cgroup string) expr.Match {
   }
 }
 
-func nftMarkCgroup2xt(ctx *nftCtx, cgroup string) {
+func (ctx* nftCtx) nftMarkCgroup2xt(cgroup string) {
   xtmatch := nftXtCgroupMatch(cgroup)
 
-  mozvpn_conn.AddRule(&nftables.Rule{
+  ctx.conn.AddRule(&nftables.Rule{
     Table: ctx.table_inet,
     Chain: ctx.mangle,
     Exprs: []expr.Any{
@@ -229,7 +229,7 @@ func nftMarkCgroup2xt(ctx *nftCtx, cgroup string) {
   })
 
   // Masquerade outgoing packets from split tunnelling to trigger rerouting.
-  mozvpn_conn.AddRule(&nftables.Rule{
+  ctx.conn.AddRule(&nftables.Rule{
     Table: ctx.table_inet,
     Chain: ctx.nat,
     Exprs: []expr.Any{
@@ -250,7 +250,7 @@ func nftMarkCgroup2xt(ctx *nftCtx, cgroup string) {
   })
 }
 
-func nftDelCgroup2xt(rules []*nftables.Rule, xtmatch *expr.Match) {
+func (ctx* nftCtx) nftDelCgroup2xt(rules []*nftables.Rule, xtmatch *expr.Match) {
   cgdata, _ := xt.Marshal(0, xtmatch.Rev, xtmatch.Info)
 
   for _, r := range rules {
@@ -264,12 +264,12 @@ func nftDelCgroup2xt(rules []*nftables.Rule, xtmatch *expr.Match) {
     }
     if bytes.Compare(rrdata, cgdata) == 0 {
       log.Println("Deleting", r.Chain.Name, "rule handle", r.Handle)
-      mozvpn_conn.DelRule(r);
+      ctx.conn.DelRule(r);
     }
   }
 }
 
-func nftMarkCgroup1netcls(ctx *nftCtx, cgroup uint32) {
+func (ctx* nftCtx) nftMarkCgroup1netcls(cgroup uint32) {
   // Match packets originating from the cgroup/net_cls
   var loadcgroup = expr.Meta{
     Key:      expr.MetaKeyCGROUP,
@@ -281,7 +281,7 @@ func nftMarkCgroup1netcls(ctx *nftCtx, cgroup uint32) {
     Data:     binaryutil.NativeEndian.PutUint32(cgroup),
   }
 
-  mozvpn_conn.AddRule(&nftables.Rule{
+  ctx.conn.AddRule(&nftables.Rule{
     Table: ctx.table_inet,
     Chain: ctx.mangle,
     Exprs: []expr.Any{
@@ -311,7 +311,7 @@ func nftMarkCgroup1netcls(ctx *nftCtx, cgroup uint32) {
   })
 
   // Masquerade outgoing packets from split tunnelling to trigger rerouting.
-  mozvpn_conn.AddRule(&nftables.Rule{
+  ctx.conn.AddRule(&nftables.Rule{
     Table: ctx.table_inet,
     Chain: ctx.nat,
     Exprs: []expr.Any{
@@ -333,8 +333,8 @@ func nftMarkCgroup1netcls(ctx *nftCtx, cgroup uint32) {
   })
 }
 
-func nftBlockCgroup(ctx *nftCtx, cgroup uint32) {
-  mozvpn_conn.AddRule(&nftables.Rule{
+func (ctx* nftCtx) nftBlockCgroup(cgroup uint32) {
+  ctx.conn.AddRule(&nftables.Rule{
     Table: ctx.table_inet,
     Chain: ctx.mangle,
     Exprs: []expr.Any{
@@ -368,32 +368,32 @@ func nftBlockCgroup(ctx *nftCtx, cgroup uint32) {
 
 //export NetfilterCreateTables
 func NetfilterCreateTables() int32 {
-  mozvpn_ctx.table_inet = mozvpn_conn.AddTable(&nftables.Table{
+  mozvpn_ctx.table_inet = mozvpn_ctx.conn.AddTable(&nftables.Table{
     Family: nftables.TableFamilyINet,
     Name: "mozvpn-inet",
   })
-  mozvpn_ctx.mangle = mozvpn_conn.AddChain(&nftables.Chain{
+  mozvpn_ctx.mangle = mozvpn_ctx.conn.AddChain(&nftables.Chain{
     Name:       "mozvpn-mangle",
     Table:      mozvpn_ctx.table_inet,
     Type:       nftables.ChainTypeRoute,
     Hooknum:    nftables.ChainHookOutput,
     Priority:   nftables.ChainPriorityRaw,
   })
-  mozvpn_ctx.nat = mozvpn_conn.AddChain(&nftables.Chain{
+  mozvpn_ctx.nat = mozvpn_ctx.conn.AddChain(&nftables.Chain{
     Name:       "mozvpn-nat",
     Table:      mozvpn_ctx.table_inet,
     Type:       nftables.ChainTypeNAT,
     Hooknum:    nftables.ChainHookPostrouting,
     Priority:   nftables.ChainPriorityNATSource,
   })
-  mozvpn_ctx.conntrack = mozvpn_conn.AddChain(&nftables.Chain{
+  mozvpn_ctx.conntrack = mozvpn_ctx.conn.AddChain(&nftables.Chain{
     Name:       "mozvpn-conntrack",
     Table:      mozvpn_ctx.table_inet,
     Type:       nftables.ChainTypeRoute,
     Hooknum:    nftables.ChainHookOutput,
     Priority:   nftables.ChainPriorityConntrack-1,
   })
-  mozvpn_ctx.preroute = mozvpn_conn.AddChain(&nftables.Chain{
+  mozvpn_ctx.preroute = mozvpn_ctx.conn.AddChain(&nftables.Chain{
     Name:       "mozvpn-preroute",
     Table:      mozvpn_ctx.table_inet,
     Type:       nftables.ChainTypeFilter,
@@ -401,11 +401,11 @@ func NetfilterCreateTables() int32 {
     Priority:   nftables.ChainPriorityRaw,
   })
 
-  mozvpn_ctx.table_v6 = mozvpn_conn.AddTable(&nftables.Table{
+  mozvpn_ctx.table_v6 = mozvpn_ctx.conn.AddTable(&nftables.Table{
     Family: nftables.TableFamilyIPv6,
     Name: "mozvpn-v6",
   })
-  mozvpn_ctx.preroute_v6 = mozvpn_conn.AddChain(&nftables.Chain{
+  mozvpn_ctx.preroute_v6 = mozvpn_ctx.conn.AddChain(&nftables.Chain{
     Name:       "mozvpn-preroute-v6",
     Table:      mozvpn_ctx.table_v6,
     Type:       nftables.ChainTypeFilter,
@@ -414,47 +414,47 @@ func NetfilterCreateTables() int32 {
   })
 
   log.Println("Creating netfilter tables")
-  return nftCommit()
+  return mozvpn_ctx.nftCommit()
 }
 
 //export NetfilterRemoveTables
 func NetfilterRemoveTables() int32 {
-  mozvpn_conn.DelTable(mozvpn_ctx.table_inet)
-  mozvpn_conn.DelTable(mozvpn_ctx.table_v6)
+  mozvpn_ctx.conn.DelTable(mozvpn_ctx.table_inet)
+  mozvpn_ctx.conn.DelTable(mozvpn_ctx.table_v6)
 
   log.Println("Removing netfilter tables")
-  return nftCommit()
+  return mozvpn_ctx.nftCommit()
 }
 
 //export NetfilterClearTables
 func NetfilterClearTables() int32 {
   mozvpn_ctx.fwmark = 0
-  mozvpn_conn.FlushChain(mozvpn_ctx.mangle)
-  mozvpn_conn.FlushChain(mozvpn_ctx.nat)
-  mozvpn_conn.FlushChain(mozvpn_ctx.conntrack)
-  mozvpn_conn.FlushChain(mozvpn_ctx.preroute)
-  mozvpn_conn.FlushChain(mozvpn_ctx.preroute_v6)
+  mozvpn_ctx.conn.FlushChain(mozvpn_ctx.mangle)
+  mozvpn_ctx.conn.FlushChain(mozvpn_ctx.nat)
+  mozvpn_ctx.conn.FlushChain(mozvpn_ctx.conntrack)
+  mozvpn_ctx.conn.FlushChain(mozvpn_ctx.preroute)
+  mozvpn_ctx.conn.FlushChain(mozvpn_ctx.preroute_v6)
 
   log.Println("Clearing netfilter tables")
-  return nftCommit()
+  return mozvpn_ctx.nftCommit()
 }
 
 //export NetfilterIfup
 func NetfilterIfup(ifname string, fwmark uint32) int32 {
   mozvpn_ctx.fwmark = fwmark
   if fwmark != 0 {
-    nftIfup(&mozvpn_ctx, ifname)
+    mozvpn_ctx.nftIfup(ifname)
   }
 
   log.Println("Starting netfilter tables for", ifname)
-  return nftCommit()
+  return mozvpn_ctx.nftCommit()
 }
 
 //export NetfilterIsolateIpv6
 func NetfilterIsolateIpv6(ifname string, ipv6addr string) int32 {
   // Inbound packets from any interface other than the tunnel should
   // be dropped if they are routed to an address assigned to the tunnel.
-  mozvpn_conn.AddRule(&nftables.Rule{
+  mozvpn_ctx.conn.AddRule(&nftables.Rule{
     Table: mozvpn_ctx.table_v6,
     Chain: mozvpn_ctx.preroute_v6,
     Exprs: []expr.Any{
@@ -499,7 +499,7 @@ func NetfilterIsolateIpv6(ifname string, ipv6addr string) int32 {
   })
 
   log.Println("Isolating tunnel address", ipv6addr)
-  return nftCommit()
+  return mozvpn_ctx.nftCommit()
 }
 
 //export NetfilterMarkCgroupV1
@@ -509,10 +509,10 @@ func NetfilterMarkCgroupV1(cgroup uint32) int32 {
     return -1
   }
 
-  nftMarkCgroup1netcls(&mozvpn_ctx, cgroup)
+  mozvpn_ctx.nftMarkCgroup1netcls(cgroup)
 
   log.Println("Marking traffic from cgroup", cgroup)
-  return nftCommit()
+  return mozvpn_ctx.nftCommit()
 }
 
 //export NetfilterMarkCgroupV2
@@ -523,9 +523,9 @@ func NetfilterMarkCgroupV2(cgroup string) int32 {
   }
 
   log.Println("Marking traffic from cgroup", cgroup)
-  nftMarkCgroup2xt(&mozvpn_ctx, cgroup)
+  mozvpn_ctx.nftMarkCgroup2xt(cgroup)
 
-  return nftCommit()
+  return mozvpn_ctx.nftCommit()
 }
 
 //export NetfilterResetCgroupV2
@@ -533,30 +533,30 @@ func NetfilterResetCgroupV2(cgroup string) int32 {
   xtcgroup := nftXtCgroupMatch(cgroup)
 
   // Delete all mangle rules matching against the cgroup.
-  rules, err := mozvpn_conn.GetRules(mozvpn_ctx.table_inet, mozvpn_ctx.mangle)
+  rules, err := mozvpn_ctx.conn.GetRules(mozvpn_ctx.table_inet, mozvpn_ctx.mangle)
   if err != nil {
     log.Println("Failed to inspect inet/mangle rules", err)
   } else {
-    nftDelCgroup2xt(rules, &xtcgroup)
+    mozvpn_ctx.nftDelCgroup2xt(rules, &xtcgroup)
   }
 
   // Delete all NAT rules matching against the cgroup.
-  rules, err = mozvpn_conn.GetRules(mozvpn_ctx.table_inet, mozvpn_ctx.nat)
+  rules, err = mozvpn_ctx.conn.GetRules(mozvpn_ctx.table_inet, mozvpn_ctx.nat)
   if err != nil {
     log.Println("Failed to inspect inet/nat rules", err)
   } else {
-    nftDelCgroup2xt(rules, &xtcgroup)
+    mozvpn_ctx.nftDelCgroup2xt(rules, &xtcgroup)
   }
   
-  return nftCommit()
+  return mozvpn_ctx.nftCommit()
 }
 
 //export NetfilterResetAllCgroupsV2
 func NetfilterResetAllCgroupsV2() int32 {
   log.Println("Clearing all cgroup traffic marks")
-  mozvpn_conn.FlushChain(mozvpn_ctx.mangle)
-  mozvpn_conn.FlushChain(mozvpn_ctx.nat)
-  return nftCommit()
+  mozvpn_ctx.conn.FlushChain(mozvpn_ctx.mangle)
+  mozvpn_ctx.conn.FlushChain(mozvpn_ctx.nat)
+  return mozvpn_ctx.nftCommit()
 }
 
 func main() {}
