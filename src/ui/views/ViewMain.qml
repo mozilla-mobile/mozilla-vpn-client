@@ -185,6 +185,8 @@ VPNFlickable {
         sourceComponent: VPNSimplePopup {
             id: tipsAndTricksIntroPopup
 
+            property bool closedByPrimaryButton: false
+
             anchors.centerIn: Overlay.overlay
             closeButtonObjectName: "tipsAndTricksIntroPopupCloseButton"
             imageSrc: "qrc:/ui/resources/logo-sparkles.svg"
@@ -196,6 +198,7 @@ VPNFlickable {
                     objectName: "tipsAndTricksIntroPopupDiscoverNowButton"
                     text: VPNl18n.GlobalDiscoverNow
                     onClicked: {
+                        closedByPrimaryButton = true
                         tipsAndTricksIntroPopup.close()
                         mainStackView.push(tipsAndTricksDeepLinkView)
                     }
@@ -214,7 +217,7 @@ VPNFlickable {
 
             onClosed: {
                 tipsAndTricksIntroPopupLoader.active = false
-                Sample.tipsAndTricksModalClosed.record();
+                if(!closedByPrimaryButton) Sample.tipsAndTricksModalClosed.record();
             }
         }
 
