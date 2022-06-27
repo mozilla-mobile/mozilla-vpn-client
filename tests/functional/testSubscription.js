@@ -30,42 +30,72 @@ describe('Subscription view', function() {
       {
         name: 'plan: USD - yearly',
         plan: {
-          value: {amount: 123, currency: 'usd', interval_count: 12},
+          value: {
+            amount: 123,
+            currency: 'usd',
+            interval: 'year',
+            interval_count: 1
+          },
           expected: '$1.23 Yearly'
         }
       },
       {
         name: 'plan: USD - half-yearly',
         plan: {
-          value: {amount: 123, currency: 'usd', interval_count: 6},
+          value: {
+            amount: 123,
+            currency: 'usd',
+            interval: 'month',
+            interval_count: 6
+          },
           expected: '$1.23 Half-yearly'
         }
       },
       {
         name: 'plan: USD - monthly',
         plan: {
-          value: {amount: 123, currency: 'usd', interval_count: 1},
+          value: {
+            amount: 123,
+            currency: 'usd',
+            interval: 'month',
+            interval_count: 1
+          },
           expected: '$1.23 Monthly'
         }
       },
       {
         name: 'plan: EUR - yearly',
         plan: {
-          value: {amount: 4567, currency: 'eur', interval_count: 12},
+          value: {
+            amount: 4567,
+            currency: 'eur',
+            interval: 'year',
+            interval_count: 1
+          },
           expected: '€45.67 Yearly'
         }
       },
       {
         name: 'plan: EUR - half-yearly',
         plan: {
-          value: {amount: 1, currency: 'eur', interval_count: 6},
+          value: {
+            amount: 1,
+            currency: 'eur',
+            interval: 'month',
+            interval_count: 6
+          },
           expected: '€0.01 Half-yearly'
         }
       },
       {
         name: 'plan: EUR - monthly',
         plan: {
-          value: {amount: 1234567, currency: 'eur', interval_count: 1},
+          value: {
+            amount: 1234567,
+            currency: 'eur',
+            interval: 'month',
+            interval_count: 1
+          },
           expected: '€12,345.67 Monthly'
         }
       },
@@ -258,7 +288,12 @@ describe('Subscription view', function() {
       // Default values
       if (!('plan' in data)) {
         data.plan = {
-          value: {amount: 123, currency: 'usd', interval_count: 12},
+          value: {
+            amount: 123,
+            currency: 'usd',
+            interval: 'year',
+            interval_count: 1
+          },
           expected: '$1.23 Yearly'
         };
       }
