@@ -185,6 +185,7 @@ VPNFlickable {
         sourceComponent: VPNSimplePopup {
             id: tipsAndTricksIntroPopup
 
+            //Keeps track of how the popup was closed to determine whether or not to fire "dismissed" telemetry
             property bool closedByPrimaryButton: false
 
             anchors.centerIn: Overlay.overlay
