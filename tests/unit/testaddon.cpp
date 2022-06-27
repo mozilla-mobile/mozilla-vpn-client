@@ -373,7 +373,7 @@ void TestAddon::tutorial_create() {
 
   QSignalSpy signalSpy(tm, &Tutorial::playingChanged);
 
-  tm->play(static_cast<AddonTutorial*>(tutorial));
+  tm->play(tutorial);
   QCOMPARE(signalSpy.count(), 1);
 
   tm->stop();

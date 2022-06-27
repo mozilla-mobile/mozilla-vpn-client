@@ -325,6 +325,10 @@ Window {
             }
             mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
         }
+        function onAccountDeleted() {
+            VPNController.logout();
+            mainStackView.unwindToInitialItem();
+        }
     }
 
     // Glean Connections

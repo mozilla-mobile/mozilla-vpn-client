@@ -8,6 +8,7 @@
 #include <QList>
 #include <QAbstractListModel>
 
+class Addon;
 class AddonTutorial;
 class QJsonObject;
 
@@ -22,7 +23,7 @@ class Tutorial final : public QObject {
 
   ~Tutorial();
 
-  Q_INVOKABLE void play(AddonTutorial* tutorial);
+  Q_INVOKABLE void play(Addon* tutorial);
   Q_INVOKABLE void stop();
   Q_INVOKABLE void allowItem(const QString& objectName);
   Q_INVOKABLE QString currentTutorialId();

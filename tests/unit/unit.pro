@@ -84,6 +84,7 @@ HEADERS += \
     ../../src/models/servercountry.h \
     ../../src/models/servercountrymodel.h \
     ../../src/models/serverdata.h \
+    ../../src/models/subscriptiondata.h \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
@@ -112,7 +113,6 @@ HEADERS += \
     ../../src/signature.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
-    ../../src/subscriptiondata.h \
     ../../src/task.h \
     ../../src/tasks/account/taskaccount.h \
     ../../src/tasks/adddevice/taskadddevice.h \
@@ -200,6 +200,7 @@ SOURCES += \
     ../../src/models/servercountry.cpp \
     ../../src/models/servercountrymodel.cpp \
     ../../src/models/serverdata.cpp \
+    ../../src/models/subscriptiondata.cpp \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
@@ -224,7 +225,6 @@ SOURCES += \
     ../../src/signature.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \
-    ../../src/subscriptiondata.cpp \
     ../../src/tasks/account/taskaccount.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/addon/taskaddon.cpp \

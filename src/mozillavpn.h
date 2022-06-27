@@ -21,6 +21,7 @@
 #include "models/licensemodel.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
+#include "models/subscriptiondata.h"
 #include "models/supportcategorymodel.h"
 #include "models/surveymodel.h"
 #include "models/user.h"
@@ -29,7 +30,6 @@
 #include "profileflow.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
-#include "subscriptiondata.h"
 #include "telemetry.h"
 #include "theme.h"
 #include "websockethandler.h"
@@ -415,6 +415,7 @@ class MozillaVPN final : public QObject {
   void viewLogsNeeded();
   void contactUsNeeded();
   void updatingChanged();
+  void accountDeleted();
 
   // For Glean
   void initializeGlean();

@@ -24,10 +24,6 @@ bool ItemPicker::eventFilter(QObject* obj, QEvent* event) {
 }
 
 bool ItemPicker::eventFilterInternal(QObject* obj, QEvent* event) {
-  if (event->type() == QEvent::Wheel) {
-    return true;
-  }
-
   bool isMouseEvent = event->type() == QEvent::MouseButtonPress ||
                       event->type() == QEvent::MouseButtonDblClick ||
                       event->type() == QEvent::MouseButtonRelease;
