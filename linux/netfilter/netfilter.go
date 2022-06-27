@@ -30,25 +30,29 @@ import (
   linux "golang.org/x/sys/unix"
 )
 
-var loggerFunc unsafe.Pointer
-
 type CLogger struct {
   level C.int
+  function unsafe.Pointer
 }
 
 func (l *CLogger) Write(p []byte) (int, error) {
-  if uintptr(loggerFunc) == 0 {
+  if uintptr(l.function) == 0 {
     return 0, errors.New("No logger initialized")
   }
   message := C.CString(string(p))
-  C.callLogger(loggerFunc, l.level, message)
+  C.callLogger(l.function, l.level, message)
   C.free(unsafe.Pointer(message))
   return len(p), nil
 }
 
 //export NetfilterSetLogger
 func NetfilterSetLogger(loggerFn uintptr) {
-  loggerFunc = unsafe.Pointer(loggerFn)
+  log.SetOutput(&CLogger{
+    level: 0,
+    function: unsafe.Pointer(loggerFn),
+  })
+  log.SetPrefix("")
+  log.SetFlags(0)
 }
 
 type nftCtx struct {
@@ -65,9 +69,9 @@ type nftCtx struct {
 var mozvpn_conn = nftables.Conn{}
 var mozvpn_ctx = nftCtx{}
 
-func nftCommit(logger *log.Logger) int32 {
+func nftCommit() int32 {
   if err := mozvpn_conn.Flush(); err != nil {
-    logger.Println("Netfiler commit failed:", err)
+    log.Println("Netfiler commit failed:", err)
     return -1
   }
   return 0
@@ -246,7 +250,7 @@ func nftMarkCgroup2xt(ctx *nftCtx, cgroup string) {
   })
 }
 
-func nftDelCgroup2xt(rules []*nftables.Rule, xtmatch *expr.Match, logger *log.Logger) {
+func nftDelCgroup2xt(rules []*nftables.Rule, xtmatch *expr.Match) {
   cgdata, _ := xt.Marshal(0, xtmatch.Rev, xtmatch.Info)
 
   for _, r := range rules {
@@ -259,7 +263,7 @@ func nftDelCgroup2xt(rules []*nftables.Rule, xtmatch *expr.Match, logger *log.Lo
       continue
     }
     if bytes.Compare(rrdata, cgdata) == 0 {
-      logger.Println("Deleting", r.Chain.Name, "rule handle", r.Handle)
+      log.Println("Deleting", r.Chain.Name, "rule handle", r.Handle)
       mozvpn_conn.DelRule(r);
     }
   }
@@ -364,8 +368,6 @@ func nftBlockCgroup(ctx *nftCtx, cgroup uint32) {
 
 //export NetfilterCreateTables
 func NetfilterCreateTables() int32 {
-  logger := log.New(&CLogger{level: 0}, "", 0)
-
   mozvpn_ctx.table_inet = mozvpn_conn.AddTable(&nftables.Table{
     Family: nftables.TableFamilyINet,
     Name: "mozvpn-inet",
@@ -411,25 +413,21 @@ func NetfilterCreateTables() int32 {
     Priority:   nftables.ChainPriorityRaw,
   })
 
-  logger.Println("Creating netfilter tables")
-  return nftCommit(logger)
+  log.Println("Creating netfilter tables")
+  return nftCommit()
 }
 
 //export NetfilterRemoveTables
 func NetfilterRemoveTables() int32 {
-  logger := log.New(&CLogger{level: 0}, "", 0)
-  
   mozvpn_conn.DelTable(mozvpn_ctx.table_inet)
   mozvpn_conn.DelTable(mozvpn_ctx.table_v6)
 
-  logger.Println("Removing netfilter tables")
-  return nftCommit(logger)
+  log.Println("Removing netfilter tables")
+  return nftCommit()
 }
 
 //export NetfilterClearTables
 func NetfilterClearTables() int32 {
-  logger := log.New(&CLogger{level: 0}, "", 0)
-
   mozvpn_ctx.fwmark = 0
   mozvpn_conn.FlushChain(mozvpn_ctx.mangle)
   mozvpn_conn.FlushChain(mozvpn_ctx.nat)
@@ -437,27 +435,23 @@ func NetfilterClearTables() int32 {
   mozvpn_conn.FlushChain(mozvpn_ctx.preroute)
   mozvpn_conn.FlushChain(mozvpn_ctx.preroute_v6)
 
-  logger.Println("Clearing netfilter tables")
-  return nftCommit(logger)
+  log.Println("Clearing netfilter tables")
+  return nftCommit()
 }
 
 //export NetfilterIfup
 func NetfilterIfup(ifname string, fwmark uint32) int32 {
-  logger := log.New(&CLogger{level: 0}, "", 0)
-
   mozvpn_ctx.fwmark = fwmark
   if fwmark != 0 {
     nftIfup(&mozvpn_ctx, ifname)
   }
 
-  logger.Println("Starting netfilter tables for", ifname)
-  return nftCommit(logger)
+  log.Println("Starting netfilter tables for", ifname)
+  return nftCommit()
 }
 
 //export NetfilterIsolateIpv6
 func NetfilterIsolateIpv6(ifname string, ipv6addr string) int32 {
-  logger := log.New(&CLogger{level: 0}, "", 0)
-
   // Inbound packets from any interface other than the tunnel should
   // be dropped if they are routed to an address assigned to the tunnel.
   mozvpn_conn.AddRule(&nftables.Rule{
@@ -504,73 +498,65 @@ func NetfilterIsolateIpv6(ifname string, ipv6addr string) int32 {
     },
   })
 
-  logger.Println("Isolating tunnel address", ipv6addr)
-  return nftCommit(logger)
+  log.Println("Isolating tunnel address", ipv6addr)
+  return nftCommit()
 }
 
 //export NetfilterMarkCgroupV1
 func NetfilterMarkCgroupV1(cgroup uint32) int32 {
-  logger := log.New(&CLogger{level: 0}, "", 0)
-
   if mozvpn_ctx.fwmark == 0 {
-    logger.Println("Unable to mark traffic: no fwmark")
+    log.Println("Unable to mark traffic: no fwmark")
     return -1
   }
 
   nftMarkCgroup1netcls(&mozvpn_ctx, cgroup)
 
-  logger.Println("Marking traffic from cgroup", cgroup)
-  return nftCommit(logger)
+  log.Println("Marking traffic from cgroup", cgroup)
+  return nftCommit()
 }
 
 //export NetfilterMarkCgroupV2
 func NetfilterMarkCgroupV2(cgroup string) int32 {
-  logger := log.New(&CLogger{level: 0}, "", 0)
-
   if mozvpn_ctx.fwmark == 0 {
-    logger.Println("Unable to mark traffic: no fwmark")
+    log.Println("Unable to mark traffic: no fwmark")
     return -1
   }
 
-  logger.Println("Marking traffic from cgroup", cgroup)
+  log.Println("Marking traffic from cgroup", cgroup)
   nftMarkCgroup2xt(&mozvpn_ctx, cgroup)
 
-  return nftCommit(logger)
+  return nftCommit()
 }
 
 //export NetfilterResetCgroupV2
 func NetfilterResetCgroupV2(cgroup string) int32 {
-  logger := log.New(&CLogger{level: 0}, "", 0)
   xtcgroup := nftXtCgroupMatch(cgroup)
 
   // Delete all mangle rules matching against the cgroup.
   rules, err := mozvpn_conn.GetRules(mozvpn_ctx.table_inet, mozvpn_ctx.mangle)
   if err != nil {
-    logger.Println("Failed to inspect inet/mangle rules", err)
+    log.Println("Failed to inspect inet/mangle rules", err)
   } else {
-    nftDelCgroup2xt(rules, &xtcgroup, logger)
+    nftDelCgroup2xt(rules, &xtcgroup)
   }
 
   // Delete all NAT rules matching against the cgroup.
   rules, err = mozvpn_conn.GetRules(mozvpn_ctx.table_inet, mozvpn_ctx.nat)
   if err != nil {
-    logger.Println("Failed to inspect inet/nat rules", err)
+    log.Println("Failed to inspect inet/nat rules", err)
   } else {
-    nftDelCgroup2xt(rules, &xtcgroup, logger)
+    nftDelCgroup2xt(rules, &xtcgroup)
   }
   
-  return nftCommit(logger)
+  return nftCommit()
 }
 
 //export NetfilterResetAllCgroupsV2
 func NetfilterResetAllCgroupsV2() int32 {
-  logger := log.New(&CLogger{level: 0}, "", 0)
-
-  logger.Println("Clearing all cgroup traffic marks")
+  log.Println("Clearing all cgroup traffic marks")
   mozvpn_conn.FlushChain(mozvpn_ctx.mangle)
   mozvpn_conn.FlushChain(mozvpn_ctx.nat)
-
-  return nftCommit(logger)
+  return nftCommit()
 }
 
 func main() {}
