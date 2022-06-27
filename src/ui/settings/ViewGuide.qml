@@ -252,11 +252,7 @@ Item {
         target: VPNCloseEventHandler
     }
 
-    Component.onCompleted: {
-//        console.log("Guide view created")
-//        startTime = new Date().getTime()
-        VPNCloseEventHandler.addView(root)
-    }
+    Component.onCompleted: VPNCloseEventHandler.addView(root)
 
     Component.onDestruction: {
         VPN.recordGleanEventWithExtraKeys("guideClosed",{
