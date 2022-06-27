@@ -11,6 +11,7 @@ import components.forms 0.1
 import components.inAppAuth 0.1
 
 Item {
+
     id: viewDeleteAccount
 
     Loader {
