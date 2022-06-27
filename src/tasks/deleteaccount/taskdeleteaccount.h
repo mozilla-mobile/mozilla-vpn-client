@@ -19,6 +19,9 @@ class TaskDeleteAccount final : public Task {
 
   void run() override;
 
+ signals:
+  void accountDeleted();
+
  private:
   AuthenticationInAppSession* m_authenticationInAppSession = nullptr;
   const QString m_emailAddress;

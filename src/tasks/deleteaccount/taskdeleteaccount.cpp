@@ -4,6 +4,7 @@
 
 #include "taskdeleteaccount.h"
 #include "authenticationlistener.h"
+#include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -73,7 +74,10 @@ void TaskDeleteAccount::run() {
 
   connect(m_authenticationInAppSession,
           &AuthenticationInAppSession::accountDeleted, this,
-          [this]() { m_authenticationInAppSession->terminate(); });
+          [this]() {
+            emit AuthenticationInApp::instance()->accountDeleted();
+            m_authenticationInAppSession->terminate();
+          });
 
   m_authenticationInAppSession->start(this, pkceCodeChallenge,
                                       CODE_CHALLENGE_METHOD, m_emailAddress);

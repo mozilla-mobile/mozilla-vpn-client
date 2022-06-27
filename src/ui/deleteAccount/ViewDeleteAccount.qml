@@ -11,7 +11,6 @@ import components.forms 0.1
 import components.inAppAuth 0.1
 
 Item {
-
     id: viewDeleteAccount
 
     Loader {
@@ -111,6 +110,14 @@ Item {
             }
         }
     ]
+
+    Connections {
+        target: VPNAuthInApp
+
+        function onAccountDeleted() {
+            mainStackView.pop();
+        }
+    }
 
     Component.onCompleted: {
         VPN.requestDeleteAccount();

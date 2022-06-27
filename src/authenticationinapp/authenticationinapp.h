@@ -167,6 +167,8 @@ class AuthenticationInApp final : public QObject {
   void emailAddressChanged();
   void attachedClientsChanged();
 
+  void accountDeleted();
+
 #ifdef UNIT_TEST
   void unitTestTotpCodeCreated(const QByteArray& data);
 #endif
