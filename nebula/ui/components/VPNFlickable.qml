@@ -25,7 +25,6 @@ Flickable {
             if (window.activeFocusItem &&
                 window.activeFocusItem.forceBlurOnOutsidePress &&
                 (Qt.platform.os === "android" || Qt.platform.os === "ios")) {
-                Qt.inputMethod.hide();
                 vpnFlickable.focus = true;
             }
             mouse.accepted = false;
