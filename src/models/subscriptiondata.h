@@ -23,6 +23,7 @@ class SubscriptionData final : public QObject {
   // Plan
   Q_PROPERTY(int planAmount MEMBER m_planAmount CONSTANT)
   Q_PROPERTY(QString planCurrency MEMBER m_planCurrency CONSTANT)
+  Q_PROPERTY(QString planInterval MEMBER m_planInterval CONSTANT)
   Q_PROPERTY(int planIntervalCount MEMBER m_planIntervalCount CONSTANT)
 
   // Payment
@@ -66,6 +67,7 @@ class SubscriptionData final : public QObject {
 
   int m_planAmount = 0;
   QString m_planCurrency;
+  QString m_planInterval;
   int m_planIntervalCount = 0;
 
   QString m_paymentProvider;

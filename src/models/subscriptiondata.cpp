@@ -44,6 +44,12 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     return false;
   }
 
+  m_planInterval = planData["interval"].toString();
+  logger.debug() << "m_planInterval" << m_planInterval;
+  if (m_planInterval.isEmpty()) {
+    return false;
+  }
+
   m_planIntervalCount = planData["interval_count"].toInt();
   logger.debug() << "m_planIntervalCount" << m_planIntervalCount;
   if (!m_planIntervalCount) {

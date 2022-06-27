@@ -157,6 +157,7 @@ VPNFlickable {
             valueText: getPlanText(
                 VPNSubscriptionData.planCurrency,
                 VPNSubscriptionData.planAmount,
+                VPNSubscriptionData.planInterval,
                 VPNSubscriptionData.planIntervalCount
             ),
             type: "text",
@@ -232,24 +233,25 @@ VPNFlickable {
         );
     }
 
-    function getPlanText(currencyCode, amount, intervalCount) {
+    function getPlanText(currencyCode, amount, interval, intervalCount) {
         const amountDisplay = (amount || 0) / 100;
         const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode);
 
         let labelText;
 
-        if (intervalCount === 12) {
+        if (interval === "year" && intervalCount === 1) {
             // {¤amount} Yearly
             labelText = VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
-        } else if (intervalCount === 6) {
+        } else if (interval === "month" && intervalCount === 6) {
             // {¤amount} Half-yearly
             labelText = VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
-        } else if (intervalCount === 1) {
+        } else if (interval === "month" && intervalCount === 1) {
             // {¤amount} Monthly
             labelText = VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
         } else {
-            console.warn(`Unexpected value for intervalCount: ${intervalCount}`);
+            console.warn(`Unexpected value for interval: ${intervalCount} or intervalCount: ${intervalCount}`);
             VPN.recordGleanEventWithExtraKeys("unhandledSubPlanInterval", {
+                "interval": interval,
                 "interval_count": intervalCount,
             });
         }
