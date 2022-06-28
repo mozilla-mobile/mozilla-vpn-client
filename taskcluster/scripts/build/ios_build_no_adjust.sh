@@ -45,6 +45,10 @@ export QT_IOS_BIN=`pwd`/bin
 cd ../macos/
 export QT_MAC_BIN=`pwd`/bin
 
+echo "TEST"
+echo $QT_MAC_BIN
+
+export QTBINPATH=$QT_MAC_BIN # This will force the impoprt_lang to use those :)
 # Put the MacOs bin on the path, so we can find lconvert and such :) 
 export PATH=$QT_IOS_BIN:$QT_MAC_BIN:$PATH
 
