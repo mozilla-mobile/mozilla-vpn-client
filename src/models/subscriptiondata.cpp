@@ -5,6 +5,8 @@
 #include "subscriptiondata.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
+#include "telemetry/gleansample.h"
 
 #include <QDateTime>
 #include <QJsonDocument>
@@ -57,7 +59,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       QMetaEnum::fromType<TypePlanInterval>().keyToValue(
           planInterval.toUpper().toUtf8(), &okInterval));
   if (!okInterval) {
-    logger.error() << "Unsupported plan interval:" << planInterval;
+    logger.error() << "Unsupported interval type:" << planInterval;
     return false;
   }
 
@@ -71,6 +73,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       planIntervalMonths = 12;
       break;
     default:
+      logger.error() << "Unhandled interval type:" << planIntervalType;
       return false;
   }
 
@@ -94,6 +97,11 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       m_planBillingInterval = BillingIntervalYearly;
       break;
     default:
+      logger.error() << "Unhandled billing interval:"
+                     << planIntervalMonthsTotal;
+      emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+          GleanSample::unhandledSubPlanInterval, {{"interval_count",
+          QVariant::fromValue(planIntervalMonthsTotal).toInt()}});
       return false;
   }
 

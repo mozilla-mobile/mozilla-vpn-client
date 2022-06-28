@@ -239,26 +239,24 @@ VPNFlickable {
         const amountDisplay = (amount || 0) / 100;
         const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode);
 
-        let labelText;
-
-        if (VPNSubscriptionData.planBillingInterval === VPNSubscriptionData.BillingIntervalYearly) {
-            // {¤amount} Yearly
-            labelText = VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
-        } else if (VPNSubscriptionData.planBillingInterval === VPNSubscriptionData.BillingIntervalHalfYearly) {
-            // {¤amount} Half-yearly
-            labelText = VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
-        } else if (VPNSubscriptionData.planBillingInterval === VPNSubscriptionData.BillingIntervalMonthly) {
-            // {¤amount} Monthly
-            labelText = VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
-        } else {
-            console.warn(`Unexpected value for interval: ${intervalCount} or intervalCount: ${intervalCount}`);
-            VPN.recordGleanEventWithExtraKeys("unhandledSubPlanInterval", {
-                "interval": interval,
-                "interval_count": intervalCount,
-            });
+        switch (VPNSubscriptionData.planBillingInterval) {
+            case VPNSubscriptionData.BillingIntervalMonthly:
+                // {¤amount} Monthly
+                return VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
+            case VPNSubscriptionData.BillingIntervalHalfYearly:
+                // {¤amount} Half-yearly
+                return VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
+            case VPNSubscriptionData.BillingIntervalYearly:
+                // {¤amount} Yearly
+                return VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
+            default:
+                // If we made it here something went wrong. In case we encounter
+                // an unhandled TypeBillingInterval we should have should have
+                // already handled this SubscriptionData::fromJson and not
+                // render this view at all.
+                console.warn("Validation of VPNSubscriptionData.planBillingInterval");
+                return "";
         }
-
-        return labelText;
     }
 
     Component.onCompleted: {

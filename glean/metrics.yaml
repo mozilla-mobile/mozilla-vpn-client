@@ -1014,10 +1014,6 @@ sample:
       - amarchesini@mozilla.com
     expires: never
     extra_keys:
-      interval:
-        description: |
-          Unhandled interval
-        type: string
       interval_count:
         description: |
           Unhandled interval count
