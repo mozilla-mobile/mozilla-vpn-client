@@ -42,7 +42,11 @@ echo "Using QT:$QTVERSION"
 
 cd ../../fetches/qt_ios/$QTVERSION/ios || die
 export QT_IOS_BIN=`pwd`/bin
-export PATH=$QT_IOS_BIN:$PATH
+cd ../macos/
+export QT_MAC_BIN=`pwd`/bin
+
+# Put the MacOs bin on the path, so we can find lconvert and such :) 
+export PATH=$QT_IOS_BIN:$QT_MAC_BIN:$PATH
 
 cat > bin/qt.conf << EOF
 [Paths]
@@ -53,6 +57,8 @@ cd $PROJECT_HOME
 # So ios qmake is just a wrapper script
 # and expects to find pwd/qt_ios/mac/bin/qmake >:c
 ln -s ../../fetches/qt_ios/ qt_ios 
+
+
 
 
 print Y "Updating submodules..."
