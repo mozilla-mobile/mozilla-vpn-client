@@ -1,5 +1,7 @@
 [Unit]
 Description=MozillaVPN D-Bus service
+After=modprobe@xt_cgroup.service
+Requires=modprobe@xt_cgroup.service
 
 [Service]
 Type=dbus
