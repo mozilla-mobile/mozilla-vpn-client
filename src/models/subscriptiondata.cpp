@@ -54,7 +54,8 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   // Get interval enum from string
   bool okInterval = false;
   TypePlanInterval planIntervalType = static_cast<TypePlanInterval>(
-      QMetaEnum::fromType<TypePlanInterval>().keyToValue(planInterval.toUtf8(), &okInterval));
+      QMetaEnum::fromType<TypePlanInterval>().keyToValue(
+          planInterval.toUpper().toUtf8(), &okInterval));
   if (!okInterval) {
     logger.error() << "Unsupported plan interval:" << planInterval;
     return false;
@@ -63,10 +64,10 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   // Convert `interval` to number of months
   int planIntervalMonths;
   switch (planIntervalType) {
-    case month:
+    case MONTH:
       planIntervalMonths = 1;
       break;
-    case year:
+    case YEAR:
       planIntervalMonths = 12;
       break;
     default:
@@ -157,7 +158,8 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   // Enum from string
   bool okType = false;
   m_type = static_cast<TypeSubscription>(
-      QMetaEnum::fromType<TypeSubscription>().keyToValue(type.toUtf8(), &okType));
+      QMetaEnum::fromType<TypeSubscription>().keyToValue(
+          type.toUpper().toUtf8(), &okType));
   if (!okType) {
     logger.error() << "Unsupported subscription type:" << type;
     return false;
@@ -165,14 +167,14 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
 
   // Parse subscription data depending on subscription platform
   switch (m_type) {
-    case web:
+    case WEB:
       if (!parseSubscriptionDataWeb(subscriptionData)) {
         return false;
       }
       break;
-    case iap_apple:
+    case IAP_APPLE:
       [[fallthrough]];
-    case iap_google:
+    case IAP_GOOGLE:
       if (!parseSubscriptionDataIap(subscriptionData)) {
         return false;
       }
@@ -201,9 +203,9 @@ bool SubscriptionData::parseSubscriptionDataIap(
 
   quint64 now = QDateTime::currentMSecsSinceEpoch();
   if (now <= m_expiresOn) {
-    m_status = "active";
+    m_status = ACTIVE;
   } else {
-    m_status = "inactive";
+    m_status = INACTIVE;
   }
 
   return true;
@@ -226,10 +228,22 @@ bool SubscriptionData::parseSubscriptionDataWeb(
   }
 
   m_isCancelled = subscriptionData["cancel_at_period_end"].toBool();
-  m_status = subscriptionData["status"].toString();
-  if (m_status.isEmpty()) {
+  QString subscriptionStatus = subscriptionData["status"].toString();
+  if (subscriptionStatus.isEmpty()) {
     return false;
   }
+
+  // Get status enum from string
+  bool okStatus = false;
+  TypeStatus subscriptionStatusType = static_cast<TypeStatus>(
+      QMetaEnum::fromType<TypeStatus>().keyToValue(
+          subscriptionStatus.toUpper().toUtf8(), &okStatus));
+  if (!okStatus) {
+    logger.error() << "Unsupported subscription status:"
+                   << subscriptionStatusType;
+    return false;
+  }
+  m_status = subscriptionStatusType;
 
   return true;
 }

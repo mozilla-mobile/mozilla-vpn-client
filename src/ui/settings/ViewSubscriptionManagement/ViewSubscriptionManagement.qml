@@ -132,13 +132,13 @@ VPNFlickable {
 
     function handleManageAccountClicked() {
         switch(VPNSubscriptionData.type) {
-            case VPNSubscriptionData.web:
+            case VPNSubscriptionData.WEB:
                 VPN.openLink(VPN.LinkSubscriptionFxa);
                 break;
-            case VPNSubscriptionData.iap_google:
+            case VPNSubscriptionData.IAP_GOOGLE:
                 VPN.openLink(VPN.LinkSubscriptionIapGoogle);
                 break;
-            case VPNSubscriptionData.iap_apple:
+            case VPNSubscriptionData.IAP_APPLE:
                 VPN.openLink(VPN.LinkSubscriptionIapApple);
                 break;
             default:
@@ -167,7 +167,9 @@ VPNFlickable {
         subscriptionInfoModel.append({
             _objectName: "subscriptionItem-status",
             labelText: VPNl18n.SubscriptionManagementStatusLabel,
-            valueText: VPNSubscriptionData.status,
+            valueText: VPNSubscriptionData.status === VPNSubscriptionData.ACTIVE
+                ? VPNl18n.SubscriptionManagementStatusActive
+                : VPNl18n.SubscriptionManagementStatusInactive,
             type: "pill",
         });
 

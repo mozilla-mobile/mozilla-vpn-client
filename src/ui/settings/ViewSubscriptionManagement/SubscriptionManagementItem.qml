@@ -128,16 +128,16 @@ ColumnLayout {
 
             VPNPill {
                 objectName: _objectName + "-pill"
+                property bool isActive:
+                    VPNSubscriptionData.status === VPNSubscriptionData.ACTIVE
 
-                color: valueText === "active"
+                color: isActive
                     ? VPNTheme.colors.green90
                     : VPNTheme.colors.red70
-                background: valueText === "active"
+                background: isActive
                     ? VPNTheme.colors.green5
                     : VPNTheme.colors.red5
-                text: valueText === "active"
-                    ? VPNl18n.SubscriptionManagementStatusActive
-                    : VPNl18n.SubscriptionManagementStatusInactive
+                text: valueText
 
                 anchors {
                     right: parent.right

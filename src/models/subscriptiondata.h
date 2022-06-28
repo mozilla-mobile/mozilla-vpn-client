@@ -15,10 +15,10 @@ class SubscriptionData final : public QObject {
 
   // Subscription
   Q_PROPERTY(TypeSubscription type MEMBER m_type CONSTANT)
+  Q_PROPERTY(TypeStatus status MEMBER m_status CONSTANT)
   Q_PROPERTY(quint64 createdAt MEMBER m_createdAt CONSTANT)
   Q_PROPERTY(quint64 expiresOn MEMBER m_expiresOn CONSTANT)
   Q_PROPERTY(bool isCancelled MEMBER m_isCancelled CONSTANT)
-  Q_PROPERTY(QString status MEMBER m_status CONSTANT)
 
   // Plan
   Q_PROPERTY(TypeBillingInterval planBillingInterval MEMBER
@@ -38,25 +38,31 @@ class SubscriptionData final : public QObject {
   SubscriptionData();
   ~SubscriptionData();
 
+  enum TypeSubscription {
+    IAP_APPLE,
+    IAP_GOOGLE,
+    WEB,
+  };
+  Q_ENUM(TypeSubscription)
+
+  enum TypeStatus {
+    ACTIVE,
+    INACTIVE,
+  };
+  Q_ENUM(TypeStatus)
+
+  enum TypePlanInterval {
+    MONTH,
+    YEAR,
+  };
+  Q_ENUM(TypePlanInterval)
+
   enum TypeBillingInterval {
     BillingIntervalMonthly,
     BillingIntervalHalfYearly,
     BillingIntervalYearly,
   };
   Q_ENUM(TypeBillingInterval)
-
-  enum TypePlanInterval {
-    month,
-    year,
-  };
-  Q_ENUM(TypePlanInterval)
-
-  enum TypeSubscription {
-    iap_apple,
-    iap_google,
-    web,
-  };
-  Q_ENUM(TypeSubscription)
 
   [[nodiscard]] bool fromJson(const QByteArray& json);
 
@@ -73,10 +79,10 @@ class SubscriptionData final : public QObject {
   QByteArray m_rawJson;
 
   TypeSubscription m_type;
+  TypeStatus m_status;
   quint64 m_createdAt = 0;
   quint64 m_expiresOn = 0;
   bool m_isCancelled = false;
-  QString m_status;
 
   TypeBillingInterval m_planBillingInterval;
   int m_planAmount = 0;
