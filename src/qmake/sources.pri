@@ -47,6 +47,7 @@ SOURCES += \
         dnshelper.cpp \
         dnspingsender.cpp \
         errorhandler.cpp \
+        externalophandler.cpp \
         filterproxymodel.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
@@ -200,6 +201,7 @@ HEADERS += \
         dnshelper.h \
         dnspingsender.h \
         errorhandler.h \
+        externalophandler.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \

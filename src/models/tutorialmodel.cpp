@@ -27,6 +27,9 @@ TutorialModel* TutorialModel::instance() {
 TutorialModel::TutorialModel(QObject* parent) : QAbstractListModel(parent) {
   logger.debug() << "create";
   MVPN_COUNT_CTOR(TutorialModel);
+
+  connect(ExternalOpHandler::instance(), &ExternalOpHandler::requestReceived,
+          this, &TutorialModel::externalRequestReceived);
 }
 
 TutorialModel::~TutorialModel() { MVPN_COUNT_DTOR(TutorialModel); }
@@ -147,4 +150,20 @@ Tutorial* TutorialModel::highlightedTutorial() const {
     }
   }
   return nullptr;
+}
+
+void TutorialModel::externalRequestReceived(ExternalOpHandler::Op op) {
+  logger.debug() << "External request received" << op;
+
+  if (!isPlaying()) {
+    return;
+  }
+
+  if (op != ExternalOpHandler::OpActivate &&
+      op != ExternalOpHandler::OpDeactivate &&
+      op != ExternalOpHandler::OpNotificationClicked) {
+    return;
+  }
+
+  stop();
 }

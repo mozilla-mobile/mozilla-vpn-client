@@ -6,6 +6,7 @@
 #define TUTORIALMODEL_H
 
 #include "tutorial.h"
+#include "externalophandler.h"
 
 #include <QList>
 #include <QAbstractListModel>
@@ -66,6 +67,8 @@ class TutorialModel final : public QAbstractListModel {
 
  private:
   explicit TutorialModel(QObject* parent);
+
+  void externalRequestReceived(ExternalOpHandler::Op op);
 
   struct TutorialData {
     QString m_addonId;
