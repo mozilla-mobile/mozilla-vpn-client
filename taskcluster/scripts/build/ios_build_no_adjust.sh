@@ -72,7 +72,7 @@ EOF
 ./scripts/macos/apple_compile.sh ios -q ../../fetches/$QTVERSION/ios/bin -A ReallyNotAnAPIToken || die
 
 print Y "Compiling..."
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -project Mozilla\ VPN.xcodeproj || die
+xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -project MozillaVPN.xcodeproj || die
 
 
 print Y "Creating the final package..."
