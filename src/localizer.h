@@ -66,6 +66,10 @@ class Localizer final : public QAbstractListModel {
   Q_INVOKABLE QString localizeCurrency(double value,
                                        const QString& currencyIso4217);
 
+  // Returns the major part of the string in case the language code is in the
+  // format 'en-FO' or 'en_FO'
+  static QString majorLanguageCode(const QString& code);
+
  signals:
   void codeChanged();
   void previousCodeChanged();
