@@ -1149,7 +1149,7 @@ sample:
     extra_keys:
       action:
         description: |
-          The trigger that caused the modal to be closed (dismissed | clicked)
+          The trigger that caused the modal to be closed (dismissed | cta)
         type: string
 
   guide_opened:
