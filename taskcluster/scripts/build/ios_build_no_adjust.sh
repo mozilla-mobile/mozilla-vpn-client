@@ -45,11 +45,6 @@ export QT_IOS_BIN=`pwd`/bin
 cd ../macos/
 export QT_MAC_BIN=`pwd`/bin
 
-echo "TEST"
-echo $QT_MAC_BIN
-
-export QTBINPATH=$QT_MAC_BIN # This will force the impoprt_lang to use those :)
-# Put the MacOs bin on the path, so we can find lconvert and such :) 
 export PATH=$QT_IOS_BIN:$QT_MAC_BIN:$PATH
 
 cat > bin/qt.conf << EOF
@@ -81,7 +76,7 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 EOF
 
 # TODO: In case we want to release this, we need to get that token, see android-release.sh
-./scripts/macos/apple_compile.sh ios -q ../../fetches/qt_ios/$QTVERSION/ios/bin -a ReallyNotAnAPIToken || die
+./scripts/macos/apple_compile.sh ios -q ../../fetches/qt_ios/$QTVERSION/macos/bin -a ReallyNotAnAPIToken || die
 
 print Y "Compiling..."
 # TODO: apple_compile.sh ios generated "MozillaVPN.xcodeproj"; the mac one generated "Mozilla VPN.xcodeproj"
