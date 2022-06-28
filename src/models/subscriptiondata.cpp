@@ -100,8 +100,9 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       logger.error() << "Unhandled billing interval:"
                      << planIntervalMonthsTotal;
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-          GleanSample::unhandledSubPlanInterval, {{"interval_count",
-          QVariant::fromValue(planIntervalMonthsTotal).toInt()}});
+          GleanSample::unhandledSubPlanInterval,
+          {{"interval_count",
+            QVariant::fromValue(planIntervalMonthsTotal).toInt()}});
       return false;
   }
 
@@ -243,8 +244,8 @@ bool SubscriptionData::parseSubscriptionDataWeb(
 
   // Get status enum from string
   bool okStatus = false;
-  TypeStatus subscriptionStatusType = static_cast<TypeStatus>(
-      QMetaEnum::fromType<TypeStatus>().keyToValue(
+  TypeStatus subscriptionStatusType =
+      static_cast<TypeStatus>(QMetaEnum::fromType<TypeStatus>().keyToValue(
           subscriptionStatus.toUpper().toUtf8(), &okStatus));
   if (!okStatus) {
     logger.error() << "Unsupported subscription status:"

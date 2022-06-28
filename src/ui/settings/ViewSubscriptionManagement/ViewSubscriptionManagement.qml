@@ -252,7 +252,7 @@ VPNFlickable {
                 // an unhandled TypeBillingInterval we should have should have
                 // already handled this SubscriptionData::fromJson and not
                 // render this view at all.
-                console.warn("Validation of VPNSubscriptionData.planBillingInterval");
+                console.warn("Unhandled billing interval.");
                 return "";
         }
     }
