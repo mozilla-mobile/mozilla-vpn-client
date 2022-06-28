@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "helpmodel.h"
+#include "externalophandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -70,12 +71,12 @@ void HelpModel::open(int id) {
 
   const HelpEntry& entry = s_helpEntries.at(id);
   if (entry.m_viewLog) {
-    MozillaVPN::instance()->requestViewLogs();
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpViewLogs);
     return;
   }
 
   if (!entry.m_externalLink && entry.m_linkType == MozillaVPN::LinkContact) {
-    MozillaVPN::instance()->requestContactUs();
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpContactUs);
     return;
   }
 
