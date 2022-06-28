@@ -5,6 +5,8 @@
 #ifndef TUTORIAL_H
 #define TUTORIAL_H
 
+#include "externalophandler.h"
+
 #include <QList>
 #include <QAbstractListModel>
 
@@ -43,6 +45,8 @@ class Tutorial final : public QObject {
 
  private:
   explicit Tutorial(QObject* parent);
+
+  void externalRequestReceived(ExternalOpHandler::Op op);
 
   QStringList m_allowedItems;
   bool m_tooltipShown = false;

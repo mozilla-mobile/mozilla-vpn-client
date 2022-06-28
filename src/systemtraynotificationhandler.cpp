@@ -4,6 +4,7 @@
 
 #include "systemtraynotificationhandler.h"
 #include "constants.h"
+#include "externalophandler.h"
 #include "leakdetector.h"
 #include "l18nstrings.h"
 #include "logger.h"
@@ -46,12 +47,14 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   m_statusLabel = m_menu.addAction("");
   m_statusLabel->setEnabled(false);
 
-  m_lastLocationLabel =
-      m_menu.addAction("", vpn->controller(), &Controller::activate);
+  ExternalOpHandler* externalOpHandler = ExternalOpHandler::instance();
+
+  m_lastLocationLabel = m_menu.addAction("", externalOpHandler,
+                                         &ExternalOpHandler::requestOpActivate);
   m_lastLocationLabel->setEnabled(false);
 
-  m_disconnectAction =
-      m_menu.addAction("", vpn->controller(), &Controller::deactivate);
+  m_disconnectAction = m_menu.addAction(
+      "", externalOpHandler, &ExternalOpHandler::requestOpDeactivate);
 
   m_separator = m_menu.addSeparator();
 
@@ -62,11 +65,13 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
 
   m_helpMenu = m_menu.addMenu("");
 
-  m_preferencesAction = m_menu.addAction("", vpn, &MozillaVPN::requestSettings);
+  m_preferencesAction = m_menu.addAction("", externalOpHandler,
+                                         &ExternalOpHandler::requestOpSettings);
 
   m_menu.addSeparator();
 
-  m_quitAction = m_menu.addAction("", vpn->controller(), &Controller::quit);
+  m_quitAction = m_menu.addAction("", externalOpHandler,
+                                  &ExternalOpHandler::requestOpQuit);
   m_systemTrayIcon.setContextMenu(&m_menu);
 
   updateIcon(vpn->statusIcon()->iconString());

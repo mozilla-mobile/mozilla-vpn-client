@@ -104,6 +104,8 @@ target_sources(mozillavpn PRIVATE
     dnspingsender.h
     errorhandler.cpp
     errorhandler.h
+    externalophandler.cpp
+    externalophandler.h
     filterproxymodel.cpp
     filterproxymodel.h
     fontloader.cpp
