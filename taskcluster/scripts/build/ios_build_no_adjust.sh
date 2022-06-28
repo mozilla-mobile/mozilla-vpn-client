@@ -82,13 +82,9 @@ print Y "Compiling..."
 # TODO: apple_compile.sh ios generated "MozillaVPN.xcodeproj"; the mac one generated "Mozilla VPN.xcodeproj"
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -project MozillaVPN.xcodeproj || die
 
-
-print Y "Creating the final package..."
-python3 ./scripts/macos/import_pkg_resources.py || die
-
 print Y "Exporting the artifact..."
 mkdir -p tmp || die
-cp -r cp -r Release-iphoneos/* tmp || die
+cp -r Release-iphoneos/* tmp || die
 cd tmp || die
 
 # From checkout dir to actual task base directory
