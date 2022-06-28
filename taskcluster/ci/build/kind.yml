@@ -15,9 +15,9 @@ kind-dependencies:
     - toolchain
 
 jobs-from:
-#    - linux.yml
-#    - windows.yml
-#    - android.yml
-#    - macos.yml
-#    - wasm.yml
+    - linux.yml
+    - windows.yml
+    - android.yml
+    - macos.yml
+    - wasm.yml
     - ios.yml

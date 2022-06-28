@@ -9,7 +9,7 @@ set -x
 
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
-print N "Taskcluster macOS compilation script"
+print N "Taskcluster iOS compilation script"
 print N ""
 
 export LC_ALL=en_US.utf-8
@@ -42,22 +42,12 @@ echo "Using QT:$QTVERSION"
 
 cd ../../fetches/qt_ios/$QTVERSION/ios || die
 export QT_IOS_BIN=`pwd`/bin
-cd ../macos/
-export QT_MAC_BIN=`pwd`/bin
+export PATH=$QT_IOS_BIN:$PATH
 
-export PATH=$QT_IOS_BIN:$QT_MAC_BIN:$PATH
-
-cat > bin/qt.conf << EOF
-[Paths]
-Prefix=`pwd`
-EOF
-cp bin/qt.conf libexec || die
 cd $PROJECT_HOME
 # So ios qmake is just a wrapper script
 # and expects to find pwd/qt_ios/mac/bin/qmake >:c
 ln -s ../../fetches/qt_ios/ qt_ios 
-
-
 
 
 print Y "Updating submodules..."
@@ -75,7 +65,7 @@ APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 EOF
 
-# TODO: In case we want to release this, we need to get that token, see android-release.sh
+# NOTE: In case we want to release this, we need to get that token, see android-release.sh
 ./scripts/macos/apple_compile.sh ios -q ../../fetches/qt_ios/$QTVERSION/macos/bin -a ReallyNotAnAPIToken || die
 
 print Y "Compiling..."
