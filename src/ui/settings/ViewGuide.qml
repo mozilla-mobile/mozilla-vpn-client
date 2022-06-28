@@ -257,7 +257,7 @@ Item {
     Component.onDestruction: {
         VPN.recordGleanEventWithExtraKeys("guideClosed",{
                                           "id": guide.id,
-                                          "duration": `${((new Date().getTime() - timeOfOpen) / 1000)} seconds`
+                                          "duration_ms": new Date().getTime() - timeOfOpen
         });
     }
 }

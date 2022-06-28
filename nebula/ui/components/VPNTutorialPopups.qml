@@ -235,12 +235,11 @@ Item {
         }
 
         tutorialPopup.secondaryButtonOnClicked = () => {
-            VPN.recordGleanEventWithExtraKeys("tutorialAborted",{
-                                          "id": VPNTutorial.currentTutorialId()
-                                      });
+            VPN.recordGleanEventWithExtraKeys("tutorialAborted", {"id": VPNTutorial.currentTutorialId()});
             tutorialPopup._onClosed = () => callback()
             leaveTutorial();
         }
+
         tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialLeavePrimaryButtonLabel;
         tutorialPopup.title = VPNl18n.TutorialPopupTutorialLeaveHeadline;
         tutorialPopup.description = VPNl18n.TutorialPopupTutorialLeaveSubtitle;
@@ -269,11 +268,6 @@ Item {
             root.targetElement = targetEl;
             tutorialTooltip.tooltipText = qsTrId(text);
             tutorialTooltip.open();
-            VPN.recordGleanEventWithExtraKeys("tutorialStepViewed",{
-                                              "tutorial_id": VPNTutorial.currentTutorialId(),
-                                              "step_id": text
-
-            });
         }
 
         function onTutorialCompleted(tutorialCompletedStringId) {
@@ -285,9 +279,6 @@ Item {
             tutorialPopup.description = qsTrId(tutorialCompletedStringId);
             tutorialPopup._onClosed = () => {};
             tutorialPopup.open();
-            VPN.recordGleanEventWithExtraKeys("tutorialCompleted",{
-                                              "id": VPNTutorial.currentTutorialId()
-            });
         }
     }
 

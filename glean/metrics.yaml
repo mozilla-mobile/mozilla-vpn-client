@@ -1146,6 +1146,11 @@ sample:
     notification_emails:
       - mlichtenstein@mozilla.com
     expires: never
+    extra_keys:
+      action:
+        description: |
+          The trigger that caused the modal to be closed (dismissed | clicked)
+        type: string
 
   guide_opened:
     type: event
@@ -1190,10 +1195,11 @@ sample:
         description: |
           The id of the guide that was closed
         type: string
-      duration:
+      duration_ms:
         description: |
           The amount of time that the user spent in the guide (in seconds)
-        type: string
+        type: quantity
+        unit: milliseconds
 
   tutorial_started:
     type: event

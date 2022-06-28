@@ -80,9 +80,6 @@ VPNFlickable {
                         onClicked: {
                             VPNTutorial.play(highlightedTutorial);
                             VPNCloseEventHandler.removeAllStackViews();
-                            VPN.recordGleanEventWithExtraKeys("tutorialStarted",{
-                                                              "id": highlightedTutorial.id
-                            });
                         }
                     }
                 }
@@ -188,9 +185,6 @@ VPNFlickable {
                             onClicked: {
                                 VPNTutorial.play(addon);
                                 VPNCloseEventHandler.removeAllStackViews();
-                                VPN.recordGleanEventWithExtraKeys("tutorialStarted",{
-                                                                  "id": addon.id
-                                });
                             }
                         }
                     }

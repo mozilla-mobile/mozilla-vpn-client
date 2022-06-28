@@ -218,7 +218,7 @@ VPNFlickable {
 
             onClosed: {
                 tipsAndTricksIntroPopupLoader.active = false
-                if(!closedByPrimaryButton) Sample.tipsAndTricksModalClosed.record();
+                VPN.recordGleanEventWithExtraKeys("tipsAndTricksModalClosed", {"action": closedByPrimaryButton ? "cta" : "dismissed"});
             }
         }
 
