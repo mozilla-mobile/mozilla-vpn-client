@@ -11,6 +11,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QMetaEnum>
+#include <QString>
 
 namespace {
 Logger logger(LOG_MODEL, "SubscriptionData");
@@ -44,15 +45,55 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     return false;
   }
 
-  m_planInterval = planData["interval"].toString();
-  if (m_planInterval.isEmpty()) {
+  // Billing frequency
+  QString planInterval = planData["interval"].toString();
+  if (planInterval.isEmpty()) {
     return false;
   }
 
-  m_planIntervalCount = planData["interval_count"].toInt();
-  logger.debug() << "m_planIntervalCount" << m_planIntervalCount;
-  if (!m_planIntervalCount) {
+  // Get interval enum from string
+  bool okInterval = false;
+  TypePlanInterval planIntervalType = static_cast<TypePlanInterval>(
+      QMetaEnum::fromType<TypePlanInterval>().keyToValue(planInterval.toUtf8(), &okInterval));
+  if (!okInterval) {
+    logger.error() << "Unsupported plan interval:" << planInterval;
     return false;
+  }
+
+  // Convert `interval` to number of months
+  int planIntervalMonths;
+  switch (planIntervalType) {
+    case month:
+      planIntervalMonths = 1;
+      break;
+    case year:
+      planIntervalMonths = 12;
+      break;
+    default:
+      return false;
+  }
+
+  // Number of intervals between subscription billings
+  int planIntervalCount = planData["interval_count"].toInt();
+  if (!planIntervalCount) {
+    return false;
+  }
+
+  // Get total billing interval in months
+  int planIntervalMonthsTotal = planIntervalMonths * planIntervalCount;
+  // Set the plan interval
+  switch (planIntervalMonthsTotal) {
+    case 1:
+      m_planBillingInterval = BillingIntervalMonthly;
+      break;
+    case 6:
+      m_planBillingInterval = BillingIntervalHalfYearly;
+      break;
+    case 12:
+      m_planBillingInterval = BillingIntervalYearly;
+      break;
+    default:
+      return false;
   }
 
   // We transform the currency code to uppercase in order to be compliant with
@@ -114,10 +155,10 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   }
 
   // Enum from string
-  bool ok = false;
+  bool okType = false;
   m_type = static_cast<TypeSubscription>(
-      QMetaEnum::fromType<TypeSubscription>().keyToValue(type.toUtf8(), &ok));
-  if (!ok) {
+      QMetaEnum::fromType<TypeSubscription>().keyToValue(type.toUtf8(), &okType));
+  if (!okType) {
     logger.error() << "Unsupported subscription type:" << type;
     return false;
   }

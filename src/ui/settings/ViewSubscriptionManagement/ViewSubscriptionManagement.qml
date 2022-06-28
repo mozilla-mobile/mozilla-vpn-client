@@ -239,13 +239,13 @@ VPNFlickable {
 
         let labelText;
 
-        if (interval === "year" && intervalCount === 1) {
+        if (VPNSubscriptionData.planBillingInterval === VPNSubscriptionData.BillingIntervalYearly) {
             // {¤amount} Yearly
             labelText = VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
-        } else if (interval === "month" && intervalCount === 6) {
+        } else if (VPNSubscriptionData.planBillingInterval === VPNSubscriptionData.BillingIntervalHalfYearly) {
             // {¤amount} Half-yearly
             labelText = VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
-        } else if (interval === "month" && intervalCount === 1) {
+        } else if (VPNSubscriptionData.planBillingInterval === VPNSubscriptionData.BillingIntervalMonthly) {
             // {¤amount} Monthly
             labelText = VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
         } else {

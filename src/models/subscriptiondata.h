@@ -21,10 +21,10 @@ class SubscriptionData final : public QObject {
   Q_PROPERTY(QString status MEMBER m_status CONSTANT)
 
   // Plan
+  Q_PROPERTY(TypeBillingInterval planBillingInterval MEMBER
+                 m_planBillingInterval CONSTANT)
   Q_PROPERTY(int planAmount MEMBER m_planAmount CONSTANT)
   Q_PROPERTY(QString planCurrency MEMBER m_planCurrency CONSTANT)
-  Q_PROPERTY(QString planInterval MEMBER m_planInterval CONSTANT)
-  Q_PROPERTY(int planIntervalCount MEMBER m_planIntervalCount CONSTANT)
 
   // Payment
   Q_PROPERTY(QString paymentProvider MEMBER m_paymentProvider CONSTANT)
@@ -37,6 +37,19 @@ class SubscriptionData final : public QObject {
  public:
   SubscriptionData();
   ~SubscriptionData();
+
+  enum TypeBillingInterval {
+    BillingIntervalMonthly,
+    BillingIntervalHalfYearly,
+    BillingIntervalYearly,
+  };
+  Q_ENUM(TypeBillingInterval)
+
+  enum TypePlanInterval {
+    month,
+    year,
+  };
+  Q_ENUM(TypePlanInterval)
 
   enum TypeSubscription {
     iap_apple,
@@ -65,10 +78,9 @@ class SubscriptionData final : public QObject {
   bool m_isCancelled = false;
   QString m_status;
 
+  TypeBillingInterval m_planBillingInterval;
   int m_planAmount = 0;
   QString m_planCurrency;
-  QString m_planInterval;
-  int m_planIntervalCount = 0;
 
   QString m_paymentProvider;
   QString m_paymentType;
