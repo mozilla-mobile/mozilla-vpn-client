@@ -5,6 +5,7 @@
 #include "survey.h"
 #include "constants.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
@@ -124,7 +125,9 @@ bool Survey::isTriggerable() const {
       }
     }
 
-    if (!m_locales.contains(code.split("_")[0].toLower())) {
+    code = Localizer::majorLanguageCode(code);
+
+    if (!m_locales.contains(code.toLower())) {
       logger.debug() << "Locale does not match:" << code << m_locales;
       return false;
     }
