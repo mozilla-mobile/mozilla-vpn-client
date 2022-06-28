@@ -37,10 +37,10 @@ export PYTHONIOENCODING="UTF-8"
 
 print Y "Installing QT..."
 PROJECT_HOME=`pwd`
-QTVERSION=$(ls ../../fetches/)
+QTVERSION=$(ls ../../fetches/qt_ios)
 echo "Using QT:$QTVERSION"
 
-cd ../../fetches/$QTVERSION/ios || die
+cd ../../fetches/qt_ios/$QTVERSION/ios || die
 export QT_IOS_BIN=`pwd`/bin
 export PATH=$QT_IOS_BIN:$PATH
 
