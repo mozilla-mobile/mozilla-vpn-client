@@ -157,8 +157,6 @@ VPNFlickable {
             valueText: getPlanText(
                 VPNSubscriptionData.planCurrency,
                 VPNSubscriptionData.planAmount,
-                VPNSubscriptionData.planInterval,
-                VPNSubscriptionData.planIntervalCount
             ),
             type: "text",
         });
@@ -235,7 +233,7 @@ VPNFlickable {
         );
     }
 
-    function getPlanText(currencyCode, amount, interval, intervalCount) {
+    function getPlanText(currencyCode, amount) {
         const amountDisplay = (amount || 0) / 100;
         const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode);
 
