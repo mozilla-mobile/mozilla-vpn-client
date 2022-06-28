@@ -49,8 +49,10 @@ cat > bin/qt.conf << EOF
 Prefix=`pwd`
 EOF
 cp bin/qt.conf libexec || die
-
 cd $PROJECT_HOME
+# So ios qmake is just a wrapper script
+# and expects to find pwd/qt_ios/mac/bin/qmake >:c
+ln -s ../../fetches/qt_ios/ qt_ios 
 
 
 print Y "Updating submodules..."
