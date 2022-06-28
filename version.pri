@@ -23,7 +23,7 @@ genversion.output = $$PWD/src/version.h
 genversion.commands = @echo Building ${QMAKE_FILE_OUT} && \
     python3 $$PWD/scripts/utils/make_template.py ${QMAKE_FILE_IN} \
         -o ${QMAKE_FILE_OUT} -k @CMAKE_PROJECT_VERSION@=$${VERSION} -k @BUILD_ID@=$${BUILD_ID}
+genversion.depends = FORCE
 genversion.CONFIG = target_predeps no_link
 genversion.variable_out = HEADERS
 QMAKE_EXTRA_COMPILERS += genversion
-
