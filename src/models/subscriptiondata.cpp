@@ -37,6 +37,42 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
 
   QJsonObject obj = doc.object();
 
+  // Subscription
+  QJsonObject subscriptionData = obj["subscription"].toObject();
+
+  QString type = subscriptionData["_subscription_type"].toString();
+  if (type.isEmpty()) {
+    return false;
+  }
+
+  // Parse subscription data depending on subscription platform
+  if (type == "web") {
+    m_type = SubscriptionWeb;
+    if (!parseSubscriptionDataWeb(subscriptionData)) {
+      return false;
+    }
+  } else if (type == "iap_apple") {
+    // TODO: Parse subscription data as soon as FxA includes Apple subscriptions
+    // in their API response.
+    // For Apple subscriptions that is all the information we currently have.
+    m_type = SubscriptionApple;
+    m_status = Active;
+
+    m_rawJson = json;
+    emit changed();
+    logger.debug() << "Subscription data from JSON ready";
+
+    return true;
+  } else if (type == "iap_google") {
+    m_type = SubscriptionGoogle;
+    if (!parseSubscriptionDataIap(subscriptionData)) {
+      return false;
+    }
+  } else {
+    logger.error() << "No matching subscription type" << type;
+    return false;
+  }
+
   // Plan
   logger.debug() << "Parse plan start";
   QJsonObject planData = obj["plan"].toObject();
@@ -98,35 +134,6 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   // transformation from Stripe.
   m_planCurrency = planData["currency"].toString().toUpper();
   if (m_planCurrency.isEmpty()) {
-    return false;
-  }
-
-  // Subscription
-  QJsonObject subscriptionData = obj["subscription"].toObject();
-
-  QString type = subscriptionData["_subscription_type"].toString();
-  if (type.isEmpty()) {
-    return false;
-  }
-
-  // Parse subscription data depending on subscription platform
-  if (type == "web") {
-    m_type = SubscriptionWeb;
-    if (!parseSubscriptionDataWeb(subscriptionData)) {
-      return false;
-    }
-  } else if (type == "iap_apple") {
-    m_type = SubscriptionApple;
-    if (!parseSubscriptionDataIap(subscriptionData)) {
-      return false;
-    }
-  } else if (type == "iap_google") {
-    m_type = SubscriptionGoogle;
-    if (!parseSubscriptionDataIap(subscriptionData)) {
-      return false;
-    }
-  } else {
-    logger.error() << "No matching subscription type" << type;
     return false;
   }
 
