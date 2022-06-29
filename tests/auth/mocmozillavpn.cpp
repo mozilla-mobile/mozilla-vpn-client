@@ -23,6 +23,8 @@ MozillaVPN::MozillaVPN() {}
 
 MozillaVPN::~MozillaVPN() {}
 
+Controller* MozillaVPN::controller() { return nullptr; }
+
 MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
 MozillaVPN::UserState MozillaVPN::userState() const {
   return UserNotAuthenticated;

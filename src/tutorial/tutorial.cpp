@@ -30,8 +30,11 @@ Tutorial::Tutorial(QObject* parent) : QObject(parent) {
   logger.debug() << "create";
   MVPN_COUNT_CTOR(Tutorial);
 
-  connect(ExternalOpHandler::instance(), &ExternalOpHandler::requestReceived,
-          this, &Tutorial::externalRequestReceived);
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+
+  connect(vpn->controller(), &Controller::readyToServerUnavailable, this,
+          &Tutorial::stop);
 }
 
 Tutorial::~Tutorial() { MVPN_COUNT_DTOR(Tutorial); }
@@ -52,6 +55,8 @@ void Tutorial::play(Addon* tutorial) {
     return;
   }
 
+  ExternalOpHandler::instance()->registerBlocker(this);
+
   emit playingChanged();
 
   m_currentTutorial->play(m_allowedItems);
@@ -66,6 +71,8 @@ void Tutorial::stop() {
 
     m_currentTutorial->stop();
     m_currentTutorial = nullptr;
+
+    ExternalOpHandler::instance()->unregisterBlocker(this);
 
     emit playingChanged();
   }
@@ -101,19 +108,24 @@ void Tutorial::requireTooltipShown(AddonTutorial* tutorial, bool shown) {
   emit tooltipShownChanged();
 }
 
-void Tutorial::externalRequestReceived(ExternalOpHandler::Op op) {
+bool Tutorial::maybeBlockRequest(ExternalOpHandler::Op op) {
   logger.debug() << "External request received" << op;
-
-  if (!isPlaying()) {
-    return;
-  }
+  Q_ASSERT(isPlaying());
 
   if (op != ExternalOpHandler::OpActivate &&
       op != ExternalOpHandler::OpDeactivate &&
       op != ExternalOpHandler::OpCloseEvent &&
       op != ExternalOpHandler::OpNotificationClicked) {
-    return;
+    emit interruptRequest(op);
+    return true;
   }
 
   stop();
+  return false;
+}
+
+void Tutorial::interruptAccepted(ExternalOpHandler::Op op) {
+  logger.debug() << "Interrupt by the user";
+  stop();
+  ExternalOpHandler::instance()->request(op);
 }
