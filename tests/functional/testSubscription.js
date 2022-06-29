@@ -405,21 +405,23 @@ describe('Subscription view', function() {
           'subscriptionManagmentView', 'visible', 'true');
       await vpn.wait();
 
-      if (data.subscription.value._subscription_type !== "iap_apple") {
+      if (data.subscription.expected.status) {
+        assert(
+          await vpn.getElementProperty(
+              'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-container/subscriptionItem-status-pillWrapper/subscriptionItem-status-pill',
+              'text') === data.subscription.expected.status);
+      }
+
+      if (data.plan.expected) {
         await vpn.waitForElement(
             'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText');
         await vpn.waitForElementProperty(
             'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
             'visible', 'true');
-
         assert(
-            await vpn.getElementProperty(
-                'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
-                'text') === data.plan.expected);
-        assert(
-            await vpn.getElementProperty(
-                'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-container/subscriptionItem-status-pillWrapper/subscriptionItem-status-pill',
-                'text') === data.subscription.expected.status);
+          await vpn.getElementProperty(
+              'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
+              'text') === data.plan.expected);
       }
 
       if (data.subscription.expected.activated) {
