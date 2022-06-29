@@ -379,3 +379,17 @@ QString Localizer::retrieveCurrencySymbolFallback(
   logger.warning() << "Fallback not found" << currencyIso4217;
   return currencyIso4217;
 }
+
+// static
+QString Localizer::majorLanguageCode(const QString& aCode) {
+  QString code = aCode;
+  if (code.contains("-")) {
+    code = code.split("-")[0];
+  }
+
+  if (code.contains("_")) {
+    code = code.split("_")[0];
+  }
+
+  return code;
+}

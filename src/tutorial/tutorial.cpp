@@ -27,6 +27,9 @@ Tutorial* Tutorial::instance() {
 Tutorial::Tutorial(QObject* parent) : QObject(parent) {
   logger.debug() << "create";
   MVPN_COUNT_CTOR(Tutorial);
+
+  connect(ExternalOpHandler::instance(), &ExternalOpHandler::requestReceived,
+          this, &Tutorial::externalRequestReceived);
 }
 
 Tutorial::~Tutorial() { MVPN_COUNT_DTOR(Tutorial); }
@@ -84,4 +87,20 @@ void Tutorial::requireTooltipShown(AddonTutorial* tutorial, bool shown) {
 
   m_tooltipShown = shown;
   emit tooltipShownChanged();
+}
+
+void Tutorial::externalRequestReceived(ExternalOpHandler::Op op) {
+  logger.debug() << "External request received" << op;
+
+  if (!isPlaying()) {
+    return;
+  }
+
+  if (op != ExternalOpHandler::OpActivate &&
+      op != ExternalOpHandler::OpDeactivate &&
+      op != ExternalOpHandler::OpNotificationClicked) {
+    return;
+  }
+
+  stop();
 }

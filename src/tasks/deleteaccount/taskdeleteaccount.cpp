@@ -9,6 +9,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
+#include "taskscheduler.h"
 
 namespace {
 Logger logger(LOG_MAIN, "TaskDeleteAccount");
@@ -74,6 +75,7 @@ void TaskDeleteAccount::run() {
   connect(m_authenticationInAppSession,
           &AuthenticationInAppSession::accountDeleted, this, [this]() {
             m_authenticationInAppSession->terminate();
+            TaskScheduler::deleteTasks();
             emit MozillaVPN::instance()->accountDeleted();
           });
 
