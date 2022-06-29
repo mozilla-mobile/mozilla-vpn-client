@@ -52,28 +52,15 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     return false;
   }
 
-  // Get interval enum from string
-  bool okInterval = false;
-  TypePlanInterval planIntervalType = static_cast<TypePlanInterval>(
-      QMetaEnum::fromType<TypePlanInterval>().keyToValue(
-          planInterval.toUpper().toUtf8(), &okInterval));
-  if (!okInterval) {
-    logger.error() << "Unsupported interval type:" << planInterval;
-    return false;
-  }
-
   // Convert `interval` to number of months
   int planIntervalMonths;
-  switch (planIntervalType) {
-    case MONTH:
-      planIntervalMonths = 1;
-      break;
-    case YEAR:
-      planIntervalMonths = 12;
-      break;
-    default:
-      logger.error() << "Unhandled interval type:" << planIntervalType;
-      return false;
+  if (planInterval == "month") {
+    planIntervalMonths = 1;
+  } else if (planInterval == "year") {
+    planIntervalMonths = 12;
+  } else {
+    logger.error() << "Unexpected interval type:" << planInterval;
+    return false;
   }
 
   // Number of intervals between subscription billings
@@ -96,11 +83,11 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       m_planBillingInterval = BillingIntervalYearly;
       break;
     default:
-      logger.error() << "Unhandled billing interval:"
+      logger.error() << "Unexpected billing interval:"
                      << planIntervalMonthsTotal;
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::unhandledSubPlanInterval,
-          {{"interval", planIntervalType},
+          {{"interval", planInterval},
            {"interval_count", planIntervalCount}});
       return false;
   }
@@ -163,33 +150,25 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     return false;
   }
 
-  // Enum from string
-  bool okType = false;
-  m_type = static_cast<TypeSubscription>(
-      QMetaEnum::fromType<TypeSubscription>().keyToValue(
-          type.toUpper().toUtf8(), &okType));
-  if (!okType) {
-    logger.error() << "Unsupported subscription type:" << type;
-    return false;
-  }
-
   // Parse subscription data depending on subscription platform
-  switch (m_type) {
-    case WEB:
-      if (!parseSubscriptionDataWeb(subscriptionData)) {
-        return false;
-      }
-      break;
-    case IAP_APPLE:
-      [[fallthrough]];
-    case IAP_GOOGLE:
-      if (!parseSubscriptionDataIap(subscriptionData)) {
-        return false;
-      }
-      break;
-    default:
-      logger.error() << "No matching subscription type" << type;
+  if (type == "web") {
+    m_type = SubscriptionWeb;
+    if (!parseSubscriptionDataWeb(subscriptionData)) {
       return false;
+    }
+  } else if (type == "iap_apple") {
+    m_type = SubscriptionApple;
+    if (!parseSubscriptionDataIap(subscriptionData)) {
+      return false;
+    }
+  } else if (type == "iap_google") {
+    m_type = SubscriptionGoogle;
+    if (!parseSubscriptionDataIap(subscriptionData)) {
+      return false;
+    }
+  } else {
+    logger.error() << "No matching subscription type" << type;
+    return false;
   }
 
   m_rawJson = json;
@@ -211,9 +190,9 @@ bool SubscriptionData::parseSubscriptionDataIap(
 
   quint64 now = QDateTime::currentMSecsSinceEpoch();
   if (now <= m_expiresOn) {
-    m_status = ACTIVE;
+    m_status = Active;
   } else {
-    m_status = INACTIVE;
+    m_status = Inactive;
   }
 
   return true;
@@ -241,17 +220,14 @@ bool SubscriptionData::parseSubscriptionDataWeb(
     return false;
   }
 
-  // Get status enum from string
-  bool okStatus = false;
-  TypeStatus subscriptionStatusType =
-      static_cast<TypeStatus>(QMetaEnum::fromType<TypeStatus>().keyToValue(
-          subscriptionStatus.toUpper().toUtf8(), &okStatus));
-  if (!okStatus) {
-    logger.error() << "Unsupported subscription status:"
-                   << subscriptionStatusType;
+  if (subscriptionStatus == "active") {
+    m_status = Active;
+  } else if (subscriptionStatus == "inactive") {
+    m_status = Inactive;
+  } else {
+    logger.error() << "Unexpected subscription status:" << subscriptionStatus;
     return false;
   }
-  m_status = subscriptionStatusType;
 
   return true;
 }

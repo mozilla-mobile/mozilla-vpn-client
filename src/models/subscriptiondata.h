@@ -39,23 +39,17 @@ class SubscriptionData final : public QObject {
   ~SubscriptionData();
 
   enum TypeSubscription {
-    IAP_APPLE,
-    IAP_GOOGLE,
-    WEB,
+    SubscriptionApple,
+    SubscriptionGoogle,
+    SubscriptionWeb,
   };
   Q_ENUM(TypeSubscription)
 
   enum TypeStatus {
-    ACTIVE,
-    INACTIVE,
+    Active,
+    Inactive,
   };
   Q_ENUM(TypeStatus)
-
-  enum TypePlanInterval {
-    MONTH,
-    YEAR,
-  };
-  Q_ENUM(TypePlanInterval)
 
   enum TypeBillingInterval {
     BillingIntervalMonthly,

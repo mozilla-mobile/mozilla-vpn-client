@@ -129,7 +129,7 @@ ColumnLayout {
             VPNPill {
                 objectName: _objectName + "-pill"
                 property bool isActive:
-                    VPNSubscriptionData.status === VPNSubscriptionData.ACTIVE
+                    VPNSubscriptionData.status === VPNSubscriptionData.Active
 
                 color: isActive
                     ? VPNTheme.colors.green90
