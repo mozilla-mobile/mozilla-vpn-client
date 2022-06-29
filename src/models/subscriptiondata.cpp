@@ -100,7 +100,35 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   if (m_planCurrency.isEmpty()) {
     return false;
   }
-  logger.debug() << "Parse plan ready";
+
+  // Subscription
+  QJsonObject subscriptionData = obj["subscription"].toObject();
+
+  QString type = subscriptionData["_subscription_type"].toString();
+  if (type.isEmpty()) {
+    return false;
+  }
+
+  // Parse subscription data depending on subscription platform
+  if (type == "web") {
+    m_type = SubscriptionWeb;
+    if (!parseSubscriptionDataWeb(subscriptionData)) {
+      return false;
+    }
+  } else if (type == "iap_apple") {
+    m_type = SubscriptionApple;
+    if (!parseSubscriptionDataIap(subscriptionData)) {
+      return false;
+    }
+  } else if (type == "iap_google") {
+    m_type = SubscriptionGoogle;
+    if (!parseSubscriptionDataIap(subscriptionData)) {
+      return false;
+    }
+  } else {
+    logger.error() << "No matching subscription type" << type;
+    return false;
+  }
 
   // Payment
   QJsonObject paymentData = obj["payment"].toObject();
@@ -108,7 +136,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   // If we do not receive payment data from FxA we don’t show it instead of
   // throwing an error. There is a known bug with FxA which causes FxA to not
   // show payment info: https://mozilla-hub.atlassian.net/browse/FXA-3856.
-  if (!paymentData.isEmpty()) {
+  if (!paymentData.isEmpty() && m_type == SubscriptionWeb) {
     // Payment provider
     m_paymentProvider = paymentData["payment_provider"].toString();
     // We should always get a payment provider if there is payment data
@@ -141,35 +169,6 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
         return false;
       }
     }
-  }
-
-  // Subscription
-  QJsonObject subscriptionData = obj["subscription"].toObject();
-
-  QString type = subscriptionData["_subscription_type"].toString();
-  if (type.isEmpty()) {
-    return false;
-  }
-
-  // Parse subscription data depending on subscription platform
-  if (type == "web") {
-    m_type = SubscriptionWeb;
-    if (!parseSubscriptionDataWeb(subscriptionData)) {
-      return false;
-    }
-  } else if (type == "iap_apple") {
-    m_type = SubscriptionApple;
-    if (!parseSubscriptionDataIap(subscriptionData)) {
-      return false;
-    }
-  } else if (type == "iap_google") {
-    m_type = SubscriptionGoogle;
-    if (!parseSubscriptionDataIap(subscriptionData)) {
-      return false;
-    }
-  } else {
-    logger.error() << "No matching subscription type" << type;
-    return false;
   }
 
   m_rawJson = json;

@@ -283,6 +283,38 @@ describe('Subscription view', function() {
         manageSubscriptionLink:
             'https://play.google.com/store/account/subscriptions',
       },
+      {
+        name: 'apple subscription: no payment data',
+        subscription: {
+          value: {
+            _subscription_type: 'iap_apple',
+            expiry_time_millis: 2147483647,
+            auto_renewing: true,
+          },
+          expected:
+              {cancelled: '1/25/70', label: 'Next billed', status: 'Inactive'}
+        },
+        payment: {
+          value: {},
+          expected: {payment: 'Apple subscription'}
+        },
+      },
+      {
+        name: 'google subscription: no payment data',
+        subscription: {
+          value: {
+            _subscription_type: 'iap_google',
+            expiry_time_millis: 2147483647,
+            auto_renewing: true,
+          },
+          expected:
+              {cancelled: '1/25/70', label: 'Next billed', status: 'Inactive'}
+        },
+        payment: {
+          value: {},
+          expected: {payment: 'Google subscription'}
+        },
+      },
     ];
 
     for (let data of tests) {
@@ -407,41 +439,39 @@ describe('Subscription view', function() {
           await vpn.getElementProperty(
               'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-labelText',
               'text') === data.subscription.expected.label);
-
-      if (data.payment.expected.card) {
-        await vpn.waitForElement(
-            'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText');
-        assert(
-            await vpn.getElementProperty(
-                'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText',
-                'text') === data.payment.expected.card);
-      }
-
-      if (data.payment.expected.expires) {
-        await vpn.waitForElement(
-            'subscriptionItem/subscriptionItem-expires/subscriptionItem-expires-parent/subscriptionItem-expires-container/subscriptionItem-expires-valueText');
-        assert(
-            await vpn.getElementProperty(
-                'subscriptionItem/subscriptionItem-expires/subscriptionItem-expires-parent/subscriptionItem-expires-container/subscriptionItem-expires-valueText',
-                'text') === data.payment.expected.expires);
-      }
-
-      if (data.payment.expected.brand) {
-        await vpn.waitForElement(
-            'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-paymentMethod/paymentLabel');
-        assert(
-            await vpn.getElementProperty(
-                'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-paymentMethod/paymentLabel',
-                'text') === data.payment.expected.brand);
-      }
-
-      if (data.payment.expected.payment) {
-        await vpn.waitForElement(
-            'subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel');
-        assert(
-            await vpn.getElementProperty(
-                'subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel',
-                'text') === data.payment.expected.payment);
+      if (data.subscription.value._subscription_type == "web") {
+        if (data.payment.expected.card) {
+          await vpn.waitForElement(
+              'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText');
+          assert(
+              await vpn.getElementProperty(
+                  'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText',
+                  'text') === data.payment.expected.card);
+        }
+        if (data.payment.expected.expires) {
+          await vpn.waitForElement(
+              'subscriptionItem/subscriptionItem-expires/subscriptionItem-expires-parent/subscriptionItem-expires-container/subscriptionItem-expires-valueText');
+          assert(
+              await vpn.getElementProperty(
+                  'subscriptionItem/subscriptionItem-expires/subscriptionItem-expires-parent/subscriptionItem-expires-container/subscriptionItem-expires-valueText',
+                  'text') === data.payment.expected.expires);
+        }
+        if (data.payment.expected.brand) {
+          await vpn.waitForElement(
+              'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-paymentMethod/paymentLabel');
+          assert(
+              await vpn.getElementProperty(
+                  'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-paymentMethod/paymentLabel',
+                  'text') === data.payment.expected.brand);
+        }
+        if (data.payment.expected.payment) {
+          await vpn.waitForElement(
+              'subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel');
+          assert(
+              await vpn.getElementProperty(
+                  'subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel',
+                  'text') === data.payment.expected.payment);
+        }
       }
 
       await vpn.waitForElement('subscriptionUserProfile');
