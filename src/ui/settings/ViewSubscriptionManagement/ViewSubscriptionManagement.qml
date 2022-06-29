@@ -132,13 +132,13 @@ VPNFlickable {
 
     function handleManageAccountClicked() {
         switch(VPNSubscriptionData.type) {
-            case VPNSubscriptionData.web:
+            case VPNSubscriptionData.SubscriptionWeb:
                 VPN.openLink(VPN.LinkSubscriptionFxa);
                 break;
-            case VPNSubscriptionData.iap_google:
+            case VPNSubscriptionData.SubscriptionGoogle:
                 VPN.openLink(VPN.LinkSubscriptionIapGoogle);
                 break;
-            case VPNSubscriptionData.iap_apple:
+            case VPNSubscriptionData.SubscriptionApple:
                 VPN.openLink(VPN.LinkSubscriptionIapApple);
                 break;
             default:
@@ -157,7 +157,6 @@ VPNFlickable {
             valueText: getPlanText(
                 VPNSubscriptionData.planCurrency,
                 VPNSubscriptionData.planAmount,
-                VPNSubscriptionData.planIntervalCount
             ),
             type: "text",
         });
@@ -166,7 +165,9 @@ VPNFlickable {
         subscriptionInfoModel.append({
             _objectName: "subscriptionItem-status",
             labelText: VPNl18n.SubscriptionManagementStatusLabel,
-            valueText: VPNSubscriptionData.status,
+            valueText: VPNSubscriptionData.status === VPNSubscriptionData.Active
+                ? VPNl18n.SubscriptionManagementStatusActive
+                : VPNl18n.SubscriptionManagementStatusInactive,
             type: "pill",
         });
 
@@ -232,29 +233,29 @@ VPNFlickable {
         );
     }
 
-    function getPlanText(currencyCode, amount, intervalCount) {
+    function getPlanText(currencyCode, amount) {
         const amountDisplay = (amount || 0) / 100;
         const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode);
 
-        let labelText;
-
-        if (intervalCount === 12) {
-            // {¤amount} Yearly
-            labelText = VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
-        } else if (intervalCount === 6) {
-            // {¤amount} Half-yearly
-            labelText = VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
-        } else if (intervalCount === 1) {
-            // {¤amount} Monthly
-            labelText = VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
-        } else {
-            console.warn(`Unexpected value for intervalCount: ${intervalCount}`);
-            VPN.recordGleanEventWithExtraKeys("unhandledSubPlanInterval", {
-                "interval_count": intervalCount,
-            });
+        switch (VPNSubscriptionData.planBillingInterval) {
+            case VPNSubscriptionData.BillingIntervalMonthly:
+                // {¤amount} Monthly
+                return VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
+            case VPNSubscriptionData.BillingIntervalHalfYearly:
+                // {¤amount} Half-yearly
+                return VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
+            case VPNSubscriptionData.BillingIntervalYearly:
+                // {¤amount} Yearly
+                return VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
+            default:
+                // If we made it here something went wrong. In case we encounter
+                // an unhandled TypeBillingInterval we should have should have
+                // already handled this SubscriptionData::fromJson and not
+                // render this view at all.
+                throw new Error("ViewSubscriptionManagement out of sync");
+                console.warn("Unhandled billing interval.");
+                return "";
         }
-
-        return labelText;
     }
 
     Component.onCompleted: {
