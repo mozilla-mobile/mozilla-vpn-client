@@ -60,6 +60,8 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     planIntervalMonths = 12;
   } else {
     logger.error() << "Unexpected interval type:" << planInterval;
+    emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::unhandledSubPlanInterval, {{"interval", planInterval}});
     return false;
   }
 
