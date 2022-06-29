@@ -252,6 +252,7 @@ VPNFlickable {
                 // an unhandled TypeBillingInterval we should have should have
                 // already handled this SubscriptionData::fromJson and not
                 // render this view at all.
+                throw new Error("ViewSubscriptionManagement out of sync");
                 console.warn("Unhandled billing interval.");
                 return "";
         }
