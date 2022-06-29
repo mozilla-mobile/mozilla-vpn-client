@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "subscriptiondata.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -54,10 +55,15 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
 
   // Convert `interval` to number of months
   int planIntervalMonths;
-  if (planInterval == "month") {
-    planIntervalMonths = 1;
-  } else if (planInterval == "year") {
+  if (planInterval == "year") {
     planIntervalMonths = 12;
+  } else if (planInterval == "month") {
+    planIntervalMonths = 1;
+  } else if ((planInterval == "week" || planInterval == "day") &&
+             !Constants::inProduction()) {
+    // For testing purposes we support additional intervals
+    // and use a monthly plan as fallback
+    planIntervalMonths = 1;
   } else {
     logger.error() << "Unexpected interval type:" << planInterval;
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
