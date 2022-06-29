@@ -87,8 +87,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
                      << planIntervalMonthsTotal;
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::unhandledSubPlanInterval,
-          {{"interval", planInterval},
-           {"interval_count", planIntervalCount}});
+          {{"interval", planInterval}, {"interval_count", planIntervalCount}});
       return false;
   }
 
