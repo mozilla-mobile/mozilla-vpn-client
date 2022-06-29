@@ -297,22 +297,16 @@ void TestWebSocketHandler::
   // we will let it do that at least 3 times.
   QTest::qWait(qPow(testBaseRetryInterval, 5));
 
-  // Start a timer
-  QElapsedTimer timer;
-  timer.start();
+  // We have to be a bit loose here with the checks.
+  //
+  // We know there were at least three retries,
+  // so the current backoff interval should be at least longer than the 3rd interval.
+  QVERIFY(handler.currentBackoffInterval > qPow(testBaseRetryInterval, 3));
 
   // Reopen the server so reconnections can take place.
   server.open();
-
   // Wait for reconnection.
   QVERIFY(newConnectionSpy.wait());
-
-  // We have to be very loose here with the checks.
-  //
-  // We know there were at least three retries,
-  // the new connection should have taken at least more than the third
-  // interval.
-  QVERIFY(timer.elapsed() > qPow(testBaseRetryInterval, 3));
   QCOMPARE(newConnectionSpy.count(), 2);
 
   // Give it just a bit of time for the `onConnected` handler to be called.
@@ -324,17 +318,18 @@ void TestWebSocketHandler::
 
   // Close the open connections to prompt a new reconnection.
   server.closeEach();
-  timer.restart();
+
+  // The reconnection interval should have been reset.
+  // Reconnection might be so fast that when we get to this line
+  // currentBackoffInterval has already been reset to 0.
+  QVERIFY(handler.currentBackoffInterval <= testBaseRetryInterval);
 
   // Wait for reconnection.
   QVERIFY(newConnectionSpy.wait());
-  // Again, we have to be loose with these cheks and checking if this
-  // took less than just one interval is asking for too much precision of
-  // QElapsedTimer.
-  //
-  // Backoff interval should have been reset, if this interval is smaller than
-  // the previous we should be fine.
-  QVERIFY(timer.elapsed() < qPow(testBaseRetryInterval, 2));
+  QCOMPARE(newConnectionSpy.count(), 3);
+
+  // The backoff interval is reset to 0 when not waiting for reconnection attempt.
+  QCOMPARE(handler.currentBackoffInterval, testBaseRetryInterval);
 }
 
 void TestWebSocketHandler::tst_reconnectionAttemptsOnPingTimeout() {

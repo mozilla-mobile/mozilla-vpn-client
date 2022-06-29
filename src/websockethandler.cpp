@@ -190,6 +190,9 @@ void WebSocketHandler::onConnected() {
   logger.debug() << "WebSocket connected";
 
   m_backoffStrategy.reset();
+#ifdef UNIT_TEST:
+  currentBackoffInterval = 0;
+#endif
 
   connect(&m_webSocket, &QWebSocket::textMessageReceived, this,
           &WebSocketHandler::onMessageReceived);
@@ -221,6 +224,10 @@ void WebSocketHandler::onClose() {
     logger.debug()
         << "User is authenticated. Will attempt to reopen websocket in:"
         << nextAttemptIn;
+
+#ifdef UNIT_TEST:
+    currentBackoffInterval = nextAttemptIn;
+#endif
   } else {
     logger.debug()
         << "User is not authenticated. Will not attempt to reopen WebSocket.";
