@@ -1,6 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 const assert = require('assert');
 const vpn = require('./helper.js');
 
@@ -158,7 +159,7 @@ describe('Subscription view', function() {
             created: 23677200,
             current_period_end: 2147483647,
             cancel_at_period_end: false,
-            status: 'foo'
+            status: 'inactive'
           },
           expected: {
             activated: '10/2/70',
@@ -166,7 +167,9 @@ describe('Subscription view', function() {
             label: 'Next billed',
             status: 'Inactive'
           }
-        }
+        },
+        manageSubscriptionLink:
+            'https://accounts.stage.mozaws.net/subscriptions',
       },
       {
         name: 'web subscription: not cancelled',
@@ -176,7 +179,7 @@ describe('Subscription view', function() {
             created: 23677200,
             current_period_end: 2147483647,
             cancel_at_period_end: true,
-            status: 'foo'
+            status: 'inactive'
           },
           expected: {
             activated: '10/2/70',
@@ -184,7 +187,9 @@ describe('Subscription view', function() {
             label: 'Expires',
             status: 'Inactive'
           }
-        }
+        },
+        manageSubscriptionLink:
+            'https://accounts.stage.mozaws.net/subscriptions',
       },
       {
         name: 'web subscription: active',
@@ -202,7 +207,9 @@ describe('Subscription view', function() {
             label: 'Expires',
             status: 'Active'
           }
-        }
+        },
+        manageSubscriptionLink:
+            'https://accounts.stage.mozaws.net/subscriptions',
       },
       {
         name: 'web subscription: inactive',
@@ -220,7 +227,9 @@ describe('Subscription view', function() {
             label: 'Expires',
             status: 'Inactive'
           }
-        }
+        },
+        manageSubscriptionLink:
+            'https://accounts.stage.mozaws.net/subscriptions',
       },
       {
         name: 'apple subscription: auto renew',
@@ -230,12 +239,10 @@ describe('Subscription view', function() {
             expiry_time_millis: 2147483647,
             auto_renewing: true,
           },
-          expected: {
-            cancelled: '1/25/70',
-            label: 'Next billed',
-            status: 'Inactive'
-          }
-        }
+          expected:
+              {cancelled: '1/25/70', label: 'Next billed', status: 'Inactive'}
+        },
+        manageSubscriptionLink: 'https://apps.apple.com/account/subscriptions',
       },
       {
         name: 'apple subscription: no auto renew',
@@ -245,12 +252,9 @@ describe('Subscription view', function() {
             expiry_time_millis: 2147483647,
             auto_renewing: false,
           },
-          expected: {
-            cancelled: '1/25/70',
-            label: 'Expires',
-            status: 'Inactive'
-          }
-        }
+          expected: {cancelled: '1/25/70', label: 'Expires', status: 'Inactive'}
+        },
+        manageSubscriptionLink: 'https://apps.apple.com/account/subscriptions',
       },
       {
         name: 'google subscription: auto renew',
@@ -260,12 +264,11 @@ describe('Subscription view', function() {
             expiry_time_millis: 2147483647000,
             auto_renewing: true,
           },
-          expected: {
-            cancelled: '1/19/38',
-            label: 'Next billed',
-            status: 'Active'
-          }
-        }
+          expected:
+              {cancelled: '1/19/38', label: 'Next billed', status: 'Active'}
+        },
+        manageSubscriptionLink:
+            'https://play.google.com/store/account/subscriptions',
       },
       {
         name: 'google subscription: no auto renew',
@@ -275,12 +278,10 @@ describe('Subscription view', function() {
             expiry_time_millis: 2147483647000,
             auto_renewing: false,
           },
-          expected: {
-            cancelled: '1/19/38',
-            label: 'Expires',
-            status: 'Active'
-          }
-        }
+          expected: {cancelled: '1/19/38', label: 'Expires', status: 'Active'}
+        },
+        manageSubscriptionLink:
+            'https://play.google.com/store/account/subscriptions',
       },
     ];
 
@@ -350,21 +351,22 @@ describe('Subscription view', function() {
       await vpn.waitForElementProperty(
           'settingsUserProfile', 'visible', 'true');
 
-      await vpn.waitForElement('profileDisplayName');
-      await vpn.waitForElementProperty('profileDisplayName', 'visible', 'true');
+      await vpn.waitForElement('settingsUserProfile-displayName');
       await vpn.waitForElementProperty(
-          'profileDisplayName', 'text', 'Test test');
+          'settingsUserProfile-displayName', 'visible', 'true');
+      await vpn.waitForElementProperty(
+          'settingsUserProfile-displayName', 'text', 'Test test');
 
-      await vpn.waitForElement('profileEmailAddress');
+      await vpn.waitForElement('settingsUserProfile-emailAddress');
       await vpn.waitForElementProperty(
-          'profileEmailAddress', 'visible', 'true');
+          'settingsUserProfile-emailAddress', 'visible', 'true');
       await vpn.waitForElementProperty(
-          'profileEmailAddress', 'text', 'test@mozilla.com');
+          'settingsUserProfile-emailAddress', 'text', 'test@mozilla.com');
 
-      await vpn.waitForElement('manageAccountButton');
+      await vpn.waitForElement('settingsUserProfile-manageAccountButton');
       await vpn.waitForElementProperty(
-          'manageAccountButton', 'visible', 'true');
-      await vpn.clickOnElement('manageAccountButton');
+          'settingsUserProfile-manageAccountButton', 'visible', 'true');
+      await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
 
       await vpn.waitForElement('subscriptionManagmentView');
       await vpn.waitForElementProperty(
@@ -440,6 +442,46 @@ describe('Subscription view', function() {
             await vpn.getElementProperty(
                 'subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel',
                 'text') === data.payment.expected.payment);
+      }
+
+      await vpn.waitForElement('subscriptionUserProfile');
+      await vpn.waitForElementProperty(
+          'subscriptionUserProfile', 'visible', 'true');
+
+      await vpn.waitForElement('subscriptionUserProfile-displayName');
+      await vpn.waitForElementProperty(
+          'subscriptionUserProfile-displayName', 'visible', 'true');
+      await vpn.waitForElementProperty(
+          'subscriptionUserProfile-displayName', 'text', 'Test test');
+
+      await vpn.waitForElement('subscriptionUserProfile-emailAddress');
+      await vpn.waitForElementProperty(
+          'subscriptionUserProfile-emailAddress', 'visible', 'true');
+      await vpn.waitForElementProperty(
+          'subscriptionUserProfile-emailAddress', 'text', 'test@mozilla.com');
+
+      await vpn.waitForElement('subscriptionUserProfile-manageAccountButton');
+      await vpn.waitForElementProperty(
+          'subscriptionUserProfile-manageAccountButton', 'visible', 'true');
+      await vpn.clickOnElement('subscriptionUserProfile-manageAccountButton');
+      await vpn.waitForCondition(async () => {
+        const url = await vpn.getLastUrl();
+        return url.includes('r/vpn/account?email=test@mozilla.com');
+      });
+
+      if (data.manageSubscriptionLink) {
+        await vpn.waitForElement('manageSubscriptionButton');
+        await vpn.waitForElementProperty(
+            'manageSubscriptionButton', 'visible', 'true');
+        await vpn.setElementProperty(
+            'subscriptionManagmentView', 'contentY', 'i',
+            parseInt(
+                await vpn.getElementProperty('manageSubscriptionButton', 'y')));
+        await vpn.clickOnElement('manageSubscriptionButton');
+        await vpn.waitForCondition(async () => {
+          const url = await vpn.getLastUrl();
+          return url.includes(data.manageSubscriptionLink);
+        });
       }
 
       await vpn.waitForElement('settingsBackButton');
