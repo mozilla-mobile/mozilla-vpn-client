@@ -13,7 +13,6 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QMetaEnum>
-#include <QString>
 
 namespace {
 Logger logger(LOG_MODEL, "SubscriptionData");
@@ -101,8 +100,8 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
                      << planIntervalMonthsTotal;
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::unhandledSubPlanInterval,
-          {{"interval_count",
-            QVariant::fromValue(planIntervalMonthsTotal).toInt()}});
+          {{"interval", planIntervalType},
+           {"interval_count", planIntervalCount}});
       return false;
   }
 
