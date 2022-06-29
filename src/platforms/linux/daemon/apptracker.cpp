@@ -25,7 +25,7 @@ constexpr const char* DBUS_SYSTEMD_MANAGER = "org.freedesktop.systemd1.Manager";
 namespace {
 Logger logger(LOG_LINUX, "AppTracker");
 QString s_cgroupMount;
-}
+}  // namespace
 
 AppTracker::AppTracker(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(AppTracker);
@@ -64,8 +64,8 @@ void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
   /* For correctness we should ask systemd for the user's runtime directory. */
   QString busPath = "unix:path=/run/user/" + QString::number(userid) + "/bus";
   logger.debug() << "Connection to" << busPath;
-  QDBusConnection connection = QDBusConnection::connectToBus(
-      busPath, "user-" + QString::number(userid));
+  QDBusConnection connection =
+      QDBusConnection::connectToBus(busPath, "user-" + QString::number(userid));
 
   /* Connect to the user's GTK launch event. */
   bool gtkConnected = connection.connect(
@@ -160,7 +160,7 @@ void AppTracker::cgroupsChanged(const QString& directory) {
 
       m_runningApps[path] = data;
       appHeuristicMatch(data);
-    
+
       emit appLaunched(data->cgroup, data->appId, data->rootpid);
     }
   }

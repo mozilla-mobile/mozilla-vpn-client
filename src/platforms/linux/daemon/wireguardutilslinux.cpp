@@ -94,12 +94,13 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
   // are present, the net_cls traffic classifiers take priority.
   //
   // In this situation, you will likely see this kernel log warning:
-  //   cgroup: disabling cgroup2 socket matching due to net_prio or net_cls activation
+  //   cgroup: disabling cgroup2 socket matching due to net_prio or net_cls
+  //   activation
   m_cgroupNetClass = LinuxDependencies::findCgroupPath("net_cls");
   m_cgroupUnified = LinuxDependencies::findCgroup2Path();
   if (!m_cgroupNetClass.isNull()) {
     if (setupCgroupClass(m_cgroupNetClass + VPN_EXCLUDE_CGROUP,
-                          VPN_EXCLUDE_CLASS_ID)) {
+                         VPN_EXCLUDE_CLASS_ID)) {
       logger.info() << "Setup split tunneling with net_cls cgroups (v1)";
       m_cgroupVersion = 1;
     }
@@ -108,8 +109,7 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
   else if ((m_cgroupVersion == 0) && !m_cgroupUnified.isNull()) {
     logger.info() << "Setup split tunneling with unified cgroups (v2)";
     m_cgroupVersion = 2;
-  }
-  else {
+  } else {
     logger.warning() << "Unable to setup split tunneling: no supported cgroups";
   }
 
@@ -690,7 +690,8 @@ bool WireguardUtilsLinux::setupCgroupClass(const QString& path,
 }
 
 // static
-bool WireguardUtilsLinux::moveCgroupProcs(const QString& src, const QString& dest) {
+bool WireguardUtilsLinux::moveCgroupProcs(const QString& src,
+                                          const QString& dest) {
   QFile srcProcs(src + "/cgroup.procs");
   FILE* fp = fopen(qPrintable(dest + "/cgroup.procs"), "w");
   if (!fp) {
@@ -719,10 +720,10 @@ void WireguardUtilsLinux::excludeCgroup(const QString& cgroup) {
     // Add all PIDs from the unified cgroup to the net_cls exclusion cgroup.
     moveCgroupProcs(m_cgroupUnified + cgroup,
                     m_cgroupNetClass + VPN_EXCLUDE_CGROUP);
-  }
-  else if (m_cgroupVersion == 2) {
+  } else if (m_cgroupVersion == 2) {
     QByteArray cgpath = cgroup.toLocal8Bit();
-    GoString goCgroup = {.p = cgpath.constData(), .n = (ptrdiff_t)cgpath.length()};
+    GoString goCgroup = {.p = cgpath.constData(),
+                         .n = (ptrdiff_t)cgpath.length()};
     NetfilterMarkCgroupV2(goCgroup);
   }
 }
@@ -732,10 +733,10 @@ void WireguardUtilsLinux::resetCgroup(const QString& cgroup) {
   if (m_cgroupVersion == 1) {
     // Add all PIDs from the unified cgroup to the net_cls default cgroup.
     moveCgroupProcs(m_cgroupUnified + cgroup, m_cgroupNetClass);
-  }
-  else if (m_cgroupVersion == 2) {
+  } else if (m_cgroupVersion == 2) {
     QByteArray cgpath = cgroup.toLocal8Bit();
-    GoString goCgroup = {.p = cgpath.constData(), .n = (ptrdiff_t)cgpath.length()};
+    GoString goCgroup = {.p = cgpath.constData(),
+                         .n = (ptrdiff_t)cgpath.length()};
     NetfilterResetCgroupV2(goCgroup);
   }
 }

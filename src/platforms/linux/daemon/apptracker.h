@@ -15,9 +15,7 @@ class QDBusInterface;
 
 class AppData {
  public:
-  AppData(const QString& path) : cgroup(path) {
-    MVPN_COUNT_CTOR(AppData);
-  }
+  AppData(const QString& path) : cgroup(path) { MVPN_COUNT_CTOR(AppData); }
   ~AppData() { MVPN_COUNT_DTOR(AppData); }
 
   QList<int> pids() const;

@@ -42,9 +42,8 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
   connect(m_appTracker,
           SIGNAL(appLaunched(const QString&, const QString&, int)), this,
           SLOT(appLaunched(const QString&, const QString&, int)));
-  connect(m_appTracker,
-          SIGNAL(appTerminated(const QString&, const QString&)), this,
-          SLOT(appTerminated(const QString&, const QString&)));
+  connect(m_appTracker, SIGNAL(appTerminated(const QString&, const QString&)),
+          this, SLOT(appTerminated(const QString&, const QString&)));
 
   // Setup to track user login sessions.
   QDBusConnection bus = QDBusConnection::systemBus();
@@ -170,7 +169,7 @@ void DBusService::appLaunched(const QString& cgroup, const QString& appId,
                               int rootpid) {
   logger.debug() << "tracking:" << cgroup << "appId:" << appId
                  << "PID:" << rootpid;
-  
+
   // HACK: Quick and dirty split tunnelling.
   // TODO: Apply filtering to currently-running apps too.
   if (m_excludedApps.contains(appId)) {
@@ -223,8 +222,7 @@ bool DBusService::firewallApp(const QString& appName, const QString& state) {
     }
     if (state == APP_STATE_EXCLUDED) {
       m_wgutils->excludeCgroup(data->cgroup);
-    }
-    else {
+    } else {
       m_wgutils->resetCgroup(data->cgroup);
     }
   }
