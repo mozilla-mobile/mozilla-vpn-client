@@ -54,10 +54,12 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   } else if (type == "iap_apple") {
     // TODO: Parse subscription data as soon as FxA includes Apple subscriptions
     // in their API response.
-    // For Apple subscriptions that is all the information we currently have.
     m_type = SubscriptionApple;
-    m_status = Active;
+    if (!parseSubscriptionDataIap(subscriptionData)) {
+      return false;
+    }
 
+    // For Apple subscriptions that is all the information we currently have.
     m_rawJson = json;
     emit changed();
     logger.debug() << "Subscription data from JSON ready";

@@ -232,6 +232,31 @@ describe('Subscription view', function() {
             'https://accounts.stage.mozaws.net/subscriptions',
       },
       {
+        name: 'apple subscription: auto renew',
+        subscription: {
+          value: {
+            _subscription_type: 'iap_apple',
+            expiry_time_millis: 2147483647,
+            auto_renewing: true,
+          },
+          expected:
+              {cancelled: '1/25/70', label: 'Next billed', status: 'Inactive'}
+        },
+        manageSubscriptionLink: 'https://apps.apple.com/account/subscriptions',
+      },
+      {
+        name: 'apple subscription: no auto renew',
+        subscription: {
+          value: {
+            _subscription_type: 'iap_apple',
+            expiry_time_millis: 2147483647,
+            auto_renewing: false,
+          },
+          expected: {cancelled: '1/25/70', label: 'Expires', status: 'Inactive'}
+        },
+        manageSubscriptionLink: 'https://apps.apple.com/account/subscriptions',
+      },
+      {
         name: 'google subscription: auto renew',
         subscription: {
           value: {
@@ -259,6 +284,22 @@ describe('Subscription view', function() {
             'https://play.google.com/store/account/subscriptions',
       },
       {
+        name: 'apple subscription: no payment data',
+        subscription: {
+          value: {
+            _subscription_type: 'iap_apple',
+            expiry_time_millis: 2147483647,
+            auto_renewing: true,
+          },
+          expected:
+              {cancelled: '1/25/70', label: 'Next billed', status: 'Inactive'}
+        },
+        payment: {
+          value: {},
+          expected: {payment: 'Apple subscription'}
+        },
+      },
+      {
         name: 'google subscription: no payment data',
         subscription: {
           value: {
@@ -273,25 +314,6 @@ describe('Subscription view', function() {
           value: {},
           expected: {payment: 'Google subscription'}
         },
-      },
-      {
-        name: 'apple subscription: Active',
-        subscription: {
-          value: {
-            _subscription_type: 'iap_apple',
-          },
-          expected: { status: 'Active'}
-        }
-      },
-      {
-        name: 'apple subscription: Manage subscriptions link',
-        subscription: {
-          value: {
-            _subscription_type: 'iap_apple',
-          },
-          expected: { status: 'Active'}
-        },
-        manageSubscriptionLink: 'https://apps.apple.com/account/subscriptions',
       },
     ];
 
@@ -398,17 +420,6 @@ describe('Subscription view', function() {
             await vpn.getElementProperty(
                 'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-container/subscriptionItem-status-pillWrapper/subscriptionItem-status-pill',
                 'text') === data.subscription.expected.status);
-
-        await vpn.waitForElement(
-            'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText');
-        assert(
-            await vpn.getElementProperty(
-                'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText',
-                'text') === data.subscription.expected.cancelled);
-        assert(
-            await vpn.getElementProperty(
-                'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-labelText',
-                'text') === data.subscription.expected.label);
       }
 
       if (data.subscription.expected.activated) {
@@ -419,6 +430,17 @@ describe('Subscription view', function() {
                 'subscriptionItem/subscriptionItem-activated/subscriptionItem-activated-parent/subscriptionItem-activated-container/subscriptionItem-activated-valueText',
                 'text') === data.subscription.expected.activated);
       }
+
+      await vpn.waitForElement(
+          'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText');
+      assert(
+          await vpn.getElementProperty(
+              'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText',
+              'text') === data.subscription.expected.cancelled);
+      assert(
+          await vpn.getElementProperty(
+              'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-labelText',
+              'text') === data.subscription.expected.label);
 
       if (data.subscription.value._subscription_type == "web") {
         if (data.payment.expected.card) {

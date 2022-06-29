@@ -152,8 +152,7 @@ VPNFlickable {
     function populateListModels() {
         // Subscription info model
         // Subscription plan
-
-        if (VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionApple) {
+        if (VPNSubscriptionData.planCurrency && VPNSubscriptionData.planAmount) {
             subscriptionInfoModel.append({
                 _objectName: "subscriptionItem-plan",
                 labelText: VPNl18n.SubscriptionManagementPlanLabel,
@@ -176,10 +175,7 @@ VPNFlickable {
         });
 
         // Created at
-        if (
-            VPNSubscriptionData.createdAt
-            && VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionApple
-        ) {
+        if (VPNSubscriptionData.createdAt) {
             subscriptionInfoModel.append({
                 _objectName: "subscriptionItem-activated",
                 labelText: VPNl18n.SubscriptionManagementActivatedLabel,
@@ -189,16 +185,14 @@ VPNFlickable {
         }
 
         // Expires or next billed
-        if (VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionApple) {
-            subscriptionInfoModel.append({
-                _objectName: "subscriptionItem-cancelled",
-                labelText: VPNSubscriptionData.isCancelled
-                    ? VPNl18n.SubscriptionManagementExpiresLabel
-                    : VPNl18n.SubscriptionManagementNextLabel,
-                valueText: epochTimeToDate(VPNSubscriptionData.expiresOn),
-                type: "text",
-            });
-        }
+        subscriptionInfoModel.append({
+            _objectName: "subscriptionItem-cancelled",
+            labelText: VPNSubscriptionData.isCancelled
+                ? VPNl18n.SubscriptionManagementExpiresLabel
+                : VPNl18n.SubscriptionManagementNextLabel,
+            valueText: epochTimeToDate(VPNSubscriptionData.expiresOn),
+            type: "text",
+        });
 
         // Subscription payment model
         if (
