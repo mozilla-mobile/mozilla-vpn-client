@@ -746,8 +746,7 @@ void WireguardUtilsLinux::resetAllCgroups() {
   if (m_cgroupVersion == 1) {
     // Add all PIDs from the net_cls exclusion cgroup to the default cgroup.
     moveCgroupProcs(m_cgroupNetClass + VPN_EXCLUDE_CGROUP, m_cgroupNetClass);
-  }
-  else if (m_cgroupVersion == 2) {
+  } else if (m_cgroupVersion == 2) {
     NetfilterResetAllCgroupsV2();
   }
 }
