@@ -152,15 +152,18 @@ VPNFlickable {
     function populateListModels() {
         // Subscription info model
         // Subscription plan
-        subscriptionInfoModel.append({
-            _objectName: "subscriptionItem-plan",
-            labelText: VPNl18n.SubscriptionManagementPlanLabel,
-            valueText: getPlanText(
-                VPNSubscriptionData.planCurrency,
-                VPNSubscriptionData.planAmount,
-            ),
-            type: "text",
-        });
+
+        if (VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionApple) {
+            subscriptionInfoModel.append({
+                _objectName: "subscriptionItem-plan",
+                labelText: VPNl18n.SubscriptionManagementPlanLabel,
+                valueText: getPlanText(
+                    VPNSubscriptionData.planCurrency,
+                    VPNSubscriptionData.planAmount,
+                ),
+                type: "text",
+            });
+        }
 
         // Status
         subscriptionInfoModel.append({
@@ -173,7 +176,10 @@ VPNFlickable {
         });
 
         // Created at
-        if (VPNSubscriptionData.createdAt) {
+        if (
+            VPNSubscriptionData.createdAt
+            && VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionApple
+        ) {
             subscriptionInfoModel.append({
                 _objectName: "subscriptionItem-activated",
                 labelText: VPNl18n.SubscriptionManagementActivatedLabel,
@@ -183,14 +189,16 @@ VPNFlickable {
         }
 
         // Expires or next billed
-        subscriptionInfoModel.append({
-            _objectName: "subscriptionItem-cancelled",
-            labelText: VPNSubscriptionData.isCancelled
-                ? VPNl18n.SubscriptionManagementExpiresLabel
-                : VPNl18n.SubscriptionManagementNextLabel,
-            valueText: epochTimeToDate(VPNSubscriptionData.expiresOn),
-            type: "text",
-        });
+        if (VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionApple) {
+            subscriptionInfoModel.append({
+                _objectName: "subscriptionItem-cancelled",
+                labelText: VPNSubscriptionData.isCancelled
+                    ? VPNl18n.SubscriptionManagementExpiresLabel
+                    : VPNl18n.SubscriptionManagementNextLabel,
+                valueText: epochTimeToDate(VPNSubscriptionData.expiresOn),
+                type: "text",
+            });
+        }
 
         // Subscription payment model
         if (
