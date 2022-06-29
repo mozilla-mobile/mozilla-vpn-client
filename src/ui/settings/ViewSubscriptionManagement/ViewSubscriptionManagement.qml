@@ -39,6 +39,8 @@ VPNFlickable {
         }
 
         VPNUserProfile {
+            objectName: "subscriptionUserProfile"
+
             _iconButtonImageSource: "qrc:/nebula/resources/open-in-new.svg"
             _iconButtonOnClicked: () => {
                 VPN.recordGleanEvent("manageAccountClicked");
@@ -96,11 +98,10 @@ VPNFlickable {
             }
 
             VPNButton {
+                objectName: "manageSubscriptionButton"
                 id: manageSubscriptionButton
 
-                onClicked: {
-                    handleManageAccountClicked();
-                }
+                onClicked: handleManageAccountClicked()
                 text: VPNl18n.SubscriptionManagementManageSubscriptionButton
                 width: undefined
 
