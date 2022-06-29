@@ -192,7 +192,10 @@ VPNFlickable {
         });
 
         // Subscription payment model
-        if (VPNSubscriptionData.paymentProvider) {
+        if (
+            VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionWeb
+            && VPNSubscriptionData.paymentProvider
+        ) {
             if (VPNSubscriptionData.paymentType === "credit") {
                 // Credit card brand
                 subscriptionPaymentModel.append({
@@ -218,6 +221,22 @@ VPNFlickable {
                     type: "payment",
                 });
             }
+        } else if (VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionApple) {
+            // IAP Apple
+            subscriptionPaymentModel.append({
+                _objectName: "subscriptionItem-payment",
+                labelText: "iap_apple",
+                valueText: "",
+                type: "payment",
+            });
+        } else if (VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionGoogle) {
+            // IAP Google
+            subscriptionPaymentModel.append({
+                _objectName: "subscriptionItem-payment",
+                labelText: "iap_google",
+                valueText: "",
+                type: "payment",
+            });
         }
     }
 
