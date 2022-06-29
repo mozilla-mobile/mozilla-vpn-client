@@ -7,6 +7,7 @@
 
 #include <QList>
 #include <QAbstractListModel>
+#include "addons/addontutorial.h"
 
 class Addon;
 class AddonTutorial;
@@ -17,6 +18,7 @@ class Tutorial final : public QObject {
   Q_DISABLE_COPY_MOVE(Tutorial)
   Q_PROPERTY(bool tooltipShown MEMBER m_tooltipShown NOTIFY tooltipShownChanged)
   Q_PROPERTY(bool playing READ isPlaying NOTIFY playingChanged)
+  Q_PROPERTY(AddonTutorial* currentTutorial MEMBER m_currentTutorial NOTIFY playingChanged)
 
  public:
   static Tutorial* instance();
@@ -26,7 +28,6 @@ class Tutorial final : public QObject {
   Q_INVOKABLE void play(Addon* tutorial);
   Q_INVOKABLE void stop();
   Q_INVOKABLE void allowItem(const QString& objectName);
-  Q_INVOKABLE QString currentTutorialId();
 
   bool isPlaying() const { return !!m_currentTutorial; }
 
@@ -41,6 +42,7 @@ class Tutorial final : public QObject {
   void tooltipNeeded(const QString& tooltipText, QObject* targetElement);
   void tooltipShownChanged();
   void tutorialCompleted(const QString& completionMessageText);
+  void currentTutorialChanged();
 
  private:
   explicit Tutorial(QObject* parent);
