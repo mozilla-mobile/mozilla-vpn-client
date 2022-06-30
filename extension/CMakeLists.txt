@@ -29,9 +29,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifests/linux/mozillavpn.json
         DESTINATION ${WEBEXT_INSTALL_LIBDIR}/mozilla/native-messaging-hosts)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifests/linux/mozillavpn.json
-        DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/opt/chrome/native-messaging-hosts)
+        DESTINATION /etc/opt/chrome/native-messaging-hosts)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifests/linux/mozillavpn.json
-        DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/chromium/native-messaging-hosts)
+        DESTINATION /etc/chromium/native-messaging-hosts)
 elseif(WIN32)
     install(PROGRAMS $<TARGET_FILE:mozillavpnnp> DESTINATION .)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manifests/windows/mozillavpn.json

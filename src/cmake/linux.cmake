@@ -88,7 +88,7 @@ install(FILES ../linux/extra/mozillavpn.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
 install(FILES ../linux/extra/mozillavpn-startup.desktop
-    DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/xdg/autostart)
+    DESTINATION /etc/xdg/autostart)
 
 install(FILES ../linux/extra/icons/16x16/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/16x16/apps)
