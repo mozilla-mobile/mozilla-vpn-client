@@ -31,10 +31,15 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/closeeventhandler.cpp
     ${MVPN_SOURCE_DIR}/closeeventhandler.h
     ${MVPN_SOURCE_DIR}/constants.h
+    ${MVPN_SOURCE_DIR}/controller.h
+    ${MVPN_SOURCE_DIR}/externalophandler.cpp
+    ${MVPN_SOURCE_DIR}/externalophandler.h
     ${MVPN_SOURCE_DIR}/hawkauth.cpp
     ${MVPN_SOURCE_DIR}/hawkauth.h
     ${MVPN_SOURCE_DIR}/hkdf.cpp
     ${MVPN_SOURCE_DIR}/hkdf.h
+    ${MVPN_SOURCE_DIR}/ipaddress.cpp
+    ${MVPN_SOURCE_DIR}/ipaddress.h
     ${MVPN_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MVPN_SOURCE_DIR}/logger.cpp
     ${MVPN_SOURCE_DIR}/logger.h
@@ -75,6 +80,7 @@ target_sources(qml_tests PRIVATE
     helper.h
     main.cpp
     mocconstants.cpp
+    moccontroller.cpp
     mocmozillavpn.cpp
     ../unit/mocinspectorhandler.cpp
 )
