@@ -8,6 +8,7 @@ SOURCES += \
         addons/addondemo.cpp \
         addons/addonguide.cpp \
         addons/addoni18n.cpp \
+        addons/addonmessage.cpp \
         addons/addontutorial.cpp \
         apppermission.cpp \
         authenticationlistener.cpp \
@@ -159,6 +160,7 @@ HEADERS += \
         addons/addondemo.h \
         addons/addonguide.h \
         addons/addoni18n.h \
+        addons/addonmessage.h \
         addons/addontutorial.h \
         appimageprovider.h \
         apppermission.h \

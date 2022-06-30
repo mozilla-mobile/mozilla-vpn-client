@@ -6,6 +6,7 @@
 #include "addondemo.h"
 #include "addonguide.h"
 #include "addoni18n.h"
+#include "addonmessage.h"
 #include "addontutorial.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -188,6 +189,10 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
 
   if (type == "guide") {
     return AddonGuide::create(parent, manifestFileName, id, name, obj);
+  }
+
+  if (type == "message") {
+    return AddonMessage::create(parent, manifestFileName, id, name, obj);
   }
 
   logger.warning() << "Unsupported type" << type << manifestFileName;
