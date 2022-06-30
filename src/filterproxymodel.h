@@ -5,6 +5,7 @@
 #ifndef FILTERPROXYMODEL_H
 #define FILTERPROXYMODEL_H
 
+#include <QQmlEngine>
 #include <QHash>
 #include <QJSValue>
 #include <QSortFilterProxyModel>
@@ -12,6 +13,7 @@
 class FilterProxyModel : public QSortFilterProxyModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(FilterProxyModel)
+  QML_NAMED_ELEMENT(VPNFilterProxyModel)
 
   Q_PROPERTY(
       QJSValue filterCallback READ filterCallback WRITE setFilterCallback)

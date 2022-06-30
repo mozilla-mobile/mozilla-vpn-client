@@ -7,6 +7,7 @@ package org.mozilla.firefox.vpn.daemon
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.CountDownTimer
 import android.os.IBinder
 import android.system.OsConstants
 import com.wireguard.android.util.SharedLibraryLoader
@@ -17,13 +18,33 @@ import com.wireguard.config.Interface
 import com.wireguard.config.Peer
 import com.wireguard.crypto.Key
 import org.json.JSONObject
+import java.util.*
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
+    val mGlean = GleanUtil(this)
     private var mConfig: JSONObject? = null
     private var mConnectionTime: Long = 0
     private var mAlreadyInitialised = false
+    private val controllerPeriodicStateRecorderMsec: Long = 10800000
+
+    private val mGleanTimer = object : CountDownTimer(
+        controllerPeriodicStateRecorderMsec,
+        controllerPeriodicStateRecorderMsec / 4
+    ) {
+        override fun onTick(millisUntilFinished: Long) {}
+        override fun onFinish() {
+            Log.i(tag, "Timer Done!")
+            if (currentTunnelHandle == -1) {
+                mGlean.recordGleanEvent("controllerStateOff")
+            } else {
+                // When we're stil connected, rescheudle.
+                this.start()
+                mGlean.recordGleanEvent("controllerStateOn")
+            }
+        }
+    }
 
     private var currentTunnelHandle = -1
 
@@ -32,6 +53,7 @@ class VPNService : android.net.VpnService() {
             return
         }
         Log.init(this)
+        mGlean.initializeGlean()
         SharedLibraryLoader.loadSharedLibrary(this, "wg-go")
         Log.i(tag, "loaded lib")
         Log.e(tag, "Wireguard Version ${wgVersion()}")
@@ -67,8 +89,8 @@ class VPNService : android.net.VpnService() {
         intent?.let {
             if (intent.getBooleanExtra("startOnly", false)) {
                 Log.i(tag, "Start only!")
-                // If this is a Start Only request, the client will soon 
-                // bind to the service anyway. 
+                // If this is a Start Only request, the client will soon
+                // bind to the service anyway.
                 // We should return START_NOT_STICKY so that after an unbind()
                 // the OS will not try to restart the service.
                 return START_NOT_STICKY
@@ -195,6 +217,7 @@ class VPNService : android.net.VpnService() {
             .apply()
 
         NotificationUtil.get(this)?.show(this) // Go foreground
+        mGleanTimer.start()
     }
 
     fun turnOff() {
@@ -203,6 +226,7 @@ class VPNService : android.net.VpnService() {
         currentTunnelHandle = -1
         stopForeground(false)
         isUp = false
+        mGleanTimer.cancel()
     }
 
     /**

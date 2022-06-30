@@ -72,7 +72,7 @@ target_sources(mozillavpn PRIVATE
 )
 
 # Windows Qt6 UI workaround resources
-if(${QT_VERSION} VERSION_GREATER_EQUAL 6.3.0)
+if(Qt6_VERSION VERSION_GREATER_EQUAL 6.3.0)
     message(WARNING "Remove the Qt6 windows hack!")
 else()
     target_sources(mozillavpn PRIVATE ui/qt6winhack.qrc)
@@ -82,11 +82,14 @@ include(cmake/golang.cmake)
 
 # Enable Balrog for update support.
 add_definitions(-DMVPN_BALROG)
-add_go_library(mozillavpn ../balrog/balrog-api.go)
+add_go_library(balrog ../balrog/balrog-api.go)
+target_link_libraries(mozillavpn PRIVATE balrog)
 target_sources(mozillavpn PRIVATE
     update/balrog.cpp
     update/balrog.h
 )
+
+include(cmake/signature.cmake)
 
 install(TARGETS mozillavpn DESTINATION .)
 install(FILES $<TARGET_PDB_FILE:mozillavpn> DESTINATION . OPTIONAL)

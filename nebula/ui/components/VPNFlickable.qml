@@ -14,6 +14,7 @@ Flickable {
     property var flickContentHeight
     property bool contentExceedsHeight: height < flickContentHeight
     property bool hideScollBarOnStackTransition: false
+    interactive: !VPNTutorial.playing
 
     clip: true
 

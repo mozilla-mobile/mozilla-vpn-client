@@ -14,16 +14,22 @@ ItemPicker::ItemPicker(QObject* parent) : QObject(parent) {}
 
 bool ItemPicker::eventFilter(QObject* obj, QEvent* event) {
   if (m_lastEvent == event) {
-    return QObject::eventFilter(obj, event);
+    return m_lastResponse;
   }
 
   m_lastEvent = event;
+  m_lastResponse = eventFilterInternal(obj, event);
 
+  return m_lastResponse;
+}
+
+bool ItemPicker::eventFilterInternal(QObject* obj, QEvent* event) {
   bool isMouseEvent = event->type() == QEvent::MouseButtonPress ||
                       event->type() == QEvent::MouseButtonDblClick ||
                       event->type() == QEvent::MouseButtonRelease;
   bool isTouchEvent =
-      event->type() == QEvent::TouchBegin &&
+      (event->type() == QEvent::TouchEnd ||
+       event->type() == QEvent::TouchBegin) &&
       !!qobject_cast<QQuickWindow*>(static_cast<QTouchEvent*>(event)->target());
 
   if (

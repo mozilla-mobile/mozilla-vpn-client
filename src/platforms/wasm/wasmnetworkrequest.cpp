@@ -161,6 +161,15 @@ NetworkRequest* NetworkRequest::createForAccount(Task* parent) {
 }
 
 // static
+NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
                                                 const QHostAddress&) {
   Q_ASSERT(parent);

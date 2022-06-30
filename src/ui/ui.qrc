@@ -9,6 +9,7 @@
         <file>authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
+        <file>authenticationInApp/ViewReauthenticationFlow.qml</file>
         <file>deleteAccount/ViewDeleteAccount.qml</file>
         <file>deleteAccount/ViewDeleteAccountRequest.qml</file>
         <file>developerMenu/ViewAnimationsPlayground.qml</file>
@@ -27,6 +28,8 @@
         <file>settings/ViewNotifications.qml</file>
         <file>settings/ViewPrivacySecurity.qml</file>
         <file>settings/ViewSettingsMenu.qml</file>
+        <file>settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
+        <file>settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>
         <file>settings/ViewTipsAndTricks.qml</file>
         <file>settings/ViewWhatsNew.qml</file>
         <file>states/StateAuthenticating.qml</file>

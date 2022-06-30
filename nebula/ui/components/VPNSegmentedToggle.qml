@@ -106,7 +106,9 @@ Rectangle {
                     text: VPNl18n[segmentLabelStringId]
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideRight
+                    // Bug VPN-2158 - Apparently QText is not rendered on android
+                    // When we select any other elide then none
+                    elide: Qt.platform.os === "android" ? Text.ElideNone : Text.ElideRight
                     font.family: VPNTheme.theme.fontBoldFamily
                     font.pixelSize: VPNTheme.theme.fontSize
                     color: {

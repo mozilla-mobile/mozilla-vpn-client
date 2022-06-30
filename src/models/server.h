@@ -53,6 +53,11 @@ class Server final {
   bool operator==(const Server& other) const {
     return m_publicKey == other.m_publicKey;
   }
+  // Allow checking against QString, so we can easily search a QList<Server> for
+  // a public key.
+  bool operator==(const QString& otherPublicKey) const {
+    return m_publicKey == otherPublicKey;
+  }
 
  private:
   QString m_hostname;

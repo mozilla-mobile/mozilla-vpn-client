@@ -6,17 +6,22 @@
 #define MACOSNETWORKWATCHER_H
 
 #include "networkwatcherimpl.h"
+#include "../ios/iosnetworkwatcher.h"
 
-class MacOSNetworkWatcher final : public NetworkWatcherImpl {
+#import <Network/Network.h>
+
+class QString;
+
+class MacOSNetworkWatcher final : public IOSNetworkWatcher {
  public:
   MacOSNetworkWatcher(QObject* parent);
   ~MacOSNetworkWatcher();
 
-  void initialize() override;
-
   void start() override;
 
   void checkInterface();
+
+  void controllerStateChanged();
 
  private:
   void* m_delegate = nullptr;

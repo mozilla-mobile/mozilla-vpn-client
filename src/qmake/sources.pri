@@ -35,6 +35,8 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
+        composer.cpp \
+        composerblock.cpp \
         connectionbenchmark/benchmarktask.cpp \
         connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
@@ -47,6 +49,7 @@ SOURCES += \
         dnshelper.cpp \
         dnspingsender.cpp \
         errorhandler.cpp \
+        externalophandler.cpp \
         filterproxymodel.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
@@ -76,9 +79,6 @@ SOURCES += \
         models/feature.cpp \
         models/featuremodel.cpp \
         models/feedbackcategorymodel.cpp \
-        models/guide.cpp \
-        models/guideblock.cpp \
-        models/guidemodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
         models/licensemodel.cpp \
@@ -87,14 +87,10 @@ SOURCES += \
         models/servercountry.cpp \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
+        models/subscriptiondata.cpp \
         models/supportcategorymodel.cpp \
         models/survey.cpp \
         models/surveymodel.cpp \
-        models/tutorial.cpp \
-        models/tutorialmodel.cpp \
-        models/tutorialstep.cpp \
-        models/tutorialstepbefore.cpp \
-        models/tutorialstepnext.cpp \
         models/user.cpp \
         models/whatsnewmodel.cpp \
         mozillavpn.cpp \
@@ -109,6 +105,7 @@ SOURCES += \
         platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         platforms/dummy/dummypingsender.cpp \
+        profileflow.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc/rfc1112.cpp \
@@ -118,6 +115,7 @@ SOURCES += \
         rfc/rfc5735.cpp \
         serveri18n.cpp \
         settingsholder.cpp \
+        signature.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
         tasks/account/taskaccount.cpp \
@@ -128,6 +126,7 @@ SOURCES += \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/deleteaccount/taskdeleteaccount.cpp \
         tasks/getfeaturelist/taskgetfeaturelist.cpp \
+        tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
@@ -144,6 +143,10 @@ SOURCES += \
         telemetry.cpp \
         theme.cpp \
         timersingleshot.cpp \
+        tutorial/tutorial.cpp \
+        tutorial/tutorialstep.cpp \
+        tutorial/tutorialstepbefore.cpp \
+        tutorial/tutorialstepnext.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
         urlopener.cpp \
@@ -185,6 +188,8 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
+        composer.h \
+        composerblock.h \
         connectionbenchmark/benchmarktask.h \
         connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \
@@ -199,6 +204,7 @@ HEADERS += \
         dnshelper.h \
         dnspingsender.h \
         errorhandler.h \
+        externalophandler.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
@@ -223,9 +229,6 @@ HEADERS += \
         models/feature.h \
         models/featuremodel.h \
         models/feedbackcategorymodel.h \
-        models/guide.h \
-        models/guideblock.h \
-        models/guidemodel.h \
         models/helpmodel.h \
         models/keys.h \
         models/licensemodel.h \
@@ -234,14 +237,10 @@ HEADERS += \
         models/servercountry.h \
         models/servercountrymodel.h \
         models/serverdata.h \
+        models/subscriptiondata.h \
         models/supportcategorymodel.h \
         models/survey.h \
         models/surveymodel.h \
-        models/tutorial.h \
-        models/tutorialmodel.h \
-        models/tutorialstep.h \
-        models/tutorialstepbefore.h \
-        models/tutorialstepnext.h \
         models/user.h \
         models/whatsnewmodel.h \
         mozillavpn.h \
@@ -257,6 +256,7 @@ HEADERS += \
         platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         platforms/dummy/dummypingsender.h \
+        profileflow.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc/rfc1112.h \
@@ -266,6 +266,7 @@ HEADERS += \
         rfc/rfc5735.h \
         serveri18n.h \
         settingsholder.h \
+        signature.h \
         simplenetworkmanager.h \
         statusicon.h \
         task.h \
@@ -277,6 +278,7 @@ HEADERS += \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/deleteaccount/taskdeleteaccount.h \
         tasks/getfeaturelist/taskgetfeaturelist.h \
+        tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \
@@ -292,6 +294,10 @@ HEADERS += \
         taskscheduler.h \
         telemetry.h \
         theme.h \
+        tutorial/tutorial.h \
+        tutorial/tutorialstep.h \
+        tutorial/tutorialstepbefore.h \
+        tutorial/tutorialstepnext.h \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
@@ -309,3 +315,8 @@ RESOURCES += ui/resources.qrc
 RESOURCES += ui/license.qrc
 RESOURCES += ui/ui.qrc
 RESOURCES += resources/certs/certs.qrc
+RESOURCES += resources/public_keys/public_keys.qrc
+
+CONFIG += qmltypes
+QML_IMPORT_NAME = Mozilla.VPN.qmlcomponents
+QML_IMPORT_MAJOR_VERSION = 1.0

@@ -10,34 +10,18 @@ set_target_properties(mozillavpn PROPERTIES OUTPUT_NAME "Mozilla VPN")
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
     MACOSX_BUNDLE ON
-    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/../macos/app/Info.plist.in
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/macos/app/Info.plist.in
     MACOSX_BUNDLE_BUNDLE_NAME "Mozilla VPN"
     MACOSX_BUNDLE_BUNDLE_VERSION "${BUILD_ID}"
     MACOSX_BUNDLE_COPYRIGHT "MPL-2.0"
-    MACOSX_BUNDLE_GUI_IDENTIFIER "org.mozilla.macos.FirefoxVPN"
+    MACOSX_BUNDLE_GUI_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}"
     MACOSX_BUNDLE_ICON_FILE "AppIcon"
     MACOSX_BUNDLE_INFO_STRING "Mozilla VPN"
     MACOSX_BUNDLE_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}-${BUILD_ID}"
     MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
+    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}"
 )
 
-#isEmpty(MVPN_DEVELOPMENT_TEAM) {
-#    MVPN_DEVELOPMENT_TEAM = "43AQ936H96"
-#}
-#
-#isEmpty(MVPN_GROUP_ID_MACOS) {
-#    MVPN_GROUP_ID_MACOS = "group.org.mozilla.macos.Guardian"
-#}
-#
-#isEmpty(MVPN_APP_ID_PREFIX) {
-#    QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
-#} else {
-#    QMAKE_TARGET_BUNDLE_PREFIX = $$MVPN_APP_ID_PREFIX
-#}
-#
-#QMAKE_BUNDLE = "FirefoxVPN"
-
-# For the loginitem
 find_library(FW_SYSTEMCONFIG SystemConfiguration)
 find_library(FW_SERVICEMGMT ServiceManagement)
 find_library(FW_SECURITY Security)
@@ -93,45 +77,113 @@ target_sources(mozillavpn PRIVATE
     platforms/macos/macosutils.h
 )
 
+include(cmake/osxtools.cmake)
 include(cmake/golang.cmake)
+include(cmake/signature.cmake)
 
 # Enable Balrog for update support.
 add_definitions(-DMVPN_BALROG)
-add_go_library(mozillavpn ../balrog/balrog-api.go)
+add_go_library(balrog ../balrog/balrog-api.go
+    CGO_CFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET})
+target_link_libraries(mozillavpn PRIVATE balrog)
 target_sources(mozillavpn PRIVATE
     update/balrog.cpp
     update/balrog.h
 )
 
-## A helper to copy files into the application bundle
-function(add_bundle_file SOURCE)
-    add_custom_command(TARGET mozillavpn POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Bundling ${SOURCE}"
-        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE} $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/utils)
-endfunction(add_bundle_file)
-
+# Perform codesigning.
+execute_process(
+    COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py ${CMAKE_SOURCE_DIR}/macos/app/app.entitlements
+        -k "\$(DEVELOPMENT_TEAM)=${BUILD_OSX_DEVELOPMENT_TEAM}"
+        -k "\$(APP_ID_MACOS)=${BUILD_OSX_APP_IDENTIFIER}"
+        -o ${CMAKE_CURRENT_BINARY_DIR}/app.entitlements
+)
+osx_codesign_target(mozillavpn FORCE ENTITLEMENTS ${CMAKE_CURRENT_BINARY_DIR}/app.entitlements)
 
 # Build the Wireguard Go tunnel
 # FIXME: this builds in the source directory.
-get_filename_component(WIREGUARD_GO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go ABSOLUTE)
+get_filename_component(WIREGUARD_GO_DIR ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go ABSOLUTE)
 file(GLOB_RECURSE WIREGUARD_GO_DEPS ${WIREGUARD_GO_DIR}/*.go)
-add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go/wireguard-go
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go
-    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go/main.go
+add_custom_target(build_wireguard_go
+    COMMENT "Building wireguard-go"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go
     DEPENDS ${WIREGUARD_GO_DEPS}
     COMMAND make
 )
-add_bundle_file(${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/wireguard-go/wireguard-go)
+add_dependencies(mozillavpn build_wireguard_go)
+osx_codesign_target(build_wireguard_go FORCE OPTIONS runtime
+    FILES ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/wireguard-go
+)
+osx_bundle_files(mozillavpn
+    FILES ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/wireguard-go
+    DESTINATION Resources/utils
+)
 
 # Install the native messaging extensions into the bundle.
 add_dependencies(mozillavpn mozillavpnnp)
-add_bundle_file($<TARGET_FILE:mozillavpnnp>)
-add_bundle_file(${CMAKE_CURRENT_SOURCE_DIR}/../extension/manifests/macos/mozillavpn.json)
+osx_bundle_files(mozillavpn FILES
+    $<TARGET_FILE:mozillavpnnp>
+    ${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json
+    DESTINATION Resources/utils
+)
 
-#QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
-#QMAKE_ASSET_CATALOGS = $$PWD/../../../macos/app/Images.xcassets
-#
+# Install the lproj translation files into the bundle.
+get_filename_component(I18N_DIR ${CMAKE_SOURCE_DIR}/i18n ABSOLUTE)
+file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)
+list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
+foreach(LOCALE ${I18N_LOCALES})
+    if(NOT EXISTS ${I18N_DIR}/${LOCALE}/mozillavpn.xliff)
+        continue()
+    endif()
+    execute_process(
+        RESULT_VARIABLE I18N_CHECK_RESULT
+        COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/xlifftool.py --locale=${LOCALE} -c ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
+    )
+    if(NOT I18N_CHECK_RESULT EQUAL 0)
+        continue()
+    endif()
+    
+    add_custom_command(TARGET mozillavpn POST_BUILD
+        COMMENT "Bundling locale ${LOCALE}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj
+        COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py -k __LOCALE__=${LOCALE} 
+                    -o $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj/locversion.plist
+                    ${CMAKE_SOURCE_DIR}/translations/locversion.plist.in
+    )
+endforeach()
+
+## Install the LoginItems into the bundle.
+add_dependencies(mozillavpn loginitem)
+add_custom_command(TARGET mozillavpn POST_BUILD
+    COMMENT "Bundling LoginItems"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:loginitem>
+        $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/LoginItems/$<TARGET_PROPERTY:loginitem,OUTPUT_NAME>.app/
+)
+
+## Compile and install the asset catalog into the bundle.
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Assets.car
+           ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
+    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/ac_generated_info.plist
+    MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/Contents.json
+    COMMAND actool --output-format human-readable-text --notices --warnings
+                --target-device mac --platform macosx --minimum-deployment-target ${CMAKE_OSX_DEPLOYMENT_TARGET}
+                --app-icon AppIcon --output-partial-info-plist ${CMAKE_CURRENT_BINARY_DIR}/ac_generated_info.plist
+                --development-region en --enable-on-demand-resources NO
+                --compile ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets
+)
+target_sources(mozillavpn PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/Assets.car
+    ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
+)
+set_source_files_properties(
+    ${CMAKE_CURRENT_BINARY_DIR}/Assets.car
+    ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
+    PROPERTIES
+    HEADER_FILE_ONLY TRUE
+    MACOSX_PACKAGE_LOCATION Resources
+)
+
 #LD_RUNPATH_SEARCH_PATHS.name = "LD_RUNPATH_SEARCH_PATHS"
 #LD_RUNPATH_SEARCH_PATHS.value = '"$(inherited) @executable_path/../Frameworks"'
 #QMAKE_MAC_XCODE_SETTINGS += LD_RUNPATH_SEARCH_PATHS

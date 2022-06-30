@@ -66,6 +66,8 @@ target_sources(mozillavpn PRIVATE
 
 add_definitions(-DPROTOCOL_VERSION=\"1\")
 
+include(cmake/signature.cmake)
+
 set(DBUS_GENERATED_SOURCES)
 qt_add_dbus_interface(DBUS_GENERATED_SOURCES platforms/linux/daemon/org.mozilla.vpn.dbus.xml dbus_interface)
 qt_add_dbus_adaptor(DBUS_GENERATED_SOURCES
@@ -76,7 +78,8 @@ qt_add_dbus_adaptor(DBUS_GENERATED_SOURCES
 target_sources(mozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
 
 include(cmake/golang.cmake)
-add_go_library(mozillavpn ../linux/netfilter/netfilter.go)
+add_go_library(netfilter ../linux/netfilter/netfilter.go)
+target_link_libraries(mozillavpn PRIVATE netfilter)
 
 include(GNUInstallDirs)
 install(TARGETS mozillavpn)
@@ -112,10 +115,10 @@ install(FILES platforms/linux/daemon/org.mozilla.vpn.conf
 install(FILES platforms/linux/daemon/org.mozilla.vpn.dbus.service
     DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/system-services)
 
-## This is only really needed when building from source. Otherwise, we
-## expect the Distro's packaging magic to sort this out.
 pkg_check_modules(SYSTEMD systemd)
 if("${SYSTEMD_FOUND}" EQUAL 1)
     pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
     install(FILES ../linux/mozillavpn.service DESTINATION ${SYSTEMD_UNIT_DIR})
+else()
+    install(FILES ../linux/mozillavpn.service DESTINATION /lib/systemd/system)
 endif()

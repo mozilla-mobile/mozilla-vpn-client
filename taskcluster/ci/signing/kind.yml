@@ -7,6 +7,7 @@ loader: mozillavpn_taskgraph.loader.multi_dep:loader
 transforms:
     - mozillavpn_taskgraph.transforms.multi_dep:transforms
     - mozillavpn_taskgraph.transforms.signing:transforms
+    - mozillavpn_taskgraph.transforms.release_index:transforms
     - taskgraph.transforms.task:transforms
 
 kind-dependencies:
@@ -28,6 +29,7 @@ job-template:
     description: Sign MozillaVPN
     worker: {} # Will be configured by signing:transforms
     run-on-tasks-for: []
+    add-index-routes: build
     signing-format:
         by-build-type:
             android.*: autograph_apk

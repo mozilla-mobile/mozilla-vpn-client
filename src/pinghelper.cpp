@@ -184,5 +184,5 @@ double PingHelper::loss() const {
   if (sendCount <= 0) {
     return 0.0;
   }
-  return (double)(sendCount - recvCount) / sendCount;
+  return (double)(sendCount - recvCount) / PING_STATS_WINDOW;
 }

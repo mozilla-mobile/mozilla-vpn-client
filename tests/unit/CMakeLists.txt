@@ -5,11 +5,7 @@
 add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_ADJUST)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Network Xml Test WebSockets)
-find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
-find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
-
-get_filename_component(MVPN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../src ABSOLUTE)
+get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MVPN_SOURCE_DIR})
@@ -18,6 +14,7 @@ include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
 
 qt_add_executable(unit_tests EXCLUDE_FROM_ALL)
+set_target_properties(unit_tests PROPERTIES FOLDER "Tests")
 add_dependencies(build_tests unit_tests)
 
 target_link_libraries(unit_tests PRIVATE
@@ -60,6 +57,10 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/command.h
     ${MVPN_SOURCE_DIR}/commandlineparser.cpp
     ${MVPN_SOURCE_DIR}/commandlineparser.h
+    ${MVPN_SOURCE_DIR}/composer.cpp
+    ${MVPN_SOURCE_DIR}/composer.h
+    ${MVPN_SOURCE_DIR}/composerblock.cpp
+    ${MVPN_SOURCE_DIR}/composerblock.h
     ${MVPN_SOURCE_DIR}/constants.cpp
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/controller.h
@@ -69,6 +70,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
+    ${MVPN_SOURCE_DIR}/externalophandler.cpp
+    ${MVPN_SOURCE_DIR}/externalophandler.h
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
@@ -100,12 +103,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.cpp
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.h
-    ${MVPN_SOURCE_DIR}/models/guide.cpp
-    ${MVPN_SOURCE_DIR}/models/guide.h
-    ${MVPN_SOURCE_DIR}/models/guideblock.cpp
-    ${MVPN_SOURCE_DIR}/models/guideblock.h
-    ${MVPN_SOURCE_DIR}/models/guidemodel.cpp
-    ${MVPN_SOURCE_DIR}/models/guidemodel.h
     ${MVPN_SOURCE_DIR}/models/helpmodel.cpp
     ${MVPN_SOURCE_DIR}/models/helpmodel.h
     ${MVPN_SOURCE_DIR}/models/keys.cpp
@@ -122,22 +119,14 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/servercountrymodel.h
     ${MVPN_SOURCE_DIR}/models/serverdata.cpp
     ${MVPN_SOURCE_DIR}/models/serverdata.h
+    ${MVPN_SOURCE_DIR}/models/subscriptiondata.cpp
+    ${MVPN_SOURCE_DIR}/models/subscriptiondata.h
     ${MVPN_SOURCE_DIR}/models/supportcategorymodel.cpp
     ${MVPN_SOURCE_DIR}/models/supportcategorymodel.h
     ${MVPN_SOURCE_DIR}/models/survey.cpp
     ${MVPN_SOURCE_DIR}/models/survey.h
     ${MVPN_SOURCE_DIR}/models/surveymodel.cpp
     ${MVPN_SOURCE_DIR}/models/surveymodel.h
-    ${MVPN_SOURCE_DIR}/models/tutorial.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorial.h
-    ${MVPN_SOURCE_DIR}/models/tutorialmodel.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorialmodel.h
-    ${MVPN_SOURCE_DIR}/models/tutorialstep.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorialstep.h
-    ${MVPN_SOURCE_DIR}/models/tutorialstepbefore.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorialstepbefore.h
-    ${MVPN_SOURCE_DIR}/models/tutorialstepnext.cpp
-    ${MVPN_SOURCE_DIR}/models/tutorialstepnext.h
     ${MVPN_SOURCE_DIR}/models/user.cpp
     ${MVPN_SOURCE_DIR}/models/user.h
     ${MVPN_SOURCE_DIR}/models/whatsnewmodel.cpp
@@ -178,6 +167,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/serveri18n.h
     ${MVPN_SOURCE_DIR}/settingsholder.cpp
     ${MVPN_SOURCE_DIR}/settingsholder.h
+    ${MVPN_SOURCE_DIR}/signature.cpp
+    ${MVPN_SOURCE_DIR}/signature.h
     ${MVPN_SOURCE_DIR}/simplenetworkmanager.cpp
     ${MVPN_SOURCE_DIR}/simplenetworkmanager.h
     ${MVPN_SOURCE_DIR}/statusicon.cpp
@@ -203,6 +194,14 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/theme.h
     ${MVPN_SOURCE_DIR}/timersingleshot.cpp
     ${MVPN_SOURCE_DIR}/timersingleshot.h
+    ${MVPN_SOURCE_DIR}/tutorial/tutorial.cpp
+    ${MVPN_SOURCE_DIR}/tutorial/tutorial.h
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstep.cpp
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstep.h
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstepbefore.cpp
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstepbefore.h
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstepnext.cpp
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstepnext.h
     ${MVPN_SOURCE_DIR}/update/updater.cpp
     ${MVPN_SOURCE_DIR}/update/updater.h
     ${MVPN_SOURCE_DIR}/update/versionapi.cpp
@@ -236,8 +235,6 @@ target_sources(unit_tests PRIVATE
     testcommandlineparser.h
     testfeature.cpp
     testfeature.h
-    testguide.cpp
-    testguide.h
     testipaddress.cpp
     testipaddress.h
     testipaddresslookup.cpp
@@ -268,8 +265,6 @@ target_sources(unit_tests PRIVATE
     testthemes.h
     testtimersingleshot.cpp
     testtimersingleshot.h
-    testtutorial.cpp
-    testtutorial.h
 )
 
 # Generate the version header
@@ -292,7 +287,7 @@ foreach(filename ${UTEST_SOURCES})
         OUTPUT_VARIABLE UTEST_CLASS_LIST
         OUTPUT_STRIP_TRAILING_WHITESPACE
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/tests/list_test_classes.py -p TestHelper ${filename}
+        COMMAND python3 ${CMAKE_SOURCE_DIR}/scripts/tests/list_test_classes.py -p TestHelper ${filename}
     )
 
     foreach(UTEST_CLASS ${UTEST_CLASS_LIST})

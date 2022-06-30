@@ -9,6 +9,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
+#include "taskscheduler.h"
 
 namespace {
 Logger logger(LOG_MAIN, "TaskDeleteAccount");
@@ -32,7 +33,8 @@ void TaskDeleteAccount::run() {
                                             pkceCodeChallenge);
   Q_ASSERT(!pkceCodeVerifier.isEmpty() && !pkceCodeChallenge.isEmpty());
 
-  m_authenticationInAppSession = new AuthenticationInAppSession(this);
+  m_authenticationInAppSession = new AuthenticationInAppSession(
+      this, AuthenticationInAppSession::TypeAccountDeletion);
 
   connect(m_authenticationInAppSession, &AuthenticationInAppSession::terminated,
           this, &Task::completed);
@@ -71,8 +73,11 @@ void TaskDeleteAccount::run() {
           });
 
   connect(m_authenticationInAppSession,
-          &AuthenticationInAppSession::accountDeleted, this,
-          [this]() { m_authenticationInAppSession->terminate(); });
+          &AuthenticationInAppSession::accountDeleted, this, [this]() {
+            m_authenticationInAppSession->terminate();
+            TaskScheduler::deleteTasks();
+            emit MozillaVPN::instance()->accountDeleted();
+          });
 
   m_authenticationInAppSession->start(this, pkceCodeChallenge,
                                       CODE_CHALLENGE_METHOD, m_emailAddress);

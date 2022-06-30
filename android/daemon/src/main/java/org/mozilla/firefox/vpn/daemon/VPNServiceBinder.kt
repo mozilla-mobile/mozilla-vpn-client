@@ -30,6 +30,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val resumeActivate = 7
         const val setNotificationText = 8
         const val setStrings = 9
+        const val recordEvent = 10
+        const val sendGleanPings = 11
+        const val gleanUploadEnabledChanged = 12
+        const val controllerInit = 13
+        const val gleanSetSourceTags = 14
     }
 
     /**
@@ -89,6 +94,9 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 // [data] contains the Binder that we need to dispatch the Events
                 val binder = data.readStrongBinder()
                 mListener = binder
+                return true
+            }
+            ACTIONS.controllerInit -> {
                 val obj = JSONObject()
                 obj.put("connected", mService.isUp)
                 obj.put("time", mService.connectionTime)
@@ -118,6 +126,30 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 NotificationUtil.get(mService)?.updateStrings(data, mService)
                 return true
             }
+            ACTIONS.recordEvent -> {
+                val buffer = data.createByteArray()
+                val json = buffer?.let { String(it) }
+                val event = JSONObject(json)
+                mService.mGlean.recordEvent(event)
+                return true
+            }
+            ACTIONS.sendGleanPings -> {
+                mService.mGlean.sendGleanMainPing()
+                return true
+            }
+            ACTIONS.gleanUploadEnabledChanged -> {
+                val buffer = data.createByteArray()
+                val json = buffer?.let { String(it) }
+                val args = JSONObject(json)
+                mService.mGlean.setGleanUploadEnabled(args.getBoolean("enabled"))
+                return true
+            }
+            ACTIONS.gleanSetSourceTags -> {
+                val buffer = data.createByteArray()
+                val list = buffer?.let { String(it) }
+                mService.mGlean.setGleanSourceTag(list)
+            }
+
             IBinder.LAST_CALL_TRANSACTION -> {
                 Log.e(tag, "The OS Requested to shut down the VPN")
                 this.mService.turnOff()

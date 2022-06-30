@@ -21,14 +21,13 @@
 #include "logger.h"
 #include "models/feature.h"
 #include "models/featuremodel.h"
-#include "models/guidemodel.h"
-#include "models/tutorialmodel.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 #include "theme.h"
+#include "tutorial/tutorial.h"
 #include "update/updater.h"
 
 #include <glean.h>
@@ -54,6 +53,7 @@
 
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
+#  include "platforms/android/androidglean.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -217,6 +217,9 @@ int CommandUI::run(QStringList& tokens) {
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
 
+#ifdef MVPN_ANDROID
+    AndroidGlean::initialize(engine);
+#endif
     if (updateOption.m_set) {
       emit vpn.recordGleanEventWithExtraKeys(
           GleanSample::updateStep,
@@ -349,6 +352,22 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNServerCountryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->serverCountryModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNSubscriptionData",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->subscriptionData();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNProfileFlow",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->profileFlow();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -505,15 +524,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNTutorial",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = TutorialModel::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNGuide",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = GuideModel::instance();
+          QObject* obj = Tutorial::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -525,9 +536,6 @@ int CommandUI::run(QStringList& tokens) {
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
-
-    qmlRegisterType<FilterProxyModel>("Mozilla.VPN", 1, 0,
-                                      "VPNFilterProxyModel");
 
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::aboutToQuit);

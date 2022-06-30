@@ -7,6 +7,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
+#include "qmlengineholder.h"
+#include "signature.h"
 #include "taskscheduler.h"
 #include "tasks/addon/taskaddon.h"
 
@@ -22,6 +24,7 @@
 
 constexpr const char* ADDON_FOLDER = "addons";
 constexpr const char* ADDON_INDEX_FILENAME = "manifest.json";
+constexpr const char* ADDON_INDEX_SIGNATURE_FILENAME = "manifest.json.sign";
 
 namespace {
 
@@ -49,7 +52,7 @@ AddonManager* AddonManager::instance() {
   return s_instance;
 }
 
-AddonManager::AddonManager(QObject* parent) : QObject(parent) {
+AddonManager::AddonManager(QObject* parent) : QAbstractListModel(parent) {
   MVPN_COUNT_CTOR(AddonManager);
 }
 
@@ -70,29 +73,49 @@ void AddonManager::initialize() {
     }
   }
 
-  if (!validateIndex(readIndex())) {
+  QByteArray index;
+  QByteArray indexSignature;
+  if (!readIndex(index, indexSignature)) {
+    logger.info() << "Unable to read the addon index";
+    return;
+  }
+
+  if (!validateIndex(index, indexSignature)) {
     logger.debug() << "Unable to validate the index";
   }
 }
 
-void AddonManager::updateIndex(const QByteArray& index) {
-  QByteArray currentIndex = readIndex();
-
-  if (currentIndex == index) {
+void AddonManager::updateIndex(const QByteArray& index,
+                               const QByteArray& indexSignature) {
+  QByteArray currentIndex;
+  QByteArray currentIndexSignature;
+  if (readIndex(currentIndex, currentIndexSignature) && currentIndex == index &&
+      currentIndexSignature == indexSignature) {
     logger.debug() << "The index has not changed";
     return;
   }
 
-  if (!validateIndex(index)) {
+  if (!validateIndex(index, indexSignature)) {
     logger.debug() << "Unable to validate the index";
     return;
   }
 
-  writeIndex(index);
+  writeIndex(index, indexSignature);
 }
 
-bool AddonManager::validateIndex(const QByteArray& index) {
-  // TODO: signature validation
+bool AddonManager::validateIndex(const QByteArray& index,
+                                 const QByteArray& indexSignature) {
+  QFile publicKeyFile(Constants::addonPublicKeyFile());
+  if (!publicKeyFile.open(QIODevice::ReadOnly)) {
+    logger.warning() << "Unable to open the addon public key file";
+    return false;
+  }
+
+  QByteArray publicKey = publicKeyFile.readAll();
+  if (!Signature::verify(publicKey, index, indexSignature)) {
+    logger.warning() << "Unable to verify the signature of the addon index";
+    return false;
+  }
 
   QJsonDocument doc = QJsonDocument::fromJson(index);
   if (!doc.isObject()) {
@@ -133,7 +156,7 @@ bool AddonManager::validateIndex(const QByteArray& index) {
 
   // Remove unknown addons
   QStringList addonsToBeRemoved;
-  for (QHash<QString, AddonData>::const_iterator i(m_addons.constBegin());
+  for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
        i != m_addons.constEnd(); ++i) {
     bool found = false;
     for (const AddonData& addonData : addons) {
@@ -180,7 +203,9 @@ bool AddonManager::loadManifest(const QString& manifestFileName,
     return false;
   }
 
+  beginResetModel();
   m_addons.insert(addon->id(), {sha256, addon->id(), addon});
+  endResetModel();
   return true;
 }
 
@@ -198,7 +223,10 @@ void AddonManager::unload(const QString& addonId) {
   Addon* addon = m_addons[addonId].m_addon;
   Q_ASSERT(addon);
 
+  beginResetModel();
   m_addons.remove(addonId);
+  endResetModel();
+
   addon->deleteLater();
 }
 
@@ -228,36 +256,69 @@ bool AddonManager::addonDir(QDir* dir) {
 }
 
 // static
-QByteArray AddonManager::readIndex() {
+bool AddonManager::readIndex(QByteArray& index, QByteArray& indexSignature) {
   QDir dir;
   if (!addonDir(&dir)) {
-    return "";
+    return false;
   }
 
-  QFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
-  if (!indexFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    logger.warning() << "Unable to open the addon index";
-    return "";
+  // Index file
+  {
+    QFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
+    if (!indexFile.open(QIODevice::ReadOnly)) {
+      logger.warning() << "Unable to open the addon index";
+      return false;
+    }
+
+    index = indexFile.readAll();
   }
 
-  return indexFile.readAll();
+  // Index signature file
+  {
+    QFile indexSignatureFile(dir.filePath(ADDON_INDEX_SIGNATURE_FILENAME));
+    if (!indexSignatureFile.open(QIODevice::ReadOnly)) {
+      logger.warning() << "Unable to open the addon index signature";
+      return false;
+    }
+
+    indexSignature = indexSignatureFile.readAll();
+  }
+
+  return true;
 }
 
 // static
-void AddonManager::writeIndex(const QByteArray& index) {
+void AddonManager::writeIndex(const QByteArray& index,
+                              const QByteArray& indexSignature) {
   QDir dir;
   if (!addonDir(&dir)) {
     return;
   }
 
-  QFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
-  if (!indexFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    logger.warning() << "Unable to open the addon index";
-    return;
+  // Index file
+  {
+    QFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
+    if (!indexFile.open(QIODevice::WriteOnly)) {
+      logger.warning() << "Unable to open the addon index file";
+      return;
+    }
+
+    if (!indexFile.write(index)) {
+      logger.warning() << "Unable to write the addon index file";
+    }
   }
 
-  if (!indexFile.write(index)) {
-    logger.warning() << "Unable to write the addon file";
+  // Index signature file
+  {
+    QFile indexSignatureFile(dir.filePath(ADDON_INDEX_SIGNATURE_FILENAME));
+    if (!indexSignatureFile.open(QIODevice::WriteOnly)) {
+      logger.warning() << "Unable to open the addon index signature file";
+      return;
+    }
+
+    if (!indexSignatureFile.write(indexSignature)) {
+      logger.warning() << "Unable to write the addon index signature file";
+    }
   }
 }
 
@@ -359,4 +420,59 @@ void AddonManager::storeAndLoadAddon(const QByteArray& addonData,
   if (!validateAndLoad(addonId, sha256, false)) {
     logger.warning() << "Unable to load the addon";
   }
+}
+
+QHash<int, QByteArray> AddonManager::roleNames() const {
+  QHash<int, QByteArray> roles;
+  roles[AddonRole] = "addon";
+  return roles;
+}
+
+int AddonManager::rowCount(const QModelIndex&) const {
+  return m_addons.count();
+}
+
+QVariant AddonManager::data(const QModelIndex& index, int role) const {
+  if (!index.isValid()) {
+    return QVariant();
+  }
+
+  switch (role) {
+    case AddonRole:
+      return QVariant::fromValue(
+          m_addons[m_addons.keys().at(index.row())].m_addon);
+
+    default:
+      return QVariant();
+  }
+}
+
+void AddonManager::forEach(std::function<void(Addon*)>&& a_callback) {
+  std::function<void(Addon*)> callback = std::move(a_callback);
+  for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
+       i != m_addons.constEnd(); ++i) {
+    callback(i.value().m_addon);
+  }
+}
+
+Addon* AddonManager::pick(QJSValue filterCallback) const {
+  if (!filterCallback.isCallable()) {
+    logger.error() << "AddonManager.pick must receive a callable JS value";
+    return nullptr;
+  }
+
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+  Q_ASSERT(engine);
+
+  for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
+       i != m_addons.constEnd(); ++i) {
+    QJSValueList arguments;
+    arguments.append(engine->toScriptValue(i.value().m_addon));
+    QJSValue retValue = filterCallback.call(arguments);
+    if (retValue.toBool()) {
+      return i.value().m_addon;
+    }
+  }
+
+  return nullptr;
 }

@@ -17,9 +17,15 @@ class Telemetry final : public QObject {
 
  private:
   void connectionStabilityEvent();
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
+  void periodicStateRecorder();
+#endif
 
  private:
   QTimer m_connectionStabilityTimer;
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
+  QTimer m_gleanControllerUpTimer;
+#endif
 };
 
 #endif  // TELEMETRY_H

@@ -10,12 +10,9 @@ import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
 
 Item {
     property int safeAreaHeight: window.safeContentHeight
-    property bool shouldRestoreSlide: false
     property var initialMainStackViewDepth
     property var currentMainStackViewDepth: mainStackView.depth
 
@@ -89,11 +86,6 @@ Item {
                 subtitleStringId: "MobileOnboardingPanelFourSubtitle"
                 panelId: "more-security"
             }
-        }
-
-        StackView.onActivating: if (shouldRestoreSlide) {
-            shouldRestoreSlide = false;
-            goToPreviousSlide();
         }
 
         SwipeView {
@@ -184,6 +176,10 @@ Item {
                                 }
                             }
 
+                            onVisibleChanged: {
+                                if (visible) updatePanel.start();
+                            }
+
                         }
 
                         Component.onCompleted: {
@@ -237,13 +233,7 @@ Item {
             objectName: "getHelpLink"
             labelText: qsTrId("vpn.main.getHelp2")
             isLightTheme: false
-            onClicked: {
-                if (!shouldRestoreSlide) {
-                    shouldRestoreSlide = true;
-                    onboardingPanel.goToNextSlide();
-                }
-                getHelpViewNeeded();
-            }
+            onClicked: getHelpViewNeeded();
 
             anchors.topMargin: VPNTheme.theme.listSpacing
         }
@@ -384,11 +374,11 @@ Item {
         }
 
         function recordGleanEvtAndStartAuth(ctaObjectName) {
-            Sample.onboardingCtaClick.record({
-                                                  "panel_id": currentPanelValues._panelId,
-                                                  "panel_idx": swipeView.currentIndex.toString(),
-                                                  "panel_cta": ctaObjectName
-                                              });
+            VPN.recordGleanEventWithExtraKeys("onboardingCtaClick",{
+                                              "panel_id": currentPanelValues._panelId,
+                                              "panel_idx": swipeView.currentIndex.toString(),
+                                              "panel_cta": ctaObjectName
+            });
             VPN.getStarted();
         }
     }

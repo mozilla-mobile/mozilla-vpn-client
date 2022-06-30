@@ -9,8 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
 
 VPNFlickable {
     property string _menuTitle: qsTrId("vpn.main.settings")
@@ -47,11 +45,22 @@ VPNFlickable {
             }
 
             VPNUserProfile {
-                _iconButtonImageSource: "qrc:/nebula/resources/chevron.svg"
-                _iconButtonOnClicked: () => {
-                    Sample.manageAccountClicked.record();
-                    VPN.openLink(VPN.LinkAccount)
+                objectName: "settingsUserProfile"
+
+                property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
+                _iconButtonImageSource: subscriptionManagementEnabled
+                    ? "qrc:/nebula/resources/chevron.svg"
+                    : "qrc:/nebula/resources/open-in-new.svg"
+                _iconButtonOnClicked: () => {                    
+                    if (subscriptionManagementEnabled) {
+                        VPNProfileFlow.start();
+                    } else {
+                        VPN.recordGleanEvent("manageAccountClicked")
+                        VPN.openLink(VPN.LinkAccount);
+                    }
                 }
+                _loaderVisible: VPNProfileFlow.state === VPNProfileFlow.StateLoading
+
                 Layout.leftMargin: VPNTheme.theme.windowMargin / 2
             }
 
@@ -117,7 +126,7 @@ VPNFlickable {
                 imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 onClicked: {
-                    Sample.getHelpClickedViewSettings.record();
+                    VPN.recordGleanEvent("getHelpClickedViewSettings");
                     getHelpViewNeeded();
                 }
             }
@@ -128,19 +137,6 @@ VPNFlickable {
                 imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 onClicked: settingsStackView.push(aboutUsComponent)
-            }
-
-            VPNLinkButton {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: VPNTheme.theme.vSpacing
-
-                fontName: VPNTheme.theme.fontBoldFamily
-                labelText: VPNl18n.DeleteAccountButtonLabel + " (WIP)"
-                linkColor: VPNTheme.theme.redButton
-                visible: VPNFeatureList.get("accountDeletion").isSupported
-                onClicked: {
-                    settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
-                }
             }
 
             VPNVerticalSpacer {
@@ -166,5 +162,41 @@ VPNFlickable {
             }
         }
     }
-}
 
+    Connections {
+        target: VPNProfileFlow
+
+        function onStateChanged() {
+            if (
+                VPNProfileFlow.state === VPNProfileFlow.StateReady
+                && settingsStackView.currentItem.objectName !== "subscriptionManagmentView"
+            ) {
+                return settingsStackView.push("qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
+            }
+
+            // Only push the profile view if it’s not already in the stack
+            if (
+                VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
+                && mainStackView.currentItem.objectName !== "reauthenticationFlow"
+            ) {
+                return mainStackView.push("qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml", {
+                    _targetViewCondition: Qt.binding(() => VPNProfileFlow.state === VPNProfileFlow.StateReady),
+                    _onClose: () => {
+                        VPNProfileFlow.reset();
+                        mainStackView.pop();
+                    }
+                });
+            }
+
+            // An error occurred during the profile flow. Let’s reset and return
+            // to the main settings view.
+            const hasError = VPNProfileFlow.state === VPNProfileFlow.StateError;
+            if (hasError) {
+                if (mainStackView.currentItem.objectName === "reauthenticationFlow") {
+                    mainStackView.pop();
+                }
+                VPNProfileFlow.reset();
+            }
+        }
+    }
+}

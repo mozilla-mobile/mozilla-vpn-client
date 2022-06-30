@@ -4,12 +4,12 @@
 
 add_library(glean STATIC)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Qml Sql)
+set_target_properties(glean PROPERTIES FOLDER "Libs")
 target_link_libraries(glean PRIVATE Qt6::Core Qt6::Qml Qt6::Sql)
 target_include_directories(glean PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(glean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
-get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../scripts ABSOLUTE)
+get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_SOURCE_DIR}/scripts ABSOLUTE)
 
 target_sources(glean PRIVATE
     glean.cpp
@@ -20,13 +20,22 @@ target_sources(glean PRIVATE
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/telemetry)
-add_custom_command(
-    OUTPUT telemetry/gleansample.h telemetry/qmldir telemetry/pings.js telemetry/sample.js telemetry/telemetry.qrc
-    MAIN_DEPENDENCY metrics.yaml
+add_custom_target(glean_telemetry
+    BYPRODUCTS telemetry/gleansample.h telemetry/qmldir telemetry/pings.js telemetry/sample.js telemetry/telemetry.qrc
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    DEPENDS pings.yaml
+    DEPENDS metrics.yaml pings.yaml
     COMMAND python3 ${MVPN_SCRIPT_DIR}/utils/generate_glean.py
 )
+set_source_files_properties(
+    telemetry/gleansample.h
+    telemetry/qmldir
+    telemetry/pings.js
+    telemetry/sample.js
+    telemetry/telemetry.qrc
+    PROPERTIES GENERATED TRUE
+)
+set_target_properties(glean_telemetry PROPERTIES FOLDER "Libs")
+add_dependencies(glean glean_telemetry)
 
 # Statically link to the SQLite driver, if it exists.
 if(TARGET Qt6::QSQLiteDriverPlugin)

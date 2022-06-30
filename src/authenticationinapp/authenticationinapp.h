@@ -74,7 +74,6 @@ class AuthenticationInApp final : public QObject {
     ErrorFailedToSendEmail,
     ErrorIncorrectPassword,
     ErrorInvalidEmailAddress,
-    ErrorInvalidEmailCode,
     ErrorInvalidOrExpiredVerificationCode,
     ErrorInvalidUnblockCode,
     ErrorInvalidTotpCode,
@@ -175,7 +174,7 @@ class AuthenticationInApp final : public QObject {
  private:
   explicit AuthenticationInApp(QObject* parent);
 
-  void setState(State state);
+  void setState(State state, AuthenticationInAppSession* session);
 
  private:
   State m_state = StateInitializing;

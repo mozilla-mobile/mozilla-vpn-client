@@ -75,23 +75,21 @@ describe('User authentication in browser', function() {
     await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
   });
 
-  /* See PSP-404
-    it('Completes authentication', async () => {
-      await vpn.authenticateInBrowser(true, true);
-    });
+  it('Completes authentication', async () => {
+    await vpn.authenticateInBrowser(true, true);
+  });
 
-    it('Completes authentication after logout', async () => {
-      await vpn.authenticateInBrowser(true, true);
+  it('Completes authentication after logout', async () => {
+    await vpn.authenticateInBrowser(true, true);
 
-      await vpn.waitForElement('settingsButton');
-      await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('settingsButton');
+    await vpn.clickOnElement('settingsButton');
 
-      await vpn.waitForElement('settingsLogout');
-      await vpn.scrollToElement('settingsView', 'settingsLogout');
-      await vpn.clickOnElement('settingsLogout');
-      await vpn.waitForMainView();
+    await vpn.waitForElement('settingsLogout');
+    await vpn.scrollToElement('settingsView', 'settingsLogout');
+    await vpn.clickOnElement('settingsLogout');
+    await vpn.waitForMainView();
 
-      await vpn.authenticateInBrowser();
-    });
-  */
+    await vpn.authenticateInBrowser();
+  });
 });

@@ -39,8 +39,8 @@ NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
 
 // static
 QString NetworkRequest::apiBaseUrl() {
-  return SettingsHolder::instance()->envOrDefault(
-      "MVPN_API_BASE_URL", Constants::API_PRODUCTION_URL);
+  return Constants::envOrDefault("MVPN_API_BASE_URL",
+                                 Constants::API_PRODUCTION_URL);
 }
 
 // static
@@ -78,6 +78,10 @@ NetworkRequest* NetworkRequest::createForVersions(Task* parent) {
 }
 
 NetworkRequest* NetworkRequest::createForAccount(Task* parent) {
+  return new NetworkRequest(parent, 1234, false);
+}
+
+NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 

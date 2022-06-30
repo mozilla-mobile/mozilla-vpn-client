@@ -18,8 +18,11 @@ Item {
         objectName: "settingsBackButton"
         _menuOnBackClicked: () => {
             if (settingsStackView.depth !== 1) {
+                VPNProfileFlow.reset();
+
                 return settingsStackView.pop();
             }
+
             mainStackView.pop()
         }
         _iconButtonSource: settingsStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
@@ -30,7 +33,6 @@ Item {
 
         title: ""
         opacity: visible ? 1 : 0
-
 
         Behavior on opacity {
             PropertyAnimation {

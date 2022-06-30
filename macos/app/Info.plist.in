@@ -22,6 +22,10 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>${MACOSX_BUNDLE_SHORT_VERSION_STRING}</string>
+	<key>CFBundleSupportedPlatforms</key>
+	<array>
+		<string>MacOSX</string>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>${MACOSX_BUNDLE_BUNDLE_VERSION}</string>
 	<key>NSHumanReadableCopyright</key>
@@ -41,7 +45,7 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.14</string>
+	<string>${CMAKE_OSX_DEPLOYMENT_TARGET}</string>
 	<key>LSMultipleInstancesProhibited</key>
 	<true/>
 	<key>NSPrincipalClass</key>

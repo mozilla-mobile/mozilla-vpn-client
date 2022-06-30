@@ -38,3 +38,17 @@ qt-win:
     treeherder:
         symbol: TL(qt-win)
     worker-type: b-win2012
+
+qt-ios:
+    description: "QT ios bundle Task"
+    run:
+        script: bundle_qt_ios.sh
+        resources:
+            - taskcluster/scripts/toolchain/bundle_qt_ios.sh
+        toolchain-alias: qt-ios
+        toolchain-artifact: public/build/qt6_ios.zip
+    treeherder:
+        symbol: TL(qt-ios)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: base}

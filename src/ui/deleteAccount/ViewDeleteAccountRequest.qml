@@ -12,38 +12,46 @@ import components.inAppAuth 0.1
 
 VPNInAppAuthenticationBase {
     id: viewDeleteAccount
+    objectName: "viewDeleteAccountRequest"
 
     property var checkboxData: [
         {
             subLabelText: VPNl18n.DeleteAccountOptionDescriptionOne,
+            objectName: "check1",
             isSelected: false
         },
         {
             subLabelText: VPNl18n.DeleteAccountOptionDescriptionTwo,
+            objectName: "check2",
             isSelected: false
         },
         {
             subLabelText: VPNl18n.DeleteAccountOptionDescriptionThree,
+            objectName: "check3",
             isSelected: false
         },
         {
             subLabelText: VPNl18n.DeleteAccountOptionDescriptionFour,
+            objectName: "check4",
             isSelected: false
         }
     ]
     property bool allowAccountDeletion: false
 
     _changeEmailLinkVisible: false
+    _viewObjectName: "authDeleteAccountRequest"
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonOnClick: () => {
-        cancelAccountDeletion();
+        cancelAuthenticationFlow();
     }
     _headlineText: VPNl18n.DeleteAccountHeadline
     _imgSource: "qrc:/nebula/resources/avatar-delete-account.svg"
 
     _inputs: ColumnLayout {
+        objectName: "accountDeletionLayout"
         VPNTextBlock {
+            objectName: "accountDeletionLabel"
             color: VPNTheme.theme.fontColor
             horizontalAlignment: Text.AlignLeft
             text: VPNl18n.DeleteAccountSubheadline
@@ -58,6 +66,7 @@ VPNInAppAuthenticationBase {
         Repeater {
             model: checkboxData
             delegate: VPNCheckBoxRow {
+                objectName: "accountDeletionCheckbox-" + modelData.objectName;
                 subLabelText: modelData.subLabelText
                 leftMargin: 0
                 isChecked: modelData.isSelected
@@ -76,6 +85,7 @@ VPNInAppAuthenticationBase {
 
         VPNButton {
             Layout.fillWidth: true
+            objectName: "deleteAccountForRealButton"
 
             colorScheme: VPNTheme.theme.redButton
             enabled: viewDeleteAccount.allowAccountDeletion
@@ -94,7 +104,7 @@ VPNInAppAuthenticationBase {
             labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText
             linkColor: VPNTheme.theme.redButton
             onClicked: {
-                cancelAccountDeletion();
+                cancelAuthenticationFlow();
             }
         }
     }

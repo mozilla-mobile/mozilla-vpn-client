@@ -4,9 +4,8 @@
 
 const assert = require('assert');
 const websocket = require('websocket').w3cwebsocket;
-const FirefoxHelper = require('./firefox.js');
-
-const webdriver = require('selenium-webdriver'), By = webdriver.By;
+const {URL} = require('node:url');
+const http = require('http')
 
 let client;
 
@@ -89,6 +88,13 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
+  async reset() {
+    const json = await this._writeCommand('reset');
+    assert(
+        json.type === 'reset' && !('error' in json),
+        `Command failed: ${json.error}`);
+  },
+
   async waitForMainView() {
     await this.waitForElement('getHelpLink');
     await this.waitForElementProperty('getHelpLink', 'visible', 'true');
@@ -116,6 +122,14 @@ module.exports = {
     const json = await this._writeCommand('force_server_unavailable');
     assert(
         json.type === 'force_server_unavailable' && !('error' in json),
+        `Command failed: ${json.error}`);
+  },
+
+  async forceSubscriptionManagementReauth() {
+    const json = await this._writeCommand(
+        'force_subscription_management_reauthentication');
+    assert(
+        json.type === 'force_subscription_management_reauthentication' && !('error' in json),
         `Command failed: ${json.error}`);
   },
 
@@ -257,43 +271,31 @@ module.exports = {
     });
     await this.wait();
 
-    await this.waitForElement('authenticatingView');
-    await this.waitForElementProperty('authenticatingView', 'visible', 'true');
-
-    // Slight deviation from real-world authentication, we manually
-    // open and verify the login.
+    // We don't really want to go through the authentication flow because we are
+    // mocking everything.
     const url = await this.getLastUrl();
-    let driver = await FirefoxHelper.createDriver();
-    await driver.setContext('content');
-    await driver.navigate().to(url);
-    await FirefoxHelper.waitForURL(
-        driver, 'https://accounts.stage.mozaws.net/oauth/');
+    const urlObj = new URL(url);
 
-    // Perform login based on stored credentials in environment
-    const emailField = await driver.findElement(By.className('email'));
-    assert.ok(!!emailField);
-    await emailField.sendKeys(process.env.ACCOUNT_EMAIL);
-    let buttonElm = await driver.findElement(By.id('submit-btn'));
-    assert.ok(!!buttonElm);
-    buttonElm.click();
-    await FirefoxHelper.waitForURL(
-        driver, 'https://accounts.stage.mozaws.net/oauth/signin');
-    const passwordField = await driver.findElement(By.id('password'));
-    assert.ok(!!passwordField);
-    passwordField.sendKeys(process.env.ACCOUNT_PASSWORD);
-    buttonElm = await driver.findElement(By.id('submit-btn'));
-    assert.ok(!!buttonElm);
-    await buttonElm.click();
+    const options = {
+      hostname: urlObj.hostname,
+      port: parseInt(urlObj.searchParams.get('port'), 10),
+      path: '/?code=the_code',
+      method: 'GET',
+    };
 
-    // Verify that we've been redirected to guardian success page
-    await FirefoxHelper.waitForURL(
-        driver,
-        'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
+    await new Promise(resolve => {
+      const req = http.request(options, res => {});
+      req.on('close', resolve);
+      req.on('error', error => {
+        throw new error(
+            `Unable to connect to ${urlObj.hostname} to complete the auth`);
+      });
+      req.end();
+    });
 
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
     await this.waitForElement('postAuthenticationButton');
-    await driver.quit();
 
     // Clean-up extra devices (otherwise test account will fill up in a
     // heartbeats)
@@ -323,13 +325,14 @@ module.exports = {
     await this.clickOnElement('getStarted');
     await this.waitForElement('authStart-textInput');
     await this.setElementProperty(
-        'authStart-textInput', 'text', 's', process.env.ACCOUNT_EMAIL);
+        'authStart-textInput', 'text', 's', 'test@test');
     await this.waitForElement('authStart-button');
     await this.clickOnElement('authStart-button');
 
     await this.waitForElement('authSignIn-passwordInput');
     await this.setElementProperty(
-        'authSignIn-passwordInput', 'text', 's', process.env.ACCOUNT_PASSWORD);
+        'authSignIn-passwordInput', 'text', 's', 'password');
+
     await this.clickOnElement('authSignIn-button');
 
     // Wait for VPN client screen to move from spinning wheel to next screen

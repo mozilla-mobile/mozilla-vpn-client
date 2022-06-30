@@ -11,63 +11,76 @@ import components 0.1
 
 RowLayout {
     property string _iconButtonImageSource: ""
+    property bool _loaderVisible: false
     property var _iconButtonOnClicked
 
     id: userInfo
     spacing: VPNTheme.theme.windowMargin
 
     Rectangle {
-      Layout.preferredWidth: VPNTheme.theme.rowHeight
-      Layout.preferredHeight: VPNTheme.theme.rowHeight
-      Layout.alignment: Qt.AlignVCenter
-      color: VPNTheme.theme.transparent
+        Layout.preferredWidth: VPNTheme.theme.rowHeight
+        Layout.preferredHeight: VPNTheme.theme.rowHeight
+        Layout.alignment: Qt.AlignVCenter
+        color: VPNTheme.theme.transparent
 
         VPNAvatar {
-          id: avatar
-          avatarUrl: VPNUser.avatar
-          anchors.fill: parent
+            id: avatar
+            avatarUrl: VPNUser.avatar
+            anchors.fill: parent
         }
     }
 
     ColumnLayout {
-      Layout.alignment: Qt.AlignVCenter
+        spacing: VPNTheme.theme.listSpacing
 
-      VPNBoldLabel {
-          readonly property var textVpnUser: VPNl18n.GlobalVpnUser
-          text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
-          wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-          Layout.fillWidth: true
-      }
+        Layout.alignment: Qt.AlignVCenter
 
-      VPNTextBlock {
-          id: serverLocation
-          text: VPNUser.email
-          Accessible.ignored: true
-          Layout.alignment: Qt.AlignLeft
-          width: undefined
-          Layout.fillWidth: true
-          wrapMode: Text.NoWrap
-          elide: Text.ElideRight
-          lineHeight: 1
-          lineHeightMode: Text.FixedHeight
-      }
+        VPNBoldLabel {
+            objectName: userInfo.objectName + "-displayName"
+            readonly property var textVpnUser: VPNl18n.GlobalVpnUser
+            text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            Layout.fillWidth: true
+        }
+
+        VPNTextBlock {
+            id: serverLocation
+            objectName: userInfo.objectName + "-emailAddress"
+            text: VPNUser.email
+            Accessible.ignored: true
+            Layout.alignment: Qt.AlignLeft
+            width: undefined
+            Layout.fillWidth: true
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
+            lineHeight: 1
+            lineHeightMode: Text.FixedHeight
+        }
     }
 
     VPNIconButton {
-      id: iconButton
-      objectName: "manageAccountButton"
-      Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-      Layout.preferredHeight: VPNTheme.theme.rowHeight
-      Layout.preferredWidth: VPNTheme.theme.rowHeight
-      accessibleName: qsTrId("vpn.main.manageAccount")
-      onClicked: _iconButtonOnClicked()
-      visible: _iconButtonImageSource !== ""
+        id: iconButton
+        objectName: userInfo.objectName + "-manageAccountButton"
+        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+        Layout.preferredHeight: VPNTheme.theme.rowHeight
+        Layout.preferredWidth: VPNTheme.theme.rowHeight
+        accessibleName: qsTrId("vpn.main.manageAccount")
+        onClicked: _iconButtonOnClicked()
+        visible: _iconButtonImageSource !== ""
 
         VPNIcon {
-          id: icon
-          source: _iconButtonImageSource
-          fillMode: Image.PreserveAspectFit
-          anchors.centerIn: iconButton
+            id: icon
+            source: _iconButtonImageSource
+            fillMode: Image.PreserveAspectFit
+            anchors.centerIn: iconButton
+        }
+
+        VPNButtonLoader {
+            id: loader
+
+            color: VPNTheme.theme.bgColor
+            iconUrl: "qrc:/nebula/resources/spinner.svg"
+            state: _loaderVisible ? "active" : "inactive"
         }
     }
 }

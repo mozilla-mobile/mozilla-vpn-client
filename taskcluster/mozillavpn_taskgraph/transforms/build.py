@@ -11,7 +11,7 @@ from taskgraph.transforms.base import TransformSequence
 from taskgraph.transforms.task import task_description_schema
 from taskgraph.util.schema import Schema
 from taskgraph.util.workertypes import worker_type_implementation
-from voluptuous import Optional, Required, Any
+from voluptuous import Optional, Required, Any, Extra
 
 
 transforms = TransformSequence()
@@ -29,7 +29,8 @@ build_schema = Schema(
         Optional("requires-level"): int,
         Optional("release-artifacts"): [str],
         Optional("dependencies"): task_description_schema["dependencies"],
-        Optional("fetches"): any,
+        Optional("fetches"): any, 
+        Extra: object   
     }
 )
 

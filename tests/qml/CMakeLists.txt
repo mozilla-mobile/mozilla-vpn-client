@@ -6,16 +6,13 @@ add_definitions(-DQUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 add_definitions(-DUNIT_TEST)
 add_definitions(-DMVPN_DUMMY)
 
-find_package(Qt6 REQUIRED COMPONENTS Gui Widgets WebSockets)
-find_package(Qt6 REQUIRED COMPONENTS Qml Quick)
-find_package(Qt6 REQUIRED COMPONENTS QuickTest)
-
-get_filename_component(MVPN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../src ABSOLUTE)
+get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR})
 
 qt_add_executable(qml_tests EXCLUDE_FROM_ALL)
+set_target_properties(qml_tests PROPERTIES FOLDER "Tests")
 add_dependencies(build_tests qml_tests)
 
 target_link_libraries(qml_tests PRIVATE

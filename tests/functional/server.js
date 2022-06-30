@@ -16,15 +16,19 @@ class Server {
     app.use((req, res, next) => {
       switch (req.method) {
         case 'GET':
-          this.processRequest(req, res, this._endpoints.GETs);
+          this.processRequest(
+              req, res, this._endpoints.GETs, this._overrideEndpoints?.GETs);
           return;
 
         case 'POST':
-          this.processRequest(req, res, this._endpoints.POSTs);
+          this.processRequest(
+              req, res, this._endpoints.POSTs, this._overrideEndpoints?.POSTs);
           return;
 
         case 'DELETE':
-          this.processRequest(req, res, this._endpoints.DELETEs);
+          this.processRequest(
+              req, res, this._endpoints.DELETEs,
+              this._overrideEndpoints?.DELETEs);
           return;
 
         default:
@@ -44,23 +48,36 @@ class Server {
     }
   }
 
-  processRequest(req, res, paths) {
-    let responseData;
-
-    if (req.path in paths) {
-      responseData = paths[req.path];
-    } else {
-      const key = Object.keys(paths).find(
-          key => paths[key].match === 'startWith' && req.path.startsWith(key));
-
-      if (!key) {
-        this._addException(
-            `Server ${this._name} - Unsupported path: ${req.path} - method: ${
-                req.method} - query: ${JSON.stringify(req.query)}`);
-        return;
+  processRequest(req, res, paths, overriddenPaths) {
+    function findPath(path, paths) {
+      if (path in paths) {
+        return paths[path];
       }
 
-      responseData = paths[key];
+      const key = Object.keys(paths).find(
+          key => paths[key].match === 'startWith' && path.startsWith(key));
+
+      if (key) {
+        return paths[key];
+      }
+
+      return null;
+    }
+
+    let responseData;
+    if (typeof overriddenPaths === 'object') {
+      responseData = findPath(req.path, overriddenPaths);
+    }
+
+    if (!responseData) {
+      responseData = findPath(req.path, paths);
+    }
+
+    if (!responseData) {
+      this._addException(
+          `Server ${this._name} - Unsupported path: ${req.path} - method: ${
+              req.method} - query: ${JSON.stringify(req.query)}`);
+      return;
     }
 
     if (responseData.callback) responseData.callback(req);
@@ -78,6 +95,14 @@ class Server {
   _addException(exception) {
     console.log('Exception!', exception);
     this._exceptions.push(exception);
+  }
+
+  get overrideEndpoints() {
+    return this._overrideEndpoints || null;
+  }
+
+  set overrideEndpoints(value) {
+    this._overrideEndpoints = value;
   }
 };
 

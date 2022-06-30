@@ -13,4 +13,6 @@ class TestLocalizer final : public TestHelper {
   void systemLanguage();
 
   void localizeCurrency();
+
+  void majorLanguageCode();
 };

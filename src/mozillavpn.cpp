@@ -15,6 +15,7 @@
 #include "models/device.h"
 #include "models/feature.h"
 #include "networkrequest.h"
+#include "profileflow.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
@@ -23,6 +24,7 @@
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
+#include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
@@ -33,7 +35,7 @@
 #include "tasks/servers/taskservers.h"
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
-#include "tasks/createsupportticket/taskcreatesupportticket.h"
+#include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"
 #include "update/updater.h"
@@ -438,9 +440,14 @@ void MozillaVPN::maybeStateMain() {
 #endif
 }
 
-void MozillaVPN::setServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set server public key:" << logger.keys(publicKey);
-  m_serverPublicKey = publicKey;
+void MozillaVPN::setEntryServerPublicKey(const QString& publicKey) {
+  logger.debug() << "Set entry-server public key:" << logger.keys(publicKey);
+  m_entryServerPublicKey = publicKey;
+}
+
+void MozillaVPN::setExitServerPublicKey(const QString& publicKey) {
+  logger.debug() << "Set exit-server public key:" << logger.keys(publicKey);
+  m_exitServerPublicKey = publicKey;
 }
 
 void MozillaVPN::getStarted() {
@@ -574,6 +581,19 @@ void MozillaVPN::openLink(LinkType linkType) {
                 .arg(SettingsHolder::instance()
                          ->captivePortalIpv4Addresses()
                          .first());
+      break;
+
+    case LinkSubscriptionFxa:
+      url = Constants::fxaUrl();
+      url.append("/subscriptions");
+      break;
+
+    case LinkSubscriptionIapApple:
+      url = Constants::APPLE_SUBSCRIPTIONS_URL;
+      break;
+
+    case LinkSubscriptionIapGoogle:
+      url = Constants::GOOGLE_SUBSCRIPTIONS_URL;
       break;
 
     default:
@@ -1060,7 +1080,7 @@ const QList<Server> MozillaVPN::exitServers() const {
 
 const QList<Server> MozillaVPN::entryServers() const {
   if (!m_private->m_serverData.multihop()) {
-    return QList<Server>();
+    return exitServers();
   }
   ServerData sd;
   sd.update(m_private->m_serverData.entryCountryCode(),
@@ -1791,9 +1811,11 @@ void MozillaVPN::requestDeleteAccount() {
   TaskScheduler::scheduleTask(new TaskDeleteAccount(m_private->m_user.email()));
 }
 
-void MozillaVPN::cancelAccountDeletion() {
-  logger.warning() << "Canceling account deletion";
+void MozillaVPN::cancelReauthentication() {
+  logger.warning() << "Canceling reauthentication";
   AuthenticationInApp::instance()->terminateSession();
+
+  cancelAuthentication();
 }
 
 void MozillaVPN::updateViewShown() {

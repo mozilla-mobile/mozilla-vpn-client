@@ -8,8 +8,6 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
 
 Item {
     id: box
@@ -545,7 +543,7 @@ Item {
 
         onClicked: {
             if (!box.connectionInfoScreenVisible) {
-                Sample.connectionInfoOpened.record();
+                VPN.recordGleanEvent("connectionInfoOpened");
             }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
         }
@@ -579,8 +577,10 @@ Item {
             if (box.connectionInfoScreenVisible) {
                 return;
             }
-            Sample.settingsViewOpened.record();
+
+            VPN.recordGleanEvent("settingsViewOpened");
             mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate)
+
         }
 
         anchors.top: parent.top

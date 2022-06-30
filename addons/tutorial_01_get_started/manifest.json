@@ -16,6 +16,8 @@
         "element": "serverListButton-btn",
         "tooltip": "Select your location",
         "before": [{
+          "op": "vpn_off"
+        },{
           "op": "vpn_location_set",
           "exitCountryCode": "at",
           "exitCity": "Vienna",
