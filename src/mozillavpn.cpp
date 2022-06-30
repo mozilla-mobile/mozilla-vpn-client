@@ -822,7 +822,7 @@ void MozillaVPN::createSupportTicket(const QString& email,
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
 
-  serializeLogs(out, [this, out, buffer, email, subject, issueText, category] {
+  serializeLogs(out, [out, buffer, email, subject, issueText, category] {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
@@ -833,11 +833,13 @@ void MozillaVPN::createSupportTicket(const QString& email,
     delete buffer;
     delete out;
 
-    if (state() == StateAuthenticating && m_userState == UserNotAuthenticated) {
-      TaskScheduler::scheduleTaskNow(task);
-    } else {
-      TaskScheduler::scheduleTask(task);
-    }
+    // Support tickets can be created at anytime. Even during "critical"
+    // operations such as authentication, account deletion, etc. Those
+    // operations are often running in tasks, which would block the scheduling
+    // of this new support ticket task execution if we used
+    // `TaskScheduler::scheduleTask`. To avoid this, let's run this task
+    // immediately and let's hope it does not fail.
+    TaskScheduler::scheduleTaskNow(task);
   });
 }
 
