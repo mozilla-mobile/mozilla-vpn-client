@@ -60,6 +60,8 @@ class ServerData final : public QObject {
 
   QString toString() const;
 
+  void retranslate() { emit changed(); }
+
  signals:
   void changed();
 
