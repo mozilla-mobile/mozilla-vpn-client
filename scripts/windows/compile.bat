@@ -77,7 +77,7 @@ ECHO Generating glean samples...
 python3 scripts\utils\generate_glean.py
 
 ECHO Generating addons...
-python3 scripts\addon\generate_all.py
+python3 scripts\addon\generate_all.py -d
 
 ECHO Creating the project with flags: %FLAGS%
 

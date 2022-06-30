@@ -14,7 +14,7 @@ echo "Importing translations"
 ./scripts/utils/import_languages.py
 # addons
 echo "Generating addons..."
-./scripts/addon/generate_all.py
+./scripts/addon/generate_all.py -d
 
 # Get Secrets for building
 echo "Fetching Tokens!"

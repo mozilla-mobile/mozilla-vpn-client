@@ -237,8 +237,13 @@ parser.add_argument(
     dest="qtpath",
     help="The QT binary path. If not set, we try to guess.",
 )
+parser.add_argument(
+    "-d",
+    "--delete_extra",
+    action='store_true',
+    help="Delete extra files.",
+)
 args = parser.parse_args()
-
 
 def qtquery(qmake, propname):
     try:
@@ -363,4 +368,10 @@ with open(args.source, "r", encoding="utf-8") as file:
     print("Creating the final addon...")
     rcc_file = os.path.join(args.dest, f"{manifest['id']}.rcc")
     os.system(f"{rcc} {qrc_file} -o {rcc_file} -binary")
+
+    if args.delete_extra:
+        print("Removing extra files...")
+        ts_file = os.path.join(args.dest, f"{manifest['id']}.ts")
+        os.remove(ts_file);
+
     print(f"Done: {rcc_file}")
