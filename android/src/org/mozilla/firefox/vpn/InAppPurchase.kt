@@ -278,7 +278,15 @@ class InAppPurchase private constructor(ctx: Context) :
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             processPurchases(purchases)
         } else {
-            VPNUtils.recordGleanEvent(GleanEvent.iapGPurchasesUpdatedFailed)
+            val reason = when (billingResult.responseCode) {
+                BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> "item-already-owned"
+                BillingClient.BillingResponseCode.USER_CANCELED -> "user-canceled"
+                BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> "item-unavailable"
+                else -> "unknown-${billingResult.responseCode}"
+            }
+            VPNUtils.recordGleanEventWithExtraKeys(
+                GleanEvent.iapGPurchasesUpdatedFailed, "{ \"reason\":\"$reason\"}"
+            )
             onSubscriptionFailed(billingResultToJson(billingResult, "onSkuDetailsResponse"))
         }
     }
