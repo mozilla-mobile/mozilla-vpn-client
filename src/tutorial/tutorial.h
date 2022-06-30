@@ -42,7 +42,6 @@ class Tutorial final : public QObject {
   void tooltipNeeded(const QString& tooltipText, QObject* targetElement);
   void tooltipShownChanged();
   void tutorialCompleted(const QString& completionMessageText);
-  void currentTutorialChanged();
 
  private:
   explicit Tutorial(QObject* parent);
