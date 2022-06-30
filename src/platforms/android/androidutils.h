@@ -46,6 +46,9 @@ class AndroidUtils final : public QObject {
 
   static void recordGleanEvent(JNIEnv* env, jobject VPNUtils, jstring event);
 
+  static void recordGleanEventWithExtraKeys(JNIEnv* env, jobject VPNUtils,
+                                            jstring event, jstring extras);
+
   static void runOnAndroidThreadSync(const std::function<void()> runnable);
 
  private:

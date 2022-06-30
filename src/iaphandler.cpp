@@ -219,6 +219,7 @@ void IAPHandler::stopProductsRegistration() {
 
 void IAPHandler::subscribe(const QString& productIdentifier) {
   logger.debug() << "Subscription required";
+  m_currentSKU = productIdentifier;
   emit subscriptionStarted(productIdentifier);
 }
 

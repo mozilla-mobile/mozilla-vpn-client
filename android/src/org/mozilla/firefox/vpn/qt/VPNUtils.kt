@@ -109,8 +109,15 @@ object VPNUtils {
         // does not explode here :)
         recordGleanEvent(metricName.toString())
     }
+    fun recordGleanEventWithExtraKeys(metricName: GleanEvent, keysJSON: String) {
+        recordGleanEventWithExtraKeys(metricName.toString(), keysJSON)
+    }
 
     @SuppressLint("Unused")
     @JvmStatic
     private external fun recordGleanEvent(metricName: String)
+
+    @SuppressLint("Unused")
+    @JvmStatic
+    private external fun recordGleanEventWithExtraKeys(metricName: String, keysJSON: String)
 }
