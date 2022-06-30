@@ -601,6 +601,7 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
       MozillaVPN::instance()->serverCountryModel()->retranslate();
+      MozillaVPN::instance()->currentServer()->retranslate();
     });
 
     InspectorHandler::initialize();
