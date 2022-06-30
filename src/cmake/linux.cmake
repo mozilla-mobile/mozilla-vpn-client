@@ -84,10 +84,14 @@ target_link_libraries(mozillavpn PRIVATE netfilter)
 include(GNUInstallDirs)
 install(TARGETS mozillavpn)
 
-install(FILES ../linux/extra/mozillavpn.desktop
+configure_file(../linux/extra/mozillavpn.desktop.in
+    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.desktop)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-install(FILES ../linux/extra/mozillavpn-startup.desktop
+configure_file(../linux/extra/mozillavpn-startup.desktop.in
+    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop
     DESTINATION /etc/xdg/autostart)
 
 install(FILES ../linux/extra/icons/16x16/mozillavpn.png
@@ -118,7 +122,10 @@ install(FILES platforms/linux/daemon/org.mozilla.vpn.dbus.service
 pkg_check_modules(SYSTEMD systemd)
 if("${SYSTEMD_FOUND}" EQUAL 1)
     pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
-    install(FILES ../linux/mozillavpn.service DESTINATION ${SYSTEMD_UNIT_DIR})
 else()
-    install(FILES ../linux/mozillavpn.service DESTINATION /lib/systemd/system)
+    set(SYSTEMD_UNIT_DIR /lib/systemd/system)
 endif()
+configure_file(../linux/mozillavpn.service.in
+    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service
+    DESTINATION ${SYSTEMD_UNIT_DIR})
