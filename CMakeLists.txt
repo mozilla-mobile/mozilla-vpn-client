@@ -4,6 +4,10 @@
 
 cmake_minimum_required(VERSION 3.16)
 
+
+list(APPEND CMAKE_PREFIX_PATH "/Users/basti/Code/qt/6.2.4/android_x86/lib/cmake")
+#list(APPEND CMAKE_FIND_ROOT_PATH "/Users/basti/Code/qt/6.2.4/android_x86/lib/cmake")
+set(CMAKE_FIND_DEBUG_MODE TRUE)
 ## Some workarounds for platform build quirks
 if(WIN32)
     ## CMake v3.20 has problems with race conditions in dependency generation.

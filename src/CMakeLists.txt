@@ -8,7 +8,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-qt_add_executable(mozillavpn MANUAL_FINALIZATION)
+add_library(mozillavpn SHARED)
 
 target_link_libraries(mozillavpn PRIVATE
     Qt6::NetworkAuth

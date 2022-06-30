@@ -7,7 +7,7 @@ const val Mozilla_ANDROID_COMPONENT_VERSION = "101.0.7"
 object Dependencies {
     const val org_jetbrains_kotlin_kotlin_serialization = "org.jetbrains.kotlin:kotlin-serialization:1.4.30-M1"
     const val org_jetbrains_kotlin_kotlin_gradle_plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
-    const val com_android_tools_build_gradle = "com.android.tools.build:gradle:4.0.0"
+    const val com_android_tools_build_gradle = "com.android.tools.build:gradle:4.1.1"
     const val androidx_core = "androidx.core:core-ktx:1.6.0"
     const val android_installreferrer = "com.android.installreferrer:installreferrer:2.2"
     const val android_billingclient = "com.android.billingclient:billing-ktx:4.0.0"
