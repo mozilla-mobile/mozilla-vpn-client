@@ -44,6 +44,12 @@ class WebSocketHandler final : public QObject {
   static void testOverrideWebSocketServerUrl(const QString& url);
   void testOverridePingInterval(int newInterval);
   void testOverrideBaseRetryInterval(int newInterval);
+
+  // If currently waiting for until attempting reconnection,
+  // this variable will contain the backoff interval.
+  //
+  // When not waiting, this will be 0.
+  int m_currentBackoffInterval = 0;
 #endif
 
  signals:
