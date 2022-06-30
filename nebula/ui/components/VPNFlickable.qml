@@ -16,6 +16,21 @@ Flickable {
     property bool hideScollBarOnStackTransition: false
     interactive: !VPNTutorial.playing
 
+    MouseArea {
+
+        anchors.fill: parent
+        propagateComposedEvents: true
+
+        onPressed: mouse => {
+            if (window.activeFocusItem &&
+                window.activeFocusItem.forceBlurOnOutsidePress &&
+                (Qt.platform.os === "android" || Qt.platform.os === "ios")) {
+                vpnFlickable.focus = true;
+            }
+            mouse.accepted = false;
+        }
+    }
+
     clip: true
 
     function ensureVisible(item) {
