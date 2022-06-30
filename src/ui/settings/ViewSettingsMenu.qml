@@ -48,6 +48,8 @@ VPNFlickable {
                 objectName: "settingsUserProfile"
 
                 property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
+                _iconButtonEnabled: VPNProfileFlow.state === VPNProfileFlow.StateInitial
+
                 _iconButtonImageSource: subscriptionManagementEnabled
                     ? "qrc:/nebula/resources/chevron.svg"
                     : "qrc:/nebula/resources/open-in-new.svg"
