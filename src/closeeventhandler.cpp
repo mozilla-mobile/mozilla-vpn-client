@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "closeeventhandler.h"
+#include "externalophandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -50,6 +51,8 @@ void CloseEventHandler::removeAllStackViews() {
 
 bool CloseEventHandler::eventHandled() {
   logger.debug() << "Close event handled";
+
+  ExternalOpHandler::instance()->request(ExternalOpHandler::OpCloseEvent);
 
 #if defined(MVPN_ANDROID)
   for (int i = m_layers.length() - 1; i >= 0; --i) {

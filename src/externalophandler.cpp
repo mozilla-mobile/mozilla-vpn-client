@@ -51,7 +51,11 @@ void ExternalOpHandler::request(Op op) {
     case OpQuit:
       vpn->controller()->quit();
       break;
+
+    // List of no-op requests:
     case OpNotificationClicked:
+      [[fallthrough]];
+    case OpCloseEvent:
       break;
   }
 }

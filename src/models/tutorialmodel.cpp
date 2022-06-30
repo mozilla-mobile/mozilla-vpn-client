@@ -161,6 +161,7 @@ void TutorialModel::externalRequestReceived(ExternalOpHandler::Op op) {
 
   if (op != ExternalOpHandler::OpActivate &&
       op != ExternalOpHandler::OpDeactivate &&
+      op != ExternalOpHandler::OpCloseEvent &&
       op != ExternalOpHandler::OpNotificationClicked) {
     return;
   }
