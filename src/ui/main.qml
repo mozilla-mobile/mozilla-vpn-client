@@ -94,18 +94,6 @@ Window {
         VPN.mainWindowLoaded()
     }
 
-    MouseArea {
-        anchors.fill: parent
-        propagateComposedEvents: true
-        z: 10
-        onPressed: mouse => {
-            if (window.activeFocusItem && window.activeFocusItem.forceBlurOnOutsidePress) {
-                window.activeFocusItem.focus = false;
-            }
-            mouse.accepted = false;
-        }
-    }
-
     VPNMobileStatusBarModifier {
         id: statusBarModifier
     }
