@@ -40,11 +40,14 @@ SOURCES += \
     helper.cpp \
     main.cpp \
     mocconstants.cpp \
+    moccontroller.cpp \
     mocmozillavpn.cpp \
     ../unit/mocinspectorhandler.cpp \
     ../../src/closeeventhandler.cpp \
+    ../../src/externalophandler.cpp \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
+    ../../src/ipaddress.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/feature.cpp \
@@ -63,8 +66,11 @@ HEADERS += \
     helper.h \
     ../../src/closeeventhandler.h \
     ../../src/constants.h \
+    ../../src/controller.h \
+    ../../src/externalophandler.h \
     ../../src/hawkauth.h \
     ../../src/hkdf.h \
+    ../../src/ipaddress.h \
     ../../src/inspector/inspectorhandler.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
