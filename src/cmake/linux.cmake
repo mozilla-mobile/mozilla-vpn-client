@@ -110,14 +110,15 @@ install(FILES ../linux/extra/icons/64x64/mozillavpn.png
 install(FILES ../linux/extra/icons/128x128/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
 
+pkg_get_variable(POLKIT_POLICY_DIR polkit-gobject-1 policydir)
 install(FILES platforms/linux/daemon/org.mozilla.vpn.policy
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/actions)
+    DESTINATION ${POLKIT_POLICY_DIR})
 
 install(FILES platforms/linux/daemon/org.mozilla.vpn.conf
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/system.d)
+    DESTINATION /usr/share/dbus-1/system.d)
 
 install(FILES platforms/linux/daemon/org.mozilla.vpn.dbus.service
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/system-services)
+    DESTINATION /usr/share/dbus-1/system-services)
 
 pkg_check_modules(SYSTEMD systemd)
 if("${SYSTEMD_FOUND}" EQUAL 1)
