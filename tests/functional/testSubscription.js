@@ -389,20 +389,24 @@ describe('Subscription view', function() {
           'subscriptionManagmentView', 'visible', 'true');
       await vpn.wait();
 
-      await vpn.waitForElement(
-          'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText');
-      await vpn.waitForElementProperty(
-          'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
-          'visible', 'true');
-
-      assert(
-          await vpn.getElementProperty(
-              'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
-              'text') === data.plan.expected);
-      assert(
+      if (data.subscription.expected.status) {
+        assert(
           await vpn.getElementProperty(
               'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-container/subscriptionItem-status-pillWrapper/subscriptionItem-status-pill',
               'text') === data.subscription.expected.status);
+      }
+
+      if (data.plan.expected) {
+        await vpn.waitForElement(
+            'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText');
+        await vpn.waitForElementProperty(
+            'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
+            'visible', 'true');
+        assert(
+          await vpn.getElementProperty(
+              'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
+              'text') === data.plan.expected);
+      }
 
       if (data.subscription.expected.activated) {
         await vpn.waitForElement(
@@ -423,6 +427,7 @@ describe('Subscription view', function() {
           await vpn.getElementProperty(
               'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-labelText',
               'text') === data.subscription.expected.label);
+
       if (data.subscription.value._subscription_type == "web") {
         if (data.payment.expected.card) {
           await vpn.waitForElement(

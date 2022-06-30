@@ -151,15 +151,17 @@ VPNFlickable {
     function populateListModels() {
         // Subscription info model
         // Subscription plan
-        subscriptionInfoModel.append({
-            _objectName: "subscriptionItem-plan",
-            labelText: VPNl18n.SubscriptionManagementPlanLabel,
-            valueText: getPlanText(
-                VPNSubscriptionData.planCurrency,
-                VPNSubscriptionData.planAmount,
-            ),
-            type: "text",
-        });
+        if (VPNSubscriptionData.planCurrency && VPNSubscriptionData.planAmount) {
+            subscriptionInfoModel.append({
+                _objectName: "subscriptionItem-plan",
+                labelText: VPNl18n.SubscriptionManagementPlanLabel,
+                valueText: getPlanText(
+                    VPNSubscriptionData.planCurrency,
+                    VPNSubscriptionData.planAmount,
+                ),
+                type: "text",
+            });
+        }
 
         // Status
         subscriptionInfoModel.append({
