@@ -49,7 +49,7 @@ class WebSocketHandler final : public QObject {
   // this variable will contain the backoff interval.
   //
   // When not waiting, this will be 0.
-  int currentBackoffInterval = 0;
+  int m_currentBackoffInterval = 0;
 #endif
 
  signals:

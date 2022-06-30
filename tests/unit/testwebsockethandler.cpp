@@ -302,7 +302,7 @@ void TestWebSocketHandler::
   // We know there were at least three retries,
   // so the current backoff interval should be at least longer than the 3rd
   // interval.
-  QVERIFY(handler.currentBackoffInterval > qPow(testBaseRetryInterval, 3));
+  QVERIFY(handler.m_currentBackoffInterval > qPow(testBaseRetryInterval, 3));
 
   // Reopen the server so reconnections can take place.
   server.open();
@@ -322,8 +322,8 @@ void TestWebSocketHandler::
 
   // The reconnection interval should have been reset.
   // Reconnection might be so fast that when we get to this line
-  // currentBackoffInterval has already been reset to 0.
-  QVERIFY(handler.currentBackoffInterval <= testBaseRetryInterval);
+  // m_currentBackoffInterval has already been reset to 0.
+  QVERIFY(handler.m_currentBackoffInterval <= testBaseRetryInterval);
 
   // Wait for reconnection.
   QVERIFY(newConnectionSpy.wait());
@@ -331,7 +331,7 @@ void TestWebSocketHandler::
 
   // The backoff interval is reset to 0 when not waiting for reconnection
   // attempt.
-  QCOMPARE(handler.currentBackoffInterval, testBaseRetryInterval);
+  QCOMPARE(handler.m_currentBackoffInterval, testBaseRetryInterval);
 }
 
 void TestWebSocketHandler::tst_reconnectionAttemptsOnPingTimeout() {
