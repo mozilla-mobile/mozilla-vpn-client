@@ -15,7 +15,7 @@ target_include_directories(addons PUBLIC ${GENERATED_DIR})
 
 add_custom_command(
     OUTPUT ${GENERATED_DIR}/manifest.qrc
-    COMMAND python3 ${MVPN_SCRIPT_DIR}/addon/generate_all.py
+    COMMAND python3 ${MVPN_SCRIPT_DIR}/addon/generate_all.py -d
 )
 
 file(GLOB_RECURSE

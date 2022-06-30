@@ -18,6 +18,12 @@ parser.add_argument(
     dest="qtpath",
     help="The QT binary path. If not set, we try to guess.",
 )
+parser.add_argument(
+    "-d",
+    "--delete_extra",
+    action='store_true',
+    help="Delete extra files.",
+)
 args = parser.parse_args()
 
 build_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "build.py")
@@ -44,6 +50,8 @@ for file in os.listdir(addons_path):
     if args.qtpath:
         build_cmd.append("-q")
         build_cmd.append(args.qtpath)
+    if args.delete_extra:
+        build_cmd.append("-d")
     subprocess.call(build_cmd)
 
     generated_addon_path = os.path.join(generated_path, file + ".rcc")
