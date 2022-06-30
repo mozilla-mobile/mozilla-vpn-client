@@ -13,6 +13,7 @@ RowLayout {
     property string _iconButtonImageSource: ""
     property bool _loaderVisible: false
     property var _iconButtonOnClicked
+    property alias _iconButtonEnabled: iconButton.enabled
 
     id: userInfo
     spacing: VPNTheme.theme.windowMargin
